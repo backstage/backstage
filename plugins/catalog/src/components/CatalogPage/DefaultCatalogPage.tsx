@@ -23,12 +23,7 @@ import {
   TableColumn,
   TableProps,
 } from '@backstage/core-components';
-import {
-  configApiRef,
-  useApi,
-  usePluginOptions,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   CatalogFilterLayout,
   EntityLifecyclePicker,
@@ -57,10 +52,6 @@ export interface DefaultCatalogPageProps {
   tableOptions?: TableProps<CatalogTableRow>['options'];
 }
 
-export type CatalogPageOptionsProps = {
-  createButtonTitle: string;
-};
-
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
   const {
     columns,
@@ -73,8 +64,6 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
 
-  const { createButtonTitle } = usePluginOptions<CatalogPageOptionsProps>();
-
   return (
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
       <EntityListProvider>
@@ -83,7 +72,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
             titleComponent={<CatalogKindHeader initialFilter={initialKind} />}
           >
             <CreateButton
-              title={createButtonTitle}
+              title="Create Component"
               to={createComponentLink && createComponentLink()}
             />
             <SupportButton>All your software catalog entities</SupportButton>
