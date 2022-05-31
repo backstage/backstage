@@ -334,7 +334,7 @@ export async function createRouter(
         clearTimeout(timeout);
       });
     })
-    .post('/v2/dryrun', async (req, res) => {
+    .post('/v2/dry-run', async (req, res) => {
       const template = req.body.template as TemplateEntityV1beta3;
       const values = req.body.values;
       const token = getBearerToken(req.headers.authorization);
