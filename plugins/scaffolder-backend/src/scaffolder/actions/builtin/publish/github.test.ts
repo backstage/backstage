@@ -399,7 +399,7 @@ describe('publish:github', () => {
         collaborators: [
           {
             access: 'pull',
-            username: 'robot-1',
+            user: 'robot-1',
           },
           {
             access: 'push',

@@ -59,11 +59,15 @@ export function createPublishGithubAction(options: {
     repoVisibility?: 'private' | 'internal' | 'public';
     collaborators?: Array<
       | {
-          username: string;
+          user: string;
           access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
         }
       | {
           team: string;
+          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+        }
+      | {
+          username: string;
           access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
         }
     >;
@@ -173,10 +177,23 @@ export function createPublishGithubAction(options: {
                       description: 'The type of access for the user',
                       enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
                     },
-                    username: {
+                    user: {
                       type: 'string',
                       description:
                         'The name of the user that will be added as a collaborator',
+                    },
+                  },
+                },
+                {
+                  properties: {
+                    access: {
+                      type: 'string',
+                      description: 'The type of access for the user',
+                      enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
+                    },
+                    username: {
+                      type: 'string',
+                      description: 'Not a valid field anymore',
                     },
                   },
                 },
@@ -327,11 +344,22 @@ export function createPublishGithubAction(options: {
       if (collaborators) {
         for (const collaborator of collaborators) {
           try {
-            if ('username' in collaborator) {
+            if ('user' in collaborator) {
               await client.rest.repos.addCollaborator({
                 owner,
                 repo,
-                username: collaborator.username,
+                username: collaborator.user,
+                permission: collaborator.access,
+              });
+            } else if ('username' in collaborator) {
+              ctx.logger.warn(
+                'The field `username` is deprecated in favor of `team`',
+              );
+              await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
+                org: owner,
+                team_slug: collaborator.username,
+                owner,
+                repo,
                 permission: collaborator.access,
               });
             } else if ('team' in collaborator) {
@@ -345,10 +373,7 @@ export function createPublishGithubAction(options: {
             }
           } catch (e) {
             assertError(e);
-            const name =
-              'username' in collaborator
-                ? collaborator.username
-                : collaborator.team;
+            const name = extractCollaboratorName(collaborator);
             ctx.logger.warn(
               `Skipping ${collaborator.access} access for ${name}, ${e.message}`,
             );
@@ -417,4 +442,24 @@ export function createPublishGithubAction(options: {
       ctx.output('repoContentsUrl', repoContentsUrl);
     },
   });
+}
+
+function extractCollaboratorName(
+  collaborator:
+    | {
+        user: string;
+        access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+      }
+    | {
+        team: string;
+        access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+      }
+    | {
+        username: string;
+        access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+      },
+) {
+  if ('username' in collaborator) return collaborator.username;
+  if ('user' in collaborator) return collaborator.user;
+  return collaborator.team;
 }
