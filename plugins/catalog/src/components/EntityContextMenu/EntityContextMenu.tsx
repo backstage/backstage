@@ -31,16 +31,19 @@ import React, { useState } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { useEntityPermission } from '@backstage/plugin-catalog-react';
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common';
+import { BackstageTheme } from '@backstage/theme';
 
 /** @public */
 export type EntityContextMenuClassKey = 'button';
 
 const useStyles = makeStyles(
-  () => ({
-    button: {
-      color: 'white',
-    },
-  }),
+  (theme: BackstageTheme) => {
+    return {
+      button: {
+        color: theme.palette.bursts.fontColor,
+      },
+    };
+  },
   { name: 'PluginCatalogEntityContextMenu' },
 );
 
