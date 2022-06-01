@@ -37,6 +37,10 @@ export class AzureUrl {
       owner = parts[1];
       project = parts[2];
       repo = parts[4];
+    } else if (parts[4] === '_git') {
+      owner = `${parts[1]}/${parts[2]}`;
+      project = parts[3];
+      repo = parts[5];
     }
 
     if (!owner || !project || !repo) {
