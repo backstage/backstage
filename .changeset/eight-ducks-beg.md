@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-pagerduty': patch
+'@backstage/plugin-pagerduty': minor
 ---
 
-Use identityApi to provide auth token for pagerduty API calls.
+**Breaking**: Use identityApi to provide auth token for pagerduty API calls.
