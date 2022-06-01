@@ -1227,3 +1227,13 @@ code {
 h3.collapsible span.arrow {
   margin-right: 4px;
 }
+
+@media only screen and (max-width: 767px) {
+  .navigationSlider .slidingNav ul {
+    flex-wrap: nowrap;
+  }
+
+  .navPusher {
+    padding-top: 50px;
+  }
+}
