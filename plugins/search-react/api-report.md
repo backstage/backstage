@@ -12,6 +12,7 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { SearchQuery } from '@backstage/plugin-search-common';
+import { SearchResult as SearchResult_2 } from '@backstage/plugin-search-common';
 import { SearchResultSet } from '@backstage/plugin-search-common';
 
 // @public (undocumented)
@@ -118,6 +119,14 @@ export type SearchFilterComponentProps = {
 export type SearchFilterWrapperProps = SearchFilterComponentProps & {
   component: (props: SearchFilterComponentProps) => ReactElement;
   debug?: boolean;
+};
+
+// @public (undocumented)
+export const SearchResult: ({ children }: SearchResultProps) => JSX.Element;
+
+// @public (undocumented)
+export type SearchResultProps = {
+  children: (results: { results: SearchResult_2[] }) => JSX.Element;
 };
 
 // @public (undocumented)

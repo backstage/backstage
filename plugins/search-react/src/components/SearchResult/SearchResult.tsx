@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,19 @@ import {
 } from '@backstage/core-components';
 import { SearchResult } from '@backstage/plugin-search-common';
 import React from 'react';
-import { useSearch } from '@backstage/plugin-search-react';
+import { useSearch } from '../../context';
 
-type Props = {
+/**
+ * @public
+ */
+export type SearchResultProps = {
   children: (results: { results: SearchResult[] }) => JSX.Element;
 };
 
 /**
- * @deprecated Moved to `@backstage/plugin-search-react`.
+ * @public
  */
-export const SearchResultComponent = ({ children }: Props) => {
+export const SearchResultComponent = ({ children }: SearchResultProps) => {
   const {
     result: { loading, error, value },
   } = useSearch();
