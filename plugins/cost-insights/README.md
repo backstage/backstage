@@ -171,16 +171,15 @@ costInsights:
       name: Some Other Cloud Product
       icon: data
   currencies:
-    metricA:
-      currencyA:
-        label: Currency A
-        unit: Unit A
-      currencyB:
-        label: Currency B
-        kind: CURRENCY_B
-        unit: Unit B
-        prefix: B
-        rate: 3.5
+    currencyA:
+      label: Currency A
+      unit: Unit A
+    currencyB:
+      label: Currency B
+      kind: CURRENCY_B
+      unit: Unit B
+      prefix: B
+      rate: 3.5
 ```
 
 ## Alerts
