@@ -110,6 +110,7 @@ export const TechDocsReaderPageHeader = (
           <EntityRefLink
             color="inherit"
             entityRef={entityRef}
+            title={entityMetadata?.metadata.title}
             defaultKind="Component"
           />
         }

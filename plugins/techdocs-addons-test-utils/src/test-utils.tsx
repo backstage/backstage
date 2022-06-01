@@ -82,7 +82,7 @@ type TechDocsAddonTesterOptions = {
 
 const defaultOptions: TechDocsAddonTesterOptions = {
   dom: <></>,
-  entity: {},
+  entity: { metadata: { name: '' } },
   metadata: {},
   componentId: 'docs',
   apis: [],
