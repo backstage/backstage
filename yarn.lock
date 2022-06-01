@@ -16625,9 +16625,9 @@ linkify-it@^3.0.1:
     uc.micro "^1.0.1"
 
 lint-staged@^12.2.0:
-  version "12.4.3"
-  resolved "https://registry.npmjs.org/lint-staged/-/lint-staged-12.4.3.tgz#914fa468458364e14cc952145db552d87c8847b6"
-  integrity sha512-eH6SKOmdm/ZwCRMTZAmM3q3dPkpq6vco/BfrOw8iGun4Xs/thYegPD/MLIwKO+iPkzibkLJuQcRhRLXKvaKreg==
+  version "12.5.0"
+  resolved "https://registry.npmjs.org/lint-staged/-/lint-staged-12.5.0.tgz#d6925747480ae0e380d13988522f9dd8ef9126e3"
+  integrity sha512-BKLUjWDsKquV/JuIcoQW4MSAI3ggwEImF1+sB4zaKvyVx1wBk3FsG7UK9bpnmBTN1pm7EH2BBcMwINJzCRv12g==
   dependencies:
     cli-truncate "^3.1.0"
     colorette "^2.0.16"
