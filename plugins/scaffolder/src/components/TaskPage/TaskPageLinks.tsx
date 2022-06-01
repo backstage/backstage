@@ -41,7 +41,10 @@ export const TaskPageLinks = ({ output }: TaskPageLinksProps) => {
         .filter(({ url, entityRef }) => url || entityRef)
         .map(({ url, entityRef, title, icon }) => {
           if (entityRef) {
-            const entityName = parseEntityRef(entityRef);
+            const entityName = parseEntityRef(entityRef, {
+              defaultKind: '<unknown>',
+              defaultNamespace: '<unknown>',
+            });
             const target = entityRoute(entityName);
             return { title, icon, url: target };
           }

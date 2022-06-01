@@ -101,6 +101,7 @@ export function createFetchTemplateAction(options: {
         },
       },
     },
+    supportsDryRun: true,
     async handler(ctx) {
       ctx.logger.info('Fetching template content from remote URL');
 
@@ -153,6 +154,7 @@ export function createFetchTemplateAction(options: {
         dot: true,
         onlyFiles: false,
         markDirectories: true,
+        followSymbolicLinks: false,
       });
 
       const nonTemplatedEntries = new Set(
@@ -164,6 +166,7 @@ export function createFetchTemplateAction(options: {
                 dot: true,
                 onlyFiles: false,
                 markDirectories: true,
+                followSymbolicLinks: false,
               }),
             ),
           )

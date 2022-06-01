@@ -46,6 +46,7 @@ export function createPublishGithubAction(options: {
     description?: string;
     access?: string;
     defaultBranch?: string;
+    protectDefaultBranch?: boolean;
     deleteBranchOnMerge?: boolean;
     gitCommitMessage?: string;
     gitAuthorName?: string;
@@ -110,6 +111,11 @@ export function createPublishGithubAction(options: {
             title: 'Default Branch',
             type: 'string',
             description: `Sets the default branch on the repository. The default value is 'master'`,
+          },
+          protectDefaultBranch: {
+            title: 'Protect Default Branch',
+            type: 'boolean',
+            description: `Protect the default branch after creating the repository. The default value is 'true'`,
           },
           deleteBranchOnMerge: {
             title: 'Delete Branch On Merge',
@@ -209,6 +215,7 @@ export function createPublishGithubAction(options: {
         requiredStatusCheckContexts = [],
         repoVisibility = 'private',
         defaultBranch = 'master',
+        protectDefaultBranch = true,
         deleteBranchOnMerge = false,
         gitCommitMessage = 'initial commit',
         gitAuthorName,
@@ -360,21 +367,23 @@ export function createPublishGithubAction(options: {
         gitAuthorInfo,
       });
 
-      try {
-        await enableBranchProtectionOnDefaultRepoBranch({
-          owner,
-          client,
-          repoName: newRepo.name,
-          logger: ctx.logger,
-          defaultBranch,
-          requireCodeOwnerReviews,
-          requiredStatusCheckContexts,
-        });
-      } catch (e) {
-        assertError(e);
-        ctx.logger.warn(
-          `Skipping: default branch protection on '${newRepo.name}', ${e.message}`,
-        );
+      if (protectDefaultBranch) {
+        try {
+          await enableBranchProtectionOnDefaultRepoBranch({
+            owner,
+            client,
+            repoName: newRepo.name,
+            logger: ctx.logger,
+            defaultBranch,
+            requireCodeOwnerReviews,
+            requiredStatusCheckContexts,
+          });
+        } catch (e) {
+          assertError(e);
+          ctx.logger.warn(
+            `Skipping: default branch protection on '${newRepo.name}', ${e.message}`,
+          );
+        }
       }
 
       ctx.output('remoteUrl', remoteUrl);

@@ -14,73 +14,75 @@
  * limitations under the License.
  */
 
-import { setupRequestMockHandlers } from '@backstage/test-utils';
-import { getManifestByReleaseLine, getManifestByVersion } from './manifest';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { getManifestByReleaseLine, getManifestByVersion } from './manifest';
 
-describe('getManifestByVersion', () => {
+describe('Release Manifests', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
-  it('should return a list of packages in a release', async () => {
-    worker.use(
-      rest.get('*/v1/releases/0.0.0/manifest.json', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json({
-            packages: [{ name: '@backstage/core', version: '1.2.3' }],
-          }),
+  describe('getManifestByVersion', () => {
+    it('should return a list of packages in a release', async () => {
+      worker.use(
+        rest.get('*/v1/releases/0.0.0/manifest.json', (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.json({
+              packages: [{ name: '@backstage/core', version: '1.2.3' }],
+            }),
+          ),
         ),
-      ),
-      rest.get('*/v1/releases/999.0.1/manifest.json', (_, res, ctx) =>
-        res(ctx.status(404), ctx.json({})),
-      ),
-    );
+        rest.get('*/v1/releases/999.0.1/manifest.json', (_, res, ctx) =>
+          res(ctx.status(404), ctx.json({})),
+        ),
+      );
 
-    const pkgs = await getManifestByVersion({ version: '0.0.0' });
-    expect(pkgs.packages).toEqual([
-      {
-        name: '@backstage/core',
-        version: '1.2.3',
-      },
-    ]);
+      const pkgs = await getManifestByVersion({ version: '0.0.0' });
+      expect(pkgs.packages).toEqual([
+        {
+          name: '@backstage/core',
+          version: '1.2.3',
+        },
+      ]);
 
-    await expect(getManifestByVersion({ version: '999.0.1' })).rejects.toThrow(
-      'No release found for 999.0.1 version',
-    );
+      await expect(
+        getManifestByVersion({ version: '999.0.1' }),
+      ).rejects.toThrow('No release found for 999.0.1 version');
+    });
   });
-});
 
-describe('getManifestByReleaseLine', () => {
-  const worker = setupServer();
-  setupRequestMockHandlers(worker);
-
-  it('should return a list of packages in a release', async () => {
-    worker.use(
-      rest.get('*/v1/tags/main/manifest.json', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json({
-            packages: [{ name: '@backstage/core', version: '1.2.3' }],
-          }),
+  describe('getManifestByReleaseLine', () => {
+    it('should return a list of packages in a release', async () => {
+      worker.use(
+        rest.get(
+          'https://versions.backstage.io/v1/tags/main/manifest.json',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                packages: [{ name: '@backstage/core', version: '1.2.3' }],
+              }),
+            ),
         ),
-      ),
-      rest.get('*/v1/tags/foo/manifest.json', (_, res, ctx) =>
-        res(ctx.status(404), ctx.json({})),
-      ),
-    );
+        rest.get(
+          'https://versions.backstage.io/v1/tags/foo/manifest.json',
+          (_, res, ctx) => res(ctx.status(404), ctx.json({})),
+        ),
+      );
 
-    const pkgs = await getManifestByReleaseLine({ releaseLine: 'main' });
-    expect(pkgs.packages).toEqual([
-      {
-        name: '@backstage/core',
-        version: '1.2.3',
-      },
-    ]);
+      const pkgs = await getManifestByReleaseLine({ releaseLine: 'main' });
+      expect(pkgs.packages).toEqual([
+        {
+          name: '@backstage/core',
+          version: '1.2.3',
+        },
+      ]);
 
-    await expect(
-      getManifestByReleaseLine({ releaseLine: 'foo' }),
-    ).rejects.toThrow("No 'foo' release line found");
+      await expect(
+        getManifestByReleaseLine({ releaseLine: 'foo' }),
+      ).rejects.toThrow("No 'foo' release line found");
+    });
   });
 });

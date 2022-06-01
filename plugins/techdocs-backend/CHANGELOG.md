@@ -1,5 +1,20 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.1.2-next.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/catalog-client@1.0.3-next.0
+  - @backstage/integration@1.2.1-next.1
+  - @backstage/plugin-permission-common@0.6.2-next.0
+  - @backstage/catalog-model@1.0.3-next.0
+  - @backstage/plugin-catalog-common@1.0.3-next.0
+  - @backstage/plugin-search-common@0.3.5-next.0
+  - @backstage/plugin-techdocs-node@1.1.2-next.1
+
 ## 1.1.2-next.0
 
 ### Patch Changes
