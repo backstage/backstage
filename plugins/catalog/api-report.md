@@ -390,6 +390,7 @@ export function isOrphan(entity: Entity): boolean;
 export type PluginCatalogComponentsNameToClassKey = {
   PluginCatalogEntityLinksEmptyState: EntityLinksEmptyStateClassKey;
   PluginCatalogSystemDiagramCard: SystemDiagramCardClassKey;
+  PluginCatalogEntityContextMenu: EntityContextMenuClassKey;
 };
 
 // @public (undocumented)
@@ -416,4 +417,8 @@ export type SystemDiagramCardClassKey =
   | 'componentNode'
   | 'apiNode'
   | 'resourceNode';
+
+// Warnings were encountered during analysis:
+//
+// src/overridableComponents.d.ts:10:5 - (ae-forgotten-export) The symbol "EntityContextMenuClassKey" needs to be exported by the entry point index.d.ts
 ```
