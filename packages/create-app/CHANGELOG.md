@@ -1,5 +1,35 @@
 # @backstage/create-app
 
+## 0.4.28-next.1
+
+### Patch Changes
+
+- bff65e6958: Use of `SidebarContext` has been deprecated and will be removed in a future release. Instead, `useSidebarOpenState()` should be used to consume the context and `<SidebarOpenStateProvider>` should be used to provide it.
+
+  To prepare your app, update `packages/app/src/components/Root/Root.tsx` as follows:
+
+  ```diff
+  import {
+    Sidebar,
+    sidebarConfig,
+  - SidebarContext
+    SidebarDivider,
+    // ...
+    SidebarSpace,
+  + useSidebarOpenState,
+  } from '@backstage/core-components';
+
+  // ...
+
+  const SidebarLogo = () => {
+    const classes = useSidebarLogoStyles();
+  - const { isOpen } = useContext(SidebarContext);
+  + const { isOpen } = useSidebarOpenState();
+
+    // ...
+  };
+  ```
+
 ## 0.4.28-next.0
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @backstage/plugin-auth-backend
 
+## 0.14.1-next.1
+
+### Patch Changes
+
+- 5e055079f0: Increased key field size for signing_keys table to account for larger signature keys
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 467facc6ea: Fix improper binding of 'this' in ALB Auth provider
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/catalog-client@1.0.3-next.0
+  - @backstage/plugin-auth-node@0.2.2-next.1
+  - @backstage/catalog-model@1.0.3-next.0
+
 ## 0.14.1-next.0
 
 ### Patch Changes

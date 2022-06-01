@@ -23,7 +23,7 @@ import nunjucks from 'nunjucks';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { PassThrough } from 'stream';
-import { isTruthy } from './helper';
+import { generateExampleOutput, isTruthy } from './helper';
 import { validate as validateJsonSchema } from 'jsonschema';
 import { parseRepoUrl } from '../actions/builtin/publish/util';
 import { TemplateActionRegistry } from '../actions';
@@ -235,6 +235,27 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
           const action = this.options.actionRegistry.get(step.action);
           const { taskLogger, streamLogger } = createStepLogger({ task, step });
+
+          if (task.isDryRun && !action.supportsDryRun) {
+            task.emitLog(
+              `Skipping because ${action.id} does not support dry-run`,
+              {
+                stepId: step.id,
+                status: 'skipped',
+              },
+            );
+            const outputSchema = action.schema?.output;
+            if (outputSchema) {
+              context.steps[step.id] = {
+                output: generateExampleOutput(outputSchema) as {
+                  [name in string]: JsonValue;
+                },
+              };
+            } else {
+              context.steps[step.id] = { output: {} };
+            }
+            continue;
+          }
 
           // Secrets are only passed when templating the input to actions for security reasons
           const input =

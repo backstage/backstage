@@ -1,5 +1,15 @@
 # @techdocs/cli
 
+## 1.1.2-next.1
+
+### Patch Changes
+
+- bff65e6958: Updated sidebar-related logic to use `<SidebarPinStateProvider>` + `useSidebarPinState()` and/or `<SidebarOpenStateProvider>` + `useSidebarOpenState()` from `@backstage/core-components`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/catalog-model@1.0.3-next.0
+  - @backstage/plugin-techdocs-node@1.1.2-next.1
+
 ## 1.1.2-next.0
 
 ### Patch Changes

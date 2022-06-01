@@ -46,6 +46,7 @@ export function createCatalogWriteAction() {
         },
       },
     },
+    supportsDryRun: true,
     async handler(ctx) {
       ctx.logStream.write(`Writing catalog-info.yaml`);
       const { filePath, entity } = ctx.input;
