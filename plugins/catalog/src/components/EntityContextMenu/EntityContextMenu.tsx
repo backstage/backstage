@@ -36,7 +36,7 @@ import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common'
 export type EntityContextMenuClassKey = 'button';
 
 const useStyles = makeStyles(
-  theme => ({
+  () => ({
     button: {
       color: 'white',
     },
