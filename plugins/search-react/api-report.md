@@ -125,6 +125,9 @@ export type SearchFilterWrapperProps = SearchFilterComponentProps & {
 export const SearchResult: ({ children }: SearchResultProps) => JSX.Element;
 
 // @public (undocumented)
+export const SearchResultPager: () => JSX.Element;
+
+// @public (undocumented)
 export type SearchResultProps = {
   children: (results: { results: SearchResult_2[] }) => JSX.Element;
 };

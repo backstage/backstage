@@ -237,7 +237,7 @@ export const SearchResult: ({
 
 // Warning: (ae-missing-release-tag) "SearchResultPager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const SearchResultPager: () => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SearchType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
