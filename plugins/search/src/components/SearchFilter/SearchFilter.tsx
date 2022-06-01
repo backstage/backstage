@@ -14,32 +14,18 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, ChangeEvent } from 'react';
-import {
-  makeStyles,
-  FormControl,
-  FormControlLabel,
-  InputLabel,
-  Checkbox,
-  Select,
-  MenuItem,
-  FormLabel,
-} from '@material-ui/core';
+import React, { ReactElement } from 'react';
 
 import {
   AutocompleteFilter,
+  CheckboxFilter,
   SearchAutocompleteFilterProps,
-} from './SearchFilter.Autocomplete';
-import { useSearch } from '@backstage/plugin-search-react';
-import { useAsyncFilterValues, useDefaultFilterValue } from './hooks';
-
-const useStyles = makeStyles({
-  label: {
-    textTransform: 'capitalize',
-  },
-});
+  SelectFilter,
+} from '@backstage/plugin-search-react';
 
 /**
+ * @deprecated Moved to `@backstage/plugin-search-react`.
+ *
  * @public
  */
 export type SearchFilterComponentProps = {
@@ -62,6 +48,8 @@ export type SearchFilterComponentProps = {
 };
 
 /**
+ * @deprecated Moved to `@backstage/plugin-search-react`.
+ *
  * @public
  */
 export type SearchFilterWrapperProps = SearchFilterComponentProps & {
@@ -69,152 +57,33 @@ export type SearchFilterWrapperProps = SearchFilterComponentProps & {
   debug?: boolean;
 };
 
-const CheckboxFilter = (props: SearchFilterComponentProps) => {
-  const {
-    className,
-    defaultValue,
-    label,
-    name,
-    values: givenValues = [],
-    valuesDebounceMs,
-  } = props;
-  const classes = useStyles();
-  const { filters, setFilters } = useSearch();
-  useDefaultFilterValue(name, defaultValue);
-  const asyncValues =
-    typeof givenValues === 'function' ? givenValues : undefined;
-  const defaultValues =
-    typeof givenValues === 'function' ? undefined : givenValues;
-  const { value: values = [], loading } = useAsyncFilterValues(
-    asyncValues,
-    '',
-    defaultValues,
-    valuesDebounceMs,
-  );
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const {
-      target: { value, checked },
-    } = e;
-
-    setFilters(prevFilters => {
-      const { [name]: filter, ...others } = prevFilters;
-      const rest = ((filter as string[]) || []).filter(i => i !== value);
-      const items = checked ? [...rest, value] : rest;
-      return items.length ? { ...others, [name]: items } : others;
-    });
-  };
-
-  return (
-    <FormControl
-      className={className}
-      disabled={loading}
-      fullWidth
-      data-testid="search-checkboxfilter-next"
-    >
-      {label ? <FormLabel className={classes.label}>{label}</FormLabel> : null}
-      {values.map((value: string) => (
-        <FormControlLabel
-          key={value}
-          control={
-            <Checkbox
-              color="primary"
-              tabIndex={-1}
-              inputProps={{ 'aria-labelledby': value }}
-              value={value}
-              name={value}
-              onChange={handleChange}
-              checked={((filters[name] as string[]) ?? []).includes(value)}
-            />
-          }
-          label={value}
-        />
-      ))}
-    </FormControl>
-  );
-};
-
-const SelectFilter = (props: SearchFilterComponentProps) => {
-  const {
-    className,
-    defaultValue,
-    label,
-    name,
-    values: givenValues,
-    valuesDebounceMs,
-  } = props;
-  const classes = useStyles();
-  useDefaultFilterValue(name, defaultValue);
-  const asyncValues =
-    typeof givenValues === 'function' ? givenValues : undefined;
-  const defaultValues =
-    typeof givenValues === 'function' ? undefined : givenValues;
-  const { value: values = [], loading } = useAsyncFilterValues(
-    asyncValues,
-    '',
-    defaultValues,
-    valuesDebounceMs,
-  );
-  const { filters, setFilters } = useSearch();
-
-  const handleChange = (e: ChangeEvent<{ value: unknown }>) => {
-    const {
-      target: { value },
-    } = e;
-
-    setFilters(prevFilters => {
-      const { [name]: filter, ...others } = prevFilters;
-      return value ? { ...others, [name]: value as string } : others;
-    });
-  };
-
-  return (
-    <FormControl
-      disabled={loading}
-      className={className}
-      variant="filled"
-      fullWidth
-      data-testid="search-selectfilter-next"
-    >
-      {label ? (
-        <InputLabel className={classes.label} margin="dense">
-          {label}
-        </InputLabel>
-      ) : null}
-      <Select
-        variant="outlined"
-        value={filters[name] || ''}
-        onChange={handleChange}
-      >
-        <MenuItem value="">
-          <em>All</em>
-        </MenuItem>
-        {values.map((value: string) => (
-          <MenuItem key={value} value={value}>
-            {value}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-  );
-};
-
+/**
+ * @deprecated Moved to `@backstage/plugin-search-react`.
+ */
 const SearchFilter = ({
   component: Element,
   ...props
 }: SearchFilterWrapperProps) => <Element {...props} />;
 
+/**
+ * @deprecated Moved to `@backstage/plugin-search-react`.
+ */
 SearchFilter.Checkbox = (
   props: Omit<SearchFilterWrapperProps, 'component'> &
     SearchFilterComponentProps,
 ) => <SearchFilter {...props} component={CheckboxFilter} />;
 
+/**
+ * @deprecated Moved to `@backstage/plugin-search-react`.
+ */
 SearchFilter.Select = (
   props: Omit<SearchFilterWrapperProps, 'component'> &
     SearchFilterComponentProps,
 ) => <SearchFilter {...props} component={SelectFilter} />;
 
 /**
+ * @deprecated Moved to `@backstage/plugin-search-react`.
+ *
  * A control surface for a given filter field name, rendered as an autocomplete
  * textfield. A hard-coded list of values may be provided, or an async function
  * which returns values may be provided instead.
@@ -224,12 +93,4 @@ SearchFilter.Autocomplete = (props: SearchAutocompleteFilterProps) => (
   <SearchFilter {...props} component={AutocompleteFilter} />
 );
 
-/**
- * @deprecated This component was used for rapid prototyping of the Backstage
- * Search platform. Now that the API has stabilized, you should use the
- * <SearchFilter /> component instead. This component will be removed in an
- * upcoming release.
- */
-const SearchFilterNext = SearchFilter;
-
-export { SearchFilter, SearchFilterNext };
+export { SearchFilter };

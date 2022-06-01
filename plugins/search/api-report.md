@@ -12,7 +12,9 @@ import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { SearchAutocompleteFilterProps as SearchAutocompleteFilterProps_2 } from '@backstage/plugin-search-react';
 import { SearchDocument } from '@backstage/plugin-search-common';
+import { SearchFilterComponentProps as SearchFilterComponentProps_2 } from '@backstage/plugin-search-react';
 import { SearchResult as SearchResult_2 } from '@backstage/plugin-search-common';
 
 // Warning: (ae-missing-release-tag) "DefaultResultListItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -78,8 +80,8 @@ export type HomePageSearchBarProps = Partial<
 // @public (undocumented)
 export const Router: () => JSX.Element;
 
-// @public (undocumented)
-export type SearchAutocompleteFilterProps = SearchFilterComponentProps & {
+// @public @deprecated (undocumented)
+export type SearchAutocompleteFilterProps = SearchFilterComponentProps_2 & {
   filterSelectedOptions?: boolean;
   limitTags?: number;
   multiple?: boolean;
@@ -124,7 +126,7 @@ export type SearchBarProps = Partial<SearchBarBaseProps>;
 
 // Warning: (ae-missing-release-tag) "SearchFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const SearchFilter: {
   ({ component: Element, ...props }: SearchFilterWrapperProps): JSX.Element;
   Checkbox(
@@ -135,10 +137,10 @@ export const SearchFilter: {
     props: Omit<SearchFilterWrapperProps, 'component'> &
       SearchFilterComponentProps,
   ): JSX.Element;
-  Autocomplete(props: SearchAutocompleteFilterProps): JSX.Element;
+  Autocomplete(props: SearchAutocompleteFilterProps_2): JSX.Element;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type SearchFilterComponentProps = {
   className?: string;
   name: string;
@@ -148,23 +150,7 @@ export type SearchFilterComponentProps = {
   valuesDebounceMs?: number;
 };
 
-// Warning: (ae-missing-release-tag) "SearchFilterNext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public @deprecated (undocumented)
-export const SearchFilterNext: {
-  ({ component: Element, ...props }: SearchFilterWrapperProps): JSX.Element;
-  Checkbox(
-    props: Omit<SearchFilterWrapperProps, 'component'> &
-      SearchFilterComponentProps,
-  ): JSX.Element;
-  Select(
-    props: Omit<SearchFilterWrapperProps, 'component'> &
-      SearchFilterComponentProps,
-  ): JSX.Element;
-  Autocomplete(props: SearchAutocompleteFilterProps): JSX.Element;
-};
-
-// @public (undocumented)
 export type SearchFilterWrapperProps = SearchFilterComponentProps & {
   component: (props: SearchFilterComponentProps) => ReactElement;
   debug?: boolean;

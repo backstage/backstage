@@ -28,7 +28,7 @@ export type {
   SearchBarBaseProps,
   SearchBarProps,
 } from './components/SearchBar';
-export { SearchFilter, SearchFilterNext } from './components/SearchFilter';
+export { SearchFilter } from './components/SearchFilter';
 export type {
   SearchAutocompleteFilterProps,
   SearchFilterComponentProps,

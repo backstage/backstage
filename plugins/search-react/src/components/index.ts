@@ -15,3 +15,4 @@
  */
 
 export * from './HighlightedSearchResultText';
+export * from './SearchFilter';

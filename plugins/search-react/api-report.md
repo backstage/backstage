@@ -10,8 +10,17 @@ import { AsyncState } from 'react-use/lib/useAsync';
 import { JsonObject } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
+import { ReactElement } from 'react';
 import { SearchQuery } from '@backstage/plugin-search-common';
 import { SearchResultSet } from '@backstage/plugin-search-common';
+
+// @public (undocumented)
+export const AutocompleteFilter: (
+  props: SearchAutocompleteFilterProps,
+) => JSX.Element;
+
+// @public (undocumented)
+export const CheckboxFilter: (props: SearchFilterComponentProps) => JSX.Element;
 
 // @public (undocumented)
 export const HighlightedSearchResultText: ({
@@ -45,6 +54,13 @@ export interface SearchApi {
 // @public (undocumented)
 export const searchApiRef: ApiRef<SearchApi>;
 
+// @public (undocumented)
+export type SearchAutocompleteFilterProps = SearchFilterComponentProps & {
+  filterSelectedOptions?: boolean;
+  limitTags?: number;
+  multiple?: boolean;
+};
+
 // @public
 export const SearchContextProvider: (
   props: SearchContextProviderProps,
@@ -73,6 +89,72 @@ export type SearchContextValue = {
   fetchNextPage?: React_2.DispatchWithoutAction;
   fetchPreviousPage?: React_2.DispatchWithoutAction;
 } & SearchContextState;
+
+// @public (undocumented)
+export const SearchFilter: {
+  ({ component: Element, ...props }: SearchFilterWrapperProps): JSX.Element;
+  Checkbox(
+    props: Omit<SearchFilterWrapperProps, 'component'> &
+      SearchFilterComponentProps,
+  ): JSX.Element;
+  Select(
+    props: Omit<SearchFilterWrapperProps, 'component'> &
+      SearchFilterComponentProps,
+  ): JSX.Element;
+  Autocomplete(props: SearchAutocompleteFilterProps): JSX.Element;
+};
+
+// @public (undocumented)
+export type SearchFilterComponentProps = {
+  className?: string;
+  name: string;
+  label?: string;
+  values?: string[] | ((partial: string) => Promise<string[]>);
+  defaultValue?: string[] | string | null;
+  valuesDebounceMs?: number;
+};
+
+// @public (undocumented)
+export type SearchFilterWrapperProps = SearchFilterComponentProps & {
+  component: (props: SearchFilterComponentProps) => ReactElement;
+  debug?: boolean;
+};
+
+// @public (undocumented)
+export const SelectFilter: (props: SearchFilterComponentProps) => JSX.Element;
+
+// @public
+export const useAsyncFilterValues: (
+  fn: ((partial: string) => Promise<string[]>) | undefined,
+  inputValue: string,
+  defaultValues?: string[],
+  debounce?: number,
+) =>
+  | {
+      loading: boolean;
+      error?: undefined;
+      value?: undefined;
+    }
+  | {
+      loading: false;
+      error: Error;
+      value?: undefined;
+    }
+  | {
+      loading: true;
+      error?: Error | undefined;
+      value?: string[] | undefined;
+    }
+  | {
+      loading: boolean;
+      value: string[];
+    };
+
+// @public
+export const useDefaultFilterValue: (
+  name: string,
+  defaultValue?: string | string[] | null | undefined,
+) => void;
 
 // @public
 export const useSearch: () => SearchContextValue;
