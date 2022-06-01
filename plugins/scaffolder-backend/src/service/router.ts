@@ -22,18 +22,20 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
+import { Config, JsonObject } from '@backstage/config';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import {
   TemplateEntityV1beta3,
   TaskSpec,
+  templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
 import { Logger } from 'winston';
 import { TemplateFilter } from '../lib';
+import { z } from 'zod';
 import {
   createBuiltinActions,
   DatabaseTaskStore,
@@ -42,6 +44,7 @@ import {
   TemplateAction,
   TemplateActionRegistry,
 } from '../scaffolder';
+import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { getEntityBaseUrl, getWorkingDirectory, findTemplate } from './helpers';
 
@@ -128,6 +131,14 @@ export async function createRouter(
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
   workers.forEach(worker => worker.start());
+
+  const dryRunner = createDryRunner({
+    actionRegistry,
+    integrations,
+    logger,
+    workingDirectory,
+    additionalTemplateFilters,
+  });
 
   router
     .get(
@@ -241,6 +252,28 @@ export async function createRouter(
 
       res.status(201).json({ id: result.taskId });
     })
+    .get('/v2/tasks', async (req, res) => {
+      const [userEntityRef] = [req.query.createdBy].flat();
+
+      if (
+        typeof userEntityRef !== 'string' &&
+        typeof userEntityRef !== 'undefined'
+      ) {
+        throw new InputError('createdBy query parameter must be a string');
+      }
+
+      if (!taskBroker.list) {
+        throw new Error(
+          'TaskBroker does not support listing tasks, please implement the list method on the TaskBroker.',
+        );
+      }
+
+      const tasks = await taskBroker.list({
+        createdBy: userEntityRef,
+      });
+
+      res.status(200).json(tasks);
+    })
     .get('/v2/tasks/:taskId', async (req, res) => {
       const { taskId } = req.params;
       const task = await taskBroker.get(taskId);
@@ -323,6 +356,67 @@ export async function createRouter(
       req.on('close', () => {
         subscription.unsubscribe();
         clearTimeout(timeout);
+      });
+    })
+    .post('/v2/dry-run', async (req, res) => {
+      const bodySchema = z.object({
+        template: z.unknown(),
+        values: z.record(z.unknown()),
+        secrets: z.record(z.string()).optional(),
+        directoryContents: z.array(
+          z.object({ path: z.string(), base64Content: z.string() }),
+        ),
+      });
+      const body = await bodySchema.parseAsync(req.body).catch(e => {
+        throw new InputError(`Malformed request: ${e}`);
+      });
+
+      const template = body.template as TemplateEntityV1beta3;
+      if (!(await templateEntityV1beta3Validator.check(template))) {
+        throw new InputError('Input template is not a template');
+      }
+
+      const { token } = parseBearerToken(req.headers.authorization);
+
+      for (const parameters of [template.spec.parameters ?? []].flat()) {
+        const result = validate(body.values, parameters);
+        if (!result.valid) {
+          res.status(400).json({ errors: result.errors });
+          return;
+        }
+      }
+
+      const steps = template.spec.steps.map((step, index) => ({
+        ...step,
+        id: step.id ?? `step-${index + 1}`,
+        name: step.name ?? step.action,
+      }));
+
+      const result = await dryRunner({
+        spec: {
+          apiVersion: template.apiVersion,
+          steps,
+          output: template.spec.output ?? {},
+          parameters: body.values as JsonObject,
+        },
+        directoryContents: (body.directoryContents ?? []).map(file => ({
+          path: file.path,
+          content: Buffer.from(file.base64Content, 'base64'),
+        })),
+        secrets: {
+          ...body.secrets,
+          ...(token && { backstageToken: token }),
+        },
+      });
+
+      res.status(200).json({
+        ...result,
+        steps,
+        directoryContents: result.directoryContents.map(file => ({
+          path: file.path,
+          executable: file.executable,
+          base64Content: file.content.toString('base64'),
+        })),
       });
     });
 

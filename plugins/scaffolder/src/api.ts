@@ -19,6 +19,7 @@ import {
   createApiRef,
   DiscoveryApi,
   FetchApi,
+  IdentityApi,
 } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -36,7 +37,10 @@ import {
   ScaffolderGetIntegrationsListOptions,
   ScaffolderGetIntegrationsListResponse,
   ScaffolderTask,
+  ScaffolderDryRunOptions,
+  ScaffolderDryRunResponse,
 } from './types';
+import queryString from 'qs';
 
 /**
  * Utility API reference for the {@link ScaffolderApi}.
@@ -56,11 +60,13 @@ export class ScaffolderClient implements ScaffolderApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly scmIntegrationsApi: ScmIntegrationRegistry;
   private readonly fetchApi: FetchApi;
+  private readonly identityApi?: IdentityApi;
   private readonly useLongPollingLogs: boolean;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
+    identityApi?: IdentityApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
     useLongPollingLogs?: boolean;
   }) {
@@ -68,6 +74,30 @@ export class ScaffolderClient implements ScaffolderApi {
     this.fetchApi = options.fetchApi ?? { fetch };
     this.scmIntegrationsApi = options.scmIntegrationsApi;
     this.useLongPollingLogs = options.useLongPollingLogs ?? false;
+    this.identityApi = options.identityApi;
+  }
+
+  async listTasks(options: {
+    filterByOwnership: 'owned' | 'all';
+  }): Promise<{ tasks: ScaffolderTask[] }> {
+    if (!this.identityApi) {
+      throw new Error(
+        'IdentityApi is not available in the ScaffolderClient, please pass through the IdentityApi to the ScaffolderClient constructor in order to use the listTasks method',
+      );
+    }
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const { userEntityRef } = await this.identityApi.getBackstageIdentity();
+
+    const query = queryString.stringify(
+      options.filterByOwnership === 'owned' ? { createdBy: userEntityRef } : {},
+    );
+
+    const response = await this.fetchApi.fetch(`${baseUrl}/v2/tasks?${query}`);
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return await response.json();
   }
 
   async getIntegrationsList(
@@ -170,6 +200,30 @@ export class ScaffolderClient implements ScaffolderApi {
     }
 
     return this.streamLogsEventStream(options);
+  }
+
+  async dryRun(
+    options: ScaffolderDryRunOptions,
+  ): Promise<ScaffolderDryRunResponse> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const response = await this.fetchApi.fetch(`${baseUrl}/v2/dry-run`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        template: options.template,
+        values: options.values,
+        secrets: options.secrets,
+        directoryContents: options.directoryContents,
+      }),
+    });
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return response.json();
   }
 
   private streamLogsEventStream({

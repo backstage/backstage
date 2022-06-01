@@ -52,6 +52,7 @@ export type ScaffolderPageProps = {
   contextMenu?: {
     editor?: boolean;
     actions?: boolean;
+    tasks?: boolean;
   };
 };
 

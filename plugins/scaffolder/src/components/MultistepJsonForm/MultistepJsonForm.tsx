@@ -54,6 +54,7 @@ type Props = {
   onFinish?: () => Promise<void>;
   widgets?: FormProps<any>['widgets'];
   fields?: FormProps<any>['fields'];
+  finishButtonLabel?: string;
 };
 
 export function getUiSchemasFromSteps(steps: Step[]): UiSchema[] {
@@ -94,12 +95,12 @@ export function getReviewData(formData: Record<string, any>, steps: Step[]) {
       }
 
       const review = uiSchema['ui:backstage'].review as JsonObject;
-      if (!review.show) {
+      if (review.mask) {
+        reviewData[key] = review.mask;
         continue;
       }
 
-      if (review.mask) {
-        reviewData[key] = review.mask;
+      if (!review.show) {
         continue;
       }
       reviewData[key] = formData[key];
@@ -110,7 +111,15 @@ export function getReviewData(formData: Record<string, any>, steps: Step[]) {
 }
 
 export const MultistepJsonForm = (props: Props) => {
-  const { formData, onChange, onReset, onFinish, fields, widgets } = props;
+  const {
+    formData,
+    onChange,
+    onReset,
+    onFinish,
+    fields,
+    widgets,
+    finishButtonLabel,
+  } = props;
   const [activeStep, setActiveStep] = useState(0);
   const [disableButtons, setDisableButtons] = useState(false);
   const errorApi = useApi(errorApiRef);
@@ -171,8 +180,9 @@ export const MultistepJsonForm = (props: Props) => {
     try {
       await onFinish();
     } catch (err) {
-      setDisableButtons(false);
       errorApi.post(err);
+    } finally {
+      setDisableButtons(false);
     }
   };
 
@@ -239,7 +249,7 @@ export const MultistepJsonForm = (props: Props) => {
               onClick={handleCreate}
               disabled={!onFinish || disableButtons}
             >
-              Create
+              {finishButtonLabel ?? 'Create'}
             </Button>
           </Paper>
         </Content>

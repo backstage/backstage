@@ -40,6 +40,7 @@ export type ActionContext<Input extends JsonObject> = {
   output(name: string, value: JsonValue): void;
   createTemporaryDirectory(): Promise<string>;
   templateInfo?: TemplateInfo;
+  isDryRun?: boolean;
 };
 
 // @public
@@ -283,10 +284,20 @@ export function createPublishGithubAction(options: {
   requiredStatusCheckContexts?: string[] | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   collaborators?:
-    | {
-        username: string;
-        access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-      }[]
+    | (
+        | {
+            user: string;
+            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          }
+        | {
+            team: string;
+            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          }
+        | {
+            username: string;
+            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          }
+      )[]
     | undefined;
   token?: string | undefined;
   topics?: string[] | undefined;
@@ -394,6 +405,10 @@ export class DatabaseTaskStore implements TaskStore {
   getTask(taskId: string): Promise<SerializedTask>;
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
+  // (undocumented)
+  list(options: { createdBy?: string }): Promise<{
+    tasks: SerializedTask[];
+  }>;
   // (undocumented)
   listEvents({ taskId, after }: TaskStoreListEventsOptions): Promise<{
     events: SerializedTaskEvent[];
@@ -519,6 +534,10 @@ export interface TaskBroker {
   // (undocumented)
   get(taskId: string): Promise<SerializedTask>;
   // (undocumented)
+  list?(options?: { createdBy?: string }): Promise<{
+    tasks: SerializedTask[];
+  }>;
+  // (undocumented)
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
 }
 
@@ -549,6 +568,8 @@ export interface TaskContext {
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   // (undocumented)
   getWorkspaceName(): Promise<string>;
+  // (undocumented)
+  isDryRun?: boolean;
   // (undocumented)
   secrets?: TaskSecrets;
   // (undocumented)
@@ -616,6 +637,10 @@ export interface TaskStore {
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
+  list?(options: { createdBy?: string }): Promise<{
+    tasks: SerializedTask[];
+  }>;
+  // (undocumented)
   listEvents({ taskId, after }: TaskStoreListEventsOptions): Promise<{
     events: SerializedTaskEvent[];
   }>;
@@ -665,6 +690,7 @@ export class TaskWorker {
 export type TemplateAction<Input extends JsonObject> = {
   id: string;
   description?: string;
+  supportsDryRun?: boolean;
   schema?: {
     input?: Schema;
     output?: Schema;
