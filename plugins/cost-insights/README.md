@@ -26,6 +26,8 @@ yarn add --cwd packages/app @backstage/plugin-cost-insights
 
 2. Create a CostInsights client. Clients must implement the [CostInsightsApi](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/api/CostInsightsApi.ts) interface. Create your own or [use a template](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/example/templates/CostInsightsClient.ts) to get started.
 
+Tip: You can also use the `ExampleCostInsightsClient` from `@backstage/plugin-cost-insights` to see how the plugin looks with some mock data.
+
 ```ts
 // path/to/CostInsightsClient.ts
 import { CostInsightsApi } from '@backstage/plugin-cost-insights';
