@@ -4,6 +4,8 @@ metadata:
   name: petstore
   # This is an extra long description
   description: The Petstore is an example API used to show features of the OpenAPI spec.
+  annotations:
+    backstage.io/techdocs-ref: value
   links:
     - url: https://github.com/swagger-api/swagger-petstore
       title: GitHub Repo
