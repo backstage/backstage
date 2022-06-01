@@ -114,6 +114,7 @@ proxy:
     allowedHeaders: ['Authorization']
     headers:
       Authorization: Basic ${GOCD_AUTH_CREDENTIALS}
+
   '/dynatrace':
     target: https://your.dynatrace.instance.com/api/v2
     headers:
