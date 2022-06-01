@@ -406,6 +406,10 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
+  list(options: { createdBy?: string }): Promise<{
+    tasks: SerializedTask[];
+  }>;
+  // (undocumented)
   listEvents({ taskId, after }: TaskStoreListEventsOptions): Promise<{
     events: SerializedTaskEvent[];
   }>;
@@ -530,6 +534,10 @@ export interface TaskBroker {
   // (undocumented)
   get(taskId: string): Promise<SerializedTask>;
   // (undocumented)
+  list?(options?: { createdBy?: string }): Promise<{
+    tasks: SerializedTask[];
+  }>;
+  // (undocumented)
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
 }
 
@@ -628,6 +636,10 @@ export interface TaskStore {
   getTask(taskId: string): Promise<SerializedTask>;
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
+  // (undocumented)
+  list?(options: { createdBy?: string }): Promise<{
+    tasks: SerializedTask[];
+  }>;
   // (undocumented)
   listEvents({ taskId, after }: TaskStoreListEventsOptions): Promise<{
     events: SerializedTaskEvent[];

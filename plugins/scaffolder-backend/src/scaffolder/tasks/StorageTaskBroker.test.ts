@@ -202,4 +202,31 @@ describe('StorageTaskBroker', () => {
 
     expect(task.done).toBe(true);
   });
+
+  it('should list all tasks', async () => {
+    const broker = new StorageTaskBroker(storage, logger);
+    const { taskId } = await broker.dispatch({ spec: {} as TaskSpec });
+
+    const promise = broker.list();
+    await expect(promise).resolves.toEqual({
+      tasks: expect.arrayContaining([
+        expect.objectContaining({
+          id: taskId,
+        }),
+      ]),
+    });
+  });
+
+  it('should list only tasks createdBy a specific user', async () => {
+    const broker = new StorageTaskBroker(storage, logger);
+    const { taskId } = await broker.dispatch({
+      spec: {} as TaskSpec,
+      createdBy: 'user:default/foo',
+    });
+
+    const task = await storage.getTask(taskId);
+
+    const promise = broker.list({ createdBy: 'user:default/foo' });
+    await expect(promise).resolves.toEqual({ tasks: [task] });
+  });
 });
