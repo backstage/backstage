@@ -22,7 +22,6 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
  *
  * @public
  */
-
 export function toLowercaseEntityRefMaybe(
   entityRef: CompoundEntityRef,
   config: Config,
