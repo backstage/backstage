@@ -30,10 +30,6 @@ export const rootRouteRef = createRouteRef({
   id: 'search',
 });
 
-export const rootNextRouteRef = createRouteRef({
-  id: 'search:next',
-});
-
 export const searchPlugin = createPlugin({
   id: 'search',
   apis: [
@@ -47,7 +43,6 @@ export const searchPlugin = createPlugin({
   ],
   routes: {
     root: rootRouteRef,
-    nextRoot: rootNextRouteRef,
   },
 });
 
@@ -56,20 +51,6 @@ export const SearchPage = searchPlugin.provide(
     name: 'SearchPage',
     component: () => import('./components/SearchPage').then(m => m.SearchPage),
     mountPoint: rootRouteRef,
-  }),
-);
-
-/**
- * @deprecated This component was used for rapid prototyping of the Backstage
- * Search platform. Now that the API has stabilized, you should use the
- * <SearchPage /> component instead. This component will be removed in an
- * upcoming release.
- */
-export const SearchPageNext = searchPlugin.provide(
-  createRoutableExtension({
-    name: 'SearchPageNext',
-    component: () => import('./components/SearchPage').then(m => m.SearchPage),
-    mountPoint: rootNextRouteRef,
   }),
 );
 
@@ -82,39 +63,9 @@ export const SearchBar = searchPlugin.provide(
   }),
 );
 
-/**
- * @deprecated This component was used for rapid prototyping of the Backstage
- * Search platform. Now that the API has stabilized, you should use the
- * <SearchBar /> component instead. This component will be removed in an
- * upcoming release.
- */
-export const SearchBarNext = searchPlugin.provide(
-  createComponentExtension({
-    name: 'SearchBarNext',
-    component: {
-      lazy: () => import('./components/SearchBar').then(m => m.SearchBar),
-    },
-  }),
-);
-
 export const SearchResult = searchPlugin.provide(
   createComponentExtension({
     name: 'SearchResult',
-    component: {
-      lazy: () => import('./components/SearchResult').then(m => m.SearchResult),
-    },
-  }),
-);
-
-/**
- * @deprecated This component was used for rapid prototyping of the Backstage
- * Search platform. Now that the API has stabilized, you should use the
- * <SearchResult /> component instead. This component will be removed in an
- * upcoming release.
- */
-export const SearchResultNext = searchPlugin.provide(
-  createComponentExtension({
-    name: 'SearchResultNext',
     component: {
       lazy: () => import('./components/SearchResult').then(m => m.SearchResult),
     },

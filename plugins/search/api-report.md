@@ -113,14 +113,6 @@ export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
   onChange: (value: string) => void;
 };
 
-// Warning: (ae-missing-release-tag) "SearchBarNext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export const SearchBarNext: ({
-  onChange,
-  ...props
-}: Partial<SearchBarBaseProps>) => JSX.Element;
-
 // @public @deprecated (undocumented)
 export type SearchBarProps = Partial<SearchBarBaseProps>;
 
@@ -208,18 +200,12 @@ export type SearchModalValue = {
 // @public (undocumented)
 export const SearchPage: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SearchPageNext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export const SearchPageNext: () => JSX.Element;
-
 // Warning: (ae-missing-release-tag) "searchPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 const searchPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
-    nextRoot: RouteRef<undefined>;
   },
   {}
 >;

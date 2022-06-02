@@ -60,9 +60,7 @@ export type { SidebarSearchModalProps } from './components/SidebarSearchModal';
 export {
   DefaultResultListItem,
   HomePageSearchBar,
-  SearchBarNext,
   SearchPage,
-  SearchPageNext,
   searchPlugin as plugin,
   searchPlugin,
   SearchResult,
