@@ -15,14 +15,14 @@
  */
 import React from 'react';
 import { Table, TableColumn } from '@backstage/core-components';
-import { Problem } from '../../../api/DynatraceApi';
+import { DynatraceProblem } from '../../../api/DynatraceApi';
 import { ProblemStatus } from '../ProblemStatus';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { useApi } from '@backstage/core-plugin-api';
 import { Link } from '@material-ui/core';
 
 type ProblemsTableProps = {
-  problems: Problem[];
+  problems: DynatraceProblem[];
 };
 
 export const ProblemsTable = ({ problems }: ProblemsTableProps) => {
@@ -32,7 +32,7 @@ export const ProblemsTable = ({ problems }: ProblemsTableProps) => {
     {
       title: 'Title',
       field: 'title',
-      render: (row: Partial<Problem>) => (
+      render: (row: Partial<DynatraceProblem>) => (
         <Link
           href={`${dynatraceBaseUrl}/#problems/problemdetails;pid=${row.problemId}`}
         >
@@ -43,29 +43,32 @@ export const ProblemsTable = ({ problems }: ProblemsTableProps) => {
     {
       title: 'Status',
       field: 'status',
-      render: (row: Partial<Problem>) => <ProblemStatus status={row.status} />,
+      render: (row: Partial<DynatraceProblem>) => (
+        <ProblemStatus status={row.status} />
+      ),
     },
     { title: 'Severity', field: 'severityLevel' },
     {
       title: 'Root Cause',
       field: 'rootCauseEntity',
-      render: (row: Partial<Problem>) => row.rootCauseEntity?.name,
+      render: (row: Partial<DynatraceProblem>) => row.rootCauseEntity?.name,
     },
     {
       title: 'Affected',
       field: 'affectedEntities',
-      render: (row: Partial<Problem>) => row.affectedEntities?.map(e => e.name),
+      render: (row: Partial<DynatraceProblem>) =>
+        row.affectedEntities?.map(e => e.name),
     },
     {
       title: 'Start Time',
       field: 'startTime',
-      render: (row: Partial<Problem>) =>
+      render: (row: Partial<DynatraceProblem>) =>
         new Date(row.startTime || 0).toString(),
     },
     {
       title: 'End Time',
       field: 'endTime',
-      render: (row: Partial<Problem>) =>
+      render: (row: Partial<DynatraceProblem>) =>
         row.endTime === -1 ? 'ongoing' : new Date(row.endTime || 0).toString(),
     },
   ];

@@ -19,6 +19,7 @@ import {
   createPlugin,
   discoveryApiRef,
   identityApiRef,
+  fetchApiRef,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 
@@ -38,11 +39,13 @@ export const dynatracePlugin = createPlugin({
       deps: {
         discoveryApi: discoveryApiRef,
         identityApi: identityApiRef,
+        fetchApi: fetchApiRef,
       },
-      factory: ({ discoveryApi, identityApi }) =>
+      factory: ({ discoveryApi, identityApi, fetchApi }) =>
         new DynatraceClient({
           discoveryApi,
           identityApi,
+          fetchApi,
         }),
     }),
   ],

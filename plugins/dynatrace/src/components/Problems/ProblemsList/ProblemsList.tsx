@@ -29,8 +29,7 @@ export const ProblemsList = (props: ProblemsListProps) => {
   const { dynatraceEntityId } = props;
   const dynatraceApi = useApi(dynatraceApiRef);
   const { value, loading, error } = useAsync(async () => {
-    const r = await dynatraceApi.getProblems(dynatraceEntityId);
-    return r;
+    return dynatraceApi.getDynatraceProblems(dynatraceEntityId);
   }, [dynatraceApi, dynatraceEntityId]);
   const problems = value?.problems;
 

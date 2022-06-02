@@ -13,23 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import fetch from 'cross-fetch';
-import { Problems, DynatraceApi } from './DynatraceApi';
-import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import { DynatraceProblems, DynatraceApi } from './DynatraceApi';
+import {
+  DiscoveryApi,
+  IdentityApi,
+  FetchApi,
+} from '@backstage/core-plugin-api';
 
 export class DynatraceClient implements DynatraceApi {
   discoveryApi: DiscoveryApi;
   identityApi: IdentityApi;
+  fetchApi: FetchApi;
 
   constructor({
     discoveryApi,
     identityApi,
+    fetchApi,
   }: {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
+    fetchApi: FetchApi;
   }) {
     this.discoveryApi = discoveryApi;
     this.identityApi = identityApi;
+    this.fetchApi = fetchApi;
   }
 
   private async callApi<T>(
@@ -39,7 +46,7 @@ export class DynatraceClient implements DynatraceApi {
     const { token: idToken } = await this.identityApi.getCredentials();
 
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/dynatrace`;
-    const response = await fetch(
+    const response = await this.fetchApi.fetch(
       `${apiUrl}/${path}?${new URLSearchParams(query).toString()}`,
       {
         headers: {
@@ -54,7 +61,9 @@ export class DynatraceClient implements DynatraceApi {
     return undefined;
   }
 
-  async getProblems(dynatraceEntityId: string): Promise<Problems | undefined> {
+  async getDynatraceProblems(
+    dynatraceEntityId: string,
+  ): Promise<DynatraceProblems | undefined> {
     if (!dynatraceEntityId) {
       return undefined;
     }

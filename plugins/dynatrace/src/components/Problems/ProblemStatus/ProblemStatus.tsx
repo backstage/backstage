@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Problem } from '../../../api/DynatraceApi';
+import { DynatraceProblem } from '../../../api/DynatraceApi';
 import { StatusError, StatusOK } from '@backstage/core-components';
 
-export const ProblemStatus = ({ status }: Partial<Problem>) => {
+export const ProblemStatus = ({ status }: Partial<DynatraceProblem>) => {
   switch (status?.toLocaleLowerCase()) {
     case 'open':
       return (

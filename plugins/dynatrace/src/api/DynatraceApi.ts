@@ -23,7 +23,7 @@ export type DynatraceEntity = {
   name: string;
 };
 
-export type Problem = {
+export type DynatraceProblem = {
   problemId: string;
   impactLevel: string;
   status: string;
@@ -35,8 +35,8 @@ export type Problem = {
   affectedEntities: Array<DynatraceEntity>;
 };
 
-export interface Problems {
-  problems: Array<Problem>;
+export interface DynatraceProblems {
+  problems: Array<DynatraceProblem>;
 }
 
 export const dynatraceApiRef = createApiRef<DynatraceApi>({
@@ -44,5 +44,7 @@ export const dynatraceApiRef = createApiRef<DynatraceApi>({
 });
 
 export type DynatraceApi = {
-  getProblems(dynatraceEntityId: string): Promise<Problems | undefined>;
+  getDynatraceProblems(
+    dynatraceEntityId: string,
+  ): Promise<DynatraceProblems | undefined>;
 };

@@ -22,7 +22,7 @@ import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { configApiRef } from '@backstage/core-plugin-api';
 
 const mockDynatraceApi = {
-  getProblems: jest.fn(),
+  getDynatraceProblems: jest.fn(),
 };
 const apis = TestApiRegistry.from(
   [dynatraceApiRef, mockDynatraceApi],
@@ -31,7 +31,9 @@ const apis = TestApiRegistry.from(
 
 describe('ProblemStatus', () => {
   it('renders a table with problem data', async () => {
-    mockDynatraceApi.getProblems = jest.fn().mockResolvedValue({ problems });
+    mockDynatraceApi.getDynatraceProblems = jest
+      .fn()
+      .mockResolvedValue({ problems });
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
         <ProblemsList dynatraceEntityId="example-service-3" />
@@ -40,7 +42,7 @@ describe('ProblemStatus', () => {
     expect(await rendered.findByText('example-service')).toBeInTheDocument();
   });
   it('renders "nothing to report :)" if no problems are found', async () => {
-    mockDynatraceApi.getProblems = jest.fn().mockResolvedValue({});
+    mockDynatraceApi.getDynatraceProblems = jest.fn().mockResolvedValue({});
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
         <ProblemsList dynatraceEntityId="example-service-3" />
