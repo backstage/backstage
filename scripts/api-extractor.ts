@@ -942,8 +942,8 @@ async function buildDocs({
     private _getFilenameForApiItem(apiItem: ApiItem): string {
       const filename: string = super._getFilenameForApiItem(apiItem);
 
-      if (filename.endsWith('.html.md')) {
-        return `${filename.substring(0, filename.length - 8)}._html.md`;
+      if (filename.includes('.html.')) {
+        return filename.replaceAll('.html.', '._html.');
       }
 
       return filename;
