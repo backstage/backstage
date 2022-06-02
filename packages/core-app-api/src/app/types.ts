@@ -24,6 +24,7 @@ import {
   SubRouteRef,
   ExternalRouteRef,
   IdentityApi,
+  ComponentExtensions,
 } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
 
@@ -217,6 +218,11 @@ export type AppOptions = {
    * Supply components to the app to override the default ones.
    */
   components: AppComponents;
+
+  /**
+   * Specify component extensions apart from those provided by plugins.
+   */
+  extensions?: ComponentExtensions;
 
   /**
    * Themes provided as a part of the app. By default two themes are included, one

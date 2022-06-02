@@ -15,7 +15,11 @@
  */
 
 import { RouteRef, SubRouteRef, ExternalRouteRef } from '../routing';
-import { AnyApiFactory } from '../apis';
+import { AnyApiFactory } from '../apis/system';
+import {
+  ComponentExtension,
+  ComponentExtensions,
+} from '../extendable-components';
 
 /**
  * Plugin extension type.
@@ -62,6 +66,7 @@ export type BackstagePlugin<
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
   provide<T>(extension: Extension<T>): T;
   routes: Routes;
+  readonly extensions: ComponentExtensions | undefined;
   externalRoutes: ExternalRoutes;
   __experimentalReconfigure(options: PluginInputOptions): void;
 };
@@ -89,6 +94,7 @@ export type PluginConfig<
   id: string;
   apis?: Iterable<AnyApiFactory>;
   routes?: Routes;
+  extensions?: ComponentExtension<any, any>[];
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
   __experimentalConfigure?(options?: PluginInputOptions): {};
