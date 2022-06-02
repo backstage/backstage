@@ -56,7 +56,7 @@
     "pluralize": "^8.0.0",
     "prop-types": "^15.7.2",
     "qs": "^6.9.4",
-    "rc-progress": "3.3.2",
+    "rc-progress": "3.3.3",
     "react-helmet": "6.1.0",
     "react-hook-form": "^7.12.2",
     "react-markdown": "^8.0.0",
