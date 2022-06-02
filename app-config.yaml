@@ -118,7 +118,7 @@ proxy:
   '/dynatrace':
     target: https://your.dynatrace.instance.com/api/v2
     headers:
-      Authorization: "Api-Token ${DYNATRACE_ACCESS_TOKEN}"
+      Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
 
 organization:
   name: My Company
