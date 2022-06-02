@@ -5927,14 +5927,7 @@
     "@types/ms" "*"
 
 "@types/diff@^5.0.0":
-  version "5.0.2"
-  resolved "https://registry.npmjs.org/@types/diff/-/diff-5.0.2.tgz#dd565e0086ccf8bc6522c6ebafd8a3125c91c12b"
-  integrity sha512-uw8eYMIReOwstQ0QKF0sICefSy8cNO/v7gOTiIy9SbwuHyEecJUm7qlgueOO5S1udZ5I/irVydHVwMchgzbKTg==
-
-"@types/docker-modem@*":
-  version "3.0.2"
-  resolved "https://registry.npmjs.org/@types/docker-modem/-/docker-modem-3.0.2.tgz#c49c902e17364fc724e050db5c1d2b298c6379d4"
-  integrity sha512-qC7prjoEYR2QEe6SmCVfB1x3rfcQtUr1n4x89+3e0wSTMQ/KYCyf+/RAA9n2tllkkNc6//JMUZePdFRiGIWfaQ==
+  version "5.1.0"
   dependencies:
     "@types/node" "*"
     "@types/ssh2" "*"
