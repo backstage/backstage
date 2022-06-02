@@ -9,7 +9,6 @@
   "compilerOptions": {
     "outDir": "dist-types",
     "rootDir": ".",
-    "useUnknownInCatchVariables": false,
-    "jsx": "react"
+    "useUnknownInCatchVariables": false
   }
 }

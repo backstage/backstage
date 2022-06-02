@@ -22,7 +22,7 @@ import {
 import { AnyPluginOptions } from '../plugin';
 import React, { ReactNode } from 'react';
 
-const contextKey: string = 'pluginOptions-context';
+const contextKey: string = 'plugin-options-context';
 
 /**
  * Properties for the AsyncEntityProvider component.

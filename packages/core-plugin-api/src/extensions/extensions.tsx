@@ -236,14 +236,11 @@ export function createReactExtension<
           | { id?: string }
           | undefined;
 
-        const renderComponent = () =>
-          plugin.getPluginOptions() ? (
-            <PluginOptionsProvider pluginOptions={plugin.getPluginOptions()}>
-              <Component {...props} />
-            </PluginOptionsProvider>
-          ) : (
+        const renderComponent = () => (
+          <PluginOptionsProvider pluginOptions={plugin.getPluginOptions()}>
             <Component {...props} />
-          );
+          </PluginOptionsProvider>
+        );
 
         return (
           <Suspense fallback={<Progress />}>
