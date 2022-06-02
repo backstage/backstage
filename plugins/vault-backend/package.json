@@ -34,9 +34,9 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.13.5",
-    "@backstage/backend-tasks": "^0.3.1",
-    "@backstage/backend-test-utils": "^0.1.24",
+    "@backstage/backend-common": "^0.13.6-next.1",
+    "@backstage/backend-tasks": "^0.3.2-next.1",
+    "@backstage/backend-test-utils": "^0.1.25-next.1",
     "@backstage/config": "^1.0.1",
     "@types/compression": "^1.7.2",
     "@types/express": "*",
