@@ -943,7 +943,7 @@ async function buildDocs({
       const filename: string = super._getFilenameForApiItem(apiItem);
 
       if (filename.includes('.html.')) {
-        return filename.replaceAll('.html.', '._html.');
+        return filename.replace(/\.html\./g, '._html.');
       }
 
       return filename;
