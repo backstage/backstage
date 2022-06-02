@@ -40,7 +40,7 @@ import {
   TSDocTagSyntaxKind,
 } from '@microsoft/tsdoc';
 import { TSDocConfigFile } from '@microsoft/tsdoc-config';
-import { ApiPackage, ApiModel } from '@microsoft/api-extractor-model';
+import { ApiPackage, ApiModel, ApiItem } from '@microsoft/api-extractor-model';
 import {
   IMarkdownDocumenterOptions,
   MarkdownDocumenter,
@@ -937,6 +937,16 @@ async function buildDocs({
       );
 
       this._markdownEmitter = new CustomCustomMarkdownEmitter(newModel);
+    }
+
+    private _getFilenameForApiItem(apiItem: ApiItem): string {
+      const filename: string = super._getFilenameForApiItem(apiItem);
+
+      if (filename.includes('.html.')) {
+        return filename.replace(/\.html\./g, '._html.');
+      }
+
+      return filename;
     }
 
     // We don't really get many chances to modify the generated AST
