@@ -11,46 +11,46 @@ import { Readable } from 'stream';
 import { Transform } from 'stream';
 import { Writable } from 'stream';
 
-// @beta
+// @public
 export interface DocumentCollatorFactory {
   getCollator(): Promise<Readable>;
   readonly type: string;
   readonly visibilityPermission?: Permission;
 }
 
-// @beta
+// @public
 export interface DocumentDecoratorFactory {
   getDecorator(): Promise<Transform>;
   readonly types?: string[];
 }
 
-// @beta
+// @public
 export type DocumentTypeInfo = {
   visibilityPermission?: Permission;
 };
 
-// @beta
+// @public
 export type IndexableDocument = SearchDocument & {
   authorization?: {
     resourceRef: string;
   };
 };
 
-// @beta (undocumented)
+// @public (undocumented)
 export type IndexableResult = Result<IndexableDocument>;
 
-// @beta (undocumented)
+// @public (undocumented)
 export type IndexableResultSet = ResultSet<IndexableDocument>;
 
-// @beta
+// @public
 export type QueryRequestOptions = {
   token?: string;
 };
 
-// @beta
+// @public
 export type QueryTranslator = (query: SearchQuery) => unknown;
 
-// @beta (undocumented)
+// @public (undocumented)
 export interface Result<TDocument extends SearchDocument> {
   // (undocumented)
   document: TDocument;
@@ -60,7 +60,7 @@ export interface Result<TDocument extends SearchDocument> {
   type: string;
 }
 
-// @beta
+// @public
 export interface ResultHighlight {
   // (undocumented)
   fields: {
@@ -70,7 +70,7 @@ export interface ResultHighlight {
   preTag: string;
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export interface ResultSet<TDocument extends SearchDocument> {
   // (undocumented)
   nextPageCursor?: string;
@@ -80,14 +80,14 @@ export interface ResultSet<TDocument extends SearchDocument> {
   results: Result<TDocument>[];
 }
 
-// @beta
+// @public
 export interface SearchDocument {
   location: string;
   text: string;
   title: string;
 }
 
-// @beta
+// @public
 export interface SearchEngine {
   getIndexer(type: string): Promise<Writable>;
   query(
@@ -97,7 +97,7 @@ export interface SearchEngine {
   setTranslator(translator: QueryTranslator): void;
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export interface SearchQuery {
   // (undocumented)
   filters?: JsonObject;
@@ -109,9 +109,9 @@ export interface SearchQuery {
   types?: string[];
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export type SearchResult = Result<SearchDocument>;
 
-// @beta (undocumented)
+// @public (undocumented)
 export type SearchResultSet = ResultSet<SearchDocument>;
 ```
