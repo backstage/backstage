@@ -18963,9 +18963,9 @@ npm-packlist@^3.0.0:
     npm-normalize-package-bin "^1.0.1"
 
 npm-packlist@^5.0.0:
-  version "5.0.3"
-  resolved "https://registry.npmjs.org/npm-packlist/-/npm-packlist-5.0.3.tgz#0aec03bc2d6d488ca71396d7afb463563c3274f7"
-  integrity sha512-KuSbzgejxdsAWbNNyEs8EsyDHsO+nJF6k+9WuWzFbSNh5tFHs4lDApXw7kntKpuehfp8lKRzJkMtz0+WmGvTIw==
+  version "5.1.0"
+  resolved "https://registry.npmjs.org/npm-packlist/-/npm-packlist-5.1.0.tgz#f3fd52903a021009913a133732022132eb355ce7"
+  integrity sha512-a04sqF6FbkyOAFA19AA0e94gS7Et5T2/IMj3VOT9nOF2RaRdVPQ1Q17Fb/HaDRFs+gbC7HOmhVZ29adpWgmDZg==
   dependencies:
     glob "^8.0.1"
     ignore-walk "^5.0.1"
