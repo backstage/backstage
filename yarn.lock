@@ -44,10 +44,49 @@
     "@types/node" "^10.1.0"
     long "^4.0.0"
 
+"@apollo/utils.dropunuseddefinitions@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/@apollo/utils.dropunuseddefinitions/-/utils.dropunuseddefinitions-1.1.0.tgz#02b04006442eaf037f4c4624146b12775d70d929"
+  integrity sha512-jU1XjMr6ec9pPoL+BFWzEPW7VHHulVdGKMkPAMiCigpVIT11VmCbnij0bWob8uS3ODJ65tZLYKAh/55vLw2rbg==
+
 "@apollo/utils.logger@^1.0.0":
   version "1.0.0"
   resolved "https://registry.npmjs.org/@apollo/utils.logger/-/utils.logger-1.0.0.tgz#6e3460a2250c2ef7c2c3b0be6b5e148a1596f12b"
   integrity sha512-dx9XrjyisD2pOa+KsB5RcDbWIAdgC91gJfeyLCgy0ctJMjQe7yZK5kdWaWlaOoCeX0z6YI9iYlg7vMPyMpQF3Q==
+
+"@apollo/utils.printwithreducedwhitespace@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/@apollo/utils.printwithreducedwhitespace/-/utils.printwithreducedwhitespace-1.1.0.tgz#c466299a4766eef8577a2a64c8f27712e8bd7e30"
+  integrity sha512-GfFSkAv3n1toDZ4V6u2d7L4xMwLA+lv+6hqXicMN9KELSJ9yy9RzuEXaX73c/Ry+GzRsBy/fdSUGayGqdHfT2Q==
+
+"@apollo/utils.removealiases@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@apollo/utils.removealiases/-/utils.removealiases-1.0.0.tgz#75f6d83098af1fcae2d3beb4f515ad4a8452a8c1"
+  integrity sha512-6cM8sEOJW2LaGjL/0vHV0GtRaSekrPQR4DiywaApQlL9EdROASZU5PsQibe2MWeZCOhNrPRuHh4wDMwPsWTn8A==
+
+"@apollo/utils.sortast@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/@apollo/utils.sortast/-/utils.sortast-1.1.0.tgz#93218c7008daf3e2a0725196085a33f5aab5ad07"
+  integrity sha512-VPlTsmUnOwzPK5yGZENN069y6uUHgeiSlpEhRnLFYwYNoJHsuJq2vXVwIaSmts015WTPa2fpz1inkLYByeuRQA==
+  dependencies:
+    lodash.sortby "^4.7.0"
+
+"@apollo/utils.stripsensitiveliterals@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.npmjs.org/@apollo/utils.stripsensitiveliterals/-/utils.stripsensitiveliterals-1.2.0.tgz#4920651f36beee8e260e12031a0c5863ad0c7b28"
+  integrity sha512-E41rDUzkz/cdikM5147d8nfCFVKovXxKBcjvLEQ7bjZm/cg9zEcXvS6vFY8ugTubI3fn6zoqo0CyU8zT+BGP9w==
+
+"@apollo/utils.usagereporting@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@apollo/utils.usagereporting/-/utils.usagereporting-1.0.0.tgz#b81df180f4ca78b91a22cb49105174a7f070db1e"
+  integrity sha512-5PL7hJMkTPmdo3oxPtigRrIyPxDk/ddrUryHPDaezL1lSFExpNzsDd2f1j0XJoHOg350GRd3LyD64caLA2PU1w==
+  dependencies:
+    "@apollo/utils.dropunuseddefinitions" "^1.1.0"
+    "@apollo/utils.printwithreducedwhitespace" "^1.1.0"
+    "@apollo/utils.removealiases" "1.0.0"
+    "@apollo/utils.sortast" "^1.1.0"
+    "@apollo/utils.stripsensitiveliterals" "^1.2.0"
+    apollo-reporting-protobuf "^3.3.1"
 
 "@apollographql/apollo-tools@^0.5.3":
   version "0.5.3"
@@ -7626,12 +7665,13 @@ apollo-server-caching@^3.3.0:
   dependencies:
     lru-cache "^6.0.0"
 
-apollo-server-core@^3.7.0:
-  version "3.7.0"
-  resolved "https://registry.npmjs.org/apollo-server-core/-/apollo-server-core-3.7.0.tgz#7ec060d269d73d6761cd1eb3d419436e09fa6974"
-  integrity sha512-xUCDjrBzPVbttbh/HenuQdivco/dcXE2oIDYwCU6FU2RBXqxWFmuCl2Xe7VPA/5Frw/4snJDLCyVte9PA5edww==
+apollo-server-core@^3.8.1:
+  version "3.8.1"
+  resolved "https://registry.npmjs.org/apollo-server-core/-/apollo-server-core-3.8.1.tgz#51baba3a1073ad7aa950ffbfc5e3bbb5740d013c"
+  integrity sha512-7A6F+HWmz/1gIW/MvE/0yq/UwrYG/dQCyfk2areoWkvSmg86oV2umuvlnEvTbLE2LiJHBoDP4T+PIqv6pnlLGw==
   dependencies:
     "@apollo/utils.logger" "^1.0.0"
+    "@apollo/utils.usagereporting" "^1.0.0"
     "@apollographql/apollo-tools" "^0.5.3"
     "@apollographql/graphql-playground-html" "1.6.29"
     "@graphql-tools/mock" "^8.1.2"
@@ -7642,12 +7682,11 @@ apollo-server-core@^3.7.0:
     apollo-server-caching "^3.3.0"
     apollo-server-env "^4.2.1"
     apollo-server-errors "^3.3.1"
-    apollo-server-plugin-base "^3.5.3"
-    apollo-server-types "^3.5.3"
+    apollo-server-plugin-base "^3.6.0"
+    apollo-server-types "^3.6.0"
     async-retry "^1.2.1"
     fast-json-stable-stringify "^2.1.0"
     graphql-tag "^2.11.0"
-    lodash.sortby "^4.7.0"
     loglevel "^1.6.8"
     lru-cache "^6.0.0"
     sha.js "^2.4.11"
@@ -7666,10 +7705,10 @@ apollo-server-errors@^3.3.1:
   resolved "https://registry.npmjs.org/apollo-server-errors/-/apollo-server-errors-3.3.1.tgz#ba5c00cdaa33d4cbd09779f8cb6f47475d1cd655"
   integrity sha512-xnZJ5QWs6FixHICXHxUfm+ZWqqxrNuPlQ+kj5m6RtEgIpekOPssH/SD9gf2B4HuWV0QozorrygwZnux8POvyPA==
 
-apollo-server-express@^3.0.0, apollo-server-express@^3.7.0:
-  version "3.7.0"
-  resolved "https://registry.npmjs.org/apollo-server-express/-/apollo-server-express-3.7.0.tgz#dc4cacc25f9528d3a18e2557b52990bf000b454c"
-  integrity sha512-176LSK7YBxwfleurtbfr5SYMheNNJSHrQa2h4QuosLqhfFJkfTpI2iBW56N737U47QfyueCOvkjNZVq86e3n2g==
+apollo-server-express@^3.0.0, apollo-server-express@^3.8.1:
+  version "3.8.1"
+  resolved "https://registry.npmjs.org/apollo-server-express/-/apollo-server-express-3.8.1.tgz#79a979c60a6e6d49ae5396c13aeb467389831500"
+  integrity sha512-58QJFFbLoBfQ3SOp+0PHOqJWVxHf2WzjB3DU2MlVxHi/CfrDbjf7EYjuWTtuvIuzuoEG6kAWLGn2zEDlLmXk1A==
   dependencies:
     "@types/accepts" "^1.3.5"
     "@types/body-parser" "1.19.2"
@@ -7677,35 +7716,37 @@ apollo-server-express@^3.0.0, apollo-server-express@^3.7.0:
     "@types/express" "4.17.13"
     "@types/express-serve-static-core" "4.17.28"
     accepts "^1.3.5"
-    apollo-server-core "^3.7.0"
-    apollo-server-types "^3.5.3"
+    apollo-server-core "^3.8.1"
+    apollo-server-types "^3.6.0"
     body-parser "^1.19.0"
     cors "^2.8.5"
     parseurl "^1.3.3"
 
-apollo-server-plugin-base@^3.5.3:
-  version "3.5.3"
-  resolved "https://registry.npmjs.org/apollo-server-plugin-base/-/apollo-server-plugin-base-3.5.3.tgz#620ca8e9337e5d661c3915375bd6720d0aa205ce"
-  integrity sha512-zojm3qiUGYtM5k1PPrCJnLZSDNqvWvmIDvqBjCu3wI3iNZqNm3MOA86eYGFfaBi/WNu3qYIj6QE3T7w0XjRV1A==
+apollo-server-plugin-base@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.npmjs.org/apollo-server-plugin-base/-/apollo-server-plugin-base-3.6.0.tgz#f85e19fa4a33866ef1b4235077397a63a9a7343e"
+  integrity sha512-GtXhczRGpTLQyFPWeWSnX1VcN2JaaAU7WT8PzoTQuJKYJ/Aj5mPebHbfG+PXQlDmI8IgyCKf7B1HIRnJqvAZbg==
   dependencies:
-    apollo-server-types "^3.5.3"
+    apollo-server-types "^3.6.0"
 
-apollo-server-types@^3.5.3:
-  version "3.5.3"
-  resolved "https://registry.npmjs.org/apollo-server-types/-/apollo-server-types-3.5.3.tgz#e874bd99135c5c6550fe5f904b3b521b340e6ea3"
-  integrity sha512-Qf5mMVTDyABEeyjGecwMsk0y0km4KuW8/j/UwBDQkAAW1QRy+w8nqi+wvSoA5hNXiYCdJN4U4nxTxm9+2eiT4w==
+apollo-server-types@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.npmjs.org/apollo-server-types/-/apollo-server-types-3.6.0.tgz#29fd8369aad99d42f72b760eb12bfe2c888da901"
+  integrity sha512-zISCkwXvwTHK2AysWSfLAUvDLSDJ0xj8pnfxDv34hqA+G9JqsLbykJdSL1Y1kT53HU4RWF6ymTuTwwOmmBiAWA==
   dependencies:
+    "@apollo/utils.logger" "^1.0.0"
     apollo-reporting-protobuf "^3.3.1"
     apollo-server-caching "^3.3.0"
     apollo-server-env "^4.2.1"
 
 apollo-server@^3.0.0:
-  version "3.7.0"
-  resolved "https://registry.npmjs.org/apollo-server/-/apollo-server-3.7.0.tgz#8755c1e1f08825a61003667551e5915373db9f87"
-  integrity sha512-sMD9V0cScsuXKtqtpLBpeU3s0eRyG12n3HtHGg9LNBanYkxS4/I1i0JozO0r0e2kO5yyJ1gc6UWim9+NDxUrnA==
+  version "3.8.1"
+  resolved "https://registry.npmjs.org/apollo-server/-/apollo-server-3.8.1.tgz#ff607983344d56a9288a1df457d61ad3fa1afdeb"
+  integrity sha512-y6g3ISeUbsLao06lt2ZIhtR+cXtIYZspl0UIv2vA2eyp8hHGk6ocKm4+joQzzugqEdV1wusUswWsL4klECq5jg==
   dependencies:
-    apollo-server-core "^3.7.0"
-    apollo-server-express "^3.7.0"
+    "@types/express" "4.17.13"
+    apollo-server-core "^3.8.1"
+    apollo-server-express "^3.8.1"
     express "^4.17.1"
 
 aproba@^1.0.3:
