@@ -13,3 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { Config } from '@backstage/config';
+import { CompoundEntityRef } from '@backstage/catalog-model';
+
+/**
+ * Lower-case entity triplets by default, but allow override.
+ *
+ * @public
+ */
+
+export function toLowercaseEntityRefMaybe(
+  entityRef: CompoundEntityRef,
+  config: Config,
+) {
+  return config.getOptionalBoolean(
+    'techdocs.legacyUseCaseSensitiveTripletPaths',
+  )
+    ? entityRef
+    : {
+        kind: entityRef.kind.toLocaleLowerCase('en-US'),
+        name: entityRef.name.toLocaleLowerCase('en-US'),
+        namespace: entityRef.namespace.toLocaleLowerCase('en-US'),
+      };
+}

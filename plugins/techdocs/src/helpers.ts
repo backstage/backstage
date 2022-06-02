@@ -16,11 +16,7 @@
 
 import { Config } from '@backstage/config';
 
-/**
- * Lower-case entity triplets by default, but allow override.
- *
- * @public
- */
+// Lower-case entity triplets by default, but allow override.
 export function toLowerMaybe(str: string, config: Config) {
   return config.getOptionalBoolean(
     'techdocs.legacyUseCaseSensitiveTripletPaths',

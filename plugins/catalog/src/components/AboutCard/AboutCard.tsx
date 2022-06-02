@@ -17,7 +17,7 @@
 import {
   ANNOTATION_EDIT_URL,
   ANNOTATION_LOCATION,
-  DEFAULT_NAMESPACE,
+  getCompoundEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
@@ -55,7 +55,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import React, { useCallback } from 'react';
 import { viewTechDocRouteRef } from '../../routes';
 import { AboutContent } from './AboutContent';
-import { toLowerMaybe } from '@backstage/plugin-techdocs';
+import { toLowercaseEntityRefMaybe } from '@backstage/plugin-techdocs-react';
 
 const useStyles = makeStyles({
   gridItemCard: {
@@ -98,6 +98,7 @@ export function AboutCard(props: AboutCardProps) {
   const alertApi = useApi(alertApiRef);
   const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
   const config = useApi(configApiRef);
+  const entityRef = getCompoundEntityRef(entity);
 
   const entitySourceLocation = getEntitySourceLocation(
     entity,
@@ -120,14 +121,7 @@ export function AboutCard(props: AboutCardProps) {
     icon: <DocsIcon />,
     href:
       viewTechdocLink &&
-      viewTechdocLink({
-        namespace: toLowerMaybe(
-          entity.metadata.namespace || DEFAULT_NAMESPACE,
-          config,
-        ),
-        kind: toLowerMaybe(entity.kind, config),
-        name: toLowerMaybe(entity.metadata.name, config),
-      }),
+      viewTechdocLink(toLowercaseEntityRefMaybe(entityRef, config)),
   };
 
   let cardClass = '';

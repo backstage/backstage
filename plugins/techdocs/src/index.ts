@@ -41,7 +41,6 @@ export {
   techdocsPlugin,
 } from './plugin';
 export * from './Router';
-export { toLowerMaybe } from './helpers';
 
 /**
  * @deprecated Import from `@backstage/plugin-techdocs-react` instead
