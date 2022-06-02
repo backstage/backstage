@@ -27,7 +27,8 @@ import { Logger } from 'winston';
 import { LunrSearchEngineIndexer } from './LunrSearchEngineIndexer';
 
 /**
- * @beta
+ * Type of translated query for the Lunr Search Engine.
+ * @public
  */
 export type ConcreteLunrQuery = {
   lunrQueryBuilder: lunr.Index.QueryBuilder;
@@ -41,12 +42,14 @@ type LunrResultEnvelope = {
 };
 
 /**
- * @beta
+ * Translator repsonsible for translating search term and filters to a query that the Lunr Search Engine understands.
+ * @public
  */
 export type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
 
 /**
- * @beta
+ * Lunr specific search engine implementation.
+ * @public
  */
 export class LunrSearchEngine implements SearchEngine {
   protected lunrIndices: Record<string, lunr.Index> = {};
