@@ -87,10 +87,10 @@ export type SearchAutocompleteFilterProps = SearchFilterComponentProps_2 & {
   multiple?: boolean;
 };
 
-// @public
+// @public @deprecated (undocumented)
 export const SearchBar: ({ onChange, ...props }: SearchBarProps) => JSX.Element;
 
-// @public
+// @public @deprecated (undocumented)
 export const SearchBarBase: ({
   onChange,
   onKeyDown,
@@ -104,7 +104,7 @@ export const SearchBarBase: ({
   ...props
 }: SearchBarBaseProps) => JSX.Element;
 
-// @public
+// @public @deprecated (undocumented)
 export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
   debounceTime?: number;
   clearButton?: boolean;
@@ -121,7 +121,7 @@ export const SearchBarNext: ({
   ...props
 }: Partial<SearchBarBaseProps>) => JSX.Element;
 
-// @public
+// @public @deprecated (undocumented)
 export type SearchBarProps = Partial<SearchBarBaseProps>;
 
 // Warning: (ae-missing-release-tag) "SearchFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

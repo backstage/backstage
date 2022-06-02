@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import React, {
   useCallback,
 } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   InputBase,
   InputBaseProps,
@@ -32,16 +31,16 @@ import {
 import SearchIcon from '@material-ui/icons/Search';
 import ClearButton from '@material-ui/icons/Clear';
 
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+
 import {
   SearchContextProvider,
   useSearch,
   useSearchContextCheck,
-  TrackSearch,
-} from '@backstage/plugin-search-react';
+} from '../../context';
+import { TrackSearch } from '../SearchTracker';
 
 /**
- * @deprecated Moved to `@backstage/plugin-search-react`.
- *
  * Props for {@link SearchBarBase}.
  *
  * @public
@@ -55,8 +54,6 @@ export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
 };
 
 /**
- * @deprecated Moved to `@backstage/plugin-search-react`.
- *
  * All search boxes exported by the search plugin are based on the <SearchBarBase />,
  * and this one is based on the <InputBase /> component from Material UI.
  * Recommended if you don't use Search Provider or Search Context.
@@ -153,8 +150,6 @@ export const SearchBarBase = ({
 };
 
 /**
- * @deprecated Moved to `@backstage/plugin-search-react`.
- *
  * Props for {@link SearchBar}.
  *
  * @public
@@ -162,8 +157,6 @@ export const SearchBarBase = ({
 export type SearchBarProps = Partial<SearchBarBaseProps>;
 
 /**
- * @deprecated Moved to `@backstage/plugin-search-react`.
- *
  * Recommended search bar when you use the Search Provider or Search Context.
  *
  * @public

@@ -7,6 +7,7 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/lib/useAsync';
+import { InputBaseProps } from '@material-ui/core';
 import { JsonObject } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
@@ -61,6 +62,35 @@ export type SearchAutocompleteFilterProps = SearchFilterComponentProps & {
   limitTags?: number;
   multiple?: boolean;
 };
+
+// @public
+export const SearchBar: ({ onChange, ...props }: SearchBarProps) => JSX.Element;
+
+// @public
+export const SearchBarBase: ({
+  onChange,
+  onKeyDown,
+  onSubmit,
+  debounceTime,
+  clearButton,
+  fullWidth,
+  value: defaultValue,
+  inputProps: defaultInputProps,
+  endAdornment: defaultEndAdornment,
+  ...props
+}: SearchBarBaseProps) => JSX.Element;
+
+// @public
+export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
+  debounceTime?: number;
+  clearButton?: boolean;
+  onClear?: () => void;
+  onSubmit?: () => void;
+  onChange: (value: string) => void;
+};
+
+// @public
+export type SearchBarProps = Partial<SearchBarBaseProps>;
 
 // @public
 export const SearchContextProvider: (
@@ -134,6 +164,13 @@ export type SearchResultProps = {
 
 // @public (undocumented)
 export const SelectFilter: (props: SearchFilterComponentProps) => JSX.Element;
+
+// @public
+export const TrackSearch: ({
+  children,
+}: {
+  children: React_2.ReactChild;
+}) => JSX.Element;
 
 // @public
 export const useAsyncFilterValues: (
