@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { Link } from './Link';
-export type { LinkProps } from './Link';
+export { Link, linkComponentRef } from './Link';
+export type { LinkProps, LinkContext } from './Link';
