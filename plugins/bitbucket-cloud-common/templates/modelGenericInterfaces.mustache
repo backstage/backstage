@@ -1,0 +1,61 @@
+/**
+{{#unescapedDescription}}
+ * {{#lambda.indented_star_1}}{{{unescapedDescription}}}{{/lambda.indented_star_1}}
+{{/unescapedDescription}}
+ * @public
+{{#deprecated}}
+ * @deprecated
+{{/deprecated}}
+ */
+export interface {{classname}} {{#parent}}extends {{{.}}} {{/parent}}{
+{{#additionalPropertiesType}}
+    [key: string]: unknown;
+{{/additionalPropertiesType}}
+{{#vars}}
+{{#unescapedDescription}}
+    /**
+     * {{#lambda.indented_star_4}}{{{unescapedDescription}}}{{/lambda.indented_star_4}}
+     {{#deprecated}}
+     * @deprecated
+     {{/deprecated}}
+     */
+    {{/unescapedDescription}}
+    {{^unescapedDescription}}
+    {{#deprecated}}
+    /** @deprecated */
+    {{/deprecated}}
+    {{/unescapedDescription}}
+    {{#isReadOnly}}readonly {{/isReadOnly}}{{name}}{{^required}}?{{/required}}: {{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{datatype}}}{{#isNullable}} | null{{/isNullable}}{{/isEnum}};
+{{/vars}}
+}{{#hasEnums}}
+{{#vars}}
+{{#isEnum}}
+
+/**
+{{#unescapedDescription}}
+ * {{#lambda.indented_star_1}}{{{unescapedDescription}}}{{/lambda.indented_star_1}}
+{{/unescapedDescription}}
+ * @public
+{{#deprecated}}
+ * @deprecated
+{{/deprecated}}
+ */
+export const {{classname}}{{enumName}} = {
+{{#allowableValues}}
+    {{#enumVars}}
+        {{{name}}}: {{{value}}}{{^-last}},{{/-last}}
+    {{/enumVars}}
+{{/allowableValues}}
+} as const;
+
+/**
+{{#unescapedDescription}}
+ * {{#lambda.indented_star_1}}{{{unescapedDescription}}}{{/lambda.indented_star_1}}
+{{/unescapedDescription}}
+ * @public
+{{#deprecated}}
+ * @deprecated
+{{/deprecated}}
+ */
+export type {{classname}}{{enumName}} = typeof {{classname}}{{enumName}}[keyof typeof {{classname}}{{enumName}}];
+{{/isEnum}}{{/vars}}{{/hasEnums}}

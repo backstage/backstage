@@ -161,16 +161,16 @@ function TaskStepIconComponent(props: StepIconProps) {
 }
 
 export const TaskStatusStepper = memo(
-  ({
-    steps,
-    currentStepId,
-    onUserStepChange,
-  }: {
+  (props: {
     steps: TaskStep[];
     currentStepId: string | undefined;
     onUserStepChange: (id: string) => void;
+    classes?: {
+      root?: string;
+    };
   }) => {
-    const classes = useStyles();
+    const { steps, currentStepId, onUserStepChange } = props;
+    const classes = useStyles(props);
 
     return (
       <div className={classes.root}>

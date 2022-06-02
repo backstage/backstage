@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
 import { JsonObject, JsonValue, Observable } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 
@@ -149,6 +149,27 @@ export interface ScaffolderStreamLogsOptions {
   taskId: string;
   after?: number;
 }
+
+/** @public */
+export interface ScaffolderDryRunOptions {
+  template: JsonValue;
+  values: JsonObject;
+  secrets?: Record<string, string>;
+  directoryContents: { path: string; base64Content: string }[];
+}
+
+/** @public */
+export interface ScaffolderDryRunResponse {
+  directoryContents: Array<{
+    path: string;
+    base64Content: string;
+    executable: boolean;
+  }>;
+  log: Array<Pick<LogEvent, 'body'>>;
+  steps: TaskStep[];
+  output: ScaffolderTaskOutput;
+}
+
 /**
  * An API to interact with the scaffolder backend.
  *
@@ -171,6 +192,12 @@ export interface ScaffolderApi {
 
   getTask(taskId: string): Promise<ScaffolderTask>;
 
+  listTasks?({
+    filterByOwnership,
+  }: {
+    filterByOwnership: 'owned' | 'all';
+  }): Promise<{ tasks: ScaffolderTask[] }>;
+
   getIntegrationsList(
     options: ScaffolderGetIntegrationsListOptions,
   ): Promise<ScaffolderGetIntegrationsListResponse>;
@@ -181,4 +208,6 @@ export interface ScaffolderApi {
   listActions(): Promise<ListActionsResponse>;
 
   streamLogs(options: ScaffolderStreamLogsOptions): Observable<LogEvent>;
+
+  dryRun?(options: ScaffolderDryRunOptions): Promise<ScaffolderDryRunResponse>;
 }

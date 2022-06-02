@@ -46,6 +46,7 @@ export function createPublishGithubAction(options: {
     description?: string;
     access?: string;
     defaultBranch?: string;
+    protectDefaultBranch?: boolean;
     deleteBranchOnMerge?: boolean;
     gitCommitMessage?: string;
     gitAuthorName?: string;
@@ -57,10 +58,21 @@ export function createPublishGithubAction(options: {
     requireCodeOwnerReviews?: boolean;
     requiredStatusCheckContexts?: string[];
     repoVisibility?: 'private' | 'internal' | 'public';
-    collaborators?: Array<{
-      username: string;
-      access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-    }>;
+    collaborators?: Array<
+      | {
+          user: string;
+          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+        }
+      | {
+          team: string;
+          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+        }
+      | {
+          /** @deprecated This field is deprecated in favor of team */
+          username: string;
+          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+        }
+    >;
     token?: string;
     topics?: string[];
   }>({
@@ -111,6 +123,11 @@ export function createPublishGithubAction(options: {
             type: 'string',
             description: `Sets the default branch on the repository. The default value is 'master'`,
           },
+          protectDefaultBranch: {
+            title: 'Protect Default Branch',
+            type: 'boolean',
+            description: `Protect the default branch after creating the repository. The default value is 'true'`,
+          },
           deleteBranchOnMerge: {
             title: 'Delete Branch On Merge',
             type: 'boolean',
@@ -154,22 +171,39 @@ export function createPublishGithubAction(options: {
           },
           collaborators: {
             title: 'Collaborators',
-            description: 'Provide additional users with permissions',
+            description: 'Provide additional users or teams with permissions',
             type: 'array',
             items: {
               type: 'object',
-              required: ['username', 'access'],
+              additionalProperties: false,
+              required: ['access'],
               properties: {
                 access: {
                   type: 'string',
                   description: 'The type of access for the user',
                   enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
                 },
+                user: {
+                  type: 'string',
+                  description:
+                    'The name of the user that will be added as a collaborator',
+                },
                 username: {
                   type: 'string',
-                  description: 'The username or group',
+                  description:
+                    'Deprecated. Use the `team` or `user` field instead.',
+                },
+                team: {
+                  type: 'string',
+                  description:
+                    'The name of the team that will be added as a collaborator',
                 },
               },
+              oneOf: [
+                { required: ['user'] },
+                { required: ['username'] },
+                { required: ['team'] },
+              ],
             },
           },
           token: {
@@ -209,6 +243,7 @@ export function createPublishGithubAction(options: {
         requiredStatusCheckContexts = [],
         repoVisibility = 'private',
         defaultBranch = 'master',
+        protectDefaultBranch = true,
         deleteBranchOnMerge = false,
         gitCommitMessage = 'initial commit',
         gitAuthorName,
@@ -299,22 +334,40 @@ export function createPublishGithubAction(options: {
       }
 
       if (collaborators) {
-        for (const {
-          access: permission,
-          username: team_slug,
-        } of collaborators) {
+        for (const collaborator of collaborators) {
           try {
-            await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
-              org: owner,
-              team_slug,
-              owner,
-              repo,
-              permission,
-            });
+            if ('user' in collaborator) {
+              await client.rest.repos.addCollaborator({
+                owner,
+                repo,
+                username: collaborator.user,
+                permission: collaborator.access,
+              });
+            } else if ('username' in collaborator) {
+              ctx.logger.warn(
+                'The field `username` is deprecated in favor of `team` and will be removed in the future.',
+              );
+              await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
+                org: owner,
+                team_slug: collaborator.username,
+                owner,
+                repo,
+                permission: collaborator.access,
+              });
+            } else if ('team' in collaborator) {
+              await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
+                org: owner,
+                team_slug: collaborator.team,
+                owner,
+                repo,
+                permission: collaborator.access,
+              });
+            }
           } catch (e) {
             assertError(e);
+            const name = extractCollaboratorName(collaborator);
             ctx.logger.warn(
-              `Skipping ${permission} access for ${team_slug}, ${e.message}`,
+              `Skipping ${collaborator.access} access for ${name}, ${e.message}`,
             );
           }
         }
@@ -360,25 +413,35 @@ export function createPublishGithubAction(options: {
         gitAuthorInfo,
       });
 
-      try {
-        await enableBranchProtectionOnDefaultRepoBranch({
-          owner,
-          client,
-          repoName: newRepo.name,
-          logger: ctx.logger,
-          defaultBranch,
-          requireCodeOwnerReviews,
-          requiredStatusCheckContexts,
-        });
-      } catch (e) {
-        assertError(e);
-        ctx.logger.warn(
-          `Skipping: default branch protection on '${newRepo.name}', ${e.message}`,
-        );
+      if (protectDefaultBranch) {
+        try {
+          await enableBranchProtectionOnDefaultRepoBranch({
+            owner,
+            client,
+            repoName: newRepo.name,
+            logger: ctx.logger,
+            defaultBranch,
+            requireCodeOwnerReviews,
+            requiredStatusCheckContexts,
+          });
+        } catch (e) {
+          assertError(e);
+          ctx.logger.warn(
+            `Skipping: default branch protection on '${newRepo.name}', ${e.message}`,
+          );
+        }
       }
 
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
     },
   });
+}
+
+function extractCollaboratorName(
+  collaborator: { user: string } | { team: string } | { username: string },
+) {
+  if ('username' in collaborator) return collaborator.username;
+  if ('user' in collaborator) return collaborator.user;
+  return collaborator.team;
 }

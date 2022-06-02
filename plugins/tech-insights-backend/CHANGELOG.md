@@ -1,5 +1,16 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.4.1-next.1
+
+### Patch Changes
+
+- 4fee8f59e3: Updated tech-insights fetch/latest endpoint to return the actual latest row based on the timestamp
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.2-next.1
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/catalog-client@1.0.3-next.0
+  - @backstage/catalog-model@1.0.3-next.0
+
 ## 0.4.1-next.0
 
 ### Patch Changes
