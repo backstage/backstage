@@ -25,6 +25,8 @@ import {
   createComponentExtension,
 } from '@backstage/core-plugin-api';
 
+import { extensions } from './extensions';
+
 /** @public */
 export const githubActionsPlugin = createPlugin({
   id: 'github-actions',
@@ -36,6 +38,7 @@ export const githubActionsPlugin = createPlugin({
         new GithubActionsClient({ configApi, githubAuthApi }),
     }),
   ],
+  extensions,
   routes: {
     entityContent: rootRouteRef,
   },
