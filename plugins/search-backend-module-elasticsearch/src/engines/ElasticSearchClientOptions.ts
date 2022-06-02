@@ -18,10 +18,12 @@ import type { ConnectionOptions as TLSConnectionOptions } from 'tls';
 /**
  * Options used to configure the `@elastic/elasticsearch` client and
  * are what will be passed as an argument to the
- * {@link ElasticSearchEngine.newClient} method
+ * {@link ElasticSearchSearchEngine.newClient} method
  *
  * They are drawn from the `ClientOptions` class of `@elastic/elasticsearch`,
  * but are maintained separately so that this interface is not coupled to
+ *
+ * @public
  */
 export interface ElasticSearchClientOptions {
   provider?: 'aws' | 'elastic';
@@ -65,6 +67,9 @@ export interface ElasticSearchClientOptions {
   disablePrototypePoisoningProtection?: boolean | 'proto' | 'constructor';
 }
 
+/**
+ * @public
+ */
 export type ElasticSearchAuth =
   | {
       username: string;
@@ -79,6 +84,9 @@ export type ElasticSearchAuth =
           };
     };
 
+/**
+ * @public
+ */
 export interface ElasticSearchNodeOptions {
   url: URL;
   id?: string;
@@ -93,6 +101,9 @@ export interface ElasticSearchNodeOptions {
   };
 }
 
+/**
+ * @public
+ */
 export interface ElasticSearchAgentOptions {
   keepAlive?: boolean;
   keepAliveMsecs?: number;
@@ -100,6 +111,9 @@ export interface ElasticSearchAgentOptions {
   maxFreeSockets?: number;
 }
 
+/**
+ * @public
+ */
 export interface ElasticSearchConnectionConstructor {
   new (opts?: any): any;
   statuses: {
@@ -113,7 +127,9 @@ export interface ElasticSearchConnectionConstructor {
     ML: string;
   };
 }
-
+/**
+ * @public
+ */
 export interface ElasticSearchTransportConstructor {
   new (opts?: any): any;
   sniffReasons: {

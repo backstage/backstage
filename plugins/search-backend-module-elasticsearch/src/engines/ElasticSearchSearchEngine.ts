@@ -36,6 +36,10 @@ import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineInd
 
 export type { ElasticSearchClientOptions };
 
+/**
+ * Search query that the elasticsearch engine understands.
+ * @public
+ */
 export type ConcreteElasticSearchQuery = {
   documentTypes?: string[];
   elasticSearchQuery: Object;
@@ -43,18 +47,27 @@ export type ConcreteElasticSearchQuery = {
 };
 
 /**
+ * Options available for the Elasticsearch specific query translator.
  * @public
  */
 export type ElasticSearchQueryTranslatorOptions = {
   highlightOptions?: ElasticSearchHighlightConfig;
 };
 
-type ElasticSearchQueryTranslator = (
+/**
+ * Elasticsearch specific query translator.
+ * @public
+ */
+export type ElasticSearchQueryTranslator = (
   query: SearchQuery,
   options?: ElasticSearchQueryTranslatorOptions,
 ) => ConcreteElasticSearchQuery;
 
-type ElasticSearchOptions = {
+/**
+ * Options for instansiate ElasticSearchSearchEngine
+ * @public
+ */
+export type ElasticSearchOptions = {
   logger: Logger;
   config: Config;
   aliasPostfix?: string;
