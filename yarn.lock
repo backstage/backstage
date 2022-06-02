@@ -1643,24 +1643,6 @@
     qs "^6.9.4"
     react-use "^17.2.4"
 
-"@backstage/plugin-techdocs-react@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@backstage/plugin-techdocs-react/-/plugin-techdocs-react-1.0.0.tgz#4f532db1a55e7a36b3d080e174065bb60c9e809f"
-  integrity sha512-4q04IKNXuSGg5z7YrTxhQgOgH3v5oReJj0PU0vQXOoFf7XfG1jOzFKqIn17aJ5jKDT0CUuD+NU4Ekaoydv3e3Q==
-  dependencies:
-    "@backstage/catalog-model" "^1.0.2"
-    "@backstage/core-components" "^0.9.4"
-    "@backstage/core-plugin-api" "^1.0.2"
-    "@backstage/version-bridge" "^1.0.1"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/lab" "4.0.0-alpha.57"
-    "@material-ui/styles" "^4.11.0"
-    jss "~10.8.2"
-    lodash "^4.17.21"
-    react-helmet "6.1.0"
-    react-router-dom "6.0.0-beta.0"
-    react-use "^17.2.4"
-
 "@backstage/search-common@^0.3.4":
   version "0.3.4"
   resolved "https://registry.npmjs.org/@backstage/search-common/-/search-common-0.3.4.tgz#94235e6bd930c738b41ccc3f5b78ddfad3a105cc"
