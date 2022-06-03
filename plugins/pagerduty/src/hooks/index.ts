@@ -15,13 +15,14 @@
  */
 
 import { useEntity } from '@backstage/plugin-catalog-react';
+import { PagerDutyEntity } from '../types';
 
 import {
   PAGERDUTY_INTEGRATION_KEY,
   PAGERDUTY_SERVICE_ID,
 } from '../components/constants';
 
-export function usePagerdutyEntity() {
+export function usePagerdutyEntity(): PagerDutyEntity {
   const { entity } = useEntity();
   const {
     [PAGERDUTY_INTEGRATION_KEY]: integrationKey,

@@ -86,7 +86,7 @@ export const PagerDutyCard = () => {
       foundService = services[0];
       if (!foundService) throw new NotFoundError();
     } else {
-      foundService = await api.getServiceByServiceId(serviceId);
+      foundService = await api.getServiceByServiceId(serviceId!);
     }
 
     return {
