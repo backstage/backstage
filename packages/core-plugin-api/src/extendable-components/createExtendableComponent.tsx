@@ -25,6 +25,7 @@ import React, {
 import { useComponentExtensions } from './ExtensionsProvider';
 import {
   ExtendableComponentDescriptor,
+  ExtendableComponentProvider,
   ExtendableComponentRef,
   ExtendableComponentRefConfig,
   ExtendableComponentRefConfigForwardRef,
@@ -57,42 +58,43 @@ export function _createExtendableComponent<Props extends {}, Context>(
 
     // Turn the list of extensions, and the final inner component, into a
     // component tree.
-    const { ExtendedComponent } = useMemo(
-      () => ({
-        ExtendedComponent: providers.reverse().reduce(
-          (prev, IntermediateProvider): ComponentType<{}> =>
-            () => {
-              // eslint-disable-next-line react-hooks/rules-of-hooks
-              const value = useContext(ctx);
+    const { ExtendedComponent } = useMemo(() => {
+      function InnerMostComponent() {
+        const value = useContext(ctx);
+        const info = useMemo(() => (useRef ? { ref } : {}), []);
 
-              return (
-                <IntermediateProvider
-                  Component={prev}
-                  ComponentProvider={ComponentProvider}
-                  props={newProps}
-                  value={value}
-                />
-              );
-            },
-          // Reduce using the real inner component as start value:
-          (() => {
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            const value = useContext(ctx);
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            const info = useMemo(() => (useRef ? { ref } : {}), []);
+        return (
+          <componentRef.Component info={info} props={newProps} value={value} />
+        );
+      }
 
-            return (
-              <componentRef.Component
-                info={info}
-                props={newProps}
-                value={value}
-              />
-            );
-          }) as ComponentType<{}>,
-        ),
-      }),
-      [providers, newProps, ref],
-    );
+      function makeIntermediateComponent(
+        Inner: React.ComponentType<{}>,
+        IntermediateProvider: ExtendableComponentProvider<any, any>,
+      ): ComponentType<{}> {
+        return function IntermediateComponent() {
+          const value = useContext(ctx);
+
+          return (
+            <IntermediateProvider
+              Component={Inner}
+              ComponentProvider={ComponentProvider}
+              props={newProps}
+              value={value}
+            />
+          );
+        };
+      }
+
+      return {
+        ExtendedComponent: providers
+          .reverse()
+          .reduce<ComponentType<{}>>(
+            (prev, provider) => makeIntermediateComponent(prev, provider),
+            InnerMostComponent,
+          ),
+      };
+    }, [providers, newProps, ref]);
 
     return (
       <componentRef.Provider
