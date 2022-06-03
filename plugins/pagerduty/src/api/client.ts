@@ -67,16 +67,6 @@ export class PagerDutyClient implements PagerDutyApi {
     return services;
   }
 
-  async getServiceByServiceId(serviceId: string): Promise<Service> {
-    const params = commonGetServiceParams;
-    const url = `${await this.config.discoveryApi.getBaseUrl(
-      'proxy',
-    )}/pagerduty/services/${serviceId}?${params}`;
-    const { service } = await this.getByUrl<ServiceResponse>(url);
-
-    return service;
-  }
-
   async getServiceByEntity(
     pagerDutyEntity: PagerDutyEntity,
   ): Promise<ServiceResponse> {

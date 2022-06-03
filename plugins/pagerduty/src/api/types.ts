@@ -33,12 +33,6 @@ export interface PagerDutyApi {
   getServiceByIntegrationKey(integrationKey: string): Promise<Service[]>;
 
   /**
-   * Fetches the service for the provided service id.
-   *
-   */
-  getServiceByServiceId(serviceId: string): Promise<Service>;
-
-  /**
    * Fetches the service for the provided PagerDutyEntity.
    *
    */
