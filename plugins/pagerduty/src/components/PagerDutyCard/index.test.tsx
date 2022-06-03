@@ -90,8 +90,7 @@ const service: Service = {
 };
 
 const mockPagerDutyApi: Partial<PagerDutyClient> = {
-  getServiceByIntegrationKey: async () => [],
-  getServiceByServiceId: async () => service,
+  getServiceByEntity: async () => ({ service }),
   getOnCallByPolicyId: async () => [],
   getIncidentsByServiceId: async () => [],
 };
@@ -129,9 +128,9 @@ describe('isPluginApplicableToEntity', () => {
 
 describe('PageDutyCard', () => {
   it('Render pagerduty', async () => {
-    mockPagerDutyApi.getServiceByIntegrationKey = jest
+    mockPagerDutyApi.getServiceByEntity = jest
       .fn()
-      .mockImplementationOnce(async () => [service]);
+      .mockImplementationOnce(async () => ({ service }));
 
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
@@ -150,7 +149,7 @@ describe('PageDutyCard', () => {
   });
 
   it('Handles custom error for missing token', async () => {
-    mockPagerDutyApi.getServiceByIntegrationKey = jest
+    mockPagerDutyApi.getServiceByEntity = jest
       .fn()
       .mockRejectedValueOnce(new UnauthorizedError());
 
@@ -168,7 +167,7 @@ describe('PageDutyCard', () => {
   });
 
   it('Handles custom NotFoundError', async () => {
-    mockPagerDutyApi.getServiceByIntegrationKey = jest
+    mockPagerDutyApi.getServiceByEntity = jest
       .fn()
       .mockRejectedValueOnce(new NotFoundError());
 
@@ -186,7 +185,7 @@ describe('PageDutyCard', () => {
   });
 
   it('handles general error', async () => {
-    mockPagerDutyApi.getServiceByIntegrationKey = jest
+    mockPagerDutyApi.getServiceByEntity = jest
       .fn()
       .mockRejectedValueOnce(new Error('An error occurred'));
     const { getByText, queryByTestId } = render(
@@ -207,28 +206,10 @@ describe('PageDutyCard', () => {
     ).toBeInTheDocument();
   });
 
-  it('handles empty response from getServiceByIntegrationKey', async () => {
-    mockPagerDutyApi.getServiceByIntegrationKey = jest
-      .fn()
-      .mockImplementationOnce(async () => []);
-
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={entity}>
-            <PagerDutyCard />
-          </EntityProvider>
-        </ApiProvider>,
-      ),
-    );
-    await waitFor(() => !queryByTestId('progress'));
-    expect(getByText('PagerDuty Service Not Found')).toBeInTheDocument();
-  });
-
   it('opens the dialog when trigger button is clicked', async () => {
-    mockPagerDutyApi.getServiceByIntegrationKey = jest
+    mockPagerDutyApi.getServiceByEntity = jest
       .fn()
-      .mockImplementationOnce(async () => [service]);
+      .mockImplementationOnce(async () => ({ service }));
 
     const { getByText, queryByTestId, getByRole } = render(
       wrapInTestApp(
@@ -251,9 +232,9 @@ describe('PageDutyCard', () => {
 
   describe('when entity has the pagerduty.com/service-id annotation', () => {
     it('Renders PagerDuty service information', async () => {
-      mockPagerDutyApi.getServiceByServiceId = jest
+      mockPagerDutyApi.getServiceByEntity = jest
         .fn()
-        .mockImplementationOnce(async () => service);
+        .mockImplementationOnce(async () => ({ service }));
 
       const { getByText, queryByTestId } = render(
         wrapInTestApp(
@@ -272,7 +253,7 @@ describe('PageDutyCard', () => {
     });
 
     it('Handles custom error for missing token', async () => {
-      mockPagerDutyApi.getServiceByServiceId = jest
+      mockPagerDutyApi.getServiceByEntity = jest
         .fn()
         .mockRejectedValueOnce(new UnauthorizedError());
 
@@ -292,7 +273,7 @@ describe('PageDutyCard', () => {
     });
 
     it('Handles custom NotFoundError', async () => {
-      mockPagerDutyApi.getServiceByServiceId = jest
+      mockPagerDutyApi.getServiceByEntity = jest
         .fn()
         .mockRejectedValueOnce(new NotFoundError());
 
@@ -310,7 +291,7 @@ describe('PageDutyCard', () => {
     });
 
     it('handles general error', async () => {
-      mockPagerDutyApi.getServiceByServiceId = jest
+      mockPagerDutyApi.getServiceByEntity = jest
         .fn()
         .mockRejectedValueOnce(new Error('An error occurred'));
       const { getByText, queryByTestId } = render(
@@ -332,9 +313,9 @@ describe('PageDutyCard', () => {
     });
 
     it('disables the Create Incident button', async () => {
-      mockPagerDutyApi.getServiceByServiceId = jest
+      mockPagerDutyApi.getServiceByEntity = jest
         .fn()
-        .mockImplementationOnce(async () => service);
+        .mockImplementationOnce(async () => ({ service }));
 
       const { queryByTestId, getByTitle } = render(
         wrapInTestApp(
@@ -346,7 +327,6 @@ describe('PageDutyCard', () => {
         ),
       );
       await waitFor(() => !queryByTestId('progress'));
-      expect(queryByTestId('trigger-dialoger')).not.toBeInTheDocument();
       expect(
         getByTitle('Must provide an integration-key to create incidents')
           .className,
@@ -356,22 +336,20 @@ describe('PageDutyCard', () => {
 
   describe('when entity has all annotations', () => {
     it('queries by integration key', async () => {
-      mockPagerDutyApi.getServiceByIntegrationKey = jest
+      mockPagerDutyApi.getServiceByEntity = jest
         .fn()
-        .mockImplementationOnce(async () => [service]);
-      mockPagerDutyApi.getServiceByServiceId = jest.fn();
+        .mockImplementationOnce(async () => ({ service }));
 
       const { getByText, queryByTestId } = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
-            <EntityProvider entity={entity}>
+            <EntityProvider entity={entityWithAllAnnotations}>
               <PagerDutyCard />
             </EntityProvider>
           </ApiProvider>,
         ),
       );
       await waitFor(() => !queryByTestId('progress'));
-      expect(mockPagerDutyApi.getServiceByServiceId).not.toHaveBeenCalled();
       expect(getByText('Service Directory')).toBeInTheDocument();
       expect(getByText('Create Incident')).toBeInTheDocument();
       expect(getByText('Nice! No incidents found!')).toBeInTheDocument();

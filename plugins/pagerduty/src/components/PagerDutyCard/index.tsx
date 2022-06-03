@@ -29,7 +29,6 @@ import { usePagerdutyEntity } from '../../hooks';
 import { PAGERDUTY_INTEGRATION_KEY, PAGERDUTY_SERVICE_ID } from '../constants';
 import { TriggerDialog } from '../TriggerDialog';
 import { ChangeEvents } from '../ChangeEvents';
-import { Service } from '../types';
 
 import { useApi } from '@backstage/core-plugin-api';
 import { NotFoundError } from '@backstage/errors';
@@ -53,7 +52,7 @@ export const isPluginApplicableToEntity = (entity: Entity) =>
   );
 
 export const PagerDutyCard = () => {
-  const { integrationKey, serviceId } = usePagerdutyEntity();
+  const pagerDutyEntity = usePagerdutyEntity();
   const api = useApi(pagerDutyApiRef);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
   const [refreshChangeEvents, setRefreshChangeEvents] =
@@ -77,17 +76,9 @@ export const PagerDutyCard = () => {
     loading,
     error,
   } = useAsync(async () => {
-    let foundService: Service;
-
-    if (integrationKey) {
-      const services = await api.getServiceByIntegrationKey(
-        integrationKey as string,
-      );
-      foundService = services[0];
-      if (!foundService) throw new NotFoundError();
-    } else {
-      foundService = await api.getServiceByServiceId(serviceId!);
-    }
+    const { service: foundService } = await api.getServiceByEntity(
+      pagerDutyEntity,
+    );
 
     return {
       id: foundService.id,
@@ -138,7 +129,7 @@ export const PagerDutyCard = () => {
    * There is no guarantee the current user entity has a valid email association, so instead just
    * only allow triggering incidents when an integration key is present.
    */
-  const createIncidentDisabled = !integrationKey;
+  const createIncidentDisabled = !pagerDutyEntity.integrationKey;
   const triggerLink: IconLinkVerticalProps = {
     label: 'Create Incident',
     onClick: showDialog,
