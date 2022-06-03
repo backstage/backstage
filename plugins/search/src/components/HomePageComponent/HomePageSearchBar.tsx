@@ -16,7 +16,10 @@
 
 import React, { useCallback, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { SearchBarBase, SearchBarBaseProps } from '../SearchBar';
+import {
+  SearchBarBase,
+  SearchBarBaseProps,
+} from '@backstage/plugin-search-react';
 import { useNavigateToQuery } from '../util';
 
 const useStyles = makeStyles({

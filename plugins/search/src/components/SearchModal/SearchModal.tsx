@@ -28,14 +28,14 @@ import {
 } from '@material-ui/core';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { makeStyles } from '@material-ui/core/styles';
-import { SearchBar } from '../SearchBar';
 import {
   DefaultResultListItem,
   SearchContextProvider,
+  SearchBar,
   SearchResult,
+  SearchResultPager,
   useSearch,
 } from '@backstage/plugin-search-react';
-import { SearchResultPager } from '../SearchResultPager';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Link, useContent } from '@backstage/core-components';
 import { rootRouteRef } from '../../plugin';

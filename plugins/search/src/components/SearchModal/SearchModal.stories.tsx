@@ -34,10 +34,10 @@ import {
   MockSearchApi,
   SearchContextProvider,
   SearchResult,
+  SearchResultPager,
 } from '@backstage/plugin-search-react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { SearchModal } from './SearchModal';
-import { SearchResultPager } from '../SearchResultPager';
 import { SearchType } from '../SearchType';
 import { useSearchModal } from './useSearchModal';
 
