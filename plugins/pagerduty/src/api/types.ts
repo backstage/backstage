@@ -27,12 +27,6 @@ export type TriggerAlarmRequest = {
 
 export interface PagerDutyApi {
   /**
-   * Fetches a list of services, filtered by the provided integration key.
-   *
-   */
-  getServiceByIntegrationKey(integrationKey: string): Promise<Service[]>;
-
-  /**
    * Fetches the service for the provided PagerDutyEntity.
    *
    */

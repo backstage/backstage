@@ -57,16 +57,6 @@ export class PagerDutyClient implements PagerDutyApi {
   }
   constructor(private readonly config: ClientApiConfig) {}
 
-  async getServiceByIntegrationKey(integrationKey: string): Promise<Service[]> {
-    const params = `${commonGetServiceParams}&query=${integrationKey}`;
-    const url = `${await this.config.discoveryApi.getBaseUrl(
-      'proxy',
-    )}/pagerduty/services?${params}`;
-    const { services } = await this.getByUrl<ServicesResponse>(url);
-
-    return services;
-  }
-
   async getServiceByEntity(
     pagerDutyEntity: PagerDutyEntity,
   ): Promise<ServiceResponse> {
