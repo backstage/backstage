@@ -81,10 +81,13 @@ export type OnCallsResponse = {
   oncalls: OnCall[];
 };
 
-export type ClientApiConfig = {
-  eventsBaseUrl?: string;
+export type ClientApiDependencies = {
   discoveryApi: DiscoveryApi;
   fetchApi: FetchApi;
+};
+
+export type ClientApiConfig = ClientApiDependencies & {
+  eventsBaseUrl?: string;
 };
 
 export type RequestOptions = {
