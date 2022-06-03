@@ -16,6 +16,9 @@ Configuring the Backstage Kubernetes integration involves two steps:
 The following is a full example entry in `app-config.yaml`:
 
 ```yaml
+backend:
+  baseUrl: http://localhost:7007
+
 kubernetes:
   serviceLocatorMethod:
     type: 'multiTenant'

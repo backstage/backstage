@@ -14,6 +14,13 @@ This plugin must be explicitly added to a Backstage app, along with it's peer fr
 
 The plugin requires configuration in the Backstage `app-config.yaml` to connect to a Kubernetes API control plane.
 
+The plugin also requires access to the catalog api via the discovery api in the `app-config.yaml` e.g:
+
+```yaml
+backend:
+  baseUrl: http://localhost:7007
+```
+
 In addition, configuration of an entity's `catalog-info.yaml` helps identify which specific Kubernetes object(s) should be presented on a specific entity catalog page.
 
 For more information, see the [formal documentation about the Kubernetes feature in Backstage](https://backstage.io/docs/features/kubernetes/overview).
