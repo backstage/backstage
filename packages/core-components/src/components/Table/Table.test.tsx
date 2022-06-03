@@ -162,7 +162,7 @@ describe('<Table />', () => {
   });
 
   describe('with custom components', () => {
-    const CustomRow = ({ data }) => {
+    const CustomRow = ({ data }: any) => {
       return (
         <tr>
           <td>customised cell {data.col1}</td>
