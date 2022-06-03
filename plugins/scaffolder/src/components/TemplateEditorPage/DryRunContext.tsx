@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import yaml from 'yaml';
 import { useApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import React, {
@@ -26,6 +25,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import yaml from 'yaml';
 import { scaffolderApiRef } from '../../api';
 import { ScaffolderDryRunResponse } from '../../types';
 
@@ -108,10 +108,18 @@ export function DryRunProvider(props: DryRunProviderProps) {
         template: parsed,
         values: options.values,
         secrets: {},
-        directoryContents: options.files.map(file => ({
-          path: file.path,
-          base64Content: btoa(file.content),
-        })),
+        directoryContents: options.files.map(file => {
+          if (file.path.includes('.git/')) {
+            return {
+              path: file.path,
+              base64Content: '',
+            };
+          }
+          return {
+            path: file.path,
+            base64Content: btoa(unescape(encodeURIComponent(file.content))),
+          };
+        }),
       });
 
       const result = {
