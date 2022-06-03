@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,12 @@
  */
 
 import React, { ReactNode } from 'react';
+import { AnalyticsContext } from '@backstage/core-plugin-api';
 import {
   ResultHighlight,
   SearchDocument,
 } from '@backstage/plugin-search-common';
-import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
+import { HighlightedSearchResultText } from '../HighlightedSearchResultText';
 import {
   ListItem,
   ListItemIcon,
@@ -29,7 +30,12 @@ import {
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 
-type Props = {
+/**
+ * Props for {@link DefaultResultListItem}
+ *
+ * @public
+ */
+export type DefaultResultListItemProps = {
   icon?: ReactNode;
   secondaryAction?: ReactNode;
   result: SearchDocument;
@@ -37,13 +43,18 @@ type Props = {
   lineClamp?: number;
 };
 
-export const DefaultResultListItem = ({
+/**
+ * A default result list item.
+ *
+ * @public
+ */
+export const DefaultResultListItemComponent = ({
   result,
   highlight,
   icon,
   secondaryAction,
   lineClamp = 5,
-}: Props) => {
+}: DefaultResultListItemProps) => {
   return (
     <Link to={result.location}>
       <ListItem alignItems="center">
@@ -88,3 +99,25 @@ export const DefaultResultListItem = ({
     </Link>
   );
 };
+
+/**
+ * A higher order function providing AnalyticsContext to the DefaultResultListItemComponent.
+ *
+ * @public
+ */
+const HigherOrderDefaultResultListItem = (
+  props: DefaultResultListItemProps,
+) => {
+  return (
+    <AnalyticsContext
+      attributes={{
+        pluginId: 'search',
+        extension: 'DefaultResultListItem',
+      }}
+    >
+      <DefaultResultListItemComponent {...props} />
+    </AnalyticsContext>
+  );
+};
+
+export { HigherOrderDefaultResultListItem as DefaultResultListItem };

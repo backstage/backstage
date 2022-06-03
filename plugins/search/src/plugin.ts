@@ -15,7 +15,11 @@
  */
 
 import { SearchClient } from './apis';
-import { searchApiRef } from '@backstage/plugin-search-react';
+import {
+  searchApiRef,
+  SearchResult as RealSearchResult,
+  DefaultResultListItem as RealDefaultResultListItem,
+} from '@backstage/plugin-search-react';
 import {
   createApiFactory,
   createPlugin,
@@ -63,14 +67,10 @@ export const SearchBar = searchPlugin.provide(
   }),
 );
 
-export const SearchResult = searchPlugin.provide(
-  createComponentExtension({
-    name: 'SearchResult',
-    component: {
-      lazy: () => import('./components/SearchResult').then(m => m.SearchResult),
-    },
-  }),
-);
+/**
+ * @deprecated Import from `@backstage/plugin-search-react` instead.
+ */
+export const SearchResult = RealSearchResult;
 
 export const SidebarSearchModal = searchPlugin.provide(
   createComponentExtension({
@@ -84,17 +84,10 @@ export const SidebarSearchModal = searchPlugin.provide(
   }),
 );
 
-export const DefaultResultListItem = searchPlugin.provide(
-  createComponentExtension({
-    name: 'DefaultResultListItem',
-    component: {
-      lazy: () =>
-        import('./components/DefaultResultListItem').then(
-          m => m.DefaultResultListItem,
-        ),
-    },
-  }),
-);
+/**
+ * @deprecated Import from `@backstage/plugin-search-react` instead.
+ */
+export const DefaultResultListItem = RealDefaultResultListItem;
 
 export const HomePageSearchBar = searchPlugin.provide(
   createComponentExtension({

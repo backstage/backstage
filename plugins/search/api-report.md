@@ -6,33 +6,22 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { DefaultResultListItemProps } from '@backstage/plugin-search-react/src/components/DefaultResultListItem/DefaultResultListItem';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { InputBaseProps } from '@material-ui/core';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
-import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchAutocompleteFilterProps as SearchAutocompleteFilterProps_2 } from '@backstage/plugin-search-react';
-import { SearchDocument } from '@backstage/plugin-search-common';
 import { SearchFilterComponentProps as SearchFilterComponentProps_2 } from '@backstage/plugin-search-react';
-import { SearchResult as SearchResult_2 } from '@backstage/plugin-search-common';
+import { SearchResultProps } from '@backstage/plugin-search-react';
 
 // Warning: (ae-missing-release-tag) "DefaultResultListItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
-export const DefaultResultListItem: ({
-  result,
-  highlight,
-  icon,
-  secondaryAction,
-  lineClamp,
-}: {
-  icon?: ReactNode;
-  secondaryAction?: ReactNode;
-  result: SearchDocument;
-  highlight?: ResultHighlight | undefined;
-  lineClamp?: number | undefined;
-}) => JSX.Element;
+// @public @deprecated (undocumented)
+export const DefaultResultListItem: (
+  props: DefaultResultListItemProps,
+) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "FiltersProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Filters" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -214,12 +203,8 @@ export { searchPlugin };
 
 // Warning: (ae-missing-release-tag) "SearchResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
-export const SearchResult: ({
-  children,
-}: {
-  children: (results: { results: SearchResult_2[] }) => JSX.Element;
-}) => JSX.Element;
+// @public @deprecated (undocumented)
+export const SearchResult: (props: SearchResultProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SearchResultPager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

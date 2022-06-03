@@ -31,11 +31,11 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/plugin-search": "0.8.2-next.1",
     "@backstage/plugin-search-common": "^0.3.5-next.0",
     "@backstage/core-components": "^0.9.5-next.1",
     "@backstage/core-plugin-api": "^1.0.3-next.0",
     "@backstage/version-bridge": "^1.0.1",
+    "@backstage/theme": "^0.2.15",
     "@backstage/types": "^1.0.0",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",

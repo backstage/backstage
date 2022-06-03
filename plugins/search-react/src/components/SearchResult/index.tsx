@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { SearchResult } from './SearchResult';
+export { SearchResult, SearchResultComponent } from './SearchResult';
 export type { SearchResultProps } from './SearchResult';

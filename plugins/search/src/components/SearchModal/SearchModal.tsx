@@ -29,10 +29,10 @@ import {
 import LaunchIcon from '@material-ui/icons/Launch';
 import { makeStyles } from '@material-ui/core/styles';
 import { SearchBar } from '../SearchBar';
-import { DefaultResultListItem } from '../DefaultResultListItem';
-import { SearchResult } from '../SearchResult';
 import {
+  DefaultResultListItem,
   SearchContextProvider,
+  SearchResult,
   useSearch,
 } from '@backstage/plugin-search-react';
 import { SearchResultPager } from '../SearchResultPager';

@@ -12,6 +12,9 @@ import { JsonObject } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
+import { ReactNode } from 'react';
+import { ResultHighlight } from '@backstage/plugin-search-common';
+import { SearchDocument } from '@backstage/plugin-search-common';
 import { SearchQuery } from '@backstage/plugin-search-common';
 import { SearchResult as SearchResult_2 } from '@backstage/plugin-search-common';
 import { SearchResultSet } from '@backstage/plugin-search-common';
@@ -23,6 +26,20 @@ export const AutocompleteFilter: (
 
 // @public (undocumented)
 export const CheckboxFilter: (props: SearchFilterComponentProps) => JSX.Element;
+
+// @public
+export const DefaultResultListItem: (
+  props: DefaultResultListItemProps,
+) => JSX.Element;
+
+// @public
+export type DefaultResultListItemProps = {
+  icon?: ReactNode;
+  secondaryAction?: ReactNode;
+  result: SearchDocument;
+  highlight?: ResultHighlight;
+  lineClamp?: number;
+};
 
 // @public (undocumented)
 export const HighlightedSearchResultText: ({
@@ -151,13 +168,18 @@ export type SearchFilterWrapperProps = SearchFilterComponentProps & {
   debug?: boolean;
 };
 
-// @public (undocumented)
-export const SearchResult: ({ children }: SearchResultProps) => JSX.Element;
+// @public
+export const SearchResult: (props: SearchResultProps) => JSX.Element;
+
+// @public
+export const SearchResultComponent: ({
+  children,
+}: SearchResultProps) => JSX.Element;
 
 // @public (undocumented)
 export const SearchResultPager: () => JSX.Element;
 
-// @public (undocumented)
+// @public
 export type SearchResultProps = {
   children: (results: { results: SearchResult_2[] }) => JSX.Element;
 };

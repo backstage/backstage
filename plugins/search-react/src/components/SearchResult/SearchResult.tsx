@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
+import React from 'react';
+
 import {
   EmptyState,
   Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';
+import { AnalyticsContext } from '@backstage/core-plugin-api';
 import { SearchResult } from '@backstage/plugin-search-common';
-import React from 'react';
+
 import { useSearch } from '../../context';
 
 /**
+ * Props for {@link SearchResultComponent}
+ *
  * @public
  */
 export type SearchResultProps = {
@@ -31,6 +36,8 @@ export type SearchResultProps = {
 };
 
 /**
+ * A component returning the search result.
+ *
  * @public
  */
 export const SearchResultComponent = ({ children }: SearchResultProps) => {
@@ -57,4 +64,22 @@ export const SearchResultComponent = ({ children }: SearchResultProps) => {
   return <>{children({ results: value.results })}</>;
 };
 
-export { SearchResultComponent as SearchResult };
+/**
+ * A higher order function providing AnalyticsContext to the SearchResultComponent.
+ *
+ * @public
+ */
+const HigherOrderSearchResult = (props: SearchResultProps) => {
+  return (
+    <AnalyticsContext
+      attributes={{
+        pluginId: 'search',
+        extension: 'SearchResult',
+      }}
+    >
+      <SearchResultComponent {...props} />
+    </AnalyticsContext>
+  );
+};
+
+export { HigherOrderSearchResult as SearchResult };

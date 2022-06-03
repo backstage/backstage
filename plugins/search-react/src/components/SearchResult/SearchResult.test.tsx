@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { renderInTestApp } from '@backstage/test-utils';
-import { waitFor } from '@testing-library/react';
 import React from 'react';
+import { waitFor } from '@testing-library/react';
+
+import { renderInTestApp } from '@backstage/test-utils';
+
 import { useSearch } from '../../context';
 import { SearchResult } from './SearchResult';
 

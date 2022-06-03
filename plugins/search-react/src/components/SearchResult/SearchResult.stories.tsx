@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import { Link } from '@backstage/core-components';
-import { List, ListItem } from '@material-ui/core';
 import React, { ComponentType } from 'react';
+import { List, ListItem } from '@material-ui/core';
 import { MemoryRouter } from 'react-router';
-import { DefaultResultListItem } from '@backstage/plugin-search';
+
+import { Link } from '@backstage/core-components';
+import { TestApiProvider } from '@backstage/test-utils';
 
 import { searchApiRef, MockSearchApi } from '../../api';
 import { SearchContextProvider } from '../../context';
+import { DefaultResultListItem } from '../DefaultResultListItem';
 import { SearchResult } from './SearchResult';
-import { TestApiProvider } from '@backstage/test-utils';
 
 const mockResults = {
   results: [
