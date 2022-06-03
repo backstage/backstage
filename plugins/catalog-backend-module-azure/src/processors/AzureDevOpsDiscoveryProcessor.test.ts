@@ -21,9 +21,9 @@ import {
   AzureDevOpsDiscoveryProcessor,
   parseUrl,
 } from './AzureDevOpsDiscoveryProcessor';
-import { codeSearch } from './lib';
+import { codeSearch } from '../lib';
 
-jest.mock('./lib');
+jest.mock('../lib');
 const mockCodeSearch = codeSearch as jest.MockedFunction<typeof codeSearch>;
 
 describe('AzureDevOpsDiscoveryProcessor', () => {

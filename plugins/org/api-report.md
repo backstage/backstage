@@ -50,6 +50,7 @@ export const MyGroupsSidebarItem: (props: {
   singularTitle: string;
   pluralTitle: string;
   icon: IconComponent;
+  filter?: Record<string, string | symbol | (string | symbol)[]>;
 }) => JSX.Element | null;
 
 // @public (undocumented)

@@ -25,6 +25,7 @@ export {
   kubernetesPlugin as plugin,
   EntityKubernetesContent,
 } from './plugin';
+export type { EntityKubernetesContentProps } from './plugin';
 export { Router, isKubernetesAvailable } from './Router';
 export * from './api';
 export * from './kubernetes-auth-provider';

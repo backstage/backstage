@@ -19,7 +19,7 @@ import { ConfigReader } from '@backstage/config';
 import { Client, errors } from '@elastic/elasticsearch';
 import Mock from '@elastic/elasticsearch-mock';
 import {
-  ConcreteElasticSearchQuery,
+  ElasticSearchConcreteQuery,
   decodePageCursor,
   ElasticSearchSearchEngine,
   encodePageCursor,
@@ -131,7 +131,7 @@ describe('ElasticSearchSearchEngine', () => {
         types: ['indexName'],
         term: 'testTerm',
         filters: { kind: 'testKind' },
-      }) as ConcreteElasticSearchQuery;
+      }) as ElasticSearchConcreteQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         documentTypes: ['indexName'],
@@ -170,7 +170,7 @@ describe('ElasticSearchSearchEngine', () => {
         types: ['indexName'],
         term: 'testTerm',
         pageCursor: 'MQ==',
-      }) as ConcreteElasticSearchQuery;
+      }) as ElasticSearchConcreteQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         documentTypes: ['indexName'],
@@ -210,7 +210,7 @@ describe('ElasticSearchSearchEngine', () => {
           foo: 123,
           bar: true,
         },
-      }) as ConcreteElasticSearchQuery;
+      }) as ElasticSearchConcreteQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         documentTypes: ['indexName'],
@@ -266,7 +266,7 @@ describe('ElasticSearchSearchEngine', () => {
         types: ['indexName'],
         term: 'testTerm',
         filters: { kind: ['testKind', 'kastTeint'] },
-      }) as ConcreteElasticSearchQuery;
+      }) as ElasticSearchConcreteQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         documentTypes: ['indexName'],
@@ -327,7 +327,7 @@ describe('ElasticSearchSearchEngine', () => {
             fragmentDelimiter: ' ... ',
           },
         },
-      ) as ConcreteElasticSearchQuery;
+      ) as ElasticSearchConcreteQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         documentTypes: ['indexName'],
@@ -369,7 +369,7 @@ describe('ElasticSearchSearchEngine', () => {
           types: ['indexName'],
           term: 'testTerm',
           filters: { kind: { a: 'b' } },
-        }) as ConcreteElasticSearchQuery;
+        }) as ElasticSearchConcreteQuery;
       expect(actualTranslatedQuery).toThrow();
     });
   });

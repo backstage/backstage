@@ -89,6 +89,7 @@ export async function createConfig(
 
   const baseUrl = frontendConfig.getString('app.baseUrl');
   const validBaseUrl = new URL(baseUrl);
+  const publicPath = validBaseUrl.pathname.replace(/\/$/, '');
   if (checksEnabled) {
     plugins.push(
       new ForkTsCheckerWebpackPlugin({
@@ -121,7 +122,7 @@ export async function createConfig(
     new HtmlWebpackPlugin({
       template: paths.targetHtml,
       templateParameters: {
-        publicPath: validBaseUrl.pathname.replace(/\/$/, ''),
+        publicPath,
         config: frontendConfig,
       },
     }),
@@ -194,7 +195,7 @@ export async function createConfig(
     },
     output: {
       path: paths.targetDist,
-      publicPath: validBaseUrl.pathname,
+      publicPath: `${publicPath}/`,
       filename: isDev ? '[name].js' : 'static/[name].[fullhash:8].js',
       chunkFilename: isDev
         ? '[name].chunk.js'
