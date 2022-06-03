@@ -142,15 +142,11 @@ export const {
   Component: Link,
 } = createExtendableComponentForwardRef<LinkProps, LinkContext>({
   id: 'Link',
-  Provider: ({ props, ComponentProvider, Component }) => {
+  Provider: ({ props, Component }) => {
     const to = String(props.to);
     const value: LinkContext = { to, children: props.children };
 
-    return (
-      <ComponentProvider value={value}>
-        <Component />
-      </ComponentProvider>
-    );
+    return <Component value={value} />;
   },
   /**
    * Thin wrapper on top of material-ui's Link component, which...

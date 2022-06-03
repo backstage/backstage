@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-import { ComponentType, RefAttributes, ProviderProps } from 'react';
+import { ComponentType, RefAttributes } from 'react';
 
 import { BackstagePlugin } from '../plugin';
 
 /** @public */
+export type OpaqueComponentProps<Context extends {}> = { value: Context };
+
+/** @public */
 export type ComponentRootProviderProps<Props extends {}, Context> = {
   /**
-   * A context Provider to use when setting the context value for the _inner_
-   * component (or to the extensions down the extension stack).
+   * An opaque component representing the _inner_ component (or the next
+   * extension) with the default context value.
    */
-  ComponentProvider: ComponentType<ProviderProps<Context>>;
-
-  /**
-   * A propless opaque component representing the _inner_ component (or a the
-   * next extension).
-   */
-  Component: ComponentType<{}>;
+  Component: ComponentType<OpaqueComponentProps<Context>>;
 
   /**
    * Component props
@@ -40,15 +37,30 @@ export type ComponentRootProviderProps<Props extends {}, Context> = {
 };
 
 /** @public */
-export type ComponentProviderProps<Props extends {}, Context> = {
+export type ComponentExtensionProps<Props extends {}, Context extends {}> = {
   /**
    * The context value
    */
   value: Context;
-} & ComponentRootProviderProps<Props, Context>;
+
+  /**
+   * Component props
+   * @readonly
+   */
+  props: Readonly<Props>;
+
+  /**
+   * An opaque component representing the _inner_ component (or the next
+   * extension).
+   *
+   * The prop `value` is optional. If set, it'll provide a new context value
+   * downstream.
+   */
+  Component: ComponentType<Partial<OpaqueComponentProps<Context>>>;
+};
 
 /** @public */
-export type ExtendableComponentProps<Props, Context> = {
+export type ExtendableComponentProps<Props extends {}, Context extends {}> = {
   /**
    * The component props as provided by the user (potentially modified by props
    * interceptors).
@@ -72,7 +84,7 @@ export type ExtendableComponentExtraProps<ExtraProps extends {}> = {
 /** @public */
 export interface ExtendableComponentRef<
   Props extends {},
-  Context,
+  Context extends {},
   ExtraProps extends {} = {},
 > {
   /**
@@ -110,7 +122,7 @@ export interface ExtendableComponentRef<
  */
 export interface ExtendableComponentDescriptor<
   Props extends {},
-  Context,
+  Context extends {},
   ExtraProps extends {} = {},
 > {
   componentRef: ExtendableComponentRef<Props, Context>;
@@ -121,12 +133,16 @@ export interface ExtendableComponentDescriptor<
 export type RefInfoProps = Pick<RefAttributes<any>, 'ref'>;
 
 /** @public */
-export type ExtendableComponentRefConfig<Props, Context> =
-  ExtendableComponentRef<Props, Context>;
+export type ExtendableComponentRefConfig<
+  Props extends {},
+  Context extends {},
+> = ExtendableComponentRef<Props, Context>;
 
 /** @public */
-export type ExtendableComponentRefConfigForwardRef<Props, Context> =
-  ExtendableComponentRef<Props, Context, RefInfoProps>;
+export type ExtendableComponentRefConfigForwardRef<
+  Props extends {},
+  Context extends {},
+> = ExtendableComponentRef<Props, Context, RefInfoProps>;
 
 /**
  * A props interceptor function. It takes props and returns the same props or a
@@ -146,11 +162,11 @@ export type ExtendableComponentPropsInterceptor<Props extends {}> = (
  */
 export type ExtendableComponentProvider<
   Props extends {},
-  Context,
-> = ComponentType<ComponentProviderProps<Props, Context>>;
+  Context extends {},
+> = ComponentType<ComponentExtensionProps<Props, Context>>;
 
 /** @public */
-export type ExtendableComponentSpec<Props extends {}, Context> = {
+export type ExtendableComponentSpec<Props extends {}, Context extends {}> = {
   /**
    * Intercept the props, to e.g. rewrite some of them
    */
@@ -168,7 +184,7 @@ export type ExtendableComponentSpec<Props extends {}, Context> = {
  *
  * @public
  */
-export type ComponentExtension<Props extends {}, Context> = {
+export type ComponentExtension<Props extends {}, Context extends {}> = {
   ref: ExtendableComponentRef<Props, Context>;
   spec: ExtendableComponentSpec<Props, Context>;
   plugin?: BackstagePlugin<any, any>;

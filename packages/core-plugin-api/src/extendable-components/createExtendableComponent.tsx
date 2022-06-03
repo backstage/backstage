@@ -29,6 +29,7 @@ import {
   ExtendableComponentRef,
   ExtendableComponentRefConfig,
   ExtendableComponentRefConfigForwardRef,
+  OpaqueComponentProps,
   RefInfoProps,
 } from './types';
 
@@ -40,7 +41,7 @@ export function _createExtendableComponent<Props extends {}, Context>(
     ? ({ ...config } as ExtendableComponentRef<Props, Context, RefInfoProps>)
     : ({ ...config } as ExtendableComponentRef<Props, Context>);
 
-  const ctx = createContext<Context>(null as any);
+  const ctx = createContext<Context | undefined>(undefined);
 
   const ComponentProvider = ctx.Provider;
 
@@ -60,7 +61,7 @@ export function _createExtendableComponent<Props extends {}, Context>(
     // component tree.
     const { ExtendedComponent } = useMemo(() => {
       function InnerMostComponent() {
-        const value = useContext(ctx);
+        const value = useContext(ctx)!;
         const info = useMemo(() => (useRef ? { ref } : {}), []);
 
         return (
@@ -73,14 +74,26 @@ export function _createExtendableComponent<Props extends {}, Context>(
         IntermediateProvider: ExtendableComponentProvider<any, any>,
       ): ComponentType<{}> {
         return function IntermediateComponent() {
-          const value = useContext(ctx);
+          const currentValue = useContext(ctx);
+
+          function OpaqueComponent({
+            value,
+          }: Partial<OpaqueComponentProps<Context>>) {
+            if (value === undefined) {
+              return <Inner />;
+            }
+            return (
+              <ComponentProvider value={value}>
+                <Inner />
+              </ComponentProvider>
+            );
+          }
 
           return (
             <IntermediateProvider
-              Component={Inner}
-              ComponentProvider={ComponentProvider}
+              Component={OpaqueComponent}
               props={newProps}
-              value={value}
+              value={currentValue}
             />
           );
         };
@@ -96,12 +109,22 @@ export function _createExtendableComponent<Props extends {}, Context>(
       };
     }, [providers, newProps, ref]);
 
+    function OuterComponent({ value }: OpaqueComponentProps<Context>) {
+      if (!value) {
+        throw new Error(
+          `Invalid extendable component. No context value provided.`,
+        );
+      }
+
+      return (
+        <ComponentProvider value={value}>
+          <ExtendedComponent />
+        </ComponentProvider>
+      );
+    }
+
     return (
-      <componentRef.Provider
-        props={newProps}
-        ComponentProvider={ComponentProvider}
-        Component={ExtendedComponent}
-      />
+      <componentRef.Provider props={newProps} Component={OuterComponent} />
     );
   };
 

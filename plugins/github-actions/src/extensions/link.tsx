@@ -19,7 +19,7 @@ import { extendComponent } from '@backstage/core-plugin-api';
 import { linkComponentRef } from '@backstage/core-components';
 
 export const linkExtension = extendComponent(linkComponentRef, {
-  Provider({ value, Component, ComponentProvider }) {
+  Provider({ value, Component }) {
     const isGithubUrl = React.useMemo(() => {
       try {
         const host = new URL(value.to).host;
@@ -38,10 +38,6 @@ export const linkExtension = extendComponent(linkComponentRef, {
       </>
     );
 
-    return (
-      <ComponentProvider value={{ ...value, children }}>
-        <Component />
-      </ComponentProvider>
-    );
+    return <Component value={{ ...value, children }} />;
   },
 });
