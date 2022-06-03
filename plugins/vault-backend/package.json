@@ -38,6 +38,7 @@
     "@backstage/backend-tasks": "^0.3.2-next.1",
     "@backstage/backend-test-utils": "^0.1.25-next.1",
     "@backstage/config": "^1.0.1",
+    "@backstage/errors": "^1.0.0",
     "@types/compression": "^1.7.2",
     "@types/express": "*",
     "compression": "^1.7.4",

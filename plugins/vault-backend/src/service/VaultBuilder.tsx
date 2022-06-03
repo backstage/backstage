@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { InputError } from '@backstage/errors';
 import { Logger } from 'winston';
 import express, { Router } from 'express';
 import { VaultClient } from './vaultApi';
@@ -147,18 +148,14 @@ export class VaultBuilder {
     const router = Router();
     router.use(express.json());
 
-    router.get('/health', (_, response) => {
-      response.send({ status: 'ok' });
+    router.get('/health', (_, res) => {
+      res.json({ status: 'ok' });
     });
 
     router.get('/v1/secrets', async (req, res) => {
       const path = req.query.path;
       if (typeof path !== 'string') {
-        res
-          .status(400)
-          .send('Something was unexpected about the path query string');
-
-        return;
+        throw new InputError(`Invalid path: ${path}`);
       }
 
       const secrets = await vaultClient.listSecrets(path);
