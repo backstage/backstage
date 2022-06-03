@@ -23,7 +23,7 @@
 export { ElasticSearchSearchEngine } from './engines';
 export type {
   ElasticSearchAgentOptions,
-  ConcreteElasticSearchQuery,
+  ElasticSearchConcreteQuery,
   ElasticSearchClientOptions,
   ElasticSearchHighlightConfig,
   ElasticSearchHighlightOptions,

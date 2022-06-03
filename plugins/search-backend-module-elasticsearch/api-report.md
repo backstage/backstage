@@ -15,13 +15,6 @@ import { Logger } from 'winston';
 import { SearchEngine } from '@backstage/plugin-search-common';
 import { SearchQuery } from '@backstage/plugin-search-common';
 
-// @public
-export type ConcreteElasticSearchQuery = {
-  documentTypes?: string[];
-  elasticSearchQuery: Object;
-  pageSize: number;
-};
-
 // @public (undocumented)
 export interface ElasticSearchAgentOptions {
   // (undocumented)
@@ -119,6 +112,13 @@ export interface ElasticSearchClientOptions {
   Transport?: ElasticSearchTransportConstructor;
 }
 
+// @public
+export type ElasticSearchConcreteQuery = {
+  documentTypes?: string[];
+  elasticSearchQuery: Object;
+  pageSize: number;
+};
+
 // @public (undocumented)
 export interface ElasticSearchConnectionConstructor {
   // (undocumented)
@@ -186,7 +186,7 @@ export type ElasticSearchOptions = {
 export type ElasticSearchQueryTranslator = (
   query: SearchQuery,
   options?: ElasticSearchQueryTranslatorOptions,
-) => ConcreteElasticSearchQuery;
+) => ElasticSearchConcreteQuery;
 
 // @public
 export type ElasticSearchQueryTranslatorOptions = {
@@ -220,7 +220,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   protected translator(
     query: SearchQuery,
     options?: ElasticSearchQueryTranslatorOptions,
-  ): ConcreteElasticSearchQuery;
+  ): ElasticSearchConcreteQuery;
 }
 
 // @public

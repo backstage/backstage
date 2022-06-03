@@ -23,7 +23,7 @@ export type {
   ElasticSearchAuth,
 } from './ElasticSearchClientOptions';
 export type {
-  ConcreteElasticSearchQuery,
+  ElasticSearchConcreteQuery,
   ElasticSearchClientOptions,
   ElasticSearchHighlightConfig,
   ElasticSearchHighlightOptions,

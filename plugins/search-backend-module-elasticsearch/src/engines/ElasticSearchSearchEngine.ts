@@ -40,7 +40,7 @@ export type { ElasticSearchClientOptions };
  * Search query that the elasticsearch engine understands.
  * @public
  */
-export type ConcreteElasticSearchQuery = {
+export type ElasticSearchConcreteQuery = {
   documentTypes?: string[];
   elasticSearchQuery: Object;
   pageSize: number;
@@ -61,7 +61,7 @@ export type ElasticSearchQueryTranslatorOptions = {
 export type ElasticSearchQueryTranslator = (
   query: SearchQuery,
   options?: ElasticSearchQueryTranslatorOptions,
-) => ConcreteElasticSearchQuery;
+) => ElasticSearchConcreteQuery;
 
 /**
  * Options for instansiate ElasticSearchSearchEngine
@@ -174,7 +174,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   protected translator(
     query: SearchQuery,
     options?: ElasticSearchQueryTranslatorOptions,
-  ): ConcreteElasticSearchQuery {
+  ): ElasticSearchConcreteQuery {
     const { term, filters = {}, types, pageCursor } = query;
 
     const filter = Object.entries(filters)

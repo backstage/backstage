@@ -5,7 +5,7 @@
 Additional types now exported publicly:
 
 - ElasticSearchAgentOptions
-- ConcreteElasticSearchQuery
+- ElasticSearchConcreteQuery
 - ElasticSearchQueryTranslator
 - ElasticSearchConnectionConstructor,
 - ElasticSearchTransportConstructor,
