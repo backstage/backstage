@@ -97,15 +97,15 @@ export class PagerDutyClient implements PagerDutyApi {
     return await this.getByUrl<IncidentsResponse>(url);
   }
 
-  async getChangeEventsByServiceId(serviceId: string): Promise<ChangeEvent[]> {
+  async getChangeEventsByServiceId(
+    serviceId: string,
+  ): Promise<ChangeEventsResponse> {
     const params = `limit=5&time_zone=UTC&sort_by=timestamp`;
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/pagerduty/services/${serviceId}/change_events?${params}`;
 
-    const { change_events } = await this.getByUrl<ChangeEventsResponse>(url);
-
-    return change_events;
+    return await this.getByUrl<ChangeEventsResponse>(url);
   }
 
   async getOnCallByPolicyId(policyId: string): Promise<OnCall[]> {

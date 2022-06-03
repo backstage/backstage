@@ -44,7 +44,7 @@ export interface PagerDutyApi {
    * Fetches a list of change events a provided service has.
    *
    */
-  getChangeEventsByServiceId(serviceId: string): Promise<ChangeEvent[]>;
+  getChangeEventsByServiceId(serviceId: string): Promise<ChangeEventsResponse>;
 
   /**
    * Fetches the list of users in an escalation policy.
