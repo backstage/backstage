@@ -16,6 +16,7 @@
 
 import { Incident, ChangeEvent, OnCall, Service } from '../components/types';
 import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
+import { PagerDutyEntity } from '../types';
 
 export type TriggerAlarmRequest = {
   integrationKey: string;
@@ -36,6 +37,14 @@ export interface PagerDutyApi {
    *
    */
   getServiceByServiceId(serviceId: string): Promise<Service>;
+
+  /**
+   * Fetches the service for the provided PagerDutyEntity.
+   *
+   */
+  getServiceByEntity(
+    pagerDutyEntity: PagerDutyEntity,
+  ): Promise<ServiceResponse>;
 
   /**
    * Fetches a list of incidents a provided service has.

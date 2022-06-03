@@ -29,6 +29,7 @@ import {
 } from './types';
 import { createApiRef, ConfigApi } from '@backstage/core-plugin-api';
 import { NotFoundError } from '@backstage/errors';
+import { PagerDutyEntity } from '../types';
 
 export class UnauthorizedError extends Error {}
 
@@ -74,6 +75,37 @@ export class PagerDutyClient implements PagerDutyApi {
     const { service } = await this.getByUrl<ServiceResponse>(url);
 
     return service;
+  }
+
+  async getServiceByEntity(
+    pagerDutyEntity: PagerDutyEntity,
+  ): Promise<ServiceResponse> {
+    const { integrationKey, serviceId } = pagerDutyEntity;
+
+    let response: ServiceResponse;
+    let url: string;
+
+    if (integrationKey) {
+      url = `${await this.config.discoveryApi.getBaseUrl(
+        'proxy',
+      )}/pagerduty/services?${commonGetServiceParams}&query=${integrationKey}`;
+      const { services } = await this.getByUrl<ServicesResponse>(url);
+      const service = services[0];
+
+      if (!service) throw new NotFoundError();
+
+      response = { service };
+    } else if (serviceId) {
+      url = `${await this.config.discoveryApi.getBaseUrl(
+        'proxy',
+      )}/pagerduty/services/${serviceId}?${commonGetServiceParams}`;
+
+      response = await this.getByUrl<ServiceResponse>(url);
+    } else {
+      throw new NotFoundError();
+    }
+
+    return response;
   }
 
   async getIncidentsByServiceId(serviceId: string): Promise<Incident[]> {
