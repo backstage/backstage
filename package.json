@@ -70,7 +70,7 @@
     "fs-extra": "10.1.0",
     "husky": "^8.0.0",
     "lerna": "^4.0.0",
-    "lint-staged": "^12.2.0",
+    "lint-staged": "^13.0.0",
     "minimist": "^1.2.5",
     "prettier": "^2.2.1",
     "semver": "^7.3.2",
