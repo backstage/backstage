@@ -112,28 +112,6 @@ describe('<TechDocsReaderPageContent />', () => {
     });
   });
 
-  it('should render progress if there is no dom and reader state is checking', async () => {
-    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
-    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
-    (useTechDocsReaderDom as jest.Mock).mockReturnValue(undefined);
-    (useReaderState as jest.Mock).mockReturnValue({ state: 'CHECKING' });
-
-    await act(async () => {
-      const rendered = await renderInTestApp(
-        <Wrapper>
-          <TechDocsReaderPageContent withSearch={false} />
-        </Wrapper>,
-      );
-
-      await waitFor(() => {
-        expect(
-          rendered.queryByTestId('techdocs-native-shadowroot'),
-        ).not.toBeInTheDocument();
-        expect(rendered.getByRole('progressbar')).toBeInTheDocument();
-      });
-    });
-  });
-
   it('should not render techdocs content if entity metadata is missing', async () => {
     getEntityMetadata.mockResolvedValue(undefined);
     (useTechDocsReaderDom as jest.Mock).mockReturnValue(

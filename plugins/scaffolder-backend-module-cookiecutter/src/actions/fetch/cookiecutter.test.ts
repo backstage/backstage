@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const executeShellCommand = jest.fn();
-const commandExists = jest.fn();
-const fetchContents = jest.fn();
 
-jest.doMock('@backstage/plugin-scaffolder-backend', () => ({
-  ...require('@backstage/plugin-scaffolder-backend'),
-  fetchContents,
-  executeShellCommand,
+jest.mock('@backstage/plugin-scaffolder-backend', () => ({
+  ...jest.requireActual('@backstage/plugin-scaffolder-backend'),
+  fetchContents: jest.fn(),
+  executeShellCommand: jest.fn(),
 }));
-jest.doMock('command-exists', () => commandExists);
+jest.mock('command-exists', () => jest.fn());
 
 import {
   getVoidLogger,
@@ -37,9 +34,18 @@ import os from 'os';
 import { PassThrough } from 'stream';
 import { createFetchCookiecutterAction } from './cookiecutter';
 import { join } from 'path';
+import {
+  fetchContents as fetchContentsMock,
+  executeShellCommand as executeShellCommandMock,
+} from '@backstage/plugin-scaffolder-backend';
 import type { ActionContext } from '@backstage/plugin-scaffolder-backend';
+import commandExistsMock from 'command-exists';
 
 describe('fetch:cookiecutter', () => {
+  const fetchContents = fetchContentsMock as jest.Mock;
+  const executeShellCommand = executeShellCommandMock as jest.Mock;
+  const commandExists = commandExistsMock as unknown as jest.Mock;
+
   const integrations = ScmIntegrations.fromConfig(
     new ConfigReader({
       integrations: {
