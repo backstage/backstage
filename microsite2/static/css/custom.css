@@ -831,7 +831,7 @@ code {
   border-radius: 4px;
   margin: 0 auto 0 0;
   text-align: center;
-  /* background-color: $primaryColor; */
+  background-color: var(--ifm-color-primary);
   color: #000;
   text-transform: uppercase;
   font-family: Helvetica Neue, sans-serif;
@@ -1072,7 +1072,7 @@ code {
   padding-right: 50px; /* space for the dismiss button */
   margin: 36px 20px;
   border-radius: 4px;
-  /* background-color: $primaryColor; */
+  background-color: var(--ifm-color-primary);
   font-family: Helvetica Neue, sans-serif;
   color: #000;
   display: flex;
