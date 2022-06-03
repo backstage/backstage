@@ -100,11 +100,22 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     const startTimestamp = Date.now();
     this.logger.debug(`Reading GitLab projects from ${location.target}`);
 
-    const projects = paginated(options => client.listProjects(options), {
+
+    const opts = {
       group,
-      last_activity_after: await this.updateLastActivity(),
       page: 1,
-    });
+    } as {
+      group: string
+      page: number
+      last_activity_after: string | undefined
+    }
+  
+    const lastActivity = await this.cache.get(this.getCacheKey()) as string;
+    if (lastActivity !== "") {
+      opts.last_activity_after = lastActivity
+    }
+
+    const projects = paginated(options => client.listProjects(options), opts);
 
     const res: Result = {
       scanned: 0,
@@ -156,6 +167,8 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       );
     }
 
+    await this.cache.set(this.getCacheKey(), new Date().toISOString());
+
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
     this.logger.debug(
       `Read ${res.scanned} GitLab repositories in ${duration} seconds`,
@@ -164,11 +177,8 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     return true;
   }
 
-  private async updateLastActivity(): Promise<string | undefined> {
-    const cacheKey = `processors/${this.getProcessorName()}/last-activity`;
-    const lastActivity = await this.cache.get(cacheKey);
-    await this.cache.set(cacheKey, new Date().toISOString());
-    return lastActivity as string | undefined;
+  private getCacheKey(): string {
+    return `processors/${this.getProcessorName()}/last-activity`;
   }
 }
 
