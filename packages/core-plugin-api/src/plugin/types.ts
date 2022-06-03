@@ -16,10 +16,7 @@
 
 import { RouteRef, SubRouteRef, ExternalRouteRef } from '../routing';
 import { AnyApiFactory } from '../apis/system';
-import {
-  ComponentExtension,
-  ComponentExtensions,
-} from '../extendable-components';
+import { ComponentExtensions } from '../extendable-components';
 
 /**
  * Plugin extension type.
@@ -94,7 +91,7 @@ export type PluginConfig<
   id: string;
   apis?: Iterable<AnyApiFactory>;
   routes?: Routes;
-  extensions?: ComponentExtension<any, any>[];
+  extensions?: ComponentExtensions;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
   __experimentalConfigure?(options?: PluginInputOptions): {};
