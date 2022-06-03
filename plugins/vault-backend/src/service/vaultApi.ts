@@ -85,18 +85,16 @@ export class VaultClient implements VaultApi {
     query: { [key in string]: any },
     method: string = 'GET',
   ): Promise<T | undefined> {
-    const response = await fetch(
-      `${this.vaultConfig.baseUrl}/${path}?${new URLSearchParams(
-        query,
-      ).toString()}`,
-      {
-        method,
-        headers: {
-          Accept: 'application/json',
-          'X-Vault-Token': this.vaultConfig.token,
-        },
+    const url = `${this.vaultConfig.baseUrl}/${path}?${new URLSearchParams(
+      query,
+    ).toString()}`;
+    const response = await fetch(url, {
+      method,
+      headers: {
+        Accept: 'application/json',
+        'X-Vault-Token': this.vaultConfig.token,
       },
-    );
+    });
     if (response.status === 200) {
       return (await response.json()) as T;
     }
