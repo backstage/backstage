@@ -84,6 +84,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       return false;
     }
 
+    const startTime = new Date();
     const { group, host, branch, catalogPath } = parseUrl(location.target);
 
     const integration = this.integrations.gitlab.byUrl(`https://${host}`);
@@ -97,7 +98,6 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       config: integration.config,
       logger: this.logger,
     });
-    const startTimestamp = Date.now();
     this.logger.debug(`Reading GitLab projects from ${location.target}`);
 
     const opts = {
@@ -110,6 +110,8 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     };
 
     const lastActivity = (await this.cache.get(this.getCacheKey())) as string;
+    // We check for the existence of lastActivity and only set it if it's present to ensure
+    // that the options doesn't include the key so that the API doesn't receive an empty query parameter.
     if (lastActivity) {
       opts.last_activity_after = lastActivity;
     }
@@ -166,9 +168,10 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       );
     }
 
-    await this.cache.set(this.getCacheKey(), new Date().toISOString());
+    // Save an ISO formatted string in the cache as that's what GitLab expects in the API request.
+    await this.cache.set(this.getCacheKey(), startTime.toISOString());
 
-    const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
+    const duration = ((Date.now() - startTime.getTime()) / 1000).toFixed(1);
     this.logger.debug(
       `Read ${res.scanned} GitLab repositories in ${duration} seconds`,
     );
