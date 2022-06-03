@@ -65,9 +65,9 @@ function setupFakeServer(
     rest.get(url, (req, res, ctx) => {
       // Send the request to the assertion to give the test an opportunity to inspect the parameters.
       if (assertion !== undefined) {
-        assertion(req)
+        assertion(req);
       }
-      
+
       if (req.headers.get('private-token') !== 'test-token') {
         return res(ctx.status(401), ctx.json({}));
       }
@@ -420,17 +420,24 @@ describe('GitlabDiscoveryProcessor', () => {
         ],
       };
       const processor = getProcessor();
-      setupFakeServer(PROJECTS_URL, request => {
-        switch (request.page) {
-          case 1:
-            return payload;
-          default:
-            throw new Error('Invalid request');
-        }
-      }, request => {
-        // We assert that the last activity timestamp is not being sent to the GitLab API as we expect the cache to be empty.
-        expect(request.url.searchParams.get('last_activity_after')).toBeNull()
-      });
+
+      setupFakeServer(
+        PROJECTS_URL,
+        request => {
+          switch (request.page) {
+            case 1:
+              return payload;
+            default:
+              throw new Error('Invalid request');
+          }
+        },
+        request => {
+          // We assert that the last activity timestamp is not being sent to the GitLab API as we expect the cache to be empty.
+          expect(
+            request.url.searchParams.get('last_activity_after'),
+          ).toBeNull();
+        },
+      );
 
       const result: any[] = [];
 
@@ -442,12 +449,18 @@ describe('GitlabDiscoveryProcessor', () => {
 
       // Second scan should have used the mocked Date to set the last scanned time to 2001
       // This should result in only the second repo being scanned, since that has a timestamp of 2002
-      setupFakeServer(PROJECTS_URL, _ => {
-        return payload;
-      }, request => {
-        // We assert that the last activity timestamp is being sent to the GitLab API since we expect it to be in the cache.
-        expect(request.url.searchParams.get('last_activity_after')).toMatch(SERVER_TIME)
-      });
+      setupFakeServer(
+        PROJECTS_URL,
+        _ => {
+          return payload;
+        },
+        request => {
+          // We assert that the last activity timestamp is being sent to the GitLab API since we expect it to be in the cache.
+          expect(request.url.searchParams.get('last_activity_after')).toMatch(
+            SERVER_TIME,
+          );
+        },
+      );
       const result2: any[] = [];
       await processor.readLocation(PROJECT_LOCATION, false, e => {
         result2.push(e);
