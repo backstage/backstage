@@ -6,7 +6,7 @@
 
 Add new backend endpoints, service/:serviceId endpoint is deprecated.
 
-Backend now requires discovery api config
+Breaking: Backend now requires discovery api config
 
 e.g: 
 
