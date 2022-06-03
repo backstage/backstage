@@ -25,6 +25,7 @@ import {
   PublisherBase,
 } from '@backstage/plugin-techdocs-node';
 import fetch from 'node-fetch';
+import pLimit, { Limit } from 'p-limit';
 import { PassThrough } from 'stream';
 import * as winston from 'winston';
 import { TechDocsCache } from '../cache';
@@ -47,6 +48,7 @@ export class DocsSynchronizer {
   private readonly config: Config;
   private readonly scmIntegrations: ScmIntegrationRegistry;
   private readonly cache: TechDocsCache | undefined;
+  private readonly buildLimiter: Limit;
 
   constructor({
     publisher,
@@ -69,6 +71,9 @@ export class DocsSynchronizer {
     this.publisher = publisher;
     this.scmIntegrations = scmIntegrations;
     this.cache = cache;
+
+    // Single host/process: limit concurrent builds up to 10 at a time.
+    this.buildLimiter = pLimit(10);
   }
 
   async doSync({
@@ -123,7 +128,7 @@ export class DocsSynchronizer {
         cache: this.cache,
       });
 
-      const updated = await docsBuilder.build();
+      const updated = await this.buildLimiter(() => docsBuilder.build());
 
       if (!updated) {
         finish({ updated: false });
