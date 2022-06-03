@@ -76,6 +76,11 @@ export interface ExtendableComponentRef<
   ExtraProps extends {} = {},
 > {
   /**
+   * A unique id of this component
+   */
+  id: string;
+
+  /**
    * The 'Provider' part of an extendable component. This component should build
    * up a context object, and forward this to the inner Component using the
    * provided props `ComponentProvider` and `Component`.
