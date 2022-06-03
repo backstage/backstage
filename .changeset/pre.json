@@ -25,7 +25,6 @@
     "@backstage/integration": "1.2.0",
     "@backstage/integration-react": "1.1.0",
     "@backstage/release-manifests": "0.0.3",
-    "@backstage/search-common": "0.3.4",
     "@techdocs/cli": "1.1.1",
     "techdocs-cli-embedded-app": "0.2.70",
     "@backstage/techdocs-common": "0.11.15",

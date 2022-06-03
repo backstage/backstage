@@ -23,7 +23,8 @@ import {
 import { Logger } from 'winston';
 
 /**
- * @beta
+ * Options required to instantiate the index builder.
+ * @public
  */
 export type IndexBuilderOptions = {
   searchEngine: SearchEngine;
@@ -32,7 +33,7 @@ export type IndexBuilderOptions = {
 
 /**
  * Parameters required to register a collator.
- * @beta
+ * @public
  */
 export interface RegisterCollatorParameters {
   /**
@@ -48,7 +49,7 @@ export interface RegisterCollatorParameters {
 
 /**
  * Parameters required to register a decorator
- * @beta
+ * @public
  */
 export interface RegisterDecoratorParameters {
   /**

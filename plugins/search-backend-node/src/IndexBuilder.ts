@@ -28,7 +28,8 @@ import {
 } from './types';
 
 /**
- * @beta
+ * Used for adding collators, decorators and compile them into tasks which are added to a scheduler returned to the caller.
+ * @public
  */
 export class IndexBuilder {
   private collators: Record<string, RegisterCollatorParameters>;
@@ -45,10 +46,16 @@ export class IndexBuilder {
     this.searchEngine = searchEngine;
   }
 
+  /**
+   * Responsible for returning the registered search engine.
+   */
   getSearchEngine(): SearchEngine {
     return this.searchEngine;
   }
 
+  /**
+   * Responsible for returning the registered document types.
+   */
   getDocumentTypes(): Record<string, DocumentTypeInfo> {
     return this.documentTypes;
   }
