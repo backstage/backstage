@@ -14,7 +14,7 @@ import {
   SearchBar,
   SearchFilter,
   SearchResult,
-  useSearch
+  useSearch,
 } from '@backstage/plugin-search-react';
 import {
   CatalogIcon,
