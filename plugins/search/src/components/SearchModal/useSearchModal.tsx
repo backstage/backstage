@@ -37,7 +37,7 @@ export type SearchModalValue = {
 
 const SearchModalContext = createVersionedContext<{
   1: SearchModalValue | undefined;
-}>('analytics-context');
+}>('search-modal-context');
 
 /**
  * Props for the SearchModalProvider.

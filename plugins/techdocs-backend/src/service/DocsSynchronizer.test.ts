@@ -159,6 +159,37 @@ describe('DocsSynchronizer', () => {
       expect(DocsBuilder.prototype.build).toBeCalledTimes(1);
     });
 
+    it('should limit concurrent updates', async () => {
+      // Given a build implementation that runs long...
+      MockedDocsBuilder.prototype.build.mockImplementation(
+        () => new Promise(() => {}),
+      );
+      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
+      const entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          uid: '0',
+          name: 'test',
+          namespace: 'default',
+        },
+      };
+
+      // When more than 10 syncs are attempted...
+      for (let i = 0; i < 12; i++) {
+        docsSynchronizer.doSync({
+          responseHandler: mockResponseHandler,
+          entity,
+          preparers,
+          generators,
+        });
+      }
+
+      // Then still only 10 builds should have been triggered.
+      await new Promise<void>(resolve => resolve());
+      expect(DocsBuilder.prototype.build).toHaveBeenCalledTimes(10);
+    });
+
     it('should not check for an update too often', async () => {
       (shouldCheckForUpdate as jest.Mock).mockReturnValue(false);
 

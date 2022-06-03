@@ -26,7 +26,7 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
-import { codeSearch } from './lib';
+import { codeSearch } from '../lib';
 
 /**
  * Extracts repositories out of an Azure DevOps org.

@@ -21,7 +21,7 @@ import { Transform } from 'stream';
 /**
  * Base class encapsulating simple async transformations. Useful as a base
  * class for Backstage search decorators.
- * @beta
+ * @public
  */
 export abstract class DecoratorBase extends Transform {
   private initialized: Promise<undefined | Error>;
