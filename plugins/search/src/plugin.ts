@@ -58,15 +58,6 @@ export const SearchPage = searchPlugin.provide(
   }),
 );
 
-export const SearchBar = searchPlugin.provide(
-  createComponentExtension({
-    name: 'SearchBar',
-    component: {
-      lazy: () => import('./components/SearchBar').then(m => m.SearchBar),
-    },
-  }),
-);
-
 /**
  * @deprecated Import from `@backstage/plugin-search-react` instead.
  */

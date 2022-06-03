@@ -6,7 +6,7 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { DefaultResultListItemProps } from '@backstage/plugin-search-react/src/components/DefaultResultListItem/DefaultResultListItem';
+import { DefaultResultListItemProps } from '@backstage/plugin-search-react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { InputBaseProps } from '@material-ui/core';
 import { ReactElement } from 'react';
