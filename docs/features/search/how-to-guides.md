@@ -1,8 +1,8 @@
 ---
 id: how-to-guides
-title: Search "HOW TO" guides
-sidebar_label: "HOW TO" guides
-description: Search "HOW TO" guides
+title: 'Search "HOW TO" guides'
+sidebar_label: '"HOW TO" guides'
+description: 'Search "HOW TO" guides'
 ---
 
 ## How to implement your own Search API

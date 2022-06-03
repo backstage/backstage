@@ -1,7 +1,7 @@
 ---
 title: Where do you start when adopting Backstage?
 author: Austin Lamon, Spotify
-authorURL: https://www.linkedin.com/in/austinlamon
+authorURL: "https://www.linkedin.com/in/austinlamon"
 ---
 
 ![Create, Manage, Explore](assets/21-05-20/create-manage-explore.gif)

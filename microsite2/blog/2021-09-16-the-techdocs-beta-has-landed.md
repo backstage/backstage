@@ -1,8 +1,8 @@
 ---
 title: The TechDocs Beta has landed
 author: Eric Peterson, Spotify
-authorURL: https://github.com/iamEAP
-authorImageURL: https://avatars.githubusercontent.com/u/3496491?v=4
+authorURL: "https://github.com/iamEAP"
+authorImageURL: "https://avatars.githubusercontent.com/u/3496491?v=4"
 ---
 
 ![TechDocs in Beta](assets/21-09-16/backstage-techdocs-beta.gif)

@@ -1,7 +1,7 @@
 ---
 id: versioning-policy
 title: Release & Versioning Policy
-description:
+description: Release & Versioning Policy
 ---
 
 The Backstage project is comprised of a set of software components that together
@@ -119,19 +119,3 @@ For packages at version `1.0.0` or above, the following policy also applies:
 - Exports that have been marked as `@alpha` or `@beta` may receive breaking
   changes without a deprecation period, but the changes must still adhere to
   semver.
-
-### Release Stages
-
-The release stages(`@alpha`, `@beta` `@public`) refers to the
-[TSDoc](https://tsdoc.org/) documentation tag of the export, and are also
-visible in the API report of each package.
-
-Backstage uses three stages to indicate the stability for each individual
-package export.
-
-- `@public` - considered stable and are available in the main package entry
-  point.
-- `@beta` - Not visible in the main package entry point, beta exports must be
-  accessed via `<package-name>/beta` or `<package-name>/alpha` imports.
-- `@alpha` - here be dragons. Not visible in the main package entry point, alpha
-  exports must be accessed via `<package-name>/alpha` imports.
