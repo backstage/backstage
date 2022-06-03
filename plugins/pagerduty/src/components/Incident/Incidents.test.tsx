@@ -30,7 +30,7 @@ describe('Incidents', () => {
   it('Renders an empty state when there are no incidents', async () => {
     mockPagerDutyApi.getIncidentsByServiceId = jest
       .fn()
-      .mockImplementationOnce(async () => []);
+      .mockImplementationOnce(async () => ({ incidents: [] }));
 
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
@@ -44,9 +44,10 @@ describe('Incidents', () => {
   });
 
   it('Renders all incidents', async () => {
-    mockPagerDutyApi.getIncidentsByServiceId = jest.fn().mockImplementationOnce(
-      async () =>
-        [
+    mockPagerDutyApi.getIncidentsByServiceId = jest
+      .fn()
+      .mockImplementationOnce(async () => ({
+        incidents: [
           {
             id: 'id1',
             status: 'triggered',
@@ -83,7 +84,7 @@ describe('Incidents', () => {
             serviceId: 'sId2',
           },
         ] as Incident[],
-    );
+      }));
     const { getByText, getAllByTitle, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>

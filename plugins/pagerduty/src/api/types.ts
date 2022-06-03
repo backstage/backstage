@@ -38,7 +38,7 @@ export interface PagerDutyApi {
    * Fetches a list of incidents a provided service has.
    *
    */
-  getIncidentsByServiceId(serviceId: string): Promise<Incident[]>;
+  getIncidentsByServiceId(serviceId: string): Promise<IncidentsResponse>;
 
   /**
    * Fetches a list of change events a provided service has.

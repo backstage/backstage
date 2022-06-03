@@ -92,7 +92,7 @@ const service: Service = {
 const mockPagerDutyApi: Partial<PagerDutyClient> = {
   getServiceByEntity: async () => ({ service }),
   getOnCallByPolicyId: async () => [],
-  getIncidentsByServiceId: async () => [],
+  getIncidentsByServiceId: async () => ({ incidents: [] }),
 };
 
 const apis = TestApiRegistry.from(
