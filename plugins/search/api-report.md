@@ -13,6 +13,7 @@ import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchAutocompleteFilterProps as SearchAutocompleteFilterProps_2 } from '@backstage/plugin-search-react';
+import { SearchBarBaseProps as SearchBarBaseProps_2 } from '@backstage/plugin-search-react';
 import { SearchFilterComponentProps as SearchFilterComponentProps_2 } from '@backstage/plugin-search-react';
 import { SearchResultProps } from '@backstage/plugin-search-react';
 
@@ -66,11 +67,11 @@ export type FiltersState = {
 // @public (undocumented)
 export const HomePageSearchBar: ({
   ...props
-}: Partial<Omit<SearchBarBaseProps, 'onChange' | 'onSubmit'>>) => JSX.Element;
+}: Partial<Omit<SearchBarBaseProps_2, 'onChange' | 'onSubmit'>>) => JSX.Element;
 
 // @public
 export type HomePageSearchBarProps = Partial<
-  Omit<SearchBarBaseProps, 'onChange' | 'onSubmit'>
+  Omit<SearchBarBaseProps_2, 'onChange' | 'onSubmit'>
 >;
 
 // @public (undocumented)
