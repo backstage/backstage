@@ -34,6 +34,9 @@ export const rootRouteRef = createRouteRef({
   id: 'search',
 });
 
+/**
+ * @public
+ */
 export const searchPlugin = createPlugin({
   id: 'search',
   apis: [
@@ -50,6 +53,9 @@ export const searchPlugin = createPlugin({
   },
 });
 
+/**
+ * @public
+ */
 export const SearchPage = searchPlugin.provide(
   createRoutableExtension({
     name: 'SearchPage',
@@ -59,10 +65,14 @@ export const SearchPage = searchPlugin.provide(
 );
 
 /**
+ * @public
  * @deprecated Import from `@backstage/plugin-search-react` instead.
  */
 export const SearchResult = RealSearchResult;
 
+/**
+ * @public
+ */
 export const SidebarSearchModal = searchPlugin.provide(
   createComponentExtension({
     name: 'SidebarSearchModal',
@@ -76,10 +86,14 @@ export const SidebarSearchModal = searchPlugin.provide(
 );
 
 /**
+ * @public
  * @deprecated Import from `@backstage/plugin-search-react` instead.
  */
 export const DefaultResultListItem = RealDefaultResultListItem;
 
+/**
+ * @public
+ */
 export const HomePageSearchBar = searchPlugin.provide(
   createComponentExtension({
     name: 'HomePageSearchBar',

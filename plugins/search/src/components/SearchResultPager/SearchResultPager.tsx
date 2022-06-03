@@ -30,6 +30,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 /**
+ * @public
  * @deprecated Moved to `@backstage/plugin-search-react`.
  */
 export const SearchResultPager = () => {

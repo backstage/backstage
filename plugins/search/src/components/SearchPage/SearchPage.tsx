@@ -87,6 +87,9 @@ export const UrlUpdater = () => {
   return null;
 };
 
+/**
+ * @public
+ */
 export const SearchPage = () => {
   const outlet = useOutlet();
 

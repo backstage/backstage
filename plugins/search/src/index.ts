@@ -21,7 +21,12 @@
  */
 
 export { Filters, FiltersButton } from './components/Filters';
-export type { FiltersState } from './components/Filters';
+export type {
+  FilterOptions,
+  FiltersState,
+  FiltersProps,
+  FiltersButtonProps,
+} from './components/Filters';
 export type { HomePageSearchBarProps } from './components/HomePageComponent';
 export { SearchBar, SearchBarBase } from './components/SearchBar';
 export type {

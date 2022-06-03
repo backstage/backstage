@@ -24,9 +24,8 @@ import {
 } from '@backstage/plugin-search-react';
 
 /**
- * @deprecated Moved to `@backstage/plugin-search-react`.
- *
  * @public
+ * @deprecated Moved to `@backstage/plugin-search-react`.
  */
 export type SearchFilterComponentProps = {
   className?: string;
@@ -48,9 +47,8 @@ export type SearchFilterComponentProps = {
 };
 
 /**
- * @deprecated Moved to `@backstage/plugin-search-react`.
- *
  * @public
+ * @deprecated Moved to `@backstage/plugin-search-react`.
  */
 export type SearchFilterWrapperProps = SearchFilterComponentProps & {
   component: (props: SearchFilterComponentProps) => ReactElement;
@@ -58,6 +56,7 @@ export type SearchFilterWrapperProps = SearchFilterComponentProps & {
 };
 
 /**
+ * @public
  * @deprecated Moved to `@backstage/plugin-search-react`.
  */
 const SearchFilter = ({
@@ -82,12 +81,12 @@ SearchFilter.Select = (
 ) => <SearchFilter {...props} component={SelectFilter} />;
 
 /**
- * @deprecated Moved to `@backstage/plugin-search-react`.
- *
  * A control surface for a given filter field name, rendered as an autocomplete
  * textfield. A hard-coded list of values may be provided, or an async function
  * which returns values may be provided instead.
+ *
  * @public
+ * @deprecated Moved to `@backstage/plugin-search-react`.
  */
 SearchFilter.Autocomplete = (props: SearchAutocompleteFilterProps) => (
   <SearchFilter {...props} component={AutocompleteFilter} />

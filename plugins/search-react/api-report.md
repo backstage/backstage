@@ -48,7 +48,7 @@ export const HighlightedSearchResultText: ({
   postTag,
 }: HighlightedSearchResultTextProps) => JSX.Element;
 
-// @public (undocumented)
+// @public
 export type HighlightedSearchResultTextProps = {
   text: string;
   preTag: string;

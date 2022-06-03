@@ -40,11 +40,10 @@ import {
 } from '@backstage/plugin-search-react';
 
 /**
- * @deprecated Moved to `@backstage/plugin-search-react`.
- *
  * Props for {@link SearchBarBase}.
  *
  * @public
+ * @deprecated Moved to `@backstage/plugin-search-react`.
  */
 export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
   debounceTime?: number;
@@ -55,13 +54,12 @@ export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
 };
 
 /**
- * @deprecated Moved to `@backstage/plugin-search-react`.
- *
  * All search boxes exported by the search plugin are based on the <SearchBarBase />,
  * and this one is based on the <InputBase /> component from Material UI.
  * Recommended if you don't use Search Provider or Search Context.
  *
  * @public
+ * @deprecated Moved to `@backstage/plugin-search-react`.
  */
 export const SearchBarBase = ({
   onChange,
@@ -153,20 +151,18 @@ export const SearchBarBase = ({
 };
 
 /**
- * @deprecated Moved to `@backstage/plugin-search-react`.
- *
  * Props for {@link SearchBar}.
  *
  * @public
+ * @deprecated Moved to `@backstage/plugin-search-react`.
  */
 export type SearchBarProps = Partial<SearchBarBaseProps>;
 
 /**
- * @deprecated Moved to `@backstage/plugin-search-react`.
- *
  * Recommended search bar when you use the Search Provider or Search Context.
  *
  * @public
+ * @deprecated Moved to `@backstage/plugin-search-react`.
  */
 export const SearchBar = ({ onChange, ...props }: SearchBarProps) => {
   const { term, setTerm } = useSearch();

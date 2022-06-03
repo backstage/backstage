@@ -29,9 +29,8 @@ import {
 } from '@backstage/plugin-search-react';
 
 /**
- * @deprecated Moved to `@backstage/plugin-search-react`.
- *
  * @public
+ * @deprecated Moved to `@backstage/plugin-search-react`.
  */
 export type SearchAutocompleteFilterProps = SearchFilterComponentProps & {
   filterSelectedOptions?: boolean;
@@ -41,7 +40,6 @@ export type SearchAutocompleteFilterProps = SearchFilterComponentProps & {
 
 /**
  * @deprecated Moved to `@backstage/plugin-search-react`.
- *
  */
 export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
   const {

@@ -28,11 +28,19 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-type FiltersButtonProps = {
+/**
+ * Props for {@link FiltersButton}.
+ *
+ * @public
+ */
+export type FiltersButtonProps = {
   numberOfSelectedFilters: number;
   handleToggleFilters: () => void;
 };
 
+/**
+ * @public
+ */
 export const FiltersButton = ({
   numberOfSelectedFilters,
   handleToggleFilters,

@@ -44,17 +44,28 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+/**
+ * @public
+ */
 export type FiltersState = {
   selected: string;
   checked: Array<string>;
 };
 
+/**
+ * @public
+ */
 export type FilterOptions = {
   kind: Array<string>;
   lifecycle: Array<string>;
 };
 
-type FiltersProps = {
+/**
+ * Props for {@link Filters}.
+ *
+ * @public
+ */
+export type FiltersProps = {
   filters: FiltersState;
   filterOptions: FilterOptions;
   resetFilters: () => void;
@@ -62,6 +73,9 @@ type FiltersProps = {
   updateChecked: (filter: string) => void;
 };
 
+/**
+ * @public
+ */
 export const Filters = ({
   filters,
   filterOptions,

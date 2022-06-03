@@ -50,6 +50,9 @@ export interface SearchModalChildrenProps {
   toggleModal: () => void;
 }
 
+/**
+ * @public
+ **/
 export interface SearchModalProps {
   /**
    * If true, it renders the modal.
@@ -167,6 +170,9 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
   );
 };
 
+/**
+ * @public
+ */
 export const SearchModal = ({
   open = true,
   hidden,

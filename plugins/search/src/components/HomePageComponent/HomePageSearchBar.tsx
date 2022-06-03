@@ -37,9 +37,7 @@ export type HomePageSearchBarProps = Partial<
 >;
 
 /**
- * The search bar created specifically for the composable home page
- *
- * @public
+ * The search bar created specifically for the composable home page.
  */
 export const HomePageSearchBar = ({ ...props }: HomePageSearchBarProps) => {
   const classes = useStyles(props);
