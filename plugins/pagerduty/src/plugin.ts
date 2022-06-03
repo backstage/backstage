@@ -39,7 +39,7 @@ export const pagerDutyPlugin = createPlugin({
         fetchApi: fetchApiRef,
       },
       factory: ({ configApi, discoveryApi, fetchApi }) =>
-        PagerDutyClient.fromConfig(configApi, discoveryApi, fetchApi),
+        PagerDutyClient.fromConfig(configApi, { discoveryApi, fetchApi }),
     }),
   ],
 });

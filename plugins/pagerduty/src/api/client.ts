@@ -22,16 +22,12 @@ import {
   ServiceResponse,
   IncidentsResponse,
   OnCallsResponse,
+  ClientApiDependencies,
   ClientApiConfig,
   RequestOptions,
   ChangeEventsResponse,
 } from './types';
-import {
-  createApiRef,
-  DiscoveryApi,
-  ConfigApi,
-  FetchApi,
-} from '@backstage/core-plugin-api';
+import { createApiRef, ConfigApi } from '@backstage/core-plugin-api';
 import { NotFoundError } from '@backstage/errors';
 
 export class UnauthorizedError extends Error {}
@@ -46,12 +42,12 @@ const commonGetServiceParams =
 export class PagerDutyClient implements PagerDutyApi {
   static fromConfig(
     configApi: ConfigApi,
-    discoveryApi: DiscoveryApi,
-    fetchApi: FetchApi,
+    { discoveryApi, fetchApi }: ClientApiDependencies,
   ) {
     const eventsBaseUrl: string =
       configApi.getOptionalString('pagerDuty.eventsBaseUrl') ??
       'https://events.pagerduty.com/v2';
+
     return new PagerDutyClient({
       eventsBaseUrl,
       discoveryApi,
