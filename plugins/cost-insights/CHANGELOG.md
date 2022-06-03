@@ -1,5 +1,13 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.28-next.2
+
+### Patch Changes
+
+- 2fc98ac50c: Fix broken app-config in the example in the README
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.2
+
 ## 0.11.28-next.1
 
 ### Patch Changes

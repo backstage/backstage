@@ -1,5 +1,16 @@
 # @backstage/plugin-pagerduty
 
+## 0.4.0-next.2
+
+### Minor Changes
+
+- b157c2eb1c: **Breaking**: Use identityApi to provide auth token for pagerduty API calls.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.2
+
 ## 0.3.33-next.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 1.2.1-next.2
+
+### Patch Changes
+
+- e37c71b5a4: Updated to support deployments of Azure DevOps Server under TFS or similar sub path
+
 ## 1.2.1-next.1
 
 ### Patch Changes

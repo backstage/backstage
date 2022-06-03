@@ -1,5 +1,21 @@
 # example-app
 
+## 0.2.72-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder@1.3.0-next.2
+  - @backstage/cli@0.17.2-next.2
+  - @backstage/plugin-pagerduty@0.4.0-next.2
+  - @backstage/plugin-search-common@0.3.5-next.1
+  - @backstage/plugin-cost-insights@0.11.28-next.2
+  - @backstage/plugin-catalog-common@1.0.3-next.1
+  - @backstage/plugin-kubernetes@0.6.6-next.2
+  - @backstage/core-components@0.9.5-next.2
+  - @backstage/plugin-search@0.8.2-next.2
+  - @backstage/plugin-org@0.5.6-next.2
+
 ## 0.2.72-next.1
 
 ### Patch Changes

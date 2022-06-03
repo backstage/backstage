@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes
 
+## 0.6.6-next.2
+
+### Patch Changes
+
+- 5553f09e80: ability to configure refresh interval on Kubernetes tab
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.2
+
 ## 0.6.6-next.1
 
 ### Patch Changes

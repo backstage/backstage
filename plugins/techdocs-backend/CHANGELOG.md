@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.1.2-next.2
+
+### Patch Changes
+
+- 61fba6e50b: In order to ensure a good, stable TechDocs user experience when running TechDocs with `techdocs.builder` set to `local`, the number of concurrent builds has been limited to 10. Any additional builds requested concurrently will be queued and handled as prior builds complete. In the unlikely event that you need to handle more concurrent builds, consider scaling out your TechDocs backend deployment or using the `external` option for `techdocs.builder`.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5-next.1
+  - @backstage/plugin-catalog-common@1.0.3-next.1
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/integration@1.2.1-next.2
+  - @backstage/plugin-techdocs-node@1.1.2-next.2
+
 ## 1.1.2-next.1
 
 ### Patch Changes

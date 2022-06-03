@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend
 
+## 1.2.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5-next.1
+  - @backstage/plugin-catalog-common@1.0.3-next.1
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/integration@1.2.1-next.2
+  - @backstage/plugin-permission-node@0.6.2-next.2
+
 ## 1.2.0-next.1
 
 ### Patch Changes

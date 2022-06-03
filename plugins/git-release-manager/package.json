@@ -24,7 +24,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/core-components": "^0.9.5-next.1",
+    "@backstage/core-components": "^0.9.5-next.2",
     "@backstage/core-plugin-api": "^1.0.3-next.0",
     "@backstage/integration": "^1.2.1-next.1",
     "@backstage/theme": "^0.2.15",
@@ -43,7 +43,7 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.2-next.1",
+    "@backstage/cli": "^0.17.2-next.2",
     "@backstage/core-app-api": "^1.0.3-next.0",
     "@backstage/dev-utils": "^1.0.3-next.1",
     "@backstage/test-utils": "^1.1.1-next.0",

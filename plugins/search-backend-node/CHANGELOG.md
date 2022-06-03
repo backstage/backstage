@@ -1,5 +1,15 @@
 # @backstage/plugin-search-backend-node
 
+## 0.6.2-next.2
+
+### Patch Changes
+
+- 7d8acfc32e: Replaced all `@beta` exports with `@public` exports
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5-next.1
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/backend-tasks@0.3.2-next.2
+
 ## 0.6.2-next.1
 
 ### Patch Changes

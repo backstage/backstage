@@ -1,5 +1,11 @@
 # @backstage/plugin-search-common
 
+## 0.3.5-next.1
+
+### Patch Changes
+
+- 7d8acfc32e: `@beta` exports now replaced with `@public` exports
+
 ## 0.3.5-next.0
 
 ### Patch Changes
