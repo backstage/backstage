@@ -18,6 +18,26 @@ import { Incident, ChangeEvent, OnCall, Service } from '../components/types';
 import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { PagerDutyEntity } from '../types';
 
+export type ServicesResponse = {
+  services: Service[];
+};
+
+export type ServiceResponse = {
+  service: Service;
+};
+
+export type IncidentsResponse = {
+  incidents: Incident[];
+};
+
+export type ChangeEventsResponse = {
+  change_events: ChangeEvent[];
+};
+
+export type OnCallsResponse = {
+  oncalls: OnCall[];
+};
+
 export type TriggerAlarmRequest = {
   integrationKey: string;
   source: string;
@@ -57,26 +77,6 @@ export interface PagerDutyApi {
    */
   triggerAlarm(request: TriggerAlarmRequest): Promise<Response>;
 }
-
-export type ServicesResponse = {
-  services: Service[];
-};
-
-export type ServiceResponse = {
-  service: Service;
-};
-
-export type IncidentsResponse = {
-  incidents: Incident[];
-};
-
-export type ChangeEventsResponse = {
-  change_events: ChangeEvent[];
-};
-
-export type OnCallsResponse = {
-  oncalls: OnCall[];
-};
 
 export type ClientApiDependencies = {
   discoveryApi: DiscoveryApi;

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Service, Incident, ChangeEvent, OnCall } from '../components/types';
 import {
   PagerDutyApi,
   TriggerAlarmRequest,
