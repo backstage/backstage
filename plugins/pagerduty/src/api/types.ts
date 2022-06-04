@@ -50,7 +50,7 @@ export interface PagerDutyApi {
    * Fetches the list of users in an escalation policy.
    *
    */
-  getOnCallByPolicyId(policyId: string): Promise<OnCall[]>;
+  getOnCallByPolicyId(policyId: string): Promise<OnCallsResponse>;
 
   /**
    * Triggers an incident to whoever is on-call.

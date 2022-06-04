@@ -30,7 +30,7 @@ describe('Escalation', () => {
   it('Handles an empty response', async () => {
     mockPagerDutyApi.getOnCallByPolicyId = jest
       .fn()
-      .mockImplementationOnce(async () => []);
+      .mockImplementationOnce(async () => ({ oncalls: [] }));
 
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
@@ -48,17 +48,19 @@ describe('Escalation', () => {
   it('Render a list of users', async () => {
     mockPagerDutyApi.getOnCallByPolicyId = jest
       .fn()
-      .mockImplementationOnce(async () => [
-        {
-          user: {
-            name: 'person1',
-            id: 'p1',
-            summary: 'person1',
-            email: 'person1@example.com',
-            html_url: 'http://a.com/id1',
-          } as User,
-        },
-      ]);
+      .mockImplementationOnce(async () => ({
+        oncalls: [
+          {
+            user: {
+              name: 'person1',
+              id: 'p1',
+              summary: 'person1',
+              email: 'person1@example.com',
+              html_url: 'http://a.com/id1',
+            } as User,
+          },
+        ],
+      }));
 
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
