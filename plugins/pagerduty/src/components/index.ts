@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * A Backstage plugin that integrates towards PagerDuty
- *
- * @packageDocumentation
- */
+export type {
+  ChangeEvent,
+  Incident,
+  Service,
+  OnCall,
+  Assignee,
+  User,
+} from './types';
 
 export {
-  pagerDutyPlugin,
-  pagerDutyPlugin as plugin,
-  EntityPagerDutyCard,
-} from './plugin';
+  isPluginApplicableToEntity,
+  isPluginApplicableToEntity as isPagerDutyAvailable,
+  PagerDutyCard,
+} from './PagerDutyCard';
 
-export * from './components';
-export * from './api';
-
-export type { PagerDutyEntity } from './types';
+export { TriggerButton } from './TriggerButton';
