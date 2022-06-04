@@ -5,8 +5,18 @@
 Introduces a new annotation `pagerduty.com/service-id` that can be used instead of the `pagerduty.com/integration-key` annotation.
 _Note: If both annotations are specified on a given Entity, then the `pagerduty.com/integration-key` annotation will be prefered_
 
-**BREAKING** The `PagerDutyClient.fromConfig` static method now expects a `FetchApi` compatible object as a third argument.
+**BREAKING** The `PagerDutyClient.fromConfig` static method now expects a `FetchApi` compatible object and has been refactored to
+accept 2 arguments: config and ClientApiDependencies
 The `PagerDutyClient` now relies on a `fetchApi` being available to execute `fetch` requests.
+
+**BREAKING** A new query method `getServiceByEntity` that is used to query for Services by either the `integrationKey` or `serviceId`
+annotation values if they are defined. The `integrationKey` value is preferred currently over `serviceId`. As such, the previous
+`getServiceByIntegrationKey` method has been removed.
+
+**BREAKING** The return values for each Client query method has been changed to return an object instead of raw values.
+For example, the `getIncidentsByServiceId` query method now returns an object in the shape of `{ incidents: Incident[] }`
+instead of just `Incident[]`.
+This same pattern goes for `getChangeEventsByServiceId` and `getOnCallByPolicyId` functions.
 
 In addition, various enhancements/bug fixes were introduced:
 
