@@ -23945,9 +23945,9 @@ swagger-client@^3.18.5:
     url "~0.11.0"
 
 swagger-ui-react@^4.1.3:
-  version "4.11.1"
-  resolved "https://registry.npmjs.org/swagger-ui-react/-/swagger-ui-react-4.11.1.tgz#1de7feea2f99aa292d52cfa3d31edf665eaa6181"
-  integrity sha512-w7WkrEL7uw1EofILX9hNKQXqy5EQhxTU3u+Ob8YcLqeAEUjECewtyTvsQ+79Xypj9yXbqSvgdPkpho1n5Bo2NQ==
+  version "4.12.0"
+  resolved "https://registry.npmjs.org/swagger-ui-react/-/swagger-ui-react-4.12.0.tgz#bfdf67bd0679fdd62ec3fb98bd827afb81fb7fe6"
+  integrity sha512-pkSkUe4WVb7omoScK8GG2qgD6LxwZEIA+fKcxeACC7PCW52vFEjle6WO6lFOLj1JmfWriL7Ngi0+wJtVjfhnWw==
   dependencies:
     "@babel/runtime-corejs3" "^7.16.8"
     "@braintree/sanitize-url" "=6.0.0"
