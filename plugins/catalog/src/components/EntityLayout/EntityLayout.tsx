@@ -142,9 +142,11 @@ interface ExtraContextMenuItem {
   onClick: () => void;
 }
 
+type VisibleType = 'visible' | 'hidden' | 'disabled';
+
 // unstable context menu option, eg: disable the unregister entity menu
 interface contextMenuOptions {
-  disableUnregister: boolean;
+  disableUnregister: boolean | VisibleType;
 }
 
 /** @public */

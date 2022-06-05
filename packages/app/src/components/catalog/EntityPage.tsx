@@ -161,9 +161,22 @@ const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
     ];
   }, []);
 
+  type VisibleType = 'visible' | 'hidden' | 'disabled';
+
+  type contextMenuOptions = {
+    disableUnregister: boolean | VisibleType;
+  };
+
+  const options: contextMenuOptions = {
+    disableUnregister: false,
+  };
+
   return (
     <>
-      <EntityLayout UNSTABLE_extraContextMenuItems={extraMenuItems}>
+      <EntityLayout
+        UNSTABLE_extraContextMenuItems={extraMenuItems}
+        UNSTABLE_contextMenuOptions={options}
+      >
         {props.children}
       </EntityLayout>
       <EntityBadgesDialog
