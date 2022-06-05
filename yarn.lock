@@ -5570,13 +5570,13 @@
   resolved "https://registry.npmjs.org/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"
   integrity sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==
 
-"@ts-morph/common@~0.15.0":
-  version "0.15.0"
-  resolved "https://registry.npmjs.org/@ts-morph/common/-/common-0.15.0.tgz#aece752746fc0d779d2acfaece95fb2c23327ba5"
-  integrity sha512-QefRbadcwfBnd3HWrltpjRJprHgeKfQsnbyGbRF8pEjMqISAljJwq4wfRETxxojsmN4GWuJv3PWG+W7kBIHMMw==
+"@ts-morph/common@~0.16.0":
+  version "0.16.0"
+  resolved "https://registry.npmjs.org/@ts-morph/common/-/common-0.16.0.tgz#57e27d4b3fd65a4cd72cb36679ed08acb40fa3ba"
+  integrity sha512-SgJpzkTgZKLKqQniCjLaE3c2L2sdL7UShvmTmPBejAKd2OKV/yfMpQ2IWpAuA+VY5wy7PkSUaEObIqEK6afFuw==
   dependencies:
     fast-glob "^3.2.11"
-    minimatch "^5.0.1"
+    minimatch "^5.1.0"
     mkdirp "^1.0.4"
     path-browserify "^1.0.1"
 
@@ -18206,7 +18206,7 @@ minimatch@3.0.4:
   dependencies:
     brace-expansion "^1.1.7"
 
-minimatch@5.1.0, minimatch@^5.0.0, minimatch@^5.0.1:
+minimatch@5.1.0, minimatch@^5.0.0, minimatch@^5.0.1, minimatch@^5.1.0:
   version "5.1.0"
   resolved "https://registry.npmjs.org/minimatch/-/minimatch-5.1.0.tgz#1717b464f4971b144f6aabe8f2d0b8e4511e09c7"
   integrity sha512-9TPBGGak4nHfGZsPBohm9AWg6NoT7QTCehS3BIJABslyZbzxfV78QM2Y6+i741OPZIafFAaiiEMh5OyIrJPgtg==
@@ -24554,11 +24554,11 @@ ts-log@^2.2.3:
   integrity sha512-XvB+OdKSJ708Dmf9ore4Uf/q62AYDTzFcAdxc8KNML1mmAWywRFVt/dn1KYJH8Agt5UJNujfM3znU5PxgAzA2w==
 
 ts-morph@^15.0.0:
-  version "15.0.0"
-  resolved "https://registry.npmjs.org/ts-morph/-/ts-morph-15.0.0.tgz#927a85d22909b95fa81e399c94fea655d98be514"
-  integrity sha512-OZkg0TI1h6FVe8DZXyBo6p7NfCN9EZZkkA736f243KzQ3cypYWtaLc9eyNn/JH/fWYfQ4d6wIA4oM0vElRTGcQ==
+  version "15.1.0"
+  resolved "https://registry.npmjs.org/ts-morph/-/ts-morph-15.1.0.tgz#53deea5296d967ff6eba8f15f99d378aa7074a4e"
+  integrity sha512-RBsGE2sDzUXFTnv8Ba22QfeuKbgvAGJFuTN7HfmIRUkgT/NaVLfDM/8OFm2NlFkGlWEXdpW5OaFIp1jvqdDuOg==
   dependencies:
-    "@ts-morph/common" "~0.15.0"
+    "@ts-morph/common" "~0.16.0"
     code-block-writer "^11.0.0"
 
 ts-node@^10.0.0, ts-node@^10.2.1, ts-node@^10.4.0:
