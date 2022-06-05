@@ -55,9 +55,11 @@ interface ExtraContextMenuItem {
   onClick: () => void;
 }
 
+type VisibleType = 'visible' | 'hidden' | 'disabled';
+
 // unstable context menu option, eg: disable the unregister entity menu
 interface contextMenuOptions {
-  disableUnregister: boolean;
+  disableUnregister: boolean | VisibleType;
 }
 
 interface EntityContextMenuProps {
@@ -106,10 +108,34 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
     <Divider key="the divider is here!" />,
   ];
 
+  const isBoolean =
+    typeof UNSTABLE_contextMenuOptions?.disableUnregister === 'boolean';
+
   const disableUnregister =
     (!unregisterPermission.allowed ||
-      UNSTABLE_contextMenuOptions?.disableUnregister) ??
+      (isBoolean
+        ? UNSTABLE_contextMenuOptions?.disableUnregister
+        : UNSTABLE_contextMenuOptions?.disableUnregister === 'disabled')) ??
     false;
+
+  let unregisterButton = <></>;
+
+  if (UNSTABLE_contextMenuOptions?.disableUnregister !== 'hidden') {
+    unregisterButton = (
+      <MenuItem
+        onClick={() => {
+          onClose();
+          onUnregisterEntity();
+        }}
+        disabled={disableUnregister}
+      >
+        <ListItemIcon>
+          <CancelIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary="Unregister entity" />
+      </MenuItem>
+    );
+  }
 
   return (
     <>
@@ -136,18 +162,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
       >
         <MenuList>
           {extraItems}
-          <MenuItem
-            onClick={() => {
-              onClose();
-              onUnregisterEntity();
-            }}
-            disabled={disableUnregister}
-          >
-            <ListItemIcon>
-              <CancelIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary="Unregister entity" />
-          </MenuItem>
+          {unregisterButton}
           <MenuItem
             onClick={() => {
               onClose();
