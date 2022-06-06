@@ -172,7 +172,7 @@ const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
   };
 
   const options: contextMenuOptions = {
-    disableUnregister: false,
+    disableUnregister: 'visible',
   };
 
   return (
