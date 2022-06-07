@@ -38,10 +38,20 @@ export type ExtensionsProviderProps = {
   extensions: ComponentExtension<any, any>[] | ComponentExtension<any, any>;
 };
 
+type WrapExtension<T> = T & { extension: ComponentExtension<any, any> };
+
+type PropsInterceptor<Props extends {}> = WrapExtension<{
+  propsInterceptor: ExtendableComponentPropsInterceptor<Props>;
+}>;
+
+type Provider<Props extends {}, Context extends {}> = WrapExtension<{
+  provider: ExtendableComponentProvider<Props, Context>;
+}>;
+
 type ExtensionMapKey = ExtendableComponentRef<any, any, any>;
-type ExtensionMapValue<Props extends {}, Context> = {
-  propsInterceptors: ExtendableComponentPropsInterceptor<Props>[];
-  providers: ExtendableComponentProvider<Props, Context>[];
+type ExtensionMapValue<Props extends {}, Context extends {}> = {
+  propsInterceptors: PropsInterceptor<Props>[];
+  providers: Provider<Props, Context>[];
 };
 
 /**
@@ -113,19 +123,35 @@ function cloneExtensionMap(
 /**
  * Flatten the providers and propsInterceptors per component ref. This makes it
  * fast to use them.
+ *
+ * If two or more of the same extension is found for a certain component ref,
+ * only the first one should be used. Duplicate extensions of the same component
+ * will likely lead to undefined behaviour.
  */
 function appendExtensionMap(
   extensionMap: Map<ExtensionMapKey, ExtensionMapValue<any, any>>,
   extensions: ComponentExtension<any, any>[],
 ): void {
   extensions.forEach(extension => {
-    const { ref, spec } = extension;
+    const { ref, spec, key } = extension;
     const value = ensureMapValue(extensionMap, ref);
-    if (spec.Provider) {
-      value.providers.push(spec.Provider);
+
+    if (
+      spec.Provider &&
+      !value.providers.find(provider => provider.extension.key === key)
+    ) {
+      value.providers.push({ provider: spec.Provider, extension });
     }
-    if (spec.interceptProps) {
-      value.propsInterceptors.push(spec.interceptProps);
+    if (
+      spec.interceptProps &&
+      !value.propsInterceptors.find(
+        interceptor => interceptor.extension.key === key,
+      )
+    ) {
+      value.propsInterceptors.push({
+        propsInterceptor: spec.interceptProps,
+        extension,
+      });
     }
   });
 }

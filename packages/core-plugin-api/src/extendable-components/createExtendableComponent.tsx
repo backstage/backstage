@@ -59,7 +59,10 @@ export function _createExtendableComponent<Props extends {}, Context>(
     const { props: newProps } = useMemo(
       () => ({
         props: ((p: Props) =>
-          propsInterceptors.reduce((prev, cur) => cur(prev), p))(props),
+          propsInterceptors.reduce(
+            (prev, cur) => cur.propsInterceptor(prev),
+            p,
+          ))(props),
       }),
       [props, propsInterceptors],
     );
@@ -78,7 +81,7 @@ export function _createExtendableComponent<Props extends {}, Context>(
 
       function makeIntermediateComponent(
         Inner: React.ComponentType<{}>,
-        IntermediateProvider: ExtendableComponentProvider<any, any>,
+        Extension: ExtendableComponentProvider<any, any>,
       ): ComponentType<{}> {
         return function IntermediateComponent() {
           const currentValue = useContext(ctx);
@@ -97,7 +100,7 @@ export function _createExtendableComponent<Props extends {}, Context>(
           }
 
           return (
-            <IntermediateProvider
+            <Extension
               Component={OpaqueComponent}
               props={newProps}
               value={currentValue}
@@ -110,7 +113,7 @@ export function _createExtendableComponent<Props extends {}, Context>(
         ExtendedComponent: providers
           .reverse()
           .reduce<ComponentType<{}>>(
-            (prev, provider) => makeIntermediateComponent(prev, provider),
+            (prev, cur) => makeIntermediateComponent(prev, cur.provider),
             InnerMostComponent,
           ),
       };
