@@ -63,6 +63,14 @@ export class GitLabClient {
     return this.pagedRequest(`/projects`, options);
   }
 
+  /**
+   * Checks if the catalog file is present in the repository or not.
+   *
+   * @param projectPath The path to the project
+   * @param branch The branch used to injest entities to the catalog
+   * @param filePath The path to the catalog file
+   * @returns `true` if the file exists, `false` otherwise
+   */
   async hasFile(
     projectPath: string,
     branch: string,
