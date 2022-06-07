@@ -100,20 +100,13 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     });
     this.logger.debug(`Reading GitLab projects from ${location.target}`);
 
+    const lastActivity = (await this.cache.get(this.getCacheKey())) as string;
     const opts = {
       group,
       page: 1,
-    } as {
-      group: string;
-      page: number;
-      last_activity_after: string | undefined;
-    };
-
-    const lastActivity = (await this.cache.get(this.getCacheKey())) as string;
-    // We check for the existence of lastActivity and only set it if it's present to ensure
-    // that the options doesn't include the key so that the API doesn't receive an empty query parameter.
-    if (lastActivity) {
-      opts.last_activity_after = lastActivity;
+      // We check for the existence of lastActivity and only set it if it's present to ensure
+      // that the options doesn't include the key so that the API doesn't receive an empty query parameter.
+      ...(lastActivity && { last_activity_after: lastActivity }),
     }
 
     const projects = paginated(options => client.listProjects(options), opts);
