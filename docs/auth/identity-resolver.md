@@ -59,6 +59,11 @@ the given auth provider, as well as a context object that contains various helpe
 for looking up users and issuing tokens. There are also a number of built-in sign-in
 resolvers that can be used, which are covered a bit further down.
 
+Note that while it possible to configure multiple auth providers to be used for sign-in,
+you should take care when doing so. It is best to make sure that the different auth
+providers either do not have any user overlap, or that any users that are able to log
+in with multiple providers always end up with the same Backstage identity.
+
 ### Custom Resolver Example
 
 Let's look at an example of a custom sign-in resolver for the Google auth provider.
