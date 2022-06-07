@@ -1,5 +1,14 @@
 # @backstage/plugin-techdocs-node
 
+## 1.1.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5-next.1
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/integration@1.2.1-next.2
+
 ## 1.1.2-next.1
 
 ### Patch Changes

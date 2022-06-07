@@ -34,22 +34,22 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/core-components": "^0.9.5-next.1",
+    "@backstage/core-components": "^0.9.5-next.2",
     "@backstage/core-plugin-api": "^1.0.3-next.0",
     "@backstage/theme": "^0.2.15",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
     "graphiql": "^1.5.12",
-    "graphql-ws": "^5.4.1",
     "graphql": "^16.0.0",
+    "graphql-ws": "^5.4.1",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.2-next.1",
+    "@backstage/cli": "^0.17.2-next.2",
     "@backstage/core-app-api": "^1.0.3-next.0",
     "@backstage/dev-utils": "^1.0.3-next.1",
     "@backstage/test-utils": "^1.1.1-next.0",

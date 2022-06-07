@@ -1,5 +1,24 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 0.1.5-next.2
+
+### Patch Changes
+
+- 7d8acfc32e: Additional types now exported publicly:
+
+  - ElasticSearchAgentOptions
+  - ElasticSearchConcreteQuery
+  - ElasticSearchQueryTranslator
+  - ElasticSearchConnectionConstructor,
+  - ElasticSearchTransportConstructor,
+  - ElasticSearchNodeOptions,
+  - ElasticSearchOptions,
+  - ElasticSearchAuth,
+
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5-next.1
+  - @backstage/plugin-search-backend-node@0.6.2-next.2
+
 ## 0.1.5-next.1
 
 ### Patch Changes

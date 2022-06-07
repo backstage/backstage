@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-cost-insights",
   "description": "A Backstage plugin that helps you keep track of your cloud spend",
-  "version": "0.11.28-next.1",
+  "version": "0.11.28-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -36,7 +36,7 @@
   "dependencies": {
     "@backstage/catalog-model": "^1.0.3-next.0",
     "@backstage/config": "^1.0.1",
-    "@backstage/core-components": "^0.9.5-next.1",
+    "@backstage/core-components": "^0.9.5-next.2",
     "@backstage/core-plugin-api": "^1.0.3-next.0",
     "@backstage/theme": "^0.2.15",
     "@material-ui/core": "^4.12.2",
@@ -60,7 +60,7 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.2-next.1",
+    "@backstage/cli": "^0.17.2-next.2",
     "@backstage/core-app-api": "^1.0.3-next.0",
     "@backstage/dev-utils": "^1.0.3-next.1",
     "@backstage/test-utils": "^1.1.1-next.0",

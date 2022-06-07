@@ -1,5 +1,13 @@
 # @backstage/plugin-codescene
 
+## 0.1.1-next.2
+
+### Patch Changes
+
+- ee2cd642c5: Updated dependency `rc-progress` to `3.3.3`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.2
+
 ## 0.1.1-next.1
 
 ### Patch Changes
