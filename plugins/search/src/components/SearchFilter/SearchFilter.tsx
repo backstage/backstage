@@ -25,7 +25,7 @@ import {
 
 /**
  * @public
- * @deprecated Moved to `@backstage/plugin-search-react`.
+ * @deprecated Import from `@backstage/plugin-search-react` instead.
  */
 export type SearchFilterComponentProps = {
   className?: string;
@@ -48,7 +48,7 @@ export type SearchFilterComponentProps = {
 
 /**
  * @public
- * @deprecated Moved to `@backstage/plugin-search-react`.
+ * @deprecated Import from `@backstage/plugin-search-react` instead.
  */
 export type SearchFilterWrapperProps = SearchFilterComponentProps & {
   component: (props: SearchFilterComponentProps) => ReactElement;
@@ -57,7 +57,7 @@ export type SearchFilterWrapperProps = SearchFilterComponentProps & {
 
 /**
  * @public
- * @deprecated Moved to `@backstage/plugin-search-react`.
+ * @deprecated Import from `@backstage/plugin-search-react` instead.
  */
 const SearchFilter = ({
   component: Element,
@@ -65,7 +65,7 @@ const SearchFilter = ({
 }: SearchFilterWrapperProps) => <Element {...props} />;
 
 /**
- * @deprecated Moved to `@backstage/plugin-search-react`.
+ * @deprecated Import from `@backstage/plugin-search-react` instead.
  */
 SearchFilter.Checkbox = (
   props: Omit<SearchFilterWrapperProps, 'component'> &
@@ -73,7 +73,7 @@ SearchFilter.Checkbox = (
 ) => <SearchFilter {...props} component={CheckboxFilter} />;
 
 /**
- * @deprecated Moved to `@backstage/plugin-search-react`.
+ * @deprecated Import from `@backstage/plugin-search-react` instead.
  */
 SearchFilter.Select = (
   props: Omit<SearchFilterWrapperProps, 'component'> &
@@ -86,7 +86,7 @@ SearchFilter.Select = (
  * which returns values may be provided instead.
  *
  * @public
- * @deprecated Moved to `@backstage/plugin-search-react`.
+ * @deprecated Import from `@backstage/plugin-search-react` instead.
  */
 SearchFilter.Autocomplete = (props: SearchAutocompleteFilterProps) => (
   <SearchFilter {...props} component={AutocompleteFilter} />

@@ -65,8 +65,6 @@ export const SearchResultComponent = ({ children }: SearchResultProps) => {
 };
 
 /**
- * A higher order function providing AnalyticsContext to the SearchResultComponent.
- *
  * @public
  */
 const HigherOrderSearchResult = (props: SearchResultProps) => {

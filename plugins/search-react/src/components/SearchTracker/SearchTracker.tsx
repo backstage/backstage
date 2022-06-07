@@ -20,8 +20,6 @@ import { useSearch } from '../../context';
 
 /**
  * Capture search event on term change.
- *
- * @public
  */
 export const TrackSearch = ({ children }: { children: React.ReactChild }) => {
   const analytics = useAnalytics();

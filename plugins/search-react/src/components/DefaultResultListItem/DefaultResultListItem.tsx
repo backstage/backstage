@@ -101,8 +101,6 @@ export const DefaultResultListItemComponent = ({
 };
 
 /**
- * A higher order function providing AnalyticsContext to the DefaultResultListItemComponent.
- *
  * @public
  */
 const HigherOrderDefaultResultListItem = (

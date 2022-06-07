@@ -99,7 +99,7 @@ export const SearchBarBase: ({
   inputProps: defaultInputProps,
   endAdornment: defaultEndAdornment,
   ...props
-}: SearchBarBaseProps) => JSX.Element;
+}: SearchBarBaseProps_2) => JSX.Element;
 
 // @public @deprecated
 export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {

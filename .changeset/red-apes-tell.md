@@ -8,17 +8,10 @@ To upgrade your App, update the following in `packages/app/src/components/search
 
 ```diff
 import {
-- SearchBar
-- SearchFilter
-- SearchResult
-SearchType,
-- DefaultResultListItem
-} from `@backstage/plugin-search`;
-import {
-+ DefaultResultListItem
-+ SearchBar
-+ SearchFilter
-+ SearchResult
-useSearch,
-} from `@backstage/plugin-search-react`;
+  DefaultResultListItem
+  SearchBar
+  SearchFilter
+  SearchResult
+- } from `@backstage/plugin-search`;
++ } from `@backstage/plugin-search-react`;
 ```

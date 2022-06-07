@@ -19,5 +19,4 @@ export * from './SearchFilter';
 export * from './SearchResult';
 export * from './SearchResultPager';
 export * from './SearchBar';
-export * from './SearchTracker';
 export * from './DefaultResultListItem';

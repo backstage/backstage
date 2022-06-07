@@ -188,13 +188,6 @@ export type SearchResultProps = {
 export const SelectFilter: (props: SearchFilterComponentProps) => JSX.Element;
 
 // @public
-export const TrackSearch: ({
-  children,
-}: {
-  children: React_2.ReactChild;
-}) => JSX.Element;
-
-// @public
 export const useAsyncFilterValues: (
   fn: ((partial: string) => Promise<string[]>) | undefined,
   inputValue: string,
