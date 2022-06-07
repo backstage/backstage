@@ -152,8 +152,8 @@ export class VaultBuilder {
       res.json({ status: 'ok' });
     });
 
-    router.get('/v1/secrets', async (req, res) => {
-      const path = req.query.path;
+    router.get('/v1/secrets/:path', async (req, res) => {
+      const { path } = req.params;
       if (typeof path !== 'string') {
         throw new InputError(`Invalid path: ${path}`);
       }

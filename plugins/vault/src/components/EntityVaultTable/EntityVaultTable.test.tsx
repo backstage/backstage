@@ -83,11 +83,11 @@ describe('EntityVautTable', () => {
 
   const setupHandlers = () => {
     server.use(
-      rest.get(`${mockBaseUrl}/v1/secrets`, (req, res, ctx) => {
-        const path = req.url.searchParams.get('path');
-        if (path === 'test/success') {
+      rest.get(`${mockBaseUrl}/v1/secrets/:path`, (req, res, ctx) => {
+        const { path } = req.params;
+        if (path === 'test%2Fsuccess') {
           return res(ctx.json(mockSecretsResult));
-        } else if (path === 'test/error') {
+        } else if (path === 'test%2Ferror') {
           return res(ctx.json([]));
         }
         return res(ctx.status(400));

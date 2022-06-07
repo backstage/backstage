@@ -56,9 +56,13 @@ export class VaultClient implements VaultApi {
   }
 
   async listSecrets(secretPath: string): Promise<VaultSecret[]> {
-    const result = await this.callApi<VaultSecret[]>('v1/secrets', {
-      path: secretPath,
-    });
+    if (secretPath === '') {
+      return [];
+    }
+    const result = await this.callApi<VaultSecret[]>(
+      `v1/secrets/${encodeURIComponent(secretPath)}`,
+      {},
+    );
     if (!result) {
       return [];
     }
