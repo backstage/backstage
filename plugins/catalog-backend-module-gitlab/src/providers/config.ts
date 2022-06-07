@@ -17,6 +17,13 @@
 import { Config } from '@backstage/config';
 import { GitlabProviderConfig } from '../lib/types';
 
+/**
+ * Extracts the gitlab config from a config object
+ *
+ * @public
+ *
+ * @param config - The config object to extract from
+ */
 function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const group = config.getString('group');
   const host = config.getString('host');
@@ -33,6 +40,13 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   };
 }
 
+/**
+ * Extracts the gitlab config from a config object array
+ *
+ * @public
+ *
+ * @param config - The config object to extract from
+ */
 export function readGitlabConfigs(config: Config): GitlabProviderConfig[] {
   const configs: GitlabProviderConfig[] = [];
 
