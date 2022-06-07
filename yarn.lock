@@ -2350,13 +2350,13 @@
     tslib "~2.3.0"
 
 "@graphql-codegen/graphql-modules-preset@^2.3.2":
-  version "2.3.11"
-  resolved "https://registry.npmjs.org/@graphql-codegen/graphql-modules-preset/-/graphql-modules-preset-2.3.11.tgz#ba3c8435badfd6ffea0906a53e3fcb20e00602d9"
-  integrity sha512-nhh2C7Aq98pbVkD9gwwTIBO8GYbw13ztaaJn11YW4X515OcxYbrDTldqoNerBNlQvghiYYSSW/hUGll9f5sIvg==
+  version "2.3.12"
+  resolved "https://registry.npmjs.org/@graphql-codegen/graphql-modules-preset/-/graphql-modules-preset-2.3.12.tgz#e2e128eaab2ca5600bb137c8fec9e3f52c5f243b"
+  integrity sha512-Xz5RsiythN/6ivt+9n43ciHWZ6ngUK1mpBBG/0EYISfUUVaTBLBVKoAhqPHcquqrsByppE0Nclw5sUuOLQUjiA==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^2.4.0"
-    "@graphql-codegen/visitor-plugin-common" "2.8.0"
-    "@graphql-tools/utils" "8.6.9"
+    "@graphql-codegen/visitor-plugin-common" "2.9.0"
+    "@graphql-tools/utils" "8.6.12"
     change-case-all "1.0.14"
     parse-filepath "^1.0.2"
     tslib "~2.4.0"
@@ -2383,32 +2383,32 @@
     tslib "~2.3.0"
 
 "@graphql-codegen/typescript-resolvers@^2.4.3":
-  version "2.6.4"
-  resolved "https://registry.npmjs.org/@graphql-codegen/typescript-resolvers/-/typescript-resolvers-2.6.4.tgz#857e24279603f4e8f7293385a90a1f2498eb672e"
-  integrity sha512-BTV5q9d7V+4mVyYRnE8N7HyArmvDbUEY5JwyV94jhlN0AOq2zKQBrs8MRvx8v1VenjTGV+PlnDpF3aEtQu8o+g==
+  version "2.6.5"
+  resolved "https://registry.npmjs.org/@graphql-codegen/typescript-resolvers/-/typescript-resolvers-2.6.5.tgz#f22635ae76218dbc12c39d32f84a3979a791c764"
+  integrity sha512-vzREbHyiYHhy/C90V8HKnfD7hnJIeioqZIYssX9WTQ5pVHqdeO/k4Gbw9ljcFe4OsP5d9GFHzhtU+/GnQlCyaA==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^2.4.0"
-    "@graphql-codegen/typescript" "^2.4.11"
-    "@graphql-codegen/visitor-plugin-common" "2.8.0"
+    "@graphql-codegen/typescript" "^2.5.0"
+    "@graphql-codegen/visitor-plugin-common" "2.9.0"
     "@graphql-tools/utils" "^8.1.1"
     auto-bind "~4.0.0"
     tslib "~2.4.0"
 
-"@graphql-codegen/typescript@^2.4.11", "@graphql-codegen/typescript@^2.4.2":
-  version "2.4.11"
-  resolved "https://registry.npmjs.org/@graphql-codegen/typescript/-/typescript-2.4.11.tgz#b9d8bddaeb79ff4a85e1d0f9c774afba7423177c"
-  integrity sha512-K3oDLPJRH9Wgpg9TOvb7L+xrJZ8HxkIzV2umqGn54c+8DQjvnRFBIYRO0THgUBMnEauE2sEy6RZkGHGfgQUruA==
+"@graphql-codegen/typescript@^2.4.2", "@graphql-codegen/typescript@^2.5.0":
+  version "2.5.0"
+  resolved "https://registry.npmjs.org/@graphql-codegen/typescript/-/typescript-2.5.0.tgz#5ae121db92120fecb6badb34aa361ac464bc23d3"
+  integrity sha512-eCCebNyhV5NcNyfrNOdur1b4zPSyj2o89yaSliEMSShf4WolfFOv4aYpL4tFXjhkw3n2pR7MYFDUnrzmDpfmNw==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^2.4.0"
     "@graphql-codegen/schema-ast" "^2.4.1"
-    "@graphql-codegen/visitor-plugin-common" "2.8.0"
+    "@graphql-codegen/visitor-plugin-common" "2.9.0"
     auto-bind "~4.0.0"
     tslib "~2.4.0"
 
-"@graphql-codegen/visitor-plugin-common@2.8.0":
-  version "2.8.0"
-  resolved "https://registry.npmjs.org/@graphql-codegen/visitor-plugin-common/-/visitor-plugin-common-2.8.0.tgz#f1de3bd5ee123e6f72c06423912a3a83a6044938"
-  integrity sha512-29MOaxBog7qaEhmeCzJn2mONSbcA+slCTzHN4nJ3aZl4KrC9V32rXlQpG5x0qHbFQ1LaG1f5gPO83xbiAeMBIw==
+"@graphql-codegen/visitor-plugin-common@2.9.0":
+  version "2.9.0"
+  resolved "https://registry.npmjs.org/@graphql-codegen/visitor-plugin-common/-/visitor-plugin-common-2.9.0.tgz#a13556c805e72b63ee9d80fb437b9ba2eb0a9fa2"
+  integrity sha512-w353lPpXlgsQT6dxfcHw3hQdodGnfSwsxofHVfROqrIBZIjH0kNiFHOt8rnewYkLGEa75bWDVaM1ofyXEaN+3w==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^2.4.0"
     "@graphql-tools/optimize" "^1.0.1"
@@ -2630,6 +2630,13 @@
     tslib "^2.3.0"
     value-or-promise "^1.0.11"
     ws "^8.3.0"
+
+"@graphql-tools/utils@8.6.12":
+  version "8.6.12"
+  resolved "https://registry.npmjs.org/@graphql-tools/utils/-/utils-8.6.12.tgz#0a550dc0331fd9b097fe7223d65cbbee720556e4"
+  integrity sha512-WQ91O40RC+UJgZ9K+IzevSf8oolR1QE+WQ21Oyc2fgDYYiqT0eSf+HVyhZr/8x9rVjn3N9HeqCsywbdmbljg0w==
+  dependencies:
+    tslib "~2.4.0"
 
 "@graphql-tools/utils@8.6.9", "@graphql-tools/utils@^8.1.1", "@graphql-tools/utils@^8.3.0", "@graphql-tools/utils@^8.5.1", "@graphql-tools/utils@^8.5.2", "@graphql-tools/utils@^8.6.0":
   version "8.6.9"
@@ -12242,14 +12249,14 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     safe-buffer "^5.1.1"
 
 "example-app@link:packages/app":
-  version "0.2.72-next.1"
+  version "0.2.72-next.2"
   dependencies:
     "@backstage/app-defaults" "^1.0.3-next.1"
     "@backstage/catalog-model" "^1.0.3-next.0"
-    "@backstage/cli" "^0.17.2-next.1"
+    "@backstage/cli" "^0.17.2-next.2"
     "@backstage/config" "^1.0.1"
     "@backstage/core-app-api" "^1.0.3-next.0"
-    "@backstage/core-components" "^0.9.5-next.1"
+    "@backstage/core-components" "^0.9.5-next.2"
     "@backstage/core-plugin-api" "^1.0.3-next.0"
     "@backstage/integration-react" "^1.1.1-next.1"
     "@backstage/plugin-airbrake" "^0.3.6-next.1"
@@ -12258,14 +12265,14 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@backstage/plugin-azure-devops" "^0.1.22-next.1"
     "@backstage/plugin-badges" "^0.2.30-next.1"
     "@backstage/plugin-catalog" "^1.2.1-next.1"
-    "@backstage/plugin-catalog-common" "^1.0.3-next.0"
+    "@backstage/plugin-catalog-common" "^1.0.3-next.1"
     "@backstage/plugin-catalog-graph" "^0.2.18-next.1"
     "@backstage/plugin-catalog-import" "^0.8.9-next.1"
     "@backstage/plugin-catalog-react" "^1.1.1-next.1"
     "@backstage/plugin-circleci" "^0.3.6-next.1"
     "@backstage/plugin-cloudbuild" "^0.3.6-next.1"
     "@backstage/plugin-code-coverage" "^0.1.33-next.1"
-    "@backstage/plugin-cost-insights" "^0.11.28-next.1"
+    "@backstage/plugin-cost-insights" "^0.11.28-next.2"
     "@backstage/plugin-explore" "^0.3.37-next.1"
     "@backstage/plugin-gcalendar" "^0.3.2-next.1"
     "@backstage/plugin-gcp-projects" "^0.3.25-next.1"
@@ -12275,17 +12282,17 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@backstage/plugin-home" "^0.4.22-next.1"
     "@backstage/plugin-jenkins" "^0.7.5-next.1"
     "@backstage/plugin-kafka" "^0.3.6-next.1"
-    "@backstage/plugin-kubernetes" "^0.6.6-next.1"
+    "@backstage/plugin-kubernetes" "^0.6.6-next.2"
     "@backstage/plugin-lighthouse" "^0.3.6-next.1"
     "@backstage/plugin-newrelic" "^0.3.24-next.1"
     "@backstage/plugin-newrelic-dashboard" "^0.1.14-next.1"
-    "@backstage/plugin-org" "^0.5.6-next.1"
-    "@backstage/plugin-pagerduty" "0.3.33-next.1"
+    "@backstage/plugin-org" "^0.5.6-next.2"
+    "@backstage/plugin-pagerduty" "0.4.0-next.2"
     "@backstage/plugin-permission-react" "^0.4.2-next.0"
     "@backstage/plugin-rollbar" "^0.4.6-next.1"
-    "@backstage/plugin-scaffolder" "^1.3.0-next.1"
-    "@backstage/plugin-search" "^0.8.2-next.1"
-    "@backstage/plugin-search-common" "^0.3.5-next.0"
+    "@backstage/plugin-scaffolder" "^1.3.0-next.2"
+    "@backstage/plugin-search" "^0.8.2-next.2"
+    "@backstage/plugin-search-common" "^0.3.5-next.1"
     "@backstage/plugin-search-react" "^0.2.1-next.0"
     "@backstage/plugin-sentry" "^0.3.44-next.1"
     "@backstage/plugin-shortcuts" "^0.2.7-next.1"
