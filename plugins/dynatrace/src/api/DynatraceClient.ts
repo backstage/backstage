@@ -14,28 +14,20 @@
  * limitations under the License.
  */
 import { DynatraceProblems, DynatraceApi } from './DynatraceApi';
-import {
-  DiscoveryApi,
-  IdentityApi,
-  FetchApi,
-} from '@backstage/core-plugin-api';
+import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 
 export class DynatraceClient implements DynatraceApi {
   discoveryApi: DiscoveryApi;
-  identityApi: IdentityApi;
   fetchApi: FetchApi;
 
   constructor({
     discoveryApi,
-    identityApi,
     fetchApi,
   }: {
     discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
     fetchApi: FetchApi;
   }) {
     this.discoveryApi = discoveryApi;
-    this.identityApi = identityApi;
     this.fetchApi = fetchApi;
   }
 
@@ -43,15 +35,12 @@ export class DynatraceClient implements DynatraceApi {
     path: string,
     query: { [key in string]: any },
   ): Promise<T | undefined> {
-    const { token: idToken } = await this.identityApi.getCredentials();
-
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/dynatrace`;
     const response = await this.fetchApi.fetch(
       `${apiUrl}/${path}?${new URLSearchParams(query).toString()}`,
       {
         headers: {
           'Content-Type': 'application/json',
-          ...(idToken && { Authorization: `Bearer ${idToken}` }),
         },
       },
     );
