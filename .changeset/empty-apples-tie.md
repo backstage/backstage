@@ -1,7 +1,6 @@
 ---
-'@backstage/core-components': patch
-'@backstage/plugin-scaffolder': patch
-'@backstage/plugin-scaffolder-backend': patch
+'@backstage/plugin-scaffolder': minor
+'@backstage/plugin-scaffolder-backend': minor
 ---
 
 Starting the implement the first of the Wizard page for the `next` scaffolder plugin
