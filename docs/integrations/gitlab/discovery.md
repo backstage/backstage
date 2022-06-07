@@ -24,7 +24,7 @@ catalog:
         branch: main # Optional. Uses `master` as default
         group: example-group # Group and subgroup (if needed) to look for repositories
         entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
-        rules:
+        rules: # Optional. Uses the default rules if not present
           - repository: example-repo
             allow: [Component, System, Location, Template]
 ```
@@ -42,7 +42,7 @@ Once you've done that, you'll also need to add the segment below to `packages/ba
 ```ts
 /* packages/backend/src/plugins/catalog.ts */
 
-import { GitlabDiscoveryEntityProvider } from '@backstage/plugin-catalog-backend-module-aws';
+import { GitlabDiscoveryEntityProvider } from '@backstage/plugin-catalog-backend-module-gitlab';
 
 const builder = await CatalogBuilder.create(env);
 /** ... other processors and/or providers ... */
