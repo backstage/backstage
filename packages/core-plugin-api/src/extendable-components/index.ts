@@ -19,6 +19,10 @@ export {
   createExtendableComponent,
   createExtendableComponentForwardRef,
 } from './createExtendableComponent';
-export { extendComponent, useExtendComponent } from './extendComponent';
+export {
+  extendComponent,
+  createExtendableComponentExtension,
+  useExtendComponent,
+} from './extendComponent';
 export { ExtensionsProvider } from './ExtensionsProvider';
 export type { ExtensionsProviderProps } from './ExtensionsProvider';

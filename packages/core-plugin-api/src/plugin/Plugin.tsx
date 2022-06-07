@@ -43,10 +43,15 @@ export class PluginImpl<
       PluginInputOptions
     >,
   ) {
-    this.#_extensions = [...(config.extensions ?? [])].map(extension => ({
-      ...extension,
-      plugin: this,
-    }));
+    this.#_extensions = Object.fromEntries(
+      Object.entries(config.extensions ?? {}).map(([name, extension]) => [
+        name,
+        {
+          ...extension,
+          plugin: this,
+        },
+      ]),
+    );
   }
 
   private options: {} | undefined = undefined;

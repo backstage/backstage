@@ -15,6 +15,7 @@
  */
 
 import { useMemo, DependencyList } from 'react';
+import { Extension } from '../plugin';
 
 import {
   ComponentExtension,
@@ -37,6 +38,19 @@ export function extendComponent<Props, Context>(
     ref: componentRef,
     spec: extension,
     key: `${componentRef.id} ${extension.id}`,
+  };
+}
+
+export function createExtendableComponentExtension<Props, Context>(
+  componentRef: ExtendableComponentRef<Props, Context>,
+  extension: ExtendableComponentSpec<Props, Context>,
+): Extension<ComponentExtension<Props, Context>> {
+  return {
+    expose(plugin) {
+      const decoration = extendComponent(componentRef, extension);
+      decoration.plugin = plugin;
+      return decoration;
+    },
   };
 }
 

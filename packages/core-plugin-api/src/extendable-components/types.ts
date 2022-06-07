@@ -201,4 +201,13 @@ export type ComponentExtension<Props extends {}, Context extends {}> = {
  *
  * @public
  */
-export type ComponentExtensions = ComponentExtension<any, any>[];
+export type ComponentExtensions = Record<string, ComponentExtension<any, any>>;
+
+/**
+ * Returns the type of an extension Provider given a component ref
+ */
+export type ComponentExtensionProviderOf<
+  ComponentRef extends ExtendableComponentRef<any, any>,
+> = ComponentRef extends ExtendableComponentRef<infer Props, infer Context>
+  ? ExtendableComponentProvider<Props, Context>
+  : never;
