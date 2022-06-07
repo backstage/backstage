@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { RELATION_HAS_PART, SystemEntity } from '@backstage/catalog-model';
-import { InfoCardVariants, TableProps } from '@backstage/core-components';
+import { RELATION_HAS_PART } from '@backstage/catalog-model';
+import { InfoCardVariants } from '@backstage/core-components';
 import React from 'react';
 import {
   asSystemEntities,
@@ -27,7 +27,6 @@ import {
 /** @public */
 export interface HasSystemsCardProps {
   variant?: InfoCardVariants;
-  tableOptions?: TableProps<SystemEntity>['options'];
 }
 
 export function HasSystemsCard(props: HasSystemsCardProps) {

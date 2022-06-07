@@ -57,7 +57,6 @@ export type DefaultApiExplorerPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
-  tableOptions?: TableProps<CatalogTableRow>['options'];
 };
 
 /**
@@ -68,7 +67,6 @@ export const DefaultApiExplorerPage = ({
   initiallySelectedFilter = 'all',
   columns,
   actions,
-  tableOptions = {},
 }: DefaultApiExplorerPageProps) => {
   const configApi = useApi(configApiRef);
   const generatedSubtitle = `${
@@ -105,7 +103,6 @@ export const DefaultApiExplorerPage = ({
               <CatalogTable
                 columns={columns || defaultColumns}
                 actions={actions}
-                tableOptions={tableOptions}
               />
             </CatalogFilterLayout.Content>
           </CatalogFilterLayout>

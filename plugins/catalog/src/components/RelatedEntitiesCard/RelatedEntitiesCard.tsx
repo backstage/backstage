@@ -29,7 +29,6 @@ import {
   Progress,
   ResponseErrorPanel,
   TableColumn,
-  TableProps,
 } from '@backstage/core-components';
 
 /** @public */
@@ -41,7 +40,6 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
   relationType: string;
   emptyMessage: string;
   emptyHelpLink: string;
-  tableOptions?: TableProps<T>['options'];
   asRenderableEntities: (entities: Entity[]) => T[];
 };
 
@@ -68,7 +66,6 @@ export function RelatedEntitiesCard<T extends Entity>(
     relationType,
     emptyMessage,
     emptyHelpLink,
-    tableOptions = {},
     asRenderableEntities,
   } = props;
 
@@ -108,7 +105,6 @@ export function RelatedEntitiesCard<T extends Entity>(
       }
       columns={columns}
       entities={asRenderableEntities(entities || [])}
-      tableOptions={tableOptions}
     />
   );
 }

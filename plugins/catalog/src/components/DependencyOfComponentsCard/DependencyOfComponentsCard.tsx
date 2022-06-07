@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  ComponentEntity,
-  RELATION_DEPENDENCY_OF,
-} from '@backstage/catalog-model';
-import { InfoCardVariants, TableProps } from '@backstage/core-components';
+import { RELATION_DEPENDENCY_OF } from '@backstage/catalog-model';
+import { InfoCardVariants } from '@backstage/core-components';
 import React from 'react';
 import {
   asComponentEntities,
@@ -31,17 +28,12 @@ import {
 export interface DependencyOfComponentsCardProps {
   variant?: InfoCardVariants;
   title?: string;
-  tableOptions?: TableProps<ComponentEntity>['options'];
 }
 
 export function DependencyOfComponentsCard(
   props: DependencyOfComponentsCardProps,
 ) {
-  const {
-    variant = 'gridItem',
-    title = 'Dependency of components',
-    tableOptions = {},
-  } = props;
+  const { variant = 'gridItem', title = 'Dependency of components' } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}
@@ -52,7 +44,6 @@ export function DependencyOfComponentsCard(
       emptyMessage="No component depends on this component"
       emptyHelpLink={componentEntityHelpLink}
       asRenderableEntities={asComponentEntities}
-      tableOptions={tableOptions}
     />
   );
 }

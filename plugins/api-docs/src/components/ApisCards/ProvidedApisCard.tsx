@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ApiEntity,
-  Entity,
-  RELATION_PROVIDES_API,
-} from '@backstage/catalog-model';
+import { ApiEntity, RELATION_PROVIDES_API } from '@backstage/catalog-model';
 import { Typography } from '@material-ui/core';
 import {
   EntityTable,
@@ -33,19 +29,14 @@ import {
   InfoCardVariants,
   Link,
   Progress,
-  TableProps,
   WarningPanel,
 } from '@backstage/core-components';
 
-type Props<T extends Entity> = {
+type Props = {
   variant?: InfoCardVariants;
-  tableOptions?: TableProps<T>['options'];
 };
 
-export const ProvidedApisCard = ({
-  variant = 'gridItem',
-  tableOptions = {},
-}: Props<ApiEntity>) => {
+export const ProvidedApisCard = ({ variant = 'gridItem' }: Props) => {
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: RELATION_PROVIDES_API,
@@ -90,7 +81,6 @@ export const ProvidedApisCard = ({
       }
       columns={apiEntityColumns}
       entities={entities as ApiEntity[]}
-      tableOptions={tableOptions}
     />
   );
 };
