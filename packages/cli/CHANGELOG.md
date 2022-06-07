@@ -1,5 +1,13 @@
 # @backstage/cli
 
+## 0.17.2-next.2
+
+### Patch Changes
+
+- 026cfe525a: Fix the public path configuration of the frontend app build so that a trailing `/` is always appended when needed.
+- 9002ebd76b: Updated dependency `@rollup/plugin-commonjs` to `^22.0.0`.
+- 1a33e8b287: Updated dependency `minimatch` to `5.1.0`.
+
 ## 0.17.2-next.1
 
 ### Patch Changes

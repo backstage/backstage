@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend
 
+## 0.14.1-next.2
+
+### Patch Changes
+
+- bc6fb57094: Updated dependency `passport` to `^0.6.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/plugin-auth-node@0.2.2-next.2
+
 ## 0.14.1-next.1
 
 ### Patch Changes

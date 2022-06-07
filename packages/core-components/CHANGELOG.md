@@ -1,5 +1,12 @@
 # @backstage/core-components
 
+## 0.9.5-next.2
+
+### Patch Changes
+
+- ee2cd642c5: Updated dependency `rc-progress` to `3.3.3`.
+- 1cf9caecd6: fix Sidebar Contexts deprecation message
+
 ## 0.9.5-next.1
 
 ### Patch Changes

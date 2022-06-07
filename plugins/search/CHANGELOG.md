@@ -1,5 +1,14 @@
 # @backstage/plugin-search
 
+## 0.8.2-next.2
+
+### Patch Changes
+
+- 5388e6bdc5: Fixed a bug that could cause analytics events in other parts of Backstage to capture nonsensical values resembling search modal state under some circumstances.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5-next.1
+  - @backstage/core-components@0.9.5-next.2
+
 ## 0.8.2-next.1
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @techdocs/cli
 
+## 1.1.2-next.2
+
+### Patch Changes
+
+- f96e98f4cd: Updated dependency `cypress` to `^10.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/plugin-techdocs-node@1.1.2-next.2
+
 ## 1.1.2-next.1
 
 ### Patch Changes

@@ -1,5 +1,40 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.3.0-next.2
+
+### Minor Changes
+
+- ce0d8d7eb1: Fixed a bug in `publish:github` action that didn't permit to add users as collaborators.
+  This fix required changing the way parameters are passed to the action.
+  In order to add a team as collaborator, now you must use the `team` field instead of `username`.
+  In order to add a user as collaborator, you must use the `user` field.
+
+  It's still possible to use the field `username` but is deprecated in favor of `team`.
+
+  ```yaml
+  - id: publish
+    name: Publish
+    action: publish:github
+    input:
+      repoUrl: ...
+      collaborators:
+        - access: ...
+          team: my_team
+        - access: ...
+          user: my_username
+  ```
+
+- 582003a059: - Added an optional `list` method on the `TaskBroker` and `TaskStore` interface to list tasks by an optional `userEntityRef`
+  - Implemented a `list` method on the `DatabaseTaskStore` class to list tasks by an optional `userEntityRef`
+  - Added a route under `/v2/tasks` to list tasks by a `userEntityRef` using the `createdBy` query parameter
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/integration@1.2.1-next.2
+  - @backstage/plugin-catalog-backend@1.2.0-next.2
+
 ## 1.3.0-next.1
 
 ### Minor Changes
