@@ -22,8 +22,6 @@ export interface Config {
     providers?: {
       /**
        * GitlabDiscoveryEntityProvider configuration
-       *
-       * Uses "default" as default id for the single config variant.
        */
       gitlab?: Record<
         string,

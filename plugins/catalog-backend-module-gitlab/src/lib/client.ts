@@ -64,12 +64,11 @@ export class GitLabClient {
   }
 
   /**
-   * Checks if the catalog file is present in the repository or not.
+   * General existence check.
    *
-   * @param projectPath The path to the project
-   * @param branch The branch used to injest entities to the catalog
-   * @param filePath The path to the catalog file
-   * @returns `true` if the file exists, `false` otherwise
+   * @param projectPath - The path to the project
+   * @param branch - The branch used to search
+   * @param filePath - The path to the file
    */
   async hasFile(
     projectPath: string,

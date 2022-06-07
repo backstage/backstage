@@ -1465,78 +1465,6 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
-"@backstage/backend-common@^0.13.3":
-  version "0.13.5"
-  resolved "https://registry.npmjs.org/@backstage/backend-common/-/backend-common-0.13.5.tgz#9ff55e1da2a9cf65d0c4782cb360f9b6abd0754c"
-  integrity sha512-37kLw1BolfstantREuawbyRKXD+xKHUta3A63j0868JZPxRSCfiysBzF3uAorH/3WIh0p2lswutmunbVQFsXDA==
-  dependencies:
-    "@backstage/cli-common" "^0.1.9"
-    "@backstage/config" "^1.0.1"
-    "@backstage/config-loader" "^1.1.1"
-    "@backstage/errors" "^1.0.0"
-    "@backstage/integration" "^1.2.0"
-    "@backstage/types" "^1.0.0"
-    "@google-cloud/storage" "^5.8.0"
-    "@keyv/redis" "^2.2.3"
-    "@manypkg/get-packages" "^1.1.3"
-    "@octokit/rest" "^18.5.3"
-    "@types/cors" "^2.8.6"
-    "@types/dockerode" "^3.3.0"
-    "@types/express" "^4.17.6"
-    "@types/luxon" "^2.0.4"
-    "@types/webpack-env" "^1.15.2"
-    archiver "^5.0.2"
-    aws-sdk "^2.840.0"
-    base64-stream "^1.0.0"
-    compression "^1.7.4"
-    concat-stream "^2.0.0"
-    cors "^2.8.5"
-    dockerode "^3.3.1"
-    express "^4.17.1"
-    express-promise-router "^4.1.0"
-    fs-extra "10.1.0"
-    git-url-parse "^11.6.0"
-    helmet "^5.0.2"
-    isomorphic-git "^1.8.0"
-    jose "^4.6.0"
-    keyv "^4.0.3"
-    keyv-memcache "^1.2.5"
-    knex "^1.0.2"
-    lodash "^4.17.21"
-    logform "^2.3.2"
-    luxon "^2.3.1"
-    minimatch "^5.0.0"
-    minimist "^1.2.5"
-    morgan "^1.10.0"
-    node-abort-controller "^3.0.1"
-    node-fetch "^2.6.7"
-    raw-body "^2.4.1"
-    selfsigned "^2.0.0"
-    stoppable "^1.1.0"
-    tar "^6.1.2"
-    unzipper "^0.10.11"
-    winston "^3.2.1"
-    yn "^4.0.0"
-
-"@backstage/backend-tasks@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.npmjs.org/@backstage/backend-tasks/-/backend-tasks-0.3.1.tgz#551ff2f5eb41ea1af21c166f957a24512f87909b"
-  integrity sha512-aCUJl2E0lrmIyzSLKP8kKSZVBA8Wb6cOiHVmoYVrOe9VOvPDx4DZtnvL2iDF+bKfuQlWsvKoAQOcBlgJfyeLeg==
-  dependencies:
-    "@backstage/backend-common" "^0.13.3"
-    "@backstage/config" "^1.0.1"
-    "@backstage/errors" "^1.0.0"
-    "@backstage/types" "^1.0.0"
-    "@types/luxon" "^2.0.4"
-    cron "^1.8.2"
-    knex "^1.0.2"
-    lodash "^4.17.21"
-    luxon "^2.0.2"
-    node-abort-controller "^3.0.1"
-    uuid "^8.0.0"
-    winston "^3.2.1"
-    zod "^3.9.5"
-
 "@backstage/catalog-client@^1.0.2":
   version "1.0.2"
   resolved "https://registry.npmjs.org/@backstage/catalog-client/-/catalog-client-1.0.2.tgz#8450bb09e6e65114053538d1ab855bc8bee09531"
@@ -1558,27 +1486,6 @@
     json-schema "^0.4.0"
     lodash "^4.17.21"
     uuid "^8.0.0"
-
-"@backstage/config-loader@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.npmjs.org/@backstage/config-loader/-/config-loader-1.1.1.tgz#552bbf331acdee19247f158e62b20649cf07f427"
-  integrity sha512-LYmX+BPMn74Pyi/tDiELNNDCyKkJIsQL/PKbNw15CEd6LDJI5jOXY9pMxBPlbpg1fYyA46AeF0Yu6V5s/GXa7Q==
-  dependencies:
-    "@backstage/cli-common" "^0.1.9"
-    "@backstage/config" "^1.0.1"
-    "@backstage/errors" "^1.0.0"
-    "@backstage/types" "^1.0.0"
-    "@types/json-schema" "^7.0.6"
-    ajv "^8.10.0"
-    chokidar "^3.5.2"
-    fs-extra "10.1.0"
-    json-schema "^0.4.0"
-    json-schema-merge-allof "^0.8.1"
-    json-schema-traverse "^1.0.0"
-    node-fetch "^2.6.7"
-    typescript-json-schema "^0.53.0"
-    yaml "^1.9.2"
-    yup "^0.32.9"
 
 "@backstage/core-components@^0.9.0", "@backstage/core-components@^0.9.4":
   version "0.9.4"
@@ -10375,13 +10282,6 @@ crelt@^1.0.5:
   version "1.0.5"
   resolved "https://registry.npmjs.org/crelt/-/crelt-1.0.5.tgz#57c0d52af8c859e354bace1883eb2e1eb182bb94"
   integrity sha512-+BO9wPPi+DWTDcNYhr/W90myha8ptzftZT+LwcmUbbok0rcP/fequmFYCw8NMoH7pkAZQzU78b3kYrlua5a9eA==
-
-cron@^1.8.2:
-  version "1.8.3"
-  resolved "https://registry.npmjs.org/cron/-/cron-1.8.3.tgz#2a61d7b15848716885834ec56ac072f4b9744ebd"
-  integrity sha512-JYR/QZFklJCIPndBLfd/2nU1nSlCMrUdtQ2mGLXSVM/qqqEK7DOrFR0gsEiyeqs0PdWrs0ve1ggH4V7XksDwXg==
-  dependencies:
-    luxon "^1.23.x"
 
 cron@^2.0.0:
   version "2.0.0"

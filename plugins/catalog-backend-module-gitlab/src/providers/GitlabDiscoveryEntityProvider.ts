@@ -39,7 +39,7 @@ type Result = {
 };
 
 /**
- * Extracts repositories out of an GitLab instance.
+ * Discovers entity definition files in the groups of a Gitlab instance.
  * @public
  */
 export class GitlabDiscoveryEntityProvider implements EntityProvider {
