@@ -52,7 +52,7 @@ const defaultGroup: TemplateGroupFilter = {
 
 export const TemplateListPage = (props: TemplateListPageProps) => {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
-  const { TemplateCardComponent, groups = [defaultGroup] } = props;
+  const { TemplateCardComponent, groups = [] } = props;
 
   return (
     <EntityListProvider>
@@ -88,7 +88,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
               <TemplateGroups
-                groups={groups}
+                groups={[...groups, defaultGroup]}
                 TemplateCardComponent={TemplateCardComponent}
               />
             </CatalogFilterLayout.Content>
