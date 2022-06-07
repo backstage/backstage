@@ -26,7 +26,18 @@ export function extendComponent<Props, Context>(
   componentRef: ExtendableComponentRef<Props, Context>,
   extension: ExtendableComponentSpec<Props, Context>,
 ): ComponentExtension<Props, Context> {
-  return { ref: componentRef, spec: extension };
+  if (extension.id.match(/^[a-z](-?[a-z0-9]+)*$/)) {
+    throw new Error(
+      `Invalid extension id "${extension.id}": ` +
+        'must only contain lowercase alpha numeric values and dashes (-)',
+    );
+  }
+
+  return {
+    ref: componentRef,
+    spec: extension,
+    key: `${componentRef.id} ${extension.id}`,
+  };
 }
 
 export function useExtendComponent<Props, Context>(

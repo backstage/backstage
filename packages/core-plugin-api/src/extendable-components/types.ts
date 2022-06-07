@@ -168,6 +168,11 @@ export type ExtendableComponentProvider<
 /** @public */
 export type ExtendableComponentSpec<Props extends {}, Context extends {}> = {
   /**
+   * A unique id for the extension.
+   */
+  id: string;
+
+  /**
    * Intercept the props, to e.g. rewrite some of them
    */
   interceptProps?: ExtendableComponentPropsInterceptor<Props>;
@@ -187,6 +192,7 @@ export type ExtendableComponentSpec<Props extends {}, Context extends {}> = {
 export type ComponentExtension<Props extends {}, Context extends {}> = {
   ref: ExtendableComponentRef<Props, Context>;
   spec: ExtendableComponentSpec<Props, Context>;
+  key: string;
   plugin?: BackstagePlugin<any, any>;
 };
 

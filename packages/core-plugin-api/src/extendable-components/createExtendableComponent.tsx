@@ -37,6 +37,13 @@ export function _createExtendableComponent<Props extends {}, Context>(
   config: ExtendableComponentRefConfig<Props, Context>,
   useRef: boolean,
 ): ExtendableComponentDescriptor<Props, Context> {
+  if (config.id.match(/^[a-z](-?[a-z0-9]+)*$/)) {
+    throw new Error(
+      `Invalid extendable component id "${config.id}": ` +
+        'must only contain lowercase alpha numeric values and dashes (-)',
+    );
+  }
+
   const componentRef = useRef
     ? ({ ...config } as ExtendableComponentRef<Props, Context, RefInfoProps>)
     : ({ ...config } as ExtendableComponentRef<Props, Context>);
