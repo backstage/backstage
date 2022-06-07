@@ -210,6 +210,11 @@ is that it can be tricky to determine the ownership references, although it can
 be achieved for example through a lookup to an external service. You typically
 want to at least use the user itself as a lone ownership reference.
 
+Because we no longer use the catalog as an allow-list of users, it is often important
+that you limit what users are allowed to sign in. This could be a simple email domain
+check like in the example below, or you might for example look up the GitHub organizations
+that the user belongs to using the user access token in the provided result object.
+
 ```ts
 import { DEFAULT_NAMESPACE, stringifyEntityRef, } from '@backstage/catalog-model';
 
@@ -220,8 +225,14 @@ async ({ profile }, ctx) => {
       'Login failed, user profile does not contain an email',
     );
   }
-  // We again use the local part of the email as the user name.
-  const [localPart] = profile.email.split('@');
+  // Split the email into the local part and the domain.
+  const [localPart, domain] = profile.email.split('@');
+
+  // Next we verify the email domain. It is recommended to include this
+  // kind of check if you don't look up the user in an external service.
+  if (domain !== 'acme.org') {
+    throw new Error('Login failed, user email domain check failed');
+  }
 
   // By using `stringifyEntityRef` we ensure that the reference is formatted correctly
   const userEntityRef = stringifyEntityRef({
