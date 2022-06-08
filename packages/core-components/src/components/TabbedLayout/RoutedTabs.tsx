@@ -80,6 +80,7 @@ export function RoutedTabs(props: { routes: SubRoute[] }) {
         tabs={headerTabs}
         selectedIndex={index}
         onChange={onTabChange}
+        className="entity-page-tabs"
       />
       <Content>
         <Helmet title={route.title} />

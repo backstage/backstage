@@ -241,6 +241,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
         title={<EntityLayoutTitle title={headerTitle} entity={entity!} />}
         pageTitleOverride={headerTitle}
         type={headerType}
+        className="entity-page-header"
       >
         {entity && (
           <>

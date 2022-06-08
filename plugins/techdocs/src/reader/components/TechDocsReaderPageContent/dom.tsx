@@ -81,9 +81,25 @@ export const useTechDocsReaderDom = (
       if (isMobileMedia) {
         element.style.top = '0px';
       } else {
-        const domTop = dom.getBoundingClientRect().top ?? 0;
+        // Docs shown in entity pages should consider the entity tabs and multiple paddings at the top
+        const entityPageHeader = document.querySelector<HTMLElement>(
+          '.entity-page-header',
+        );
+        const entityPageTabs =
+          document.querySelector<HTMLElement>('.entity-page-tabs');
+        const entityPageHeaderTop =
+          entityPageHeader?.getBoundingClientRect().height ?? 0;
+        const entityPageTabsTop =
+          entityPageTabs?.getBoundingClientRect().height ?? 0;
+
+        let domTop = dom.getBoundingClientRect().top ?? 0;
         const tabs = dom.querySelector('.md-container > .md-tabs');
         const tabsHeight = tabs?.getBoundingClientRect().height ?? 0;
+
+        // In entity pages the sidebars should stop at the tabs
+        if (domTop < entityPageHeaderTop + entityPageTabsTop) {
+          domTop = entityPageHeaderTop + entityPageTabsTop;
+        }
         element.style.top = `${Math.max(domTop, 0) + tabsHeight}px`;
       }
 

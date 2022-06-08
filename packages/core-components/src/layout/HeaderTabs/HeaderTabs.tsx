@@ -67,6 +67,7 @@ type HeaderTabsProps = {
   tabs: Tab[];
   onChange?: (index: number) => void;
   selectedIndex?: number;
+  className: string | '';
 };
 
 /**
@@ -76,7 +77,7 @@ type HeaderTabsProps = {
  *
  */
 export function HeaderTabs(props: HeaderTabsProps) {
-  const { tabs, onChange, selectedIndex } = props;
+  const { tabs, onChange, selectedIndex, className } = props;
   const [selectedTab, setSelectedTab] = useState<number>(selectedIndex ?? 0);
   const styles = useStyles();
 
@@ -104,6 +105,7 @@ export function HeaderTabs(props: HeaderTabsProps) {
         aria-label="scrollable auto tabs example"
         onChange={handleChange}
         value={selectedTab}
+        className={className}
       >
         {tabs.map((tab, index) => (
           <TabUI
