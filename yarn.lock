@@ -6385,9 +6385,7 @@
     "@types/node" "*"
 
 "@types/ldapjs@^2.2.0":
-  version "2.2.2"
-  resolved "https://registry.npmjs.org/@types/ldapjs/-/ldapjs-2.2.2.tgz#cf79510d8dc34e5579442c2743f8a228427eb99c"
-  integrity sha512-U5HdnwIZ5uZa+f3usxdqgyfNmOROxOxXvQdQtsu6sKo8fte5vej9br2csHxPvXreAbAO1bs8/rdEzvCLpi67nQ==
+  version "2.3.3"
   dependencies:
     "@types/node" "*"
 
