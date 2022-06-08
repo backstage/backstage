@@ -1,5 +1,9 @@
 # @backstage/plugin-api-docs-react
 
+This package contains ApiDefinitionWidgets for the following projects:
+
+- [grpc-docs](https://github.com/gendocu-com/grpc-docs)
+
 ## Setup
 
 ```
@@ -8,7 +12,7 @@ yarn add @backstage/plugin-api-docs-react
 
 ## Add the GrpcDocsApiWidget to your apis
 
-Add the widget to your `apiDocsConfigRef` in the following way. Make sure the `apiEntity.spec.type` is compared to `grpc-docs`
+Add the widget to your `apiDocsConfigRef`.
 
 ```ts
 import { grpcDocsApiWidget } from '@backstage/plugin-api-docs-react';
