@@ -18,6 +18,9 @@
     "deploy": "docusaurus deploy",
     "docusaurus": "docusaurus"
   },
+  "workspaces": [
+    "src/plugins/*"
+  ],
   "devDependencies": {
     "@spotify/prettier-config": "^13.0.1",
     "js-yaml": "^4.1.0",
@@ -26,6 +29,7 @@
   },
   "prettier": "@spotify/prettier-config",
   "dependencies": {
+    "backstage-plugin-list": "0.0.0",
     "@docusaurus/core": "2.0.0-beta.21",
     "@docusaurus/preset-classic": "2.0.0-beta.21",
     "clsx": "^1.1.1",

@@ -60,7 +60,7 @@ module.exports = {
       },
     ],
   ],
-  plugins: [],
+  plugins: ['backstage-plugin-list'],
   themeConfig: {
     algolia: {
       appId: '123',
@@ -197,16 +197,7 @@ module.exports = {
               to: 'https://github.com/backstage/',
             },
             {
-              html: `<a className="github-button"
-              href="https://github.com/backstage/backstage"
-              data-icon="octicon-star"
-              data-count-href="/backstage/backstage/stargazers"
-              data-show-count="true"
-              data-count-aria-label="# stargazers on GitHub"
-              aria-label="Star this project on GitHub"
-            >
-              Star
-            </a>`,
+              html: '<a className="github-button" href="https://github.com/backstage/backstage" data-icon="octicon-star" data-count-href="/backstage/backstage/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub" > Star </a>',
             },
           ],
         },

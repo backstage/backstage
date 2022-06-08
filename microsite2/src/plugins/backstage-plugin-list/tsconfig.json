@@ -1,0 +1,15 @@
+{
+  "include": ["src"],
+  "compilerOptions": {
+    "jsx": "react",
+    "outDir": "lib",
+    "rootDir": "src",
+    "baseUrl": "src",
+    "tsBuildInfoFile": "lib/.tsbuildinfo",
+    "incremental": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "types": ["node", "react"]
+  }
+}
