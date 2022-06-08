@@ -55,7 +55,14 @@ export class PluginProtocolResolverFetchMiddleware implements FetchMiddleware {
       }
 
       const target = `${join(base, pathname)}${search}${hash}`;
-      return next(target, typeof input === 'string' ? init : input);
+      return next(
+        target,
+        typeof input === 'string' || isUrl(input) ? init : input,
+      );
     };
   }
+}
+
+function isUrl(a: unknown): a is URL {
+  return typeof a === 'object' && a?.constructor === URL;
 }
