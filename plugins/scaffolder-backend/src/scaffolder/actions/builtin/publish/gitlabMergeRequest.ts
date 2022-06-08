@@ -34,7 +34,6 @@ export const createPublishGitlabMergeRequestAction = (options: {
   const { integrations } = options;
 
   return createTemplateAction<{
-    projectid: string;
     repoUrl: string;
     title: string;
     description: string;
@@ -45,18 +44,13 @@ export const createPublishGitlabMergeRequestAction = (options: {
     id: 'publish:gitlab:merge-request',
     schema: {
       input: {
-        required: ['projectid', 'repoUrl', 'targetPath', 'branchName'],
+        required: ['repoUrl', 'targetPath', 'branchName'],
         type: 'object',
         properties: {
           repoUrl: {
             type: 'string',
             title: 'Repository Location',
             description: `Accepts the format 'gitlab.com/group_name/project_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
-          },
-          projectid: {
-            type: 'string',
-            title: 'projectid',
-            description: 'Project ID/Name(slug) of the Gitlab Project',
           },
           title: {
             type: 'string',
@@ -88,8 +82,8 @@ export const createPublishGitlabMergeRequestAction = (options: {
       output: {
         type: 'object',
         properties: {
-          projectid: {
-            title: 'Gitlab Project id/Name(slug)',
+          projectPath: {
+            title: 'Gitlab Project path',
             type: 'string',
           },
           mergeRequestURL: {
@@ -102,7 +96,9 @@ export const createPublishGitlabMergeRequestAction = (options: {
     },
     async handler(ctx) {
       const repoUrl = ctx.input.repoUrl;
-      const { host } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const projectPath = `${owner}/${repo}`;
+
       const integrationConfig = integrations.gitlab.byHost(host);
 
       const destinationBranch = ctx.input.branchName;
@@ -140,14 +136,13 @@ export const createPublishGitlabMergeRequestAction = (options: {
         content: file.content.toString('base64'),
         execute_filemode: file.executable,
       }));
-
-      const projects = await api.Projects.show(ctx.input.projectid);
+      const projects = await api.Projects.show(projectPath);
 
       const { default_branch: defaultBranch } = projects;
 
       try {
         await api.Branches.create(
-          ctx.input.projectid,
+          projectPath,
           destinationBranch,
           String(defaultBranch),
         );
@@ -157,7 +152,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
 
       try {
         await api.Commits.create(
-          ctx.input.projectid,
+          projectPath,
           destinationBranch,
           ctx.input.title,
           actions,
@@ -170,7 +165,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
 
       try {
         const mergeRequestUrl = await api.MergeRequests.create(
-          ctx.input.projectid,
+          projectPath,
           destinationBranch,
           String(defaultBranch),
           ctx.input.title,
@@ -178,7 +173,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
         ).then((mergeRequest: { web_url: string }) => {
           return mergeRequest.web_url;
         });
-        ctx.output('projectid', ctx.input.projectid);
+        ctx.output('project path: ', projectPath);
         ctx.output('mergeRequestUrl', mergeRequestUrl);
       } catch (e) {
         throw new InputError(`Merge request creation failed${e}`);
