@@ -17,12 +17,10 @@
 import React from 'react';
 import { GRPCSelfGeneratedAPIReference } from 'grpc-docs';
 
-export function grpcDocsApiWidget() {
-  return {
-    type: 'grpc-docs',
-    title: 'gRPC',
-    component: (definition: string) => (
-      <GRPCSelfGeneratedAPIReference definition={definition || ''} />
-    ),
-  };
-}
+export const grpcDocsApiWidget = {
+  type: 'grpc-docs',
+  title: 'gRPC',
+  component: (definition: string) => (
+    <GRPCSelfGeneratedAPIReference definition={definition || ''} />
+  ),
+};
