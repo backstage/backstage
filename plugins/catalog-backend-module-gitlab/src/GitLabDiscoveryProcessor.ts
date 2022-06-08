@@ -107,7 +107,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       // We check for the existence of lastActivity and only set it if it's present to ensure
       // that the options doesn't include the key so that the API doesn't receive an empty query parameter.
       ...(lastActivity && { last_activity_after: lastActivity }),
-    }
+    };
 
     const projects = paginated(options => client.listProjects(options), opts);
 
