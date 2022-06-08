@@ -55,7 +55,7 @@
     "express-promise-router": "^4.1.0",
     "fs-extra": "10.1.0",
     "git-url-parse": "^11.6.0",
-    "globby": "^11.0.0",
+    "globby": "^13.0.0",
     "isbinaryfile": "^5.0.0",
     "isomorphic-git": "^1.8.0",
     "jsonschema": "^1.2.6",

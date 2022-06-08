@@ -38,7 +38,7 @@
     "@backstage/config": "^1.0.1",
     "@backstage/types": "^1.0.0",
     "@types/express": "^4.17.6",
-    "globby": "^11.0.0",
+    "globby": "^13.0.0",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "fs-extra": "10.1.0",
