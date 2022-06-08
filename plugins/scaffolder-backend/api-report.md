@@ -338,7 +338,6 @@ export function createPublishGitlabAction(options: {
 export const createPublishGitlabMergeRequestAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<{
-  projectid: string;
   repoUrl: string;
   title: string;
   description: string;
