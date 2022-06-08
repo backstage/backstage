@@ -50,9 +50,10 @@ export type AnyExternalRoutes = { [name: string]: ExternalRouteRef };
  * @public
  */
 export type AnyPluginOptions = { [name: string]: unknown };
+export type AnyPluginInputOptions = { [name: string]: unknown };
 
 export type ReconfigureFunction = (
-  options: AnyPluginOptions,
+  options: AnyPluginInputOptions,
 ) => AnyPluginOptions;
 
 /**
