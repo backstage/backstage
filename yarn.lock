@@ -2240,39 +2240,36 @@
   resolved "https://registry.npmjs.org/@google-cloud/projectify/-/projectify-2.0.1.tgz#13350ee609346435c795bbfe133a08dfeab78d65"
   integrity sha512-ZDG38U/Yy6Zr21LaR3BTiiLtpJl6RkPS/JwoRT453G+6Q1DhlV0waNf8Lfu+YVYGIIxgKnLayJRfYlFJfiI8iQ==
 
-"@google-cloud/promisify@^2.0.0":
-  version "2.0.3"
-  resolved "https://registry.npmjs.org/@google-cloud/promisify/-/promisify-2.0.3.tgz#f934b5cdc939e3c7039ff62b9caaf59a9d89e3a8"
-  integrity sha512-d4VSA86eL/AFTe5xtyZX+ePUjE8dIFu2T8zmdeNBSa5/kNgXPCx/o/wbFNHAGLJdGnk1vddRuMESD9HbOC8irw==
+"@google-cloud/promisify@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/@google-cloud/promisify/-/promisify-3.0.0.tgz#5cd6941fc30c4acac18051706aa5af96069bd3e3"
+  integrity sha512-91ArYvRgXWb73YvEOBMmOcJc0bDRs5yiVHnqkwoG0f3nm7nZuipllz6e7BvFESBvjkDTBC0zMD8QxedUwNLc1A==
 
-"@google-cloud/storage@^5.6.0", "@google-cloud/storage@^5.8.0":
-  version "5.20.5"
-  resolved "https://registry.npmjs.org/@google-cloud/storage/-/storage-5.20.5.tgz#1de71fc88d37934a886bc815722c134b162d335d"
-  integrity sha512-lOs/dCyveVF8TkVFnFSF7IGd0CJrTm91qiK6JLu+Z8qiT+7Ag0RyVhxZIWkhiACqwABo7kSHDm8FdH8p2wxSSw==
+"@google-cloud/storage@^6.0.0":
+  version "6.0.1"
+  resolved "https://registry.npmjs.org/@google-cloud/storage/-/storage-6.0.1.tgz#57c367345431da1f9196513ca836796b11b39d95"
+  integrity sha512-52P3A8IpqISc2aeGxx/DQyqDmG0uP5wUW3dsns4ZPKZS5jbllFMy0V7qzY2vVv7GgpIULIKQ26yEWjSEA/pLng==
   dependencies:
     "@google-cloud/paginator" "^3.0.7"
     "@google-cloud/projectify" "^2.0.0"
-    "@google-cloud/promisify" "^2.0.0"
+    "@google-cloud/promisify" "^3.0.0"
     abort-controller "^3.0.0"
     arrify "^2.0.0"
     async-retry "^1.3.3"
     compressible "^2.0.12"
-    configstore "^5.0.0"
     duplexify "^4.0.0"
     ent "^2.2.0"
     extend "^3.0.2"
-    gaxios "^4.0.0"
-    google-auth-library "^7.14.1"
-    hash-stream-validation "^0.2.2"
+    gaxios "^5.0.0"
+    google-auth-library "^8.0.1"
     mime "^3.0.0"
     mime-types "^2.0.8"
     p-limit "^3.0.1"
     pumpify "^2.0.0"
-    retry-request "^4.2.2"
+    retry-request "^5.0.0"
     stream-events "^1.0.4"
-    teeny-request "^7.1.3"
+    teeny-request "^8.0.0"
     uuid "^8.0.0"
-    xdg-basedir "^4.0.0"
 
 "@graphiql/react@^0.4.0":
   version "0.4.0"
@@ -9947,7 +9944,7 @@ config-chain@^1.1.12:
     ini "^1.3.4"
     proto-list "~1.2.1"
 
-configstore@^5.0.0, configstore@^5.0.1:
+configstore@^5.0.1:
   version "5.0.1"
   resolved "https://registry.npmjs.org/configstore/-/configstore-5.0.1.tgz#d365021b5df4b98cdd187d6a3b0e3f6a7cc5ed96"
   integrity sha512-aMKprgk5YhBNyH25hj8wGt2+D52Sw1DRRIzqBwLp2Ya9mFmY8KPvvtvmna8SxVR9JMZ4kzMD68N22vlaRpkeFA==
@@ -13776,7 +13773,7 @@ globby@^7.1.1:
     pify "^3.0.0"
     slash "^1.0.0"
 
-google-auth-library@^7.14.0, google-auth-library@^7.14.1, google-auth-library@^7.6.1:
+google-auth-library@^7.14.0, google-auth-library@^7.6.1:
   version "7.14.1"
   resolved "https://registry.npmjs.org/google-auth-library/-/google-auth-library-7.14.1.tgz#e3483034162f24cc71b95c8a55a210008826213c"
   integrity sha512-5Rk7iLNDFhFeBYc3s8l1CqzbEBcdhwR193RlD4vSNFajIcINKI8W8P0JLmBpwymHqqWbX34pJDQu39cSy/6RsA==
@@ -13791,7 +13788,7 @@ google-auth-library@^7.14.0, google-auth-library@^7.14.1, google-auth-library@^7
     jws "^4.0.0"
     lru-cache "^6.0.0"
 
-google-auth-library@^8.0.2:
+google-auth-library@^8.0.1, google-auth-library@^8.0.2:
   version "8.0.2"
   resolved "https://registry.npmjs.org/google-auth-library/-/google-auth-library-8.0.2.tgz#5fa0f2d3795c3e4019d2bb315ade4454cc9c30b5"
   integrity sha512-HoG+nWFAThLovKpvcbYzxgn+nBJPTfAwtq0GxPN821nOO+21+8oP7MoEHfd1sbDulUFFGfcjJr2CnJ4YssHcyg==
@@ -14190,11 +14187,6 @@ hash-it@^5.0.0:
   version "5.0.2"
   resolved "https://registry.npmjs.org/hash-it/-/hash-it-5.0.2.tgz#8cc981944964a5124f74f1065af0c0a5d182d556"
   integrity sha512-csU3E/a9QEmEgPPxoShVuMcFWM329IGioEPRvYVBv3r5BFrU8pCfnk3jGEVvriAcwqd+nl6KsNhPPjg8MUzkhQ==
-
-hash-stream-validation@^0.2.2:
-  version "0.2.4"
-  resolved "https://registry.npmjs.org/hash-stream-validation/-/hash-stream-validation-0.2.4.tgz#ee68b41bf822f7f44db1142ec28ba9ee7ccb7512"
-  integrity sha512-Gjzu0Xn7IagXVkSu9cSFuK1fqzwtLwFhNhVL8IFJijRNMgUttFbBSIAzKuSIrsFMO1+g1RlsoN49zPIbwPDMGQ==
 
 hash.js@^1.0.0, hash.js@^1.0.3:
   version "1.1.7"
@@ -22507,7 +22499,7 @@ ret@~0.1.10:
   resolved "https://registry.npmjs.org/ret/-/ret-0.1.15.tgz#b8a4825d5bdb1fc3f6f53c2bc33f81388681c7bc"
   integrity sha512-TTlYpa+OL+vMMNG24xSlQGEJ3B/RzEfUlLct7b5G/ytav+wPrplCpVMFuwzXbkecJrb6IYo1iFb0S9v37754mg==
 
-retry-request@^4.0.0, retry-request@^4.2.2:
+retry-request@^4.0.0:
   version "4.2.2"
   resolved "https://registry.npmjs.org/retry-request/-/retry-request-4.2.2.tgz#b7d82210b6d2651ed249ba3497f07ea602f1a903"
   integrity sha512-xA93uxUD/rogV7BV59agW/JHPGXeREMWiZc9jhcwY4YdZ7QOtC7qbomYg0n4wyk2lJhggjvKvhNX8wln/Aldhg==
@@ -24324,10 +24316,10 @@ tdigest@^0.1.1:
     react-router-dom "6.0.0-beta.0"
     react-use "^17.2.4"
 
-teeny-request@^7.1.3:
-  version "7.2.0"
-  resolved "https://registry.npmjs.org/teeny-request/-/teeny-request-7.2.0.tgz#41347ece068f08d741e7b86df38a4498208b2633"
-  integrity sha512-SyY0pek1zWsi0LRVAALem+avzMLc33MKW/JLLakdP4s9+D7+jHcy5x6P+h94g2QNZsAqQNfX5lsbd3WSeJXrrw==
+teeny-request@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.npmjs.org/teeny-request/-/teeny-request-8.0.0.tgz#9614410ba70114fd28ba7bf5077dce3e2f02adf7"
+  integrity sha512-6KEYxXI4lQPSDkXzXpPmJPNmo7oqduFFbhOEHf8sfsLbXyCsb+umUjBtMGAKhaSToD8JNCtQutTRefu29K64JA==
   dependencies:
     http-proxy-agent "^5.0.0"
     https-proxy-agent "^5.0.0"
