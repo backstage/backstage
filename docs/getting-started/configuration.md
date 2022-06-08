@@ -191,13 +191,15 @@ components: {
 
 ### Add sign-in resolver in the backend
 
-The Auth backend plugin is responsible for assigning a [Backstage User Identity](../auth/identity-resolver.md#backstage-user-identity) when a user signs in. The identity is mainly used in determining the ownership of Backstage Catalog entities for the user. This is achieved by writing a [Sign In Resolver](../auth/identity-resolver.md#sign-in-resolvers) which takes care of assigning the right identity to the user and even reject SignIn attempts from unrecognized email domains.
+The Auth backend plugin is responsible for assigning a [Backstage User Identity](../auth/identity-resolver.md#backstage-user-identity) when a user signs in. The Backstage User Identity is fundamentally a JSON Web Token which consists of two parts. The `sub` part is your identity and that identifies your user for any purpose within the Backstage ecosystem. It can for example be used as a primary key in a per-user settings backend, or any other similar purpose. The ent is what relates to ownership (the list of entity refs through which you claim ownership). This is achieved by writing a [Sign In Resolver](../auth/identity-resolver.md#sign-in-resolvers) which takes care of assigning the right identity to the user and even reject SignIn attempts from unrecognized email domains.
 
 > Since [v1.1.0](https://github.com/backstage/backstage/releases/tag/v1.1.0-next.3), you must provide an [explicit sign-in resolver](../auth/identity-resolver.md).
 
 For now, let's create a simple Sign In Resolver which uses the first part of the user's email address to assign a Backstage User Identity.
 
-Replace your `packages/backend/src/plugin/auth.ts` file with the following
+Replace your `packages/backend/src/plugin/auth.ts` file with the following.
+
+> NOTE: Please update `acme.org` below with your actual company domain to allow login requests from email address with that domain.
 
 ```tsx
 import {
@@ -232,9 +234,13 @@ export default async function createPlugin(
               );
             }
             // Split the email into the local part and the domain.
-            // You can use the email domain and verify that it belongs to your own org
-            // e.g. acme.org. It is recommended to include this kind of check for security.
-            const [localPart, _] = profile.email.split('@');
+            const [localPart, domain] = profile.email.split('@');
+
+            // Next we verify the email domain. It is recommended to include this
+            // kind of check if you don't look up the user in an external service.
+            if (domain !== 'acme.org') {
+              throw new Error('Login failed, user email domain check failed');
+            }
 
             // By using `stringifyEntityRef` we ensure that the reference is formatted correctly
             const userEntityRef = stringifyEntityRef({

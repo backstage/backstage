@@ -201,7 +201,7 @@ export default async function createPlugin(
         // the standard logic. It uses a reference to the entity itself, as well as the
         // target of each `memberOf` relation where the target is of the kind `Group`.
         //
-        // If you replace the catalog lookup with something does not return
+        // If you replace the catalog lookup with something that does not return
         // an entity you will need to replace this step as well.
         //
         // You might also replace it if you for example want to filter out certain groups.
