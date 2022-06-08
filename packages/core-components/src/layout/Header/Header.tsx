@@ -113,7 +113,7 @@ type Props = {
   tooltip?: string;
   type?: string;
   typeLink?: string;
-  className: string | '';
+  className?: string | '';
 };
 
 type TypeFragmentProps = {

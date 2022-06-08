@@ -67,7 +67,7 @@ type HeaderTabsProps = {
   tabs: Tab[];
   onChange?: (index: number) => void;
   selectedIndex?: number;
-  className: string | '';
+  className?: string | '';
 };
 
 /**
