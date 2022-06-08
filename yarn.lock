@@ -18696,9 +18696,9 @@ msw@^0.39.2:
     yargs "^17.3.1"
 
 msw@^0.42.0:
-  version "0.42.0"
-  resolved "https://registry.npmjs.org/msw/-/msw-0.42.0.tgz#2286aefad82808888914e2bc5e40666e82b2824b"
-  integrity sha512-vB9rzgiGHoQGfkKpp3QZHxobzfuuQOJk+0bff0wtbK8k3P3CaUSt8bCwvExours682AY4mUfTjIkCsxy0JoS3w==
+  version "0.42.1"
+  resolved "https://registry.npmjs.org/msw/-/msw-0.42.1.tgz#2496d3e191754b68686e2530de459a2e102f85c4"
+  integrity sha512-LZZuz7VddL45gCBgfBWHyXj6a4W7OTJY0mZPoipJ3P/xwbuJwrtwB3IJrWlqBM8aink/eTKlRxwzmtIAwCj5yQ==
   dependencies:
     "@mswjs/cookies" "^0.2.0"
     "@mswjs/interceptors" "^0.16.3"
