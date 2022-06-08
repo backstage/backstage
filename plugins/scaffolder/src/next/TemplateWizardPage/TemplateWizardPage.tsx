@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Page,
   Header,
@@ -72,8 +72,13 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
     }),
   );
 
+  useEffect(() => {
+    if (error) {
+      errorApi.post(new Error(`Failed to load template, ${error}`));
+    }
+  }, [error, errorApi]);
+
   if (error) {
-    errorApi.post(new Error(`Failed to load template, ${error}`));
     return <Navigate to={rootRef()} />;
   }
 
