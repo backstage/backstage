@@ -155,6 +155,8 @@ auth:
         clientSecret: YOUR CLIENT SECRET
 ```
 
+### Add sign-in option to the frontend
+
 Backstage will re-read the configuration. If there's no errors, that's great! We
 can continue with the last part of the configuration. The next step is needed to
 change the sign-in page, this you actually need to add in the source code.
@@ -187,10 +189,77 @@ components: {
  },
 ```
 
+### Add sign-in resolver in the backend
+
+The Auth backend plugin is responsible for assigning a [Backstage User Identity](../auth/identity-resolver.md#backstage-user-identity) when a user signs in. The identity is mainly used in determining the ownership of Backstage Catalog entities for the user. This is achieved by writing a [Sign In Resolver](../auth/identity-resolver.md#sign-in-resolvers) which takes care of assigning the right identity to the user and even reject SignIn attempts from unrecognized email domains.
+
 > Since [v1.1.0](https://github.com/backstage/backstage/releases/tag/v1.1.0-next.3), you must provide an [explicit sign-in resolver](../auth/identity-resolver.md).
 
-That should be it. You can stop your Backstage App. When you start it again and
-go to your Backstage portal in your browser, you should have your login prompt!
+For now, let's create a simple Sign In Resolver which uses the first part of the user's email address to assign a Backstage User Identity.
+
+Replace your `packages/backend/src/plugin/auth.ts` file with the following
+
+```tsx
+import {
+  createRouter,
+  providers,
+  defaultAuthProviderFactories,
+} from '@backstage/plugin-auth-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
+import {
+  DEFAULT_NAMESPACE,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter({
+    logger: env.logger,
+    config: env.config,
+    database: env.database,
+    discovery: env.discovery,
+    tokenManager: env.tokenManager,
+    providerFactories: {
+      ...defaultAuthProviderFactories,
+      github: providers.github.create({
+        signIn: {
+          resolver: async ({ profile }, ctx) => {
+            if (!profile.email) {
+              throw new Error(
+                'Login failed, user profile does not contain an email',
+              );
+            }
+            // Split the email into the local part and the domain.
+            // You can use the email domain and verify that it belongs to your own org
+            // e.g. acme.org. It is recommended to include this kind of check for security.
+            const [localPart, _] = profile.email.split('@');
+
+            // By using `stringifyEntityRef` we ensure that the reference is formatted correctly
+            const userEntityRef = stringifyEntityRef({
+              kind: 'User',
+              name: localPart,
+              namespace: DEFAULT_NAMESPACE,
+            });
+
+            return ctx.issueToken({
+              claims: {
+                sub: userEntityRef,
+                ent: [userEntityRef],
+              },
+            });
+          },
+        },
+      }),
+    },
+  });
+}
+```
+
+Restart Backstage from the terminal, by stopping it with `Control-C`, and starting it with `yarn dev` . You should be welcomed by a login prompt!
+
+> Note: Sometimes the frontend starts before the backend resulting in errors on the sign in page. Wait for the backend to start and then reload Backstage to proceed.
 
 To learn more about Authentication in Backstage, here are some docs you
 could read:
