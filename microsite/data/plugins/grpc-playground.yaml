@@ -1,0 +1,9 @@
+---
+title: GRPC Playground
+author: Zalopay-OSS
+authorUrl: https://github.com/zalopay-oss/
+category: Discovery
+description: Easily view and test your gRPC API with a GUI Client, inspired from BloomRPC application.
+documentation: https://github.com/zalopay-oss/backstage-grpc-playground
+iconUrl: https://raw.githubusercontent.com/zalopay-oss/backstage-grpc-playground/main/images/gprc-logo.png
+npmPackageName: 'backstage-grpc-playground'
