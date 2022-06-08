@@ -30,6 +30,8 @@ import {
   discoveryApiRef,
   fetchApiRef,
   storageApiRef,
+  PluginOptions,
+  PluginInputOptions,
 } from '@backstage/core-plugin-api';
 import { DefaultStarredEntitiesApi } from './apis';
 import { AboutCardProps } from './components/AboutCard';
@@ -71,6 +73,13 @@ export const catalogPlugin = createPlugin({
   externalRoutes: {
     createComponent: createComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
+  },
+  configure(options?: PluginInputOptions): PluginOptions {
+    const defaultOptions = { createButtonTitle: 'Create' };
+    if (!options) {
+      return defaultOptions;
+    }
+    return { ...defaultOptions, ...options };
   },
 });
 

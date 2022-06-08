@@ -49,12 +49,8 @@ export type AnyExternalRoutes = { [name: string]: ExternalRouteRef };
  *
  * @public
  */
-export type AnyPluginOptions = { [name: string]: unknown };
-export type AnyPluginInputOptions = { [name: string]: unknown };
-
-export type ReconfigureFunction = (
-  options: AnyPluginInputOptions,
-) => AnyPluginOptions;
+export type PluginOptions = { [name: string]: unknown };
+export type PluginInputOptions = { [name: string]: unknown };
 
 /**
  * Plugin type.
@@ -64,7 +60,6 @@ export type ReconfigureFunction = (
 export type BackstagePlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
-  PluginOptions extends AnyPluginOptions = { [name: string]: any },
 > = {
   getId(): string;
   getApis(): Iterable<AnyApiFactory>;
@@ -74,7 +69,7 @@ export type BackstagePlugin<
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
   provide<T>(extension: Extension<T>): T;
   getPluginOptions(): PluginOptions;
-  reconfigure(fn: ReconfigureFunction): void;
+  reconfigure(options: PluginInputOptions): void;
   routes: Routes;
   externalRoutes: ExternalRoutes;
 };
@@ -97,7 +92,6 @@ export type PluginFeatureFlagConfig = {
 export type PluginConfig<
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
-  PluginOptions extends AnyPluginOptions,
 > = {
   id: string;
   apis?: Iterable<AnyApiFactory>;
@@ -105,6 +99,7 @@ export type PluginConfig<
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
   options?: PluginOptions;
+  configure?(options?: PluginInputOptions): PluginOptions;
 };
 
 /**

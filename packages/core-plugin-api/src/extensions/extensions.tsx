@@ -236,12 +236,6 @@ export function createReactExtension<
           | { id?: string }
           | undefined;
 
-        const renderComponent = () => (
-          <PluginOptionsProvider pluginOptions={plugin.getPluginOptions()}>
-            <Component {...props} />
-          </PluginOptionsProvider>
-        );
-
         return (
           <Suspense fallback={<Progress />}>
             <PluginErrorBoundary app={app} plugin={plugin}>
@@ -252,7 +246,11 @@ export function createReactExtension<
                   ...(mountPoint && { routeRef: mountPoint.id }),
                 }}
               >
-                {renderComponent()}
+                <PluginOptionsProvider
+                  pluginOptions={plugin.getPluginOptions()}
+                >
+                  <Component {...props} />
+                </PluginOptionsProvider>
               </AnalyticsContext>
             </PluginErrorBoundary>
           </Suspense>

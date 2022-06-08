@@ -20,9 +20,9 @@ import {
   Extension,
   AnyRoutes,
   AnyExternalRoutes,
-  AnyPluginOptions,
+  PluginOptions,
+  PluginInputOptions,
   PluginFeatureFlagConfig,
-  ReconfigureFunction,
 } from './types';
 import { AnyApiFactory } from '../apis';
 
@@ -32,16 +32,9 @@ import { AnyApiFactory } from '../apis';
 export class PluginImpl<
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
-  PluginOptions extends AnyPluginOptions,
-> implements BackstagePlugin<Routes, ExternalRoutes, PluginOptions>
+> implements BackstagePlugin<Routes, ExternalRoutes>
 {
-  constructor(
-    private readonly config: PluginConfig<
-      Routes,
-      ExternalRoutes,
-      PluginOptions
-    >,
-  ) {}
+  constructor(private readonly config: PluginConfig<Routes, ExternalRoutes>) {}
 
   getId(): string {
     return this.config.id;
@@ -67,13 +60,16 @@ export class PluginImpl<
     return extension.expose(this);
   }
 
-  reconfigure(fn: ReconfigureFunction): void {
-    if (this.config.options) {
-      this.config.options = fn(this.config.options) as PluginOptions;
+  reconfigure(options: PluginInputOptions): void {
+    if (this.config.configure) {
+      this.config.options = this.config.configure(options);
     }
   }
 
   getPluginOptions(): PluginOptions {
+    if (this.config.configure && !this.config.options) {
+      this.config.options = this.config.configure();
+    }
     return this.config.options ?? ({} as PluginOptions);
   }
 
@@ -91,9 +87,8 @@ export class PluginImpl<
 export function createPlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
-  PluginOptions extends AnyPluginOptions = {},
 >(
-  config: PluginConfig<Routes, ExternalRoutes, PluginOptions>,
-): BackstagePlugin<Routes, ExternalRoutes, PluginOptions> {
+  config: PluginConfig<Routes, ExternalRoutes>,
+): BackstagePlugin<Routes, ExternalRoutes> {
   return new PluginImpl(config);
 }

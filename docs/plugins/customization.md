@@ -18,8 +18,12 @@ customizable elements. For example
 ```typescript jsx
 const plugin = createPlugin({
   id: 'my-plugin',
-  options: {
-    createButtonTitle: 'Create',
+  configure(options?: PluginInputOptions): PluginOptions {
+    const defaultOptions = { createButtonTitle: 'Create' };
+    if (!options) {
+      return defaultOptions;
+    }
+    return { ...defaultOptions, ...options };
   },
 });
 ```
@@ -50,8 +54,7 @@ plugin. Example:
 ```typescript jsx
 import { myPlugin } from '@backstage/my-plugin';
 
-myPlugin.reconfigure((options: CatalogPageOptionsProps) => ({
-  ...options,
+myPlugin.reconfigure({
   createButtonTitle: 'Maybe Create',
-}));
+});
 ```
