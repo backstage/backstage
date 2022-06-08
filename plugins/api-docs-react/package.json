@@ -34,12 +34,12 @@
     "grpc-docs": "^1.1.2"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.17.2-next.0",
-    "@testing-library/jest-dom": "^5.16.4"
+    "@testing-library/jest-dom": "^5.16.4",
+    "@types/react": "^16.13.1 || ^17.0.0"
   },
   "files": [
     "dist"
