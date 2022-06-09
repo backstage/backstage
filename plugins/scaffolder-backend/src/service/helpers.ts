@@ -95,11 +95,6 @@ export async function findTemplate(options: {
 }): Promise<TemplateEntityV1beta3> {
   const { entityRef, token, catalogApi } = options;
 
-  if (entityRef.namespace.toLocaleLowerCase('en-US') !== DEFAULT_NAMESPACE) {
-    throw new InputError(
-      `Invalid namespace, only '${DEFAULT_NAMESPACE}' namespace is supported`,
-    );
-  }
   if (entityRef.kind.toLocaleLowerCase('en-US') !== 'template') {
     throw new InputError(`Invalid kind, only 'Template' kind is supported`);
   }

@@ -26,7 +26,11 @@ import {
 } from '@material-ui/core';
 import { CardHeader } from './CardHeader';
 import { MarkdownContent, UserIcon, Button } from '@backstage/core-components';
-import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import {
+  parseEntityRef,
+  RELATION_OWNED_BY,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import {
   EntityRefLinks,
   getEntityRelations,
@@ -91,7 +95,8 @@ export const TemplateCard = (props: TemplateCardProps) => {
   const styles = useStyles();
   const ownedByRelations = getEntityRelations(template, RELATION_OWNED_BY);
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
-  const href = templateRoute({ templateName: template.metadata.name });
+  const { name, namespace } = parseEntityRef(stringifyEntityRef(template));
+  const href = templateRoute({ templateName: name, namespace: namespace });
 
   return (
     <Card>

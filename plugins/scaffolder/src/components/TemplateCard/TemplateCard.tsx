@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import {
+  Entity,
+  parseEntityRef,
+  RELATION_OWNED_BY,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import {
   ScmIntegrationIcon,
@@ -162,7 +167,8 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
     : 'other';
   const theme = backstageTheme.getPageTheme({ themeId });
   const classes = useStyles({ backgroundImage: theme.backgroundImage });
-  const href = templateRoute({ templateName: templateProps.name });
+  const { name, namespace } = parseEntityRef(stringifyEntityRef(template));
+  const href = templateRoute({ templateName: name, namespace });
 
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
   const sourceLocation = getEntitySourceLocation(template, scmIntegrationsApi);
