@@ -40,6 +40,8 @@ export const createPublishGitlabMergeRequestAction = (options: {
     branchName: string;
     targetPath: string;
     token?: string;
+    /** @deprecated */
+    projectid?: string;
   }>({
     id: 'publish:gitlab:merge-request',
     schema: {
@@ -51,6 +53,12 @@ export const createPublishGitlabMergeRequestAction = (options: {
             type: 'string',
             title: 'Repository Location',
             description: `Accepts the format 'gitlab.com/group_name/project_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
+          },
+          /** @deprecated */
+          projectid: {
+            type: 'string',
+            title: 'projectid',
+            description: 'Project ID/Name(slug) of the Gitlab Project',
           },
           title: {
             type: 'string',
@@ -82,6 +90,10 @@ export const createPublishGitlabMergeRequestAction = (options: {
       output: {
         type: 'object',
         properties: {
+          projectid: {
+            title: 'Gitlab Project id/Name(slug)',
+            type: 'string',
+          },
           projectPath: {
             title: 'Gitlab Project path',
             type: 'string',
@@ -173,7 +185,8 @@ export const createPublishGitlabMergeRequestAction = (options: {
         ).then((mergeRequest: { web_url: string }) => {
           return mergeRequest.web_url;
         });
-        ctx.output('project path: ', projectPath);
+        ctx.output('projectid', projectPath);
+        ctx.output('projectPath', projectPath);
         ctx.output('mergeRequestUrl', mergeRequestUrl);
       } catch (e) {
         throw new InputError(`Merge request creation failed${e}`);

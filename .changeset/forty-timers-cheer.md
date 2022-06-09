@@ -1,5 +1,6 @@
 ---
-'@backstage/plugin-scaffolder-backend': minor
+'@backstage/plugin-scaffolder-backend': major
 ---
 
-refactored the gitlab publish merge request action to not use the `projectId` property. Instead use the `host` and `owner` property from the `RepoUrlPicker`. This decreases the amount of fields the user has to fill in.
+**DEPRECATION**: The `projectid` input parameters to the `publish:gitlab:merge-request`, it's no longer required as it can be decoded from the `repoUrl` input parameter.
+**DEPRECATION**: The `projectid` output of the action in favour of `projectPath`
