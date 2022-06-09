@@ -181,8 +181,7 @@ integrations:
   #   rawBaseUrl: https://ghe.example.net/raw
   #   token: ${GHE_TOKEN}
   gitlab:
-    - host: lols.lols.com
-      apiBaseUrl: https://lols.lols.com/api
+    - host: gitlab.com
       token: ${GITLAB_TOKEN}
   ### Example for how to add a bitbucket cloud integration
   # bitbucketCloud:
