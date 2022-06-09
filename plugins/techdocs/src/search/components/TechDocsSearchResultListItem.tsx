@@ -23,6 +23,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
+import { useAnalytics } from '@backstage/core-plugin-api';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
@@ -45,6 +46,7 @@ export type TechDocsSearchResultListItemProps = {
   icon?: ReactNode;
   result: any;
   highlight?: ResultHighlight;
+  rank?: number;
   lineClamp?: number;
   asListItem?: boolean;
   asLink?: boolean;
@@ -62,6 +64,7 @@ export const TechDocsSearchResultListItem = (
   const {
     result,
     highlight,
+    rank,
     lineClamp = 5,
     asListItem = true,
     asLink = true,
@@ -69,6 +72,15 @@ export const TechDocsSearchResultListItem = (
     icon,
   } = props;
   const classes = useStyles();
+
+  const analytics = useAnalytics();
+  const handleClick = () => {
+    analytics.captureEvent('discover', result.title, {
+      attributes: { to: result.location },
+      value: rank,
+    });
+  };
+
   const TextItem = () => {
     const resultTitle = highlight?.fields.title ? (
       <HighlightedSearchResultText
@@ -138,7 +150,13 @@ export const TechDocsSearchResultListItem = (
   };
 
   const LinkWrapper = ({ children }: PropsWithChildren<{}>) =>
-    asLink ? <Link to={result.location}>{children}</Link> : <>{children}</>;
+    asLink ? (
+      <Link noTrack to={result.location} onClick={handleClick}>
+        {children}
+      </Link>
+    ) : (
+      <>{children}</>
+    );
 
   const ListItemWrapper = ({ children }: PropsWithChildren<{}>) =>
     asListItem ? (

@@ -25,6 +25,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
+import { useAnalytics } from '@backstage/core-plugin-api';
 import {
   IndexableDocument,
   ResultHighlight,
@@ -51,6 +52,7 @@ export interface CatalogSearchResultListItemProps {
   icon?: ReactNode;
   result: IndexableDocument;
   highlight?: ResultHighlight;
+  rank?: number;
 }
 
 /** @public */
@@ -60,8 +62,16 @@ export function CatalogSearchResultListItem(
   const result = props.result as any;
 
   const classes = useStyles();
+  const analytics = useAnalytics();
+  const handleClick = () => {
+    analytics.captureEvent('discover', result.title, {
+      attributes: { to: result.location },
+      value: props.rank,
+    });
+  };
+
   return (
-    <Link to={result.location}>
+    <Link noTrack to={result.location} onClick={handleClick}>
       <ListItem alignItems="flex-start">
         {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
         <div className={classes.flexContainer}>
