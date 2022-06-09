@@ -16,7 +16,7 @@
 
 import { RouteRef, SubRouteRef, ExternalRouteRef } from '../routing';
 import { AnyApiFactory } from '../apis/system';
-import { ComponentExtensions } from '../extendable-components';
+import { ComponentAdaptation } from '../adaptable-components/types';
 
 /**
  * Plugin extension type.
@@ -54,6 +54,7 @@ export type BackstagePlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
   PluginInputOptions extends {} = {},
+  ComponentAdaptations extends Record<string, ComponentAdaptation> = {},
 > = {
   getId(): string;
   getApis(): Iterable<AnyApiFactory>;
@@ -63,7 +64,7 @@ export type BackstagePlugin<
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
   provide<T>(extension: Extension<T>): T;
   routes: Routes;
-  readonly extensions: ComponentExtensions | undefined;
+  readonly adaptations: ComponentAdaptations;
   externalRoutes: ExternalRoutes;
   __experimentalReconfigure(options: PluginInputOptions): void;
 };
@@ -87,11 +88,15 @@ export type PluginConfig<
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
   PluginInputOptions extends {},
+  ComponentAdaptations extends Record<
+    string,
+    Extension<ComponentAdaptation>
+  > = {},
 > = {
   id: string;
   apis?: Iterable<AnyApiFactory>;
   routes?: Routes;
-  extensions?: ComponentExtensions;
+  adaptations?: ComponentAdaptations;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
   __experimentalConfigure?(options?: PluginInputOptions): {};

@@ -24,7 +24,7 @@ import {
   SubRouteRef,
   ExternalRouteRef,
   IdentityApi,
-  ComponentExtensions,
+  ComponentAdaptation,
 } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
 
@@ -177,6 +177,27 @@ export type AppRouteBinder = <
   >,
 ) => void;
 
+/** @public */
+export type ComponentAdaptationOptions = {
+  /**
+   * Exclude all adaptations from these plugins
+   */
+  excludePlugins?: BackstagePlugin<any, any>[];
+
+  /**
+   * Exclude these specific adaptations
+   */
+  exclude?: ComponentAdaptation[];
+
+  /**
+   * Include these adaptations apart from those in plugins.
+   *
+   * An adaptation here will be used even if excluded or if the whole plugin is
+   * excluded.
+   */
+  include?: ComponentAdaptation[];
+};
+
 /**
  * The options accepted by {@link createSpecializedApp}.
  *
@@ -220,9 +241,14 @@ export type AppOptions = {
   components: AppComponents;
 
   /**
-   * Specify component extensions apart from those provided by plugins.
+   * Specify component adaptations.
+   *
+   * If provided as an array, then only these adaptations will be used.
+   *
+   * Oherwise provided as a {@link ComponentAdaptationOptions} object, in which
+   * case all the adaptations form plugins are included by default.
    */
-  extensions?: ComponentExtensions;
+  adaptations?: ComponentAdaptation[] | ComponentAdaptationOptions;
 
   /**
    * Themes provided as a part of the app. By default two themes are included, one

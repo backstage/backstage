@@ -24,7 +24,7 @@ export * from './analytics';
 export * from './apis';
 export * from './plugin-options';
 export * from './app';
-export * from './extendable-components';
+export * from './adaptable-components';
 export * from './extensions';
 export * from './icons';
 export * from './plugin';

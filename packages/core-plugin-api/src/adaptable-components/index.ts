@@ -16,13 +16,16 @@
 
 export * from './types';
 export {
-  createExtendableComponent,
-  createExtendableComponentForwardRef,
-} from './createExtendableComponent';
+  createAdaptableComponentRef,
+  createAdaptableForwardableComponentRef,
+  implementAdaptableComponent,
+  createAdaptableComponent,
+  createAdaptableForwardableComponent,
+} from './create';
 export {
-  extendComponent,
-  createExtendableComponentExtension,
-  useExtendComponent,
-} from './extendComponent';
-export { ExtensionsProvider } from './ExtensionsProvider';
-export type { ExtensionsProviderProps } from './ExtensionsProvider';
+  adaptComponent,
+  createAdaptableComponentExtension,
+  useAdaptComponent,
+} from './adaptations';
+export { AdaptationProvider } from './AdaptationProvider';
+export type { AdaptationProviderProps } from './AdaptationProvider';

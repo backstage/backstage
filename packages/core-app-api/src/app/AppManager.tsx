@@ -47,8 +47,8 @@ import {
   IdentityApi,
   identityApiRef,
   BackstagePlugin,
-  ExtensionsProvider,
-  ComponentExtensions,
+  AdaptationProvider,
+  ComponentAdaptation,
 } from '@backstage/core-plugin-api';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
@@ -181,6 +181,42 @@ class AppContextImpl implements AppContext {
   }
 }
 
+function filterAdaptations(
+  config: AppOptions['adaptations'],
+  plugins: Set<BackstagePlugin<any, any>>,
+): ComponentAdaptation[] {
+  if (!config) return [];
+
+  // Only use the exact list of adaptations provided
+  if (Array.isArray(config)) return config;
+
+  // Use all the adaptations provided by plugins, except exceptions, and also
+  // add app-provided adaptations
+
+  const include = config.include ?? [];
+  const exclude = config.exclude ?? [];
+  const excludePlugins = config.excludePlugins ?? [];
+
+  // Plugin-provided adaptations
+  const pluginAdaptations = [...plugins]
+    .flatMap(plugin =>
+      Object.values(
+        (plugin.adaptations as Record<string, ComponentAdaptation>) ?? {},
+      ).map(adaptation => ({
+        plugin,
+        adaptation,
+      })),
+    )
+    .filter(
+      ({ plugin, adaptation }) =>
+        !excludePlugins.includes(plugin) && !exclude.includes(adaptation),
+    )
+    .map(({ adaptation }) => adaptation);
+
+  // Merge app-provided adaptations
+  return [...new Set([...pluginAdaptations, ...include])];
+}
+
 export class AppManager implements BackstageApp {
   private apiHolder?: ApiHolder;
   private configApi?: ConfigApi;
@@ -189,7 +225,7 @@ export class AppManager implements BackstageApp {
   private readonly icons: NonNullable<AppOptions['icons']>;
   private readonly plugins: Set<CompatiblePlugin>;
   private readonly components: AppComponents;
-  private readonly extensions: ComponentExtensions;
+  private readonly adaptations: ComponentAdaptation[];
   private readonly themes: AppTheme[];
   private readonly configLoader?: AppConfigLoader;
   private readonly defaultApis: Iterable<AnyApiFactory>;
@@ -203,7 +239,10 @@ export class AppManager implements BackstageApp {
     this.icons = options.icons;
     this.plugins = new Set((options.plugins as CompatiblePlugin[]) ?? []);
     this.components = options.components;
-    this.extensions = options.extensions ?? [];
+    this.adaptations = filterAdaptations(
+      options.adaptations,
+      this.plugins as Set<BackstagePlugin<any, any>>,
+    );
     this.themes = options.themes as AppTheme[];
     this.configLoader = options.configLoader ?? defaultConfigLoader;
     this.defaultApis = options.defaultApis ?? [];
@@ -225,15 +264,6 @@ export class AppManager implements BackstageApp {
 
   getComponents(): AppComponents {
     return this.components;
-  }
-
-  getExtensions(): ComponentExtensions {
-    return [
-      // Plugin-provided extensions
-      ...this.getPlugins().flatMap(plugin => plugin.extensions ?? []),
-      // App-provided extensions
-      ...this.extensions,
-    ];
   }
 
   getProvider(): ComponentType<{}> {
@@ -329,8 +359,6 @@ export class AppManager implements BackstageApp {
         }
       }, [hasConfigApi, loadedConfig, featureFlags]);
 
-      const extensions = useMemo(() => this.getExtensions(), []);
-
       if ('node' in loadedConfig) {
         // Loading or error
         return loadedConfig.node;
@@ -352,9 +380,9 @@ export class AppManager implements BackstageApp {
                 <InternalAppContext.Provider
                   value={{ routeObjects: routing.objects }}
                 >
-                  <ExtensionsProvider extensions={extensions}>
+                  <AdaptationProvider adaptations={this.adaptations}>
                     {children}
-                  </ExtensionsProvider>
+                  </AdaptationProvider>
                 </InternalAppContext.Provider>
               </RoutingProvider>
             </ThemeProvider>
