@@ -111,6 +111,12 @@ export const createPublishGitlabMergeRequestAction = (options: {
       const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
       const projectPath = `${owner}/${repo}`;
 
+      if (ctx.input.projectid) {
+        const deprecationWarning = `Property "projectid" is deprecated and no longer to needed to create a MR`;
+        ctx.logger.warn(deprecationWarning);
+        console.warn(deprecationWarning);
+      }
+
       const integrationConfig = integrations.gitlab.byHost(host);
 
       const destinationBranch = ctx.input.branchName;
