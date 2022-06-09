@@ -28,6 +28,9 @@ export const rootRouteRef = createRouteRef({
   id: 'scaffolder',
 });
 
+/**
+ * @deprecated This is the old template route, can be deleted before next major release
+ */
 export const legacySelectedTemplateRouteRef = createSubRouteRef({
   id: 'scaffolder/legacy/selected-template',
   parent: rootRouteRef,
