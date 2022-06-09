@@ -233,7 +233,7 @@ describe('TemplateCard', () => {
     expect(getByRole('button', { name: 'Choose' })).toBeInTheDocument();
     expect(getByRole('button', { name: 'Choose' })).toHaveAttribute(
       'href',
-      '/templates/bob',
+      '/templates/default/bob',
     );
   });
 });
