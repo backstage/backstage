@@ -19,6 +19,7 @@ import { useAsync } from 'react-use';
 
 import { errorApiRef, useApi } from '../apis';
 import { Extension } from '../plugin';
+import { ensureValidId } from './id';
 
 import {
   ComponentAdaptation,
@@ -90,12 +91,7 @@ export function adaptComponent<Props extends {}, Context extends {}>(
   componentRef: AdaptableComponentRef<Props, Context>,
   adaptation: ComponentAdaptationSpec<Props, Context>,
 ): ComponentAdaptation<Props, Context> {
-  if (adaptation.id.match(/^[a-z](-?[a-z0-9]+)*$/)) {
-    throw new Error(
-      `Invalid adaptation id "${adaptation.id}": ` +
-        'must only contain lowercase alpha numeric values and dashes (-)',
-    );
-  }
+  ensureValidId(adaptation.id, `Invalid adaptation id "${adaptation.id}"`);
 
   const ret: ComponentAdaptation<Props, Context> = {
     ref: componentRef,

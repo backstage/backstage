@@ -25,6 +25,7 @@ import React, {
 import { useAsync } from 'react-use';
 
 import { useComponentAdaptations } from './AdaptationProvider';
+import { ensureValidId } from './id';
 import {
   AdaptableComponentDescriptor,
   AdaptableComponentAdaptation,
@@ -54,12 +55,7 @@ export function createAdaptableComponentRef<
 >(
   config: UnimplementedAdaptableComponentRefConfig,
 ): AdaptableComponentRef<Props, Context> {
-  if (config.id.match(/^[a-z](-?[a-z0-9]+)*$/)) {
-    throw new Error(
-      `Invalid adaptable component id "${config.id}": ` +
-        'must only contain lowercase alpha numeric values and dashes (-)',
-    );
-  }
+  ensureValidId(config.id, `Invalid adaptable component id "${config.id}"`);
 
   return {
     id: config.id,
