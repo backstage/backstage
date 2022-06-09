@@ -185,6 +185,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
         ).then((mergeRequest: { web_url: string }) => {
           return mergeRequest.web_url;
         });
+        /** @deprecated */
         ctx.output('projectid', projectPath);
         ctx.output('projectPath', projectPath);
         ctx.output('mergeRequestUrl', mergeRequestUrl);
