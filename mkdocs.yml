@@ -167,7 +167,6 @@ nav:
       - Deploying Backstage: 'deployment/index.md'
       - Docker: 'deployment/docker.md'
       - Kubernetes: 'deployment/k8s.md'
-      - Helm: 'deployment/helm.md'
       - Heroku: 'deployment/heroku.md'
   - Designing for Backstage:
       - Design: 'dls/design.md'
