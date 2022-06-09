@@ -24,9 +24,6 @@ catalog:
         branch: main # Optional. Uses `master` as default
         group: example-group # Group and subgroup (if needed) to look for repositories
         entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
-        rules: # Optional. Uses the default rules if not present
-          - repository: example-repo
-            allow: [Component, System, Location, Template]
 ```
 
 As this provider is not one of the default providers, you will first need to install

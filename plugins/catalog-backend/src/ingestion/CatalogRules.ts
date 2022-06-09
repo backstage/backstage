@@ -18,7 +18,6 @@ import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import path from 'path';
 import { LocationSpec } from '../api';
-import { ScmIntegrations } from '@backstage/integration';
 
 /**
  * Rules to apply to catalog entities.
@@ -120,18 +119,6 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
       rules.push(...locationRules);
     }
 
-    if (config.has('catalog.providers')) {
-      const providersConf = config.getConfig('catalog.providers');
-      const providerList = providersConf.keys();
-      providerList.forEach(provider => {
-        if (provider === 'gitlab') {
-          rules.push(
-            ...getGitlabRules(config, providersConf.getConfig(provider)),
-          );
-        }
-      });
-    }
-
     return new DefaultCatalogRulesEnforcer(rules);
   }
 
@@ -199,36 +186,4 @@ function resolveTarget(type: string, target: string): string {
   }
 
   return path.resolve(target);
-}
-
-function getGitlabRules(initialConfig: Config, config: Config): CatalogRule[] {
-  return config.keys().flatMap(id => {
-    const gitlabConf = config.getConfig(id);
-    if (!gitlabConf.has('rules')) {
-      return [];
-    }
-
-    const integrations = ScmIntegrations.fromConfig(initialConfig).gitlab;
-    const gitlabHost = gitlabConf.getString('host');
-    const integration = integrations.byHost(gitlabHost);
-    if (!integration) {
-      throw new Error(
-        `No gitlab integration found that matches host ${gitlabHost}`,
-      );
-    }
-
-    const type = `url`;
-    const branch = gitlabConf.getOptionalString('branch') ?? 'master';
-    const entityFilename =
-      gitlabConf.getOptionalString('entityFilename') ?? 'catalog-info.yaml';
-
-    return gitlabConf.getConfigArray('rules').map(ruleConf => {
-      const repoName = ruleConf.getString('repository');
-      const target = `${integration.config.baseUrl}/${id}/${repoName}/-/blob/${branch}/${entityFilename}`;
-      return {
-        allow: ruleConf.getStringArray('allow').map(kind => ({ kind })),
-        locations: [{ type, target }],
-      };
-    });
-  });
 }

@@ -160,7 +160,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       const project_branch = project.default_branch ?? this.config.branch;
 
       const projectHasFile: boolean = await client.hasFile(
-        project.path_with_namespace,
+        project.path_with_namespace ?? '',
         project_branch,
         this.config.catalogFile,
       );

@@ -26,7 +26,7 @@ export type GitLabProject = {
   archived: boolean;
   last_activity_at: string;
   web_url: string;
-  path_with_namespace: string;
+  path_with_namespace?: string;
 };
 
 export type GitlabProviderConfig = {
