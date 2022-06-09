@@ -47,14 +47,16 @@ export class DynatraceClient implements DynatraceApi {
     if (response.status === 200) {
       return (await response.json()) as T;
     }
-    return undefined;
+    throw new Error(
+      `Dynatrace API call failed: ${response.status}:${response.statusText}`,
+    );
   }
 
   async getDynatraceProblems(
     dynatraceEntityId: string,
   ): Promise<DynatraceProblems | undefined> {
     if (!dynatraceEntityId) {
-      return undefined;
+      throw new Error('Dynatrace entity ID is required');
     }
 
     return this.callApi('problems', {

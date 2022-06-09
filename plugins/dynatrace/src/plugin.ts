@@ -25,13 +25,9 @@ import {
 import { Entity } from '@backstage/catalog-model';
 import { DYNATRACE_ID_ANNOTATION } from './constants';
 
-import { rootRouteRef } from './routes';
-
+// @public
 export const dynatracePlugin = createPlugin({
   id: 'dynatrace',
-  routes: {
-    root: rootRouteRef,
-  },
   apis: [
     createApiFactory({
       api: dynatraceApiRef,
@@ -48,9 +44,11 @@ export const dynatracePlugin = createPlugin({
   ],
 });
 
+// @public
 export const isDynatraceAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[DYNATRACE_ID_ANNOTATION]);
 
+// @public
 export const DynatraceTab = dynatracePlugin.provide(
   createRoutableExtension({
     name: 'DynatraceTab',

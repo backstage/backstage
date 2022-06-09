@@ -23,6 +23,6 @@ export interface Config {
      * base url for links
      * @visibility frontend
      */
-    baseUrl?: string;
+    baseUrl: string;
   };
 }
