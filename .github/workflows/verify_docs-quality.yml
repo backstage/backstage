@@ -21,7 +21,7 @@ jobs:
         run: echo "::set-output name=args::$(node scripts/check-docs-quality.js --ci-args)"
 
       - name: documentation quality check
-        uses: errata-ai/vale-action@v1.5.0
+        uses: errata-ai/vale-action@v2.0.1
         with:
           # This also contains --config=.github/vale/config.ini ... :/
           files: '${{ steps.generate.outputs.args }}'

@@ -137,6 +137,7 @@ const SearchPage = () => {
                       case 'software-catalog':
                         return (
                           <CatalogSearchResultListItem
+                            icon={<CatalogIcon />}
                             key={document.location}
                             result={document}
                             highlight={highlight}
@@ -145,6 +146,7 @@ const SearchPage = () => {
                       case 'techdocs':
                         return (
                           <TechDocsSearchResultListItem
+                            icon={<DocsIcon />}
                             key={document.location}
                             result={document}
                             highlight={highlight}

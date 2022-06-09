@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import {
   Box,
   Chip,
   Divider,
   ListItem,
+  ListItemIcon,
   ListItemText,
   makeStyles,
 } from '@material-ui/core';
@@ -47,6 +48,7 @@ const useStyles = makeStyles({
  * @public
  */
 export interface CatalogSearchResultListItemProps {
+  icon?: ReactNode;
   result: IndexableDocument;
   highlight?: ResultHighlight;
 }
@@ -60,39 +62,44 @@ export function CatalogSearchResultListItem(
   const classes = useStyles();
   return (
     <Link to={result.location}>
-      <ListItem alignItems="flex-start" className={classes.flexContainer}>
-        <ListItemText
-          className={classes.itemText}
-          primaryTypographyProps={{ variant: 'h6' }}
-          primary={
-            props.highlight?.fields.title ? (
-              <HighlightedSearchResultText
-                text={props.highlight.fields.title}
-                preTag={props.highlight.preTag}
-                postTag={props.highlight.postTag}
-              />
-            ) : (
-              result.title
-            )
-          }
-          secondary={
-            props.highlight?.fields.text ? (
-              <HighlightedSearchResultText
-                text={props.highlight.fields.text}
-                preTag={props.highlight.preTag}
-                postTag={props.highlight.postTag}
-              />
-            ) : (
-              result.text
-            )
-          }
-        />
-        <Box>
-          {result.kind && <Chip label={`Kind: ${result.kind}`} size="small" />}
-          {result.lifecycle && (
-            <Chip label={`Lifecycle: ${result.lifecycle}`} size="small" />
-          )}
-        </Box>
+      <ListItem alignItems="flex-start">
+        {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
+        <div className={classes.flexContainer}>
+          <ListItemText
+            className={classes.itemText}
+            primaryTypographyProps={{ variant: 'h6' }}
+            primary={
+              props.highlight?.fields.title ? (
+                <HighlightedSearchResultText
+                  text={props.highlight.fields.title}
+                  preTag={props.highlight.preTag}
+                  postTag={props.highlight.postTag}
+                />
+              ) : (
+                result.title
+              )
+            }
+            secondary={
+              props.highlight?.fields.text ? (
+                <HighlightedSearchResultText
+                  text={props.highlight.fields.text}
+                  preTag={props.highlight.preTag}
+                  postTag={props.highlight.postTag}
+                />
+              ) : (
+                result.text
+              )
+            }
+          />
+          <Box>
+            {result.kind && (
+              <Chip label={`Kind: ${result.kind}`} size="small" />
+            )}
+            {result.lifecycle && (
+              <Chip label={`Lifecycle: ${result.lifecycle}`} size="small" />
+            )}
+          </Box>
+        </div>
       </ListItem>
       <Divider component="li" />
     </Link>
