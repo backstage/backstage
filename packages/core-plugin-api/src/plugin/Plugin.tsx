@@ -25,11 +25,13 @@ import {
 import { AnyApiFactory } from '../apis';
 import { ComponentAdaptation } from '../adaptable-components/types';
 
-type ExtractExtensions<T extends Record<string, Extension<any>>> = T extends {
-  [K: string]: Extension<infer U>;
-}
-  ? { [K: string]: U }
+type ExtensionType<T extends Extension<any>> = T extends Extension<infer U>
+  ? U
   : never;
+
+type ExtractExtensions<T extends Record<string, Extension<any>>> = {
+  [K in keyof T]: ExtensionType<T[K]>;
+};
 
 /**
  * @internal
@@ -126,10 +128,7 @@ export function createPlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
   PluginInputOptions extends {} = {},
-  ComponentAdaptations extends Record<
-    string,
-    Extension<ComponentAdaptation>
-  > = {},
+  ComponentAdaptations extends Record<string, Extension<any>> = {},
 >(
   config: PluginConfig<
     Routes,
