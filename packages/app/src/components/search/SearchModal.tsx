@@ -184,7 +184,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
             <SearchResult>
               {({ results }) => (
                 <List>
-                  {results.map(({ type, document, highlight }) => {
+                  {results.map(({ type, document, highlight, rank }) => {
                     let resultItem;
                     switch (type) {
                       case 'software-catalog':
@@ -194,6 +194,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
                             key={document.location}
                             result={document}
                             highlight={highlight}
+                            rank={rank}
                           />
                         );
                         break;
@@ -204,6 +205,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
                             key={document.location}
                             result={document}
                             highlight={highlight}
+                            rank={rank}
                           />
                         );
                         break;
@@ -213,6 +215,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
                             key={document.location}
                             result={document}
                             highlight={highlight}
+                            rank={rank}
                           />
                         );
                     }
