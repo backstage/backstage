@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
+import React, { ComponentType, useEffect } from 'react';
 import { Routes, Route, useOutlet, Navigate, useParams } from 'react-router';
 import { Entity } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
@@ -101,10 +101,20 @@ export const Router = (props: RouterProps) => {
         ),
     ),
   ];
-
+  /**
+   * This component can be deleted once the older routes have been deprecated.
+   */
   const RedirectingComponent = () => {
     const { templateName } = useParams();
     const newLink = useRouteRef(selectedTemplateRouteRef);
+    // eslint-disable-next-line no-console
+    useEffect(
+      () =>
+        console.warn(
+          'The route /template/:templateName is deprecated, please use the new /template/:namespace/:templateName route instead',
+        ),
+      [],
+    );
     return <Navigate to={newLink({ namespace: 'default', templateName })} />;
   };
 
