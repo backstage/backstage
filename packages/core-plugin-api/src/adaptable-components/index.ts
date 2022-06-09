@@ -24,7 +24,7 @@ export {
 } from './create';
 export {
   adaptComponent,
-  createAdaptableComponentExtension,
+  createComponentAdaptationExtension,
   useAdaptComponent,
 } from './adaptations';
 export { AdaptationProvider } from './AdaptationProvider';

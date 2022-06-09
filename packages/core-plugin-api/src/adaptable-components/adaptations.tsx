@@ -106,7 +106,7 @@ export function adaptComponent<Props extends {}, Context extends {}>(
   return handleAsyncAdaptation(ret, adaptation);
 }
 
-export function createAdaptableComponentExtension<
+export function createComponentAdaptationExtension<
   Props extends {},
   Context extends {},
 >(
