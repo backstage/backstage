@@ -35,8 +35,8 @@ export class RollbarApi {
     },
   ): Promise<
     {
-      timestamp: number;
       count: number;
+      timestamp: number;
     }[]
   >;
   // (undocumented)
@@ -44,8 +44,8 @@ export class RollbarApi {
     {
       id: number;
       name: string;
-      accountId: number;
       status: string;
+      accountId: number;
     }[]
   >;
   // (undocumented)
@@ -57,21 +57,21 @@ export class RollbarApi {
     },
   ): Promise<
     {
-      timestamp: number;
       count: number;
+      timestamp: number;
     }[]
   >;
   // (undocumented)
   getProject(projectName: string): Promise<{
     id: number;
     name: string;
-    accountId: number;
     status: string;
+    accountId: number;
   }>;
   // (undocumented)
   getProjectItems(projectName: string): Promise<{
-    items: RollbarItem[];
     page: number;
+    items: RollbarItem[];
     totalCount: number;
   }>;
   // (undocumented)
@@ -114,6 +114,6 @@ export interface RouterOptions {
 
 // Warnings were encountered during analysis:
 //
-// src/api/RollbarApi.d.ts:20:9 - (ae-forgotten-export) The symbol "RollbarItem" needs to be exported by the entry point index.d.ts
+// src/api/RollbarApi.d.ts:21:9 - (ae-forgotten-export) The symbol "RollbarItem" needs to be exported by the entry point index.d.ts
 // src/api/RollbarApi.d.ts:32:13 - (ae-forgotten-export) The symbol "RollbarFrameworkId" needs to be exported by the entry point index.d.ts
 ```
