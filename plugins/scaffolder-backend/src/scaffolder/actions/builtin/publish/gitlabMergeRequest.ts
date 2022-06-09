@@ -40,7 +40,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
     branchName: string;
     targetPath: string;
     token?: string;
-    /** @deprecated */
+    /** @deprecated Use projectPath instead */
     projectid?: string;
   }>({
     id: 'publish:gitlab:merge-request',
@@ -54,7 +54,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
             title: 'Repository Location',
             description: `Accepts the format 'gitlab.com/group_name/project_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
           },
-          /** @deprecated */
+          /** @deprecated Use projectPath instead */
           projectid: {
             type: 'string',
             title: 'projectid',
@@ -185,7 +185,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
         ).then((mergeRequest: { web_url: string }) => {
           return mergeRequest.web_url;
         });
-        /** @deprecated */
+        /** @deprecated Use projectPath instead */
         ctx.output('projectid', projectPath);
         ctx.output('projectPath', projectPath);
         ctx.output('mergeRequestUrl', mergeRequestUrl);
