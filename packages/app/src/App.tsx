@@ -115,6 +115,7 @@ const app = createApp({
     // Custom icon example
     alert: AlarmIcon,
   },
+  adaptations: [plugins.githubActionsPlugin.adaptations.link],
   components: {
     SignInPage: props => {
       return (
