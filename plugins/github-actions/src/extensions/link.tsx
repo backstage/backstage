@@ -15,29 +15,31 @@
  */
 
 import React from 'react';
-import { extendComponent } from '@backstage/core-plugin-api';
+
+import { ComponentAdaptationOf } from '@backstage/core-plugin-api';
 import { linkComponentRef } from '@backstage/core-components';
 
-export const linkExtension = extendComponent(linkComponentRef, {
-  Provider({ value, Component }) {
-    const isGithubUrl = React.useMemo(() => {
-      try {
-        const host = new URL(value.to).host;
-        return host === 'github.com' || host.endsWith('.github.com');
-      } catch (err) {
-        return false;
-      }
-    }, [value.to]);
+export const Provider: ComponentAdaptationOf<typeof linkComponentRef> = ({
+  value,
+  Component,
+}) => {
+  const isGithubUrl = React.useMemo(() => {
+    try {
+      const host = new URL(value.to).host;
+      return host === 'github.com' || host.endsWith('.github.com');
+    } catch (err) {
+      return false;
+    }
+  }, [value.to]);
 
-    if (!value.children || !isGithubUrl) return <Component />;
+  if (!value.children || !isGithubUrl) return <Component />;
 
-    const children = (
-      <>
-        {value.children}
-        {` (this link goes to GitHub)`}
-      </>
-    );
+  const children = (
+    <>
+      {value.children}
+      {` (this link goes to GitHub)`}
+    </>
+  );
 
-    return <Component value={{ ...value, children }} />;
-  },
-});
+  return <Component value={{ ...value, children }} />;
+};
