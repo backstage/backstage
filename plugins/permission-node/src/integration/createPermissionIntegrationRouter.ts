@@ -195,6 +195,38 @@ export const createPermissionIntegrationRouter = <
       description: rule.description,
       resourceType: rule.resourceType,
       paramLength: rule.toQuery.length,
+      /*
+        Maybe use zod-to-json-schema here
+
+        This will return the following object:
+
+        {
+          "name": "IS_ENTITY_OWNER",
+          "description": "Allow entities owned by the current user",
+          "resourceType": "catalog-entity",
+          "paramLength": 1,
+          "schema": {
+            "items": [
+              {
+                "_def": {
+                  "type": {
+                    "_def": {
+                      "checks": [],
+                      "typeName": "ZodString"
+                    }
+                  },
+                  "minLength": null,
+                  "maxLength": null,
+                  "typeName": "ZodArray"
+                }
+              }
+            ],
+            "typeName": "ZodTuple",
+            "rest": null
+          }
+        }
+      */
+      schema: rule.schema?._def,
     }));
 
     return res.json({ permissions, rules: serializableRules });
