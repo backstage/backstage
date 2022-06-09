@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import type { JsonObject } from '@backstage/types';
 import type {
   FetchResponse,
   KubernetesFetchError,
+  KubernetesRequestAuth,
   KubernetesRequestBody,
   ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-common';
@@ -67,6 +69,8 @@ export interface CustomResource extends ObjectToFetch {
   objectType: 'customresources';
 }
 
+export type CustomResourceMatcher = Omit<ObjectToFetch, 'objectType'>;
+
 export type KubernetesObjectTypes =
   | 'pods'
   | 'services'
@@ -93,7 +97,7 @@ export interface KubernetesClustersSupplier {
 
 // Used to locate which cluster(s) a service is running on
 export interface KubernetesServiceLocator {
-  getClustersByServiceId(serviceId: string): Promise<ClusterDetails[]>;
+  getClustersByEntity(entity: Entity): Promise<ClusterDetails[]>;
 }
 
 export type ServiceLocatorMethod = 'multiTenant' | 'http'; // TODO implement http
@@ -171,6 +175,12 @@ export type ObjectsByEntityRequest = KubernetesRequestBody;
 
 export interface KubernetesObjectsProvider {
   getKubernetesObjectsByEntity(
-    request: ObjectsByEntityRequest,
+    entity: Entity,
+    auth: KubernetesRequestAuth,
+  ): Promise<ObjectsByEntityResponse>;
+  getCustomResourcesByEntity(
+    entity: Entity,
+    auth: KubernetesRequestAuth,
+    customResources: CustomResourceMatcher[],
   ): Promise<ObjectsByEntityResponse>;
 }

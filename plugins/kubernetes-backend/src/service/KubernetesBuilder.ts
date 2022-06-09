@@ -228,7 +228,8 @@ export class KubernetesBuilder {
       const requestBody: ObjectsByEntityRequest = req.body;
       try {
         const response = await objectsProvider.getKubernetesObjectsByEntity(
-          requestBody,
+          requestBody.entity,
+          requestBody.auth || {},
         );
         res.json(response);
       } catch (e) {

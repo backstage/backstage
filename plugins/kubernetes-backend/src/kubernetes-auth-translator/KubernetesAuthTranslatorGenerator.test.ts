@@ -17,7 +17,7 @@
 import { KubernetesAuthTranslator } from './types';
 import { GoogleKubernetesAuthTranslator } from './GoogleKubernetesAuthTranslator';
 import { KubernetesAuthTranslatorGenerator } from './KubernetesAuthTranslatorGenerator';
-import { ServiceAccountKubernetesAuthTranslator } from './ServiceAccountKubernetesAuthTranslator';
+import { NoopKubernetesAuthTranslator } from './NoopKubernetesAuthTranslator';
 import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator';
 import { OidcKubernetesAuthTranslator } from './OidcKubernetesAuthTranslator';
 import { getVoidLogger } from '@backstage/backend-common';
@@ -42,9 +42,7 @@ describe('getKubernetesAuthTranslatorInstance', () => {
   it('can return an auth translator for serviceAccount auth', () => {
     const authTranslator: KubernetesAuthTranslator =
       sut.getKubernetesAuthTranslatorInstance('serviceAccount', { logger });
-    expect(
-      authTranslator instanceof ServiceAccountKubernetesAuthTranslator,
-    ).toBe(true);
+    expect(authTranslator instanceof NoopKubernetesAuthTranslator).toBe(true);
   });
 
   it('can return an auth translator for oidc auth', () => {
