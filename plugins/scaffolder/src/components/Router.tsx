@@ -107,9 +107,9 @@ export const Router = (props: RouterProps) => {
   const RedirectingComponent = () => {
     const { templateName } = useParams();
     const newLink = useRouteRef(selectedTemplateRouteRef);
-    // eslint-disable-next-line no-console
     useEffect(
       () =>
+        // eslint-disable-next-line no-console
         console.warn(
           'The route /template/:templateName is deprecated, please use the new /template/:namespace/:templateName route instead',
         ),
