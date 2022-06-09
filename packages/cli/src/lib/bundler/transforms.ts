@@ -57,7 +57,6 @@ export const transforms = (options: TransformOptions): Transforms => {
         {
           loader: 'swc-loader',
           options: {
-            env: { mode: 'usage' },
             jsc: {
               parser: {
                 syntax: 'typescript',
@@ -82,7 +81,6 @@ export const transforms = (options: TransformOptions): Transforms => {
         {
           loader: 'swc-loader',
           options: {
-            env: { mode: 'usage' },
             jsc: {
               parser: {
                 syntax: 'ecmascript',
