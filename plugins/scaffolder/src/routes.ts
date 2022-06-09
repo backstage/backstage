@@ -28,10 +28,16 @@ export const rootRouteRef = createRouteRef({
   id: 'scaffolder',
 });
 
+export const legacySelectedTemplateRouteRef = createSubRouteRef({
+  id: 'scaffolder/legacy/selected-template',
+  parent: rootRouteRef,
+  path: '/templates/:templateName',
+});
+
 export const selectedTemplateRouteRef = createSubRouteRef({
   id: 'scaffolder/selected-template',
   parent: rootRouteRef,
-  path: '/templates/:templateName',
+  path: '/templates/:namespace/:templateName',
 });
 
 export const scaffolderTaskRouteRef = createSubRouteRef({
