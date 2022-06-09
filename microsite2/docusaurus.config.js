@@ -62,6 +62,11 @@ module.exports = {
   ],
   plugins: ['backstage-plugin-list'],
   themeConfig: {
+    colorMode: {
+      defaultMode: 'dark',
+      disableSwitch: true,
+      respectPrefersColorScheme: false,
+    },
     algolia: {
       appId: '123',
       apiKey: '123',
