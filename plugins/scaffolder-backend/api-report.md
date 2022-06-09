@@ -344,6 +344,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   branchName: string;
   targetPath: string;
   token?: string | undefined;
+  projectid?: string | undefined;
 }>;
 
 // @public
@@ -709,4 +710,8 @@ export class TemplateActionRegistry {
 
 // @public (undocumented)
 export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
+
+// Warnings were encountered during analysis:
+//
+// src/scaffolder/actions/builtin/publish/gitlabMergeRequest.d.ts:16:9 - (tsdoc-missing-deprecation-message) The @deprecated block must include a deprecation message, e.g. describing the recommended alternative
 ```
