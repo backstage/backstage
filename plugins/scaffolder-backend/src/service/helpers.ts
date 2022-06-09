@@ -21,7 +21,6 @@ import {
   parseLocationRef,
   ANNOTATION_SOURCE_LOCATION,
   CompoundEntityRef,
-  DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
