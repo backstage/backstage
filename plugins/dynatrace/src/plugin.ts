@@ -27,7 +27,10 @@ import { DYNATRACE_ID_ANNOTATION } from './constants';
 
 import { rootRouteRef } from './routes';
 
-// @public (undocumented)
+/**
+ * Create the Dynatrace plugin.
+ * @public
+ */
 export const dynatracePlugin = createPlugin({
   id: 'dynatrace',
   apis: [
@@ -46,11 +49,18 @@ export const dynatracePlugin = createPlugin({
   ],
 });
 
-// @public (undocumented)
+/**
+ * Checks if the entity has a dynatrace id annotation.
+ * @public
+ * @param entity {Entity} - The entity to check for the dynatrace id annotation.
+ */
 export const isDynatraceAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[DYNATRACE_ID_ANNOTATION]);
 
-// @public (undocumented)
+/**
+ * Creates a routable extension for the dynatrace plugin tab.
+ * @public
+ */
 export const DynatraceTab = dynatracePlugin.provide(
   createRoutableExtension({
     name: 'DynatraceTab',

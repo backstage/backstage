@@ -7,25 +7,13 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "dynatracePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const dynatracePlugin: BackstagePlugin<
-  {
-    root: RouteRef<undefined>;
-  },
-  {}
->;
+export const dynatracePlugin: BackstagePlugin<{}, {}>;
 
-// Warning: (ae-missing-release-tag) "DynatraceTab" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const DynatraceTab: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "isDynatraceAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const isDynatraceAvailable: (entity: Entity) => boolean;
 
