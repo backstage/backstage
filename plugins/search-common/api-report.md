@@ -52,11 +52,9 @@ export type QueryTranslator = (query: SearchQuery) => unknown;
 
 // @public (undocumented)
 export interface Result<TDocument extends SearchDocument> {
-  // (undocumented)
   document: TDocument;
-  // (undocumented)
   highlight?: ResultHighlight;
-  // (undocumented)
+  rank?: number;
   type: string;
 }
 
