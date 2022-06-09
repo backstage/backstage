@@ -271,6 +271,22 @@ catalog:
     # Backstage end-to-end tests of TechDocs
     - type: file
       target: ../../cypress/e2e-fixture.catalog.info.yaml
+  providers:
+    # Add github-discovery providers here to ingest correctly formatedyaml files on repos and generates entities
+    #     All fields are required
+    #     - id: 'unique-id'                   # A unique id
+    #       orgUrl: 'your-github-org-url'     # the github url of the target repo 
+    #       files:                            # an array of key, file pairs that will be parsed by the provider 
+    #       - file: 'name-of-the-entity.yaml' # the exact name of the file ie. catalog-info.yaml
+    #
+    github-discovery:
+    ### Example github-discovery entity provider config
+    # - id: 'provider-1'
+    #   orgUrl: 'https://github.com/backstage'
+    #   files:
+    #   - file: catalog-info.yaml
+    #   - file: template.yaml
+  
 scaffolder:
   # Use to customize default commit author info used when new components are created
   # defaultAuthor:

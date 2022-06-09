@@ -46,7 +46,8 @@
     "msw": "^0.42.0",
     "node-fetch": "^2.6.7",
     "uuid": "^8.0.0",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "yaml": "^2.1.1"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "^0.1.25-next.2",

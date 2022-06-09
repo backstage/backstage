@@ -42,7 +42,7 @@ import {
   getOrganizationTeams,
   getOrganizationUsers,
   parseGitHubOrgUrl,
-} from './lib';
+} from '../lib';
 
 /**
  * Options for {@link GitHubOrgEntityProvider}.
