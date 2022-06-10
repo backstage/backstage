@@ -102,8 +102,9 @@ export const EntityPicker = (
           <TextField
             {...params}
             label={title}
-            margin="normal"
+            margin="dense"
             helperText={description}
+            FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
             variant="outlined"
             required={required}
             InputProps={params.InputProps}

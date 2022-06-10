@@ -206,6 +206,7 @@ export function SelectComponent(props: SelectProps) {
             data-testid="select"
             displayEmpty
             multiple={multiple}
+            margin="dense"
             onChange={handleChange}
             onClick={handleClick}
             open={isOpen}
