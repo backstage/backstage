@@ -42,15 +42,17 @@ export type { ElasticSearchClientOptions };
  */
 export type ElasticSearchCustomIndexTemplate = {
   name: string;
-  body: ElasticSearchIndexTemplateBody;
+  body: ElasticSearchCustomIndexTemplateBody;
 };
 
 /**
  * Elasticsearch specific index template body
  * @public
  */
-export type ElasticSearchIndexTemplateBody = {
+export type ElasticSearchCustomIndexTemplateBody = {
   index_patterns: string[];
+  // See available properties of template
+  // https://www.elastic.co/guide/en/elasticsearch/reference/7.15/indices-put-template.html#put-index-template-api-request-body
   template: Record<string, any>;
 };
 

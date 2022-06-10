@@ -30,6 +30,8 @@ export type {
   ElasticSearchQueryTranslator,
   ElasticSearchQueryTranslatorOptions,
   ElasticSearchOptions,
+  ElasticSearchCustomIndexTemplate,
+  ElasticSearchCustomIndexTemplateBody,
 } from './ElasticSearchSearchEngine';
 export type {
   ElasticSearchSearchEngineIndexer,
