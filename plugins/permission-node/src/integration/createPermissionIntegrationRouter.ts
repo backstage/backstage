@@ -194,7 +194,9 @@ export const createPermissionIntegrationRouter = <
       name: rule.name,
       description: rule.description,
       resourceType: rule.resourceType,
-      paramLength: rule.toQuery.length,
+      parameters: {
+        count: rule.toQuery.length,
+      },
     }));
 
     return res.json({ permissions, rules: serializableRules });

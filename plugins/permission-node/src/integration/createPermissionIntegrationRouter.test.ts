@@ -524,13 +524,13 @@ describe('createPermissionIntegrationRouter', () => {
             name: testRule1.name,
             description: testRule1.description,
             resourceType: testRule1.resourceType,
-            paramLength: 2,
+            parameters: { count: 2 },
           },
           {
             name: testRule2.name,
             description: testRule2.description,
             resourceType: testRule2.resourceType,
-            paramLength: 1,
+            parameters: { count: 1 },
           },
         ],
       });
