@@ -102,6 +102,31 @@ import { Client } from '@elastic/elastic-search';
 const client = searchEngine.newClient(options => new Client(options));
 ```
 
+#### Set custom index template
+
+The elasticsearch engine gives you the ability to set a custom index template if needed.
+
+> Index templates define settings, mappings, and aliases that can be applied automatically to new indices.
+
+```typescript
+// app/backend/src/plugins/search.ts
+const searchEngine = await ElasticSearchSearchEngine.initialize({
+  logger: env.logger,
+  config: env.config,
+});
+
+searchEngine.setIndexTemplate({
+  name: '<name-of-your-custom-template>',
+  body: {
+    index_patterns: ['<your-index-pattern>'],
+    template: {
+      mappings: {},
+      settings: {},
+    },
+  },
+});
+```
+
 ## Example configurations
 
 ### AWS

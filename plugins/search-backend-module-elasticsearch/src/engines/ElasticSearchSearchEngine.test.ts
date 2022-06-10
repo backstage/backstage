@@ -50,6 +50,23 @@ jest.mock('./ElasticSearchSearchEngineIndexer', () => ({
     .mockImplementation(() => indexerMock),
 }));
 
+const customIndexTemplate = {
+  name: 'custom-index-template',
+  body: {
+    index_patterns: ['*'],
+    template: {
+      settings: {
+        number_of_shards: 1,
+      },
+      mappings: {
+        _source: {
+          enabled: false,
+        },
+      },
+    },
+  },
+};
+
 describe('ElasticSearchSearchEngine', () => {
   let testSearchEngine: ElasticSearchSearchEngine;
   let inspectableSearchEngine: ElasticSearchSearchEngineForTranslatorTests;
@@ -70,6 +87,20 @@ describe('ElasticSearchSearchEngine', () => {
     );
     // eslint-disable-next-line dot-notation
     client = testSearchEngine['elasticSearchClient'];
+  });
+
+  describe('custom index template', () => {
+    it('should set custom index template', async () => {
+      const indexTemplateSpy = jest.fn().mockReturnValue(customIndexTemplate);
+      mock.add(
+        { method: 'PUT', path: '/_index_template/custom-index-template' },
+        indexTemplateSpy,
+      );
+      await inspectableSearchEngine.setIndexTemplate(customIndexTemplate);
+
+      expect(indexTemplateSpy).toHaveBeenCalled();
+      expect(indexTemplateSpy).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('queryTranslator', () => {
@@ -760,6 +791,10 @@ describe('ElasticSearchSearchEngine', () => {
   });
 
   describe('indexer', () => {
+    beforeEach(async () => {
+      await testSearchEngine.setIndexTemplate(customIndexTemplate);
+    });
+
     it('should get indexer', async () => {
       const indexer = await testSearchEngine.getIndexer('test-index');
 

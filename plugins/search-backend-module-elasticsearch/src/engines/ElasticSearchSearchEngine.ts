@@ -37,6 +37,37 @@ import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineInd
 export type { ElasticSearchClientOptions };
 
 /**
+ * Elasticsearch specific index template
+ * @public
+ */
+export type ElasticSearchCustomIndexTemplate = {
+  name: string;
+  body: ElasticSearchCustomIndexTemplateBody;
+};
+
+/**
+ * Elasticsearch specific index template body
+ * @public
+ */
+export type ElasticSearchCustomIndexTemplateBody = {
+  /**
+   * Array of wildcard (*) expressions used to match the names of data streams and indices during creation.
+   */
+  index_patterns: string[];
+  /**
+   * An ordered list of component template names.
+   * Component templates are merged in the order specified,
+   * meaning that the last component template specified has the highest precedence.
+   */
+  composed_of?: string[];
+  /**
+   * See available properties of template
+   * https://www.elastic.co/guide/en/elasticsearch/reference/7.15/indices-put-template.html#put-index-template-api-request-body
+   */
+  template?: Record<string, any>;
+};
+
+/**
  * Search query that the elasticsearch engine understands.
  * @public
  */
@@ -236,8 +267,18 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     this.translator = translator;
   }
 
+  async setIndexTemplate(template: ElasticSearchCustomIndexTemplate) {
+    try {
+      await this.elasticSearchClient.indices.putIndexTemplate(template);
+      this.logger.info('Custom index template set');
+    } catch (error) {
+      this.logger.error(`Unable to set custom index template: ${error}`);
+    }
+  }
+
   async getIndexer(type: string) {
     const alias = this.constructSearchAlias(type);
+
     const indexer = new ElasticSearchSearchEngineIndexer({
       type,
       indexPrefix: this.indexPrefix,
