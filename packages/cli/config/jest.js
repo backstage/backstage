@@ -132,7 +132,7 @@ async function getProjectConfig(targetPath, displayName) {
 
     transform: {
       '\\.(js|jsx|ts|tsx|mjs|cjs)$': [
-        '@swc/jest',
+        require.resolve('./jestSwcTransform'),
         {
           sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
         },
