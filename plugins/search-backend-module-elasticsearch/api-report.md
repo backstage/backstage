@@ -224,13 +224,11 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   }: ElasticSearchOptions): Promise<ElasticSearchSearchEngine>;
   // (undocumented)
   getIndexer(type: string): Promise<ElasticSearchSearchEngineIndexer>;
-  // (undocumented)
-  protected indexTemplate?: ElasticSearchCustomIndexTemplate;
   newClient<T>(create: (options: ElasticSearchClientOptions) => T): T;
   // (undocumented)
   query(query: SearchQuery): Promise<IndexableResultSet>;
   // (undocumented)
-  setIndexTemplate(template: ElasticSearchCustomIndexTemplate): void;
+  setIndexTemplate(template: ElasticSearchCustomIndexTemplate): Promise<void>;
   // (undocumented)
   setTranslator(translator: ElasticSearchQueryTranslator): void;
   // (undocumented)
