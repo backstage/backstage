@@ -50,10 +50,21 @@ export type ElasticSearchCustomIndexTemplate = {
  * @public
  */
 export type ElasticSearchCustomIndexTemplateBody = {
+  /**
+   * Array of wildcard (*) expressions used to match the names of data streams and indices during creation.
+   */
   index_patterns: string[];
-  // See available properties of template
-  // https://www.elastic.co/guide/en/elasticsearch/reference/7.15/indices-put-template.html#put-index-template-api-request-body
-  template: Record<string, any>;
+  /**
+   * An ordered list of component template names.
+   * Component templates are merged in the order specified,
+   * meaning that the last component template specified has the highest precedence.
+   */
+  composed_of?: string[];
+  /**
+   * See available properties of template
+   * https://www.elastic.co/guide/en/elasticsearch/reference/7.15/indices-put-template.html#put-index-template-api-request-body
+   */
+  template?: Record<string, any>;
 };
 
 /**

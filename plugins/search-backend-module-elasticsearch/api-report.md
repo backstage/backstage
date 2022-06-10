@@ -146,7 +146,8 @@ export type ElasticSearchCustomIndexTemplate = {
 // @public
 export type ElasticSearchCustomIndexTemplateBody = {
   index_patterns: string[];
-  template: Record<string, any>;
+  composed_of?: string[];
+  template?: Record<string, any>;
 };
 
 // @public (undocumented)
