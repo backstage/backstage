@@ -37,6 +37,24 @@ import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineInd
 export type { ElasticSearchClientOptions };
 
 /**
+ * Elasticsearch specific index template
+ * @public
+ */
+export type ElasticSearchCustomIndexTemplate = {
+  name: string;
+  body: ElasticSearchIndexTemplateBody;
+};
+
+/**
+ * Elasticsearch specific index template body
+ * @public
+ */
+export type ElasticSearchIndexTemplateBody = {
+  index_patterns: string[];
+  template: Record<string, any>;
+};
+
+/**
  * Search query that the elasticsearch engine understands.
  * @public
  */
@@ -114,6 +132,7 @@ function isBlank(str: string) {
 export class ElasticSearchSearchEngine implements SearchEngine {
   private readonly elasticSearchClient: Client;
   private readonly highlightOptions: ElasticSearchHighlightConfig;
+  protected indexTemplate?: ElasticSearchCustomIndexTemplate;
 
   constructor(
     private readonly elasticSearchClientOptions: ElasticSearchClientOptions,
@@ -236,8 +255,13 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     this.translator = translator;
   }
 
+  setIndexTemplate(template: ElasticSearchCustomIndexTemplate) {
+    this.indexTemplate = template;
+  }
+
   async getIndexer(type: string) {
     const alias = this.constructSearchAlias(type);
+
     const indexer = new ElasticSearchSearchEngineIndexer({
       type,
       indexPrefix: this.indexPrefix,
@@ -263,6 +287,20 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         }
       } catch (error) {
         this.logger.error(`Unable to clean up elastic index: ${error}`);
+      }
+    });
+
+    indexer.on('finish', async () => {
+      // Set custom index template if set
+      if (this.indexTemplate) {
+        try {
+          await this.elasticSearchClient.indices.putIndexTemplate(
+            this.indexTemplate,
+          );
+          this.logger.info('Custom index template set');
+        } catch (error) {
+          this.logger.error(`Unable to set custom index template: ${error}`);
+        }
       }
     });
 

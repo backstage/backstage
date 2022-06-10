@@ -32,6 +32,9 @@ class ElasticSearchSearchEngineForTranslatorTests extends ElasticSearchSearchEng
   getTranslator() {
     return this.translator;
   }
+  getIndexTemplate() {
+    return this.indexTemplate;
+  }
 }
 
 const mock = new Mock();
@@ -49,6 +52,23 @@ jest.mock('./ElasticSearchSearchEngineIndexer', () => ({
     .fn()
     .mockImplementation(() => indexerMock),
 }));
+
+const customIndexTemplate = {
+  name: 'custom-index-template',
+  body: {
+    index_patterns: ['*'],
+    template: {
+      settings: {
+        number_of_shards: 1,
+      },
+      mappings: {
+        _source: {
+          enabled: false,
+        },
+      },
+    },
+  },
+};
 
 describe('ElasticSearchSearchEngine', () => {
   let testSearchEngine: ElasticSearchSearchEngine;
@@ -70,6 +90,20 @@ describe('ElasticSearchSearchEngine', () => {
     );
     // eslint-disable-next-line dot-notation
     client = testSearchEngine['elasticSearchClient'];
+  });
+
+  describe('custom index template', () => {
+    it('should not have custom template set as default', async () => {
+      expect(inspectableSearchEngine.getIndexTemplate()).toBeUndefined();
+    });
+
+    it('should set custom index template', async () => {
+      await inspectableSearchEngine.setIndexTemplate(customIndexTemplate);
+
+      expect(inspectableSearchEngine.getIndexTemplate()).toMatchObject(
+        customIndexTemplate,
+      );
+    });
   });
 
   describe('queryTranslator', () => {
@@ -760,6 +794,10 @@ describe('ElasticSearchSearchEngine', () => {
   });
 
   describe('indexer', () => {
+    beforeEach(async () => {
+      await testSearchEngine.setIndexTemplate(customIndexTemplate);
+    });
+
     it('should get indexer', async () => {
       const indexer = await testSearchEngine.getIndexer('test-index');
 
@@ -774,9 +812,35 @@ describe('ElasticSearchSearchEngine', () => {
         }),
       );
       expect(indexerMock.on).toHaveBeenCalledWith(
+        'finish',
+        expect.any(Function),
+      );
+      expect(indexerMock.on).toHaveBeenCalledWith(
         'error',
         expect.any(Function),
       );
+    });
+
+    describe('onFinish', () => {
+      let callback: Function;
+
+      beforeEach(async () => {
+        mock.clearAll();
+        await testSearchEngine.getIndexer('test-index');
+        callback = indexerMock.on.mock.calls[1][1];
+      });
+
+      it('should set provided index template on finish', async () => {
+        const indexTemplateSpy = jest.fn().mockReturnValue(customIndexTemplate);
+        mock.add(
+          { method: 'PUT', path: '/_index_template/custom-index-template' },
+          indexTemplateSpy,
+        );
+
+        await callback();
+
+        expect(indexTemplateSpy).toHaveBeenCalled();
+      });
     });
 
     describe('onError', () => {
