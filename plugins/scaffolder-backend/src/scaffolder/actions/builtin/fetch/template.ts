@@ -20,7 +20,7 @@ import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { fetchContents } from './helpers';
 import { createTemplateAction } from '../../createTemplateAction';
-import globby from 'globby';
+import { globby } from 'globby';
 import fs from 'fs-extra';
 import { isBinaryFile } from 'isbinaryfile';
 import {

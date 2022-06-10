@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import globby from 'globby';
+import { globby } from 'globby';
 import { StaticAssetInput } from './types';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 

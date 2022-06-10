@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import globby from 'globby';
+import { globby } from 'globby';
 import limiterFactory from 'p-limit';
 import { join as joinPath } from 'path';
 import { SerializedFile } from './types';
