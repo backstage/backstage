@@ -145,7 +145,6 @@ function isBlank(str: string) {
 export class ElasticSearchSearchEngine implements SearchEngine {
   private readonly elasticSearchClient: Client;
   private readonly highlightOptions: ElasticSearchHighlightConfig;
-  protected indexTemplate?: ElasticSearchCustomIndexTemplate;
 
   constructor(
     private readonly elasticSearchClientOptions: ElasticSearchClientOptions,
@@ -268,8 +267,13 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     this.translator = translator;
   }
 
-  setIndexTemplate(template: ElasticSearchCustomIndexTemplate) {
-    this.indexTemplate = template;
+  async setIndexTemplate(template: ElasticSearchCustomIndexTemplate) {
+    try {
+      await this.elasticSearchClient.indices.putIndexTemplate(template);
+      this.logger.info('Custom index template set');
+    } catch (error) {
+      this.logger.error(`Unable to set custom index template: ${error}`);
+    }
   }
 
   async getIndexer(type: string) {
@@ -300,20 +304,6 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         }
       } catch (error) {
         this.logger.error(`Unable to clean up elastic index: ${error}`);
-      }
-    });
-
-    indexer.on('finish', async () => {
-      // Set custom index template if set
-      if (this.indexTemplate) {
-        try {
-          await this.elasticSearchClient.indices.putIndexTemplate(
-            this.indexTemplate,
-          );
-          this.logger.info('Custom index template set');
-        } catch (error) {
-          this.logger.error(`Unable to set custom index template: ${error}`);
-        }
       }
     });
 
