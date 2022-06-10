@@ -301,6 +301,7 @@ superfences
 Superfences
 superset
 supertype
+storable
 talkdesk
 Talkdesk
 tasklist
