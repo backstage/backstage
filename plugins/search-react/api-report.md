@@ -27,7 +27,7 @@ export const AutocompleteFilter: (
 // @public (undocumented)
 export const CheckboxFilter: (props: SearchFilterComponentProps) => JSX.Element;
 
-// @public
+// @public (undocumented)
 export const DefaultResultListItem: (
   props: DefaultResultListItemProps,
 ) => JSX.Element;
@@ -168,7 +168,7 @@ export type SearchFilterWrapperProps = SearchFilterComponentProps & {
   debug?: boolean;
 };
 
-// @public
+// @public (undocumented)
 export const SearchResult: (props: SearchResultProps) => JSX.Element;
 
 // @public
@@ -186,39 +186,6 @@ export type SearchResultProps = {
 
 // @public (undocumented)
 export const SelectFilter: (props: SearchFilterComponentProps) => JSX.Element;
-
-// @public
-export const useAsyncFilterValues: (
-  fn: ((partial: string) => Promise<string[]>) | undefined,
-  inputValue: string,
-  defaultValues?: string[],
-  debounce?: number,
-) =>
-  | {
-      loading: boolean;
-      error?: undefined;
-      value?: undefined;
-    }
-  | {
-      loading: false;
-      error: Error;
-      value?: undefined;
-    }
-  | {
-      loading: true;
-      error?: Error | undefined;
-      value?: string[] | undefined;
-    }
-  | {
-      loading: boolean;
-      value: string[];
-    };
-
-// @public
-export const useDefaultFilterValue: (
-  name: string,
-  defaultValue?: string | string[] | null | undefined,
-) => void;
 
 // @public
 export const useSearch: () => SearchContextValue;

@@ -317,8 +317,8 @@ describe('SearchBar', () => {
     expect(analyticsApiSpy.getEvents()[0]).toEqual({
       action: 'search',
       context: {
-        extension: 'App',
-        pluginId: 'root',
+        extension: 'SearchBar',
+        pluginId: 'search',
         routeRef: 'unknown',
         searchTypes: 'software-catalog,techdocs',
       },
@@ -340,8 +340,8 @@ describe('SearchBar', () => {
     expect(analyticsApiSpy.getEvents()[1]).toEqual({
       action: 'search',
       context: {
-        extension: 'App',
-        pluginId: 'root',
+        extension: 'SearchBar',
+        pluginId: 'search',
         routeRef: 'unknown',
         searchTypes: 'software-catalog,techdocs',
       },

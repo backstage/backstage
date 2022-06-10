@@ -16,7 +16,6 @@
 
 export { CheckboxFilter, SearchFilter, SelectFilter } from './SearchFilter';
 export { AutocompleteFilter } from './SearchFilter.Autocomplete';
-export { useAsyncFilterValues, useDefaultFilterValue } from './hooks';
 export type {
   SearchFilterComponentProps,
   SearchFilterWrapperProps,

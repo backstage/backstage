@@ -32,6 +32,8 @@ const useStyles = makeStyles(theme => ({
  * Props for {@link FiltersButton}.
  *
  * @public
+ * @deprecated This type and corresponding component will be removed in a
+ * future release.
  */
 export type FiltersButtonProps = {
   numberOfSelectedFilters: number;
@@ -40,6 +42,7 @@ export type FiltersButtonProps = {
 
 /**
  * @public
+ * @deprecated See `SearchFilter` in `@backstage/plugin-search-react` instead.
  */
 export const FiltersButton = ({
   numberOfSelectedFilters,

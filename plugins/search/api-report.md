@@ -22,13 +22,13 @@ export const DefaultResultListItem: (
   props: DefaultResultListItemProps,
 ) => JSX.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type FilterOptions = {
   kind: Array<string>;
   lifecycle: Array<string>;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const Filters: ({
   filters,
   filterOptions,
@@ -37,19 +37,19 @@ export const Filters: ({
   updateChecked,
 }: FiltersProps) => JSX.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const FiltersButton: ({
   numberOfSelectedFilters,
   handleToggleFilters,
 }: FiltersButtonProps) => JSX.Element;
 
-// @public
+// @public @deprecated
 export type FiltersButtonProps = {
   numberOfSelectedFilters: number;
   handleToggleFilters: () => void;
 };
 
-// @public
+// @public @deprecated
 export type FiltersProps = {
   filters: FiltersState;
   filterOptions: FilterOptions;
@@ -58,7 +58,7 @@ export type FiltersProps = {
   updateChecked: (filter: string) => void;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type FiltersState = {
   selected: string;
   checked: Array<string>;

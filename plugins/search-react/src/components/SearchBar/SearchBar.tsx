@@ -31,7 +31,11 @@ import {
 import SearchIcon from '@material-ui/icons/Search';
 import ClearButton from '@material-ui/icons/Clear';
 
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  AnalyticsContext,
+  configApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
 
 import {
   SearchContextProvider,
@@ -175,5 +179,11 @@ export const SearchBar = ({ onChange, ...props }: SearchBarProps) => {
     [onChange, setTerm],
   );
 
-  return <SearchBarBase value={term} onChange={handleChange} {...props} />;
+  return (
+    <AnalyticsContext
+      attributes={{ pluginId: 'search', extension: 'SearchBar' }}
+    >
+      <SearchBarBase value={term} onChange={handleChange} {...props} />
+    </AnalyticsContext>
+  );
 };
