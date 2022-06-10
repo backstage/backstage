@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  createPermission,
+  Permission,
+} from '@backstage/plugin-permission-common';
 import express, { Express, Router } from 'express';
 import request, { Response } from 'supertest';
 import { createPermissionIntegrationRouter } from './createPermissionIntegrationRouter';
@@ -26,22 +30,25 @@ const mockGetResources: jest.MockedFunction<
   resourceRefs.map(resourceRef => ({ id: resourceRef })),
 );
 
+const testPermission: Permission = createPermission({
+  name: 'test.permission',
+  attributes: {},
+});
+
 const testRule1 = createPermissionRule({
   name: 'test-rule-1',
   description: 'Test rule 1',
   resourceType: 'test-resource',
-  apply: jest.fn(
-    (_resource: any, _firstParam: string, _secondParam: number) => true,
-  ),
-  toQuery: jest.fn(),
+  apply: (_resource: any, _firstParam: string, _secondParam: number) => true,
+  toQuery: (_firstParam: string, _secondParam: number) => ({}),
 });
 
 const testRule2 = createPermissionRule({
   name: 'test-rule-2',
   description: 'Test rule 2',
   resourceType: 'test-resource',
-  apply: jest.fn((_resource: any, _firstParam: object) => false),
-  toQuery: jest.fn(),
+  apply: (_resource: any, _firstParam: object) => false,
+  toQuery: (_firstParam: object) => ({}),
 });
 
 describe('createPermissionIntegrationRouter', () => {
@@ -51,6 +58,7 @@ describe('createPermissionIntegrationRouter', () => {
   beforeAll(() => {
     router = createPermissionIntegrationRouter({
       resourceType: 'test-resource',
+      permissions: [testPermission],
       getResources: mockGetResources,
       rules: [testRule1, testRule2],
     });
@@ -499,6 +507,33 @@ describe('createPermissionIntegrationRouter', () => {
 
       expect(response.status).toEqual(400);
       expect(response.error && response.error.text).toMatch(/invalid/i);
+    });
+  });
+
+  describe('GET /.well-known/backstage/permissions/metadata', () => {
+    it('returns a list of permissions and rules used by a given backend', async () => {
+      const response = await request(app).get(
+        '/.well-known/backstage/permissions/metadata',
+      );
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        permissions: [testPermission],
+        rules: [
+          {
+            name: testRule1.name,
+            description: testRule1.description,
+            resourceType: testRule1.resourceType,
+            parameters: { count: 2 },
+          },
+          {
+            name: testRule2.name,
+            description: testRule2.description,
+            resourceType: testRule2.resourceType,
+            parameters: { count: 1 },
+          },
+        ],
+      });
     });
   });
 });

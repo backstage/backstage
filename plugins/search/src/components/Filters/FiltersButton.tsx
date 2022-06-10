@@ -28,11 +28,22 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-type FiltersButtonProps = {
+/**
+ * Props for {@link FiltersButton}.
+ *
+ * @public
+ * @deprecated This type and corresponding component will be removed in a
+ * future release.
+ */
+export type FiltersButtonProps = {
   numberOfSelectedFilters: number;
   handleToggleFilters: () => void;
 };
 
+/**
+ * @public
+ * @deprecated See `SearchFilter` in `@backstage/plugin-search-react` instead.
+ */
 export const FiltersButton = ({
   numberOfSelectedFilters,
   handleToggleFilters,

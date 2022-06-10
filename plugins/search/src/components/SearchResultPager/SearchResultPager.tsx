@@ -29,6 +29,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+/**
+ * @public
+ * @deprecated Import from `@backstage/plugin-search-react` instead.
+ */
 export const SearchResultPager = () => {
   const { fetchNextPage, fetchPreviousPage } = useSearch();
   const classes = useStyles();

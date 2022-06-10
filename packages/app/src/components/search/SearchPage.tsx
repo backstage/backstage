@@ -29,15 +29,15 @@ import {
   catalogApiRef,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/plugin-catalog-react';
+import { SearchType } from '@backstage/plugin-search';
 import {
   DefaultResultListItem,
   SearchBar,
   SearchFilter,
   SearchResult,
   SearchResultPager,
-  SearchType,
-} from '@backstage/plugin-search';
-import { useSearch } from '@backstage/plugin-search-react';
+  useSearch,
+} from '@backstage/plugin-search-react';
 import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
 import { Grid, List, makeStyles, Paper, Theme } from '@material-ui/core';
 import React from 'react';

@@ -112,6 +112,7 @@ export const createPermissionIntegrationRouter: <
   TResource,
 >(options: {
   resourceType: TResourceType;
+  permissions?: Permission[] | undefined;
   rules: PermissionRule<TResource, any, NoInfer<TResourceType>, unknown[]>[];
   getResources: (resourceRefs: string[]) => Promise<(TResource | undefined)[]>;
 }) => express.Router;

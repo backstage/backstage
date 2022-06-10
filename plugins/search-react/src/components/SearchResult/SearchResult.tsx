@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,33 @@
  * limitations under the License.
  */
 
+import React from 'react';
+
 import {
   EmptyState,
   Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';
+import { AnalyticsContext } from '@backstage/core-plugin-api';
 import { SearchResult } from '@backstage/plugin-search-common';
-import React from 'react';
-import { useSearch } from '@backstage/plugin-search-react';
 
-type Props = {
+import { useSearch } from '../../context';
+
+/**
+ * Props for {@link SearchResultComponent}
+ *
+ * @public
+ */
+export type SearchResultProps = {
   children: (results: { results: SearchResult[] }) => JSX.Element;
 };
 
-export const SearchResultComponent = ({ children }: Props) => {
+/**
+ * A component returning the search result.
+ *
+ * @public
+ */
+export const SearchResultComponent = ({ children }: SearchResultProps) => {
   const {
     result: { loading, error, value },
   } = useSearch();
@@ -51,4 +64,20 @@ export const SearchResultComponent = ({ children }: Props) => {
   return <>{children({ results: value.results })}</>;
 };
 
-export { SearchResultComponent as SearchResult };
+/**
+ * @public
+ */
+const HigherOrderSearchResult = (props: SearchResultProps) => {
+  return (
+    <AnalyticsContext
+      attributes={{
+        pluginId: 'search',
+        extension: 'SearchResult',
+      }}
+    >
+      <SearchResultComponent {...props} />
+    </AnalyticsContext>
+  );
+};
+
+export { HigherOrderSearchResult as SearchResult };

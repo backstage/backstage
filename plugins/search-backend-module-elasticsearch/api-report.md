@@ -137,6 +137,19 @@ export interface ElasticSearchConnectionConstructor {
   };
 }
 
+// @public
+export type ElasticSearchCustomIndexTemplate = {
+  name: string;
+  body: ElasticSearchCustomIndexTemplateBody;
+};
+
+// @public
+export type ElasticSearchCustomIndexTemplateBody = {
+  index_patterns: string[];
+  composed_of?: string[];
+  template?: Record<string, any>;
+};
+
 // @public (undocumented)
 export type ElasticSearchHighlightConfig = {
   fragmentDelimiter: string;
@@ -214,6 +227,8 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   newClient<T>(create: (options: ElasticSearchClientOptions) => T): T;
   // (undocumented)
   query(query: SearchQuery): Promise<IndexableResultSet>;
+  // (undocumented)
+  setIndexTemplate(template: ElasticSearchCustomIndexTemplate): Promise<void>;
   // (undocumented)
   setTranslator(translator: ElasticSearchQueryTranslator): void;
   // (undocumented)

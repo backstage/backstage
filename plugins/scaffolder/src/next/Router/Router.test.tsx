@@ -47,7 +47,9 @@ describe('Router', () => {
 
   describe('/templates/:templateName', () => {
     it('should render the TemplateWizard page', async () => {
-      await renderInTestApp(<Router />, { routeEntries: ['/templates/foo'] });
+      await renderInTestApp(<Router />, {
+        routeEntries: ['/templates/default/foo'],
+      });
 
       expect(TemplateWizardPage).toHaveBeenCalled();
     });
@@ -67,7 +69,7 @@ describe('Router', () => {
             <CustomFieldExtension />
           </ScaffolderFieldExtensions>
         </Router>,
-        { routeEntries: ['/templates/foo'] },
+        { routeEntries: ['/templates/default/foo'] },
       );
 
       const mock = TemplateWizardPage as jest.Mock;

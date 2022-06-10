@@ -54,11 +54,16 @@ export const TemplatePage = ({
   const secretsContext = useContext(SecretsContext);
   const errorApi = useApi(errorApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
-  const { templateName } = useParams();
+  const { templateName, namespace } = useParams();
+  const templateRef = stringifyEntityRef({
+    name: templateName,
+    kind: 'template',
+    namespace,
+  });
   const navigate = useNavigate();
   const scaffolderTaskRoute = useRouteRef(scaffolderTaskRouteRef);
   const rootRoute = useRouteRef(rootRouteRef);
-  const { schema, loading, error } = useTemplateParameterSchema(templateName);
+  const { schema, loading, error } = useTemplateParameterSchema(templateRef);
   const [formState, setFormState] = useState<Record<string, any>>(() => {
     const query = qs.parse(window.location.search, {
       ignoreQueryPrefix: true,
@@ -78,11 +83,7 @@ export const TemplatePage = ({
 
   const handleCreate = async () => {
     const { taskId } = await scaffolderApi.scaffold({
-      templateRef: stringifyEntityRef({
-        name: templateName,
-        kind: 'template',
-        namespace: 'default',
-      }),
+      templateRef,
       values: formState,
       secrets: secretsContext?.secrets,
     });
