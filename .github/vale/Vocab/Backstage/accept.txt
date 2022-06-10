@@ -275,6 +275,7 @@ scrollbar
 seb
 semlas
 semver
+serializable
 Serverless
 shoutout
 siloed
