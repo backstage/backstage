@@ -44,17 +44,34 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+/**
+ * @public
+ * @deprecated This type and corresponding component will be removed in a
+ * future release.
+ */
 export type FiltersState = {
   selected: string;
   checked: Array<string>;
 };
 
+/**
+ * @public
+ * @deprecated This type and corresponding component will be removed in a
+ * future release.
+ */
 export type FilterOptions = {
   kind: Array<string>;
   lifecycle: Array<string>;
 };
 
-type FiltersProps = {
+/**
+ * Props for {@link Filters}.
+ *
+ * @public
+ * @deprecated This type and corresponding component will be removed in a
+ * future release.
+ */
+export type FiltersProps = {
   filters: FiltersState;
   filterOptions: FilterOptions;
   resetFilters: () => void;
@@ -62,6 +79,11 @@ type FiltersProps = {
   updateChecked: (filter: string) => void;
 };
 
+/**
+ * @public
+ * @deprecated This component will be removed in a future release. Use
+ * `SearchFilter` from `@backstage/plugin-search-react` instead.
+ */
 export const Filters = ({
   filters,
   filterOptions,

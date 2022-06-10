@@ -256,6 +256,7 @@ const NO_WARNING_PACKAGES = [
   'plugins/scaffolder-backend-module-rails',
   'plugins/scaffolder-backend-module-yeoman',
   'plugins/scaffolder-common',
+  'plugins/search',
   'plugins/search-backend',
   'plugins/search-backend-node',
   'plugins/search-backend-module-elasticsearch',

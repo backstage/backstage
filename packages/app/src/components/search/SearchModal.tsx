@@ -38,16 +38,15 @@ import {
   catalogApiRef,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/plugin-catalog-react';
+import { searchPlugin, SearchType } from '@backstage/plugin-search';
 import {
   DefaultResultListItem,
-  SearchBar,
   SearchFilter,
-  searchPlugin,
+  SearchBar,
   SearchResult,
   SearchResultPager,
-  SearchType,
-} from '@backstage/plugin-search';
-import { useSearch } from '@backstage/plugin-search-react';
+  useSearch,
+} from '@backstage/plugin-search-react';
 import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
 
 const useStyles = makeStyles(theme => ({
@@ -185,7 +184,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
             <SearchResult>
               {({ results }) => (
                 <List>
-                  {results.map(({ type, document, highlight }) => {
+                  {results.map(({ type, document, highlight, rank }) => {
                     let resultItem;
                     switch (type) {
                       case 'software-catalog':
@@ -195,6 +194,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
                             key={document.location}
                             result={document}
                             highlight={highlight}
+                            rank={rank}
                           />
                         );
                         break;
@@ -205,6 +205,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
                             key={document.location}
                             result={document}
                             highlight={highlight}
+                            rank={rank}
                           />
                         );
                         break;
@@ -214,6 +215,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
                             key={document.location}
                             result={document}
                             highlight={highlight}
+                            rank={rank}
                           />
                         );
                     }

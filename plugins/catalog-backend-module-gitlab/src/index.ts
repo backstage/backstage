@@ -21,3 +21,4 @@
  */
 
 export { GitLabDiscoveryProcessor } from './GitLabDiscoveryProcessor';
+export { GitlabDiscoveryEntityProvider } from './providers';

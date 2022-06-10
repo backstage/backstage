@@ -95,7 +95,7 @@ See [TechDocs Architecture](architecture.md) to get an overview of where the bel
 [techdocs/frontend-library]: https://github.com/backstage/backstage/blob/master/plugins/techdocs-react
 [techdocs/backend]: https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend
 [techdocs/container]: https://github.com/backstage/techdocs-container
-[techdocs/cli]: https://github.com/backstage/techdocs-cli
+[techdocs/cli]: https://github.com/backstage/backstage/blob/master/packages/techdocs-cli
 
 ## Get involved
 

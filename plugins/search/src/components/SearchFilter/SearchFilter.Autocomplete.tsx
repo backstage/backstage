@@ -14,103 +14,14 @@
  * limitations under the License.
  */
 
-import React, { ChangeEvent, useState } from 'react';
-import { Chip, TextField } from '@material-ui/core';
-import {
-  Autocomplete,
-  AutocompleteGetTagProps,
-  AutocompleteRenderInputParams,
-} from '@material-ui/lab';
-import { useSearch } from '@backstage/plugin-search-react';
-import { useAsyncFilterValues, useDefaultFilterValue } from './hooks';
-import { SearchFilterComponentProps } from './SearchFilter';
+import { SearchFilterComponentProps } from '@backstage/plugin-search-react';
 
 /**
  * @public
+ * @deprecated Import from `@backstage/plugin-search-react` instead.
  */
 export type SearchAutocompleteFilterProps = SearchFilterComponentProps & {
   filterSelectedOptions?: boolean;
   limitTags?: number;
   multiple?: boolean;
-};
-
-export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
-  const {
-    className,
-    defaultValue,
-    name,
-    values: givenValues,
-    valuesDebounceMs,
-    label,
-    filterSelectedOptions,
-    limitTags,
-    multiple,
-  } = props;
-  const [inputValue, setInputValue] = useState<string>('');
-  useDefaultFilterValue(name, defaultValue);
-  const asyncValues =
-    typeof givenValues === 'function' ? givenValues : undefined;
-  const defaultValues =
-    typeof givenValues === 'function' ? undefined : givenValues;
-  const { value: values, loading } = useAsyncFilterValues(
-    asyncValues,
-    inputValue,
-    defaultValues,
-    valuesDebounceMs,
-  );
-  const { filters, setFilters } = useSearch();
-  const filterValue =
-    (filters[name] as string | string[] | undefined) || (multiple ? [] : null);
-
-  // Set new filter values on input change.
-  const handleChange = (
-    _: ChangeEvent<{}>,
-    newValue: string | string[] | null,
-  ) => {
-    setFilters(prevState => {
-      const { [name]: filter, ...others } = prevState;
-
-      if (newValue) {
-        return { ...others, [name]: newValue };
-      }
-      return { ...others };
-    });
-  };
-
-  // Provide the input field.
-  const renderInput = (params: AutocompleteRenderInputParams) => (
-    <TextField
-      {...params}
-      name="search"
-      variant="outlined"
-      label={label}
-      fullWidth
-    />
-  );
-
-  // Render tags as primary-colored chips.
-  const renderTags = (
-    tagValue: string[],
-    getTagProps: AutocompleteGetTagProps,
-  ) =>
-    tagValue.map((option: string, index: number) => (
-      <Chip label={option} color="primary" {...getTagProps({ index })} />
-    ));
-
-  return (
-    <Autocomplete
-      filterSelectedOptions={filterSelectedOptions}
-      limitTags={limitTags}
-      multiple={multiple}
-      className={className}
-      id={`${multiple ? 'multi-' : ''}select-filter-${name}--select`}
-      options={values || []}
-      loading={loading}
-      value={filterValue}
-      onChange={handleChange}
-      onInputChange={(_, newValue) => setInputValue(newValue)}
-      renderInput={renderInput}
-      renderTags={renderTags}
-    />
-  );
 };

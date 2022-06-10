@@ -44,9 +44,9 @@ describe('api', () => {
     server.use(
       rest.get(`${mockBaseUrl}/v1/secrets/:path`, (req, res, ctx) => {
         const { path } = req.params;
-        if (path === 'test%2Fsuccess') {
+        if (path === 'test/success') {
           return res(ctx.json(mockSecretsResult));
-        } else if (path === 'test%2Ferror') {
+        } else if (path === 'test/error') {
           return res(ctx.json([]));
         }
         return res(ctx.status(400));

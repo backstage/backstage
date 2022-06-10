@@ -275,6 +275,7 @@ scrollbar
 seb
 semlas
 semver
+serializable
 Serverless
 shoutout
 siloed
@@ -301,6 +302,7 @@ superfences
 Superfences
 superset
 supertype
+storable
 talkdesk
 Talkdesk
 tasklist

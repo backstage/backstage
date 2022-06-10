@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
-import { useAnalytics } from '@backstage/core-plugin-api';
-import { useSearch } from '@backstage/plugin-search-react';
+// @ts-check
 
 /**
- * Capture search event on term change.
+ * @param {import('knex').Knex} knex
  */
-export const TrackSearch = ({ children }: { children: React.ReactChild }) => {
-  const analytics = useAnalytics();
-  const { term } = useSearch();
-
-  useEffect(() => {
-    if (term) {
-      // Capture analytics search event with search term provided as value
-      analytics.captureEvent('search', term);
-    }
-  }, [analytics, term]);
-
-  return <>{children}</>;
+exports.up = async function up(knex) {
+  await knex.schema.alterTable('facts', table => {
+    table
+      .dateTime('timestamp', { precision: 0 })
+      .defaultTo(knex.fn.now())
+      .notNullable()
+      .comment('The timestamp when this entry was created')
+      .alter();
+  });
 };
+
+/**
+ * @param {import('knex').Knex} _knex
+ */
+exports.down = async function down(_knex) {};

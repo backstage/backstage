@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { SearchFilter, SearchFilterNext } from './SearchFilter';
+export { SearchFilter } from './SearchFilter';
 export type {
   SearchFilterComponentProps,
   SearchFilterWrapperProps,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,12 @@
  */
 
 import React, { ReactNode } from 'react';
+import { AnalyticsContext, useAnalytics } from '@backstage/core-plugin-api';
 import {
   ResultHighlight,
   SearchDocument,
 } from '@backstage/plugin-search-common';
-import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
+import { HighlightedSearchResultText } from '../HighlightedSearchResultText';
 import {
   ListItem,
   ListItemIcon,
@@ -29,23 +30,43 @@ import {
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 
-type Props = {
+/**
+ * Props for {@link DefaultResultListItem}
+ *
+ * @public
+ */
+export type DefaultResultListItemProps = {
   icon?: ReactNode;
   secondaryAction?: ReactNode;
   result: SearchDocument;
   highlight?: ResultHighlight;
+  rank?: number;
   lineClamp?: number;
 };
 
-export const DefaultResultListItem = ({
+/**
+ * A default result list item.
+ *
+ * @public
+ */
+export const DefaultResultListItemComponent = ({
   result,
   highlight,
+  rank,
   icon,
   secondaryAction,
   lineClamp = 5,
-}: Props) => {
+}: DefaultResultListItemProps) => {
+  const analytics = useAnalytics();
+  const handleClick = () => {
+    analytics.captureEvent('discover', result.title, {
+      attributes: { to: result.location },
+      value: rank,
+    });
+  };
+
   return (
-    <Link to={result.location}>
+    <Link noTrack to={result.location} onClick={handleClick}>
       <ListItem alignItems="center">
         {icon && <ListItemIcon>{icon}</ListItemIcon>}
         <ListItemText
@@ -88,3 +109,23 @@ export const DefaultResultListItem = ({
     </Link>
   );
 };
+
+/**
+ * @public
+ */
+const HigherOrderDefaultResultListItem = (
+  props: DefaultResultListItemProps,
+) => {
+  return (
+    <AnalyticsContext
+      attributes={{
+        pluginId: 'search',
+        extension: 'DefaultResultListItem',
+      }}
+    >
+      <DefaultResultListItemComponent {...props} />
+    </AnalyticsContext>
+  );
+};
+
+export { HigherOrderDefaultResultListItem as DefaultResultListItem };
