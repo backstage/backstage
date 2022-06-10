@@ -2271,17 +2271,17 @@
     teeny-request "^8.0.0"
     uuid "^8.0.0"
 
-"@graphiql/react@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.npmjs.org/@graphiql/react/-/react-0.4.0.tgz#55099632c29be0c49f1251904b74cbfd2d31993b"
-  integrity sha512-9OtwzJ3EaDgD5Qi+WtnHA8Wv0XL9l+W4n3jtNR+wFDjC2vvbEd/grPm0eSikryVcq/0q6aR4HyR3SuKj6tKPYg==
+"@graphiql/react@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.npmjs.org/@graphiql/react/-/react-0.4.1.tgz#c424951f4e1b2ffa22aa514b18663d7a848ff31f"
+  integrity sha512-YeB26Sc223zfv6wSzygKRfeJ7JeXZW40c6vY4Om/POXuytRyrxuKynuP1Z3ueGYY4Rji8YMg6dPAjtTOUDLjZw==
   dependencies:
     "@graphiql/toolkit" "^0.6.0"
     codemirror "^5.65.3"
-    codemirror-graphql "^1.3.0"
+    codemirror-graphql "^1.3.1"
     copy-to-clipboard "^3.2.0"
     escape-html "^1.0.3"
-    graphql-language-service "^5.0.4"
+    graphql-language-service "^5.0.5"
     markdown-it "^12.2.0"
     set-value "^4.1.0"
 
@@ -9589,12 +9589,12 @@ code-point-at@^1.0.0:
   resolved "https://registry.npmjs.org/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codemirror-graphql@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.npmjs.org/codemirror-graphql/-/codemirror-graphql-1.3.0.tgz#6ca19eb2735dbfd5ac9db59b8fc4c8fc1e34fe43"
-  integrity sha512-Inqecp/PpUsNFz6+V6jpgQD1m7jjGg3yby60baw2t5yb2stBH8Z/6cHm/IYp9eN0Aq2EWqomd0GkGmiISPi4jQ==
+codemirror-graphql@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.npmjs.org/codemirror-graphql/-/codemirror-graphql-1.3.1.tgz#c852b12b6909783681a5e37d61d1627a78f9c7a6"
+  integrity sha512-jlLwTARoMeuYLR5sQYbh5uYewIoYUYAn+0lOIKXpaHudk9X1rOrP/WtOqfDza1ETnyfnlpLidBnpieIMKktriQ==
   dependencies:
-    graphql-language-service "^5.0.4"
+    graphql-language-service "^5.0.5"
 
 codemirror@^5.65.3:
   version "5.65.3"
@@ -13905,14 +13905,14 @@ grapheme-splitter@^1.0.4:
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
 graphiql@^1.5.12, graphiql@^1.8.8:
-  version "1.9.6"
-  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.9.6.tgz#ab1714a0200bdcf358761d7e9625de41fe06a98c"
-  integrity sha512-HxKM2cu6SQUi8x1QqZc/GkLBnyjZerPOKmiBfsZmIWYLtZTJTd4dezeraD2klB80FkYKgPVPbojGLofuLq8w3w==
+  version "1.9.7"
+  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.9.7.tgz#2edadea4fbbd723f9ba27a1f464f4ff5b20866bd"
+  integrity sha512-rn0njwDkCpFn5GwDbSuzt7GwjiFLhYCdgiscYm4n8Oq9EeOyGrIxQK/PjUz1YaR/+T7lg1raIBuRAX/Nei9KcQ==
   dependencies:
-    "@graphiql/react" "^0.4.0"
+    "@graphiql/react" "^0.4.1"
     "@graphiql/toolkit" "^0.6.0"
     entities "^2.0.0"
-    graphql-language-service "^5.0.4"
+    graphql-language-service "^5.0.5"
     markdown-it "^12.2.0"
 
 graphlib@^2.1.8:
@@ -13944,10 +13944,10 @@ graphql-executor@0.0.23:
   resolved "https://registry.npmjs.org/graphql-executor/-/graphql-executor-0.0.23.tgz#205c1764b39ee0fcf611553865770f37b45851a2"
   integrity sha512-3Ivlyfjaw3BWmGtUSnMpP/a4dcXCp0mJtj0PiPG14OKUizaMKlSEX+LX2Qed0LrxwniIwvU6B4w/koVjEPyWJg==
 
-graphql-language-service@^5.0.4:
-  version "5.0.4"
-  resolved "https://registry.npmjs.org/graphql-language-service/-/graphql-language-service-5.0.4.tgz#068dd4ff5dc6fcc6c8560ccc8f05311d5fd63fcd"
-  integrity sha512-lX+ahYBwvTHJe1N7JqA08moNwbr0RWaFILxVnbciaaeb469TTIhQi87ZgVJ/y9Szre4d0r3vjIt2EstwafzcDA==
+graphql-language-service@^5.0.5:
+  version "5.0.5"
+  resolved "https://registry.npmjs.org/graphql-language-service/-/graphql-language-service-5.0.5.tgz#894c08bee50070c97cc53ae514847aeef41bc0ac"
+  integrity sha512-hekBLI73r6ghShWrIMJ7Pe4Z+yJrda/U+kLenNJLNswuCrR0XfFOv5pNtnSXLcjFZkQfY1bwGV0D8IVKZEOW5Q==
   dependencies:
     nullthrows "^1.0.0"
     vscode-languageserver-types "^3.15.1"
