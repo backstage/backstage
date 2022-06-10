@@ -156,11 +156,10 @@ nav:
           - OneLogin: 'auth/onelogin/provider.md'
           - OAuth2Proxy: 'auth/oauth2-proxy/provider.md'
           - Bitbucket: 'auth/bitbucket/provider.md'
-      - Adding authentication providers: 'auth/add-auth-provider.md'
       - Sign in resolvers: 'auth/identity-resolver.md'
       - Auth backend: 'auth/auth-backend.md'
       - OAuth and OpenID Connect: 'auth/oauth.md'
-      - Auth backend classes: 'auth/auth-backend-classes.md'
+      - Contributing New Providers: 'auth/add-auth-provider.md'
       - Troubleshooting Auth: 'auth/troubleshooting.md'
       - Glossary: 'auth/glossary.md'
   - Deployment:

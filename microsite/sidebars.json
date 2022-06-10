@@ -259,11 +259,10 @@
           "auth/oauth2-proxy/provider"
         ]
       },
-      "auth/add-auth-provider",
       "auth/identity-resolver",
       "auth/auth-backend",
       "auth/oauth",
-      "auth/auth-backend-classes",
+      "auth/add-auth-provider",
       "auth/troubleshooting",
       "auth/glossary"
     ],
