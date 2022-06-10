@@ -334,27 +334,30 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         : undefined;
 
       return {
-        results: result.body.hits.hits.map((d: ElasticSearchResult) => {
-          const resultItem: IndexableResult = {
-            type: this.getTypeFromIndex(d._index),
-            document: d._source,
-          };
-
-          if (d.highlight) {
-            resultItem.highlight = {
-              preTag: this.highlightOptions.preTag as string,
-              postTag: this.highlightOptions.postTag as string,
-              fields: Object.fromEntries(
-                Object.entries(d.highlight).map(([field, fragments]) => [
-                  field,
-                  fragments.join(this.highlightOptions.fragmentDelimiter),
-                ]),
-              ),
+        results: result.body.hits.hits.map(
+          (d: ElasticSearchResult, index: number) => {
+            const resultItem: IndexableResult = {
+              type: this.getTypeFromIndex(d._index),
+              document: d._source,
+              rank: pageSize * page + index + 1,
             };
-          }
 
-          return resultItem;
-        }),
+            if (d.highlight) {
+              resultItem.highlight = {
+                preTag: this.highlightOptions.preTag as string,
+                postTag: this.highlightOptions.postTag as string,
+                fields: Object.fromEntries(
+                  Object.entries(d.highlight).map(([field, fragments]) => [
+                    field,
+                    fragments.join(this.highlightOptions.fragmentDelimiter),
+                  ]),
+                ),
+              };
+            }
+
+            return resultItem;
+          },
+        ),
         nextPageCursor,
         previousPageCursor,
       };

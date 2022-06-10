@@ -207,9 +207,10 @@ export class LunrSearchEngine implements SearchEngine {
 
     // Translate results into IndexableResultSet
     const realResultSet: IndexableResultSet = {
-      results: results.slice(offset, offset + pageSize).map(d => ({
+      results: results.slice(offset, offset + pageSize).map((d, index) => ({
         type: d.type,
         document: this.docStore[d.result.ref],
+        rank: page * pageSize + index + 1,
         highlight: {
           preTag: this.highlightPreTag,
           postTag: this.highlightPostTag,

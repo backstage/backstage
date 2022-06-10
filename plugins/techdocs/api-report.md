@@ -393,6 +393,7 @@ export type TechDocsSearchResultListItemProps = {
   icon?: ReactNode;
   result: any;
   highlight?: ResultHighlight;
+  rank?: number;
   lineClamp?: number;
   asListItem?: boolean;
   asLink?: boolean;
