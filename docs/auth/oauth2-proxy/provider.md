@@ -40,19 +40,22 @@ or grab ID or access tokens to look up additional information and/or validate th
 A simple sign-in resolver might for example look like this:
 
 ```ts
-providers.oauth2Proxy.create({
-  signIn: {
-    async resolver({ result }, ctx) {
-      const name = result.getHeader('x-forwarded-user');
-      if (!name) {
-        throw new Error('Request did not contain a user')
-      }
-      return ctx.signInWithCatalogUser({
-        entityRef: { name },
-      });
+providerFactories: {
+  ...defaultAuthProviderFactories,
+  oauth2Proxy: providers.oauth2Proxy.create({
+    signIn: {
+      async resolver({ result }, ctx) {
+        const name = result.getHeader('x-forwarded-user');
+        if (!name) {
+          throw new Error('Request did not contain a user')
+        }
+        return ctx.signInWithCatalogUser({
+          entityRef: { name },
+        });
+      },
     },
-  },
-}),
+  }),
+},
 ```
 
 ## Adding the provider to the Backstage frontend
