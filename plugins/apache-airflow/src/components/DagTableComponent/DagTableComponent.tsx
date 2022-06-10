@@ -129,9 +129,24 @@ export const DenseTable = ({ dags }: DenseTableProps) => {
   );
 };
 
-export const DagTableComponent = () => {
+type DagTableComponentProps = {
+  dagIds?: string[];
+};
+
+export const DagTableComponent = ({ dagIds }: DagTableComponentProps) => {
   const apiClient = useApi(apacheAirflowApiRef);
   const { value, loading, error } = useAsync(async (): Promise<Dag[]> => {
+    if (dagIds) {
+      const { dags, dagsNotFound } = await apiClient.getDags(dagIds);
+      if (dagsNotFound.length) {
+        throw new Error(
+          `${dagsNotFound.length} DAGs were not found:\n${dagsNotFound.join(
+            ';\n',
+          )}`,
+        );
+      }
+      return dags;
+    }
     return await apiClient.listDags();
   }, []);
 

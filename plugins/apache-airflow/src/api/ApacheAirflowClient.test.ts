@@ -160,4 +160,31 @@ describe('ApacheAirflowClient', () => {
     expect(response.dag_id).toEqual(dagId);
     expect(response.is_paused).toEqual(true);
   });
+
+  it('get only some dags', async () => {
+    setupHandlers();
+    const client = new ApacheAirflowClient({
+      discoveryApi: discoveryApi,
+      baseUrl: 'localhost:8080/',
+    });
+    const dagIds = ['mock_dag_1', 'mock_dag_3'];
+    const response = await client.getDags(dagIds);
+    expect(response.dags.length).toEqual(dagIds.length);
+    response.dags.forEach((dag, index) =>
+      expect(dag.dag_id).toEqual(dagIds[index]),
+    );
+    expect(response.dagsNotFound.length).toEqual(0);
+  });
+
+  it('get dags but ignore NOT FOUND errors', async () => {
+    setupHandlers();
+    const client = new ApacheAirflowClient({
+      discoveryApi: discoveryApi,
+      baseUrl: 'localhost:8080/',
+    });
+    const dagIds = ['mock_dag_1', 'a-random-DAG-id'];
+    const response = await client.getDags(dagIds);
+    expect(response.dags[0].dag_id).toEqual('mock_dag_1');
+    expect(response.dagsNotFound[0]).toEqual('a-random-DAG-id');
+  });
 });
