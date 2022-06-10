@@ -173,6 +173,16 @@ function handleAsyncComponents<
   };
 }
 
+interface AdaptableContext<
+  Props extends {},
+  Context extends {},
+  ExtraProps extends {},
+> {
+  userContext: Context;
+  props: Props;
+  extraProps: ExtraProps;
+}
+
 /**
  * Implement an adaptable component given an unimplemented component ref.
  *
@@ -192,12 +202,23 @@ export function implementAdaptableComponent<
 
   const handled = handleAsyncComponents(config, componentRef.id);
 
-  componentRef.Component = handled.Component;
-  componentRef.Provider = handled.Provider;
+  componentRef.Component = React.memo(handled.Component);
+  componentRef.Provider = React.memo(handled.Provider);
 
   const useRef = componentRef.forwardable;
 
-  const ctx = createContext<Context | undefined>(undefined);
+  // This context is shared with the outer Provider, the inner Component and all
+  // adaptations inbetween. Adaptations will only have access to the userContext
+  // part of it.
+  //
+  // By e.g. moving the props into this context, means we don't need to depend
+  // on props when constructing the component tree, and so the component tree
+  // doesn't need to be re-created (causing _complete_ downstream component
+  // reset) when props change. Only when the adaptation setup changes (which it
+  // likely never will).
+  type InfoType = ComponentProps<typeof componentRef.Component>['info'];
+  type AdaptableContextType = AdaptableContext<Props, Context, InfoType>;
+  const ctx = createContext<AdaptableContextType | undefined>(undefined);
 
   const ComponentProvider = ctx.Provider;
 
@@ -220,13 +241,14 @@ export function implementAdaptableComponent<
     // component tree.
     const { AdaptedComponent } = useMemo(() => {
       function InnerMostComponent() {
-        type InfoType = ComponentProps<typeof componentRef.Component>['info'];
-
         const value = useContext(ctx)!;
-        const info = useMemo(() => (useRef ? { ref } : {}) as InfoType, []);
 
         return (
-          <componentRef.Component info={info} props={newProps} value={value} />
+          <componentRef.Component
+            info={value.extraProps}
+            props={value.props}
+            value={value.userContext}
+          />
         );
       }
 
@@ -234,30 +256,38 @@ export function implementAdaptableComponent<
         Inner: React.ComponentType<{}>,
         Adaptation: AdaptableComponentAdaptation<any, any>,
       ): ComponentType<{}> {
-        return function IntermediateComponent() {
-          const currentValue = useContext(ctx);
+        const OpaqueComponent = React.memo(function OpaqueComponent({
+          value,
+        }: Partial<OpaqueComponentProps<Context>>) {
+          const context = useContext(ctx)!;
 
-          function OpaqueComponent({
-            value,
-          }: Partial<OpaqueComponentProps<Context>>) {
-            if (value === undefined) {
-              return <Inner />;
-            }
-            return (
-              <ComponentProvider value={value}>
-                <Inner />
-              </ComponentProvider>
-            );
+          const newContext = useMemo(
+            () => ({ ...context, userContext: value ?? context.userContext }),
+            [context, value],
+          );
+
+          if (value === undefined) {
+            return <Inner />;
           }
+
+          return (
+            <ComponentProvider value={newContext}>
+              <Inner />
+            </ComponentProvider>
+          );
+        });
+
+        return React.memo(function IntermediateComponent() {
+          const currentValue = useContext(ctx)!;
 
           return (
             <Adaptation
               Component={OpaqueComponent}
-              props={newProps}
-              value={currentValue}
+              props={currentValue.props}
+              value={currentValue.userContext}
             />
           );
-        };
+        });
       }
 
       return {
@@ -268,24 +298,49 @@ export function implementAdaptableComponent<
             InnerMostComponent,
           ),
       };
-    }, [components, newProps, ref]);
+    }, [components]);
 
-    function OuterComponent({ value }: OpaqueComponentProps<Context>) {
-      if (!value) {
-        throw new Error(
-          `Invalid adaptable component. No context value provided.`,
-        );
-      }
+    const { OuterComponent } = useMemo(
+      () => ({
+        OuterComponent: React.memo(function Outer({
+          value,
+        }: OpaqueComponentProps<Context>) {
+          const context = useContext(ctx)!;
 
-      return (
-        <ComponentProvider value={value}>
-          <AdaptedComponent />
-        </ComponentProvider>
-      );
-    }
+          if (!value) {
+            throw new Error(
+              `Invalid adaptable component. No context value provided.`,
+            );
+          }
+
+          const newContext = useMemo(
+            () => ({ ...context, userContext: value }),
+            [context, value],
+          );
+
+          return (
+            <ComponentProvider value={newContext}>
+              <AdaptedComponent />
+            </ComponentProvider>
+          );
+        }),
+      }),
+      [AdaptedComponent],
+    );
+
+    const initialContext: AdaptableContextType = useMemo(
+      () => ({
+        extraProps: (useRef ? { ref } : {}) as InfoType,
+        props: newProps,
+        userContext: undefined as any, // Is set in OuterComponent
+      }),
+      [newProps, ref],
+    );
 
     return (
-      <componentRef.Provider props={newProps} Component={OuterComponent} />
+      <ComponentProvider value={initialContext}>
+        <componentRef.Provider props={newProps} Component={OuterComponent} />
+      </ComponentProvider>
     );
   };
 
