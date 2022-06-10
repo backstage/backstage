@@ -26,23 +26,27 @@ import {
   useTheme,
 } from '@material-ui/core';
 import LaunchIcon from '@material-ui/icons/Launch';
-import { Link, useContent } from '@backstage/core-components';
+import {
+  CatalogIcon,
+  DocsIcon,
+  Link,
+  useContent,
+} from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
 import {
   catalogApiRef,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/plugin-catalog-react';
+import { searchPlugin, SearchType } from '@backstage/plugin-search';
 import {
   DefaultResultListItem,
-  SearchBar,
   SearchFilter,
-  searchPlugin,
+  SearchBar,
   SearchResult,
   SearchResultPager,
-  SearchType,
-} from '@backstage/plugin-search';
-import { useSearch } from '@backstage/plugin-search-react';
+  useSearch,
+} from '@backstage/plugin-search-react';
 import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
 
 const useStyles = makeStyles(theme => ({
@@ -180,24 +184,28 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
             <SearchResult>
               {({ results }) => (
                 <List>
-                  {results.map(({ type, document, highlight }) => {
+                  {results.map(({ type, document, highlight, rank }) => {
                     let resultItem;
                     switch (type) {
                       case 'software-catalog':
                         resultItem = (
                           <CatalogSearchResultListItem
+                            icon={<CatalogIcon />}
                             key={document.location}
                             result={document}
                             highlight={highlight}
+                            rank={rank}
                           />
                         );
                         break;
                       case 'techdocs':
                         resultItem = (
                           <TechDocsSearchResultListItem
+                            icon={<DocsIcon />}
                             key={document.location}
                             result={document}
                             highlight={highlight}
+                            rank={rank}
                           />
                         );
                         break;
@@ -207,6 +215,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
                             key={document.location}
                             result={document}
                             highlight={highlight}
+                            rank={rank}
                           />
                         );
                     }

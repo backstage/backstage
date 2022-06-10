@@ -6,14 +6,55 @@ sidebar_label: Discovery
 description: Automatically discovering catalog entities from repositories in GitLab
 ---
 
-The GitLab integration has a special discovery processor for discovering catalog
-entities from GitLab. The processor will crawl the GitLab instance and register
-entities matching the configured path. This can be useful as an alternative to
+The GitLab integration has a special entity provider for discovering catalog
+entities from GitLab. The entity provider will crawl the GitLab instance and register
+entities matching the configured paths. This can be useful as an alternative to
 static locations or manually adding things to the catalog.
 
-To use the discovery processor, you'll need a GitLab integration
-[set up](locations.md) with a `token`. Then you can add a location target to the
-catalog configuration:
+To use the discovery provider, you'll need a GitLab integration
+[set up](locations.md) with a `token`. Then you can add a provider config per group
+to the catalog configuration:
+
+```yaml
+catalog:
+  providers:
+    gitlab:
+      yourProviderId:
+        host: gitlab-host # Identifies one of the hosts set up in the integrations
+        branch: main # Optional. Uses `master` as default
+        group: example-group # Group and subgroup (if needed) to look for repositories
+        entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
+```
+
+As this provider is not one of the default providers, you will first need to install
+the gitlab catalog plugin:
+
+```bash
+# From the Backstage root directory
+yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-gitlab
+```
+
+Once you've done that, you'll also need to add the segment below to `packages/backend/src/plugins/catalog.ts`:
+
+```ts
+/* packages/backend/src/plugins/catalog.ts */
+
+import { GitlabDiscoveryEntityProvider } from '@backstage/plugin-catalog-backend-module-gitlab';
+
+const builder = await CatalogBuilder.create(env);
+/** ... other processors and/or providers ... */
+builder.addEntityProvider(
+  ...GitlabDiscoveryEntityProvider.fromConfig(env.config, {
+    logger: env.logger,
+    schedule: env.scheduler.createScheduledTaskRunner({
+      frequency: { minutes: 30 },
+      timeout: { minutes: 3 },
+    }),
+  }),
+);
+```
+
+## Alternative processor
 
 ```yaml
 catalog:
@@ -21,6 +62,9 @@ catalog:
     - type: gitlab-discovery
       target: https://gitlab.com/group/subgroup/blob/main/catalog-info.yaml
 ```
+
+As alternative to the entity provider `GitlabDiscoveryEntityProvider`
+you can still use the `GitLabDiscoveryProcessor`.
 
 Note the `gitlab-discovery` type, as this is not a regular `url` processor.
 

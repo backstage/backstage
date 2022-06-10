@@ -1,0 +1,11 @@
+---
+title: Vault
+author: Spread Group
+authorUrl: https://github.com/ivangonzalezacuna
+category: Vault
+description: Visualize a list secrets stored in your vault instance.
+documentation: https://github.com/backstage/backstage/tree/master/plugins/vault
+iconUrl: img/vault.png
+npmPackageName: '@backstage/plugin-vault'
+tags:
+  - vault

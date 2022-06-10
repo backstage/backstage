@@ -112,6 +112,10 @@ export interface CatalogSearchResultListItemProps {
   // (undocumented)
   highlight?: ResultHighlight;
   // (undocumented)
+  icon?: ReactNode;
+  // (undocumented)
+  rank?: number;
+  // (undocumented)
   result: IndexableDocument;
 }
 

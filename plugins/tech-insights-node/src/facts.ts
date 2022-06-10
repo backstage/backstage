@@ -15,6 +15,7 @@
  */
 import { DateTime, Duration, DurationLike } from 'luxon';
 import { Config } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 import {
   PluginEndpointDiscovery,
   TokenManager,
@@ -55,6 +56,7 @@ export type TechInsightFact = {
     | string[]
     | boolean[]
     | DateTime[]
+    | JsonValue
   >;
 
   /**
@@ -94,9 +96,16 @@ export type FactSchema = {
      * Type of the individual fact value
      *
      * Numbers are split into integers and floating point values.
-     * `set` indicates a collection of values
+     * `set` indicates a collection of values, `object` indicates JSON serializable value
      */
-    type: 'integer' | 'float' | 'string' | 'boolean' | 'datetime' | 'set';
+    type:
+      | 'integer'
+      | 'float'
+      | 'string'
+      | 'boolean'
+      | 'datetime'
+      | 'set'
+      | 'object';
 
     /**
      * A description of this individual fact value

@@ -160,4 +160,55 @@ describe('<Table />', () => {
     );
     expect(rendered.getByText('EMPTY')).toBeInTheDocument();
   });
+
+  describe('with custom components', () => {
+    const CustomRow = ({ data }: any) => {
+      return (
+        <tr>
+          <td>customised cell {data.col1}</td>
+          <td>customised cell {data.col2}</td>
+        </tr>
+      );
+    };
+
+    it('should not override the toolbar implementation', async () => {
+      const rendered = await renderInTestApp(
+        <Table
+          subtitle="subtitle"
+          emptyContent={<div>EMPTY</div>}
+          columns={minProps.columns}
+          data={minProps.data}
+          filters={[
+            {
+              column: column1.title,
+              type: 'select',
+            },
+          ]}
+          components={{
+            Row: CustomRow,
+          }}
+        />,
+      );
+
+      expect(rendered.getByText('Filters (0)')).toBeInTheDocument();
+    });
+
+    it('should render the provided custom row component correctly', async () => {
+      const rendered = await renderInTestApp(
+        <Table
+          subtitle="subtitle"
+          emptyContent={<div>EMPTY</div>}
+          columns={minProps.columns}
+          data={minProps.data}
+          components={{
+            Row: CustomRow,
+          }}
+        />,
+      );
+
+      expect(
+        rendered.getByText('customised cell first value, first row'),
+      ).toBeInTheDocument();
+    });
+  });
 });
