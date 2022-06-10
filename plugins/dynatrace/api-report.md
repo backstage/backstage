@@ -8,13 +8,15 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 
-// @public (undocumented)
+// @public
 export const dynatracePlugin: BackstagePlugin<{}, {}>;
 
-// @public (undocumented)
+// @public
 export const DynatraceTab: () => JSX.Element;
 
-// @public (undocumented)
+// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
+//
+// @public
 export const isDynatraceAvailable: (entity: Entity) => boolean;
 
 // (No @packageDocumentation comment for this package)
