@@ -6,7 +6,7 @@ description: Adding OAuth2Proxy as an authentication provider in Backstage
 ---
 
 The Backstage `@backstage/plugin-auth-backend` package comes with an
-`oauth2proxy` authentication provider that can authenticate users by using a
+`oauth2Proxy` authentication provider that can authenticate users by using a
 [oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy) in front of an
 actual Backstage instance. This enables to reuse existing authentications within
 a cluster. In general the `oauth2-proxy` supports all OpenID Connect providers,
@@ -21,17 +21,17 @@ The provider configuration can be added to your `app-config.yaml` under the root
 ```yaml
 auth:
   providers:
-    oauth2proxy: {}
+    oauth2Proxy: {}
 ```
 
 Right now no configuration options are supported, but the empty object is needed
 to enable the provider in the auth backend.
 
-To use the `oauth2proxy` provider you must also configure it with a sign-in resolver.
+To use the `oauth2Proxy` provider you must also configure it with a sign-in resolver.
 For more information about the sign-in process in general, see the
 [Sign-in Identities and Resolvers](../identity-resolver.md) documentation.
 
-For the `oauth2proxy` provider, the sign-in result is quite different than other providers.
+For the `oauth2Proxy` provider, the sign-in result is quite different than other providers.
 Because it's a proxy provider that can be configured to forward information through
 arbitrary headers, the auth result simply just gives you access to the HTTP headers
 of the incoming request. Using these you can either extract the information directly,
@@ -65,7 +65,7 @@ installed in `packages/app/src/App.tsx` like this:
 
  const app = createApp({
    components: {
-+    SignInPage: props => <ProxiedSignInPage {...props} provider="oauth2proxy" />,
++    SignInPage: props => <ProxiedSignInPage {...props} provider="oauth2Proxy" />,
 ```
 
 See the [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) section for more information.
