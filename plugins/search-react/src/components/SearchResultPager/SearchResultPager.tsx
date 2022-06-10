@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import React from 'react';
+
 import { Button, makeStyles } from '@material-ui/core';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import React from 'react';
-import { useSearch } from '@backstage/plugin-search-react';
+
+import { useSearch } from '../../context';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -31,7 +33,6 @@ const useStyles = makeStyles(theme => ({
 
 /**
  * @public
- * @deprecated Import from `@backstage/plugin-search-react` instead.
  */
 export const SearchResultPager = () => {
   const { fetchNextPage, fetchPreviousPage } = useSearch();

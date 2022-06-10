@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-export * from './HighlightedSearchResultText';
-export * from './SearchFilter';
-export * from './SearchResult';
-export * from './SearchResultPager';
-export * from './SearchBar';
-export * from './DefaultResultListItem';
+export { CheckboxFilter, SearchFilter, SelectFilter } from './SearchFilter';
+export { AutocompleteFilter } from './SearchFilter.Autocomplete';
+export type {
+  SearchFilterComponentProps,
+  SearchFilterWrapperProps,
+} from './SearchFilter';
+export type { SearchAutocompleteFilterProps } from './SearchFilter.Autocomplete';

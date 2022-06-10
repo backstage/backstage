@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import { renderInTestApp } from '@backstage/test-utils';
-import { waitFor } from '@testing-library/react';
 import React from 'react';
-import { useSearch } from '@backstage/plugin-search-react';
+import { waitFor } from '@testing-library/react';
+
+import { renderInTestApp } from '@backstage/test-utils';
+
+import { useSearch } from '../../context';
 import { SearchResult } from './SearchResult';
 
-jest.mock('@backstage/plugin-search-react', () => ({
-  ...jest.requireActual('@backstage/plugin-search-react'),
+jest.mock('../../context', () => ({
+  ...jest.requireActual('../../context'),
   useSearch: jest.fn().mockReturnValue({
     result: {},
   }),

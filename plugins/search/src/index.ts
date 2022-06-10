@@ -21,14 +21,19 @@
  */
 
 export { Filters, FiltersButton } from './components/Filters';
-export type { FiltersState } from './components/Filters';
+export type {
+  FilterOptions,
+  FiltersState,
+  FiltersProps,
+  FiltersButtonProps,
+} from './components/Filters';
 export type { HomePageSearchBarProps } from './components/HomePageComponent';
 export { SearchBar, SearchBarBase } from './components/SearchBar';
 export type {
   SearchBarBaseProps,
   SearchBarProps,
 } from './components/SearchBar';
-export { SearchFilter, SearchFilterNext } from './components/SearchFilter';
+export { SearchFilter } from './components/SearchFilter';
 export type {
   SearchAutocompleteFilterProps,
   SearchFilterComponentProps,
@@ -60,9 +65,7 @@ export type { SidebarSearchModalProps } from './components/SidebarSearchModal';
 export {
   DefaultResultListItem,
   HomePageSearchBar,
-  SearchBarNext,
   SearchPage,
-  SearchPageNext,
   searchPlugin as plugin,
   searchPlugin,
   SearchResult,
