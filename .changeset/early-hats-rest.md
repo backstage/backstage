@@ -2,4 +2,4 @@
 '@backstage/plugin-user-settings': patch
 ---
 
-Add UserSettingsIdentityCard to show the result of the identityApi.getBackstageIdentity() call to help debug ownership issues.
+Added new `<UserSettingsIdentityCard />` to show the result of the `identityApi.getBackstageIdentity()` call to help debug ownership issues. The new card has been added to the user settings page.
