@@ -51,6 +51,13 @@ export type AdaptationProviderProps = {
   excludePlugins?: BackstagePlugin<any, any>[];
 
   /**
+   * Exclude all previously registered adaptations for this/these component(s)
+   */
+  excludeComponents?:
+    | AdaptableComponentRef<any, any>
+    | AdaptableComponentRef<any, any>[];
+
+  /**
    * Exclude these specific previously registered adaptations
    */
   exclude?: ComponentAdaptation[];
@@ -106,6 +113,7 @@ export function AdaptationProvider(
     adaptations,
     reset = false,
     excludePlugins,
+    excludeComponents,
     exclude,
     children,
   } = props;
@@ -115,6 +123,16 @@ export function AdaptationProvider(
     const adaptationMap = reset
       ? cloneAdaptationMap(undefined)
       : cloneAdaptationMap(parentContext?.adaptationMap);
+
+    if (excludeComponents) {
+      const excludeComponentRefs = Array.isArray(excludeComponents)
+        ? excludeComponents
+        : [excludeComponents];
+
+      excludeComponentRefs.forEach(ref => {
+        adaptationMap.delete(ref.id);
+      });
+    }
 
     if (excludePlugins || exclude) {
       const excludePluginsSet = new Set(excludePlugins ?? []);
@@ -143,6 +161,7 @@ export function AdaptationProvider(
     adaptations,
     reset,
     excludePlugins,
+    excludeComponents,
     exclude,
   ]);
 
