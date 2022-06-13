@@ -220,7 +220,7 @@ export class LocalPublish implements PublisherBase {
       }
 
       // Otherwise, redirect to the new path.
-      return res.redirect(req.baseUrl + newPath, 301);
+      return res.redirect(301, req.baseUrl + newPath);
     });
 
     router.use(
