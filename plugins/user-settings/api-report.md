@@ -139,8 +139,8 @@ export const useUserProfile: () =>
   | {
       profile: ProfileInfo;
       displayName: string;
-      backstageIdentity: undefined;
       loading: boolean;
+      backstageIdentity?: undefined;
     }
   | {
       profile: ProfileInfo;
