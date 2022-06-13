@@ -27,7 +27,6 @@ export function useUserRepositories() {
     const entitiesList = await catalogApi.getEntities({
       filter: {
         kind: 'Component',
-        'spec.type': 'service',
         'spec.owner': teamEntity?.metadata?.name,
       },
     });
