@@ -48,7 +48,12 @@ type Adaptation<Props extends {}, Context extends {}> = WrapAdaptation<{
   component: AdaptableComponentAdaptation<Props, Context>;
 }>;
 
-type AdaptationMapKey = AdaptableComponentRef<any, any, any>;
+/** The component ref provider key is its id */
+type AdaptationMapKey = string;
+/**
+ * The component ref provider value is a pre-flattened list of props
+ * interceptors and adaptation components
+ * */
 type AdaptationMapValue<Props extends {}, Context extends {}> = {
   propsInterceptors: PropsInterceptor<Props>[];
   components: Adaptation<Props, Context>[];
@@ -134,7 +139,7 @@ function appendAdaptationMap(
 ): void {
   adaptations.forEach(adaptation => {
     const { ref, spec, key } = adaptation;
-    const value = ensureMapValue(adaptationMap, ref);
+    const value = ensureMapValue(adaptationMap, ref.id);
 
     if (
       spec.Adaptation &&
@@ -166,7 +171,7 @@ export function useComponentAdaptations<Props extends {} = any, Context = any>(
 ): AdaptationMapValue<any, any> {
   const { adaptationMap } = useContext(VersionedContext)?.atVersion(1) ?? {};
 
-  return adaptationMap?.get(componentRef) ?? noAdaptations;
+  return adaptationMap?.get(componentRef.id) ?? noAdaptations;
 }
 
 export function ensureMapValue(
