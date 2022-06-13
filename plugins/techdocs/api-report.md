@@ -380,6 +380,7 @@ export const TechDocsSearch: (props: TechDocsSearchProps) => JSX.Element;
 // @public
 export type TechDocsSearchProps = {
   entityId: CompoundEntityRef;
+  entityTitle?: string;
   debounceTime?: number;
 };
 
