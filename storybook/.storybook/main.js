@@ -9,6 +9,7 @@ const BACKSTAGE_CORE_STORIES = [
   'packages/app',
   'plugins/org',
   'plugins/search',
+  'plugins/search-react',
   'plugins/home',
   'plugins/stack-overflow',
 ];
