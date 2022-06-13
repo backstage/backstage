@@ -199,7 +199,7 @@ export class LocalPublish implements PublisherBase {
       }
 
       // Generate a lower-case entity triplet path.
-      const [_, namespace, kind, name, ...rest] = req.path.split('/');
+      const [prefix, namespace, kind, name, ...rest] = req.path.split(path.sep);
 
       // Ignore non-triplet objects.
       if (!namespace || !kind || !name) {
@@ -207,12 +207,12 @@ export class LocalPublish implements PublisherBase {
       }
 
       const newPath = [
-        _,
+        prefix,
         namespace.toLowerCase(),
         kind.toLowerCase(),
         name.toLowerCase(),
         ...rest,
-      ].join('/');
+      ].join(path.posix.sep);
 
       // If there was no change, then let express.static() handle the request.
       if (newPath === req.path) {
@@ -220,7 +220,7 @@ export class LocalPublish implements PublisherBase {
       }
 
       // Otherwise, redirect to the new path.
-      return res.redirect(req.baseUrl + newPath, 301);
+      return res.redirect(301, req.baseUrl + newPath);
     });
 
     router.use(
