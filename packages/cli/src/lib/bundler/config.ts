@@ -135,21 +135,6 @@ export async function createConfig(
     }),
   );
 
-  // Detect and use the appropriate react-dom hot-loader patch based on what
-  // version of React is used within the target repo.
-  const resolveAliases: Record<string, string> = {};
-  try {
-    // eslint-disable-next-line import/no-extraneous-dependencies
-    const { version: reactDomVersion } = require('react-dom/package.json');
-    if (reactDomVersion.startsWith('16.')) {
-      resolveAliases['react-dom'] = '@hot-loader/react-dom-v16';
-    } else {
-      resolveAliases['react-dom'] = '@hot-loader/react-dom-v17';
-    }
-  } catch (error) {
-    console.warn(`WARNING: Failed to read react-dom version, ${error}`);
-  }
-
   const resolvePlugins: webpack.ResolvePluginInstance[] = [
     new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
   ];
@@ -194,7 +179,6 @@ export async function createConfig(
         util: require.resolve('util/'),
       },
       plugins: resolvePlugins,
-      alias: resolveAliases,
     },
     module: {
       rules: loaders,
