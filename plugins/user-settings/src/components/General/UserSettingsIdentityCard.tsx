@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 import { InfoCard } from '@backstage/core-components';
-import { Grid, Typography } from '@material-ui/core';
 import React from 'react';
 import { useUserProfile } from '../useUserProfileInfo';
 import Chip from '@material-ui/core/Chip';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 
 export const UserSettingsIdentityCard = () => {
   const { backstageIdentity } = useUserProfile();
