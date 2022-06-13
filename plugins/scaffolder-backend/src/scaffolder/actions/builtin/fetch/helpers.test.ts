@@ -119,4 +119,26 @@ describe('fetchContent helper', () => {
     expect(fs.ensureDir).toBeCalled();
     expect(dirFunction).toBeCalledWith({ targetDir: 'foo' });
   });
+
+  it('should not encode the URLs', async () => {
+    const baseUrl = 'https://github.com/backstage/foo/';
+    const nestedPath = '{{ nested }}';
+
+    // relative URL
+    await fetchContents({
+      ...options,
+      baseUrl,
+      fetchUrl: nestedPath,
+    });
+
+    // absolute URL
+    await fetchContents({
+      ...options,
+      fetchUrl: `${baseUrl}${nestedPath}`,
+    });
+
+    const expectedReadUrl = 'https://github.com/backstage/foo/{{ nested }}';
+    expect(readTree).toHaveBeenNthCalledWith(1, expectedReadUrl);
+    expect(readTree).toHaveBeenNthCalledWith(2, expectedReadUrl);
+  });
 });

@@ -64,10 +64,12 @@ export async function fetchContents({
         throw new InputError(`No integration found for location ${baseUrl}`);
       }
 
-      readUrl = integration.resolveUrl({
+      const resolvedUrl = integration.resolveUrl({
         url: fetchUrl,
         base: baseUrl,
       });
+
+      readUrl = decodeURIComponent(resolvedUrl);
     } else {
       throw new InputError(
         `Failed to fetch, template location could not be determined and the fetch URL is relative, ${fetchUrl}`,
