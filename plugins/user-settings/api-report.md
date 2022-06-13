@@ -71,6 +71,11 @@ export const UserSettingsFeatureFlags: () => JSX.Element;
 // @public (undocumented)
 export const UserSettingsGeneral: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "UserSettingsIdentityCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const UserSettingsIdentityCard: () => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "UserSettingsMenu" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
