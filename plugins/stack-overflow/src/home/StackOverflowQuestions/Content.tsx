@@ -74,12 +74,14 @@ export const Content = (props: StackOverflowQuestionsContentProps) => {
               primary={question.title}
               secondary={getSecondaryText(question.answer_count)}
             />
-            <ListItemSecondaryAction>
+          </Link>
+          <ListItemSecondaryAction>
+            <Link to={question.link}>
               <IconButton edge="end" aria-label="external-link">
                 <OpenInNewIcon />
               </IconButton>
-            </ListItemSecondaryAction>
-          </Link>
+            </Link>
+          </ListItemSecondaryAction>
         </ListItem>
       ))}
     </List>
