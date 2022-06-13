@@ -15,7 +15,7 @@
  */
 
 import React, { ReactNode } from 'react';
-import { AnalyticsContext } from '@backstage/core-plugin-api';
+import { AnalyticsContext, useAnalytics } from '@backstage/core-plugin-api';
 import {
   ResultHighlight,
   SearchDocument,
@@ -40,6 +40,7 @@ export type DefaultResultListItemProps = {
   secondaryAction?: ReactNode;
   result: SearchDocument;
   highlight?: ResultHighlight;
+  rank?: number;
   lineClamp?: number;
 };
 
@@ -51,12 +52,21 @@ export type DefaultResultListItemProps = {
 export const DefaultResultListItemComponent = ({
   result,
   highlight,
+  rank,
   icon,
   secondaryAction,
   lineClamp = 5,
 }: DefaultResultListItemProps) => {
+  const analytics = useAnalytics();
+  const handleClick = () => {
+    analytics.captureEvent('discover', result.title, {
+      attributes: { to: result.location },
+      value: rank,
+    });
+  };
+
   return (
-    <Link to={result.location}>
+    <Link noTrack to={result.location} onClick={handleClick}>
       <ListItem alignItems="center">
         {icon && <ListItemIcon>{icon}</ListItemIcon>}
         <ListItemText

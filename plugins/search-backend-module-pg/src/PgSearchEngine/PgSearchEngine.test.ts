@@ -174,6 +174,7 @@ describe('PgSearchEngine', () => {
               location: 'location-1',
             },
             type: 'my-type',
+            rank: 1,
           },
         ],
         nextPageCursor: undefined,
@@ -215,6 +216,7 @@ describe('PgSearchEngine', () => {
               location: `location-${i}`,
             },
             type: 'my-type',
+            rank: i + 1,
           })),
         nextPageCursor: 'MQ==',
       });
@@ -257,6 +259,7 @@ describe('PgSearchEngine', () => {
               location: `location-${i}`,
             },
             type: 'my-type',
+            rank: i + 1,
           }))
           .slice(25),
         previousPageCursor: 'MA==',

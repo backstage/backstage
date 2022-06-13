@@ -53,6 +53,7 @@ export const useUserProfile = () => {
 
   return {
     profile: value!.profile,
+    backstageIdentity: value!.identity,
     displayName: value!.profile.displayName ?? value!.identity.userEntityRef,
     loading,
   };

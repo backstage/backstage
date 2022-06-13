@@ -85,6 +85,8 @@ dockerfiles
 Dockerize
 dockerode
 Docusaurus
+dynatrace
+Dynatrace
 ecco
 env
 Env
@@ -302,6 +304,7 @@ superfences
 Superfences
 superset
 supertype
+storable
 talkdesk
 Talkdesk
 tasklist

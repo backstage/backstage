@@ -114,6 +114,8 @@ export interface CatalogSearchResultListItemProps {
   // (undocumented)
   icon?: ReactNode;
   // (undocumented)
+  rank?: number;
+  // (undocumented)
   result: IndexableDocument;
 }
 

@@ -523,6 +523,7 @@ describe('ElasticSearchSearchEngine', () => {
             .map((_, i) => ({
               type: 'mytype',
               document: { value: `${i}` },
+              rank: i + 1,
             })),
         ),
       });
@@ -567,6 +568,7 @@ describe('ElasticSearchSearchEngine', () => {
             .map((_, i) => ({
               type: 'mytype',
               document: { value: `${i}` },
+              rank: i + 1,
             })),
         ),
         nextPageCursor: 'MQ==',
@@ -614,6 +616,7 @@ describe('ElasticSearchSearchEngine', () => {
             .map((_, i) => ({
               type: 'mytype',
               document: { value: `${i}` },
+              rank: i + 1,
             }))
             .slice(25),
         ),
@@ -667,6 +670,7 @@ describe('ElasticSearchSearchEngine', () => {
             .map((_, i) => ({
               type: 'mytype',
               document: { value: `${i}` },
+              rank: i + 1,
               highlight: {
                 preTag: '<tag>',
                 postTag: '</tag>',

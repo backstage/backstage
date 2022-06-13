@@ -38,6 +38,7 @@ export type DefaultResultListItemProps = {
   secondaryAction?: ReactNode;
   result: SearchDocument;
   highlight?: ResultHighlight;
+  rank?: number;
   lineClamp?: number;
 };
 

@@ -2271,17 +2271,17 @@
     teeny-request "^8.0.0"
     uuid "^8.0.0"
 
-"@graphiql/react@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.npmjs.org/@graphiql/react/-/react-0.4.0.tgz#55099632c29be0c49f1251904b74cbfd2d31993b"
-  integrity sha512-9OtwzJ3EaDgD5Qi+WtnHA8Wv0XL9l+W4n3jtNR+wFDjC2vvbEd/grPm0eSikryVcq/0q6aR4HyR3SuKj6tKPYg==
+"@graphiql/react@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.npmjs.org/@graphiql/react/-/react-0.4.1.tgz#c424951f4e1b2ffa22aa514b18663d7a848ff31f"
+  integrity sha512-YeB26Sc223zfv6wSzygKRfeJ7JeXZW40c6vY4Om/POXuytRyrxuKynuP1Z3ueGYY4Rji8YMg6dPAjtTOUDLjZw==
   dependencies:
     "@graphiql/toolkit" "^0.6.0"
     codemirror "^5.65.3"
-    codemirror-graphql "^1.3.0"
+    codemirror-graphql "^1.3.1"
     copy-to-clipboard "^3.2.0"
     escape-html "^1.0.3"
-    graphql-language-service "^5.0.4"
+    graphql-language-service "^5.0.5"
     markdown-it "^12.2.0"
     set-value "^4.1.0"
 
@@ -5016,19 +5016,19 @@
   resolved "https://registry.npmjs.org/@octokit/webhooks-methods/-/webhooks-methods-2.0.0.tgz#1108b9ea661ca6c81e4a8bfa63a09eb27d5bc2db"
   integrity sha512-35cfQ4YWlnZnmZKmIxlGPUPLtbkF8lr/A/1Sk1eC0ddLMwQN06dOuLc+dI3YLQS+T+MoNt3DIQ0NynwgKPilig==
 
-"@octokit/webhooks-types@5.6.0":
-  version "5.6.0"
-  resolved "https://registry.npmjs.org/@octokit/webhooks-types/-/webhooks-types-5.6.0.tgz#cbc908ef0df997de7f65da4e4003ecb8430410d3"
-  integrity sha512-y3MqE6N6Ksg1+YV0sXVpW2WP7Y24h7rUp2hDJuzoqWdKGr7owmRDyHC72INwfCYNzura/vsNPXvc6Xbfp4wGGw==
+"@octokit/webhooks-types@5.7.1":
+  version "5.7.1"
+  resolved "https://registry.npmjs.org/@octokit/webhooks-types/-/webhooks-types-5.7.1.tgz#26452dcd72fa77ac85bb188fda2a5980eb292932"
+  integrity sha512-zabCzfWvvquxDzj1lU7GhJQteACGfGXnHfROJD4A7LKhRjlkaggoSkE5cWQJJ6nW2t/UI51dSFrEA+A4mhqfPw==
 
 "@octokit/webhooks@^9.0.1", "@octokit/webhooks@^9.14.1":
-  version "9.24.0"
-  resolved "https://registry.npmjs.org/@octokit/webhooks/-/webhooks-9.24.0.tgz#3e3b194ee67151f674e8d0d565c8179828a12b3d"
-  integrity sha512-s1nqplA+j4sP7Cz40jn/Q2ipkKRKJ7Gi+NzZiSnwNfisYNduLHEwMUJVBEKc5I0r6GMcZZRJOe6PJ2rJXYW66g==
+  version "9.25.0"
+  resolved "https://registry.npmjs.org/@octokit/webhooks/-/webhooks-9.25.0.tgz#f1bd7815af59fb37892b87c86d2cb8625a570e9a"
+  integrity sha512-pyCraAmxHSnfTMe4K+QnNH/nSCJolCc++J2SAfYBwPFm6gg2WTGxWuegzuHul+Xm71+V9qL2NhIXX48U7MvTIA==
   dependencies:
     "@octokit/request-error" "^2.0.2"
     "@octokit/webhooks-methods" "^2.0.0"
-    "@octokit/webhooks-types" "5.6.0"
+    "@octokit/webhooks-types" "5.7.1"
     aggregate-error "^3.1.0"
 
 "@open-draft/until@^1.0.3":
@@ -9589,12 +9589,12 @@ code-point-at@^1.0.0:
   resolved "https://registry.npmjs.org/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codemirror-graphql@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.npmjs.org/codemirror-graphql/-/codemirror-graphql-1.3.0.tgz#6ca19eb2735dbfd5ac9db59b8fc4c8fc1e34fe43"
-  integrity sha512-Inqecp/PpUsNFz6+V6jpgQD1m7jjGg3yby60baw2t5yb2stBH8Z/6cHm/IYp9eN0Aq2EWqomd0GkGmiISPi4jQ==
+codemirror-graphql@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.npmjs.org/codemirror-graphql/-/codemirror-graphql-1.3.1.tgz#c852b12b6909783681a5e37d61d1627a78f9c7a6"
+  integrity sha512-jlLwTARoMeuYLR5sQYbh5uYewIoYUYAn+0lOIKXpaHudk9X1rOrP/WtOqfDza1ETnyfnlpLidBnpieIMKktriQ==
   dependencies:
-    graphql-language-service "^5.0.4"
+    graphql-language-service "^5.0.5"
 
 codemirror@^5.65.3:
   version "5.65.3"
@@ -12407,6 +12407,7 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@backstage/plugin-cloudbuild" "^0.3.6-next.1"
     "@backstage/plugin-code-coverage" "^0.1.33-next.1"
     "@backstage/plugin-cost-insights" "^0.11.28-next.2"
+    "@backstage/plugin-dynatrace" "^0.0.0"
     "@backstage/plugin-explore" "^0.3.37-next.1"
     "@backstage/plugin-gcalendar" "^0.3.2-next.1"
     "@backstage/plugin-gcp-projects" "^0.3.25-next.1"
@@ -12618,7 +12619,7 @@ express-xml-bodyparser@^0.3.0:
   dependencies:
     xml2js "^0.4.11"
 
-express@^4.17.1, express@^4.17.3:
+express@^4.17.1, express@^4.17.3, express@^4.18.1:
   version "4.18.1"
   resolved "https://registry.npmjs.org/express/-/express-4.18.1.tgz#7797de8b9c72c857b9cd0e14a5eea80666267caf"
   integrity sha512-zZBcOX9TfehHQhtupq57OF8lFZ3UZi08Y97dwFCkD8p9d/d2Y3M+ykKcwaMDEL+4qyUolgBDX6AblpR3fL212Q==
@@ -13905,14 +13906,14 @@ grapheme-splitter@^1.0.4:
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
 graphiql@^1.5.12, graphiql@^1.8.8:
-  version "1.9.6"
-  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.9.6.tgz#ab1714a0200bdcf358761d7e9625de41fe06a98c"
-  integrity sha512-HxKM2cu6SQUi8x1QqZc/GkLBnyjZerPOKmiBfsZmIWYLtZTJTd4dezeraD2klB80FkYKgPVPbojGLofuLq8w3w==
+  version "1.9.7"
+  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.9.7.tgz#2edadea4fbbd723f9ba27a1f464f4ff5b20866bd"
+  integrity sha512-rn0njwDkCpFn5GwDbSuzt7GwjiFLhYCdgiscYm4n8Oq9EeOyGrIxQK/PjUz1YaR/+T7lg1raIBuRAX/Nei9KcQ==
   dependencies:
-    "@graphiql/react" "^0.4.0"
+    "@graphiql/react" "^0.4.1"
     "@graphiql/toolkit" "^0.6.0"
     entities "^2.0.0"
-    graphql-language-service "^5.0.4"
+    graphql-language-service "^5.0.5"
     markdown-it "^12.2.0"
 
 graphlib@^2.1.8:
@@ -13944,10 +13945,10 @@ graphql-executor@0.0.23:
   resolved "https://registry.npmjs.org/graphql-executor/-/graphql-executor-0.0.23.tgz#205c1764b39ee0fcf611553865770f37b45851a2"
   integrity sha512-3Ivlyfjaw3BWmGtUSnMpP/a4dcXCp0mJtj0PiPG14OKUizaMKlSEX+LX2Qed0LrxwniIwvU6B4w/koVjEPyWJg==
 
-graphql-language-service@^5.0.4:
-  version "5.0.4"
-  resolved "https://registry.npmjs.org/graphql-language-service/-/graphql-language-service-5.0.4.tgz#068dd4ff5dc6fcc6c8560ccc8f05311d5fd63fcd"
-  integrity sha512-lX+ahYBwvTHJe1N7JqA08moNwbr0RWaFILxVnbciaaeb469TTIhQi87ZgVJ/y9Szre4d0r3vjIt2EstwafzcDA==
+graphql-language-service@^5.0.5:
+  version "5.0.5"
+  resolved "https://registry.npmjs.org/graphql-language-service/-/graphql-language-service-5.0.5.tgz#894c08bee50070c97cc53ae514847aeef41bc0ac"
+  integrity sha512-hekBLI73r6ghShWrIMJ7Pe4Z+yJrda/U+kLenNJLNswuCrR0XfFOv5pNtnSXLcjFZkQfY1bwGV0D8IVKZEOW5Q==
   dependencies:
     nullthrows "^1.0.0"
     vscode-languageserver-types "^3.15.1"
@@ -26099,7 +26100,7 @@ write-pkg@^4.0.0:
     type-fest "^0.4.1"
     write-json-file "^3.2.0"
 
-ws@8.7.0, ws@^8.0.0, ws@^8.3.0:
+ws@8.7.0:
   version "8.7.0"
   resolved "https://registry.npmjs.org/ws/-/ws-8.7.0.tgz#eaf9d874b433aa00c0e0d8752532444875db3957"
   integrity sha512-c2gsP0PRwcLFzUiA8Mkr37/MI7ilIlHQxaEAtd0uNMbVMoy8puJyafRlm0bV9MbGSabUPeLrRRaqIBcFcA2Pqg==
@@ -26108,6 +26109,11 @@ ws@^7.3.1, ws@^7.4.6:
   version "7.5.7"
   resolved "https://registry.npmjs.org/ws/-/ws-7.5.7.tgz#9e0ac77ee50af70d58326ecff7e85eb3fa375e67"
   integrity sha512-KMvVuFzpKBuiIXW3E4u3mySRO2/mCHSyZDJQM5NQ9Q9KHWHWh0NHgfbRMLLrceUK5qAL4ytALJbpRMjixFZh8A==
+
+ws@^8.0.0, ws@^8.3.0:
+  version "8.8.0"
+  resolved "https://registry.npmjs.org/ws/-/ws-8.8.0.tgz#8e71c75e2f6348dbf8d78005107297056cb77769"
+  integrity sha512-JDAgSYQ1ksuwqfChJusw1LSJ8BizJ2e/vVu5Lxjq3YvNJNlROv1ui4i+c/kUUrPheBvQl4c5UbERhTwKa6QBJQ==
 
 ws@^8.4.2:
   version "8.5.0"
