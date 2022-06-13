@@ -24,6 +24,7 @@ import request from 'supertest';
 import mockFs from 'mock-fs';
 import * as os from 'os';
 import { LocalPublish } from './local';
+import path from 'path';
 
 const createMockEntity = (annotations = {}, lowerCase = false) => {
   return {
@@ -145,7 +146,7 @@ describe('local publisher', () => {
         ...{
           kind: 'component',
           metadata: {
-            name: '../component/other-component',
+            name: path.join('..', 'component', 'other-component'),
             namespace: 'default',
           },
         },
