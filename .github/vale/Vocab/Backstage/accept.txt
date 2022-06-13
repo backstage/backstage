@@ -85,6 +85,8 @@ dockerfiles
 Dockerize
 dockerode
 Docusaurus
+dynatrace
+Dynatrace
 ecco
 env
 Env

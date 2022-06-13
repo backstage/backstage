@@ -12407,6 +12407,7 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@backstage/plugin-cloudbuild" "^0.3.6-next.1"
     "@backstage/plugin-code-coverage" "^0.1.33-next.1"
     "@backstage/plugin-cost-insights" "^0.11.28-next.2"
+    "@backstage/plugin-dynatrace" "^0.0.0"
     "@backstage/plugin-explore" "^0.3.37-next.1"
     "@backstage/plugin-gcalendar" "^0.3.2-next.1"
     "@backstage/plugin-gcp-projects" "^0.3.25-next.1"
@@ -12618,7 +12619,7 @@ express-xml-bodyparser@^0.3.0:
   dependencies:
     xml2js "^0.4.11"
 
-express@^4.17.1, express@^4.17.3:
+express@^4.17.1, express@^4.17.3, express@^4.18.1:
   version "4.18.1"
   resolved "https://registry.npmjs.org/express/-/express-4.18.1.tgz#7797de8b9c72c857b9cd0e14a5eea80666267caf"
   integrity sha512-zZBcOX9TfehHQhtupq57OF8lFZ3UZi08Y97dwFCkD8p9d/d2Y3M+ykKcwaMDEL+4qyUolgBDX6AblpR3fL212Q==
