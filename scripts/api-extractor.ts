@@ -235,6 +235,7 @@ const ALLOW_WARNINGS = [
   'plugins/code-coverage-backend',
   'plugins/config-schema',
   'plugins/cost-insights',
+  'plugins/dynatrace',
   'plugins/explore',
   'plugins/explore-react',
   'plugins/firehydrant',
