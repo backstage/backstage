@@ -14,10 +14,8 @@ yarn.lock                                           @backstage/reviewers @backst
 /docs/assets/search                                 @backstage/reviewers @backstage/techdocs-core
 /docs/features/search                               @backstage/reviewers @backstage/techdocs-core
 /docs/features/techdocs                             @backstage/reviewers @backstage/techdocs-core
-/packages/search-common                             @backstage/reviewers @backstage/techdocs-core
 /packages/techdocs-cli                              @backstage/reviewers @backstage/techdocs-core
 /packages/techdocs-cli-embedded-app                 @backstage/reviewers @backstage/techdocs-core
-/packages/techdocs-common                           @backstage/reviewers @backstage/techdocs-core
 /plugins/allure                                     @backstage/reviewers @deepak-bhardwaj-ps
 /plugins/apache-airflow                             @backstage/reviewers @cmpadden
 /plugins/api-docs                                   @backstage/reviewers @backstage/sda-se-reviewers
