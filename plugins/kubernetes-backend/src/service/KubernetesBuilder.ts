@@ -227,10 +227,10 @@ export class KubernetesBuilder {
       const serviceId = req.params.serviceId;
       const requestBody: ObjectsByEntityRequest = req.body;
       try {
-        const response = await objectsProvider.getKubernetesObjectsByEntity(
-          requestBody.entity,
-          requestBody.auth || {},
-        );
+        const response = await objectsProvider.getKubernetesObjectsByEntity({
+          entity: requestBody.entity,
+          auth: requestBody.auth || {},
+        });
         res.json(response);
       } catch (e) {
         logger.error(

@@ -97,7 +97,7 @@ export interface KubernetesClustersSupplier {
 
 // Used to locate which cluster(s) a service is running on
 export interface KubernetesServiceLocator {
-  getClustersByEntity(entity: Entity): Promise<ClusterDetails[]>;
+  getClustersByEntity(entity: Entity): Promise<{ clusters: ClusterDetails[] }>;
 }
 
 export type ServiceLocatorMethod = 'multiTenant' | 'http'; // TODO implement http
@@ -173,14 +173,20 @@ export interface KubernetesObjectsProviderOptions {
 
 export type ObjectsByEntityRequest = KubernetesRequestBody;
 
+export interface KubernetesObjectsByEntity {
+  entity: Entity;
+  auth: KubernetesRequestAuth;
+}
+
+export interface CustomResourcesByEntity extends KubernetesObjectsByEntity {
+  customResources: CustomResourceMatcher[];
+}
+
 export interface KubernetesObjectsProvider {
   getKubernetesObjectsByEntity(
-    entity: Entity,
-    auth: KubernetesRequestAuth,
+    kubernetesObjectsByEntity: KubernetesObjectsByEntity,
   ): Promise<ObjectsByEntityResponse>;
   getCustomResourcesByEntity(
-    entity: Entity,
-    auth: KubernetesRequestAuth,
-    customResources: CustomResourceMatcher[],
+    customResourcesByEntity: CustomResourcesByEntity,
   ): Promise<ObjectsByEntityResponse>;
 }

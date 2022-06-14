@@ -167,12 +167,14 @@ describe('handleGetKubernetesObjectsForService', () => {
 
   it('retrieve objects for one cluster', async () => {
     getClustersByEntity.mockImplementation(() =>
-      Promise.resolve([
-        {
-          name: 'test-cluster',
-          authProvider: 'serviceAccount',
-        },
-      ]),
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'test-cluster',
+            authProvider: 'serviceAccount',
+          },
+        ],
+      }),
     );
 
     mockFetch(fetchObjectsForService);
@@ -190,8 +192,8 @@ describe('handleGetKubernetesObjectsForService', () => {
       customResources: [],
     });
 
-    const result = await sut.getKubernetesObjectsByEntity(
-      {
+    const result = await sut.getKubernetesObjectsByEntity({
+      entity: {
         apiVersion: 'backstage.io/v1beta1',
         kind: 'Component',
         metadata: {
@@ -207,8 +209,8 @@ describe('handleGetKubernetesObjectsForService', () => {
           owner: 'joe',
         },
       },
-      {},
-    );
+      auth: {},
+    });
 
     expect(getClustersByEntity.mock.calls.length).toBe(1);
     expect(fetchObjectsForService.mock.calls.length).toBe(1);
@@ -267,12 +269,14 @@ describe('handleGetKubernetesObjectsForService', () => {
 
   it('dont call top for the same namespace twice', async () => {
     getClustersByEntity.mockImplementation(() =>
-      Promise.resolve([
-        {
-          name: 'test-cluster',
-          authProvider: 'serviceAccount',
-        },
-      ]),
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'test-cluster',
+            authProvider: 'serviceAccount',
+          },
+        ],
+      }),
     );
 
     fetchObjectsForService.mockImplementation((_: ObjectFetchParams) =>
@@ -320,8 +324,8 @@ describe('handleGetKubernetesObjectsForService', () => {
       customResources: [],
     });
 
-    const result = await sut.getKubernetesObjectsByEntity(
-      {
+    const result = await sut.getKubernetesObjectsByEntity({
+      entity: {
         apiVersion: 'backstage.io/v1beta1',
         kind: 'Component',
         metadata: {
@@ -337,8 +341,8 @@ describe('handleGetKubernetesObjectsForService', () => {
           owner: 'joe',
         },
       },
-      {},
-    );
+      auth: {},
+    });
 
     expect(getClustersByEntity.mock.calls.length).toBe(1);
     expect(fetchObjectsForService.mock.calls.length).toBe(1);
@@ -386,17 +390,19 @@ describe('handleGetKubernetesObjectsForService', () => {
 
   it('retrieve objects for two clusters', async () => {
     getClustersByEntity.mockImplementation(() =>
-      Promise.resolve([
-        {
-          name: 'test-cluster',
-          authProvider: 'serviceAccount',
-          dashboardUrl: 'https://k8s.foo.coom',
-        },
-        {
-          name: 'other-cluster',
-          authProvider: 'google',
-        },
-      ]),
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'test-cluster',
+            authProvider: 'serviceAccount',
+            dashboardUrl: 'https://k8s.foo.coom',
+          },
+          {
+            name: 'other-cluster',
+            authProvider: 'google',
+          },
+        ],
+      }),
     );
 
     mockFetch(fetchObjectsForService);
@@ -414,8 +420,8 @@ describe('handleGetKubernetesObjectsForService', () => {
       customResources: [],
     });
 
-    const result = await sut.getKubernetesObjectsByEntity(
-      {
+    const result = await sut.getKubernetesObjectsByEntity({
+      entity: {
         apiVersion: 'backstage.io/v1beta1',
         kind: 'Component',
         metadata: {
@@ -431,10 +437,10 @@ describe('handleGetKubernetesObjectsForService', () => {
           owner: 'joe',
         },
       },
-      {
+      auth: {
         google: 'google_token_123',
       },
-    );
+    });
 
     expect(getClustersByEntity.mock.calls.length).toBe(1);
     expect(fetchObjectsForService.mock.calls.length).toBe(2);
@@ -530,20 +536,22 @@ describe('handleGetKubernetesObjectsForService', () => {
   });
   it('retrieve objects for three clusters, only two have resources and show in ui', async () => {
     getClustersByEntity.mockImplementation(() =>
-      Promise.resolve([
-        {
-          name: 'test-cluster',
-          authProvider: 'serviceAccount',
-        },
-        {
-          name: 'other-cluster',
-          authProvider: 'google',
-        },
-        {
-          name: 'empty-cluster',
-          authProvider: 'google',
-        },
-      ]),
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'test-cluster',
+            authProvider: 'serviceAccount',
+          },
+          {
+            name: 'other-cluster',
+            authProvider: 'google',
+          },
+          {
+            name: 'empty-cluster',
+            authProvider: 'google',
+          },
+        ],
+      }),
     );
 
     mockFetch(fetchObjectsForService);
@@ -561,8 +569,8 @@ describe('handleGetKubernetesObjectsForService', () => {
       customResources: [],
     });
 
-    const result = await sut.getKubernetesObjectsByEntity(
-      {
+    const result = await sut.getKubernetesObjectsByEntity({
+      entity: {
         apiVersion: 'backstage.io/v1beta1',
         kind: 'Component',
         metadata: {
@@ -578,10 +586,10 @@ describe('handleGetKubernetesObjectsForService', () => {
           owner: 'joe',
         },
       },
-      {
+      auth: {
         google: 'google_token_123',
       },
-    );
+    });
 
     expect(getClustersByEntity.mock.calls.length).toBe(1);
     expect(fetchObjectsForService.mock.calls.length).toBe(3);
@@ -676,24 +684,26 @@ describe('handleGetKubernetesObjectsForService', () => {
   });
   it('retrieve objects for four clusters, two have resources and one error cluster', async () => {
     getClustersByEntity.mockImplementation(() =>
-      Promise.resolve([
-        {
-          name: 'test-cluster',
-          authProvider: 'serviceAccount',
-        },
-        {
-          name: 'other-cluster',
-          authProvider: 'google',
-        },
-        {
-          name: 'empty-cluster',
-          authProvider: 'google',
-        },
-        {
-          name: 'error-cluster',
-          authProvider: 'google',
-        },
-      ]),
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'test-cluster',
+            authProvider: 'serviceAccount',
+          },
+          {
+            name: 'other-cluster',
+            authProvider: 'google',
+          },
+          {
+            name: 'empty-cluster',
+            authProvider: 'google',
+          },
+          {
+            name: 'error-cluster',
+            authProvider: 'google',
+          },
+        ],
+      }),
     );
 
     mockFetch(fetchObjectsForService);
@@ -711,8 +721,8 @@ describe('handleGetKubernetesObjectsForService', () => {
       customResources: [],
     });
 
-    const result = await sut.getKubernetesObjectsByEntity(
-      {
+    const result = await sut.getKubernetesObjectsByEntity({
+      entity: {
         apiVersion: 'backstage.io/v1beta1',
         kind: 'Component',
         metadata: {
@@ -728,10 +738,10 @@ describe('handleGetKubernetesObjectsForService', () => {
           owner: 'joe',
         },
       },
-      {
+      auth: {
         google: 'google_token_123',
       },
-    );
+    });
 
     expect(getClustersByEntity.mock.calls.length).toBe(1);
     expect(fetchObjectsForService.mock.calls.length).toBe(4);

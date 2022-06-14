@@ -208,8 +208,10 @@ describe('KubernetesBuilder', () => {
       };
 
       const serviceLocator: KubernetesServiceLocator = {
-        getClustersByEntity(_entity: Entity): Promise<ClusterDetails[]> {
-          return Promise.resolve([someCluster]);
+        getClustersByEntity(
+          _entity: Entity,
+        ): Promise<{ clusters: ClusterDetails[] }> {
+          return Promise.resolve({ clusters: [someCluster] });
         },
       };
 

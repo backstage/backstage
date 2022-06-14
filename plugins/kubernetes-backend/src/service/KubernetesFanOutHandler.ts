@@ -26,6 +26,8 @@ import {
   ObjectToFetch,
   CustomResource,
   CustomResourceMatcher,
+  CustomResourcesByEntity,
+  KubernetesObjectsByEntity,
 } from '../types/types';
 import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
 import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
@@ -181,11 +183,11 @@ export class KubernetesFanOutHandler {
     this.authTranslators = {};
   }
 
-  async getCustomResourcesByEntity(
-    entity: Entity,
-    auth: KubernetesRequestAuth,
-    customResources: CustomResourceMatcher[],
-  ): Promise<ObjectsByEntityResponse> {
+  async getCustomResourcesByEntity({
+    entity,
+    auth,
+    customResources,
+  }: CustomResourcesByEntity): Promise<ObjectsByEntityResponse> {
     // Don't fetch the default object types only the provided custom resources
     return this.fanOutRequests(
       entity,
@@ -195,10 +197,10 @@ export class KubernetesFanOutHandler {
     );
   }
 
-  async getKubernetesObjectsByEntity(
-    entity: Entity,
-    auth: KubernetesRequestAuth,
-  ): Promise<ObjectsByEntityResponse> {
+  async getKubernetesObjectsByEntity({
+    entity,
+    auth,
+  }: KubernetesObjectsByEntity): Promise<ObjectsByEntityResponse> {
     return this.fanOutRequests(
       entity,
       auth,
@@ -258,8 +260,9 @@ export class KubernetesFanOutHandler {
     entity: Entity,
     auth: KubernetesRequestAuth,
   ) {
-    const clusterDetails: ClusterDetails[] =
-      await this.serviceLocator.getClustersByEntity(entity);
+    const clusterDetails: ClusterDetails[] = await (
+      await this.serviceLocator.getClustersByEntity(entity)
+    ).clusters;
 
     // Execute all of these async actions simultaneously/without blocking sequentially as no common object is modified by them
     return await Promise.all(
