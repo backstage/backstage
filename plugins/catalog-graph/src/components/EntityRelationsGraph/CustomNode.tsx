@@ -21,18 +21,28 @@ import classNames from 'classnames';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { EntityKindIcon } from './EntityKindIcon';
 import { EntityNodeData } from './types';
+import { ALL_RELATION_PAIRS } from './relations';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   node: {
-    fill: theme.palette.grey[300],
+    fill: props =>
+      props?.kind
+        ? theme.palette.catalogGraph[props?.kind]
+        : theme.palette.grey[300],
     stroke: theme.palette.grey[300],
 
     '&.primary': {
-      fill: theme.palette.primary.light,
+      fill: props =>
+        props?.kind
+          ? theme.palette.catalogGraph[props?.kind]
+          : theme.palette.primary.light,
       stroke: theme.palette.primary.light,
     },
     '&.secondary': {
-      fill: theme.palette.secondary.light,
+      fill: props =>
+        props?.kind
+          ? theme.palette.catalogGraph[props?.kind]
+          : theme.palette.secondary.light,
       stroke: theme.palette.secondary.light,
     },
   },
@@ -40,10 +50,10 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
     fill: theme.palette.getContrastText(theme.palette.grey[300]),
 
     '&.primary': {
-      fill: theme.palette.primary.contrastText,
+      fill: '#fff',
     },
     '&.secondary': {
-      fill: theme.palette.secondary.contrastText,
+      fill: '#fff',
     },
     '&.focused': {
       fontWeight: 'bold',
@@ -66,7 +76,7 @@ export function CustomNode({
     onClick,
   },
 }: DependencyGraphTypes.RenderNodeProps<EntityNodeData>) {
-  const classes = useStyles();
+  const classes = useStyles({ kind: kind?.toLocaleLowerCase('en-US') });
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
   const idRef = useRef<SVGTextElement | null>(null);

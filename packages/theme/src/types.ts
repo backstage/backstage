@@ -84,6 +84,17 @@ export type BackstagePaletteAdditions = {
     link: string;
     warning?: string;
   };
+  catalogGraph: {
+    conponent: string;
+    domain: string;
+    system: string;
+    location: string;
+    resource: string;
+    group: string;
+    user: string;
+    template: string;
+    api: string;
+  };
 };
 
 /**
