@@ -47,6 +47,10 @@ import {
   PodStatus,
 } from '@kubernetes/client-node';
 
+/**
+ *
+ * @alpha
+ */
 export const DEFAULT_OBJECTS: ObjectToFetch[] = [
   {
     group: '',
