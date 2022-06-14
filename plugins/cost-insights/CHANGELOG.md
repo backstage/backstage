@@ -1,5 +1,19 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.28
+
+### Patch Changes
+
+- dea1f32f44: In the README, a old path of the `sidebar` was updated to the current path.
+- eb2544b21b: Add missing `export` in configuration schema.
+- 2fc98ac50c: Fix broken app-config in the example in the README
+- 2297510941: Fixed css to show large tooltips on cost overview graph
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/catalog-model@1.0.3
+
 ## 0.11.28-next.2
 
 ### Patch Changes

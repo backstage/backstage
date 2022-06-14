@@ -1,5 +1,16 @@
 # @backstage/plugin-gocd
 
+## 0.1.12
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/catalog-model@1.0.3
+
 ## 0.1.12-next.1
 
 ### Patch Changes

@@ -1,5 +1,30 @@
 # @backstage/plugin-catalog
 
+## 1.3.0
+
+### Minor Changes
+
+- fe7614ea54: Add an optional icon to the Catalog and TechDocs search results
+
+### Patch Changes
+
+- 449dcef98e: Updates the `isKind`, `ìsComponentType`, and `isNamespace` to allow an array of possible values
+- 1f70704580: Accessibility updates:
+
+  - Added screen reader elements to describe default table `Action` buttons
+
+- 915700f64f: In order to simplify analytics on top of the search experience in Backstage, the provided `<*ResultListItem />` component now captures a `discover` analytics event instead of a `click` event. This event includes the result rank as its `value` and, like a click, the URL/path clicked to as its `to` attribute.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/plugin-search-react@0.2.1
+  - @backstage/plugin-catalog-common@1.0.3
+  - @backstage/core-components@0.9.5
+  - @backstage/catalog-client@1.0.3
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/integration-react@1.1.1
+  - @backstage/catalog-model@1.0.3
+
 ## 1.2.1-next.1
 
 ### Patch Changes

@@ -1,5 +1,29 @@
 # @backstage/core-components
 
+## 0.9.5
+
+### Patch Changes
+
+- feb4e8de07: Fix EntityPage tab scrolling overflow bug on Firefox
+- 65840b17be: Fix issue where right arrow icon was incorrectly added to side bar items without a sub-menu
+- de593ec78f: Updated dependency `react-text-truncate` to `^0.19.0`.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 6968b65ba1: Updated dependency `@react-hookz/web` to `^14.0.0`.
+- ee2cd642c5: Updated dependency `rc-progress` to `3.3.3`.
+- 96d1e01641: Accessibility updates:
+
+  - Added `aria-label` to the `Select` component
+  - Changed heading level used in the header of `Table` component
+
+- 7d355c4b3f: Fix the missing filter in the toolbar when passing a custom component in the core-components Table
+- 1cf9caecd6: fix Sidebar Contexts deprecation message
+- bff65e6958: The `SidebarPinStateContext` and `SidebarContext` have been deprecated and will be removed in a future release. Instead, use `<SidebarPinStateProvider>` + `useSidebarPinState()` and/or `<SidebarOpenStateProvider>` + `useSidebarOpenState()`.
+
+  This was done to ensure that sidebar state can be shared successfully across components exported by different packages, regardless of what version of this package is resolved and installed for each individual package.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.3
+
 ## 0.9.5-next.2
 
 ### Patch Changes

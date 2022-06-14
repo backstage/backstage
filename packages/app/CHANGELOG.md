@@ -1,5 +1,64 @@
 # example-app
 
+## 0.2.72
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes@0.6.6
+  - @backstage/plugin-cost-insights@0.11.28
+  - @backstage/plugin-scaffolder@1.3.0
+  - @backstage/plugin-catalog@1.3.0
+  - @backstage/plugin-techdocs@1.2.0
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/cli@0.17.2
+  - @backstage/plugin-user-settings@0.4.5
+  - @backstage/plugin-pagerduty@0.4.0
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/plugin-search@0.9.0
+  - @backstage/plugin-search-react@0.2.1
+  - @backstage/plugin-sentry@0.3.44
+  - @backstage/plugin-tech-insights@0.2.2
+  - @backstage/plugin-catalog-common@1.0.3
+  - @backstage/core-components@0.9.5
+  - @backstage/plugin-dynatrace@0.1.0
+  - @backstage/plugin-tech-radar@0.5.13
+  - @backstage/core-app-api@1.0.3
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/integration-react@1.1.1
+  - @backstage/plugin-airbrake@0.3.6
+  - @backstage/plugin-apache-airflow@0.1.14
+  - @backstage/plugin-api-docs@0.8.6
+  - @backstage/plugin-azure-devops@0.1.22
+  - @backstage/plugin-badges@0.2.30
+  - @backstage/plugin-catalog-import@0.8.9
+  - @backstage/plugin-circleci@0.3.6
+  - @backstage/plugin-cloudbuild@0.3.6
+  - @backstage/plugin-code-coverage@0.1.33
+  - @backstage/plugin-explore@0.3.37
+  - @backstage/plugin-gcalendar@0.3.2
+  - @backstage/plugin-gcp-projects@0.3.25
+  - @backstage/plugin-github-actions@0.5.6
+  - @backstage/plugin-gocd@0.1.12
+  - @backstage/plugin-graphiql@0.2.38
+  - @backstage/plugin-home@0.4.22
+  - @backstage/plugin-jenkins@0.7.5
+  - @backstage/plugin-kafka@0.3.6
+  - @backstage/plugin-lighthouse@0.3.6
+  - @backstage/plugin-newrelic@0.3.24
+  - @backstage/plugin-org@0.5.6
+  - @backstage/plugin-rollbar@0.4.6
+  - @backstage/plugin-shortcuts@0.2.7
+  - @backstage/plugin-stack-overflow@0.1.2
+  - @backstage/plugin-techdocs-module-addons-contrib@1.0.1
+  - @backstage/plugin-todo@0.2.8
+  - @backstage/catalog-model@1.0.3
+  - @backstage/plugin-techdocs-react@1.0.1
+  - @backstage/app-defaults@1.0.3
+  - @backstage/plugin-catalog-graph@0.2.18
+  - @backstage/plugin-newrelic-dashboard@0.1.14
+  - @backstage/plugin-permission-react@0.4.2
+
 ## 0.2.72-next.2
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # @backstage/plugin-pagerduty
 
+## 0.4.0
+
+### Minor Changes
+
+- b157c2eb1c: **Breaking**: Use identityApi to provide auth token for pagerduty API calls.
+
+### Patch Changes
+
+- 76bf6400fe: Fix alert that was not showing after creating an incident.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/catalog-model@1.0.3
+
 ## 0.4.0-next.2
 
 ### Minor Changes

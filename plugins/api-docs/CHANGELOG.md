@@ -1,5 +1,19 @@
 # @backstage/plugin-api-docs
 
+## 0.8.6
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 811ff4bcf4: Updated `swagger-ui-react` to 4.11.1 in order to address a [XSS
+  vulnerability](https://github.com/advisories/GHSA-hqq7-2q2v-82xq) in `@braintree/sanitize-url`
+- Updated dependencies
+  - @backstage/plugin-catalog@1.3.0
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/catalog-model@1.0.3
+
 ## 0.8.6-next.1
 
 ### Patch Changes

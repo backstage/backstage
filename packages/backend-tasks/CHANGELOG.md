@@ -1,5 +1,16 @@
 # @backstage/backend-tasks
 
+## 0.3.2
+
+### Patch Changes
+
+- fde10d24f6: Allow tasks that fail to retry on a loop emitting a warning log every time it fails with the amount of attempts it has
+- f7146b516f: Updated dependency `cron` to `^2.0.0`.
+  Updated dependency `@types/cron` to `^2.0.0`.
+- 7f108513b8: Add error logging when a background task throws an error rather than silently swallowing it.
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+
 ## 0.3.2-next.2
 
 ### Patch Changes

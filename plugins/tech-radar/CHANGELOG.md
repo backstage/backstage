@@ -1,5 +1,16 @@
 # @backstage/plugin-tech-radar
 
+## 0.5.13
+
+### Patch Changes
+
+- bb31e5489c: Updated dependency `d3-force` to `^3.0.0`.
+  Updated dependency `@types/d3-force` to `^3.0.0`.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+
 ## 0.5.13-next.1
 
 ### Patch Changes

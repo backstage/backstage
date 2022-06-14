@@ -1,5 +1,21 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.4.1
+
+### Patch Changes
+
+- 4fee8f59e3: Updated tech-insights fetch/latest endpoint to return the actual latest row based on the timestamp
+- aa15229ec3: Introduce additional JsonValue types to be storable as facts. This enables the possibility to store more complex objects for fact checking purposes. The rules engine supports walking keyed object values directly to create rules and checks
+
+  Modify facts database table to have a more restricted timestamp precision for cases where the postgres server isn't configured to contain such value. This fixes the issue where in some cases `maxItems` lifecycle condition didn't work as expected.
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.2
+  - @backstage/backend-common@0.14.0
+  - @backstage/catalog-client@1.0.3
+  - @backstage/catalog-model@1.0.3
+  - @backstage/plugin-tech-insights-node@0.3.1
+
 ## 0.4.1-next.2
 
 ### Patch Changes
