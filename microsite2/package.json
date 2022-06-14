@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "examples": "docusaurus-examples",
-    "start": "docusaurus start",
-    "build": "docusaurus build",
+    "start": "node scripts/pre-build && docusaurus start",
+    "build": "node scripts/pre-build && docusaurus build",
     "prettier:check": "prettier --check .",
     "publish-gh-pages": "docusaurus-publish",
     "write-translations": "docusaurus-write-translations",
@@ -25,7 +25,8 @@
     "@spotify/prettier-config": "^13.0.1",
     "js-yaml": "^4.1.0",
     "prettier": "^2.6.2",
-    "yarn-lock-check": "^1.0.5"
+    "yarn-lock-check": "^1.0.5",
+    "replace": "^1.2.1"
   },
   "prettier": "@spotify/prettier-config",
   "dependencies": {
