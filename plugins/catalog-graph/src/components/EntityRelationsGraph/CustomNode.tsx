@@ -21,26 +21,25 @@ import classNames from 'classnames';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { EntityKindIcon } from './EntityKindIcon';
 import { EntityNodeData } from './types';
-import { ALL_RELATION_PAIRS } from './relations';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   node: {
     fill: props =>
-      props?.kind
+      props?.kind && theme.palette.catalogGraph
         ? theme.palette.catalogGraph[props?.kind]
         : theme.palette.grey[300],
     stroke: theme.palette.grey[300],
 
     '&.primary': {
       fill: props =>
-        props?.kind
+        props?.kind && theme.palette.catalogGraph
           ? theme.palette.catalogGraph[props?.kind]
           : theme.palette.primary.light,
       stroke: theme.palette.primary.light,
     },
     '&.secondary': {
       fill: props =>
-        props?.kind
+        props?.kind && theme.palette.catalogGraph
           ? theme.palette.catalogGraph[props?.kind]
           : theme.palette.secondary.light,
       stroke: theme.palette.secondary.light,

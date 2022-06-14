@@ -84,7 +84,7 @@ export type BackstagePaletteAdditions = {
     link: string;
     warning?: string;
   };
-  catalogGraph: {
+  catalogGraph?: {
     conponent: string;
     domain: string;
     system: string;
