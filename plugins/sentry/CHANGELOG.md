@@ -1,5 +1,17 @@
 # @backstage/plugin-sentry
 
+## 0.3.44
+
+### Patch Changes
+
+- c55f6cb22d: Exported `isSentryAvailable` which can be used to determine if sentry is available.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/catalog-model@1.0.3
+
 ## 0.3.44-next.1
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # @backstage/cli
 
+## 0.17.2
+
+### Patch Changes
+
+- 026cfe525a: Fix the public path configuration of the frontend app build so that a trailing `/` is always appended when needed.
+- 4f73352608: Updated Lockfile to support new versions of yarn as well as the legacy 1 version
+- b8970b8941: Improved the `create-github-app` permissions selection prompt by converting it into a multi-select with clearer descriptions. The `members` permission is now also included in the list which is required for ingesting user data into the catalog.
+- bd58365d09: Updated dependency `run-script-webpack-plugin` to `^0.0.14`.
+- 9002ebd76b: Updated dependency `@rollup/plugin-commonjs` to `^22.0.0`.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 1a33e8b287: Updated dependency `minimatch` to `5.1.0`.
+- 6de866ea74: Added console warning to frontend start when the `app.baseUrl` and `backend.baseUrl` are identical
+- Updated dependencies
+  - @backstage/config-loader@1.1.2
+  - @backstage/release-manifests@0.0.4
+
 ## 0.17.2-next.2
 
 ### Patch Changes

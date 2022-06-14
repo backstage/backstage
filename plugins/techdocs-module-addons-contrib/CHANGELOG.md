@@ -1,5 +1,18 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.0.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 6968b65ba1: Updated dependency `@react-hookz/web` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5
+  - @backstage/integration@1.2.1
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/integration-react@1.1.1
+  - @backstage/plugin-techdocs-react@1.0.1
+
 ## 1.0.1-next.1
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-allure
 
+## 0.1.22
+
+### Patch Changes
+
+- 6387b7a98a: Add export for `isAllureReportAvailable` and `ALLURE_PROJECT_ID_ANNOTATION` so it can be used outside of plugin
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/catalog-model@1.0.3
+
 ## 0.1.22-next.1
 
 ### Patch Changes

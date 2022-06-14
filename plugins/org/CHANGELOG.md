@@ -1,5 +1,39 @@
 # @backstage/plugin-org
 
+## 0.5.6
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 306d0b4fdd: Added the ability to use an additional `filter` when fetching groups in `MyGroupsSidebarItem` component. Example:
+
+  ```diff
+  // app/src/components/Root/Root.tsx
+  <SidebarPage>
+      <Sidebar>
+        //...
+        <SidebarGroup label="Menu" icon={<MenuIcon />}>
+          {/* Global nav, not org-specific */}
+          //...
+          <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+          <MyGroupsSidebarItem
+            singularTitle="My Squad"
+            pluralTitle="My Squads"
+            icon={GroupIcon}
+  +         filter={{ 'spec.type': 'team' }}
+          />
+         //...
+        </SidebarGroup>
+      </ Sidebar>
+  </SidebarPage>
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/catalog-model@1.0.3
+
 ## 0.5.6-next.2
 
 ### Patch Changes

@@ -1,5 +1,50 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.3.0
+
+### Minor Changes
+
+- 35a26131b3: **DEPRECATION**: The `projectid` input parameters to the `publish:gitlab:merge-request`, it's no longer required as it can be decoded from the `repoUrl` input parameter.
+  **DEPRECATION**: The `projectid` output of the action in favour of `projectPath`
+- 72dfcbc8bf: A new scaffolder action has been added: `gerrit:publish`
+- ce0d8d7eb1: Fixed a bug in `publish:github` action that didn't permit to add users as collaborators.
+  This fix required changing the way parameters are passed to the action.
+  In order to add a team as collaborator, now you must use the `team` field instead of `username`.
+  In order to add a user as collaborator, you must use the `user` field.
+
+  It's still possible to use the field `username` but is deprecated in favor of `team`.
+
+  ```yaml
+  - id: publish
+    name: Publish
+    action: publish:github
+    input:
+      repoUrl: ...
+      collaborators:
+        - access: ...
+          team: my_team
+        - access: ...
+          user: my_username
+  ```
+
+- 582003a059: - Added an optional `list` method on the `TaskBroker` and `TaskStore` interface to list tasks by an optional `userEntityRef`
+  - Implemented a `list` method on the `DatabaseTaskStore` class to list tasks by an optional `userEntityRef`
+  - Added a route under `/v2/tasks` to list tasks by a `userEntityRef` using the `createdBy` query parameter
+- c042c5eaff: Add an option to not protect the default branch.
+- f93af969cd: Added the ability to support running of templates that are not in the `default` namespace
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 6901f6be4a: Adds more of an explanation when the `publish:github` scaffolder action fails to create a repository.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.2.0
+  - @backstage/backend-common@0.14.0
+  - @backstage/integration@1.2.1
+  - @backstage/catalog-client@1.0.3
+  - @backstage/catalog-model@1.0.3
+  - @backstage/plugin-scaffolder-common@1.1.1
+
 ## 1.3.0-next.2
 
 ### Minor Changes

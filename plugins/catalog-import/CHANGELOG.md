@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-import
 
+## 0.8.9
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 05be420971: Updated catalog import page text so they go in the correct hierarchy order
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/core-components@0.9.5
+  - @backstage/integration@1.2.1
+  - @backstage/catalog-client@1.0.3
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/integration-react@1.1.1
+  - @backstage/catalog-model@1.0.3
+
 ## 0.8.9-next.1
 
 ### Patch Changes

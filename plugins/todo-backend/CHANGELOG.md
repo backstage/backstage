@@ -1,5 +1,16 @@
 # @backstage/plugin-todo-backend
 
+## 0.1.30
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+  - @backstage/integration@1.2.1
+  - @backstage/catalog-client@1.0.3
+  - @backstage/catalog-model@1.0.3
+
 ## 0.1.30-next.2
 
 ### Patch Changes

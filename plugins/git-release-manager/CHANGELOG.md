@@ -1,5 +1,15 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.19
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5
+  - @backstage/integration@1.2.1
+  - @backstage/core-plugin-api@1.0.3
+
 ## 0.3.19-next.1
 
 ### Patch Changes

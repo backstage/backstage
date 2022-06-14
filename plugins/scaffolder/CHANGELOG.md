@@ -1,5 +1,50 @@
 # @backstage/plugin-scaffolder
 
+## 1.3.0
+
+### Minor Changes
+
+- dc39366bdb: - Added a new page under `/create/tasks` to show tasks that have been run by the Scaffolder.
+  - Ability to filter these tasks by the signed in user, and all tasks.
+  - Added optional method to the `ScaffolderApi` interface called `listTasks` to get tasks with an required `filterByOwnership` parameter.
+- 86a4a0f72d: Get data of other fields in Form from a custom field in template Scaffolder.
+  following:
+
+  ```tsx
+  const CustomFieldExtensionComponent = (props: FieldExtensionComponentProps<string[]>) => {
+    const { formData } = props.formContext;
+    ...
+  };
+
+  const CustomFieldExtension = scaffolderPlugin.provide(
+    createScaffolderFieldExtension({
+      name: ...,
+      component: CustomFieldExtensionComponent,
+      validation: ...
+    })
+  );
+  ```
+
+- 72dfcbc8bf: Gerrit Integration: Implemented a `RepoUrlPicker` for Gerrit.
+- f93af969cd: Added the ability to support running of templates that are not in the `default` namespace
+
+### Patch Changes
+
+- ac0c7e45ee: Fixes review mask in `MultistepJsonForm` to work as documented. `show: true` no longer needed when mask is set.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- fd505f40c0: Handle binary files and files that are too large during dry-run content upload.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/plugin-catalog-common@1.0.3
+  - @backstage/core-components@0.9.5
+  - @backstage/integration@1.2.1
+  - @backstage/catalog-client@1.0.3
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/integration-react@1.1.1
+  - @backstage/catalog-model@1.0.3
+  - @backstage/plugin-permission-react@0.4.2
+  - @backstage/plugin-scaffolder-common@1.1.1
+
 ## 1.3.0-next.2
 
 ### Minor Changes
