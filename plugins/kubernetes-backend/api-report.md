@@ -16,7 +16,7 @@ import { Logger } from 'winston';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { PodStatus } from '@kubernetes/client-node/dist/top';
 
-// @alpha
+// @alpha (undocumented)
 export interface AWSClusterDetails extends ClusterDetails {
   // (undocumented)
   assumeRole?: string;
@@ -24,10 +24,10 @@ export interface AWSClusterDetails extends ClusterDetails {
   externalId?: string;
 }
 
-// @alpha
+// @alpha (undocumented)
 export interface AzureClusterDetails extends ClusterDetails {}
 
-// @alpha
+// @alpha (undocumented)
 export interface ClusterDetails {
   // (undocumented)
   authProvider: string;
@@ -47,67 +47,97 @@ export interface ClusterDetails {
   url: string;
 }
 
-// @alpha
+// Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public @deprecated
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// @alpha
+// @alpha (undocumented)
 export interface CustomResource extends ObjectToFetch {
   // (undocumented)
   objectType: 'customresources';
 }
 
-// @alpha
+// @alpha (undocumented)
 export type CustomResourceMatcher = Omit<ObjectToFetch, 'objectType'>;
 
-// @alpha
+// @alpha (undocumented)
 export interface CustomResourcesByEntity extends KubernetesObjectsByEntity {
   // (undocumented)
   customResources: CustomResourceMatcher[];
 }
 
-// @alpha
+// Warning: (ae-incompatible-release-tags) The symbol "DEFAULT_OBJECTS" is marked as @public, but its signature references "ObjectToFetch" which is marked as @alpha
+// Warning: (ae-missing-release-tag) "DEFAULT_OBJECTS" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
 export const DEFAULT_OBJECTS: ObjectToFetch[];
 
-// @alpha
+// @alpha (undocumented)
 export interface FetchResponseWrapper {
   // (undocumented)
   errors: KubernetesFetchError[];
   // (undocumented)
   responses: FetchResponse[];
 }
-// @alpha
+
+// @alpha (undocumented)
 export interface GKEClusterDetails extends ClusterDetails {}
 
-// @alpha
+// Warning: (ae-missing-release-tag) "KubernetesBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
 export class KubernetesBuilder {
   constructor(env: KubernetesEnvironment);
   // (undocumented)
   build(): KubernetesBuilderReturn;
+  // Warning: (ae-incompatible-release-tags) The symbol "buildClusterSupplier" is marked as @public, but its signature references "KubernetesClustersSupplier" which is marked as @alpha
+  //
   // (undocumented)
   protected buildClusterSupplier(
     refreshInterval: Duration,
   ): KubernetesClustersSupplier;
+  // Warning: (ae-incompatible-release-tags) The symbol "buildCustomResources" is marked as @public, but its signature references "CustomResource" which is marked as @alpha
+  //
   // (undocumented)
   protected buildCustomResources(): CustomResource[];
+  // Warning: (ae-incompatible-release-tags) The symbol "buildFetcher" is marked as @public, but its signature references "KubernetesFetcher" which is marked as @alpha
+  //
   // (undocumented)
   protected buildFetcher(): KubernetesFetcher;
+  // Warning: (ae-incompatible-release-tags) The symbol "buildHttpServiceLocator" is marked as @public, but its signature references "KubernetesClustersSupplier" which is marked as @alpha
+  // Warning: (ae-incompatible-release-tags) The symbol "buildHttpServiceLocator" is marked as @public, but its signature references "KubernetesServiceLocator" which is marked as @alpha
+  //
   // (undocumented)
   protected buildHttpServiceLocator(
     _clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator;
+  // Warning: (ae-incompatible-release-tags) The symbol "buildMultiTenantServiceLocator" is marked as @public, but its signature references "KubernetesClustersSupplier" which is marked as @alpha
+  // Warning: (ae-incompatible-release-tags) The symbol "buildMultiTenantServiceLocator" is marked as @public, but its signature references "KubernetesServiceLocator" which is marked as @alpha
+  //
   // (undocumented)
   protected buildMultiTenantServiceLocator(
     clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator;
+  // Warning: (ae-incompatible-release-tags) The symbol "buildObjectsProvider" is marked as @public, but its signature references "KubernetesObjectsProviderOptions" which is marked as @alpha
+  // Warning: (ae-incompatible-release-tags) The symbol "buildObjectsProvider" is marked as @public, but its signature references "KubernetesObjectsProvider" which is marked as @alpha
+  //
   // (undocumented)
   protected buildObjectsProvider(
     options: KubernetesObjectsProviderOptions,
   ): KubernetesObjectsProvider;
+  // Warning: (ae-incompatible-release-tags) The symbol "buildRouter" is marked as @public, but its signature references "KubernetesObjectsProvider" which is marked as @alpha
+  // Warning: (ae-incompatible-release-tags) The symbol "buildRouter" is marked as @public, but its signature references "KubernetesClustersSupplier" which is marked as @alpha
+  //
   // (undocumented)
   protected buildRouter(
     objectsProvider: KubernetesObjectsProvider,
     clusterSupplier: KubernetesClustersSupplier,
   ): express.Router;
+  // Warning: (ae-incompatible-release-tags) The symbol "buildServiceLocator" is marked as @public, but its signature references "ServiceLocatorMethod" which is marked as @alpha
+  // Warning: (ae-incompatible-release-tags) The symbol "buildServiceLocator" is marked as @public, but its signature references "KubernetesClustersSupplier" which is marked as @alpha
+  // Warning: (ae-incompatible-release-tags) The symbol "buildServiceLocator" is marked as @public, but its signature references "KubernetesServiceLocator" which is marked as @alpha
+  //
   // (undocumented)
   protected buildServiceLocator(
     method: ServiceLocatorMethod,
@@ -117,27 +147,42 @@ export class KubernetesBuilder {
   static createBuilder(env: KubernetesEnvironment): KubernetesBuilder;
   // (undocumented)
   protected readonly env: KubernetesEnvironment;
+  // Warning: (ae-incompatible-release-tags) The symbol "fetchClusterDetails" is marked as @public, but its signature references "KubernetesClustersSupplier" which is marked as @alpha
+  // Warning: (ae-incompatible-release-tags) The symbol "fetchClusterDetails" is marked as @public, but its signature references "ClusterDetails" which is marked as @alpha
+  //
   // (undocumented)
   protected fetchClusterDetails(
     clusterSupplier: KubernetesClustersSupplier,
   ): Promise<ClusterDetails[]>;
+  // Warning: (ae-incompatible-release-tags) The symbol "getObjectTypesToFetch" is marked as @public, but its signature references "ObjectToFetch" which is marked as @alpha
+  //
   // (undocumented)
   protected getObjectTypesToFetch(): ObjectToFetch[] | undefined;
+  // Warning: (ae-incompatible-release-tags) The symbol "getServiceLocatorMethod" is marked as @public, but its signature references "ServiceLocatorMethod" which is marked as @alpha
+  //
   // (undocumented)
   protected getServiceLocatorMethod(): ServiceLocatorMethod;
+  // Warning: (ae-incompatible-release-tags) The symbol "setClusterSupplier" is marked as @public, but its signature references "KubernetesClustersSupplier" which is marked as @alpha
+  //
   // (undocumented)
   setClusterSupplier(clusterSupplier?: KubernetesClustersSupplier): this;
   // (undocumented)
   setDefaultClusterRefreshInterval(refreshInterval: Duration): this;
+  // Warning: (ae-incompatible-release-tags) The symbol "setFetcher" is marked as @public, but its signature references "KubernetesFetcher" which is marked as @alpha
+  //
   // (undocumented)
   setFetcher(fetcher?: KubernetesFetcher): this;
+  // Warning: (ae-incompatible-release-tags) The symbol "setObjectsProvider" is marked as @public, but its signature references "KubernetesObjectsProvider" which is marked as @alpha
+  //
   // (undocumented)
   setObjectsProvider(objectsProvider?: KubernetesObjectsProvider): this;
+  // Warning: (ae-incompatible-release-tags) The symbol "setServiceLocator" is marked as @public, but its signature references "KubernetesServiceLocator" which is marked as @alpha
+  //
   // (undocumented)
   setServiceLocator(serviceLocator?: KubernetesServiceLocator): this;
 }
 
-// @alpha
+// @public
 export type KubernetesBuilderReturn = Promise<{
   router: express.Router;
   clusterSupplier: KubernetesClustersSupplier;
@@ -152,7 +197,9 @@ export interface KubernetesClustersSupplier {
   getClusters(): Promise<ClusterDetails[]>;
 }
 
-// @alpha
+// Warning: (ae-missing-release-tag) "KubernetesEnvironment" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
 export interface KubernetesEnvironment {
   // (undocumented)
   config: Config;
@@ -173,7 +220,7 @@ export interface KubernetesFetcher {
   ): Promise<PodStatus[]>;
 }
 
-// @alpha
+// @alpha (undocumented)
 export interface KubernetesObjectsByEntity {
   // (undocumented)
   auth: KubernetesRequestAuth;
@@ -181,7 +228,7 @@ export interface KubernetesObjectsByEntity {
   entity: Entity;
 }
 
-// @alpha
+// @alpha (undocumented)
 export interface KubernetesObjectsProvider {
   // (undocumented)
   getCustomResourcesByEntity(
@@ -193,7 +240,7 @@ export interface KubernetesObjectsProvider {
   ): Promise<ObjectsByEntityResponse>;
 }
 
-// @alpha
+// @alpha (undocumented)
 export interface KubernetesObjectsProviderOptions {
   // (undocumented)
   customResources: CustomResource[];
@@ -207,7 +254,7 @@ export interface KubernetesObjectsProviderOptions {
   serviceLocator: KubernetesServiceLocator;
 }
 
-// @alpha
+// @alpha (undocumented)
 export type KubernetesObjectTypes =
   | 'pods'
   | 'services'
@@ -229,7 +276,7 @@ export interface KubernetesServiceLocator {
   }>;
 }
 
-// @alpha
+// @alpha (undocumented)
 export interface ObjectFetchParams {
   // (undocumented)
   clusterDetails:
@@ -249,10 +296,10 @@ export interface ObjectFetchParams {
   serviceId: string;
 }
 
-// @alpha
+// @alpha (undocumented)
 export type ObjectsByEntityRequest = KubernetesRequestBody;
 
-// @alpha
+// @alpha (undocumented)
 export interface ObjectToFetch {
   // (undocumented)
   apiVersion: string;
@@ -264,8 +311,12 @@ export interface ObjectToFetch {
   plural: string;
 }
 
-// @alpha
+// Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
 export interface RouterOptions {
+  // Warning: (ae-incompatible-release-tags) The symbol "clusterSupplier" is marked as @public, but its signature references "KubernetesClustersSupplier" which is marked as @alpha
+  //
   // (undocumented)
   clusterSupplier?: KubernetesClustersSupplier;
   // (undocumented)
@@ -274,9 +325,17 @@ export interface RouterOptions {
   logger: Logger;
 }
 
-// @alpha
+// @alpha (undocumented)
 export interface ServiceAccountClusterDetails extends ClusterDetails {}
 
-// @alpha
+// @alpha (undocumented)
 export type ServiceLocatorMethod = 'multiTenant' | 'http';
+
+// Warnings were encountered during analysis:
+//
+// src/service/KubernetesBuilder.d.ts:17:5 - (ae-incompatible-release-tags) The symbol "clusterSupplier" is marked as @public, but its signature references "KubernetesClustersSupplier" which is marked as @alpha
+// src/service/KubernetesBuilder.d.ts:18:5 - (ae-incompatible-release-tags) The symbol "customResources" is marked as @public, but its signature references "CustomResource" which is marked as @alpha
+// src/service/KubernetesBuilder.d.ts:19:5 - (ae-incompatible-release-tags) The symbol "fetcher" is marked as @public, but its signature references "KubernetesFetcher" which is marked as @alpha
+// src/service/KubernetesBuilder.d.ts:20:5 - (ae-incompatible-release-tags) The symbol "objectsProvider" is marked as @public, but its signature references "KubernetesObjectsProvider" which is marked as @alpha
+// src/service/KubernetesBuilder.d.ts:21:5 - (ae-incompatible-release-tags) The symbol "serviceLocator" is marked as @public, but its signature references "KubernetesServiceLocator" which is marked as @alpha
 ```
