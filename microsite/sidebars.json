@@ -1,6 +1,11 @@
 {
   "releases": {
-    "Release Notes": ["releases/v1.2.0", "releases/v1.1.0", "releases/v1.0.0"]
+    "Release Notes": [
+      "releases/v1.3.0",
+      "releases/v1.2.0",
+      "releases/v1.1.0",
+      "releases/v1.0.0"
+    ]
   },
   "docs": {
     "Overview": [
