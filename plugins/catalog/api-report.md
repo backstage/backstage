@@ -208,6 +208,9 @@ export interface DependsOnResourcesCardProps {
 export const EntityAboutCard: (props: AboutCardProps) => JSX.Element;
 
 // @public (undocumented)
+export type EntityContextMenuClassKey = 'button';
+
+// @public (undocumented)
 export const EntityDependencyOfComponentsCard: (
   props: DependencyOfComponentsCardProps,
 ) => JSX.Element;
@@ -417,8 +420,4 @@ export type SystemDiagramCardClassKey =
   | 'componentNode'
   | 'apiNode'
   | 'resourceNode';
-
-// Warnings were encountered during analysis:
-//
-// src/overridableComponents.d.ts:10:5 - (ae-forgotten-export) The symbol "EntityContextMenuClassKey" needs to be exported by the entry point index.d.ts
 ```
