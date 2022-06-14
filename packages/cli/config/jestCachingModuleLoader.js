@@ -53,7 +53,7 @@ module.exports = class CachingJestRuntime extends JestRuntime {
         generation: this.__runtimeGeneration,
       });
 
-      return { code: entry.code };
+      return entry.code;
     }
 
     const code = super.transformFile(filename, options);
@@ -63,7 +63,7 @@ module.exports = class CachingJestRuntime extends JestRuntime {
       generation: this.__runtimeGeneration,
     });
 
-    return { code };
+    return code;
   }
 
   // This may or may not be a good idea. Theoretically I don't know why this would impact
