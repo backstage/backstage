@@ -13,20 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Stack Overflow frontend plugin
- *
- * @packageDocumentation
- */
-
-export {
-  stackOverflowPlugin,
-  StackOverflowSearchResultListItem,
-  HomePageStackOverflowQuestions,
-} from './plugin';
-export { StackOverflowIcon } from './icons';
-export type {
-  StackOverflowQuestion,
-  StackOverflowQuestionsContentProps,
-  StackOverflowQuestionsRequestParams,
-} from './types';
+export * from './StackOverflowIcon';
