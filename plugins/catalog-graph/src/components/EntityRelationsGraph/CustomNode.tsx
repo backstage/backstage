@@ -24,21 +24,21 @@ import { EntityNodeData } from './types';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   node: {
-    fill: props =>
+    fill: (props: { [key: string]: null }) =>
       props?.kind && theme.palette.catalogGraph
         ? theme.palette.catalogGraph[props?.kind]
         : theme.palette.grey[300],
     stroke: theme.palette.grey[300],
 
     '&.primary': {
-      fill: props =>
+      fill: (props: { [key: string]: null }) =>
         props?.kind && theme.palette.catalogGraph
           ? theme.palette.catalogGraph[props?.kind]
           : theme.palette.primary.light,
       stroke: theme.palette.primary.light,
     },
     '&.secondary': {
-      fill: props =>
+      fill: (props: { [key: string]: null }) =>
         props?.kind && theme.palette.catalogGraph
           ? theme.palette.catalogGraph[props?.kind]
           : theme.palette.secondary.light,
