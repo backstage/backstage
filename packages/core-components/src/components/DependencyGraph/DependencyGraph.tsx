@@ -40,7 +40,7 @@ import { ARROW_MARKER_ID } from './constants';
  *
  * @public
  * @remarks
- * <NodeData> and <EdgeData> are useful when rendering custom or edge labels
+ * `<NodeData>` and `<EdgeData>` are useful when rendering custom or edge labels
  */
 export interface DependencyGraphProps<NodeData, EdgeData>
   extends React.SVGProps<SVGSVGElement> {

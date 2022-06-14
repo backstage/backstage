@@ -64,7 +64,7 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
  * A simple card header, rendering a default look for "item cards" - cards that
  * are arranged in a grid for users to select among several options.
  *
- * This component expects to be placed within a MUI <CardMedia>.
+ * This component expects to be placed within a MUI `<CardMedia>`.
  *
  * Styles for the header can be overridden using the `classes` prop, e.g.:
  *

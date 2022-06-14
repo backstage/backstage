@@ -24,7 +24,7 @@ import lodash from 'lodash';
  */
 export class CommonValidatorFunctions {
   /**
-   * Checks that the value is on the form <suffix> or <prefix><separator><suffix>, and validates
+   * Checks that the value is on the form `<suffix>` or `<prefix><separator><suffix>`, and validates
    * those parts separately.
    *
    * @param value - The value to check
