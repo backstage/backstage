@@ -5,4 +5,4 @@
 '@backstage/plugin-techdocs-react': patch
 ---
 
-Updated docstring to be MDX compatible.
+Updated JSDoc to be MDX compatible.
