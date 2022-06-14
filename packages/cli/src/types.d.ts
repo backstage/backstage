@@ -259,31 +259,7 @@ declare module 'webpack-node-externals' {
   }
 }
 
-/** TODO: Remove when rjsf fix support enable support for having either mui v4 or mui v5 installed, not both together 🤷‍♂️ for typescript. */
-declare module '@mui/material' {
-  export type BoxProps = any;
-  export type ButtonProps = any;
-  export type CheckboxProps = any;
-  export type DividerProps = any;
-  export type GridProps = any;
-  export type FormControlProps = any;
-  export type FormControlLabelProps = any;
-  export type FormGroupProps = any;
-  export type FormHelperTextProps = any;
-  export type FormLabelProps = any;
-  export type IconButtonProps = any;
-  export type InputLabelProps = any;
-  export type ListProps = any;
-  export type ListItemProps = any;
-  export type ListItemIconProps = any;
-  export type ListItemTextProps = any;
-  export type MenuItemProps = any;
-  export type OutlinedInputProps = any;
-  export type PaperProps = any;
-  export type RadioProps = any;
-  export type RadioGroupProps = any;
-  export type SliderProps = any;
-  export type SvgIconProps = any;
-  export type TextFieldProps = any;
-  export type TypographyProps = any;
+/** TODO: Remove when rjsf actually ship types that match the package exports. */
+declare module '@rjsf/material-ui/v4' {
+  export const MuiForm: any;
 }

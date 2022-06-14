@@ -33,7 +33,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { FormProps, IChangeEvent, UiSchema } from '@rjsf/core';
-import { MuiForm as Form } from '@rjsf/material-ui';
+import { MuiForm as Form } from '@rjsf/material-ui/v4';
 import cloneDeep from 'lodash/cloneDeep';
 import React, { useState } from 'react';
 
@@ -209,7 +209,7 @@ export const MultistepJsonForm = (props: Props) => {
                   formData={formData}
                   formContext={{ formData }}
                   onChange={onChange}
-                  onSubmit={e => {
+                  onSubmit={(e: any) => {
                     if (e.errors.length === 0) handleNext();
                   }}
                   {...formProps}
