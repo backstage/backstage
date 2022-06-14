@@ -6,4 +6,4 @@ category: Discovery
 description: Provides Stack Overflow specific functionality that can be used in different ways (e.g. for homepage and search) to compose your Backstage App.
 documentation: https://github.com/backstage/backstage/blob/master/plugins/stack-overflow
 iconUrl: img/stack-overflow-logo.svg
-npmPackageName: '@backstage/plugin-adr'
+npmPackageName: '@backstage/plugin-stack-overflow'
