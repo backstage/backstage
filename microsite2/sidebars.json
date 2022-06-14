@@ -275,7 +275,7 @@
       "auth/identity-resolver",
       "auth/auth-backend",
       "auth/oauth",
-      "auth/auth-backend-classes",
+      "auth/add-auth-provider",
       "auth/troubleshooting",
       "auth/glossary"
     ],
@@ -300,7 +300,6 @@
       "deployment/index",
       "deployment/docker",
       "deployment/k8s",
-      "deployment/helm",
       "deployment/heroku"
     ],
     "Designing for Backstage": [
