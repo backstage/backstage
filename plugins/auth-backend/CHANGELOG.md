@@ -1,5 +1,20 @@
 # @backstage/plugin-auth-backend
 
+## 0.14.1
+
+### Patch Changes
+
+- 5e055079f0: Increased key field size for signing_keys table to account for larger signature keys
+- f6aae90e4e: Added configurable algorithm field for TokenFactory
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- bc6fb57094: Updated dependency `passport` to `^0.6.0`.
+- 467facc6ea: Fix improper binding of 'this' in ALB Auth provider
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+  - @backstage/plugin-auth-node@0.2.2
+  - @backstage/catalog-client@1.0.3
+  - @backstage/catalog-model@1.0.3
+
 ## 0.14.1-next.2
 
 ### Patch Changes

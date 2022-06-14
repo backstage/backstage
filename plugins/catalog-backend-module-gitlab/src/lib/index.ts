@@ -15,4 +15,9 @@
  */
 
 export { GitLabClient, paginated } from './client';
-export type { GitLabProject } from './types';
+export type {
+  GitLabProject,
+  GitlabProviderConfig,
+  GitlabGroupDescription,
+} from './types';
+export { readGitlabConfigs } from '../providers/config';

@@ -1,5 +1,16 @@
 # @techdocs/cli
 
+## 1.1.2
+
+### Patch Changes
+
+- f96e98f4cd: Updated dependency `cypress` to `^10.0.0`.
+- bff65e6958: Updated sidebar-related logic to use `<SidebarPinStateProvider>` + `useSidebarPinState()` and/or `<SidebarOpenStateProvider>` + `useSidebarOpenState()` from `@backstage/core-components`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+  - @backstage/plugin-techdocs-node@1.1.2
+  - @backstage/catalog-model@1.0.3
+
 ## 1.1.2-next.2
 
 ### Patch Changes

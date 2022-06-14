@@ -1,5 +1,25 @@
 # @backstage/plugin-search
 
+## 0.9.0
+
+### Minor Changes
+
+- 2dc4818541: The pre-alpha `<SearchPageNext>`, `<SearchBarNext>`, `etc...` components have been removed. In the unlikely event you were still using/referencing them, please update to using their non-`*Next` equivalents from either `@backstage/plugin-search-react` or `@backstage/plugin-search`.
+
+### Patch Changes
+
+- 8809159148: Components `<DefaultResultListItem>`, `<SearchBar>` (including `<SearchBarBase>`), `<SearchFilter>` (including `.Checkbox`, `.Select`, and `.Autocomplete` static prop components), `<SearchResult>`, and `<SearchResultPager>` are now exported from `@backstage/plugin-search-react`. They are now deprecated in `@backstage/plugin-search` and will be removed in a future release.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 5388e6bdc5: Fixed a bug that could cause analytics events in other parts of Backstage to capture nonsensical values resembling search modal state under some circumstances.
+- 915700f64f: In order to simplify analytics on top of the search experience in Backstage, the provided `<*ResultListItem />` component now captures a `discover` analytics event instead of a `click` event. This event includes the result rank as its `value` and, like a click, the URL/path clicked to as its `to` attribute.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/plugin-search-react@0.2.1
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/catalog-model@1.0.3
+
 ## 0.8.2-next.2
 
 ### Patch Changes

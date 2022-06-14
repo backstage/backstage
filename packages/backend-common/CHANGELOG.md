@@ -1,5 +1,21 @@
 # @backstage/backend-common
 
+## 0.14.0
+
+### Minor Changes
+
+- 55647ec7df: **BREAKING**: Server-to-server tokens that are authenticated by the `ServerTokenManager` now must have an `exp` claim that has not expired. Tokens where the `exp` claim is in the past or missing are considered invalid and will throw an error. This is a followup to the deprecation from the `1.2` release of Backstage where perpetual tokens were deprecated. Be sure to update any usage of the `getToken()` method to have it be called every time a token is needed. Do not store tokens for later use.
+
+### Patch Changes
+
+- f72a6b8c62: Applied the `luxon` dependency fix from the `0.13.4` patch release.
+- 5b22a8c97f: Applied the AWS S3 reading patch from the `0.13.5` patch release.
+- f5283a42e2: Updated dependency `@google-cloud/storage` to `^6.0.0`.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/integration@1.2.1
+  - @backstage/config-loader@1.1.2
+
 ## 0.14.0-next.2
 
 ### Minor Changes

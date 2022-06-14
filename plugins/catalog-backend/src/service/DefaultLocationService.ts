@@ -27,6 +27,7 @@ import {
 } from '../processing/types';
 import { LocationInput, LocationService, LocationStore } from './types';
 import { locationSpecToMetadataName } from '../util/conversion';
+import { InputError } from '@backstage/errors';
 
 export class DefaultLocationService implements LocationService {
   constructor(
@@ -38,6 +39,9 @@ export class DefaultLocationService implements LocationService {
     input: LocationInput,
     dryRun: boolean,
   ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }> {
+    if (input.type !== 'url') {
+      throw new InputError(`Registered locations must be of type 'url'`);
+    }
     if (dryRun) {
       return this.dryRunCreateLocation(input);
     }

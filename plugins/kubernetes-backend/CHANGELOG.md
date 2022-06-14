@@ -1,5 +1,20 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.6.0
+
+### Minor Changes
+
+- 4328737af6: Add support to fetch data for Stateful Sets from Kubernetes
+
+### Patch Changes
+
+- 0c70cd8e1d: cache and refresh Azure tokens to avoid excessive calls to Azure Identity
+- 2aedf64ad3: Updated dependency `@google-cloud/container` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+  - @backstage/plugin-kubernetes-common@0.3.0
+  - @backstage/catalog-model@1.0.3
+
 ## 0.6.0-next.2
 
 ### Patch Changes

@@ -24,6 +24,7 @@ import request from 'supertest';
 import mockFs from 'mock-fs';
 import * as os from 'os';
 import { LocalPublish } from './local';
+import path from 'path';
 
 const createMockEntity = (annotations = {}, lowerCase = false) => {
   return {
@@ -54,62 +55,107 @@ const resolvedDir = resolvePackagePath(
 );
 
 describe('local publisher', () => {
-  it('should publish generated documentation dir', async () => {
-    mockFs({
-      [tmpDir]: {
-        'index.html': '',
-      },
+  describe('publish', () => {
+    beforeEach(() => {
+      mockFs({
+        [tmpDir]: {
+          'index.html': '',
+        },
+      });
     });
 
-    const mockConfig = new ConfigReader({});
-
-    const publisher = LocalPublish.fromConfig(
-      mockConfig,
-      logger,
-      testDiscovery,
-    );
-    const mockEntity = createMockEntity();
-    const lowerMockEntity = createMockEntity(undefined, true);
-
-    await publisher.publish({ entity: mockEntity, directory: tmpDir });
-
-    expect(await publisher.hasDocsBeenGenerated(mockEntity)).toBe(true);
-
-    // Lower/upper should be treated the same.
-    expect(await publisher.hasDocsBeenGenerated(lowerMockEntity)).toBe(true);
-
-    mockFs.restore();
-  });
-
-  it('should respect legacy casing', async () => {
-    mockFs({
-      [tmpDir]: {
-        'index.html': '',
-      },
+    afterEach(() => {
+      mockFs.restore();
     });
 
-    const mockConfig = new ConfigReader({
-      techdocs: {
-        legacyUseCaseSensitiveTripletPaths: true,
-      },
+    it('should publish generated documentation dir', async () => {
+      const mockConfig = new ConfigReader({});
+
+      const publisher = LocalPublish.fromConfig(
+        mockConfig,
+        logger,
+        testDiscovery,
+      );
+      const mockEntity = createMockEntity();
+      const lowerMockEntity = createMockEntity(undefined, true);
+
+      await publisher.publish({ entity: mockEntity, directory: tmpDir });
+
+      expect(await publisher.hasDocsBeenGenerated(mockEntity)).toBe(true);
+
+      // Lower/upper should be treated the same.
+      expect(await publisher.hasDocsBeenGenerated(lowerMockEntity)).toBe(true);
+
+      mockFs.restore();
     });
 
-    const publisher = LocalPublish.fromConfig(
-      mockConfig,
-      logger,
-      testDiscovery,
-    );
-    const mockEntity = createMockEntity();
-    const lowerMockEntity = createMockEntity(undefined, true);
+    it('should respect legacy casing', async () => {
+      const mockConfig = new ConfigReader({
+        techdocs: {
+          legacyUseCaseSensitiveTripletPaths: true,
+        },
+      });
 
-    await publisher.publish({ entity: mockEntity, directory: tmpDir });
+      const publisher = LocalPublish.fromConfig(
+        mockConfig,
+        logger,
+        testDiscovery,
+      );
+      const mockEntity = createMockEntity();
+      const lowerMockEntity = createMockEntity(undefined, true);
 
-    expect(await publisher.hasDocsBeenGenerated(mockEntity)).toBe(true);
+      await publisher.publish({ entity: mockEntity, directory: tmpDir });
 
-    // Lower/upper should be treated differently.
-    expect(await publisher.hasDocsBeenGenerated(lowerMockEntity)).toBe(false);
+      expect(await publisher.hasDocsBeenGenerated(mockEntity)).toBe(true);
 
-    mockFs.restore();
+      // Lower/upper should be treated differently.
+      expect(await publisher.hasDocsBeenGenerated(lowerMockEntity)).toBe(false);
+
+      mockFs.restore();
+    });
+
+    it('should throw with unsafe triplet', async () => {
+      const mockConfig = new ConfigReader({});
+      const publisher = LocalPublish.fromConfig(
+        mockConfig,
+        logger,
+        testDiscovery,
+      );
+      const mockEntity = {
+        ...createMockEntity(),
+        ...{
+          kind: '..',
+          metadata: { name: '..', namespace: '..' },
+        },
+      };
+
+      await expect(() =>
+        publisher.publish({ entity: mockEntity, directory: tmpDir }),
+      ).rejects.toThrowError('Unable to publish TechDocs site');
+    });
+
+    it('should throw with unsafe name', async () => {
+      const mockConfig = new ConfigReader({});
+      const publisher = LocalPublish.fromConfig(
+        mockConfig,
+        logger,
+        testDiscovery,
+      );
+      const mockEntity = {
+        ...createMockEntity(),
+        ...{
+          kind: 'component',
+          metadata: {
+            name: path.join('..', 'component', 'other-component'),
+            namespace: 'default',
+          },
+        },
+      };
+
+      await expect(() =>
+        publisher.publish({ entity: mockEntity, directory: tmpDir }),
+      ).rejects.toThrowError('Unable to publish TechDocs site');
+    });
   });
 
   describe('docsRouter', () => {

@@ -12,6 +12,37 @@ If you want to use an auth provider to sign in users, you need to explicitly con
 it have sign-in enabled and also tell it how the external identities should
 be mapped to user identities within Backstage.
 
+## Quick Start
+
+> See [providers](../reference/plugin-auth-backend.providers.md)
+> for a full list of auth providers and their built-in sign-in resolvers.
+
+Backstage projects created with `npx @backstage/create-app` come configured with a
+sign-in resolver for GitHub guest access. This resolver makes all users share
+a single "guest" identity and is only intended as a minimum requirement to quickly
+get up and running. You can replace `github` for any of the other providers if you need.
+
+This resolver should not be used in production, as it uses a single shared identity,
+and has no restrictions on who is able to sign-in. Be sure to read through the rest
+of this page to understand the Backstage identity system once you need to install
+a resolver for your production environment.
+
+The guest resolver can be useful for testing purposes too, and it looks like this:
+
+```ts
+signIn: {
+  resolver(_, ctx) {
+    const userRef = 'user:default/guest'
+    return ctx.issueToken({
+      claims: {
+        sub: userRef,
+        ent: [userRef],
+      },
+    }),
+  },
+},
+```
+
 ## Backstage User Identity
 
 A user identity within Backstage is built up from two pieces of information, a

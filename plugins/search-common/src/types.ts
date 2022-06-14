@@ -56,9 +56,27 @@ export interface ResultHighlight {
  * @public
  */
 export interface Result<TDocument extends SearchDocument> {
+  /**
+   * The "type" of the given document. See: {@link DocumentCollatorFactory."type"}
+   */
   type: string;
+
+  /**
+   * The raw value of the document, as indexed.
+   */
   document: TDocument;
+
+  /**
+   * Optional result highlight. Useful for improving the search result
+   * display/experience.
+   */
   highlight?: ResultHighlight;
+
+  /**
+   * Optional result rank, where 1 is the first/top result returned. Useful for
+   * understanding search effectiveness in analytics.
+   */
+  rank?: number;
 }
 
 /**

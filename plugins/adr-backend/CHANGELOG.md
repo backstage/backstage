@@ -1,5 +1,18 @@
 # @backstage/plugin-adr-backend
 
+## 0.1.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/backend-common@0.14.0
+  - @backstage/integration@1.2.1
+  - @backstage/catalog-client@1.0.3
+  - @backstage/catalog-model@1.0.3
+  - @backstage/plugin-adr-common@0.1.1
+
 ## 0.1.1-next.2
 
 ### Patch Changes

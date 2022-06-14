@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs-react
 
+## 1.0.1
+
+### Patch Changes
+
+- 3b45ad701f: Creates a `TechDocsShadowDom` component that takes a tree of elements and an `onAppend` handler:
+
+  - Calls the `onAppend` handler when appending the element tree to the shadow root;
+  - Also dispatches an event when styles are loaded to let transformers know that the computed styles are ready to be consumed.
+
+- Updated dependencies
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/catalog-model@1.0.3
+
 ## 1.0.1-next.1
 
 ### Patch Changes

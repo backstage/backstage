@@ -1,5 +1,27 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 0.1.5
+
+### Patch Changes
+
+- 281cec1b61: Use more precise matching for query filters
+- 915700f64f: The provided search engine now adds a pagination-aware `rank` value to all results.
+- ddce23d080: Now possible to set a custom index template on the elasticsearch search engine.
+- 7d8acfc32e: Additional types now exported publicly:
+
+  - ElasticSearchAgentOptions
+  - ElasticSearchConcreteQuery
+  - ElasticSearchQueryTranslator
+  - ElasticSearchConnectionConstructor,
+  - ElasticSearchTransportConstructor,
+  - ElasticSearchNodeOptions,
+  - ElasticSearchOptions,
+  - ElasticSearchAuth,
+
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/plugin-search-backend-node@0.6.2
+
 ## 0.1.5-next.2
 
 ### Patch Changes

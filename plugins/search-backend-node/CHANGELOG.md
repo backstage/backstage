@@ -1,5 +1,23 @@
 # @backstage/plugin-search-backend-node
 
+## 0.6.2
+
+### Patch Changes
+
+- e7794a0aaa: propagate indexing errors so they don't appear successful to the task scheduler
+- 3bb25a9acc: Introducing a `NewlineDelimitedJsonCollatorFactory`, which can be used to create search indices from newline delimited JSON files stored in external storage readable via a configured `UrlReader` instance.
+
+  This is useful if you have an independent process periodically generating `*.ndjson` files consisting of `IndexableDocument` objects and want to be able to generate a fresh index based on the latest version of such a file.
+
+- 3bb25a9acc: Fixed a bug that prevented `TestPipeline.withSubject` from identifying valid `Readable` subjects that were technically transform streams.
+- 915700f64f: The provided search engine now adds a pagination-aware `rank` value to all results.
+- 7d8acfc32e: Replaced all `@beta` exports with `@public` exports
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/backend-tasks@0.3.2
+  - @backstage/backend-common@0.14.0
+  - @backstage/plugin-permission-common@0.6.2
+
 ## 0.6.2-next.2
 
 ### Patch Changes

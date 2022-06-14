@@ -338,13 +338,13 @@ export function createPublishGitlabAction(options: {
 export const createPublishGitlabMergeRequestAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<{
-  projectid: string;
   repoUrl: string;
   title: string;
   description: string;
   branchName: string;
   targetPath: string;
   token?: string | undefined;
+  projectid?: string | undefined;
 }>;
 
 // @public

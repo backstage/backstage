@@ -1,5 +1,20 @@
 # @backstage/plugin-adr
 
+## 0.1.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- a6458a120b: Adding term highlighting support to `AdrSearchResultListItem`
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/plugin-search-react@0.2.1
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/integration-react@1.1.1
+  - @backstage/plugin-adr-common@0.1.1
+
 ## 0.1.1-next.1
 
 ### Patch Changes

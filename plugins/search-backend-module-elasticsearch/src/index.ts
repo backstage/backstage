@@ -36,4 +36,6 @@ export type {
   ElasticSearchAuth,
   ElasticSearchSearchEngineIndexer,
   ElasticSearchSearchEngineIndexerOptions,
+  ElasticSearchCustomIndexTemplate,
+  ElasticSearchCustomIndexTemplateBody,
 } from './engines';

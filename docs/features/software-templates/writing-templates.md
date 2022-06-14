@@ -397,6 +397,26 @@ There's also the ability to pass additional scopes when requesting the `oauth`
 token from the user, which you can do on a per-provider basis, in case your
 template can be published to multiple providers.
 
+### Accessing the signed-in users details
+
+Sometimes when authoring templates, you'll want to access the user that is running the template, and get details from the profile or the users `Entity` in the Catalog.
+
+If you have enabled a sign in provider and have a [sign in resolver](../../auth/identity-resolver.md) that points to a user in the Catalog, then you can use the `${{ user.entity }}` templating expression to access the raw entity from the Catalog.
+
+This can be particularly useful if you have processors setup in the Catalog to write `spec.profile.email` of the `User Entities` to reference them and pass them into actions like below:
+
+```yaml
+  steps:
+    action: publish:github
+    ...
+    input:
+        ...
+        gitAuthorName: ${{ user.entity.metadata.name }}
+        gitAuthorEmail: ${{ user.entity.spec.profile.email }}
+```
+
+You also have access to `user.entity.metadata.annotations` too, so if you have some other additional information stored in there, you reference those too.
+
 ### The Owner Picker
 
 When the scaffolder needs to add new components to the catalog, it needs to have

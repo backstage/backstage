@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-node
 
+## 1.1.2
+
+### Patch Changes
+
+- f5283a42e2: Updated dependency `@google-cloud/storage` to `^6.0.0`.
+- 2c048f8b90: Updated deprecated use of `express`' `res.redirect()` method when handling legacy path casing.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/backend-common@0.14.0
+  - @backstage/integration@1.2.1
+  - @backstage/catalog-model@1.0.3
+
 ## 1.1.2-next.2
 
 ### Patch Changes

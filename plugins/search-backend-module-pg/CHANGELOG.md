@@ -1,5 +1,15 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.3.4
+
+### Patch Changes
+
+- 915700f64f: The provided search engine now adds a pagination-aware `rank` value to all results.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/backend-common@0.14.0
+  - @backstage/plugin-search-backend-node@0.6.2
+
 ## 0.3.4-next.2
 
 ### Patch Changes
