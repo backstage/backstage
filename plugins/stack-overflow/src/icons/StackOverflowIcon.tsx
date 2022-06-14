@@ -15,6 +15,10 @@
  */
 import React from 'react';
 
+/**
+ * Stack Overflow Icon
+ * @public
+ */
 export const StackOverflowIcon = () => {
   return (
     <svg
