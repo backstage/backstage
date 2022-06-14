@@ -50,10 +50,10 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
     fill: theme.palette.getContrastText(theme.palette.grey[300]),
 
     '&.primary': {
-      fill: '#fff',
+      fill: theme.palette.primary.contrastText,
     },
     '&.secondary': {
-      fill: '#fff',
+      fill: theme.palette.secondary.contrastText,
     },
     '&.focused': {
       fontWeight: 'bold',
