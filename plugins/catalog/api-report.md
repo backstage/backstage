@@ -212,6 +212,9 @@ export interface DependsOnResourcesCardProps {
 export const EntityAboutCard: (props: AboutCardProps) => JSX.Element;
 
 // @public (undocumented)
+export type EntityContextMenuClassKey = 'button';
+
+// @public (undocumented)
 export const EntityDependencyOfComponentsCard: (
   props: DependencyOfComponentsCardProps,
 ) => JSX.Element;
@@ -394,6 +397,7 @@ export function isOrphan(entity: Entity): boolean;
 export type PluginCatalogComponentsNameToClassKey = {
   PluginCatalogEntityLinksEmptyState: EntityLinksEmptyStateClassKey;
   PluginCatalogSystemDiagramCard: SystemDiagramCardClassKey;
+  PluginCatalogEntityContextMenu: EntityContextMenuClassKey;
 };
 
 // @public (undocumented)
