@@ -271,9 +271,9 @@
     tslib "^2.0.0"
 
 "@azure/identity@^2.0.1", "@azure/identity@^2.0.4":
-  version "2.0.4"
-  resolved "https://registry.npmjs.org/@azure/identity/-/identity-2.0.4.tgz#f5cfde0daf1b9ebaaff3ed6c504f50d7d7c939a5"
-  integrity sha512-ZgFubAsmo7dji63NLPaot6O7pmDfceAUPY57uphSCr0hmRj+Cakqb4SUz5SohCHFtscrhcmejRU903Fowz6iXg==
+  version "2.0.5"
+  resolved "https://registry.npmjs.org/@azure/identity/-/identity-2.0.5.tgz#4475f1222a3cbf5c5ddec644dd3fb293256703d3"
+  integrity sha512-fSQTu9dS0P+lw1Gfct6t7TuRYybULL/E3wJjXLc1xr6RQXpmenJspi0lKzq3XFjLP5MzBlToKY3ZkYoAXPz1zA==
   dependencies:
     "@azure/abort-controller" "^1.0.0"
     "@azure/core-auth" "^1.3.0"
