@@ -365,6 +365,8 @@ Backstage integrator will ultimately be left to provide the appropriate icon
 component mappings. A generic fallback icon would be provided if a mapping
 cannot be resolved.
 
+The semantics of the `type` field are undefined. The adopter is free to define their own set of types and utilize them as they wish. Some potential use cases can be to utilize the type field to validate certain links exist on entities or to create customized UI components for specific link types.
+
 ## Common to All Kinds: Relations
 
 The `relations` root field is a read-only list of relations, between the current
