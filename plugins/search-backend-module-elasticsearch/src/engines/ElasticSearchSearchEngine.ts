@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  awsGetCredentials,
-  createAWSConnection,
-} from '@acuris/aws-es-connection';
+import { awsGetCredentials, createAWSConnection } from 'aws-os-connection';
 import { Config } from '@backstage/config';
 import {
   IndexableDocument,
@@ -26,46 +23,16 @@ import {
   SearchEngine,
   SearchQuery,
 } from '@backstage/plugin-search-common';
-import { Client } from '@elastic/elasticsearch';
 import esb from 'elastic-builder';
 import { isEmpty, isNaN as nan, isNumber } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
-import type { ElasticSearchClientOptions } from './ElasticSearchClientOptions';
+import { ElasticSearchClientOptions } from './ElasticSearchClientOptions';
 import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
+import { ElasticSearchCustomIndexTemplate } from './types';
+import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 
 export type { ElasticSearchClientOptions };
-
-/**
- * Elasticsearch specific index template
- * @public
- */
-export type ElasticSearchCustomIndexTemplate = {
-  name: string;
-  body: ElasticSearchCustomIndexTemplateBody;
-};
-
-/**
- * Elasticsearch specific index template body
- * @public
- */
-export type ElasticSearchCustomIndexTemplateBody = {
-  /**
-   * Array of wildcard (*) expressions used to match the names of data streams and indices during creation.
-   */
-  index_patterns: string[];
-  /**
-   * An ordered list of component template names.
-   * Component templates are merged in the order specified,
-   * meaning that the last component template specified has the highest precedence.
-   */
-  composed_of?: string[];
-  /**
-   * See available properties of template
-   * https://www.elastic.co/guide/en/elasticsearch/reference/7.15/indices-put-template.html#put-index-template-api-request-body
-   */
-  template?: Record<string, any>;
-};
 
 /**
  * Search query that the elasticsearch engine understands.
@@ -143,7 +110,7 @@ function isBlank(str: string) {
  * @public
  */
 export class ElasticSearchSearchEngine implements SearchEngine {
-  private readonly elasticSearchClient: Client;
+  private readonly elasticSearchClientWrapper: ElasticSearchClientWrapper;
   private readonly highlightOptions: ElasticSearchHighlightConfig;
 
   constructor(
@@ -153,7 +120,8 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     private readonly logger: Logger,
     highlightOptions?: ElasticSearchHighlightOptions,
   ) {
-    this.elasticSearchClient = this.newClient(options => new Client(options));
+    this.elasticSearchClientWrapper =
+      ElasticSearchClientWrapper.fromClientOptions(elasticSearchClientOptions);
     const uuidTag = uuid();
     this.highlightOptions = {
       preTag: `<${uuidTag}>`,
@@ -177,7 +145,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     if (options.provider === 'elastic') {
       logger.info('Initializing Elastic.co ElasticSearch search engine.');
     } else if (options.provider === 'aws') {
-      logger.info('Initializing AWS ElasticSearch search engine.');
+      logger.info('Initializing AWS OpenSearch search engine.');
     } else {
       logger.info('Initializing ElasticSearch search engine.');
     }
@@ -269,7 +237,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
 
   async setIndexTemplate(template: ElasticSearchCustomIndexTemplate) {
     try {
-      await this.elasticSearchClient.indices.putIndexTemplate(template);
+      await this.elasticSearchClientWrapper.putIndexTemplate(template);
       this.logger.info('Custom index template set');
     } catch (error) {
       this.logger.error(`Unable to set custom index template: ${error}`);
@@ -284,7 +252,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       indexPrefix: this.indexPrefix,
       indexSeparator: this.indexSeparator,
       alias,
-      elasticSearchClient: this.elasticSearchClient,
+      elasticSearchClientWrapper: this.elasticSearchClientWrapper,
       logger: this.logger,
     });
 
@@ -292,13 +260,13 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     indexer.on('error', async e => {
       this.logger.error(`Failed to index documents for type ${type}`, e);
       try {
-        const response = await this.elasticSearchClient.indices.exists({
+        const response = await this.elasticSearchClientWrapper.indexExists({
           index: indexer.indexName,
         });
         const indexCreated = response.body;
         if (indexCreated) {
           this.logger.info(`Removing created index ${indexer.indexName}`);
-          await this.elasticSearchClient.indices.delete({
+          await this.elasticSearchClientWrapper.deleteIndex({
             index: indexer.indexName,
           });
         }
@@ -319,7 +287,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       ? documentTypes.map(it => this.constructSearchAlias(it))
       : this.constructSearchAlias('*');
     try {
-      const result = await this.elasticSearchClient.search({
+      const result = await this.elasticSearchClientWrapper.search({
         index: queryIndices,
         body: elasticSearchQuery,
       });
