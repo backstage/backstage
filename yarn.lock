@@ -1723,12 +1723,24 @@
     "@lezer/lr" "^0.16.0"
     style-mod "^4.0.0"
 
-"@codemirror/legacy-modes@^0.20.0":
-  version "0.20.0"
-  resolved "https://registry.npmjs.org/@codemirror/legacy-modes/-/legacy-modes-0.20.0.tgz#a1cea5eed05fa09a0cac4a39f41e362a136da5ea"
-  integrity sha512-SYllodnzD8OI6Y6NoFzCv+77cU9aTdfqDO0Zn8j5PbjUIAD+pIofwHAvecd9/ePLAICr+EYCEuqUxldHAR+pLQ==
+"@codemirror/language@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.npmjs.org/@codemirror/language/-/language-6.0.0.tgz#f590558447c01f430fb3ef3297c41b8cd3ae9190"
+  integrity sha512-rtjk5ifyMzOna1c7PBu7J1VCt0PvA5wy3o8eMVnxMKb7z8KA7JFecvD04dSn14vj/bBaAbqRsGed5OjtofEnLA==
   dependencies:
-    "@codemirror/language" "^0.20.0"
+    "@codemirror/state" "^6.0.0"
+    "@codemirror/view" "^6.0.0"
+    "@lezer/common" "^1.0.0"
+    "@lezer/highlight" "^1.0.0"
+    "@lezer/lr" "^1.0.0"
+    style-mod "^4.0.0"
+
+"@codemirror/legacy-modes@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.npmjs.org/@codemirror/legacy-modes/-/legacy-modes-6.0.0.tgz#acb0bfe642261694930019faa60178d8ba8ce9cd"
+  integrity sha512-wt5qbAI1H16xjanKBHNqTyWbuKSE5ifj8uCY6+vmQkZVzBBF7fRgnODb+c4bSk22dg5kS8PWOKE17aqyyC+SSw==
+  dependencies:
+    "@codemirror/language" "^6.0.0"
 
 "@codemirror/lint@^0.20.0":
   version "0.20.1"
@@ -1753,6 +1765,11 @@
   resolved "https://registry.npmjs.org/@codemirror/state/-/state-0.20.0.tgz#3343d209169813b0152b77361cd78bea01549a73"
   integrity sha512-R3XrAWCS5Xm9lx+4pDET4EUPEg+8bDfAa5zoOFIhx+VChsfew9Vy33dAjCXS5ES4Q8UecW4WM4UudmUFpZ+86A==
 
+"@codemirror/state@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.npmjs.org/@codemirror/state/-/state-6.0.0.tgz#baac0d050ce9271259b0997e1693469c044deb3f"
+  integrity sha512-UjP/jB2dz7B+1L+eiCm8YWhM1zBkFM2zUyp8hhtpvgmuOFmoWjwqHnICQmM34HNPBqMPcVY9ZcqJcOhDrB+dBQ==
+
 "@codemirror/theme-one-dark@^0.20.0":
   version "0.20.0"
   resolved "https://registry.npmjs.org/@codemirror/theme-one-dark/-/theme-one-dark-0.20.0.tgz#112074e446d46931d1104405154ccbe8c8874009"
@@ -1769,6 +1786,15 @@
   integrity sha512-pqEPCb9QFTOtHgAH5XU/oVy9UR/Anj6r+tG5CRmkNVcqSKEPmBU05WtN/jxJCFZBXf6HumzWC9ydE4qstO3TxQ==
   dependencies:
     "@codemirror/state" "^0.20.0"
+    style-mod "^4.0.0"
+    w3c-keyname "^2.2.4"
+
+"@codemirror/view@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.npmjs.org/@codemirror/view/-/view-6.0.0.tgz#b3aa07e9bec497a465c27767c825c83c9b2525cc"
+  integrity sha512-IdbZtg17jpLdNnetoPpSOMZNtsCEAexFNdG7tU6TlJkLQakaTNrzXiQEIx9oiZx3f1ql6Zbr8+qyLr/pkrmsng==
+  dependencies:
+    "@codemirror/state" "^6.0.0"
     style-mod "^4.0.0"
     w3c-keyname "^2.2.4"
 
@@ -3898,6 +3924,11 @@
   resolved "https://registry.npmjs.org/@lezer/common/-/common-0.16.0.tgz#b6023a0a682b0b7676d0e7f0e0838f71bde39fcd"
   integrity sha512-H6sPCku+asKWYaNjwfQ1Uvcay9UP1Pdzu4qpy8GtRZ0cKT2AAGnj9MQGiRtY18MDntvhYRJxNGv7FNWOSV/e8A==
 
+"@lezer/common@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@lezer/common/-/common-1.0.0.tgz#1c95ae53ec17706aa3cbcc88b52c23f22ed56096"
+  integrity sha512-ohydQe+Hb+w4oMDvXzs8uuJd2NoA3D8YDcLiuDsLqH+yflDTPEpgCsWI3/6rH5C3BAedtH1/R51dxENldQceEA==
+
 "@lezer/highlight@^0.16.0":
   version "0.16.0"
   resolved "https://registry.npmjs.org/@lezer/highlight/-/highlight-0.16.0.tgz#95f7b7ee3c32c8a0f6ce499c085e8b1f927ffbdc"
@@ -3905,12 +3936,26 @@
   dependencies:
     "@lezer/common" "^0.16.0"
 
+"@lezer/highlight@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@lezer/highlight/-/highlight-1.0.0.tgz#1dc82300f5d39fbd67ae1194b5519b4c381878d3"
+  integrity sha512-nsCnNtim90UKsB5YxoX65v3GEIw3iCHw9RM2DtdgkiqAbKh9pCdvi8AWNwkYf10Lu6fxNhXPpkpHbW6mihhvJA==
+  dependencies:
+    "@lezer/common" "^1.0.0"
+
 "@lezer/lr@^0.16.0":
   version "0.16.1"
   resolved "https://registry.npmjs.org/@lezer/lr/-/lr-0.16.1.tgz#abe8c538d3f1a811ce5731847e3d0470c7709dcd"
   integrity sha512-RuRD84dWY9If8BanfaaWNe0YhRdYWtni92GpB4C4/7JgHyAIfdkJz7miBjgILm3gOsBjJsJh56vb1ckxSQEWBg==
   dependencies:
     "@lezer/common" "^0.16.0"
+
+"@lezer/lr@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@lezer/lr/-/lr-1.0.0.tgz#89e30c1e710b8715ac5c847ad063418c51d6e750"
+  integrity sha512-k6DEqBh4HxqO/cVGedb6Ern6LS7K6IOzfydJ5WaqCR26v6UR9sIFyb6PS+5rPUs/mXgnBR/QQCW7RkyjSCMoQA==
+  dependencies:
+    "@lezer/common" "^1.0.0"
 
 "@manypkg/find-root@^1.1.0":
   version "1.1.0"
