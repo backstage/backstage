@@ -26,6 +26,18 @@ catalog:
         entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
 ```
 
+If you desire so, it's also possible to execute the gitlab discovery in your entire
+project. In order to do that, use this catalog configuration instead:
+
+```yaml
+catalog:
+  providers:
+    gitlab:
+      host: gitlab-host # Identifies one of the hosts set up in the integrations
+      branch: main # Optional. Uses `master` as default
+      entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
+```
+
 As this provider is not one of the default providers, you will first need to install
 the gitlab catalog plugin:
 

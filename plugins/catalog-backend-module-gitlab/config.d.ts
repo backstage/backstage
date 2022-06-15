@@ -23,33 +23,53 @@ export interface Config {
       /**
        * GitlabDiscoveryEntityProvider configuration
        */
-      gitlab?: Record<
-        string,
-        {
-          /**
-           * (Required) Gitlab's host name.
-           * @visibility backend
-           */
-          host: string;
-          /**
-           * (Required) Gitlab's group[/subgroup] where the discovery is done.
-           * @visibility backend
-           */
-          group: string;
-          /**
-           * (Optional) Default branch to read the catalog-info.yaml file.
-           * If not set, 'master' will be used.
-           * @visibility backend
-           */
-          branch?: string;
-          /**
-           * (Optional) The name used for the catalog file.
-           * If not set, 'catalog-info.yaml' will be used.
-           * @visibility backend
-           */
-          entityFilename?: string;
-        }
-      >;
+      gitlab?:
+        | {
+            /**
+             * (Required) Gitlab's host name.
+             * @visibility backend
+             */
+            host: string;
+            /**
+             * (Optional) Default branch to read the catalog-info.yaml file.
+             * If not set, 'master' will be used.
+             * @visibility backend
+             */
+            branch?: string;
+            /**
+             * (Optional) The name used for the catalog file.
+             * If not set, 'catalog-info.yaml' will be used.
+             * @visibility backend
+             */
+            entityFilename?: string;
+          }
+        | Record<
+            string,
+            {
+              /**
+               * (Required) Gitlab's host name.
+               * @visibility backend
+               */
+              host: string;
+              /**
+               * (Required) Gitlab's group[/subgroup] where the discovery is done.
+               * @visibility backend
+               */
+              group: string;
+              /**
+               * (Optional) Default branch to read the catalog-info.yaml file.
+               * If not set, 'master' will be used.
+               * @visibility backend
+               */
+              branch?: string;
+              /**
+               * (Optional) The name used for the catalog file.
+               * If not set, 'catalog-info.yaml' will be used.
+               * @visibility backend
+               */
+              entityFilename?: string;
+            }
+          >;
     };
   };
 }

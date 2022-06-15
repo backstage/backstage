@@ -48,6 +48,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
  * @param config - The config object to extract from
  */
 export function readGitlabConfigs(config: Config): GitlabProviderConfig[] {
+  const reservedParams = ['host', 'group', 'branch', 'catalogFile'];
   const configs: GitlabProviderConfig[] = [];
 
   const providerConfigs = config.getOptionalConfig('catalog.providers.gitlab');
@@ -56,8 +57,20 @@ export function readGitlabConfigs(config: Config): GitlabProviderConfig[] {
     return configs;
   }
 
-  for (const id of providerConfigs.keys()) {
-    configs.push(readGitlabConfig(id, providerConfigs.getConfig(id)));
+  if (providerConfigs.keys().some(r => reservedParams.indexOf(r) >= 0)) {
+    configs.push({
+      id: 'full-check',
+      group: '',
+      branch: providerConfigs.getOptionalString('branch') ?? 'master',
+      host: providerConfigs.getString('host'),
+      catalogFile:
+        providerConfigs.getOptionalString('entityFilename') ??
+        'catalog-info.yaml',
+    });
+  } else {
+    for (const id of providerConfigs.keys()) {
+      configs.push(readGitlabConfig(id, providerConfigs.getConfig(id)));
+    }
   }
 
   return configs;
