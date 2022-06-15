@@ -19,6 +19,7 @@ import {
   createBackendModule,
   createBackendPlugin,
   createServiceRef,
+  loggerServiceRef,
 } from '@backstage/backend-plugin-api';
 // import { catalogPlugin } from '@backstage/plugin-catalog-backend';
 // import { scaffolderPlugin } from '@backstage/plugin-scaffolder-backend';
@@ -60,12 +61,12 @@ export const catalogPlugin = createBackendPlugin({
 
     env.registerInit({
       deps: {
-        // logger: loggerApiRef,
+        logger: loggerServiceRef,
       },
-      async init() {
+      async init({ logger }) {
+        //        const builder = await CatalogBuilder.create(env);
+        logger.log('boppp');
         console.log('I HAZ', processingExtensions.processors[0].process());
-        console.log('I AM le CATALOG!');
-        // logger.log('HELLO!');
       },
     });
   },
@@ -93,6 +94,16 @@ export const scaffolderCatalogExtension = createBackendModule({
 const backend = createBackend({
   apis: [],
 });
+
+// logger: Logger;
+// cache: PluginCacheManager;
+// database: PluginDatabaseManager;
+// config: Config;
+// reader: UrlReader;
+// discovery: PluginEndpointDiscovery;
+// tokenManager: TokenManager;
+// permissions: PermissionEvaluator | PermissionAuthorizer;
+// scheduler: PluginTaskScheduler;
 
 // backend.add(scaffolderPlugin());
 backend.add(catalogPlugin({}));

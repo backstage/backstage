@@ -26,8 +26,13 @@
 //   scheduler: PluginTaskScheduler;
 // };
 
-export { configApiRef } from './configApiRef';
-export { httpRouterApiRef } from './httpRouterApiRef';
-export type { HttpRouterApi } from './httpRouterApiRef';
-export { loggerApiRef } from './loggerApiRef';
-export type { Logger } from './loggerApiRef';
+export { configServiceRef } from './configServiceRef';
+export { httpRouterServiceRef } from './httpRouterServiceRef';
+export type { HttpRouterApi } from './httpRouterServiceRef';
+export { loggerServiceRef } from './loggerServiceRef';
+export type { Logger } from './loggerServiceRef';
+export { urlReaderServiceRef } from './urlReaderServiceRef';
+export { cacheServiceRef } from './cacheServiceRef';
+export { databaseServiceRef } from './databaseServiceRef';
+export { discoveryServiceRef } from './discoveryServiceRef';
+export { tokenManagerServiceRef } from './tokenManagerServiceRef';

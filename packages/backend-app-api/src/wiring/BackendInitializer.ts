@@ -15,7 +15,7 @@
  */
 
 import { BackendRegistrable, ServiceRef } from '@backstage/backend-plugin-api';
-import { BackendRegisterInit, ApiHolder } from './types';
+import { ApiHolder, BackendRegisterInit } from './types';
 
 export class BackendInitializer {
   #started = false;
@@ -133,7 +133,6 @@ export class BackendInitializer {
       for (const registerInit of registerInitsToOrder) {
         const unInitializedDependents = Array.from(
           registerInit.provides,
-          // eslint-disable-next-line no-loop-func
         ).filter(r =>
           registerInitsToOrder.some(
             init => init !== registerInit && init.consumes.has(r),

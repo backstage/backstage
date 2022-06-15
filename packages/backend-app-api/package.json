@@ -34,7 +34,9 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/backend-plugin-api": "^0.0.0"
+    "@backstage/backend-plugin-api": "^0.0.0",
+    "@backstage/backend-common": "^0.14.0",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.17.2-next.0"

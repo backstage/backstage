@@ -15,11 +15,12 @@
  */
 
 import {
-  BackendRegistrable,
   AnyServiceFactory,
-  ServiceRef,
+  BackendRegistrable,
   FactoryFunc,
+  ServiceRef,
 } from '@backstage/backend-plugin-api';
+import { loggerFactory } from '../services/implementations/loggerService';
 import { BackstageBackend } from './BackstageBackend';
 
 export interface Backend {
@@ -44,5 +45,7 @@ export type ApiHolder = {
 };
 
 export function createBackend(options?: CreateBackendOptions): Backend {
-  return new BackstageBackend(options?.apis ?? []);
+  // TODO: merge with provided APIs
+  const defaultApis = [loggerFactory];
+  return new BackstageBackend([...defaultApis, ...(options?.apis ?? [])]);
 }

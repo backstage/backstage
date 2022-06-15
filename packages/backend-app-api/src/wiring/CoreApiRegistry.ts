@@ -15,8 +15,8 @@
  */
 import {
   AnyServiceFactory,
-  ServiceRef,
   FactoryFunc,
+  ServiceRef,
 } from '@backstage/backend-plugin-api';
 
 export class CoreApiRegistry {

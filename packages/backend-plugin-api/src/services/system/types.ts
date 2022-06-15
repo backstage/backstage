@@ -68,3 +68,11 @@ export function createServiceRef<T>(options: { id: string }): ServiceRef<T> {
     $$ref: 'service', // TODO: declare
   };
 }
+
+export function createServiceFactory<
+  Api,
+  Impl extends Api,
+  Deps extends { [name in string]: unknown },
+>(factory: ServiceFactory<Api, Impl, Deps>): ServiceFactory<Api, Impl, Deps> {
+  return factory;
+}

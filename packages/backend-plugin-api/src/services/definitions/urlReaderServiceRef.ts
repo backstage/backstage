@@ -15,12 +15,8 @@
  */
 
 import { createServiceRef } from '../system/types';
+import { UrlReader } from '@backstage/backend-common';
 
-export interface Logger {
-  log(message: string): void;
-  child(fields: { [name: string]: string }): Logger;
-}
-
-export const loggerApiRef = createServiceRef<Logger>({
-  id: 'core.logger',
+export const urlReaderServiceRef = createServiceRef<UrlReader>({
+  id: 'core.urlReader',
 });

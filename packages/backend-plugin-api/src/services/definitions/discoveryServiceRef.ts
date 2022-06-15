@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
 import { createServiceRef } from '../system/types';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
-export const configApiRef = createServiceRef<Config>({
-  id: 'core.config',
+export const discoveryServiceRef = createServiceRef<PluginEndpointDiscovery>({
+  id: 'core.discovery',
 });

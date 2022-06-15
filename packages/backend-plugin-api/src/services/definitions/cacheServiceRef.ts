@@ -15,11 +15,8 @@
  */
 
 import { createServiceRef } from '../system/types';
+import { PluginCacheManager } from '@backstage/backend-common';
 
-export interface HttpRouterApi {
-  get(path: string): void;
-}
-
-export const httpRouterApiRef = createServiceRef<HttpRouterApi>({
-  id: 'core.httpRouter',
+export const cacheServiceRef = createServiceRef<PluginCacheManager>({
+  id: 'core.cache',
 });
