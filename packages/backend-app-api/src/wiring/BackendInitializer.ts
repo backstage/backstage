@@ -15,7 +15,7 @@
  */
 
 import { BackendRegistrable, ServiceRef } from '@backstage/backend-plugin-api';
-import { ApiHolder, BackendRegisterInit } from './types';
+import { BackendRegisterInit, ApiHolder } from './types';
 
 export class BackendInitializer {
   #started = false;
@@ -131,15 +131,20 @@ export class BackendInitializer {
       const toRemove = new Set<unknown>();
 
       for (const registerInit of registerInitsToOrder) {
-        const unInitializedDependents = Array.from(
-          registerInit.provides,
-        ).filter(r =>
-          registerInitsToOrder.some(
-            init => init !== registerInit && init.consumes.has(r),
-          ),
-        );
+        const unInitializedDependents = [];
+
+        for (const api of registerInit.provides) {
+          if (
+            registerInitsToOrder.some(
+              init => init !== registerInit && init.consumes.has(api),
+            )
+          ) {
+            unInitializedDependents.push(api);
+          }
+        }
 
         if (unInitializedDependents.length === 0) {
+          console.log(`DEBUG: pushed ${registerInit.id} to results`);
           orderedRegisterInits.push(registerInit);
           toRemove.add(registerInit);
         }

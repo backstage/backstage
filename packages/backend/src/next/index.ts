@@ -65,7 +65,7 @@ export const catalogPlugin = createBackendPlugin({
       },
       async init({ logger }) {
         //        const builder = await CatalogBuilder.create(env);
-        logger.log('boppp');
+        logger.info('boppp');
         console.log('I HAZ', processingExtensions.processors[0].process());
       },
     });

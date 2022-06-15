@@ -14,9 +14,24 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '../system/types';
 import { CacheManager } from '@backstage/backend-common';
+import {
+  configServiceRef,
+  createServiceFactory,
+  cacheServiceRef,
+} from '@backstage/backend-plugin-api';
 
-export const cacheManagerServiceRef = createServiceRef<CacheManager>({
-  id: 'core.cacheManager',
+// TODO: Work out some naming and implementation patterns for these
+export const cacheFactory = createServiceFactory({
+  service: cacheServiceRef,
+  deps: {
+    configFactory: configServiceRef,
+  },
+  factory: async ({ configFactory }) => {
+    const config = await configFactory('root');
+    const cacheManager = CacheManager.fromConfig(config);
+    return async (pluginId: string) => {
+      return cacheManager.forPlugin(pluginId);
+    };
+  },
 });

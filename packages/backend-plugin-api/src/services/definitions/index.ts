@@ -36,3 +36,5 @@ export { cacheServiceRef } from './cacheServiceRef';
 export { databaseServiceRef } from './databaseServiceRef';
 export { discoveryServiceRef } from './discoveryServiceRef';
 export { tokenManagerServiceRef } from './tokenManagerServiceRef';
+export { permissionsServiceRef } from './permissionsServiceRef';
+export { schedulerServiceRef } from './schedulerServiceRef';

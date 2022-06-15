@@ -14,28 +14,23 @@
  * limitations under the License.
  */
 
-import { UrlReaders } from '@backstage/backend-common';
+import { DatabaseManager } from '@backstage/backend-common';
 import {
   configServiceRef,
   createServiceFactory,
-  loggerServiceRef,
-  urlReaderServiceRef,
+  databaseServiceRef,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from './loggerService';
 
-export const urlReaderFactory = createServiceFactory({
-  service: urlReaderServiceRef,
+export const databaseFactory = createServiceFactory({
+  service: databaseServiceRef,
   deps: {
     configFactory: configServiceRef,
-    loggerFactory: loggerServiceRef,
   },
-  factory: async ({ configFactory, loggerFactory }) => {
+  factory: async ({ configFactory }) => {
+    const config = await configFactory('root');
+    const databaseManager = DatabaseManager.fromConfig(config);
     return async (pluginId: string) => {
-      const logger = await loggerFactory(pluginId);
-      return UrlReaders.default({
-        logger: loggerToWinstonLogger(logger),
-        config: await configFactory(pluginId),
-      });
+      return databaseManager.forPlugin(pluginId);
     };
   },
 });

@@ -22,16 +22,19 @@ import {
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from './loggerService';
 
-export const configService = createServiceFactory({
+export const configFactory = createServiceFactory({
   service: configServiceRef,
-  deps: { loggerFactory: loggerServiceRef },
+  deps: {
+    loggerFactory: loggerServiceRef,
+  },
   factory: async ({ loggerFactory }) => {
     const logger = await loggerFactory('root');
     const config = await loadBackendConfig({
       argv: process.argv,
       logger: loggerToWinstonLogger(logger),
     });
-
-    return async () => config;
+    return async () => {
+      return config;
+    };
   },
 });

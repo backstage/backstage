@@ -14,28 +14,32 @@
  * limitations under the License.
  */
 
-import { UrlReaders } from '@backstage/backend-common';
 import {
   configServiceRef,
   createServiceFactory,
-  loggerServiceRef,
-  urlReaderServiceRef,
+  discoveryServiceRef,
+  permissionsServiceRef,
+  tokenManagerServiceRef,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from './loggerService';
+import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
-export const urlReaderFactory = createServiceFactory({
-  service: urlReaderServiceRef,
+export const permissionsFactory = createServiceFactory({
+  service: permissionsServiceRef,
   deps: {
     configFactory: configServiceRef,
-    loggerFactory: loggerServiceRef,
+    discoveryFactory: discoveryServiceRef,
+    tokenManagerFactory: tokenManagerServiceRef,
   },
-  factory: async ({ configFactory, loggerFactory }) => {
-    return async (pluginId: string) => {
-      const logger = await loggerFactory(pluginId);
-      return UrlReaders.default({
-        logger: loggerToWinstonLogger(logger),
-        config: await configFactory(pluginId),
-      });
+  factory: async ({ configFactory, discoveryFactory, tokenManagerFactory }) => {
+    const config = await configFactory('root');
+    const discovery = await discoveryFactory('root');
+    const tokenManager = await tokenManagerFactory('root');
+    const permissions = ServerPermissionClient.fromConfig(config, {
+      discovery,
+      tokenManager,
+    });
+    return async (_pluginId: string) => {
+      return permissions;
     };
   },
 });

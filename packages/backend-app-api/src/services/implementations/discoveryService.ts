@@ -14,28 +14,23 @@
  * limitations under the License.
  */
 
-import { UrlReaders } from '@backstage/backend-common';
+import { SingleHostDiscovery } from '@backstage/backend-common';
 import {
   configServiceRef,
   createServiceFactory,
-  loggerServiceRef,
-  urlReaderServiceRef,
+  discoveryServiceRef,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from './loggerService';
 
-export const urlReaderFactory = createServiceFactory({
-  service: urlReaderServiceRef,
+export const discoveryFactory = createServiceFactory({
+  service: discoveryServiceRef,
   deps: {
     configFactory: configServiceRef,
-    loggerFactory: loggerServiceRef,
   },
-  factory: async ({ configFactory, loggerFactory }) => {
-    return async (pluginId: string) => {
-      const logger = await loggerFactory(pluginId);
-      return UrlReaders.default({
-        logger: loggerToWinstonLogger(logger),
-        config: await configFactory(pluginId),
-      });
+  factory: async ({ configFactory }) => {
+    const config = await configFactory('root');
+    const discovery = SingleHostDiscovery.fromConfig(config);
+    return async () => {
+      return discovery;
     };
   },
 });
