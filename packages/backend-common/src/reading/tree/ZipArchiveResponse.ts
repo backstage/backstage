@@ -26,6 +26,14 @@ import {
 } from '../types';
 import { streamToTimeoutPromise } from './util';
 
+const guardCorruptZipStream = (stream: Readable) =>
+  streamToTimeoutPromise(stream, {
+    eventName: 'entry',
+    timeoutMs: 3000,
+    getError: (entry: Entry) =>
+      new Error(`Timed out while unzipping ${entry.type}: ${entry.path}`),
+  });
+
 /**
  * Wraps a zip archive stream into a tree response reader.
  */
@@ -104,13 +112,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
           entry.autodrain();
         }
       });
-
-    await streamToTimeoutPromise(parseStream, {
-      eventName: 'entry',
-      timeoutMs: 3000,
-      getError: (entry: Entry) =>
-        new Error(`Timed out while unzipping ${entry.type}: ${entry.path}`),
-    });
+    await guardCorruptZipStream(parseStream);
 
     return files;
   }
@@ -132,13 +134,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
           entry.autodrain();
         }
       });
-
-    await streamToTimeoutPromise(parseStream, {
-      eventName: 'entry',
-      timeoutMs: 3000,
-      getError: (entry: Entry) =>
-        new Error(`Timed out while unzipping ${entry.type}: ${entry.path}`),
-    });
+    await guardCorruptZipStream(parseStream);
 
     archive.finalize();
 
@@ -168,13 +164,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
           entry.autodrain();
         }
       });
-
-    await streamToTimeoutPromise(parseStream, {
-      eventName: 'entry',
-      timeoutMs: 3000,
-      getError: (entry: Entry) =>
-        new Error(`Timed out while unzipping ${entry.type}: ${entry.path}`),
-    });
+    await guardCorruptZipStream(parseStream);
 
     return dir;
   }
