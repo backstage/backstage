@@ -23,3 +23,30 @@ const directoryNameRegex = /^[^\/]+\//;
 export function stripFirstDirectoryFromPath(path: string): string {
   return path.replace(directoryNameRegex, '');
 }
+
+// Some corrupted ZIP files cause the zlib inflater to hang indefinitely.
+// This is a workaround to bail on stuck streams after 3 seconds.
+export async function streamToTimeoutPromise<T>(
+  stream: NodeJS.ReadableStream,
+  options: {
+    timeoutMs: number;
+    eventName: string;
+    getError: (data: T) => Error;
+  },
+) {
+  let lastEntryTimeout: NodeJS.Timeout | undefined;
+  stream.on(options.eventName, (data: T) => {
+    clearTimeout(lastEntryTimeout);
+
+    lastEntryTimeout = setTimeout(() => {
+      stream.emit('error', options.getError(data));
+    }, options.timeoutMs);
+  });
+
+  await new Promise(function (resolve, reject) {
+    stream.on('finish', resolve);
+    stream.on('error', reject);
+  });
+
+  clearTimeout(lastEntryTimeout);
+}

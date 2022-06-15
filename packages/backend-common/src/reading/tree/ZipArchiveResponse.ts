@@ -24,6 +24,7 @@ import {
   ReadTreeResponseDirOptions,
   ReadTreeResponseFile,
 } from '../types';
+import { streamToTimeoutPromise } from './util';
 
 /**
  * Wraps a zip archive stream into a tree response reader.
@@ -86,27 +87,9 @@ export class ZipArchiveResponse implements ReadTreeResponse {
 
     const files = Array<ReadTreeResponseFile>();
 
-    // Some corrupted ZIP files cause the zlib inflater to hang indefinitely.
-    // This is a workaround to bail on stuck streams after 3 seconds.
-    const piped = this.stream.pipe(unzipper.Parse());
-    let lastEntryTimeout: NodeJS.Timeout | undefined;
-
-    await piped
+    const parseStream = this.stream
+      .pipe(unzipper.Parse())
       .on('entry', (entry: Entry) => {
-        clearTimeout(lastEntryTimeout);
-
-        lastEntryTimeout = setTimeout(() => {
-          piped.emit(
-            'error',
-            new Error(`Timed out unzipping file ${entry.path}`),
-          );
-        }, 3000);
-
-        if (entry.type === 'Directory') {
-          entry.resume();
-          return;
-        }
-
         if (this.shouldBeIncluded(entry)) {
           files.push({
             path: this.getInnerPath(entry.path),
@@ -115,10 +98,14 @@ export class ZipArchiveResponse implements ReadTreeResponse {
         } else {
           entry.autodrain();
         }
-      })
-      .promise();
+      });
 
-    clearTimeout(lastEntryTimeout);
+    await streamToTimeoutPromise(parseStream, {
+      eventName: 'entry',
+      timeoutMs: 3000,
+      getError: (entry: Entry) =>
+        new Error(`Timed out while unzipping ${entry.type}: ${entry.path}`),
+    });
 
     return files;
   }
