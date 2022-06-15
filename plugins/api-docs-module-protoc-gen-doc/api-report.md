@@ -5,8 +5,6 @@
 ```ts
 /// <reference types="react" />
 
-// Warning: (ae-missing-release-tag) "grpcDocsApiWidget" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const grpcDocsApiWidget: {
   type: string;

@@ -17,6 +17,9 @@
 import React from 'react';
 import { GRPCSelfGeneratedAPIReference } from 'grpc-docs';
 
+/**
+ * @public
+ */
 export const grpcDocsApiWidget = {
   type: 'grpc-docs',
   title: 'gRPC',
