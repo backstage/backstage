@@ -14,9 +14,25 @@
  * limitations under the License.
  */
 
+import { ServiceRef } from '../services/system/types';
+
+/**
+ * TODO
+ *
+ * @public
+ */
 export interface ExtensionPoint<T> {
   id: string;
+
+  /**
+   * Utility for getting the type of the extension point, using `typeof
+   * extensionPoint.T`. Attempting to actually read this value will result in an
+   * exception.
+   */
   T: T;
+
+  toString(): string;
+
   $$ref: 'extension-point';
 }
 
@@ -26,7 +42,10 @@ export function createExtensionPoint<T>(options: {
   return {
     id: options.id,
     get T(): T {
-      throw Error('NO T');
+      throw new Error(`tried to read ExtensionPoint.T of ${this}`);
+    },
+    toString() {
+      return `extensionPoint{${options.id}}`;
     },
     $$ref: 'extension-point', // TODO: declare
   };

@@ -14,13 +14,34 @@
  * limitations under the License.
  */
 
-export interface BackendApp {
-  add(registrable: BackendRegistrable): void;
+import {
+  BackendRegistrable,
+  AnyServiceFactory,
+  ServiceRef,
+  FactoryFunc,
+} from '@backstage/backend-plugin-api';
+import { BackstageBackend } from './BackstageBackend';
+
+export interface Backend {
+  add(extension: BackendRegistrable): void;
+  start(): Promise<void>;
+}
+
+export interface BackendRegisterInit {
+  id: string;
+  consumes: Set<ServiceRef<unknown>>;
+  provides: Set<ServiceRef<unknown>>;
+  deps: { [name: string]: ServiceRef<unknown> };
+  init: (deps: { [name: string]: unknown }) => Promise<void>;
 }
 
 interface CreateBackendOptions {
   apis: AnyServiceFactory[];
 }
+
+export type ApiHolder = {
+  get<T>(api: ServiceRef<T>): FactoryFunc<T> | undefined;
+};
 
 export function createBackend(options?: CreateBackendOptions): Backend {
   return new BackstageBackend(options?.apis ?? []);

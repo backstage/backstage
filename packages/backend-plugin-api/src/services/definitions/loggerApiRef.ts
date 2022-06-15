@@ -14,39 +14,13 @@
  * limitations under the License.
  */
 
-interface Logger {
+import { createServiceRef } from '../system/types';
+
+export interface Logger {
   log(message: string): void;
   child(fields: { [name: string]: string }): Logger;
-}
-
-interface ConfigApi {
-  getString(key: string): string;
-}
-
-interface HttpRouterApi {
-  get(path: string): void;
 }
 
 export const loggerApiRef = createServiceRef<Logger>({
   id: 'core.logger',
 });
-
-export const configApiRef = createServiceRef<ConfigApi>({
-  id: 'core.config',
-});
-
-export const httpRouterApiRef = createServiceRef<HttpRouterApi>({
-  id: 'core.apiRouter',
-});
-
-// export type PluginEnvironment = {
-//   logger: Logger;
-//   cache: PluginCacheManager;
-//   database: PluginDatabaseManager;
-//   config: Config;
-//   reader: UrlReader;
-//   discovery: PluginEndpointDiscovery;
-//   tokenManager: TokenManager;
-//   permissions: PermissionEvaluator | PermissionAuthorizer;
-//   scheduler: PluginTaskScheduler;
-// };

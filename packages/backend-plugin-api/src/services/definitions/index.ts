@@ -14,5 +14,20 @@
  * limitations under the License.
  */
 
-export type { BackendRegistrable } from './types';
-export * from './types';
+// export type PluginEnvironment = {
+//   logger: Logger;
+//   cache: PluginCacheManager;
+//   database: PluginDatabaseManager;
+//   config: Config;
+//   reader: UrlReader;
+//   discovery: PluginEndpointDiscovery;
+//   tokenManager: TokenManager;
+//   permissions: PermissionEvaluator | PermissionAuthorizer;
+//   scheduler: PluginTaskScheduler;
+// };
+
+export { configApiRef } from './configApiRef';
+export { httpRouterApiRef } from './httpRouterApiRef';
+export type { HttpRouterApi } from './httpRouterApiRef';
+export { loggerApiRef } from './loggerApiRef';
+export type { Logger } from './loggerApiRef';

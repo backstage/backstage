@@ -33,7 +33,9 @@
     "clean": "backstage-cli package clean",
     "start": "backstage-cli package start"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@backstage/backend-plugin-api": "^0.0.0"
+  },
   "devDependencies": {
     "@backstage/cli": "^0.17.2-next.0"
   },
