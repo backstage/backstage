@@ -75,7 +75,10 @@ export function CustomNode({
     onClick,
   },
 }: DependencyGraphTypes.RenderNodeProps<EntityNodeData>) {
-  const classes = useStyles({ kind: kind?.toLocaleLowerCase('en-US') });
+  const styleProps: any = {
+    kind: kind?.toLocaleLowerCase('en-US'),
+  };
+  const classes = useStyles({ ...styleProps });
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
   const idRef = useRef<SVGTextElement | null>(null);
