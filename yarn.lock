@@ -100,6 +100,29 @@
   dependencies:
     xss "^1.0.8"
 
+"@ardatan/relay-compiler@12.0.0":
+  version "12.0.0"
+  resolved "https://registry.npmjs.org/@ardatan/relay-compiler/-/relay-compiler-12.0.0.tgz#2e4cca43088e807adc63450e8cab037020e91106"
+  integrity sha512-9anThAaj1dQr6IGmzBMcfzOQKTa5artjuPmw8NYK/fiGEMjADbSguBY2FMDykt+QhilR3wc9VA/3yVju7JHg7Q==
+  dependencies:
+    "@babel/core" "^7.14.0"
+    "@babel/generator" "^7.14.0"
+    "@babel/parser" "^7.14.0"
+    "@babel/runtime" "^7.0.0"
+    "@babel/traverse" "^7.14.0"
+    "@babel/types" "^7.0.0"
+    babel-preset-fbjs "^3.4.0"
+    chalk "^4.0.0"
+    fb-watchman "^2.0.0"
+    fbjs "^3.0.0"
+    glob "^7.1.1"
+    immutable "~3.7.6"
+    invariant "^2.2.4"
+    nullthrows "^1.1.1"
+    relay-runtime "12.0.0"
+    signedsource "^1.0.0"
+    yargs "^15.3.1"
+
 "@asyncapi/avro-schema-parser@^0.3.0":
   version "0.3.0"
   resolved "https://registry.npmjs.org/@asyncapi/avro-schema-parser/-/avro-schema-parser-0.3.0.tgz#6922acc559ef999c57e81297d78ffe680fc92b3c"
@@ -2150,13 +2173,13 @@
     tslib "~2.3.0"
 
 "@graphql-codegen/graphql-modules-preset@^2.3.2":
-  version "2.3.12"
-  resolved "https://registry.npmjs.org/@graphql-codegen/graphql-modules-preset/-/graphql-modules-preset-2.3.12.tgz#e2e128eaab2ca5600bb137c8fec9e3f52c5f243b"
-  integrity sha512-Xz5RsiythN/6ivt+9n43ciHWZ6ngUK1mpBBG/0EYISfUUVaTBLBVKoAhqPHcquqrsByppE0Nclw5sUuOLQUjiA==
+  version "2.3.13"
+  resolved "https://registry.npmjs.org/@graphql-codegen/graphql-modules-preset/-/graphql-modules-preset-2.3.13.tgz#181ab8acacf376c38d572d6d50aad609aba3cd3d"
+  integrity sha512-hi/vKUrVa62d5W2euSapUqTNf2ysfq4RjRc0Pcren7zPqMzD3QgbYRLjDtPsXXQntZDmDxoJVd1BEzjpPGD2/g==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^2.4.0"
-    "@graphql-codegen/visitor-plugin-common" "2.9.0"
-    "@graphql-tools/utils" "8.6.12"
+    "@graphql-codegen/visitor-plugin-common" "2.9.1"
+    "@graphql-tools/utils" "8.6.13"
     change-case-all "1.0.14"
     parse-filepath "^1.0.2"
     tslib "~2.4.0"
@@ -2183,36 +2206,36 @@
     tslib "~2.3.0"
 
 "@graphql-codegen/typescript-resolvers@^2.4.3":
-  version "2.6.5"
-  resolved "https://registry.npmjs.org/@graphql-codegen/typescript-resolvers/-/typescript-resolvers-2.6.5.tgz#f22635ae76218dbc12c39d32f84a3979a791c764"
-  integrity sha512-vzREbHyiYHhy/C90V8HKnfD7hnJIeioqZIYssX9WTQ5pVHqdeO/k4Gbw9ljcFe4OsP5d9GFHzhtU+/GnQlCyaA==
+  version "2.6.6"
+  resolved "https://registry.npmjs.org/@graphql-codegen/typescript-resolvers/-/typescript-resolvers-2.6.6.tgz#c42cabbc05103b44a29df5ac4a015f2a8e8ab4aa"
+  integrity sha512-6yVU0rojI64qZbAtGy4+5kA1xJbolcWbefd4y/nwLOn2g99QBHt9nQRCVl96rppfBNinLPkiJCtQ0thOHu9glg==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^2.4.0"
-    "@graphql-codegen/typescript" "^2.5.0"
-    "@graphql-codegen/visitor-plugin-common" "2.9.0"
+    "@graphql-codegen/typescript" "^2.5.1"
+    "@graphql-codegen/visitor-plugin-common" "2.9.1"
     "@graphql-tools/utils" "^8.1.1"
     auto-bind "~4.0.0"
     tslib "~2.4.0"
 
-"@graphql-codegen/typescript@^2.4.2", "@graphql-codegen/typescript@^2.5.0":
-  version "2.5.0"
-  resolved "https://registry.npmjs.org/@graphql-codegen/typescript/-/typescript-2.5.0.tgz#5ae121db92120fecb6badb34aa361ac464bc23d3"
-  integrity sha512-eCCebNyhV5NcNyfrNOdur1b4zPSyj2o89yaSliEMSShf4WolfFOv4aYpL4tFXjhkw3n2pR7MYFDUnrzmDpfmNw==
+"@graphql-codegen/typescript@^2.4.2", "@graphql-codegen/typescript@^2.5.1":
+  version "2.5.1"
+  resolved "https://registry.npmjs.org/@graphql-codegen/typescript/-/typescript-2.5.1.tgz#5131485ff3ac83d5bc0aae11a2af0c9bdc08854c"
+  integrity sha512-D/9V2VfVIE4Mu5UiMGQtxyFU5xe1ZkAZi8g/IsqymW8rqlhTwsGhtk4JR55qPfOYxR8G94RJSJpzgNakRneytw==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^2.4.0"
     "@graphql-codegen/schema-ast" "^2.4.1"
-    "@graphql-codegen/visitor-plugin-common" "2.9.0"
+    "@graphql-codegen/visitor-plugin-common" "2.9.1"
     auto-bind "~4.0.0"
     tslib "~2.4.0"
 
-"@graphql-codegen/visitor-plugin-common@2.9.0":
-  version "2.9.0"
-  resolved "https://registry.npmjs.org/@graphql-codegen/visitor-plugin-common/-/visitor-plugin-common-2.9.0.tgz#a13556c805e72b63ee9d80fb437b9ba2eb0a9fa2"
-  integrity sha512-w353lPpXlgsQT6dxfcHw3hQdodGnfSwsxofHVfROqrIBZIjH0kNiFHOt8rnewYkLGEa75bWDVaM1ofyXEaN+3w==
+"@graphql-codegen/visitor-plugin-common@2.9.1":
+  version "2.9.1"
+  resolved "https://registry.npmjs.org/@graphql-codegen/visitor-plugin-common/-/visitor-plugin-common-2.9.1.tgz#17dfe33e19e846e7475ab9d4ff43de5130e18397"
+  integrity sha512-j9eGOSGt+sJcwv0ijhZiQ2cF/0ponscekNVoF+vHdOT4RB0qgOQxykPBk6EbKxIHECnkdV8ARdPVTA21A93/QQ==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^2.4.0"
     "@graphql-tools/optimize" "^1.0.1"
-    "@graphql-tools/relay-operation-optimizer" "^6.3.7"
+    "@graphql-tools/relay-operation-optimizer" "^6.4.14"
     "@graphql-tools/utils" "^8.3.0"
     auto-bind "~4.0.0"
     change-case-all "1.0.14"
@@ -2390,14 +2413,14 @@
     tslib "~2.3.0"
     yaml-ast-parser "^0.0.43"
 
-"@graphql-tools/relay-operation-optimizer@^6.3.7":
-  version "6.4.9"
-  resolved "https://registry.npmjs.org/@graphql-tools/relay-operation-optimizer/-/relay-operation-optimizer-6.4.9.tgz#f3e1960ac8e6429a09156836701a03ebf523f0e1"
-  integrity sha512-fHMR1bNyx+ryBnmtXWnYmxvQLEx0O3yIG0MTVB1Mp6GlsyKTGI3O9njvjv0EI2JmCszs1uakT/6BW0LO37E6tQ==
+"@graphql-tools/relay-operation-optimizer@^6.4.14":
+  version "6.4.14"
+  resolved "https://registry.npmjs.org/@graphql-tools/relay-operation-optimizer/-/relay-operation-optimizer-6.4.14.tgz#812f32123a1351615a72b4e832852daac7bd64b3"
+  integrity sha512-vqch2M/sIUfMmlRJ4eCupiHlVPXWOPVpHX9yCZwRrpNg0Eaokyc57NSjJuKVV3KcvcJKf03qfMK2PxFbfDvN9A==
   dependencies:
-    "@graphql-tools/utils" "8.6.9"
-    relay-compiler "12.0.0"
-    tslib "~2.3.0"
+    "@ardatan/relay-compiler" "12.0.0"
+    "@graphql-tools/utils" "8.6.13"
+    tslib "^2.4.0"
 
 "@graphql-tools/schema@8.3.10", "@graphql-tools/schema@^8.0.0", "@graphql-tools/schema@^8.1.1", "@graphql-tools/schema@^8.1.2", "@graphql-tools/schema@^8.3.1":
   version "8.3.10"
@@ -2431,12 +2454,12 @@
     value-or-promise "^1.0.11"
     ws "^8.3.0"
 
-"@graphql-tools/utils@8.6.12":
-  version "8.6.12"
-  resolved "https://registry.npmjs.org/@graphql-tools/utils/-/utils-8.6.12.tgz#0a550dc0331fd9b097fe7223d65cbbee720556e4"
-  integrity sha512-WQ91O40RC+UJgZ9K+IzevSf8oolR1QE+WQ21Oyc2fgDYYiqT0eSf+HVyhZr/8x9rVjn3N9HeqCsywbdmbljg0w==
+"@graphql-tools/utils@8.6.13":
+  version "8.6.13"
+  resolved "https://registry.npmjs.org/@graphql-tools/utils/-/utils-8.6.13.tgz#2b4fb7f9f8a29b25eecd44551fb95974de32f969"
+  integrity sha512-FiVqrQzj4cgz0HcZ3CxUs8NtBGPZFpmsVyIgwmL6YCwIhjJQnT72h8G3/vk5zVfjfesht85YGp0inWWuoCKWzg==
   dependencies:
-    tslib "~2.4.0"
+    tslib "^2.4.0"
 
 "@graphql-tools/utils@8.6.9", "@graphql-tools/utils@^8.1.1", "@graphql-tools/utils@^8.3.0", "@graphql-tools/utils@^8.5.1", "@graphql-tools/utils@^8.5.2", "@graphql-tools/utils@^8.6.0":
   version "8.6.9"
@@ -22095,29 +22118,6 @@ relateurl@^0.2.7:
   resolved "https://registry.npmjs.org/relateurl/-/relateurl-0.2.7.tgz#54dbf377e51440aca90a4cd274600d3ff2d888a9"
   integrity sha1-VNvzd+UUQKypCkzSdGANP/LYiKk=
 
-relay-compiler@12.0.0:
-  version "12.0.0"
-  resolved "https://registry.npmjs.org/relay-compiler/-/relay-compiler-12.0.0.tgz#9f292d483fb871976018704138423a96c8a45439"
-  integrity sha512-SWqeSQZ+AMU/Cr7iZsHi1e78Z7oh00I5SvR092iCJq79aupqJ6Ds+I1Pz/Vzo5uY5PY0jvC4rBJXzlIN5g9boQ==
-  dependencies:
-    "@babel/core" "^7.14.0"
-    "@babel/generator" "^7.14.0"
-    "@babel/parser" "^7.14.0"
-    "@babel/runtime" "^7.0.0"
-    "@babel/traverse" "^7.14.0"
-    "@babel/types" "^7.0.0"
-    babel-preset-fbjs "^3.4.0"
-    chalk "^4.0.0"
-    fb-watchman "^2.0.0"
-    fbjs "^3.0.0"
-    glob "^7.1.1"
-    immutable "~3.7.6"
-    invariant "^2.2.4"
-    nullthrows "^1.1.1"
-    relay-runtime "12.0.0"
-    signedsource "^1.0.0"
-    yargs "^15.3.1"
-
 relay-runtime@12.0.0:
   version "12.0.0"
   resolved "https://registry.npmjs.org/relay-runtime/-/relay-runtime-12.0.0.tgz#1e039282bdb5e0c1b9a7dc7f6b9a09d4f4ff8237"
@@ -24776,7 +24776,7 @@ tslib@^1.13.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
   resolved "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.1.0, tslib@~2.4.0:
+tslib@^2.1.0, tslib@^2.4.0, tslib@~2.4.0:
   version "2.4.0"
   resolved "https://registry.npmjs.org/tslib/-/tslib-2.4.0.tgz#7cecaa7f073ce680a05847aa77be941098f36dc3"
   integrity sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==
