@@ -118,7 +118,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
     }
 
     const archive = archiver('zip');
-    await this.stream
+    const parseStream = this.stream
       .pipe(unzipper.Parse())
       .on('entry', (entry: Entry) => {
         if (entry.type === 'File' && this.shouldBeIncluded(entry)) {
@@ -126,8 +126,15 @@ export class ZipArchiveResponse implements ReadTreeResponse {
         } else {
           entry.autodrain();
         }
-      })
-      .promise();
+      });
+
+    await streamToTimeoutPromise(parseStream, {
+      eventName: 'entry',
+      timeoutMs: 3000,
+      getError: (entry: Entry) =>
+        new Error(`Timed out while unzipping ${entry.type}: ${entry.path}`),
+    });
+
     archive.finalize();
 
     return archive;
@@ -140,7 +147,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
       options?.targetDir ??
       (await fs.mkdtemp(platformPath.join(this.workDir, 'backstage-')));
 
-    await this.stream
+    const parseStream = this.stream
       .pipe(unzipper.Parse())
       .on('entry', async (entry: Entry) => {
         // Ignore directory entries since we handle that with the file entries
@@ -155,8 +162,14 @@ export class ZipArchiveResponse implements ReadTreeResponse {
         } else {
           entry.autodrain();
         }
-      })
-      .promise();
+      });
+
+    await streamToTimeoutPromise(parseStream, {
+      eventName: 'entry',
+      timeoutMs: 3000,
+      getError: (entry: Entry) =>
+        new Error(`Timed out while unzipping ${entry.type}: ${entry.path}`),
+    });
 
     return dir;
   }

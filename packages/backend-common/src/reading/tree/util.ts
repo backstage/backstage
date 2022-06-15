@@ -26,6 +26,7 @@ export function stripFirstDirectoryFromPath(path: string): string {
 
 // Some corrupted ZIP files cause the zlib inflater to hang indefinitely.
 // This is a workaround to bail on stuck streams after 3 seconds.
+// Related: https://github.com/ZJONSSON/node-unzipper/issues/213
 export async function streamToTimeoutPromise<T>(
   stream: NodeJS.ReadableStream,
   options: {
