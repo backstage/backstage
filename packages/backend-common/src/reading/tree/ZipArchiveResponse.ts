@@ -90,6 +90,11 @@ export class ZipArchiveResponse implements ReadTreeResponse {
     const parseStream = this.stream
       .pipe(unzipper.Parse())
       .on('entry', (entry: Entry) => {
+        if (entry.type === 'Directory') {
+          entry.resume();
+          return;
+        }
+
         if (this.shouldBeIncluded(entry)) {
           files.push({
             path: this.getInnerPath(entry.path),
