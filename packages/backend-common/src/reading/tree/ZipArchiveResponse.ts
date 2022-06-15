@@ -86,9 +86,22 @@ export class ZipArchiveResponse implements ReadTreeResponse {
 
     const files = Array<ReadTreeResponseFile>();
 
-    await this.stream
-      .pipe(unzipper.Parse())
+    // Some corrupted ZIP files cause the zlib inflater to hang indefinitely.
+    // This is a workaround to bail on stuck streams after 3 seconds.
+    const piped = this.stream.pipe(unzipper.Parse());
+    let lastEntryTimeout: NodeJS.Timeout | undefined;
+
+    await piped
       .on('entry', (entry: Entry) => {
+        clearTimeout(lastEntryTimeout);
+
+        lastEntryTimeout = setTimeout(() => {
+          piped.emit(
+            'error',
+            new Error(`Timed out unzipping file ${entry.path}`),
+          );
+        }, 3000);
+
         if (entry.type === 'Directory') {
           entry.resume();
           return;
@@ -104,6 +117,8 @@ export class ZipArchiveResponse implements ReadTreeResponse {
         }
       })
       .promise();
+
+    clearTimeout(lastEntryTimeout);
 
     return files;
   }
