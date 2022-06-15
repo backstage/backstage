@@ -1,6 +1,6 @@
 {
-  "name": "@backstage/plugin-api-docs-react",
-  "description": "Common functionalities for the api-docs-react plugin",
+  "name": "@backstage/plugin-api-docs-module-protoc-gen-doc",
+  "description": "Additional functionalities for the api-docs plugin that renders the output of the protoc-gen-doc",
   "version": "0.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -11,13 +11,13 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "web-library"
+    "role": "frontend-plugin-module"
   },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/api-docs-react"
+    "directory": "plugins/api-docs-module-protoc-gen-doc"
   },
   "keywords": [
     "backstage"

@@ -1,4 +1,4 @@
-# @backstage/plugin-api-docs-react
+# @backstage/plugin-api-docs-module-protoc-gen-doc
 
 This package contains ApiDefinitionWidgets for the following projects:
 
@@ -7,7 +7,7 @@ This package contains ApiDefinitionWidgets for the following projects:
 ## Setup
 
 ```
-yarn add @backstage/plugin-api-docs-react
+yarn add @backstage/plugin-api-docs-module-protoc-gen-doc
 ```
 
 ## Add the GrpcDocsApiWidget to your apis
@@ -15,7 +15,7 @@ yarn add @backstage/plugin-api-docs-react
 Add the widget to your `apiDocsConfigRef`.
 
 ```ts
-import { grpcDocsApiWidget } from '@backstage/plugin-api-docs-react';
+import { grpcDocsApiWidget } from '@backstage/plugin-api-docs-module-protoc-gen-doc';
 // packages/app/apis.ts
 export const apis: AnyApiFactory[] = [
   createApiFactory({

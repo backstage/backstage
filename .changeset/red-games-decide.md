@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-api-docs-react': major
+'@backstage/plugin-api-docs-module-protoc-gen-doc': major
 ---
 
-Adds an api widget to render protoc-gen-doc generated descriptors by the grpc-docs package
+Added the new `grpcDocsApiWidget` to render `protoc-gen-doc` generated descriptors by the `grpc-docs` package.
