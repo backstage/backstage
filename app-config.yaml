@@ -182,9 +182,8 @@ integrations:
   gitlab:
     - host: gitlab.com
       token: ${GITLAB_TOKEN}
-  bitbucket:
-    - host: bitbucket.org
-      username: ${BITBUCKET_USERNAME}
+  bitbucketCloud:
+    - username: ${BITBUCKET_USERNAME}
       appPassword: ${BITBUCKET_APP_PASSWORD}
     ### Example for how to add your bitbucket server instance using the API:
     # - host: server.bitbucket.com
