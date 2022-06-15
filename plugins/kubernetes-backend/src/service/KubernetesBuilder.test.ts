@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { Entity } from '@backstage/catalog-model';
 import { Config, ConfigReader } from '@backstage/config';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import express from 'express';
@@ -207,8 +208,10 @@ describe('KubernetesBuilder', () => {
       };
 
       const serviceLocator: KubernetesServiceLocator = {
-        getClustersByServiceId(_serviceId: string): Promise<ClusterDetails[]> {
-          return Promise.resolve([someCluster]);
+        getClustersByEntity(
+          _entity: Entity,
+        ): Promise<{ clusters: ClusterDetails[] }> {
+          return Promise.resolve({ clusters: [someCluster] });
         },
       };
 
@@ -244,7 +247,15 @@ describe('KubernetesBuilder', () => {
         .build();
       app = express().use(router);
 
-      const response = await request(app).post('/services/test-service');
+      const response = await request(app)
+        .post('/services/test-service')
+        .send({
+          entity: {
+            metadata: {
+              name: 'thing',
+            },
+          },
+        });
 
       expect(response.body).toEqual(result);
       expect(response.status).toEqual(200);
