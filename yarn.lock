@@ -5423,6 +5423,15 @@
   dependencies:
     any-observable "^0.3.0"
 
+"@short.io/opensearch-mock@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.npmjs.org/@short.io/opensearch-mock/-/opensearch-mock-0.3.1.tgz#41678404b94342ac60263a8df590f9b1efa80622"
+  integrity sha512-gwLTzxJrZNGVQNn+FHLhpw7at3jHb6tNczq2hvFPJ3C3nLaCBRkbP2IQHrIDzklLBVFV83Ug0Xgs73A5o9eLtg==
+  dependencies:
+    fast-deep-equal "^3.1.3"
+    find-my-way "^4.3.3"
+    into-stream "^6.0.0"
+
 "@sideway/address@^4.1.0":
   version "4.1.1"
   resolved "https://registry.npmjs.org/@sideway/address/-/address-4.1.1.tgz#9e321e74310963fdf8eebfbee09c7bd69972de4d"

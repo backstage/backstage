@@ -366,7 +366,7 @@ export function encodePageCursor({ page }: { page: number }): string {
   return Buffer.from(`${page}`, 'utf-8').toString('base64');
 }
 
-async function createElasticSearchClientOptions(
+export async function createElasticSearchClientOptions(
   config?: Config,
 ): Promise<ElasticSearchClientOptions> {
   if (!config) {
