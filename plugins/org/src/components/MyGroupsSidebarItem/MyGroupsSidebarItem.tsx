@@ -15,7 +15,11 @@
  */
 
 import React from 'react';
-import { stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  DEFAULT_NAMESPACE,
+  Entity,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import {
   SidebarItem,
   SidebarSubmenu,
@@ -32,7 +36,6 @@ import {
   catalogApiRef,
   CatalogApi,
   entityRouteRef,
-  humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
 import { getCompoundEntityRef } from '@backstage/catalog-model';
 
@@ -87,23 +90,42 @@ export const MyGroupsSidebarItem = (props: {
     );
   }
 
+  const namespacedGroupsMap: { [namespace: string]: Entity[] } = {};
+  groups.forEach(group => {
+    namespacedGroupsMap[group.metadata.namespace!] =
+      namespacedGroupsMap[group.metadata.namespace!] ?? [];
+    namespacedGroupsMap[group.metadata.namespace!].push(group);
+  });
+
   // Member of more than one group
   return (
     <SidebarItem icon={icon} text={pluralTitle}>
       <SidebarSubmenu title={pluralTitle}>
-        {groups?.map(function groupsMap(group) {
+        {namespacedGroupsMap[DEFAULT_NAMESPACE]?.map(group => {
           return (
             <SidebarSubmenuItem
-              title={
-                group.metadata.title ||
-                humanizeEntityRef(group, { defaultKind: 'group' })
-              }
+              key={stringifyEntityRef(group)}
+              title={group.metadata.title || group.metadata.name}
               to={catalogEntityRoute(getCompoundEntityRef(group))}
               icon={icon}
-              key={stringifyEntityRef(group)}
             />
           );
         })}
+        {Object.entries(namespacedGroupsMap)
+          .filter(([n]) => n !== DEFAULT_NAMESPACE)
+          .map(([namespace, namespacedGroups]) => {
+            return (
+              <SidebarSubmenuItem
+                key={namespace}
+                title={namespace}
+                icon={icon}
+                dropdownItems={namespacedGroups.map(group => ({
+                  title: group.metadata.title || group.metadata.name,
+                  to: catalogEntityRoute(getCompoundEntityRef(group)),
+                }))}
+              />
+            );
+          })}
       </SidebarSubmenu>
     </SidebarItem>
   );
