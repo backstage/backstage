@@ -27,18 +27,20 @@ describe('api', () => {
   const mockBaseUrl = 'https://api-vault.com/api/vault';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
 
-  const mockSecretsResult: VaultSecret[] = [
-    {
-      name: 'secret::one',
-      editUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/edit/test/success/secret::one`,
-      showUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/show/test/success/secret::one`,
-    },
-    {
-      name: 'secret::two',
-      editUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/edit/test/success/secret::two`,
-      showUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/show/test/success/secret::two`,
-    },
-  ];
+  const mockSecretsResult: { items: VaultSecret[] } = {
+    items: [
+      {
+        name: 'secret::one',
+        editUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/edit/test/success/secret::one`,
+        showUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/show/test/success/secret::one`,
+      },
+      {
+        name: 'secret::two',
+        editUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/edit/test/success/secret::two`,
+        showUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/show/test/success/secret::two`,
+      },
+    ],
+  };
 
   const setupHandlers = () => {
     server.use(
@@ -47,9 +49,12 @@ describe('api', () => {
         if (path === 'test/success') {
           return res(ctx.json(mockSecretsResult));
         } else if (path === 'test/error') {
-          return res(ctx.json([]));
+          return res(ctx.json({ items: [] }));
         }
         return res(ctx.status(400));
+      }),
+      rest.get(`${mockBaseUrl}/v1/secrets/`, (_req, res, ctx) => {
+        return res(ctx.json(mockSecretsResult));
       }),
     );
   };
@@ -57,21 +62,20 @@ describe('api', () => {
   it('should return secrets', async () => {
     setupHandlers();
     const api = new VaultClient({ discoveryApi });
-    const secrets = await api.listSecrets('test/success');
-    expect(secrets).toEqual(mockSecretsResult);
+    expect(await api.listSecrets('test/success')).toEqual(
+      mockSecretsResult.items,
+    );
   });
 
   it('should return empty secret list', async () => {
     setupHandlers();
     const api = new VaultClient({ discoveryApi });
     expect(await api.listSecrets('test/error')).toEqual([]);
-    expect(await api.listSecrets('')).toEqual([]);
   });
 
-  it('should return no secrets', async () => {
+  it('should return all the secrets if no path defined', async () => {
     setupHandlers();
     const api = new VaultClient({ discoveryApi });
-    const secrets = await api.listSecrets('');
-    expect(secrets).toEqual([]);
+    expect(await api.listSecrets('')).toEqual(mockSecretsResult.items);
   });
 });

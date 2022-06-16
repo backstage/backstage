@@ -13,13 +13,6 @@ import { TaskRunner } from '@backstage/backend-tasks';
 export function createRouter(options: RouterOptions): express.Router;
 
 // @public
-export type RenewTokenResponse = {
-  auth: {
-    client_token: string;
-  };
-};
-
-// @public
 export interface RouterOptions {
   // (undocumented)
   config: Config;
@@ -33,7 +26,7 @@ export interface RouterOptions {
 export interface VaultApi {
   getFrontendSecretsUrl(): string;
   listSecrets(secretPath: string): Promise<VaultSecret[]>;
-  renewToken?(): Promise<boolean>;
+  renewToken?(): Promise<void>;
 }
 
 // @public
@@ -45,7 +38,6 @@ export class VaultBuilder {
   enableTokenRenew(schedule?: TaskRunner): Promise<this>;
   // (undocumented)
   protected readonly env: VaultEnvironment;
-  protected renewToken(vaultClient: VaultClient): Promise<void>;
   setVaultClient(vaultClient: VaultClient): this;
 }
 
@@ -62,7 +54,7 @@ export class VaultClient implements VaultApi {
   // (undocumented)
   listSecrets(secretPath: string): Promise<VaultSecret[]>;
   // (undocumented)
-  renewToken(): Promise<boolean>;
+  renewToken(): Promise<void>;
 }
 
 // @public
@@ -80,13 +72,6 @@ export type VaultSecret = {
   name: string;
   showUrl: string;
   editUrl: string;
-};
-
-// @public
-export type VaultSecretList = {
-  data: {
-    keys: string[];
-  };
 };
 
 // (No @packageDocumentation comment for this package)

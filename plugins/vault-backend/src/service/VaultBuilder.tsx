@@ -45,9 +45,6 @@ export type VaultBuilderReturn = {
  * @public
  */
 export class VaultBuilder {
-  // private vaultTokenRefreshInterval: Duration = Duration.fromObject({
-  //   minutes: 60,
-  // });
   private vaultClient?: VaultClient;
 
   /**
@@ -118,24 +115,10 @@ export class VaultBuilder {
       fn: async () => {
         this.env.logger.info('Renewing Vault token');
         const vaultClient = this.vaultClient ?? new VaultClient(this.env);
-        await this.renewToken(vaultClient);
+        await vaultClient.renewToken();
       },
     });
     return this;
-  }
-
-  /**
-   * Renews the token for vault using a defined client.
-   *
-   * @param vaultClient - The vault client used to renew the token
-   */
-  protected async renewToken(vaultClient: VaultClient) {
-    const result = await vaultClient.renewToken();
-    if (!result) {
-      this.env.logger.warn('Error renewing vault token');
-    } else {
-      this.env.logger.info('Vault token renewed');
-    }
   }
 
   /**
@@ -159,7 +142,7 @@ export class VaultBuilder {
       }
 
       const secrets = await vaultClient.listSecrets(path);
-      res.json(secrets);
+      res.json({ items: secrets });
     });
 
     return router;
