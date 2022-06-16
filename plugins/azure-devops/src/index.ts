@@ -26,6 +26,7 @@ export {
 
 export { AzurePullRequestsIcon } from './components/AzurePullRequestsIcon';
 export { AzureGitTagsIcon } from './components/AzureGitTagsIcon';
+export { AzurePipelinesIcon } from './components/AzurePipelinesIcon';
 
 export * from './api';
 export * from './hooks';

@@ -178,6 +178,11 @@ export const azureDevOpsPlugin: BackstagePlugin<{}, {}>;
 // @public (undocumented)
 export const AzureGitTagsIcon: (props: SvgIconProps) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "AzurePipelinesIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const AzurePipelinesIcon: (props: SvgIconProps) => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "AzurePullRequestsIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
