@@ -134,6 +134,34 @@ describe('JenkinsApi', () => {
         });
         expect(result).toHaveLength(1);
       });
+
+      it('supports multiple branches', async () => {
+        mockedJenkinsClient.job.get.mockResolvedValue(project);
+
+        const result = await jenkinsApi.getProjects(
+          jenkinsInfo,
+          'foo,bar,catpants',
+        );
+
+        expect(mockedJenkins).toHaveBeenCalledWith({
+          baseUrl: jenkinsInfo.baseUrl,
+          headers: jenkinsInfo.headers,
+          promisify: true,
+        });
+        expect(mockedJenkinsClient.job.get).toBeCalledWith({
+          name: `${jenkinsInfo.jobFullName}/foo`,
+          tree: expect.anything(),
+        });
+        expect(mockedJenkinsClient.job.get).toBeCalledWith({
+          name: `${jenkinsInfo.jobFullName}/bar`,
+          tree: expect.anything(),
+        });
+        expect(mockedJenkinsClient.job.get).toBeCalledWith({
+          name: `${jenkinsInfo.jobFullName}/catpants`,
+          tree: expect.anything(),
+        });
+        expect(result).toHaveLength(1);
+      });
     });
     describe('augmented', () => {
       const projectWithScmActions: JenkinsProject = {

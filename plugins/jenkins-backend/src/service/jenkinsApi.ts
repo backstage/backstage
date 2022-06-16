@@ -75,13 +75,16 @@ export class JenkinsApiImpl {
     const projects: BackstageProject[] = [];
 
     if (branch) {
-      // we have been asked to filter to a single branch.
       // Assume jenkinsInfo.jobFullName is a folder which contains one job per branch.
       // TODO: extract a strategy interface for this
-      const job = await client.job.get({
-        name: `${jenkinsInfo.jobFullName}/${branch}`,
-        tree: JenkinsApiImpl.jobTreeSpec.replace(/\s/g, ''),
-      });
+      const job = await Promise.any(
+        branch.split(/,/g).map(name =>
+          client.job.get({
+            name: `${jenkinsInfo.jobFullName}/${name}`,
+            tree: JenkinsApiImpl.jobTreeSpec.replace(/\s/g, ''),
+          }),
+        ),
+      );
       projects.push(this.augmentProject(job));
     } else {
       // We aren't filtering
