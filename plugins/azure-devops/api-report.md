@@ -5,10 +5,22 @@
 ```ts
 /// <reference types="react" />
 
+import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { BuildRun } from '@backstage/plugin-azure-devops-common';
+import { BuildRunOptions } from '@backstage/plugin-azure-devops-common';
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { GitTag } from '@backstage/plugin-azure-devops-common';
+import { IdentityApi } from '@backstage/core-plugin-api';
+import { PullRequest } from '@backstage/plugin-azure-devops-common';
+import { PullRequestOptions } from '@backstage/plugin-azure-devops-common';
+import { PullRequestStatus } from '@backstage/plugin-azure-devops-common';
+import { RepoBuild } from '@backstage/plugin-azure-devops-common';
+import { RepoBuildOptions } from '@backstage/plugin-azure-devops-common';
 import { SvgIconProps } from '@material-ui/core';
+import { Team } from '@backstage/plugin-azure-devops-common';
 
 // Warning: (ae-missing-release-tag) "AllFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -55,10 +67,116 @@ export type AssignedToUserFilter = BaseFilter &
       }
   );
 
+// Warning: (ae-missing-release-tag) "AzureDevOpsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface AzureDevOpsApi {
+  // (undocumented)
+  getAllTeams(): Promise<Team[]>;
+  // (undocumented)
+  getBuildRuns(
+    projectName: string,
+    repoName?: string,
+    definitionName?: string,
+    options?: BuildRunOptions,
+  ): Promise<{
+    items: BuildRun[];
+  }>;
+  // (undocumented)
+  getDashboardPullRequests(
+    projectName: string,
+  ): Promise<DashboardPullRequest[]>;
+  // (undocumented)
+  getGitTags(
+    projectName: string,
+    repoName: string,
+  ): Promise<{
+    items: GitTag[];
+  }>;
+  // (undocumented)
+  getPullRequests(
+    projectName: string,
+    repoName: string,
+    options?: PullRequestOptions,
+  ): Promise<{
+    items: PullRequest[];
+  }>;
+  // (undocumented)
+  getRepoBuilds(
+    projectName: string,
+    repoName: string,
+    options?: RepoBuildOptions,
+  ): Promise<{
+    items: RepoBuild[];
+  }>;
+  // (undocumented)
+  getUserTeamIds(userId: string): Promise<string[]>;
+}
+
+// Warning: (ae-missing-release-tag) "azureDevOpsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const azureDevOpsApiRef: ApiRef<AzureDevOpsApi>;
+
+// Warning: (ae-missing-release-tag) "AzureDevOpsClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class AzureDevOpsClient implements AzureDevOpsApi {
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+  });
+  // (undocumented)
+  getAllTeams(): Promise<Team[]>;
+  // (undocumented)
+  getBuildRuns(
+    projectName: string,
+    repoName?: string,
+    definitionName?: string,
+    options?: BuildRunOptions,
+  ): Promise<{
+    items: BuildRun[];
+  }>;
+  // (undocumented)
+  getDashboardPullRequests(
+    projectName: string,
+  ): Promise<DashboardPullRequest[]>;
+  // (undocumented)
+  getGitTags(
+    projectName: string,
+    repoName: string,
+  ): Promise<{
+    items: GitTag[];
+  }>;
+  // (undocumented)
+  getPullRequests(
+    projectName: string,
+    repoName: string,
+    options?: PullRequestOptions,
+  ): Promise<{
+    items: PullRequest[];
+  }>;
+  // (undocumented)
+  getRepoBuilds(
+    projectName: string,
+    repoName: string,
+    options?: RepoBuildOptions,
+  ): Promise<{
+    items: RepoBuild[];
+  }>;
+  // (undocumented)
+  getUserTeamIds(userId: string): Promise<string[]>;
+}
+
 // Warning: (ae-missing-release-tag) "azureDevOpsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const azureDevOpsPlugin: BackstagePlugin<{}, {}>;
+
+// Warning: (ae-missing-release-tag) "AzureGitTagsIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const AzureGitTagsIcon: (props: SvgIconProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "AzurePullRequestsIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -225,6 +343,74 @@ export interface PullRequestColumnConfig {
 //
 // @public (undocumented)
 export type PullRequestFilter = (pullRequest: DashboardPullRequest) => boolean;
+
+// Warning: (ae-missing-release-tag) "useAllTeams" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function useAllTeams(): {
+  teams?: Team[];
+  loading: boolean;
+  error?: Error;
+};
+
+// Warning: (ae-missing-release-tag) "useDashboardPullRequests" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function useDashboardPullRequests(
+  project?: string,
+  pollingInterval?: number,
+): {
+  pullRequests?: DashboardPullRequest[];
+  loading: boolean;
+  error?: Error;
+};
+
+// Warning: (ae-missing-release-tag) "useProjectRepoFromEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function useProjectRepoFromEntity(entity: Entity): {
+  project: string;
+  repo: string;
+};
+
+// Warning: (ae-missing-release-tag) "usePullRequests" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function usePullRequests(
+  entity: Entity,
+  defaultLimit?: number,
+  requestedStatus?: PullRequestStatus,
+): {
+  items?: PullRequest[];
+  loading: boolean;
+  error?: Error;
+};
+
+// Warning: (ae-missing-release-tag) "useRepoBuilds" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function useRepoBuilds(
+  entity: Entity,
+  defaultLimit?: number,
+): {
+  items?: RepoBuild[];
+  loading: boolean;
+  error?: Error;
+};
+
+// Warning: (ae-missing-release-tag) "useUserEmail" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function useUserEmail(): string | undefined;
+
+// Warning: (ae-missing-release-tag) "useUserTeamIds" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function useUserTeamIds(userId: string | undefined): {
+  teamIds?: string[];
+  loading: boolean;
+  error?: Error;
+};
 
 // (No @packageDocumentation comment for this package)
 ```

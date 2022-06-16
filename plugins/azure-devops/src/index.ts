@@ -27,7 +27,7 @@ export {
 export { AzurePullRequestsIcon } from './components/AzurePullRequestsIcon';
 export { AzureGitTagsIcon } from './components/AzureGitTagsIcon';
 
-export { azureDevOpsApiRef } from './api';
+export * from './api';
 export * from './hooks';
 
 export { FilterType } from './components/PullRequestsPage';
