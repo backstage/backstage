@@ -22,6 +22,9 @@ import { ZipArchiveResponse } from './ZipArchiveResponse';
 const archiveData = fs.readFileSync(
   resolvePath(__filename, '../../__fixtures__/mock-main.zip'),
 );
+const archiveDataCorrupted = fs.readFileSync(
+  resolvePath(__filename, '../../__fixtures__/mock-corrupted.zip'),
+);
 const archiveDataWithExtraDir = fs.readFileSync(
   resolvePath(__filename, '../../__fixtures__/mock-with-extra-root-dir.zip'),
 );
@@ -31,6 +34,7 @@ describe('ZipArchiveResponse', () => {
     mockFs({
       '/test-archive.zip': archiveData,
       '/test-archive-with-extra-root-dir.zip': archiveDataWithExtraDir,
+      '/test-archive-corrupted.zip': archiveDataCorrupted,
       '/tmp': mockFs.directory(),
     });
   });
@@ -151,5 +155,16 @@ describe('ZipArchiveResponse', () => {
     await expect(
       fs.pathExists(resolvePath(dir, 'docs/index.md')),
     ).resolves.toBe(false);
+  });
+
+  it('should throw on invalid archive', async () => {
+    const stream = fs.createReadStream('/test-archive-corrupted.zip');
+
+    const res = new ZipArchiveResponse(stream, '', '/tmp', 'etag');
+    const filesPromise = res.files();
+
+    await expect(filesPromise).rejects.toThrow(
+      'Timed out while unzipping File: docs/corrupted.zip',
+    );
   });
 });
