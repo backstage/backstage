@@ -31,7 +31,7 @@ describe('AppIdentityProxy', () => {
 
   it('should forward user identities', async () => {
     const proxy = new AppIdentityProxy();
-    proxy.setTarget(mockIdentityApi);
+    proxy.setTarget(mockIdentityApi, { signOutTargetUrl: '/' });
 
     const logs = await withLogCollector(async () => {
       mockIdentityApi.getBackstageIdentity.mockResolvedValueOnce({
@@ -55,7 +55,7 @@ describe('AppIdentityProxy', () => {
 
   it('should warn about invalid user entity refs', async () => {
     const proxy = new AppIdentityProxy();
-    proxy.setTarget(mockIdentityApi);
+    proxy.setTarget(mockIdentityApi, { signOutTargetUrl: '/' });
 
     const logs = await withLogCollector(async () => {
       mockIdentityApi.getBackstageIdentity.mockResolvedValueOnce({
@@ -78,5 +78,17 @@ describe('AppIdentityProxy', () => {
       ],
       error: [],
     });
+  });
+
+  it('should navigate to target URL on sign out', async () => {
+    const proxy = new AppIdentityProxy();
+    proxy.setTarget(mockIdentityApi, { signOutTargetUrl: '/foo' });
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: {},
+    });
+
+    await proxy.signOut();
+    expect(location.href).toBe('/foo');
   });
 });
