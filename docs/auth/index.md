@@ -187,7 +187,7 @@ sign-in resolvers so that they resolve to the same identity regardless of the me
 
 ## Scaffolder Configuration (Software Templates)
 
-If you want to use the authentication capabilities of the [Repository Picker](../features/software-templates/writing-templates.md#the-repository-picker) inside your Software Templates you will need to configure the [`ScmAuthApi`](https://backstage.io/docs/reference/integration-react.scmauthapi) alongside your authentication provider. It is an API used to authenticate towards different SCM systems in a generic way, based on what resource is being accessed.
+If you want to use the authentication capabilities of the [Repository Picker](../features/software-templates/writing-templates.md#the-repository-picker) inside your software templates you will need to configure the [`ScmAuthApi`](https://backstage.io/docs/reference/integration-react.scmauthapi) alongside your authentication provider. It is an API used to authenticate towards different SCM systems in a generic way, based on what resource is being accessed.
 
 To set it up, you'll need to add an API factory entry to `packages/app/src/apis.ts`. The example below sets up the `ScmAuthApi` for an already configured GitLab authentication provider:
 
