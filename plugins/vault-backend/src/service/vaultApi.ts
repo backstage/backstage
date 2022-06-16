@@ -17,6 +17,7 @@
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import fetch from 'cross-fetch';
+import plimit from 'p-limit';
 import { getVaultConfig, VaultConfig } from '../config';
 
 /**
@@ -75,6 +76,7 @@ export interface VaultApi {
  */
 export class VaultClient implements VaultApi {
   private vaultConfig: VaultConfig;
+  private readonly limit = plimit(5);
 
   constructor({ config }: { config: Config }) {
     this.vaultConfig = getVaultConfig(config);
@@ -115,14 +117,19 @@ export class VaultClient implements VaultApi {
       this.vaultConfig.kvVersion === 2
         ? `v1/${this.vaultConfig.secretEngine}/metadata/${secretPath}`
         : `v1/${this.vaultConfig.secretEngine}/${secretPath}`;
-    const result = await this.callApi<VaultSecretList>(listUrl, { list: true });
+    const result = await this.limit(() =>
+      this.callApi<VaultSecretList>(listUrl, { list: true }),
+    );
 
     const secrets: VaultSecret[] = [];
+
     await Promise.all(
       result.data.keys.map(async secret => {
         if (secret.endsWith('/')) {
           secrets.push(
-            ...(await this.listSecrets(`${secretPath}/${secret.slice(0, -1)}`)),
+            ...(await this.limit(() =>
+              this.listSecrets(`${secretPath}/${secret.slice(0, -1)}`),
+            )),
           );
         } else {
           secrets.push({

@@ -12,8 +12,6 @@ import { Entity } from '@backstage/catalog-model';
 // @public
 export const EntityVaultCard: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "isVaultAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function isVaultAvailable(entity: Entity): boolean;
 
