@@ -34,12 +34,18 @@ describe('createRouter', () => {
     jest.resetAllMocks();
   });
 
-  describe('GET /health', () => {
+  describe('GET /findings', () => {
     it('returns ok', async () => {
-      const response = await request(app).get('/health');
+      const response = await request(app)
+        .get('/findings')
+        .set('componentKey', 'my:app')
+        .send();
 
       expect(response.status).toEqual(200);
-      expect(response.body).toEqual({ status: 'ok' });
+      expect(response.body).toEqual({
+        analysisDate: '2022-10-22T04:55:23Z',
+        measures: [{ metric: 'coverage', value: '50' }],
+      });
     });
   });
 });

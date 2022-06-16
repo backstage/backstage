@@ -30,10 +30,13 @@ export async function createRouter(
 
   const router = Router();
   router.use(express.json());
-
-  router.get('/health', (_, response) => {
-    logger.info('PONG!');
-    response.send({ status: 'ok' });
+  // mock api for now
+  router.get('/findings', (request, response) => {
+    logger.info(request.params);
+    response.send({
+      analysisDate: '2022-10-22T04:55:23Z',
+      measures: [{ metric: 'coverage', value: '50' }],
+    });
   });
   router.use(errorHandler());
   return router;

@@ -16,7 +16,7 @@
 
 import fetch from 'cross-fetch';
 import { FindingSummary, Metrics, SonarQubeApi } from './SonarQubeApi';
-import { ComponentWrapper, MeasuresWrapper } from './types';
+import { FindingsWrapper } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 export class SonarQubeClient implements SonarQubeApi {
@@ -44,7 +44,7 @@ export class SonarQubeClient implements SonarQubeApi {
   ): Promise<T | undefined> {
     const { token: idToken } = await this.identityApi.getCredentials();
 
-    const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/sonarqube`;
+    const apiUrl = `${await this.discoveryApi.getBaseUrl('sonarqube')}`;
     const response = await fetch(
       `${apiUrl}/${path}?${new URLSearchParams(query).toString()}`,
       {
@@ -60,38 +60,10 @@ export class SonarQubeClient implements SonarQubeApi {
     return undefined;
   }
 
-  private async getSupportedMetrics(): Promise<string[]> {
-    const metrics: string[] = [];
-    let nextPage: number = 1;
-
-    for (;;) {
-      const result = await this.callApi<{
-        metrics: Array<{ key: string }>;
-        total: number;
-      }>('metrics/search', { ps: 500, p: nextPage });
-
-      metrics.push(...(result?.metrics?.map(m => m.key) ?? []));
-
-      if (result && metrics.length < result.total) {
-        nextPage++;
-        continue;
-      }
-
-      return metrics;
-    }
-  }
-
   async getFindingSummary(
     componentKey?: string,
   ): Promise<FindingSummary | undefined> {
     if (!componentKey) {
-      return undefined;
-    }
-
-    const component = await this.callApi<ComponentWrapper>('components/show', {
-      component: componentKey,
-    });
-    if (!component) {
       return undefined;
     }
 
@@ -109,28 +81,19 @@ export class SonarQubeClient implements SonarQubeApi {
       duplicated_lines_density: undefined,
     };
 
-    // select the metrics that are supported by the SonarQube instance
-    const supportedMetrics = await this.getSupportedMetrics();
-    const metricKeys = Object.keys(metrics).filter(m =>
-      supportedMetrics.includes(m),
-    );
-
-    const measures = await this.callApi<MeasuresWrapper>('measures/search', {
-      projectKeys: componentKey,
-      metricKeys: metricKeys.join(','),
+    const findings = await this.callApi<FindingsWrapper>('findings', {
+      componentKey: componentKey,
     });
-    if (!measures) {
+    if (!findings) {
       return undefined;
     }
 
-    measures.measures
-      .filter(m => m.component === componentKey)
-      .forEach(m => {
-        metrics[m.metric] = m.value;
-      });
+    findings.measures.forEach(m => {
+      metrics[m.metric] = m.value;
+    });
 
     return {
-      lastAnalysis: component.component.analysisDate,
+      lastAnalysis: findings.analysisDate,
       metrics,
       projectUrl: `${this.baseUrl}dashboard?id=${encodeURIComponent(
         componentKey,
