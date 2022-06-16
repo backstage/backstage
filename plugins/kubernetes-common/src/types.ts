@@ -22,6 +22,7 @@ import {
   V1HorizontalPodAutoscaler,
   V1Ingress,
   V1Job,
+  V1LimitRange,
   V1Pod,
   V1ReplicaSet,
   V1Service,
@@ -97,6 +98,7 @@ export type FetchResponse =
   | ServiceFetchResponse
   | ConfigMapFetchResponse
   | DeploymentFetchResponse
+  | LimitRangeFetchReponse
   | ReplicaSetsFetchResponse
   | HorizontalPodAutoscalersFetchResponse
   | JobsFetchResponse
@@ -128,6 +130,11 @@ export interface DeploymentFetchResponse {
 export interface ReplicaSetsFetchResponse {
   type: 'replicasets';
   resources: Array<V1ReplicaSet>;
+}
+
+export interface LimitRangeFetchReponse {
+  type: 'limitranges';
+  resources: Array<V1LimitRange>;
 }
 
 export interface HorizontalPodAutoscalersFetchResponse {
