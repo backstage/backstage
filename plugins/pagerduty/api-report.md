@@ -95,9 +95,7 @@ export class PagerDutyClient implements PagerDutyApi {
   // (undocumented)
   getOnCallByPolicyId(policyId: string): Promise<PagerDutyOnCallsResponse>;
   // (undocumented)
-  getServiceByEntity(
-    pagerDutyEntity: PagerDutyEntity,
-  ): Promise<PagerDutyServiceResponse>;
+  getServiceByEntity(entity: Entity): Promise<PagerDutyServiceResponse>;
   // (undocumented)
   triggerAlarm(request: PagerDutyTriggerAlarmRequest): Promise<Response>;
 }
