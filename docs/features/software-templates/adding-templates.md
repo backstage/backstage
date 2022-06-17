@@ -97,6 +97,8 @@ catalog:
       target: https://github.com/backstage/software-templates/blob/main/scaffolder-templates/react-ssr-template/template.yaml
       rules:
         - allow: [Template]
+    - type: file
+      target: template.yaml # Backstage will expect the file to be in packages/backend/template.yaml
 ```
 
 Or you can add the template using the `catalog-import` plugin, which unless
