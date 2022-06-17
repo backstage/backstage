@@ -41,6 +41,7 @@ import { EntityTagsPicker } from './components/fields/EntityTagsPicker/EntityTag
  */
 export const scaffolderPlugin = createPlugin({
   id: 'scaffolder',
+  featureFlags: [{ name: 'scaffolder-experimental-templates' }],
   apis: [
     createApiFactory({
       api: scaffolderApiRef,
