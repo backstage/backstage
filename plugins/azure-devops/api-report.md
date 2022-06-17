@@ -16,7 +16,6 @@ import { GitTag } from '@backstage/plugin-azure-devops-common';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { PullRequest } from '@backstage/plugin-azure-devops-common';
 import { PullRequestOptions } from '@backstage/plugin-azure-devops-common';
-import { PullRequestStatus } from '@backstage/plugin-azure-devops-common';
 import { RepoBuild } from '@backstage/plugin-azure-devops-common';
 import { RepoBuildOptions } from '@backstage/plugin-azure-devops-common';
 import { SvgIconProps } from '@material-ui/core';
@@ -172,16 +171,6 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
 //
 // @public (undocumented)
 export const azureDevOpsPlugin: BackstagePlugin<{}, {}>;
-
-// Warning: (ae-missing-release-tag) "AzureGitTagsIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const AzureGitTagsIcon: (props: SvgIconProps) => JSX.Element;
-
-// Warning: (ae-missing-release-tag) "AzurePipelinesIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const AzurePipelinesIcon: (props: SvgIconProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "AzurePullRequestsIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -348,74 +337,6 @@ export interface PullRequestColumnConfig {
 //
 // @public (undocumented)
 export type PullRequestFilter = (pullRequest: DashboardPullRequest) => boolean;
-
-// Warning: (ae-missing-release-tag) "useAllTeams" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export function useAllTeams(): {
-  teams?: Team[];
-  loading: boolean;
-  error?: Error;
-};
-
-// Warning: (ae-missing-release-tag) "useDashboardPullRequests" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export function useDashboardPullRequests(
-  project?: string,
-  pollingInterval?: number,
-): {
-  pullRequests?: DashboardPullRequest[];
-  loading: boolean;
-  error?: Error;
-};
-
-// Warning: (ae-missing-release-tag) "useProjectRepoFromEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export function useProjectRepoFromEntity(entity: Entity): {
-  project: string;
-  repo: string;
-};
-
-// Warning: (ae-missing-release-tag) "usePullRequests" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export function usePullRequests(
-  entity: Entity,
-  defaultLimit?: number,
-  requestedStatus?: PullRequestStatus,
-): {
-  items?: PullRequest[];
-  loading: boolean;
-  error?: Error;
-};
-
-// Warning: (ae-missing-release-tag) "useRepoBuilds" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export function useRepoBuilds(
-  entity: Entity,
-  defaultLimit?: number,
-): {
-  items?: RepoBuild[];
-  loading: boolean;
-  error?: Error;
-};
-
-// Warning: (ae-missing-release-tag) "useUserEmail" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export function useUserEmail(): string | undefined;
-
-// Warning: (ae-missing-release-tag) "useUserTeamIds" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export function useUserTeamIds(userId: string | undefined): {
-  teamIds?: string[];
-  loading: boolean;
-  error?: Error;
-};
 
 // (No @packageDocumentation comment for this package)
 ```
