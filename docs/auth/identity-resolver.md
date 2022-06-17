@@ -304,7 +304,7 @@ export default async function createPlugin(
   return await createRouter({
     ...
     providerFactories: {
-      google: createGoogleProvider({
+      google: providers.google.create({
         authHandler: async ({
           fullProfile  // Type: passport.Profile,
           idToken      // Type: (Optional) string,
