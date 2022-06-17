@@ -17,11 +17,12 @@
 import { rootRouteRef } from './routes';
 import { apacheAirflowApiRef, ApacheAirflowClient } from './api';
 import {
+  configApiRef,
   createApiFactory,
+  createComponentExtension,
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
-  configApiRef,
 } from '@backstage/core-plugin-api';
 
 export const apacheAirflowPlugin = createPlugin({
@@ -47,5 +48,15 @@ export const ApacheAirflowPage = apacheAirflowPlugin.provide(
     name: 'ApacheAirflowPage',
     component: () => import('./components/HomePage').then(m => m.HomePage),
     mountPoint: rootRouteRef,
+  }),
+);
+
+export const ApacheAirflowDagTable = apacheAirflowPlugin.provide(
+  createComponentExtension({
+    name: 'ApacheAirflowDagTable',
+    component: {
+      lazy: () =>
+        import('./components/DagTableComponent').then(m => m.DagTableComponent),
+    },
   }),
 );
