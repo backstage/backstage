@@ -18,6 +18,8 @@ For example, the `getIncidentsByServiceId` query method now returns an object in
 instead of just `Incident[]`.
 This same pattern goes for `getChangeEventsByServiceId` and `getOnCallByPolicyId` functions.
 
+**BREAKING** All public exported types that relate to entities within PagerDuty have been prefixed with `PagerDuty` (e.g. `ServicesResponse` is now `PagerDutyServicesResponse` and `User` is now `PagerDutyUser`)
+
 In addition, various enhancements/bug fixes were introduced:
 
 - The `PagerDutyCard` component now wraps error and loading messages with an `InfoCard` to contain errors/messages. This enforces a consistent experience on the EntityPage
