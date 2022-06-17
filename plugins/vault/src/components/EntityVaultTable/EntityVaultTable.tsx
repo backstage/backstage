@@ -49,7 +49,7 @@ export const EntityVaultTable = ({ entity }: { entity: Entity }) => {
 
   const data = (value || []).map(secret => {
     return {
-      secret: secret.name,
+      secret: `${secret.path.replace(secretPath + "/", "")}/${secret.name}`,
       view: (
         <a
           aria-label="View"
