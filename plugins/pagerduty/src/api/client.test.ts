@@ -16,9 +16,9 @@
 import { MockFetchApi } from '@backstage/test-utils';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { PagerDutyClient, UnauthorizedError } from './client';
-import { PagerDutyEntity } from '../types';
 import { PagerDutyService, PagerDutyUser } from '../components/types';
 import { NotFoundError } from '@backstage/errors';
+import { Entity } from '@backstage/catalog-model';
 
 const mockFetch = jest.fn().mockName('fetch');
 const mockDiscoveryApi: jest.Mocked<DiscoveryApi> = {
@@ -32,7 +32,7 @@ const mockFetchApi: MockFetchApi = new MockFetchApi({
 });
 
 let client: PagerDutyClient;
-let pagerDutyEntity: PagerDutyEntity;
+let entity: Entity;
 
 const user: PagerDutyUser = {
   name: 'person1',
@@ -76,9 +76,15 @@ describe('PagerDutyClient', () => {
   describe('getServiceByEntity', () => {
     describe('when provided entity has an integrationKey value', () => {
       beforeEach(() => {
-        pagerDutyEntity = {
-          name: 'pagerduty-test',
-          integrationKey: 'abc123',
+        entity = {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'pagerduty-test',
+            annotations: {
+              'pagerduty.com/integration-key': 'abc123',
+            },
+          },
         };
       });
 
@@ -89,7 +95,7 @@ describe('PagerDutyClient', () => {
           json: () => Promise.resolve({ services: [service] }),
         });
 
-        expect(await client.getServiceByEntity(pagerDutyEntity)).toEqual({
+        expect(await client.getServiceByEntity(entity)).toEqual({
           service,
         });
         expect(mockFetch).toHaveBeenCalledWith(
@@ -108,9 +114,9 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws UnauthorizedError', async () => {
-          await expect(
-            client.getServiceByEntity(pagerDutyEntity),
-          ).rejects.toThrowError(UnauthorizedError);
+          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+            UnauthorizedError,
+          );
         });
       });
 
@@ -124,9 +130,9 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws NotFoundError', async () => {
-          await expect(
-            client.getServiceByEntity(pagerDutyEntity),
-          ).rejects.toThrowError(NotFoundError);
+          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+            NotFoundError,
+          );
         });
       });
 
@@ -143,9 +149,7 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws NotFoundError', async () => {
-          await expect(
-            client.getServiceByEntity(pagerDutyEntity),
-          ).rejects.toThrowError(
+          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
             'Request failed with 500, Not valid request internal error occurred',
           );
         });
@@ -161,18 +165,24 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws NotFoundError', async () => {
-          await expect(
-            client.getServiceByEntity(pagerDutyEntity),
-          ).rejects.toThrowError(NotFoundError);
+          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+            NotFoundError,
+          );
         });
       });
     });
 
     describe('when provided entity has a serviceId value', () => {
       beforeEach(() => {
-        pagerDutyEntity = {
-          name: 'pagerduty-test',
-          serviceId: 'def456',
+        entity = {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'pagerduty-test',
+            annotations: {
+              'pagerduty.com/service-id': 'def456',
+            },
+          },
         };
       });
 
@@ -183,7 +193,7 @@ describe('PagerDutyClient', () => {
           json: () => Promise.resolve({ service }),
         });
 
-        expect(await client.getServiceByEntity(pagerDutyEntity)).toEqual({
+        expect(await client.getServiceByEntity(entity)).toEqual({
           service,
         });
         expect(mockFetch).toHaveBeenCalledWith(
@@ -202,9 +212,9 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws UnauthorizedError', async () => {
-          await expect(
-            client.getServiceByEntity(pagerDutyEntity),
-          ).rejects.toThrowError(UnauthorizedError);
+          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+            UnauthorizedError,
+          );
         });
       });
 
@@ -218,9 +228,9 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws NotFoundError', async () => {
-          await expect(
-            client.getServiceByEntity(pagerDutyEntity),
-          ).rejects.toThrowError(NotFoundError);
+          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+            NotFoundError,
+          );
         });
       });
 
@@ -237,9 +247,7 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws NotFoundError', async () => {
-          await expect(
-            client.getServiceByEntity(pagerDutyEntity),
-          ).rejects.toThrowError(
+          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
             'Request failed with 500, Not valid request internal error occurred',
           );
         });
@@ -248,10 +256,16 @@ describe('PagerDutyClient', () => {
 
     describe('when provided entity has both integrationKey and serviceId', () => {
       beforeEach(() => {
-        pagerDutyEntity = {
-          name: 'pagerduty-test',
-          integrationKey: 'abc123',
-          serviceId: 'def456',
+        entity = {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'pagerduty-test',
+            annotations: {
+              'pagerduty.com/integration-key': 'abc123',
+              'pagerduty.com/service-id': 'def456',
+            },
+          },
         };
       });
 
@@ -262,7 +276,7 @@ describe('PagerDutyClient', () => {
           json: () => Promise.resolve({ services: [service] }),
         });
 
-        expect(await client.getServiceByEntity(pagerDutyEntity)).toEqual({
+        expect(await client.getServiceByEntity(entity)).toEqual({
           service,
         });
         expect(mockFetch).toHaveBeenCalledWith(
@@ -281,9 +295,9 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws UnauthorizedError', async () => {
-          await expect(
-            client.getServiceByEntity(pagerDutyEntity),
-          ).rejects.toThrowError(UnauthorizedError);
+          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+            UnauthorizedError,
+          );
         });
       });
 
@@ -297,9 +311,9 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws NotFoundError', async () => {
-          await expect(
-            client.getServiceByEntity(pagerDutyEntity),
-          ).rejects.toThrowError(NotFoundError);
+          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+            NotFoundError,
+          );
         });
       });
 
@@ -316,9 +330,7 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws NotFoundError', async () => {
-          await expect(
-            client.getServiceByEntity(pagerDutyEntity),
-          ).rejects.toThrowError(
+          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
             'Request failed with 500, Not valid request internal error occurred',
           );
         });
@@ -334,24 +346,29 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws NotFoundError', async () => {
-          await expect(
-            client.getServiceByEntity(pagerDutyEntity),
-          ).rejects.toThrowError(NotFoundError);
+          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+            NotFoundError,
+          );
         });
       });
     });
 
     describe('when provided entity has no integrationKey or serviceId values', () => {
       beforeEach(() => {
-        pagerDutyEntity = {
-          name: 'pagerduty-test',
+        entity = {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'pagerduty-test',
+            annotations: {},
+          },
         };
       });
 
       it('throws NotFoundError', async () => {
-        await expect(
-          client.getServiceByEntity(pagerDutyEntity),
-        ).rejects.toThrowError(NotFoundError);
+        await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+          NotFoundError,
+        );
         expect(mockFetch).not.toHaveBeenCalled();
       });
     });

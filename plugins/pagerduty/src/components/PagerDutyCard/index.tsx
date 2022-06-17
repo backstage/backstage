@@ -25,7 +25,6 @@ import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import { MissingTokenError, ServiceNotFoundError } from '../Errors';
 import WebIcon from '@material-ui/icons/Web';
 import DateRangeIcon from '@material-ui/icons/DateRange';
-import { usePagerdutyEntity } from '../../hooks';
 import { PAGERDUTY_INTEGRATION_KEY, PAGERDUTY_SERVICE_ID } from '../constants';
 import { TriggerDialog } from '../TriggerDialog';
 import { ChangeEvents } from '../ChangeEvents';
@@ -40,6 +39,8 @@ import {
   CardTab,
   InfoCard,
 } from '@backstage/core-components';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { getPagerDutyEntity } from '../pagerDutyEntity';
 
 const BasicCard = ({ children }: { children: ReactNode }) => (
   <InfoCard title="PagerDuty">{children}</InfoCard>
@@ -52,7 +53,8 @@ export const isPluginApplicableToEntity = (entity: Entity) =>
   );
 
 export const PagerDutyCard = () => {
-  const pagerDutyEntity = usePagerdutyEntity();
+  const { entity } = useEntity();
+  const pagerDutyEntity = getPagerDutyEntity(entity);
   const api = useApi(pagerDutyApiRef);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
   const [refreshChangeEvents, setRefreshChangeEvents] =
@@ -76,9 +78,7 @@ export const PagerDutyCard = () => {
     loading,
     error,
   } = useAsync(async () => {
-    const { service: foundService } = await api.getServiceByEntity(
-      pagerDutyEntity,
-    );
+    const { service: foundService } = await api.getServiceByEntity(entity);
 
     return {
       id: foundService.id,

@@ -21,7 +21,7 @@ import {
   PagerDutyService,
 } from '../components/types';
 import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
-import { PagerDutyEntity } from '../types';
+import { Entity } from '@backstage/catalog-model';
 
 export type PagerDutyServicesResponse = {
   services: PagerDutyService[];
@@ -52,12 +52,10 @@ export type PagerDutyTriggerAlarmRequest = {
 
 export interface PagerDutyApi {
   /**
-   * Fetches the service for the provided PagerDutyEntity.
+   * Fetches the service for the provided Entity.
    *
    */
-  getServiceByEntity(
-    pagerDutyEntity: PagerDutyEntity,
-  ): Promise<PagerDutyServiceResponse>;
+  getServiceByEntity(entity: Entity): Promise<PagerDutyServiceResponse>;
 
   /**
    * Fetches a list of incidents a provided service has.
