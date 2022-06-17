@@ -15,7 +15,7 @@
  */
 
 import { JsonValue } from '@backstage/types';
-import { AuthHandler, AuthResponse, SignInResolver } from '../types';
+import { AuthResponse } from '../types';
 
 /**
  * The header name used by the IAP.
@@ -69,27 +69,3 @@ export type GcpIapProviderInfo = {
  * The shape of the response to return to callers.
  */
 export type GcpIapResponse = AuthResponse<GcpIapProviderInfo>;
-
-/**
- * @public
- * @deprecated This type has been inlined into the create method and will be removed.
- */
-export type GcpIapProviderOptions = {
-  /**
-   * The profile transformation function used to verify and convert the auth
-   * response into the profile that will be presented to the user. The default
-   * implementation just provides the authenticated email that the IAP
-   * presented.
-   */
-  authHandler?: AuthHandler<GcpIapResult>;
-
-  /**
-   * Configures sign-in for this provider.
-   */
-  signIn: {
-    /**
-     * Maps an auth result to a Backstage identity for the user.
-     */
-    resolver: SignInResolver<GcpIapResult>;
-  };
-};

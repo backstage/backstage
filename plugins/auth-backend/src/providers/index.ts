@@ -30,9 +30,7 @@ export * from './onelogin';
 export * from './saml';
 export * from './gcp-iap';
 
-export { providers } from './providers';
-
-export { factories as defaultAuthProviderFactories } from './factories';
+export { providers, defaultAuthProviderFactories } from './providers';
 
 export type {
   AuthProviderConfig,
