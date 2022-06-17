@@ -16,19 +16,10 @@
 
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { PagerDutyEntity } from '../types';
-
-import {
-  PAGERDUTY_INTEGRATION_KEY,
-  PAGERDUTY_SERVICE_ID,
-} from '../components/constants';
+import { getPagerDutyEntity } from '../components/pagerDutyEntity';
 
 export function usePagerdutyEntity(): PagerDutyEntity {
   const { entity } = useEntity();
-  const {
-    [PAGERDUTY_INTEGRATION_KEY]: integrationKey,
-    [PAGERDUTY_SERVICE_ID]: serviceId,
-  } = entity.metadata.annotations || ({} as Record<string, string>);
-  const name = entity.metadata.name;
 
-  return { integrationKey, serviceId, name };
+  return getPagerDutyEntity(entity);
 }
