@@ -3,14 +3,17 @@
 Welcome to the apache-airflow plugin!
 
 This plugin serves as frontend to the REST API exposed by Apache Airflow.  
-Note only [Airflow v2 (and later)](https://airflow.apache.org/docs/apache-airflow/stable/deprecated-rest-api-ref.html) integrate with the plugin.
+Note only [Airflow v2 (and later)](https://airflow.apache.org/docs/apache-airflow/stable/deprecated-rest-api-ref.html)
+integrate with the plugin.
 
 ## Feature Requests & Ideas
 
 - [ ] Add support for running multiple instances of Airflow for monitoring
-      various deployment stages or business domains. ([Suggested by @JGoldman110](https://github.com/backstage/backstage/issues/735#issuecomment-985063468))
+      various deployment stages or business
+      domains. ([Suggested by @JGoldman110](https://github.com/backstage/backstage/issues/735#issuecomment-985063468))
 - [ ] Make owner chips in the DAG table clickable, resolving to a user or group
-      in the entity catalog. ([Suggested by @julioz](https://github.com/backstage/backstage/pull/8348#discussion_r764766295))
+      in the entity
+      catalog. ([Suggested by @julioz](https://github.com/backstage/backstage/pull/8348#discussion_r764766295))
 
 ## Installation
 
@@ -40,6 +43,27 @@ yarn --cwd packages/app add @backstage/plugin-apache-airflow
 +    <Route path="/apache-airflow" element={<ApacheAirflowPage />} />
    </FlatRoutes>
  );
+```
+
+If you just want to embed the DAGs into an existing page, you can use the `ApacheAirflowDagTable`
+
+```typescript
+import {ApacheAirflowDagTable} from '@backstage/plugin-apache-airflow';
+
+export function SomeEntityPage(): JSX.Element {
+  return (
+    <Grid item
+  md = {6}
+  xs = {12} >
+  <ApacheAirflowDagTable
+    dagIds = {["example_bash_operator", "example_branch_datetime_operator_2", "example_branch_labels"
+]
+}
+  />
+  < /Grid>
+)
+  ;
+}
 ```
 
 ## Configuration
