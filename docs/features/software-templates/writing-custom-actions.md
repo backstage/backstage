@@ -123,27 +123,32 @@ will set the available actions that the scaffolder has access to.
 ```ts
 import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
 import { ScmIntegrations } from '@backstage/integration';
+import { createNewFileAction } from './actions/custom';
 
-const integrations = ScmIntegrations.fromConfig(env.config);
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
+  const integrations = ScmIntegrations.fromConfig(env.config);
 
-const builtInActions = createBuiltinActions({
-  containerRunner,
-  integrations,
-  catalogClient,
-  config: env.config,
-  reader: env.reader,
-});
+  const builtInActions = createBuiltinActions({
+    integrations,
+    catalogClient,
+    config: env.config,
+    reader: env.reader,
+  });
+  
+  const actions = [...builtInActions, createNewFileAction()];
 
-const actions = [...builtInActions, createNewFileAction()];
-return await createRouter({
-  containerRunner,
-  catalogClient,
-  actions,
-  logger: env.logger,
-  config: env.config,
-  database: env.database,
-  reader: env.reader,
-});
+  return createRouter({
+    actions,
+    catalogClient: catalogClient,
+    logger: env.logger,
+    config: env.config,
+    database: env.database,
+    reader: env.reader,
+  });
+}
 ```
 
 ## List of custom action packages
