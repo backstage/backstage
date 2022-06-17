@@ -38,6 +38,14 @@ export async function createRouter(
       measures: [{ metric: 'coverage', value: '50' }],
     });
   });
+  router.get('/instanceUrl', (request, response) => {
+    logger.info(request.params);
+    response.send({
+      instanceUrl: `https://instance.local?${encodeURI(
+        request.query.instanceKey as string,
+      )}`,
+    });
+  });
   router.use(errorHandler());
   return router;
 }

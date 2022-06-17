@@ -16,26 +16,22 @@
 
 import fetch from 'cross-fetch';
 import { FindingSummary, Metrics, SonarQubeApi } from './SonarQubeApi';
-import { FindingsWrapper } from './types';
+import { InstanceUrlWrapper, FindingsWrapper } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 export class SonarQubeClient implements SonarQubeApi {
   discoveryApi: DiscoveryApi;
-  baseUrl: string;
   identityApi: IdentityApi;
 
   constructor({
     discoveryApi,
     identityApi,
-    baseUrl = 'https://sonarcloud.io/',
   }: {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
-    baseUrl?: string;
   }) {
     this.discoveryApi = discoveryApi;
     this.identityApi = identityApi;
-    this.baseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
   }
 
   private async callApi<T>(
@@ -62,10 +58,13 @@ export class SonarQubeClient implements SonarQubeApi {
 
   async getFindingSummary(
     componentKey?: string,
+    projectInstance?: string,
   ): Promise<FindingSummary | undefined> {
     if (!componentKey) {
       return undefined;
     }
+
+    const instanceKey = projectInstance || '';
 
     const metrics: Metrics = {
       alert_status: undefined,
@@ -81,8 +80,24 @@ export class SonarQubeClient implements SonarQubeApi {
       duplicated_lines_density: undefined,
     };
 
+    const baseUrlWrapper = await this.callApi<InstanceUrlWrapper>(
+      'instanceUrl',
+      {
+        instanceKey,
+      },
+    );
+    let baseUrl = baseUrlWrapper?.instanceUrl;
+    if (!baseUrl) {
+      return undefined;
+    }
+    // ensure trailing slash for later on
+    if (!baseUrl.endsWith('/')) {
+      baseUrl += '/';
+    }
+
     const findings = await this.callApi<FindingsWrapper>('findings', {
-      componentKey: componentKey,
+      componentKey,
+      instanceKey,
     });
     if (!findings) {
       return undefined;
@@ -95,21 +110,19 @@ export class SonarQubeClient implements SonarQubeApi {
     return {
       lastAnalysis: findings.analysisDate,
       metrics,
-      projectUrl: `${this.baseUrl}dashboard?id=${encodeURIComponent(
-        componentKey,
-      )}`,
+      projectUrl: `${baseUrl}dashboard?id=${encodeURIComponent(componentKey)}`,
       getIssuesUrl: identifier =>
-        `${this.baseUrl}project/issues?id=${encodeURIComponent(
+        `${baseUrl}project/issues?id=${encodeURIComponent(
           componentKey,
         )}&types=${identifier.toLocaleUpperCase('en-US')}&resolved=false`,
       getComponentMeasuresUrl: identifier =>
-        `${this.baseUrl}component_measures?id=${encodeURIComponent(
+        `${baseUrl}component_measures?id=${encodeURIComponent(
           componentKey,
         )}&metric=${identifier.toLocaleLowerCase(
           'en-US',
         )}&resolved=false&view=list`,
       getSecurityHotspotsUrl: () =>
-        `${this.baseUrl}project/security_hotspots?id=${encodeURIComponent(
+        `${baseUrl}project/security_hotspots?id=${encodeURIComponent(
           componentKey,
         )}`,
     };

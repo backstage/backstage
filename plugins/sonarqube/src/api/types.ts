@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+export interface InstanceUrlWrapper {
+  instanceUrl: string;
+}
+
 export interface FindingsWrapper {
   analysisDate: string;
   measures: Measure[];
