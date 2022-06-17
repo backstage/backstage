@@ -59,6 +59,7 @@ export const atlassianDefaultAuthHandler: AuthHandler<OAuthResult> = async ({
 });
 
 /**
+ * @public
  * @deprecated This export is deprecated and will be removed in the future.
  */
 export class AtlassianAuthProvider implements OAuthHandlers {

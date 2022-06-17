@@ -23,25 +23,6 @@ import { TokenSet } from 'openid-client';
 import { UserEntity } from '@backstage/catalog-model';
 import { UserinfoResponse } from 'openid-client';
 
-// @public
-export const atlassian: Readonly<{
-  create: (
-    options?:
-      | {
-          authHandler?: AuthHandler<OAuthResult> | undefined;
-          signIn?:
-            | {
-                resolver: SignInResolver<OAuthResult>;
-              }
-            | undefined;
-        }
-      | undefined,
-  ) => AuthProviderFactory;
-  resolvers: never;
-}>;
-
-// Warning: (ae-missing-release-tag) "AtlassianAuthProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public @deprecated (undocumented)
 export class AtlassianAuthProvider implements OAuthHandlers {
   // Warning: (ae-forgotten-export) The symbol "AtlassianAuthProviderOptions" needs to be exported by the entry point index.d.ts
@@ -61,23 +42,6 @@ export class AtlassianAuthProvider implements OAuthHandlers {
   // (undocumented)
   start(req: OAuthStartRequest): Promise<RedirectInfo>;
 }
-
-// @public
-export const auth0: Readonly<{
-  create: (
-    options?:
-      | {
-          authHandler?: AuthHandler<OAuthResult> | undefined;
-          signIn?:
-            | {
-                resolver: SignInResolver<OAuthResult>;
-              }
-            | undefined;
-        }
-      | undefined,
-  ) => AuthProviderFactory;
-  resolvers: never;
-}>;
 
 // @public
 export type AuthHandler<TAuthResult> = (
@@ -157,47 +121,12 @@ export type AuthResponse<ProviderInfo> = {
   backstageIdentity?: BackstageIdentityResponse;
 };
 
-// @public
-export const awsAlb: Readonly<{
-  create: (
-    options?:
-      | {
-          authHandler?: AuthHandler<AwsAlbResult> | undefined;
-          signIn: {
-            resolver: SignInResolver<AwsAlbResult>;
-          };
-        }
-      | undefined,
-  ) => AuthProviderFactory;
-  resolvers: never;
-}>;
-
 // @public (undocumented)
 export type AwsAlbResult = {
   fullProfile: Profile;
   expiresInSeconds?: number;
   accessToken: string;
 };
-
-// @public
-export const bitbucket: Readonly<{
-  create: (
-    options?:
-      | {
-          authHandler?: AuthHandler<OAuthResult> | undefined;
-          signIn?:
-            | {
-                resolver: SignInResolver<OAuthResult>;
-              }
-            | undefined;
-        }
-      | undefined,
-  ) => AuthProviderFactory;
-  resolvers: Readonly<{
-    usernameMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
-    userIdMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
-  }>;
-}>;
 
 // Warning: (ae-missing-release-tag) "BitbucketOAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -278,17 +207,6 @@ export const encodeState: (state: OAuthState) => string;
 export const ensuresXRequestedWith: (req: express.Request) => boolean;
 
 // @public
-export const gcpIap: Readonly<{
-  create: (options: {
-    authHandler?: AuthHandler<GcpIapResult> | undefined;
-    signIn: {
-      resolver: SignInResolver<GcpIapResult>;
-    };
-  }) => AuthProviderFactory;
-  resolvers: never;
-}>;
-
-// @public
 export type GcpIapResult = {
   iapToken: GcpIapTokenInfo;
 };
@@ -303,26 +221,6 @@ export type GcpIapTokenInfo = {
 // @public
 export function getDefaultOwnershipEntityRefs(entity: Entity): string[];
 
-// @public
-export const github: Readonly<{
-  create: (
-    options?:
-      | {
-          authHandler?: AuthHandler<GithubOAuthResult> | undefined;
-          signIn?:
-            | {
-                resolver: SignInResolver<GithubOAuthResult>;
-              }
-            | undefined;
-          stateEncoder?: StateEncoder | undefined;
-        }
-      | undefined,
-  ) => AuthProviderFactory;
-  resolvers: Readonly<{
-    usernameMatchingUserEntityName: () => SignInResolver<GithubOAuthResult>;
-  }>;
-}>;
-
 // Warning: (ae-missing-release-tag) "GithubOAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -336,93 +234,6 @@ export type GithubOAuthResult = {
   accessToken: string;
   refreshToken?: string;
 };
-
-// @public
-export const gitlab: Readonly<{
-  create: (
-    options?:
-      | {
-          authHandler?: AuthHandler<OAuthResult> | undefined;
-          signIn?:
-            | {
-                resolver: SignInResolver<OAuthResult>;
-              }
-            | undefined;
-        }
-      | undefined,
-  ) => AuthProviderFactory;
-  resolvers: never;
-}>;
-
-// @public
-export const google: Readonly<{
-  create: (
-    options?:
-      | {
-          authHandler?: AuthHandler<OAuthResult> | undefined;
-          signIn?:
-            | {
-                resolver: SignInResolver<OAuthResult>;
-              }
-            | undefined;
-        }
-      | undefined,
-  ) => AuthProviderFactory;
-  resolvers: Readonly<{
-    emailLocalPartMatchingUserEntityName: () => SignInResolver<unknown>;
-    emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
-    emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
-  }>;
-}>;
-
-// @public
-export const microsoft: Readonly<{
-  create: (
-    options?:
-      | {
-          authHandler?: AuthHandler<OAuthResult> | undefined;
-          signIn?:
-            | {
-                resolver: SignInResolver<OAuthResult>;
-              }
-            | undefined;
-        }
-      | undefined,
-  ) => AuthProviderFactory;
-  resolvers: Readonly<{
-    emailLocalPartMatchingUserEntityName: () => SignInResolver<unknown>;
-    emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
-    emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
-  }>;
-}>;
-
-// @public
-export const oauth2: Readonly<{
-  create: (
-    options?:
-      | {
-          authHandler?: AuthHandler<OAuthResult> | undefined;
-          signIn?:
-            | {
-                resolver: SignInResolver<OAuthResult>;
-              }
-            | undefined;
-        }
-      | undefined,
-  ) => AuthProviderFactory;
-  resolvers: never;
-}>;
-
-// @public
-export const oauth2Proxy: Readonly<{
-  create: (options: {
-    authHandler?: AuthHandler<OAuth2ProxyResult<unknown>> | undefined;
-    signIn: {
-      resolver: SignInResolver<OAuth2ProxyResult<unknown>>;
-    };
-  }) => AuthProviderFactory;
-  resolvers: never;
-}>;
 
 // @public
 export type OAuth2ProxyResult<JWTPayload = {}> = {
@@ -556,65 +367,10 @@ export type OAuthState = {
 };
 
 // @public
-export const oidc: Readonly<{
-  create: (
-    options?:
-      | {
-          authHandler?: AuthHandler<OidcAuthResult> | undefined;
-          signIn?:
-            | {
-                resolver: SignInResolver<OidcAuthResult>;
-              }
-            | undefined;
-        }
-      | undefined,
-  ) => AuthProviderFactory;
-  resolvers: never;
-}>;
-
-// @public
 export type OidcAuthResult = {
   tokenset: TokenSet;
   userinfo: UserinfoResponse;
 };
-
-// @public
-export const okta: Readonly<{
-  create: (
-    options?:
-      | {
-          authHandler?: AuthHandler<OAuthResult> | undefined;
-          signIn?:
-            | {
-                resolver: SignInResolver<OAuthResult>;
-              }
-            | undefined;
-        }
-      | undefined,
-  ) => AuthProviderFactory;
-  resolvers: Readonly<{
-    emailLocalPartMatchingUserEntityName: () => SignInResolver<unknown>;
-    emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
-    emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
-  }>;
-}>;
-
-// @public
-export const onelogin: Readonly<{
-  create: (
-    options?:
-      | {
-          authHandler?: AuthHandler<OAuthResult> | undefined;
-          signIn?:
-            | {
-                resolver: SignInResolver<OAuthResult>;
-              }
-            | undefined;
-        }
-      | undefined,
-  ) => AuthProviderFactory;
-  resolvers: never;
-}>;
 
 // Warning: (ae-missing-release-tag) "postMessageResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -896,25 +652,6 @@ export interface RouterOptions {
   // (undocumented)
   tokenManager: TokenManager;
 }
-
-// @public
-export const saml: Readonly<{
-  create: (
-    options?:
-      | {
-          authHandler?: AuthHandler<SamlAuthResult> | undefined;
-          signIn?:
-            | {
-                resolver: SignInResolver<SamlAuthResult>;
-              }
-            | undefined;
-        }
-      | undefined,
-  ) => AuthProviderFactory;
-  resolvers: Readonly<{
-    nameIdMatchingUserEntityName(): SignInResolver<SamlAuthResult>;
-  }>;
-}>;
 
 // @public (undocumented)
 export type SamlAuthResult = {
