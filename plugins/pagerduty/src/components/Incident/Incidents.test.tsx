@@ -18,7 +18,7 @@ import { render, waitFor } from '@testing-library/react';
 import { Incidents } from './Incidents';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { pagerDutyApiRef } from '../../api';
-import { Incident } from '../types';
+import { PagerDutyIncident } from '../types';
 import { ApiProvider } from '@backstage/core-app-api';
 
 const mockPagerDutyApi = {
@@ -83,7 +83,7 @@ describe('Incidents', () => {
             html_url: 'http://a.com/id2',
             serviceId: 'sId2',
           },
-        ] as Incident[],
+        ] as PagerDutyIncident[],
       }));
     const { getByText, getAllByTitle, queryByTestId } = render(
       wrapInTestApp(

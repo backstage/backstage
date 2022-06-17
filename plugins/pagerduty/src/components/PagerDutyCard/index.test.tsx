@@ -21,7 +21,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { NotFoundError } from '@backstage/errors';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { pagerDutyApiRef, UnauthorizedError, PagerDutyClient } from '../../api';
-import { Service, User } from '../types';
+import { PagerDutyService, PagerDutyUser } from '../types';
 
 import { alertApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider } from '@backstage/core-app-api';
@@ -69,7 +69,7 @@ const entityWithAllAnnotations: Entity = {
   },
 };
 
-const user: User = {
+const user: PagerDutyUser = {
   name: 'person1',
   id: 'p1',
   summary: 'person1',
@@ -77,7 +77,7 @@ const user: User = {
   html_url: 'http://a.com/id1',
 };
 
-const service: Service = {
+const service: PagerDutyService = {
   id: 'def456',
   name: 'pagerduty-name',
   html_url: 'www.example.com',

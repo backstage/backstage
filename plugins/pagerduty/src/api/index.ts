@@ -16,11 +16,11 @@
 
 export { PagerDutyClient, pagerDutyApiRef, UnauthorizedError } from './client';
 export type {
-  ServiceResponse,
-  IncidentsResponse,
-  ChangeEventsResponse,
-  OnCallsResponse,
-  TriggerAlarmRequest,
-  ClientApiDependencies,
-  ClientApiConfig,
+  PagerDutyServiceResponse,
+  PagerDutyIncidentsResponse,
+  PagerDutyChangeEventsResponse,
+  PagerDutyOnCallsResponse,
+  PagerDutyTriggerAlarmRequest,
+  PagerDutyClientApiDependencies,
+  PagerDutyClientApiConfig,
 } from './types';

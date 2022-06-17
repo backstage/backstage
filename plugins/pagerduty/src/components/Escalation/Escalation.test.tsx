@@ -17,7 +17,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { EscalationPolicy } from './EscalationPolicy';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
-import { User } from '../types';
+import { PagerDutyUser } from '../types';
 import { pagerDutyApiRef } from '../../api';
 import { ApiProvider } from '@backstage/core-app-api';
 
@@ -57,7 +57,7 @@ describe('Escalation', () => {
               summary: 'person1',
               email: 'person1@example.com',
               html_url: 'http://a.com/id1',
-            } as User,
+            } as PagerDutyUser,
           },
         ],
       }));

@@ -15,12 +15,12 @@
  */
 
 export type {
-  ChangeEvent,
-  Incident,
-  Service,
-  OnCall,
-  Assignee,
-  User,
+  PagerDutyChangeEvent,
+  PagerDutyIncident,
+  PagerDutyService,
+  PagerDutyOnCall,
+  PagerDutyAssignee,
+  PagerDutyUser,
 } from './types';
 
 export {

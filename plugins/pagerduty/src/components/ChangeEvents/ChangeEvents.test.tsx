@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { ChangeEvent } from '../types';
+import { PagerDutyChangeEvent } from '../types';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { pagerDutyApiRef } from '../../api';
 import { ApiProvider } from '@backstage/core-app-api';
@@ -74,7 +74,7 @@ describe('Incidents', () => {
             summary: 'sum of EVENT',
             timestamp: '2020-07-18T08:42:58.315+0000',
           },
-        ] as ChangeEvent[],
+        ] as PagerDutyChangeEvent[],
       }));
     const { getByText, getAllByTitle, queryByTestId } = render(
       wrapInTestApp(
@@ -121,7 +121,7 @@ describe('Incidents', () => {
             summary: 'sum of EVENT',
             timestamp: '2020-07-18T08:42:58.315+0000',
           },
-        ] as ChangeEvent[],
+        ] as PagerDutyChangeEvent[],
       }));
     const { getByText, getAllByTitle, queryByTestId } = render(
       wrapInTestApp(

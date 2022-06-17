@@ -16,15 +16,15 @@
 
 import {
   PagerDutyApi,
-  TriggerAlarmRequest,
-  ServicesResponse,
-  ServiceResponse,
-  IncidentsResponse,
-  OnCallsResponse,
-  ClientApiDependencies,
-  ClientApiConfig,
+  PagerDutyTriggerAlarmRequest,
+  PagerDutyServicesResponse,
+  PagerDutyServiceResponse,
+  PagerDutyIncidentsResponse,
+  PagerDutyOnCallsResponse,
+  PagerDutyClientApiDependencies,
+  PagerDutyClientApiConfig,
   RequestOptions,
-  ChangeEventsResponse,
+  PagerDutyChangeEventsResponse,
 } from './types';
 import { createApiRef, ConfigApi } from '@backstage/core-plugin-api';
 import { NotFoundError } from '@backstage/errors';
@@ -42,7 +42,7 @@ const commonGetServiceParams =
 export class PagerDutyClient implements PagerDutyApi {
   static fromConfig(
     configApi: ConfigApi,
-    { discoveryApi, fetchApi }: ClientApiDependencies,
+    { discoveryApi, fetchApi }: PagerDutyClientApiDependencies,
   ) {
     const eventsBaseUrl: string =
       configApi.getOptionalString('pagerDuty.eventsBaseUrl') ??
@@ -54,21 +54,21 @@ export class PagerDutyClient implements PagerDutyApi {
       fetchApi,
     });
   }
-  constructor(private readonly config: ClientApiConfig) {}
+  constructor(private readonly config: PagerDutyClientApiConfig) {}
 
   async getServiceByEntity(
     pagerDutyEntity: PagerDutyEntity,
-  ): Promise<ServiceResponse> {
+  ): Promise<PagerDutyServiceResponse> {
     const { integrationKey, serviceId } = pagerDutyEntity;
 
-    let response: ServiceResponse;
+    let response: PagerDutyServiceResponse;
     let url: string;
 
     if (integrationKey) {
       url = `${await this.config.discoveryApi.getBaseUrl(
         'proxy',
       )}/pagerduty/services?${commonGetServiceParams}&query=${integrationKey}`;
-      const { services } = await this.getByUrl<ServicesResponse>(url);
+      const { services } = await this.getByUrl<PagerDutyServicesResponse>(url);
       const service = services[0];
 
       if (!service) throw new NotFoundError();
@@ -79,7 +79,7 @@ export class PagerDutyClient implements PagerDutyApi {
         'proxy',
       )}/pagerduty/services/${serviceId}?${commonGetServiceParams}`;
 
-      response = await this.getByUrl<ServiceResponse>(url);
+      response = await this.getByUrl<PagerDutyServiceResponse>(url);
     } else {
       throw new NotFoundError();
     }
@@ -87,36 +87,40 @@ export class PagerDutyClient implements PagerDutyApi {
     return response;
   }
 
-  async getIncidentsByServiceId(serviceId: string): Promise<IncidentsResponse> {
+  async getIncidentsByServiceId(
+    serviceId: string,
+  ): Promise<PagerDutyIncidentsResponse> {
     const params = `time_zone=UTC&sort_by=created_at&statuses[]=triggered&statuses[]=acknowledged&service_ids[]=${serviceId}`;
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/pagerduty/incidents?${params}`;
 
-    return await this.getByUrl<IncidentsResponse>(url);
+    return await this.getByUrl<PagerDutyIncidentsResponse>(url);
   }
 
   async getChangeEventsByServiceId(
     serviceId: string,
-  ): Promise<ChangeEventsResponse> {
+  ): Promise<PagerDutyChangeEventsResponse> {
     const params = `limit=5&time_zone=UTC&sort_by=timestamp`;
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/pagerduty/services/${serviceId}/change_events?${params}`;
 
-    return await this.getByUrl<ChangeEventsResponse>(url);
+    return await this.getByUrl<PagerDutyChangeEventsResponse>(url);
   }
 
-  async getOnCallByPolicyId(policyId: string): Promise<OnCallsResponse> {
+  async getOnCallByPolicyId(
+    policyId: string,
+  ): Promise<PagerDutyOnCallsResponse> {
     const params = `time_zone=UTC&include[]=users&escalation_policy_ids[]=${policyId}`;
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/pagerduty/oncalls?${params}`;
 
-    return await this.getByUrl<OnCallsResponse>(url);
+    return await this.getByUrl<PagerDutyOnCallsResponse>(url);
   }
 
-  triggerAlarm(request: TriggerAlarmRequest): Promise<Response> {
+  triggerAlarm(request: PagerDutyTriggerAlarmRequest): Promise<Response> {
     const { integrationKey, source, description, userName } = request;
 
     const body = JSON.stringify({

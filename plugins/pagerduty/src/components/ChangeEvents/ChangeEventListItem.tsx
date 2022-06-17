@@ -26,7 +26,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { DateTime, Duration } from 'luxon';
-import { ChangeEvent } from '../types';
+import { PagerDutyChangeEvent } from '../types';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import { BackstageTheme } from '@backstage/theme';
 
@@ -44,7 +44,7 @@ const useStyles = makeStyles<BackstageTheme>({
 });
 
 type Props = {
-  changeEvent: ChangeEvent;
+  changeEvent: PagerDutyChangeEvent;
 };
 
 export const ChangeEventListItem = ({ changeEvent }: Props) => {

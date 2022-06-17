@@ -17,7 +17,7 @@ import { MockFetchApi } from '@backstage/test-utils';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { PagerDutyClient, UnauthorizedError } from './client';
 import { PagerDutyEntity } from '../types';
-import { Service, User } from '../components/types';
+import { PagerDutyService, PagerDutyUser } from '../components/types';
 import { NotFoundError } from '@backstage/errors';
 
 const mockFetch = jest.fn().mockName('fetch');
@@ -34,7 +34,7 @@ const mockFetchApi: MockFetchApi = new MockFetchApi({
 let client: PagerDutyClient;
 let pagerDutyEntity: PagerDutyEntity;
 
-const user: User = {
+const user: PagerDutyUser = {
   name: 'person1',
   id: 'p1',
   summary: 'person1',
@@ -42,7 +42,7 @@ const user: User = {
   html_url: 'http://a.com/id1',
 };
 
-const service: Service = {
+const service: PagerDutyService = {
   id: 'def456',
   name: 'pagerduty-name',
   html_url: 'www.example.com',
