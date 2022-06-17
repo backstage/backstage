@@ -534,7 +534,7 @@ spec:
 ```
 
 Afterwards, if you are using the builtin templating action, you can start using
-the variables in your code. You can use also any other templating fuctions from
+the variables in your code. You can use also any other templating functions from
 [Nunjucks](https://mozilla.github.io/nunjucks/templating.html#tags) as well.
 
 ```bash
