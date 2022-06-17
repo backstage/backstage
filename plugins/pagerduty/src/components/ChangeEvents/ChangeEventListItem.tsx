@@ -54,7 +54,7 @@ export const ChangeEventListItem = ({ changeEvent }: Props) => {
   const changedAt = DateTime.local()
     .minus(Duration.fromMillis(duration))
     .toRelative({ locale: 'en' });
-  let externalLinkElem = null;
+  let externalLinkElem: JSX.Element | undefined;
   if (changeEvent.links.length > 0) {
     const text: string = changeEvent.links[0].text;
     externalLinkElem = (
