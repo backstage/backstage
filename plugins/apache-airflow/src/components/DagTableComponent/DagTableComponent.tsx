@@ -20,6 +20,7 @@ import {
   StatusOK,
   Table,
   TableColumn,
+  WarningPanel,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import Box from '@material-ui/core/Box';
@@ -30,7 +31,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import Alert from '@material-ui/lab/Alert';
-import React from 'react';
+import React, { useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { apacheAirflowApiRef } from '../../api';
 import { Dag } from '../../api/types';
@@ -135,15 +136,14 @@ type DagTableComponentProps = {
 
 export const DagTableComponent = ({ dagIds }: DagTableComponentProps) => {
   const apiClient = useApi(apacheAirflowApiRef);
+  const [dagsNotFound, setDagsNotFound] = useState<string[]>();
+
   const { value, loading, error } = useAsync(async (): Promise<Dag[]> => {
     if (dagIds) {
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       const { dags, dagsNotFound } = await apiClient.getDags(dagIds);
       if (dagsNotFound.length) {
-        throw new Error(
-          `${dagsNotFound.length} DAGs were not found:\n${dagsNotFound.join(
-            ';\n',
-          )}`,
-        );
+        setDagsNotFound(dagsNotFound);
       }
       return dags;
     }
@@ -162,5 +162,18 @@ export const DagTableComponent = ({ dagIds }: DagTableComponentProps) => {
     dagUrl: `${apiClient.baseUrl}dag_details?dag_id=${el.dag_id}`, // construct path to DAG using `baseUrl`
   }));
 
-  return <DenseTable dags={data || []} />;
+  return (
+    <>
+      {dagsNotFound ? (
+        <WarningPanel title={`${dagsNotFound.length} DAGs were not found`}>
+          {dagsNotFound.map(dagId => (
+            <Typography>{dagId}</Typography>
+          ))}
+        </WarningPanel>
+      ) : (
+        ''
+      )}
+      <DenseTable dags={data || []} />
+    </>
+  );
 };
