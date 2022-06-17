@@ -184,7 +184,9 @@ describe('ApacheAirflowClient', () => {
     });
     const dagIds = ['mock_dag_1', 'a-random-DAG-id'];
     const response = await client.getDags(dagIds);
+    expect(response.dags.length).toEqual(1);
     expect(response.dags[0].dag_id).toEqual('mock_dag_1');
+    expect(response.dagsNotFound.length).toEqual(1);
     expect(response.dagsNotFound[0]).toEqual('a-random-DAG-id');
   });
 });
