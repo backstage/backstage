@@ -6135,9 +6135,9 @@
     "@types/node" "*"
 
 "@types/jest-when@^3.5.0":
-  version "3.5.0"
-  resolved "https://registry.npmjs.org/@types/jest-when/-/jest-when-3.5.0.tgz#6a573cd521da131e6801f0991b4f1d4dee2ebab5"
-  integrity sha512-rNUuZ3Mn/HDzpImPXDeOtW18zqyerPoOS2aKU0zUFbirWgJ7sN7LnRv73RmbBQ/uzw28sxf/nUofxbhJ5DWB0w==
+  version "3.5.1"
+  resolved "https://registry.npmjs.org/@types/jest-when/-/jest-when-3.5.1.tgz#296a0d62b576615046773daf123d518b10adee32"
+  integrity sha512-8pzJWwU4h7KyCgwAB2Hs9xuy+a1YgVcdh0vE4LT4DZx5Yo7rFO9FAPIsSORVBVCk8QfjuGZaaU9HTTh3mJnEAg==
   dependencies:
     "@types/jest" "*"
 
