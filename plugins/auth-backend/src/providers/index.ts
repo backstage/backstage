@@ -35,7 +35,6 @@ export { providers, defaultAuthProviderFactories } from './providers';
 export type {
   AuthProviderConfig,
   AuthProviderRouteHandlers,
-  AuthProviderFactoryOptions,
   AuthProviderFactory,
   AuthHandler,
   AuthResolverCatalogUserQuery,
