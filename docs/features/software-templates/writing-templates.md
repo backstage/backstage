@@ -397,6 +397,9 @@ There's also the ability to pass additional scopes when requesting the `oauth`
 token from the user, which you can do on a per-provider basis, in case your
 template can be published to multiple providers.
 
+Note, that you will need to configure an [authentication provider](../../auth/index.md#configuring-authentication-providers), alongside the
+[`ScmAuthApi`](../../auth/index.md#scaffolder-configuration-software-templates) for your source code management (SCM) service to make this feature work.
+
 ### Accessing the signed-in users details
 
 Sometimes when authoring templates, you'll want to access the user that is running the template, and get details from the profile or the users `Entity` in the Catalog.
