@@ -23,8 +23,7 @@ describe('createValidator', () => {
   const validators: Record<string, undefined | CustomFieldValidator<unknown>> =
     {
       CustomPicker: (value, validation, _context) => {
-        // @ts-ignore
-        if (!value || !value.value) {
+        if (!value || !(value as { value?: unknown }).value) {
           validation.addError('Error !');
         }
       },
