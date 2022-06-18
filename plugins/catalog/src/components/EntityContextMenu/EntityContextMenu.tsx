@@ -40,7 +40,7 @@ const useStyles = makeStyles(
   (theme: BackstageTheme) => {
     return {
       button: {
-        color: theme.palette.bursts.fontColor,
+        color: theme.page.fontColor,
       },
     };
   },

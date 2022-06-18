@@ -164,4 +164,5 @@ export type PageTheme = {
   colors: string[];
   shape: string;
   backgroundImage: string;
+  fontColor: string;
 };
