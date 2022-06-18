@@ -43,7 +43,7 @@ export class DatabaseDocumentStore implements DatabaseStore {
   // (undocumented)
   query(
     tx: Knex.Transaction,
-    { types, pgTerm, fields, offset, limit }: PgSearchQuery,
+    { types, pgTerm, fields, offset, limit, preTag, postTag }: PgSearchQuery,
   ): Promise<DocumentResultRow[]>;
   // (undocumented)
   static supported(knex: Knex): Promise<boolean>;
@@ -133,6 +133,10 @@ export interface PgSearchQuery {
   offset: number;
   // (undocumented)
   pgTerm?: string;
+  // (undocumented)
+  postTag: string;
+  // (undocumented)
+  preTag: string;
   // (undocumented)
   types?: string[];
 }

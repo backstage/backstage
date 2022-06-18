@@ -158,6 +158,11 @@ describe('PgSearchEngine', () => {
             location: 'location-1',
           },
           type: 'my-type',
+          highlight: {
+            title: 'Hello World',
+            text: 'Lorem Ipsum',
+            location: 'location-1',
+          },
         },
       ]);
 
@@ -199,6 +204,11 @@ describe('PgSearchEngine', () => {
               location: `location-${i}`,
             },
             type: 'my-type',
+            highlight: {
+              title: 'Hello World',
+              text: 'Lorem Ipsum',
+              location: 'location-1',
+            },
           })),
       );
 
@@ -240,6 +250,11 @@ describe('PgSearchEngine', () => {
               location: `location-${i}`,
             },
             type: 'my-type',
+            highlight: {
+              title: 'Hello World',
+              text: 'Lorem Ipsum',
+              location: 'location-1',
+            },
           }))
           .slice(25),
       );

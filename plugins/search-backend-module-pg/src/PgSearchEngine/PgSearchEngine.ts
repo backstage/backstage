@@ -26,6 +26,7 @@ import {
   DatabaseStore,
   PgSearchQuery,
 } from '../database';
+import { v4 as uuid } from 'uuid';
 
 export type ConcretePgSearchQuery = {
   pgQuery: PgSearchQuery;
@@ -53,6 +54,7 @@ export class PgSearchEngine implements SearchEngine {
     const offset = page * pageSize;
     // We request more result to know whether there is another page
     const limit = pageSize + 1;
+    const uuidTag = uuid();
 
     return {
       pgQuery: {
@@ -66,6 +68,8 @@ export class PgSearchEngine implements SearchEngine {
         types: query.types,
         offset,
         limit,
+        preTag: `<${uuidTag}>`,
+        postTag: `</${uuidTag}>`,
       },
       pageSize,
     };
@@ -106,10 +110,22 @@ export class PgSearchEngine implements SearchEngine {
       : undefined;
 
     const results = pageRows.map(
-      ({ type, document }, index): IndexableResult => ({
+      ({ type, document, highlight }, index): IndexableResult => ({
         type,
         document,
         rank: page * pageSize + index + 1,
+        highlight: {
+          preTag: pgQuery.preTag,
+          postTag: pgQuery.postTag,
+          fields: highlight
+            ? {
+                text: highlight.text,
+                title: highlight.title,
+                location: highlight.location,
+                path: '',
+              }
+            : {},
+        },
       }),
     );
 

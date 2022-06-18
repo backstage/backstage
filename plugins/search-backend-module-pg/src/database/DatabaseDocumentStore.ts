@@ -132,10 +132,11 @@ export class DatabaseDocumentStore implements DatabaseStore {
 
   async query(
     tx: Knex.Transaction,
-    { types, pgTerm, fields, offset, limit }: PgSearchQuery,
+    { types, pgTerm, fields, offset, limit, preTag, postTag }: PgSearchQuery,
   ): Promise<DocumentResultRow[]> {
     // Builds a query like:
-    // SELECT ts_rank_cd(body, query) AS rank,  type, document
+    // SELECT ts_rank_cd(body, query) AS rank, type, document,
+    // ts_headline('english', document, query) AS highlight
     // FROM documents, to_tsquery('english', 'consent') query
     // WHERE query @@ body AND (document @> '{"kind": "API"}')
     // ORDER BY rank DESC
@@ -173,6 +174,11 @@ export class DatabaseDocumentStore implements DatabaseStore {
     if (pgTerm) {
       query
         .select(tx.raw('ts_rank_cd(body, query) AS "rank"'))
+        .select(
+          tx.raw(
+            `ts_headline(\'english\', document, query, 'StartSel=${preTag}, StopSel=${postTag}') as "highlight"`,
+          ),
+        )
         .orderBy('rank', 'desc');
     } else {
       query.select(tx.raw('1 as rank'));

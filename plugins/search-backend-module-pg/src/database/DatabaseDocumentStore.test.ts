@@ -220,7 +220,13 @@ describe('DatabaseDocumentStore', () => {
         });
 
         const rows = await store.transaction(tx =>
-          store.query(tx, { pgTerm: 'Hello & World', offset: 1, limit: 1 }),
+          store.query(tx, {
+            pgTerm: 'Hello & World',
+            offset: 1,
+            limit: 1,
+            preTag: '<tag>',
+            postTag: '</tag>',
+          }),
         );
 
         expect(rows).toEqual([
@@ -261,7 +267,13 @@ describe('DatabaseDocumentStore', () => {
         });
 
         const rows = await store.transaction(tx =>
-          store.query(tx, { pgTerm: 'Hello & World', offset: 0, limit: 25 }),
+          store.query(tx, {
+            pgTerm: 'Hello & World',
+            offset: 0,
+            limit: 25,
+            preTag: '<tag>',
+            postTag: '</tag>',
+          }),
         );
 
         expect(rows).toEqual([
@@ -322,6 +334,8 @@ describe('DatabaseDocumentStore', () => {
             types: ['my-type'],
             offset: 0,
             limit: 25,
+            preTag: '<tag>',
+            postTag: '</tag>',
           }),
         );
 
@@ -375,6 +389,8 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this' },
             offset: 0,
             limit: 25,
+            preTag: '<tag>',
+            postTag: '</tag>',
           }),
         );
 
@@ -429,6 +445,8 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: ['this', 'that'] },
             offset: 0,
             limit: 25,
+            preTag: '<tag>',
+            postTag: '</tag>',
           }),
         );
 
@@ -490,6 +508,8 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this', otherField: 'another' },
             offset: 0,
             limit: 25,
+            preTag: '<tag>',
+            postTag: '</tag>',
           }),
         );
 
@@ -539,6 +559,8 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this' },
             offset: 0,
             limit: 25,
+            preTag: '<tag>',
+            postTag: '</tag>',
           }),
         );
 

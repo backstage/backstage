@@ -22,6 +22,8 @@ export interface PgSearchQuery {
   pgTerm?: string;
   offset: number;
   limit: number;
+  preTag: string;
+  postTag: string;
 }
 
 export interface DatabaseStore {
@@ -49,4 +51,5 @@ export interface RawDocumentRow {
 export interface DocumentResultRow {
   document: IndexableDocument;
   type: string;
+  highlight: IndexableDocument;
 }
