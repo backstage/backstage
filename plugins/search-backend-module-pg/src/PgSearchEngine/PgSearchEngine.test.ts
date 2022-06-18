@@ -26,7 +26,7 @@ import { PgSearchEngineIndexer } from './PgSearchEngineIndexer';
 const highlightOptions: PgSearchHighlightConfig = {
   preTag: '<tag>',
   postTag: '</tag>',
-  useHighlight: false,
+  useHighlight: true,
   maxWords: 35,
   minWords: 15,
   shortWord: 3,
@@ -34,6 +34,8 @@ const highlightOptions: PgSearchHighlightConfig = {
   maxFragments: 0,
   fragmentDelimiter: ' ... ',
 };
+
+jest.mock('uuid', () => ({ v4: () => 'tag' }));
 
 jest.mock('./PgSearchEngineIndexer', () => ({
   PgSearchEngineIndexer: jest
@@ -71,10 +73,13 @@ describe('PgSearchEngine', () => {
         filters: {},
       });
 
-      expect(translatorSpy).toHaveBeenCalledWith({
-        term: 'testTerm',
-        filters: {},
-      });
+      expect(translatorSpy).toHaveBeenCalledWith(
+        {
+          term: 'testTerm',
+          filters: {},
+        },
+        highlightOptions,
+      );
     });
 
     it('should pass page cursor', async () => {
@@ -205,6 +210,16 @@ describe('PgSearchEngine', () => {
             },
             type: 'my-type',
             rank: 1,
+            highlight: {
+              preTag: '<tag>',
+              postTag: '</tag>',
+              fields: {
+                title: 'Hello World',
+                text: 'Lorem Ipsum',
+                location: 'location-1',
+                path: '',
+              },
+            },
           },
         ],
         nextPageCursor: undefined,
@@ -214,6 +229,7 @@ describe('PgSearchEngine', () => {
         pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
         offset: 0,
         limit: 26,
+        options: highlightOptions,
       });
     });
 
@@ -252,6 +268,16 @@ describe('PgSearchEngine', () => {
             },
             type: 'my-type',
             rank: i + 1,
+            highlight: {
+              preTag: '<tag>',
+              postTag: '</tag>',
+              fields: {
+                title: 'Hello World',
+                text: 'Lorem Ipsum',
+                location: 'location-1',
+                path: '',
+              },
+            },
           })),
         nextPageCursor: 'MQ==',
       });
@@ -260,6 +286,7 @@ describe('PgSearchEngine', () => {
         pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
         offset: 0,
         limit: 26,
+        options: highlightOptions,
       });
     });
 
@@ -300,6 +327,16 @@ describe('PgSearchEngine', () => {
             },
             type: 'my-type',
             rank: i + 1,
+            highlight: {
+              preTag: '<tag>',
+              postTag: '</tag>',
+              fields: {
+                title: 'Hello World',
+                text: 'Lorem Ipsum',
+                location: 'location-1',
+                path: '',
+              },
+            },
           }))
           .slice(25),
         previousPageCursor: 'MA==',
@@ -309,6 +346,7 @@ describe('PgSearchEngine', () => {
         pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
         offset: 25,
         limit: 26,
+        options: highlightOptions,
       });
     });
   });

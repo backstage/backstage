@@ -46,7 +46,7 @@ export class PgSearchEngine implements SearchEngine {
     this.highlightOptions = {
       preTag: `<${uuidTag}>`,
       postTag: `</${uuidTag}>`,
-      useHighlight: false,
+      useHighlight: true,
       maxWords: 35,
       minWords: 15,
       shortWord: 3,
