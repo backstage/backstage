@@ -62,6 +62,7 @@ export function createCardExtension<T>(options: {
 // @public (undocumented)
 export const HeaderWorldClock: (props: {
   clockConfigs: ClockConfig[];
+  customTimeFormat?: Intl.DateTimeFormatOptions;
 }) => JSX.Element | null;
 
 // @public

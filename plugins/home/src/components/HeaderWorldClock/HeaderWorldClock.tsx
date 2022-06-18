@@ -32,7 +32,10 @@ export type ClockConfig = {
   timeZone: string;
 };
 
-function getTimes(clockConfigs: ClockConfig[]) {
+function getTimes(
+  clockConfigs: ClockConfig[],
+  customTimeFormat?: Intl.DateTimeFormatOptions,
+) {
   const d = new Date();
   const lang = window.navigator.language;
 
@@ -47,7 +50,7 @@ function getTimes(clockConfigs: ClockConfig[]) {
 
     const options: Intl.DateTimeFormatOptions = {
       timeZone: clockConfig.timeZone,
-      ...timeFormat,
+      ...(customTimeFormat ?? timeFormat),
     };
 
     try {
@@ -69,23 +72,26 @@ function getTimes(clockConfigs: ClockConfig[]) {
 }
 
 /** @public */
-export const HeaderWorldClock = (props: { clockConfigs: ClockConfig[] }) => {
-  const { clockConfigs } = props;
+export const HeaderWorldClock = (props: {
+  clockConfigs: ClockConfig[];
+  customTimeFormat?: Intl.DateTimeFormatOptions;
+}) => {
+  const { clockConfigs, customTimeFormat } = props;
 
   const defaultTimes: TimeObj[] = [];
   const [clocks, setTimes] = React.useState(defaultTimes);
 
   React.useEffect(() => {
-    setTimes(getTimes(clockConfigs));
+    setTimes(getTimes(clockConfigs, customTimeFormat));
 
     const intervalId = setInterval(() => {
-      setTimes(getTimes(clockConfigs));
+      setTimes(getTimes(clockConfigs, customTimeFormat));
     }, 1000);
 
     return () => {
       clearInterval(intervalId);
     };
-  }, [clockConfigs]);
+  }, [clockConfigs, customTimeFormat]);
 
   if (clocks.length !== 0) {
     return (
