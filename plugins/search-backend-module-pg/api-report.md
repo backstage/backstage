@@ -4,6 +4,7 @@
 
 ```ts
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
+import { Config } from '@backstage/config';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { IndexableResultSet } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
@@ -43,7 +44,7 @@ export class DatabaseDocumentStore implements DatabaseStore {
   // (undocumented)
   query(
     tx: Knex.Transaction,
-    { types, pgTerm, fields, offset, limit, preTag, postTag }: PgSearchQuery,
+    { types, pgTerm, fields, offset, limit, options }: PgSearchQuery,
   ): Promise<DocumentResultRow[]>;
   // (undocumented)
   static supported(knex: Knex): Promise<boolean>;
@@ -80,10 +81,15 @@ export interface DatabaseStore {
 //
 // @public (undocumented)
 export class PgSearchEngine implements SearchEngine {
-  constructor(databaseStore: DatabaseStore);
+  // Warning: (ae-forgotten-export) The symbol "PgSearchHighlightOptions" needs to be exported by the entry point index.d.ts
+  constructor(
+    databaseStore: DatabaseStore,
+    highlightOptions?: PgSearchHighlightOptions,
+  );
   // (undocumented)
   static from(options: {
     database: PluginDatabaseManager;
+    config: Config;
   }): Promise<PgSearchEngine>;
   // (undocumented)
   getIndexer(type: string): Promise<PgSearchEngineIndexer>;
@@ -95,8 +101,13 @@ export class PgSearchEngine implements SearchEngine {
   ): void;
   // (undocumented)
   static supported(database: PluginDatabaseManager): Promise<boolean>;
+  // Warning: (ae-forgotten-export) The symbol "PgSearchHighlightConfig" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
-  translator(query: SearchQuery): ConcretePgSearchQuery;
+  translator(
+    query: SearchQuery,
+    options: PgSearchHighlightConfig,
+  ): ConcretePgSearchQuery;
 }
 
 // Warning: (ae-missing-release-tag) "PgSearchEngineIndexer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -132,11 +143,9 @@ export interface PgSearchQuery {
   // (undocumented)
   offset: number;
   // (undocumented)
+  options: PgSearchHighlightConfig;
+  // (undocumented)
   pgTerm?: string;
-  // (undocumented)
-  postTag: string;
-  // (undocumented)
-  preTag: string;
   // (undocumented)
   types?: string[];
 }
