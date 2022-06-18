@@ -48,7 +48,7 @@ export interface Config {
          */
         highlightAll?: boolean;
         /**
-         * maximum number of text fragments to display. The default value of zero selects a non-fragment-based headline generation method.
+         * Maximum number of text fragments to display. The default value of zero selects a non-fragment-based headline generation method.
          * A value greater than zero selects fragment-based headline generation (see the linked documentation above for more details).
          */
         maxFragments?: number;
