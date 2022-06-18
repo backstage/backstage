@@ -39,7 +39,10 @@ async function createSearchEngine(
   }
 
   if (await PgSearchEngine.supported(env.database)) {
-    return await PgSearchEngine.from({ database: env.database });
+    return await PgSearchEngine.from({
+      database: env.database,
+      config: env.config,
+    });
   }
 
   return new LunrSearchEngine({ logger: env.logger });

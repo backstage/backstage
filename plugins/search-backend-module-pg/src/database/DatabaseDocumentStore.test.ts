@@ -15,7 +15,20 @@
  */
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { IndexableDocument } from '@backstage/plugin-search-common';
+import { PgSearchHighlightConfig } from '../types';
 import { DatabaseDocumentStore } from './DatabaseDocumentStore';
+
+const highlightOptions: PgSearchHighlightConfig = {
+  preTag: '<tag>',
+  postTag: '</tag>',
+  useHighlight: false,
+  maxWords: 35,
+  minWords: 15,
+  shortWord: 3,
+  highlightAll: false,
+  maxFragments: 0,
+  fragmentDelimiter: ' ... ',
+};
 
 describe('DatabaseDocumentStore', () => {
   describe('unsupported', () => {
@@ -224,8 +237,7 @@ describe('DatabaseDocumentStore', () => {
             pgTerm: 'Hello & World',
             offset: 1,
             limit: 1,
-            preTag: '<tag>',
-            postTag: '</tag>',
+            options: highlightOptions,
           }),
         );
 
@@ -271,8 +283,7 @@ describe('DatabaseDocumentStore', () => {
             pgTerm: 'Hello & World',
             offset: 0,
             limit: 25,
-            preTag: '<tag>',
-            postTag: '</tag>',
+            options: highlightOptions,
           }),
         );
 
@@ -334,8 +345,7 @@ describe('DatabaseDocumentStore', () => {
             types: ['my-type'],
             offset: 0,
             limit: 25,
-            preTag: '<tag>',
-            postTag: '</tag>',
+            options: highlightOptions,
           }),
         );
 
@@ -389,8 +399,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this' },
             offset: 0,
             limit: 25,
-            preTag: '<tag>',
-            postTag: '</tag>',
+            options: highlightOptions,
           }),
         );
 
@@ -445,8 +454,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: ['this', 'that'] },
             offset: 0,
             limit: 25,
-            preTag: '<tag>',
-            postTag: '</tag>',
+            options: highlightOptions,
           }),
         );
 
@@ -508,8 +516,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this', otherField: 'another' },
             offset: 0,
             limit: 25,
-            preTag: '<tag>',
-            postTag: '</tag>',
+            options: highlightOptions,
           }),
         );
 
@@ -559,8 +566,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this' },
             offset: 0,
             limit: 25,
-            preTag: '<tag>',
-            postTag: '</tag>',
+            options: highlightOptions,
           }),
         );
 

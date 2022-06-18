@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { DatabaseStore } from '../database';
+import { PgSearchHighlightConfig } from '../types';
 import {
   ConcretePgSearchQuery,
   decodePageCursor,
@@ -21,6 +22,18 @@ import {
   PgSearchEngine,
 } from './PgSearchEngine';
 import { PgSearchEngineIndexer } from './PgSearchEngineIndexer';
+
+const highlightOptions: PgSearchHighlightConfig = {
+  preTag: '<tag>',
+  postTag: '</tag>',
+  useHighlight: false,
+  maxWords: 35,
+  minWords: 15,
+  shortWord: 3,
+  highlightAll: false,
+  maxFragments: 0,
+  fragmentDelimiter: ' ... ',
+};
 
 jest.mock('./PgSearchEngineIndexer', () => ({
   PgSearchEngineIndexer: jest
@@ -65,10 +78,13 @@ describe('PgSearchEngine', () => {
     });
 
     it('should pass page cursor', async () => {
-      const actualTranslatedQuery = searchEngine.translator({
-        term: 'Hello',
-        pageCursor: 'MQ==',
-      });
+      const actualTranslatedQuery = searchEngine.translator(
+        {
+          term: 'Hello',
+          pageCursor: 'MQ==',
+        },
+        highlightOptions,
+      );
 
       expect(actualTranslatedQuery).toMatchObject({
         pgQuery: {
@@ -81,9 +97,12 @@ describe('PgSearchEngine', () => {
     });
 
     it('should return translated query term', async () => {
-      const actualTranslatedQuery = searchEngine.translator({
-        term: 'Hello World',
-      });
+      const actualTranslatedQuery = searchEngine.translator(
+        {
+          term: 'Hello World',
+        },
+        highlightOptions,
+      );
 
       expect(actualTranslatedQuery).toMatchObject({
         pgQuery: {
@@ -96,10 +115,13 @@ describe('PgSearchEngine', () => {
     });
 
     it('should sanitize query term', async () => {
-      const actualTranslatedQuery = searchEngine.translator({
-        term: 'H&e|l!l*o W\0o(r)l:d',
-        pageCursor: '',
-      }) as ConcretePgSearchQuery;
+      const actualTranslatedQuery = searchEngine.translator(
+        {
+          term: 'H&e|l!l*o W\0o(r)l:d',
+          pageCursor: '',
+        },
+        highlightOptions,
+      ) as ConcretePgSearchQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         pgQuery: {
@@ -110,11 +132,14 @@ describe('PgSearchEngine', () => {
     });
 
     it('should return translated query with filters', async () => {
-      const actualTranslatedQuery = searchEngine.translator({
-        term: 'testTerm',
-        filters: { kind: 'testKind' },
-        types: ['my-filter'],
-      });
+      const actualTranslatedQuery = searchEngine.translator(
+        {
+          term: 'testTerm',
+          filters: { kind: 'testKind' },
+          types: ['my-filter'],
+        },
+        highlightOptions,
+      );
 
       expect(actualTranslatedQuery).toMatchObject({
         pgQuery: {

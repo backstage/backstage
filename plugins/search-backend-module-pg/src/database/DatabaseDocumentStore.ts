@@ -132,7 +132,7 @@ export class DatabaseDocumentStore implements DatabaseStore {
 
   async query(
     tx: Knex.Transaction,
-    { types, pgTerm, fields, offset, limit, preTag, postTag }: PgSearchQuery,
+    { types, pgTerm, fields, offset, limit, options }: PgSearchQuery,
   ): Promise<DocumentResultRow[]> {
     // Builds a query like:
     // SELECT ts_rank_cd(body, query) AS rank, type, document,
@@ -171,14 +171,19 @@ export class DatabaseDocumentStore implements DatabaseStore {
 
     query.select('type', 'document');
 
-    if (pgTerm) {
+    if (pgTerm && options.useHighlight) {
+      const headlineOptions = `MaxWords=${options.maxWords}, MinWords=${options.minWords}, ShortWord=${options.shortWord}, HighlightAll=${options.highlightAll}, MaxFragments=${options.maxFragments}, FragmentDelimiter=${options.fragmentDelimiter}, StartSel=${options.preTag}, StopSel=${options.postTag}`;
       query
         .select(tx.raw('ts_rank_cd(body, query) AS "rank"'))
         .select(
           tx.raw(
-            `ts_headline(\'english\', document, query, 'StartSel=${preTag}, StopSel=${postTag}') as "highlight"`,
+            `ts_headline(\'english\', document, query, '${headlineOptions}') as "highlight"`,
           ),
         )
+        .orderBy('rank', 'desc');
+    } else if (pgTerm && !options.useHighlight) {
+      query
+        .select(tx.raw('ts_rank_cd(body, query) AS "rank"'))
         .orderBy('rank', 'desc');
     } else {
       query.select(tx.raw('1 as rank'));

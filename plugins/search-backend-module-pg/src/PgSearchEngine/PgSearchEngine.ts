@@ -27,6 +27,8 @@ import {
   PgSearchQuery,
 } from '../database';
 import { v4 as uuid } from 'uuid';
+import { Config } from '@backstage/config';
+import { PgSearchHighlightConfig, PgSearchHighlightOptions } from '../types';
 
 export type ConcretePgSearchQuery = {
   pgQuery: PgSearchQuery;
@@ -34,13 +36,36 @@ export type ConcretePgSearchQuery = {
 };
 
 export class PgSearchEngine implements SearchEngine {
-  constructor(private readonly databaseStore: DatabaseStore) {}
+  private readonly highlightOptions: PgSearchHighlightConfig;
+
+  constructor(
+    private readonly databaseStore: DatabaseStore,
+    highlightOptions?: PgSearchHighlightOptions,
+  ) {
+    const uuidTag = uuid();
+    this.highlightOptions = {
+      preTag: `<${uuidTag}>`,
+      postTag: `</${uuidTag}>`,
+      useHighlight: false,
+      maxWords: 35,
+      minWords: 15,
+      shortWord: 3,
+      highlightAll: false,
+      maxFragments: 0,
+      fragmentDelimiter: ' ... ',
+      ...highlightOptions,
+    };
+  }
 
   static async from(options: {
     database: PluginDatabaseManager;
+    config: Config;
   }): Promise<PgSearchEngine> {
     return new PgSearchEngine(
       await DatabaseDocumentStore.create(await options.database.getClient()),
+      options.config.getOptional<PgSearchHighlightOptions>(
+        'search.pg.highlightOptions',
+      ),
     );
   }
 
@@ -48,13 +73,15 @@ export class PgSearchEngine implements SearchEngine {
     return await DatabaseDocumentStore.supported(await database.getClient());
   }
 
-  translator(query: SearchQuery): ConcretePgSearchQuery {
+  translator(
+    query: SearchQuery,
+    options: PgSearchHighlightConfig,
+  ): ConcretePgSearchQuery {
     const pageSize = 25;
     const { page } = decodePageCursor(query.pageCursor);
     const offset = page * pageSize;
     // We request more result to know whether there is another page
     const limit = pageSize + 1;
-    const uuidTag = uuid();
 
     return {
       pgQuery: {
@@ -68,8 +95,7 @@ export class PgSearchEngine implements SearchEngine {
         types: query.types,
         offset,
         limit,
-        preTag: `<${uuidTag}>`,
-        postTag: `</${uuidTag}>`,
+        options,
       },
       pageSize,
     };
@@ -90,7 +116,7 @@ export class PgSearchEngine implements SearchEngine {
   }
 
   async query(query: SearchQuery): Promise<IndexableResultSet> {
-    const { pgQuery, pageSize } = this.translator(query);
+    const { pgQuery, pageSize } = this.translator(query, this.highlightOptions);
 
     const rows = await this.databaseStore.transaction(async tx =>
       this.databaseStore.query(tx, pgQuery),
@@ -115,8 +141,8 @@ export class PgSearchEngine implements SearchEngine {
         document,
         rank: page * pageSize + index + 1,
         highlight: {
-          preTag: pgQuery.preTag,
-          postTag: pgQuery.postTag,
+          preTag: pgQuery.options.preTag,
+          postTag: pgQuery.options.postTag,
           fields: highlight
             ? {
                 text: highlight.text,
