@@ -19972,6 +19972,14 @@ passport-google-oauth20@^2.0.0:
   dependencies:
     passport-oauth2 "1.x.x"
 
+passport-keycloak-oauth2-oidc@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.npmjs.org/passport-keycloak-oauth2-oidc/-/passport-keycloak-oauth2-oidc-1.0.5.tgz#a772eed2e4ec3565e39a40f042b362c65a0d85aa"
+  integrity sha512-uvZGTFu7MozqOIocDdSlEImEQTaPd8g5Lwbt83SbFqOVvCS3PelKjMQOYoJ7ERL7ELOY6puV0BY+Pw8ExM4EYw==
+  dependencies:
+    lodash "^4.17.20"
+    passport-oauth2 "^1.5.0"
+
 passport-microsoft@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/passport-microsoft/-/passport-microsoft-1.0.0.tgz#78954cf3201fdce61beeb6587a3b158f8e9db86c"
@@ -19989,7 +19997,7 @@ passport-oauth1@1.x.x:
     passport-strategy "1.x.x"
     utils-merge "1.x.x"
 
-passport-oauth2@1.6.1, passport-oauth2@1.x.x, passport-oauth2@^1.1.2, passport-oauth2@^1.4.0, passport-oauth2@^1.6.1:
+passport-oauth2@1.6.1, passport-oauth2@1.x.x, passport-oauth2@^1.1.2, passport-oauth2@^1.4.0, passport-oauth2@^1.5.0, passport-oauth2@^1.6.1:
   version "1.6.1"
   resolved "https://registry.npmjs.org/passport-oauth2/-/passport-oauth2-1.6.1.tgz#c5aee8f849ce8bd436c7f81d904a3cd1666f181b"
   integrity sha512-ZbV43Hq9d/SBSYQ22GOiglFsjsD1YY/qdiptA+8ej+9C1dL1TVB+mBE5kDH/D4AJo50+2i8f4bx0vg4/yDDZCQ==

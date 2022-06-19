@@ -426,3 +426,15 @@ export const atlassianAuthApiRef: ApiRef<
 > = createApiRef({
   id: 'core.auth.atlassian',
 });
+
+/**
+ * Provides authentication towards Keycloak APIs.
+ *
+ * @public
+ * @remarks
+ * */
+export const keycloakAuthApiRef: ApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+> = createApiRef({
+  id: 'core.auth.keycloak',
+});

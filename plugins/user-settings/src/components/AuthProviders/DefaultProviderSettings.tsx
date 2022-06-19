@@ -25,6 +25,7 @@ import {
   bitbucketAuthApiRef,
   atlassianAuthApiRef,
   oneloginAuthApiRef,
+  keycloakAuthApiRef,
 } from '@backstage/core-plugin-api';
 
 type Props = {
@@ -94,6 +95,14 @@ export const DefaultProviderSettings = ({ configuredProviders }: Props) => (
         title="Atlassian"
         description="Provides authentication towards Atlassian APIs"
         apiRef={atlassianAuthApiRef}
+        icon={Star}
+      />
+    )}
+    {configuredProviders.includes('keycloak') && (
+      <ProviderSettingsItem
+        title="Keycloak"
+        description="Provides authentication towards keycloak APIs"
+        apiRef={keycloakAuthApiRef}
         icon={Star}
       />
     )}

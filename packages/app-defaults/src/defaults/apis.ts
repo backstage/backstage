@@ -31,6 +31,7 @@ import {
   OneLoginAuth,
   UnhandledErrorForwarder,
   AtlassianAuth,
+  KeycloakAuth,
   createFetchApi,
   FetchMiddlewares,
 } from '@backstage/core-app-api';
@@ -54,6 +55,7 @@ import {
   oneloginAuthApiRef,
   bitbucketAuthApiRef,
   atlassianAuthApiRef,
+  keycloakAuthApiRef,
 } from '@backstage/core-plugin-api';
 import {
   permissionApiRef,
@@ -171,6 +173,20 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
       OktaAuth.create({
+        discoveryApi,
+        oauthRequestApi,
+        environment: configApi.getOptionalString('auth.environment'),
+      }),
+  }),
+  createApiFactory({
+    api: keycloakAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+      KeycloakAuth.create({
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),

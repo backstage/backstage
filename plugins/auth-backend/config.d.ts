@@ -106,6 +106,9 @@ export interface Config {
       auth0?: {
         [authEnv: string]: { [key: string]: string };
       };
+      keycloak?: {
+        [authEnv: string]: { [key: string]: string };
+      };
       microsoft?: {
         [authEnv: string]: { [key: string]: string };
       };

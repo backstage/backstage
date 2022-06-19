@@ -22,6 +22,7 @@ import {
   microsoftAuthApiRef,
   oneloginAuthApiRef,
   bitbucketAuthApiRef,
+  keycloakAuthApiRef,
 } from '@backstage/core-plugin-api';
 
 export const providers = [
@@ -66,5 +67,11 @@ export const providers = [
     title: 'Bitbucket',
     message: 'Sign In using Bitbucket',
     apiRef: bitbucketAuthApiRef,
+  },
+  {
+    id: 'keycloak-auth-provider',
+    title: 'Keycloak',
+    message: 'Sign In using Keycloak',
+    apiRef: keycloakAuthApiRef,
   },
 ];
