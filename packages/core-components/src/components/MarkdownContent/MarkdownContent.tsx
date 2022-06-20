@@ -64,12 +64,23 @@ const useStyles = makeStyles<BackstageTheme>(
   { name: 'BackstageMarkdownContent' },
 );
 
+type TransformLink = (
+  href: string,
+  // Complex type from internal react-markdown dep library (hast)[./node_modules/@types/hast/index.d.ts]
+  children: any[],
+  title: string | null,
+) => string;
+
 type Props = {
   content: string;
   dialect?: 'gfm' | 'common-mark';
-  linkTarget?: Options['linkTarget'];
-  transformLinkUri?: Options['transformLinkUri'];
-  transformImageUri?: Options['transformImageUri'];
+  linkTarget?: React.HTMLAttributeAnchorTarget | TransformLink;
+  transformLinkUri?: TransformLink;
+  transformImageUri?: (
+    src: string,
+    alt: string,
+    title: string | null,
+  ) => string;
 };
 
 const components: Options['components'] = {
