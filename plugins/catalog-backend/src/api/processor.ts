@@ -170,8 +170,16 @@ export type CatalogProcessorErrorResult = {
 };
 
 /** @public */
+export type CatalogProcessorRefreshKeysResult = {
+  type: 'refresh';
+  entity: Entity;
+  key: String;
+};
+
+/** @public */
 export type CatalogProcessorResult =
   | CatalogProcessorLocationResult
   | CatalogProcessorEntityResult
   | CatalogProcessorRelationResult
-  | CatalogProcessorErrorResult;
+  | CatalogProcessorErrorResult
+  | CatalogProcessorRefreshKeysResult;

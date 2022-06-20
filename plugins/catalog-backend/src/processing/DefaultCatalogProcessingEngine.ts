@@ -123,6 +123,12 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
           let hashBuilder = this.createHash().update(errorsString);
           if (result.ok) {
+            await this.processingDatabase.transaction(tx =>
+              this.processingDatabase.addRefreshKeys(tx, {
+                keys: result.refreshKeys,
+              }),
+            );
+
             const { entityRefs: parents } =
               await this.processingDatabase.transaction(tx =>
                 this.processingDatabase.listParents(tx, {

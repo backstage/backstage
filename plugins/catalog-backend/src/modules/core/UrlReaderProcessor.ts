@@ -83,6 +83,13 @@ export class UrlReaderProcessor implements CatalogProcessor {
         })) {
           parseResults.push(parseResult);
           emit(parseResult);
+          if (parseResult.type === 'entity') {
+            emit({
+              type: 'refresh',
+              key: item.url,
+              entity: parseResult.entity,
+            });
+          }
         }
       }
 

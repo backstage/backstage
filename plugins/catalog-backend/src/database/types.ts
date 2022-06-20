@@ -81,6 +81,14 @@ export type ReplaceUnprocessedEntitiesOptions =
       type: 'delta';
     };
 
+export type RefreshKeyOptions = {
+  keys: { key: String; entity: Entity }[];
+};
+
+export type RefreshByKeyOptions = {
+  key: string;
+};
+
 export type RefreshOptions = {
   entityRef: string;
 };
@@ -148,6 +156,11 @@ export interface ProcessingDatabase {
    * Schedules a refresh of a given entityRef.
    */
   refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void>;
+
+  addRefreshKeys(
+    txOpaque: Transaction,
+    options: RefreshKeyOptions,
+  ): Promise<void>;
 
   /**
    * Lists all ancestors of a given entityRef.

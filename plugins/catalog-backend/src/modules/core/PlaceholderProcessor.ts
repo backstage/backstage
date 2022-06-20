@@ -19,7 +19,11 @@ import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import yaml from 'yaml';
-import { CatalogProcessor, LocationSpec } from '../../api';
+import {
+  CatalogProcessor,
+  CatalogProcessorEmit,
+  LocationSpec,
+} from '../../api';
 
 /** @public */
 export type PlaceholderResolverRead = (url: string) => Promise<Buffer>;
@@ -66,6 +70,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
   async preProcessEntity(
     entity: Entity,
     location: LocationSpec,
+    emit: CatalogProcessorEmit,
   ): Promise<Entity> {
     const process = async (data: any): Promise<[any, boolean]> => {
       if (!data || !(data instanceof Object)) {
@@ -102,6 +107,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
 
       const resolverKey = keys[0].substr(1);
       const resolverValue = data[keys[0]];
+      emit({ type: 'refresh', key: resolverValue, entity });
       const resolver = this.options.resolvers[resolverKey];
       if (!resolver || typeof resolverValue !== 'string') {
         // If there was no such placeholder resolver or if the value was not a

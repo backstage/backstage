@@ -61,6 +61,13 @@ export class FileReaderProcessor implements CatalogProcessor {
             },
           })) {
             emit(parseResult);
+            if (parseResult.type === 'entity') {
+              emit({
+                type: 'refresh',
+                key: path.normalize(fileMatch),
+                entity: parseResult.entity,
+              });
+            }
           }
         }
       } else if (!optional) {

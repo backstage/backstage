@@ -33,12 +33,15 @@ import {
   UpdateEntityCacheOptions,
   ListParentsOptions,
   ListParentsResult,
+  RefreshKeyOptions,
+  RefreshByKeyOptions,
 } from './types';
 import { DeferredEntity } from '../processing/types';
 import { ProcessingIntervalFunction } from '../processing/refresh';
 import { rethrowError, timestampToDateTime } from './conversion';
 import { initDatabaseMetrics } from './metrics';
 import {
+  DbRefreshKeysRow,
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
   DbRelationsRow,
@@ -515,7 +518,40 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       throw new NotFoundError(`Failed to schedule ${entityRef} for refresh`);
     }
   }
+  async refreshByRefreshKey(
+    txOpaque: Transaction,
+    options: RefreshByKeyOptions,
+  ) {
+    const tx = txOpaque as Knex.Transaction;
+    const { key } = options;
 
+    const rows = await tx<DbRefreshKeysRow>('refresh_keys')
+      .where({ key })
+      .select({
+        entity_ref: 'refresh_keys.entity_ref',
+      });
+
+    await Promise.all(rows.map(r => this.refresh(tx, r.entity_ref)));
+  }
+  async addRefreshKeys(
+    txOpaque: Transaction,
+    options: RefreshKeyOptions,
+  ): Promise<void> {
+    const tx = txOpaque as Knex.Transaction;
+    const { keys } = options;
+
+    await Promise.all(
+      keys.map(k => {
+        return tx<DbRefreshKeysRow>('refresh_keys')
+          .insert({
+            entity_ref: stringifyEntityRef(k.entity),
+            key: k.key,
+          })
+          .onConflict(['entity_ref', 'key'])
+          .ignore();
+      }),
+    );
+  }
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {
     try {
       let result: T | undefined = undefined;

@@ -38,6 +38,10 @@ export class ProcessorOutputCollector {
   private readonly errors = new Array<Error>();
   private readonly relations = new Array<EntityRelationSpec>();
   private readonly deferredEntities = new Array<DeferredEntity>();
+  private readonly refreshKeys = new Array<{
+    key: String;
+    entity: Entity;
+  }>();
   private done = false;
 
   constructor(
@@ -54,6 +58,7 @@ export class ProcessorOutputCollector {
     return {
       errors: this.errors,
       relations: this.relations,
+      refreshKeys: this.refreshKeys,
       deferredEntities: this.deferredEntities,
     };
   }
@@ -116,6 +121,8 @@ export class ProcessorOutputCollector {
       this.relations.push(i.relation);
     } else if (i.type === 'error') {
       this.errors.push(i.error);
+    } else if (i.type === 'refresh') {
+      this.refreshKeys.push({ key: i.key, entity: i.entity });
     }
   }
 }
