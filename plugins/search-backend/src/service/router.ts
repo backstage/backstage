@@ -33,7 +33,10 @@ import {
   IndexableResultSet,
   SearchResultSet,
 } from '@backstage/plugin-search-common';
-import { SearchEngine } from '@backstage/plugin-search-backend-node';
+import {
+  SearchEngine,
+  MissingIndexError,
+} from '@backstage/plugin-search-backend-node';
 import { AuthorizedSearchEngine } from './AuthorizedSearchEngine';
 
 const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
@@ -129,7 +132,10 @@ export async function createRouter(
   const router = Router();
   router.get(
     '/query',
-    async (req: express.Request, res: express.Response<SearchResultSet>) => {
+    async (
+      req: express.Request,
+      res: express.Response<SearchResultSet | string>,
+    ) => {
       const parseResult = requestSchema.safeParse(req.query);
 
       if (!parseResult.success) {
@@ -154,9 +160,19 @@ export async function createRouter(
         const resultSet = await engine?.query(query, { token });
 
         res.send(filterResultSet(toSearchResults(resultSet)));
-      } catch (err) {
+      } catch (error) {
+        if (error instanceof MissingIndexError) {
+          res
+            .status(400)
+            .send(
+              `\nNo index found for types: ${
+                query.types ? query.types.join(',') : ''
+              }. This means there are no documents to search through.`,
+            );
+        }
+
         throw new Error(
-          `There was a problem performing the search query. ${err}`,
+          `There was a problem performing the search query. ${error}`,
         );
       }
     },
