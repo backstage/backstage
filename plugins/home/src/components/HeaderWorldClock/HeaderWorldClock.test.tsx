@@ -86,3 +86,32 @@ describe('HeaderWorldClock with invalid Time Zone', () => {
     expect(rendered.getByText('GMT')).toBeInTheDocument();
   });
 });
+
+describe('HeaderWorldClock with custom Time Format', () => {
+  it('uses 24hr clock from custom Time Format', async () => {
+    const clockConfigs: ClockConfig[] = [
+      {
+        label: 'UTC',
+        timeZone: 'UTC',
+      },
+    ];
+
+    const timeFormat: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    };
+
+    const rendered = await renderInTestApp(
+      <ThemeProvider theme={lightTheme}>
+        <HeaderWorldClock
+          clockConfigs={clockConfigs}
+          customTimeFormat={timeFormat}
+        />
+      </ThemeProvider>,
+    );
+
+    const currentTime = `${new Date().getHours()}:${new Date().getMinutes()}`;
+    expect(rendered.getByText(currentTime)).toBeInTheDocument();
+  });
+});

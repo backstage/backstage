@@ -2,7 +2,7 @@
 '@backstage/plugin-home': patch
 ---
 
-Added support for customizing the time format used in the `HeaderWorlClock` component
+Added support for customizing the time format used in the `HeaderWorldClock` component
 
 Here's an example of how this can be used in the `HomePage.tsx` found in `\packages\app\src\components\home` to change the clock to be in the 24hr time format:
 
