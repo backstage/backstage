@@ -19,6 +19,9 @@ import { Duration } from 'luxon';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
 import { GkeClusterLocator } from './GkeClusterLocator';
+import { CatalogClusterLocator } from './CatalogClusterLocator';
+import { PluginEndpointDiscovery } from '@backstage/backend-common/dist';
+import { CatalogClient } from '@backstage/catalog-client';
 
 class CombinedClustersSupplier implements KubernetesClustersSupplier {
   constructor(readonly clusterSuppliers: KubernetesClustersSupplier[]) {}
@@ -38,13 +41,17 @@ class CombinedClustersSupplier implements KubernetesClustersSupplier {
 
 export const getCombinedClusterSupplier = (
   rootConfig: Config,
+  discovery: PluginEndpointDiscovery,
   refreshInterval: Duration | undefined = undefined,
 ): KubernetesClustersSupplier => {
+  const catalogClient = new CatalogClient({ discoveryApi: discovery });
   const clusterSuppliers = rootConfig
     .getConfigArray('kubernetes.clusterLocatorMethods')
     .map(clusterLocatorMethod => {
       const type = clusterLocatorMethod.getString('type');
       switch (type) {
+        case 'catalog':
+          return CatalogClusterLocator.fromConfig(catalogClient);
         case 'config':
           return ConfigClusterLocator.fromConfig(clusterLocatorMethod);
         case 'gke':

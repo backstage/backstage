@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,17 @@
  */
 
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
-import {
-  CATALOG_FILTER_EXISTS,
-  CatalogClient,
-} from '@backstage/catalog-client';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { CATALOG_FILTER_EXISTS, CatalogApi } from '@backstage/catalog-client';
 
 export class CatalogClusterLocator implements KubernetesClustersSupplier {
-  private catalogClient: CatalogClient;
+  private catalogClient: CatalogApi;
 
-  constructor(catalogClient: CatalogClient) {
+  constructor(catalogClient: CatalogApi) {
     this.catalogClient = catalogClient;
   }
 
-  static fromConfig(discoveryApi: DiscoveryApi): CatalogClusterLocator {
-    return new CatalogClusterLocator(new CatalogClient({ discoveryApi }));
+  static fromConfig(catalogApi: CatalogApi): CatalogClusterLocator {
+    return new CatalogClusterLocator(catalogApi);
   }
 
   async getClusters(): Promise<ClusterDetails[]> {
@@ -55,13 +51,13 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
         name: entity.metadata.name,
         // @ts-ignore filtered out by catalog-client query.
         url: entity.metadata.annotations['kubernetes.io/api-server'],
-        // @ts-ignore filtered out by catalog-client query.
         caData:
+          // @ts-ignore filtered out by catalog-client query.
           entity.metadata.annotations[
             'kubernetes.io/api-server-certificate-authority'
           ],
-        // @ts-ignore filtered out by catalog-client query.
         authProvider:
+          // @ts-ignore filtered out by catalog-client query.
           entity.metadata.annotations['kubernetes.io/auth-provider'],
       };
 

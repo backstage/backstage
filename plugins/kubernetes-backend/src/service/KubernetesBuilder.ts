@@ -37,10 +37,12 @@ import {
   KubernetesFanOutHandler,
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import { PluginEndpointDiscovery } from '@backstage/backend-common/dist';
 
 export interface KubernetesEnvironment {
   logger: Logger;
   config: Config;
+  discovery: PluginEndpointDiscovery;
 }
 
 /**
@@ -171,7 +173,11 @@ export class KubernetesBuilder {
     refreshInterval: Duration,
   ): KubernetesClustersSupplier {
     const config = this.env.config;
-    return getCombinedClusterSupplier(config, refreshInterval);
+    return getCombinedClusterSupplier(
+      config,
+      this.env.discovery,
+      refreshInterval,
+    );
   }
 
   protected buildObjectsProvider(
