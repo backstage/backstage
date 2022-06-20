@@ -64,22 +64,22 @@ export const colorVariants: Record<string, string[]> = {
  * As the background shapes and colors are decorative, we place them onto the
  * page as a css background-image instead of an html element of its own.
  */
-export function genPageTheme(options: {
+export function genPageTheme(props: {
   colors: string[];
   shape: string;
-  fontColor?: string;
+  options?: {
+    fontColor?: string;
+  };
 }): PageTheme {
-  const gradientColors =
-    options.colors.length === 1
-      ? [options.colors[0], options.colors[0]]
-      : options.colors;
+  const { colors, shape, options } = props;
+  const gradientColors = colors.length === 1 ? [colors[0], colors[0]] : colors;
   const gradient = `linear-gradient(90deg, ${gradientColors.join(', ')})`;
-  const backgroundImage = `${options.shape},  ${gradient}`;
-  const fontColor = options.fontColor ?? '#FFFFFF';
+  const backgroundImage = `${shape},  ${gradient}`;
+  const fontColor = options?.fontColor ?? '#FFFFFF';
 
   return {
-    colors: options.colors,
-    shape: options.shape,
+    colors: colors,
+    shape: shape,
     backgroundImage: backgroundImage,
     fontColor: fontColor,
   };
