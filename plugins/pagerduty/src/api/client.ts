@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-import { Service, Incident, ChangeEvent, OnCall } from '../components/types';
 import {
   PagerDutyApi,
-  TriggerAlarmRequest,
-  ServicesResponse,
-  IncidentsResponse,
-  OnCallsResponse,
-  ClientApiConfig,
+  PagerDutyTriggerAlarmRequest,
+  PagerDutyServicesResponse,
+  PagerDutyServiceResponse,
+  PagerDutyIncidentsResponse,
+  PagerDutyOnCallsResponse,
+  PagerDutyClientApiDependencies,
+  PagerDutyClientApiConfig,
   RequestOptions,
-  ChangeEventsResponse,
+  PagerDutyChangeEventsResponse,
 } from './types';
-import {
-  createApiRef,
-  DiscoveryApi,
-  ConfigApi,
-  IdentityApi,
-} from '@backstage/core-plugin-api';
+import { createApiRef, ConfigApi } from '@backstage/core-plugin-api';
+import { NotFoundError } from '@backstage/errors';
+import { Entity } from '@backstage/catalog-model';
+import { getPagerDutyEntity } from '../components/pagerDutyEntity';
 
 export class UnauthorizedError extends Error {}
 
@@ -38,65 +37,89 @@ export const pagerDutyApiRef = createApiRef<PagerDutyApi>({
   id: 'plugin.pagerduty.api',
 });
 
+const commonGetServiceParams =
+  'time_zone=UTC&include[]=integrations&include[]=escalation_policies';
+
 export class PagerDutyClient implements PagerDutyApi {
   static fromConfig(
     configApi: ConfigApi,
-    discoveryApi: DiscoveryApi,
-    identityApi: IdentityApi,
+    { discoveryApi, fetchApi }: PagerDutyClientApiDependencies,
   ) {
     const eventsBaseUrl: string =
       configApi.getOptionalString('pagerDuty.eventsBaseUrl') ??
       'https://events.pagerduty.com/v2';
+
     return new PagerDutyClient({
       eventsBaseUrl,
       discoveryApi,
-      identityApi,
+      fetchApi,
     });
   }
-  constructor(private readonly config: ClientApiConfig) {}
+  constructor(private readonly config: PagerDutyClientApiConfig) {}
 
-  async getServiceByIntegrationKey(integrationKey: string): Promise<Service[]> {
-    const params = `time_zone=UTC&include[]=integrations&include[]=escalation_policies&query=${integrationKey}`;
-    const url = `${await this.config.discoveryApi.getBaseUrl(
-      'proxy',
-    )}/pagerduty/services?${params}`;
-    const { services } = await this.getByUrl<ServicesResponse>(url);
+  async getServiceByEntity(entity: Entity): Promise<PagerDutyServiceResponse> {
+    const { integrationKey, serviceId } = getPagerDutyEntity(entity);
 
-    return services;
+    let response: PagerDutyServiceResponse;
+    let url: string;
+
+    if (integrationKey) {
+      url = `${await this.config.discoveryApi.getBaseUrl(
+        'proxy',
+      )}/pagerduty/services?${commonGetServiceParams}&query=${integrationKey}`;
+      const { services } = await this.getByUrl<PagerDutyServicesResponse>(url);
+      const service = services[0];
+
+      if (!service) throw new NotFoundError();
+
+      response = { service };
+    } else if (serviceId) {
+      url = `${await this.config.discoveryApi.getBaseUrl(
+        'proxy',
+      )}/pagerduty/services/${serviceId}?${commonGetServiceParams}`;
+
+      response = await this.getByUrl<PagerDutyServiceResponse>(url);
+    } else {
+      throw new NotFoundError();
+    }
+
+    return response;
   }
 
-  async getIncidentsByServiceId(serviceId: string): Promise<Incident[]> {
+  async getIncidentsByServiceId(
+    serviceId: string,
+  ): Promise<PagerDutyIncidentsResponse> {
     const params = `time_zone=UTC&sort_by=created_at&statuses[]=triggered&statuses[]=acknowledged&service_ids[]=${serviceId}`;
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/pagerduty/incidents?${params}`;
-    const { incidents } = await this.getByUrl<IncidentsResponse>(url);
 
-    return incidents;
+    return await this.getByUrl<PagerDutyIncidentsResponse>(url);
   }
 
-  async getChangeEventsByServiceId(serviceId: string): Promise<ChangeEvent[]> {
+  async getChangeEventsByServiceId(
+    serviceId: string,
+  ): Promise<PagerDutyChangeEventsResponse> {
     const params = `limit=5&time_zone=UTC&sort_by=timestamp`;
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/pagerduty/services/${serviceId}/change_events?${params}`;
 
-    const { change_events } = await this.getByUrl<ChangeEventsResponse>(url);
-
-    return change_events;
+    return await this.getByUrl<PagerDutyChangeEventsResponse>(url);
   }
 
-  async getOnCallByPolicyId(policyId: string): Promise<OnCall[]> {
+  async getOnCallByPolicyId(
+    policyId: string,
+  ): Promise<PagerDutyOnCallsResponse> {
     const params = `time_zone=UTC&include[]=users&escalation_policy_ids[]=${policyId}`;
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/pagerduty/oncalls?${params}`;
-    const { oncalls } = await this.getByUrl<OnCallsResponse>(url);
 
-    return oncalls;
+    return await this.getByUrl<PagerDutyOnCallsResponse>(url);
   }
 
-  triggerAlarm(request: TriggerAlarmRequest): Promise<Response> {
+  triggerAlarm(request: PagerDutyTriggerAlarmRequest): Promise<Response> {
     const { integrationKey, source, description, userName } = request;
 
     const body = JSON.stringify({
@@ -130,13 +153,11 @@ export class PagerDutyClient implements PagerDutyApi {
   }
 
   private async getByUrl<T>(url: string): Promise<T> {
-    const { token: idToken } = await this.config.identityApi.getCredentials();
     const options = {
       method: 'GET',
       headers: {
         Accept: 'application/vnd.pagerduty+json;version=2',
         'Content-Type': 'application/json',
-        ...(idToken && { Authorization: `Bearer ${idToken}` }),
       },
     };
     const response = await this.request(url, options);
@@ -147,10 +168,15 @@ export class PagerDutyClient implements PagerDutyApi {
     url: string,
     options: RequestOptions,
   ): Promise<Response> {
-    const response = await fetch(url, options);
+    const response = await this.config.fetchApi.fetch(url, options);
     if (response.status === 401) {
       throw new UnauthorizedError();
     }
+
+    if (response.status === 404) {
+      throw new NotFoundError();
+    }
+
     if (!response.ok) {
       const payload = await response.json();
       const errors = payload.errors.map((error: string) => error).join(' ');

@@ -15,3 +15,4 @@
  */
 
 export { MissingTokenError } from './MissingTokenError';
+export { ServiceNotFoundError } from './ServiceNotFoundError';
