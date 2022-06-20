@@ -56,7 +56,7 @@ export const ApacheAirflowPage = apacheAirflowPlugin.provide(
  * If the dagIds is specified, only those DAGs are loaded.
  * Otherwise, it's going to list all the DAGs
  * @public
- * @param dagIds - string[]
+ * @param dagIds - optional string[] of the DAGs to show in the table. If undefined, it will list all DAGs
  */
 export const ApacheAirflowDagTable = apacheAirflowPlugin.provide(
   createComponentExtension({
