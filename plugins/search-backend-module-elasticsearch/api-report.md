@@ -15,17 +15,37 @@ import { Logger } from 'winston';
 import { SearchEngine } from '@backstage/plugin-search-common';
 import { SearchQuery } from '@backstage/plugin-search-common';
 
-// Warning: (ae-missing-release-tag) "ElasticSearchClientOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-search-backend-module-elasticsearch" does not have an export "ElasticSearchEngine"
-//
+// @public (undocumented)
+export interface ElasticSearchAgentOptions {
+  // (undocumented)
+  keepAlive?: boolean;
+  // (undocumented)
+  keepAliveMsecs?: number;
+  // (undocumented)
+  maxFreeSockets?: number;
+  // (undocumented)
+  maxSockets?: number;
+}
+
+// @public (undocumented)
+export type ElasticSearchAuth =
+  | {
+      username: string;
+      password: string;
+    }
+  | {
+      apiKey:
+        | string
+        | {
+            id: string;
+            api_key: string;
+          };
+    };
+
 // @public
 export interface ElasticSearchClientOptions {
-  // Warning: (ae-forgotten-export) The symbol "ElasticSearchAgentOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   agent?: ElasticSearchAgentOptions | ((opts?: any) => unknown) | false;
-  // Warning: (ae-forgotten-export) The symbol "ElasticSearchAuth" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   auth?: ElasticSearchAuth;
   // (undocumented)
@@ -36,8 +56,6 @@ export interface ElasticSearchClientOptions {
   };
   // (undocumented)
   compression?: 'gzip';
-  // Warning: (ae-forgotten-export) The symbol "ElasticSearchConnectionConstructor" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   Connection?: ElasticSearchConnectionConstructor;
   // (undocumented)
@@ -50,8 +68,6 @@ export interface ElasticSearchClientOptions {
   maxRetries?: number;
   // (undocumented)
   name?: string | symbol;
-  // Warning: (ae-forgotten-export) The symbol "ElasticSearchNodeOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   node?:
     | string
@@ -92,11 +108,47 @@ export interface ElasticSearchClientOptions {
   ssl?: ConnectionOptions;
   // (undocumented)
   suggestCompression?: boolean;
-  // Warning: (ae-forgotten-export) The symbol "ElasticSearchTransportConstructor" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   Transport?: ElasticSearchTransportConstructor;
 }
+
+// @public
+export type ElasticSearchConcreteQuery = {
+  documentTypes?: string[];
+  elasticSearchQuery: Object;
+  pageSize: number;
+};
+
+// @public (undocumented)
+export interface ElasticSearchConnectionConstructor {
+  // (undocumented)
+  new (opts?: any): any;
+  // (undocumented)
+  roles: {
+    MASTER: string;
+    DATA: string;
+    INGEST: string;
+    ML: string;
+  };
+  // (undocumented)
+  statuses: {
+    ALIVE: string;
+    DEAD: string;
+  };
+}
+
+// @public
+export type ElasticSearchCustomIndexTemplate = {
+  name: string;
+  body: ElasticSearchCustomIndexTemplateBody;
+};
+
+// @public
+export type ElasticSearchCustomIndexTemplateBody = {
+  index_patterns: string[];
+  composed_of?: string[];
+  template?: Record<string, any>;
+};
 
 // @public (undocumented)
 export type ElasticSearchHighlightConfig = {
@@ -115,6 +167,41 @@ export type ElasticSearchHighlightOptions = {
 };
 
 // @public (undocumented)
+export interface ElasticSearchNodeOptions {
+  // (undocumented)
+  agent?: ElasticSearchAgentOptions;
+  // (undocumented)
+  headers?: Record<string, any>;
+  // (undocumented)
+  id?: string;
+  // (undocumented)
+  roles?: {
+    master: boolean;
+    data: boolean;
+    ingest: boolean;
+    ml: boolean;
+  };
+  // (undocumented)
+  ssl?: ConnectionOptions;
+  // (undocumented)
+  url: URL;
+}
+
+// @public
+export type ElasticSearchOptions = {
+  logger: Logger;
+  config: Config;
+  aliasPostfix?: string;
+  indexPrefix?: string;
+};
+
+// @public
+export type ElasticSearchQueryTranslator = (
+  query: SearchQuery,
+  options?: ElasticSearchQueryTranslatorOptions,
+) => ElasticSearchConcreteQuery;
+
+// @public
 export type ElasticSearchQueryTranslatorOptions = {
   highlightOptions?: ElasticSearchHighlightConfig;
 };
@@ -128,8 +215,6 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     logger: Logger,
     highlightOptions?: ElasticSearchHighlightOptions,
   );
-  // Warning: (ae-forgotten-export) The symbol "ElasticSearchOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static fromConfig({
     logger,
@@ -142,22 +227,18 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   newClient<T>(create: (options: ElasticSearchClientOptions) => T): T;
   // (undocumented)
   query(query: SearchQuery): Promise<IndexableResultSet>;
-  // Warning: (ae-forgotten-export) The symbol "ElasticSearchQueryTranslator" needs to be exported by the entry point index.d.ts
-  //
+  // (undocumented)
+  setIndexTemplate(template: ElasticSearchCustomIndexTemplate): Promise<void>;
   // (undocumented)
   setTranslator(translator: ElasticSearchQueryTranslator): void;
-  // Warning: (ae-forgotten-export) The symbol "ConcreteElasticSearchQuery" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   protected translator(
     query: SearchQuery,
     options?: ElasticSearchQueryTranslatorOptions,
-  ): ConcreteElasticSearchQuery;
+  ): ElasticSearchConcreteQuery;
 }
 
-// Warning: (ae-missing-release-tag) "ElasticSearchSearchEngineIndexer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
   constructor(options: ElasticSearchSearchEngineIndexerOptions);
   // (undocumented)
@@ -170,9 +251,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
   initialize(): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "ElasticSearchSearchEngineIndexerOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type ElasticSearchSearchEngineIndexerOptions = {
   type: string;
   indexPrefix: string;
@@ -181,4 +260,17 @@ export type ElasticSearchSearchEngineIndexerOptions = {
   logger: Logger;
   elasticSearchClient: Client;
 };
+
+// @public (undocumented)
+export interface ElasticSearchTransportConstructor {
+  // (undocumented)
+  new (opts?: any): any;
+  // (undocumented)
+  sniffReasons: {
+    SNIFF_ON_START: string;
+    SNIFF_INTERVAL: string;
+    SNIFF_ON_CONNECTION_FAULT: string;
+    DEFAULT: string;
+  };
+}
 ```

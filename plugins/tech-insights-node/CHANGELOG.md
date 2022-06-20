@@ -1,5 +1,23 @@
 # @backstage/plugin-tech-insights-node
 
+## 0.3.1
+
+### Patch Changes
+
+- aa15229ec3: Introduce additional JsonValue types to be storable as facts. This enables the possibility to store more complex objects for fact checking purposes. The rules engine supports walking keyed object values directly to create rules and checks
+
+  Modify facts database table to have a more restricted timestamp precision for cases where the postgres server isn't configured to contain such value. This fixes the issue where in some cases `maxItems` lifecycle condition didn't work as expected.
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+
+## 0.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+
 ## 0.3.1-next.0
 
 ### Patch Changes

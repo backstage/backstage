@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.3.0
+
+### Minor Changes
+
+- 4328737af6: Add support to fetch data for Stateful Sets
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.3
+
 ## 0.3.0-next.1
 
 ### Patch Changes

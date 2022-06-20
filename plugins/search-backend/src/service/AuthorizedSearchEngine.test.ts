@@ -44,6 +44,7 @@ describe('AuthorizedSearchEngine', () => {
       .fill(0)
       .map((_, index) => ({
         type,
+        rank: index + 1,
         document: {
           title: `${type}_doc_${index}`,
           authorization: withAuthorization
@@ -261,9 +262,11 @@ describe('AuthorizedSearchEngine', () => {
       }),
     );
 
+    const expectedResult = { ...usersWithAuth[8], rank: 1 };
+
     await expect(
       authorizedSearchEngine.query({ term: '' }, options),
-    ).resolves.toEqual({ results: [usersWithAuth[8]] });
+    ).resolves.toEqual({ results: [expectedResult] });
 
     expect(mockedQuery).toHaveBeenCalledWith(
       { term: '', types: ['users'] },
@@ -275,6 +278,7 @@ describe('AuthorizedSearchEngine', () => {
     const searchResults = [
       {
         type: 'templates',
+        rank: 1,
         document: {
           title: `doc_0_a`,
           authorization: { resourceRef: `template_doc_0` },
@@ -282,6 +286,7 @@ describe('AuthorizedSearchEngine', () => {
       },
       {
         type: 'templates',
+        rank: 2,
         document: {
           title: `doc_0_b`,
           authorization: { resourceRef: `template_doc_0` },
@@ -419,7 +424,9 @@ describe('AuthorizedSearchEngine', () => {
       { token: 'token' },
     );
 
-    const expectedResult = allDocuments.slice(0, 25);
+    const expectedResult = allDocuments
+      .slice(0, 25)
+      .map((r, i) => ({ ...r, rank: i + 1 }));
 
     const expectedFirstRequestCursor = 'MQ==';
     expect(result).toEqual({
@@ -510,7 +517,8 @@ describe('AuthorizedSearchEngine', () => {
 
     const expectedResult = allDocuments
       .filter(d => d.type !== typeServices)
-      .slice(0, 25);
+      .slice(0, 25)
+      .map((d, i) => ({ ...d, rank: i + 1 }));
 
     const expectedFirstRequestCursor = 'MQ==';
     expect(result).toEqual({
@@ -587,8 +595,12 @@ describe('AuthorizedSearchEngine', () => {
       { token: 'token' },
     );
 
+    const expectedResults = servicesWithAuth
+      .slice(5)
+      .map((r, i) => ({ ...r, rank: 25 + i + 1 }));
+
     expect(result).toEqual({
-      results: servicesWithAuth.slice(5),
+      results: expectedResults,
       previousPageCursor: encodePageCursor({ page: 0 }),
     });
   });

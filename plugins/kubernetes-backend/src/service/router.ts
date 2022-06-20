@@ -21,6 +21,10 @@ import express from 'express';
 import { KubernetesBuilder } from './KubernetesBuilder';
 import { PluginEndpointDiscovery } from '@backstage/backend-common/dist';
 
+/**
+ *
+ * @alpha
+ */
 export interface RouterOptions {
   logger: Logger;
   config: Config;
@@ -40,6 +44,8 @@ export interface RouterOptions {
  *   config,
  * }).build();
  * ```
+ *
+ * @alpha
  */
 export async function createRouter(
   options: RouterOptions,

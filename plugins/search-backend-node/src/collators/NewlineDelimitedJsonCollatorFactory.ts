@@ -23,7 +23,8 @@ import { Readable } from 'stream';
 import { Logger } from 'winston';
 
 /**
- * @beta
+ * Options for instansiate NewlineDelimitedJsonCollatorFactory
+ * @public
  */
 export type NewlineDelimitedJsonCollatorFactoryOptions = {
   type: string;
@@ -60,15 +61,13 @@ export type NewlineDelimitedJsonCollatorFactoryOptions = {
  * });
  * ```
  *
- * @beta
+ * @public
  */
 export class NewlineDelimitedJsonCollatorFactory
   implements DocumentCollatorFactory
 {
-  /** {@inheritDoc @backstage/plugin-search-common#DocumentCollatorFactory."type"} */
   readonly type: string;
 
-  /** {@inheritDoc @backstage/plugin-search-common#DocumentCollatorFactory.visibilityPermission} */
   public readonly visibilityPermission: Permission | undefined;
 
   private constructor(
@@ -123,7 +122,6 @@ export class NewlineDelimitedJsonCollatorFactory
     }
   }
 
-  /** {@inheritDoc @backstage/plugin-search-common#DocumentCollatorFactory.getCollator} */
   async getCollator(): Promise<Readable> {
     // Search for files matching the given pattern.
     const lastUrl = await this.lastUrl();

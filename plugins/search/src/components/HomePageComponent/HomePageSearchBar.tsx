@@ -16,7 +16,10 @@
 
 import React, { useCallback, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { SearchBarBase, SearchBarBaseProps } from '../SearchBar';
+import {
+  SearchBarBase,
+  SearchBarBaseProps,
+} from '@backstage/plugin-search-react';
 import { useNavigateToQuery } from '../util';
 
 const useStyles = makeStyles({
@@ -37,9 +40,7 @@ export type HomePageSearchBarProps = Partial<
 >;
 
 /**
- * The search bar created specifically for the composable home page
- *
- * @public
+ * The search bar created specifically for the composable home page.
  */
 export const HomePageSearchBar = ({ ...props }: HomePageSearchBarProps) => {
   const classes = useStyles(props);

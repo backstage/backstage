@@ -51,6 +51,9 @@ const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
   return z.record(jsonValueSchema);
 });
 
+/**
+ * @public
+ */
 export type RouterOptions = {
   engine: SearchEngine;
   types: Record<string, DocumentTypeInfo>;
@@ -61,6 +64,9 @@ export type RouterOptions = {
 
 const allowedLocationProtocols = ['http:', 'https:'];
 
+/**
+ * @public
+ */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

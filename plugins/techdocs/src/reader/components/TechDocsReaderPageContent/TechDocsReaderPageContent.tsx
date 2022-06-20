@@ -114,7 +114,10 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
           </Grid>
           {withSearch && (
             <Grid className={classes.search} xs="auto" item>
-              <TechDocsSearch entityId={entityRef} />
+              <TechDocsSearch
+                entityId={entityRef}
+                entityTitle={entityMetadata?.metadata?.title}
+              />
             </Grid>
           )}
           <Grid xs={12} item>

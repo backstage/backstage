@@ -26,6 +26,8 @@ export {
 
 export { AzurePullRequestsIcon } from './components/AzurePullRequestsIcon';
 
+export * from './api';
+
 export { FilterType } from './components/PullRequestsPage';
 export type {
   PullRequestColumnConfig,

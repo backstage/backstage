@@ -32,9 +32,7 @@ export const isKubernetesAvailable = (entity: Entity) =>
     entity.metadata.annotations?.[KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION],
   );
 
-type Props = {};
-
-export const Router = (_props: Props) => {
+export const Router = (props: { refreshIntervalMs?: number }) => {
   const { entity } = useEntity();
 
   const kubernetesAnnotationValue =
@@ -49,7 +47,15 @@ export const Router = (_props: Props) => {
   ) {
     return (
       <Routes>
-        <Route path="/" element={<KubernetesContent entity={entity} />} />
+        <Route
+          path="/"
+          element={
+            <KubernetesContent
+              entity={entity}
+              refreshIntervalMs={props.refreshIntervalMs}
+            />
+          }
+        />
       </Routes>
     );
   }

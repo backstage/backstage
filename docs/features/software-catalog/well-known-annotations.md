@@ -353,6 +353,19 @@ to `scm-only`, the plugin will only take into account files stored in source
 control (e.g. ignoring generated code). If set to `enabled`, all files covered
 by a coverage report will be taken into account.
 
+### vault.io/secrets-path
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    vault.io/secrets-path: test/backstage
+```
+
+The value of this annotation contains the path to the secrets of the entity in
+Vault. If not present when the Vault plugin is in use, a message will be shown
+instead, letting the user know what is missing in the `catalog-info.yaml`.
+
 ## Deprecated Annotations
 
 The following annotations are deprecated, and only listed here to aid in

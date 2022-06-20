@@ -334,41 +334,49 @@ export class AppManager implements BackstageApp {
       children: ReactElement;
     }) => {
       const [identityApi, setIdentityApi] = useState<IdentityApi>();
+      const configApi = useApi(configApiRef);
+      const basePath = getBasePath(configApi);
 
       if (!identityApi) {
         return <Component onSignInSuccess={setIdentityApi} />;
       }
 
-      this.appIdentityProxy.setTarget(identityApi);
+      this.appIdentityProxy.setTarget(identityApi, {
+        signOutTargetUrl: basePath || '/',
+      });
       return children;
     };
 
     const AppRouter = ({ children }: PropsWithChildren<{}>) => {
       const configApi = useApi(configApiRef);
-      const mountPath = `${getBasePath(configApi)}/*`;
+      const basePath = getBasePath(configApi);
+      const mountPath = `${basePath}/*`;
       const { routeObjects } = useContext(InternalAppContext);
 
       // If the app hasn't configured a sign-in page, we just continue as guest.
       if (!SignInPageComponent) {
-        this.appIdentityProxy.setTarget({
-          getUserId: () => 'guest',
-          getIdToken: async () => undefined,
-          getProfile: () => ({
-            email: 'guest@example.com',
-            displayName: 'Guest',
-          }),
-          getProfileInfo: async () => ({
-            email: 'guest@example.com',
-            displayName: 'Guest',
-          }),
-          getBackstageIdentity: async () => ({
-            type: 'user',
-            userEntityRef: 'user:default/guest',
-            ownershipEntityRefs: ['user:default/guest'],
-          }),
-          getCredentials: async () => ({}),
-          signOut: async () => {},
-        });
+        this.appIdentityProxy.setTarget(
+          {
+            getUserId: () => 'guest',
+            getIdToken: async () => undefined,
+            getProfile: () => ({
+              email: 'guest@example.com',
+              displayName: 'Guest',
+            }),
+            getProfileInfo: async () => ({
+              email: 'guest@example.com',
+              displayName: 'Guest',
+            }),
+            getBackstageIdentity: async () => ({
+              type: 'user',
+              userEntityRef: 'user:default/guest',
+              ownershipEntityRefs: ['user:default/guest'],
+            }),
+            getCredentials: async () => ({}),
+            signOut: async () => {},
+          },
+          { signOutTargetUrl: basePath || '/' },
+        );
 
         return (
           <RouterComponent>

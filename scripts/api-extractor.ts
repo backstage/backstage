@@ -40,7 +40,7 @@ import {
   TSDocTagSyntaxKind,
 } from '@microsoft/tsdoc';
 import { TSDocConfigFile } from '@microsoft/tsdoc-config';
-import { ApiPackage, ApiModel } from '@microsoft/api-extractor-model';
+import { ApiPackage, ApiModel, ApiItem } from '@microsoft/api-extractor-model';
 import {
   IMarkdownDocumenterOptions,
   MarkdownDocumenter,
@@ -209,69 +209,69 @@ const SKIPPED_PACKAGES = [
   join('packages', 'techdocs-cli'),
 ];
 
-const NO_WARNING_PACKAGES = [
-  'packages/app-defaults',
-  'packages/backend-common',
-  'packages/backend-tasks',
-  'packages/backend-test-utils',
-  'packages/catalog-client',
-  'packages/cli-common',
-  'packages/config',
-  'packages/config-loader',
-  'packages/core-app-api',
-  'packages/core-plugin-api',
-  'packages/dev-utils',
-  'packages/errors',
-  'packages/integration',
-  'packages/integration-react',
-  'packages/search-common',
-  'packages/techdocs-common',
-  'packages/test-utils',
-  'packages/theme',
-  'packages/types',
-  'packages/release-manifests',
-  'packages/version-bridge',
-  'plugins/auth-node',
-  'plugins/catalog-backend',
-  'plugins/catalog-backend-module-aws',
-  'plugins/catalog-backend-module-azure',
-  'plugins/catalog-backend-module-bitbucket',
-  'plugins/catalog-backend-module-github',
-  'plugins/catalog-backend-module-gitlab',
-  'plugins/catalog-backend-module-ldap',
-  'plugins/catalog-backend-module-msgraph',
-  'plugins/catalog-common',
-  'plugins/catalog-graph',
-  'plugins/catalog-react',
-  'plugins/codescene',
-  'plugins/graphiql',
-  'plugins/org',
-  'plugins/periskop',
-  'plugins/periskop-backend',
-  'plugins/permission-backend',
-  'plugins/permission-common',
-  'plugins/permission-node',
-  'plugins/permission-react',
-  'plugins/scaffolder-backend-module-cookiecutter',
-  'plugins/scaffolder-backend-module-rails',
-  'plugins/scaffolder-backend-module-yeoman',
-  'plugins/scaffolder-common',
-  'plugins/search-backend-node',
-  'plugins/search-common',
-  'plugins/search-react',
-  'plugins/techdocs',
-  'plugins/techdocs-addons-test-utils',
-  'plugins/techdocs-backend',
-  'plugins/techdocs-module-addons-contrib',
-  'plugins/techdocs-node',
-  'plugins/techdocs-react',
-  'plugins/tech-insights',
-  'plugins/tech-insights-backend',
-  'plugins/tech-insights-backend-module-jsonfc',
-  'plugins/tech-insights-common',
-  'plugins/tech-insights-node',
-  'plugins/todo',
-  'plugins/todo-backend',
+const ALLOW_WARNINGS = [
+  'packages/core-components',
+  'plugins/allure',
+  'plugins/apache-airflow',
+  'plugins/api-docs',
+  'plugins/app-backend',
+  'plugins/auth-backend',
+  'plugins/azure-devops',
+  'plugins/azure-devops-backend',
+  'plugins/azure-devops-common',
+  'plugins/badges',
+  'plugins/badges-backend',
+  'plugins/bazaar',
+  'plugins/bazaar-backend',
+  'plugins/bitrise',
+  'plugins/catalog',
+  'plugins/catalog-graphql',
+  'plugins/catalog-import',
+  'plugins/cicd-statistics',
+  'plugins/circleci',
+  'plugins/cloudbuild',
+  'plugins/code-climate',
+  'plugins/code-coverage',
+  'plugins/code-coverage-backend',
+  'plugins/config-schema',
+  'plugins/cost-insights',
+  'plugins/dynatrace',
+  'plugins/explore',
+  'plugins/explore-react',
+  'plugins/firehydrant',
+  'plugins/fossa',
+  'plugins/gcalendar',
+  'plugins/gcp-projects',
+  'plugins/git-release-manager',
+  'plugins/github-actions',
+  'plugins/github-deployments',
+  'plugins/github-pull-requests-board',
+  'plugins/gitops-profiles',
+  'plugins/graphql-backend',
+  'plugins/home',
+  'plugins/ilert',
+  'plugins/jenkins',
+  'plugins/jenkins-backend',
+  'plugins/kafka',
+  'plugins/kafka-backend',
+  'plugins/kubernetes',
+  'plugins/kubernetes-backend',
+  'plugins/kubernetes-common',
+  'plugins/lighthouse',
+  'plugins/newrelic',
+  'plugins/newrelic-dashboard',
+  'plugins/pagerduty',
+  'plugins/proxy-backend',
+  'plugins/rollbar',
+  'plugins/rollbar-backend',
+  'plugins/search-backend-module-pg',
+  'plugins/sentry',
+  'plugins/shortcuts',
+  'plugins/sonarqube',
+  'plugins/splunk-on-call',
+  'plugins/tech-radar',
+  'plugins/user-settings',
+  'plugins/xcmetrics',
 ];
 
 async function resolvePackagePath(
@@ -580,7 +580,7 @@ async function runApiExtraction({
     }
 
     const warningCountAfter = await countApiReportWarnings(projectFolder);
-    if (NO_WARNING_PACKAGES.includes(packageDir) && warningCountAfter > 0) {
+    if (warningCountAfter > 0 && !ALLOW_WARNINGS.includes(packageDir)) {
       throw new Error(
         `The API Report for ${packageDir} is not allowed to have warnings`,
       );
@@ -937,6 +937,16 @@ async function buildDocs({
       );
 
       this._markdownEmitter = new CustomCustomMarkdownEmitter(newModel);
+    }
+
+    private _getFilenameForApiItem(apiItem: ApiItem): string {
+      const filename: string = super._getFilenameForApiItem(apiItem);
+
+      if (filename.includes('.html.')) {
+        return filename.replace(/\.html\./g, '._html.');
+      }
+
+      return filename;
     }
 
     // We don't really get many chances to modify the generated AST

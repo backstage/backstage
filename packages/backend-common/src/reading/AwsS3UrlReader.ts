@@ -35,6 +35,8 @@ import { ForwardedError, NotModifiedError } from '@backstage/errors';
 import { ListObjectsV2Output, ObjectList } from 'aws-sdk/clients/s3';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
+const DEFAULT_REGION = 'us-east-1';
+
 /**
  * Path style URLs: https://s3.(region).amazonaws.com/(bucket)/(key)
  * The region can also be on the old form: https://s3-(region).amazonaws.com/(bucket)/(key)
@@ -57,7 +59,7 @@ export function parseUrl(
   // Treat Amazon hosted separately because it has special region logic
   if (config.host === 'amazonaws.com') {
     const match = host.match(
-      /^(?:([a-z0-9.-]+)\.)?s3[.-]([a-z0-9-]+)\.amazonaws\.com$/,
+      /^(?:([a-z0-9.-]+)\.)?s3(?:[.-]([a-z0-9-]+))?\.amazonaws\.com$/,
     );
     if (!match) {
       throw new Error(`Invalid AWS S3 URL ${url}`);
@@ -76,14 +78,14 @@ export function parseUrl(
       return {
         path: pathname.substring(slashIndex + 1),
         bucket: pathname.substring(0, slashIndex),
-        region: hostRegion,
+        region: hostRegion ?? DEFAULT_REGION,
       };
     }
 
     return {
       path: pathname,
       bucket: hostBucket,
-      region: hostRegion,
+      region: hostRegion ?? DEFAULT_REGION,
     };
   }
 

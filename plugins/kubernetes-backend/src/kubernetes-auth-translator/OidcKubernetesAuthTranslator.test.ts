@@ -16,15 +16,9 @@
 
 import { OidcKubernetesAuthTranslator } from './OidcKubernetesAuthTranslator';
 import { ClusterDetails } from '../types/types';
-import { Entity } from '@backstage/catalog-model';
 
 describe('OidcKubernetesAuthTranslator tests', () => {
   const at = new OidcKubernetesAuthTranslator();
-  const entity: Entity = {
-    apiVersion: 'v1',
-    kind: 'service',
-    metadata: { name: 'test' },
-  };
   const baseClusterDetails: ClusterDetails = {
     name: 'test',
     authProvider: 'oidc',
@@ -38,10 +32,7 @@ describe('OidcKubernetesAuthTranslator tests', () => {
         ...baseClusterDetails,
       },
       {
-        auth: {
-          oidc: { okta: 'fakeToken' },
-        },
-        entity,
+        oidc: { okta: 'fakeToken' },
       },
     );
 
@@ -50,7 +41,7 @@ describe('OidcKubernetesAuthTranslator tests', () => {
 
   it('returns error when oidcTokenProvider is not configured', async () => {
     await expect(
-      at.decorateClusterDetailsWithAuth(baseClusterDetails, { entity }),
+      at.decorateClusterDetailsWithAuth(baseClusterDetails, {}),
     ).rejects.toThrow(
       'oidc authProvider requires a configured oidcTokenProvider',
     );
@@ -60,7 +51,7 @@ describe('OidcKubernetesAuthTranslator tests', () => {
     await expect(
       at.decorateClusterDetailsWithAuth(
         { oidcTokenProvider: 'okta', ...baseClusterDetails },
-        { entity },
+        {},
       ),
     ).rejects.toThrow('Auth token not found under oidc.okta in request body');
   });

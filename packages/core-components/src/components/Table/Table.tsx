@@ -303,6 +303,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     initialState,
     emptyContent,
     onStateChange,
+    components,
     ...restProps
   } = props;
   const tableClasses = useTableStyles();
@@ -493,6 +494,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
           Header: StyledMTableHeader,
           Toolbar,
           Body,
+          ...components,
         }}
         options={{ ...defaultOptions, ...options }}
         columns={MTColumns}

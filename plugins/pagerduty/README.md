@@ -7,6 +7,7 @@
 
 - The Backstage PagerDuty plugin allows PagerDuty information about a Backstage entity to be displayed within Backstage. This includes active incidents, recent change events, as well as the current on-call responders' names, email addresses, and links to their profiles in PagerDuty.
 - Incidents can be manually triggered via the plugin with a user-provided description, which will in turn notify the current on-call responders.
+  - _Note: This feature is only available when providing the `pagerduty.com/integration-key` annotation_
 - Change events will be displayed in a separate tab. If the change event payload has additional links the first link only will be rendered.
 
 # Requirements
@@ -116,6 +117,26 @@ $ PAGERDUTY_TOKEN='<TOKEN>' yarn start
 This will proxy the request by adding an `Authorization` header with the provided token.
 
 ### Optional configuration
+
+#### Annotating with Service ID
+
+If you want to integrate a PagerDuty service with Backstage but don't want to use an integration key, you can also [annotate](https://backstage.io/docs/features/software-catalog/descriptor-format#annotations-optional) the appropriate entity with a PagerDuty Service ID instead
+
+```yaml
+annotations:
+  pagerduty.com/service-id: [SERVICE_ID]
+```
+
+This service ID can be found by navigating to a Service within PagerDuty and pulling the ID value out of the URL.
+
+1. From the **Configuration** menu within PagerDuty, select **Services**.
+2. Click the **name** of the service you want to represent for your Entity.
+
+Your browser URL should now be located at `https://pagerduty.com/service-directory/[SERVICE_ID]`.
+
+_Note: When annotating with `pagerduty.com/service-id`, the feature to Create Incidents is not currently supported_
+
+#### Custom Events URL
 
 If you want to override the default URL used for events, you can add it to `app-config.yaml`:
 

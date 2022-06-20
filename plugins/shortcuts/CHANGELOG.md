@@ -1,5 +1,14 @@
 # @backstage/plugin-shortcuts
 
+## 0.2.7
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+
 ## 0.2.7-next.1
 
 ### Patch Changes

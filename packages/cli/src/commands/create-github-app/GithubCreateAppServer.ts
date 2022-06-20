@@ -19,18 +19,6 @@ import openBrowser from 'react-dev-utils/openBrowser';
 import { request } from '@octokit/request';
 import express, { Express, Request, Response } from 'express';
 
-const MANIFEST_DATA = {
-  default_events: ['create', 'delete', 'push', 'repository'],
-  default_permissions: {
-    contents: 'read',
-    metadata: 'read',
-  },
-  name: 'Backstage-<changeme>',
-  url: 'https://backstage.io',
-  description: 'GitHub App for Backstage',
-  public: false,
-};
-
 const FORM_PAGE = `
 <html>
   <body>
@@ -62,17 +50,17 @@ export class GithubCreateAppServer {
 
   static async run(options: {
     org: string;
-    readWrite: boolean;
+    permissions: string[];
   }): Promise<GithubAppConfig> {
     const encodedOrg = encodeURIComponent(options.org);
     const actionUrl = `https://github.com/organizations/${encodedOrg}/settings/apps/new`;
-    const server = new GithubCreateAppServer(actionUrl, options.readWrite);
+    const server = new GithubCreateAppServer(actionUrl, options.permissions);
     return server.start();
   }
 
   private constructor(
     private readonly actionUrl: string,
-    private readonly readWrite: boolean,
+    private readonly permissions: string[],
   ) {
     const webhookId = crypto
       .randomBytes(15)
@@ -121,21 +109,29 @@ export class GithubCreateAppServer {
     if (!baseUrl) {
       throw new Error('baseUrl is not set');
     }
+
     const manifest = {
-      ...MANIFEST_DATA,
+      default_events: ['create', 'delete', 'push', 'repository'],
+      default_permissions: {
+        metadata: 'read',
+        ...(this.permissions.includes('members') && { members: 'read' }),
+        ...(this.permissions.includes('read') && { contents: 'read' }),
+        ...(this.permissions.includes('write') && {
+          contents: 'write',
+          actions: 'write',
+        }),
+      },
+      name: 'Backstage-<changeme>',
+      url: 'https://backstage.io',
+      description: 'GitHub App for Backstage',
+      public: false,
       redirect_url: `${baseUrl}/callback`,
       hook_attributes: {
         url: this.webhookUrl,
         active: false,
       },
-      ...(this.readWrite && {
-        default_permissions: {
-          contents: 'write',
-          actions: 'write',
-          metadata: 'read',
-        },
-      }),
     };
+
     const manifestJson = JSON.stringify(manifest).replace(/\"/g, '&quot;');
 
     let body = FORM_PAGE;

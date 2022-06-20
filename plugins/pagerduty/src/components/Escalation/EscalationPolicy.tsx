@@ -37,7 +37,7 @@ export const EscalationPolicy = ({ policyId }: Props) => {
     loading,
     error,
   } = useAsync(async () => {
-    const oncalls = await api.getOnCallByPolicyId(policyId);
+    const { oncalls } = await api.getOnCallByPolicyId(policyId);
     const usersItem = oncalls
       .sort((a, b) => a.escalation_level - b.escalation_level)
       .map(oncall => oncall.user);

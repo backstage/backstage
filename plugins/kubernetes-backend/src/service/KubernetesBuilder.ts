@@ -39,6 +39,10 @@ import {
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { PluginEndpointDiscovery } from '@backstage/backend-common/dist';
 
+/**
+ *
+ * @alpha
+ */
 export interface KubernetesEnvironment {
   logger: Logger;
   config: Config;
@@ -48,7 +52,7 @@ export interface KubernetesEnvironment {
 /**
  * The return type of the `KubernetesBuilder.build` method
  *
- * @public
+ * @alpha
  */
 export type KubernetesBuilderReturn = Promise<{
   router: express.Router;
@@ -59,6 +63,10 @@ export type KubernetesBuilderReturn = Promise<{
   serviceLocator: KubernetesServiceLocator;
 }>;
 
+/**
+ *
+ * @alpha
+ */
 export class KubernetesBuilder {
   private clusterSupplier?: KubernetesClustersSupplier;
   private defaultClusterRefreshInterval: Duration = Duration.fromObject({
@@ -233,9 +241,10 @@ export class KubernetesBuilder {
       const serviceId = req.params.serviceId;
       const requestBody: ObjectsByEntityRequest = req.body;
       try {
-        const response = await objectsProvider.getKubernetesObjectsByEntity(
-          requestBody,
-        );
+        const response = await objectsProvider.getKubernetesObjectsByEntity({
+          entity: requestBody.entity,
+          auth: requestBody.auth || {},
+        });
         res.json(response);
       } catch (e) {
         logger.error(
