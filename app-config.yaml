@@ -300,7 +300,7 @@ auth:
   environment: development
   ### Providing an auth.session.secret will enable session support in the auth-backend
   # session:
-  #   secret: custom_session_secret
+  #   secret: custom session secret
   providers:
     google:
       development:
