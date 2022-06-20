@@ -5,7 +5,7 @@ sidebar_label: Keycloak
 description: Adding Keycloak as an authentication provider in Backstage
 ---
 
-The Backstage `core-plugin-api` package comes with an Auth0 authentication
+The Backstage `core-plugin-api` package comes with an Keycloak authentication
 provider that can authenticate users using OAuth.
 
 ## Create a Keycloak realm
@@ -44,7 +44,7 @@ auth:
           metadataUrl: ${AUTH_KEYCLOAK_METADATA_URL}
 ```
 
-The Auth0 provider is a structure with three configuration keys:
+The Keycloak provider is a structure with three configuration keys:
 
 - `AUTH_KEYCLOAK_CLIENT_ID`: The Application client ID, found under the client/credentials tab.
 - `AUTH_KEYCLOAK_CLIENT_SECRET`: The Application client secret, found under the client/credentials tab.
