@@ -286,25 +286,6 @@ export const keycloak = createAuthProviderIntegration({
      * Looks up the user by matching their email to the entity email.
      */
     emailMatchingUserEntityProfileEmail: () => commonByEmailResolver,
-
-    /**
-     * Looks up the user by matching their email to the `google.com/email` annotation.
-     */
-    emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult> {
-      return async (info, ctx) => {
-        const { profile } = info;
-
-        if (!profile.email) {
-          throw new Error('Google profile contained no email');
-        }
-
-        return ctx.signInWithCatalogUser({
-          annotations: {
-            'google.com/email': profile.email,
-          },
-        });
-      };
-    },
   },
 });
 
