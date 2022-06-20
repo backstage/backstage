@@ -23,7 +23,11 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ClientMetadata, IssuerMetadata } from 'openid-client';
 import { OAuthAdapter } from '../../lib/oauth';
-import { createOidcProvider, OidcAuthProvider, Options } from './provider';
+import {
+  createKeycloakProvider,
+  KeycloakAuthProvider,
+  Options,
+} from './provider';
 import { AuthResolverContext } from '../types';
 
 const issuerMetadata = {
@@ -75,7 +79,7 @@ describe('OidcAuthProvider', () => {
     worker.use(
       rest.get('https://oidc.test/.well-known/openid-configuration', handler),
     );
-    const provider = new OidcAuthProvider(clientMetadata);
+    const provider = new KeycloakAuthProvider(clientMetadata);
     const { strategy } = (await (provider as any).implementation) as any as {
       strategy: {
         _client: ClientMetadata;
@@ -145,7 +149,7 @@ describe('OidcAuthProvider', () => {
         });
       }),
     );
-    const provider = new OidcAuthProvider(clientMetadata);
+    const provider = new KeycloakAuthProvider(clientMetadata);
     const req = {
       method: 'GET',
       url: 'https://oidc.test/?code=test2',
@@ -172,7 +176,7 @@ describe('OidcAuthProvider', () => {
         metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
       },
     } as any);
-    const provider = createOidcProvider()({
+    const provider = createKeycloakProvider()({
       globalConfig: {
         appUrl: 'https://oidc.test',
         baseUrl: 'https://oidc.test',
