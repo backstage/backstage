@@ -299,8 +299,8 @@ auth:
 
   environment: development
   ### Providing an auth.session.secret will enable session support in the auth-backend
-  # session:
-  #   secret: custom session secret
+  session:
+    secret: custom_session_secret
   providers:
     google:
       development:
@@ -374,6 +374,11 @@ auth:
         clientId: ${AUTH_ATLASSIAN_CLIENT_ID}
         clientSecret: ${AUTH_ATLASSIAN_CLIENT_SECRET}
         scopes: ${AUTH_ATLASSIAN_SCOPES}
+    keycloak:
+      development:
+        clientId:  ${AUTH_KEYCLOAK_CLIENT_ID}
+        clientSecret:  ${AUTH_KEYCLOAK_CLIENT_SECRET}
+        metadataUrl: ${AUTH_KEYCLOAK_METADATA_URL}
     myproxy:
       development: {}
 costInsights:

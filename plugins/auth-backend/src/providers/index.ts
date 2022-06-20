@@ -29,6 +29,7 @@ export * from './okta';
 export * from './onelogin';
 export * from './saml';
 export * from './gcp-iap';
+export * from './keycloak';
 
 export { providers } from './providers';
 

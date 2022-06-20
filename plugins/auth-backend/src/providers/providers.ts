@@ -22,6 +22,7 @@ import { gcpIap } from './gcp-iap/provider';
 import { github } from './github/provider';
 import { gitlab } from './gitlab/provider';
 import { google } from './google/provider';
+import { keycloak } from './keycloak/provider';
 import { microsoft } from './microsoft/provider';
 import { oauth2 } from './oauth2/provider';
 import { oauth2Proxy } from './oauth2-proxy/provider';
@@ -44,6 +45,7 @@ export const providers = Object.freeze({
   github,
   gitlab,
   google,
+  keycloak,
   microsoft,
   oauth2,
   oauth2Proxy,

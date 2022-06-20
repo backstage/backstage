@@ -113,6 +113,18 @@ export default async function createPlugin(
           },
         },
       }),
+      keycloak: providers.keycloak.create({
+        signIn: {
+          async resolver({ result: { userinfo } }, ctx) {
+            console.log(userinfo);
+            return ctx.signInWithCatalogUser({
+              entityRef: {
+                name: userinfo.preferred_username!,
+              },
+            });
+          },
+        },
+      }),
 
       // This is an example of how to configure the OAuth2Proxy provider as well
       // as how to sign a user in without a matching user entity in the catalog.

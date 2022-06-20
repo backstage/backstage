@@ -116,6 +116,9 @@ export interface Config {
         issuer?: string;
         region: string;
       };
+      keycloak?: {
+        [authEnv: string]: { [key: string]: string };
+      };
     };
   };
 }
