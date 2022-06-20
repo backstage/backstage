@@ -10187,9 +10187,9 @@ cron@^2.0.0:
     luxon "^1.23.x"
 
 cronstrue@^2.2.0:
-  version "2.9.0"
-  resolved "https://registry.npmjs.org/cronstrue/-/cronstrue-2.9.0.tgz#f63c376060c8e019d748564d6eb128d6cac76210"
-  integrity sha512-PZSsUZU7O+R0JdsquKMXlm41tm62oO5fVYoXi6QI/eRAYxgbkPJ/OcLrVxUM+JNRy5yv0QEI84YG1mUjEo4RLA==
+  version "2.10.0"
+  resolved "https://registry.npmjs.org/cronstrue/-/cronstrue-2.10.0.tgz#9b57e9acc18eb44ebe9be5dc993753fd7d6d8e56"
+  integrity sha512-WCCaKuuzjZJl/xTaJiK2KB2lhHqAz+cTAHgSiZQc/pNnF2XUSZX0FBfxAG0qa9CogToNoQw7pEBJExc77QnFBQ==
 
 cross-env@^7.0.0:
   version "7.0.3"
