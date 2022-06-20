@@ -1,0 +1,9 @@
+---
+title: Rootly
+author: Rootly
+authorUrl: https://rootly.com/
+category: Incident Management
+description: Import your Backstage entities into Rootly services and view incidents & analytics.
+documentation: https://github.com/rootlyhq/backstage-plugin/blob/master/README.md
+iconUrl: https://raw.githubusercontent.com/rootlyhq/backstage-plugin/master/docs/logo.png
+npmPackageName: '@rootly/backstage-plugin'
