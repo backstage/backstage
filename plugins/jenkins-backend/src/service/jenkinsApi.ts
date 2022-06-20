@@ -70,17 +70,17 @@ export class JenkinsApiImpl {
    * Get a list of projects for the given JenkinsInfo.
    * @see ../../../jenkins/src/api/JenkinsApi.ts#getProjects
    */
-  async getProjects(jenkinsInfo: JenkinsInfo, branch?: string) {
+  async getProjects(jenkinsInfo: JenkinsInfo, branches?: string[]) {
     const client = await JenkinsApiImpl.getClient(jenkinsInfo);
     const projects: BackstageProject[] = [];
 
-    if (branch) {
+    if (branches) {
       // Assume jenkinsInfo.jobFullName is a folder which contains one job per branch.
       // TODO: extract a strategy interface for this
       const job = await Promise.any(
-        branch.split(/,/g).map(name =>
+        branches.map(branch =>
           client.job.get({
-            name: `${jenkinsInfo.jobFullName}/${name}`,
+            name: `${jenkinsInfo.jobFullName}/${branch}`,
             tree: JenkinsApiImpl.jobTreeSpec.replace(/\s/g, ''),
           }),
         ),
