@@ -20,7 +20,7 @@ import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
 import { GkeClusterLocator } from './GkeClusterLocator';
 import { CatalogClusterLocator } from './CatalogClusterLocator';
-import { PluginEndpointDiscovery } from '@backstage/backend-common/dist';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
 
 class CombinedClustersSupplier implements KubernetesClustersSupplier {

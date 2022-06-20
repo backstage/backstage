@@ -16,7 +16,7 @@
 
 import { Config, ConfigReader } from '@backstage/config';
 import { getCombinedClusterSupplier } from './index';
-import { PluginEndpointDiscovery } from '@backstage/backend-common/dist';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
 describe('getCombinedClusterSupplier', () => {
   it('should retrieve cluster details from config', async () => {
