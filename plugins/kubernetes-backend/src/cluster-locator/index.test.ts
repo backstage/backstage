@@ -16,6 +16,7 @@
 
 import { Config, ConfigReader } from '@backstage/config';
 import { getCombinedClusterSupplier } from './index';
+import { PluginEndpointDiscovery } from '@backstage/backend-common/dist';
 
 describe('getCombinedClusterSupplier', () => {
   it('should retrieve cluster details from config', async () => {
@@ -44,8 +45,12 @@ describe('getCombinedClusterSupplier', () => {
       },
       'ctx',
     );
+    const discovery: PluginEndpointDiscovery = {
+      getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
+      getExternalBaseUrl: jest.fn(),
+    };
 
-    const clusterSupplier = getCombinedClusterSupplier(config);
+    const clusterSupplier = getCombinedClusterSupplier(config, discovery);
     const result = await clusterSupplier.getClusters();
 
     expect(result).toStrictEqual([
@@ -99,8 +104,12 @@ describe('getCombinedClusterSupplier', () => {
       },
       'ctx',
     );
+    const discovery: PluginEndpointDiscovery = {
+      getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
+      getExternalBaseUrl: jest.fn(),
+    };
 
-    expect(() => getCombinedClusterSupplier(config)).toThrowError(
+    expect(() => getCombinedClusterSupplier(config, discovery)).toThrowError(
       new Error('Unsupported kubernetes.clusterLocatorMethods: "magic"'),
     );
   });

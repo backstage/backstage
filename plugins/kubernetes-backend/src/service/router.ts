@@ -19,11 +19,13 @@ import { Logger } from 'winston';
 import { KubernetesClustersSupplier } from '../types/types';
 import express from 'express';
 import { KubernetesBuilder } from './KubernetesBuilder';
+import { PluginEndpointDiscovery } from '@backstage/backend-common/dist';
 
 export interface RouterOptions {
   logger: Logger;
   config: Config;
   clusterSupplier?: KubernetesClustersSupplier;
+  discovery: PluginEndpointDiscovery;
 }
 
 /**

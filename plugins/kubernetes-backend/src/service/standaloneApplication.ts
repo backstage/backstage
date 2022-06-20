@@ -18,6 +18,7 @@ import {
   errorHandler,
   notFoundHandler,
   requestLoggingHandler,
+  SingleHostDiscovery,
 } from '@backstage/backend-common';
 import compression from 'compression';
 import cors from 'cors';
@@ -37,6 +38,8 @@ export async function createStandaloneApplication(
 ): Promise<express.Application> {
   const { enableCors, logger } = options;
   const config = new ConfigReader({});
+  const discovery = SingleHostDiscovery.fromConfig(config);
+
   const app = express();
 
   app.use(helmet());
@@ -46,7 +49,7 @@ export async function createStandaloneApplication(
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());
-  app.use('/', await createRouter({ logger, config }));
+  app.use('/', await createRouter({ logger, config, discovery }));
   app.use(notFoundHandler());
   app.use(errorHandler());
 
