@@ -344,6 +344,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   branchName: string;
   targetPath: string;
   token?: string | undefined;
+  commitAction?: 'update' | 'delete' | 'create' | undefined;
   projectid?: string | undefined;
 }>;
 
