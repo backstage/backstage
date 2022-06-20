@@ -100,7 +100,7 @@ describe('config', () => {
     });
 
     expect(() => readGitlabConfigs(config)).toThrow(
-      "Missing required config value at 'catalog.providers.gitlab.test.group'",
+      "Missing required config value at 'catalog.providers.gitlab.test.host'",
     );
   });
 
@@ -109,8 +109,10 @@ describe('config', () => {
       catalog: {
         providers: {
           gitlab: {
-            host: 'host',
-            branch: 'main',
+            test: {
+              host: 'host',
+              branch: 'main',
+            },
           },
         },
       },
