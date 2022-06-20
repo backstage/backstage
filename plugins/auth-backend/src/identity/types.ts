@@ -39,8 +39,6 @@ export type TokenParams = {
 
 /**
  * A TokenIssuer is able to issue verifiable ID Tokens on demand.
- *
- * @internal
  */
 export type TokenIssuer = {
   /**
