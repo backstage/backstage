@@ -28,6 +28,7 @@ import {
   CatalogFilterLayout,
   EntityLifecyclePicker,
   EntityListProvider,
+  EntityAdvancedPicker,
   EntityOwnerPicker,
   EntityTagPicker,
   EntityTypePicker,
@@ -84,6 +85,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
               <EntityOwnerPicker />
               <EntityLifecyclePicker />
               <EntityTagPicker />
+              <EntityAdvancedPicker />
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
               <CatalogTable

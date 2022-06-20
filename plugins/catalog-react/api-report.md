@@ -78,7 +78,11 @@ export type CatalogReactComponentsNameToClassKey = {
   CatalogReactEntitySearchBar: CatalogReactEntitySearchBarClassKey;
   CatalogReactEntityTagPicker: CatalogReactEntityTagPickerClassKey;
   CatalogReactEntityOwnerPicker: CatalogReactEntityOwnerPickerClassKey;
+  CatalogReactEntityAdvancedPicker: CatalogReactEntityAdvancedPickerClassKey;
 };
+
+// @public (undocumented)
+export type CatalogReactEntityAdvancedPickerClassKey = 'input';
 
 // @public (undocumented)
 export type CatalogReactEntityLifecyclePickerClassKey = 'input';
@@ -137,7 +141,21 @@ export type DefaultEntityFilters = {
   lifecycles?: EntityLifecycleFilter;
   tags?: EntityTagFilter;
   text?: EntityTextFilter;
+  orphan?: EntityOrphanFilter;
+  error?: EntityErrorFilter;
 };
+
+// @public (undocumented)
+export const EntityAdvancedPicker: () => JSX.Element;
+
+// @public
+export class EntityErrorFilter implements EntityFilter {
+  constructor(values: string[]);
+  // (undocumented)
+  filterEntity(entity: Entity): boolean;
+  // (undocumented)
+  readonly values: string[];
+}
 
 // @public (undocumented)
 export type EntityFilter = {
@@ -221,6 +239,15 @@ export type EntityLoadingStatus<TEntity extends Entity = Entity> = {
   error?: Error;
   refresh?: VoidFunction;
 };
+
+// @public
+export class EntityOrphanFilter implements EntityFilter {
+  constructor(values: string[]);
+  // (undocumented)
+  filterEntity(entity: Entity): boolean;
+  // (undocumented)
+  readonly values: string[];
+}
 
 // @public
 export class EntityOwnerFilter implements EntityFilter {
