@@ -14,6 +14,7 @@ import type { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common'
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { Logger } from 'winston';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PodStatus } from '@kubernetes/client-node/dist/top';
 
 // @alpha (undocumented)
@@ -158,6 +159,8 @@ export interface KubernetesEnvironment {
   // (undocumented)
   config: Config;
   // (undocumented)
+  discovery: PluginEndpointDiscovery;
+  // (undocumented)
   logger: Logger;
 }
 
@@ -271,6 +274,8 @@ export interface RouterOptions {
   clusterSupplier?: KubernetesClustersSupplier;
   // (undocumented)
   config: Config;
+  // (undocumented)
+  discovery: PluginEndpointDiscovery;
   // (undocumented)
   logger: Logger;
 }
