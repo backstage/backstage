@@ -1,0 +1,11 @@
+---
+title: Humanitec Platform Orchestrator
+author: Frontside
+authorUrl: 'https://frontside.com'
+category: Deployment # A single category e.g. CI, Machine Learning, Services, Monitoring
+description: |
+  Show workloads, environments and resources deployed by Humanitec Platform Orchestrator. 
+  Plugin includes an Entity ComponentCard, Backend API route and scaffolder actions.
+documentation: https://github.com/thefrontside/backstage/tree/main/plugins/humanitec
+iconUrl: ../../static/img/humanitec-logo.png
+npmPackageName: '@frontside/backstage-plugin-humanitec'
