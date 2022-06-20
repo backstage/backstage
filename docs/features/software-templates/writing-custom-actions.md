@@ -137,7 +137,7 @@ export default async function createPlugin(
     config: env.config,
     reader: env.reader,
   });
-  
+
   const actions = [...builtInActions, createNewFileAction()];
 
   return createRouter({

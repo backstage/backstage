@@ -513,14 +513,12 @@ spec:
           title: URL endpoint
           type: string
           description: URL endpoint at which the component can be reached
-          default: "https://www.example.com"
+          default: 'https://www.example.com'
         enabledDB:
           title: Enable Database
           type: boolean
           default: false
-
-...
-
+  ...
   steps:
     - id: fetch-base
       name: Fetch Base
