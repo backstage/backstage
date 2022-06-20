@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
-import { Table, TableColumn } from '@backstage/core-components';
+import { Link, Table, TableColumn } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { Box, Typography } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
@@ -27,7 +27,7 @@ import { VAULT_SECRET_PATH_ANNOTATION } from '../../constants';
 
 export const vaultSecretPath = (entity: Entity) => {
   const secretPath =
-    entity.metadata.annotations?.[VAULT_SECRET_PATH_ANNOTATION] ?? '';
+    entity.metadata.annotations?.[VAULT_SECRET_PATH_ANNOTATION];
 
   return { secretPath };
 };
@@ -35,6 +35,11 @@ export const vaultSecretPath = (entity: Entity) => {
 export const EntityVaultTable = ({ entity }: { entity: Entity }) => {
   const vaultApi = useApi(vaultApiRef);
   const { secretPath } = vaultSecretPath(entity);
+  if (!secretPath) {
+    throw Error(
+      `The secret path is undefined. Please, define the annotation ${VAULT_SECRET_PATH_ANNOTATION}`,
+    );
+  }
   const { value, loading, error } = useAsync(async (): Promise<
     VaultSecret[]
   > => {
@@ -51,22 +56,22 @@ export const EntityVaultTable = ({ entity }: { entity: Entity }) => {
     return {
       secret: secret.name,
       view: (
-        <a
+        <Link
           aria-label="View"
           title={`View ${secret.name}`}
-          href={secret.showUrl}
+          to={secret.showUrl}
         >
           <Visibility style={{ fontSize: 16 }} />
-        </a>
+        </Link>
       ),
       edit: (
-        <a
+        <Link
           aria-label="Edit"
           title={`Edit ${secret.name}`}
-          href={secret.editUrl}
+          to={secret.editUrl}
         >
           <Edit style={{ fontSize: 16 }} />
-        </a>
+        </Link>
       ),
     };
   });

@@ -68,18 +68,20 @@ describe('EntityVaultTable', () => {
     },
   };
 
-  const mockSecretsResult: VaultSecret[] = [
-    {
-      name: 'secret::one',
-      editUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/edit/test/success/secret::one`,
-      showUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/show/test/success/secret::one`,
-    },
-    {
-      name: 'secret::two',
-      editUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/edit/test/success/secret::two`,
-      showUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/show/test/success/secret::two`,
-    },
-  ];
+  const mockSecretsResult: { items: VaultSecret[] } = {
+    items: [
+      {
+        name: 'secret::one',
+        editUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/edit/test/success/secret::one`,
+        showUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/show/test/success/secret::one`,
+      },
+      {
+        name: 'secret::two',
+        editUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/edit/test/success/secret::two`,
+        showUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/show/test/success/secret::two`,
+      },
+    ],
+  };
 
   const setupHandlers = () => {
     server.use(

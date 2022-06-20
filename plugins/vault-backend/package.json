@@ -46,6 +46,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "helmet": "^5.0.2",
+    "p-limit": "^3.1.0",
     "winston": "^3.7.2",
     "yn": "^5.0.0"
   },
@@ -54,7 +55,7 @@
     "@types/compression": "^1.7.2",
     "@types/supertest": "^2.0.8",
     "msw": "^0.42.0",
-    "supertest": "^4.0.2"
+    "supertest": "^6.1.6"
   },
   "files": [
     "dist",

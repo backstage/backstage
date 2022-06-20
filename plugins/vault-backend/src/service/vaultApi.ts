@@ -15,12 +15,14 @@
  */
 
 import { Config } from '@backstage/config';
+import { NotFoundError } from '@backstage/errors';
 import fetch from 'cross-fetch';
+import plimit from 'p-limit';
 import { getVaultConfig, VaultConfig } from '../config';
 
 /**
  * Object received as a response from the Vault API when fetching secrets
- * @public
+ * @internal
  */
 export type VaultSecretList = {
   data: {
@@ -40,9 +42,8 @@ export type VaultSecret = {
 
 /**
  * Object received as response when the token is renewed using the Vault API
- * @public
  */
-export type RenewTokenResponse = {
+type RenewTokenResponse = {
   auth: {
     client_token: string;
   };
@@ -63,10 +64,10 @@ export interface VaultApi {
    */
   listSecrets(secretPath: string): Promise<VaultSecret[]>;
   /**
-   * Optional, to renew the token used to list the secrets. Returns true
-   * if the action was successfull, false otherwise.
+   * Optional, to renew the token used to list the secrets. Throws an
+   * error if the token renewal went wrong.
    */
-  renewToken?(): Promise<boolean>;
+  renewToken?(): Promise<void>;
 }
 
 /**
@@ -75,6 +76,7 @@ export interface VaultApi {
  */
 export class VaultClient implements VaultApi {
   private vaultConfig: VaultConfig;
+  private readonly limit = plimit(5);
 
   constructor({ config }: { config: Config }) {
     this.vaultConfig = getVaultConfig(config);
@@ -84,7 +86,7 @@ export class VaultClient implements VaultApi {
     path: string,
     query: { [key in string]: any },
     method: string = 'GET',
-  ): Promise<T | undefined> {
+  ): Promise<T> {
     const url = new URL(path, this.vaultConfig.baseUrl);
     const response = await fetch(
       `${url.toString()}?${new URLSearchParams(query).toString()}`,
@@ -96,15 +98,14 @@ export class VaultClient implements VaultApi {
         },
       },
     );
-    if (response.status === 200) {
+    if (response.ok) {
       return (await response.json()) as T;
+    } else if (response.status === 404) {
+      throw new NotFoundError(`No secrets found in path '${path}'`);
     }
-    return undefined;
-  }
-
-  private isFolder(secretName: string): boolean {
-    const regex = /^.*\/$/gm;
-    return regex.test(secretName);
+    throw new Error(
+      `Unexpected error while fetching secrets from path '${path}'`,
+    );
   }
 
   getFrontendSecretsUrl(): string {
@@ -116,17 +117,19 @@ export class VaultClient implements VaultApi {
       this.vaultConfig.kvVersion === 2
         ? `v1/${this.vaultConfig.secretEngine}/metadata/${secretPath}`
         : `v1/${this.vaultConfig.secretEngine}/${secretPath}`;
-    const result = await this.callApi<VaultSecretList>(listUrl, { list: true });
-    if (!result) {
-      return [];
-    }
+    const result = await this.limit(() =>
+      this.callApi<VaultSecretList>(listUrl, { list: true }),
+    );
 
     const secrets: VaultSecret[] = [];
+
     await Promise.all(
       result.data.keys.map(async secret => {
-        if (this.isFolder(secret)) {
+        if (secret.endsWith('/')) {
           secrets.push(
-            ...(await this.listSecrets(`${secretPath}/${secret.slice(0, -1)}`)),
+            ...(await this.limit(() =>
+              this.listSecrets(`${secretPath}/${secret.slice(0, -1)}`),
+            )),
           );
         } else {
           secrets.push({
@@ -141,17 +144,13 @@ export class VaultClient implements VaultApi {
     return secrets;
   }
 
-  async renewToken(): Promise<boolean> {
+  async renewToken(): Promise<void> {
     const result = await this.callApi<RenewTokenResponse>(
       'v1/auth/token/renew-self',
       {},
       'POST',
     );
-    if (!result) {
-      return false;
-    }
 
     this.vaultConfig.token = result.auth.client_token;
-    return true;
   }
 }
