@@ -37,7 +37,7 @@ import {
   KubernetesFanOutHandler,
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
-import { PluginEndpointDiscovery } from '@backstage/backend-common/dist';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
 /**
  *
