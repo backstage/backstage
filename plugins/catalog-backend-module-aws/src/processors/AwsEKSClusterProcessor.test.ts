@@ -18,7 +18,7 @@ import { AwsEKSClusterProcessor } from './AwsEKSClusterProcessor';
 import AWSMock from 'aws-sdk-mock';
 import aws from 'aws-sdk';
 
-describe('AwsOrganizationCloudAccountProcessor', () => {
+describe('AwsEKSClusterProcessor', () => {
   AWSMock.setSDKInstance(aws);
   describe('readLocation', () => {
     const processor = new (AwsEKSClusterProcessor as any)();
