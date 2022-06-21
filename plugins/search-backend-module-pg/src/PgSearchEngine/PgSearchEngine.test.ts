@@ -15,12 +15,12 @@
  */
 import { ConfigReader } from '@backstage/config';
 import { DatabaseStore } from '../database';
-import { PgSearchHighlightOptions } from '../types';
 import {
   ConcretePgSearchQuery,
   decodePageCursor,
   encodePageCursor,
   PgSearchEngine,
+  PgSearchHighlightOptions,
 } from './PgSearchEngine';
 import { PgSearchEngineIndexer } from './PgSearchEngineIndexer';
 
@@ -86,7 +86,7 @@ describe('PgSearchEngine', () => {
           term: 'testTerm',
           filters: {},
         },
-        highlightOptions,
+        { highlightOptions },
       );
     });
 
@@ -96,7 +96,7 @@ describe('PgSearchEngine', () => {
           term: 'Hello',
           pageCursor: 'MQ==',
         },
-        highlightOptions,
+        { highlightOptions },
       );
 
       expect(actualTranslatedQuery).toMatchObject({
@@ -114,7 +114,7 @@ describe('PgSearchEngine', () => {
         {
           term: 'Hello World',
         },
-        highlightOptions,
+        { highlightOptions },
       );
 
       expect(actualTranslatedQuery).toMatchObject({
@@ -133,7 +133,7 @@ describe('PgSearchEngine', () => {
           term: 'H&e|l!l*o W\0o(r)l:d',
           pageCursor: '',
         },
-        highlightOptions,
+        { highlightOptions },
       ) as ConcretePgSearchQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
@@ -151,7 +151,7 @@ describe('PgSearchEngine', () => {
           filters: { kind: 'testKind' },
           types: ['my-filter'],
         },
-        highlightOptions,
+        { highlightOptions },
       );
 
       expect(actualTranslatedQuery).toMatchObject({

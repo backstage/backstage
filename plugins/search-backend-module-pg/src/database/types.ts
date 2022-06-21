@@ -15,7 +15,7 @@
  */
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
-import { PgSearchHighlightOptions } from '../types';
+import { PgSearchHighlightOptions } from '../PgSearchEngine';
 
 export interface PgSearchQuery {
   fields?: Record<string, string | string[]>;

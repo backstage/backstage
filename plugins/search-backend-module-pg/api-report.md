@@ -12,9 +12,7 @@ import { PluginDatabaseManager } from '@backstage/backend-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import { SearchQuery } from '@backstage/plugin-search-common';
 
-// Warning: (ae-missing-release-tag) "ConcretePgSearchQuery" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type ConcretePgSearchQuery = {
   pgQuery: PgSearchQuery;
   pageSize: number;
@@ -97,15 +95,13 @@ export class PgSearchEngine implements SearchEngine {
   // (undocumented)
   query(query: SearchQuery): Promise<IndexableResultSet>;
   // (undocumented)
-  setTranslator(
-    translator: (query: SearchQuery) => ConcretePgSearchQuery,
-  ): void;
+  setTranslator(translator: PgSearchQueryTranslator): void;
   // (undocumented)
   static supported(database: PluginDatabaseManager): Promise<boolean>;
   // (undocumented)
   translator(
     query: SearchQuery,
-    options: PgSearchHighlightOptions,
+    options: PgSearchQueryTranslatorOptions,
   ): ConcretePgSearchQuery;
 }
 
@@ -167,6 +163,17 @@ export interface PgSearchQuery {
   // (undocumented)
   types?: string[];
 }
+
+// @public
+export type PgSearchQueryTranslator = (
+  query: SearchQuery,
+  options: PgSearchQueryTranslatorOptions,
+) => ConcretePgSearchQuery;
+
+// @public
+export type PgSearchQueryTranslatorOptions = {
+  highlightOptions: PgSearchHighlightOptions;
+};
 
 // Warning: (ae-missing-release-tag) "RawDocumentRow" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

@@ -15,7 +15,7 @@
  */
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { PgSearchHighlightOptions } from '../types';
+import { PgSearchHighlightOptions } from '../PgSearchEngine';
 import { DatabaseDocumentStore } from './DatabaseDocumentStore';
 
 const highlightOptions: PgSearchHighlightOptions = {

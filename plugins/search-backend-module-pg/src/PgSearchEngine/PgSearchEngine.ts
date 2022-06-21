@@ -28,11 +28,56 @@ import {
 } from '../database';
 import { v4 as uuid } from 'uuid';
 import { Config } from '@backstage/config';
-import { PgSearchHighlightOptions, PgSearchOptions } from '../types';
 
+/**
+ * Search query that the Postgres search engine understands.
+ * @public
+ */
 export type ConcretePgSearchQuery = {
   pgQuery: PgSearchQuery;
   pageSize: number;
+};
+
+/**
+ * Options available for the Postgres specific query translator.
+ * @public
+ */
+export type PgSearchQueryTranslatorOptions = {
+  highlightOptions: PgSearchHighlightOptions;
+};
+
+/**
+ * Postgres specific query translator.
+ * @public
+ */
+export type PgSearchQueryTranslator = (
+  query: SearchQuery,
+  options: PgSearchQueryTranslatorOptions,
+) => ConcretePgSearchQuery;
+
+/**
+ * Options to instantiate PgSearchEngine
+ * @public
+ */
+export type PgSearchOptions = {
+  config: Config;
+  database: PluginDatabaseManager;
+};
+
+/**
+ * Options for highlighting search terms
+ * @public
+ */
+export type PgSearchHighlightOptions = {
+  useHighlight?: boolean;
+  maxWords?: number;
+  minWords?: number;
+  shortWord?: number;
+  highlightAll?: boolean;
+  maxFragments?: number;
+  fragmentDelimiter?: string;
+  preTag: string;
+  postTag: string;
 };
 
 export class PgSearchEngine implements SearchEngine {
@@ -85,7 +130,7 @@ export class PgSearchEngine implements SearchEngine {
 
   translator(
     query: SearchQuery,
-    options: PgSearchHighlightOptions,
+    options: PgSearchQueryTranslatorOptions,
   ): ConcretePgSearchQuery {
     const pageSize = 25;
     const { page } = decodePageCursor(query.pageCursor);
@@ -105,15 +150,13 @@ export class PgSearchEngine implements SearchEngine {
         types: query.types,
         offset,
         limit,
-        options,
+        options: options.highlightOptions,
       },
       pageSize,
     };
   }
 
-  setTranslator(
-    translator: (query: SearchQuery) => ConcretePgSearchQuery,
-  ): void {
+  setTranslator(translator: PgSearchQueryTranslator) {
     this.translator = translator;
   }
 
@@ -126,7 +169,9 @@ export class PgSearchEngine implements SearchEngine {
   }
 
   async query(query: SearchQuery): Promise<IndexableResultSet> {
-    const { pgQuery, pageSize } = this.translator(query, this.highlightOptions);
+    const { pgQuery, pageSize } = this.translator(query, {
+      highlightOptions: this.highlightOptions,
+    });
 
     const rows = await this.databaseStore.transaction(async tx =>
       this.databaseStore.query(tx, pgQuery),

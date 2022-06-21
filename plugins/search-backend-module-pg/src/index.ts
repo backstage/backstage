@@ -22,4 +22,3 @@
 
 export * from './database';
 export * from './PgSearchEngine';
-export type { PgSearchOptions, PgSearchHighlightOptions } from './types';
