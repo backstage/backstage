@@ -17,7 +17,6 @@
 import React from 'react';
 import {
   DEFAULT_NAMESPACE,
-  Entity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
@@ -90,42 +89,25 @@ export const MyGroupsSidebarItem = (props: {
     );
   }
 
-  const namespacedGroupsMap: { [namespace: string]: Entity[] } = {};
-  groups.forEach(group => {
-    namespacedGroupsMap[group.metadata.namespace!] =
-      namespacedGroupsMap[group.metadata.namespace!] ?? [];
-    namespacedGroupsMap[group.metadata.namespace!].push(group);
-  });
-
   // Member of more than one group
   return (
     <SidebarItem icon={icon} text={pluralTitle}>
       <SidebarSubmenu title={pluralTitle}>
-        {namespacedGroupsMap[DEFAULT_NAMESPACE]?.map(group => {
+        {groups?.map(function groupsMap(group) {
           return (
             <SidebarSubmenuItem
-              key={stringifyEntityRef(group)}
               title={group.metadata.title || group.metadata.name}
+              subtitle={
+                group.metadata.namespace !== DEFAULT_NAMESPACE
+                  ? group.metadata.namespace
+                  : undefined
+              }
               to={catalogEntityRoute(getCompoundEntityRef(group))}
               icon={icon}
+              key={stringifyEntityRef(group)}
             />
           );
         })}
-        {Object.entries(namespacedGroupsMap)
-          .filter(([n]) => n !== DEFAULT_NAMESPACE)
-          .map(([namespace, namespacedGroups]) => {
-            return (
-              <SidebarSubmenuItem
-                key={namespace}
-                title={namespace}
-                icon={icon}
-                dropdownItems={namespacedGroups.map(group => ({
-                  title: group.metadata.title || group.metadata.name,
-                  to: catalogEntityRoute(getCompoundEntityRef(group)),
-                }))}
-              />
-            );
-          })}
       </SidebarSubmenu>
     </SidebarItem>
   );

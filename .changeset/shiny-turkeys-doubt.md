@@ -2,4 +2,4 @@
 '@backstage/plugin-org': patch
 ---
 
-Render namespaced teams within dropdown items in `MyGroupsSidebarItem`
+Render namespaces for teams with subtitles in `MyGroupsSidebarItem`
