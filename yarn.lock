@@ -12485,9 +12485,9 @@ expect@^27.5.1:
     jest-message-util "^27.5.1"
 
 express-prom-bundle@^6.3.6:
-  version "6.4.1"
-  resolved "https://registry.npmjs.org/express-prom-bundle/-/express-prom-bundle-6.4.1.tgz#a688050b9e090f6969825c33143106d3e0e5a70e"
-  integrity sha512-Sg0svLQe/SS5z1tHDTVfZVjNumobiDlXM0jmemt5Dm9K6BX8z9yCwEr93zbko6fNMR4zKav77iPfxUWi6gAjNA==
+  version "6.5.0"
+  resolved "https://registry.npmjs.org/express-prom-bundle/-/express-prom-bundle-6.5.0.tgz#cdf28b29907618cae933ed14d5b727f7404e810b"
+  integrity sha512-paFAm0FK7TV1Ln6Blh9edDt2mJ4Pk6Py/fjhZDMcoMHENYryBjCpnXDXuCu8NE1kkvp58IrPcAAkNeNqdvZnnw==
   dependencies:
     on-finished "^2.3.0"
     url-value-parser "^2.0.0"
