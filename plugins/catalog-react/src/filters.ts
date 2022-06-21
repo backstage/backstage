@@ -169,10 +169,10 @@ export class UserListFilter implements EntityFilter {
  * @public
  */
 export class EntityOrphanFilter implements EntityFilter {
-  constructor(readonly values: string[]) {}
+  constructor(readonly value: boolean) {}
   filterEntity(entity: Entity): boolean {
     const orphan = entity.metadata.annotations?.['backstage.io/orphan'];
-    return orphan !== undefined && this.values.includes(orphan);
+    return orphan !== undefined && this.value.toString() === orphan;
   }
 }
 
@@ -181,10 +181,10 @@ export class EntityOrphanFilter implements EntityFilter {
  * @public
  */
 export class EntityErrorFilter implements EntityFilter {
-  constructor(readonly values: string[]) {}
+  constructor(readonly value: boolean) {}
   filterEntity(entity: Entity): boolean {
     const error =
       ((entity as AlphaEntity)?.status?.items?.length as number) > 0;
-    return error !== undefined && this.values.includes(error.toString());
+    return error !== undefined && this.value === error;
   }
 }

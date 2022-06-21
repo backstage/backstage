@@ -54,15 +54,15 @@ export const EntityAdvancedPicker = () => {
     [],
   );
 
-  function orphanChange(value: string) {
+  function orphanChange(value: boolean) {
     updateFilters({
-      orphan: value === 'true' ? new EntityOrphanFilter([value]) : undefined,
+      orphan: value ? new EntityOrphanFilter(value) : undefined,
     });
   }
 
-  function errorChange(value: string) {
+  function errorChange(value: boolean) {
     updateFilters({
-      error: value === 'true' ? new EntityErrorFilter([value]) : undefined,
+      error: value ? new EntityErrorFilter(value) : undefined,
     });
   }
 
@@ -78,8 +78,8 @@ export const EntityAdvancedPicker = () => {
           value={selectedAdvancedItems}
           onChange={(_: object, value: string[]) => {
             setSelectedAdvancedItems(value);
-            orphanChange(value.includes('Is Orphan') ? 'true' : 'false');
-            errorChange(value.includes('Has Error') ? 'true' : 'false');
+            orphanChange(value.includes('Is Orphan'));
+            errorChange(value.includes('Has Error'));
           }}
           renderOption={(option, { selected }) => (
             <FormControlLabel

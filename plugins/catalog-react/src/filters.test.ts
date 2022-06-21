@@ -110,7 +110,7 @@ describe('EntityOrphanFilter', () => {
   };
 
   it('should find orphans', () => {
-    const filter = new EntityOrphanFilter(['true']);
+    const filter = new EntityOrphanFilter(true);
     expect(filter.filterEntity(orphan)).toBeTruthy();
     expect(filter.filterEntity(entities[1])).toBeFalsy();
   });
@@ -137,7 +137,7 @@ describe('EntityErrorFilter', () => {
   };
 
   it('should find errors', () => {
-    const filter = new EntityErrorFilter(['true']);
+    const filter = new EntityErrorFilter(true);
     expect(filter.filterEntity(error)).toBeTruthy();
     expect(filter.filterEntity(entities[1])).toBeFalsy();
   });

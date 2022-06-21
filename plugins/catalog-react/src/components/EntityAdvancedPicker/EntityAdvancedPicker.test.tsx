@@ -83,7 +83,7 @@ describe('<EntityAdvancedPicker/>', () => {
     fireEvent.click(rendered.getByTestId('advanced-picker-expand'));
     fireEvent.click(rendered.getByText('Is Orphan'));
     expect(updateFilters).toHaveBeenCalledWith({
-      orphan: new EntityOrphanFilter(['true']),
+      orphan: new EntityOrphanFilter(true),
     });
   });
 
@@ -104,7 +104,7 @@ describe('<EntityAdvancedPicker/>', () => {
     fireEvent.click(rendered.getByTestId('advanced-picker-expand'));
     fireEvent.click(rendered.getByText('Has Error'));
     expect(updateFilters).toHaveBeenCalledWith({
-      error: new EntityErrorFilter(['true']),
+      error: new EntityErrorFilter(true),
     });
   });
 

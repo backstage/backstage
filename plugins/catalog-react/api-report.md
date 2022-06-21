@@ -150,11 +150,11 @@ export const EntityAdvancedPicker: () => JSX.Element;
 
 // @public
 export class EntityErrorFilter implements EntityFilter {
-  constructor(values: string[]);
+  constructor(value: boolean);
   // (undocumented)
   filterEntity(entity: Entity): boolean;
   // (undocumented)
-  readonly values: string[];
+  readonly value: boolean;
 }
 
 // @public (undocumented)
@@ -242,11 +242,11 @@ export type EntityLoadingStatus<TEntity extends Entity = Entity> = {
 
 // @public
 export class EntityOrphanFilter implements EntityFilter {
-  constructor(values: string[]);
+  constructor(value: boolean);
   // (undocumented)
   filterEntity(entity: Entity): boolean;
   // (undocumented)
-  readonly values: string[];
+  readonly value: boolean;
 }
 
 // @public
