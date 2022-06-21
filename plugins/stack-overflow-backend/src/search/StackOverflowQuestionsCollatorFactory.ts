@@ -71,9 +71,9 @@ export class StackOverflowQuestionsCollatorFactory
 
   private constructor(options: StackOverflowQuestionsCollatorFactoryOptions) {
     this.baseUrl = options.baseUrl;
+    this.apiKey = options.apiKey;
     this.requestParams = options.requestParams;
     this.logger = options.logger;
-    this.apiKey = options.apiKey;
   }
 
   static fromConfig(
@@ -102,7 +102,16 @@ export class StackOverflowQuestionsCollatorFactory
       );
     }
 
-    this.logger.warn(`${JSON.stringify(this.requestParams)}`);
+    try {
+      if (Object.keys(this.requestParams).indexOf('key') >= 0) {
+        this.logger.warn(
+          'The API Key should be passed as a seperate param to bypass encoding',
+        );
+        delete this.requestParams.key;
+      }
+    } catch (e) {
+      this.logger.error(`Caught ${e}`);
+    }
 
     const params = qs.stringify(this.requestParams, {
       arrayFormat: 'comma',
