@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-adr-common",
   "description": "Common functionalities for the adr plugin",
-  "version": "0.1.1",
+  "version": "0.1.2-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -30,12 +30,12 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/catalog-model": "^1.0.3",
-    "@backstage/integration": "^1.2.1",
+    "@backstage/catalog-model": "^1.1.0-next.0",
+    "@backstage/integration": "^1.2.2-next.0",
     "@backstage/plugin-search-common": "^0.3.5"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.2"
+    "@backstage/cli": "^0.17.3-next.0"
   },
   "files": [
     "dist"

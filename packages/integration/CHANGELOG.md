@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 1.2.2-next.0
+
+### Patch Changes
+
+- 8829e175f2: Allow frontend visibility for `integrations` itself.
+
 ## 1.2.1
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-react
 
+## 1.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/integration@1.2.2-next.0
+  - @backstage/catalog-client@1.0.4-next.0
+
 ## 1.1.1
 
 ### Patch Changes

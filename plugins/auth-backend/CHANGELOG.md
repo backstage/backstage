@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend
 
+## 0.14.2-next.0
+
+### Patch Changes
+
+- 859346bfbb: Updated dependency `google-auth-library` to `^8.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/plugin-auth-node@0.2.3-next.0
+  - @backstage/catalog-client@1.0.4-next.0
+
 ## 0.14.1
 
 ### Patch Changes

@@ -1,5 +1,37 @@
 # @backstage/plugin-catalog
 
+## 1.3.1-next.0
+
+### Patch Changes
+
+- dcaf1cb418: Previously, the color of the Entity Context Menu (in the Entity Page Header) was hardcoded as `white`.
+
+  This was an issue for themes that use a header with a white background. By default, the color of the icon is now `theme.palette.bursts.fontColor`.
+
+  It can now also be overridden in the theme, which is only necessary if the header title, subtitle and three-dots icon need to have different colors. For example:
+
+  ```typescript
+  export function createThemeOverrides(theme: BackstageTheme): Overrides {
+    return {
+      PluginCatalogEntityContextMenu: {
+        button: {
+          color: 'blue',
+        },
+      },
+      ...
+    },
+    ...
+    }
+  ```
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/catalog-client@1.0.4-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.0
+  - @backstage/integration-react@1.1.2-next.0
+  - @backstage/plugin-search-react@0.2.2-next.0
+
 ## 1.3.0
 
 ### Minor Changes
