@@ -92,7 +92,6 @@ elasticsearch
 esbuild
 eslint
 etag
-ent
 Expedia
 facto
 failover
