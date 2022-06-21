@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-import { CatalogClient } from '@backstage/catalog-client';
-import { createRouter } from '@backstage/plugin-scaffolder-backend';
+import { createRouter } from '@backstage/plugin-identity-backend';
 import { Router } from 'express';
 import type { PluginEnvironment } from '../types';
 
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  const catalogClient = new CatalogClient({
-    discoveryApi: env.discovery,
-  });
-
   return await createRouter({
     logger: env.logger,
     config: env.config,
-    database: env.database,
-    catalogClient: catalogClient,
-    reader: env.reader,
     identityProvider: env.identityProvider,
   });
 }

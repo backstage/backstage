@@ -47,6 +47,10 @@ import {
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { getEntityBaseUrl, getWorkingDirectory, findTemplate } from './helpers';
+import {
+  DefaultIdentityProvider,
+  IdentityProvider,
+} from '@backstage/plugin-identity-backend';
 
 /**
  * RouterOptions
@@ -63,6 +67,7 @@ export interface RouterOptions {
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  identityProvider?: IdentityProvider;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
@@ -90,6 +95,8 @@ export async function createRouter(
     additionalTemplateFilters,
   } = options;
 
+  const identityProvider =
+    options.identityProvider || new DefaultIdentityProvider();
   const logger = parentLogger.child({ plugin: 'scaffolder' });
   const workingDirectory = await getWorkingDirectory(config, logger);
   const integrations = ScmIntegrations.fromConfig(config);
@@ -145,7 +152,7 @@ export async function createRouter(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
       async (req, res) => {
         const { namespace, kind, name } = req.params;
-        const { token } = parseBearerToken(req.headers.authorization);
+        const { token } = identityProvider.userFromRequest(req);
         const template = await findTemplate({
           catalogApi: catalogClient,
           entityRef: { kind, namespace, name },
@@ -184,9 +191,8 @@ export async function createRouter(
       const { kind, namespace, name } = parseEntityRef(templateRef, {
         defaultKind: 'template',
       });
-      const { token, entityRef: userEntityRef } = parseBearerToken(
-        req.headers.authorization,
-      );
+      const { token, entityRef: userEntityRef } =
+        identityProvider.userFromRequest(req);
 
       const userEntity = userEntityRef
         ? await catalogClient.getEntityByRef(userEntityRef, { token })
@@ -376,7 +382,7 @@ export async function createRouter(
         throw new InputError('Input template is not a template');
       }
 
-      const { token } = parseBearerToken(req.headers.authorization);
+      const { token } = identityProvider.userFromRequest(req);
 
       for (const parameters of [template.spec.parameters ?? []].flat()) {
         const result = validate(body.values, parameters);
@@ -425,23 +431,4 @@ export async function createRouter(
   app.use('/', router);
 
   return app;
-}
-
-function parseBearerToken(header?: string): {
-  token?: string;
-  entityRef?: string;
-} {
-  const token = header?.match(/Bearer\s+(\S+)/i)?.[1];
-
-  if (!token) return {};
-
-  const [_header, rawPayload, _signature] = token.split('.');
-  const payload: { sub: string } = JSON.parse(
-    Buffer.from(rawPayload, 'base64').toString(),
-  );
-
-  return {
-    entityRef: payload.sub,
-    token,
-  };
 }

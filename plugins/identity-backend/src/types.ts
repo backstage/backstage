@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-import { CatalogClient } from '@backstage/catalog-client';
-import { createRouter } from '@backstage/plugin-scaffolder-backend';
-import { Router } from 'express';
-import type { PluginEnvironment } from '../types';
+import express from 'express';
 
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const catalogClient = new CatalogClient({
-    discoveryApi: env.discovery,
-  });
+/**
+ * Identity returned by the IdentityProvider.
+ * @public
+ */
+export type BackstageIdentity = {
+  token?: string;
+  entityRef?: string;
+};
 
-  return await createRouter({
-    logger: env.logger,
-    config: env.config,
-    database: env.database,
-    catalogClient: catalogClient,
-    reader: env.reader,
-    identityProvider: env.identityProvider,
-  });
+/**
+ * IdentityProvider interface, for customizing authentication process.
+ * @public
+ */
+export interface IdentityProvider {
+  userFromRequest: (request: express.Request) => BackstageIdentity;
 }

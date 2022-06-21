@@ -53,6 +53,7 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
+import { DefaultIdentityProvider } from '@backstage/plugin-identity-backend';
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -141,6 +142,7 @@ describe('createRouter', () => {
       catalogClient,
       reader: mockUrlReader,
       taskBroker,
+      identityProvider: new DefaultIdentityProvider(),
     });
     app = express().use(router);
 

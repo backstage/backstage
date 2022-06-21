@@ -47,6 +47,7 @@ import kubernetes from './plugins/kubernetes';
 import kafka from './plugins/kafka';
 import rollbar from './plugins/rollbar';
 import scaffolder from './plugins/scaffolder';
+import identity from './plugins/identity';
 import proxy from './plugins/proxy';
 import search from './plugins/search';
 import techdocs from './plugins/techdocs';
@@ -59,6 +60,7 @@ import jenkins from './plugins/jenkins';
 import permission from './plugins/permission';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
+import { DefaultIdentityProvider } from '@backstage/plugin-identity-backend';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -72,6 +74,7 @@ function makeCreateEnv(config: Config) {
   const databaseManager = DatabaseManager.fromConfig(config);
   const cacheManager = CacheManager.fromConfig(config);
   const taskScheduler = TaskScheduler.fromConfig(config);
+  const identityProvider = DefaultIdentityProvider.fromConfig(config);
 
   root.info(`Created UrlReader ${reader}`);
 
@@ -87,6 +90,7 @@ function makeCreateEnv(config: Config) {
       config,
       reader,
       discovery,
+      identityProvider,
       tokenManager,
       permissions,
       scheduler,
@@ -116,6 +120,7 @@ async function main() {
     createEnv('code-coverage'),
   );
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
+  const identityEnv = useHotMemoize(module, () => createEnv('identity'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
   const azureDevOpsEnv = useHotMemoize(module, () => createEnv('azure-devops'));
   const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
@@ -139,6 +144,7 @@ async function main() {
   apiRouter.use('/code-coverage', await codeCoverage(codeCoverageEnv));
   apiRouter.use('/rollbar', await rollbar(rollbarEnv));
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
+  apiRouter.use('/identity', await identity(identityEnv));
   apiRouter.use('/tech-insights', await techInsights(techInsightsEnv));
   apiRouter.use('/auth', await auth(authEnv));
   apiRouter.use('/azure-devops', await azureDevOps(azureDevOpsEnv));
