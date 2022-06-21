@@ -18,7 +18,7 @@ import { render, waitFor } from '@testing-library/react';
 import { Incidents } from './Incidents';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { pagerDutyApiRef } from '../../api';
-import { Incident } from '../types';
+import { PagerDutyIncident } from '../types';
 import { ApiProvider } from '@backstage/core-app-api';
 
 const mockPagerDutyApi = {
@@ -30,7 +30,7 @@ describe('Incidents', () => {
   it('Renders an empty state when there are no incidents', async () => {
     mockPagerDutyApi.getIncidentsByServiceId = jest
       .fn()
-      .mockImplementationOnce(async () => []);
+      .mockImplementationOnce(async () => ({ incidents: [] }));
 
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
@@ -44,9 +44,10 @@ describe('Incidents', () => {
   });
 
   it('Renders all incidents', async () => {
-    mockPagerDutyApi.getIncidentsByServiceId = jest.fn().mockImplementationOnce(
-      async () =>
-        [
+    mockPagerDutyApi.getIncidentsByServiceId = jest
+      .fn()
+      .mockImplementationOnce(async () => ({
+        incidents: [
           {
             id: 'id1',
             status: 'triggered',
@@ -82,8 +83,8 @@ describe('Incidents', () => {
             html_url: 'http://a.com/id2',
             serviceId: 'sId2',
           },
-        ] as Incident[],
-    );
+        ] as PagerDutyIncident[],
+      }));
     const { getByText, getAllByTitle, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>

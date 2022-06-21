@@ -299,12 +299,12 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
 
     const formData = taskStream.task!.spec.parameters;
 
-    const { name } = parseEntityRef(
+    const { name, namespace } = parseEntityRef(
       taskStream.task!.spec.templateInfo?.entityRef,
     );
 
     navigate(
-      `${templateRoute({ templateName: name })}?${qs.stringify({
+      `${templateRoute({ templateName: name, namespace })}?${qs.stringify({
         formData: JSON.stringify(formData),
       })}`,
     );

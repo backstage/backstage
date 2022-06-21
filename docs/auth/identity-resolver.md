@@ -12,6 +12,37 @@ If you want to use an auth provider to sign in users, you need to explicitly con
 it have sign-in enabled and also tell it how the external identities should
 be mapped to user identities within Backstage.
 
+## Quick Start
+
+> See [providers](../reference/plugin-auth-backend.providers.md)
+> for a full list of auth providers and their built-in sign-in resolvers.
+
+Backstage projects created with `npx @backstage/create-app` come configured with a
+sign-in resolver for GitHub guest access. This resolver makes all users share
+a single "guest" identity and is only intended as a minimum requirement to quickly
+get up and running. You can replace `github` for any of the other providers if you need.
+
+This resolver should not be used in production, as it uses a single shared identity,
+and has no restrictions on who is able to sign-in. Be sure to read through the rest
+of this page to understand the Backstage identity system once you need to install
+a resolver for your production environment.
+
+The guest resolver can be useful for testing purposes too, and it looks like this:
+
+```ts
+signIn: {
+  resolver(_, ctx) {
+    const userRef = 'user:default/guest'
+    return ctx.issueToken({
+      claims: {
+        sub: userRef,
+        ent: [userRef],
+      },
+    }),
+  },
+},
+```
+
 ## Backstage User Identity
 
 A user identity within Backstage is built up from two pieces of information, a
@@ -58,6 +89,11 @@ The input to the sign-in resolver function is the result of a successful log in 
 the given auth provider, as well as a context object that contains various helpers
 for looking up users and issuing tokens. There are also a number of built-in sign-in
 resolvers that can be used, which are covered a bit further down.
+
+Note that while it possible to configure multiple auth providers to be used for sign-in,
+you should take care when doing so. It is best to make sure that the different auth
+providers either do not have any user overlap, or that any users that are able to log
+in with multiple providers always end up with the same Backstage identity.
 
 ### Custom Resolver Example
 
@@ -210,6 +246,11 @@ is that it can be tricky to determine the ownership references, although it can
 be achieved for example through a lookup to an external service. You typically
 want to at least use the user itself as a lone ownership reference.
 
+Because we no longer use the catalog as an allow-list of users, it is often important
+that you limit what users are allowed to sign in. This could be a simple email domain
+check like in the example below, or you might for example look up the GitHub organizations
+that the user belongs to using the user access token in the provided result object.
+
 ```ts
 import { DEFAULT_NAMESPACE, stringifyEntityRef, } from '@backstage/catalog-model';
 
@@ -220,8 +261,14 @@ async ({ profile }, ctx) => {
       'Login failed, user profile does not contain an email',
     );
   }
-  // We again use the local part of the email as the user name.
-  const [localPart] = profile.email.split('@');
+  // Split the email into the local part and the domain.
+  const [localPart, domain] = profile.email.split('@');
+
+  // Next we verify the email domain. It is recommended to include this
+  // kind of check if you don't look up the user in an external service.
+  if (domain !== 'acme.org') {
+    throw new Error('Login failed, user email domain check failed');
+  }
 
   // By using `stringifyEntityRef` we ensure that the reference is formatted correctly
   const userEntityRef = stringifyEntityRef({

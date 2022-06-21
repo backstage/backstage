@@ -71,18 +71,9 @@ export const EntityRecentGithubActionsRunsCard: ({
 // @public (undocumented)
 export const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
 
-// Warning: (ae-missing-release-tag) "GithubActionsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type GithubActionsApi = {
-  listWorkflowRuns: ({
-    hostname,
-    owner,
-    repo,
-    pageSize,
-    page,
-    branch,
-  }: {
+  listWorkflowRuns: (options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -92,12 +83,7 @@ export type GithubActionsApi = {
   }) => Promise<
     RestEndpointMethodTypes['actions']['listWorkflowRuns']['response']['data']
   >;
-  getWorkflow: ({
-    hostname,
-    owner,
-    repo,
-    id,
-  }: {
+  getWorkflow: (options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -105,12 +91,7 @@ export type GithubActionsApi = {
   }) => Promise<
     RestEndpointMethodTypes['actions']['getWorkflow']['response']['data']
   >;
-  getWorkflowRun: ({
-    hostname,
-    owner,
-    repo,
-    id,
-  }: {
+  getWorkflowRun: (options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -118,25 +99,13 @@ export type GithubActionsApi = {
   }) => Promise<
     RestEndpointMethodTypes['actions']['getWorkflowRun']['response']['data']
   >;
-  reRunWorkflow: ({
-    hostname,
-    owner,
-    repo,
-    runId,
-  }: {
+  reRunWorkflow: (options: {
     hostname?: string;
     owner: string;
     repo: string;
     runId: number;
   }) => Promise<any>;
-  listJobsForWorkflowRun: ({
-    hostname,
-    owner,
-    repo,
-    id,
-    pageSize,
-    page,
-  }: {
+  listJobsForWorkflowRun: (options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -146,12 +115,7 @@ export type GithubActionsApi = {
   }) => Promise<
     RestEndpointMethodTypes['actions']['listJobsForWorkflowRun']['response']['data']
   >;
-  downloadJobLogsForWorkflowRun: ({
-    hostname,
-    owner,
-    repo,
-    runId,
-  }: {
+  downloadJobLogsForWorkflowRun: (options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -166,18 +130,11 @@ export type GithubActionsApi = {
 // @public (undocumented)
 export const githubActionsApiRef: ApiRef<GithubActionsApi>;
 
-// Warning: (ae-missing-release-tag) "GithubActionsClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class GithubActionsClient implements GithubActionsApi {
   constructor(options: { configApi: ConfigApi; githubAuthApi: OAuthApi });
   // (undocumented)
-  downloadJobLogsForWorkflowRun({
-    hostname,
-    owner,
-    repo,
-    runId,
-  }: {
+  downloadJobLogsForWorkflowRun(options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -186,12 +143,7 @@ export class GithubActionsClient implements GithubActionsApi {
     RestEndpointMethodTypes['actions']['downloadJobLogsForWorkflowRun']['response']['data']
   >;
   // (undocumented)
-  getWorkflow({
-    hostname,
-    owner,
-    repo,
-    id,
-  }: {
+  getWorkflow(options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -200,12 +152,7 @@ export class GithubActionsClient implements GithubActionsApi {
     RestEndpointMethodTypes['actions']['getWorkflow']['response']['data']
   >;
   // (undocumented)
-  getWorkflowRun({
-    hostname,
-    owner,
-    repo,
-    id,
-  }: {
+  getWorkflowRun(options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -214,14 +161,7 @@ export class GithubActionsClient implements GithubActionsApi {
     RestEndpointMethodTypes['actions']['getWorkflowRun']['response']['data']
   >;
   // (undocumented)
-  listJobsForWorkflowRun({
-    hostname,
-    owner,
-    repo,
-    id,
-    pageSize,
-    page,
-  }: {
+  listJobsForWorkflowRun(options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -232,14 +172,7 @@ export class GithubActionsClient implements GithubActionsApi {
     RestEndpointMethodTypes['actions']['listJobsForWorkflowRun']['response']['data']
   >;
   // (undocumented)
-  listWorkflowRuns({
-    hostname,
-    owner,
-    repo,
-    pageSize,
-    page,
-    branch,
-  }: {
+  listWorkflowRuns(options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -250,12 +183,7 @@ export class GithubActionsClient implements GithubActionsApi {
     RestEndpointMethodTypes['actions']['listWorkflowRuns']['response']['data']
   >;
   // (undocumented)
-  reRunWorkflow({
-    hostname,
-    owner,
-    repo,
-    runId,
-  }: {
+  reRunWorkflow(options: {
     hostname?: string;
     owner: string;
     repo: string;

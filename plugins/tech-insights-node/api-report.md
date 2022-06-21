@@ -8,6 +8,7 @@ import { Config } from '@backstage/config';
 import { DateTime } from 'luxon';
 import { Duration } from 'luxon';
 import { DurationLike } from 'luxon';
+import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { TokenManager } from '@backstage/backend-common';
@@ -76,7 +77,14 @@ export type FactRetrieverRegistration = {
 // @public
 export type FactSchema = {
   [name: string]: {
-    type: 'integer' | 'float' | 'string' | 'boolean' | 'datetime' | 'set';
+    type:
+      | 'integer'
+      | 'float'
+      | 'string'
+      | 'boolean'
+      | 'datetime'
+      | 'set'
+      | 'object';
     description: string;
     since?: string;
     metadata?: Record<string, any>;
@@ -136,6 +144,7 @@ export type TechInsightFact = {
     | string[]
     | boolean[]
     | DateTime[]
+    | JsonValue
   >;
   timestamp?: DateTime;
 };

@@ -210,4 +210,9 @@ export type EntityLink = {
    * An optional semantic key that represents a visual icon.
    */
   icon?: string;
+
+  /**
+   * An optional value to categorize links into specific groups
+   */
+  type?: string;
 };

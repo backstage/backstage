@@ -25,10 +25,20 @@ import EmptyStateImage from '../assets/emptystate.svg';
 import { useKubernetesObjects } from '../hooks';
 import { Content, Page, Progress } from '@backstage/core-components';
 
-type KubernetesContentProps = { entity: Entity; children?: React.ReactNode };
+type KubernetesContentProps = {
+  entity: Entity;
+  refreshIntervalMs?: number;
+  children?: React.ReactNode;
+};
 
-export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
-  const { kubernetesObjects, error } = useKubernetesObjects(entity);
+export const KubernetesContent = ({
+  entity,
+  refreshIntervalMs,
+}: KubernetesContentProps) => {
+  const { kubernetesObjects, error } = useKubernetesObjects(
+    entity,
+    refreshIntervalMs,
+  );
 
   const clustersWithErrors =
     kubernetesObjects?.items.filter(r => r.errors.length > 0) ?? [];

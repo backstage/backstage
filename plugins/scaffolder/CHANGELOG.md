@@ -1,5 +1,90 @@
 # @backstage/plugin-scaffolder
 
+## 1.4.0-next.0
+
+### Minor Changes
+
+- 3500c13a33: A new template editor has been added which is accessible via the context menu on the top right hand corner of the Create page. It allows you to load a template from a local directory, edit it with a preview, execute it in dry-run mode, and view the results. Note that the [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API) must be supported by your browser for this to be available.
+
+  To support the new template editor the `ScaffolderApi` now has an optional `dryRun` method, which is implemented by the default `ScaffolderClient`.
+
+### Patch Changes
+
+- 37539e29d8: The template editor now shows the cause of request errors that happen during a dry-run.
+- 842282ecf9: Bumped `codemirror` dependencies to `v6.0.0`.
+- 464bb0e6c8: The max content size for dry-run files has been reduced from 256k to 64k.
+- a7c0b34d70: Swap usage of `MaterialTable` with `Table` from `core-components`
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/integration@1.2.2-next.0
+  - @backstage/catalog-client@1.0.4-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.0
+  - @backstage/plugin-scaffolder-common@1.1.2-next.0
+  - @backstage/integration-react@1.1.2-next.0
+
+## 1.3.0
+
+### Minor Changes
+
+- dc39366bdb: - Added a new page under `/create/tasks` to show tasks that have been run by the Scaffolder.
+  - Ability to filter these tasks by the signed in user, and all tasks.
+  - Added optional method to the `ScaffolderApi` interface called `listTasks` to get tasks with an required `filterByOwnership` parameter.
+- 86a4a0f72d: Get data of other fields in Form from a custom field in template Scaffolder.
+  following:
+
+  ```tsx
+  const CustomFieldExtensionComponent = (props: FieldExtensionComponentProps<string[]>) => {
+    const { formData } = props.formContext;
+    ...
+  };
+
+  const CustomFieldExtension = scaffolderPlugin.provide(
+    createScaffolderFieldExtension({
+      name: ...,
+      component: CustomFieldExtensionComponent,
+      validation: ...
+    })
+  );
+  ```
+
+- 72dfcbc8bf: Gerrit Integration: Implemented a `RepoUrlPicker` for Gerrit.
+- f93af969cd: Added the ability to support running of templates that are not in the `default` namespace
+
+### Patch Changes
+
+- ac0c7e45ee: Fixes review mask in `MultistepJsonForm` to work as documented. `show: true` no longer needed when mask is set.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- fd505f40c0: Handle binary files and files that are too large during dry-run content upload.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/plugin-catalog-common@1.0.3
+  - @backstage/core-components@0.9.5
+  - @backstage/integration@1.2.1
+  - @backstage/catalog-client@1.0.3
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/integration-react@1.1.1
+  - @backstage/catalog-model@1.0.3
+  - @backstage/plugin-permission-react@0.4.2
+  - @backstage/plugin-scaffolder-common@1.1.1
+
+## 1.3.0-next.2
+
+### Minor Changes
+
+- dc39366bdb: - Added a new page under `/create/tasks` to show tasks that have been run by the Scaffolder.
+  - Ability to filter these tasks by the signed in user, and all tasks.
+  - Added optional method to the `ScaffolderApi` interface called `listTasks` to get tasks with an required `filterByOwnership` parameter.
+
+### Patch Changes
+
+- ac0c7e45ee: Fixes review mask in `MultistepJsonForm` to work as documented. `show: true` no longer needed when mask is set.
+- fd505f40c0: Handle binary files and files that are too large during dry-run content upload.
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.0.3-next.1
+  - @backstage/core-components@0.9.5-next.2
+  - @backstage/integration@1.2.1-next.2
+
 ## 1.3.0-next.1
 
 ### Patch Changes

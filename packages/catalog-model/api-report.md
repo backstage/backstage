@@ -159,6 +159,7 @@ export type EntityLink = {
   url: string;
   title?: string;
   icon?: string;
+  type?: string;
 };
 
 // @public

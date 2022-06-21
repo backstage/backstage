@@ -252,6 +252,28 @@ export async function createRouter(
 
       res.status(201).json({ id: result.taskId });
     })
+    .get('/v2/tasks', async (req, res) => {
+      const [userEntityRef] = [req.query.createdBy].flat();
+
+      if (
+        typeof userEntityRef !== 'string' &&
+        typeof userEntityRef !== 'undefined'
+      ) {
+        throw new InputError('createdBy query parameter must be a string');
+      }
+
+      if (!taskBroker.list) {
+        throw new Error(
+          'TaskBroker does not support listing tasks, please implement the list method on the TaskBroker.',
+        );
+      }
+
+      const tasks = await taskBroker.list({
+        createdBy: userEntityRef,
+      });
+
+      res.status(200).json(tasks);
+    })
     .get('/v2/tasks/:taskId', async (req, res) => {
       const { taskId } = req.params;
       const task = await taskBroker.get(taskId);

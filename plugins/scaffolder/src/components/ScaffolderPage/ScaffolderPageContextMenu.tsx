@@ -24,10 +24,15 @@ import Popover from '@material-ui/core/Popover';
 import { makeStyles } from '@material-ui/core/styles';
 import Description from '@material-ui/icons/Description';
 import Edit from '@material-ui/icons/Edit';
+import List from '@material-ui/icons/List';
 import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { rootRouteRef } from '../../routes';
+import {
+  actionsRouteRef,
+  editRouteRef,
+  scaffolderListTaskRouteRef,
+} from '../../routes';
 
 const useStyles = makeStyles({
   button: {
@@ -38,6 +43,7 @@ const useStyles = makeStyles({
 export type ScaffolderPageContextMenuProps = {
   editor?: boolean;
   actions?: boolean;
+  tasks?: boolean;
 };
 
 export function ScaffolderPageContextMenu(
@@ -45,11 +51,15 @@ export function ScaffolderPageContextMenu(
 ) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
-  const pageLink = useRouteRef(rootRouteRef);
+  const editLink = useRouteRef(editRouteRef);
+  const actionsLink = useRouteRef(actionsRouteRef);
+  const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
+
   const navigate = useNavigate();
 
   const showEditor = props.editor !== false;
   const showActions = props.actions !== false;
+  const showTasks = props.tasks !== false;
 
   if (!showEditor && !showActions) {
     return null;
@@ -85,7 +95,7 @@ export function ScaffolderPageContextMenu(
       >
         <MenuList>
           {showEditor && (
-            <MenuItem onClick={() => navigate(`${pageLink()}/edit`)}>
+            <MenuItem onClick={() => navigate(editLink())}>
               <ListItemIcon>
                 <Edit fontSize="small" />
               </ListItemIcon>
@@ -93,11 +103,19 @@ export function ScaffolderPageContextMenu(
             </MenuItem>
           )}
           {showActions && (
-            <MenuItem onClick={() => navigate(`${pageLink()}/actions`)}>
+            <MenuItem onClick={() => navigate(actionsLink())}>
               <ListItemIcon>
                 <Description fontSize="small" />
               </ListItemIcon>
               <ListItemText primary="Installed Actions" />
+            </MenuItem>
+          )}
+          {showTasks && (
+            <MenuItem onClick={() => navigate(tasksLink())}>
+              <ListItemIcon>
+                <List fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Task List" />
             </MenuItem>
           )}
         </MenuList>

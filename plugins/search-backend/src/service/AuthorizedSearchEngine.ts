@@ -189,10 +189,15 @@ export class AuthorizedSearchEngine implements SearchEngine {
     );
 
     return {
-      results: filteredResults.slice(
-        page * this.pageSize,
-        (page + 1) * this.pageSize,
-      ),
+      results: filteredResults
+        .slice(page * this.pageSize, (page + 1) * this.pageSize)
+        .map((result, index) => {
+          // Overwrite any/all rank entries to avoid leaking knowledge of filtered results.
+          return {
+            ...result,
+            rank: page * this.pageSize + index + 1,
+          };
+        }),
       previousPageCursor:
         page === 0 ? undefined : encodePageCursor({ page: page - 1 }),
       nextPageCursor:

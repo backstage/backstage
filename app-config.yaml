@@ -115,6 +115,11 @@ proxy:
     headers:
       Authorization: Basic ${GOCD_AUTH_CREDENTIALS}
 
+  '/dynatrace':
+    target: https://your.dynatrace.instance.com/api/v2
+    headers:
+      Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
+
 organization:
   name: My Company
 
@@ -130,6 +135,9 @@ techdocs:
     # pullImage: true # or false to disable automatic pulling of image (e.g. if custom docker login is required)
   publisher:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage' or 'openStackSwift'. Read documentation for using alternatives.
+
+dynatrace:
+  baseUrl: https://your.dynatrace.instance.com
 
 sentry:
   organization: my-company
@@ -163,26 +171,26 @@ integrations:
   github:
     - host: github.com
       token: ${GITHUB_TOKEN}
-    ### Example for how to add your GitHub Enterprise instance using the API:
-    # - host: ghe.example.net
-    #   apiBaseUrl: https://ghe.example.net/api/v3
-    #   token: ${GHE_TOKEN}
-    ### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
-    # - host: ghe.example.net
-    #   rawBaseUrl: https://ghe.example.net/raw
-    #   token: ${GHE_TOKEN}
+  ### Example for how to add your GitHub Enterprise instance using the API:
+  # - host: ghe.example.net
+  #   apiBaseUrl: https://ghe.example.net/api/v3
+  #   token: ${GHE_TOKEN}
+  ### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
+  # - host: ghe.example.net
+  #   rawBaseUrl: https://ghe.example.net/raw
+  #   token: ${GHE_TOKEN}
   gitlab:
     - host: gitlab.com
       token: ${GITLAB_TOKEN}
-  bitbucket:
-    - host: bitbucket.org
-      username: ${BITBUCKET_USERNAME}
-      appPassword: ${BITBUCKET_APP_PASSWORD}
-    ### Example for how to add your bitbucket server instance using the API:
-    # - host: server.bitbucket.com
-    #   apiBaseUrl: server.bitbucket.com
-    #   username: ${BITBUCKET_SERVER_USERNAME}
-    #   appPassword: ${BITBUCKET_SERVER_APP_PASSWORD}
+  ### Example for how to add a bitbucket cloud integration
+  # bitbucketCloud:
+  #   - username: ${BITBUCKET_USERNAME}
+  #     appPassword: ${BITBUCKET_APP_PASSWORD}
+  ### Example for how to add your bitbucket server instance using the API:
+  # - host: server.bitbucket.com
+  #   apiBaseUrl: server.bitbucket.com
+  #   username: ${BITBUCKET_SERVER_USERNAME}
+  #   appPassword: ${BITBUCKET_SERVER_APP_PASSWORD}
   azure:
     - host: dev.azure.com
       token: ${AZURE_TOKEN}

@@ -15,3 +15,8 @@
  */
 
 export * from './HighlightedSearchResultText';
+export * from './SearchFilter';
+export * from './SearchResult';
+export * from './SearchResultPager';
+export * from './SearchBar';
+export * from './DefaultResultListItem';

@@ -76,7 +76,21 @@ export const kubernetesPlugin = createPlugin({
   },
 });
 
-export const EntityKubernetesContent = kubernetesPlugin.provide(
+/**
+ * Props of EntityKubernetesContent
+ *
+ * @public
+ */
+export type EntityKubernetesContentProps = {
+  /**
+   * Sets the refresh interval in milliseconds. The default value is 10000 (10 seconds)
+   */
+  refreshIntervalMs?: number;
+};
+
+export const EntityKubernetesContent: (
+  props: EntityKubernetesContentProps,
+) => JSX.Element = kubernetesPlugin.provide(
   createRoutableExtension({
     name: 'EntityKubernetesContent',
     component: () => import('./Router').then(m => m.Router),

@@ -39,8 +39,8 @@ export class FetchUrlReader implements UrlReader {
    * targets to allow, containing the following fields:
    *
    * `host`:
-   *   Either full hostnames to match, or subdomain wildcard matchers with a leading `*`.
-   *   For example `example.com` and `*.example.com` are valid values, `prod.*.example.com` is not.
+   *   Either full hostnames to match, or subdomain wildcard matchers with a leading '*'.
+   *   For example 'example.com' and '*.example.com' are valid values, 'prod.*.example.com' is not.
    *
    * `paths`:
    *   An optional list of paths which are allowed. If the list is omitted all paths are allowed.

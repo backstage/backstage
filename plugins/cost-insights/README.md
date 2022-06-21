@@ -26,6 +26,8 @@ yarn add --cwd packages/app @backstage/plugin-cost-insights
 
 2. Create a CostInsights client. Clients must implement the [CostInsightsApi](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/api/CostInsightsApi.ts) interface. Create your own or [use a template](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/example/templates/CostInsightsClient.ts) to get started.
 
+Tip: You can also use the `ExampleCostInsightsClient` from `@backstage/plugin-cost-insights` to see how the plugin looks with some mock data.
+
 ```ts
 // path/to/CostInsightsClient.ts
 import { CostInsightsApi } from '@backstage/plugin-cost-insights';
@@ -70,37 +72,50 @@ import { CostInsightsPage } from '@backstage/plugin-cost-insights';
 To expose the plugin to your users, you can integrate the `cost-insights` route anyway that suits your application, but most commonly it is added to the Sidebar.
 
 ```diff
-// packages/app/src/sidebar.tsx
+// packages/app/src/components/Root/Root.tsx
 + import MoneyIcon from '@material-ui/icons/MonetizationOn';
 
  ...
 
- export const AppSidebar = () => (
-   <Sidebar>
-     <SidebarLogo />
-     <SidebarGroup icon={<SearchIcon />} to="/search">
-       <SidebarSearch />
-     </SidebarGroup>
-     <SidebarDivider />
-     {/* Global nav, not org-specific */}
-     <SidebarGroup label="Menu" icon={<MenuIcon />}>
-       <SidebarItem icon={HomeIcon} to="./" text="Home" />
-       <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
-       <SidebarItem icon={LibraryBooks} to="/docs" text="Docs" />
-       <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
-       <SidebarDivider />
-       <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
-+      <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
-     </SidebarGroup>
-     {/* End global nav */}
-     <SidebarDivider />
-     <SidebarSpace />
-     <SidebarDivider />
-     <SidebarGroup icon={<UserSettingsSignInAvatar />} to="/settings">
-       <SidebarSettings />
-     </SidebarGroup>
-   </Sidebar>
- );
+ export const Root = ({ children }: PropsWithChildren<{}>) => (
+  <SidebarPage>
+    <Sidebar>
+      <SidebarLogo />
+      <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+        <SidebarSearchModal>
+          {({ toggleModal }) => <SearchModal toggleModal={toggleModal} />}
+        </SidebarSearchModal>
+      </SidebarGroup>
+      <SidebarDivider />
+        <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+        <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
+        <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
+        <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+        {/* End global nav */}
+        <SidebarDivider />
+        <SidebarScrollWrapper>
++          <SidebarItem
++            icon={MoneyIcon}
++            to="cost-insights"
++            text="Cost Insights"
++          />
+        </SidebarScrollWrapper>
+        <SidebarDivider />
+        <Shortcuts />
+      </SidebarGroup>
+      <SidebarSpace />
+      <SidebarDivider />
+      <SidebarGroup
+        label="Settings"
+        icon={<UserSettingsSignInAvatar />}
+        to="/settings"
+      >
+        <SidebarSettings />
+      </SidebarGroup>
+    </Sidebar>
+    {children}
+  </SidebarPage>
+);
 ```
 
 ## Configuration
@@ -155,7 +170,7 @@ costInsights:
 
 ### Currencies (Optional)
 
-In the `Cost Overview` panel, users can choose from a dropdown of currencies to see costs in, such as Engineers or USD. Currencies must be defined as keys on the `currencies` field. A user-friendly label and unit are **required**. If not set, the `defaultCurrencies` in `currenc.ts` will be used.
+In the `Cost Overview` panel, users can choose from a dropdown of currencies to see costs in, such as Engineers or USD. Currencies must be defined as keys on the `currencies` field. A user-friendly label and unit are **required**. If not set, the `defaultCurrencies` in `currency.ts` will be used.
 
 A currency without `kind` is reserved to calculate cost for `engineers`. There should only be one currency without `kind`.
 
@@ -171,16 +186,15 @@ costInsights:
       name: Some Other Cloud Product
       icon: data
   currencies:
-    metricA:
-      currencyA:
-        label: Currency A
-        unit: Unit A
-      currencyB:
-        label: Currency B
-        kind: CURRENCY_B
-        unit: Unit B
-        prefix: B
-        rate: 3.5
+    currencyA:
+      label: Currency A
+      unit: Unit A
+    currencyB:
+      label: Currency B
+      kind: CURRENCY_B
+      unit: Unit B
+      prefix: B
+      rate: 3.5
 ```
 
 ## Alerts

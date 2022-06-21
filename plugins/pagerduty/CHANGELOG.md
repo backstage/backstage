@@ -1,5 +1,68 @@
 # @backstage/plugin-pagerduty
 
+## 0.5.0-next.0
+
+### Minor Changes
+
+- 8798f8d93f: Introduces a new annotation `pagerduty.com/service-id` that can be used instead of the `pagerduty.com/integration-key` annotation.
+  _Note: If both annotations are specified on a given Entity, then the `pagerduty.com/integration-key` annotation will be prefered_
+
+  **BREAKING** The `PagerDutyClient.fromConfig` static method now expects a `FetchApi` compatible object and has been refactored to
+  accept 2 arguments: config and ClientApiDependencies
+  The `PagerDutyClient` now relies on a `fetchApi` being available to execute `fetch` requests.
+
+  **BREAKING** A new query method `getServiceByEntity` that is used to query for Services by either the `integrationKey` or `serviceId`
+  annotation values if they are defined. The `integrationKey` value is preferred currently over `serviceId`. As such, the previous
+  `getServiceByIntegrationKey` method has been removed.
+
+  **BREAKING** The return values for each Client query method has been changed to return an object instead of raw values.
+  For example, the `getIncidentsByServiceId` query method now returns an object in the shape of `{ incidents: Incident[] }`
+  instead of just `Incident[]`.
+  This same pattern goes for `getChangeEventsByServiceId` and `getOnCallByPolicyId` functions.
+
+  **BREAKING** All public exported types that relate to entities within PagerDuty have been prefixed with `PagerDuty` (e.g. `ServicesResponse` is now `PagerDutyServicesResponse` and `User` is now `PagerDutyUser`)
+
+  In addition, various enhancements/bug fixes were introduced:
+
+  - The `PagerDutyCard` component now wraps error and loading messages with an `InfoCard` to contain errors/messages. This enforces a consistent experience on the EntityPage
+  - If no service can be found for the provided integration key, a new Error Message Empty State component will be shown instead of an error alert
+  - Introduces the `fetchApi` to replace standard `window.fetch`
+    - ensures that Identity Authorization is respected and provided in API requests
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.0
+
+## 0.4.0
+
+### Minor Changes
+
+- b157c2eb1c: **Breaking**: Use identityApi to provide auth token for pagerduty API calls.
+
+### Patch Changes
+
+- 76bf6400fe: Fix alert that was not showing after creating an incident.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/catalog-model@1.0.3
+
+## 0.4.0-next.2
+
+### Minor Changes
+
+- b157c2eb1c: **Breaking**: Use identityApi to provide auth token for pagerduty API calls.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.2
+
 ## 0.3.33-next.1
 
 ### Patch Changes

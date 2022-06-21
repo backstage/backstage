@@ -1,5 +1,58 @@
 # @backstage/plugin-techdocs
 
+## 1.2.1-next.0
+
+### Patch Changes
+
+- 3cbebf710e: Reorder browser tab title in Techdocs pages to have the site name first.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/plugin-techdocs-react@1.0.2-next.0
+  - @backstage/integration@1.2.2-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.0
+  - @backstage/integration-react@1.1.2-next.0
+  - @backstage/plugin-search-react@0.2.2-next.0
+
+## 1.2.0
+
+### Minor Changes
+
+- fe7614ea54: Add an optional icon to the Catalog and TechDocs search results
+
+### Patch Changes
+
+- d047d81295: Use entity title as label in `TechDocsReaderPageHeader` if available
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- bff65e6958: Updated sidebar-related logic to use `<SidebarPinStateProvider>` + `useSidebarPinState()` and/or `<SidebarOpenStateProvider>` + `useSidebarOpenState()` from `@backstage/core-components`.
+- 915700f64f: In order to simplify analytics on top of the search experience in Backstage, the provided `<*ResultListItem />` component now captures a `discover` analytics event instead of a `click` event. This event includes the result rank as its `value` and, like a click, the URL/path clicked to as its `to` attribute.
+- 881fbd7e8d: Fix `EntityTechdocsContent` component to use objects instead of `<Route>` elements, otherwise "outlet" will be null on sub-pages and add-ons won't render.
+- 17c059dfd0: Restructures reader style transformations to improve code readability:
+
+  - Extracts the style rules to separate files;
+  - Creates a hook that processes each rule;
+  - And creates another hook that returns a transformer responsible for injecting them into the head tag of a given element.
+
+- 3b45ad701f: Packages a set of tweaks to the TechDocs addons rendering process:
+
+  - Prevents displaying sidebars until page styles are loaded and the sidebar position is updated;
+  - Prevents new sidebar locations from being created every time the reader page is rendered if these locations already exist;
+  - Centers the styles loaded event to avoid having multiple locations setting the opacity style in Shadow Dom causing the screen to flash multiple times.
+
+- 9b94ade898: Use entity title in `TechDocsSearch` placeholder if available.
+- 816f7475ec: Convert `sanitizeDOM` transformer to hook as part of code readability improvements in dom file.
+- 50ff56a80f: Change the `EntityDocsPage` path to be more specific and also add integration tests for `sub-routes` on this page.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/plugin-search-react@0.2.1
+  - @backstage/core-components@0.9.5
+  - @backstage/integration@1.2.1
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/integration-react@1.1.1
+  - @backstage/catalog-model@1.0.3
+  - @backstage/plugin-techdocs-react@1.0.1
+
 ## 1.1.2-next.1
 
 ### Patch Changes

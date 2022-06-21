@@ -73,12 +73,10 @@ export class Generators implements GeneratorBuilder {
 export const getDocFilesFromRepository: (
   reader: UrlReader,
   entity: Entity,
-  opts?:
-    | {
-        etag?: string | undefined;
-        logger?: Logger | undefined;
-      }
-    | undefined,
+  opts?: {
+    etag?: string;
+    logger?: Logger;
+  },
 ) => Promise<PreparerResponse>;
 
 // @public

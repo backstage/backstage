@@ -28,14 +28,14 @@ import {
 } from '@material-ui/core';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { makeStyles } from '@material-ui/core/styles';
-import { SearchBar } from '../SearchBar';
-import { DefaultResultListItem } from '../DefaultResultListItem';
-import { SearchResult } from '../SearchResult';
 import {
+  DefaultResultListItem,
   SearchContextProvider,
+  SearchBar,
+  SearchResult,
+  SearchResultPager,
   useSearch,
 } from '@backstage/plugin-search-react';
-import { SearchResultPager } from '../SearchResultPager';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Link, useContent } from '@backstage/core-components';
 import { rootRouteRef } from '../../plugin';
@@ -50,6 +50,9 @@ export interface SearchModalChildrenProps {
   toggleModal: () => void;
 }
 
+/**
+ * @public
+ **/
 export interface SearchModalProps {
   /**
    * If true, it renders the modal.
@@ -167,6 +170,9 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
   );
 };
 
+/**
+ * @public
+ */
 export const SearchModal = ({
   open = true,
   hidden,

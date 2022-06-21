@@ -43,7 +43,6 @@ export async function serveBundle(options: ServeOptions) {
   const compiler = webpack(config);
 
   const server = new WebpackDevServer(
-    compiler as any,
     {
       hot: !process.env.CI,
       devMiddleware: {
@@ -71,10 +70,11 @@ export async function serveBundle(options: ServeOptions) {
         webSocketURL: 'auto://0.0.0.0:0/ws',
       },
     } as any,
+    compiler as any,
   );
 
   await new Promise<void>((resolve, reject) => {
-    server.listen(port, host, (err?: Error) => {
+    server.startCallback((err?: Error) => {
       if (err) {
         reject(err);
         return;

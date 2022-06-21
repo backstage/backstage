@@ -41,7 +41,6 @@ describe('MultistepJsonForm', () => {
             type: 'string',
             'ui:backstage': {
               review: {
-                show: true,
                 mask: '******',
               },
             },
