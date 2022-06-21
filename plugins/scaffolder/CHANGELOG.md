@@ -1,5 +1,28 @@
 # @backstage/plugin-scaffolder
 
+## 1.4.0-next.0
+
+### Minor Changes
+
+- 3500c13a33: A new template editor has been added which is accessible via the context menu on the top right hand corner of the Create page. It allows you to load a template from a local directory, edit it with a preview, execute it in dry-run mode, and view the results. Note that the [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API) must be supported by your browser for this to be available.
+
+  To support the new template editor the `ScaffolderApi` now has an optional `dryRun` method, which is implemented by the default `ScaffolderClient`.
+
+### Patch Changes
+
+- 37539e29d8: The template editor now shows the cause of request errors that happen during a dry-run.
+- 842282ecf9: Bumped `codemirror` dependencies to `v6.0.0`.
+- 464bb0e6c8: The max content size for dry-run files has been reduced from 256k to 64k.
+- a7c0b34d70: Swap usage of `MaterialTable` with `Table` from `core-components`
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/integration@1.2.2-next.0
+  - @backstage/catalog-client@1.0.4-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.0
+  - @backstage/plugin-scaffolder-common@1.1.2-next.0
+  - @backstage/integration-react@1.1.2-next.0
+
 ## 1.3.0
 
 ### Minor Changes

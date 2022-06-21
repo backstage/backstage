@@ -1,5 +1,15 @@
 # @techdocs/cli
 
+## 1.1.3-next.0
+
+### Patch Changes
+
+- 14ce0d9347: Fixed a bug that prevented docker images from being pulled by default when generating TechDocs.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/plugin-techdocs-node@1.1.3-next.0
+
 ## 1.1.2
 
 ### Patch Changes

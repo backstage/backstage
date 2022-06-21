@@ -1,5 +1,16 @@
 # @backstage/plugin-github-actions
 
+## 0.5.7-next.0
+
+### Patch Changes
+
+- 217f919f0a: Minor cleanup of the API surface.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/integration@1.2.2-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.0
+
 ## 0.5.6
 
 ### Patch Changes
