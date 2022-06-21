@@ -27,6 +27,8 @@ import {
 } from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from '../publish/util';
 import { getOctokitOptions } from './helpers';
+import * as inputProps from './inputProperties';
+import * as outputProps from './outputProperties';
 
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
@@ -62,82 +64,23 @@ export function createGithubRepoPushAction(options: {
         type: 'object',
         required: ['repoUrl'],
         properties: {
-          repoUrl: {
-            title: 'Repository Location',
-            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
-            type: 'string',
-          },
-          requireCodeOwnerReviews: {
-            title: 'Require CODEOWNER Reviews?',
-            description:
-              'Require an approved review in PR including files with a designated Code Owner',
-            type: 'boolean',
-          },
-          requiredStatusCheckContexts: {
-            title: 'Required Status Check Contexts',
-            description:
-              'The list of status checks to require in order to merge into this branch',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          defaultBranch: {
-            title: 'Default Branch',
-            type: 'string',
-            description: `Sets the default branch on the repository. The default value is 'master'`,
-          },
-          protectDefaultBranch: {
-            title: 'Protect Default Branch',
-            type: 'boolean',
-            description: `Protect the default branch after creating the repository. The default value is 'true'`,
-          },
-          gitCommitMessage: {
-            title: 'Git Commit Message',
-            type: 'string',
-            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
-          },
-          gitAuthorName: {
-            title: 'Default Author Name',
-            type: 'string',
-            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
-          },
-          gitAuthorEmail: {
-            title: 'Default Author Email',
-            type: 'string',
-            description: `Sets the default author email for the commit.`,
-          },
-          sourcePath: {
-            title: 'Source Path',
-            description:
-              'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
-            type: 'string',
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The token to use for authorization to GitHub',
-          },
-          topics: {
-            title: 'Topics',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
+          repoUrl: inputProps.repoUrl,
+          requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+          requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+          defaultBranch: inputProps.defaultBranch,
+          protectDefaultBranch: inputProps.protectDefaultBranch,
+          gitCommitMessage: inputProps.gitCommitMessage,
+          gitAuthorName: inputProps.gitAuthorName,
+          gitAuthorEmail: inputProps.gitAuthorEmail,
+          sourcePath: inputProps.sourcePath,
+          token: inputProps.token,
         },
       },
       output: {
         type: 'object',
         properties: {
-          remoteUrl: {
-            title: 'A URL to the repository with the provider',
-            type: 'string',
-          },
-          repoContentsUrl: {
-            title: 'A URL to the root of the repository',
-            type: 'string',
-          },
+          remoteUrl: outputProps.remoteUrl,
+          repoContentsUrl: outputProps.repoContentsUrl,
         },
       },
     },

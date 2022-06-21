@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Config } from '@backstage/config';
+import { assertError, InputError } from '@backstage/errors';
 import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
+import { Octokit } from 'octokit';
+import { createTemplateAction } from '../../createTemplateAction';
+import { getOctokitOptions } from '../github/helpers';
+import * as inputProps from '../github/inputProperties';
+import * as outputProps from '../github/outputProperties';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
   initRepoAndPush,
 } from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
-import { createTemplateAction } from '../../createTemplateAction';
-import { Config } from '@backstage/config';
-import { assertError, InputError } from '@backstage/errors';
-import { getOctokitOptions } from '../github/helpers';
-import { Octokit } from 'octokit';
 
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
@@ -84,153 +86,32 @@ export function createPublishGithubAction(options: {
         type: 'object',
         required: ['repoUrl'],
         properties: {
-          repoUrl: {
-            title: 'Repository Location',
-            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
-            type: 'string',
-          },
-          description: {
-            title: 'Repository Description',
-            type: 'string',
-          },
-          access: {
-            title: 'Repository Access',
-            description: `Sets an admin collaborator on the repository. Can either be a user reference different from 'owner' in 'repoUrl' or team reference, eg. 'org/team-name'`,
-            type: 'string',
-          },
-          requireCodeOwnerReviews: {
-            title: 'Require CODEOWNER Reviews?',
-            description:
-              'Require an approved review in PR including files with a designated Code Owner',
-            type: 'boolean',
-          },
-          requiredStatusCheckContexts: {
-            title: 'Required Status Check Contexts',
-            description:
-              'The list of status checks to require in order to merge into this branch',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          repoVisibility: {
-            title: 'Repository Visibility',
-            type: 'string',
-            enum: ['private', 'public', 'internal'],
-          },
-          defaultBranch: {
-            title: 'Default Branch',
-            type: 'string',
-            description: `Sets the default branch on the repository. The default value is 'master'`,
-          },
-          protectDefaultBranch: {
-            title: 'Protect Default Branch',
-            type: 'boolean',
-            description: `Protect the default branch after creating the repository. The default value is 'true'`,
-          },
-          deleteBranchOnMerge: {
-            title: 'Delete Branch On Merge',
-            type: 'boolean',
-            description: `Delete the branch after merging the PR. The default value is 'false'`,
-          },
-          gitCommitMessage: {
-            title: 'Git Commit Message',
-            type: 'string',
-            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
-          },
-          gitAuthorName: {
-            title: 'Default Author Name',
-            type: 'string',
-            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
-          },
-          gitAuthorEmail: {
-            title: 'Default Author Email',
-            type: 'string',
-            description: `Sets the default author email for the commit.`,
-          },
-          allowMergeCommit: {
-            title: 'Allow Merge Commits',
-            type: 'boolean',
-            description: `Allow merge commits. The default value is 'true'`,
-          },
-          allowSquashMerge: {
-            title: 'Allow Squash Merges',
-            type: 'boolean',
-            description: `Allow squash merges. The default value is 'true'`,
-          },
-          allowRebaseMerge: {
-            title: 'Allow Rebase Merges',
-            type: 'boolean',
-            description: `Allow rebase merges. The default value is 'true'`,
-          },
-          sourcePath: {
-            title: 'Source Path',
-            description:
-              'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
-            type: 'string',
-          },
-          collaborators: {
-            title: 'Collaborators',
-            description: 'Provide additional users or teams with permissions',
-            type: 'array',
-            items: {
-              type: 'object',
-              additionalProperties: false,
-              required: ['access'],
-              properties: {
-                access: {
-                  type: 'string',
-                  description: 'The type of access for the user',
-                  enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
-                },
-                user: {
-                  type: 'string',
-                  description:
-                    'The name of the user that will be added as a collaborator',
-                },
-                username: {
-                  type: 'string',
-                  description:
-                    'Deprecated. Use the `team` or `user` field instead.',
-                },
-                team: {
-                  type: 'string',
-                  description:
-                    'The name of the team that will be added as a collaborator',
-                },
-              },
-              oneOf: [
-                { required: ['user'] },
-                { required: ['username'] },
-                { required: ['team'] },
-              ],
-            },
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The token to use for authorization to GitHub',
-          },
-          topics: {
-            title: 'Topics',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
+          repoUrl: inputProps.repoUrl,
+          description: inputProps.description,
+          access: inputProps.access,
+          requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+          requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+          repoVisibility: inputProps.repoVisibility,
+          defaultBranch: inputProps.defaultBranch,
+          protectDefaultBranch: inputProps.protectDefaultBranch,
+          deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
+          gitCommitMessage: inputProps.gitCommitMessage,
+          gitAuthorName: inputProps.gitAuthorName,
+          gitAuthorEmail: inputProps.gitAuthorEmail,
+          allowMergeCommit: inputProps.allowMergeCommit,
+          allowSquashMerge: inputProps.allowSquashMerge,
+          allowRebaseMerge: inputProps.allowRebaseMerge,
+          sourcePath: inputProps.sourcePath,
+          collaborators: inputProps.collaborators,
+          token: inputProps.token,
+          topics: inputProps.topics,
         },
       },
       output: {
         type: 'object',
         properties: {
-          remoteUrl: {
-            title: 'A URL to the repository with the provider',
-            type: 'string',
-          },
-          repoContentsUrl: {
-            title: 'A URL to the root of the repository',
-            type: 'string',
-          },
+          remoteUrl: outputProps.remoteUrl,
+          repoContentsUrl: outputProps.repoContentsUrl,
         },
       },
     },

@@ -22,6 +22,8 @@ import { Octokit } from 'octokit';
 import { createTemplateAction } from '../../createTemplateAction';
 import { parseRepoUrl } from '../publish/util';
 import { getOctokitOptions } from './helpers';
+import * as inputProps from './inputProperties';
+import * as outputProps from './outputProperties';
 
 /**
  * Creates a new action that initializes a git repository
@@ -67,123 +69,26 @@ export function createGithubRepoCreateAction(options: {
         type: 'object',
         required: ['repoUrl'],
         properties: {
-          repoUrl: {
-            title: 'Repository Location',
-            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
-            type: 'string',
-          },
-          description: {
-            title: 'Repository Description',
-            type: 'string',
-          },
-          access: {
-            title: 'Repository Access',
-            description: `Sets an admin collaborator on the repository. Can either be a user reference different from 'owner' in 'repoUrl' or team reference, eg. 'org/team-name'`,
-            type: 'string',
-          },
-          requireCodeOwnerReviews: {
-            title: 'Require CODEOWNER Reviews?',
-            description:
-              'Require an approved review in PR including files with a designated Code Owner',
-            type: 'boolean',
-          },
-          requiredStatusCheckContexts: {
-            title: 'Required Status Check Contexts',
-            description:
-              'The list of status checks to require in order to merge into this branch',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          repoVisibility: {
-            title: 'Repository Visibility',
-            type: 'string',
-            enum: ['private', 'public', 'internal'],
-          },
-          deleteBranchOnMerge: {
-            title: 'Delete Branch On Merge',
-            type: 'boolean',
-            description: `Delete the branch after merging the PR. The default value is 'false'`,
-          },
-          gitAuthorName: {
-            title: 'Default Author Name',
-            type: 'string',
-            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
-          },
-          gitAuthorEmail: {
-            title: 'Default Author Email',
-            type: 'string',
-            description: `Sets the default author email for the commit.`,
-          },
-          allowMergeCommit: {
-            title: 'Allow Merge Commits',
-            type: 'boolean',
-            description: `Allow merge commits. The default value is 'true'`,
-          },
-          allowSquashMerge: {
-            title: 'Allow Squash Merges',
-            type: 'boolean',
-            description: `Allow squash merges. The default value is 'true'`,
-          },
-          allowRebaseMerge: {
-            title: 'Allow Rebase Merges',
-            type: 'boolean',
-            description: `Allow rebase merges. The default value is 'true'`,
-          },
-          collaborators: {
-            title: 'Collaborators',
-            description: 'Provide additional users or teams with permissions',
-            type: 'array',
-            items: {
-              type: 'object',
-              additionalProperties: false,
-              required: ['access'],
-              properties: {
-                access: {
-                  type: 'string',
-                  description: 'The type of access for the user',
-                  enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
-                },
-                user: {
-                  type: 'string',
-                  description:
-                    'The name of the user that will be added as a collaborator',
-                },
-                team: {
-                  type: 'string',
-                  description:
-                    'The name of the team that will be added as a collaborator',
-                },
-              },
-              oneOf: [{ required: ['user'] }, { required: ['team'] }],
-            },
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The token to use for authorization to GitHub',
-          },
-          topics: {
-            title: 'Topics',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
+          repoUrl: inputProps.repoUrl,
+          description: inputProps.description,
+          access: inputProps.access,
+          requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+          requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+          repoVisibility: inputProps.repoVisibility,
+          deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
+          allowMergeCommit: inputProps.allowMergeCommit,
+          allowSquashMerge: inputProps.allowSquashMerge,
+          allowRebaseMerge: inputProps.allowRebaseMerge,
+          collaborators: inputProps.collaborators,
+          token: inputProps.token,
+          topics: inputProps.topics,
         },
       },
       output: {
         type: 'object',
         properties: {
-          remoteUrl: {
-            title: 'A URL to the repository with the provider',
-            type: 'string',
-          },
-          repoContentsUrl: {
-            title: 'A URL to the root of the repository',
-            type: 'string',
-          },
+          remoteUrl: outputProps.remoteUrl,
+          repoContentsUrl: outputProps.repoContentsUrl,
         },
       },
     },
@@ -212,7 +117,7 @@ export function createGithubRepoCreateAction(options: {
         integrations,
         credentialsProvider: githubCredentialsProvider,
         token: providedToken,
-        repoUrl,
+        repoUrl: repoUrl,
       });
 
       const client = new Octokit(octokitOptions);
