@@ -35,6 +35,7 @@ import {
   SearchResult,
   SearchResultPager,
   useSearch,
+  useSearchContextCheck,
 } from '@backstage/plugin-search-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Link, useContent } from '@backstage/core-components';
@@ -172,13 +173,11 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
 
 const Context = ({ children }: PropsWithChildren<{}>) => {
   // Checks if there is a parent context already defined and, if not, creates a new local context.
-  try {
-    // Throws an exception if there is no parent context already defined
-    useSearch();
+  const hasParentContext = useSearchContextCheck();
+  if (hasParentContext) {
     return <>{children}</>;
-  } catch {
-    return <SearchContextProvider>{children}</SearchContextProvider>;
   }
+  return <SearchContextProvider>{children}</SearchContextProvider>;
 };
 
 /**
