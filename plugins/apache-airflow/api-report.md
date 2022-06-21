@@ -5,8 +5,8 @@
 ```ts
 /// <reference types="react" />
 
-import {BackstagePlugin} from '@backstage/core-plugin-api';
-import {RouteRef} from '@backstage/core-plugin-api';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
 export const ApacheAirflowDagTable: ({
