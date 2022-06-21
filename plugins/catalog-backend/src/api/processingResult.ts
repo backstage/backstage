@@ -65,4 +65,8 @@ export const processingResult = Object.freeze({
   relation(spec: EntityRelationSpec): CatalogProcessorResult {
     return { type: 'relation', relation: spec };
   },
+
+  refresh(entity, key) {
+    return { type: 'refresh', entity, key };
+  },
 } as const);
