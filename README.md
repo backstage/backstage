@@ -1,6 +1,6 @@
 ![headline](docs/assets/headline.png)
 
-> 🏖 From W/C 11/7 due to Summer Vacations of some of the maintainers, expect the project to move a little slower than normal, and support to be limited. Normal service will resume on W/C 8/8! 🏝
+> 🏖 From July 7th due to Summer Vacations for some of the maintainers, expect the project to move a little slower than normal, and support to be limited. Normal service will resume on August 8th 🏝
 
 # [Backstage](https://backstage.io)
 
