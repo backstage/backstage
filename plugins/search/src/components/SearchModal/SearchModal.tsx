@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import {
   Dialog,
   DialogActions,
@@ -170,6 +170,17 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
   );
 };
 
+const Context = ({ children }: PropsWithChildren<{}>) => {
+  // Checks if there is a parent context already defined and, if not, creates a new local context.
+  try {
+    // Throws an exception if there is no parent context already defined
+    useSearch();
+    return <>{children}</>;
+  } catch {
+    return <SearchContextProvider>{children}</SearchContextProvider>;
+  }
+};
+
 /**
  * @public
  */
@@ -194,11 +205,11 @@ export const SearchModal = ({
       hidden={hidden}
     >
       {open && (
-        <SearchContextProvider>
+        <Context>
           {(children && children({ toggleModal })) ?? (
             <Modal toggleModal={toggleModal} />
           )}
-        </SearchContextProvider>
+        </Context>
       )}
     </Dialog>
   );
