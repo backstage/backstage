@@ -29,8 +29,8 @@ import React, {
 import { scaffolderApiRef } from '../../api';
 import { ScaffolderDryRunResponse } from '../../types';
 
-const MAX_CONTENT_SIZE = 256 * 1024;
-const CHUNK_SIZE = 0x8000;
+const MAX_CONTENT_SIZE = 64 * 1024;
+const CHUNK_SIZE = 32 * 1024;
 
 interface DryRunOptions {
   templateContent: string;
