@@ -16,4 +16,4 @@
 
 export { EntitySwitch } from './EntitySwitch';
 export type { EntitySwitchProps, EntitySwitchCaseProps } from './EntitySwitch';
-export * from './conditions';
+export { isKind, isNamespace, isComponentType } from './conditions';
