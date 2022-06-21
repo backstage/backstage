@@ -66,7 +66,7 @@ export const processingResult = Object.freeze({
     return { type: 'relation', relation: spec };
   },
 
-  refresh(entity, key) {
+  refresh(entity: Entity, key: String) {
     return { type: 'refresh', entity, key };
   },
 } as const);

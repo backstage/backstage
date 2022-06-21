@@ -20,7 +20,11 @@ import {
   AuthorizeResult,
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
-import { RefreshOptions, RefreshService } from './types';
+import {
+  RefreshByRefreshKeysOptions,
+  RefreshOptions,
+  RefreshService,
+} from './types';
 
 export class AuthorizedRefreshService implements RefreshService {
   constructor(
@@ -44,5 +48,8 @@ export class AuthorizedRefreshService implements RefreshService {
       throw new NotAllowedError();
     }
     await this.service.refresh(options);
+  }
+  async refreshByRefreshKey(options: RefreshByRefreshKeysOptions) {
+    await this.service.refreshByRefreshKey(options);
   }
 }

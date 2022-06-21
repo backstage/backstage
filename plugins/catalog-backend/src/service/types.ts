@@ -61,6 +61,9 @@ export type RefreshOptions = {
   authorizationToken?: string;
 };
 
+export type RefreshByRefreshKeysOptions = {
+  key: string;
+};
 /**
  * A service that manages refreshes of entities in the catalog.
  *
@@ -71,6 +74,7 @@ export interface RefreshService {
    * Request a refresh of entities in the catalog.
    */
   refresh(options: RefreshOptions): Promise<void>;
+  refreshByRefreshKey(options: RefreshByRefreshKeysOptions): Promise<void>;
 }
 
 /**
