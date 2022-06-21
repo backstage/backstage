@@ -8,8 +8,7 @@
 yarn.lock                                           @backstage/reviewers @backstage-service
 */yarn.lock                                         @backstage/reviewers @backstage-service
 /.changeset/cost-insights-*                         @backstage/reviewers @backstage/silver-lining
-/.changeset/search-*                                @backstage/reviewers @backstage/techdocs-core
-/.changeset/techdocs-*                              @backstage/reviewers @backstage/techdocs-core
+/.changeset                                         @backstage/reviewers @backstage/techdocs-core
 /cypress/src/integration/plugins/techdocs.spec.ts   @backstage/reviewers @backstage/techdocs-core
 /docs/assets/search                                 @backstage/reviewers @backstage/techdocs-core
 /docs/features/search                               @backstage/reviewers @backstage/techdocs-core
