@@ -10,23 +10,28 @@ const Components = require(`${process.cwd()}/core/Components.js`);
 const Block = Components.Block;
 const BulletLine = Components.BulletLine;
 
-const PARTNERS = [{
-  name: "Frontside Software",
-  url: "https://frontside.com/backstage/",
-  logo: "img/partner-logo-frontside.png"
-}, {
-  name: "Roadie",
-  url: "https://roadie.io/",
-  logo: "img/partner-logo-roadie.png"
-}, {
-  name: "ThoughtWorks",
-  url: "https://www.thoughtworks.com",
-  logo: "img/partner-logo-thoughtworks.png"
-}, {
-  name: "VMWare",
-  url: "https://www.vmware.com",
-  logo: "img/partner-logo-vmware.png"
-}];
+const PARTNERS = [
+  {
+    name: 'Frontside Software',
+    url: 'https://frontside.com/backstage/',
+    logo: 'img/partner-logo-frontside.png',
+  },
+  {
+    name: 'Roadie',
+    url: 'https://roadie.io/',
+    logo: 'img/partner-logo-roadie.png',
+  },
+  {
+    name: 'ThoughtWorks',
+    url: 'https://www.thoughtworks.com',
+    logo: 'img/partner-logo-thoughtworks.png',
+  },
+  {
+    name: 'VMWare',
+    url: 'https://www.vmware.com',
+    logo: 'img/partner-logo-vmware.png',
+  },
+];
 
 const Background = props => {
   const { config: siteConfig } = props;
@@ -38,8 +43,9 @@ const Background = props => {
           <Block.TextBox>
             <Block.Title main>Backstage Community</Block.Title>
             <Block.Paragraph>
-              Join
-              the vibrant community around Backstage through social media and different meetups. To ensure you have a welcoming environment, we follow {' '}
+              Join the vibrant community around Backstage through social media
+              and different meetups. To ensure you have a welcoming environment,
+              we follow{' '}
               <a href="https://github.com/cncf/foundation/blob/master/code-of-conduct.md">
                 {' '}
                 CNCF Code of Conduct
@@ -93,66 +99,62 @@ const Background = props => {
         <Block.Container style={{ flexFlow: 'column nowrap' }}>
           <Block.TextBox wide>
             <Block.Subtitle>Offical Backstage initiatives</Block.Subtitle>
-            <Block.Title small>Stay tuned to the latest developments</Block.Title>
+            <Block.Title small>
+              Stay tuned to the latest developments
+            </Block.Title>
           </Block.TextBox>
           <Block.Container>
             <Block.TextBox style={{ flexShrink: '1' }}>
               <BulletLine />
-              <Block.SmallTitle small>
-                Community sessions
-              </Block.SmallTitle>
+              <Block.SmallTitle small>Community sessions</Block.SmallTitle>
               <Block.Paragraph>
-                Maintainers and adopters meet monthly to share updates,
-                demos, and ideas. Yep, all sessions are recorded!
+                Maintainers and adopters meet monthly to share updates, demos,
+                and ideas. Yep, all sessions are recorded!
               </Block.Paragraph>
-              <Block.LinkButton href="/on-demand">Join a session</Block.LinkButton>
+              <Block.LinkButton href="/on-demand">
+                Join a session
+              </Block.LinkButton>
             </Block.TextBox>
             <Block.TextBox style={{ flexShrink: '1' }}>
               <BulletLine />
-              <Block.SmallTitle small>
-                Newsletter
-              </Block.SmallTitle>
+              <Block.SmallTitle small>Newsletter</Block.SmallTitle>
               <Block.Paragraph>
-                The official monthly Backstage newsletter. Don't miss
-                the latest news from your favorite project!
+                The official monthly Backstage newsletter. Don't miss the latest
+                news from your favorite project!
               </Block.Paragraph>
               <Block.LinkButton href="/on-demand">Subscribe</Block.LinkButton>
             </Block.TextBox>
             <Block.TextBox style={{ flexShrink: '1' }}>
               <BulletLine />
-              <Block.SmallTitle small>
-                Contributor Spotlight
-              </Block.SmallTitle>
+              <Block.SmallTitle small>Contributor Spotlight</Block.SmallTitle>
               <Block.Paragraph>
-                A recognition for valuable community work. Nominate contributing members for
-                their efforts! We'll put them in the spotlight ❤️
+                A recognition for valuable community work. Nominate contributing
+                members for their efforts! We'll put them in the spotlight ❤️
               </Block.Paragraph>
               <Block.LinkButton href="nominate ">Nominate now</Block.LinkButton>
             </Block.TextBox>
           </Block.Container>
         </Block.Container>
       </Block>
-      <Block className="stripe-top bg-black" >
+      <Block className="stripe-top bg-black">
         <Block.Container wrapped style={{ justifyContent: 'flex-start' }}>
           <Block.TextBox wide>
             <Block.Subtitle>Community initiatives</Block.Subtitle>
           </Block.TextBox>
           <Block.TextBox small>
-            <Block.SmallTitle>
-              Open Mic Meetup
-            </Block.SmallTitle>
+            <Block.SmallTitle>Open Mic Meetup</Block.SmallTitle>
             <Block.Paragraph>
-              A casual get together of Backstage users sharing their
-              experiences and helping each other. Hosted by{' '}
+              A casual get together of Backstage users sharing their experiences
+              and helping each other. Hosted by{' '}
               <a href="https://roadie.io/">Roadie.io</a> and{' '}
               <a href="https://frontside.com/">Frontside Software</a>.
             </Block.Paragraph>
-            <Block.LinkButton href="https://backstage-openmic.com/">Learn more</Block.LinkButton>
+            <Block.LinkButton href="https://backstage-openmic.com/">
+              Learn more
+            </Block.LinkButton>
           </Block.TextBox>
           <Block.TextBox small>
-            <Block.SmallTitle>
-              Backstage Weekly Newsletter
-            </Block.SmallTitle>
+            <Block.SmallTitle>Backstage Weekly Newsletter</Block.SmallTitle>
             <Block.Paragraph>
               A weekly newsletter with news, updates and things community from
               your friends at <a href="https://roadie.io/">Roadie.io</a>.
@@ -169,7 +171,7 @@ const Background = props => {
           <Block.TextBox wide>
             <Block.Subtitle>Commercial Partners</Block.Subtitle>
           </Block.TextBox>
-          {PARTNERS.map((partner) => (
+          {PARTNERS.map(partner => (
             <Block.TextBox small>
               <Block.SmallTitle>
                 <a href={partner.url}>
