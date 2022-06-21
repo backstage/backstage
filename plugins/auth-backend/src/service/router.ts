@@ -119,10 +119,6 @@ export async function createRouter(
           },
           config: providersConfig.getConfig(providerId),
           logger,
-          tokenManager,
-          tokenIssuer,
-          discovery,
-          catalogApi,
           resolverContext: CatalogAuthResolverContext.create({
             logger,
             catalogApi,
