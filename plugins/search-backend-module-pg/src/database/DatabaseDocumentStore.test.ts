@@ -15,10 +15,10 @@
  */
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { PgSearchHighlightConfig } from '../types';
+import { PgSearchHighlightOptions } from '../types';
 import { DatabaseDocumentStore } from './DatabaseDocumentStore';
 
-const highlightOptions: PgSearchHighlightConfig = {
+const highlightOptions: PgSearchHighlightOptions = {
   preTag: '<tag>',
   postTag: '</tag>',
   useHighlight: false,

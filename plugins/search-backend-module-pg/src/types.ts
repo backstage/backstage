@@ -14,6 +14,22 @@
  * limitations under the License.
  */
 
+import { PluginDatabaseManager } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
+
+/**
+ * Options to instantiate PgSearchEngine
+ * @public
+ */
+export type PgSearchOptions = {
+  config: Config;
+  database: PluginDatabaseManager;
+};
+
+/**
+ * Options for highlighting search terms
+ * @public
+ */
 export type PgSearchHighlightOptions = {
   useHighlight?: boolean;
   maxWords?: number;
@@ -22,19 +38,6 @@ export type PgSearchHighlightOptions = {
   highlightAll?: boolean;
   maxFragments?: number;
   fragmentDelimiter?: string;
-};
-
-/**
- * @public
- */
-export type PgSearchHighlightConfig = {
-  useHighlight: boolean;
-  maxWords: number;
-  minWords: number;
-  shortWord: number;
-  highlightAll: boolean;
-  maxFragments: number;
-  fragmentDelimiter: string;
   preTag: string;
   postTag: string;
 };

@@ -28,7 +28,7 @@ import {
 } from '../database';
 import { v4 as uuid } from 'uuid';
 import { Config } from '@backstage/config';
-import { PgSearchHighlightConfig, PgSearchHighlightOptions } from '../types';
+import { PgSearchHighlightOptions, PgSearchOptions } from '../types';
 
 export type ConcretePgSearchQuery = {
   pgQuery: PgSearchQuery;
@@ -36,36 +36,46 @@ export type ConcretePgSearchQuery = {
 };
 
 export class PgSearchEngine implements SearchEngine {
-  private readonly highlightOptions: PgSearchHighlightConfig;
-
-  constructor(
-    private readonly databaseStore: DatabaseStore,
-    highlightOptions?: PgSearchHighlightOptions,
-  ) {
+  private readonly highlightOptions: PgSearchHighlightOptions;
+  constructor(private readonly databaseStore: DatabaseStore, config: Config) {
     const uuidTag = uuid();
-    this.highlightOptions = {
+    const highlightConfig = config.getOptionalConfig(
+      'search.pg.highlightOptions',
+    );
+
+    const highlightOptions: PgSearchHighlightOptions = {
       preTag: `<${uuidTag}>`,
       postTag: `</${uuidTag}>`,
-      useHighlight: true,
-      maxWords: 35,
-      minWords: 15,
-      shortWord: 3,
-      highlightAll: false,
-      maxFragments: 0,
-      fragmentDelimiter: ' ... ',
-      ...highlightOptions,
+      useHighlight: highlightConfig?.getOptionalBoolean('useHighlight') ?? true,
+      maxWords: highlightConfig?.getOptionalNumber('maxWords') ?? 35,
+      minWords: highlightConfig?.getOptionalNumber('minWords') ?? 15,
+      shortWord: highlightConfig?.getOptionalNumber('shortWord') ?? 3,
+      highlightAll:
+        highlightConfig?.getOptionalBoolean('highlightAll') ?? false,
+      maxFragments: highlightConfig?.getOptionalNumber('maxFragments') ?? 0,
+      fragmentDelimiter:
+        highlightConfig?.getOptionalString('fragmentDelimiter') ?? ' ... ',
     };
+    this.highlightOptions = highlightOptions;
   }
 
+  /**
+   * @deprecated This will be removed in a future release, please us fromConfig instead
+   */
   static async from(options: {
     database: PluginDatabaseManager;
     config: Config;
   }): Promise<PgSearchEngine> {
     return new PgSearchEngine(
       await DatabaseDocumentStore.create(await options.database.getClient()),
-      options.config.getOptional<PgSearchHighlightOptions>(
-        'search.pg.highlightOptions',
-      ),
+      options.config,
+    );
+  }
+
+  static async fromConfig({ config, database }: PgSearchOptions) {
+    return new PgSearchEngine(
+      await DatabaseDocumentStore.create(await database.getClient()),
+      config,
     );
   }
 
@@ -75,7 +85,7 @@ export class PgSearchEngine implements SearchEngine {
 
   translator(
     query: SearchQuery,
-    options: PgSearchHighlightConfig,
+    options: PgSearchHighlightOptions,
   ): ConcretePgSearchQuery {
     const pageSize = 25;
     const { page } = decodePageCursor(query.pageCursor);

@@ -132,8 +132,9 @@ export class DatabaseDocumentStore implements DatabaseStore {
 
   async query(
     tx: Knex.Transaction,
-    { types, pgTerm, fields, offset, limit, options }: PgSearchQuery,
+    searchQuery: PgSearchQuery,
   ): Promise<DocumentResultRow[]> {
+    const { types, pgTerm, fields, offset, limit, options } = searchQuery;
     // Builds a query like:
     // SELECT ts_rank_cd(body, query) AS rank, type, document,
     // ts_headline('english', document, query) AS highlight

@@ -15,7 +15,7 @@
  */
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
-import { PgSearchHighlightConfig } from '../types';
+import { PgSearchHighlightOptions } from '../types';
 
 export interface PgSearchQuery {
   fields?: Record<string, string | string[]>;
@@ -23,7 +23,7 @@ export interface PgSearchQuery {
   pgTerm?: string;
   offset: number;
   limit: number;
-  options: PgSearchHighlightConfig;
+  options: PgSearchHighlightOptions;
 }
 
 export interface DatabaseStore {

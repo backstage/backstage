@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ConfigReader } from '@backstage/config';
 import { DatabaseStore } from '../database';
-import { PgSearchHighlightConfig } from '../types';
+import { PgSearchHighlightOptions } from '../types';
 import {
   ConcretePgSearchQuery,
   decodePageCursor,
@@ -23,7 +24,7 @@ import {
 } from './PgSearchEngine';
 import { PgSearchEngineIndexer } from './PgSearchEngineIndexer';
 
-const highlightOptions: PgSearchHighlightConfig = {
+const highlightOptions: PgSearchHighlightOptions = {
   preTag: '<tag>',
   postTag: '</tag>',
   useHighlight: true,
@@ -47,6 +48,13 @@ describe('PgSearchEngine', () => {
   const tx: any = {} as any;
   let searchEngine: PgSearchEngine;
   let database: jest.Mocked<DatabaseStore>;
+  const config = {
+    search: {
+      pg: {
+        highlightOptions,
+      },
+    },
+  };
 
   beforeEach(() => {
     database = {
@@ -57,7 +65,7 @@ describe('PgSearchEngine', () => {
       completeInsert: jest.fn(),
       prepareInsert: jest.fn(),
     };
-    searchEngine = new PgSearchEngine(database);
+    searchEngine = new PgSearchEngine(database, new ConfigReader(config));
   });
 
   describe('translator', () => {
