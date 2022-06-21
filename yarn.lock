@@ -4895,6 +4895,11 @@
   resolved "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-11.2.0.tgz#b38d7fc3736d52a1e96b230c1ccd4a58a2f400a6"
   integrity sha512-PBsVO+15KSlGmiI8QAzaqvsNlZlrDlyAJYcrXBCvVUxCp7VnXjkwPoFHgjEJXx3WF9BAwkA6nfCUA7i9sODzKA==
 
+"@octokit/openapi-types@^12.4.0":
+  version "12.4.0"
+  resolved "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-12.4.0.tgz#fd8bf5db72bd566c5ba2cb76754512a9ebe66e71"
+  integrity sha512-Npcb7Pv30b33U04jvcD7l75yLU0mxhuX2Xqrn51YyZ5WTkF04bpbxLaZ6GcaTqu03WZQHoO/Gbfp95NGRueDUA==
+
 "@octokit/openapi-types@^7.3.2":
   version "7.3.2"
   resolved "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-7.3.2.tgz#065ce49b338043ec7f741316ce06afd4d459d944"
@@ -4911,6 +4916,13 @@
   integrity sha512-tzMbrbnam2Mt4AhuyCHvpRkS0oZ5MvwwcQPYGtMv4tUa5kkzG58SVB0fcsLulOZQeRnOgdkZWkRUiyBlh0Bkyw==
   dependencies:
     "@octokit/types" "^6.34.0"
+
+"@octokit/plugin-paginate-rest@^2.18.0":
+  version "2.19.0"
+  resolved "https://registry.npmjs.org/@octokit/plugin-paginate-rest/-/plugin-paginate-rest-2.19.0.tgz#b52eae6ecacfa1f5583dc2cc0985cfbed3ca78b0"
+  integrity sha512-hQ4Qysg2hNmEMuZeJkvyzM4eSZiTifOKqYAMsW8FnxFKowhuwWICSgBQ9Gn9GpUmgKB7qaf1hFvMjYaTAg5jQA==
+  dependencies:
+    "@octokit/types" "^6.36.0"
 
 "@octokit/plugin-paginate-rest@^2.6.2":
   version "2.7.0"
@@ -4943,6 +4955,14 @@
   integrity sha512-uJjMTkN1KaOIgNtUPMtIXDOjx6dGYysdIFhgA52x4xSadQCz3b/zJexvITDVpANnfKPW/+E0xkOvLntqMYpviA==
   dependencies:
     "@octokit/types" "^6.34.0"
+    deprecation "^2.3.1"
+
+"@octokit/plugin-rest-endpoint-methods@^5.14.0":
+  version "5.15.0"
+  resolved "https://registry.npmjs.org/@octokit/plugin-rest-endpoint-methods/-/plugin-rest-endpoint-methods-5.15.0.tgz#6c8251b55c33315a6e53e5b55654f72023ed5049"
+  integrity sha512-Gsw9+Xm56jVhfbJoy4pt6eOOyf8/3K6CAnx1Sl7U2GhZWcg8MR6YgXWnpfdF69S2ViMXLA7nfvTDAsZpFlkLRw==
+  dependencies:
+    "@octokit/types" "^6.36.0"
     deprecation "^2.3.1"
 
 "@octokit/plugin-retry@^3.0.9":
@@ -5016,12 +5036,19 @@
   dependencies:
     "@octokit/openapi-types" "^7.3.2"
 
-"@octokit/types@^6.26.0", "@octokit/types@^6.27.1", "@octokit/types@^6.34.0":
+"@octokit/types@^6.27.1", "@octokit/types@^6.34.0":
   version "6.34.0"
   resolved "https://registry.npmjs.org/@octokit/types/-/types-6.34.0.tgz#c6021333334d1ecfb5d370a8798162ddf1ae8218"
   integrity sha512-s1zLBjWhdEI2zwaoSgyOFoKSl109CUcVBCc7biPJ3aAf6LGLU6szDvi31JPU7bxfla2lqfhjbbg/5DdFNxOwHw==
   dependencies:
     "@octokit/openapi-types" "^11.2.0"
+
+"@octokit/types@^6.35.0", "@octokit/types@^6.36.0":
+  version "6.37.0"
+  resolved "https://registry.npmjs.org/@octokit/types/-/types-6.37.0.tgz#32eb78edb34cf5cea4ba5753ab8db75b776d617a"
+  integrity sha512-BXWQhFKRkjX4dVW5L2oYa0hzWOAqsEsujXsQLSdepPoDZfYdubrD1KDGpyNldGXtR8QM/WezDcxcIN1UKJMGPA==
+  dependencies:
+    "@octokit/openapi-types" "^12.4.0"
 
 "@octokit/webhooks-methods@^2.0.0":
   version "2.0.0"
@@ -19489,18 +19516,18 @@ octokit-plugin-create-pull-request@^3.10.0:
     "@octokit/types" "^6.8.2"
 
 octokit@^1.7.1:
-  version "1.7.2"
-  resolved "https://registry.npmjs.org/octokit/-/octokit-1.7.2.tgz#c5f11699c39ba5526ff170cbfcb7eaa291ddf11a"
-  integrity sha512-C+iwOeUMWwbvHxGbLX5rAde5WuEVGe/hNQniU1haZAPMHqUz1+ppffvkP4v/2R3dkSLJnzceUG+ir0klNmEoBA==
+  version "1.8.0"
+  resolved "https://registry.npmjs.org/octokit/-/octokit-1.8.0.tgz#c2ea6ace083b3be1d594aa7eb2e05fccd14e7ca5"
+  integrity sha512-HtArk9ttGy5effKNiaqKCirR6VSZoYjqgLgvVm/1mSRR4WYmww5DHjLnZlCbvj8+DwBLLLduJ3XnX/SPCCcp6A==
   dependencies:
     "@octokit/app" "^12.0.4"
     "@octokit/core" "^3.5.1"
     "@octokit/oauth-app" "^3.5.1"
-    "@octokit/plugin-paginate-rest" "^2.16.8"
-    "@octokit/plugin-rest-endpoint-methods" "^5.12.0"
+    "@octokit/plugin-paginate-rest" "^2.18.0"
+    "@octokit/plugin-rest-endpoint-methods" "^5.14.0"
     "@octokit/plugin-retry" "^3.0.9"
     "@octokit/plugin-throttling" "^3.5.1"
-    "@octokit/types" "^6.26.0"
+    "@octokit/types" "^6.35.0"
 
 oidc-token-hash@^5.0.1:
   version "5.0.1"
