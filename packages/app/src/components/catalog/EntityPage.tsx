@@ -74,6 +74,10 @@ import {
 } from '@backstage/plugin-cloudbuild';
 import { EntityCodeCoverageContent } from '@backstage/plugin-code-coverage';
 import {
+  DynatraceTab,
+  isDynatraceAvailable,
+} from '@backstage/plugin-dynatrace';
+import {
   EntityGithubActionsContent,
   EntityRecentGithubActionsRunsCard,
   isGithubActionsAvailable,
@@ -140,6 +144,12 @@ import { EntityGoCdContent, isGoCdAvailable } from '@backstage/plugin-gocd';
 
 import React, { ReactNode, useMemo, useState } from 'react';
 
+import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+import {
+  TextSize,
+  ReportIssue,
+} from '@backstage/plugin-techdocs-module-addons-contrib';
+
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
@@ -167,6 +177,15 @@ const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
     </>
   );
 };
+
+const techdocsContent = (
+  <EntityTechdocsContent>
+    <TechDocsAddons>
+      <TextSize />
+      <ReportIssue />
+    </TechDocsAddons>
+  </EntityTechdocsContent>
+);
 
 /**
  * NOTE: This page is designed to work on small screens such as mobile devices.
@@ -398,7 +417,7 @@ const serviceEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
-      <EntityTechdocsContent />
+      {techdocsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route
@@ -431,6 +450,14 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/todos" title="TODOs">
       <EntityTodoContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route
+      path="/dynatrace"
+      title="Dynatrace"
+      if={isDynatraceAvailable}
+    >
+      <DynatraceTab />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
@@ -465,8 +492,9 @@ const websiteEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
-      <EntityTechdocsContent />
+      {techdocsContent}
     </EntityLayout.Route>
+
     <EntityLayout.Route
       if={isNewRelicDashboardAvailable}
       path="/newrelic-dashboard"
@@ -477,6 +505,14 @@ const websiteEntityPage = (
 
     <EntityLayout.Route path="/kubernetes" title="Kubernetes">
       <EntityKubernetesContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route
+      path="/dynatrace"
+      title="Dynatrace"
+      if={isDynatraceAvailable}
+    >
+      <DynatraceTab />
     </EntityLayout.Route>
 
     <EntityLayout.Route
@@ -512,7 +548,7 @@ const defaultEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
-      <EntityTechdocsContent />
+      {techdocsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/todos" title="TODOs">

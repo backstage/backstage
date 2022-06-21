@@ -1,6 +1,11 @@
 {
   "releases": {
-    "Release Notes": ["releases/v1.2.0", "releases/v1.1.0", "releases/v1.0.0"]
+    "Release Notes": [
+      "releases/v1.3.0",
+      "releases/v1.2.0",
+      "releases/v1.1.0",
+      "releases/v1.0.0"
+    ]
   },
   "docs": {
     "Overview": [
@@ -151,6 +156,14 @@
       },
       {
         "type": "subcategory",
+        "label": "Bitbucket Cloud",
+        "ids": [
+          "integrations/bitbucketCloud/locations",
+          "integrations/bitbucketCloud/discovery"
+        ]
+      },
+      {
+        "type": "subcategory",
         "label": "Datadog",
         "ids": ["integrations/datadog-rum/installation"]
       },
@@ -198,6 +211,7 @@
       "plugins/plugin-development",
       "plugins/structure-of-a-plugin",
       "plugins/integrating-plugin-into-software-catalog",
+      "plugins/integrating-search-into-plugins",
       "plugins/composability",
       "plugins/analytics",
       {
@@ -250,28 +264,27 @@
           "auth/oauth2-proxy/provider"
         ]
       },
-      "auth/add-auth-provider",
       "auth/identity-resolver",
       "auth/auth-backend",
       "auth/oauth",
-      "auth/auth-backend-classes",
+      "auth/add-auth-provider",
       "auth/troubleshooting",
       "auth/glossary"
     ],
     "Permissions": [
-      "permission/overview",
-      "permission/concepts",
-      "permission/getting-started",
-      "permission/writing-a-policy",
-      "permission/custom-rules",
+      "permissions/overview",
+      "permissions/concepts",
+      "permissions/getting-started",
+      "permissions/writing-a-policy",
+      "permissions/custom-rules",
       {
         "type": "subcategory",
         "label": "Tutorial: using Permissions in your plugin",
         "ids": [
-          "permission/plugin-authors/01-setup",
-          "permission/plugin-authors/02-adding-a-basic-permission-check",
-          "permission/plugin-authors/03-adding-a-resource-permission-check",
-          "permission/plugin-authors/04-authorizing-access-to-paginated-data"
+          "permissions/plugin-authors/01-setup",
+          "permissions/plugin-authors/02-adding-a-basic-permission-check",
+          "permissions/plugin-authors/03-adding-a-resource-permission-check",
+          "permissions/plugin-authors/04-authorizing-access-to-paginated-data"
         ]
       }
     ],
@@ -279,7 +292,6 @@
       "deployment/index",
       "deployment/docker",
       "deployment/k8s",
-      "deployment/helm",
       "deployment/heroku"
     ],
     "Designing for Backstage": [

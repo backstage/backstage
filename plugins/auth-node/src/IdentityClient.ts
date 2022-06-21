@@ -141,7 +141,7 @@ export class IdentityClient {
     // Add a small margin in case clocks are out of sync
     const issuedAfterLastRefresh =
       payload?.iat && payload.iat > this.keyStoreUpdated - CLOCK_MARGIN_S;
-    if (!keyStoreHasKey && issuedAfterLastRefresh) {
+    if (!this.keyStore || (!keyStoreHasKey && issuedAfterLastRefresh)) {
       const url = await this.discovery.getBaseUrl('auth');
       const endpoint = new URL(`${url}/.well-known/jwks.json`);
       this.keyStore = createRemoteJWKSet(endpoint);

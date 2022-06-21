@@ -15,7 +15,11 @@
  */
 
 import React from 'react';
-import { currentToDeclaredResourceToPerc, podStatusToCpuUtil } from './pod';
+import {
+  currentToDeclaredResourceToPerc,
+  podStatusToCpuUtil,
+  podStatusToMemoryUtil,
+} from './pod';
 import { SubvalueCell } from '@backstage/core-components';
 
 describe('pod', () => {
@@ -46,7 +50,30 @@ describe('pod', () => {
         },
       } as any);
       expect(result).toStrictEqual(
-        <SubvalueCell subvalue="limits: 50%" value="requests: 99%" />,
+        <SubvalueCell
+          subvalue="limits: 50% of 100m"
+          value="requests: 99% of 50m"
+        />,
+      );
+    });
+  });
+  describe('podStatusToMemoryUtil', () => {
+    it('does use correct units', () => {
+      const result = podStatusToMemoryUtil({
+        memory: {
+          // ~91.5 MiB
+          currentUsage: '95948800',
+          // 320 MiB
+          limitTotal: '335544320',
+          // 192 MiB
+          requestTotal: '201326592',
+        },
+      } as any);
+      expect(result).toStrictEqual(
+        <SubvalueCell
+          subvalue="limits: 28% of 320MiB"
+          value="requests: 47% of 192MiB"
+        />,
       );
     });
   });

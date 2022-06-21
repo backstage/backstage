@@ -33,7 +33,10 @@ export const ChangeEvents = ({ serviceId, refreshEvents }: Props) => {
   const api = useApi(pagerDutyApiRef);
 
   const [{ value: changeEvents, loading, error }, getChangeEvents] = useAsyncFn(
-    async () => await api.getChangeEventsByServiceId(serviceId),
+    async () => {
+      const { change_events } = await api.getChangeEventsByServiceId(serviceId);
+      return change_events;
+    },
   );
 
   useEffect(() => {

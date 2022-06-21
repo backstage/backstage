@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 import { createTemplateAction } from '../../createTemplateAction';
-import { readFile } from 'fs-extra';
 import { Gitlab } from '@gitbeaker/node';
-import globby from 'globby';
 import { Types } from '@gitbeaker/core';
-
+import path from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
 import { parseRepoUrl } from './util';
 import { resolveSafeChildPath } from '@backstage/backend-common';
+import { serializeDirectoryContents } from '../../../../lib/files';
 
 /**
  * Create a new action that creates a gitlab merge request.
@@ -35,18 +34,19 @@ export const createPublishGitlabMergeRequestAction = (options: {
   const { integrations } = options;
 
   return createTemplateAction<{
-    projectid: string;
     repoUrl: string;
     title: string;
     description: string;
     branchName: string;
     targetPath: string;
     token?: string;
+    /** @deprecated Use projectPath instead */
+    projectid?: string;
   }>({
     id: 'publish:gitlab:merge-request',
     schema: {
       input: {
-        required: ['projectid', 'repoUrl', 'targetPath', 'branchName'],
+        required: ['repoUrl', 'targetPath', 'branchName'],
         type: 'object',
         properties: {
           repoUrl: {
@@ -54,6 +54,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
             title: 'Repository Location',
             description: `Accepts the format 'gitlab.com/group_name/project_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
           },
+          /** @deprecated Use projectPath instead */
           projectid: {
             type: 'string',
             title: 'projectid',
@@ -93,6 +94,10 @@ export const createPublishGitlabMergeRequestAction = (options: {
             title: 'Gitlab Project id/Name(slug)',
             type: 'string',
           },
+          projectPath: {
+            title: 'Gitlab Project path',
+            type: 'string',
+          },
           mergeRequestURL: {
             title: 'MergeRequest(MR) URL',
             type: 'string',
@@ -103,10 +108,16 @@ export const createPublishGitlabMergeRequestAction = (options: {
     },
     async handler(ctx) {
       const repoUrl = ctx.input.repoUrl;
-      const { host } = parseRepoUrl(repoUrl, integrations);
-      const integrationConfig = integrations.gitlab.byHost(host);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const projectPath = `${owner}/${repo}`;
 
-      const actions: Types.CommitAction[] = [];
+      if (ctx.input.projectid) {
+        const deprecationWarning = `Property "projectid" is deprecated and no longer to needed to create a MR`;
+        ctx.logger.warn(deprecationWarning);
+        console.warn(deprecationWarning);
+      }
+
+      const integrationConfig = integrations.gitlab.byHost(host);
 
       const destinationBranch = ctx.input.branchName;
 
@@ -128,36 +139,28 @@ export const createPublishGitlabMergeRequestAction = (options: {
         [tokenType]: token,
       });
 
-      const fileRoot = ctx.workspacePath;
-      const localFilePaths = await globby([`${ctx.input.targetPath}/**`], {
-        cwd: fileRoot,
-        gitignore: true,
-        dot: true,
-      });
-
-      const fileContents = await Promise.all(
-        localFilePaths.map(p => readFile(resolveSafeChildPath(fileRoot, p))),
+      const targetPath = resolveSafeChildPath(
+        ctx.workspacePath,
+        ctx.input.targetPath,
       );
-
-      const repoFilePaths = localFilePaths.map(repoFilePath => {
-        return repoFilePath;
+      const fileContents = await serializeDirectoryContents(targetPath, {
+        gitignore: true,
       });
 
-      for (let i = 0; i < repoFilePaths.length; i++) {
-        actions.push({
-          action: 'create',
-          filePath: repoFilePaths[i],
-          content: fileContents[i].toString(),
-        });
-      }
-
-      const projects = await api.Projects.show(ctx.input.projectid);
+      const actions: Types.CommitAction[] = fileContents.map(file => ({
+        action: 'create',
+        filePath: path.posix.join(ctx.input.targetPath, file.path),
+        encoding: 'base64',
+        content: file.content.toString('base64'),
+        execute_filemode: file.executable,
+      }));
+      const projects = await api.Projects.show(projectPath);
 
       const { default_branch: defaultBranch } = projects;
 
       try {
         await api.Branches.create(
-          ctx.input.projectid,
+          projectPath,
           destinationBranch,
           String(defaultBranch),
         );
@@ -167,7 +170,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
 
       try {
         await api.Commits.create(
-          ctx.input.projectid,
+          projectPath,
           destinationBranch,
           ctx.input.title,
           actions,
@@ -180,7 +183,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
 
       try {
         const mergeRequestUrl = await api.MergeRequests.create(
-          ctx.input.projectid,
+          projectPath,
           destinationBranch,
           String(defaultBranch),
           ctx.input.title,
@@ -188,7 +191,9 @@ export const createPublishGitlabMergeRequestAction = (options: {
         ).then((mergeRequest: { web_url: string }) => {
           return mergeRequest.web_url;
         });
-        ctx.output('projectid', ctx.input.projectid);
+        /** @deprecated */
+        ctx.output('projectid', projectPath);
+        ctx.output('projectPath', projectPath);
         ctx.output('mergeRequestUrl', mergeRequestUrl);
       } catch (e) {
         throw new InputError(`Merge request creation failed${e}`);

@@ -190,17 +190,24 @@ export interface KubernetesFetchError {
   statusCode?: number;
 }
 
+// Warning: (ae-missing-release-tag) "KubernetesRequestAuth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface KubernetesRequestAuth {
+  // (undocumented)
+  google?: string;
+  // (undocumented)
+  oidc?: {
+    [key: string]: string;
+  };
+}
+
 // Warning: (ae-missing-release-tag) "KubernetesRequestBody" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export interface KubernetesRequestBody {
   // (undocumented)
-  auth?: {
-    google?: string;
-    oidc?: {
-      [key: string]: string;
-    };
-  };
+  auth?: KubernetesRequestAuth;
   // (undocumented)
   entity: Entity;
 }

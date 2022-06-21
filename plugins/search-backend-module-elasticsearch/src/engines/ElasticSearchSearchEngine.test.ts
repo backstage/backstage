@@ -19,7 +19,7 @@ import { ConfigReader } from '@backstage/config';
 import { Client, errors } from '@elastic/elasticsearch';
 import Mock from '@elastic/elasticsearch-mock';
 import {
-  ConcreteElasticSearchQuery,
+  ElasticSearchConcreteQuery,
   decodePageCursor,
   ElasticSearchSearchEngine,
   encodePageCursor,
@@ -50,6 +50,23 @@ jest.mock('./ElasticSearchSearchEngineIndexer', () => ({
     .mockImplementation(() => indexerMock),
 }));
 
+const customIndexTemplate = {
+  name: 'custom-index-template',
+  body: {
+    index_patterns: ['*'],
+    template: {
+      settings: {
+        number_of_shards: 1,
+      },
+      mappings: {
+        _source: {
+          enabled: false,
+        },
+      },
+    },
+  },
+};
+
 describe('ElasticSearchSearchEngine', () => {
   let testSearchEngine: ElasticSearchSearchEngine;
   let inspectableSearchEngine: ElasticSearchSearchEngineForTranslatorTests;
@@ -70,6 +87,20 @@ describe('ElasticSearchSearchEngine', () => {
     );
     // eslint-disable-next-line dot-notation
     client = testSearchEngine['elasticSearchClient'];
+  });
+
+  describe('custom index template', () => {
+    it('should set custom index template', async () => {
+      const indexTemplateSpy = jest.fn().mockReturnValue(customIndexTemplate);
+      mock.add(
+        { method: 'PUT', path: '/_index_template/custom-index-template' },
+        indexTemplateSpy,
+      );
+      await inspectableSearchEngine.setIndexTemplate(customIndexTemplate);
+
+      expect(indexTemplateSpy).toHaveBeenCalled();
+      expect(indexTemplateSpy).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('queryTranslator', () => {
@@ -131,7 +162,7 @@ describe('ElasticSearchSearchEngine', () => {
         types: ['indexName'],
         term: 'testTerm',
         filters: { kind: 'testKind' },
-      }) as ConcreteElasticSearchQuery;
+      }) as ElasticSearchConcreteQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         documentTypes: ['indexName'],
@@ -153,7 +184,7 @@ describe('ElasticSearchSearchEngine', () => {
             },
             filter: {
               match: {
-                kind: 'testKind',
+                'kind.keyword': 'testKind',
               },
             },
           },
@@ -170,7 +201,7 @@ describe('ElasticSearchSearchEngine', () => {
         types: ['indexName'],
         term: 'testTerm',
         pageCursor: 'MQ==',
-      }) as ConcreteElasticSearchQuery;
+      }) as ElasticSearchConcreteQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         documentTypes: ['indexName'],
@@ -204,8 +235,13 @@ describe('ElasticSearchSearchEngine', () => {
       const actualTranslatedQuery = translatorUnderTest({
         types: ['indexName'],
         term: 'testTerm',
-        filters: { kind: 'testKind', namespace: 'testNameSpace' },
-      }) as ConcreteElasticSearchQuery;
+        filters: {
+          kind: 'testKind',
+          namespace: 'testNameSpace',
+          foo: 123,
+          bar: true,
+        },
+      }) as ElasticSearchConcreteQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         documentTypes: ['indexName'],
@@ -228,12 +264,22 @@ describe('ElasticSearchSearchEngine', () => {
             filter: [
               {
                 match: {
-                  kind: 'testKind',
+                  'kind.keyword': 'testKind',
                 },
               },
               {
                 match: {
-                  namespace: 'testNameSpace',
+                  'namespace.keyword': 'testNameSpace',
+                },
+              },
+              {
+                match: {
+                  foo: '123',
+                },
+              },
+              {
+                match: {
+                  bar: 'true',
                 },
               },
             ],
@@ -251,7 +297,7 @@ describe('ElasticSearchSearchEngine', () => {
         types: ['indexName'],
         term: 'testTerm',
         filters: { kind: ['testKind', 'kastTeint'] },
-      }) as ConcreteElasticSearchQuery;
+      }) as ElasticSearchConcreteQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         documentTypes: ['indexName'],
@@ -312,7 +358,7 @@ describe('ElasticSearchSearchEngine', () => {
             fragmentDelimiter: ' ... ',
           },
         },
-      ) as ConcreteElasticSearchQuery;
+      ) as ElasticSearchConcreteQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         documentTypes: ['indexName'],
@@ -354,7 +400,7 @@ describe('ElasticSearchSearchEngine', () => {
           types: ['indexName'],
           term: 'testTerm',
           filters: { kind: { a: 'b' } },
-        }) as ConcreteElasticSearchQuery;
+        }) as ElasticSearchConcreteQuery;
       expect(actualTranslatedQuery).toThrow();
     });
   });
@@ -477,6 +523,7 @@ describe('ElasticSearchSearchEngine', () => {
             .map((_, i) => ({
               type: 'mytype',
               document: { value: `${i}` },
+              rank: i + 1,
             })),
         ),
       });
@@ -521,6 +568,7 @@ describe('ElasticSearchSearchEngine', () => {
             .map((_, i) => ({
               type: 'mytype',
               document: { value: `${i}` },
+              rank: i + 1,
             })),
         ),
         nextPageCursor: 'MQ==',
@@ -568,6 +616,7 @@ describe('ElasticSearchSearchEngine', () => {
             .map((_, i) => ({
               type: 'mytype',
               document: { value: `${i}` },
+              rank: i + 1,
             }))
             .slice(25),
         ),
@@ -621,6 +670,7 @@ describe('ElasticSearchSearchEngine', () => {
             .map((_, i) => ({
               type: 'mytype',
               document: { value: `${i}` },
+              rank: i + 1,
               highlight: {
                 preTag: '<tag>',
                 postTag: '</tag>',
@@ -745,6 +795,10 @@ describe('ElasticSearchSearchEngine', () => {
   });
 
   describe('indexer', () => {
+    beforeEach(async () => {
+      await testSearchEngine.setIndexTemplate(customIndexTemplate);
+    });
+
     it('should get indexer', async () => {
       const indexer = await testSearchEngine.getIndexer('test-index');
 

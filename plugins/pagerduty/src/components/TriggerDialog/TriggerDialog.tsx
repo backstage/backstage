@@ -60,7 +60,7 @@ export const TriggerDialog = ({
         defaultKind: 'User',
         defaultNamespace: DEFAULT_NAMESPACE,
       });
-      await api.triggerAlarm({
+      return await api.triggerAlarm({
         integrationKey: integrationKey as string,
         source: window.location.toString(),
         description: descriptions,

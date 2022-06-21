@@ -44,7 +44,27 @@ export default async function createPlugin(
       //       It is here for demo purposes only.
       github: providers.github.create({
         signIn: {
-          resolver: providers.github.resolvers.usernameMatchingUserEntityName(),
+          async resolver({ result: { fullProfile } }, ctx) {
+            const userId = fullProfile.username;
+            if (!userId) {
+              throw new Error(
+                `GitHub user profile does not contain a username`,
+              );
+            }
+
+            const userEntityRef = stringifyEntityRef({
+              kind: 'User',
+              name: userId,
+              namespace: DEFAULT_NAMESPACE,
+            });
+
+            return ctx.issueToken({
+              claims: {
+                sub: userEntityRef,
+                ent: [userEntityRef],
+              },
+            });
+          },
         },
       }),
       gitlab: providers.gitlab.create({

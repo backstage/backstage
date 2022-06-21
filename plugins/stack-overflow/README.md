@@ -23,6 +23,8 @@ This stack overflow frontend plugin is primarily responsible for the following:
 
 #### Use specific search result list item for Stack Overflow Question
 
+> Note: For Stack Overflow specific search results to be returned, it needs to be indexed. Use the [stack-overflow-backend plugin](https://github.com/backstage/backstage/blob/master/plugins/stack-overflow-backend/README.md) to index Stack Overflow Questions to search.
+
 When you have your `packages/app/src/components/search/SearchPage.tsx` file ready to make modifications, add the following code snippet to add the `StackOverflowSearchResultListItem` when the type of the search results are `stack-overflow`.
 
 ```tsx

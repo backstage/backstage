@@ -20,6 +20,10 @@ import { Client } from '@elastic/elasticsearch';
 import { Readable } from 'stream';
 import { Logger } from 'winston';
 
+/**
+ * Options for instansiate ElasticSearchSearchEngineIndexer
+ * @public
+ */
 export type ElasticSearchSearchEngineIndexerOptions = {
   type: string;
   indexPrefix: string;
@@ -35,6 +39,10 @@ function duration(startTimestamp: [number, number]): string {
   return `${seconds.toFixed(1)}s`;
 }
 
+/**
+ * Elasticsearch specific search engine indexer.
+ * @public
+ */
 export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
   private received: number = 0;
   private processed: number = 0;

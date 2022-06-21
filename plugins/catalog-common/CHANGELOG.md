@@ -1,5 +1,30 @@
 # @backstage/plugin-catalog-common
 
+## 1.0.3
+
+### Patch Changes
+
+- 7d8acfc32e: Replaced all usages of `@backstage/search-common` with `@backstage/plugin-search-common`
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/plugin-permission-common@0.6.2
+
+## 1.0.3-next.1
+
+### Patch Changes
+
+- 7d8acfc32e: Replaced all usages of `@backstage/search-common` with `@backstage/plugin-search-common`
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5-next.1
+
+## 1.0.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.2-next.0
+  - @backstage/search-common@0.3.5-next.0
+
 ## 1.0.2
 
 ### Patch Changes

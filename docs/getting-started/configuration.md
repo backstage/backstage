@@ -164,28 +164,28 @@ Open `packages/app/src/App.tsx` and below the last `import` line, add:
 ```typescript
 import { githubAuthApiRef } from '@backstage/core-plugin-api';
 import { SignInProviderConfig, SignInPage } from '@backstage/core-components';
-
-const githubProvider: SignInProviderConfig = {
-  id: 'github-auth-provider',
-  title: 'GitHub',
-  message: 'Sign in using GitHub',
-  apiRef: githubAuthApiRef,
-};
 ```
 
 Search for `const app = createApp({` in this file, and below `apis,` add:
 
 ```typescript
 components: {
-   SignInPage: props => (
-     <SignInPage
-       {...props}
-       auto
-       provider={githubProvider}
-     />
-   ),
- },
+  SignInPage: props => (
+    <SignInPage
+      {...props}
+      auto
+      provider={{
+        id: 'github-auth-provider',
+        title: 'GitHub',
+        message: 'Sign in using GitHub',
+        apiRef: githubAuthApiRef,
+      }}
+    />
+  ),
+},
 ```
+
+> Since [v1.1.0](https://github.com/backstage/backstage/releases/tag/v1.1.0-next.3), you must provide an [explicit sign-in resolver](../auth/identity-resolver.md).
 
 That should be it. You can stop your Backstage App. When you start it again and
 go to your Backstage portal in your browser, you should have your login prompt!

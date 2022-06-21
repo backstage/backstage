@@ -1,5 +1,35 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.2
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/plugin-home@0.4.22
+
+## 0.1.2-next.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.1
+  - @backstage/core-plugin-api@1.0.3-next.0
+  - @backstage/plugin-home@0.4.22-next.1
+  - @backstage/plugin-search-common@0.3.5-next.0
+
+## 0.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.0
+  - @backstage/plugin-home@0.4.22-next.0
+
 ## 0.1.1
 
 ### Patch Changes

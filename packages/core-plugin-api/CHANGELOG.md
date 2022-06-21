@@ -1,5 +1,17 @@
 # @backstage/core-plugin-api
 
+## 1.0.3
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+
+## 1.0.3-next.0
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+
 ## 1.0.2
 
 ### Patch Changes

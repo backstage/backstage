@@ -161,16 +161,16 @@ function TaskStepIconComponent(props: StepIconProps) {
 }
 
 export const TaskStatusStepper = memo(
-  ({
-    steps,
-    currentStepId,
-    onUserStepChange,
-  }: {
+  (props: {
     steps: TaskStep[];
     currentStepId: string | undefined;
     onUserStepChange: (id: string) => void;
+    classes?: {
+      root?: string;
+    };
   }) => {
-    const classes = useStyles();
+    const { steps, currentStepId, onUserStepChange } = props;
+    const classes = useStyles(props);
 
     return (
       <div className={classes.root}>
@@ -299,12 +299,12 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
 
     const formData = taskStream.task!.spec.parameters;
 
-    const { name } = parseEntityRef(
+    const { name, namespace } = parseEntityRef(
       taskStream.task!.spec.templateInfo?.entityRef,
     );
 
     navigate(
-      `${templateRoute({ templateName: name })}?${qs.stringify({
+      `${templateRoute({ templateName: name, namespace })}?${qs.stringify({
         formData: JSON.stringify(formData),
       })}`,
     );

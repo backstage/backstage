@@ -1,7 +1,7 @@
 {
   "name": "@backstage/config-loader",
   "description": "Config loading functionality used by Backstage backend, and CLI",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -57,7 +57,7 @@
     "@types/node": "^16.11.26",
     "@types/yup": "^0.29.13",
     "mock-fs": "^5.1.0",
-    "msw": "^0.35.0"
+    "msw": "^0.42.0"
   },
   "files": [
     "dist"

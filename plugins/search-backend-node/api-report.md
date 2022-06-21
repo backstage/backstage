@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="node" />
 
+import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { DocumentDecoratorFactory } from '@backstage/plugin-search-common';
 import { DocumentTypeInfo } from '@backstage/plugin-search-common';
@@ -12,6 +13,7 @@ import { IndexableDocument } from '@backstage/plugin-search-common';
 import { IndexableResultSet } from '@backstage/plugin-search-common';
 import { Logger } from 'winston';
 import { default as lunr_2 } from 'lunr';
+import { Permission } from '@backstage/plugin-permission-common';
 import { QueryTranslator } from '@backstage/plugin-search-common';
 import { Readable } from 'stream';
 import { SearchEngine } from '@backstage/plugin-search-common';
@@ -19,9 +21,10 @@ import { SearchQuery } from '@backstage/plugin-search-common';
 import { TaskFunction } from '@backstage/backend-tasks';
 import { TaskRunner } from '@backstage/backend-tasks';
 import { Transform } from 'stream';
+import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
 
-// @beta
+// @public
 export abstract class BatchSearchEngineIndexer extends Writable {
   constructor(options: BatchSearchEngineOptions);
   abstract finalize(): Promise<void>;
@@ -29,19 +32,19 @@ export abstract class BatchSearchEngineIndexer extends Writable {
   abstract initialize(): Promise<void>;
 }
 
-// @beta (undocumented)
+// @public
 export type BatchSearchEngineOptions = {
   batchSize: number;
 };
 
-// @beta (undocumented)
+// @public
 export type ConcreteLunrQuery = {
   lunrQueryBuilder: lunr_2.Index.QueryBuilder;
   documentTypes?: string[];
   pageSize: number;
 };
 
-// @beta
+// @public
 export abstract class DecoratorBase extends Transform {
   constructor();
   abstract decorate(
@@ -51,7 +54,7 @@ export abstract class DecoratorBase extends Transform {
   abstract initialize(): Promise<void>;
 }
 
-// @beta (undocumented)
+// @public
 export class IndexBuilder {
   constructor({ logger, searchEngine }: IndexBuilderOptions);
   addCollator({ factory, schedule }: RegisterCollatorParameters): void;
@@ -59,22 +62,20 @@ export class IndexBuilder {
   build(): Promise<{
     scheduler: Scheduler;
   }>;
-  // (undocumented)
   getDocumentTypes(): Record<string, DocumentTypeInfo>;
-  // (undocumented)
   getSearchEngine(): SearchEngine;
 }
 
-// @beta (undocumented)
+// @public
 export type IndexBuilderOptions = {
   searchEngine: SearchEngine;
   logger: Logger;
 };
 
-// @beta (undocumented)
+// @public
 export type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
 
-// @beta (undocumented)
+// @public
 export class LunrSearchEngine implements SearchEngine {
   constructor({ logger }: { logger: Logger });
   // (undocumented)
@@ -97,7 +98,7 @@ export class LunrSearchEngine implements SearchEngine {
   protected translator: QueryTranslator;
 }
 
-// @beta (undocumented)
+// @public
 export class LunrSearchEngineIndexer extends BatchSearchEngineIndexer {
   constructor();
   // (undocumented)
@@ -112,18 +113,43 @@ export class LunrSearchEngineIndexer extends BatchSearchEngineIndexer {
   initialize(): Promise<void>;
 }
 
-// @beta
+// @public
+export class NewlineDelimitedJsonCollatorFactory
+  implements DocumentCollatorFactory
+{
+  static fromConfig(
+    _config: Config,
+    options: NewlineDelimitedJsonCollatorFactoryOptions,
+  ): NewlineDelimitedJsonCollatorFactory;
+  // (undocumented)
+  getCollator(): Promise<Readable>;
+  // (undocumented)
+  readonly type: string;
+  // (undocumented)
+  readonly visibilityPermission: Permission | undefined;
+}
+
+// @public
+export type NewlineDelimitedJsonCollatorFactoryOptions = {
+  type: string;
+  searchPattern: string;
+  reader: UrlReader;
+  logger: Logger;
+  visibilityPermission?: Permission;
+};
+
+// @public
 export interface RegisterCollatorParameters {
   factory: DocumentCollatorFactory;
   schedule: TaskRunner;
 }
 
-// @beta
+// @public
 export interface RegisterDecoratorParameters {
   factory: DocumentDecoratorFactory;
 }
 
-// @beta (undocumented)
+// @public
 export class Scheduler {
   constructor({ logger }: { logger: Logger });
   addToSchedule({ id, task, scheduledRunner }: ScheduleTaskParameters): void;
@@ -132,25 +158,22 @@ export class Scheduler {
 }
 
 // @public
-export interface ScheduleTaskParameters {
-  // (undocumented)
+export type ScheduleTaskParameters = {
   id: string;
-  // (undocumented)
-  scheduledRunner: TaskRunner;
-  // (undocumented)
   task: TaskFunction;
-}
+  scheduledRunner: TaskRunner;
+};
 
 export { SearchEngine };
 
-// @beta
+// @public
 export class TestPipeline {
   execute(): Promise<TestPipelineResult>;
   withDocuments(documents: IndexableDocument[]): TestPipeline;
   static withSubject(subject: Readable | Transform | Writable): TestPipeline;
 }
 
-// @beta
+// @public
 export type TestPipelineResult = {
   error: unknown;
   documents: IndexableDocument[];

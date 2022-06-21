@@ -22,6 +22,7 @@ export type {
   GroupConfig,
   UserConfig,
   BindConfig,
+  TLSConfig,
 } from './config';
 export type { LdapVendor } from './vendors';
 export {

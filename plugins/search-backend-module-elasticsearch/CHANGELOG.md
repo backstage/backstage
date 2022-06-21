@@ -1,5 +1,62 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 0.1.5
+
+### Patch Changes
+
+- 281cec1b61: Use more precise matching for query filters
+- 915700f64f: The provided search engine now adds a pagination-aware `rank` value to all results.
+- ddce23d080: Now possible to set a custom index template on the elasticsearch search engine.
+- 7d8acfc32e: Additional types now exported publicly:
+
+  - ElasticSearchAgentOptions
+  - ElasticSearchConcreteQuery
+  - ElasticSearchQueryTranslator
+  - ElasticSearchConnectionConstructor,
+  - ElasticSearchTransportConstructor,
+  - ElasticSearchNodeOptions,
+  - ElasticSearchOptions,
+  - ElasticSearchAuth,
+
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/plugin-search-backend-node@0.6.2
+
+## 0.1.5-next.2
+
+### Patch Changes
+
+- 7d8acfc32e: Additional types now exported publicly:
+
+  - ElasticSearchAgentOptions
+  - ElasticSearchConcreteQuery
+  - ElasticSearchQueryTranslator
+  - ElasticSearchConnectionConstructor,
+  - ElasticSearchTransportConstructor,
+  - ElasticSearchNodeOptions,
+  - ElasticSearchOptions,
+  - ElasticSearchAuth,
+
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5-next.1
+  - @backstage/plugin-search-backend-node@0.6.2-next.2
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- 281cec1b61: Use more precise matching for query filters
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@0.6.2-next.1
+  - @backstage/plugin-search-common@0.3.5-next.0
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@0.6.2-next.0
+
 ## 0.1.4
 
 ### Patch Changes
@@ -91,10 +148,10 @@
 - 022507c860: **BREAKING**
 
   The `ElasticSearchSearchEngine` implements the new stream-based indexing
-  process expected by the latest `@backstage/search-backend-node`.
+  process expected by the latest `@backstage/plugin-search-backend-node`.
 
   When updating to this version, you must also update to the latest version of
-  `@backstage/search-backend-node`. Check [this upgrade guide](https://backstage.io/docs/features/search/how-to-guides#how-to-migrate-from-search-alpha-to-beta)
+  `@backstage/plugin-search-backend-node`. Check [this upgrade guide](https://backstage.io/docs/features/search/how-to-guides#how-to-migrate-from-search-alpha-to-beta)
   for further details.
 
 ### Patch Changes

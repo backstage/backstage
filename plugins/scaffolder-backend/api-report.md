@@ -40,6 +40,7 @@ export type ActionContext<Input extends JsonObject> = {
   output(name: string, value: JsonValue): void;
   createTemporaryDirectory(): Promise<string>;
   templateInfo?: TemplateInfo;
+  isDryRun?: boolean;
 };
 
 // @public
@@ -248,6 +249,19 @@ export function createPublishFileAction(): TemplateAction<{
 }>;
 
 // @public
+export function createPublishGerritAction(options: {
+  integrations: ScmIntegrationRegistry;
+  config: Config;
+}): TemplateAction<{
+  repoUrl: string;
+  description: string;
+  defaultBranch?: string | undefined;
+  gitCommitMessage?: string | undefined;
+  gitAuthorName?: string | undefined;
+  gitAuthorEmail?: string | undefined;
+}>;
+
+// @public
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
@@ -257,6 +271,7 @@ export function createPublishGithubAction(options: {
   description?: string | undefined;
   access?: string | undefined;
   defaultBranch?: string | undefined;
+  protectDefaultBranch?: boolean | undefined;
   deleteBranchOnMerge?: boolean | undefined;
   gitCommitMessage?: string | undefined;
   gitAuthorName?: string | undefined;
@@ -269,10 +284,20 @@ export function createPublishGithubAction(options: {
   requiredStatusCheckContexts?: string[] | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   collaborators?:
-    | {
-        username: string;
-        access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-      }[]
+    | (
+        | {
+            user: string;
+            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          }
+        | {
+            team: string;
+            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          }
+        | {
+            username: string;
+            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          }
+      )[]
     | undefined;
   token?: string | undefined;
   topics?: string[] | undefined;
@@ -313,13 +338,13 @@ export function createPublishGitlabAction(options: {
 export const createPublishGitlabMergeRequestAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<{
-  projectid: string;
   repoUrl: string;
   title: string;
   description: string;
   branchName: string;
   targetPath: string;
   token?: string | undefined;
+  projectid?: string | undefined;
 }>;
 
 // @public
@@ -380,6 +405,10 @@ export class DatabaseTaskStore implements TaskStore {
   getTask(taskId: string): Promise<SerializedTask>;
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
+  // (undocumented)
+  list(options: { createdBy?: string }): Promise<{
+    tasks: SerializedTask[];
+  }>;
   // (undocumented)
   listEvents({ taskId, after }: TaskStoreListEventsOptions): Promise<{
     events: SerializedTaskEvent[];
@@ -505,6 +534,10 @@ export interface TaskBroker {
   // (undocumented)
   get(taskId: string): Promise<SerializedTask>;
   // (undocumented)
+  list?(options?: { createdBy?: string }): Promise<{
+    tasks: SerializedTask[];
+  }>;
+  // (undocumented)
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
 }
 
@@ -535,6 +568,8 @@ export interface TaskContext {
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   // (undocumented)
   getWorkspaceName(): Promise<string>;
+  // (undocumented)
+  isDryRun?: boolean;
   // (undocumented)
   secrets?: TaskSecrets;
   // (undocumented)
@@ -602,6 +637,10 @@ export interface TaskStore {
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
+  list?(options: { createdBy?: string }): Promise<{
+    tasks: SerializedTask[];
+  }>;
+  // (undocumented)
   listEvents({ taskId, after }: TaskStoreListEventsOptions): Promise<{
     events: SerializedTaskEvent[];
   }>;
@@ -651,6 +690,7 @@ export class TaskWorker {
 export type TemplateAction<Input extends JsonObject> = {
   id: string;
   description?: string;
+  supportsDryRun?: boolean;
   schema?: {
     input?: Schema;
     output?: Schema;

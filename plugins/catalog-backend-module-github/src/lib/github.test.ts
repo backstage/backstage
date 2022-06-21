@@ -86,6 +86,7 @@ describe('github', () => {
                 name: 'Team',
                 description: 'The one and only team',
                 avatarUrl: 'http://example.com/team.jpeg',
+                editTeamUrl: 'http://example.com/orgs/blah/teams/team/edit',
                 parentTeam: {
                   slug: 'parent',
                   combinedSlug: '',
@@ -109,6 +110,11 @@ describe('github', () => {
             metadata: expect.objectContaining({
               name: 'team',
               description: 'The one and only team',
+              annotations: {
+                'github.com/team-slug': 'blah/team',
+                'backstage.io/edit-url':
+                  'http://example.com/orgs/blah/teams/team/edit',
+              },
             }),
             spec: {
               type: 'team',

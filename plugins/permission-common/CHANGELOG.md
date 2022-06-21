@@ -1,5 +1,17 @@
 # @backstage/plugin-permission-common
 
+## 0.6.2
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+
 ## 0.6.1
 
 ### Patch Changes

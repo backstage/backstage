@@ -103,6 +103,7 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
       this.logger,
       provider.target,
       provider.bind,
+      provider.tls,
     );
     const { users, groups } = await readLdapOrg(
       client,

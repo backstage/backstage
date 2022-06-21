@@ -54,6 +54,7 @@ export function createFetchPlainAction(options: {
         },
       },
     },
+    supportsDryRun: true,
     async handler(ctx) {
       ctx.logger.info('Fetching plain content from remote URL');
 

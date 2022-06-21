@@ -17,6 +17,9 @@ export const HomePageStackOverflowQuestions: (
 ) => JSX.Element;
 
 // @public
+export const StackOverflowIcon: () => JSX.Element;
+
+// @public
 export const stackOverflowPlugin: BackstagePlugin<{}, {}>;
 
 // @public
@@ -31,6 +34,7 @@ export type StackOverflowQuestion = {
 // @public
 export type StackOverflowQuestionsContentProps = {
   requestParams: StackOverflowQuestionsRequestParams;
+  icon?: React.ReactNode;
 };
 
 // @public

@@ -1,0 +1,71 @@
+{
+  "name": "@backstage/plugin-github-pull-requests-board",
+  "description": "A Backstage plugin that allows you to see all open Pull Requests for all the repositories owned by your team",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "frontend-plugin"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/github-pull-requests-board"
+  },
+  "keywords": [
+    "backstage",
+    "github",
+    "pull requests"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "start": "backstage-cli package start",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "diff": "backstage-cli plugin:diff",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean"
+  },
+  "dependencies": {
+    "@backstage/catalog-model": "^1.0.3",
+    "@backstage/core-components": "^0.9.5",
+    "@backstage/core-plugin-api": "^1.0.3",
+    "@backstage/integration": "^1.2.1",
+    "@backstage/plugin-catalog-react": "^1.1.1",
+    "@backstage/theme": "^0.2.15",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "4.0.0-alpha.57",
+    "@octokit/rest": "^18.12.0",
+    "moment": "^2.29.1",
+    "react-use": "^17.2.4"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.17.2",
+    "@backstage/dev-utils": "^1.0.3",
+    "@backstage/test-utils": "^1.1.1",
+    "@testing-library/jest-dom": "^5.10.1",
+    "@testing-library/react": "^12.1.3",
+    "@testing-library/user-event": "^14.0.0",
+    "@types/jest": "^26.0.7",
+    "@types/node": "^16.11.26",
+    "cross-fetch": "^3.1.5",
+    "msw": "^0.42.0"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0",
+    "react": "^16.13.1 || ^17.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0"
+  },
+  "files": [
+    "dist"
+  ]
+}

@@ -50,7 +50,7 @@
     "@types/node": "^14.14.32",
     "@types/react-dom": "*",
     "cross-env": "^7.0.0",
-    "cypress": "^7.3.0",
+    "cypress": "^9.7.0",
     "eslint-plugin-cypress": "^2.10.3",
     "start-server-and-test": "^1.10.11"
   },
@@ -63,7 +63,7 @@
     "test:e2e": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:dev",
     "test:e2e:ci": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:run",
     "cy:dev": "cypress open",
-    "cy:run": "cypress run"
+    "cy:run": "cypress run --browser chrome"
   },
   "browserslist": {
     "production": [

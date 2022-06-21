@@ -20,9 +20,8 @@
 This is a list of all packages used by the template. If dependencies are added or removed,
 this list should be updated as well.
 
-The list, and the accompanying peerDependencies entries, are here to ensure correct versioning
-and bumping of this package. Without this list the version would not be bumped unless we
-manually trigger a release.
+There is a release step that ensures that this package is always bumped with every
+release, meaning these version will always be up to date.
 
 This does not create an actual dependency on these packages and does not bring in any code.
 Relative imports are used rather than package imports to make sure the packages aren't externalized.

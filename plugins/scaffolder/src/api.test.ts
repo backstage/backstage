@@ -33,6 +33,13 @@ describe('api', () => {
 
   const discoveryApi = { getBaseUrl: async () => mockBaseUrl };
   const fetchApi = new MockFetchApi();
+  const identityApi = {
+    getBackstageIdentity: jest.fn(),
+    getProfileInfo: jest.fn(),
+    getCredentials: jest.fn(),
+    signOut: jest.fn(),
+  };
+
   const scmIntegrationsApi = ScmIntegrations.fromConfig(
     new ConfigReader({
       integrations: {
@@ -51,7 +58,11 @@ describe('api', () => {
       scmIntegrationsApi,
       discoveryApi,
       fetchApi,
+      identityApi,
     });
+
+    jest.restoreAllMocks();
+    identityApi.getBackstageIdentity.mockReturnValue({});
   });
 
   it('should return default and custom integrations', async () => {
@@ -129,6 +140,7 @@ describe('api', () => {
           scmIntegrationsApi,
           discoveryApi,
           fetchApi,
+          identityApi,
           useLongPollingLogs: true,
         });
       });
@@ -303,6 +315,80 @@ describe('api', () => {
           body: { message: 'Finished!' },
         });
       });
+    });
+  });
+
+  describe('listTasks', () => {
+    it('should list all tasks', async () => {
+      server.use(
+        rest.get(`${mockBaseUrl}/v2/tasks`, (req, res, ctx) => {
+          const createdBy = req.url.searchParams.get('createdBy');
+
+          if (createdBy) {
+            return res(
+              ctx.json([
+                {
+                  createdBy,
+                },
+              ]),
+            );
+          }
+
+          return res(
+            ctx.json([
+              {
+                createdBy: null,
+              },
+              {
+                createdBy: null,
+              },
+            ]),
+          );
+        }),
+      );
+
+      const result = await apiClient.listTasks({ filterByOwnership: 'all' });
+      expect(result).toHaveLength(2);
+    });
+    it('should list task using the current user as owner', async () => {
+      server.use(
+        rest.get(`${mockBaseUrl}/v2/tasks`, (req, res, ctx) => {
+          const createdBy = req.url.searchParams.get('createdBy');
+
+          if (createdBy) {
+            return res(
+              ctx.json({
+                tasks: [
+                  {
+                    createdBy,
+                  },
+                ],
+              }),
+            );
+          }
+
+          return res(
+            ctx.json({
+              tasks: [
+                {
+                  createdBy: null,
+                },
+                {
+                  createdBy: null,
+                },
+              ],
+            }),
+          );
+        }),
+      );
+
+      identityApi.getBackstageIdentity.mockResolvedValueOnce({
+        userEntityRef: 'user:default/foo',
+      });
+
+      const result = await apiClient.listTasks({ filterByOwnership: 'owned' });
+      expect(identityApi.getBackstageIdentity).toBeCalled();
+      expect(result.tasks).toHaveLength(1);
     });
   });
 });

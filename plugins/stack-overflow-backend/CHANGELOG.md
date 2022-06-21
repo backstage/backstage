@@ -4,7 +4,15 @@
 
 ### Patch Changes
 
-- Added apiKey configuration to prevent encoding the key value
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+
+## 0.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5-next.0
 
 ## 0.1.1
 

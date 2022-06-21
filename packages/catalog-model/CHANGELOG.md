@@ -1,5 +1,17 @@
 # @backstage/catalog-model
 
+## 1.0.3
+
+### Patch Changes
+
+- 131a99e909: Added targetRef to common.schema.json to match the Typescript type
+
+## 1.0.3-next.0
+
+### Patch Changes
+
+- 131a99e909: Added targetRef to common.schema.json to match the Typescript type
+
 ## 1.0.2
 
 ### Patch Changes

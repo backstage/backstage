@@ -189,7 +189,7 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
     };
   }
 
-  async getKey(header: JWTHeaderParameters): Promise<KeyObject> {
+  getKey = async (header: JWTHeaderParameters): Promise<KeyObject> => {
     if (!header.kid) {
       throw new AuthenticationError('No key id was specified in header');
     }
@@ -208,7 +208,7 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
       keyValue.export({ format: 'pem', type: 'spki' }),
     );
     return keyValue;
-  }
+  };
 }
 
 /**

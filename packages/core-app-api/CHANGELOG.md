@@ -1,5 +1,22 @@
 # @backstage/core-app-api
 
+## 1.0.3
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 19781483a2: Handle URLs as the first argument to `fetchApi`, when using the `plugin:` protocol
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.3
+
+## 1.0.3-next.0
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.3-next.0
+
 ## 1.0.2
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/config-loader
 
+## 1.1.2
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+
+## 1.1.2-next.0
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+
 ## 1.1.1
 
 ### Patch Changes
