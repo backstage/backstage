@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ApiEntity,
-  ComponentEntity,
-  DomainEntity,
-  Entity,
-  GroupEntity,
-  LocationEntity,
-  ResourceEntity,
-  SystemEntity,
-  UserEntity,
-} from '@backstage/catalog-model';
+import { ComponentEntity, Entity } from '@backstage/catalog-model';
 
 function strCmp(a: string | undefined, b: string | undefined): boolean {
   return Boolean(
@@ -66,53 +56,4 @@ export function isComponentType(types: string | string[]) {
  */
 export function isNamespace(namespaces: string | string[]) {
   return (entity: Entity) => strCmpAll(entity.metadata?.namespace, namespaces);
-}
-
-/**
- * @public
- */
-export function isApiEntity(entity: Entity): entity is ApiEntity {
-  return entity.kind.toLocaleUpperCase('en-US') === 'API';
-}
-/**
- * @public
- */
-export function isComponentEntity(entity: Entity): entity is ComponentEntity {
-  return entity.kind.toLocaleUpperCase('en-US') === 'COMPONENT';
-}
-/**
- * @public
- */
-export function isDomainEntity(entity: Entity): entity is DomainEntity {
-  return entity.kind.toLocaleUpperCase('en-US') === 'DOMAIN';
-}
-/**
- * @public
- */
-export function isGroupEntity(entity: Entity): entity is GroupEntity {
-  return entity.kind.toLocaleUpperCase('en-US') === 'GROUP';
-}
-/**
- * @public
- */
-export function isLocationEntity(entity: Entity): entity is LocationEntity {
-  return entity.kind.toLocaleUpperCase('en-US') === 'LOCATION';
-}
-/**
- * @public
- */
-export function isResourceEntity(entity: Entity): entity is ResourceEntity {
-  return entity.kind.toLocaleUpperCase('en-US') === 'RESOURCE';
-}
-/**
- * @public
- */
-export function isSystemEntity(entity: Entity): entity is SystemEntity {
-  return entity.kind.toLocaleUpperCase('en-US') === 'SYSTEM';
-}
-/**
- * @public
- */
-export function isUserEntity(entity: Entity): entity is UserEntity {
-  return entity.kind.toLocaleUpperCase('en-US') === 'USER';
 }
