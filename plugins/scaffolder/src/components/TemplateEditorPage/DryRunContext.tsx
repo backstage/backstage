@@ -29,6 +29,9 @@ import React, {
 import { scaffolderApiRef } from '../../api';
 import { ScaffolderDryRunResponse } from '../../types';
 
+const MAX_CONTENT_SIZE = 64 * 1024;
+const CHUNK_SIZE = 32 * 1024;
+
 interface DryRunOptions {
   templateContent: string;
   values: JsonObject;
@@ -52,6 +55,27 @@ const DryRunContext = createContext<DryRun | undefined>(undefined);
 
 interface DryRunProviderProps {
   children: ReactNode;
+}
+
+export function base64EncodeContent(content: string): string {
+  if (content.length > MAX_CONTENT_SIZE) {
+    return btoa('<file too large>');
+  }
+
+  try {
+    return btoa(content);
+  } catch {
+    const decoder = new TextEncoder();
+    const buffer = decoder.encode(content);
+
+    const chunks = new Array<string>();
+    for (let offset = 0; offset < buffer.length; offset += CHUNK_SIZE) {
+      chunks.push(
+        String.fromCharCode(...buffer.slice(offset, offset + CHUNK_SIZE)),
+      );
+    }
+    return btoa(chunks.join(''));
+  }
 }
 
 export function DryRunProvider(props: DryRunProviderProps) {
@@ -110,7 +134,7 @@ export function DryRunProvider(props: DryRunProviderProps) {
         secrets: {},
         directoryContents: options.files.map(file => ({
           path: file.path,
-          base64Content: btoa(file.content),
+          base64Content: base64EncodeContent(file.content),
         })),
       });
 

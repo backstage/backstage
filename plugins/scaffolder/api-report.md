@@ -16,6 +16,7 @@ import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { FieldProps } from '@rjsf/core';
 import { FieldValidation } from '@rjsf/core';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
@@ -240,6 +241,14 @@ export interface ScaffolderApi {
     templateRef: string,
   ): Promise<TemplateParameterSchema>;
   listActions(): Promise<ListActionsResponse>;
+  // (undocumented)
+  listTasks?({
+    filterByOwnership,
+  }: {
+    filterByOwnership: 'owned' | 'all';
+  }): Promise<{
+    tasks: ScaffolderTask[];
+  }>;
   scaffold(
     options: ScaffolderScaffoldOptions,
   ): Promise<ScaffolderScaffoldResponse>;
@@ -255,6 +264,7 @@ export class ScaffolderClient implements ScaffolderApi {
   constructor(options: {
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
+    identityApi?: IdentityApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
     useLongPollingLogs?: boolean;
   });
@@ -272,6 +282,10 @@ export class ScaffolderClient implements ScaffolderApi {
   ): Promise<TemplateParameterSchema>;
   // (undocumented)
   listActions(): Promise<ListActionsResponse>;
+  // (undocumented)
+  listTasks(options: { filterByOwnership: 'owned' | 'all' }): Promise<{
+    tasks: ScaffolderTask[];
+  }>;
   scaffold(
     options: ScaffolderScaffoldOptions,
   ): Promise<ScaffolderScaffoldResponse>;

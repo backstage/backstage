@@ -45,8 +45,9 @@ export const MyGroupsSidebarItem = (props: {
   singularTitle: string;
   pluralTitle: string;
   icon: IconComponent;
+  filter?: Record<string, string | symbol | (string | symbol)[]>;
 }) => {
-  const { singularTitle, pluralTitle, icon } = props;
+  const { singularTitle, pluralTitle, icon, filter } = props;
 
   const identityApi = useApi(identityApiRef);
   const catalogApi: CatalogApi = useApi(catalogApiRef);
@@ -56,7 +57,13 @@ export const MyGroupsSidebarItem = (props: {
     const profile = await identityApi.getBackstageIdentity();
 
     const response = await catalogApi.getEntities({
-      filter: [{ kind: 'group', 'relations.hasMember': profile.userEntityRef }],
+      filter: [
+        {
+          kind: 'group',
+          'relations.hasMember': profile.userEntityRef,
+          ...(filter ?? {}),
+        },
+      ],
       fields: ['metadata', 'kind'],
     });
 

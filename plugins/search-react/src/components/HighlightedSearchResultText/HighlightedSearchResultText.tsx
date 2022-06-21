@@ -25,6 +25,8 @@ const useStyles = makeStyles(
 );
 
 /**
+ * Props for {@link HighlightedSearchResultText}.
+ *
  * @public
  */
 export type HighlightedSearchResultTextProps = {

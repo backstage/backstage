@@ -1,5 +1,25 @@
 # @backstage/integration
 
+## 1.2.2-next.0
+
+### Patch Changes
+
+- 8829e175f2: Allow frontend visibility for `integrations` itself.
+
+## 1.2.1
+
+### Patch Changes
+
+- 72dfcbc8bf: Gerrit Integration: Handle absolute paths in `resolveUrl` properly.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- e37c71b5a4: Updated to support deployments of Azure DevOps Server under TFS or similar sub path
+
+## 1.2.1-next.2
+
+### Patch Changes
+
+- e37c71b5a4: Updated to support deployments of Azure DevOps Server under TFS or similar sub path
+
 ## 1.2.1-next.1
 
 ### Patch Changes

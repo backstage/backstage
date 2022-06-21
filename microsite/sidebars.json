@@ -1,6 +1,11 @@
 {
   "releases": {
-    "Release Notes": ["releases/v1.2.0", "releases/v1.1.0", "releases/v1.0.0"]
+    "Release Notes": [
+      "releases/v1.3.0",
+      "releases/v1.2.0",
+      "releases/v1.1.0",
+      "releases/v1.0.0"
+    ]
   },
   "docs": {
     "Overview": [
@@ -260,11 +265,10 @@
           "auth/oauth2-proxy/provider"
         ]
       },
-      "auth/add-auth-provider",
       "auth/identity-resolver",
       "auth/auth-backend",
       "auth/oauth",
-      "auth/auth-backend-classes",
+      "auth/add-auth-provider",
       "auth/troubleshooting",
       "auth/glossary"
     ],
@@ -289,7 +293,6 @@
       "deployment/index",
       "deployment/docker",
       "deployment/k8s",
-      "deployment/helm",
       "deployment/heroku"
     ],
     "Designing for Backstage": [

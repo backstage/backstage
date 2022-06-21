@@ -14,10 +14,8 @@ yarn.lock                                           @backstage/reviewers @backst
 /docs/assets/search                                 @backstage/reviewers @backstage/techdocs-core
 /docs/features/search                               @backstage/reviewers @backstage/techdocs-core
 /docs/features/techdocs                             @backstage/reviewers @backstage/techdocs-core
-/packages/search-common                             @backstage/reviewers @backstage/techdocs-core
 /packages/techdocs-cli                              @backstage/reviewers @backstage/techdocs-core
 /packages/techdocs-cli-embedded-app                 @backstage/reviewers @backstage/techdocs-core
-/packages/techdocs-common                           @backstage/reviewers @backstage/techdocs-core
 /plugins/allure                                     @backstage/reviewers @deepak-bhardwaj-ps
 /plugins/apache-airflow                             @backstage/reviewers @cmpadden
 /plugins/api-docs                                   @backstage/reviewers @backstage/sda-se-reviewers
@@ -42,14 +40,16 @@ yarn.lock                                           @backstage/reviewers @backst
 /plugins/jenkins-backend                            @backstage/reviewers @timja
 /plugins/kafka                                      @backstage/reviewers @nirga
 /plugins/kafka-backend                              @backstage/reviewers @nirga
+/plugins/kubernetes                                 @backstage/reviewers @backstage/warpspeed
+/plugins/kubernetes-*                               @backstage/reviewers @backstage/warpspeed
 /plugins/newrelic-dashboard                         @backstage/reviewers @mufaddal7
 /plugins/scaffolder-backend-module-rails            @backstage/reviewers @angeliski
 /plugins/scaffolder-backend-module-yeoman           @backstage/reviewers @pawelmitka
 /plugins/search                                     @backstage/reviewers @backstage/techdocs-core
 /plugins/search-*                                   @backstage/reviewers @backstage/techdocs-core
+/plugins/sonarqube                                  @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/stack-overflow                             @backstage/reviewers @backstage/techdocs-core
 /plugins/stack-overflow-backend                     @backstage/reviewers @backstage/techdocs-core
-/plugins/sonarqube                                  @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/techdocs                                   @backstage/reviewers @backstage/techdocs-core
 /plugins/techdocs-*                                 @backstage/reviewers @backstage/techdocs-core
 /tech-insights-backend                              @backstage/reviewers @xantier @iain-b

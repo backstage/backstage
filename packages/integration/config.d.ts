@@ -15,7 +15,10 @@
  */
 
 export interface Config {
-  /** Configuration for integrations towards various external repository provider systems */
+  /**
+   * Configuration for integrations towards various external repository provider systems
+   * @visibility frontend
+   */
   integrations?: {
     /** Integration configuration for Azure */
     azure?: Array<{

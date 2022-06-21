@@ -235,6 +235,18 @@ async function createApp(
     print('Rewriting module resolutions of app to use workspace packages');
     await overrideModuleResolutions(appDir, workspaceDir);
 
+    // Yarn does not clean up node_module folders in the linked in dependencies by itself
+    print('Cleaning up node_modules in workspace');
+    await fs.remove(resolvePath(workspaceDir, 'node_modules'));
+    for (const wsDir of ['packages', 'plugins']) {
+      for (const dir of await fs.readdir(resolvePath(workspaceDir, wsDir))) {
+        const moduleDir = resolvePath(workspaceDir, wsDir, dir, 'node_modules');
+        if (await fs.pathExists(moduleDir)) {
+          await fs.remove(moduleDir);
+        }
+      }
+    }
+
     print('Pinning yarn version and registry in app');
     await pinYarnVersion(appDir);
     await fs.writeFile(

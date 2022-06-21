@@ -1,5 +1,29 @@
 # @backstage/plugin-airbrake
 
+## 0.3.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/dev-utils@1.0.4-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.0
+  - @backstage/test-utils@1.1.2-next.0
+
+## 0.3.6
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/test-utils@1.1.1
+  - @backstage/catalog-model@1.0.3
+  - @backstage/dev-utils@1.0.3
+
 ## 0.3.6-next.1
 
 ### Patch Changes

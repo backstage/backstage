@@ -112,6 +112,10 @@ export interface CatalogSearchResultListItemProps {
   // (undocumented)
   highlight?: ResultHighlight;
   // (undocumented)
+  icon?: ReactNode;
+  // (undocumented)
+  rank?: number;
+  // (undocumented)
   result: IndexableDocument;
 }
 
@@ -206,6 +210,9 @@ export interface DependsOnResourcesCardProps {
 
 // @public (undocumented)
 export const EntityAboutCard: (props: AboutCardProps) => JSX.Element;
+
+// @public (undocumented)
+export type EntityContextMenuClassKey = 'button';
 
 // @public (undocumented)
 export const EntityDependencyOfComponentsCard: (
@@ -390,6 +397,7 @@ export function isOrphan(entity: Entity): boolean;
 export type PluginCatalogComponentsNameToClassKey = {
   PluginCatalogEntityLinksEmptyState: EntityLinksEmptyStateClassKey;
   PluginCatalogSystemDiagramCard: SystemDiagramCardClassKey;
+  PluginCatalogEntityContextMenu: EntityContextMenuClassKey;
 };
 
 // @public (undocumented)

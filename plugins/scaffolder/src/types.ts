@@ -192,6 +192,12 @@ export interface ScaffolderApi {
 
   getTask(taskId: string): Promise<ScaffolderTask>;
 
+  listTasks?({
+    filterByOwnership,
+  }: {
+    filterByOwnership: 'owned' | 'all';
+  }): Promise<{ tasks: ScaffolderTask[] }>;
+
   getIntegrationsList(
     options: ScaffolderGetIntegrationsListOptions,
   ): Promise<ScaffolderGetIntegrationsListResponse>;

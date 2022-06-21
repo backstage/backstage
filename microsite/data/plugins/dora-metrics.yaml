@@ -1,0 +1,9 @@
+---
+title: DORA Metrics
+author: Okay
+authorUrl: https://www.okayhq.com
+category: Metrics
+description: Embed dashboards (like DORA metrics) in your team or service pages from any dev tools (including Github, Gitlab, Jira, Argo, CircleCI, Buildkite, Pagerduty, Rollbar, Sentry, etc).
+documentation: https://github.com/OkayHQ/backstage-plugin
+iconUrl: img/okay.png
+npmPackageName: '@okayhq/backstage-plugin'

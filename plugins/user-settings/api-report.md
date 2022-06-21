@@ -7,6 +7,7 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
@@ -70,6 +71,11 @@ export const UserSettingsFeatureFlags: () => JSX.Element;
 // @public (undocumented)
 export const UserSettingsGeneral: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "UserSettingsIdentityCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const UserSettingsIdentityCard: () => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "UserSettingsMenu" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -129,9 +135,17 @@ export const UserSettingsThemeToggle: () => JSX.Element;
 // Warning: (ae-missing-release-tag) "useUserProfile" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const useUserProfile: () => {
-  profile: ProfileInfo;
-  displayName: string;
-  loading: boolean;
-};
+export const useUserProfile: () =>
+  | {
+      profile: ProfileInfo;
+      displayName: string;
+      loading: boolean;
+      backstageIdentity?: undefined;
+    }
+  | {
+      profile: ProfileInfo;
+      backstageIdentity: BackstageUserIdentity;
+      displayName: string;
+      loading: false;
+    };
 ```

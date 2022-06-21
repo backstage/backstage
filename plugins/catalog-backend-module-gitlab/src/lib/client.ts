@@ -63,6 +63,13 @@ export class GitLabClient {
     return this.pagedRequest(`/projects`, options);
   }
 
+  /**
+   * General existence check.
+   *
+   * @param projectPath - The path to the project
+   * @param branch - The branch used to search
+   * @param filePath - The path to the file
+   */
   async hasFile(
     projectPath: string,
     branch: string,

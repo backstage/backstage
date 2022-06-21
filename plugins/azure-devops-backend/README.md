@@ -60,7 +60,10 @@ Here's how to get the backend up and running:
    // ...
    async function main() {
      // ...
+     // Add this line under the other lines that follow the useHotMemoize pattern
      const azureDevOpsEnv = useHotMemoize(module, () => createEnv('azure-devops'));
+     // ...
+     // Insert this line under the other lines that add their routers to apiRouter in the same way
      apiRouter.use('/azure-devops', await azureDevOps(azureDevOpsEnv));
    ```
 

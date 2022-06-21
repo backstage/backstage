@@ -24,16 +24,18 @@ type TaskEnvelope = {
 };
 
 /**
- * @public ScheduleTaskParameters
+ * ScheduleTaskParameters
+ * @public
  */
-export interface ScheduleTaskParameters {
+export type ScheduleTaskParameters = {
   id: string;
   task: TaskFunction;
   scheduledRunner: TaskRunner;
-}
+};
 
 /**
- * @beta
+ * Scheduler responsible for all search tasks.
+ * @public
  */
 export class Scheduler {
   private logger: Logger;

@@ -34,7 +34,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@backstage/cli": "^0.17.2-next.0",
+    "@backstage/cli": "^0.17.3-next.0",
     "@types/zen-observable": "^0.8.0",
     "zen-observable": "^0.8.15"
   },

@@ -1,5 +1,59 @@
 # @backstage/plugin-catalog-backend
 
+## 1.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/integration@1.2.2-next.0
+  - @backstage/plugin-permission-node@0.6.3-next.0
+  - @backstage/catalog-client@1.0.4-next.0
+  - @backstage/plugin-scaffolder-common@1.1.2-next.0
+
+## 1.2.0
+
+### Minor Changes
+
+- b594679ae3: Allow array as non-spread arguments at the `CatalogBuilder`.
+
+  ```typescript
+  builder.addEntityProvider(...getArrayOfProviders());
+  ```
+
+  can be simplified to
+
+  ```typescript
+  builder.addEntityProvider(getArrayOfProviders());
+  ```
+
+### Patch Changes
+
+- 8838b13038: Disallow anything but `'url'` locations from being registered via the location service.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/plugin-permission-node@0.6.2
+  - @backstage/plugin-catalog-common@1.0.3
+  - @backstage/backend-common@0.14.0
+  - @backstage/integration@1.2.1
+  - @backstage/catalog-client@1.0.3
+  - @backstage/plugin-permission-common@0.6.2
+  - @backstage/catalog-model@1.0.3
+  - @backstage/plugin-scaffolder-common@1.1.1
+
+## 1.2.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5-next.1
+  - @backstage/plugin-catalog-common@1.0.3-next.1
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/integration@1.2.1-next.2
+  - @backstage/plugin-permission-node@0.6.2-next.2
+
 ## 1.2.0-next.1
 
 ### Patch Changes

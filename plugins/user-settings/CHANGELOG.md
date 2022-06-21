@@ -1,5 +1,23 @@
 # @backstage/plugin-user-settings
 
+## 0.4.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.0
+
+## 0.4.5
+
+### Patch Changes
+
+- 9d2d6a0cea: Added new `<UserSettingsIdentityCard />` to show the result of the `identityApi.getBackstageIdentity()` call to help debug ownership issues. The new card has been added to the user settings page.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- bff65e6958: Updated sidebar-related logic to use `<SidebarPinStateProvider>` + `useSidebarPinState()` and/or `<SidebarOpenStateProvider>` + `useSidebarOpenState()` from `@backstage/core-components`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+
 ## 0.4.5-next.1
 
 ### Patch Changes

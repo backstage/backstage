@@ -11,13 +11,9 @@ import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 
-// Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type RouterOptions = {
   engine: SearchEngine;

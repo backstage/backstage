@@ -1,5 +1,21 @@
 # @backstage/catalog-model
 
+## 1.1.0-next.0
+
+### Minor Changes
+
+- 1380b389dc: Adding an optional type field to entity links to group and categorize links
+
+### Patch Changes
+
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+
+## 1.0.3
+
+### Patch Changes
+
+- 131a99e909: Added targetRef to common.schema.json to match the Typescript type
+
 ## 1.0.3-next.0
 
 ### Patch Changes

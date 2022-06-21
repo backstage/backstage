@@ -85,6 +85,8 @@ dockerfiles
 Dockerize
 dockerode
 Docusaurus
+dynatrace
+Dynatrace
 ecco
 env
 Env
@@ -275,6 +277,7 @@ scrollbar
 seb
 semlas
 semver
+serializable
 Serverless
 shoutout
 siloed
@@ -301,6 +304,7 @@ superfences
 Superfences
 superset
 supertype
+storable
 talkdesk
 Talkdesk
 tasklist

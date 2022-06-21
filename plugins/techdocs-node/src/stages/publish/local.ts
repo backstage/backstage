@@ -16,8 +16,13 @@
 import {
   PluginEndpointDiscovery,
   resolvePackagePath,
+  resolveSafeChildPath,
 } from '@backstage/backend-common';
-import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  CompoundEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import express from 'express';
 import fs from 'fs-extra';
@@ -37,7 +42,7 @@ import {
   getHeadersForFileExtension,
   lowerCaseEntityTripletInStoragePath,
 } from './helpers';
-import { assertError } from '@backstage/errors';
+import { ForwardedError } from '@backstage/errors';
 
 // TODO: Use a more persistent storage than node_modules or /tmp directory.
 // Make it configurable with techdocs.publisher.local.publishDirectory
@@ -103,12 +108,22 @@ export class LocalPublish implements PublisherBase {
     directory,
   }: PublishRequest): Promise<PublishResponse> {
     const entityNamespace = entity.metadata.namespace ?? 'default';
+    let publishDir: string;
 
-    const publishDir = this.staticEntityPathJoin(
-      entityNamespace,
-      entity.kind,
-      entity.metadata.name,
-    );
+    try {
+      publishDir = this.staticEntityPathJoin(
+        entityNamespace,
+        entity.kind,
+        entity.metadata.name,
+      );
+    } catch (error) {
+      throw new ForwardedError(
+        `Unable to publish TechDocs site for entity: ${stringifyEntityRef(
+          entity,
+        )}`,
+        error,
+      );
+    }
 
     if (!fs.existsSync(publishDir)) {
       this.logger.info(`Could not find ${publishDir}, creating the directory.`);
@@ -144,21 +159,31 @@ export class LocalPublish implements PublisherBase {
   async fetchTechDocsMetadata(
     entityName: CompoundEntityRef,
   ): Promise<TechDocsMetadata> {
-    const metadataPath = this.staticEntityPathJoin(
-      entityName.namespace,
-      entityName.kind,
-      entityName.name,
-      'techdocs_metadata.json',
-    );
+    let metadataPath: string;
+
+    try {
+      metadataPath = this.staticEntityPathJoin(
+        entityName.namespace,
+        entityName.kind,
+        entityName.name,
+        'techdocs_metadata.json',
+      );
+    } catch (err) {
+      throw new ForwardedError(
+        `Unexpected entity when fetching metadata: ${stringifyEntityRef(
+          entityName,
+        )}`,
+        err,
+      );
+    }
 
     try {
       return await fs.readJson(metadataPath);
     } catch (err) {
-      assertError(err);
-      this.logger.error(
+      throw new ForwardedError(
         `Unable to read techdocs_metadata.json at ${metadataPath}. Error: ${err}`,
+        err,
       );
-      throw new Error(err.message);
     }
   }
 
@@ -195,7 +220,7 @@ export class LocalPublish implements PublisherBase {
       }
 
       // Otherwise, redirect to the new path.
-      return res.redirect(req.baseUrl + newPath, 301);
+      return res.redirect(301, req.baseUrl + newPath);
     });
 
     router.use(
@@ -217,18 +242,26 @@ export class LocalPublish implements PublisherBase {
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     const namespace = entity.metadata.namespace ?? 'default';
 
-    const indexHtmlPath = this.staticEntityPathJoin(
-      namespace,
-      entity.kind,
-      entity.metadata.name,
-      'index.html',
-    );
-
     // Check if the file exists
     try {
+      const indexHtmlPath = this.staticEntityPathJoin(
+        namespace,
+        entity.kind,
+        entity.metadata.name,
+        'index.html',
+      );
+
       await fs.access(indexHtmlPath, fs.constants.F_OK);
+
       return true;
     } catch (err) {
+      if (err.name === 'NotAllowedError') {
+        this.logger.error(
+          `Unexpected entity when checking if generated: ${stringifyEntityRef(
+            entity,
+          )}`,
+        );
+      }
       return false;
     }
   }
@@ -278,17 +311,25 @@ export class LocalPublish implements PublisherBase {
    * Utility wrapper around path.join(), used to control legacy case logic.
    */
   protected staticEntityPathJoin(...allParts: string[]): string {
-    if (this.legacyPathCasing) {
-      const [namespace, kind, name, ...parts] = allParts;
-      return path.join(staticDocsDir, namespace, kind, name, ...parts);
-    }
-    const [namespace, kind, name, ...parts] = allParts;
-    return path.join(
-      staticDocsDir,
-      namespace.toLowerCase(),
-      kind.toLowerCase(),
-      name.toLowerCase(),
-      ...parts,
-    );
+    let staticEntityPath = staticDocsDir;
+
+    allParts
+      .map(part => part.split(path.sep))
+      .flat()
+      .forEach((part, index) => {
+        // Respect legacy path casing when operating on namespace, kind, or name.
+        if (index < 3) {
+          staticEntityPath = resolveSafeChildPath(
+            staticEntityPath,
+            this.legacyPathCasing ? part : part.toLowerCase(),
+          );
+          return;
+        }
+
+        // Otherwise, respect the provided case.
+        staticEntityPath = resolveSafeChildPath(staticEntityPath, part);
+      });
+
+    return staticEntityPath;
   }
 }

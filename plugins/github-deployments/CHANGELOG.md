@@ -1,5 +1,29 @@
 # @backstage/plugin-github-deployments
 
+## 0.1.38-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/integration@1.2.2-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.0
+  - @backstage/integration-react@1.1.2-next.0
+
+## 0.1.37
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/core-components@0.9.5
+  - @backstage/integration@1.2.1
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/integration-react@1.1.1
+  - @backstage/catalog-model@1.0.3
+
 ## 0.1.37-next.1
 
 ### Patch Changes

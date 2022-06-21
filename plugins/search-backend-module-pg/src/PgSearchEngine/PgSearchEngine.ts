@@ -18,6 +18,7 @@ import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import {
   SearchQuery,
   IndexableResultSet,
+  IndexableResult,
 } from '@backstage/plugin-search-common';
 import { PgSearchEngineIndexer } from './PgSearchEngineIndexer';
 import {
@@ -104,10 +105,13 @@ export class PgSearchEngine implements SearchEngine {
       ? encodePageCursor({ page: page - 1 })
       : undefined;
 
-    const results = pageRows.map(({ type, document }) => ({
-      type,
-      document,
-    }));
+    const results = pageRows.map(
+      ({ type, document }, index): IndexableResult => ({
+        type,
+        document,
+        rank: page * pageSize + index + 1,
+      }),
+    );
 
     return { results, nextPageCursor, previousPageCursor };
   }
