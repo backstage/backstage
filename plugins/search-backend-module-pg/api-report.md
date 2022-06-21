@@ -44,7 +44,7 @@ export class DatabaseDocumentStore implements DatabaseStore {
   // (undocumented)
   query(
     tx: Knex.Transaction,
-    { types, pgTerm, fields, offset, limit, options }: PgSearchQuery,
+    searchQuery: PgSearchQuery,
   ): Promise<DocumentResultRow[]>;
   // (undocumented)
   static supported(knex: Knex): Promise<boolean>;
@@ -81,16 +81,17 @@ export interface DatabaseStore {
 //
 // @public (undocumented)
 export class PgSearchEngine implements SearchEngine {
-  // Warning: (ae-forgotten-export) The symbol "PgSearchHighlightOptions" needs to be exported by the entry point index.d.ts
-  constructor(
-    databaseStore: DatabaseStore,
-    highlightOptions?: PgSearchHighlightOptions,
-  );
-  // (undocumented)
+  constructor(databaseStore: DatabaseStore, config: Config);
+  // @deprecated (undocumented)
   static from(options: {
     database: PluginDatabaseManager;
     config: Config;
   }): Promise<PgSearchEngine>;
+  // (undocumented)
+  static fromConfig({
+    config,
+    database,
+  }: PgSearchOptions): Promise<PgSearchEngine>;
   // (undocumented)
   getIndexer(type: string): Promise<PgSearchEngineIndexer>;
   // (undocumented)
@@ -101,12 +102,10 @@ export class PgSearchEngine implements SearchEngine {
   ): void;
   // (undocumented)
   static supported(database: PluginDatabaseManager): Promise<boolean>;
-  // Warning: (ae-forgotten-export) The symbol "PgSearchHighlightConfig" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   translator(
     query: SearchQuery,
-    options: PgSearchHighlightConfig,
+    options: PgSearchHighlightOptions,
   ): ConcretePgSearchQuery;
 }
 
@@ -132,6 +131,25 @@ export type PgSearchEngineIndexerOptions = {
   databaseStore: DatabaseStore;
 };
 
+// @public
+export type PgSearchHighlightOptions = {
+  useHighlight?: boolean;
+  maxWords?: number;
+  minWords?: number;
+  shortWord?: number;
+  highlightAll?: boolean;
+  maxFragments?: number;
+  fragmentDelimiter?: string;
+  preTag: string;
+  postTag: string;
+};
+
+// @public
+export type PgSearchOptions = {
+  config: Config;
+  database: PluginDatabaseManager;
+};
+
 // Warning: (ae-missing-release-tag) "PgSearchQuery" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -143,7 +161,7 @@ export interface PgSearchQuery {
   // (undocumented)
   offset: number;
   // (undocumented)
-  options: PgSearchHighlightConfig;
+  options: PgSearchHighlightOptions;
   // (undocumented)
   pgTerm?: string;
   // (undocumented)
