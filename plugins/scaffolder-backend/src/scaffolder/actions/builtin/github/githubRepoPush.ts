@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 import { Config } from '@backstage/config';
-import { assertError, InputError } from '@backstage/errors';
+import { InputError } from '@backstage/errors';
 import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { Octokit } from 'octokit';
 import { createTemplateAction } from '../../createTemplateAction';
-import {
-  enableBranchProtectionOnDefaultRepoBranch,
-  initRepoAndPush,
-} from '../helpers';
-import { getRepoSourceDirectory, parseRepoUrl } from '../publish/util';
-import { getOctokitOptions } from './helpers';
+import { parseRepoUrl } from '../publish/util';
+import { getOctokitOptions, initRepoPushAndProtect } from './helpers';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
 
@@ -117,48 +113,24 @@ export function createGithubRepoPushAction(options: {
       const remoteUrl = targetRepo.data.clone_url;
       const repoContentsUrl = `${targetRepo.data.html_url}/blob/${defaultBranch}`;
 
-      const gitAuthorInfo = {
-        name: gitAuthorName
-          ? gitAuthorName
-          : config.getOptionalString('scaffolder.defaultAuthor.name'),
-        email: gitAuthorEmail
-          ? gitAuthorEmail
-          : config.getOptionalString('scaffolder.defaultAuthor.email'),
-      };
-
-      await initRepoAndPush({
-        dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
+      await initRepoPushAndProtect(
         remoteUrl,
+        octokitOptions.auth,
+        ctx.workspacePath,
+        ctx.input.sourcePath,
         defaultBranch,
-        auth: {
-          username: 'x-access-token',
-          password: octokitOptions.auth,
-        },
-        logger: ctx.logger,
-        commitMessage: gitCommitMessage
-          ? gitCommitMessage
-          : config.getOptionalString('scaffolder.defaultCommitMessage'),
-        gitAuthorInfo,
-      });
-
-      if (protectDefaultBranch) {
-        try {
-          await enableBranchProtectionOnDefaultRepoBranch({
-            owner,
-            client,
-            repoName: repo,
-            logger: ctx.logger,
-            defaultBranch,
-            requireCodeOwnerReviews,
-            requiredStatusCheckContexts,
-          });
-        } catch (e) {
-          assertError(e);
-          ctx.logger.warn(
-            `Skipping: default branch protection on '${repo}', ${e.message}`,
-          );
-        }
-      }
+        protectDefaultBranch,
+        owner,
+        client,
+        repo,
+        requireCodeOwnerReviews,
+        requiredStatusCheckContexts,
+        config,
+        ctx.logger,
+        gitCommitMessage,
+        gitAuthorName,
+        gitAuthorEmail,
+      );
 
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);

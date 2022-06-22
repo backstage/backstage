@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 import { Config } from '@backstage/config';
-import { assertError, InputError } from '@backstage/errors';
+import { InputError } from '@backstage/errors';
 import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { Octokit } from 'octokit';
 import { createTemplateAction } from '../../createTemplateAction';
-import { getOctokitOptions } from '../github/helpers';
+import {
+  createGithubRepoWithCollaboratorsAndTopics,
+  getOctokitOptions,
+  initRepoPushAndProtect,
+} from '../github/helpers';
 import * as inputProps from '../github/inputProperties';
 import * as outputProps from '../github/outputProperties';
-import {
-  enableBranchProtectionOnDefaultRepoBranch,
-  initRepoAndPush,
-} from '../helpers';
-import { getRepoSourceDirectory, parseRepoUrl } from './util';
-
+import { parseRepoUrl } from './util';
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
  * and publishes it to GitHub.
@@ -137,192 +136,103 @@ export function createPublishGithubAction(options: {
         token: providedToken,
       } = ctx.input;
 
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        token: providedToken,
+        repoUrl: repoUrl,
+      });
+      const client = new Octokit(octokitOptions);
+
       const { owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const octokitOptions = await getOctokitOptions({
-        integrations,
-        credentialsProvider: githubCredentialsProvider,
-        token: providedToken,
-        repoUrl,
-      });
-
-      const client = new Octokit(octokitOptions);
-
-      const user = await client.rest.users.getByUsername({
-        username: owner,
-      });
-
-      const repoCreationPromise =
-        user.data.type === 'Organization'
-          ? client.rest.repos.createInOrg({
-              name: repo,
-              org: owner,
-              private: repoVisibility === 'private',
-              visibility: repoVisibility,
-              description: description,
-              delete_branch_on_merge: deleteBranchOnMerge,
-              allow_merge_commit: allowMergeCommit,
-              allow_squash_merge: allowSquashMerge,
-              allow_rebase_merge: allowRebaseMerge,
-            })
-          : client.rest.repos.createForAuthenticatedUser({
-              name: repo,
-              private: repoVisibility === 'private',
-              description: description,
-              delete_branch_on_merge: deleteBranchOnMerge,
-              allow_merge_commit: allowMergeCommit,
-              allow_squash_merge: allowSquashMerge,
-              allow_rebase_merge: allowRebaseMerge,
-            });
-
-      let newRepo;
-
-      try {
-        newRepo = (await repoCreationPromise).data;
-      } catch (e) {
-        assertError(e);
-        if (e.message === 'Resource not accessible by integration') {
-          ctx.logger.warn(
-            `The GitHub app or token provided may not have the required permissions to create the ${user.data.type} repository ${owner}/${repo}.`,
-          );
-        }
-        throw new Error(
-          `Failed to create the ${user.data.type} repository ${owner}/${repo}, ${e.message}`,
-        );
-      }
-
-      if (access?.startsWith(`${owner}/`)) {
-        const [, team] = access.split('/');
-        await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
-          org: owner,
-          team_slug: team,
-          owner,
-          repo,
-          permission: 'admin',
-        });
-        // No need to add access if it's the person who owns the personal account
-      } else if (access && access !== owner) {
-        await client.rest.repos.addCollaborator({
-          owner,
-          repo,
-          username: access,
-          permission: 'admin',
-        });
-      }
-
-      if (collaborators) {
-        for (const collaborator of collaborators) {
-          try {
-            if ('user' in collaborator) {
-              await client.rest.repos.addCollaborator({
-                owner,
-                repo,
-                username: collaborator.user,
-                permission: collaborator.access,
-              });
-            } else if ('username' in collaborator) {
-              ctx.logger.warn(
-                'The field `username` is deprecated in favor of `team` and will be removed in the future.',
-              );
-              await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
-                org: owner,
-                team_slug: collaborator.username,
-                owner,
-                repo,
-                permission: collaborator.access,
-              });
-            } else if ('team' in collaborator) {
-              await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
-                org: owner,
-                team_slug: collaborator.team,
-                owner,
-                repo,
-                permission: collaborator.access,
-              });
-            }
-          } catch (e) {
-            assertError(e);
-            const name = extractCollaboratorName(collaborator);
-            ctx.logger.warn(
-              `Skipping ${collaborator.access} access for ${name}, ${e.message}`,
-            );
-          }
-        }
-      }
-
-      if (topics) {
-        try {
-          await client.rest.repos.replaceAllTopics({
-            owner,
-            repo,
-            names: topics.map(t => t.toLowerCase()),
-          });
-        } catch (e) {
-          assertError(e);
-          ctx.logger.warn(`Skipping topics ${topics.join(' ')}, ${e.message}`);
-        }
-      }
+      const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
+        client,
+        repo,
+        owner,
+        repoVisibility,
+        description,
+        deleteBranchOnMerge,
+        allowMergeCommit,
+        allowSquashMerge,
+        allowRebaseMerge,
+        access,
+        collaborators,
+        topics,
+        ctx.logger,
+      );
 
       const remoteUrl = newRepo.clone_url;
       const repoContentsUrl = `${newRepo.html_url}/blob/${defaultBranch}`;
 
-      const gitAuthorInfo = {
-        name: gitAuthorName
-          ? gitAuthorName
-          : config.getOptionalString('scaffolder.defaultAuthor.name'),
-        email: gitAuthorEmail
-          ? gitAuthorEmail
-          : config.getOptionalString('scaffolder.defaultAuthor.email'),
-      };
+      // const gitAuthorInfo = {
+      //   name: gitAuthorName
+      //     ? gitAuthorName
+      //     : config.getOptionalString('scaffolder.defaultAuthor.name'),
+      //   email: gitAuthorEmail
+      //     ? gitAuthorEmail
+      //     : config.getOptionalString('scaffolder.defaultAuthor.email'),
+      // };
 
-      await initRepoAndPush({
-        dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
+      // await initRepoAndPush({
+      //   dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
+      //   remoteUrl,
+      //   defaultBranch,
+      //   auth: {
+      //     username: 'x-access-token',
+      //     password: octokitOptions.auth,
+      //   },
+      //   logger: ctx.logger,
+      //   commitMessage: gitCommitMessage
+      //     ? gitCommitMessage
+      //     : config.getOptionalString('scaffolder.defaultCommitMessage'),
+      //   gitAuthorInfo,
+      // });
+
+      // if (protectDefaultBranch) {
+      //   try {
+      //     await enableBranchProtectionOnDefaultRepoBranch({
+      //       owner,
+      //       client,
+      //       repoName: newRepo.name,
+      //       logger: ctx.logger,
+      //       defaultBranch,
+      //       requireCodeOwnerReviews,
+      //       requiredStatusCheckContexts,
+      //     });
+      //   } catch (e) {
+      //     assertError(e);
+      //     ctx.logger.warn(
+      //       `Skipping: default branch protection on '${newRepo.name}', ${e.message}`,
+      //     );
+      //   }
+      // }
+
+      await initRepoPushAndProtect(
         remoteUrl,
+        octokitOptions.auth,
+        ctx.workspacePath,
+        ctx.input.sourcePath,
         defaultBranch,
-        auth: {
-          username: 'x-access-token',
-          password: octokitOptions.auth,
-        },
-        logger: ctx.logger,
-        commitMessage: gitCommitMessage
-          ? gitCommitMessage
-          : config.getOptionalString('scaffolder.defaultCommitMessage'),
-        gitAuthorInfo,
-      });
-
-      if (protectDefaultBranch) {
-        try {
-          await enableBranchProtectionOnDefaultRepoBranch({
-            owner,
-            client,
-            repoName: newRepo.name,
-            logger: ctx.logger,
-            defaultBranch,
-            requireCodeOwnerReviews,
-            requiredStatusCheckContexts,
-          });
-        } catch (e) {
-          assertError(e);
-          ctx.logger.warn(
-            `Skipping: default branch protection on '${newRepo.name}', ${e.message}`,
-          );
-        }
-      }
+        protectDefaultBranch,
+        owner,
+        client,
+        repo,
+        requireCodeOwnerReviews,
+        requiredStatusCheckContexts,
+        config,
+        ctx.logger,
+        gitCommitMessage,
+        gitAuthorName,
+        gitAuthorEmail,
+      );
 
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
     },
   });
-}
-
-function extractCollaboratorName(
-  collaborator: { user: string } | { team: string } | { username: string },
-) {
-  if ('username' in collaborator) return collaborator.username;
-  if ('user' in collaborator) return collaborator.user;
-  return collaborator.team;
 }
