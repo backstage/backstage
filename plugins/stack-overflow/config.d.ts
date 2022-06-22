@@ -24,5 +24,11 @@ export interface Config {
      * @visibility frontend
      */
     baseUrl: string;
+
+    /**
+     * The api key to authenticate to Stack Overflow API
+     * @visibility backend
+     */
+    apiKey: string;
   };
 }
