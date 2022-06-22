@@ -37,7 +37,7 @@
     "@backstage/plugin-catalog-backend": "^1.2.1-next.0",
     "fs-extra": "10.1.0",
     "msw": "^0.42.0",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.0.0",
     "uuid": "^8.0.0",
     "winston": "^3.2.1"
   },

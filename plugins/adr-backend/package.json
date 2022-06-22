@@ -40,7 +40,7 @@
     "luxon": "^2.0.2",
     "marked": "^4.0.14",
     "winston": "^3.2.1",
-    "node-fetch": "^2.6.5",
+    "node-fetch": "^3.0.0",
     "yn": "^4.0.0"
   },
   "devDependencies": {

@@ -27,7 +27,7 @@
     "@backstage/config": "^1.0.1",
     "@backstage/errors": "^1.0.0",
     "jose": "^4.6.0",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.0.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
