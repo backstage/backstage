@@ -195,6 +195,10 @@ export function createGithubRepoCreateAction(options: {
             team: string;
             access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
           }
+        | {
+            username: string;
+            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          }
       )[]
     | undefined;
   token?: string | undefined;
