@@ -48,7 +48,15 @@ import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { getEntityBaseUrl, getWorkingDirectory, findTemplate } from './helpers';
 
-type GetTokenAndEntityRefFromRequestFunction = (request: express.Request) => {
+/**
+ * GetTokenAndEntityRefFromRequestFunction
+ *
+ * @public
+ * @deprecated This type is a temporary stop gap fix before a more complete backend identity solution.
+ */
+export type GetTokenAndEntityRefFromRequestFunction = (
+  request: express.Request,
+) => {
   token?: string;
   entityRef?: string;
 };

@@ -444,6 +444,14 @@ export function fetchContents({
   outputPath: string;
 }): Promise<void>;
 
+// @public @deprecated
+export type GetTokenAndEntityRefFromRequestFunction = (
+  request: express.Request,
+) => {
+  token?: string;
+  entityRef?: string;
+};
+
 // @public (undocumented)
 export interface OctokitWithPullRequestPluginClient {
   // (undocumented)
@@ -467,6 +475,8 @@ export interface RouterOptions {
   config: Config;
   // (undocumented)
   database: PluginDatabaseManager;
+  // (undocumented)
+  getTokenAndEntityRefFromRequestFunction?: GetTokenAndEntityRefFromRequestFunction;
   // (undocumented)
   logger: Logger;
   // (undocumented)
