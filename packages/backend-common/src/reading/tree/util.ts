@@ -44,7 +44,7 @@ export async function streamToTimeoutPromise<T>(
     }, options.timeoutMs);
   });
 
-  await new Promise(function (resolve, reject) {
+  await new Promise((resolve, reject) => {
     stream.on('finish', resolve);
     stream.on('error', reject);
   });
