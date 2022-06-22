@@ -157,7 +157,7 @@ export interface ProcessingDatabase {
    */
   refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void>;
 
-  addRefreshKeys(
+  setRefreshKeys(
     txOpaque: Transaction,
     options: RefreshKeyOptions,
   ): Promise<void>;

@@ -533,7 +533,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
     await Promise.all(rows.map(r => this.refresh(tx, r.entity_ref)));
   }
-  async addRefreshKeys(
+  async setRefreshKeys(
     txOpaque: Transaction,
     options: RefreshKeyOptions,
   ): Promise<void> {

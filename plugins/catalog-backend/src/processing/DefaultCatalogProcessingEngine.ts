@@ -124,7 +124,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
           let hashBuilder = this.createHash().update(errorsString);
           if (result.ok) {
             await this.processingDatabase.transaction(tx =>
-              this.processingDatabase.addRefreshKeys(tx, {
+              this.processingDatabase.setRefreshKeys(tx, {
                 keys: result.refreshKeys,
               }),
             );
