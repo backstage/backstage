@@ -223,8 +223,7 @@ For more information, see our
 
 No, this is not a service offering. We build the piece of software, and someone
 in your infrastructure team is responsible for
-[deploying](https://backstage.io/docs/getting-started/deployment-k8s) and
-maintaining it.
+[deploying](https://backstage.io/docs/deployment) and maintaining it.
 
 ### How secure is Backstage?
 

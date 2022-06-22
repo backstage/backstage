@@ -28,7 +28,7 @@ the code.
   sub-folder which is used for a markdown spellchecker.
 
 - [`.yarn/`](https://github.com/backstage/backstage/tree/master/.yarn) -
-  Backstage ships with it's own `yarn` implementation. This allows us to have
+  Backstage ships with its own `yarn` implementation. This allows us to have
   better control over our `yarn.lock` file and hopefully avoid problems due to
   yarn versioning differences.
 
