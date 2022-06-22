@@ -518,6 +518,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       throw new NotFoundError(`Failed to schedule ${entityRef} for refresh`);
     }
   }
+
   async refreshByRefreshKey(
     txOpaque: Transaction,
     options: RefreshByKeyOptions,
@@ -533,6 +534,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
     await Promise.all(rows.map(r => this.refresh(tx, r.entity_ref)));
   }
+
   async setRefreshKeys(
     txOpaque: Transaction,
     options: RefreshKeyOptions,
@@ -552,6 +554,17 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       }),
     );
   }
+
+  async deleteRefreshKey(
+    txOpaque: Transaction,
+    options: RefreshByKeyOptions,
+  ): Promise<void> {
+    const tx = txOpaque as Knex.Transaction;
+    const { key } = options;
+
+    await tx<DbRefreshKeysRow>('refresh_keys').where({ key }).delete();
+  }
+
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {
     try {
       let result: T | undefined = undefined;
