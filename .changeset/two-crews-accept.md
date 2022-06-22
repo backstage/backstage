@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-backend-module-gitlab': minor
+'@backstage/plugin-catalog-backend-module-gitlab': patch
 ---
 
 Add the possibility in the `GitlabDiscoveryEntityProvider` to scan the whole project instead of concrete groups. For that, use a configuration like this one, where the group parameter is omitted (not mandatory anymore):
