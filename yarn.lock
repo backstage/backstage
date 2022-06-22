@@ -22776,9 +22776,9 @@ run-parallel@^1.1.9:
   integrity sha512-DEqnSRTDw/Tc3FXf49zedI638Z9onwUotBMiUFKmrO2sdFKIbXamXGQ3Axd4qgphxKB4kw/qP1w5kTxnfU1B9Q==
 
 run-script-webpack-plugin@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.npmjs.org/run-script-webpack-plugin/-/run-script-webpack-plugin-0.1.0.tgz#6250a4734511836628259666d56641a27526875d"
-  integrity sha512-PKddVrnTu1BO90ogvN93yP/zg3X8Q4XvSKKyGVZFye9VBVbgVkFllKykNOomi9IfNtnoFFzu6TkLONIuXq5URA==
+  version "0.1.1"
+  resolved "https://registry.npmjs.org/run-script-webpack-plugin/-/run-script-webpack-plugin-0.1.1.tgz#dad3114be32eb864d2160306e4d9c52a2c1cfd59"
+  integrity sha512-PrxBRLv1K9itDKMlootSCyGhdTU+KbKGJ2wF6/k0eyo6M0YGPC58HYbS/J/QsDiwM0t7G99WcuCqto0J7omOXA==
 
 rxjs@7.5.5, rxjs@^7.0.0, rxjs@^7.1.0, rxjs@^7.2.0, rxjs@^7.5.1, rxjs@^7.5.5:
   version "7.5.5"
