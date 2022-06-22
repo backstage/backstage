@@ -44,7 +44,7 @@ const Background = props => {
             <Block.Title main>Backstage Community</Block.Title>
             <Block.Paragraph>
               Join the vibrant community around Backstage through social media
-              and different meetups. To ensure you have a welcoming environment,
+              and different meetups. To ensure that you have a welcoming environment,
               we follow{' '}
               <a href="https://github.com/cncf/foundation/blob/master/code-of-conduct.md">
                 {' '}
@@ -122,7 +122,7 @@ const Background = props => {
                 The official monthly Backstage newsletter. Don't miss the latest
                 news from your favorite project!
               </Block.Paragraph>
-              <Block.LinkButton href="/on-demand">Subscribe</Block.LinkButton>
+              <Block.LinkButton href="https://mailchi.mp/spotify/backstage-community">Subscribe</Block.LinkButton>
             </Block.TextBox>
             <Block.TextBox style={{ flexShrink: '1' }}>
               <BulletLine />
@@ -131,7 +131,7 @@ const Background = props => {
                 A recognition for valuable community work. Nominate contributing
                 members for their efforts! We'll put them in the spotlight ❤️
               </Block.Paragraph>
-              <Block.LinkButton href="nominate ">Nominate now</Block.LinkButton>
+              <Block.LinkButton href="/nominate ">Nominate now</Block.LinkButton>
             </Block.TextBox>
           </Block.Container>
         </Block.Container>
