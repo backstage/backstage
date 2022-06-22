@@ -48,6 +48,11 @@ import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { getEntityBaseUrl, getWorkingDirectory, findTemplate } from './helpers';
 
+type GetTokenAndEntityRefFromRequestFunction = (request: express.Request) => {
+  token?: string;
+  entityRef?: string;
+};
+
 /**
  * RouterOptions
  *
@@ -63,7 +68,25 @@ export interface RouterOptions {
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  getTokenAndEntityRefFromRequestFunction?: GetTokenAndEntityRefFromRequestFunction;
 }
+
+const defaultGetTokenAndEntityRefFromRequest: GetTokenAndEntityRefFromRequestFunction =
+  (request: express.Request) => {
+    const token = request.headers.authorization?.match(/Bearer\s+(\S+)/i)?.[1];
+
+    if (!token) return {};
+
+    const [_header, rawPayload, _signature] = token.split('.');
+    const payload: { sub: string } = JSON.parse(
+      Buffer.from(rawPayload, 'base64').toString(),
+    );
+
+    return {
+      entityRef: payload.sub,
+      token,
+    };
+  };
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
   return entity.apiVersion === 'scaffolder.backstage.io/v1beta3';
@@ -89,6 +112,10 @@ export async function createRouter(
     taskWorkers,
     additionalTemplateFilters,
   } = options;
+
+  const getTokenAndEntityRefFromRequest =
+    options.getTokenAndEntityRefFromRequestFunction ||
+    defaultGetTokenAndEntityRefFromRequest;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
   const workingDirectory = await getWorkingDirectory(config, logger);
@@ -145,7 +172,7 @@ export async function createRouter(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
       async (req, res) => {
         const { namespace, kind, name } = req.params;
-        const { token } = parseBearerToken(req.headers.authorization);
+        const { token } = getTokenAndEntityRefFromRequest(req);
         const template = await findTemplate({
           catalogApi: catalogClient,
           entityRef: { kind, namespace, name },
@@ -184,9 +211,8 @@ export async function createRouter(
       const { kind, namespace, name } = parseEntityRef(templateRef, {
         defaultKind: 'template',
       });
-      const { token, entityRef: userEntityRef } = parseBearerToken(
-        req.headers.authorization,
-      );
+      const { token, entityRef: userEntityRef } =
+        getTokenAndEntityRefFromRequest(req);
 
       const userEntity = userEntityRef
         ? await catalogClient.getEntityByRef(userEntityRef, { token })
@@ -376,7 +402,7 @@ export async function createRouter(
         throw new InputError('Input template is not a template');
       }
 
-      const { token } = parseBearerToken(req.headers.authorization);
+      const { token } = getTokenAndEntityRefFromRequest(req);
 
       for (const parameters of [template.spec.parameters ?? []].flat()) {
         const result = validate(body.values, parameters);
@@ -425,23 +451,4 @@ export async function createRouter(
   app.use('/', router);
 
   return app;
-}
-
-function parseBearerToken(header?: string): {
-  token?: string;
-  entityRef?: string;
-} {
-  const token = header?.match(/Bearer\s+(\S+)/i)?.[1];
-
-  if (!token) return {};
-
-  const [_header, rawPayload, _signature] = token.split('.');
-  const payload: { sub: string } = JSON.parse(
-    Buffer.from(rawPayload, 'base64').toString(),
-  );
-
-  return {
-    entityRef: payload.sub,
-    token,
-  };
 }
