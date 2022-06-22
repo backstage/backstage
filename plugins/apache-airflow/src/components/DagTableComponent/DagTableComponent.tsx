@@ -31,7 +31,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import Alert from '@material-ui/lab/Alert';
-import React, { useState } from 'react';
+import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { apacheAirflowApiRef } from '../../api';
 import { Dag } from '../../api/types';
@@ -136,15 +136,10 @@ type DagTableComponentProps = {
 
 export const DagTableComponent = ({ dagIds }: DagTableComponentProps) => {
   const apiClient = useApi(apacheAirflowApiRef);
-  const [dagsNotFound, setDagsNotFound] = useState<string[]>();
 
   const { value, loading, error } = useAsync(async (): Promise<Dag[]> => {
     if (dagIds) {
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      const { dags, dagsNotFound } = await apiClient.getDags(dagIds);
-      if (dagsNotFound.length) {
-        setDagsNotFound(dagsNotFound);
-      }
+      const { dags } = await apiClient.getDags(dagIds);
       return dags;
     }
     return await apiClient.listDags();
@@ -161,13 +156,16 @@ export const DagTableComponent = ({ dagIds }: DagTableComponentProps) => {
     id: el.dag_id, // table records require `id` attribute
     dagUrl: `${apiClient.baseUrl}dag_details?dag_id=${el.dag_id}`, // construct path to DAG using `baseUrl`
   }));
-
+  const dagsNotFound =
+    dagIds && value
+      ? dagIds.filter(id => !value.find(d => d.dag_id === id))
+      : [];
   return (
     <>
-      {dagsNotFound && (
+      {dagsNotFound.length && (
         <WarningPanel title={`${dagsNotFound.length} DAGs were not found`}>
           {dagsNotFound.map(dagId => (
-            <Typography>{dagId}</Typography>
+            <Typography key={dagId}>{dagId}</Typography>
           ))}
         </WarningPanel>
       )}
