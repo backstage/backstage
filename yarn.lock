@@ -7317,9 +7317,9 @@
     eslint-visitor-keys "^3.0.0"
 
 "@uiw/react-codemirror@^4.9.3":
-  version "4.9.3"
-  resolved "https://registry.npmjs.org/@uiw/react-codemirror/-/react-codemirror-4.9.3.tgz#3d7abc434b140f01119332e25e9f49ace7c381bf"
-  integrity sha512-iT/daKF852ZsNJGvqmxRFJ4KTOJSikeoCMl7jhUUJTETdozUf0/DqUQhvazAoduMRzqqHYnN/5isdITCyy2P6g==
+  version "4.9.4"
+  resolved "https://registry.npmjs.org/@uiw/react-codemirror/-/react-codemirror-4.9.4.tgz#4643201f279fed103f2cf15df9431931fe4e9f15"
+  integrity sha512-IsC5xDevpIeLMzHQQwT2W40gFFIdKeT1T0DHjzzai+s5SIrMlGe3QSHWeC1wSO7FtfNxFpFlTYMGJm5JwUviMA==
   dependencies:
     "@babel/runtime" ">=7.11.0"
     "@codemirror/theme-one-dark" "^6.0.0"
