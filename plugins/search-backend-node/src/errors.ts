@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
-import { CustomErrorBase } from '@backstage/errors';
+import { isError } from '@backstage/errors';
 
 /**
  *  Failed to query documents for index that does not exist.
  *  @public
  */
-export class MissingIndexError extends CustomErrorBase {}
+export class MissingIndexError extends Error {
+  /**
+   * An inner error that caused this error to be thrown, if any.
+   */
+  readonly cause?: Error | undefined;
+
+  constructor(message?: string, cause?: Error | unknown) {
+    super(message);
+
+    Error.captureStackTrace?.(this, this.constructor);
+
+    this.name = this.constructor.name;
+    this.cause = isError(cause) ? cause : undefined;
+  }
+}

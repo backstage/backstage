@@ -362,13 +362,16 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         nextPageCursor,
         previousPageCursor,
       };
-    } catch (e) {
-      if (e.meta.body.error.type === 'index_not_found_exception') {
-        throw new MissingIndexError(`Missing index for ${queryIndices}`, e);
+    } catch (error) {
+      if (error.meta.body.error.type === 'index_not_found_exception') {
+        throw new MissingIndexError(
+          `Missing index for ${queryIndices}. This means there are no documents to search through.`,
+          error,
+        );
       }
       this.logger.error(
         `Failed to query documents for indices ${queryIndices}`,
-        e,
+        error,
       );
       return Promise.reject({ results: [] });
     }

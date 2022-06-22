@@ -162,13 +162,7 @@ export async function createRouter(
         res.send(filterResultSet(toSearchResults(resultSet)));
       } catch (error) {
         if (error instanceof MissingIndexError) {
-          res
-            .status(400)
-            .send(
-              `\nNo index found for types: ${
-                query.types ? query.types.join(',') : ''
-              }. This means there are no documents to search through.`,
-            );
+          res.status(400).json(error.message);
         }
 
         throw new Error(

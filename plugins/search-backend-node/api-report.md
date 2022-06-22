@@ -6,7 +6,6 @@
 /// <reference types="node" />
 
 import { Config } from '@backstage/config';
-import { CustomErrorBase } from '@backstage/errors';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { DocumentDecoratorFactory } from '@backstage/plugin-search-common';
 import { DocumentTypeInfo } from '@backstage/plugin-search-common';
@@ -115,7 +114,10 @@ export class LunrSearchEngineIndexer extends BatchSearchEngineIndexer {
 }
 
 // @public
-export class MissingIndexError extends CustomErrorBase {}
+export class MissingIndexError extends Error {
+  constructor(message?: string, cause?: Error | unknown);
+  readonly cause?: Error | undefined;
+}
 
 // @public
 export class NewlineDelimitedJsonCollatorFactory
