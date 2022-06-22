@@ -15,7 +15,7 @@
  */
 
 import { UrlReader } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
 import parseGitUrl from 'git-url-parse';
 import limiterFactory from 'p-limit';
@@ -84,11 +84,12 @@ export class UrlReaderProcessor implements CatalogProcessor {
           parseResults.push(parseResult);
           emit(parseResult);
           if (parseResult.type === 'entity') {
-            emit({
-              type: 'refresh',
-              key: item.url,
-              entity: parseResult.entity,
-            });
+            emit(
+              processingResult.refresh(
+                stringifyEntityRef(parseResult.entity),
+                item.url,
+              ),
+            );
           }
         }
       }

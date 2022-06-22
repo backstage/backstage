@@ -125,7 +125,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
           if (result.ok) {
             await this.processingDatabase.transaction(tx =>
               this.processingDatabase.setRefreshKeys(tx, {
-                keys: result.refreshKeys,
+                refreshKeys: result.refreshKeys,
               }),
             );
 

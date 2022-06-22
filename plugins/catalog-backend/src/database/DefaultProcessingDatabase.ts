@@ -540,13 +540,13 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     options: RefreshKeyOptions,
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
-    const { keys } = options;
+    const { refreshKeys } = options;
 
     await Promise.all(
-      keys.map(k => {
+      refreshKeys.map(k => {
         return tx<DbRefreshKeysRow>('refresh_keys')
           .insert({
-            entity_ref: stringifyEntityRef(k.entity),
+            entity_ref: k.entityRef,
             key: k.key,
           })
           .onConflict(['entity_ref', 'key'])

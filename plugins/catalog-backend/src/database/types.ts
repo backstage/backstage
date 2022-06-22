@@ -82,7 +82,7 @@ export type ReplaceUnprocessedEntitiesOptions =
     };
 
 export type RefreshKeyOptions = {
-  keys: { key: String; entity: Entity }[];
+  refreshKeys: { key: String; entityRef: String }[];
 };
 
 export type RefreshByKeyOptions = {

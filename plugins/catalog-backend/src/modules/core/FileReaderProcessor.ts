@@ -25,6 +25,7 @@ import {
   LocationSpec,
   processingResult,
 } from '../../api';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 const glob = promisify(g);
 
@@ -62,11 +63,12 @@ export class FileReaderProcessor implements CatalogProcessor {
           })) {
             emit(parseResult);
             if (parseResult.type === 'entity') {
-              emit({
-                type: 'refresh',
-                key: path.normalize(fileMatch),
-                entity: parseResult.entity,
-              });
+              emit(
+                processingResult.refresh(
+                  stringifyEntityRef(parseResult.entity),
+                  path.normalize(fileMatch),
+                ),
+              );
             }
           }
         }

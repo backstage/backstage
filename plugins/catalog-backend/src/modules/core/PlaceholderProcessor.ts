@@ -15,7 +15,7 @@
  */
 
 import { UrlReader } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import yaml from 'yaml';
@@ -23,6 +23,7 @@ import {
   CatalogProcessor,
   CatalogProcessorEmit,
   LocationSpec,
+  processingResult,
 } from '../../api';
 
 /** @public */
@@ -107,7 +108,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
 
       const resolverKey = keys[0].substr(1);
       const resolverValue = data[keys[0]];
-      emit({ type: 'refresh', key: resolverValue, entity });
+
       const resolver = this.options.resolvers[resolverKey];
       if (!resolver || typeof resolverValue !== 'string') {
         // If there was no such placeholder resolver or if the value was not a
@@ -132,6 +133,8 @@ export class PlaceholderProcessor implements CatalogProcessor {
           url,
           base,
         });
+
+      emit(processingResult.refresh(stringifyEntityRef(entity), resolverValue));
 
       return [
         await resolver({

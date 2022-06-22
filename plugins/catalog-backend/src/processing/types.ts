@@ -37,7 +37,7 @@ export type EntityProcessingResult =
       completedEntity: Entity;
       deferredEntities: DeferredEntity[];
       relations: EntityRelationSpec[];
-      refreshKeys: { key: String; entity: Entity }[];
+      refreshKeys: { key: String; entityRef: String }[];
       errors: Error[];
     }
   | {

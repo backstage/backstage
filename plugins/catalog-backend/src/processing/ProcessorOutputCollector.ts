@@ -40,7 +40,7 @@ export class ProcessorOutputCollector {
   private readonly deferredEntities = new Array<DeferredEntity>();
   private readonly refreshKeys = new Array<{
     key: String;
-    entity: Entity;
+    entityRef: String;
   }>();
   private done = false;
 
@@ -122,7 +122,7 @@ export class ProcessorOutputCollector {
     } else if (i.type === 'error') {
       this.errors.push(i.error);
     } else if (i.type === 'refresh') {
-      this.refreshKeys.push({ key: i.key, entity: i.entity });
+      this.refreshKeys.push({ key: i.key, entityRef: i.entityRef });
     }
   }
 }
