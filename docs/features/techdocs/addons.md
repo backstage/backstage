@@ -52,7 +52,7 @@ Addons are rendered in the order in which they are registered.
 
 ## Installing and using Addons
 
-To start using Addons you need to add the `@backstage/plugin-techdocs-module-addons-contrib` package you your app, you can do that by running this command form the root of your project: `yarn add --cwd packages/app @backstage/plugin-techdocs-module-addons-contrib`
+To start using Addons you need to add the `@backstage/plugin-techdocs-module-addons-contrib` package to your app. You can do that by running this command from the root of your project: `yarn add --cwd packages/app @backstage/plugin-techdocs-module-addons-contrib`
 
 Addons can be installed and configured in much the same way as extensions for
 other Backstage plugins: by adding them underneath an extension registry
