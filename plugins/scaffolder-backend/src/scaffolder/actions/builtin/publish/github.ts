@@ -169,49 +169,6 @@ export function createPublishGithubAction(options: {
       const remoteUrl = newRepo.clone_url;
       const repoContentsUrl = `${newRepo.html_url}/blob/${defaultBranch}`;
 
-      // const gitAuthorInfo = {
-      //   name: gitAuthorName
-      //     ? gitAuthorName
-      //     : config.getOptionalString('scaffolder.defaultAuthor.name'),
-      //   email: gitAuthorEmail
-      //     ? gitAuthorEmail
-      //     : config.getOptionalString('scaffolder.defaultAuthor.email'),
-      // };
-
-      // await initRepoAndPush({
-      //   dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
-      //   remoteUrl,
-      //   defaultBranch,
-      //   auth: {
-      //     username: 'x-access-token',
-      //     password: octokitOptions.auth,
-      //   },
-      //   logger: ctx.logger,
-      //   commitMessage: gitCommitMessage
-      //     ? gitCommitMessage
-      //     : config.getOptionalString('scaffolder.defaultCommitMessage'),
-      //   gitAuthorInfo,
-      // });
-
-      // if (protectDefaultBranch) {
-      //   try {
-      //     await enableBranchProtectionOnDefaultRepoBranch({
-      //       owner,
-      //       client,
-      //       repoName: newRepo.name,
-      //       logger: ctx.logger,
-      //       defaultBranch,
-      //       requireCodeOwnerReviews,
-      //       requiredStatusCheckContexts,
-      //     });
-      //   } catch (e) {
-      //     assertError(e);
-      //     ctx.logger.warn(
-      //       `Skipping: default branch protection on '${newRepo.name}', ${e.message}`,
-      //     );
-      //   }
-      // }
-
       await initRepoPushAndProtect(
         remoteUrl,
         octokitOptions.auth,
