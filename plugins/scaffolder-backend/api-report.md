@@ -13,6 +13,7 @@ import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GithubCredentialsProvider } from '@backstage/integration';
+import { IdentityProvider } from '@backstage/plugin-identity-backend';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
@@ -467,6 +468,8 @@ export interface RouterOptions {
   config: Config;
   // (undocumented)
   database: PluginDatabaseManager;
+  // (undocumented)
+  identityProvider?: IdentityProvider;
   // (undocumented)
   logger: Logger;
   // (undocumented)

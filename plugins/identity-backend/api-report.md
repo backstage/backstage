@@ -22,7 +22,7 @@ export class DefaultIdentityProvider implements IdentityProvider {
   // (undocumented)
   static fromConfig(_config: Config): IdentityProvider;
   // (undocumented)
-  userFromRequest(request: Request_2): BackstageIdentity | {};
+  userFromRequest(request: Request_2): BackstageIdentity;
 }
 
 // @public

@@ -25,8 +25,15 @@ describe('DefaultIdentityProvider', () => {
   });
 
   it('where we send a basic token header', async () => {
-    const token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvZ3Vlc3QifQ.elzBaDb3wYEcy9GNERD0uXaJCUqBlzfALLQHQT6CST4';
+    const header = Buffer.from(
+      JSON.stringify({ alg: 'none', type: 'JWT' }),
+      'utf8',
+    ).toString('base64');
+    const payload = Buffer.from(
+      JSON.stringify({ sub: 'user:default/guest' }),
+      'utf8',
+    ).toString('base64');
+    const token = [header, payload].join('.');
     const identityProvider = new DefaultIdentityProvider();
 
     const result = identityProvider.userFromRequest({

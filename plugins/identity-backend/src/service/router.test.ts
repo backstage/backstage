@@ -18,6 +18,7 @@ import supertest from 'supertest';
 import { ConfigReader } from '@backstage/config';
 import { createLogger } from 'winston';
 import express from 'express';
+import { BackstageIdentity, IdentityProvider } from '../types';
 
 describe('Router', () => {
   describe('/user', () => {
@@ -33,17 +34,24 @@ describe('Router', () => {
     });
 
     it('should return ok when there is a token', async () => {
-      const token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvZ3Vlc3QifQ.elzBaDb3wYEcy9GNERD0uXaJCUqBlzfALLQHQT6CST4';
+      const identityProvider: IdentityProvider = {
+        userFromRequest(_request: express.Request): BackstageIdentity {
+          return {
+            entityRef: 'user:default/guest',
+          };
+        },
+      };
 
       const config = new ConfigReader({ backend: { baseUrl: 'lol' } });
 
-      const router = await createRouter({ config, logger: createLogger() });
+      const router = await createRouter({
+        config,
+        logger: createLogger(),
+        identityProvider,
+      });
       const app = express().use(router);
 
-      const { body } = await supertest(app)
-        .get('/me')
-        .set('Authorization', `Bearer ${token}`);
+      const { body } = await supertest(app).get('/me');
 
       expect(body).toEqual({ user: { entityRef: 'user:default/guest' } });
     });
