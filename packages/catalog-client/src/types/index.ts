@@ -20,6 +20,7 @@ export type {
   AddLocationResponse,
   CatalogApi,
   CatalogRequestOptions,
+  EntitiesFilter,
   GetEntitiesRequest,
   GetEntitiesResponse,
   GetEntityAncestorsRequest,
@@ -29,6 +30,7 @@ export type {
   GetEntityFacetsResponse,
   GetPaginatedEntitiesCursorRequest,
   GetPaginatedEntitiesInitialRequest,
+  GetPaginatedEntitiesRequest,
   GetPaginatedEntitiesResponse,
 } from './api';
 export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';

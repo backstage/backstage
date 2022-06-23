@@ -22,4 +22,3 @@
 
 export { CatalogClient } from './CatalogClient';
 export * from './types';
-export * from './utils';

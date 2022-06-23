@@ -53,6 +53,11 @@ export interface CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
+  // @alpha
+  getPaginatedEntities?(
+    request?: GetPaginatedEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<GetPaginatedEntitiesResponse>;
   refreshEntity(
     entityRef: string,
     options?: CatalogRequestOptions,
@@ -110,6 +115,11 @@ export class CatalogClient implements CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
+  // @alpha
+  getPaginatedEntities?(
+    request?: GetPaginatedEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<GetPaginatedEntitiesResponse>;
   refreshEntity(
     entityRef: string,
     options?: CatalogRequestOptions,
@@ -131,6 +141,12 @@ export interface CatalogRequestOptions {
 }
 
 // @public
+export type EntitiesFilter =
+  | Record<string, string | symbol | (string | symbol)[]>[]
+  | Record<string, string | symbol | (string | symbol)[]>
+  | undefined;
+
+// @public
 export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
   'backstage.io/catalog-processing';
 
@@ -138,10 +154,7 @@ export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
 export interface GetEntitiesRequest {
   after?: string;
   fields?: string[] | undefined;
-  filter?:
-    | Record<string, string | symbol | (string | symbol)[]>[]
-    | Record<string, string | symbol | (string | symbol)[]>
-    | undefined;
+  filter?: EntitiesFilter;
   limit?: number;
   offset?: number;
 }
@@ -172,10 +185,7 @@ export interface GetEntityAncestorsResponse {
 // @public
 export interface GetEntityFacetsRequest {
   facets: string[];
-  filter?:
-    | Record<string, string | symbol | (string | symbol)[]>[]
-    | Record<string, string | symbol | (string | symbol)[]>
-    | undefined;
+  filter?: EntitiesFilter;
 }
 
 // @public
@@ -188,6 +198,42 @@ export interface GetEntityFacetsResponse {
     }>
   >;
 }
+
+// @alpha
+export type GetPaginatedEntitiesCursorRequest = {
+  fields?: string[];
+  limit?: number;
+  cursor: string;
+};
+
+// @alpha
+export type GetPaginatedEntitiesInitialRequest =
+  | {
+      fields?: string[];
+      limit?: number;
+      filter?: EntitiesFilter;
+      sortField?: string;
+      query?: string;
+      sortFieldOrder?: 'asc' | 'desc';
+    }
+  | undefined;
+
+// @alpha
+export type GetPaginatedEntitiesRequest =
+  | GetPaginatedEntitiesInitialRequest
+  | GetPaginatedEntitiesCursorRequest;
+
+// @alpha
+export type GetPaginatedEntitiesResponse = {
+  entities: Entity[];
+  totalItems: number;
+  next?(
+    request?: Omit<GetPaginatedEntitiesCursorRequest, 'cursor'>,
+  ): Promise<GetPaginatedEntitiesResponse>;
+  prev?(
+    request?: Omit<GetPaginatedEntitiesCursorRequest, 'cursor'>,
+  ): Promise<GetPaginatedEntitiesResponse>;
+};
 
 // @public
 type Location_2 = {

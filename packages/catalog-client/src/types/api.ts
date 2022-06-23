@@ -251,6 +251,11 @@ export type AddLocationRequest = {
   dryRun?: boolean;
 };
 
+/**
+ * Used for filtering entities that match the given patterns.
+ *
+ * @public
+ */
 export type EntitiesFilter =
   | Record<string, string | symbol | (string | symbol)[]>[]
   | Record<string, string | symbol | (string | symbol)[]>
@@ -351,12 +356,12 @@ export interface CatalogApi {
   /**
    *
    * Gets paginated entities from the catalog.
-   * The method takes
-   * @alpha
+   *
    * @remarks
    *
    * Example:
    *
+   * ```
    * const response = await catalogClient.getPaginatedEntities({
    *   filter: [{ kind: 'group' }],
    *   limit: 20,
@@ -364,6 +369,7 @@ export interface CatalogApi {
    *   sortField: 'metadata.name',
    *   sortFieldOrder: 'asc'
    * });
+   * ```
    *
    * this will match all entities of type group having a name starting
    * with 'A', ordered by name ascending.
@@ -372,13 +378,17 @@ export interface CatalogApi {
    * more than 20 entities exist, the response will contain a next function, invocable
    * using:
    *
+   * ```
    * const secondBatchResponse = await response.next({ limit: 20 });
+   * ```
    *
    * secondBatchResponse will contain the next batch of maximum 20 entities, together
    * with a prev function useful for navigating backwards and a next function
    * in case more entities matching the filters of the first request are present in the catalog.
    *
    *
+   * @alpha
+
    * @param request - Request parameters
    * @param options - Additional options
    */
