@@ -347,18 +347,6 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const isFetchingBackwards = cursor.isPrevious;
 
-    /**
-     * page number is used for quickly
-     * detecting the initial batch of items
-     * when navigating backwards without performing
-     * extra operations on the database.
-     */
-    /*
-    const currentPage = isFetchingBackwards
-      ? cursor.previousPage - 1
-      : cursor.previousPage + 1;
-      */
-
     const dbQuery = db('search')
       .join('final_entities', 'search.entity_id', 'final_entities.entity_id')
       .where('key', cursor.sortField);
@@ -393,8 +381,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           ? invertOrder(cursor.sortFieldOrder)
           : cursor.sortFieldOrder,
       )
-      // fetch an extra item for
-      // checking if there are more items
+      // fetch an extra item to check if there are more items.
       .limit(isFetchingBackwards ? limit : limit + 1);
 
     countQuery.count('search.entity_id', { as: 'count' });
