@@ -1100,9 +1100,9 @@ function createBinRunner(cwd: string, path: string) {
         },
         (err, stdout, stderr) => {
           if (err) {
-            reject(err);
+            reject(new Error(`${err.message}\n${stderr}`));
           } else if (stderr) {
-            reject(stderr);
+            reject(new Error(`Command printed error output: ${stderr}`));
           } else {
             resolve(stdout);
           }
