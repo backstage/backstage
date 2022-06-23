@@ -11,7 +11,7 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "common-library"
   },
   "scripts": {
     "start": "backstage-cli package start",
