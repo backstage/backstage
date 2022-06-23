@@ -42,7 +42,6 @@ import {
 export const Content = (props: StackOverflowQuestionsContentProps) => {
   const { requestParams } = props;
   const configApi = useApi(configApiRef);
-  const apiKey = configApi.getOptionalString('stackoverflow.apiKey');
   const baseUrl =
     configApi.getOptionalString('stackoverflow.baseUrl') ||
     'https://api.stackexchange.com/2.2';
@@ -50,20 +49,11 @@ export const Content = (props: StackOverflowQuestionsContentProps) => {
   const { value, loading, error } = useAsync(async (): Promise<
     StackOverflowQuestion[]
   > => {
-    try {
-      if (Object.keys(requestParams).indexOf('key') >= 0) {
-        delete requestParams.key;
-      }
-    } catch (e) {
-      // console.log("Failed to remove key from params");
-    }
-
     const params = qs.stringify(requestParams, {
       arrayFormat: 'comma',
       addQueryPrefix: true,
     });
-    const apiKeyParam = apiKey ? `${params ? '&' : '?'}key=${apiKey}` : '';
-    const response = await fetch(`${baseUrl}/questions${params}${apiKeyParam}`);
+    const response = await fetch(`${baseUrl}/questions${params}`);
     const data = await response.json();
     return data.items;
   }, []);
