@@ -50,6 +50,7 @@ describe('createRouter readonly disabled', () => {
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
       facets: jest.fn(),
+      paginatedEntities: jest.fn(),
     };
     locationService = {
       getLocation: jest.fn(),
@@ -129,6 +130,80 @@ describe('createRouter readonly disabled', () => {
             { allOf: [{ key: 'c', values: ['4'] }] },
           ],
         },
+      });
+    });
+  });
+
+  describe('GET /v2beta1/entities', () => {
+    it('happy path: lists entities', async () => {
+      const entities: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+
+      entitiesCatalog.paginatedEntities.mockResolvedValueOnce({
+        entities,
+        totalItems: 100,
+        nextCursor: 'something',
+      });
+
+      const response = await request(app).get('/v2beta1/entities');
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        entities,
+        totalItems: 100,
+        nextCursor: 'something',
+      });
+    });
+
+    it('parses initial request', async () => {
+      entitiesCatalog.paginatedEntities.mockResolvedValueOnce({
+        entities: [],
+        totalItems: 0,
+      });
+      const response = await request(app).get(
+        '/v2beta1/entities?filter=a=1,a=2,b=3&filter=c=4',
+      );
+
+      expect(response.status).toEqual(200);
+      expect(entitiesCatalog.paginatedEntities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.paginatedEntities).toHaveBeenCalledWith({
+        filter: {
+          anyOf: [
+            {
+              allOf: [
+                { key: 'a', values: ['1', '2'] },
+                { key: 'b', values: ['3'] },
+              ],
+            },
+            { allOf: [{ key: 'c', values: ['4'] }] },
+          ],
+        },
+      });
+    });
+
+    it('parses cursor request', async () => {
+      const entities: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+
+      entitiesCatalog.paginatedEntities.mockResolvedValueOnce({
+        entities,
+        totalItems: 100,
+        nextCursor: 'next',
+      });
+
+      const response = await request(app).get(
+        '/v2beta1/entities?cursor=something',
+      );
+      expect(entitiesCatalog.paginatedEntities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.paginatedEntities).toHaveBeenCalledWith({
+        cursor: 'something',
+      });
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        entities,
+        totalItems: 100,
+        nextCursor: 'next',
       });
     });
   });

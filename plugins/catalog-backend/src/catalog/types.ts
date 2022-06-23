@@ -131,6 +131,16 @@ export interface EntitiesCatalog {
   entities(request?: EntitiesRequest): Promise<EntitiesResponse>;
 
   /**
+   * Fetch entities and scroll back and forth between entities.
+   *
+   * @alpha
+   * @param request
+   */
+  paginatedEntities(
+    request?: PaginatedEntitiesRequest,
+  ): Promise<PaginatedEntitiesResponse>;
+
+  /**
    * Removes a single entity.
    *
    * @param uid - The metadata.uid of the entity
@@ -158,3 +168,108 @@ export interface EntitiesCatalog {
    */
   facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse>;
 }
+
+/**
+ * The request shape for {@link EntitiesCatalog.paginatedEntities}.
+ *
+ * @alpha
+ */
+export type PaginatedEntitiesRequest =
+  | PaginatedEntitiesInitialRequest
+  | PaginatedEntitiesCursorRequest;
+
+/**
+ * The initial request for {@link EntitiesCatalog.paginatedEntities}.
+ * The request take immutable properties that are going to be bound
+ * for the current and the next pagination requests.
+ *
+ * @alpha
+ */
+export interface PaginatedEntitiesInitialRequest {
+  authorizationToken?: string;
+  fields?: (entity: Entity) => Entity;
+  limit?: number;
+  filter?: EntityFilter;
+  sortField?: string;
+  query?: string;
+  sortFieldOrder?: 'asc' | 'desc' | undefined;
+}
+
+/**
+ * Request for {@link EntitiesCatalog.paginatedEntities} used to
+ * move forward or backward on the data.
+ *
+ * @alpha
+ */
+export interface PaginatedEntitiesCursorRequest {
+  authorizationToken?: string;
+  fields?: (entity: Entity) => Entity;
+  limit?: number;
+  cursor: string;
+}
+
+/**
+ * The response shape for {@link EntitiesCatalog.paginatedEntities}.
+ *
+ * @alpha
+ */
+export interface PaginatedEntitiesResponse {
+  /**
+   * The entities for the current pagination request
+   */
+  entities: Entity[];
+  /**
+   * The cursor of the next pagination request.
+   */
+  nextCursor?: string;
+  /**
+   * The cursor of the previous pagination request.
+   */
+  prevCursor?: string;
+  /**
+   * the total number of entities matching the current filters.
+   */
+  totalItems: number;
+}
+
+/**
+ * The Cursor used internally by the catalog.
+ *
+ * @alpha
+ */
+export type Cursor = {
+  /**
+   * the id of the field used for sorting the data.
+   * For example, metadata.name
+   */
+  sortField: string;
+  /**
+   * The value of the last item returned
+   * by the request. This is used for performing
+   * cursor based pagination.
+   */
+  sortFieldId: string;
+  /**
+   * In which order the data should be paginated.
+   */
+  sortFieldOrder: 'asc' | 'desc';
+  filter?: EntityFilter;
+  /**
+   * true if the cursor is a previous cursor.
+   */
+  isPrevious: boolean;
+  /**
+   * Filter the data by name.
+   */
+  query?: string;
+  /**
+   * Sort field id of the first item.
+   * The catalog uses this field internally for understanding when the beginning
+   * of the list has been reached when performing cursor based pagination.
+   */
+  firstFieldId: string;
+  /**
+   * The number of items that match the provided filters
+   */
+  totalItems?: number;
+};

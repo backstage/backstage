@@ -35,6 +35,7 @@ import {
   parseEntityFilterParams,
   parseEntityPaginationParams,
   parseEntityTransformParams,
+  parsePaginatedEntitiesParams,
 } from './request';
 import {
   disallowReadonlyMode,
@@ -126,6 +127,14 @@ export async function createRouter(
 
         // TODO(freben): encode the pageInfo in the response
         res.json(entities);
+      })
+      .get('/v2beta1/entities', async (req, res) => {
+        const response = await entitiesCatalog.paginatedEntities({
+          ...parsePaginatedEntitiesParams(req.query),
+          authorizationToken: getBearerToken(req.header('authorization')),
+        });
+
+        res.json(response);
       })
       .get('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
