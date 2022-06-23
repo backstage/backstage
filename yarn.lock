@@ -1985,9 +1985,9 @@
     "@lezer/highlight" "^1.0.0"
 
 "@codemirror/view@^6.0.0":
-  version "6.0.1"
-  resolved "https://registry.npmjs.org/@codemirror/view/-/view-6.0.1.tgz#f56327a5cd241eff5393cfdfbceea897b5266967"
-  integrity sha512-n5olUr4Ld+XDTZN8+cnUHzkqJPeO2kr55HvBQ+4C1xWlDaRGrsedAoxCgeuGZsXRTUup/H/0e2kAN+a0R3skdA==
+  version "6.0.2"
+  resolved "https://registry.npmjs.org/@codemirror/view/-/view-6.0.2.tgz#27f4d08edd10a3678cf15390b4fba5e2a7220873"
+  integrity sha512-mnVT/q1JvKPjpmjXJNeCi/xHyaJ3abGJsumIVpdQ1nE1MXAyHf7GHWt8QpWMUvDiqF0j+inkhVR2OviTdFFX7Q==
   dependencies:
     "@codemirror/state" "^6.0.0"
     style-mod "^4.0.0"
@@ -5342,7 +5342,7 @@
   dependencies:
     "@rollup/pluginutils" "^3.0.8"
 
-"@rollup/plugin-node-resolve@^13.0.0":
+"@rollup/plugin-node-resolve@^13.0.6":
   version "13.3.0"
   resolved "https://registry.npmjs.org/@rollup/plugin-node-resolve/-/plugin-node-resolve-13.3.0.tgz#da1c5c5ce8316cef96a2f823d111c1e4e498801c"
   integrity sha512-Lus8rbUo1eEcnS4yTFKLZrVumLPY+YayBdWXgFSHYhTT2iJbMhoaaBL3xl5NCdeRytErGr8tZ0L71BMRmnlwSw==
