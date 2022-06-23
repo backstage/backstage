@@ -54,6 +54,7 @@
   },
   "files": [
     "dist",
-    "config"
-  ]
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
 }
