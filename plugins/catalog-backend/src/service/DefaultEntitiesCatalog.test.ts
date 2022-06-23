@@ -17,7 +17,7 @@
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid, v4 } from 'uuid';
 import {
   PaginatedEntitiesCursorRequest,
   PaginatedEntitiesInitialRequest,
@@ -897,6 +897,33 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response.nextCursor).toBeUndefined();
         expect(response.prevCursor).toBeUndefined();
         expect(response.totalItems).toBe(3);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should include totalItems and empty entities in the response in case limit is zero, %p',
+      async databaseId => {
+        const { knex } = await createDatabase(databaseId);
+
+        await Promise.all(
+          Array(20)
+            .fill(0)
+            .map(() =>
+              addEntityToSearch(knex, {
+                apiVersion: 'a',
+                kind: 'k',
+                metadata: { name: v4() },
+              }),
+            ),
+        );
+
+        const catalog = new DefaultEntitiesCatalog(knex);
+
+        const request: PaginatedEntitiesInitialRequest = {
+          limit: 0,
+        };
+        const response = await catalog.paginatedEntities(request);
+        expect(response).toEqual({ totalItems: 20, entities: [] });
       },
     );
   });

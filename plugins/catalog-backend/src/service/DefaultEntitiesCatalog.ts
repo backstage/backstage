@@ -351,7 +351,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const isInitialRequest = cursor.firstFieldId === '';
 
-    const firstFieldId = cursor.firstFieldId || rows[0].value;
+    const firstFieldId = cursor.firstFieldId || rows[0]?.value;
 
     const nextCursor = hasMoreResults
       ? encodeCursor({
