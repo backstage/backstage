@@ -1281,7 +1281,6 @@ describe('DefaultEntitiesCatalog', () => {
             {
               targetRef: 'targetRef',
               type: 'ownedBy',
-              target: { kind: 'k', namespace: 'default', name: 'targetRef' },
             },
           ],
         });
@@ -1297,20 +1296,10 @@ describe('DefaultEntitiesCatalog', () => {
             {
               targetRef: 'anotherTargetRef',
               type: 'ownedBy',
-              target: {
-                kind: 'k',
-                namespace: 'default',
-                name: 'anotherTargetRef',
-              },
             },
             {
               targetRef: 'tt',
               type: 'somethingelse',
-              target: {
-                kind: 'k',
-                namespace: 'default',
-                name: 'tt',
-              },
             },
           ],
         });
@@ -1326,7 +1315,6 @@ describe('DefaultEntitiesCatalog', () => {
             {
               targetRef: 'targetRef',
               type: 'ownedBy',
-              target: { kind: 'k', namespace: 'default', name: 'targetRef' },
             },
           ],
         });
