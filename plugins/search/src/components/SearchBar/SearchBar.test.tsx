@@ -18,59 +18,60 @@ import React from 'react';
 import { screen, render, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { configApiRef, analyticsApiRef } from '@backstage/core-plugin-api';
-import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
-import { MockAnalyticsApi, TestApiRegistry } from '@backstage/test-utils';
+import { ConfigReader } from '@backstage/core-app-api';
+import {
+  MockAnalyticsApi,
+  TestApiProvider,
+  renderWithEffects,
+} from '@backstage/test-utils';
 import {
   SearchContextProvider,
   searchApiRef,
+  SearchBar,
 } from '@backstage/plugin-search-react';
 
-import { SearchBar } from './SearchBar';
-
-jest.mock('@backstage/core-plugin-api', () => ({
-  ...jest.requireActual('@backstage/core-plugin-api'),
-}));
+const createInitialState = ({
+  term = '',
+  filters = {},
+  types = ['*'],
+  pageCursor = '',
+} = {}) => ({
+  term,
+  filters,
+  types,
+  pageCursor,
+});
 
 describe('SearchBar', () => {
-  const initialState = {
-    term: '',
-    filters: {},
-    types: ['*'],
-    pageCursor: '',
-  };
+  const query = jest.fn().mockResolvedValue({ results: [] });
 
-  const query = jest.fn().mockResolvedValue({});
-  const analyticsApiSpy = new MockAnalyticsApi();
-  let apiRegistry: TestApiRegistry;
+  const analyticsApiMock = new MockAnalyticsApi();
 
-  apiRegistry = TestApiRegistry.from(
-    [
-      configApiRef,
-      new ConfigReader({
-        app: { title: 'Mock title' },
-      }),
-    ],
-    [searchApiRef, { query }],
-  );
+  const configApiMock = new ConfigReader({
+    app: { title: 'Mock title' },
+  });
 
-  const name = 'Search';
-  const term = 'term';
+  const searchApiMock = { query };
 
-  afterAll(() => {
-    jest.resetAllMocks();
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
   it('Renders without exploding', async () => {
-    render(
-      <ApiProvider apis={apiRegistry}>
-        <SearchContextProvider initialState={initialState}>
+    await renderWithEffects(
+      <TestApiProvider
+        apis={[
+          [configApiRef, configApiMock],
+          [searchApiRef, searchApiMock],
+        ]}
+      >
+        <SearchContextProvider>
           <SearchBar />
         </SearchContextProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('textbox', { name })).toBeInTheDocument();
       expect(
         screen.getByPlaceholderText('Search in Mock title'),
       ).toBeInTheDocument();
@@ -78,59 +79,72 @@ describe('SearchBar', () => {
   });
 
   it('Renders with custom placeholder', async () => {
-    render(
-      <ApiProvider apis={apiRegistry}>
-        <SearchContextProvider initialState={{ ...initialState }}>
-          <SearchBar placeholder="This is a custom placeholder" />
+    const placeholder = 'placeholder';
+
+    await renderWithEffects(
+      <TestApiProvider
+        apis={[
+          [configApiRef, configApiMock],
+          [searchApiRef, searchApiMock],
+        ]}
+      >
+        <SearchContextProvider>
+          <SearchBar placeholder={placeholder} />
         </SearchContextProvider>
-        ,
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     await waitFor(() => {
-      expect(
-        screen.getByPlaceholderText('This is a custom placeholder'),
-      ).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(placeholder)).toBeInTheDocument();
     });
   });
 
   it('Renders based on initial search', async () => {
+    const term = 'term';
+
     render(
-      <ApiProvider apis={apiRegistry}>
-        <SearchContextProvider initialState={{ ...initialState, term }}>
+      <TestApiProvider
+        apis={[
+          [configApiRef, configApiMock],
+          [searchApiRef, searchApiMock],
+        ]}
+      >
+        <SearchContextProvider initialState={createInitialState({ term })}>
           <SearchBar />
         </SearchContextProvider>
-        ,
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('textbox', { name })).toHaveValue(term);
+      expect(screen.getByRole('textbox', { name: 'Search' })).toHaveValue(term);
     });
   });
 
   it('Updates term state when text is entered', async () => {
-    const user = userEvent.setup({ delay: null });
     jest.useFakeTimers();
-    const defaultDebounceTime = 200;
+    const user = userEvent.setup({ delay: null });
 
-    render(
-      <ApiProvider apis={apiRegistry}>
-        <SearchContextProvider initialState={initialState}>
+    await renderWithEffects(
+      <TestApiProvider
+        apis={[
+          [configApiRef, configApiMock],
+          [searchApiRef, searchApiMock],
+        ]}
+      >
+        <SearchContextProvider>
           <SearchBar />
         </SearchContextProvider>
-        ,
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
-    const textbox = screen.getByRole('textbox', { name });
+    const textbox = screen.getByRole('textbox', { name: 'Search' });
 
     const value = 'value';
 
     await user.type(textbox, value);
 
     act(() => {
-      jest.advanceTimersByTime(defaultDebounceTime);
+      jest.advanceTimersByTime(200);
     });
 
     await waitFor(() => {
@@ -140,26 +154,36 @@ describe('SearchBar', () => {
     expect(query).toHaveBeenLastCalledWith(
       expect.objectContaining({ term: value }),
     );
+
     jest.useRealTimers();
   });
 
   it('Clear button clears term state', async () => {
-    render(
-      <ApiProvider apis={apiRegistry}>
-        <SearchContextProvider initialState={{ ...initialState, term }}>
+    const term = 'term';
+
+    await renderWithEffects(
+      <TestApiProvider
+        apis={[
+          [configApiRef, configApiMock],
+          [searchApiRef, searchApiMock],
+        ]}
+      >
+        <SearchContextProvider initialState={createInitialState({ term })}>
           <SearchBar />
         </SearchContextProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
+    const textbox = screen.getByRole('textbox', { name: 'Search' });
+
     await waitFor(() => {
-      expect(screen.getByRole('textbox', { name })).toHaveValue(term);
+      expect(textbox).toHaveValue(term);
     });
 
     await userEvent.click(screen.getByRole('button', { name: 'Clear' }));
 
     await waitFor(() => {
-      expect(screen.getByRole('textbox', { name })).toHaveValue('');
+      expect(textbox).toHaveValue('');
     });
 
     expect(query).toHaveBeenLastCalledWith(
@@ -168,12 +192,19 @@ describe('SearchBar', () => {
   });
 
   it('Should not show clear button', async () => {
-    render(
-      <ApiProvider apis={apiRegistry}>
-        <SearchContextProvider initialState={{ ...initialState, term }}>
+    const term = 'term';
+
+    await renderWithEffects(
+      <TestApiProvider
+        apis={[
+          [configApiRef, configApiMock],
+          [searchApiRef, searchApiMock],
+        ]}
+      >
+        <SearchContextProvider initialState={createInitialState({ term })}>
           <SearchBar clearButton={false} />
         </SearchContextProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     await waitFor(() => {
@@ -184,170 +215,168 @@ describe('SearchBar', () => {
   });
 
   it('Adheres to provided debounceTime', async () => {
-    const user = userEvent.setup({ delay: null });
     jest.useFakeTimers();
-
+    const user = userEvent.setup({ delay: null });
     const debounceTime = 600;
 
-    render(
-      <ApiProvider apis={apiRegistry}>
-        <SearchContextProvider initialState={initialState}>
+    await renderWithEffects(
+      <TestApiProvider
+        apis={[
+          [configApiRef, configApiMock],
+          [searchApiRef, searchApiMock],
+        ]}
+      >
+        <SearchContextProvider>
           <SearchBar debounceTime={debounceTime} />
         </SearchContextProvider>
-        ,
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
-    await waitFor(() => {
-      expect(screen.getByRole('textbox', { name })).toBeInTheDocument();
-    });
-
-    const textbox = screen.getByRole('textbox', { name });
+    const textbox = await screen.findByRole('textbox', { name: 'Search' });
 
     const value = 'value';
 
     await user.type(textbox, value);
 
-    expect(query).not.toHaveBeenLastCalledWith(
-      expect.objectContaining({ term: value }),
-    );
+    await waitFor(() => {
+      expect(query).not.toHaveBeenLastCalledWith(
+        expect.objectContaining({ term: value }),
+      );
+    });
 
     act(() => {
       jest.advanceTimersByTime(debounceTime);
     });
-    expect(textbox).toHaveValue(value);
+
+    await waitFor(() => {
+      expect(textbox).toHaveValue(value);
+    });
 
     expect(query).toHaveBeenLastCalledWith(
       expect.objectContaining({ term: value }),
     );
+
     jest.useRealTimers();
   });
 
   it('does not capture analytics event if not enabled in app', async () => {
-    const user = userEvent.setup({ delay: null });
     jest.useFakeTimers();
+    const user = userEvent.setup({ delay: null });
 
-    const debounceTime = 600;
-
-    render(
-      <ApiProvider apis={apiRegistry}>
-        <SearchContextProvider initialState={initialState}>
-          <SearchBar debounceTime={debounceTime} />
+    await renderWithEffects(
+      <TestApiProvider
+        apis={[
+          [configApiRef, configApiMock],
+          [searchApiRef, searchApiMock],
+        ]}
+      >
+        <SearchContextProvider>
+          <SearchBar />
         </SearchContextProvider>
-        ,
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
-    await waitFor(() => {
-      expect(screen.getByRole('textbox', { name })).toBeInTheDocument();
-    });
-
-    const textbox = screen.getByRole('textbox', { name });
+    const textbox = await screen.findByRole('textbox', { name: 'Search' });
 
     const value = 'value';
 
     await user.type(textbox, value);
 
     act(() => {
-      jest.advanceTimersByTime(debounceTime);
+      jest.advanceTimersByTime(200);
     });
 
-    await waitFor(() => expect(textbox).toHaveValue(value));
+    await waitFor(() => {
+      expect(textbox).toHaveValue(value);
+    });
 
-    expect(analyticsApiSpy.getEvents()).toHaveLength(0);
+    expect(analyticsApiMock.getEvents()).toHaveLength(0);
+
     jest.useRealTimers();
   });
 
   it('captures analytics events if enabled in app', async () => {
-    const user = userEvent.setup({ delay: null });
     jest.useFakeTimers();
+    const user = userEvent.setup({ delay: null });
+    const types = ['techdocs', 'software-catalog'];
 
-    const debounceTime = 600;
-
-    apiRegistry = TestApiRegistry.from(
-      [analyticsApiRef, analyticsApiSpy],
-      [
-        configApiRef,
-        new ConfigReader({
-          app: {
-            title: 'Mock title',
-            analytics: {
-              ga: {
-                trackingId: 'xyz123',
+    await renderWithEffects(
+      <TestApiProvider
+        apis={[
+          [searchApiRef, searchApiMock],
+          [analyticsApiRef, analyticsApiMock],
+          [
+            configApiRef,
+            new ConfigReader({
+              app: {
+                title: 'Mock title',
+                analytics: {
+                  ga: {
+                    trackingId: 'xyz123',
+                  },
+                },
               },
-            },
-          },
-        }),
-      ],
-      [searchApiRef, { query }],
-    );
-
-    render(
-      <ApiProvider apis={apiRegistry}>
-        <SearchContextProvider
-          initialState={{
-            term: '',
-            types: ['techdocs', 'software-catalog'],
-            filters: {},
-          }}
-        >
-          <SearchBar debounceTime={debounceTime} />
+            }),
+          ],
+        ]}
+      >
+        <SearchContextProvider initialState={createInitialState({ types })}>
+          <SearchBar />
         </SearchContextProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
-    await waitFor(() => {
-      expect(screen.getByRole('textbox', { name })).toBeInTheDocument();
-    });
+    const textbox = await screen.findByRole('textbox', { name: 'Search' });
 
-    const textbox = screen.getByRole('textbox', { name });
-
-    const value = 'value';
+    let value = 'value';
 
     await user.type(textbox, value);
 
-    expect(analyticsApiSpy.getEvents()).toHaveLength(0);
+    expect(analyticsApiMock.getEvents()).toHaveLength(0);
 
     act(() => {
-      jest.advanceTimersByTime(debounceTime);
+      jest.advanceTimersByTime(200);
     });
 
     await waitFor(() => expect(textbox).toHaveValue(value));
 
-    expect(analyticsApiSpy.getEvents()).toHaveLength(1);
-    expect(analyticsApiSpy.getEvents()[0]).toEqual({
+    expect(analyticsApiMock.getEvents()).toHaveLength(1);
+    expect(analyticsApiMock.getEvents()[0]).toEqual({
       action: 'search',
       context: {
-        extension: 'App',
-        pluginId: 'root',
+        extension: 'SearchBar',
+        pluginId: 'search',
         routeRef: 'unknown',
-        searchTypes: 'software-catalog,techdocs',
+        searchTypes: types.toString(),
       },
-      subject: 'value',
+      subject: value,
     });
 
     await user.clear(textbox);
 
+    value = 'new value';
+
     // make sure new term is captured
-    await user.type(textbox, 'new value');
+    await user.type(textbox, value);
 
     act(() => {
-      jest.advanceTimersByTime(debounceTime);
+      jest.advanceTimersByTime(200);
     });
 
-    await waitFor(() => expect(textbox).toHaveValue('new value'));
+    await waitFor(() => expect(textbox).toHaveValue(value));
 
-    expect(analyticsApiSpy.getEvents()).toHaveLength(2);
-    expect(analyticsApiSpy.getEvents()[1]).toEqual({
+    expect(analyticsApiMock.getEvents()).toHaveLength(2);
+    expect(analyticsApiMock.getEvents()[1]).toEqual({
       action: 'search',
       context: {
-        extension: 'App',
-        pluginId: 'root',
+        extension: 'SearchBar',
+        pluginId: 'search',
         routeRef: 'unknown',
-        searchTypes: 'software-catalog,techdocs',
+        searchTypes: types.toString(),
       },
-      subject: 'new value',
+      subject: value,
     });
+
     jest.useRealTimers();
   });
 });
