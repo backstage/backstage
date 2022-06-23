@@ -18,6 +18,11 @@ import { InputError, NotAllowedError } from '@backstage/errors';
 import { Request } from 'express';
 import lodash from 'lodash';
 import { z } from 'zod';
+import {
+  EntitiesRequest,
+  PaginatedEntitiesCursorRequest,
+  PaginatedEntitiesInitialRequest,
+} from '../catalog/types';
 
 export async function requireRequestBody(req: Request): Promise<unknown> {
   const contentType = req.header('content-type');
@@ -64,4 +69,24 @@ export function disallowReadonlyMode(readonly: boolean) {
   if (readonly) {
     throw new NotAllowedError('This operation not allowed in readonly mode');
   }
+}
+
+export function isPaginatedEntitiesInitialRequest(
+  input: EntitiesRequest | undefined,
+): input is PaginatedEntitiesInitialRequest {
+  if (!input) {
+    return false;
+  }
+  // TODO(vinzscam) expand this
+  return !isPaginatedEntitiesCursorRequest(input);
+}
+
+export function isPaginatedEntitiesCursorRequest(
+  input: EntitiesRequest | undefined,
+): input is PaginatedEntitiesCursorRequest {
+  if (!input) {
+    return false;
+  }
+  // TODO(vinzscam) expand this
+  return input?.hasOwnProperty('cursor') ?? false;
 }
