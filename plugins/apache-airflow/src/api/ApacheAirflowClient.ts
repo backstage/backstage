@@ -82,7 +82,7 @@ export class ApacheAirflowClient implements ApacheAirflowApi {
     const response = await Promise.all(
       dagIds.map(id => {
         return this.fetch<Dag>(`/dags/${id}`).catch(e => {
-          if (e.message === 'Not Found') {
+          if (e.message.toUpperCase('en-US') === 'NOT FOUND') {
             dagsNotFound.push(id);
           } else {
             throw e;
