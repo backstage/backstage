@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-export { assertError, isError } from './assertion';
-export type { ErrorLike } from './assertion';
-export {
-  AuthenticationError,
-  ConflictError,
-  ForwardedError,
-  InputError,
-  NotAllowedError,
-  NotFoundError,
-  NotModifiedError,
-} from './common';
-export { CustomErrorBase } from './CustomErrorBase';
-export { ResponseError } from './ResponseError';
-export type { ConsumedResponse } from './types';
+/**
+ * ConsumedResponse represents a Response that is known to have been consumed.
+ * The methods and properties used to read the body contents are therefore omitted.
+ *
+ * @public
+ */
+export type ConsumedResponse = {
+  readonly headers: Headers;
+  readonly ok: boolean;
+  readonly redirected: boolean;
+  readonly status: number;
+  readonly statusText: string;
+  readonly type: ResponseType;
+  readonly url: string;
+};
