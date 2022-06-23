@@ -53,7 +53,9 @@ const updateRedactionList = (
   );
 
   logger.info(
-    `${values.size} secrets found in the config which will be redacted`,
+    `${values.size} secret${
+      values.size > 1 ? 's' : ''
+    } found in the config which will be redacted`,
   );
 
   setRootLoggerRedactionList(Array.from(values));

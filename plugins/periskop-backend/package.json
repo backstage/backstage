@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-periskop-backend",
-  "version": "0.1.4",
+  "version": "0.1.5-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -24,7 +24,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.14.0",
+    "@backstage/backend-common": "^0.14.1-next.0",
     "@backstage/config": "^1.0.1",
     "@types/express": "*",
     "cross-fetch": "^3.0.6",
@@ -35,7 +35,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.2",
+    "@backstage/cli": "^0.17.3-next.0",
     "@types/supertest": "^2.0.8",
     "msw": "^0.42.0",
     "supertest": "^6.1.6"

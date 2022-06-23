@@ -107,6 +107,15 @@ describe('ApacheAirflowClient', () => {
         );
       }),
 
+      rest.get(`${mockBaseUrl}/airflow/dags/:dag_id`, (req, res, ctx) => {
+        const { dag_id } = req.params;
+        const dag = dags.find(d => d.dag_id === dag_id);
+        if (dag) {
+          return res(ctx.json(dag));
+        }
+        return res(ctx.status(404));
+      }),
+
       rest.patch(`${mockBaseUrl}/airflow/dags/:dag_id`, (req, res, ctx) => {
         const { dag_id } = req.params;
         const body = JSON.parse(req.body as string);
@@ -159,5 +168,34 @@ describe('ApacheAirflowClient', () => {
     const response: Dag = await client.updateDag(dagId, true);
     expect(response.dag_id).toEqual(dagId);
     expect(response.is_paused).toEqual(true);
+  });
+
+  it('get only some dags', async () => {
+    setupHandlers();
+    const client = new ApacheAirflowClient({
+      discoveryApi: discoveryApi,
+      baseUrl: 'localhost:8080/',
+    });
+    const dagIds = ['mock_dag_1', 'mock_dag_3'];
+    const response = await client.getDags(dagIds);
+    expect(response.dags.length).toEqual(dagIds.length);
+    response.dags.forEach((dag, index) =>
+      expect(dag.dag_id).toEqual(dagIds[index]),
+    );
+    expect(response.dagsNotFound.length).toEqual(0);
+  });
+
+  it('get dags but ignore NOT FOUND errors', async () => {
+    setupHandlers();
+    const client = new ApacheAirflowClient({
+      discoveryApi: discoveryApi,
+      baseUrl: 'localhost:8080/',
+    });
+    const dagIds = ['mock_dag_1', 'a-random-DAG-id'];
+    const response = await client.getDags(dagIds);
+    expect(response.dags.length).toEqual(1);
+    expect(response.dags[0].dag_id).toEqual('mock_dag_1');
+    expect(response.dagsNotFound.length).toEqual(1);
+    expect(response.dagsNotFound[0]).toEqual('a-random-DAG-id');
   });
 });

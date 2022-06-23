@@ -13,14 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { OptionValues } from 'commander';
-import { buildPackage, Output } from '../../lib/builder';
-
-export default async (opts: OptionValues) => {
-  await buildPackage({
-    outputs: new Set([Output.cjs, Output.types]),
-    minify: opts.minify,
-    useApiExtractor: opts.experimentalTypeBuild,
-  });
-};
+export * from './bundle';

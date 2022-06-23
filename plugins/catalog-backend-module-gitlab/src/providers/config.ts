@@ -25,7 +25,7 @@ import { GitlabProviderConfig } from '../lib/types';
  * @param config - The config object to extract from
  */
 function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
-  const group = config.getString('group');
+  const group = config.getOptionalString('group') ?? '';
   const host = config.getString('host');
   const branch = config.getOptionalString('branch') ?? 'master';
   const catalogFile =

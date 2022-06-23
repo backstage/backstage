@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend
 
+## 1.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/integration@1.2.2-next.0
+  - @backstage/plugin-permission-node@0.6.3-next.0
+  - @backstage/catalog-client@1.0.4-next.0
+  - @backstage/plugin-scaffolder-common@1.1.2-next.0
+
 ## 1.2.0
 
 ### Minor Changes

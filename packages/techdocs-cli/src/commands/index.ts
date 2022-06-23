@@ -38,7 +38,7 @@ export function registerCommands(program: Command) {
       'The mkdocs docker container to use',
       defaultDockerImage,
     )
-    .option('--no-pull', 'Do not pull the latest docker image', false)
+    .option('--no-pull', 'Do not pull the latest docker image')
     .option(
       '--no-docker',
       'Do not use Docker, use MkDocs executable and plugins in current user environment.',

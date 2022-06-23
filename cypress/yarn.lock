@@ -304,9 +304,9 @@ cross-spawn@^7.0.0:
     which "^2.0.1"
 
 cypress@^10.0.0:
-  version "10.1.0"
-  resolved "https://registry.npmjs.org/cypress/-/cypress-10.1.0.tgz#6514a26c721822a02bc194e9a7f72c3142aea174"
-  integrity sha512-aQ4JVZVib4Xd9FZW8IRZfKelUvqF4y5A+oUbNvn8TlsBmEfIg3m5Xd6Mt6PVU/jHiVJ9Psl905B3ZPnrDcmyuQ==
+  version "10.2.0"
+  resolved "https://registry.npmjs.org/cypress/-/cypress-10.2.0.tgz#ca078abfceb13be2a33cbba6e0e80ded770f542a"
+  integrity sha512-+i9lY5ENlfi2mJwsggzR+XASOIgMd7S/Gd3/13NCpv596n3YSplMAueBTIxNLcxDpTcIksp+9pM3UaDrJDpFqA==
   dependencies:
     "@cypress/request" "^2.88.10"
     "@cypress/xvfb" "^1.2.4"
@@ -1059,9 +1059,9 @@ type-fest@^0.21.3:
   integrity sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==
 
 typescript@^4.1.3:
-  version "4.7.3"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-4.7.3.tgz#8364b502d5257b540f9de4c40be84c98e23a129d"
-  integrity sha512-WOkT3XYvrpXx4vMMqlD+8R8R37fZkjyLGlxavMc4iB8lrl8L0DeTcHbYgw/v0N/z9wAFsgBhcsF0ruoySS22mA==
+  version "4.7.4"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-4.7.4.tgz#1a88596d1cf47d59507a1bcdfb5b9dfe4d488235"
+  integrity sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ==
 
 universalify@^2.0.0:
   version "2.0.0"

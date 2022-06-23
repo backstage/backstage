@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import { OptionValues } from 'commander';
-import { buildPackage, Output } from '../../lib/builder';
-
-export default async (opts: OptionValues) => {
-  await buildPackage({
-    outputs: new Set([Output.esm, Output.types]),
-    minify: opts.minify,
-    useApiExtractor: opts.experimentalTypeBuild,
-  });
+export type PagerDutyEntity = {
+  integrationKey?: string;
+  serviceId?: string;
+  name: string;
 };

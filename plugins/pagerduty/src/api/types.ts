@@ -14,10 +14,36 @@
  * limitations under the License.
  */
 
-import { Incident, ChangeEvent, OnCall, Service } from '../components/types';
-import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import {
+  PagerDutyIncident,
+  PagerDutyChangeEvent,
+  PagerDutyOnCall,
+  PagerDutyService,
+} from '../components/types';
+import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
+import { Entity } from '@backstage/catalog-model';
 
-export type TriggerAlarmRequest = {
+export type PagerDutyServicesResponse = {
+  services: PagerDutyService[];
+};
+
+export type PagerDutyServiceResponse = {
+  service: PagerDutyService;
+};
+
+export type PagerDutyIncidentsResponse = {
+  incidents: PagerDutyIncident[];
+};
+
+export type PagerDutyChangeEventsResponse = {
+  change_events: PagerDutyChangeEvent[];
+};
+
+export type PagerDutyOnCallsResponse = {
+  oncalls: PagerDutyOnCall[];
+};
+
+export type PagerDutyTriggerAlarmRequest = {
   integrationKey: string;
   source: string;
   description: string;
@@ -26,55 +52,46 @@ export type TriggerAlarmRequest = {
 
 export interface PagerDutyApi {
   /**
-   * Fetches a list of services, filtered by the provided integration key.
+   * Fetches the service for the provided Entity.
    *
    */
-  getServiceByIntegrationKey(integrationKey: string): Promise<Service[]>;
+  getServiceByEntity(entity: Entity): Promise<PagerDutyServiceResponse>;
 
   /**
    * Fetches a list of incidents a provided service has.
    *
    */
-  getIncidentsByServiceId(serviceId: string): Promise<Incident[]>;
+  getIncidentsByServiceId(
+    serviceId: string,
+  ): Promise<PagerDutyIncidentsResponse>;
 
   /**
    * Fetches a list of change events a provided service has.
    *
    */
-  getChangeEventsByServiceId(serviceId: string): Promise<ChangeEvent[]>;
+  getChangeEventsByServiceId(
+    serviceId: string,
+  ): Promise<PagerDutyChangeEventsResponse>;
 
   /**
    * Fetches the list of users in an escalation policy.
    *
    */
-  getOnCallByPolicyId(policyId: string): Promise<OnCall[]>;
+  getOnCallByPolicyId(policyId: string): Promise<PagerDutyOnCallsResponse>;
 
   /**
    * Triggers an incident to whoever is on-call.
    */
-  triggerAlarm(request: TriggerAlarmRequest): Promise<Response>;
+  triggerAlarm(request: PagerDutyTriggerAlarmRequest): Promise<Response>;
 }
 
-export type ServicesResponse = {
-  services: Service[];
-};
-
-export type IncidentsResponse = {
-  incidents: Incident[];
-};
-
-export type ChangeEventsResponse = {
-  change_events: ChangeEvent[];
-};
-
-export type OnCallsResponse = {
-  oncalls: OnCall[];
-};
-
-export type ClientApiConfig = {
-  eventsBaseUrl?: string;
+export type PagerDutyClientApiDependencies = {
   discoveryApi: DiscoveryApi;
-  identityApi: IdentityApi;
+  fetchApi: FetchApi;
+};
+
+export type PagerDutyClientApiConfig = PagerDutyClientApiDependencies & {
+  eventsBaseUrl?: string;
 };
 
 export type RequestOptions = {

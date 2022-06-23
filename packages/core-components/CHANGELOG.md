@@ -1,5 +1,11 @@
 # @backstage/core-components
 
+## 0.9.6-next.0
+
+### Patch Changes
+
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+
 ## 0.9.5
 
 ### Patch Changes

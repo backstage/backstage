@@ -21,7 +21,10 @@ import userEvent from '@testing-library/user-event';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { rootRouteRef } from '../../plugin';
-import { searchApiRef } from '@backstage/plugin-search-react';
+import {
+  searchApiRef,
+  SearchContextProvider,
+} from '@backstage/plugin-search-react';
 
 import { SearchModal } from './SearchModal';
 
@@ -53,6 +56,52 @@ describe('SearchModal', () => {
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(query).toHaveBeenCalledTimes(1);
+  });
+
+  it('Should use parent search context if defined', async () => {
+    const initialState = {
+      term: 'term',
+      filters: { filter: '' },
+      types: ['type'],
+      pageCursor: 'page cursor',
+    };
+
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchContextProvider initialState={initialState}>
+          <SearchModal open hidden={false} toggleModal={toggleModal} />
+        </SearchContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(query).toHaveBeenCalledWith(initialState);
+  });
+
+  it('Should create a local search context if a parent is not defined', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchModal open hidden={false} toggleModal={toggleModal} />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(query).toHaveBeenCalledWith({
+      term: '',
+      filters: {},
+      types: [],
+      pageCursor: undefined,
+    });
   });
 
   it('Should render a custom Modal correctly', async () => {

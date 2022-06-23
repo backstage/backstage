@@ -13,4 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * @public
+ */
 export const VAULT_SECRET_PATH_ANNOTATION = 'vault.io/secrets-path';

@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 import { useApi } from '@backstage/core-plugin-api';
-import { useEntity, catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  humanizeEntityRef,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
 import { useCallback, useEffect, useState } from 'react';
 import { getProjectNameFromEntity } from '../utils/functions';
 
@@ -26,8 +30,7 @@ export function useUserRepositories() {
   const getRepositoriesNames = useCallback(async () => {
     const entitiesList = await catalogApi.getEntities({
       filter: {
-        kind: 'Component',
-        'spec.owner': teamEntity?.metadata?.name,
+        'spec.owner': humanizeEntityRef(teamEntity, { defaultKind: 'group' }),
       },
     });
 
@@ -36,7 +39,7 @@ export function useUserRepositories() {
     );
 
     setRepositories([...new Set(entitiesNames)]);
-  }, [catalogApi, teamEntity?.metadata?.name]);
+  }, [catalogApi, teamEntity]);
 
   useEffect(() => {
     getRepositoriesNames();
