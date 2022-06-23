@@ -17,17 +17,15 @@ import React from 'react';
 import { Table, TableColumn } from '@backstage/core-components';
 import { DynatraceProblem } from '../../../api/DynatraceApi';
 import { ProblemStatus } from '../ProblemStatus';
-import { configApiRef } from '@backstage/core-plugin-api';
-import { useApi } from '@backstage/core-plugin-api';
 import { Link } from '@material-ui/core';
 
 type ProblemsTableProps = {
   problems: DynatraceProblem[];
+  dynatraceBaseUrl: string;
 };
 
-export const ProblemsTable = ({ problems }: ProblemsTableProps) => {
-  const configApi = useApi(configApiRef);
-  const dynatraceBaseUrl = configApi.getString('dynatrace.baseUrl');
+export const ProblemsTable = (props: ProblemsTableProps) => {
+  const { problems, dynatraceBaseUrl } = props;
   const columns: TableColumn[] = [
     {
       title: 'Title',

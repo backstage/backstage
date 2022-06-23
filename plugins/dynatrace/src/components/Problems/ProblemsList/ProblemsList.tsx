@@ -25,10 +25,11 @@ import { InfoCard } from '@backstage/core-components';
 
 type ProblemsListProps = {
   dynatraceEntityId: string;
+  dynatraceBaseUrl: string;
 };
 
 export const ProblemsList = (props: ProblemsListProps) => {
-  const { dynatraceEntityId } = props;
+  const { dynatraceEntityId, dynatraceBaseUrl } = props;
   const dynatraceApi = useApi(dynatraceApiRef);
   const { value, loading, error } = useAsync(async () => {
     return dynatraceApi.getDynatraceProblems(dynatraceEntityId);
@@ -41,9 +42,19 @@ export const ProblemsList = (props: ProblemsListProps) => {
     return <Alert severity="error">{error.message}</Alert>;
   }
   return (
-    <InfoCard title="Problems" subheader="From the last 2 hours">
+    <InfoCard
+      title="Problems"
+      subheader="From the last 2 hours"
+      deepLink={{
+        title: 'View Entity in Dynatrace',
+        link: `${dynatraceBaseUrl}/#serviceOverview;id=${dynatraceEntityId}`,
+      }}
+    >
       {value?.totalCount ? (
-        <ProblemsTable problems={problems || []} />
+        <ProblemsTable
+          problems={problems || []}
+          dynatraceBaseUrl={dynatraceBaseUrl}
+        />
       ) : (
         <EmptyState message="No Problems to Report!" />
       )}
