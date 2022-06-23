@@ -1096,7 +1096,8 @@ function createBinRunner(cwd: string, path: string) {
         {
           cwd,
           shell: true,
-          timeout: 5000,
+          timeout: 30000,
+          maxBuffer: 1024 * 1024,
         },
         (err, stdout, stderr) => {
           if (err) {
