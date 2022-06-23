@@ -44,14 +44,6 @@ export interface RouterOptions {
   config: Config;
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
-  /**
-   * The algorithm to be used when signing the JWT token.
-   *
-   * @defaultValue `ES256`
-   *
-   * @remarks
-   * This is passed to {@link TokenFactory| the token factory}.
-   */
   tokenKeyAlgorithm?: string;
   providerFactories?: ProviderFactories;
 }
