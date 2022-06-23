@@ -14,23 +14,4 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { OptionValues } from 'commander';
-import { serveBundle } from '../../lib/bundler';
-import { loadCliConfig } from '../../lib/config';
-import { paths } from '../../lib/paths';
-
-export default async (opts: OptionValues) => {
-  const { name } = await fs.readJson(paths.resolveTarget('package.json'));
-  const waitForExit = await serveBundle({
-    entry: 'dev/index',
-    checksEnabled: opts.check,
-    ...(await loadCliConfig({
-      args: opts.config,
-      fromPackage: name,
-      withFilteredKeys: true,
-    })),
-  });
-
-  await waitForExit();
-};
+export {};

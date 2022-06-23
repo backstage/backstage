@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import { OptionValues } from 'commander';
-import { buildPackage, Output } from '../../lib/builder';
-
-export default async (opts: OptionValues) => {
-  await buildPackage({
-    outputs: new Set([Output.cjs, Output.types]),
-    minify: opts.minify,
-    useApiExtractor: opts.experimentalTypeBuild,
-  });
+/**
+ * ConsumedResponse represents a Response that is known to have been consumed.
+ * The methods and properties used to read the body contents are therefore omitted.
+ *
+ * @public
+ */
+export type ConsumedResponse = {
+  readonly headers: Headers;
+  readonly ok: boolean;
+  readonly redirected: boolean;
+  readonly status: number;
+  readonly statusText: string;
+  readonly type: ResponseType;
+  readonly url: string;
 };

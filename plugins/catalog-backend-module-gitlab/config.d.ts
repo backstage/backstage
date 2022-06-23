@@ -32,10 +32,11 @@ export interface Config {
            */
           host: string;
           /**
-           * (Required) Gitlab's group[/subgroup] where the discovery is done.
+           * (Optional) Gitlab's group[/subgroup] where the discovery is done.
+           * If not defined the whole project will be scanned.
            * @visibility backend
            */
-          group: string;
+          group?: string;
           /**
            * (Optional) Default branch to read the catalog-info.yaml file.
            * If not set, 'master' will be used.

@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, UserEntity, GroupEntity } from '@backstage/catalog-model';
-
-function isUserEntity(entity: Entity): entity is UserEntity {
-  return entity.kind.toLocaleUpperCase('en-US') === 'USER';
-}
-
-function isGroupEntity(entity: Entity): entity is GroupEntity {
-  return entity.kind.toLocaleUpperCase('en-US') === 'GROUP';
-}
+import { Entity, isUserEntity, isGroupEntity } from '@backstage/catalog-model';
 
 export function getDocumentText(entity: Entity): string {
   const documentTexts: string[] = [];
