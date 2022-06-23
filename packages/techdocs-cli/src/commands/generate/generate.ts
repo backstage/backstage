@@ -57,8 +57,8 @@ export default async function generate(opts: OptionValues) {
         runIn: opts.docker ? 'docker' : 'local',
         dockerImage,
         pullImage,
-        legacyCopyReadmeMdToIndexMd,
         mkdocs: {
+          legacyCopyReadmeMdToIndexMd,
           omitTechdocsCorePlugin,
         },
       },
