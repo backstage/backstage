@@ -23,7 +23,7 @@ import {
   dirname,
   join,
 } from 'path';
-import { spawnSync } from 'child_process';
+import { spawnSync, execFile } from 'child_process';
 import prettier from 'prettier';
 import fs from 'fs-extra';
 import {
@@ -197,18 +197,6 @@ ApiReportGenerator.generateReviewFileContent =
 
 const PACKAGE_ROOTS = ['packages', 'plugins'];
 
-const SKIPPED_PACKAGES = [
-  join('packages', 'app'),
-  join('packages', 'backend'),
-  join('packages', 'cli'),
-  join('packages', 'codemods'),
-  join('packages', 'create-app'),
-  join('packages', 'e2e-test'),
-  join('packages', 'techdocs-cli-embedded-app'),
-  join('packages', 'storybook'),
-  join('packages', 'techdocs-cli'),
-];
-
 const ALLOW_WARNINGS = [
   'packages/core-components',
   'plugins/allure',
@@ -303,9 +291,6 @@ async function findSpecificPackageDirs(unresolvedPackageDirs: string[]) {
     if (!packageDir) {
       throw new Error(`'${unresolvedPackageDir}' is not a valid package path`);
     }
-    if (SKIPPED_PACKAGES.includes(packageDir)) {
-      throw new Error(`'${packageDir}' does not have an API report`);
-    }
     packageDirs.push(packageDir);
   }
 
@@ -328,9 +313,7 @@ async function findPackageDirs() {
         continue;
       }
 
-      if (!SKIPPED_PACKAGES.includes(packageDir)) {
-        packageDirs.push(packageDir);
-      }
+      packageDirs.push(packageDir);
     }
   }
 
@@ -1065,6 +1048,251 @@ async function buildDocs({
   documenter.generateFiles();
 }
 
+async function categorizePackageDirs(projectRoot, packageDirs) {
+  const dirs = packageDirs.slice();
+  const tsPackageDirs = new Array<string>();
+  const cliPackageDirs = new Array<string>();
+
+  await Promise.all(
+    Array(10)
+      .fill(0)
+      .map(async () => {
+        for (;;) {
+          const dir = dirs.pop();
+          if (!dir) {
+            return;
+          }
+
+          const pkgJson = await fs
+            .readJson(resolvePath(projectRoot, dir, 'package.json'))
+            .catch(error => {
+              if (error.code === 'ENOENT') {
+                return undefined;
+              }
+              throw error;
+            });
+          const role = pkgJson?.backstage?.role;
+          if (!role) {
+            throw new Error(`No backstage.role in ${dir}/package.json`);
+          }
+          if (role === 'cli') {
+            cliPackageDirs.push(dir);
+          } else if (role !== 'frontend' && role !== 'backend') {
+            tsPackageDirs.push(dir);
+          }
+        }
+      }),
+  );
+
+  return { tsPackageDirs, cliPackageDirs };
+}
+
+function createBinRunner(cwd: string, path: string) {
+  return async (...command: string[]) =>
+    new Promise<string>((resolve, reject) => {
+      execFile(
+        'node',
+        [path, ...command],
+        {
+          cwd,
+          shell: true,
+          timeout: 5000,
+        },
+        (err, stdout, stderr) => {
+          if (err) {
+            reject(err);
+          } else if (stderr) {
+            reject(stderr);
+          } else {
+            resolve(stdout);
+          }
+        },
+      );
+    });
+}
+
+function parseHelpPage(helpPageContent: string) {
+  const [, usage] = helpPageContent.match(/^\s*Usage: (.*)$/im) ?? [];
+  const lines = helpPageContent.split(/\r?\n/);
+
+  let options = new Array<string>();
+  let commands = new Array<string>();
+
+  while (lines.length > 0) {
+    while (lines.length > 0 && !lines[0].endsWith(':')) {
+      lines.shift();
+    }
+    if (lines.length > 0) {
+      // Start of a new section, e.g. "Options:"
+      const sectionName = lines.shift();
+      // Take lines until we hit the next section or the end
+      const sectionEndIndex = lines.findIndex(
+        line => line && !line.match(/^\s/),
+      );
+      const sectionLines = lines.slice(0, sectionEndIndex);
+      lines.splice(0, sectionLines.length);
+
+      // Trim away documentation
+      const sectionItems = sectionLines
+        .map(line => line.match(/^\s{1,8}(.*?)\s\s+/)?.[1])
+        .filter(Boolean);
+
+      if (sectionName.toLocaleLowerCase('en-US') === 'options:') {
+        options = sectionItems;
+      } else if (sectionName.toLocaleLowerCase('en-US') === 'commands:') {
+        commands = sectionItems;
+      } else {
+        throw new Error(`Unknown CLI section: ${sectionName}`);
+      }
+    }
+  }
+
+  return {
+    usage,
+    options,
+    commands,
+  };
+}
+
+// Represents the help page os a CLI command
+interface CliHelpPage {
+  // Path of commands to reach this page
+  path: string[];
+  // Parsed content
+  usage: string | undefined;
+  options: string[];
+  commands: string[];
+}
+
+async function exploreCliHelpPages(
+  run: (...args: string[]) => Promise<string>,
+): Promise<CliHelpPage[]> {
+  const helpPages = new Array<CliHelpPage>();
+
+  async function exploreHelpPage(...path: string[]) {
+    const content = await run(...path, '--help');
+    const parsed = parseHelpPage(content);
+    helpPages.push({ path, ...parsed });
+
+    await Promise.all(
+      parsed.commands.map(async fullCommand => {
+        const command = fullCommand.split(/[|\s]/)[0];
+        if (command !== 'help') {
+          await exploreHelpPage(...path, command);
+        }
+      }),
+    );
+  }
+
+  await exploreHelpPage();
+
+  helpPages.sort((a, b) => a.path.join(' ').localeCompare(b.path.join(' ')));
+
+  return helpPages;
+}
+
+// The API model for a CLI entry point
+interface CliModel {
+  name: string;
+  helpPages: CliHelpPage[];
+}
+
+function generateCliReport(name: string, models: CliModel[]): string {
+  const content = [
+    `## CLI Report file for "${name}"`,
+    '',
+    '> Do not edit this file. It is a report generated by `yarn build:api-reports`',
+    '',
+  ];
+
+  for (const model of models) {
+    for (const helpPage of model.helpPages) {
+      content.push(
+        `### \`${[model.name, ...helpPage.path].join(' ')}\``,
+        '',
+        '```',
+        `Usage: ${helpPage.usage ?? '<none>'}`,
+      );
+
+      if (helpPage.options.length > 0) {
+        content.push('', 'Options:', ...helpPage.options.map(l => `  ${l}`));
+      }
+
+      if (helpPage.commands.length > 0) {
+        content.push('', 'Commands:', ...helpPage.commands.map(l => `  ${l}`));
+      }
+      content.push('```', '');
+    }
+  }
+
+  return content.join('\n');
+}
+
+interface CliExtractionOptions {
+  projectRoot: string;
+  packageDirs: string[];
+  isLocalBuild: boolean;
+}
+
+async function runCliExtraction({
+  projectRoot,
+  packageDirs,
+  isLocalBuild,
+}: CliExtractionOptions) {
+  for (const packageDir of packageDirs) {
+    console.log(`## Processing ${packageDir}`);
+    const fullDir = resolvePath(projectRoot, packageDir);
+    const pkgJson = await fs.readJson(resolvePath(fullDir, 'package.json'));
+
+    if (!pkgJson.bin) {
+      throw new Error(`CLI Package in ${packageDir} has no bin field`);
+    }
+    const models = new Array<CliModel>();
+    for (const [name, path] of Object.entries<string>(pkgJson.bin)) {
+      const run = createBinRunner(fullDir, path);
+      const helpPages = await exploreCliHelpPages(run);
+      models.push({ name, helpPages });
+    }
+
+    const report = generateCliReport(pkgJson.name, models);
+
+    const reportPath = resolvePath(fullDir, 'cli-report.md');
+    const existingReport = await fs
+      .readFile(reportPath, 'utf8')
+      .catch(error => {
+        if (error.code === 'ENOENT') {
+          return undefined;
+        }
+        throw error;
+      });
+
+    if (existingReport !== report) {
+      if (isLocalBuild) {
+        console.warn(`CLI report changed for ${packageDir}`);
+        await fs.writeFile(reportPath, report);
+      } else {
+        logApiReportInstructions();
+
+        if (existingReport) {
+          console.log('');
+          console.log(
+            `The conflicting file is ${relativePath(
+              projectRoot,
+              reportPath,
+            )}, expecting the following content:`,
+          );
+          console.log('');
+
+          console.log(report);
+
+          logApiReportInstructions();
+        }
+        throw new Error(`CLI report changed for ${packageDir}, `);
+      }
+    }
+  }
+}
+
 async function main() {
   const projectRoot = resolvePath(__dirname, '..');
   const isCiBuild = process.argv.includes('--ci');
@@ -1121,13 +1349,28 @@ async function main() {
 
   const packageDirs = selectedPackageDirs ?? (await findPackageDirs());
 
-  console.log('# Generating package API reports');
-  await runApiExtraction({
+  const { tsPackageDirs, cliPackageDirs } = await categorizePackageDirs(
+    projectRoot,
     packageDirs,
-    outputDir: tmpDir,
-    isLocalBuild: !isCiBuild,
-    tsconfigFilePath,
-  });
+  );
+
+  if (tsPackageDirs.length > 0) {
+    console.log('# Generating package API reports');
+    await runApiExtraction({
+      packageDirs: tsPackageDirs,
+      outputDir: tmpDir,
+      isLocalBuild: !isCiBuild,
+      tsconfigFilePath,
+    });
+  }
+  if (cliPackageDirs.length > 0) {
+    console.log('# Generating package CLI reports');
+    await runCliExtraction({
+      projectRoot,
+      packageDirs: cliPackageDirs,
+      isLocalBuild: !isCiBuild,
+    });
+  }
 
   if (isDocsBuild) {
     console.log('# Generating package documentation');
