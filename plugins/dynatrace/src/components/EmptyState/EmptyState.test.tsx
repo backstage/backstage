@@ -13,6 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const DYNATRACE_ID_ANNOTATION = 'dynatrace.com/dynatrace-entity-id';
-export const DYNATRACE_SYNTHETICS_ANNOTATION =
-  'dynatrace.com/dynatrace-synthetics-ids';

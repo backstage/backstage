@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DynatraceProblems, DynatraceApi } from './DynatraceApi';
+import {
+  DynatraceProblems,
+  DynatraceApi,
+  DynatraceSyntheticResults,
+} from './DynatraceApi';
 import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 
 export class DynatraceClient implements DynatraceApi {
@@ -52,11 +56,21 @@ export class DynatraceClient implements DynatraceApi {
     );
   }
 
+  async getDynatraceSyntheticFailures(
+    syntheticId: string,
+  ): Promise<DynatraceSyntheticResults | undefined> {
+    if (!syntheticId) {
+      throw new Error('Dynatrace synthetic Id is required');
+    }
+
+    return this.callApi(`synthetic/execution/${syntheticId}/FAILED`, {});
+  }
+
   async getDynatraceProblems(
     dynatraceEntityId: string,
   ): Promise<DynatraceProblems | undefined> {
     if (!dynatraceEntityId) {
-      throw new Error('Dynatrace entity ID is required');
+      throw new Error('Dynatrace entity Id is required');
     }
 
     return this.callApi('problems', {
