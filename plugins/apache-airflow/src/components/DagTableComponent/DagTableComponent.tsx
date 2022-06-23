@@ -162,12 +162,14 @@ export const DagTableComponent = ({ dagIds }: DagTableComponentProps) => {
       : [];
   return (
     <>
-      {dagsNotFound.length && (
+      {dagsNotFound.length ? (
         <WarningPanel title={`${dagsNotFound.length} DAGs were not found`}>
           {dagsNotFound.map(dagId => (
             <Typography key={dagId}>{dagId}</Typography>
           ))}
         </WarningPanel>
+      ) : (
+        ''
       )}
       <DenseTable dags={data || []} />
     </>
