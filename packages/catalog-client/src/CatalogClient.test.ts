@@ -195,6 +195,200 @@ describe('CatalogClient', () => {
     });
   });
 
+  describe('getPaginatedEntities', () => {
+    const defaultServiceResponse = {
+      entities: [
+        {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: {
+            name: 'Test2',
+            namespace: 'test1',
+          },
+        },
+        {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: {
+            name: 'Test1',
+            namespace: 'test1',
+          },
+        },
+      ],
+      totalItems: 10,
+      nextCursor: 'next',
+      prevCursor: 'prev',
+    };
+
+    const defaultClientResponse = {
+      entities: [
+        {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: {
+            name: 'Test2',
+            namespace: 'test1',
+          },
+        },
+        {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: {
+            name: 'Test1',
+            namespace: 'test1',
+          },
+        },
+      ],
+      totalItems: 10,
+      next: jest.fn(),
+      prev: jest.fn(),
+    };
+
+    beforeEach(() => {
+      server.use(
+        rest.get(`${mockBaseUrl}/v2beta1/entities`, (_, res, ctx) => {
+          return res(ctx.json(defaultServiceResponse));
+        }),
+      );
+    });
+
+    it('should fetch entities from correct endpoint', async () => {
+      const response = await client.getPaginatedEntities?.({}, { token });
+      expect(response?.entities).toEqual(defaultClientResponse.entities);
+      expect(response?.totalItems).toEqual(defaultClientResponse.totalItems);
+      expect(response?.next).toBeDefined();
+      expect(response?.prev).toBeDefined();
+    });
+
+    it('builds multiple entity search filters properly', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) =>
+          res(ctx.json({ entities: [], totalItems: 0 })),
+        );
+
+      server.use(rest.get(`${mockBaseUrl}/v2beta1/entities`, mockedEndpoint));
+
+      const response = await client.getPaginatedEntities?.(
+        {
+          filter: [
+            {
+              a: '1',
+              b: ['2', '3'],
+              ö: '=',
+            },
+            {
+              a: '2',
+            },
+            {
+              c: CATALOG_FILTER_EXISTS,
+            },
+          ],
+        },
+        { token },
+      );
+
+      expect(response).toEqual({ entities: [], totalItems: 0 });
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
+        '?filter=a=1,b=2,b=3,%C3%B6=%3D&filter=a=2&filter=c',
+      );
+    });
+
+    it('should send query params correctly on initial request', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) =>
+          res(ctx.json({ entities: [], totalItems: 0 })),
+        );
+
+      server.use(rest.get(`${mockBaseUrl}/v2beta1/entities`, mockedEndpoint));
+
+      await client.getPaginatedEntities?.({
+        fields: ['a', 'b'],
+        limit: 100,
+        query: 'query',
+        sortField: 'metadata.name',
+        sortFieldOrder: 'asc',
+      });
+      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
+        '?limit=100&sortField=metadata.name&sortFieldOrder=asc&fields=a,b&query=query',
+      );
+    });
+
+    it('should ignore initial query params if cursor is passed', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) =>
+          res(ctx.json({ entities: [], totalItems: 0 })),
+        );
+
+      server.use(rest.get(`${mockBaseUrl}/v2beta1/entities`, mockedEndpoint));
+
+      await client.getPaginatedEntities?.({
+        fields: ['a', 'b'],
+        limit: 100,
+        query: 'query',
+        sortField: 'metadata.name',
+        sortFieldOrder: 'asc',
+        cursor: 'cursor',
+      });
+      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
+        '?cursor=cursor&limit=100&fields=a,b',
+      );
+    });
+
+    it('should return paginated functions if next and prev cursors are present', async () => {
+      const mockedEndpoint = jest.fn().mockImplementation((_req, res, ctx) =>
+        res(
+          ctx.json({
+            entities: [
+              {
+                apiVersion: 'v1',
+                kind: 'CustomKind',
+                metadata: {
+                  namespace: 'default',
+                  name: 'e1',
+                },
+              },
+              {
+                apiVersion: 'v1',
+                kind: 'CustomKind',
+                metadata: {
+                  namespace: 'default',
+                  name: 'e2',
+                },
+              },
+            ],
+            nextCursor: 'nextcursor',
+            prevCursor: 'prevcursor',
+            totalItems: 100,
+          }),
+        ),
+      );
+
+      server.use(rest.get(`${mockBaseUrl}/v2beta1/entities`, mockedEndpoint));
+
+      const response = await client.getPaginatedEntities?.({
+        limit: 2,
+      });
+      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe('?limit=2');
+
+      expect(response?.next).toBeDefined();
+      expect(response?.prev).toBeDefined();
+
+      await response?.next?.();
+      expect(mockedEndpoint.mock.calls[1][0].url.search).toBe(
+        '?cursor=nextcursor',
+      );
+
+      await response?.prev?.();
+      expect(mockedEndpoint.mock.calls[2][0].url.search).toBe(
+        '?cursor=prevcursor',
+      );
+    });
+  });
+
   describe('getEntityByRef', () => {
     const existingEntity: Entity = {
       apiVersion: 'v1',

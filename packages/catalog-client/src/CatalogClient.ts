@@ -36,9 +36,14 @@ import {
   Location,
   GetEntityFacetsRequest,
   GetEntityFacetsResponse,
+  GetPaginatedEntitiesRequest,
+  GetPaginatedEntitiesResponse,
+  EntitiesFilter,
+  GetPaginatedEntitiesCursorRequest,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import { FetchApi } from './types/fetch';
+import { isPaginatedEntitiesInitialRequest } from './utils';
 
 /**
  * A frontend and backend compatible client for communicating with the Backstage
@@ -97,30 +102,7 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<GetEntitiesResponse> {
     const { filter = [], fields = [], offset, limit, after } = request ?? {};
-    const params: string[] = [];
-
-    // filter param can occur multiple times, for example
-    // /api/catalog/entities?filter=metadata.name=wayback-search,kind=component&filter=metadata.name=www-artist,kind=component'
-    // the "outer array" defined by `filter` occurrences corresponds to "anyOf" filters
-    // the "inner array" defined within a `filter` param corresponds to "allOf" filters
-    for (const filterItem of [filter].flat()) {
-      const filterParts: string[] = [];
-      for (const [key, value] of Object.entries(filterItem)) {
-        for (const v of [value].flat()) {
-          if (v === CATALOG_FILTER_EXISTS) {
-            filterParts.push(encodeURIComponent(key));
-          } else if (typeof v === 'string') {
-            filterParts.push(
-              `${encodeURIComponent(key)}=${encodeURIComponent(v)}`,
-            );
-          }
-        }
-      }
-
-      if (filterParts.length) {
-        params.push(`filter=${filterParts.join(',')}`);
-      }
-    }
+    const params = this.getParams(filter);
 
     if (fields.length) {
       params.push(`fields=${fields.map(encodeURIComponent).join(',')}`);
@@ -166,6 +148,70 @@ export class CatalogClient implements CatalogApi {
     };
 
     return { items: entities.sort(refCompare) };
+  }
+
+  /**
+   * {@inheritdoc CatalogApi.getPaginatedEntities}
+   */
+  async getPaginatedEntities?(
+    request?: GetPaginatedEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<GetPaginatedEntitiesResponse> {
+    const params: string[] = [];
+
+    if (isPaginatedEntitiesInitialRequest(request)) {
+      const {
+        fields = [],
+        filter,
+        limit,
+        sortField,
+        sortFieldOrder,
+        query,
+      } = request ?? {};
+      params.push(...this.getParams(filter));
+
+      if (limit !== undefined) {
+        params.push(`limit=${limit}`);
+      }
+      if (sortField !== undefined) {
+        params.push(`sortField=${sortField}`);
+      }
+      if (sortFieldOrder !== undefined) {
+        params.push(`sortFieldOrder=${sortFieldOrder}`);
+      }
+      if (fields.length) {
+        params.push(`fields=${fields.map(encodeURIComponent).join(',')}`);
+      }
+
+      const normalizedQuery = query?.trim();
+      if (normalizedQuery) {
+        params.push(`query=${normalizedQuery}`);
+      }
+    } else {
+      const { fields = [], limit, cursor } = request;
+
+      params.push(`cursor=${cursor}`);
+      if (limit !== undefined) {
+        params.push(`limit=${limit}`);
+      }
+      if (fields.length) {
+        params.push(`fields=${fields.map(encodeURIComponent).join(',')}`);
+      }
+    }
+
+    const query = params.length ? `?${params.join('&')}` : '';
+    const { entities, totalItems, nextCursor, prevCursor } =
+      await this.requestRequired<{
+        entities: Entity[];
+        totalItems: number;
+        nextCursor?: string;
+        prevCursor?: string;
+      }>('GET', `/v2beta1/entities${query}`, options);
+
+    const next = this.getEntitiesFromCursor(nextCursor, options);
+    const prev = this.getEntitiesFromCursor(prevCursor, options);
+
+    return { entities, totalItems, next, prev };
   }
 
   /**
@@ -235,30 +281,7 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<GetEntityFacetsResponse> {
     const { filter = [], facets } = request;
-    const params: string[] = [];
-
-    // filter param can occur multiple times, for example
-    // /api/catalog/entities?filter=metadata.name=wayback-search,kind=component&filter=metadata.name=www-artist,kind=component'
-    // the "outer array" defined by `filter` occurrences corresponds to "anyOf" filters
-    // the "inner array" defined within a `filter` param corresponds to "allOf" filters
-    for (const filterItem of [filter].flat()) {
-      const filterParts: string[] = [];
-      for (const [key, value] of Object.entries(filterItem)) {
-        for (const v of [value].flat()) {
-          if (v === CATALOG_FILTER_EXISTS) {
-            filterParts.push(encodeURIComponent(key));
-          } else if (typeof v === 'string') {
-            filterParts.push(
-              `${encodeURIComponent(key)}=${encodeURIComponent(v)}`,
-            );
-          }
-        }
-      }
-
-      if (filterParts.length) {
-        params.push(`filter=${filterParts.join(',')}`);
-      }
-    }
+    const params = this.getParams(filter);
 
     for (const facet of facets) {
       params.push(`facet=${encodeURIComponent(facet)}`);
@@ -373,11 +396,11 @@ export class CatalogClient implements CatalogApi {
     }
   }
 
-  private async requestRequired(
+  private async requestRequired<T = any>(
     method: string,
     path: string,
     options?: CatalogRequestOptions,
-  ): Promise<any> {
+  ): Promise<T> {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
     const headers: Record<string, string> = options?.token
       ? { Authorization: `Bearer ${options.token}` }
@@ -388,7 +411,7 @@ export class CatalogClient implements CatalogApi {
       throw await ResponseError.fromResponse(response);
     }
 
-    return await response.json();
+    return response.json();
   }
 
   private async requestOptional(
@@ -410,5 +433,43 @@ export class CatalogClient implements CatalogApi {
     }
 
     return await response.json();
+  }
+
+  private getParams(filter: EntitiesFilter = []) {
+    const params: string[] = [];
+    // filter param can occur multiple times, for example
+    // /api/catalog/entities?filter=metadata.name=wayback-search,kind=component&filter=metadata.name=www-artist,kind=component'
+    // the "outer array" defined by `filter` occurrences corresponds to "anyOf" filters
+    // the "inner array" defined within a `filter` param corresponds to "allOf" filters
+    for (const filterItem of [filter].flat()) {
+      const filterParts: string[] = [];
+      for (const [key, value] of Object.entries(filterItem)) {
+        for (const v of [value].flat()) {
+          if (v === CATALOG_FILTER_EXISTS) {
+            filterParts.push(encodeURIComponent(key));
+          } else if (typeof v === 'string') {
+            filterParts.push(
+              `${encodeURIComponent(key)}=${encodeURIComponent(v)}`,
+            );
+          }
+        }
+      }
+
+      if (filterParts.length) {
+        params.push(`filter=${filterParts.join(',')}`);
+      }
+    }
+    return params;
+  }
+
+  private getEntitiesFromCursor(
+    cursor: string | undefined,
+    options?: CatalogRequestOptions,
+  ) {
+    if (!cursor) {
+      return undefined;
+    }
+    return (request: Omit<GetPaginatedEntitiesCursorRequest, 'cursor'> = {}) =>
+      this.getPaginatedEntities!({ ...request, cursor }, options);
   }
 }

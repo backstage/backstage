@@ -71,10 +71,7 @@ export interface GetEntitiesRequest {
    * (exported from this package), which means that you assert on the existence
    * of that key, no matter what its value is.
    */
-  filter?:
-    | Record<string, string | symbol | (string | symbol)[]>[]
-    | Record<string, string | symbol | (string | symbol)[]>
-    | undefined;
+  filter?: EntitiesFilter;
   /**
    * If given, return only the parts of each entity that match those dot
    * separated paths in each object.
@@ -185,10 +182,7 @@ export interface GetEntityFacetsRequest {
    * (exported from this package), which means that you assert on the existence
    * of that key, no matter what its value is.
    */
-  filter?:
-    | Record<string, string | symbol | (string | symbol)[]>[]
-    | Record<string, string | symbol | (string | symbol)[]>
-    | undefined;
+  filter?: EntitiesFilter;
   /**
    * Dot separated paths for the facets to extract from each entity.
    *
@@ -257,6 +251,11 @@ export type AddLocationRequest = {
   dryRun?: boolean;
 };
 
+export type EntitiesFilter =
+  | Record<string, string | symbol | (string | symbol)[]>[]
+  | Record<string, string | symbol | (string | symbol)[]>
+  | undefined;
+
 /**
  * The response type for {@link CatalogClient.addLocation}.
  *
@@ -267,6 +266,69 @@ export type AddLocationResponse = {
   entities: Entity[];
   // Only set in dryRun mode.
   exists?: boolean;
+};
+
+/**
+ * The request type for {@link CatalogClient.getPaginatedEntities}.
+ *
+ * @alpha
+ */
+export type GetPaginatedEntitiesRequest =
+  | GetPaginatedEntitiesInitialRequest
+  | GetPaginatedEntitiesCursorRequest;
+
+/**
+ * A request type for {@link CatalogClient.getPaginatedEntities}.
+ * The method takes this type in an initial pagination request,
+ * when requesting the first batch of entities.
+ *
+ * The properties filter, sortField, query and sortFieldOrder, are going
+ * to be immutable for the entire lifecycle of the following requests.
+ *
+ * @alpha
+ */
+export type GetPaginatedEntitiesInitialRequest =
+  | {
+      fields?: string[];
+      limit?: number;
+      filter?: EntitiesFilter;
+      sortField?: string;
+      query?: string;
+      sortFieldOrder?: 'asc' | 'desc';
+    }
+  | undefined;
+
+/**
+ * A request type for {@link CatalogClient.getPaginatedEntities}.
+ * The method takes this type in a pagination request, following
+ * the initial request.
+ *
+ * @alpha
+ */
+export type GetPaginatedEntitiesCursorRequest = {
+  fields?: string[];
+  limit?: number;
+  cursor: string;
+};
+
+/**
+ * The response type for {@link CatalogClient.getPaginatedEntities}.
+ *
+ * @alpha
+ */
+export type GetPaginatedEntitiesResponse = {
+  /* The list of entities for the current request */
+  entities: Entity[];
+  /* The number of entities among all the requests */
+  totalItems: number;
+  /* A method returning a promise containing the next batch of entities. */
+  next?(
+    request?: Omit<GetPaginatedEntitiesCursorRequest, 'cursor'>,
+  ): Promise<GetPaginatedEntitiesResponse>;
+  /* A method returning a promise containing the previous batch of entities. */
+  prev?(
+    request?: Omit<GetPaginatedEntitiesCursorRequest, 'cursor'>,
+  ): Promise<GetPaginatedEntitiesResponse>;
 };
 
 /**
@@ -285,6 +347,45 @@ export interface CatalogApi {
     request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntitiesResponse>;
+
+  /**
+   *
+   * Gets paginated entities from the catalog.
+   * The method takes
+   * @alpha
+   * @remarks
+   *
+   * Example:
+   *
+   * const response = await catalogClient.getPaginatedEntities({
+   *   filter: [{ kind: 'group' }],
+   *   limit: 20,
+   *   query: 'A',
+   *   sortField: 'metadata.name',
+   *   sortFieldOrder: 'asc'
+   * });
+   *
+   * this will match all entities of type group having a name starting
+   * with 'A', ordered by name ascending.
+   *
+   * The response will contain a maximum of 20 entities. In case
+   * more than 20 entities exist, the response will contain a next function, invocable
+   * using:
+   *
+   * const secondBatchResponse = await response.next({ limit: 20 });
+   *
+   * secondBatchResponse will contain the next batch of maximum 20 entities, together
+   * with a prev function useful for navigating backwards and a next function
+   * in case more entities matching the filters of the first request are present in the catalog.
+   *
+   *
+   * @param request - Request parameters
+   * @param options - Additional options
+   */
+  getPaginatedEntities?(
+    request?: GetPaginatedEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<GetPaginatedEntitiesResponse>;
 
   /**
    * Gets entity ancestor information, i.e. the hierarchy of parent entities

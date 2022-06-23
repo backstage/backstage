@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-export { CATALOG_FILTER_EXISTS } from './api';
-export type {
-  AddLocationRequest,
-  AddLocationResponse,
-  CatalogApi,
-  CatalogRequestOptions,
-  GetEntitiesRequest,
-  GetEntitiesResponse,
-  GetEntityAncestorsRequest,
-  GetEntityAncestorsResponse,
-  Location,
-  GetEntityFacetsRequest,
-  GetEntityFacetsResponse,
+import {
   GetPaginatedEntitiesCursorRequest,
   GetPaginatedEntitiesInitialRequest,
-  GetPaginatedEntitiesResponse,
-} from './api';
-export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';
+  GetPaginatedEntitiesRequest,
+} from './types/api';
+
+export function isPaginatedEntitiesInitialRequest(
+  request: GetPaginatedEntitiesInitialRequest,
+): request is GetPaginatedEntitiesInitialRequest {
+  if (!request) {
+    return true;
+  }
+  return !(request as GetPaginatedEntitiesCursorRequest).cursor;
+}
+
+export function isPaginatedEntitiesCursorRequest(
+  request: GetPaginatedEntitiesRequest,
+): request is GetPaginatedEntitiesCursorRequest {
+  return !isPaginatedEntitiesInitialRequest(request);
+}
