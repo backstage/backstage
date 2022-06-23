@@ -107,6 +107,15 @@ describe('ApacheAirflowClient', () => {
         );
       }),
 
+      rest.get(`${mockBaseUrl}/airflow/dags/:dag_id`, (req, res, ctx) => {
+        const { dag_id } = req.params;
+        const dag = dags.find(d => d.dag_id === dag_id);
+        if (dag) {
+          return res(ctx.json(dag));
+        }
+        return res(ctx.status(404));
+      }),
+
       rest.patch(`${mockBaseUrl}/airflow/dags/:dag_id`, (req, res, ctx) => {
         const { dag_id } = req.params;
         const body = JSON.parse(req.body as string);
