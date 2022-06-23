@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { JsonObject } from '@backstage/types';
 import {
   Stepper as MuiStepper,
   Step as MuiStep,
@@ -51,6 +52,7 @@ const Form = withTheme(MuiTheme);
 export const Stepper = (props: StepperProps) => {
   const { steps } = useTemplateSchema(props.manifest);
   const [activeStep, setActiveStep] = useState(0);
+  const [formState, setFormState] = useState({});
   const styles = useStyles();
 
   const extensions = useMemo(() => {
@@ -62,8 +64,10 @@ export const Stepper = (props: StepperProps) => {
   const handleBack = () => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
-  const handleNext = () => {
+
+  const handleNext = ({ formData }: { formData: JsonObject }) => {
     setActiveStep(prevActiveStep => prevActiveStep + 1);
+    setFormState(current => ({ ...current, ...formData }));
   };
 
   return (
@@ -77,6 +81,7 @@ export const Stepper = (props: StepperProps) => {
       </MuiStepper>
       <div className={styles.formWrapper}>
         <Form
+          formData={formState}
           schema={steps[activeStep].schema}
           uiSchema={steps[activeStep].uiSchema}
           onSubmit={handleNext}
