@@ -1,5 +1,7 @@
 ![headline](docs/assets/headline.png)
 
+> 🏖 From July 7th due to Summer Vacations for some of the maintainers, expect the project to move a little slower than normal, and support to be limited. Normal service will resume on August 8th 🏝
+
 # [Backstage](https://backstage.io)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)

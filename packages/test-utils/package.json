@@ -1,7 +1,7 @@
 {
   "name": "@backstage/test-utils",
   "description": "Utilities to test Backstage plugins and apps.",
-  "version": "1.1.1",
+  "version": "1.1.2-next.0",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@backstage/config": "^1.0.1",
-    "@backstage/core-app-api": "^1.0.3",
+    "@backstage/core-app-api": "^1.0.4-next.0",
     "@backstage/core-plugin-api": "^1.0.3",
     "@backstage/plugin-permission-common": "^0.6.2",
     "@backstage/plugin-permission-react": "^0.4.2",
@@ -55,7 +55,7 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.2",
+    "@backstage/cli": "^0.17.3-next.0",
     "@types/jest": "^26.0.7",
     "@types/node": "^16.11.26",
     "msw": "^0.42.0"

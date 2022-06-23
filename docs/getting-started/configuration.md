@@ -155,6 +155,8 @@ auth:
         clientSecret: YOUR CLIENT SECRET
 ```
 
+### Add sign-in option to the frontend
+
 Backstage will re-read the configuration. If there's no errors, that's great! We
 can continue with the last part of the configuration. The next step is needed to
 change the sign-in page, this you actually need to add in the source code.
@@ -185,10 +187,11 @@ components: {
 },
 ```
 
-> Since [v1.1.0](https://github.com/backstage/backstage/releases/tag/v1.1.0-next.3), you must provide an [explicit sign-in resolver](../auth/identity-resolver.md).
+> Note: The default Backstage app comes with a guest Sign In Resolver. This resolver makes all users share a single "guest" identity and is only intended as a minimum requirement to quickly get up and running. You can read more about how [Sign In Resolvers](../auth/identity-resolver.md#sign-in-resolvers) play a role in creating a [Backstage User Identity](../auth/identity-resolver.md#backstage-user-identity) for logged in users.
 
-That should be it. You can stop your Backstage App. When you start it again and
-go to your Backstage portal in your browser, you should have your login prompt!
+Restart Backstage from the terminal, by stopping it with `Control-C`, and starting it with `yarn dev` . You should be welcomed by a login prompt!
+
+> Note: Sometimes the frontend starts before the backend resulting in errors on the sign in page. Wait for the backend to start and then reload Backstage to proceed.
 
 To learn more about Authentication in Backstage, here are some docs you
 could read:

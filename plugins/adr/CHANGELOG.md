@@ -1,5 +1,17 @@
 # @backstage/plugin-adr
 
+## 0.1.2-next.0
+
+### Patch Changes
+
+- 7d47e7e512: Track discover event and result rank for `AdrSearchResultListItem`
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/plugin-adr-common@0.1.2-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.0
+  - @backstage/integration-react@1.1.2-next.0
+  - @backstage/plugin-search-react@0.2.2-next.0
+
 ## 0.1.1
 
 ### Patch Changes

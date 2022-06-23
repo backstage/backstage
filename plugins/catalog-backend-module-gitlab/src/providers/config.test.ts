@@ -100,7 +100,26 @@ describe('config', () => {
     });
 
     expect(() => readGitlabConfigs(config)).toThrow(
-      "Missing required config value at 'catalog.providers.gitlab.test.group'",
+      "Missing required config value at 'catalog.providers.gitlab.test.host'",
     );
+  });
+
+  it('read full gitlab project', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          gitlab: {
+            test: {
+              host: 'host',
+              branch: 'main',
+            },
+          },
+        },
+      },
+    });
+
+    const result = readGitlabConfigs(config);
+    expect(result).toHaveLength(1);
+    expect(result[0].group).toEqual('');
   });
 });

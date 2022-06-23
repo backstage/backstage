@@ -80,27 +80,6 @@ export type OAuth2ProxyResult<JWTPayload = {}> = {
   getHeader(name: string): string | undefined;
 };
 
-/**
- * @public
- * @deprecated This type has been inlined into the create method and will be removed.
- */
-export type Oauth2ProxyProviderOptions<JWTPayload> = {
-  /**
-   * Configure an auth handler to generate a profile for the user.
-   */
-  authHandler: AuthHandler<OAuth2ProxyResult<JWTPayload>>;
-
-  /**
-   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-   */
-  signIn: {
-    /**
-     * Maps an auth result to a Backstage identity for the user.
-     */
-    resolver: SignInResolver<OAuth2ProxyResult<JWTPayload>>;
-  };
-};
-
 interface Options<JWTPayload> {
   resolverContext: AuthResolverContext;
   signInResolver: SignInResolver<OAuth2ProxyResult<JWTPayload>>;
@@ -231,9 +210,3 @@ export const oauth2Proxy = createAuthProviderIntegration({
     };
   },
 });
-
-/**
- * @public
- * @deprecated Use `providers.oauth2Proxy.create` instead
- */
-export const createOauth2ProxyProvider = oauth2Proxy.create;

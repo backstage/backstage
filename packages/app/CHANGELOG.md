@@ -1,5 +1,60 @@
 # example-app
 
+## 0.2.73-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder@1.4.0-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/plugin-techdocs-react@1.0.2-next.0
+  - @backstage/plugin-catalog@1.3.1-next.0
+  - @backstage/plugin-stack-overflow@0.1.3-next.0
+  - @backstage/core-app-api@1.0.4-next.0
+  - @backstage/cli@0.17.3-next.0
+  - @backstage/plugin-azure-devops@0.1.23-next.0
+  - @backstage/plugin-techdocs@1.2.1-next.0
+  - @backstage/plugin-catalog-import@0.8.10-next.0
+  - @backstage/plugin-pagerduty@0.5.0-next.0
+  - @backstage/plugin-github-actions@0.5.7-next.0
+  - @backstage/plugin-airbrake@0.3.7-next.0
+  - @backstage/plugin-api-docs@0.8.7-next.0
+  - @backstage/plugin-badges@0.2.31-next.0
+  - @backstage/plugin-catalog-graph@0.2.19-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.0
+  - @backstage/plugin-circleci@0.3.7-next.0
+  - @backstage/plugin-cloudbuild@0.3.7-next.0
+  - @backstage/plugin-code-coverage@0.1.34-next.0
+  - @backstage/plugin-cost-insights@0.11.29-next.0
+  - @backstage/plugin-dynatrace@0.1.1-next.0
+  - @backstage/plugin-explore@0.3.38-next.0
+  - @backstage/plugin-gocd@0.1.13-next.0
+  - @backstage/plugin-home@0.4.23-next.0
+  - @backstage/plugin-jenkins@0.7.6-next.0
+  - @backstage/plugin-kafka@0.3.7-next.0
+  - @backstage/plugin-kubernetes@0.6.7-next.0
+  - @backstage/plugin-lighthouse@0.3.7-next.0
+  - @backstage/plugin-newrelic-dashboard@0.1.15-next.0
+  - @backstage/plugin-org@0.5.7-next.0
+  - @backstage/plugin-rollbar@0.4.7-next.0
+  - @backstage/plugin-search@0.9.1-next.0
+  - @backstage/plugin-sentry@0.3.45-next.0
+  - @backstage/plugin-tech-insights@0.2.3-next.0
+  - @backstage/plugin-todo@0.2.9-next.0
+  - @backstage/app-defaults@1.0.4-next.0
+  - @backstage/integration-react@1.1.2-next.0
+  - @backstage/plugin-apache-airflow@0.1.15-next.0
+  - @backstage/plugin-gcalendar@0.3.3-next.0
+  - @backstage/plugin-gcp-projects@0.3.26-next.0
+  - @backstage/plugin-graphiql@0.2.39-next.0
+  - @backstage/plugin-newrelic@0.3.25-next.0
+  - @backstage/plugin-search-react@0.2.2-next.0
+  - @backstage/plugin-shortcuts@0.2.8-next.0
+  - @backstage/plugin-tech-radar@0.5.14-next.0
+  - @backstage/plugin-techdocs-module-addons-contrib@1.0.2-next.0
+  - @backstage/plugin-user-settings@0.4.6-next.0
+
 ## 0.2.72
 
 ### Patch Changes

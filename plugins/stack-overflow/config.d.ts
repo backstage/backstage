@@ -18,17 +18,17 @@ export interface Config {
   /**
    * Configuration options for the stack overflow plugin
    */
-  stackoverflow: {
+  stackoverflow?: {
     /**
      * The base url of the Stack Overflow API used for the plugin
      * @visibility frontend
      */
-    baseUrl: string;
+    baseUrl?: string;
 
     /**
      * The api key to authenticate to Stack Overflow API
      * @visibility backend
      */
-    apiKey: string;
+    apiKey?: string;
   };
 }

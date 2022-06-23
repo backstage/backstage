@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { createOauth2ProxyProvider } from './provider';
-export type { Oauth2ProxyProviderOptions, OAuth2ProxyResult } from './provider';
+export { oauth2Proxy } from './provider';
+export type { OAuth2ProxyResult } from './provider';

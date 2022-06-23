@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.17.3-next.0
+
+### Patch Changes
+
+- d2256c0384: Fix `webpack-dev-server` deprecations.
+
 ## 0.17.2
 
 ### Patch Changes

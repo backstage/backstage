@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.4.0-next.0
+
+### Minor Changes
+
+- 0791af993f: Refactor `KubernetesObjectsProvider` with new methods, `KubernetesServiceLocator` now takes an `Entity` instead of `serviceId`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+
 ## 0.3.0
 
 ### Minor Changes
