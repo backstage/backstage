@@ -76,6 +76,18 @@ import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 </Route>;
 ```
 
+If you are using a custom [TechDocs reader page](./how-to-guides.md#how-to-customize-the-techdocs-reader-page) your setup will be very similar, here's an example:
+
+```ts
+<Route path="/docs/:namespace/:kind/:name/*" element={<TechDocsReaderPage />}>
+  <TechDocsAddons>
+    <ReportIssue />
+    {/* Other addons can be added here. */}
+  </TechDocsAddons>
+  {techDocsPage} // This is your custom TechDocs reader page
+</Route>
+```
+
 The process for configuring Addons on the documentation tab on the entity page
 is very similar; instead of adding the `<TechDocsAddons>` registry under a
 `<Route>`, you'd add it as a child of `<EntityTechdocsContent />`:
