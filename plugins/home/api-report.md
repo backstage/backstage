@@ -59,10 +59,10 @@ export function createCardExtension<T>(options: {
   name?: string;
 }): Extension<(props: CardExtensionProps<T>) => JSX.Element>;
 
-// @public (undocumented)
+// @public
 export const HeaderWorldClock: (props: {
   clockConfigs: ClockConfig[];
-  customTimeFormat?: Intl.DateTimeFormatOptions;
+  customTimeFormat?: Intl.DateTimeFormatOptions | undefined;
 }) => JSX.Element | null;
 
 // @public

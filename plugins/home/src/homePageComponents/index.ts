@@ -16,3 +16,4 @@
 
 export * from './CompanyLogo';
 export * from './Toolkit';
+export type { ClockConfig } from './HeaderWorldClock';
