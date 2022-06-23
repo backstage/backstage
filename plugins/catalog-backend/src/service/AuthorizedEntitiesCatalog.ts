@@ -35,8 +35,11 @@ import {
   EntityFacetsRequest,
   EntityFacetsResponse,
   EntityFilter,
+  PaginatedEntitiesRequest,
+  PaginatedEntitiesResponse,
 } from '../catalog/types';
 import { basicEntityFilter } from './request/basicEntityFilter';
+import { isPaginatedEntitiesInitialRequest } from './util';
 
 export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
   constructor(
@@ -104,6 +107,41 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     }
 
     return this.entitiesCatalog.entitiesBatch(request);
+  }
+
+  async paginatedEntities(
+    request?: PaginatedEntitiesRequest,
+  ): Promise<PaginatedEntitiesResponse> {
+    const authorizeDecision = (
+      await this.permissionApi.authorizeConditional(
+        [{ permission: catalogEntityReadPermission }],
+        { token: request?.authorizationToken },
+      )
+    )[0];
+
+    if (authorizeDecision.result === AuthorizeResult.DENY) {
+      return {
+        entities: [],
+        totalItems: 0,
+      };
+    }
+
+    if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
+      const permissionFilter: EntityFilter = this.transformConditions(
+        authorizeDecision.conditions,
+      );
+
+      return this.entitiesCatalog.paginatedEntities({
+        ...request,
+        ...(isPaginatedEntitiesInitialRequest(request) && {
+          filter: request?.filter
+            ? { allOf: [permissionFilter, request.filter] }
+            : permissionFilter,
+        }),
+      });
+    }
+
+    return this.entitiesCatalog.paginatedEntities(request);
   }
 
   async removeEntityByUid(

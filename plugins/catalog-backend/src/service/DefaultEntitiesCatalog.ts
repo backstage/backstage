@@ -25,6 +25,7 @@ import { Knex } from 'knex';
 import {
   EntitiesBatchRequest,
   EntitiesBatchResponse,
+  Cursor,
   EntitiesCatalog,
   EntitiesRequest,
   EntitiesResponse,
@@ -34,6 +35,8 @@ import {
   EntityFacetsResponse,
   EntityFilter,
   EntityPagination,
+  PaginatedEntitiesRequest,
+  PaginatedEntitiesResponse,
 } from '../catalog/types';
 import {
   DbFinalEntitiesRow,
@@ -43,7 +46,16 @@ import {
   DbRelationsRow,
   DbSearchRow,
 } from '../database/tables';
+
 import { Stitcher } from '../stitching/Stitcher';
+
+import {
+  isPaginatedEntitiesCursorRequest,
+  isPaginatedEntitiesInitialRequest,
+} from './util';
+
+const defaultSortField = 'metadata.name';
+const defaultSortFieldOrder = 'asc';
 
 function parsePagination(input?: EntityPagination): {
   limit?: number;
@@ -97,7 +109,7 @@ function addCondition(
   // make a lot of sense. However, it had abysmal performance on sqlite
   // when datasets grew large, so we're using IN instead.
   const matchQuery = db<DbSearchRow>('search')
-    .select('search.entity_id')
+    .select(entityIdField)
     .where({ key: filter.key.toLowerCase() })
     .andWhere(function keyFilter() {
       if (filter.values) {
@@ -310,6 +322,141 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     return { items };
   }
 
+  async paginatedEntities(
+    request?: PaginatedEntitiesRequest,
+  ): Promise<PaginatedEntitiesResponse> {
+    const db = this.database;
+    const limit = request?.limit ?? 20;
+
+    const cursor: Omit<Cursor, 'sortFieldId'> & { sortFieldId?: string } = {
+      firstFieldId: '',
+      sortField: defaultSortField,
+      sortFieldOrder: defaultSortFieldOrder,
+      isPrevious: false,
+      ...parseCursorFromRequest(request),
+    };
+
+    const allowedSortFields = ['metadata.name', 'metadata.uid'];
+    if (!allowedSortFields.includes(cursor.sortField)) {
+      throw new InputError(
+        `Invalid sortField. Allowed values are ${allowedSortFields.join(
+          ', ',
+        )}.`,
+      );
+    }
+
+    const isFetchingBackwards = cursor.isPrevious;
+
+    /**
+     * page number is used for quickly
+     * detecting the initial batch of items
+     * when navigating backwards without performing
+     * extra operations on the database.
+     */
+    /*
+    const currentPage = isFetchingBackwards
+      ? cursor.previousPage - 1
+      : cursor.previousPage + 1;
+      */
+
+    const dbQuery = db('search')
+      .join('final_entities', 'search.entity_id', 'final_entities.entity_id')
+      .where('key', cursor.sortField);
+
+    if (cursor.filter) {
+      parseFilter(cursor.filter, dbQuery, db, false, 'search.entity_id');
+    }
+
+    const normalizedQueryByName = cursor.query?.trim();
+    if (normalizedQueryByName) {
+      dbQuery.andWhereLike(
+        'value',
+        `%${normalizedQueryByName.toLocaleLowerCase('en-US')}%`,
+      );
+    }
+
+    const countQuery = dbQuery.clone();
+
+    const isOrderingDescending = cursor.sortFieldOrder === 'desc';
+    if (cursor.sortFieldId) {
+      dbQuery.andWhere(
+        'value',
+        isFetchingBackwards !== isOrderingDescending ? '<' : '>',
+        cursor.sortFieldId,
+      );
+    }
+
+    dbQuery
+      .orderBy(
+        'value',
+        isFetchingBackwards
+          ? invertOrder(cursor.sortFieldOrder)
+          : cursor.sortFieldOrder,
+      )
+      // fetch an extra item for
+      // checking if there are more items
+      .limit(isFetchingBackwards ? limit : limit + 1);
+
+    countQuery.count('search.entity_id', { as: 'count' });
+
+    const [rows, [{ count }]] = await Promise.all([
+      dbQuery,
+      // for performance reasons we invoke the countQuery
+      // only on the first request.
+      // The result is then embedded into the cursor
+      // for subsequent requests.
+      typeof cursor.totalItems === 'undefined'
+        ? countQuery
+        : [{ count: cursor.totalItems }],
+    ]);
+
+    const totalItems = Number(count);
+
+    if (isFetchingBackwards) {
+      rows.reverse();
+    }
+    const hasMoreResults =
+      limit > 0 && (isFetchingBackwards || rows.length > limit);
+
+    // discard the extra item only when fetching forward.
+    if (rows.length > limit) {
+      rows.length -= 1;
+    }
+
+    const isInitialRequest = cursor.firstFieldId === '';
+
+    const firstFieldId = cursor.firstFieldId || rows[0].value;
+
+    const nextCursor = hasMoreResults
+      ? encodeCursor({
+          ...cursor,
+          sortFieldId: rows[rows.length - 1].value,
+          firstFieldId,
+          isPrevious: false,
+          totalItems,
+        })
+      : undefined;
+
+    const prevCursor =
+      !isInitialRequest &&
+      rows.length > 0 &&
+      rows[0].value !== cursor.firstFieldId
+        ? encodeCursor({
+            ...cursor,
+            sortFieldId: rows[0].value,
+            firstFieldId: cursor.firstFieldId,
+            isPrevious: true,
+            totalItems,
+          })
+        : undefined;
+
+    const entities = rows
+      .map(e => JSON.parse(e.final_entity!))
+      .map(e => (request?.fields ? request.fields(e) : e));
+
+    return { entities, prevCursor, nextCursor, totalItems };
+  }
+
   async removeEntityByUid(uid: string): Promise<void> {
     const dbConfig = this.database.client.config;
 
@@ -489,4 +636,38 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     return { facets };
   }
+}
+
+function encodeCursor(cursor: Cursor) {
+  const json = JSON.stringify(cursor);
+  return Buffer.from(json, 'utf8').toString('base64');
+}
+
+function parseCursorFromRequest(
+  request?: PaginatedEntitiesRequest,
+): Partial<Cursor> {
+  if (isPaginatedEntitiesInitialRequest(request)) {
+    const {
+      filter,
+      sortField = defaultSortField,
+      sortFieldOrder = defaultSortFieldOrder,
+      query,
+    } = request;
+    return { filter, sortField, sortFieldOrder, query };
+  }
+  if (isPaginatedEntitiesCursorRequest(request)) {
+    try {
+      const json = Buffer.from(request.cursor, 'base64').toString('utf8');
+      const cursor = JSON.parse(json);
+      // TODO(vinzscam): validate the shit
+      return cursor as unknown as Cursor;
+    } catch {
+      throw new InputError('Malformed cursor, could not be parsed');
+    }
+  }
+  return {};
+}
+
+function invertOrder(order: Cursor['sortFieldOrder']) {
+  return order === 'asc' ? 'desc' : 'asc';
 }
