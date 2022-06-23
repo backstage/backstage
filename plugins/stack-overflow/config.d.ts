@@ -27,7 +27,7 @@ export interface Config {
 
     /**
      * The api key to authenticate to Stack Overflow API
-     * @visibility backend
+     * @visibility frontend
      */
     apiKey?: string;
   };
