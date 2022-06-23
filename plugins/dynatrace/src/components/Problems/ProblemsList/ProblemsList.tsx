@@ -20,6 +20,8 @@ import Alert from '@material-ui/lab/Alert';
 import { useApi } from '@backstage/core-plugin-api';
 import { ProblemsTable } from '../ProblemsTable';
 import { dynatraceApiRef } from '../../../api';
+import { EmptyState } from '../../EmptyState';
+import { InfoCard } from '@backstage/core-components';
 
 type ProblemsListProps = {
   dynatraceEntityId: string;
@@ -38,6 +40,13 @@ export const ProblemsList = (props: ProblemsListProps) => {
   } else if (error) {
     return <Alert severity="error">{error.message}</Alert>;
   }
-  if (!problems) return <div>Nothing to report :)</div>;
-  return <ProblemsTable problems={problems} />;
+  return (
+    <InfoCard title="Problems" subheader="From the last 2 hours">
+      {value?.totalCount ? (
+        <ProblemsTable problems={problems || []} />
+      ) : (
+        <EmptyState message="No Problems to Report!" />
+      )}
+    </InfoCard>
+  );
 };

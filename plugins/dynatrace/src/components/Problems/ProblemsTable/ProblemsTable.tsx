@@ -75,7 +75,6 @@ export const ProblemsTable = ({ problems }: ProblemsTableProps) => {
 
   return (
     <Table
-      title="Problems"
       options={{ search: true, paging: true }}
       columns={columns}
       data={problems.map(p => {
