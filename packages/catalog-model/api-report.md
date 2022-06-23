@@ -109,6 +109,13 @@ export class DefaultNamespaceEntityPolicy implements EntityPolicy {
 }
 
 // @public
+export class DefaultParentEntityPolicy implements EntityPolicy {
+  constructor(parent: string);
+  // (undocumented)
+  enforce(entity: Entity): Promise<Entity>;
+}
+
+// @public
 interface DomainEntityV1alpha1 extends Entity {
   // (undocumented)
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
