@@ -16,8 +16,14 @@
 
 import { RuleOptions } from './types';
 
+type RuleTypography = RuleOptions['theme']['typography'];
+
+type BackstageTypography = RuleTypography & {
+  htmlFontSize?: number;
+};
+
 type TypographyHeadings = Pick<
-  RuleOptions['theme']['typography'],
+  RuleTypography,
   'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 >;
 
@@ -33,13 +39,15 @@ export default ({ theme }: RuleOptions) => `
 }
 
 ${headings.reduce<string>((style, heading) => {
+  const htmlFontSize =
+    (theme.typography as BackstageTypography).htmlFontSize ?? 16;
   const styles = theme.typography[heading];
   const { lineHeight, fontFamily, fontWeight, fontSize } = styles;
   const calculate = (value: typeof fontSize) => {
     let factor: number | string = 1;
     if (typeof value === 'number') {
       // convert px to rem
-      factor = value / 16;
+      factor = value / htmlFontSize;
     }
     if (typeof value === 'string') {
       factor = value.replace('rem', '');
