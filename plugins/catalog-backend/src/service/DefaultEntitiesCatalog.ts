@@ -262,15 +262,6 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       ...parseCursorFromRequest(request),
     };
 
-    const allowedSortFields = ['metadata.name', 'metadata.uid'];
-    if (!allowedSortFields.includes(cursor.sortField)) {
-      throw new InputError(
-        `Invalid sortField. Allowed values are ${allowedSortFields.join(
-          ', ',
-        )}.`,
-      );
-    }
-
     const isFetchingBackwards = cursor.isPrevious;
 
     const dbQuery = db('search')
