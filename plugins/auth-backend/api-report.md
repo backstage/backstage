@@ -170,6 +170,12 @@ export class CatalogIdentityClient {
   resolveCatalogMembership(query: MemberClaimQuery): Promise<string[]>;
 }
 
+// @public (undocumented)
+export type CloudflareAccessResult = {
+  fullProfile: Profile;
+  expiresInSeconds?: number;
+};
+
 // @public
 export type CookieConfigurer = (ctx: {
   providerId: string;

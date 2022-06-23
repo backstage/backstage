@@ -18,6 +18,7 @@ import { atlassian } from './atlassian';
 import { auth0 } from './auth0';
 import { awsAlb } from './aws-alb';
 import { bitbucket } from './bitbucket';
+import { cfAccess } from './cloudflare-access';
 import { gcpIap } from './gcp-iap';
 import { github } from './github';
 import { gitlab } from './gitlab';
@@ -75,4 +76,5 @@ export const defaultAuthProviderFactories: {
   awsalb: awsAlb.create(),
   bitbucket: bitbucket.create(),
   atlassian: atlassian.create(),
+  cfaccess: cfAccess.create(),
 };
