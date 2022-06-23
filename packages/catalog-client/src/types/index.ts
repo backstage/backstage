@@ -25,6 +25,7 @@ export type {
   EntityOrderQuery,
   GetEntitiesByRefsRequest,
   GetEntitiesByRefsResponse,
+  EntitiesFilter,
   GetEntitiesRequest,
   GetEntitiesResponse,
   GetEntityAncestorsRequest,
@@ -35,6 +36,7 @@ export type {
   ValidateEntityResponse,
   GetPaginatedEntitiesCursorRequest,
   GetPaginatedEntitiesInitialRequest,
+  GetPaginatedEntitiesRequest,
   GetPaginatedEntitiesResponse,
 } from './api';
 export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';

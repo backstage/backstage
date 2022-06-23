@@ -717,7 +717,7 @@ describe('DefaultEntitiesCatalog', () => {
             .map(e => addEntityToSearch(knex, e)),
         );
 
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog(knex, stitcher);
 
         const filter = {
           key: 'spec.should_include_this',
@@ -869,7 +869,7 @@ describe('DefaultEntitiesCatalog', () => {
             .map(e => addEntityToSearch(knex, e)),
         );
 
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog(knex, stitcher);
 
         const filter = {
           key: 'spec.should_include_this',
@@ -1023,7 +1023,7 @@ describe('DefaultEntitiesCatalog', () => {
             .map(e => addEntityToSearch(knex, e)),
         );
 
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog(knex, stitcher);
 
         const filter = {
           key: 'spec.should_include_this',
@@ -1064,7 +1064,7 @@ describe('DefaultEntitiesCatalog', () => {
             ),
         );
 
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog(knex, stitcher);
 
         const request: PaginatedEntitiesInitialRequest = {
           limit: 0,
@@ -1346,7 +1346,7 @@ describe('DefaultEntitiesCatalog', () => {
           ],
         });
 
-        const catalog = new DefaultEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog(knex, stitcher);
 
         await expect(
           catalog.facets({
