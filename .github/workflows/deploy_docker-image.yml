@@ -66,13 +66,14 @@ jobs:
 
       - name: yarn build
         run: yarn build
-        working-directory: ./packages/create-app/example-app
+        working-directory: ./example-app
 
-      - name: Login to Docker Hub
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -80,7 +81,9 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: './packages/create-app/example-app'
-          file: ./packages/create-app/example-app/packages/backend/Dockerfile
+          context: './example-app'
+          file: ./example-app/packages/backend/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/backstage:${{ github.event.client_payload.version }}
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/backstage:latest
+            ghcr.io/${{ github.repository_owner }}/backstage:${{ github.event.client_payload.version }}
