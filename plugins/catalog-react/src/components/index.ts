@@ -27,4 +27,4 @@ export * from './FavoriteEntity';
 export * from './InspectEntityDialog';
 export * from './UnregisterEntityDialog';
 export * from './UserListPicker';
-export * from './EntityAdvancedPicker';
+export * from './EntityProcessingStatusPicker';

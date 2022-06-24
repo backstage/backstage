@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { EntityAdvancedPicker } from './EntityAdvancedPicker';
-export type { CatalogReactEntityAdvancedPickerClassKey } from './EntityAdvancedPicker';
+export { EntityProcessingStatusPicker as EntityProcessingStatusPicker } from './EntityProcessingStatusPicker';
+export type { CatalogReactEntityProcessingStatusPickerClassKey } from './EntityProcessingStatusPicker';

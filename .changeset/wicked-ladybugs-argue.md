@@ -3,7 +3,7 @@
 '@backstage/plugin-catalog-react': patch
 ---
 
-Added new `EntityAdvancedPicker` that will filter for entities with orphans and/or errors.
+Added new `EntityProcessingStatusPicker` that will filter for entities with orphans and/or errors.
 
 If you are using the default Catalog page this picker will be added automatically. For those who have customized their Catalog page you'll need to add this manually by doing something like this:
 
@@ -14,7 +14,7 @@ import {
   EntityTypePicker,
   UserListPicker,
   EntityTagPicker
-+ EntityAdvancedPicker,
++ EntityProcessingStatusPicker,
 } from '@backstage/plugin-catalog-react';
 ...
 export const CustomCatalogPage = ({
@@ -31,7 +31,7 @@ export const CustomCatalogPage = ({
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityTagPicker />
-+             <EntityAdvancedPicker />
++             <EntityProcessingStatusPicker />
             <CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
               <CatalogTable columns={columns} actions={actions} />

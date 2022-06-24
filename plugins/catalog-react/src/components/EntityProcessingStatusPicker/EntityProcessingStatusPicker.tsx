@@ -31,14 +31,14 @@ import { useEntityList } from '../../hooks';
 import { Autocomplete } from '@material-ui/lab';
 
 /** @public */
-export type CatalogReactEntityAdvancedPickerClassKey = 'input';
+export type CatalogReactEntityProcessingStatusPickerClassKey = 'input';
 
 const useStyles = makeStyles(
   {
     input: {},
   },
   {
-    name: 'CatalogReactEntityAdvancedPicker',
+    name: 'CatalogReactEntityProcessingStatusPickerPicker',
   },
 );
 
@@ -46,7 +46,7 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 /** @public */
-export const EntityAdvancedPicker = () => {
+export const EntityProcessingStatusPicker = () => {
   const classes = useStyles();
   const { updateFilters } = useEntityList();
 
@@ -71,7 +71,7 @@ export const EntityAdvancedPicker = () => {
   return (
     <Box pb={1} pt={1}>
       <Typography variant="button" component="label">
-        Advanced
+        Processing Status
         <Autocomplete
           multiple
           options={availableAdvancedItems}
@@ -94,7 +94,9 @@ export const EntityAdvancedPicker = () => {
             />
           )}
           size="small"
-          popupIcon={<ExpandMoreIcon data-testid="advanced-picker-expand" />}
+          popupIcon={
+            <ExpandMoreIcon data-testid="processing-status-picker-expand" />
+          }
           renderInput={params => (
             <TextField
               {...params}

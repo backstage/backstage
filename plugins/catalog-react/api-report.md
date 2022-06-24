@@ -78,17 +78,17 @@ export type CatalogReactComponentsNameToClassKey = {
   CatalogReactEntitySearchBar: CatalogReactEntitySearchBarClassKey;
   CatalogReactEntityTagPicker: CatalogReactEntityTagPickerClassKey;
   CatalogReactEntityOwnerPicker: CatalogReactEntityOwnerPickerClassKey;
-  CatalogReactEntityAdvancedPicker: CatalogReactEntityAdvancedPickerClassKey;
+  CatalogReactEntityProcessingStatusPicker: CatalogReactEntityProcessingStatusPickerClassKey;
 };
-
-// @public (undocumented)
-export type CatalogReactEntityAdvancedPickerClassKey = 'input';
 
 // @public (undocumented)
 export type CatalogReactEntityLifecyclePickerClassKey = 'input';
 
 // @public (undocumented)
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
+
+// @public (undocumented)
+export type CatalogReactEntityProcessingStatusPickerClassKey = 'input';
 
 // @public (undocumented)
 export type CatalogReactEntitySearchBarClassKey = 'searchToolbar' | 'input';
@@ -144,9 +144,6 @@ export type DefaultEntityFilters = {
   orphan?: EntityOrphanFilter;
   error?: EntityErrorFilter;
 };
-
-// @public (undocumented)
-export const EntityAdvancedPicker: () => JSX.Element;
 
 // @public
 export class EntityErrorFilter implements EntityFilter {
@@ -262,6 +259,9 @@ export class EntityOwnerFilter implements EntityFilter {
 
 // @public (undocumented)
 export const EntityOwnerPicker: () => JSX.Element | null;
+
+// @public (undocumented)
+export const EntityProcessingStatusPicker: () => JSX.Element;
 
 // @public
 export const EntityProvider: (props: EntityProviderProps) => JSX.Element;

@@ -19,7 +19,7 @@ import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import { EntityErrorFilter, EntityOrphanFilter } from '../../filters';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
-import { EntityAdvancedPicker } from './EntityAdvancedPicker';
+import { EntityProcessingStatusPicker } from './EntityProcessingStatusPicker';
 
 const orphanAnnotation: Record<string, string> = {};
 orphanAnnotation['backstage.io/orphan'] = 'true';
@@ -50,18 +50,18 @@ const sampleEntities: Entity[] = [
   },
 ];
 
-describe('<EntityAdvancedPicker/>', () => {
-  it('renders all advanced options', () => {
+describe('<EntityProcessingStatusPicker/>', () => {
+  it('renders all processing status options', () => {
     const rendered = render(
       <MockEntityListContextProvider
         value={{ entities: sampleEntities, backendEntities: sampleEntities }}
       >
-        <EntityAdvancedPicker />
+        <EntityProcessingStatusPicker />
       </MockEntityListContextProvider>,
     );
-    expect(rendered.getByText('Advanced')).toBeInTheDocument();
+    expect(rendered.getByText('Processing Status')).toBeInTheDocument();
 
-    fireEvent.click(rendered.getByTestId('advanced-picker-expand'));
+    fireEvent.click(rendered.getByTestId('processing-status-picker-expand'));
     expect(rendered.getByText('Is Orphan')).toBeInTheDocument();
     expect(rendered.getByText('Has Error')).toBeInTheDocument();
   });
@@ -76,11 +76,11 @@ describe('<EntityAdvancedPicker/>', () => {
           updateFilters,
         }}
       >
-        <EntityAdvancedPicker />
+        <EntityProcessingStatusPicker />
       </MockEntityListContextProvider>,
     );
 
-    fireEvent.click(rendered.getByTestId('advanced-picker-expand'));
+    fireEvent.click(rendered.getByTestId('processing-status-picker-expand'));
     fireEvent.click(rendered.getByText('Is Orphan'));
     expect(updateFilters).toHaveBeenCalledWith({
       orphan: new EntityOrphanFilter(true),
@@ -97,11 +97,11 @@ describe('<EntityAdvancedPicker/>', () => {
           updateFilters,
         }}
       >
-        <EntityAdvancedPicker />
+        <EntityProcessingStatusPicker />
       </MockEntityListContextProvider>,
     );
 
-    fireEvent.click(rendered.getByTestId('advanced-picker-expand'));
+    fireEvent.click(rendered.getByTestId('processing-status-picker-expand'));
     fireEvent.click(rendered.getByText('Has Error'));
     expect(updateFilters).toHaveBeenCalledWith({
       error: new EntityErrorFilter(true),
@@ -118,11 +118,11 @@ describe('<EntityAdvancedPicker/>', () => {
           updateFilters,
         }}
       >
-        <EntityAdvancedPicker />
+        <EntityProcessingStatusPicker />
       </MockEntityListContextProvider>,
     );
 
-    fireEvent.click(rendered.getByTestId('advanced-picker-expand'));
+    fireEvent.click(rendered.getByTestId('processing-status-picker-expand'));
     fireEvent.click(rendered.getByText('Is Orphan'));
     expect(updateFilters).toHaveBeenCalledWith({
       orphan: undefined,
@@ -139,11 +139,11 @@ describe('<EntityAdvancedPicker/>', () => {
           updateFilters,
         }}
       >
-        <EntityAdvancedPicker />
+        <EntityProcessingStatusPicker />
       </MockEntityListContextProvider>,
     );
 
-    fireEvent.click(rendered.getByTestId('advanced-picker-expand'));
+    fireEvent.click(rendered.getByTestId('processing-status-picker-expand'));
     fireEvent.click(rendered.getByText('Has Error'));
     expect(updateFilters).toHaveBeenCalledWith({
       error: undefined,
