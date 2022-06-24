@@ -38,13 +38,18 @@ const anyPromise = (any => {
   }
 
   // reverse promise resolution (rejects become resolves and visa versa)
-  const reverse = (promise: Promise<any>) =>
-    new Promise((resolve, reject) =>
+  const reverse = (promise: Promise<JenkinsProject>): Promise<JenkinsProject> =>
+    new Promise<JenkinsProject>((resolve, reject) =>
       Promise.resolve(promise).then(reject, resolve),
     );
 
-  return (iterable: Promise<any>[]) =>
-    reverse(Promise.all([...iterable].map(reverse)));
+  return (
+    iterable: Iterable<Promise<JenkinsProject>>,
+  ): Promise<JenkinsProject> =>
+    Promise.all([...iterable].map(reverse)).then(
+      results => reverse(Promise.resolve(results[0])),
+      reverse,
+    );
 })(Promise.any);
 
 export class JenkinsApiImpl {
