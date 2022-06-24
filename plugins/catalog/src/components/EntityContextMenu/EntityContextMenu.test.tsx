@@ -65,7 +65,7 @@ describe('ComponentContextMenu', () => {
 
     const { getByText } = await render(
       <EntityContextMenu
-        UNSTABLE_contextMenuOptions={{ disableUnregister: 'disabled' }}
+        UNSTABLE_contextMenuOptions={{ disableUnregister: 'disable' }}
         onUnregisterEntity={mockCallback}
         onInspectEntity={() => {}}
       />,
