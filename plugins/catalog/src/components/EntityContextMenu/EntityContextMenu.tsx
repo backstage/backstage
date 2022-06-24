@@ -24,7 +24,6 @@ import {
   Popover,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import CancelIcon from '@material-ui/icons/Cancel';
 import BugReportIcon from '@material-ui/icons/BugReport';
 import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
@@ -32,6 +31,8 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import { useEntityPermission } from '@backstage/plugin-catalog-react';
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common';
 import { BackstageTheme } from '@backstage/theme';
+import { UnregisterEntity, UnregisterEntityOptions } from './UnregisterEntity';
+
 
 /** @public */
 export type EntityContextMenuClassKey = 'button';
@@ -55,16 +56,9 @@ interface ExtraContextMenuItem {
   onClick: () => void;
 }
 
-type VisibleType = 'visible' | 'hidden' | 'disabled';
-
-// unstable context menu option, eg: disable the unregister entity menu
-interface contextMenuOptions {
-  disableUnregister: boolean | VisibleType;
-}
-
 interface EntityContextMenuProps {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
-  UNSTABLE_contextMenuOptions?: contextMenuOptions;
+  UNSTABLE_contextMenuOptions?: UnregisterEntityOptions;
   onUnregisterEntity: () => void;
   onInspectEntity: () => void;
 }
@@ -81,6 +75,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
   const unregisterPermission = useEntityPermission(
     catalogEntityDeletePermission,
   );
+  const isAllowed = unregisterPermission.allowed;
 
   const onOpen = (event: React.SyntheticEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -108,35 +103,6 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
     <Divider key="the divider is here!" />,
   ];
 
-  const isBoolean =
-    typeof UNSTABLE_contextMenuOptions?.disableUnregister === 'boolean';
-
-  const disableUnregister =
-    (!unregisterPermission.allowed ||
-      (isBoolean
-        ? UNSTABLE_contextMenuOptions?.disableUnregister
-        : UNSTABLE_contextMenuOptions?.disableUnregister === 'disabled')) ??
-    false;
-
-  let unregisterButton = <></>;
-
-  if (UNSTABLE_contextMenuOptions?.disableUnregister !== 'hidden') {
-    unregisterButton = (
-      <MenuItem
-        onClick={() => {
-          onClose();
-          onUnregisterEntity();
-        }}
-        disabled={disableUnregister}
-      >
-        <ListItemIcon>
-          <CancelIcon fontSize="small" />
-        </ListItemIcon>
-        <ListItemText primary="Unregister entity" />
-      </MenuItem>
-    );
-  }
-
   return (
     <>
       <IconButton
@@ -162,7 +128,12 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
       >
         <MenuList>
           {extraItems}
-          {unregisterButton}
+          <UnregisterEntity
+            unregisterEntityOptions={UNSTABLE_contextMenuOptions}
+            isUnregisterAllowed={isAllowed}
+            onUnregisterEntity={onUnregisterEntity}
+            onClose={onClose}
+          />
           <MenuItem
             onClick={() => {
               onClose();

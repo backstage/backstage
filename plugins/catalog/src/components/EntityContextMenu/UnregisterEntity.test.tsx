@@ -21,10 +21,9 @@ import {
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
-import SearchIcon from '@material-ui/icons/Search';
 import { fireEvent, screen } from '@testing-library/react';
 import * as React from 'react';
-import { EntityContextMenu } from './EntityContextMenu';
+import { UnregisterEntity } from './UnregisterEntity';
 
 const mockPermissionApi = new MockPermissionApi();
 
@@ -43,15 +42,13 @@ describe('ComponentContextMenu', () => {
   it('should call onUnregisterEntity on button click', async () => {
     const mockCallback = jest.fn();
     await render(
-      <EntityContextMenu
+      <UnregisterEntity
+        unregisterEntityOptions={{ disableUnregister: 'visible' }}
+        isUnregisterAllowed
         onUnregisterEntity={mockCallback}
-        onInspectEntity={() => {}}
+        onClose={() => {}}
       />,
     );
-
-    const button = await screen.findByTestId('menu-button');
-    expect(button).toBeInTheDocument();
-    fireEvent.click(button);
 
     const unregister = await screen.findByText('Unregister entity');
     expect(unregister).toBeInTheDocument();
@@ -60,50 +57,24 @@ describe('ComponentContextMenu', () => {
     expect(mockCallback).toBeCalled();
   });
 
-  it('should call onInspectEntity on button click', async () => {
+  it('check Unregister entity button is disabled', async () => {
     const mockCallback = jest.fn();
 
-    await render(
-      <EntityContextMenu
-        onUnregisterEntity={() => {}}
-        onInspectEntity={mockCallback}
+    const { getByText } = await render(
+      <UnregisterEntity
+        unregisterEntityOptions={{ disableUnregister: 'disable' }}
+        isUnregisterAllowed
+        onUnregisterEntity={mockCallback}
+        onClose={() => {}}
       />,
     );
 
-    const button = await screen.findByTestId('menu-button');
-    expect(button).toBeInTheDocument();
-    fireEvent.click(button);
-
-    const unregister = await screen.findByText('Inspect entity');
+    const unregister = await screen.getByText('Unregister entity');
     expect(unregister).toBeInTheDocument();
-    fireEvent.click(unregister);
 
-    expect(mockCallback).toBeCalled();
-  });
-
-  it('supports extra items', async () => {
-    const extra = {
-      title: 'HELLO',
-      Icon: SearchIcon,
-      onClick: jest.fn(),
-    };
-
-    await render(
-      <EntityContextMenu
-        onUnregisterEntity={jest.fn()}
-        onInspectEntity={jest.fn()}
-        UNSTABLE_extraContextMenuItems={[extra]}
-      />,
-    );
-
-    const button = await screen.findByTestId('menu-button');
-    expect(button).toBeInTheDocument();
-    fireEvent.click(button);
-
-    const item = await screen.findByText('HELLO');
-    expect(item).toBeInTheDocument();
-    fireEvent.click(item);
-
-    expect(extra.onClick).toBeCalled();
+    const unregisterSpanItem = getByText(/Unregister entity/);
+    const unregisterMenuListItem =
+      unregisterSpanItem?.parentElement?.parentElement;
+    expect(unregisterMenuListItem).toHaveAttribute('aria-disabled');
   });
 });

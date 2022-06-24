@@ -15,4 +15,8 @@
  */
 
 export { EntityLayout } from './EntityLayout';
-export type { EntityLayoutProps, EntityLayoutRouteProps } from './EntityLayout';
+export type {
+  EntityLayoutProps,
+  EntityLayoutRouteProps,
+  EntityContextMenuOptions,
+} from './EntityLayout';
