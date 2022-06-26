@@ -15,6 +15,11 @@
  */
 import { Credentials } from 'aws-sdk';
 
+/**
+ * A factory for providing user-specified AWS credentials for a given AWS account.
+ *
+ * @public
+ */
 export type AWSCredentialFactory = (
   awsAccountId: string,
 ) => Promise<Credentials>;

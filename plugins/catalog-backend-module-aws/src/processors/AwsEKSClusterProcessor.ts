@@ -29,6 +29,13 @@ import { AWSCredentialFactory } from '../types';
 const ACCOUNTID_ANNOTATION: string = 'amazonaws.com/account-id';
 const ARN_ANNOTATION: string = 'amazonaws.com/arn';
 
+/**
+ * A processor for automatic discovery of resources from EKS clusters. Handles the
+ * `aws-eks` location type, and target accounts/regions of the form
+ * `<accountId>/<region>`.
+ *
+ * @public
+ */
 export class AwsEKSClusterProcessor implements CatalogProcessor {
   private credentialsFactory?: AWSCredentialFactory;
 
