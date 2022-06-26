@@ -16,6 +16,11 @@
 
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import { CATALOG_FILTER_EXISTS, CatalogApi } from '@backstage/catalog-client';
+import {
+  ANNOTATION_KUBERNETES_API_SERVER,
+  ANNOTATION_KUBERNETES_API_SERVER_CA,
+  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
+} from '@backstage/catalog-model';
 
 export class CatalogClusterLocator implements KubernetesClustersSupplier {
   private catalogClient: CatalogApi;
@@ -31,16 +36,13 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
   async getClusters(): Promise<ClusterDetails[]> {
     const clusters = await this.catalogClient.getEntities({
       filter: [
-        { 'spec.type': 'kubernetes-cluster' },
         {
+          kind: 'Resource',
+          'spec.type': 'kubernetes-cluster',
           'metadata.annotations.kubernetes.io/api-server':
             CATALOG_FILTER_EXISTS,
-        },
-        {
           'metadata.annotations.kubernetes.io/api-server-certificate-authority':
             CATALOG_FILTER_EXISTS,
-        },
-        {
           'metadata.annotations.kubernetes.io/auth-provider':
             CATALOG_FILTER_EXISTS,
         },
@@ -49,16 +51,11 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
     return clusters.items.map(entity => {
       const clusterDetails: ClusterDetails = {
         name: entity.metadata.name,
-        // @ts-ignore filtered out by catalog-client query.
-        url: entity.metadata.annotations['kubernetes.io/api-server'],
+        url: entity.metadata.annotations![ANNOTATION_KUBERNETES_API_SERVER]!,
         caData:
-          // @ts-ignore filtered out by catalog-client query.
-          entity.metadata.annotations[
-            'kubernetes.io/api-server-certificate-authority'
-          ],
+          entity.metadata.annotations![ANNOTATION_KUBERNETES_API_SERVER_CA]!,
         authProvider:
-          // @ts-ignore filtered out by catalog-client query.
-          entity.metadata.annotations['kubernetes.io/auth-provider'],
+          entity.metadata.annotations![ANNOTATION_KUBERNETES_AUTH_PROVIDER]!,
       };
 
       return clusterDetails;

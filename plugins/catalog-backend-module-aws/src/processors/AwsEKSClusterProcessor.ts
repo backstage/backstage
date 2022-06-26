@@ -18,15 +18,16 @@ import {
   CatalogProcessorEmit,
   LocationSpec,
 } from '@backstage/plugin-catalog-backend';
+import {
+  ANNOTATION_KUBERNETES_API_SERVER,
+  ANNOTATION_KUBERNETES_API_SERVER_CA,
+  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
+} from '@backstage/catalog-model';
 import { Credentials, EKS } from 'aws-sdk';
 import { AWSCredentialFactory } from '../types';
 
 const ACCOUNTID_ANNOTATION: string = 'amazonaws.com/account-id';
 const ARN_ANNOTATION: string = 'amazonaws.com/arn';
-const KUBERNETES_API_SERVER_ANNOTATION = 'kubernetes.io/api-server';
-const KUBERNETES_API_SERVER_CA_ANNOTATION =
-  'kubernetes.io/api-server-certificate-authority';
-const KUBERNETES_AUTH_METHOD_ANNOTATION = 'kubernetes.io/auth-provider';
 
 export class AwsEKSClusterProcessor implements CatalogProcessor {
   private credentialsFactory?: AWSCredentialFactory;
@@ -82,11 +83,11 @@ export class AwsEKSClusterProcessor implements CatalogProcessor {
               annotations: {
                 [ACCOUNTID_ANNOTATION]: accountId,
                 [ARN_ANNOTATION]: describedCluster.cluster.arn || '',
-                [KUBERNETES_API_SERVER_ANNOTATION]:
+                [ANNOTATION_KUBERNETES_API_SERVER]:
                   describedCluster.cluster.endpoint || '',
-                [KUBERNETES_API_SERVER_CA_ANNOTATION]:
+                [ANNOTATION_KUBERNETES_API_SERVER_CA]:
                   describedCluster.cluster.certificateAuthority?.data || '',
-                [KUBERNETES_AUTH_METHOD_ANNOTATION]: 'aws',
+                [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'aws',
               },
               name: this.normalizeName(describedCluster.cluster.name as string),
               namespace: 'default',
