@@ -113,7 +113,6 @@ type Props = {
   tooltip?: string;
   type?: string;
   typeLink?: string;
-  className?: string | '';
 };
 
 type TypeFragmentProps = {
@@ -209,7 +208,6 @@ export function Header(props: PropsWithChildren<Props>) {
     tooltip,
     type,
     typeLink,
-    className,
   } = props;
   const classes = useStyles();
   const configApi = useApi(configApiRef);
@@ -222,7 +220,7 @@ export function Header(props: PropsWithChildren<Props>) {
   return (
     <>
       <Helmet titleTemplate={titleTemplate} defaultTitle={defaultTitle} />
-      <header style={style} className={[classes.header, className].join(' ')}>
+      <header style={style} className={classes.header}>
         <Box className={classes.leftItemsBox}>
           <TypeFragment
             classes={classes}

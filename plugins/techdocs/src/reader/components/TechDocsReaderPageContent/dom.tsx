@@ -81,25 +81,16 @@ export const useTechDocsReaderDom = (
       if (isMobileMedia) {
         element.style.top = '0px';
       } else {
+        const page = document?.querySelector('.techdocs-reader-page');
+        const pageTop = page?.getBoundingClientRect().top ?? 0;
         let domTop = dom.getBoundingClientRect().top ?? 0;
+
         const tabs = dom.querySelector('.md-container > .md-tabs');
         const tabsHeight = tabs?.getBoundingClientRect().height ?? 0;
 
-        // When docs are shown in entity pages this method to reposition the sidebars on scroll
-        // do not consider the header and tabs.
-        const entityPageHeader = document.querySelector<HTMLElement>(
-          '.entity-page-header',
-        );
-        const entityPageTabs =
-          document.querySelector<HTMLElement>('.entity-page-tabs');
-        const entityPageHeaderTop =
-          entityPageHeader?.getBoundingClientRect().height ?? 0;
-        const entityPageTabsTop =
-          entityPageTabs?.getBoundingClientRect().height ?? 0;
-
         // the sidebars should not scroll beyond the total height of the header and tabs
-        if (domTop < entityPageHeaderTop + entityPageTabsTop) {
-          domTop = entityPageHeaderTop + entityPageTabsTop;
+        if (domTop < pageTop) {
+          domTop = pageTop;
         }
         element.style.top = `${Math.max(domTop, 0) + tabsHeight}px`;
       }
