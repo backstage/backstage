@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-kubernetes-backend': minor
+'@backstage/plugin-kubernetes-backend': patch
 ---
 
 Add support for Kubernetes clusters in the catalog.
@@ -9,8 +9,8 @@ discovery. To update your backend, you will want to do something like the follow
 
 ```javascript
 KubernetesBuilder.createBuilder({
-   config: env.config,
-   logger: env.config,
-   discovery: env.discovery,
- })
+  config: env.config,
+  logger: env.config,
+  discovery: env.discovery,
+});
 ```
