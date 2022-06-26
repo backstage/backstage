@@ -38,7 +38,7 @@
     "serialize-error": "^8.0.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.2-next.0",
+    "@backstage/cli": "^0.17.3-next.0",
     "@types/jest": "^26.0.7"
   },
   "files": [

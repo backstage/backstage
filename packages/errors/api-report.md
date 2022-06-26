@@ -15,6 +15,17 @@ export class AuthenticationError extends CustomErrorBase {}
 export class ConflictError extends CustomErrorBase {}
 
 // @public
+export type ConsumedResponse = {
+  readonly headers: Headers;
+  readonly ok: boolean;
+  readonly redirected: boolean;
+  readonly status: number;
+  readonly statusText: string;
+  readonly type: ResponseType;
+  readonly url: string;
+};
+
+// @public
 export class CustomErrorBase extends Error {
   constructor(message?: string, cause?: Error | unknown);
   readonly cause?: Error | undefined;
@@ -67,15 +78,21 @@ export class NotModifiedError extends CustomErrorBase {}
 
 // @public
 export function parseErrorResponseBody(
-  response: Response,
+  response: ConsumedResponse & {
+    text(): Promise<string>;
+  },
 ): Promise<ErrorResponseBody>;
 
 // @public
 export class ResponseError extends Error {
   readonly body: ErrorResponseBody;
   readonly cause: Error;
-  static fromResponse(response: Response): Promise<ResponseError>;
-  readonly response: Response;
+  static fromResponse(
+    response: ConsumedResponse & {
+      text(): Promise<string>;
+    },
+  ): Promise<ResponseError>;
+  readonly response: ConsumedResponse;
 }
 
 // @public

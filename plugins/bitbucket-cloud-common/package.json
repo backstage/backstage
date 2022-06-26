@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-bitbucket-cloud-common",
   "description": "Common functionalities for bitbucket-cloud plugins",
-  "version": "0.1.0",
+  "version": "0.1.1-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -28,11 +28,11 @@
     "update-models": "yarn refresh-schema && yarn generate-models && yarn reduce-models"
   },
   "dependencies": {
-    "@backstage/integration": "^1.2.1",
+    "@backstage/integration": "^1.2.2-next.0",
     "cross-fetch": "^3.1.5"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.2",
+    "@backstage/cli": "^0.17.3-next.0",
     "@openapitools/openapi-generator-cli": "^2.4.26",
     "msw": "^0.42.0",
     "ts-morph": "^15.0.0"

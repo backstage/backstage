@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export * from './conditions';
 export {
   DEFAULT_NAMESPACE,
   ANNOTATION_EDIT_URL,

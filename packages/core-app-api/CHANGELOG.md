@@ -1,5 +1,11 @@
 # @backstage/core-app-api
 
+## 1.0.4-next.0
+
+### Patch Changes
+
+- 8fe2357101: The `signOut` method of the `IdentityApi` will now navigate the user back to the base URL of the app as indicated by the `app.baseUrl` config.
+
 ## 1.0.3
 
 ### Patch Changes

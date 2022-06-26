@@ -266,6 +266,36 @@ export { GroupEntityV1alpha1 };
 // @public
 export const groupEntityV1alpha1Validator: KindValidator;
 
+// @public (undocumented)
+export function isApiEntity(entity: Entity): entity is ApiEntityV1alpha1;
+
+// @public (undocumented)
+export function isComponentEntity(
+  entity: Entity,
+): entity is ComponentEntityV1alpha1;
+
+// @public (undocumented)
+export function isDomainEntity(entity: Entity): entity is DomainEntityV1alpha1;
+
+// @public (undocumented)
+export function isGroupEntity(entity: Entity): entity is GroupEntityV1alpha1;
+
+// @public (undocumented)
+export function isLocationEntity(
+  entity: Entity,
+): entity is LocationEntityV1alpha1;
+
+// @public (undocumented)
+export function isResourceEntity(
+  entity: Entity,
+): entity is ResourceEntityV1alpha1;
+
+// @public (undocumented)
+export function isSystemEntity(entity: Entity): entity is SystemEntityV1alpha1;
+
+// @public (undocumented)
+export function isUserEntity(entity: Entity): entity is UserEntityV1alpha1;
+
 // @public
 export type KindValidator = {
   check(entity: Entity): Promise<boolean>;
