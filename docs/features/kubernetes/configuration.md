@@ -62,7 +62,7 @@ Valid cluster locator methods are:
 - [`gke`](#gke)
 - [custom `KubernetesClustersSupplier`](#custom-kubernetesclusterssupplier)
 
-#### `config`
+#### `catalog`
 
 This cluster locator method will read cluster information from the catalog.
 
