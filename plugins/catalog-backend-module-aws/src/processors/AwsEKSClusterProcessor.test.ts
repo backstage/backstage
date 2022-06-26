@@ -21,7 +21,7 @@ import aws from 'aws-sdk';
 describe('AwsEKSClusterProcessor', () => {
   AWSMock.setSDKInstance(aws);
   describe('readLocation', () => {
-    const processor = new (AwsEKSClusterProcessor as any)();
+    const processor = new (AwsEKSClusterProcessor as any)({});
     const location = { type: 'aws-eks', target: '957140518395/us-west-2' };
     const emit = jest.fn();
     it('generates cluster correctly', async () => {
