@@ -32,8 +32,8 @@ const ARN_ANNOTATION: string = 'amazonaws.com/arn';
 export class AwsEKSClusterProcessor implements CatalogProcessor {
   private credentialsFactory?: AWSCredentialFactory;
 
-  constructor(credentialsFactory?: AWSCredentialFactory) {
-    this.credentialsFactory = credentialsFactory;
+  constructor(options: { credentialsFactory?: AWSCredentialFactory }) {
+    this.credentialsFactory = options.credentialsFactory;
   }
 
   getProcessorName(): string {

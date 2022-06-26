@@ -15,6 +15,17 @@ export interface AlphaEntity extends Entity {
 export const ANNOTATION_EDIT_URL = 'backstage.io/edit-url';
 
 // @public
+export const ANNOTATION_KUBERNETES_API_SERVER = 'kubernetes.io/api-server';
+
+// @public
+export const ANNOTATION_KUBERNETES_API_SERVER_CA =
+  'kubernetes.io/api-server-certificate-authority';
+
+// @public
+export const ANNOTATION_KUBERNETES_AUTH_PROVIDER =
+  'kubernetes.io/auth-provider';
+
+// @public
 export const ANNOTATION_LOCATION = 'backstage.io/managed-by-location';
 
 // @public
