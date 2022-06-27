@@ -68,7 +68,7 @@ describe('Default Processing Database', () => {
     await db<DbRefreshStateRow>('refresh_state').insert(ref);
   };
 
-  const insertRefreshKeysRow = async (db: Knex, ref) => {
+  const insertRefreshKeysRow = async (db: Knex, ref: DbRefreshKeysRow) => {
     await db('refresh_keys').insert(ref);
   };
 
@@ -1432,7 +1432,7 @@ describe('Default Processing Database', () => {
       async databaseId => {
         const { knex, db } = await createDatabase(databaseId);
 
-        await knex<DbRefreshKeysRow>('refresh_keys').insert({
+        await insertRefreshKeysRow(knex, {
           entity_ref: 'location:default/root-1',
           key: 'foo',
         });
