@@ -47,7 +47,7 @@ const useIconStyles = makeStyles(
       textAlign: 'center',
     },
     disabled: {
-      color: 'gray',
+      color: theme.palette.text.secondary,
       cursor: 'default',
     },
     primary: {

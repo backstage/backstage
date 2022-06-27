@@ -2,13 +2,6 @@
 # yarn lockfile v1
 
 
-"@acuris/aws-es-connection@^2.2.0":
-  version "2.3.0"
-  resolved "https://registry.npmjs.org/@acuris/aws-es-connection/-/aws-es-connection-2.3.0.tgz#bfa736163bdfe2e7fc12f8529eead949fb4e73fe"
-  integrity sha512-k8jSkdNwpSPty7oautGaJXoAzzPjP7WKbmaAE9i+vJrKWg9n2UtjesHeDhOAPzV9MG8EzXofGozYjaLdeTP+Ug==
-  dependencies:
-    aws4 "^1.11.0"
-
 "@ampproject/remapping@^2.1.0":
   version "2.1.2"
   resolved "https://registry.npmjs.org/@ampproject/remapping/-/remapping-2.1.2.tgz#4edca94973ded9630d20101cd8559cedb8d8bd34"
@@ -2079,10 +2072,10 @@
     find-my-way "^4.3.3"
     into-stream "^6.0.0"
 
-"@elastic/elasticsearch@7.13.0":
-  version "7.13.0"
-  resolved "https://registry.npmjs.org/@elastic/elasticsearch/-/elasticsearch-7.13.0.tgz#6dcf511dfa91187e22c81e54f41f4bd0fd96b4d6"
-  integrity sha512-WgwLWo2p9P2tdqzBGX9fHeG8p5IOTXprXNTECQG2mJ7z9n93N5AFBJpEw4d35tWWeCWi9jI13A2wzQZH7XZ/xw==
+"@elastic/elasticsearch@^7.13.0":
+  version "7.17.0"
+  resolved "https://registry.npmjs.org/@elastic/elasticsearch/-/elasticsearch-7.17.0.tgz#589fb219234cf1b0da23744e82b1d25e2fe9a797"
+  integrity sha512-5QLPCjd0uLmLj1lSuKSThjNpq39f6NmlTy9ROLFwG5gjyTgpwSqufDeYG/Fm43Xs05uF7WcscoO7eguI3HuuYA==
   dependencies:
     debug "^4.3.1"
     hpagent "^0.1.1"
@@ -5127,6 +5120,16 @@
     rxjs "7.5.5"
     tslib "2.0.3"
 
+"@opensearch-project/opensearch@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/@opensearch-project/opensearch/-/opensearch-1.1.0.tgz#8b3c8b4cbcea01755ba092d2997bf0b4ca7f22f7"
+  integrity sha512-1TDw92JL8rD1b2QGluqBsIBLIiD5SGciIpz4qkrGAe9tcdfQ1ptub5e677rhWl35UULSjr6hP8M6HmISZ/M5HQ==
+  dependencies:
+    debug "^4.3.1"
+    hpagent "^0.1.1"
+    ms "^2.1.3"
+    secure-json-parse "^2.4.0"
+
 "@opentelemetry/api@^1.0.1":
   version "1.0.4"
   resolved "https://registry.npmjs.org/@opentelemetry/api/-/api-1.0.4.tgz#a167e46c10d05a07ab299fc518793b0cff8f6924"
@@ -5203,9 +5206,9 @@
     "@react-hookz/deep-equal" "^1.0.1"
 
 "@react-hookz/web@^14.0.0":
-  version "14.2.2"
-  resolved "https://registry.npmjs.org/@react-hookz/web/-/web-14.2.2.tgz#eee0085f954e5b62d0a6c5b20d8786c28abfb9ad"
-  integrity sha512-6FeZHKV3FFOYnbSJMkkqXDoMuIX0HEFJlDF4LpHR7RsA3zrH2xzhtF8nSYZ+pG6fDIqYKID9yQuILFmbAWaqCQ==
+  version "14.3.0"
+  resolved "https://registry.npmjs.org/@react-hookz/web/-/web-14.3.0.tgz#ccfcfa65aa1e56ca5a3b258a9bd987e0daa67bae"
+  integrity sha512-lmZ9rAoHbBFZo0v72cjHMCY/hz9Wp6WQd/Kx53A+HumxkAaJT3AuBkd9jJgrtdsNiHdG0IEr93/oOza3+G6kVA==
   dependencies:
     "@react-hookz/deep-equal" "^1.0.2"
 
@@ -5419,6 +5422,15 @@
   integrity sha512-MI4Xx6LHs4Webyvi6EbspgyAb4D2Q2VtnCQ1blOJcoLS6mVa8lNN2rkIy1CVxfTUpoyIbCTkXES1rLXztFD1lg==
   dependencies:
     any-observable "^0.3.0"
+
+"@short.io/opensearch-mock@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.npmjs.org/@short.io/opensearch-mock/-/opensearch-mock-0.3.1.tgz#41678404b94342ac60263a8df590f9b1efa80622"
+  integrity sha512-gwLTzxJrZNGVQNn+FHLhpw7at3jHb6tNczq2hvFPJ3C3nLaCBRkbP2IQHrIDzklLBVFV83Ug0Xgs73A5o9eLtg==
+  dependencies:
+    fast-deep-equal "^3.1.3"
+    find-my-way "^4.3.3"
+    into-stream "^6.0.0"
 
 "@sideway/address@^4.1.0":
   version "4.1.1"
@@ -8250,6 +8262,13 @@ available-typed-arrays@^1.0.2:
   dependencies:
     array-filter "^1.0.0"
 
+aws-os-connection@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.npmjs.org/aws-os-connection/-/aws-os-connection-0.1.0.tgz#02c1be08cf63448c5bdc9d47b03b7ad3222b662c"
+  integrity sha512-WBN2S/5zgzfPpEiOTEW7IPJX+hlq+AQeAVKK4AL/Th0SfRRKu6a46i4aZKovQslBkKnmcSFvy+mHSJ299N8YWA==
+  dependencies:
+    aws4 "^1.11.0"
+
 aws-sdk-mock@^5.2.1:
   version "5.7.0"
   resolved "https://registry.npmjs.org/aws-sdk-mock/-/aws-sdk-mock-5.7.0.tgz#b2a9454c78d008186c3f1a460b79cdb9cc9dfdc4"
@@ -9245,9 +9264,9 @@ caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001286:
   integrity sha512-5v7LFQU4Sb/qvkz7JcZkvtSH1Ko+1x2kgo3ocdBeMGZSOFpuE1kkm0kpTwLtWeFrw5qw08ulLxJjVIXIS8MkiQ==
 
 canvas@^2.6.1:
-  version "2.9.1"
-  resolved "https://registry.npmjs.org/canvas/-/canvas-2.9.1.tgz#58ec841cba36cef0675bc7a74ebd1561f0b476b0"
-  integrity sha512-vSQti1uG/2gjv3x6QLOZw7TctfufaerTWbVe+NSduHxxLGB+qf3kFgQ6n66DSnuoINtVUjrLLIK2R+lxrBG07A==
+  version "2.9.3"
+  resolved "https://registry.npmjs.org/canvas/-/canvas-2.9.3.tgz#8723c4f970442d4cdcedba5221579f9660a58bdb"
+  integrity sha512-WOUM7ghii5TV2rbhaZkh1youv/vW1/Canev6Yx6BG2W+1S07w8jKZqKkPnbiPpQEDsnJdN8ouDd7OvQEGXDcUw==
   dependencies:
     "@mapbox/node-pre-gyp" "^1.0.0"
     nan "^2.15.0"
