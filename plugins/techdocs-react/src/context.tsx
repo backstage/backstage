@@ -47,11 +47,16 @@ const areEntityRefsEqual = (
   );
 };
 
+const arePathsEqual = (prevPath?: string, nextPath?: string) => {
+  return prevPath === nextPath;
+};
+
 /**
  * @public type for the value of the TechDocsReaderPageContext
  */
 export type TechDocsReaderPageValue = {
   metadata: AsyncState<TechDocsMetadata>;
+  path: string;
   entityRef: CompoundEntityRef;
   entityMetadata: AsyncState<TechDocsEntityMetadata>;
   shadowRoot?: ShadowRoot;
@@ -67,6 +72,7 @@ export type TechDocsReaderPageValue = {
 };
 
 const defaultTechDocsReaderPageValue: TechDocsReaderPageValue = {
+  path: '',
   title: '',
   subtitle: '',
   setTitle: () => {},
@@ -96,6 +102,7 @@ export type TechDocsReaderPageProviderRenderFunction = (
  * @public
  */
 export type TechDocsReaderPageProviderProps = {
+  path?: string;
   entityRef: CompoundEntityRef;
   children: TechDocsReaderPageProviderRenderFunction | ReactNode;
 };
@@ -105,7 +112,7 @@ export type TechDocsReaderPageProviderProps = {
  * @public
  */
 export const TechDocsReaderPageProvider = memo(
-  ({ entityRef, children }: TechDocsReaderPageProviderProps) => {
+  ({ path = '', entityRef, children }: TechDocsReaderPageProviderProps) => {
     const techdocsApi = useApi(techdocsApiRef);
 
     const metadata = useAsync(async () => {
@@ -126,6 +133,7 @@ export const TechDocsReaderPageProvider = memo(
 
     const value = {
       metadata,
+      path,
       entityRef,
       entityMetadata,
       shadowRoot,
@@ -144,7 +152,10 @@ export const TechDocsReaderPageProvider = memo(
     );
   },
   (prevProps, nextProps) => {
-    return areEntityRefsEqual(prevProps.entityRef, nextProps.entityRef);
+    return (
+      areEntityRefsEqual(prevProps.entityRef, nextProps.entityRef) &&
+      arePathsEqual(prevProps.path, nextProps.path)
+    );
   },
 );
 
