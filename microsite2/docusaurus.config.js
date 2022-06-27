@@ -68,8 +68,8 @@ module.exports = {
       respectPrefersColorScheme: false,
     },
     algolia: {
-      appId: '123',
-      apiKey: '123',
+      appId: 'AZYC4ZFNTN',
+      apiKey: '7dbd2089b0d445ee0d87db71abfc794f',
       indexName: 'backstage',
       searchParameters: {},
     },
