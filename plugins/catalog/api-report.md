@@ -136,6 +136,13 @@ export const CatalogTable: {
     createSpecLifecycleColumn(): TableColumn<CatalogTableRow>;
     createMetadataDescriptionColumn(): TableColumn<CatalogTableRow>;
     createTagsColumn(): TableColumn<CatalogTableRow>;
+    createTitleColumn(
+      options?:
+        | {
+            hidden?: boolean | undefined;
+          }
+        | undefined,
+    ): TableColumn<CatalogTableRow>;
   }>;
 };
 

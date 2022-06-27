@@ -68,6 +68,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
 
   const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(() => {
     return [
+      columnFactories.createTitleColumn({ hidden: true }),
       columnFactories.createNameColumn({ defaultKind: filters.kind?.value }),
       ...createEntitySpecificColumns(),
       columnFactories.createMetadataDescriptionColumn(),
