@@ -50,8 +50,8 @@ export type EntityProcessingResult =
  * @public
  */
 export type RefreshKeyData = {
-  key: String;
-  entityRef: String;
+  key: string;
+  entityRef: string;
 };
 
 /**

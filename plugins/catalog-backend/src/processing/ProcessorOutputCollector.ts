@@ -24,7 +24,7 @@ import { assertError } from '@backstage/errors';
 import { Logger } from 'winston';
 import { CatalogProcessorResult, EntityRelationSpec } from '../api';
 import { locationSpecToLocationEntity } from '../util/conversion';
-import { DeferredEntity } from './types';
+import { DeferredEntity, RefreshKeyData } from './types';
 import {
   getEntityLocationRef,
   getEntityOriginLocationRef,
@@ -38,10 +38,7 @@ export class ProcessorOutputCollector {
   private readonly errors = new Array<Error>();
   private readonly relations = new Array<EntityRelationSpec>();
   private readonly deferredEntities = new Array<DeferredEntity>();
-  private readonly refreshKeys = new Array<{
-    key: String;
-    entityRef: String;
-  }>();
+  private readonly refreshKeys = new Array<RefreshKeyData>();
   private done = false;
 
   constructor(
