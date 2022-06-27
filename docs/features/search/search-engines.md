@@ -80,15 +80,16 @@ const searchEngine = await ElasticSearchSearchEngine.initialize({
 const indexBuilder = new IndexBuilder({ logger: env.logger, searchEngine });
 ```
 
-For the engine to be available, your backend package needs a dependency into
+For the engine to be available, your backend package needs a dependency on
 package `@backstage/plugin-search-backend-module-elasticsearch`.
 
 ElasticSearch needs some additional configuration before it is ready to use
 within your instance. The configuration options are documented in the
 [configuration schema definition file.](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-elasticsearch/config.d.ts)
 
-The underlying functionality is using official ElasticSearch client version 7.x,
-meaning that ElasticSearch version 7 is the only one confirmed to be supported.
+The underlying functionality uses either the official ElasticSearch client
+version 7.x (meaning that ElasticSearch version 7 is the only one confirmed to
+be supported), or the OpenSearch client, when the `aws` provider is configured.
 
 Should you need to create your own bespoke search experiences that require more
 than just a query translator (such as faceted search or Relay pagination), you
@@ -97,9 +98,19 @@ search clients. The version of the client need not be the same as one used
 internally by the elastic search engine plugin. For example:
 
 ```typescript
-import { Client } from '@elastic/elastic-search';
+import { isOpenSearchCompatible } from '@backstage/plugin-search-backend-module-elasticsearch';
+import { Client as ElasticClient } from '@elastic/elastic-search';
+import { Client as OpenSearchClient } from '@opensearch-project/opensearch';
 
-const client = searchEngine.newClient(options => new Client(options));
+const client = searchEngine.newClient(options => {
+  // In reality, you would only import / instantiate one of the following, but
+  // for illustrative purposes, here are both:
+  if (isOpenSearchCompatible(options)) {
+    return new OpenSearchClient(options);
+  } else {
+    return new ElasticClient(options);
+  }
+});
 ```
 
 #### Set custom index template
