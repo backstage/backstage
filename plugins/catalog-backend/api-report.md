@@ -269,6 +269,13 @@ export type CatalogProcessorParser = (options: {
 }) => AsyncIterable<CatalogProcessorResult>;
 
 // @public (undocumented)
+export type CatalogProcessorRefreshKeysResult = {
+  type: 'refresh';
+  entityRef: string;
+  key: string;
+};
+
+// @public (undocumented)
 export type CatalogProcessorRelationResult = {
   type: 'relation';
   relation: EntityRelationSpec;
@@ -279,7 +286,8 @@ export type CatalogProcessorResult =
   | CatalogProcessorLocationResult
   | CatalogProcessorEntityResult
   | CatalogProcessorRelationResult
-  | CatalogProcessorErrorResult;
+  | CatalogProcessorErrorResult
+  | CatalogProcessorRefreshKeysResult;
 
 // @public (undocumented)
 export class CodeOwnersProcessor implements CatalogProcessor {
@@ -545,7 +553,11 @@ export class PlaceholderProcessor implements CatalogProcessor {
   // (undocumented)
   getProcessorName(): string;
   // (undocumented)
-  preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
+  preProcessEntity(
+    entity: Entity,
+    location: LocationSpec,
+    emit: CatalogProcessorEmit,
+  ): Promise<Entity>;
 }
 
 // @public (undocumented)
@@ -601,6 +613,7 @@ export const processingResult: Readonly<{
     newEntity: Entity,
   ) => CatalogProcessorResult;
   readonly relation: (spec: EntityRelationSpec) => CatalogProcessorResult;
+  readonly refresh: (entityRef: string, key: string) => CatalogProcessorResult;
 }>;
 
 // @public (undocumented)
