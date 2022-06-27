@@ -83,7 +83,7 @@ export type TechDocsReaderPageProps = {
  * @public
  */
 export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
-  const { kind, name, namespace } = useParams();
+  const { kind, name, namespace, '*': path } = useParams();
   const { children, entityRef = { kind, name, namespace } } = props;
 
   const outlet = useOutlet();
@@ -97,14 +97,14 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
     });
 
     return (
-      <TechDocsReaderPageProvider entityRef={entityRef}>
+      <TechDocsReaderPageProvider entityRef={entityRef} path={path}>
         {(page as JSX.Element) || <TechDocsReaderLayout />}
       </TechDocsReaderPageProvider>
     );
   }
 
   return (
-    <TechDocsReaderPageProvider entityRef={entityRef}>
+    <TechDocsReaderPageProvider entityRef={entityRef} path={path}>
       {({ metadata, entityMetadata, onReady }) => (
         <Page themeId="documentation">
           {children instanceof Function
