@@ -22,7 +22,7 @@ import { PodStatus } from '@kubernetes/client-node/dist/top';
 const fetchObjectsForService = jest.fn();
 const fetchPodMetricsByNamespace = jest.fn();
 
-const getClustersByServiceId = jest.fn();
+const getClustersByEntity = jest.fn();
 
 const POD_METRICS_FIXTURE = {
   containers: [],
@@ -166,13 +166,15 @@ describe('handleGetKubernetesObjectsForService', () => {
   });
 
   it('retrieve objects for one cluster', async () => {
-    getClustersByServiceId.mockImplementation(() =>
-      Promise.resolve([
-        {
-          name: 'test-cluster',
-          authProvider: 'serviceAccount',
-        },
-      ]),
+    getClustersByEntity.mockImplementation(() =>
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'test-cluster',
+            authProvider: 'serviceAccount',
+          },
+        ],
+      }),
     );
 
     mockFetch(fetchObjectsForService);
@@ -185,7 +187,7 @@ describe('handleGetKubernetesObjectsForService', () => {
         fetchPodMetricsByNamespace,
       },
       serviceLocator: {
-        getClustersByServiceId,
+        getClustersByEntity,
       },
       customResources: [],
     });
@@ -207,9 +209,10 @@ describe('handleGetKubernetesObjectsForService', () => {
           owner: 'joe',
         },
       },
+      auth: {},
     });
 
-    expect(getClustersByServiceId.mock.calls.length).toBe(1);
+    expect(getClustersByEntity.mock.calls.length).toBe(1);
     expect(fetchObjectsForService.mock.calls.length).toBe(1);
     expect(fetchPodMetricsByNamespace.mock.calls.length).toBe(1);
     expect(fetchPodMetricsByNamespace.mock.calls[0][1]).toBe(
@@ -265,13 +268,15 @@ describe('handleGetKubernetesObjectsForService', () => {
   });
 
   it('dont call top for the same namespace twice', async () => {
-    getClustersByServiceId.mockImplementation(() =>
-      Promise.resolve([
-        {
-          name: 'test-cluster',
-          authProvider: 'serviceAccount',
-        },
-      ]),
+    getClustersByEntity.mockImplementation(() =>
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'test-cluster',
+            authProvider: 'serviceAccount',
+          },
+        ],
+      }),
     );
 
     fetchObjectsForService.mockImplementation((_: ObjectFetchParams) =>
@@ -314,7 +319,7 @@ describe('handleGetKubernetesObjectsForService', () => {
         fetchPodMetricsByNamespace,
       },
       serviceLocator: {
-        getClustersByServiceId,
+        getClustersByEntity,
       },
       customResources: [],
     });
@@ -336,9 +341,10 @@ describe('handleGetKubernetesObjectsForService', () => {
           owner: 'joe',
         },
       },
+      auth: {},
     });
 
-    expect(getClustersByServiceId.mock.calls.length).toBe(1);
+    expect(getClustersByEntity.mock.calls.length).toBe(1);
     expect(fetchObjectsForService.mock.calls.length).toBe(1);
     expect(fetchPodMetricsByNamespace.mock.calls.length).toBe(2);
     expect(fetchPodMetricsByNamespace.mock.calls[0][1]).toBe('ns-a');
@@ -383,18 +389,20 @@ describe('handleGetKubernetesObjectsForService', () => {
   });
 
   it('retrieve objects for two clusters', async () => {
-    getClustersByServiceId.mockImplementation(() =>
-      Promise.resolve([
-        {
-          name: 'test-cluster',
-          authProvider: 'serviceAccount',
-          dashboardUrl: 'https://k8s.foo.coom',
-        },
-        {
-          name: 'other-cluster',
-          authProvider: 'google',
-        },
-      ]),
+    getClustersByEntity.mockImplementation(() =>
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'test-cluster',
+            authProvider: 'serviceAccount',
+            dashboardUrl: 'https://k8s.foo.coom',
+          },
+          {
+            name: 'other-cluster',
+            authProvider: 'google',
+          },
+        ],
+      }),
     );
 
     mockFetch(fetchObjectsForService);
@@ -407,15 +415,12 @@ describe('handleGetKubernetesObjectsForService', () => {
         fetchPodMetricsByNamespace,
       },
       serviceLocator: {
-        getClustersByServiceId,
+        getClustersByEntity,
       },
       customResources: [],
     });
 
     const result = await sut.getKubernetesObjectsByEntity({
-      auth: {
-        google: 'google_token_123',
-      },
       entity: {
         apiVersion: 'backstage.io/v1beta1',
         kind: 'Component',
@@ -432,9 +437,12 @@ describe('handleGetKubernetesObjectsForService', () => {
           owner: 'joe',
         },
       },
+      auth: {
+        google: 'google_token_123',
+      },
     });
 
-    expect(getClustersByServiceId.mock.calls.length).toBe(1);
+    expect(getClustersByEntity.mock.calls.length).toBe(1);
     expect(fetchObjectsForService.mock.calls.length).toBe(2);
     expect(result).toStrictEqual({
       items: [
@@ -527,21 +535,23 @@ describe('handleGetKubernetesObjectsForService', () => {
     });
   });
   it('retrieve objects for three clusters, only two have resources and show in ui', async () => {
-    getClustersByServiceId.mockImplementation(() =>
-      Promise.resolve([
-        {
-          name: 'test-cluster',
-          authProvider: 'serviceAccount',
-        },
-        {
-          name: 'other-cluster',
-          authProvider: 'google',
-        },
-        {
-          name: 'empty-cluster',
-          authProvider: 'google',
-        },
-      ]),
+    getClustersByEntity.mockImplementation(() =>
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'test-cluster',
+            authProvider: 'serviceAccount',
+          },
+          {
+            name: 'other-cluster',
+            authProvider: 'google',
+          },
+          {
+            name: 'empty-cluster',
+            authProvider: 'google',
+          },
+        ],
+      }),
     );
 
     mockFetch(fetchObjectsForService);
@@ -554,15 +564,12 @@ describe('handleGetKubernetesObjectsForService', () => {
         fetchPodMetricsByNamespace,
       },
       serviceLocator: {
-        getClustersByServiceId,
+        getClustersByEntity,
       },
       customResources: [],
     });
 
     const result = await sut.getKubernetesObjectsByEntity({
-      auth: {
-        google: 'google_token_123',
-      },
       entity: {
         apiVersion: 'backstage.io/v1beta1',
         kind: 'Component',
@@ -579,9 +586,12 @@ describe('handleGetKubernetesObjectsForService', () => {
           owner: 'joe',
         },
       },
+      auth: {
+        google: 'google_token_123',
+      },
     });
 
-    expect(getClustersByServiceId.mock.calls.length).toBe(1);
+    expect(getClustersByEntity.mock.calls.length).toBe(1);
     expect(fetchObjectsForService.mock.calls.length).toBe(3);
     expect(result).toStrictEqual({
       items: [
@@ -673,25 +683,27 @@ describe('handleGetKubernetesObjectsForService', () => {
     });
   });
   it('retrieve objects for four clusters, two have resources and one error cluster', async () => {
-    getClustersByServiceId.mockImplementation(() =>
-      Promise.resolve([
-        {
-          name: 'test-cluster',
-          authProvider: 'serviceAccount',
-        },
-        {
-          name: 'other-cluster',
-          authProvider: 'google',
-        },
-        {
-          name: 'empty-cluster',
-          authProvider: 'google',
-        },
-        {
-          name: 'error-cluster',
-          authProvider: 'google',
-        },
-      ]),
+    getClustersByEntity.mockImplementation(() =>
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'test-cluster',
+            authProvider: 'serviceAccount',
+          },
+          {
+            name: 'other-cluster',
+            authProvider: 'google',
+          },
+          {
+            name: 'empty-cluster',
+            authProvider: 'google',
+          },
+          {
+            name: 'error-cluster',
+            authProvider: 'google',
+          },
+        ],
+      }),
     );
 
     mockFetch(fetchObjectsForService);
@@ -704,15 +716,12 @@ describe('handleGetKubernetesObjectsForService', () => {
         fetchPodMetricsByNamespace,
       },
       serviceLocator: {
-        getClustersByServiceId,
+        getClustersByEntity,
       },
       customResources: [],
     });
 
     const result = await sut.getKubernetesObjectsByEntity({
-      auth: {
-        google: 'google_token_123',
-      },
       entity: {
         apiVersion: 'backstage.io/v1beta1',
         kind: 'Component',
@@ -729,9 +738,12 @@ describe('handleGetKubernetesObjectsForService', () => {
           owner: 'joe',
         },
       },
+      auth: {
+        google: 'google_token_123',
+      },
     });
 
-    expect(getClustersByServiceId.mock.calls.length).toBe(1);
+    expect(getClustersByEntity.mock.calls.length).toBe(1);
     expect(fetchObjectsForService.mock.calls.length).toBe(4);
     expect(result).toStrictEqual({
       items: [

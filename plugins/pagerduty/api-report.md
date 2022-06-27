@@ -10,7 +10,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { IdentityApi } from '@backstage/core-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
 import { ReactNode } from 'react';
 
 // Warning: (ae-missing-release-tag) "EntityPagerDutyCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -31,44 +31,137 @@ export { isPluginApplicableToEntity };
 // @public (undocumented)
 export const pagerDutyApiRef: ApiRef<PagerDutyApi>;
 
+// Warning: (ae-missing-release-tag) "PagerDutyAssignee" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PagerDutyAssignee = {
+  id: string;
+  summary: string;
+  html_url: string;
+};
+
 // Warning: (ae-missing-release-tag) "PagerDutyCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const PagerDutyCard: () => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "PagerDutyChangeEvent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PagerDutyChangeEvent = {
+  id: string;
+  integration: [
+    {
+      service: PagerDutyService;
+    },
+  ];
+  source: string;
+  html_url: string;
+  links: [
+    {
+      href: string;
+      text: string;
+    },
+  ];
+  summary: string;
+  timestamp: string;
+};
+
+// Warning: (ae-missing-release-tag) "PagerDutyChangeEventsResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PagerDutyChangeEventsResponse = {
+  change_events: PagerDutyChangeEvent[];
+};
+
 // Warning: (ae-missing-release-tag) "PagerDutyClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export class PagerDutyClient implements PagerDutyApi {
-  // Warning: (ae-forgotten-export) The symbol "ClientApiConfig" needs to be exported by the entry point index.d.ts
-  constructor(config: ClientApiConfig);
+  constructor(config: PagerDutyClientApiConfig);
   // (undocumented)
   static fromConfig(
     configApi: ConfigApi,
-    discoveryApi: DiscoveryApi,
-    identityApi: IdentityApi,
+    { discoveryApi, fetchApi }: PagerDutyClientApiDependencies,
   ): PagerDutyClient;
-  // Warning: (ae-forgotten-export) The symbol "ChangeEvent" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
-  getChangeEventsByServiceId(serviceId: string): Promise<ChangeEvent[]>;
-  // Warning: (ae-forgotten-export) The symbol "Incident" needs to be exported by the entry point index.d.ts
-  //
+  getChangeEventsByServiceId(
+    serviceId: string,
+  ): Promise<PagerDutyChangeEventsResponse>;
   // (undocumented)
-  getIncidentsByServiceId(serviceId: string): Promise<Incident[]>;
-  // Warning: (ae-forgotten-export) The symbol "OnCall" needs to be exported by the entry point index.d.ts
-  //
+  getIncidentsByServiceId(
+    serviceId: string,
+  ): Promise<PagerDutyIncidentsResponse>;
   // (undocumented)
-  getOnCallByPolicyId(policyId: string): Promise<OnCall[]>;
-  // Warning: (ae-forgotten-export) The symbol "Service" needs to be exported by the entry point index.d.ts
-  //
+  getOnCallByPolicyId(policyId: string): Promise<PagerDutyOnCallsResponse>;
   // (undocumented)
-  getServiceByIntegrationKey(integrationKey: string): Promise<Service[]>;
-  // Warning: (ae-forgotten-export) The symbol "TriggerAlarmRequest" needs to be exported by the entry point index.d.ts
-  //
+  getServiceByEntity(entity: Entity): Promise<PagerDutyServiceResponse>;
   // (undocumented)
-  triggerAlarm(request: TriggerAlarmRequest): Promise<Response>;
+  triggerAlarm(request: PagerDutyTriggerAlarmRequest): Promise<Response>;
 }
+
+// Warning: (ae-missing-release-tag) "PagerDutyClientApiConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PagerDutyClientApiConfig = PagerDutyClientApiDependencies & {
+  eventsBaseUrl?: string;
+};
+
+// Warning: (ae-missing-release-tag) "PagerDutyClientApiDependencies" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PagerDutyClientApiDependencies = {
+  discoveryApi: DiscoveryApi;
+  fetchApi: FetchApi;
+};
+
+// Warning: (ae-missing-release-tag) "PagerDutyEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PagerDutyEntity = {
+  integrationKey?: string;
+  serviceId?: string;
+  name: string;
+};
+
+// Warning: (ae-missing-release-tag) "PagerDutyIncident" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PagerDutyIncident = {
+  id: string;
+  title: string;
+  status: string;
+  html_url: string;
+  assignments: [
+    {
+      assignee: PagerDutyAssignee;
+    },
+  ];
+  serviceId: string;
+  created_at: string;
+};
+
+// Warning: (ae-missing-release-tag) "PagerDutyIncidentsResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PagerDutyIncidentsResponse = {
+  incidents: PagerDutyIncident[];
+};
+
+// Warning: (ae-missing-release-tag) "PagerDutyOnCall" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PagerDutyOnCall = {
+  user: PagerDutyUser;
+  escalation_level: number;
+};
+
+// Warning: (ae-missing-release-tag) "PagerDutyOnCallsResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PagerDutyOnCallsResponse = {
+  oncalls: PagerDutyOnCall[];
+};
 
 // Warning: (ae-missing-release-tag) "pagerDutyPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -76,6 +169,49 @@ export class PagerDutyClient implements PagerDutyApi {
 const pagerDutyPlugin: BackstagePlugin<{}, {}>;
 export { pagerDutyPlugin };
 export { pagerDutyPlugin as plugin };
+
+// Warning: (ae-missing-release-tag) "PagerDutyService" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PagerDutyService = {
+  id: string;
+  name: string;
+  html_url: string;
+  integrationKey: string;
+  escalation_policy: {
+    id: string;
+    user: PagerDutyUser;
+    html_url: string;
+  };
+};
+
+// Warning: (ae-missing-release-tag) "PagerDutyServiceResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PagerDutyServiceResponse = {
+  service: PagerDutyService;
+};
+
+// Warning: (ae-missing-release-tag) "PagerDutyTriggerAlarmRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PagerDutyTriggerAlarmRequest = {
+  integrationKey: string;
+  source: string;
+  description: string;
+  userName: string;
+};
+
+// Warning: (ae-missing-release-tag) "PagerDutyUser" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PagerDutyUser = {
+  id: string;
+  summary: string;
+  email: string;
+  html_url: string;
+  name: string;
+};
 
 // Warning: (ae-forgotten-export) The symbol "TriggerButtonProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "TriggerButton" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

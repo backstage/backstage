@@ -149,6 +149,7 @@ export type SimpleThemeOptions = {
   defaultPageTheme: string;
   pageTheme?: Record<string, PageTheme>;
   fontFamily?: string;
+  htmlFontSize?: number;
 };
 
 /**

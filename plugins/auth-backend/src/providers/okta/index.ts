@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { createOktaProvider, oktaEmailSignInResolver } from './provider';
-export type { OktaProviderOptions } from './provider';
+export { okta } from './provider';

@@ -31,7 +31,6 @@ import {
   isError,
   NotAllowedError,
 } from '@backstage/errors';
-import { TokenIssuer } from '../../identity/types';
 import { defaultCookieConfigurer, readState, verifyNonce } from './helpers';
 import { postMessageResponse, ensuresXRequestedWith } from '../flow';
 import {
@@ -52,8 +51,6 @@ export type Options = {
   cookieDomain: string;
   cookiePath: string;
   appOrigin: string;
-  /** @deprecated This option is no longer needed */
-  tokenIssuer?: TokenIssuer;
   isOriginAllowed: (origin: string) => boolean;
   callbackUrl: string;
 };
@@ -61,10 +58,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
   static fromConfig(
     config: AuthProviderConfig,
     handlers: OAuthHandlers,
-    options: Pick<
-      Options,
-      'providerId' | 'persistScopes' | 'tokenIssuer' | 'callbackUrl'
-    >,
+    options: Pick<Options, 'providerId' | 'persistScopes' | 'callbackUrl'>,
   ): OAuthAdapter {
     const { origin: appOrigin } = new URL(config.appUrl);
 

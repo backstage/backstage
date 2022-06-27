@@ -29,7 +29,7 @@ import {
 import Done from '@material-ui/icons/Done';
 import Warning from '@material-ui/icons/Warning';
 import { DateTime, Duration } from 'luxon';
-import { Incident } from '../types';
+import { PagerDutyIncident } from '../types';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import { BackstageTheme } from '@backstage/theme';
 
@@ -61,7 +61,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 }));
 
 type Props = {
-  incident: Incident;
+  incident: PagerDutyIncident;
 };
 
 export const IncidentListItem = ({ incident }: Props) => {

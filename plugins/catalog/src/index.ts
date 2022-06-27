@@ -62,6 +62,7 @@ export type {
 } from './components/EntityLinksCard';
 export type { SystemDiagramCardClassKey } from './components/SystemDiagramCard';
 export type { DefaultCatalogPageProps } from './components/CatalogPage';
+export type { EntityContextMenuClassKey } from './components/EntityContextMenu';
 export type { HasComponentsCardProps } from './components/HasComponentsCard';
 export type { HasResourcesCardProps } from './components/HasResourcesCard';
 export type { HasSubcomponentsCardProps } from './components/HasSubcomponentsCard';

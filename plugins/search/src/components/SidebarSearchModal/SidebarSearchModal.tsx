@@ -24,6 +24,11 @@ import {
   useSearchModal,
 } from '../SearchModal';
 
+/**
+ * Props for {@link SidebarSearchModal}.
+ *
+ * @public
+ */
 export type SidebarSearchModalProps = {
   icon?: IconComponent;
   children?: (props: SearchModalChildrenProps) => JSX.Element;

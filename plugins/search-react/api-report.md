@@ -7,11 +7,40 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/lib/useAsync';
+import { InputBaseProps } from '@material-ui/core';
 import { JsonObject } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
+import { ReactElement } from 'react';
+import { ReactNode } from 'react';
+import { ResultHighlight } from '@backstage/plugin-search-common';
+import { SearchDocument } from '@backstage/plugin-search-common';
 import { SearchQuery } from '@backstage/plugin-search-common';
+import { SearchResult as SearchResult_2 } from '@backstage/plugin-search-common';
 import { SearchResultSet } from '@backstage/plugin-search-common';
+
+// @public (undocumented)
+export const AutocompleteFilter: (
+  props: SearchAutocompleteFilterProps,
+) => JSX.Element;
+
+// @public (undocumented)
+export const CheckboxFilter: (props: SearchFilterComponentProps) => JSX.Element;
+
+// @public (undocumented)
+export const DefaultResultListItem: (
+  props: DefaultResultListItemProps,
+) => JSX.Element;
+
+// @public
+export type DefaultResultListItemProps = {
+  icon?: ReactNode;
+  secondaryAction?: ReactNode;
+  result: SearchDocument;
+  highlight?: ResultHighlight;
+  rank?: number;
+  lineClamp?: number;
+};
 
 // @public (undocumented)
 export const HighlightedSearchResultText: ({
@@ -20,7 +49,7 @@ export const HighlightedSearchResultText: ({
   postTag,
 }: HighlightedSearchResultTextProps) => JSX.Element;
 
-// @public (undocumented)
+// @public
 export type HighlightedSearchResultTextProps = {
   text: string;
   preTag: string;
@@ -44,6 +73,42 @@ export interface SearchApi {
 
 // @public (undocumented)
 export const searchApiRef: ApiRef<SearchApi>;
+
+// @public (undocumented)
+export type SearchAutocompleteFilterProps = SearchFilterComponentProps & {
+  filterSelectedOptions?: boolean;
+  limitTags?: number;
+  multiple?: boolean;
+};
+
+// @public
+export const SearchBar: ({ onChange, ...props }: SearchBarProps) => JSX.Element;
+
+// @public
+export const SearchBarBase: ({
+  onChange,
+  onKeyDown,
+  onSubmit,
+  debounceTime,
+  clearButton,
+  fullWidth,
+  value: defaultValue,
+  inputProps: defaultInputProps,
+  endAdornment: defaultEndAdornment,
+  ...props
+}: SearchBarBaseProps) => JSX.Element;
+
+// @public
+export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
+  debounceTime?: number;
+  clearButton?: boolean;
+  onClear?: () => void;
+  onSubmit?: () => void;
+  onChange: (value: string) => void;
+};
+
+// @public
+export type SearchBarProps = Partial<SearchBarBaseProps>;
 
 // @public
 export const SearchContextProvider: (
@@ -73,6 +138,55 @@ export type SearchContextValue = {
   fetchNextPage?: React_2.DispatchWithoutAction;
   fetchPreviousPage?: React_2.DispatchWithoutAction;
 } & SearchContextState;
+
+// @public (undocumented)
+export const SearchFilter: {
+  ({ component: Element, ...props }: SearchFilterWrapperProps): JSX.Element;
+  Checkbox(
+    props: Omit<SearchFilterWrapperProps, 'component'> &
+      SearchFilterComponentProps,
+  ): JSX.Element;
+  Select(
+    props: Omit<SearchFilterWrapperProps, 'component'> &
+      SearchFilterComponentProps,
+  ): JSX.Element;
+  Autocomplete(props: SearchAutocompleteFilterProps): JSX.Element;
+};
+
+// @public (undocumented)
+export type SearchFilterComponentProps = {
+  className?: string;
+  name: string;
+  label?: string;
+  values?: string[] | ((partial: string) => Promise<string[]>);
+  defaultValue?: string[] | string | null;
+  valuesDebounceMs?: number;
+};
+
+// @public (undocumented)
+export type SearchFilterWrapperProps = SearchFilterComponentProps & {
+  component: (props: SearchFilterComponentProps) => ReactElement;
+  debug?: boolean;
+};
+
+// @public (undocumented)
+export const SearchResult: (props: SearchResultProps) => JSX.Element;
+
+// @public
+export const SearchResultComponent: ({
+  children,
+}: SearchResultProps) => JSX.Element;
+
+// @public (undocumented)
+export const SearchResultPager: () => JSX.Element;
+
+// @public
+export type SearchResultProps = {
+  children: (results: { results: SearchResult_2[] }) => JSX.Element;
+};
+
+// @public (undocumented)
+export const SelectFilter: (props: SearchFilterComponentProps) => JSX.Element;
 
 // @public
 export const useSearch: () => SearchContextValue;

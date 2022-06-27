@@ -29,13 +29,15 @@ import {
 } from '@kubernetes/client-node';
 import { Entity } from '@backstage/catalog-model';
 
-export interface KubernetesRequestBody {
-  auth?: {
-    google?: string;
-    oidc?: {
-      [key: string]: string;
-    };
+export interface KubernetesRequestAuth {
+  google?: string;
+  oidc?: {
+    [key: string]: string;
   };
+}
+
+export interface KubernetesRequestBody {
+  auth?: KubernetesRequestAuth;
   entity: Entity;
 }
 

@@ -228,46 +228,6 @@ export class GithubAuthProvider implements OAuthHandlers {
 }
 
 /**
- * @public
- * @deprecated This type has been inlined into the create method and will be removed.
- */
-export type GithubProviderOptions = {
-  /**
-   * The profile transformation function used to verify and convert the auth response
-   * into the profile that will be presented to the user.
-   */
-  authHandler?: AuthHandler<GithubOAuthResult>;
-
-  /**
-   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-   */
-  signIn?: {
-    /**
-     * Maps an auth result to a Backstage identity for the user.
-     */
-    resolver: SignInResolver<GithubOAuthResult>;
-  };
-
-  /**
-   * The state encoder used to encode the 'state' parameter on the OAuth request.
-   *
-   * It should return a string that takes the state params (from the request), url encodes the params
-   * and finally base64 encodes them.
-   *
-   * Providing your own stateEncoder will allow you to add addition parameters to the state field.
-   *
-   * It is typed as follows:
-   *   `export type StateEncoder = (input: OAuthState) => Promise<{encodedState: string}>;`
-   *
-   * Note: the stateEncoder must encode a 'nonce' value and an 'env' value. Without this, the OAuth flow will fail
-   * (These two values will be set by the req.state by default)
-   *
-   * For more information, please see the helper module in ../../oauth/helpers #readState
-   */
-  stateEncoder?: StateEncoder;
-};
-
-/**
  * Auth provider integration for GitHub auth
  *
  * @public
@@ -381,9 +341,3 @@ export const github = createAuthProviderIntegration({
     },
   },
 });
-
-/**
- * @public
- * @deprecated Use `providers.github.create` instead
- */
-export const createGithubProvider = github.create;

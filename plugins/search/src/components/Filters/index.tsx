@@ -15,5 +15,6 @@
  */
 
 export { FiltersButton } from './FiltersButton';
+export type { FiltersButtonProps } from './FiltersButton';
 export { Filters } from './Filters';
-export type { FiltersState } from './Filters';
+export type { FilterOptions, FiltersProps, FiltersState } from './Filters';

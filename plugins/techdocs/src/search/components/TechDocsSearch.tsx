@@ -46,6 +46,7 @@ const useStyles = makeStyles({
  */
 export type TechDocsSearchProps = {
   entityId: CompoundEntityRef;
+  entityTitle?: string;
   debounceTime?: number;
 };
 
@@ -64,7 +65,7 @@ type TechDocsSearchResult = {
 };
 
 const TechDocsSearchBar = (props: TechDocsSearchProps) => {
-  const { entityId, debounceTime = 150 } = props;
+  const { entityId, entityTitle, debounceTime = 150 } = props;
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const {
@@ -160,7 +161,7 @@ const TechDocsSearchBar = (props: TechDocsSearchProps) => {
           data-testid="techdocs-search-bar-input"
           variant="outlined"
           fullWidth
-          placeholder={`Search ${entityId.name} docs`}
+          placeholder={`Search ${entityTitle || entityId.name} docs`}
           value={value}
           onChange={handleQuery}
           InputProps={{

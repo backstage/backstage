@@ -40,6 +40,15 @@ const treeResponseFactory = DefaultReadTreeResponseFactory.create({
 describe('parseUrl', () => {
   it('supports all aws formats', () => {
     expect(
+      parseUrl('https://s3.amazonaws.com/my.bucket-3/a/puppy.jpg', {
+        host: 'amazonaws.com',
+      }),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: 'us-east-1',
+    });
+    expect(
       parseUrl('https://s3.us-west-2.amazonaws.com/my.bucket-3/a/puppy.jpg', {
         host: 'amazonaws.com',
       }),

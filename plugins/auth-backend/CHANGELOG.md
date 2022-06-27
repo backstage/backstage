@@ -1,5 +1,40 @@
 # @backstage/plugin-auth-backend
 
+## 0.14.2-next.0
+
+### Patch Changes
+
+- 859346bfbb: Updated dependency `google-auth-library` to `^8.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/plugin-auth-node@0.2.3-next.0
+  - @backstage/catalog-client@1.0.4-next.0
+
+## 0.14.1
+
+### Patch Changes
+
+- 5e055079f0: Increased key field size for signing_keys table to account for larger signature keys
+- f6aae90e4e: Added configurable algorithm field for TokenFactory
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- bc6fb57094: Updated dependency `passport` to `^0.6.0`.
+- 467facc6ea: Fix improper binding of 'this' in ALB Auth provider
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+  - @backstage/plugin-auth-node@0.2.2
+  - @backstage/catalog-client@1.0.3
+  - @backstage/catalog-model@1.0.3
+
+## 0.14.1-next.2
+
+### Patch Changes
+
+- bc6fb57094: Updated dependency `passport` to `^0.6.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/plugin-auth-node@0.2.2-next.2
+
 ## 0.14.1-next.1
 
 ### Patch Changes

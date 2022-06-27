@@ -17,6 +17,7 @@
 import { DefaultLocationService } from './DefaultLocationService';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { LocationStore } from './types';
+import { InputError } from '@backstage/errors';
 
 describe('DefaultLocationServiceTest', () => {
   const orchestrator: jest.Mocked<CatalogProcessingOrchestrator> = {
@@ -250,6 +251,18 @@ describe('DefaultLocationServiceTest', () => {
         target: 'https://backstage.io/catalog-info.yaml',
         type: 'url',
       });
+    });
+
+    it('should not allow locations of unknown types', async () => {
+      await expect(
+        locationService.createLocation(
+          {
+            type: 'unknown',
+            target: 'https://backstage.io/catalog-info.yaml',
+          },
+          false,
+        ),
+      ).rejects.toThrow(InputError);
     });
   });
 

@@ -1,5 +1,28 @@
 # @backstage/plugin-kafka-backend
 
+## 0.2.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+
+## 0.2.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+  - @backstage/catalog-model@1.0.3
+
+## 0.2.26-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+
 ## 0.2.26-next.1
 
 ### Patch Changes

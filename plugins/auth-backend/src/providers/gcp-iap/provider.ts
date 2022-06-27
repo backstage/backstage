@@ -117,9 +117,3 @@ export const gcpIap = createAuthProviderIntegration({
     };
   },
 });
-
-/**
- * @public
- * @deprecated Use `providers.gcpIap.create` instead
- */
-export const createGcpIapProvider = gcpIap.create;

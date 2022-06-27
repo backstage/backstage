@@ -31,13 +31,21 @@ import React, { useState } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { useEntityPermission } from '@backstage/plugin-catalog-react';
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common';
+import { BackstageTheme } from '@backstage/theme';
 
-// TODO(freben): It should probably instead be the case that Header sets the theme text color to white inside itself unconditionally instead
-const useStyles = makeStyles({
-  button: {
-    color: 'white',
+/** @public */
+export type EntityContextMenuClassKey = 'button';
+
+const useStyles = makeStyles(
+  (theme: BackstageTheme) => {
+    return {
+      button: {
+        color: theme.palette.bursts.fontColor,
+      },
+    };
   },
-});
+  { name: 'PluginCatalogEntityContextMenu' },
+);
 
 // NOTE(freben): Intentionally not exported at this point, since it's part of
 // the unstable extra context menu items concept below

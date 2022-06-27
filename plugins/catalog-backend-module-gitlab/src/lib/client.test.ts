@@ -103,6 +103,21 @@ function setupFakeInstanceProjectsEndpoint(
   );
 }
 
+function setupFakeHasFileEndpoint(srv: SetupServerApi, apiBaseUrl: string) {
+  srv.use(
+    rest.head(
+      `${apiBaseUrl}/projects/group%2Frepo/repository/files/catalog-info.yaml`,
+      (req, res, ctx) => {
+        const branch = req.url.searchParams.get('ref');
+        if (branch === 'master') {
+          return res(ctx.status(200));
+        }
+        return res(ctx.status(404, 'Not Found'));
+      },
+    ),
+  );
+}
+
 describe('GitLabClient', () => {
   describe('isSelfManaged', () => {
     it('returns true if self managed instance', () => {
@@ -264,5 +279,35 @@ describe('paginated', () => {
     }
 
     expect(allItems).toHaveLength(4);
+  });
+});
+
+describe('hasFile', () => {
+  let client: GitLabClient;
+
+  beforeEach(() => {
+    setupFakeHasFileEndpoint(server, MOCK_CONFIG.apiBaseUrl);
+    client = new GitLabClient({
+      config: MOCK_CONFIG,
+      logger: getVoidLogger(),
+    });
+  });
+
+  it('should not find catalog file', async () => {
+    const hasFile = await client.hasFile(
+      'group/repo',
+      'master',
+      'catalog-info.yaml',
+    );
+    expect(hasFile).toBe(true);
+  });
+
+  it('should find catalog file', async () => {
+    const hasFile = await client.hasFile(
+      'group/repo',
+      'unknown',
+      'catalog-info.yaml',
+    );
+    expect(hasFile).toBe(false);
   });
 });

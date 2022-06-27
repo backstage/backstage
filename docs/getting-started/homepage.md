@@ -157,7 +157,7 @@ export const HomePage = () => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} md={4}>
-        <HomePageCompanyLogo className={container} />
+        <HomePageCompanyLogo />
       </Grid>
     </Grid>
   );

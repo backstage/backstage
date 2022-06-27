@@ -1,5 +1,37 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.1.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/plugin-auth-node@0.2.3-next.0
+  - @backstage/catalog-client@1.0.4-next.0
+
+## 0.1.23
+
+### Patch Changes
+
+- 83f6a64d2c: bug fix: provide backstage token for rebuild api call
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+  - @backstage/plugin-auth-node@0.2.2
+  - @backstage/catalog-client@1.0.3
+  - @backstage/plugin-permission-common@0.6.2
+  - @backstage/catalog-model@1.0.3
+  - @backstage/plugin-jenkins-common@0.1.5
+
+## 0.1.23-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/plugin-auth-node@0.2.2-next.2
+
 ## 0.1.23-next.1
 
 ### Patch Changes

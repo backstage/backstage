@@ -104,10 +104,10 @@ directly be used with a URL. Some example usages -
 
 - [`read`](https://github.com/backstage/backstage/blob/d5c83bb889b8142e343ebc4e4c0b90a02d1c1a3d/plugins/catalog-backend/src/ingestion/processors/codeowners/read.ts#L24-L33) -
   Catalog using the `read` method to read the CODEOWNERS file in a repository.
-- [`readTree`](https://github.com/backstage/backstage/blob/d5c83bb889b8142e343ebc4e4c0b90a02d1c1a3d/packages/techdocs-common/src/helpers.ts#L198-L220) -
+- [`readTree`](https://github.com/backstage/backstage/blob/84a8788/plugins/techdocs-node/src/helpers.ts#L146-L167) -
   TechDocs using the `readTree` method to download markdown files in order to
   generate the documentation site.
-- [`readTree`](https://github.com/backstage/backstage/blob/d5c83bb889b8142e343ebc4e4c0b90a02d1c1a3d/packages/techdocs-common/src/stages/prepare/url.ts#L33-L54) -
+- [`readTree`](https://github.com/backstage/backstage/blob/cb4f0e4/plugins/techdocs-node/src/stages/prepare/url.ts#L51-L73) -
   TechDocs using `NotModifiedError` to maintain cache and speed up and limit the
   number of requests.
 - [`search`](https://github.com/backstage/backstage/blob/d5c83bb889b8142e343ebc4e4c0b90a02d1c1a3d/plugins/catalog-backend/src/ingestion/processors/UrlReaderProcessor.ts#L88-L108) -

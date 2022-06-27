@@ -15,6 +15,7 @@
  */
 
 import '@backstage/backend-common';
+import { Entity } from '@backstage/catalog-model';
 import { MultiTenantServiceLocator } from './MultiTenantServiceLocator';
 
 describe('MultiTenantConfigClusterLocator', () => {
@@ -23,9 +24,9 @@ describe('MultiTenantConfigClusterLocator', () => {
       getClusters: async () => [],
     });
 
-    const result = await sut.getClustersByServiceId('ignored');
+    const result = await sut.getClustersByEntity({} as Entity);
 
-    expect(result).toStrictEqual([]);
+    expect(result).toStrictEqual({ clusters: [] });
   });
 
   it('one clusters returns one cluster details', async () => {
@@ -42,16 +43,18 @@ describe('MultiTenantConfigClusterLocator', () => {
       },
     });
 
-    const result = await sut.getClustersByServiceId('ignored');
+    const result = await sut.getClustersByEntity({} as Entity);
 
-    expect(result).toStrictEqual([
-      {
-        name: 'cluster1',
-        serviceAccountToken: '12345',
-        url: 'http://localhost:8080',
-        authProvider: 'serviceAccount',
-      },
-    ]);
+    expect(result).toStrictEqual({
+      clusters: [
+        {
+          name: 'cluster1',
+          serviceAccountToken: '12345',
+          url: 'http://localhost:8080',
+          authProvider: 'serviceAccount',
+        },
+      ],
+    });
   });
 
   it('two clusters returns two cluster details', async () => {
@@ -73,20 +76,22 @@ describe('MultiTenantConfigClusterLocator', () => {
       },
     });
 
-    const result = await sut.getClustersByServiceId('ignored');
+    const result = await sut.getClustersByEntity({} as Entity);
 
-    expect(result).toStrictEqual([
-      {
-        name: 'cluster1',
-        serviceAccountToken: 'token',
-        url: 'http://localhost:8080',
-        authProvider: 'serviceAccount',
-      },
-      {
-        name: 'cluster2',
-        url: 'http://localhost:8081',
-        authProvider: 'google',
-      },
-    ]);
+    expect(result).toStrictEqual({
+      clusters: [
+        {
+          name: 'cluster1',
+          serviceAccountToken: 'token',
+          url: 'http://localhost:8080',
+          authProvider: 'serviceAccount',
+        },
+        {
+          name: 'cluster2',
+          url: 'http://localhost:8081',
+          authProvider: 'google',
+        },
+      ],
+    });
   });
 });
