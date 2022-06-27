@@ -21,3 +21,4 @@
  */
 
 export { createBackend } from './wiring/types';
+export { loggerToWinstonLogger } from './services/implementations/loggerService';

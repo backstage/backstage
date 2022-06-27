@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-import { createBackend } from '@backstage/backend-app-api';
 import {
+  createBackend,
+  loggerToWinstonLogger,
+} from '@backstage/backend-app-api';
+import {
+  configServiceRef,
   createBackendModule,
   createBackendPlugin,
   createServiceRef,
+  databaseServiceRef,
   loggerServiceRef,
+  permissionsServiceRef,
+  urlReaderServiceRef,
 } from '@backstage/backend-plugin-api';
-// import { catalogPlugin } from '@backstage/plugin-catalog-backend';
-// import { scaffolderPlugin } from '@backstage/plugin-scaffolder-backend';
-
-interface CatalogProcessor {
-  process(): void;
-}
+import {
+  CatalogBuilder,
+  CatalogProcessor,
+} from '@backstage/plugin-catalog-backend';
+import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
 
 interface CatalogProcessingInitApi {
   addProcessor(processor: CatalogProcessor): void;
@@ -62,18 +68,30 @@ export const catalogPlugin = createBackendPlugin({
     env.registerInit({
       deps: {
         logger: loggerServiceRef,
+        config: configServiceRef,
+        reader: urlReaderServiceRef,
+        permissions: permissionsServiceRef,
+        database: databaseServiceRef,
       },
-      async init({ logger }) {
-        //        const builder = await CatalogBuilder.create(env);
-        logger.info('boppp');
-        console.log('I HAZ', processingExtensions.processors[0].process());
+      async init({ logger, config, reader, database, permissions }) {
+        const winstonLogger = loggerToWinstonLogger(logger);
+        const builder = await CatalogBuilder.create({
+          config,
+          reader,
+          permissions,
+          database,
+          logger: winstonLogger,
+        });
+        builder.addProcessor(processingExtensions.processors);
+        const { processingEngine } = await builder.build();
+        await processingEngine.start();
       },
     });
   },
 });
 
 export const scaffolderCatalogExtension = createBackendModule({
-  moduleId: 'boop',
+  moduleId: 'scaffolder.extention',
   pluginId: 'catalog',
   register(env) {
     env.registerInit({
@@ -81,11 +99,9 @@ export const scaffolderCatalogExtension = createBackendModule({
         catalogProcessingInitApi: catalogProcessingInitApiRef,
       },
       async init({ catalogProcessingInitApi }) {
-        catalogProcessingInitApi.addProcessor({
-          process() {
-            console.log('Running scaffolder processor');
-          },
-        });
+        catalogProcessingInitApi.addProcessor(
+          new ScaffolderEntitiesProcessor(),
+        );
       },
     });
   },
@@ -95,17 +111,6 @@ const backend = createBackend({
   apis: [],
 });
 
-// logger: Logger;
-// cache: PluginCacheManager;
-// database: PluginDatabaseManager;
-// config: Config;
-// reader: UrlReader;
-// discovery: PluginEndpointDiscovery;
-// tokenManager: TokenManager;
-// permissions: PermissionEvaluator | PermissionAuthorizer;
-// scheduler: PluginTaskScheduler;
-
-// backend.add(scaffolderPlugin());
 backend.add(catalogPlugin({}));
 backend.add(scaffolderCatalogExtension({}));
 backend.start();
