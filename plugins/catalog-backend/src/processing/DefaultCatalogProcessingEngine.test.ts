@@ -30,6 +30,7 @@ describe('DefaultCatalogProcessingEngine', () => {
     updateProcessedEntity: jest.fn(),
     updateEntityCache: jest.fn(),
     listParents: jest.fn(),
+    setRefreshKeys: jest.fn(),
   } as unknown as jest.Mocked<DefaultProcessingDatabase>;
   const orchestrator: jest.Mocked<CatalogProcessingOrchestrator> = {
     process: jest.fn(),

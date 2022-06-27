@@ -562,7 +562,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const tx = txOpaque as Knex.Transaction;
     const { key } = options;
 
-    await tx<DbRefreshKeysRow>('refresh_keys').where({ key }).delete();
+    await tx<DbRefreshKeysRow>('refresh_keys').where({ key: key }).delete();
   }
 
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {

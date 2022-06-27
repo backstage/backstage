@@ -18,7 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
 import { DateTime } from 'luxon';
 import { EntityRelationSpec } from '../api';
-import { DeferredEntity } from '../processing/types';
+import { DeferredEntity, RefreshKeyData } from '../processing/types';
 import { DbRelationsRow } from './tables';
 
 /**
@@ -82,7 +82,7 @@ export type ReplaceUnprocessedEntitiesOptions =
     };
 
 export type RefreshKeyOptions = {
-  refreshKeys: { key: String; entityRef: String }[];
+  refreshKeys: RefreshKeyData[];
 };
 
 export type RefreshByKeyOptions = {
@@ -157,6 +157,17 @@ export interface ProcessingDatabase {
    */
   refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void>;
 
+  /**
+   * Schedules a refresh for all the entities that have the given refreshKey
+   */
+  setRefreshKeys(
+    txOpaque: Transaction,
+    options: RefreshKeyOptions,
+  ): Promise<void>;
+
+  /**
+   * Schedules a refresh for all the entities that have the given refreshKey
+   */
   setRefreshKeys(
     txOpaque: Transaction,
     options: RefreshKeyOptions,

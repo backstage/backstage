@@ -74,7 +74,7 @@ describe('UrlReaderProcessor', () => {
       mockCache,
     );
 
-    expect(emitted.length).toBe(1);
+    expect(emitted.length).toBe(2);
     expect(emitted[0]).toEqual({
       type: 'entity',
       location: spec,

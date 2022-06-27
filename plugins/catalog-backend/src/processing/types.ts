@@ -37,13 +37,22 @@ export type EntityProcessingResult =
       completedEntity: Entity;
       deferredEntities: DeferredEntity[];
       relations: EntityRelationSpec[];
-      refreshKeys: { key: String; entityRef: String }[];
+      refreshKeys: RefreshKeyData[];
       errors: Error[];
     }
   | {
       ok: false;
       errors: Error[];
     };
+
+/**
+ * A string to associate to the entity itself.
+ * @public
+ */
+export type RefreshKeyData = {
+  key: String;
+  entityRef: String;
+};
 
 /**
  * Responsible for executing the individual processing steps in order to fully process an entity.
