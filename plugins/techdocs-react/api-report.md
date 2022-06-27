@@ -85,11 +85,16 @@ export type TechDocsMetadata = {
 
 // @public
 export const TechDocsReaderPageProvider: React_2.MemoExoticComponent<
-  ({ entityRef, children }: TechDocsReaderPageProviderProps) => JSX.Element
+  ({
+    path,
+    entityRef,
+    children,
+  }: TechDocsReaderPageProviderProps) => JSX.Element
 >;
 
 // @public
 export type TechDocsReaderPageProviderProps = {
+  path?: string;
   entityRef: CompoundEntityRef;
   children: TechDocsReaderPageProviderRenderFunction | ReactNode;
 };
@@ -102,6 +107,7 @@ export type TechDocsReaderPageProviderRenderFunction = (
 // @public
 export type TechDocsReaderPageValue = {
   metadata: AsyncState<TechDocsMetadata>;
+  path: string;
   entityRef: CompoundEntityRef;
   entityMetadata: AsyncState<TechDocsEntityMetadata>;
   shadowRoot?: ShadowRoot;
