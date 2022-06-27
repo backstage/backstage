@@ -20,7 +20,6 @@ import React, {
   useContext,
   ReactNode,
 } from 'react';
-import { useParams } from 'react-router-dom';
 import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
 
 import { useReaderState, ReaderState } from './useReaderState';
@@ -51,8 +50,7 @@ export type TechDocsReaderProviderProps = {
 export const TechDocsReaderProvider = ({
   children,
 }: TechDocsReaderProviderProps) => {
-  const { '*': path = '' } = useParams();
-  const { entityRef } = useTechDocsReaderPage();
+  const { entityRef, path } = useTechDocsReaderPage();
   const { kind, namespace, name } = entityRef;
   const value = useReaderState(kind, namespace, name, path);
 
