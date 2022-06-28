@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
+// @deprecated - use types from `@backstage/plugin-cost-insights-common` instead.
+export * from '@backstage/plugin-cost-insights-common';
+
+// TODO: Split some of these up into `@backstage/plugin-cost-insights-react` for presentation types
+//       and `@backstage/plugin-cost-insights-common` for data transfer object types.
 export * from './Alert';
 export * from './ChangeStatistic';
-export * from './ChartData';
-export * from './Cost';
-export * from './DateAggregation';
-export * from './Duration';
 export * from './Currency';
-export * from './Entity';
+export * from './Duration';
 export * from './Icon';
-export * from './Filters';
-export * from './Group';
 export * from './Loading';
-export * from './Maybe';
-export * from './MetricData';
-export * from './Metric';
-export * from './Product';
-export * from './Project';
 export * from './Theme';
-export * from './Trendline';
