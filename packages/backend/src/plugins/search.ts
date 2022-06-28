@@ -39,9 +39,8 @@ async function createSearchEngine(
   }
 
   if (await PgSearchEngine.supported(env.database)) {
-    return await PgSearchEngine.fromConfig({
+    return await PgSearchEngine.fromConfig(env.config, {
       database: env.database,
-      config: env.config,
     });
   }
 

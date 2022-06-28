@@ -60,7 +60,6 @@ export type PgSearchQueryTranslator = (
  * @public
  */
 export type PgSearchOptions = {
-  config: Config;
   database: PluginDatabaseManager;
 };
 
@@ -82,6 +81,10 @@ export type PgSearchHighlightOptions = {
 
 export class PgSearchEngine implements SearchEngine {
   private readonly highlightOptions: PgSearchHighlightOptions;
+
+  /**
+   * @deprecated This will be marked as private in a future release, please us fromConfig instead
+   */
   constructor(private readonly databaseStore: DatabaseStore, config: Config) {
     const uuidTag = uuid();
     const highlightConfig = config.getOptionalConfig(
@@ -117,9 +120,9 @@ export class PgSearchEngine implements SearchEngine {
     );
   }
 
-  static async fromConfig({ config, database }: PgSearchOptions) {
+  static async fromConfig(config: Config, options: PgSearchOptions) {
     return new PgSearchEngine(
-      await DatabaseDocumentStore.create(await database.getClient()),
+      await DatabaseDocumentStore.create(await options.database.getClient()),
       config,
     );
   }

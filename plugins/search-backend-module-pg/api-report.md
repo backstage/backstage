@@ -79,6 +79,7 @@ export interface DatabaseStore {
 //
 // @public (undocumented)
 export class PgSearchEngine implements SearchEngine {
+  // @deprecated
   constructor(databaseStore: DatabaseStore, config: Config);
   // @deprecated (undocumented)
   static from(options: {
@@ -86,10 +87,10 @@ export class PgSearchEngine implements SearchEngine {
     config: Config;
   }): Promise<PgSearchEngine>;
   // (undocumented)
-  static fromConfig({
-    config,
-    database,
-  }: PgSearchOptions): Promise<PgSearchEngine>;
+  static fromConfig(
+    config: Config,
+    options: PgSearchOptions,
+  ): Promise<PgSearchEngine>;
   // (undocumented)
   getIndexer(type: string): Promise<PgSearchEngineIndexer>;
   // (undocumented)
@@ -142,7 +143,6 @@ export type PgSearchHighlightOptions = {
 
 // @public
 export type PgSearchOptions = {
-  config: Config;
   database: PluginDatabaseManager;
 };
 

@@ -135,6 +135,7 @@ export class DatabaseDocumentStore implements DatabaseStore {
     searchQuery: PgSearchQuery,
   ): Promise<DocumentResultRow[]> {
     const { types, pgTerm, fields, offset, limit, options } = searchQuery;
+    // TODO(awanlin): We should make the language a parameter so that we can support more then just english
     // Builds a query like:
     // SELECT ts_rank_cd(body, query) AS rank, type, document,
     // ts_headline('english', document, query) AS highlight
