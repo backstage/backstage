@@ -37,6 +37,7 @@ import { FieldExtensionComponentProps } from '../../../extensions';
 export interface OwnedEntityPickerUiOptions {
   allowedKinds?: string[];
   defaultKind?: string;
+  allowArbitraryValues?: boolean;
 }
 
 /**
