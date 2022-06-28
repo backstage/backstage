@@ -78,6 +78,7 @@ export type CatalogReactComponentsNameToClassKey = {
   CatalogReactEntitySearchBar: CatalogReactEntitySearchBarClassKey;
   CatalogReactEntityTagPicker: CatalogReactEntityTagPickerClassKey;
   CatalogReactEntityOwnerPicker: CatalogReactEntityOwnerPickerClassKey;
+  CatalogReactEntityProcessingStatusPicker: CatalogReactEntityProcessingStatusPickerClassKey;
 };
 
 // @public (undocumented)
@@ -85,6 +86,9 @@ export type CatalogReactEntityLifecyclePickerClassKey = 'input';
 
 // @public (undocumented)
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
+
+// @public (undocumented)
+export type CatalogReactEntityProcessingStatusPickerClassKey = 'input';
 
 // @public (undocumented)
 export type CatalogReactEntitySearchBarClassKey = 'searchToolbar' | 'input';
@@ -137,7 +141,18 @@ export type DefaultEntityFilters = {
   lifecycles?: EntityLifecycleFilter;
   tags?: EntityTagFilter;
   text?: EntityTextFilter;
+  orphan?: EntityOrphanFilter;
+  error?: EntityErrorFilter;
 };
+
+// @public
+export class EntityErrorFilter implements EntityFilter {
+  constructor(value: boolean);
+  // (undocumented)
+  filterEntity(entity: Entity): boolean;
+  // (undocumented)
+  readonly value: boolean;
+}
 
 // @public (undocumented)
 export type EntityFilter = {
@@ -223,6 +238,15 @@ export type EntityLoadingStatus<TEntity extends Entity = Entity> = {
 };
 
 // @public
+export class EntityOrphanFilter implements EntityFilter {
+  constructor(value: boolean);
+  // (undocumented)
+  filterEntity(entity: Entity): boolean;
+  // (undocumented)
+  readonly value: boolean;
+}
+
+// @public
 export class EntityOwnerFilter implements EntityFilter {
   constructor(values: string[]);
   // (undocumented)
@@ -235,6 +259,9 @@ export class EntityOwnerFilter implements EntityFilter {
 
 // @public (undocumented)
 export const EntityOwnerPicker: () => JSX.Element | null;
+
+// @public (undocumented)
+export const EntityProcessingStatusPicker: () => JSX.Element;
 
 // @public
 export const EntityProvider: (props: EntityProviderProps) => JSX.Element;
