@@ -15,6 +15,7 @@
  */
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
+import { MissingIndexError } from '@backstage/plugin-search-backend-node';
 import {
   SearchQuery,
   IndexableResultSet,
@@ -91,6 +92,12 @@ export class PgSearchEngine implements SearchEngine {
     const rows = await this.databaseStore.transaction(async tx =>
       this.databaseStore.query(tx, pgQuery),
     );
+
+    if (!rows.length) {
+      throw new MissingIndexError(
+        `Missing index for ${pgQuery.types}. This means there are no documents to search through.`,
+      );
+    }
 
     // We requested one result more than the page size to know whether there is
     // another page.
