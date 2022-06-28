@@ -142,9 +142,9 @@ export function AdaptationProvider(
         value.components = value.components
           .filter(
             ({ adaptation }) =>
-              !adaptation.plugin || excludePluginsSet.has(adaptation.plugin),
+              !adaptation.plugin || !excludePluginsSet.has(adaptation.plugin),
           )
-          .filter(({ adaptation }) => excludeSet.has(adaptation.key));
+          .filter(({ adaptation }) => !excludeSet.has(adaptation.key));
       });
     }
 
