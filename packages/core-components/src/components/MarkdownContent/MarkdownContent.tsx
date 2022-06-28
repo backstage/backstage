@@ -64,12 +64,7 @@ const useStyles = makeStyles<BackstageTheme>(
   { name: 'BackstageMarkdownContent' },
 );
 
-type TransformLink = (
-  href: string,
-  // Complex type from internal react-markdown dep library (hast)[./node_modules/@types/hast/index.d.ts]
-  children: any[],
-  title: string | null,
-) => string;
+type TransformLink = (href: string) => string;
 
 type Props = {
   content: string;
