@@ -8,4 +8,4 @@ jobs:
   cron:
     runs-on: ubuntu-latest
     steps:
-      - uses: backstage/actions/cron@v0.1.3
+      - uses: backstage/actions/cron@v0.1.4
