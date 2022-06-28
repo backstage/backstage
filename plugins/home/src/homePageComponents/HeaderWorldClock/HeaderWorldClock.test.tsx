@@ -113,7 +113,6 @@ describe('HeaderWorldClock with custom Time Format', () => {
       </ThemeProvider>,
     );
 
-    const currentTime = `09:10`;
-    expect(rendered.getByText(currentTime)).toBeInTheDocument();
+    expect(rendered.getByText('09:10')).toBeInTheDocument();
   });
 });
