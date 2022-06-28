@@ -19,7 +19,7 @@ import {
   createVersionedValueMap,
   useVersionedContext,
 } from '@backstage/version-bridge';
-import { AnyPluginOptions } from '../plugin';
+import { PluginOptions } from '../plugin';
 import React, { ReactNode } from 'react';
 
 const contextKey: string = 'plugin-options-context';
@@ -31,7 +31,7 @@ const contextKey: string = 'plugin-options-context';
  */
 export interface PluginOptionsProviderProps {
   children: ReactNode;
-  pluginOptions?: AnyPluginOptions;
+  pluginOptions?: PluginOptions;
 }
 
 export const PluginOptionsProvider = ({
@@ -39,9 +39,7 @@ export const PluginOptionsProvider = ({
   pluginOptions,
 }: PluginOptionsProviderProps): JSX.Element => {
   const value = { pluginOptions };
-  const { Provider } = createVersionedContext<{ 1: AnyPluginOptions }>(
-    contextKey,
-  );
+  const { Provider } = createVersionedContext<{ 1: PluginOptions }>(contextKey);
   return (
     <Provider value={createVersionedValueMap({ 1: value })}>
       {children}
@@ -56,7 +54,7 @@ export const PluginOptionsProvider = ({
  * @public
  */
 export function usePluginOptions<
-  TPluginOptions extends AnyPluginOptions = AnyPluginOptions,
+  TPluginOptions extends PluginOptions = PluginOptions,
 >(): TPluginOptions {
   const versionedHolder = useVersionedContext<{ 1: TPluginOptions }>(
     contextKey,
@@ -71,5 +69,5 @@ export function usePluginOptions<
     throw new Error('Plugin Options v1 is not available');
   }
 
-  return value.pluginOptions;
+  return value.pluginOptions as TPluginOptions;
 }

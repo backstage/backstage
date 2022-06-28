@@ -40,6 +40,10 @@ import {
   CatalogIndexPage,
   catalogPlugin,
 } from '@backstage/plugin-catalog';
+
+/* Uncomment this import to enable a customized version of a catalog */
+// import '@internal/plugin-catalog-customized';
+
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import {
   CatalogImportPage,

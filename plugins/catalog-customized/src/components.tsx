@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-export { createPlugin } from './Plugin';
+import React from 'react';
+import {
+  EntityTypePickerProps,
+  UserListPickerProps,
+} from '@backstage/plugin-catalog-react';
 
-export type {
-  AnyExternalRoutes,
-  PluginOptions,
-  PluginInputOptions,
-  AnyRoutes,
-  BackstagePlugin,
-  Extension,
-  FeatureFlagsHooks,
-  PluginConfig,
-  PluginFeatureFlagConfig,
-} from './types';
+export const EntityOwnerPicker = () => {
+  return <div>Customized entity owner picker</div>;
+};
+
+export const EntityTypePicker = (_: EntityTypePickerProps) => {
+  return <div>Customized entity type picker</div>;
+};
+
+export const UserListPicker = (_: UserListPickerProps) => {
+  return <div>Customized user lis picker</div>;
+};

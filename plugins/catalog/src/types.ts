@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-export { createPlugin } from './Plugin';
+import {
+  EntityTypePickerProps,
+  UserListPickerProps,
+} from '@backstage/plugin-catalog-react';
 
-export type {
-  AnyExternalRoutes,
-  PluginOptions,
-  PluginInputOptions,
-  AnyRoutes,
-  BackstagePlugin,
-  Extension,
-  FeatureFlagsHooks,
-  PluginConfig,
-  PluginFeatureFlagConfig,
-} from './types';
+export type CatalogPageOptionsProps = {
+  EntityOwnerPicker: () => JSX.Element | null;
+  EntityTypePicker: (props: EntityTypePickerProps) => JSX.Element | null;
+  UserListPicker: (props: UserListPickerProps) => JSX.Element | null;
+  createButtonTitle: string;
+  showButtonText: string;
+};

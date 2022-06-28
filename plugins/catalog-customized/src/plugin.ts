@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-export { createPlugin } from './Plugin';
+import { catalogPlugin } from '@backstage/plugin-catalog';
 
-export type {
-  AnyExternalRoutes,
-  PluginOptions,
-  PluginInputOptions,
-  AnyRoutes,
-  BackstagePlugin,
-  Extension,
-  FeatureFlagsHooks,
-  PluginConfig,
-  PluginFeatureFlagConfig,
-} from './types';
+import {
+  EntityOwnerPicker,
+  EntityTypePicker,
+  UserListPicker,
+} from './components';
+
+catalogPlugin.reconfigure({
+  EntityOwnerPicker,
+  EntityTypePicker,
+  UserListPicker,
+  createButtonTitle: 'Maybe Create',
+  showButtonText: 'Mine catalog entities',
+});
+
+export const customizedCatalog = catalogPlugin;

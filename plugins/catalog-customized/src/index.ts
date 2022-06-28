@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-export { createPlugin } from './Plugin';
-
-export type {
-  AnyExternalRoutes,
-  PluginOptions,
-  PluginInputOptions,
-  AnyRoutes,
-  BackstagePlugin,
-  Extension,
-  FeatureFlagsHooks,
-  PluginConfig,
-  PluginFeatureFlagConfig,
-} from './types';
+export { customizedCatalog } from './plugin';

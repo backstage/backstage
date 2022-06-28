@@ -18,7 +18,10 @@ import { CatalogClient } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
   catalogApiRef,
+  EntityOwnerPicker,
   entityRouteRef,
+  EntityTypePicker,
+  UserListPicker,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
 import { createComponentRouteRef, viewTechDocRouteRef } from './routes';
@@ -31,7 +34,6 @@ import {
   fetchApiRef,
   storageApiRef,
   PluginOptions,
-  PluginInputOptions,
 } from '@backstage/core-plugin-api';
 import { DefaultStarredEntitiesApi } from './apis';
 import { AboutCardProps } from './components/AboutCard';
@@ -45,6 +47,8 @@ import { HasSubcomponentsCardProps } from './components/HasSubcomponentsCard';
 import { HasSystemsCardProps } from './components/HasSystemsCard';
 import { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
 import { rootRouteRef } from './routes';
+
+export interface PluginInputOptions {}
 
 /** @public */
 export const catalogPlugin = createPlugin({
@@ -75,7 +79,13 @@ export const catalogPlugin = createPlugin({
     viewTechDoc: viewTechDocRouteRef,
   },
   configure(options?: PluginInputOptions): PluginOptions {
-    const defaultOptions = { createButtonTitle: 'Create' };
+    const defaultOptions = {
+      EntityOwnerPicker,
+      EntityTypePicker,
+      UserListPicker,
+      createButtonTitle: 'Create',
+      showButtonText: 'All your software catalog entities',
+    };
     if (!options) {
       return defaultOptions;
     }
