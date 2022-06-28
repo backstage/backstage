@@ -93,7 +93,7 @@ export class PgSearchEngine implements SearchEngine {
       this.databaseStore.query(tx, pgQuery),
     );
 
-    if (!rows.length) {
+    if (pgQuery?.types && !rows.length) {
       throw new MissingIndexError(
         `Missing index for ${pgQuery.types}. This means there are no documents to search through.`,
       );
