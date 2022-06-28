@@ -650,6 +650,8 @@ export interface RouterOptions {
   // (undocumented)
   providerFactories?: ProviderFactories;
   // (undocumented)
+  tokenFactoryAlgorithm?: string;
+  // (undocumented)
   tokenManager: TokenManager;
 }
 
