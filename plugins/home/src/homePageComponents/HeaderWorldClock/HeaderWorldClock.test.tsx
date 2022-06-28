@@ -89,6 +89,8 @@ describe('HeaderWorldClock with invalid Time Zone', () => {
 
 describe('HeaderWorldClock with custom Time Format', () => {
   it('uses 24hr clock from custom Time Format', async () => {
+    jest.useFakeTimers().setSystemTime(new Date('2022-06-28T09:10:13.502Z'));
+
     const clockConfigs: ClockConfig[] = [
       {
         label: 'UTC',
@@ -111,7 +113,7 @@ describe('HeaderWorldClock with custom Time Format', () => {
       </ThemeProvider>,
     );
 
-    const currentTime = `${new Date().getHours()}:${new Date().getMinutes()}`;
+    const currentTime = `09:10`;
     expect(rendered.getByText(currentTime)).toBeInTheDocument();
   });
 });
