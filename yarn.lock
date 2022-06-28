@@ -20902,6 +20902,11 @@ promise-all-reject-late@^1.0.0:
   resolved "https://registry.npmjs.org/promise-all-reject-late/-/promise-all-reject-late-1.0.1.tgz#f8ebf13483e5ca91ad809ccc2fcf25f26f8643c2"
   integrity sha512-vuf0Lf0lOxyQREH7GDIOUMLS7kz+gs8i6B+Yi8dC68a2sychGrHTJYghMBD6k7eUcH0H5P73EckCA48xijWqXw==
 
+promise-any-polyfill@^1.0.1:
+  version "1.0.1"
+  resolved "https://artifactory.thousandeyes.com/artifactory/api/npm/npm/promise-any-polyfill/-/promise-any-polyfill-1.0.1.tgz#563872dd0abd370bfa8039e63980469b4b8b0d53"
+  integrity sha1-Vjhy3Qq9Nwv6gDnmOYBGm0uLDVM=
+
 promise-call-limit@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/promise-call-limit/-/promise-call-limit-1.0.1.tgz#4bdee03aeb85674385ca934da7114e9bcd3c6e24"

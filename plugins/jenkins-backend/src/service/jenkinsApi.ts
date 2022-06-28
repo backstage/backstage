@@ -30,27 +30,11 @@ import {
 import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
 import { NotAllowedError } from '@backstage/errors';
 
-// polyfill Promise.any for Node v14
-const anyPromise = (any => {
-  if (any) {
-    // bind is required by tsc
-    return any.bind(Promise);
-  }
-
-  // reverse promise resolution (rejects become resolves and visa versa)
-  const reverse = (promise: Promise<JenkinsProject>): Promise<JenkinsProject> =>
-    new Promise<JenkinsProject>((resolve, reject) =>
-      Promise.resolve(promise).then(reject, resolve),
-    );
-
-  return (
-    iterable: Iterable<Promise<JenkinsProject>>,
-  ): Promise<JenkinsProject> =>
-    Promise.all([...iterable].map(reverse)).then(
-      results => reverse(Promise.resolve(results[0])),
-      reverse,
-    );
-})(Promise.any);
+if (!Promise.any) {
+  (async () => {
+    await import('promise-any-polyfill');
+  })();
+}
 
 export class JenkinsApiImpl {
   private static readonly lastBuildTreeSpec = `lastBuild[
@@ -99,7 +83,7 @@ export class JenkinsApiImpl {
     if (branches) {
       // Assume jenkinsInfo.jobFullName is a folder which contains one job per branch.
       // TODO: extract a strategy interface for this
-      const job = await anyPromise(
+      const job = await Promise.any(
         branches.map(branch =>
           client.job.get({
             name: `${jenkinsInfo.jobFullName}/${branch}`,
