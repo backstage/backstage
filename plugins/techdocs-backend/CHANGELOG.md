@@ -1,5 +1,25 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.2.0-next.1
+
+### Minor Changes
+
+- 860765ff45: Added local publishing target directory `config`: `techdocs.publisher.local.publishDirectory`
+
+### Patch Changes
+
+- 726577958f: Add sample headings on the documented component homepage.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.2.0-next.1
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/catalog-client@1.0.4-next.1
+  - @backstage/integration@1.2.2-next.1
+  - @backstage/plugin-catalog-common@1.0.4-next.0
+  - @backstage/plugin-permission-common@0.6.3-next.0
+  - @backstage/plugin-search-common@0.3.6-next.0
+
 ## 1.1.3-next.0
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/catalog-model
 
+## 1.1.0-next.1
+
+### Patch Changes
+
+- f1dcc6f3c6: Added type predicates for all entity types, e.g. isUserEntity
+- Updated dependencies
+  - @backstage/errors@1.1.0-next.0
+
 ## 1.1.0-next.0
 
 ### Minor Changes
