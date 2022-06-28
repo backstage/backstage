@@ -225,7 +225,8 @@ export class AppManager implements BackstageApp {
   private readonly icons: NonNullable<AppOptions['icons']>;
   private readonly plugins: Set<CompatiblePlugin>;
   private readonly components: AppComponents;
-  private readonly adaptations: ComponentAdaptation[];
+  private readonly adaptationOptions: AppOptions['adaptations'];
+  private adaptations: ComponentAdaptation[] = []; // deferred
   private readonly themes: AppTheme[];
   private readonly configLoader?: AppConfigLoader;
   private readonly defaultApis: Iterable<AnyApiFactory>;
@@ -235,14 +236,11 @@ export class AppManager implements BackstageApp {
   private readonly apiFactoryRegistry: ApiFactoryRegistry;
 
   constructor(options: AppOptions) {
+    this.adaptationOptions = options.adaptations;
     this.apis = options.apis ?? [];
     this.icons = options.icons;
     this.plugins = new Set((options.plugins as CompatiblePlugin[]) ?? []);
     this.components = options.components;
-    this.adaptations = filterAdaptations(
-      options.adaptations,
-      this.plugins as Set<BackstagePlugin<any, any>>,
-    );
     this.themes = options.themes as AppTheme[];
     this.configLoader = options.configLoader ?? defaultConfigLoader;
     this.defaultApis = options.defaultApis ?? [];
@@ -300,6 +298,10 @@ export class AppManager implements BackstageApp {
 
         // Initialize APIs once all plugins are available
         this.getApiHolder();
+
+        // Initialize component adaptations once all plugins are available
+        this.setupComponentAdaptations();
+
         return {
           ...result,
           routeBindings: resolveRouteBindings(this.bindRoutes),
@@ -585,5 +587,15 @@ export class AppManager implements BackstageApp {
       }
       pluginIds.add(id);
     }
+  }
+
+  private setupComponentAdaptations() {
+    // Only initialize root-level adaptations once
+    if (this.adaptations.length > 0) return;
+
+    this.adaptations = filterAdaptations(
+      this.adaptationOptions,
+      this.plugins as Set<BackstagePlugin<any, any>>,
+    );
   }
 }
