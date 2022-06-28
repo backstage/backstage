@@ -949,6 +949,19 @@ describe('LunrSearchEngine', () => {
         previousPageCursor: undefined,
       });
     });
+
+    it('should throws missing index error', async () => {
+      await expect(
+        async () =>
+          await testLunrSearchEngine.query({
+            term: 'testTerm',
+            types: ['unknown'],
+            filters: {},
+          }),
+      ).rejects.toThrow(
+        'Missing index for unknown. This means there are no documents to search through',
+      );
+    });
   });
 
   it('should return previous page cursor if on another page', async () => {
