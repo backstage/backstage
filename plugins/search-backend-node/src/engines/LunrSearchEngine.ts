@@ -168,7 +168,7 @@ export class LunrSearchEngine implements SearchEngine {
       type => !documentTypes || documentTypes.includes(type),
     );
 
-    if (!indexKeys.length) {
+    if (documentTypes?.length && !indexKeys.length) {
       throw new MissingIndexError(
         `Missing index for ${documentTypes?.toString()}. This means there are no documents to search through.`,
       );
