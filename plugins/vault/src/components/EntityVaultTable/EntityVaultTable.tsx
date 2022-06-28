@@ -32,6 +32,13 @@ export const vaultSecretPath = (entity: Entity) => {
   return { secretPath };
 };
 
+function getSecretRelativeName(
+  secretPath: string,
+  secret: VaultSecret,
+): string {
+  return `${secret.path.replace(`${secretPath}/`, '')}/${secret.name}`;
+}
+
 export const EntityVaultTable = ({ entity }: { entity: Entity }) => {
   const vaultApi = useApi(vaultApiRef);
   const { secretPath } = vaultSecretPath(entity);
@@ -54,11 +61,11 @@ export const EntityVaultTable = ({ entity }: { entity: Entity }) => {
 
   const data = (value || []).map(secret => {
     return {
-      secret: `${secret.path.replace(secretPath + "/", "")}/${secret.name}`,
+      secret: getSecretRelativeName(secretPath, secret),
       view: (
         <Link
           aria-label="View"
-          title={`View ${secret.path.replace(secretPath + "/", "")}/${secret.name}`}
+          title={`View ${getSecretRelativeName(secretPath, secret)}`}
           to={secret.showUrl}
         >
           <Visibility style={{ fontSize: 16 }} />
@@ -67,7 +74,7 @@ export const EntityVaultTable = ({ entity }: { entity: Entity }) => {
       edit: (
         <Link
           aria-label="Edit"
-          title={`Edit ${secret.path.replace(secretPath + "/", "")}/${secret.name}`}
+          title={`Edit ${getSecretRelativeName(secretPath, secret)}`}
           to={secret.editUrl}
         >
           <Edit style={{ fontSize: 16 }} />
