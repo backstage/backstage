@@ -34,10 +34,10 @@
   },
   "dependencies": {
     "@azure/msal-node": "^1.1.0",
-    "@backstage/backend-tasks": "^0.3.3-next.0",
-    "@backstage/catalog-model": "^1.1.0-next.0",
+    "@backstage/backend-tasks": "^0.3.3-next.1",
+    "@backstage/catalog-model": "^1.1.0-next.1",
     "@backstage/config": "^1.0.1",
-    "@backstage/plugin-catalog-backend": "^1.2.1-next.0",
+    "@backstage/plugin-catalog-backend": "^1.2.1-next.1",
     "@microsoft/microsoft-graph-types": "^2.6.0",
     "@types/node-fetch": "^2.5.12",
     "lodash": "^4.17.21",
@@ -48,9 +48,9 @@
     "qs": "^6.9.4"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.14.1-next.0",
-    "@backstage/backend-test-utils": "^0.1.26-next.0",
-    "@backstage/cli": "^0.17.3-next.0",
+    "@backstage/backend-common": "^0.14.1-next.1",
+    "@backstage/backend-test-utils": "^0.1.26-next.1",
+    "@backstage/cli": "^0.18.0-next.1",
     "@types/lodash": "^4.14.151",
     "msw": "^0.42.0"
   },

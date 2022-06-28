@@ -1,5 +1,33 @@
 # @backstage/cli
 
+## 0.18.0-next.1
+
+### Minor Changes
+
+- 96a82d9791: **BREAKING**: Removed the following deprecated package commands:
+
+  - `app:build` - Use `package build` instead
+  - `app:serve` - Use `package start` instead
+  - `backend:build` - Use `package build` instead
+  - `backend:bundle` - Use `package build` instead
+  - `backend:dev` - Use `package start` instead
+  - `plugin:build` - Use `package build` instead
+  - `plugin:serve` - Use `package start` instead
+  - `build` - Use `package build` instead
+  - `lint` - Use `package lint` instead
+  - `prepack` - Use `package prepack` instead
+  - `postpack` - Use `package postpack` instead
+
+  In order to replace these you need to have [migrated to using package roles](https://backstage.io/docs/tutorials/package-role-migration).
+
+### Patch Changes
+
+- 86640214f0: Upgrade `@rollup/plugin-node-resolve` to `^13.0.6`
+- e661242844: Updated dependency `run-script-webpack-plugin` to `^0.1.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/config-loader@1.1.3-next.0
+
 ## 0.17.3-next.0
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.2.16-next.0
+
+### Patch Changes
+
+- 4c09c09102: Adds optional `htmlFontSize` property and also sets typography design tokens for h5 and h6 in base theme.
+
 ## 0.2.15
 
 ### Patch Changes

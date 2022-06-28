@@ -1,5 +1,29 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.1.5-next.1
+
+### Patch Changes
+
+- 49ff472c0b: Add the possibility in the `GitlabDiscoveryEntityProvider` to scan the whole project instead of concrete groups. For that, use a configuration like this one, where the group parameter is omitted (not mandatory anymore):
+
+  ```yaml
+  catalog:
+    providers:
+      gitlab:
+        yourProviderId:
+          host: gitlab-host # Identifies one of the hosts set up in the integrations
+          branch: main # Optional. Uses `master` as default
+          entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
+  ```
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/plugin-catalog-backend@1.2.1-next.1
+  - @backstage/backend-tasks@0.3.3-next.1
+  - @backstage/integration@1.2.2-next.1
+
 ## 0.1.5-next.0
 
 ### Patch Changes
