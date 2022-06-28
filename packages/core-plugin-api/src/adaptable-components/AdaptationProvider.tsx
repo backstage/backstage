@@ -27,8 +27,6 @@ import {
   AdaptableComponentRef,
 } from './types';
 
-import { BackstagePlugin } from '../plugin/types';
-
 /**
  * Prop types for the ApiProvider component.
  * @public
@@ -44,23 +42,6 @@ export type AdaptationProviderProps = {
    * Reset (exclude) all previously registered adaptations
    */
   reset?: boolean;
-
-  /**
-   * Exclude all previously registered adaptations from these plugins
-   */
-  excludePlugins?: BackstagePlugin<any, any>[];
-
-  /**
-   * Exclude all previously registered adaptations for this/these component(s)
-   */
-  excludeComponents?:
-    | AdaptableComponentRef<any, any>
-    | AdaptableComponentRef<any, any>[];
-
-  /**
-   * Exclude these specific previously registered adaptations
-   */
-  exclude?: ComponentAdaptation[];
 };
 
 type WrapAdaptation<T> = T & { adaptation: ComponentAdaptation<any, any> };
@@ -109,44 +90,13 @@ const VersionedContext = createVersionedContext<{ 1: ContextType }>(
 export function AdaptationProvider(
   props: PropsWithChildren<AdaptationProviderProps>,
 ) {
-  const {
-    adaptations,
-    reset = false,
-    excludePlugins,
-    excludeComponents,
-    exclude,
-    children,
-  } = props;
+  const { adaptations, reset = false, children } = props;
   const parentContext = useContext(VersionedContext)?.atVersion(1);
 
   const contextValue = useMemo((): ContextType => {
     const adaptationMap = reset
       ? cloneAdaptationMap(undefined)
       : cloneAdaptationMap(parentContext?.adaptationMap);
-
-    if (excludeComponents) {
-      const excludeComponentRefs = Array.isArray(excludeComponents)
-        ? excludeComponents
-        : [excludeComponents];
-
-      excludeComponentRefs.forEach(ref => {
-        adaptationMap.delete(ref.id);
-      });
-    }
-
-    if (excludePlugins || exclude) {
-      const excludePluginsSet = new Set(excludePlugins ?? []);
-      const excludeSet = new Set(exclude?.map(e => e.key) ?? []);
-
-      [...adaptationMap.values()].forEach(value => {
-        value.components = value.components
-          .filter(
-            ({ adaptation }) =>
-              !adaptation.plugin || !excludePluginsSet.has(adaptation.plugin),
-          )
-          .filter(({ adaptation }) => !excludeSet.has(adaptation.key));
-      });
-    }
 
     if (adaptations) {
       appendAdaptationMap(
@@ -156,14 +106,7 @@ export function AdaptationProvider(
     }
 
     return { adaptationMap };
-  }, [
-    parentContext?.adaptationMap,
-    adaptations,
-    reset,
-    excludePlugins,
-    excludeComponents,
-    exclude,
-  ]);
+  }, [parentContext?.adaptationMap, adaptations, reset]);
 
   const versionedValue = useMemo(
     () => createVersionedValueMap({ 1: contextValue }),
