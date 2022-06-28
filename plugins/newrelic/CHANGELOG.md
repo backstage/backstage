@@ -1,5 +1,20 @@
 # @backstage/plugin-newrelic
 
+## 0.3.25-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.1
+  - @backstage/theme@0.2.16-next.0
+
+## 0.3.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.0
+
 ## 0.3.24
 
 ### Patch Changes

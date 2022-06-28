@@ -14,21 +14,41 @@
  * limitations under the License.
  */
 import { DiscoveryApi, createApiRef } from '@backstage/core-plugin-api';
+import { NotFoundError } from '@backstage/errors';
 
+/**
+ * @public
+ */
 export const vaultApiRef = createApiRef<VaultApi>({
   id: 'plugin.vault.service',
 });
 
+/**
+ * Object containing the secret name and some links.
+ * @public
+ */
 export type VaultSecret = {
   name: string;
   showUrl: string;
   editUrl: string;
 };
 
+/**
+ * Interface for the VaultApi.
+ * @public
+ */
 export interface VaultApi {
+  /**
+   * Returns a list of secrets used to show in a table.
+   * @param secretPath - The path where the secrets are stored in Vault
+   */
   listSecrets(secretPath: string): Promise<VaultSecret[]>;
 }
 
+/**
+ * Default implementation of the VaultApi.
+ * @public
+ */
 export class VaultClient implements VaultApi {
   private readonly discoveryApi: DiscoveryApi;
 
@@ -39,7 +59,7 @@ export class VaultClient implements VaultApi {
   private async callApi<T>(
     path: string,
     query: { [key in string]: any },
-  ): Promise<T | undefined> {
+  ): Promise<T> {
     const apiUrl = `${await this.discoveryApi.getBaseUrl('vault')}`;
     const response = await fetch(
       `${apiUrl}/${path}?${new URLSearchParams(query).toString()}`,
@@ -49,23 +69,21 @@ export class VaultClient implements VaultApi {
         },
       },
     );
-    if (response.status === 200) {
+    if (response.ok) {
       return (await response.json()) as T;
+    } else if (response.status === 404) {
+      throw new NotFoundError(`No secrets found in path '${path}'`);
     }
-    return undefined;
+    throw new Error(
+      `Unexpected error while fetching secrets from path '${path}'`,
+    );
   }
 
   async listSecrets(secretPath: string): Promise<VaultSecret[]> {
-    if (secretPath === '') {
-      return [];
-    }
-    const result = await this.callApi<VaultSecret[]>(
+    const result = await this.callApi<{ items: VaultSecret[] }>(
       `v1/secrets/${encodeURIComponent(secretPath)}`,
       {},
     );
-    if (!result) {
-      return [];
-    }
-    return result;
+    return result.items;
   }
 }

@@ -1,5 +1,24 @@
 # @backstage/backend-common
 
+## 0.14.1-next.1
+
+### Patch Changes
+
+- 0fc57887e8: Improve plural handling in logging output for secrets
+- Updated dependencies
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/integration@1.2.2-next.1
+  - @backstage/config-loader@1.1.3-next.0
+
+## 0.14.1-next.0
+
+### Patch Changes
+
+- b1edb5cfd9: Fix parsing of S3 URLs for the default region.
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+- Updated dependencies
+  - @backstage/integration@1.2.2-next.0
+
 ## 0.14.0
 
 ### Minor Changes

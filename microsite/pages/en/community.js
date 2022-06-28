@@ -8,6 +8,30 @@
 const React = require('react');
 const Components = require(`${process.cwd()}/core/Components.js`);
 const Block = Components.Block;
+const BulletLine = Components.BulletLine;
+
+const PARTNERS = [
+  {
+    name: 'Frontside Software',
+    url: 'https://frontside.com/backstage/',
+    logo: 'img/partner-logo-frontside.png',
+  },
+  {
+    name: 'Roadie',
+    url: 'https://roadie.io/',
+    logo: 'img/partner-logo-roadie.png',
+  },
+  {
+    name: 'ThoughtWorks',
+    url: 'https://www.thoughtworks.com',
+    logo: 'img/partner-logo-thoughtworks.png',
+  },
+  {
+    name: 'VMWare',
+    url: 'https://www.vmware.com',
+    logo: 'img/partner-logo-vmware.png',
+  },
+];
 
 const Background = props => {
   const { config: siteConfig } = props;
@@ -17,14 +41,11 @@ const Background = props => {
       <Block small className="stripe-bottom bg-black-grey">
         <Block.Container style={{ justifyContent: 'flex-start' }}>
           <Block.TextBox>
-            <Block.Title>Backstage Community</Block.Title>
-          </Block.TextBox>
-          <Block.TextBox>
+            <Block.Title main>Backstage Community</Block.Title>
             <Block.Paragraph>
-              What's the use of having fun if you can't share it? Exactly. Join
-              the vibrant community around the Backstage project. Be it on
-              GitHub, social media, Discord... You'll find a welcoming
-              environment. To ensure this, we follow the{' '}
+              Join the vibrant community around Backstage through social media
+              and different meetups. To ensure that you have a welcoming
+              environment, we follow{' '}
               <a href="https://github.com/cncf/foundation/blob/master/code-of-conduct.md">
                 {' '}
                 CNCF Code of Conduct
@@ -32,110 +53,110 @@ const Background = props => {
               in everything we do.
             </Block.Paragraph>
           </Block.TextBox>
-          <Block.TextBox>
+          <Block.TextBox style={{ margin: 'auto' }}>
             <Block.Paragraph>
-              Main community channels
-              <br />- Chat and get support on our{' '}
-              <a href="https://discord.gg/MUpMjP2">Discord</a>
-              <br />- Get into contributing with the{' '}
-              <a href="https://github.com/backstage/backstage/contribute">
-                Good First Issues
-              </a>
-              <br />- Subscribe to the{' '}
-              <a href="https://mailchi.mp/spotify/backstage-community">
-                Community newsletter
-              </a>
-              <br />- Join the{' '}
-              <a href="https://twitter.com/i/communities/1494019781716062215">
-                Twitter community
-              </a>
-              <br />
+              <Block.SmallTitle small>
+                Get started in our community!
+              </Block.SmallTitle>
+              <ul>
+                <li>
+                  <Block.Paragraph style={{ marginBottom: '0' }}>
+                    Chat and get support on our{' '}
+                    <a href="https://discord.gg/MUpMjP2">Discord</a>
+                  </Block.Paragraph>
+                </li>
+                <li>
+                  <Block.Paragraph style={{ marginBottom: '0' }}>
+                    Get into contributing with the{' '}
+                    <a href="https://github.com/backstage/backstage/contribute">
+                      Good First Issues
+                    </a>
+                  </Block.Paragraph>
+                </li>
+                <li>
+                  <Block.Paragraph style={{ marginBottom: '0' }}>
+                    Subscribe to the{' '}
+                    <a href="https://mailchi.mp/spotify/backstage-community">
+                      Community newsletter
+                    </a>
+                  </Block.Paragraph>
+                </li>
+                <li>
+                  <Block.Paragraph style={{ marginBottom: '0' }}>
+                    Join the{' '}
+                    <a href="https://twitter.com/i/communities/1494019781716062215">
+                      Twitter community
+                    </a>
+                  </Block.Paragraph>
+                </li>
+              </ul>
             </Block.Paragraph>
           </Block.TextBox>
         </Block.Container>
       </Block>
 
-      <Block small className="stripe bg-black">
-        <Block.Container style={{ justifyContent: 'flex-start' }}>
-          <Block.TextBox>
-            <Block.Title>Backstage Community Sessions</Block.Title>
-            <Block.Paragraph>
-              Missed a meetup? Wondering when the next one is coming up? We've
-              got you covered! Check out our all-new Meetups page.
-            </Block.Paragraph>
-            <Block.LinkButton href="/on-demand">Meetups</Block.LinkButton>
+      <Block className="stripe-top stripe-bottom bg-teal-bottom">
+        <Block.Container style={{ flexFlow: 'column nowrap' }}>
+          <Block.TextBox wide>
+            <Block.Subtitle>Offical Backstage initiatives</Block.Subtitle>
+            <Block.Title small>
+              Stay tuned to the latest developments
+            </Block.Title>
           </Block.TextBox>
-          <Block.TextBox>
-            <Block.Title>Adopter Community Sessions</Block.Title>
-            <Block.Paragraph>
-              Backstage Community Sessions is the monthly meetup where we all
-              come together to listen to the latest maintainer updates, learn
-              from each other about adopting, share exciting new demos or
-              discuss any relevant topic like developer effectiveness, developer
-              experience, developer portals, etc. Have something to share, or a
-              burning question? Add it to the{' '}
-              <a href="https://github.com/backstage/community/issues">issue</a>.
-            </Block.Paragraph>
-          </Block.TextBox>
-          <Block.TextBox>
-            <Block.Title>Contributor Community Sessions</Block.Title>
-            <Block.Paragraph>
-              Discuss all things contributing, diving deep under the hood of
-              Backstage (Backstage of Backstage? Backerstage?). An open
-              discussion with maintainers and contributors of Backstage. If you
-              like Backstage, this is your favorite Zoom meeting of the month,
-              guaranteed! Have something to share, or a burning question? Add it
-              to the{' '}
-              <a href="https://github.com/backstage/community/issues">issue</a>.
-            </Block.Paragraph>
-          </Block.TextBox>
+          <Block.Container>
+            <Block.TextBox style={{ flexShrink: '1' }}>
+              <BulletLine />
+              <Block.SmallTitle small>Community sessions</Block.SmallTitle>
+              <Block.Paragraph>
+                Maintainers and adopters meet monthly to share updates, demos,
+                and ideas. Yep, all sessions are recorded!
+              </Block.Paragraph>
+              <Block.LinkButton href="/on-demand">
+                Join a session
+              </Block.LinkButton>
+            </Block.TextBox>
+            <Block.TextBox style={{ flexShrink: '1' }}>
+              <BulletLine />
+              <Block.SmallTitle small>Newsletter</Block.SmallTitle>
+              <Block.Paragraph>
+                The official monthly Backstage newsletter. Don't miss the latest
+                news from your favorite project!
+              </Block.Paragraph>
+              <Block.LinkButton href="https://mailchi.mp/spotify/backstage-community">
+                Subscribe
+              </Block.LinkButton>
+            </Block.TextBox>
+            <Block.TextBox style={{ flexShrink: '1' }}>
+              <BulletLine />
+              <Block.SmallTitle small>Contributor Spotlight</Block.SmallTitle>
+              <Block.Paragraph>
+                A recognition for valuable community work. Nominate contributing
+                members for their efforts! We'll put them in the spotlight ❤️
+              </Block.Paragraph>
+              <Block.LinkButton href="/nominate">Nominate now</Block.LinkButton>
+            </Block.TextBox>
+          </Block.Container>
         </Block.Container>
       </Block>
-
-      <Block small className="stripe bg-black-grey">
-        <Block.Container style={{ justifyContent: 'flex-start' }}>
-          <Block.TextBox>
-            <Block.Title>Backstage official Newsletter</Block.Title>
+      <Block className="stripe-top bg-black">
+        <Block.Container wrapped style={{ justifyContent: 'flex-start' }}>
+          <Block.TextBox wide>
+            <Block.Subtitle>Community initiatives</Block.Subtitle>
           </Block.TextBox>
-          <Block.TextBox>
+          <Block.TextBox small>
+            <Block.SmallTitle>Open Mic Meetup</Block.SmallTitle>
             <Block.Paragraph>
-              The official monthly Backstage newsletter. Containing the latest
-              news from your favorite project.
-            </Block.Paragraph>
-            <Block.LinkButton href="https://mailchi.mp/spotify/backstage-community">
-              Subscribe
-            </Block.LinkButton>
-          </Block.TextBox>
-        </Block.Container>
-      </Block>
-
-      <Block className="stripe bg-black">
-        <Block.Container style={{ justifyContent: 'flex-start' }}>
-          <Block.TextBox>
-            <Block.Title>Spotlight</Block.Title>
-            <Block.Paragraph>
-              A recognition for valuable community work, the{' '}
-              <b>Contributor Spotlight</b>. Nominate contributing members for
-              their efforts! We'll put them in the spotlight ❤️.
-              <br />
-            </Block.Paragraph>
-            <Block.LinkButton href="nominate ">Nominate now</Block.LinkButton>
-          </Block.TextBox>
-          <Block.TextBox>
-            <Block.Title>Open Mic Meetup</Block.Title>
-            <Block.Paragraph>
-              A monthly casual get together of Backstage users sharing their
-              experiences and helping each other. Hosted by{' '}
+              A casual get together of Backstage users sharing their experiences
+              and helping each other. Hosted by{' '}
               <a href="https://roadie.io/">Roadie.io</a> and{' '}
               <a href="https://frontside.com/">Frontside Software</a>.
-              <br />
             </Block.Paragraph>
             <Block.LinkButton href="https://backstage-openmic.com/">
               Learn more
             </Block.LinkButton>
           </Block.TextBox>
-          <Block.TextBox>
-            <Block.Title>Backstage Weekly</Block.Title>
+          <Block.TextBox small>
+            <Block.SmallTitle>Backstage Weekly Newsletter</Block.SmallTitle>
             <Block.Paragraph>
               A weekly newsletter with news, updates and things community from
               your friends at <a href="https://roadie.io/">Roadie.io</a>.
@@ -144,6 +165,23 @@ const Background = props => {
               Learn more
             </Block.LinkButton>
           </Block.TextBox>
+        </Block.Container>
+      </Block>
+
+      <Block className="stripe-top bg-black-grey">
+        <Block.Container wrapped style={{ justifyContent: 'flex-start' }}>
+          <Block.TextBox wide>
+            <Block.Subtitle>Commercial Partners</Block.Subtitle>
+          </Block.TextBox>
+          {PARTNERS.map(partner => (
+            <Block.TextBox small>
+              <Block.SmallTitle>
+                <a href={partner.url}>
+                  <img src={`${baseUrl}${partner.logo}`} alt={partner.name} />
+                </a>
+              </Block.SmallTitle>
+            </Block.TextBox>
+          ))}
         </Block.Container>
       </Block>
     </main>

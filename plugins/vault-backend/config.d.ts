@@ -19,6 +19,7 @@ export interface Config {
   vault?: {
     /**
      * The baseUrl for your Vault instance.
+     * @visibility frontend
      */
     baseUrl: string;
 

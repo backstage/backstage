@@ -193,18 +193,6 @@ export class OAuth2AuthProvider implements OAuthHandlers {
 }
 
 /**
- * @public
- * @deprecated This type has been inlined into the create method and will be removed.
- */
-export type OAuth2ProviderOptions = {
-  authHandler?: AuthHandler<OAuthResult>;
-
-  signIn?: {
-    resolver: SignInResolver<OAuthResult>;
-  };
-};
-
-/**
  * Auth provider integration for generic OAuth2 auth
  *
  * @public
@@ -260,9 +248,3 @@ export const oauth2 = createAuthProviderIntegration({
       });
   },
 });
-
-/**
- * @public
- * @deprecated Use `providers.oauth2.create` instead
- */
-export const createOAuth2Provider = oauth2.create;

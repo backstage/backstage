@@ -1,5 +1,26 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.3-next.1
+
+### Patch Changes
+
+- 52b4f796e3: app-config is now picked up properly.
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.1
+  - @backstage/plugin-home@0.4.23-next.1
+  - @backstage/theme@0.2.16-next.0
+  - @backstage/plugin-search-common@0.3.6-next.0
+
+## 0.1.3-next.0
+
+### Patch Changes
+
+- 12ae3eed2f: - Publicly exports `StackOverflowIcon`.
+  - `HomePageStackOverflowQuestions` accepts optional icon property.
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/plugin-home@0.4.23-next.0
+
 ## 0.1.2
 
 ### Patch Changes

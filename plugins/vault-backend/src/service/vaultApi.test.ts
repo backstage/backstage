@@ -93,8 +93,7 @@ describe('VaultApi', () => {
   it('should return success token renew', async () => {
     setupHandlers();
     const api = new VaultClient({ config });
-    const apiRenew = await api.renewToken();
-    expect(apiRenew).toBeTruthy();
+    expect(await api.renewToken()).toBe(undefined);
   });
 
   it('should render frontend url', () => {

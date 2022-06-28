@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-export type ChangeEvent = {
+export type PagerDutyChangeEvent = {
   id: string;
   integration: [
     {
-      service: Service;
+      service: PagerDutyService;
     },
   ];
   source: string;
@@ -33,44 +33,44 @@ export type ChangeEvent = {
   timestamp: string;
 };
 
-export type Incident = {
+export type PagerDutyIncident = {
   id: string;
   title: string;
   status: string;
   html_url: string;
   assignments: [
     {
-      assignee: Assignee;
+      assignee: PagerDutyAssignee;
     },
   ];
   serviceId: string;
   created_at: string;
 };
 
-export type Service = {
+export type PagerDutyService = {
   id: string;
   name: string;
   html_url: string;
   integrationKey: string;
   escalation_policy: {
     id: string;
-    user: User;
+    user: PagerDutyUser;
     html_url: string;
   };
 };
 
-export type OnCall = {
-  user: User;
+export type PagerDutyOnCall = {
+  user: PagerDutyUser;
   escalation_level: number;
 };
 
-export type Assignee = {
+export type PagerDutyAssignee = {
   id: string;
   summary: string;
   html_url: string;
 };
 
-export type User = {
+export type PagerDutyUser = {
   id: string;
   summary: string;
   email: string;

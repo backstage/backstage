@@ -1,5 +1,49 @@
 # @backstage/plugin-home
 
+## 0.4.23-next.1
+
+### Patch Changes
+
+- a46e317a75: Added support for customizing the time format used in the `HeaderWorldClock` component
+
+  Here's an example of how this can be used in the `HomePage.tsx` found in `\packages\app\src\components\home` to change the clock to be in the 24hr time format:
+
+  ```diff
+  +const timeFormat: Intl.DateTimeFormatOptions = {
+  +  hour: '2-digit',
+  +  minute: '2-digit',
+  +  hour12: false,
+  +};
+
+  export const homePage = (
+    <Page themeId="home">
+      <Header title={<WelcomeTitle />} pageTitleOverride="Home">
+  +      <HeaderWorldClock clockConfigs={clockConfigs} customTimeFormat={timeFormat} />
+      </Header>
+      <Content>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <HomePageSearchBar />
+          </Grid>
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.1
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/plugin-stack-overflow@0.1.3-next.1
+  - @backstage/theme@0.2.16-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.1
+
+## 0.4.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/plugin-stack-overflow@0.1.3-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.0
+
 ## 0.4.22
 
 ### Patch Changes

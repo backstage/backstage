@@ -16,13 +16,13 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
-import { Client } from '@elastic/elasticsearch';
 import Mock from '@elastic/elasticsearch-mock';
 import { range } from 'lodash';
+import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
 
 const mock = new Mock();
-const client = new Client({
+const clientWrapper = ElasticSearchClientWrapper.fromClientOptions({
   node: 'http://localhost:9200',
   Connection: mock.getConnection(),
 });
@@ -43,7 +43,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       indexSeparator: '-index__',
       alias: 'some-type-index__search',
       logger: getVoidLogger(),
-      elasticSearchClient: client,
+      elasticSearchClientWrapper: clientWrapper,
     });
 
     // Set up all requisite Elastic mocks.
