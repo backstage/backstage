@@ -154,6 +154,8 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent<
 // @public
 export interface OwnedEntityPickerUiOptions {
   // (undocumented)
+  allowArbitraryValues?: boolean;
+  // (undocumented)
   allowedKinds?: string[];
   // (undocumented)
   defaultKind?: string;
