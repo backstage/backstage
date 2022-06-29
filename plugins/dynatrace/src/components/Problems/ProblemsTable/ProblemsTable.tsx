@@ -61,13 +61,15 @@ export const ProblemsTable = (props: ProblemsTableProps) => {
       title: 'Start Time',
       field: 'startTime',
       render: (row: Partial<DynatraceProblem>) =>
-        new Date(row.startTime || 0).toString(),
+        new Date(row.startTime || 0).toLocaleString(),
     },
     {
       title: 'End Time',
       field: 'endTime',
       render: (row: Partial<DynatraceProblem>) =>
-        row.endTime === -1 ? 'ongoing' : new Date(row.endTime || 0).toString(),
+        row.endTime === -1
+          ? 'ongoing'
+          : new Date(row.endTime || 0).toLocaleString(),
     },
   ];
 
