@@ -231,6 +231,13 @@ export function getEntitySourceLocation(entity: Entity): {
 };
 
 // @public
+export class GroupDefaultParentEntityPolicy implements EntityPolicy {
+  constructor(parentEntityRef: string);
+  // (undocumented)
+  enforce(entity: Entity): Promise<Entity>;
+}
+
+// @public
 interface GroupEntityV1alpha1 extends Entity {
   // (undocumented)
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
