@@ -63,6 +63,7 @@ const useStyles = makeStyles<BackstageTheme>(
     },
     rightItemsBox: {
       width: 'auto',
+      alignItems: 'center',
     },
     title: {
       color: theme.palette.bursts.fontColor,
