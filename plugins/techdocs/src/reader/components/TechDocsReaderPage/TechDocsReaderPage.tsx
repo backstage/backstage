@@ -106,16 +106,18 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
   return (
     <TechDocsReaderPageProvider entityRef={entityRef}>
       {({ metadata, entityMetadata, onReady }) => (
-        <Page themeId="documentation">
-          {children instanceof Function
-            ? children({
-                entityRef,
-                techdocsMetadataValue: metadata.value,
-                entityMetadataValue: entityMetadata.value,
-                onReady,
-              })
-            : children}
-        </Page>
+        <div className="techdocs-reader-page">
+          <Page themeId="documentation">
+            {children instanceof Function
+              ? children({
+                  entityRef,
+                  techdocsMetadataValue: metadata.value,
+                  entityMetadataValue: entityMetadata.value,
+                  onReady,
+                })
+              : children}
+          </Page>
+        </div>
       )}
     </TechDocsReaderPageProvider>
   );
