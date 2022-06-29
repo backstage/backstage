@@ -37,7 +37,7 @@ import {
   getOrganizationUsers,
   GithubMultiOrgConfig,
   readGithubMultiOrgConfig,
-} from './lib';
+} from '../lib';
 
 /**
  * Extracts teams and users out of a multiple GitHub orgs namespaced per org.

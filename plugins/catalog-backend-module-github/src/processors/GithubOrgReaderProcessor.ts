@@ -36,7 +36,7 @@ import {
   getOrganizationTeams,
   getOrganizationUsers,
   parseGitHubOrgUrl,
-} from './lib';
+} from '../lib';
 
 type GraphQL = typeof graphql;
 
