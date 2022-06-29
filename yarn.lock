@@ -16947,10 +16947,10 @@ jwt-decode@*, jwt-decode@^3.1.0:
   resolved "https://registry.npmjs.org/jwt-decode/-/jwt-decode-3.1.2.tgz#3fb319f3675a2df0c2895c8f5e9fa4b67b04ed59"
   integrity sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A==
 
-kafkajs@^1.16.0-beta.6:
-  version "1.16.0"
-  resolved "https://registry.npmjs.org/kafkajs/-/kafkajs-1.16.0.tgz#bfcc3ae2b69265ca8435b53a01ee9e8787b9fee5"
-  integrity sha512-+Rcfu2hyQ/jv5skqRY8xA7Ra+mmRkDAzCaLDYbkGtgsNKpzxPWiLbk8ub0dgr4EbWrN1Zb4BCXHUkD6+zYfdWg==
+kafkajs@^2.0.0:
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/kafkajs/-/kafkajs-2.0.2.tgz#cdfc8f57aa4fd69f6d9ca1cce4ee89bbc2a3a1f9"
+  integrity sha512-g6CM3fAenofOjR1bfOAqeZUEaSGhNtBscNokybSdW1rmIKYNwBPC9xQzwulFJm36u/xcxXUiCl/L/qfslapihA==
 
 keyv-memcache@^1.2.5:
   version "1.2.9"
