@@ -19,7 +19,10 @@ import { Page, Content } from '@backstage/core-components';
 import { DashboardEntityList } from './DashboardEntityList';
 import { DashboardSnapshotList } from './DashboardSnapshotList';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { NEWRELIC_GUID_ANNOTATION } from '../../constants';
+import {
+  NEWRELIC_TIME_WINDOW_ANNOTATION,
+  NEWRELIC_GUID_ANNOTATION,
+} from '../../constants';
 
 export const NewRelicDashboard = () => {
   const { entity } = useEntity();
@@ -34,6 +37,9 @@ export const NewRelicDashboard = () => {
             <DashboardSnapshotList
               guid={String(
                 entity.metadata.annotations?.[NEWRELIC_GUID_ANNOTATION],
+              )}
+              duration={Number(
+                entity.metadata.annotations?.[NEWRELIC_TIME_WINDOW_ANNOTATION],
               )}
             />
           </Grid>
