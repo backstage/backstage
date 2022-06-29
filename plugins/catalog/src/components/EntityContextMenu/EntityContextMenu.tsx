@@ -33,7 +33,6 @@ import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common'
 import { BackstageTheme } from '@backstage/theme';
 import { UnregisterEntity, UnregisterEntityOptions } from './UnregisterEntity';
 
-
 /** @public */
 export type EntityContextMenuClassKey = 'button';
 
