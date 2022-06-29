@@ -25,7 +25,7 @@ import {
   EntityProvider,
   EntityProviderConnection,
   LocationSpec,
-  locationSpecToLocationEntity
+  locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-backend';
 
 import { graphql } from '@octokit/graphql';
@@ -33,7 +33,6 @@ import * as uuid from 'uuid';
 import { Logger } from 'winston';
 import { camelCase } from 'lodash';
 import { getOrganizationEntities } from '../lib/github';
-
 
 /**
  * Options for {@link GithubEntityProvider}.
@@ -55,9 +54,8 @@ export interface GithubEntityProviderOptions {
    */
   orgUrl: string;
 
-
   /**
-   * An array of entity file names to be parsed and added to the catalog 
+   * An array of entity file names to be parsed and added to the catalog
    *
    * @example "['catalog-info.yaml', 'template.yaml']"
    */
@@ -86,7 +84,7 @@ type CreateLocationSpec = {
   url: string;
   branch: string;
   file: string;
-}
+};
 
 /**
  * Provider which discovers catalog files (any name) within a Github Organization.
@@ -100,10 +98,7 @@ export class GithubEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
   private readonly githubCredentialsProvider: GithubCredentialsProvider;
 
-  static fromConfig(
-    config: Config,
-    options: GithubEntityProviderOptions
-  ) {
+  static fromConfig(config: Config, options: GithubEntityProviderOptions) {
     const integrations = ScmIntegrations.fromConfig(config);
     if (!integrations) {
       throw new Error('No integrations found for github');
@@ -120,11 +115,12 @@ export class GithubEntityProvider implements EntityProvider {
       logger: Logger;
       schedule: TaskRunner;
       githubCredentialsProvider?: any;
-    }
+    },
   ) {
     options.logger.child({ target: this.getProviderName() });
 
-    this.githubCredentialsProvider = options.githubCredentialsProvider ||
+    this.githubCredentialsProvider =
+      options.githubCredentialsProvider ||
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
     this.scheduleFn = this.createScheduleFn(options.schedule);
@@ -189,17 +185,15 @@ export class GithubEntityProvider implements EntityProvider {
 
     const startTimestamp = Date.now();
 
-    logger.info(
-      `Reading GitHub repositories from ${this.options.orgUrl}`,
-    );
+    logger.info(`Reading GitHub repositories from ${this.options.orgUrl}`);
 
     if (!this.options.files) {
       throw new Error(
-        `Missing 'files' array key in 'options' passed to GithubEntityProvider.fromConfig() : ${this.getProviderName()}`
-      )
+        `Missing 'files' array key in 'options' passed to GithubEntityProvider.fromConfig() : ${this.getProviderName()}`,
+      );
     }
 
-    const expectedEntityFiles = this.options.files
+    const expectedEntityFiles = this.options.files;
 
     const { repositories } = await getOrganizationEntities(
       client,
@@ -208,7 +202,10 @@ export class GithubEntityProvider implements EntityProvider {
     );
 
     const matching = repositories.filter(
-      r => !r.isArchived && repoSearchPath.test(r.name) && r.defaultBranchRef?.name,
+      r =>
+        !r.isArchived &&
+        repoSearchPath.test(r.name) &&
+        r.defaultBranchRef?.name,
     );
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
@@ -217,7 +214,10 @@ export class GithubEntityProvider implements EntityProvider {
       `Read ${repositories.length} GitHub repositories (${matching.length} matching the pattern) in ${duration} seconds`,
     );
 
-    const files = expectedEntityFiles.map(fileName => ({ name: fileName, key: camelCase(fileName) }));
+    const files = expectedEntityFiles.map(fileName => ({
+      name: fileName,
+      key: camelCase(fileName),
+    }));
 
     const repoEntities: Array<LocationSpec | Array<LocationSpec>> = [];
 
@@ -225,8 +225,12 @@ export class GithubEntityProvider implements EntityProvider {
       for (const { name: fileName, key } of files) {
         const entityObj: any = entity[key as keyof typeof entity];
         if (entityObj) {
-          const locationEntity = this.createLocationSpec({ url: entity.url, branch: entity.defaultBranchRef?.name || '', file: fileName })
-          repoEntities.push(locationEntity)
+          const locationEntity = this.createLocationSpec({
+            url: entity.url,
+            branch: entity.defaultBranchRef?.name || '',
+            file: fileName,
+          });
+          repoEntities.push(locationEntity);
         }
       }
     }
@@ -234,10 +238,8 @@ export class GithubEntityProvider implements EntityProvider {
     const entityLocations = repoEntities.flat();
 
     if (entityLocations.length === 0) {
-      logger.info(
-        `No valid entities found by ${this.getProviderName()}.`,
-      );
-      return false
+      logger.info(`No valid entities found by ${this.getProviderName()}.`);
+      return false;
     }
 
     await this.connection.applyMutation({
@@ -245,17 +247,21 @@ export class GithubEntityProvider implements EntityProvider {
       entities: entityLocations.map(location => ({
         locationKey: this.getProviderName(),
         entity: locationSpecToLocationEntity({ location }),
-      }))
+      })),
     });
 
     logger.info(
       `Adding ${entityLocations.length} valid entities to the catalog`,
     );
 
-    return true
+    return true;
   }
 
-  private createLocationSpec({ url, branch, file }: CreateLocationSpec): LocationSpec {
+  private createLocationSpec({
+    url,
+    branch,
+    file,
+  }: CreateLocationSpec): LocationSpec {
     return {
       type: 'url',
       target: `${url}/blob/${branch}/${file}`,

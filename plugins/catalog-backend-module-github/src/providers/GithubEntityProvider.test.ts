@@ -18,62 +18,62 @@ import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
 import {
-    GithubEntityProvider,
-    GithubEntityProviderOptions
+  GithubEntityProvider,
+  GithubEntityProviderOptions,
 } from './GithubEntityProvider';
 
 class PersistingTaskRunner implements TaskRunner {
-    private tasks: TaskInvocationDefinition[] = [];
+  private tasks: TaskInvocationDefinition[] = [];
 
-    getTasks() {
-        return this.tasks;
-    }
+  getTasks() {
+    return this.tasks;
+  }
 
-    run(task: TaskInvocationDefinition): Promise<void> {
-        this.tasks.push(task);
-        return Promise.resolve(undefined);
-    }
+  run(task: TaskInvocationDefinition): Promise<void> {
+    this.tasks.push(task);
+    return Promise.resolve(undefined);
+  }
 }
 
 describe('GithubEntityProvider', () => {
-    const backendConfig = {
-        integrations: {
-            github: [
-                {
-                    host: 'github.com',
-                },
-            ],
+  const backendConfig = {
+    integrations: {
+      github: [
+        {
+          host: 'github.com',
         },
-    }
+      ],
+    },
+  };
 
-    const options: GithubEntityProviderOptions = {
-        id: 'mockId',
-        orgUrl: 'http://mockUrl',
-        files: ['mockFiles.yaml'],
-        schedule: new PersistingTaskRunner(),
-        logger: getVoidLogger()
-    }
+  const options: GithubEntityProviderOptions = {
+    id: 'mockId',
+    orgUrl: 'http://mockUrl',
+    files: ['mockFiles.yaml'],
+    schedule: new PersistingTaskRunner(),
+    logger: getVoidLogger(),
+  };
 
-    it('should return an instance when calling GithubEntityProvider.fromConfig()', () => {
-        const config = new ConfigReader(backendConfig);
-        const provider = GithubEntityProvider.fromConfig(config, options)
-        expect(typeof provider).toBe('object')
-    });
+  it('should return an instance when calling GithubEntityProvider.fromConfig()', () => {
+    const config = new ConfigReader(backendConfig);
+    const provider = GithubEntityProvider.fromConfig(config, options);
+    expect(typeof provider).toBe('object');
+  });
 
-    it('should have the expected properties', () => {
-        const config = new ConfigReader(backendConfig);
-        const provider = GithubEntityProvider.fromConfig(config, options)
-        expect(provider).toHaveProperty('connect')
-        expect(typeof provider.connect).toBe('function')
-        expect(provider).toHaveProperty('refresh')
-        expect(typeof provider.refresh).toBe('function')
-        expect(provider).toHaveProperty('getProviderName')
-        expect(typeof provider.getProviderName).toBe('function')
-    })
+  it('should have the expected properties', () => {
+    const config = new ConfigReader(backendConfig);
+    const provider = GithubEntityProvider.fromConfig(config, options);
+    expect(provider).toHaveProperty('connect');
+    expect(typeof provider.connect).toBe('function');
+    expect(provider).toHaveProperty('refresh');
+    expect(typeof provider.refresh).toBe('function');
+    expect(provider).toHaveProperty('getProviderName');
+    expect(typeof provider.getProviderName).toBe('function');
+  });
 
-    it('should return the instance providerName', () => {
-        const config = new ConfigReader(backendConfig);
-        const provider = GithubEntityProvider.fromConfig(config, options)
-        expect(provider.getProviderName()).toBe('github-entity-provider:mockId')
-    })
+  it('should return the instance providerName', () => {
+    const config = new ConfigReader(backendConfig);
+    const provider = GithubEntityProvider.fromConfig(config, options);
+    expect(provider.getProviderName()).toBe('github-entity-provider:mockId');
+  });
 });

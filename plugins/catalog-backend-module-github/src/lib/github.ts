@@ -344,7 +344,7 @@ export async function getTeamMembers(
  * @param files - List of file entries pulled from the config
  */
 
- export async function getOrganizationEntities(
+export async function getOrganizationEntities(
   client: typeof graphql,
   org: string,
   files: Array<string>,
