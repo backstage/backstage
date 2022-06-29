@@ -1,6 +1,4 @@
 ---
-'@backstage/core-components': patch
-'@backstage/plugin-catalog': patch
 '@backstage/plugin-techdocs': patch
 ---
 
