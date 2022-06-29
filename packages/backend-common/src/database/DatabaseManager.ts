@@ -251,7 +251,7 @@ export class DatabaseManager {
       // include base connection if client type has not been overridden
       ...(overridden ? {} : baseConnection),
       ...connection,
-    };
+    } as Partial<Knex.StaticConnectionConfig>;
   }
 
   /**

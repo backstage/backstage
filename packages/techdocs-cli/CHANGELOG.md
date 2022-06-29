@@ -1,5 +1,15 @@
 # @techdocs/cli
 
+## 1.1.3-next.1
+
+### Patch Changes
+
+- a5d73da942: Fix the flag parsing for `legacyCopyReadmeMdToIndexMd` in `techdocs-cli generate` command, and decouple it's logic from the `techdocs-ref` flag.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.2.0-next.1
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/backend-common@0.14.1-next.1
+
 ## 1.1.3-next.0
 
 ### Patch Changes

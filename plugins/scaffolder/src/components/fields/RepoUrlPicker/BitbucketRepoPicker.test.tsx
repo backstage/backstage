@@ -26,7 +26,7 @@ describe('BitbucketRepoPicker', () => {
       <BitbucketRepoPicker onChange={jest.fn()} rawErrors={[]} state={state} />,
     );
 
-    expect(getAllByRole('textbox')).toHaveLength(3);
+    expect(getAllByRole('textbox')).toHaveLength(2);
     expect(getAllByRole('textbox')[0]).toHaveValue('lolsWorkspace');
   });
 
@@ -39,7 +39,7 @@ describe('BitbucketRepoPicker', () => {
       <BitbucketRepoPicker onChange={jest.fn()} rawErrors={[]} state={state} />,
     );
 
-    expect(getAllByRole('textbox')).toHaveLength(2);
+    expect(getAllByRole('textbox')).toHaveLength(1);
   });
   describe('workspace field', () => {
     it('calls onChange when the workspace changes', () => {
@@ -76,25 +76,6 @@ describe('BitbucketRepoPicker', () => {
       fireEvent.change(projectInput, { target: { value: 'test-project' } });
 
       expect(onChange).toHaveBeenCalledWith({ project: 'test-project' });
-    });
-  });
-
-  describe('repoName field', () => {
-    it('calls onChange when the repoName changes', () => {
-      const onChange = jest.fn();
-      const { getAllByRole } = render(
-        <BitbucketRepoPicker
-          onChange={onChange}
-          rawErrors={[]}
-          state={{ host: 'bitbucket.org' }}
-        />,
-      );
-
-      const repoNameInput = getAllByRole('textbox')[2];
-
-      fireEvent.change(repoNameInput, { target: { value: 'test-repo' } });
-
-      expect(onChange).toHaveBeenCalledWith({ repoName: 'test-repo' });
     });
   });
 });

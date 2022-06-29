@@ -53,12 +53,16 @@ export const EntityVaultTable = ({ entity }: { entity: Entity }) => {
   ];
 
   const data = (value || []).map(secret => {
+    const secretName = `${secret.path.replace(`${secretPath}/`, '')}/${
+      secret.name
+    }`;
+
     return {
-      secret: secret.name,
+      secret: secretName,
       view: (
         <Link
           aria-label="View"
-          title={`View ${secret.name}`}
+          title={`View ${secretName}`}
           to={secret.showUrl}
         >
           <Visibility style={{ fontSize: 16 }} />
@@ -67,7 +71,7 @@ export const EntityVaultTable = ({ entity }: { entity: Entity }) => {
       edit: (
         <Link
           aria-label="Edit"
-          title={`Edit ${secret.name}`}
+          title={`Edit ${secretName}`}
           to={secret.editUrl}
         >
           <Edit style={{ fontSize: 16 }} />

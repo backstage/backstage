@@ -1,0 +1,14 @@
+name: PR
+on:
+  pull_request_target:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    if: github.repository == 'backstage/backstage'
+    steps:
+      - name: PR sync
+        uses: backstage/actions/pr-sync@v0.1.8
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}

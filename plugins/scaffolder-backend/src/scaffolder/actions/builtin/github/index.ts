@@ -15,5 +15,7 @@
  */
 
 export { createGithubActionsDispatchAction } from './githubActionsDispatch';
-export { createGithubWebhookAction } from './githubWebhook';
 export { createGithubIssuesLabelAction } from './githubIssuesLabel';
+export { createGithubRepoCreateAction } from './githubRepoCreate';
+export { createGithubRepoPushAction } from './githubRepoPush';
+export { createGithubWebhookAction } from './githubWebhook';

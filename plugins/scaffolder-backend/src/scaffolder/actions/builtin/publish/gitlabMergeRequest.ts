@@ -42,6 +42,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
     token?: string;
     /** @deprecated Use projectPath instead */
     projectid?: string;
+    removeSourceBranch?: boolean;
   }>({
     id: 'publish:gitlab:merge-request',
     schema: {
@@ -84,6 +85,12 @@ export const createPublishGitlabMergeRequestAction = (options: {
             title: 'Authentication Token',
             type: 'string',
             description: 'The token to use for authorization to GitLab',
+          },
+          removeSourceBranch: {
+            title: 'Delete source branch',
+            type: 'boolean',
+            description:
+              'Option to delete source branch once the MR has been merged. Default: false',
           },
         },
       },
@@ -187,7 +194,12 @@ export const createPublishGitlabMergeRequestAction = (options: {
           destinationBranch,
           String(defaultBranch),
           ctx.input.title,
-          { description: ctx.input.description },
+          {
+            description: ctx.input.description,
+            removeSourceBranch: ctx.input.removeSourceBranch
+              ? ctx.input.removeSourceBranch
+              : false,
+          },
         ).then((mergeRequest: { web_url: string }) => {
           return mergeRequest.web_url;
         });

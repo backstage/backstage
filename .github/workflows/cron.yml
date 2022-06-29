@@ -1,0 +1,11 @@
+name: Cron
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: backstage/actions/cron@v0.1.8

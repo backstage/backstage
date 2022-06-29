@@ -214,6 +214,7 @@ export type KubernetesObjectTypes =
   | 'services'
   | 'configmaps'
   | 'deployments'
+  | 'limitranges'
   | 'replicasets'
   | 'horizontalpodautoscalers'
   | 'jobs'

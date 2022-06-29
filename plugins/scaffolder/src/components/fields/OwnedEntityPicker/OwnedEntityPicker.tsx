@@ -37,6 +37,7 @@ import { FieldExtensionComponentProps } from '../../../extensions';
 export interface OwnedEntityPickerUiOptions {
   allowedKinds?: string[];
   defaultKind?: string;
+  allowArbitraryValues?: boolean;
 }
 
 /**
@@ -60,6 +61,8 @@ export const OwnedEntityPicker = (
 
   const allowedKinds = uiSchema['ui:options']?.allowedKinds;
   const defaultKind = uiSchema['ui:options']?.defaultKind;
+  const allowArbitraryValues =
+    uiSchema['ui:options']?.allowArbitraryValues ?? true;
   const { ownedEntities, loading } = useOwnedEntities(allowedKinds);
 
   const entityRefs = ownedEntities?.items
@@ -83,7 +86,7 @@ export const OwnedEntityPicker = (
         onChange={onSelect}
         options={entityRefs || []}
         autoSelect
-        freeSolo
+        freeSolo={allowArbitraryValues}
         renderInput={params => (
           <TextField
             {...params}
