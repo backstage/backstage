@@ -19636,9 +19636,9 @@ octokit-plugin-create-pull-request@^3.10.0:
     "@octokit/types" "^6.8.2"
 
 octokit@^1.7.1:
-  version "1.8.0"
-  resolved "https://registry.npmjs.org/octokit/-/octokit-1.8.0.tgz#c2ea6ace083b3be1d594aa7eb2e05fccd14e7ca5"
-  integrity sha512-HtArk9ttGy5effKNiaqKCirR6VSZoYjqgLgvVm/1mSRR4WYmww5DHjLnZlCbvj8+DwBLLLduJ3XnX/SPCCcp6A==
+  version "1.8.1"
+  resolved "https://registry.npmjs.org/octokit/-/octokit-1.8.1.tgz#399b0032e89e058084a1a1922e40a02e87d4cd61"
+  integrity sha512-xBLKFIivbl7wnLwxzLYuDO/JDNYxdyxoSjFrl/QMrY/fwGGQYYklvKUDTUyGMU0aXPrQtJ0IZnG3BXpCkDQzWg==
   dependencies:
     "@octokit/app" "^12.0.4"
     "@octokit/core" "^3.5.1"
