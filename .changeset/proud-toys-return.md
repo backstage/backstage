@@ -1,5 +1,5 @@
 ---
-'@backstage/catalog-model': patch
+'@backstage/catalog-model': minor
 ---
 
-Introduced DefaultParentEntityPolicy to set a default group entity parent.
+Introduced `GroupDefaultParentEntityPolicy` to set a default group entity parent.

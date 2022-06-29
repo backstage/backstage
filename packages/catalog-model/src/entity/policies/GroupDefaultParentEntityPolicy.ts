@@ -28,7 +28,7 @@ import { parseEntityRef, stringifyEntityRef } from '../ref';
  *
  * @public
  */
-export class DefaultParentEntityPolicy implements EntityPolicy {
+export class GroupDefaultParentEntityPolicy implements EntityPolicy {
   private readonly parentRef: string;
 
   constructor(parentEntityRef: string) {

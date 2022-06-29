@@ -109,13 +109,6 @@ export class DefaultNamespaceEntityPolicy implements EntityPolicy {
 }
 
 // @public
-export class DefaultParentEntityPolicy implements EntityPolicy {
-  constructor(parent: string);
-  // (undocumented)
-  enforce(entity: Entity): Promise<Entity>;
-}
-
-// @public
 interface DomainEntityV1alpha1 extends Entity {
   // (undocumented)
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
@@ -236,6 +229,13 @@ export function getEntitySourceLocation(entity: Entity): {
   type: string;
   target: string;
 };
+
+// @public
+export class GroupDefaultParentEntityPolicy implements EntityPolicy {
+  constructor(parentEntityRef: string);
+  // (undocumented)
+  enforce(entity: Entity): Promise<Entity>;
+}
 
 // @public
 interface GroupEntityV1alpha1 extends Entity {

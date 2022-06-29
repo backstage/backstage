@@ -15,11 +15,11 @@
  */
 
 import { UserEntity, GroupEntity } from '../../kinds';
-import { DefaultParentEntityPolicy } from './DefaultParentEntityPolicy';
+import { GroupDefaultParentEntityPolicy } from './GroupDefaultParentEntityPolicy';
 
-describe('DefaultParentEntityPolicy', () => {
+describe('GroupDefaultParentEntityPolicy', () => {
   it('should ignore non-group entities', async () => {
-    const p = new DefaultParentEntityPolicy('name');
+    const p = new GroupDefaultParentEntityPolicy('name');
     const u: UserEntity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'User',
@@ -36,7 +36,7 @@ describe('DefaultParentEntityPolicy', () => {
   });
 
   it('should parent group entities', async () => {
-    const p = new DefaultParentEntityPolicy('name');
+    const p = new GroupDefaultParentEntityPolicy('name');
     const g: GroupEntity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Group',
@@ -53,7 +53,7 @@ describe('DefaultParentEntityPolicy', () => {
   });
 
   it('should not replace existing parents', async () => {
-    const p = new DefaultParentEntityPolicy('namespace/name');
+    const p = new GroupDefaultParentEntityPolicy('namespace/name');
     const g: GroupEntity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Group',
