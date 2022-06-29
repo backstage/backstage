@@ -21,6 +21,7 @@ import React, {
   useState,
   memo,
   ReactNode,
+  useMemo,
 } from 'react';
 import useAsync, { AsyncState } from 'react-use/lib/useAsync';
 
@@ -37,6 +38,7 @@ import { useApi } from '@backstage/core-plugin-api';
 
 import { techdocsApiRef } from './api';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
+import { useParams } from 'react-router-dom';
 
 const areEntityRefsEqual = (
   prevEntityRef: CompoundEntityRef,
@@ -107,13 +109,31 @@ export type TechDocsReaderPageProviderProps = {
   children: TechDocsReaderPageProviderRenderFunction | ReactNode;
 };
 
+type TechDocsReaderPageState = Partial<
+  Pick<TechDocsReaderPageProviderProps, 'path' | 'entityRef'>
+>;
+
+const useTechDocsReaderPageState = (
+  initialState: TechDocsReaderPageState = {},
+): Required<TechDocsReaderPageState> => {
+  const params = useParams();
+
+  const defaultState = useMemo(() => {
+    const { namespace, kind, name, '*': path = '' } = params;
+    return { path, entityRef: { namespace, kind, name } };
+  }, [params]);
+
+  return { ...defaultState, ...initialState };
+};
+
 /**
  * A context to store the reader page state
  * @public
  */
 export const TechDocsReaderPageProvider = memo(
-  ({ path = '', entityRef, children }: TechDocsReaderPageProviderProps) => {
+  ({ children, ...rest }: TechDocsReaderPageProviderProps) => {
     const techdocsApi = useApi(techdocsApiRef);
+    const { path = '', entityRef } = useTechDocsReaderPageState(rest);
 
     const metadata = useAsync(async () => {
       return techdocsApi.getTechDocsMetadata(entityRef);
