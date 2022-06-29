@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder': patch
+'@backstage/plugin-scaffolder': minor
 ---
 
-RepoUrlPicker: Add allowedRepos option and move repoName field to own component
+Add `allowedRepos` `ui:option` to `RepoUrlPicker` component, and move `repoName` field to own component
