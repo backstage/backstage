@@ -44,7 +44,7 @@ export const ProblemsList = (props: ProblemsListProps) => {
   return (
     <InfoCard
       title="Problems"
-      subheader="From the last 2 hours"
+      subheader={`Last 2 hours - ${dynatraceEntityId}`}
       deepLink={{
         title: 'View Entity in Dynatrace',
         link: `${dynatraceBaseUrl}/#serviceOverview;id=${dynatraceEntityId}`,
