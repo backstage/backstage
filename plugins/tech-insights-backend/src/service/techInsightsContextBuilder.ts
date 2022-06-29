@@ -16,7 +16,10 @@
 
 import { FactRetrieverEngine } from './fact/FactRetrieverEngine';
 import { Logger } from 'winston';
-import { FactRetrieverRegistry } from './fact/FactRetrieverRegistry';
+import {
+  FactRetrieverRegistry,
+  FactRetrieverRegistryInterface,
+} from './fact/FactRetrieverRegistry';
 import { Config } from '@backstage/config';
 import {
   PluginDatabaseManager,
@@ -59,7 +62,7 @@ export interface TechInsightsOptions<
    */
   factCheckerFactory?: FactCheckerFactory<CheckType, CheckResultType>;
 
-  factRetrieverRegistry?: FactRetrieverRegistry;
+  factRetrieverRegistry?: FactRetrieverRegistryInterface;
 
   logger: Logger;
   config: Config;
@@ -111,7 +114,7 @@ export const buildTechInsightsContext = async <
     tokenManager,
   } = options;
 
-  const buildFactRetrieverRegistry = () => {
+  const buildFactRetrieverRegistry = (): FactRetrieverRegistryInterface => {
     if (!options.factRetrieverRegistry) {
       if (!factRetrievers) {
         throw new Error(
