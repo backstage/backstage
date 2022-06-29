@@ -29,6 +29,7 @@ yarn.lock                                           @backstage/reviewers @backst
 /plugins/catalog-backend-module-msgraph             @backstage/reviewers @pjungermann
 /plugins/catalog-graph                              @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/circleci                                   @backstage/reviewers @adamdmharvey
+/plugins/integrations-backend                       @backstage/maintainers
 /plugins/cloudbuild                                 @backstage/reviewers @trivago/ebarrios
 /plugins/code-coverage                              @backstage/reviewers @alde @nissayeva
 /plugins/code-coverage-backend                      @backstage/reviewers @alde @nissayeva
