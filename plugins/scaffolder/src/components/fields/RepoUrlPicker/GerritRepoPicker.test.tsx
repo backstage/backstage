@@ -56,23 +56,4 @@ describe('BitbucketRepoPicker', () => {
       expect(onChange).toHaveBeenCalledWith({ workspace: 'test-parent' });
     });
   });
-
-  describe('repoName field', () => {
-    it('calls onChange when the repoName changes', () => {
-      const onChange = jest.fn();
-      const { getAllByRole } = render(
-        <GerritRepoPicker
-          onChange={onChange}
-          rawErrors={[]}
-          state={{ host: 'gerrithost.org' }}
-        />,
-      );
-
-      const repoNameInput = getAllByRole('textbox')[2];
-
-      fireEvent.change(repoNameInput, { target: { value: 'test-repo' } });
-
-      expect(onChange).toHaveBeenCalledWith({ repoName: 'test-repo' });
-    });
-  });
 });
