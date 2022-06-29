@@ -59,7 +59,7 @@ export const DynatraceTab = () => {
           {syntheticsIds ? (
             <Grid item xs={12} lg={12}>
               <SyntheticsCard
-                syntheticsIds={syntheticsIds}
+                syntheticsId={syntheticsIds}
                 dynatraceBaseUrl={dynatraceBaseUrl}
               />
             </Grid>

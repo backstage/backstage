@@ -17,6 +17,7 @@ import {
   DynatraceProblems,
   DynatraceApi,
   DynatraceSyntheticResults,
+  DynatraceSyntheticLocationInfo,
 } from './DynatraceApi';
 import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 
@@ -57,13 +58,23 @@ export class DynatraceClient implements DynatraceApi {
   }
 
   async getDynatraceSyntheticFailures(
-    syntheticId: string,
+    syntheticsId: string,
   ): Promise<DynatraceSyntheticResults | undefined> {
-    if (!syntheticId) {
-      throw new Error('Dynatrace synthetic Id is required');
+    if (!syntheticsId) {
+      throw new Error('Dynatrace syntheticId is required');
     }
 
-    return this.callApi(`synthetic/execution/${syntheticId}/FAILED`, {});
+    return this.callApi(`synthetic/execution/${syntheticsId}/FAILED`, {});
+  }
+
+  async getDynatraceSyntheticLocationInfo(
+    syntheticLocationId: string,
+  ): Promise<DynatraceSyntheticLocationInfo | undefined> {
+    if (!syntheticLocationId) {
+      throw new Error('Dynatrace syntheticLocationId is required');
+    }
+
+    return this.callApi(`synthetic/locations/${syntheticLocationId}`, {});
   }
 
   async getDynatraceProblems(

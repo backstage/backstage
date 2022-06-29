@@ -39,7 +39,7 @@ type SyntheticRequestResults = {
   startTimestamp: number;
 };
 
-export type DynatraceSyntheticResults = {
+export interface DynatraceSyntheticResults {
   monitorId: string;
   locationsExecutionResults: [
     {
@@ -48,7 +48,14 @@ export type DynatraceSyntheticResults = {
       requestResults: Array<SyntheticRequestResults>;
     },
   ];
-};
+}
+
+export interface DynatraceSyntheticLocationInfo {
+  entityId: string;
+  name: string;
+  city: string;
+  browserType: string;
+}
 
 export interface DynatraceProblems {
   problems: Array<DynatraceProblem>;
@@ -65,6 +72,9 @@ export type DynatraceApi = {
     dynatraceEntityId: string,
   ): Promise<DynatraceProblems | undefined>;
   getDynatraceSyntheticFailures(
-    syntheticId: string,
+    syntheticsId: string,
   ): Promise<DynatraceSyntheticResults | undefined>;
+  getDynatraceSyntheticLocationInfo(
+    syntheticLocationId: string,
+  ): Promise<DynatraceSyntheticLocationInfo | undefined>;
 };

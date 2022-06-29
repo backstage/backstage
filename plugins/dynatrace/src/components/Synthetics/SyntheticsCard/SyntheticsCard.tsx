@@ -19,11 +19,11 @@ import { Progress } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import { InfoCard } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { Typography } from '@material-ui/core';
 import { dynatraceApiRef } from '../../../api';
+import { SyntheticsLocation } from '../SyntheticsLocation';
 
 type SyntheticsCardProps = {
-  syntheticsIds: string;
+  syntheticsId: string;
   dynatraceBaseUrl: string;
 };
 
@@ -41,11 +41,11 @@ const dynatraceMonitorPrefixes = (idPrefix: string): string => {
 };
 
 export const SyntheticsCard = (props: SyntheticsCardProps) => {
-  const { syntheticsIds, dynatraceBaseUrl } = props;
+  const { syntheticsId, dynatraceBaseUrl } = props;
   const dynatraceApi = useApi(dynatraceApiRef);
   const { value, loading, error } = useAsync(async () => {
-    return dynatraceApi.getDynatraceSyntheticFailures(syntheticsIds);
-  }, [dynatraceApi, syntheticsIds]);
+    return dynatraceApi.getDynatraceSyntheticFailures(syntheticsId);
+  }, [dynatraceApi, syntheticsId]);
 
   if (loading) {
     return <Progress />;
@@ -54,32 +54,33 @@ export const SyntheticsCard = (props: SyntheticsCardProps) => {
   }
 
   const deepLinkPrefix = dynatraceMonitorPrefixes(
-    `${syntheticsIds.match(/(.+)-/)![1]}`,
+    `${syntheticsId.match(/(.+)-/)![1]}`,
   );
-  const timestamps = value?.locationsExecutionResults.map(l => {
-    return l.requestResults[0].startTimestamp;
+  const lastFailed = value?.locationsExecutionResults.map(l => {
+    return {
+      timestamp: l.requestResults[0].startTimestamp,
+      location: Number(l.locationId).toString(16),
+    };
   });
 
   return (
     <InfoCard
       title="Synthetics"
-      subheader="Recent Activity"
+      subheader={`Recent Activity for Monitor ${syntheticsId}`}
       deepLink={{
         title: 'View Synthetics in Dynatrace',
-        link: `${dynatraceBaseUrl}/${deepLinkPrefix}/${syntheticsIds}`,
+        link: `${dynatraceBaseUrl}/${deepLinkPrefix}/${syntheticsId}`,
       }}
     >
-      <Typography>
-        Locations: {JSON.stringify(value?.locationsExecutionResults.length)}
-      </Typography>
-      <Typography>
-        Last Failures:{' '}
-        {JSON.stringify(
-          timestamps?.map(t => {
-            return new Date(t).toString();
-          }),
-        )}
-      </Typography>
+      {lastFailed?.map(l => {
+        return (
+          <SyntheticsLocation
+            key={l.location}
+            lastFailedTimestamp={new Date(l.timestamp)}
+            locationId={l.location}
+          />
+        );
+      })}
     </InfoCard>
   );
 };
