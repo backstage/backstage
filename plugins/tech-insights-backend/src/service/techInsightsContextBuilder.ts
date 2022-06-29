@@ -52,12 +52,14 @@ export interface TechInsightsOptions<
    * A collection of FactRetrieverRegistrations.
    * Used to register FactRetrievers and their schemas and schedule an execution loop for them.
    */
-  factRetrievers: FactRetrieverRegistration[];
+  factRetrievers?: FactRetrieverRegistration[];
 
   /**
    * Optional factory exposing a `construct` method to initialize a FactChecker implementation
    */
   factCheckerFactory?: FactCheckerFactory<CheckType, CheckResultType>;
+
+  factRetrieverRegistry?: FactRetrieverRegistry;
 
   logger: Logger;
   config: Config;
@@ -109,7 +111,19 @@ export const buildTechInsightsContext = async <
     tokenManager,
   } = options;
 
-  const factRetrieverRegistry = new FactRetrieverRegistry(factRetrievers);
+  const buildFactRetrieverRegistry = () => {
+    if (!options.factRetrieverRegistry) {
+      if (!factRetrievers) {
+        throw new Error(
+          'Failed to build FactRetrieverRegistry because no factRetrievers found',
+        );
+      }
+      return new FactRetrieverRegistry(factRetrievers);
+    }
+    return options.factRetrieverRegistry;
+  };
+
+  const factRetrieverRegistry = buildFactRetrieverRegistry();
 
   const persistenceContext = await initializePersistenceContext(
     await database.getClient(),
