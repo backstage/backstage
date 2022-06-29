@@ -29,7 +29,7 @@ import {
 } from '@backstage/plugin-catalog-backend';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
-import { getOrganizationRepositories } from './lib';
+import { getOrganizationRepositories } from '../lib';
 
 /**
  * Extracts repositories out of a GitHub org.
