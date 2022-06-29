@@ -21,21 +21,18 @@ import {
 } from '@backstage/integration';
 import { Octokit } from 'octokit';
 import { createTemplateAction } from '../../createTemplateAction';
-import {
-  createGithubRepoWithCollaboratorsAndTopics,
-  getOctokitOptions,
-  initRepoPushAndProtect,
-} from '../github/helpers';
-import * as inputProps from '../github/inputProperties';
-import * as outputProps from '../github/outputProperties';
-import { parseRepoUrl } from './util';
+import { parseRepoUrl } from '../publish/util';
+import { getOctokitOptions, initRepoPushAndProtect } from './helpers';
+import * as inputProps from './inputProperties';
+import * as outputProps from './outputProperties';
+
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
  * and publishes it to GitHub.
  *
  * @public
  */
-export function createPublishGithubAction(options: {
+export function createGithubRepoPushAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
   githubCredentialsProvider?: GithubCredentialsProvider;
@@ -45,39 +42,17 @@ export function createPublishGithubAction(options: {
   return createTemplateAction<{
     repoUrl: string;
     description?: string;
-    access?: string;
     defaultBranch?: string;
     protectDefaultBranch?: boolean;
-    deleteBranchOnMerge?: boolean;
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
-    allowRebaseMerge?: boolean;
-    allowSquashMerge?: boolean;
-    allowMergeCommit?: boolean;
-    sourcePath?: string;
     requireCodeOwnerReviews?: boolean;
     requiredStatusCheckContexts?: string[];
-    repoVisibility?: 'private' | 'internal' | 'public';
-    collaborators?: Array<
-      | {
-          user: string;
-          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-        }
-      | {
-          team: string;
-          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-        }
-      | {
-          /** @deprecated This field is deprecated in favor of team */
-          username: string;
-          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-        }
-    >;
+    sourcePath?: string;
     token?: string;
-    topics?: string[];
   }>({
-    id: 'publish:github',
+    id: 'github:repo:push',
     description:
       'Initializes a git repository of contents in workspace and publishes it to GitHub.',
     schema: {
@@ -86,24 +61,15 @@ export function createPublishGithubAction(options: {
         required: ['repoUrl'],
         properties: {
           repoUrl: inputProps.repoUrl,
-          description: inputProps.description,
-          access: inputProps.access,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
-          repoVisibility: inputProps.repoVisibility,
           defaultBranch: inputProps.defaultBranch,
           protectDefaultBranch: inputProps.protectDefaultBranch,
-          deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
           gitCommitMessage: inputProps.gitCommitMessage,
           gitAuthorName: inputProps.gitAuthorName,
           gitAuthorEmail: inputProps.gitAuthorEmail,
-          allowMergeCommit: inputProps.allowMergeCommit,
-          allowSquashMerge: inputProps.allowSquashMerge,
-          allowRebaseMerge: inputProps.allowRebaseMerge,
           sourcePath: inputProps.sourcePath,
-          collaborators: inputProps.collaborators,
           token: inputProps.token,
-          topics: inputProps.topics,
         },
       },
       output: {
@@ -117,32 +83,15 @@ export function createPublishGithubAction(options: {
     async handler(ctx) {
       const {
         repoUrl,
-        description,
-        access,
-        requireCodeOwnerReviews = false,
-        requiredStatusCheckContexts = [],
-        repoVisibility = 'private',
         defaultBranch = 'master',
         protectDefaultBranch = true,
-        deleteBranchOnMerge = false,
         gitCommitMessage = 'initial commit',
         gitAuthorName,
         gitAuthorEmail,
-        allowMergeCommit = true,
-        allowSquashMerge = true,
-        allowRebaseMerge = true,
-        collaborators,
-        topics,
+        requireCodeOwnerReviews = false,
+        requiredStatusCheckContexts = [],
         token: providedToken,
       } = ctx.input;
-
-      const octokitOptions = await getOctokitOptions({
-        integrations,
-        credentialsProvider: githubCredentialsProvider,
-        token: providedToken,
-        repoUrl: repoUrl,
-      });
-      const client = new Octokit(octokitOptions);
 
       const { owner, repo } = parseRepoUrl(repoUrl, integrations);
 
@@ -150,24 +99,19 @@ export function createPublishGithubAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
-        client,
-        repo,
-        owner,
-        repoVisibility,
-        description,
-        deleteBranchOnMerge,
-        allowMergeCommit,
-        allowSquashMerge,
-        allowRebaseMerge,
-        access,
-        collaborators,
-        topics,
-        ctx.logger,
-      );
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        token: providedToken,
+        repoUrl,
+      });
 
-      const remoteUrl = newRepo.clone_url;
-      const repoContentsUrl = `${newRepo.html_url}/blob/${defaultBranch}`;
+      const client = new Octokit(octokitOptions);
+
+      const targetRepo = await client.rest.repos.get({ owner, repo });
+
+      const remoteUrl = targetRepo.data.clone_url;
+      const repoContentsUrl = `${targetRepo.data.html_url}/blob/${defaultBranch}`;
 
       await initRepoPushAndProtect(
         remoteUrl,

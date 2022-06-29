@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import {
   GithubCredentialsProvider,
@@ -21,41 +20,35 @@ import {
 } from '@backstage/integration';
 import { Octokit } from 'octokit';
 import { createTemplateAction } from '../../createTemplateAction';
+import { parseRepoUrl } from '../publish/util';
 import {
   createGithubRepoWithCollaboratorsAndTopics,
   getOctokitOptions,
-  initRepoPushAndProtect,
-} from '../github/helpers';
-import * as inputProps from '../github/inputProperties';
-import * as outputProps from '../github/outputProperties';
-import { parseRepoUrl } from './util';
+} from './helpers';
+import * as inputProps from './inputProperties';
+import * as outputProps from './outputProperties';
+
 /**
- * Creates a new action that initializes a git repository of the content in the workspace
- * and publishes it to GitHub.
+ * Creates a new action that initializes a git repository
  *
  * @public
  */
-export function createPublishGithubAction(options: {
+export function createGithubRepoCreateAction(options: {
   integrations: ScmIntegrationRegistry;
-  config: Config;
   githubCredentialsProvider?: GithubCredentialsProvider;
 }) {
-  const { integrations, config, githubCredentialsProvider } = options;
+  const { integrations, githubCredentialsProvider } = options;
 
   return createTemplateAction<{
     repoUrl: string;
     description?: string;
     access?: string;
-    defaultBranch?: string;
-    protectDefaultBranch?: boolean;
     deleteBranchOnMerge?: boolean;
-    gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
     allowRebaseMerge?: boolean;
     allowSquashMerge?: boolean;
     allowMergeCommit?: boolean;
-    sourcePath?: string;
     requireCodeOwnerReviews?: boolean;
     requiredStatusCheckContexts?: string[];
     repoVisibility?: 'private' | 'internal' | 'public';
@@ -77,9 +70,8 @@ export function createPublishGithubAction(options: {
     token?: string;
     topics?: string[];
   }>({
-    id: 'publish:github',
-    description:
-      'Initializes a git repository of contents in workspace and publishes it to GitHub.',
+    id: 'github:repo:create',
+    description: 'Creates a GitHub repository.',
     schema: {
       input: {
         type: 'object',
@@ -91,16 +83,10 @@ export function createPublishGithubAction(options: {
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
           repoVisibility: inputProps.repoVisibility,
-          defaultBranch: inputProps.defaultBranch,
-          protectDefaultBranch: inputProps.protectDefaultBranch,
           deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
-          gitCommitMessage: inputProps.gitCommitMessage,
-          gitAuthorName: inputProps.gitAuthorName,
-          gitAuthorEmail: inputProps.gitAuthorEmail,
           allowMergeCommit: inputProps.allowMergeCommit,
           allowSquashMerge: inputProps.allowSquashMerge,
           allowRebaseMerge: inputProps.allowRebaseMerge,
-          sourcePath: inputProps.sourcePath,
           collaborators: inputProps.collaborators,
           token: inputProps.token,
           topics: inputProps.topics,
@@ -119,15 +105,8 @@ export function createPublishGithubAction(options: {
         repoUrl,
         description,
         access,
-        requireCodeOwnerReviews = false,
-        requiredStatusCheckContexts = [],
         repoVisibility = 'private',
-        defaultBranch = 'master',
-        protectDefaultBranch = true,
         deleteBranchOnMerge = false,
-        gitCommitMessage = 'initial commit',
-        gitAuthorName,
-        gitAuthorEmail,
         allowMergeCommit = true,
         allowSquashMerge = true,
         allowRebaseMerge = true,
@@ -166,30 +145,7 @@ export function createPublishGithubAction(options: {
         ctx.logger,
       );
 
-      const remoteUrl = newRepo.clone_url;
-      const repoContentsUrl = `${newRepo.html_url}/blob/${defaultBranch}`;
-
-      await initRepoPushAndProtect(
-        remoteUrl,
-        octokitOptions.auth,
-        ctx.workspacePath,
-        ctx.input.sourcePath,
-        defaultBranch,
-        protectDefaultBranch,
-        owner,
-        client,
-        repo,
-        requireCodeOwnerReviews,
-        requiredStatusCheckContexts,
-        config,
-        ctx.logger,
-        gitCommitMessage,
-        gitAuthorName,
-        gitAuthorEmail,
-      );
-
-      ctx.output('remoteUrl', remoteUrl);
-      ctx.output('repoContentsUrl', repoContentsUrl);
+      ctx.output('remoteUrl', newRepo.clone_url);
     },
   });
 }

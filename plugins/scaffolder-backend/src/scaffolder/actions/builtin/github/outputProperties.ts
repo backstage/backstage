@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-export { createGithubActionsDispatchAction } from './githubActionsDispatch';
-export { createGithubIssuesLabelAction } from './githubIssuesLabel';
-export { createGithubRepoCreateAction } from './githubRepoCreate';
-export { createGithubRepoPushAction } from './githubRepoPush';
-export { createGithubWebhookAction } from './githubWebhook';
+const remoteUrl = {
+  title: 'A URL to the repository with the provider',
+  type: 'string',
+};
+const repoContentsUrl = {
+  title: 'A URL to the root of the repository',
+  type: 'string',
+};
+
+export { remoteUrl };
+export { repoContentsUrl };

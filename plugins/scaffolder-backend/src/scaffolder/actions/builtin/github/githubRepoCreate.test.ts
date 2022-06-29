@@ -27,11 +27,7 @@ import {
 } from '@backstage/integration';
 import { when } from 'jest-when';
 import { PassThrough } from 'stream';
-import {
-  enableBranchProtectionOnDefaultRepoBranch,
-  initRepoAndPush,
-} from '../helpers';
-import { createPublishGithubAction } from './github';
+import { createGithubRepoCreateAction } from './githubRepoCreate';
 
 const mockOctokit = {
   rest: {
@@ -57,7 +53,7 @@ jest.mock('octokit', () => ({
   },
 }));
 
-describe('publish:github', () => {
+describe('github:repo:create', () => {
   const config = new ConfigReader({
     integrations: {
       github: [
@@ -89,9 +85,8 @@ describe('publish:github', () => {
     jest.resetAllMocks();
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
-    action = createPublishGithubAction({
+    action = createGithubRepoCreateAction({
       integrations,
-      config,
       githubCredentialsProvider,
     });
   });
@@ -175,155 +170,6 @@ describe('publish:github', () => {
       allow_squash_merge: true,
       allow_merge_commit: true,
       allow_rebase_merge: true,
-    });
-  });
-
-  it('should call initRepoAndPush with the correct values', async () => {
-    mockOctokit.rest.users.getByUsername.mockResolvedValue({
-      data: { type: 'User' },
-    });
-
-    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
-      data: {
-        clone_url: 'https://github.com/clone/url.git',
-        html_url: 'https://github.com/html/url',
-      },
-    });
-
-    await action.handler(mockContext);
-
-    expect(initRepoAndPush).toHaveBeenCalledWith({
-      dir: mockContext.workspacePath,
-      remoteUrl: 'https://github.com/clone/url.git',
-      defaultBranch: 'master',
-      auth: { username: 'x-access-token', password: 'tokenlols' },
-      logger: mockContext.logger,
-      commitMessage: 'initial commit',
-      gitAuthorInfo: {},
-    });
-  });
-
-  it('should call initRepoAndPush with the correct defaultBranch main', async () => {
-    mockOctokit.rest.users.getByUsername.mockResolvedValue({
-      data: { type: 'User' },
-    });
-
-    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
-      data: {
-        clone_url: 'https://github.com/clone/url.git',
-        html_url: 'https://github.com/html/url',
-      },
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        defaultBranch: 'main',
-      },
-    });
-
-    expect(initRepoAndPush).toHaveBeenCalledWith({
-      dir: mockContext.workspacePath,
-      remoteUrl: 'https://github.com/clone/url.git',
-      defaultBranch: 'main',
-      auth: { username: 'x-access-token', password: 'tokenlols' },
-      logger: mockContext.logger,
-      commitMessage: 'initial commit',
-      gitAuthorInfo: {},
-    });
-  });
-
-  it('should call initRepoAndPush with the configured defaultAuthor', async () => {
-    const customAuthorConfig = new ConfigReader({
-      integrations: {
-        github: [
-          { host: 'github.com', token: 'tokenlols' },
-          { host: 'ghe.github.com' },
-        ],
-      },
-      scaffolder: {
-        defaultAuthor: {
-          name: 'Test',
-          email: 'example@example.com',
-        },
-      },
-    });
-
-    const customAuthorIntegrations =
-      ScmIntegrations.fromConfig(customAuthorConfig);
-    const customAuthorAction = createPublishGithubAction({
-      integrations: customAuthorIntegrations,
-      config: customAuthorConfig,
-      githubCredentialsProvider,
-    });
-
-    mockOctokit.rest.users.getByUsername.mockResolvedValue({
-      data: { type: 'User' },
-    });
-
-    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
-      data: {
-        clone_url: 'https://github.com/clone/url.git',
-        html_url: 'https://github.com/html/url',
-      },
-    });
-
-    await customAuthorAction.handler(mockContext);
-
-    expect(initRepoAndPush).toHaveBeenCalledWith({
-      dir: mockContext.workspacePath,
-      remoteUrl: 'https://github.com/clone/url.git',
-      defaultBranch: 'master',
-      auth: { username: 'x-access-token', password: 'tokenlols' },
-      logger: mockContext.logger,
-      commitMessage: 'initial commit',
-      gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
-    });
-  });
-
-  it('should call initRepoAndPush with the configured defaultCommitMessage', async () => {
-    const customAuthorConfig = new ConfigReader({
-      integrations: {
-        github: [
-          { host: 'github.com', token: 'tokenlols' },
-          { host: 'ghe.github.com' },
-        ],
-      },
-      scaffolder: {
-        defaultCommitMessage: 'Test commit message',
-      },
-    });
-
-    const customAuthorIntegrations =
-      ScmIntegrations.fromConfig(customAuthorConfig);
-    const customAuthorAction = createPublishGithubAction({
-      integrations: customAuthorIntegrations,
-      config: customAuthorConfig,
-      githubCredentialsProvider,
-    });
-
-    mockOctokit.rest.users.getByUsername.mockResolvedValue({
-      data: { type: 'User' },
-    });
-
-    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
-      data: {
-        clone_url: 'https://github.com/clone/url.git',
-        html_url: 'https://github.com/html/url',
-      },
-    });
-
-    await customAuthorAction.handler(mockContext);
-
-    expect(initRepoAndPush).toHaveBeenCalledWith({
-      dir: mockContext.workspacePath,
-      remoteUrl: 'https://github.com/clone/url.git',
-      defaultBranch: 'master',
-      auth: { username: 'x-access-token', password: 'tokenlols' },
-      logger: mockContext.logger,
-      commitMessage: 'initial commit',
-      gitAuthorInfo: { email: undefined, name: undefined },
     });
   });
 
@@ -548,7 +394,7 @@ describe('publish:github', () => {
     });
   });
 
-  it('should call output with the remoteUrl and the repoContentsUrl', async () => {
+  it('should call output with the remoteUrl', async () => {
     mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
     });
@@ -566,181 +412,5 @@ describe('publish:github', () => {
       'remoteUrl',
       'https://github.com/clone/url.git',
     );
-    expect(mockContext.output).toHaveBeenCalledWith(
-      'repoContentsUrl',
-      'https://github.com/html/url/blob/master',
-    );
-  });
-
-  it('should use main as default branch', async () => {
-    mockOctokit.rest.users.getByUsername.mockResolvedValue({
-      data: { type: 'User' },
-    });
-
-    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
-      data: {
-        clone_url: 'https://github.com/clone/url.git',
-        html_url: 'https://github.com/html/url',
-      },
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        defaultBranch: 'main',
-      },
-    });
-
-    expect(mockContext.output).toHaveBeenCalledWith(
-      'remoteUrl',
-      'https://github.com/clone/url.git',
-    );
-    expect(mockContext.output).toHaveBeenCalledWith(
-      'repoContentsUrl',
-      'https://github.com/html/url/blob/main',
-    );
-  });
-
-  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requireCodeOwnerReviews', async () => {
-    mockOctokit.rest.users.getByUsername.mockResolvedValue({
-      data: { type: 'User' },
-    });
-
-    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
-      data: {
-        name: 'repo',
-      },
-    });
-
-    await action.handler(mockContext);
-
-    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
-      owner: 'owner',
-      client: mockOctokit,
-      repoName: 'repo',
-      logger: mockContext.logger,
-      defaultBranch: 'master',
-      requireCodeOwnerReviews: false,
-      requiredStatusCheckContexts: [],
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        requireCodeOwnerReviews: true,
-      },
-    });
-
-    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
-      owner: 'owner',
-      client: mockOctokit,
-      repoName: 'repo',
-      logger: mockContext.logger,
-      defaultBranch: 'master',
-      requireCodeOwnerReviews: true,
-      requiredStatusCheckContexts: [],
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        requireCodeOwnerReviews: false,
-      },
-    });
-
-    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
-      owner: 'owner',
-      client: mockOctokit,
-      repoName: 'repo',
-      logger: mockContext.logger,
-      defaultBranch: 'master',
-      requireCodeOwnerReviews: false,
-      requiredStatusCheckContexts: [],
-    });
-  });
-
-  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requiredStatusCheckContexts', async () => {
-    mockOctokit.rest.users.getByUsername.mockResolvedValue({
-      data: { type: 'User' },
-    });
-
-    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
-      data: {
-        name: 'repo',
-      },
-    });
-
-    await action.handler(mockContext);
-
-    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
-      owner: 'owner',
-      client: mockOctokit,
-      repoName: 'repo',
-      logger: mockContext.logger,
-      defaultBranch: 'master',
-      requireCodeOwnerReviews: false,
-      requiredStatusCheckContexts: [],
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        requiredStatusCheckContexts: ['statusCheck'],
-      },
-    });
-
-    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
-      owner: 'owner',
-      client: mockOctokit,
-      repoName: 'repo',
-      logger: mockContext.logger,
-      defaultBranch: 'master',
-      requireCodeOwnerReviews: false,
-      requiredStatusCheckContexts: ['statusCheck'],
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        requiredStatusCheckContexts: [],
-      },
-    });
-
-    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
-      owner: 'owner',
-      client: mockOctokit,
-      repoName: 'repo',
-      logger: mockContext.logger,
-      defaultBranch: 'master',
-      requireCodeOwnerReviews: false,
-      requiredStatusCheckContexts: [],
-    });
-  });
-
-  it('should not call enableBranchProtectionOnDefaultRepoBranch with protectDefaultBranch disabled', async () => {
-    mockOctokit.rest.users.getByUsername.mockResolvedValue({
-      data: { type: 'User' },
-    });
-
-    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
-      data: {
-        name: 'repo',
-      },
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        protectDefaultBranch: false,
-      },
-    });
-
-    expect(enableBranchProtectionOnDefaultRepoBranch).not.toHaveBeenCalled();
   });
 });
