@@ -345,6 +345,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   targetPath: string;
   token?: string | undefined;
   projectid?: string | undefined;
+  removeSourceBranch?: boolean | undefined;
 }>;
 
 // @public
