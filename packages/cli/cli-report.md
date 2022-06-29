@@ -312,6 +312,75 @@ Options:
   --filter
   --findRelatedTests
   --forceExit
+  --globalSetup
+  --globalTeardown
+  --globals
+  --haste
+  --init
+  --injectGlobals
+  --json
+  --lastCommit
+  --listTests
+  --logHeapUsage
+  --maxConcurrency
+  -w, --maxWorkers
+  --moduleDirectories
+  --moduleFileExtensions
+  --moduleNameMapper
+  --modulePathIgnorePatterns
+  --modulePaths
+  --noStackTrace
+  --notify
+  --notifyMode
+  -o, --onlyChanged
+  -f, --onlyFailures
+  --outputFile
+  --passWithNoTests
+  --preset
+  --prettierPath
+  --projects
+  --reporters
+  --resetMocks
+  --resetModules
+  --resolver
+  --restoreMocks
+  --rootDir
+  --roots
+  -i, --runInBand
+  --runTestsByPath
+  --runner
+  --selectProjects
+  --setupFiles
+  --setupFilesAfterEnv
+  --showConfig
+  --silent
+  --skipFilter
+  --snapshotSerializers
+  --testEnvironment
+  --testEnvironmentOptions
+  --testFailureExitCode
+  --testLocationInResults
+  --testMatch
+  -t, --testNamePattern
+  --testPathIgnorePatterns
+  --testPathPattern
+  --testRegex
+  --testResultsProcessor
+  --testRunner
+  --testSequencer
+  --testTimeout
+  --testURL
+  --timers
+  --transform
+  --transformIgnorePatterns
+  --unmockedModulePathPatterns
+  -u, --updateSnapshot
+  --useStderr
+  --verbose
+  --watch
+  --watchAll
+  --watchPathIgnorePatterns
+  --watchman
 ```
 
 ### `backstage-cli plugin:diff`
@@ -401,6 +470,75 @@ Options:
   --filter
   --findRelatedTests
   --forceExit
+  --globalSetup
+  --globalTeardown
+  --globals
+  --haste
+  --init
+  --injectGlobals
+  --json
+  --lastCommit
+  --listTests
+  --logHeapUsage
+  --maxConcurrency
+  -w, --maxWorkers
+  --moduleDirectories
+  --moduleFileExtensions
+  --moduleNameMapper
+  --modulePathIgnorePatterns
+  --modulePaths
+  --noStackTrace
+  --notify
+  --notifyMode
+  -o, --onlyChanged
+  -f, --onlyFailures
+  --outputFile
+  --passWithNoTests
+  --preset
+  --prettierPath
+  --projects
+  --reporters
+  --resetMocks
+  --resetModules
+  --resolver
+  --restoreMocks
+  --rootDir
+  --roots
+  -i, --runInBand
+  --runTestsByPath
+  --runner
+  --selectProjects
+  --setupFiles
+  --setupFilesAfterEnv
+  --showConfig
+  --silent
+  --skipFilter
+  --snapshotSerializers
+  --testEnvironment
+  --testEnvironmentOptions
+  --testFailureExitCode
+  --testLocationInResults
+  --testMatch
+  -t, --testNamePattern
+  --testPathIgnorePatterns
+  --testPathPattern
+  --testRegex
+  --testResultsProcessor
+  --testRunner
+  --testSequencer
+  --testTimeout
+  --testURL
+  --timers
+  --transform
+  --transformIgnorePatterns
+  --unmockedModulePathPatterns
+  -u, --updateSnapshot
+  --useStderr
+  --verbose
+  --watch
+  --watchAll
+  --watchPathIgnorePatterns
+  --watchman
 ```
 
 ### `backstage-cli versions:bump`
