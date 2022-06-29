@@ -43,7 +43,6 @@ import {
 } from '@backstage/plugin-azure-devops';
 import { EntityBadgesDialog } from '@backstage/plugin-badges';
 import {
-  EntityContextMenuOptions,
   EntityAboutCard,
   EntityDependsOnComponentsCard,
   EntityDependsOnResourcesCard,
@@ -166,15 +165,13 @@ const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
     ];
   }, []);
 
-  const options: EntityContextMenuOptions = {
-    disableUnregister: 'visible',
-  };
-
   return (
     <>
       <EntityLayout
         UNSTABLE_extraContextMenuItems={extraMenuItems}
-        UNSTABLE_contextMenuOptions={options}
+        UNSTABLE_contextMenuOptions={{
+          disableUnregister: 'visible',
+        }}
       >
         {props.children}
       </EntityLayout>

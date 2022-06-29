@@ -144,8 +144,9 @@ interface ExtraContextMenuItem {
 
 type VisibleType = 'visible' | 'hidden' | 'disable';
 
+// NOTE(blam): Intentionally not exported at this point, since it's part of
 // unstable context menu option, eg: disable the unregister entity menu
-export interface EntityContextMenuOptions {
+interface EntityContextMenuOptions {
   disableUnregister: boolean | VisibleType;
 }
 
