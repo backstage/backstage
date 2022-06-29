@@ -320,6 +320,30 @@ The `allowedHosts` part should be set to where you wish to enable this template
 to publish to. And it can be any host that is listed in your `integrations`
 config in `app-config.yaml`.
 
+Besides specifying `allowedHosts` you can also restrict the template to publish to
+repositories owned by specific users/groups/namespaces by setting the `allowedOwners`
+option. With the `allowedRepos` option you are able to narrow it down further to a
+specific set of repository names. A full example could look like this:
+
+```yaml
+- title: Choose a location
+  required:
+    - repoUrl
+  properties:
+    repoUrl:
+      title: Repository Location
+      type: string
+      ui:field: RepoUrlPicker
+      ui:options:
+        allowedHosts:
+          - github.com
+        allowedOwners:
+          - backstage
+          - someGithubUser
+        allowedRepos:
+          - backstage
+```
+
 The `RepoUrlPicker` is a custom field that we provide part of the
 `plugin-scaffolder`. You can provide your own custom fields by
 [writing your own Custom Field Extensions](./writing-custom-field-extensions.md)

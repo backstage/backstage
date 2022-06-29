@@ -195,6 +195,8 @@ export interface RepoUrlPickerUiOptions {
   // (undocumented)
   allowedOwners?: string[];
   // (undocumented)
+  allowedRepos?: string[];
+  // (undocumented)
   requestUserCredentials?: {
     secretsKey: string;
     additionalScopes?: {
