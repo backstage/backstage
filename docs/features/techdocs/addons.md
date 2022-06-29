@@ -52,6 +52,8 @@ Addons are rendered in the order in which they are registered.
 
 ## Installing and using Addons
 
+To start using Addons you need to add the `@backstage/plugin-techdocs-module-addons-contrib` package to your app. You can do that by running this command from the root of your project: `yarn add --cwd packages/app @backstage/plugin-techdocs-module-addons-contrib`
+
 Addons can be installed and configured in much the same way as extensions for
 other Backstage plugins: by adding them underneath an extension registry
 component (`<TechDocsAddons>`) under the route representing the TechDocs Reader
@@ -72,6 +74,18 @@ import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
     {/* Other addons can be added here. */}
   </TechDocsAddons>
 </Route>;
+```
+
+If you are using a custom [TechDocs reader page](./how-to-guides.md#how-to-customize-the-techdocs-reader-page) your setup will be very similar, here's an example:
+
+```ts
+<Route path="/docs/:namespace/:kind/:name/*" element={<TechDocsReaderPage />}>
+  <TechDocsAddons>
+    <ReportIssue />
+    {/* Other addons can be added here. */}
+  </TechDocsAddons>
+  {techDocsPage} // This is your custom TechDocs reader page
+</Route>
 ```
 
 The process for configuring Addons on the documentation tab on the entity page
