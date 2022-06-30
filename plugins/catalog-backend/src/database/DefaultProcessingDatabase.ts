@@ -519,20 +519,28 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     }
   }
 
-  async refreshByRefreshKey(
+  async refreshByRefreshKeys(
     txOpaque: Transaction,
     options: RefreshByKeyOptions,
   ) {
     const tx = txOpaque as Knex.Transaction;
-    const { key } = options;
+    const { keys } = options;
 
-    const rows = await tx<DbRefreshKeysRow>('refresh_keys')
-      .where({ key })
-      .select({
-        entity_ref: 'refresh_keys.entity_ref',
-      });
+    const query = await tx<DbRefreshStateRow>('refresh_state')
+      .whereIn('entity_ref', function (tx2) {
+        tx2
+          .whereIn('key', keys)
+          .select({
+            entity_ref: 'refresh_keys.entity_ref',
+          })
+          .from('refresh_keys')
+          .columns('entity_ref');
+      })
+      .update({ next_update_at: tx.fn.now() })
+      .toSQL()
+      .toNative();
 
-    await Promise.all(rows.map(r => this.refresh(tx, r.entity_ref)));
+    console.log(query, '@@@@@@@!!!!!!!@@@@@');
   }
 
   async setRefreshKeys(
@@ -553,16 +561,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
           .ignore();
       }),
     );
-  }
-
-  async deleteRefreshKey(
-    txOpaque: Transaction,
-    options: RefreshByKeyOptions,
-  ): Promise<void> {
-    const tx = txOpaque as Knex.Transaction;
-    const { key } = options;
-
-    await tx<DbRefreshKeysRow>('refresh_keys').where({ key: key }).delete();
   }
 
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {

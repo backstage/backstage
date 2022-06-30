@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * @param { import("knex").Knex } knex
+ */
 exports.up = async function up(knex) {
   await knex.schema.createTable('refresh_keys', table => {
     table.comment(

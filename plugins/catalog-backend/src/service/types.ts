@@ -62,7 +62,7 @@ export type RefreshOptions = {
 };
 
 export type RefreshByRefreshKeysOptions = {
-  key: string;
+  keys: string[];
 };
 /**
  * A service that manages refreshes of entities in the catalog.

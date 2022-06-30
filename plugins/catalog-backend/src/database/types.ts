@@ -86,7 +86,7 @@ export type RefreshKeyOptions = {
 };
 
 export type RefreshByKeyOptions = {
-  key: string;
+  keys: string[];
 };
 
 export type RefreshOptions = {
@@ -156,14 +156,6 @@ export interface ProcessingDatabase {
    * Schedules a refresh of a given entityRef.
    */
   refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void>;
-
-  /**
-   * Schedules a refresh for all the entities that have the given refreshKey
-   */
-  setRefreshKeys(
-    txOpaque: Transaction,
-    options: RefreshKeyOptions,
-  ): Promise<void>;
 
   /**
    * Schedules a refresh for all the entities that have the given refreshKey
