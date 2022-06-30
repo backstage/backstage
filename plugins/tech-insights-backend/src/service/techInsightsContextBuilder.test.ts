@@ -23,11 +23,20 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { TaskScheduler } from '@backstage/backend-tasks';
 import { DefaultFactRetrieverRegistry } from './fact/FactRetrieverRegistry';
+import { Knex } from 'knex';
 
 jest.mock('./fact/FactRetrieverRegistry');
 
 describe('buildTechInsightsContext', () => {
-  const pluginDatabase = {} as PluginDatabaseManager;
+  const pluginDatabase: PluginDatabaseManager = {
+    getClient: () => {
+      return Promise.resolve({
+        migrate: {
+          latest: () => {},
+        },
+      }) as unknown as Promise<Knex>;
+    },
+  };
   const manager = {} as DatabaseManager;
   const discoveryMock = {
     getBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
