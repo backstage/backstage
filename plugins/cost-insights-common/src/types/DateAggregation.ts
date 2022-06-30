@@ -18,6 +18,11 @@
  * @public
  */
 export type DateAggregation = {
-  date: string; // YYYY-MM-DD
+  /**
+   * The date aggregation as string.
+   * @example YYYY-MM-DD
+   */
+  date: string;
+
   amount: number;
 };

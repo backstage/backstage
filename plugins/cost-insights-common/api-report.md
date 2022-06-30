@@ -5,9 +5,7 @@
 ```ts
 // @public (undocumented)
 export interface ChangeStatistic {
-  // (undocumented)
   amount: number;
-  // (undocumented)
   ratio?: number;
 }
 
