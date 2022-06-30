@@ -24,10 +24,10 @@ exports.up = async function up(knex) {
     );
     table
       .text('entity_ref')
+      .notNullable()
       .references('entity_id')
       .inTable('refresh_state')
       .onDelete('CASCADE')
-      .notNullable()
       .comment('A reference to the entity that the refresh key is tied to');
     table
       .text('key')
