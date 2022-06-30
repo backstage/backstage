@@ -41,6 +41,31 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
 }
 
 // @public
+export class GithubEntityProvider implements EntityProvider {
+  // (undocumented)
+  connect(connection: EntityProviderConnection): Promise<void>;
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: GithubEntityProviderOptions,
+  ): GithubEntityProvider;
+  // (undocumented)
+  getProviderName(): string;
+  // (undocumented)
+  refresh(logger: Logger): Promise<boolean>;
+}
+
+// @public
+export interface GithubEntityProviderOptions {
+  files: Array<string>;
+  githubCredentialsProvider?: GithubCredentialsProvider;
+  id: string;
+  logger: Logger;
+  orgUrl: string;
+  schedule: TaskRunner;
+}
+
+// @public
 export type GithubMultiOrgConfig = Array<{
   name: string;
   groupNamespace: string;
