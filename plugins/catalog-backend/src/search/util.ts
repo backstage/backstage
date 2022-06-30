@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { Entity, isUserEntity, isGroupEntity } from '@backstage/catalog-model';
+import {
+  Entity,
+  isUserEntity,
+  isGroupEntity,
+  isApiEntity,
+} from '@backstage/catalog-model';
 
 export function getDocumentText(entity: Entity): string {
   const documentTexts: string[] = [];
@@ -24,6 +29,8 @@ export function getDocumentText(entity: Entity): string {
     if (entity.spec?.profile?.displayName) {
       documentTexts.push(entity.spec.profile.displayName);
     }
+  } else if (isApiEntity(entity)) {
+    documentTexts.push(entity.spec?.definition);
   }
   return documentTexts.join(' : ');
 }
