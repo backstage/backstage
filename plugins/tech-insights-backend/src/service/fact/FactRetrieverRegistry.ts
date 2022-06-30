@@ -21,6 +21,10 @@ import {
 } from '@backstage/plugin-tech-insights-node';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 
+/**
+ * @public
+ *
+ */
 export interface FactRetrieverRegistry {
   readonly retrievers: Map<string, FactRetrieverRegistration>;
   register(registration: FactRetrieverRegistration): void;
