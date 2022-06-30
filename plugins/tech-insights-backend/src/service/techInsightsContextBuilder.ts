@@ -52,8 +52,10 @@ export interface TechInsightsOptions<
   CheckResultType extends CheckResult,
 > {
   /**
-   * A collection of FactRetrieverRegistrations.
+   * Optional collection of FactRetrieverRegistrations.
    * Used to register FactRetrievers and their schemas and schedule an execution loop for them.
+   *
+   * Not needed if passing in your own FactRetrieverRegistry implementation
    */
   factRetrievers?: FactRetrieverRegistration[];
 
@@ -62,6 +64,11 @@ export interface TechInsightsOptions<
    */
   factCheckerFactory?: FactCheckerFactory<CheckType, CheckResultType>;
 
+  /**
+   * Optional FactRetrieverRegistry implementation that replaces the default one.
+   *
+   * If passing this in you don't need to pass in factRetrievers also.
+   */
   factRetrieverRegistry?: FactRetrieverRegistry;
 
   logger: Logger;
