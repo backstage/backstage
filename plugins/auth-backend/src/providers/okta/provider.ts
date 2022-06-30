@@ -26,7 +26,7 @@ import {
   OAuthRefreshRequest,
   OAuthResult,
 } from '../../lib/oauth';
-import { Strategy as OktaStrategy } from 'passport-okta-oauth';
+import { Strategy as OktaStrategy } from '@davidzemon/passport-okta-oauth';
 import passport from 'passport';
 import {
   executeFrameHandlerStrategy,
