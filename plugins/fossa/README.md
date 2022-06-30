@@ -43,9 +43,12 @@ proxy:
     headers:
       Authorization: token ${FOSSA_API_TOKEN}
 
-# if you have a fossa organization, configure your id here
 fossa:
+  # if you have a fossa organization, configure your id here
   organizationId: <your-fossa-organization-id>
+  # if you have a self-managed fossa instance,
+  # configure the baseUrl to use for links to the fossa page here
+  externalLinkBaseUrl: <your fossa url>
 ```
 
 4. Get an api-token and provide `FOSSA_AUTH_HEADER` as env variable (https://app.fossa.com/account/settings/integrations/api_tokens)
