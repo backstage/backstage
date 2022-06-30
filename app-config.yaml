@@ -286,6 +286,15 @@ scaffolder:
   #   email: scaffolder@backstage.io
   # Use to customize the default commit message when new components are created
   # defaultCommitMessage: 'Initial commit'
+  # Use to customize the audit log emitted when a template task is created
+  auditlog:
+    enabled: true
+  # Properties of the user entity metadata (i.e. userEntity.metadata.name)
+    identityMetadata:
+      - name
+  # Annotations under the user entity metadata (i.e. userEntity.metadata.annotations['name/of-annotation'])
+  #   identityAnnotations:
+  #     # - name/of-annotation
 
 auth:
   ### Add auth.keyStore.provider to more granularly control how to store JWK data when running
