@@ -1989,9 +1989,9 @@
     "@lezer/common" "^1.0.0"
 
 "@codemirror/language@^6.0.0":
-  version "6.1.0"
-  resolved "https://registry.npmjs.org/@codemirror/language/-/language-6.1.0.tgz#7686f0ecafd958c35332c3cc2aa3d564fd33dc44"
-  integrity sha512-CeqY80nvUFrJcXcBW115aNi06D0PS8NSW6nuJRSwbrYFkE0SfJnPfyLGrcM90AV95lqg5+4xUi99BCmzNaPGJg==
+  version "6.2.0"
+  resolved "https://registry.npmjs.org/@codemirror/language/-/language-6.2.0.tgz#f8d103927bb61346e93781b1ca7d3f4ac3c9280b"
+  integrity sha512-tabB0Ef/BflwoEmTB4a//WZ9P90UQyne9qWB9YFsmeS4bnEqSys7UpGk/da1URMXhyfuzWCwp+AQNMhvu8SfnA==
   dependencies:
     "@codemirror/state" "^6.0.0"
     "@codemirror/view" "^6.0.0"
