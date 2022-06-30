@@ -5263,9 +5263,9 @@
     "@react-hookz/deep-equal" "^1.0.1"
 
 "@react-hookz/web@^14.0.0":
-  version "14.3.0"
-  resolved "https://registry.npmjs.org/@react-hookz/web/-/web-14.3.0.tgz#ccfcfa65aa1e56ca5a3b258a9bd987e0daa67bae"
-  integrity sha512-lmZ9rAoHbBFZo0v72cjHMCY/hz9Wp6WQd/Kx53A+HumxkAaJT3AuBkd9jJgrtdsNiHdG0IEr93/oOza3+G6kVA==
+  version "14.4.0"
+  resolved "https://registry.npmjs.org/@react-hookz/web/-/web-14.4.0.tgz#8c5003d2ee243e4f628ca7f69a6975a4c1a84713"
+  integrity sha512-MZUeiC/xCg30yBVfV3LS4gtQUngVb/r0xhaeGKk+Bx5ZaJOhHQ8kuduXP13RmbzpehJk2e1TL0oZsTofzT7QJQ==
   dependencies:
     "@react-hookz/deep-equal" "^1.0.2"
 
