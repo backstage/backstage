@@ -48,7 +48,7 @@ further down for an example of a custom badge factories function.
 Finally, you have to make the following changes in `src/index.ts`:
 
 ```ts
-// 1. importing the plugin
+// 1. import the plugin
 import badges from './plugins/badges';
 
 ...
