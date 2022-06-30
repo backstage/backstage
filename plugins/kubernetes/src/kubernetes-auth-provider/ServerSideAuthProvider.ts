@@ -17,6 +17,11 @@
 import { KubernetesAuthProvider } from './types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 
+/**
+ * No-op KubernetesAuthProvider, authorization will be handled in the kubernetes-backend plugin
+ *
+ * @alpha
+ */
 export class ServerSideKubernetesAuthProvider
   implements KubernetesAuthProvider
 {
