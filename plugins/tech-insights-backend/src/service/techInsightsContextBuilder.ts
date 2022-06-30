@@ -120,7 +120,6 @@ export const buildTechInsightsContext = async <
     scheduler,
     tokenManager,
   } = options;
-  logger.info('HERE1');
 
   const buildFactRetrieverRegistry = (): FactRetrieverRegistry => {
     if (!options.factRetrieverRegistry) {
@@ -140,7 +139,6 @@ export const buildTechInsightsContext = async <
     await database.getClient(),
     { logger },
   );
-  logger.info('HERE2');
 
   const factRetrieverEngine = await FactRetrieverEngine.create({
     scheduler,
