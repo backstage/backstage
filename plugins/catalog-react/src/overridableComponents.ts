@@ -22,6 +22,7 @@ import {
   CatalogReactEntitySearchBarClassKey,
   CatalogReactEntityTagPickerClassKey,
   CatalogReactEntityOwnerPickerClassKey,
+  CatalogReactEntityProcessingStatusPickerClassKey,
 } from './components';
 
 /** @public */
@@ -31,6 +32,7 @@ export type CatalogReactComponentsNameToClassKey = {
   CatalogReactEntitySearchBar: CatalogReactEntitySearchBarClassKey;
   CatalogReactEntityTagPicker: CatalogReactEntityTagPickerClassKey;
   CatalogReactEntityOwnerPicker: CatalogReactEntityOwnerPickerClassKey;
+  CatalogReactEntityProcessingStatusPicker: CatalogReactEntityProcessingStatusPickerClassKey;
 };
 
 /** @public */

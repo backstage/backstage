@@ -36,6 +36,7 @@ export type VaultSecretList = {
  */
 export type VaultSecret = {
   name: string;
+  path: string;
   showUrl: string;
   editUrl: string;
 };
@@ -134,6 +135,7 @@ export class VaultClient implements VaultApi {
         } else {
           secrets.push({
             name: secret,
+            path: secretPath,
             editUrl: `${this.vaultConfig.baseUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/edit/${secretPath}/${secret}`,
             showUrl: `${this.vaultConfig.baseUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/show/${secretPath}/${secret}`,
           });

@@ -11,6 +11,7 @@ import { V1Deployment } from '@kubernetes/client-node';
 import { V1HorizontalPodAutoscaler } from '@kubernetes/client-node';
 import { V1Ingress } from '@kubernetes/client-node';
 import { V1Job } from '@kubernetes/client-node';
+import { V1LimitRange } from '@kubernetes/client-node';
 import { V1Pod } from '@kubernetes/client-node';
 import { V1ReplicaSet } from '@kubernetes/client-node';
 import { V1Service } from '@kubernetes/client-node';
@@ -131,6 +132,7 @@ export type FetchResponse =
   | ServiceFetchResponse
   | ConfigMapFetchResponse
   | DeploymentFetchResponse
+  | LimitRangeFetchReponse
   | ReplicaSetsFetchResponse
   | HorizontalPodAutoscalersFetchResponse
   | JobsFetchResponse
@@ -210,6 +212,16 @@ export interface KubernetesRequestBody {
   auth?: KubernetesRequestAuth;
   // (undocumented)
   entity: Entity;
+}
+
+// Warning: (ae-missing-release-tag) "LimitRangeFetchReponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface LimitRangeFetchReponse {
+  // (undocumented)
+  resources: Array<V1LimitRange>;
+  // (undocumented)
+  type: 'limitranges';
 }
 
 // Warning: (ae-missing-release-tag) "ObjectsByEntityResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
