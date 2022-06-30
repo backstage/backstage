@@ -37,7 +37,10 @@ describe('buildTechInsightsContext', () => {
       }) as unknown as Promise<Knex>;
     },
   };
-  const manager = {} as DatabaseManager;
+  const databaseManager: Partial<DatabaseManager> = {
+    forPlugin: () => pluginDatabase,
+  };
+  const manager = databaseManager as DatabaseManager;
   const discoveryMock = {
     getBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
     getExternalBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
