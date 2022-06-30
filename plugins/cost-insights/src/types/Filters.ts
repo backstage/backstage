@@ -14,17 +14,28 @@
  * limitations under the License.
  */
 
+import { Maybe } from '@backstage/plugin-cost-insights-common';
+import { Duration } from './Duration';
+
 /**
- * Time periods for cost comparison; slight abuse of ISO 8601 periods. We take P3M to mean
- * 'last completed quarter', and P30D/P90D to be '[month|quarter] relative to today'. So if
- * it's September 15, P3M represents costs for Q2 and P30D represents August 16 -
- * September 15.
- *
  * @public
  */
-export enum Duration {
-  P7D = 'P7D',
-  P30D = 'P30D',
-  P90D = 'P90D',
-  P3M = 'P3M',
+export interface PageFilters {
+  group: Maybe<string>;
+  project: Maybe<string>;
+  duration: Duration;
+  metric: string | null;
+}
+
+/**
+ * @public
+ */
+export type ProductFilters = Array<ProductPeriod>;
+
+/**
+ * @public
+ */
+export interface ProductPeriod {
+  duration: Duration;
+  productType: string;
 }

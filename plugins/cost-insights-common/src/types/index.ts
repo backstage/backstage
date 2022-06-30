@@ -15,13 +15,9 @@
  */
 
 export * from './ChangeStatistic';
-export * from './ChartData';
 export * from './Cost';
 export * from './DateAggregation';
-export * from './Duration';
-export * from './Currency';
 export * from './Entity';
-export * from './Filters';
 export * from './Group';
 export * from './Maybe';
 export * from './MetricData';

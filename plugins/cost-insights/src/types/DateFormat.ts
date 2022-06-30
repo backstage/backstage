@@ -14,28 +14,4 @@
  * limitations under the License.
  */
 
-import { Maybe } from './Maybe';
-import { Duration } from './Duration';
-
-/**
- * @public
- */
-export interface PageFilters {
-  group: Maybe<string>;
-  project: Maybe<string>;
-  duration: Duration;
-  metric: string | null;
-}
-
-/**
- * @public
- */
-export type ProductFilters = Array<ProductPeriod>;
-
-/**
- * @public
- */
-export interface ProductPeriod {
-  duration: Duration;
-  productType: string;
-}
+export const DEFAULT_DATE_FORMAT = 'yyyy-LL-dd';

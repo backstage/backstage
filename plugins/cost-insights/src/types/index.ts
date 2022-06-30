@@ -14,15 +14,40 @@
  * limitations under the License.
  */
 
-// @deprecated - use types from `@backstage/plugin-cost-insights-common` instead.
-export * from '@backstage/plugin-cost-insights-common';
+import * as common from '@backstage/plugin-cost-insights-common';
+/** * @deprecated use the same type from @backstage/plugin-cost-insights-common instead */
+export type ChangeStatistic = common.ChangeStatistic;
+/** * @deprecated use the same type from @backstage/plugin-cost-insights-common instead */
+export type Cost = common.Cost;
+/** * @deprecated use the same type from @backstage/plugin-cost-insights-common instead */
+export type DateAggregation = common.DateAggregation;
+/** * @deprecated use the same type from @backstage/plugin-cost-insights-common instead */
+export type Entity = common.Entity;
+/** * @deprecated use the same type from @backstage/plugin-cost-insights-common instead */
+export type Group = common.Group;
+/** * @deprecated use the same type from @backstage/plugin-cost-insights-common instead */
+export type Maybe<T> = common.Maybe<T>;
+/** * @deprecated use the same type from @backstage/plugin-cost-insights-common instead */
+export type Metric = common.Metric;
+/** * @deprecated use the same type from @backstage/plugin-cost-insights-common instead */
+export type MetricData = common.MetricData;
+/** * @deprecated use the same type from @backstage/plugin-cost-insights-common instead */
+export type Product = common.Product;
+/** * @deprecated use the same type from @backstage/plugin-cost-insights-common instead */
+export type Project = common.Project;
+/** * @deprecated use the same type from @backstage/plugin-cost-insights-common instead */
+export type Trendline = common.Trendline;
 
 // TODO: Split some of these up into `@backstage/plugin-cost-insights-react` for presentation types
 //       and `@backstage/plugin-cost-insights-common` for data transfer object types.
 export * from './Alert';
 export * from './ChangeStatistic';
+export * from './ChartData';
 export * from './Currency';
+export * from './CurrencyType';
+export * from './DateFormat';
 export * from './Duration';
+export * from './Filters';
 export * from './Icon';
 export * from './Loading';
 export * from './Theme';

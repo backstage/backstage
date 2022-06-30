@@ -15,11 +15,8 @@
  */
 
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
-import {
-  ChangeStatistic,
-  Duration,
-  Maybe,
-} from '@backstage/plugin-cost-insights-common';
+import { ChangeStatistic, Maybe } from '@backstage/plugin-cost-insights-common';
+import { Duration } from './Duration';
 
 /**
  * Generic alert type with required fields for display. The `element` field will be rendered in
