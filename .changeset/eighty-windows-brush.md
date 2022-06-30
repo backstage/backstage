@@ -2,4 +2,4 @@
 '@backstage/plugin-tech-insights-backend': minor
 ---
 
-Make FactRetrieverRegistry injectable to override default implementation
+Allow FactRetrieverRegistry to be injected into buildTechInsightsContext so that we can override default registry implementation.
