@@ -21,7 +21,7 @@ import {
 } from '@backstage/plugin-tech-insights-node';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 
-export interface FactRetrieverRegistryInterface {
+export interface FactRetrieverRegistry {
   readonly retrievers: Map<string, FactRetrieverRegistration>;
   register(registration: FactRetrieverRegistration): void;
   get(retrieverReference: string): FactRetrieverRegistration;
@@ -30,7 +30,7 @@ export interface FactRetrieverRegistryInterface {
   getSchemas(): FactSchema[];
 }
 
-export class FactRetrieverRegistry implements FactRetrieverRegistryInterface {
+export class DefaultFactRetrieverRegistry implements FactRetrieverRegistry {
   readonly retrievers = new Map<string, FactRetrieverRegistration>();
 
   constructor(retrievers: FactRetrieverRegistration[]) {

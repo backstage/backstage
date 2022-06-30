@@ -22,7 +22,7 @@ import {
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TaskScheduler } from '@backstage/backend-tasks';
-import { FactRetrieverRegistry } from './fact/FactRetrieverRegistry';
+import { DefaultFactRetrieverRegistry } from './fact/FactRetrieverRegistry';
 
 jest.mock('./fact/FactRetrieverRegistry');
 
@@ -41,7 +41,7 @@ describe('buildTechInsightsContext', () => {
     jest.clearAllMocks();
   });
 
-  it('constructs the default FactRetrieverRegistry if factRetrievers but no factRetrieverRegistry are passed in', () => {
+  it('constructs the default FactRetrieverRegistry if factRetrievers but no factRetrieverRegistry are passed', () => {
     buildTechInsightsContext({
       database: pluginDatabase,
       logger: getVoidLogger(),
@@ -52,11 +52,11 @@ describe('buildTechInsightsContext', () => {
       tokenManager: ServerTokenManager.noop(),
     });
 
-    expect(FactRetrieverRegistry).toHaveBeenCalledTimes(1);
+    expect(DefaultFactRetrieverRegistry).toHaveBeenCalledTimes(1);
   });
 
   it('uses factRetrieverRegistry implementation instead of the default FactRetrieverRegistry if it is passed in', () => {
-    const factRetrieverRegistryMock = {} as FactRetrieverRegistry;
+    const factRetrieverRegistryMock = {} as DefaultFactRetrieverRegistry;
 
     buildTechInsightsContext({
       database: pluginDatabase,
@@ -69,6 +69,6 @@ describe('buildTechInsightsContext', () => {
       tokenManager: ServerTokenManager.noop(),
     });
 
-    expect(FactRetrieverRegistry).not.toHaveBeenCalled();
+    expect(DefaultFactRetrieverRegistry).not.toHaveBeenCalled();
   });
 });
