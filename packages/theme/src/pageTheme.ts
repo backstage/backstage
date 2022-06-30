@@ -52,6 +52,7 @@ export const colorVariants: Record<string, string[]> = {
   eveningSea: ['#00FFF2', '#035355'],
   teal: ['#005B4B'],
   pinkSea: ['#C8077A', '#C2297D'],
+  greens: ['#4BB8A5', '#187656'],
 };
 
 /**
@@ -63,12 +64,25 @@ export const colorVariants: Record<string, string[]> = {
  * As the background shapes and colors are decorative, we place them onto the
  * page as a css background-image instead of an html element of its own.
  */
-export function genPageTheme(colors: string[], shape: string): PageTheme {
+export function genPageTheme(props: {
+  colors: string[];
+  shape: string;
+  options?: {
+    fontColor?: string;
+  };
+}): PageTheme {
+  const { colors, shape, options } = props;
   const gradientColors = colors.length === 1 ? [colors[0], colors[0]] : colors;
   const gradient = `linear-gradient(90deg, ${gradientColors.join(', ')})`;
   const backgroundImage = `${shape},  ${gradient}`;
+  const fontColor = options?.fontColor ?? '#FFFFFF';
 
-  return { colors, shape, backgroundImage };
+  return {
+    colors: colors,
+    shape: shape,
+    backgroundImage: backgroundImage,
+    fontColor: fontColor,
+  };
 }
 
 /**
@@ -77,13 +91,20 @@ export function genPageTheme(colors: string[], shape: string): PageTheme {
  * @public
  */
 export const pageTheme: Record<string, PageTheme> = {
-  home: genPageTheme(colorVariants.teal, shapes.wave),
-  documentation: genPageTheme(colorVariants.pinkSea, shapes.wave2),
-  tool: genPageTheme(colorVariants.purpleSky, shapes.round),
-  service: genPageTheme(colorVariants.marineBlue, shapes.wave),
-  website: genPageTheme(colorVariants.veryBlue, shapes.wave),
-  library: genPageTheme(colorVariants.rubyRed, shapes.wave),
-  other: genPageTheme(colorVariants.darkGrey, shapes.wave),
-  app: genPageTheme(colorVariants.toastyOrange, shapes.wave),
-  apis: genPageTheme(colorVariants.teal, shapes.wave2),
+  home: genPageTheme({ colors: colorVariants.teal, shape: shapes.wave }),
+  documentation: genPageTheme({
+    colors: colorVariants.pinkSea,
+    shape: shapes.wave2,
+  }),
+  tool: genPageTheme({ colors: colorVariants.purpleSky, shape: shapes.round }),
+  service: genPageTheme({
+    colors: colorVariants.marineBlue,
+    shape: shapes.wave,
+  }),
+  website: genPageTheme({ colors: colorVariants.veryBlue, shape: shapes.wave }),
+  library: genPageTheme({ colors: colorVariants.rubyRed, shape: shapes.wave }),
+  other: genPageTheme({ colors: colorVariants.darkGrey, shape: shapes.wave }),
+  app: genPageTheme({ colors: colorVariants.toastyOrange, shape: shapes.wave }),
+  apis: genPageTheme({ colors: colorVariants.teal, shape: shapes.wave2 }),
+  card: genPageTheme({ colors: colorVariants.greens, shape: shapes.wave }),
 };
