@@ -28,6 +28,8 @@ export type { GcpIapResult, GcpIapTokenInfo } from './gcp-iap';
 
 export { providers, defaultAuthProviderFactories } from './providers';
 
+export { createAuthProviderIntegration } from './createAuthProviderIntegration';
+
 export type {
   AuthProviderConfig,
   AuthProviderRouteHandlers,
