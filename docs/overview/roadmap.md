@@ -15,9 +15,9 @@ work"](#future-work). With "next" we mean features planned for release within
 the ongoing quarter from April through June 2022. With "future" we mean
 features on the radar, but not yet scheduled.
 
-| [What's next](#whats-next)                                                                                                                                                                                                                                                                                                                                               | [Future work](#future-work)                                                                             |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
-| [Backstage Search 1.0](#search-1.0) <br/> [Backend Services (MVP)](#backend-services-mvp) <br/> [Backstage Security Audit](#backstage-security-audit) <br/> [Backstage Threat Model](#backstage-threat-model) <br/> [TechDocs Addon Framework](techDocs-addon-framework) <br/> [Software Catalog pagination](#software-catalog-pagination) <br/> [More SIGs](#more-sigs) | Ease of onboarding <br/> Composable Homepage 1.0 <br/> Creator experience <br/> GraphQL <br/> Telemetry |
+| [What's next](#whats-next)                                                                                                                                                                                                                                                                                                                                                | [Future work](#future-work)                                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| [Backstage Search 1.0](#search-1.0) <br/> [Backend Services (MVP)](#backend-services-mvp) <br/> [Backstage Security Audit](#backstage-security-audit) <br/> [Backstage Threat Model](#backstage-threat-model) <br/> [TechDocs Addon Framework](#techdocs-addon-framework) <br/> [Software Catalog pagination](#software-catalog-pagination) <br/> [More SIGs](#more-sigs) | Ease of onboarding <br/> Composable Homepage 1.0 <br/> Creator experience <br/> GraphQL <br/> Telemetry |
 
 The long-term roadmap (12 - 36 months) is not detailed in the public roadmap.
 Third-party contributions are also not currently included in the roadmap. Let us
@@ -63,9 +63,9 @@ Native Computing Foundation (CNCF)](https://www.cncf.io/).
 
 This is another (relevant) initiative planned to make Backstage a secure product for the adopters. The goals of this initiative are:
 
-1.  Understand where security investment and attention is needed.
-2.  Guide the upcoming security audit.
-3.  Communicate expectations to Backstage adopters and inform and attract security researchers.
+1. Understand where security investment and attention is needed.
+2. Guide the upcoming security audit.
+3. Communicate expectations to Backstage adopters and inform and attract security researchers.
 
 The planned artifacts are:
 
@@ -76,13 +76,13 @@ The planned artifacts are:
 
 Addons are TechDocs features that are added on top of the base docs-like-code experience. An example would be a feature that showed comments on the page. We plan to add an Addon framework and open source a selection of the Addons that we use internally at Spotify. We encourage the Backstage community to add further Addons.
 
-For more information about the TechDocs Addon Framework, see the documentation page [here](https://backstage.io/docs/features/techdocs/addons)
+For more information about the TechDocs Addon Framework, see the documentation page [here](https://backstage.io/docs/features/techdocs/addons).
 
 For general information about TechDocs including roadmap, see [here](https://backstage.io/docs/features/techdocs/techdocs-overview).
 
 ### Software Catalog pagination
 
-Today adopters with a big catalog (with several thousands of software components) might not have an ideal end-user experience when viewing the `/catalog` page. The issue is related to how the entities are fetched by the frontend. In order to provide a better end-user experience the pagination of the catalog’s entities needs to be enforced. Some experimentations are already completed but in this quarter we plan to continue, and hopefully complete, this relevant enhancement.
+Today adopters with a big catalog (with several thousands of software components) might not have an ideal end-user experience when viewing the `/catalog` page. The issue is related to how the entities are fetched by the frontend. In order to provide a better end-user experience the pagination of the catalog’s entities needs to be enforced. Some experimentation is already completed but in this quarter we plan to continue, and hopefully complete, this relevant enhancement.
 
 ### More SIGs
 
@@ -94,7 +94,8 @@ The following feature list doesn't represent a commitment to develop, and the
 list order doesn't reflect any priority or importance, but these features are on
 the maintainers' radar, with clear interest expressed by the community.
 
-- **Ease of onboarding:** A faster (with less development) and easier setup of Backstage and the most relevant/adopted plugins.
+- **Ease of onboarding:** A faster (with less development) and easier setup of
+  Backstage and the most relevant/adopted plugins.
 - **Composable Homepage 1.0:** Driving this to 1.0 by adding some composable
   components.
 - **Creator experience:** Provide a better Backstage user experience through
