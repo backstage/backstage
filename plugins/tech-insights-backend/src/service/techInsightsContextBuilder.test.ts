@@ -26,6 +26,11 @@ import { DefaultFactRetrieverRegistry } from './fact/FactRetrieverRegistry';
 import { Knex } from 'knex';
 
 jest.mock('./fact/FactRetrieverRegistry');
+jest.mock('./fact/FactRetrieverEngine', () => ({
+  create: jest.fn().mockResolvedValue({
+    schedule: jest.fn(),
+  }),
+}));
 
 describe('buildTechInsightsContext', () => {
   const pluginDatabase: PluginDatabaseManager = {
