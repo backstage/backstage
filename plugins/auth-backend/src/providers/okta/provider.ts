@@ -56,6 +56,7 @@ type PrivateInfo = {
 export type OktaAuthProviderOptions = OAuthProviderOptions & {
   audience: string;
   authServerId?: string;
+  idp?: string;
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
   resolverContext: AuthResolverContext;
@@ -96,6 +97,7 @@ export class OktaAuthProvider implements OAuthHandlers {
         callbackURL: options.callbackUrl,
         audience: options.audience,
         authServerID: options.authServerId,
+        idp: options.idp,
         passReqToCallback: false,
         store: this.store,
         response_type: 'code',
@@ -223,6 +225,7 @@ export const okta = createAuthProviderIntegration({
         const clientSecret = envConfig.getString('clientSecret');
         const audience = envConfig.getString('audience');
         const authServerId = envConfig.getOptionalString('authServerId');
+        const idp = envConfig.getOptionalString('idp');
         const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
         const callbackUrl =
           customCallbackUrl ||
@@ -244,6 +247,7 @@ export const okta = createAuthProviderIntegration({
         const provider = new OktaAuthProvider({
           audience,
           authServerId,
+          idp,
           clientId,
           clientSecret,
           callbackUrl,
