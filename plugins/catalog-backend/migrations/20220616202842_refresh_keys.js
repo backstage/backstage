@@ -24,6 +24,9 @@ exports.up = async function up(knex) {
     );
     table
       .text('entity_ref')
+      .references('entity_id')
+      .inTable('refresh_state')
+      .onDelete('CASCADE')
       .notNullable()
       .comment('A reference to the entity that the refresh key is tied to');
     table
@@ -32,7 +35,8 @@ exports.up = async function up(knex) {
       .comment(
         'A reference to a key which should be used to trigger a refresh on this entity',
       );
-    table.unique(['entity_ref', 'key']);
+    table.index('entity_ref', 'refresh_keys_entity_ref_idx');
+    table.index('key', 'refresh_keys_key_idx');
   });
 };
 
@@ -40,5 +44,10 @@ exports.up = async function up(knex) {
  * @param { import("knex").Knex } knex
  */
 exports.down = async function down(knex) {
+  await knex.schema.alterTable('refresh_keys', table => {
+    table.dropIndex([], 'refresh_keys_entity_ref_idx');
+    table.dropIndex([], 'refresh_keys_key_idx');
+  });
+
   await knex.schema.dropTable('refresh_keys');
 };
