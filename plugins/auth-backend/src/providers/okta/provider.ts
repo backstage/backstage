@@ -222,7 +222,7 @@ export const okta = createAuthProviderIntegration({
         const clientId = envConfig.getString('clientId');
         const clientSecret = envConfig.getString('clientSecret');
         const audience = envConfig.getString('audience');
-        const authServerId = envConfig.getString('authServerId');
+        const authServerId = envConfig.getOptionalString('authServerId');
         const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
         const callbackUrl =
           customCallbackUrl ||
