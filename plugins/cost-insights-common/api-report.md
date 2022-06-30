@@ -10,14 +10,6 @@ export interface ChangeStatistic {
 }
 
 // @public (undocumented)
-export type ChartData = {
-  date: number;
-  trend: number;
-  dailyCost: number;
-  [key: string]: number;
-};
-
-// @public (undocumented)
 export interface Cost {
   // (undocumented)
   aggregation: DateAggregation[];
@@ -32,36 +24,10 @@ export interface Cost {
 }
 
 // @public (undocumented)
-export interface Currency {
-  // (undocumented)
-  kind: string | null;
-  // (undocumented)
-  label: string;
-  // (undocumented)
-  prefix?: string;
-  // (undocumented)
-  rate?: number;
-  // (undocumented)
-  unit: string;
-}
-
-// @public (undocumented)
 export type DateAggregation = {
   date: string;
   amount: number;
 };
-
-// @public
-export enum Duration {
-  // (undocumented)
-  P30D = 'P30D',
-  // (undocumented)
-  P3M = 'P3M',
-  // (undocumented)
-  P7D = 'P7D',
-  // (undocumented)
-  P90D = 'P90D',
-}
 
 // @public
 export interface Entity {
@@ -103,34 +69,11 @@ export interface MetricData {
 }
 
 // @public (undocumented)
-export interface PageFilters {
-  // (undocumented)
-  duration: Duration;
-  // (undocumented)
-  group: Maybe<string>;
-  // (undocumented)
-  metric: string | null;
-  // (undocumented)
-  project: Maybe<string>;
-}
-
-// @public (undocumented)
 export interface Product {
   // (undocumented)
   kind: string;
   // (undocumented)
   name: string;
-}
-
-// @public (undocumented)
-export type ProductFilters = Array<ProductPeriod>;
-
-// @public (undocumented)
-export interface ProductPeriod {
-  // (undocumented)
-  duration: Duration;
-  // (undocumented)
-  productType: string;
 }
 
 // @public (undocumented)
