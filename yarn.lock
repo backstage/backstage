@@ -6420,9 +6420,9 @@
     "@types/node" "*"
 
 "@types/jest-when@^3.5.0":
-  version "3.5.1"
-  resolved "https://registry.npmjs.org/@types/jest-when/-/jest-when-3.5.1.tgz#296a0d62b576615046773daf123d518b10adee32"
-  integrity sha512-8pzJWwU4h7KyCgwAB2Hs9xuy+a1YgVcdh0vE4LT4DZx5Yo7rFO9FAPIsSORVBVCk8QfjuGZaaU9HTTh3mJnEAg==
+  version "3.5.2"
+  resolved "https://registry.npmjs.org/@types/jest-when/-/jest-when-3.5.2.tgz#7e6225e827267d26f115dc97da6403a3b37556c5"
+  integrity sha512-1WP+wJDW7h4TYAVLoIebxRIVv8GPk66Qsq2nU7PkwKZ6usurnDQZgk0DfBNKAJ9gVzapCXSV53Vn/3nBHBNzAw==
   dependencies:
     "@types/jest" "*"
 
