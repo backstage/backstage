@@ -27,9 +27,11 @@ import { Knex } from 'knex';
 
 jest.mock('./fact/FactRetrieverRegistry');
 jest.mock('./fact/FactRetrieverEngine', () => ({
-  create: jest.fn().mockResolvedValue({
-    schedule: jest.fn(),
-  }),
+  FactRetrieverEngine: {
+    create: jest.fn().mockResolvedValue({
+      schedule: jest.fn(),
+    }),
+  },
 }));
 
 describe('buildTechInsightsContext', () => {
@@ -68,7 +70,6 @@ describe('buildTechInsightsContext', () => {
       discovery: discoveryMock,
       tokenManager: ServerTokenManager.noop(),
     });
-
     expect(DefaultFactRetrieverRegistry).toHaveBeenCalledTimes(1);
   });
 
@@ -85,7 +86,6 @@ describe('buildTechInsightsContext', () => {
       discovery: discoveryMock,
       tokenManager: ServerTokenManager.noop(),
     });
-
     expect(DefaultFactRetrieverRegistry).not.toHaveBeenCalled();
   });
 });
