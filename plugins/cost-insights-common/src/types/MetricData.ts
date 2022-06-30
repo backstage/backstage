@@ -17,6 +17,9 @@
 import { DateAggregation } from './DateAggregation';
 import { ChangeStatistic } from './ChangeStatistic';
 
+/**
+ * @public
+ */
 export interface MetricData {
   id: string;
   format: 'number' | 'currency';

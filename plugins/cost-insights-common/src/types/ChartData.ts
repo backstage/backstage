@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * @public
+ */
 export type ChartData = {
   date: number;
   trend: number;

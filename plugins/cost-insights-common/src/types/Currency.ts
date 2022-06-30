@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * @public
+ */
 export interface Currency {
   kind: string | null;
   label: string;

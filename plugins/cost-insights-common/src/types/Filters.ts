@@ -17,6 +17,9 @@
 import { Maybe } from './Maybe';
 import { Duration } from './Duration';
 
+/**
+ * @public
+ */
 export interface PageFilters {
   group: Maybe<string>;
   project: Maybe<string>;
@@ -24,8 +27,14 @@ export interface PageFilters {
   metric: string | null;
 }
 
+/**
+ * @public
+ */
 export type ProductFilters = Array<ProductPeriod>;
 
+/**
+ * @public
+ */
 export interface ProductPeriod {
   duration: Duration;
   productType: string;

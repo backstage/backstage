@@ -18,6 +18,9 @@ import { DateAggregation } from './DateAggregation';
 import { ChangeStatistic } from './ChangeStatistic';
 import { Trendline } from './Trendline';
 
+/**
+ * @public
+ */
 export interface Cost {
   id: string;
   aggregation: DateAggregation[];

@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
+/**
+ * @public
+ */
 export type Maybe<T> = T | null;
