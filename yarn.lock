@@ -19648,9 +19648,9 @@ obuf@^1.0.0, obuf@^1.1.2:
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
 
 octokit-plugin-create-pull-request@^3.10.0:
-  version "3.11.0"
-  resolved "https://registry.npmjs.org/octokit-plugin-create-pull-request/-/octokit-plugin-create-pull-request-3.11.0.tgz#11f496176111eaa04955fb2bb7e4d953501423d0"
-  integrity sha512-ZD025HTrm/KoBMRmPYbcCw3tfGomOdAYFB6/K1xiMW+/NFsOyDOeFrEGBbL82b57dhNsPRibs0eL64lpJ3xyvw==
+  version "3.12.2"
+  resolved "https://registry.npmjs.org/octokit-plugin-create-pull-request/-/octokit-plugin-create-pull-request-3.12.2.tgz#eaced840587a2f7176c563d94ca6112a93f29da2"
+  integrity sha512-DwY+vPq7dd2zSiIJw2lN1bYUKEuvjLmBTErTJOQEQd+ujQompN8qjpixeheMZetkJmSNzpWhxxqgZyCMuVnZlQ==
   dependencies:
     "@octokit/types" "^6.8.2"
 
