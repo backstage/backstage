@@ -24,10 +24,12 @@
   },
   "dependencies": {
     "@backstage/backend-common": "^0.14.1-next.1",
+    "@backstage/config": "^1.0.1",
     "@backstage/plugin-search-backend-node": "^0.6.3-next.1",
     "@backstage/plugin-search-common": "^0.3.6-next.0",
     "lodash": "^4.17.21",
-    "knex": "^2.0.0"
+    "knex": "^2.0.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "^0.1.26-next.1",
@@ -35,6 +37,8 @@
   },
   "files": [
     "dist",
-    "migrations"
-  ]
+    "migrations",
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
 }
