@@ -134,7 +134,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
           base,
         });
 
-      emit(processingResult.refresh(stringifyEntityRef(entity), resolverValue));
+      emit(processingResult.refresh(`url:${resolverValue}`));
 
       return [
         await resolver({

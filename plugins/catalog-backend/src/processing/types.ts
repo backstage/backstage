@@ -51,7 +51,6 @@ export type EntityProcessingResult =
  */
 export type RefreshKeyData = {
   key: string;
-  entityRef: string;
 };
 
 /**

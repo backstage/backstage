@@ -103,11 +103,12 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         `Conflicting write of processing result for ${id} with location key '${locationKey}'`,
       );
     }
+    const sourceEntityRef = stringifyEntityRef(processedEntity);
 
     // Schedule all deferred entities for future processing.
     await this.addUnprocessedEntities(tx, {
       entities: deferredEntities,
-      sourceEntityRef: stringifyEntityRef(processedEntity),
+      sourceEntityRef,
     });
 
     // Delete old relations
@@ -139,6 +140,19 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       'relations',
       this.deduplicateRelations(relationRows),
       BATCH_SIZE,
+    );
+
+    // Insert the refresh keys for the procssed entity
+    await Promise.all(
+      options.refreshKeys.map(k => {
+        return tx<DbRefreshKeysRow>('refresh_keys')
+          .insert({
+            entity_ref: sourceEntityRef,
+            key: k.key,
+          })
+          .onConflict(['entity_ref', 'key'])
+          .ignore();
+      }),
     );
 
     return {
@@ -526,41 +540,22 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const tx = txOpaque as Knex.Transaction;
     const { keys } = options;
 
-    const query = await tx<DbRefreshStateRow>('refresh_state')
+    const updateResult = await tx<DbRefreshStateRow>('refresh_state')
       .whereIn('entity_ref', function (tx2) {
         tx2
           .whereIn('key', keys)
           .select({
             entity_ref: 'refresh_keys.entity_ref',
           })
-          .from('refresh_keys')
-          .columns('entity_ref');
+          .from('refresh_keys');
       })
-      .update({ next_update_at: tx.fn.now() })
-      .toSQL()
-      .toNative();
+      .update({ next_update_at: tx.fn.now() });
 
-    console.log(query, '@@@@@@@!!!!!!!@@@@@');
-  }
-
-  async setRefreshKeys(
-    txOpaque: Transaction,
-    options: RefreshKeyOptions,
-  ): Promise<void> {
-    const tx = txOpaque as Knex.Transaction;
-    const { refreshKeys } = options;
-
-    await Promise.all(
-      refreshKeys.map(k => {
-        return tx<DbRefreshKeysRow>('refresh_keys')
-          .insert({
-            entity_ref: k.entityRef,
-            key: k.key,
-          })
-          .onConflict(['entity_ref', 'key'])
-          .ignore();
-      }),
-    );
+    if (updateResult === 0) {
+      throw new NotFoundError(
+        `Failed to schedule ${JSON.stringify(keys)} for keys`,
+      );
+    }
   }
 
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {

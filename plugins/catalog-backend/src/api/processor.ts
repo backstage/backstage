@@ -172,7 +172,6 @@ export type CatalogProcessorErrorResult = {
 /** @public */
 export type CatalogProcessorRefreshKeysResult = {
   type: 'refresh';
-  entityRef: string;
   key: string;
 };
 

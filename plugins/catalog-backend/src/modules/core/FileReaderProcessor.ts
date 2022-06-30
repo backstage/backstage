@@ -29,6 +29,8 @@ import { stringifyEntityRef } from '@backstage/catalog-model';
 
 const glob = promisify(g);
 
+const LOCATION_TYPE = 'file';
+
 /** @public */
 export class FileReaderProcessor implements CatalogProcessor {
   getProcessorName(): string {
@@ -41,7 +43,7 @@ export class FileReaderProcessor implements CatalogProcessor {
     emit: CatalogProcessorEmit,
     parser: CatalogProcessorParser,
   ): Promise<boolean> {
-    if (location.type !== 'file') {
+    if (location.type !== LOCATION_TYPE) {
       return false;
     }
 
@@ -57,19 +59,16 @@ export class FileReaderProcessor implements CatalogProcessor {
           for await (const parseResult of parser({
             data: data,
             location: {
-              type: 'file',
+              type: LOCATION_TYPE,
               target: path.normalize(fileMatch),
             },
           })) {
             emit(parseResult);
-            if (parseResult.type === 'entity') {
-              emit(
-                processingResult.refresh(
-                  stringifyEntityRef(parseResult.entity),
-                  path.normalize(fileMatch),
-                ),
-              );
-            }
+            emit(
+              processingResult.refresh(
+                `${LOCATION_TYPE}:${path.normalize(fileMatch)}`,
+              ),
+            );
           }
         }
       } else if (!optional) {

@@ -30,6 +30,7 @@ import {
   LocationSpec,
   processingResult,
 } from '../../api';
+import { locationSpecToLocationEntity } from '../../util';
 
 const CACHE_KEY = 'v1';
 
@@ -83,14 +84,6 @@ export class UrlReaderProcessor implements CatalogProcessor {
         })) {
           parseResults.push(parseResult);
           emit(parseResult);
-          if (parseResult.type === 'entity') {
-            emit(
-              processingResult.refresh(
-                stringifyEntityRef(parseResult.entity),
-                item.url,
-              ),
-            );
-          }
         }
       }
 
@@ -101,6 +94,8 @@ export class UrlReaderProcessor implements CatalogProcessor {
           value: parseResults as CatalogProcessorEntityResult[],
         });
       }
+
+      emit(processingResult.refresh(`${location.type}:${location.target}`));
     } catch (error) {
       assertError(error);
       const message = `Unable to read ${location.type}, ${error}`;

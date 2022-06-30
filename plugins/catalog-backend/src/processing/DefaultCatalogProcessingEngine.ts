@@ -123,12 +123,6 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
           let hashBuilder = this.createHash().update(errorsString);
           if (result.ok) {
-            await this.processingDatabase.transaction(tx =>
-              this.processingDatabase.setRefreshKeys(tx, {
-                refreshKeys: result.refreshKeys,
-              }),
-            );
-
             const { entityRefs: parents } =
               await this.processingDatabase.transaction(tx =>
                 this.processingDatabase.listParents(tx, {
@@ -186,6 +180,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
                 relations: result.relations,
                 deferredEntities: result.deferredEntities,
                 locationKey,
+                refreshKeys: result.refreshKeys,
               });
             oldRelationSources = new Set(
               previous.relations.map(r => r.source_entity_ref),

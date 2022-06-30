@@ -38,6 +38,7 @@ export type UpdateProcessedEntityOptions = {
   relations: EntityRelationSpec[];
   deferredEntities: DeferredEntity[];
   locationKey?: string;
+  refreshKeys: RefreshKeyData[];
 };
 
 export type UpdateEntityCacheOptions = {
@@ -156,14 +157,6 @@ export interface ProcessingDatabase {
    * Schedules a refresh of a given entityRef.
    */
   refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void>;
-
-  /**
-   * Schedules a refresh for all the entities that have the given refreshKey
-   */
-  setRefreshKeys(
-    txOpaque: Transaction,
-    options: RefreshKeyOptions,
-  ): Promise<void>;
 
   /**
    * Lists all ancestors of a given entityRef.
