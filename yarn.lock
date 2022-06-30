@@ -2364,9 +2364,9 @@
     meros "^1.1.4"
 
 "@graphql-codegen/cli@^2.3.1":
-  version "2.6.2"
-  resolved "https://registry.npmjs.org/@graphql-codegen/cli/-/cli-2.6.2.tgz#a9aa4656141ee0998cae8c7ad7d0bf9ca8e0c9ae"
-  integrity sha512-UO75msoVgvLEvfjCezM09cQQqp32+mR8Ma1ACsBpr7nroFvHbgcu2ulx1cMovg4sxDBCsvd9Eq/xOOMpARUxtw==
+  version "2.6.3"
+  resolved "https://registry.npmjs.org/@graphql-codegen/cli/-/cli-2.6.3.tgz#80d6f0324bcf9a375b9a1d5e998fcd62b3bace66"
+  integrity sha512-gxtKbe6LlBhGqDISZldCMcGaV1rSTS4D836clSR52kBY7UBhZZcDOcNZM0zDJDFGpjHtwuL9p0Kb4w9HRXYfew==
   dependencies:
     "@graphql-codegen/core" "2.5.1"
     "@graphql-codegen/plugin-helpers" "^2.4.1"
@@ -2387,24 +2387,18 @@
     common-tags "^1.8.0"
     cosmiconfig "^7.0.0"
     debounce "^1.2.0"
-    dependency-graph "^0.11.0"
     detect-indent "^6.0.0"
-    glob "^7.1.6"
-    globby "^11.0.4"
     graphql-config "^4.1.0"
     inquirer "^8.0.0"
     is-glob "^4.0.1"
     json-to-pretty-yaml "^1.2.2"
-    latest-version "5.1.0"
+    latest-version "^6.0.0"
     listr "^0.14.3"
     listr-update-renderer "^0.5.0"
     log-symbols "^4.0.0"
-    minimatch "^4.0.0"
     mkdirp "^1.0.4"
     string-env-interpolation "^1.0.1"
     ts-log "^2.2.3"
-    tslib "~2.3.0"
-    valid-url "^1.0.9"
     wrap-ansi "^7.0.0"
     yaml "^1.10.0"
     yargs "^17.0.0"
@@ -14075,7 +14069,7 @@ got@11.8.3:
     p-cancelable "^2.0.0"
     responselike "^2.0.0"
 
-got@^11.8.0:
+got@^11.8.0, got@^11.8.2:
   version "11.8.5"
   resolved "https://registry.npmjs.org/got/-/got-11.8.5.tgz#ce77d045136de56e8f024bebb82ea349bc730046"
   integrity sha512-o0Je4NvQObAuZPHLFoRSkdG2lTgtcynqymzg2Vupdx6PorhaT5MCbIyXG6d4D94kk8ZG57QeosgdiqfJWhEhlQ==
@@ -17051,12 +17045,19 @@ language-tags@^1.0.5:
   dependencies:
     language-subtag-registry "~0.3.2"
 
-latest-version@5.1.0, latest-version@^5.1.0:
+latest-version@^5.1.0:
   version "5.1.0"
   resolved "https://registry.npmjs.org/latest-version/-/latest-version-5.1.0.tgz#119dfe908fe38d15dfa43ecd13fa12ec8832face"
   integrity sha512-weT+r0kTkRQdCdYCNtkMwWXQTMEswKrFBkm4ckQOMVhhqhIMI1UT2hMj+1iigIhgSZm5gTmrRXBNoGUgaTY1xA==
   dependencies:
     package-json "^6.3.0"
+
+latest-version@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.npmjs.org/latest-version/-/latest-version-6.0.0.tgz#469fb95f1d588b38436c1ec8fec947b99ed268c7"
+  integrity sha512-zfTuGx4PwpoSJ1mABs58AkM6qMzu49LZ7LT5JHprKvpGpQ+cYtfSibi3tLLrH4z7UylYU42rfBdwN8YgqbTljA==
+  dependencies:
+    package-json "^7.0.0"
 
 lazy-ass@1.6.0, lazy-ass@^1.6.0:
   version "1.6.0"
@@ -18681,13 +18682,6 @@ minimatch@^3.0.2, minimatch@^3.0.4, minimatch@^3.1.1, minimatch@^3.1.2:
   dependencies:
     brace-expansion "^1.1.7"
 
-minimatch@^4.0.0:
-  version "4.2.1"
-  resolved "https://registry.npmjs.org/minimatch/-/minimatch-4.2.1.tgz#40d9d511a46bdc4e563c22c3080cde9c0d8299b4"
-  integrity sha512-9Uq1ChtSZO+Mxa/CL1eGizn2vRn3MlLgzhT0Iz8zaY8NdvxvB0d5QdPFmCKf7JKA9Lerx5vRrnwO03jsSfGG9g==
-  dependencies:
-    brace-expansion "^1.1.7"
-
 minimist-options@4.1.0, minimist-options@^4.0.2:
   version "4.1.0"
   resolved "https://registry.npmjs.org/minimist-options/-/minimist-options-4.1.0.tgz#c0655713c53a8a2ebd77ffa247d342c40f010619"
@@ -20011,6 +20005,16 @@ package-json@^6.3.0:
     registry-auth-token "^4.0.0"
     registry-url "^5.0.0"
     semver "^6.2.0"
+
+package-json@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.npmjs.org/package-json/-/package-json-7.0.0.tgz#1355416e50a5c1b8f1a6f471197a3650d21186bf"
+  integrity sha512-CHJqc94AA8YfSLHGQT3DbvSIuE12NLFekpM4n7LRrAd3dOJtA911+4xe9q6nC3/jcKraq7nNS9VxgtT0KC+diA==
+  dependencies:
+    got "^11.8.2"
+    registry-auth-token "^4.0.0"
+    registry-url "^5.0.0"
+    semver "^7.3.5"
 
 packet-reader@1.0.0:
   version "1.0.0"
@@ -25677,11 +25681,6 @@ v8-to-istanbul@^8.1.0:
     "@types/istanbul-lib-coverage" "^2.0.1"
     convert-source-map "^1.6.0"
     source-map "^0.7.3"
-
-valid-url@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.npmjs.org/valid-url/-/valid-url-1.0.9.tgz#1c14479b40f1397a75782f115e4086447433a200"
-  integrity sha1-HBRHm0DxOXp1eC8RXkCGRHQzogA=
 
 validate-npm-package-license@^3.0.1, validate-npm-package-license@^3.0.4:
   version "3.0.4"
