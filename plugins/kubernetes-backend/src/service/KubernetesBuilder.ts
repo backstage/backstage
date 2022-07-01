@@ -37,6 +37,8 @@ import {
   KubernetesFanOutHandler,
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
+import { CatalogApi } from '@backstage/catalog-client';
 
 /**
  *
@@ -45,6 +47,7 @@ import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 export interface KubernetesEnvironment {
   logger: Logger;
   config: Config;
+  catalogClient: CatalogApi;
 }
 
 /**
@@ -119,7 +122,11 @@ export class KubernetesBuilder {
         objectTypesToFetch: this.getObjectTypesToFetch(),
       });
 
-    const router = this.buildRouter(objectsProvider, clusterSupplier);
+    const router = this.buildRouter(
+      objectsProvider,
+      clusterSupplier,
+      this.env.catalogClient,
+    );
 
     return {
       clusterSupplier,
@@ -226,11 +233,13 @@ export class KubernetesBuilder {
   protected buildRouter(
     objectsProvider: KubernetesObjectsProvider,
     clusterSupplier: KubernetesClustersSupplier,
+    catalogClient: CatalogApi,
   ): express.Router {
     const logger = this.env.logger;
     const router = Router();
     router.use(express.json());
 
+    // @deprecated
     router.post('/services/:serviceId', async (req, res) => {
       const serviceId = req.params.serviceId;
       const requestBody: ObjectsByEntityRequest = req.body;
@@ -259,6 +268,9 @@ export class KubernetesBuilder {
         })),
       });
     });
+
+    addResourceRoutesToRouter(router, catalogClient, objectsProvider, logger);
+
     return router;
   }
 
