@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-export interface Product {
-  kind: string;
-  name: string;
-}
+export * from './ChangeStatistic';
+export * from './Cost';
+export * from './DateAggregation';
+export * from './Entity';
+export * from './Group';
+export * from './Maybe';
+export * from './MetricData';
+export * from './Metric';
+export * from './Product';
+export * from './Project';
+export * from './Trendline';

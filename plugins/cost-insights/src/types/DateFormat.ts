@@ -14,13 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * @public
- */
-export interface Currency {
-  kind: string | null;
-  label: string;
-  unit: string;
-  prefix?: string;
-  rate?: number;
-}
+export const DEFAULT_DATE_FORMAT = 'yyyy-LL-dd';

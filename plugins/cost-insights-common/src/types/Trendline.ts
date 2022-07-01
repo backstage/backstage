@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { DateAggregation } from './DateAggregation';
-import { ChangeStatistic } from './ChangeStatistic';
-
-export interface MetricData {
-  id: string;
-  format: 'number' | 'currency';
-  aggregation: DateAggregation[];
-  change: ChangeStatistic;
-}
+/**
+ * @public
+ */
+export type Trendline = {
+  slope: number;
+  intercept: number;
+};

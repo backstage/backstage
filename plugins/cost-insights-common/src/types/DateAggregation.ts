@@ -17,10 +17,12 @@
 /**
  * @public
  */
-export interface Currency {
-  kind: string | null;
-  label: string;
-  unit: string;
-  prefix?: string;
-  rate?: number;
-}
+export type DateAggregation = {
+  /**
+   * The date aggregation as string.
+   * @example YYYY-MM-DD
+   */
+  date: string;
+
+  amount: number;
+};
