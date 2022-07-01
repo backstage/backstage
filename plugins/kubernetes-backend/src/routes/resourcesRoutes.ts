@@ -59,7 +59,9 @@ export const addResourceRoutesToRouter = (
     });
 
     if (!entity) {
-      throw new InputError(`Entity ref missing, ${entityRef}`);
+      throw new InputError(
+        `Entity ref missing, ${stringifyEntityRef(entityRef)}`,
+      );
     }
     return entity;
   };
@@ -68,12 +70,10 @@ export const addResourceRoutesToRouter = (
     const entity = await getEntityByReq(req);
 
     try {
-      const response = await objectsProvider.getKubernetesObjectsByEntity(
-        {
+      const response = await objectsProvider.getKubernetesObjectsByEntity({
         entity,
         auth: req.body.auth,
-        }
-      );
+      });
       res.json(response);
     } catch (e) {
       logger.error(String(e), {
@@ -87,14 +87,20 @@ export const addResourceRoutesToRouter = (
   router.post('/resources/custom/query', async (req, res) => {
     const entity = await getEntityByReq(req);
 
+    if (!req.body.customResources) {
+      throw new InputError('customResources is a required field');
+    } else if (!Array.isArray(req.body.customResources)) {
+      throw new InputError('customResources must be an array');
+    } else if (req.body.customResources.length === 0) {
+      throw new InputError('at least 1 customResource is required');
+    }
+
     try {
-      const response = await objectsProvider.getCustomResourcesByEntity(
-        {
+      const response = await objectsProvider.getCustomResourcesByEntity({
         entity,
         customResources: req.body.customResources,
         auth: req.body.auth,
-        }
-      );
+      });
       res.json(response);
     } catch (e) {
       logger.error(String(e), {
