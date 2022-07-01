@@ -33,7 +33,6 @@ import {
   UpdateEntityCacheOptions,
   ListParentsOptions,
   ListParentsResult,
-  RefreshKeyOptions,
   RefreshByKeyOptions,
 } from './types';
 import { DeferredEntity } from '../processing/types';

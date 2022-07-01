@@ -25,7 +25,6 @@ import {
   LocationSpec,
   processingResult,
 } from '../../api';
-import { stringifyEntityRef } from '@backstage/catalog-model';
 
 const glob = promisify(g);
 

@@ -15,7 +15,7 @@
  */
 
 import { UrlReader } from '@backstage/backend-common';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
 import parseGitUrl from 'git-url-parse';
 import limiterFactory from 'p-limit';
@@ -30,7 +30,6 @@ import {
   LocationSpec,
   processingResult,
 } from '../../api';
-import { locationSpecToLocationEntity } from '../../util';
 
 const CACHE_KEY = 'v1';
 

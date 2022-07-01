@@ -15,7 +15,7 @@
  */
 
 import { UrlReader } from '@backstage/backend-common';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import yaml from 'yaml';

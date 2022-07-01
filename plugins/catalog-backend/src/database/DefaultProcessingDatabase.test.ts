@@ -24,7 +24,6 @@ import { DateTime } from 'luxon';
 import { applyDatabaseMigrations } from './migrations';
 import { DefaultProcessingDatabase } from './DefaultProcessingDatabase';
 import {
-  DbRefreshKeysRow,
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
   DbRelationsRow,
@@ -68,10 +67,6 @@ describe('Default Processing Database', () => {
     await db<DbRefreshStateRow>('refresh_state').insert(ref);
   };
 
-  const insertRefreshKeysRow = async (db: Knex, ref: DbRefreshKeysRow) => {
-    await db('refresh_keys').insert(ref);
-  };
-
   describe('updateProcessedEntity', () => {
     let id: string;
     let processedEntity: Entity;
@@ -103,6 +98,7 @@ describe('Default Processing Database', () => {
               resultHash: '',
               relations: [],
               deferredEntities: [],
+              refreshKeys: [],
             }),
           ).rejects.toThrow(
             `Conflicting write of processing result for ${id} with location key 'undefined'`,
@@ -122,6 +118,7 @@ describe('Default Processing Database', () => {
           relations: [],
           deferredEntities: [],
           locationKey: 'key',
+          refreshKeys: [],
           errors: "['something broke']",
         };
         const { knex, db } = await createDatabase(databaseId);
@@ -148,6 +145,7 @@ describe('Default Processing Database', () => {
               ...options,
               resultHash: '',
               locationKey: 'fail',
+              refreshKeys: [],
             }),
           ).rejects.toThrow(
             `Conflicting write of processing result for ${id} with location key 'fail'`,
@@ -179,6 +177,7 @@ describe('Default Processing Database', () => {
             relations: [],
             deferredEntities: [],
             locationKey: 'key',
+            refreshKeys: [],
             errors: "['something broke']",
           }),
         );
@@ -233,6 +232,7 @@ describe('Default Processing Database', () => {
             resultHash: '',
             relations: relations,
             deferredEntities: [],
+            refreshKeys: [],
           }),
         );
 
@@ -255,6 +255,7 @@ describe('Default Processing Database', () => {
             resultHash: '',
             relations: relations,
             deferredEntities: [],
+            refreshKeys: [],
           }),
         );
 
@@ -314,6 +315,7 @@ describe('Default Processing Database', () => {
             resultHash: '',
             relations: [],
             deferredEntities,
+            refreshKeys: [],
           }),
         );
 
@@ -405,6 +407,7 @@ describe('Default Processing Database', () => {
               processedEntity,
               resultHash: '',
               relations: [],
+              refreshKeys: [],
               deferredEntities: [
                 {
                   entity: {
@@ -1399,57 +1402,6 @@ describe('Default Processing Database', () => {
           db.listParents(tx, { entityRef: 'location:default/root-2' }),
         );
         expect(result3.entityRefs).toEqual([]);
-      },
-    );
-  });
-
-  describe('setRefreshKeys', () => {
-    it.each(databases.eachSupportedId())(
-      'should set keys, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
-
-        await db.transaction(async tx =>
-          db.setRefreshKeys(tx, {
-            refreshKeys: [{ entityRef: 'location:default/root-1', key: 'foo' }],
-          }),
-        );
-
-        const rows = await knex<DbRefreshKeysRow>('refresh_keys').select();
-
-        expect(rows.length).toBe(1);
-        expect(rows[0]).toEqual({
-          entity_ref: 'location:default/root-1',
-          key: 'foo',
-        });
-      },
-    );
-  });
-
-  describe('deleteRefreshKeys', () => {
-    it.each(databases.eachSupportedId())(
-      'should delete keys, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
-
-        await insertRefreshKeysRow(knex, {
-          entity_ref: 'location:default/root-1',
-          key: 'foo',
-        });
-
-        let rows = await knex<DbRefreshKeysRow>('refresh_keys').select();
-
-        expect(rows.length).toBe(1);
-
-        await db.transaction(async tx =>
-          db.deleteRefreshKey(tx, {
-            key: 'foo',
-          }),
-        );
-
-        rows = await knex<DbRefreshKeysRow>('refresh_keys').select();
-
-        expect(rows.length).toBe(0);
       },
     );
   });

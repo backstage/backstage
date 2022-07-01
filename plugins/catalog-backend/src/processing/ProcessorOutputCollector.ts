@@ -119,7 +119,7 @@ export class ProcessorOutputCollector {
     } else if (i.type === 'error') {
       this.errors.push(i.error);
     } else if (i.type === 'refresh') {
-      this.refreshKeys.push({ key: i.key, entityRef: i.entityRef });
+      this.refreshKeys.push({ key: i.key });
     }
   }
 }
