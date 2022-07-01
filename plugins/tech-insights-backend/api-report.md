@@ -11,6 +11,7 @@ import { FactCheckerFactory } from '@backstage/plugin-tech-insights-node';
 import { FactLifecycle } from '@backstage/plugin-tech-insights-node';
 import { FactRetriever } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistration } from '@backstage/plugin-tech-insights-node';
+import { FactSchema } from '@backstage/plugin-tech-insights-node';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -50,6 +51,22 @@ export type FactRetrieverRegistrationOptions = {
   factRetriever: FactRetriever;
   lifecycle?: FactLifecycle;
 };
+
+// @public (undocumented)
+export interface FactRetrieverRegistry {
+  // (undocumented)
+  get(retrieverReference: string): FactRetrieverRegistration;
+  // (undocumented)
+  getSchemas(): FactSchema[];
+  // (undocumented)
+  listRegistrations(): FactRetrieverRegistration[];
+  // (undocumented)
+  listRetrievers(): FactRetriever[];
+  // (undocumented)
+  register(registration: FactRetrieverRegistration): void;
+  // (undocumented)
+  readonly retrievers: Map<string, FactRetrieverRegistration>;
+}
 
 // @public
 export type PersistenceContext = {
@@ -91,7 +108,8 @@ export interface TechInsightsOptions<
   // (undocumented)
   discovery: PluginEndpointDiscovery;
   factCheckerFactory?: FactCheckerFactory<CheckType, CheckResultType>;
-  factRetrievers: FactRetrieverRegistration[];
+  factRetrieverRegistry?: FactRetrieverRegistry;
+  factRetrievers?: FactRetrieverRegistration[];
   // (undocumented)
   logger: Logger;
   // (undocumented)
