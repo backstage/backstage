@@ -25,7 +25,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
-import { useAnalytics } from '@backstage/core-plugin-api';
+import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import {
   IndexableDocument,
   ResultHighlight,
@@ -63,15 +63,19 @@ export function CatalogSearchResultListItem(
 
   const classes = useStyles();
   const analytics = useAnalytics();
+
+  const configApi = useApi(configApiRef);
+  const to = configApi.getString('app.baseUrl').concat(result.location);
+
   const handleClick = () => {
     analytics.captureEvent('discover', result.title, {
-      attributes: { to: result.location },
+      attributes: { to },
       value: props.rank,
     });
   };
 
   return (
-    <Link noTrack to={result.location} onClick={handleClick}>
+    <Link noTrack to={to} onClick={handleClick}>
       <ListItem alignItems="flex-start">
         {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
         <div className={classes.flexContainer}>
