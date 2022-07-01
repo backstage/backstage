@@ -21604,6 +21604,15 @@ rc-progress@3.3.3:
     classnames "^2.2.6"
     rc-util "^5.16.1"
 
+rc-progress@3.4.0:
+  version "3.4.0"
+  resolved "https://registry.npmjs.org/rc-progress/-/rc-progress-3.4.0.tgz#80a33c25c9675f5836ba25a87cd8dc310aad72b1"
+  integrity sha512-ZuMyOzzTkZnn+EKqGQ7YHzrvGzBtcCCVjx1McC/E/pMTvr6GWVfVRSawDlWsscxsJs7MkqSTwCO6Lu4IeoY2zQ==
+  dependencies:
+    "@babel/runtime" "^7.10.1"
+    classnames "^2.2.6"
+    rc-util "^5.16.1"
+
 rc-util@^5.16.1:
   version "5.16.1"
   resolved "https://registry.npmjs.org/rc-util/-/rc-util-5.16.1.tgz#374db7cb735512f05165ddc3d6b2c61c21b8b4e3"
