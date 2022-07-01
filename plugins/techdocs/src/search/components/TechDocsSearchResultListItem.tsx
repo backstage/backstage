@@ -77,7 +77,11 @@ export const TechDocsSearchResultListItem = (
   const configApi = useApi(configApiRef);
 
   const handleClick = () => {
-    const to = configApi.getString('app.baseUrl').concat(result.location);
+    let to = result.location;
+    // Is relative url
+    if (!to.match(/^([a-z]*:)?\/\//i)) {
+      to = configApi.getString('app.baseUrl').concat(to);
+    }
     analytics.captureEvent('discover', result.title, {
       attributes: { to },
       value: rank,
@@ -153,7 +157,11 @@ export const TechDocsSearchResultListItem = (
   };
 
   const LinkWrapper = ({ children }: PropsWithChildren<{}>) => {
-    const to = configApi.getString('app.baseUrl').concat(result.location);
+    let to = result.location;
+    // Is relative url
+    if (!to.match(/^([a-z]*:)?\/\//i)) {
+      to = configApi.getString('app.baseUrl').concat(to);
+    }
     return asLink ? (
       <Link noTrack to={to} onClick={handleClick}>
         {children}

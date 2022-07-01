@@ -65,7 +65,11 @@ export const DefaultResultListItemComponent = ({
   const analytics = useAnalytics();
   const configApi = useApi(configApiRef);
 
-  const to = configApi.getString('app.baseUrl').concat(result.location);
+  let to = result.location;
+  // Is relative url
+  if (!to.match(/^([a-z]*:)?\/\//i)) {
+    to = configApi.getString('app.baseUrl').concat(to);
+  }
 
   const handleClick = () => {
     analytics.captureEvent('discover', result.title, {
