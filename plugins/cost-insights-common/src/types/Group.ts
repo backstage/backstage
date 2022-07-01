@@ -17,10 +17,6 @@
 /**
  * @public
  */
-export interface Currency {
-  kind: string | null;
-  label: string;
-  unit: string;
-  prefix?: string;
-  rate?: number;
-}
+export type Group = {
+  id: string;
+};

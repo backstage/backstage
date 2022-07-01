@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-export type Metric = {
-  kind: string;
-  name: string;
-  default: boolean;
-};
+export enum CurrencyType {
+  USD = 'USD',
+  CarbonOffsetTons = 'CARBON_OFFSET_TONS',
+  Beers = 'BEERS',
+  IceCream = 'PINTS_OF_ICE_CREAM',
+}

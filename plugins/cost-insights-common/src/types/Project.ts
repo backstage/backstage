@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-export type Maybe<T> = T | null;
+/**
+ * @public
+ */
+export interface Project {
+  id: string;
+  name?: string;
+}

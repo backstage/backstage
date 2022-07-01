@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export type Trendline = {
-  slope: number;
-  intercept: number;
-};
+
+/**
+ * @public
+ */
+export interface Product {
+  kind: string;
+  name: string;
+}

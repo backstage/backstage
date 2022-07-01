@@ -150,10 +150,11 @@ export const SearchContextProvider = (props: SearchContextProviderProps) => {
 
   useEffect(() => {
     // Any time a term is reset, we want to start from page 0.
-    if (term && prevTerm && term !== prevTerm) {
+    // Only reset the term if it has been modified by the user at least once, the initial state must not reset the term.
+    if (prevTerm !== undefined && term !== prevTerm) {
       setPageCursor(undefined);
     }
-  }, [term, prevTerm, initialState.pageCursor]);
+  }, [term, prevTerm, setPageCursor]);
 
   const value: SearchContextValue = {
     result,
