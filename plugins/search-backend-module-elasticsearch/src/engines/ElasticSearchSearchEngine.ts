@@ -331,7 +331,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         previousPageCursor,
       };
     } catch (error) {
-      if (error.meta.body.error.type === 'index_not_found_exception') {
+      if (error.meta?.body?.error?.type === 'index_not_found_exception') {
         throw new MissingIndexError(
           `Missing index for ${queryIndices}. This means there are no documents to search through.`,
           error,
