@@ -15,7 +15,12 @@
  */
 
 import React, { ReactNode } from 'react';
-import { AnalyticsContext, useAnalytics } from '@backstage/core-plugin-api';
+import {
+  AnalyticsContext,
+  configApiRef,
+  useAnalytics,
+  useApi,
+} from '@backstage/core-plugin-api';
 import {
   ResultHighlight,
   SearchDocument,
@@ -58,15 +63,19 @@ export const DefaultResultListItemComponent = ({
   lineClamp = 5,
 }: DefaultResultListItemProps) => {
   const analytics = useAnalytics();
+  const configApi = useApi(configApiRef);
+
+  const to = configApi.getString('app.baseUrl').concat(result.location);
+
   const handleClick = () => {
     analytics.captureEvent('discover', result.title, {
-      attributes: { to: result.location },
+      attributes: { to },
       value: rank,
     });
   };
 
   return (
-    <Link noTrack to={result.location} onClick={handleClick}>
+    <Link noTrack to={to} onClick={handleClick}>
       <ListItem alignItems="center">
         {icon && <ListItemIcon>{icon}</ListItemIcon>}
         <ListItemText
