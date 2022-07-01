@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-export interface Project {
-  id: string;
-  name?: string;
-}
+/**
+ * @public
+ */
+export type Metric = {
+  kind: string;
+  name: string;
+  default: boolean;
+};

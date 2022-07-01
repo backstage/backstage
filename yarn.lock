@@ -5263,9 +5263,9 @@
     "@react-hookz/deep-equal" "^1.0.1"
 
 "@react-hookz/web@^14.0.0":
-  version "14.6.0"
-  resolved "https://registry.npmjs.org/@react-hookz/web/-/web-14.6.0.tgz#8b3824841ee679b23516aa9b316e819e55590a1c"
-  integrity sha512-4ZQU4wsNd4QsMe4LkF9t1y4NS2cCp1N/JfG9TYw1dsWLOJhZ0w+4ebp7cydN5BLeceIaILcfQ7fBYUvrBJN6EA==
+  version "14.7.0"
+  resolved "https://registry.npmjs.org/@react-hookz/web/-/web-14.7.0.tgz#3154b7cf38bf464e7b60417eae7f3348ce19e6f6"
+  integrity sha512-9AN0W3QH3Aj5/LXHKy2XiysjgvaNRLQwEVyCaU3AOMW9c1XlL5hSYc67ExubmzQRw2kAYx2Jpgl8wKCIINxsxQ==
   dependencies:
     "@react-hookz/deep-equal" "^1.0.2"
 
@@ -21223,6 +21223,11 @@ promise-all-reject-late@^1.0.0:
   resolved "https://registry.npmjs.org/promise-all-reject-late/-/promise-all-reject-late-1.0.1.tgz#f8ebf13483e5ca91ad809ccc2fcf25f26f8643c2"
   integrity sha512-vuf0Lf0lOxyQREH7GDIOUMLS7kz+gs8i6B+Yi8dC68a2sychGrHTJYghMBD6k7eUcH0H5P73EckCA48xijWqXw==
 
+promise-any-polyfill@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/promise-any-polyfill/-/promise-any-polyfill-1.0.1.tgz#563872dd0abd370bfa8039e63980469b4b8b0d53"
+  integrity sha512-51Tj+hOoV3LOeCHItmWBklN9FYkyV53uIIjjzgIchitGneTvl6+ivOxWXhxraeUzzS3YFRpXRPPbv7+KD3NzYQ==
+
 promise-call-limit@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/promise-call-limit/-/promise-call-limit-1.0.1.tgz#4bdee03aeb85674385ca934da7114e9bcd3c6e24"
@@ -21599,6 +21604,15 @@ rc-progress@3.3.3:
   version "3.3.3"
   resolved "https://registry.npmjs.org/rc-progress/-/rc-progress-3.3.3.tgz#eb9bffbacab1534f2542f9f6861ce772254362b1"
   integrity sha512-MDVNVHzGanYtRy2KKraEaWeZLri2ZHWIRyaE1a9MQ2MuJ09m+Wxj5cfcaoaR6z5iRpHpA59YeUxAlpML8N4PJw==
+  dependencies:
+    "@babel/runtime" "^7.10.1"
+    classnames "^2.2.6"
+    rc-util "^5.16.1"
+
+rc-progress@3.4.0:
+  version "3.4.0"
+  resolved "https://registry.npmjs.org/rc-progress/-/rc-progress-3.4.0.tgz#80a33c25c9675f5836ba25a87cd8dc310aad72b1"
+  integrity sha512-ZuMyOzzTkZnn+EKqGQ7YHzrvGzBtcCCVjx1McC/E/pMTvr6GWVfVRSawDlWsscxsJs7MkqSTwCO6Lu4IeoY2zQ==
   dependencies:
     "@babel/runtime" "^7.10.1"
     classnames "^2.2.6"

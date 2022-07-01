@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
-export type ChartData = {
-  date: number;
-  trend: number;
-  dailyCost: number;
-  [key: string]: number;
-};
+/**
+ * @public
+ */
+export interface ChangeStatistic {
+  /**
+   * The ratio of change from one duration to another, expressed as: (newSum - oldSum) / oldSum
+   * If a ratio cannot be calculated - such as when a new or old sum is zero,
+   * the ratio can be omitted and where applicable, ∞ or -∞ will display based on amount.
+   */
+  ratio?: number;
+
+  /**
+   * The actual USD change between time periods (can be negative if costs decreased)
+   */
+  amount: number;
+}

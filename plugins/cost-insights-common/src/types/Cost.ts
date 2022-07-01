@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
+import { DateAggregation } from './DateAggregation';
+import { ChangeStatistic } from './ChangeStatistic';
+import { Trendline } from './Trendline';
+
 /**
  * @public
  */
-export interface Currency {
-  kind: string | null;
-  label: string;
-  unit: string;
-  prefix?: string;
-  rate?: number;
+export interface Cost {
+  id: string;
+  aggregation: DateAggregation[];
+  change?: ChangeStatistic;
+  trendline?: Trendline;
+  groupedCosts?: Record<string, Cost[]>;
 }
