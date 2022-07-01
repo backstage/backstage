@@ -89,8 +89,9 @@ describe('FileReaderProcessor', () => {
       type: 'file',
       target: expect.stringMatching(/^[^*]*$/),
     });
-    expect(emit.mock.calls[1][0].entityRef).toEqual(
-      'component:default/component-test',
+    expect(emit.mock.calls[1][0].key).toContain('file:');
+    expect(emit.mock.calls[1][0].key).toContain(
+      'fileReaderProcessor/component.yaml',
     );
     expect(emit.mock.calls[2][0].entity).toEqual({
       kind: 'API',

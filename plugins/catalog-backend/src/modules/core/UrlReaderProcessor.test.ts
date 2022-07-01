@@ -86,6 +86,10 @@ describe('UrlReaderProcessor', () => {
       location: spec,
       entity: { kind: 'component', metadata: { name: 'mock-url-entity' } },
     });
+    expect(emitted[1]).toEqual({
+      type: 'refresh',
+      key: 'url:http://localhost/component.yaml',
+    });
     expect(mockCache.set).toBeCalledWith('v1', {
       etag: 'my-etag',
       value: [

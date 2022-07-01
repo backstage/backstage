@@ -49,7 +49,7 @@ export class AuthorizedRefreshService implements RefreshService {
     }
     await this.service.refresh(options);
   }
-  async refreshByRefreshKey(options: RefreshByRefreshKeysOptions) {
-    await this.service.refreshByRefreshKey(options);
+  async refreshByRefreshKeys(options: RefreshByRefreshKeysOptions) {
+    await this.service.refreshByRefreshKeys(options);
   }
 }

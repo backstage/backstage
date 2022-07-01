@@ -49,7 +49,7 @@ export class DefaultRefreshService implements RefreshService {
       });
     });
   }
-  async refreshByRefreshKey(options: RefreshByRefreshKeysOptions) {
+  async refreshByRefreshKeys(options: RefreshByRefreshKeysOptions) {
     await this.database.transaction(async tx => {
       await this.database.refreshByRefreshKeys(tx, options);
     });

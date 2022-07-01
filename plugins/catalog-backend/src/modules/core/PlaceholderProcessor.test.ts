@@ -17,6 +17,7 @@ import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
+import { CatalogProcessorResult } from '../../api';
 import {
   jsonPlaceholderResolver,
   PlaceholderProcessor,
@@ -356,6 +357,36 @@ describe('PlaceholderProcessor', () => {
     );
 
     expect(read).not.toBeCalled();
+  });
+  it('should emit the resolverValue as a refreshKey', async () => {
+    read.mockResolvedValue(
+      Buffer.from(JSON.stringify({ a: ['b', 7] }), 'utf-8'),
+    );
+
+    const processor = new PlaceholderProcessor({
+      resolvers: {
+        json: jsonPlaceholderResolver,
+      },
+      reader,
+      integrations,
+    });
+
+    const emitted = new Array<CatalogProcessorResult>();
+    await processor.preProcessEntity(
+      {
+        apiVersion: 'a',
+        kind: 'k',
+        metadata: { name: 'n' },
+        spec: { a: [{ b: { $json: './path-to-file.json' } }] },
+      },
+      { type: 'fake', target: 'http://example.com' },
+      result => emitted.push(result),
+    );
+    console.log(emitted);
+    expect(emitted[0]).toEqual({
+      type: 'refresh',
+      key: 'url:./path-to-file.json',
+    });
   });
 });
 

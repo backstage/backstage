@@ -57,7 +57,7 @@ describe('createRouter readonly disabled', () => {
       listLocations: jest.fn(),
       deleteLocation: jest.fn(),
     };
-    refreshService = { refresh: jest.fn(), refreshByRefreshKey: jest.fn() };
+    refreshService = { refresh: jest.fn(), refreshByRefreshKeys: jest.fn() };
     orchestrator = { process: jest.fn() };
     const router = await createRouter({
       entitiesCatalog,
@@ -712,7 +712,7 @@ describe('NextRouter permissioning', () => {
       listLocations: jest.fn(),
       deleteLocation: jest.fn(),
     };
-    refreshService = { refresh: jest.fn(), refreshByRefreshKey: jest.fn() };
+    refreshService = { refresh: jest.fn(), refreshByRefreshKeys: jest.fn() };
     const router = await createRouter({
       entitiesCatalog,
       locationService,
