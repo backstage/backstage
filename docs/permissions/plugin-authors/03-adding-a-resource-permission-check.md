@@ -163,8 +163,8 @@ import { createConditionExports } from '@backstage/plugin-permission-node';
 import { permissionRules } from './service/rules';
 
 const { conditions, createConditionalDecision } = createConditionExports({
-  pluginId: 'catalog',
-  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+  pluginId: 'todolist',
+  resourceType: TODO_LIST_RESOURCE_TYPE,
   rules: permissionRules,
 });
 
