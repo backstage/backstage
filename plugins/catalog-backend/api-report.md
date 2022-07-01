@@ -271,7 +271,6 @@ export type CatalogProcessorParser = (options: {
 // @public (undocumented)
 export type CatalogProcessorRefreshKeysResult = {
   type: 'refresh';
-  entityRef: string;
   key: string;
 };
 
@@ -613,7 +612,7 @@ export const processingResult: Readonly<{
     newEntity: Entity,
   ) => CatalogProcessorResult;
   readonly relation: (spec: EntityRelationSpec) => CatalogProcessorResult;
-  readonly refresh: (entityRef: string, key: string) => CatalogProcessorResult;
+  readonly refresh: (key: string) => CatalogProcessorResult;
 }>;
 
 // @public (undocumented)
