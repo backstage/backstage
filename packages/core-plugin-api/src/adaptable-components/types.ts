@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { ComponentType, RefAttributes } from 'react';
+import { RefAttributes } from 'react';
+
+import { ComponentType } from '@backstage/types';
 
 import { BackstagePlugin } from '../plugin';
 
 /** @public */
-export type OpaqueComponentProps<Context extends {}> = { value: Context };
+export type OpaqueComponentProps<TContext extends {}> = { value: TContext };
 
 /** @public */
 export type ComponentRootProviderProps<Props extends {}, Context> = {

@@ -18,11 +18,12 @@ import React, {
   createContext,
   useContext,
   useMemo,
-  ComponentType,
   forwardRef,
   ComponentProps,
 } from 'react';
 import { useAsync } from 'react-use';
+
+import { ComponentType } from '@backstage/types';
 
 import { useComponentAdaptations } from './AdaptationProvider';
 import { ensureValidId } from './id';
