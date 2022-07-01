@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useAnalytics } from '@backstage/core-plugin-api';
+import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import classnames from 'classnames';
 import MaterialLink, {
   LinkProps as MaterialLinkProps,
@@ -25,6 +25,7 @@ import {
   Link as RouterLink,
   LinkProps as RouterLinkProps,
 } from 'react-router-dom';
+import { getBasePath } from '@backstage/core-app-api';
 
 const useStyles = makeStyles(
   {
@@ -51,6 +52,20 @@ export type LinkProps = MaterialLinkProps &
     component?: ElementType<any>;
     noTrack?: boolean;
   };
+
+export const useResolvedPath = (uri: LinkProps['to']) => {
+  const configApi = useApi(configApiRef);
+  const basePath = getBasePath(configApi);
+
+  let resolvedPath = String(uri);
+  const external = isExternalUri(resolvedPath);
+
+  if (!external && !resolvedPath.startsWith(basePath)) {
+    resolvedPath = basePath.concat(resolvedPath);
+  }
+
+  return resolvedPath;
+};
 
 /**
  * Given a react node, try to retrieve its text content.
@@ -84,7 +99,7 @@ export const Link = React.forwardRef<any, LinkProps>(
   ({ onClick, noTrack, ...props }, ref) => {
     const classes = useStyles();
     const analytics = useAnalytics();
-    const to = String(props.to);
+    const to = useResolvedPath(props.to);
     const linkText = getNodeText(props.children) || to;
     const external = isExternalUri(to);
     const newWindow = external && !!/^https?:/.exec(to);
@@ -99,11 +114,11 @@ export const Link = React.forwardRef<any, LinkProps>(
     return external ? (
       // External links
       <MaterialLink
+        {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
+        {...props}
         ref={ref}
         href={to}
         onClick={handleClick}
-        {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
-        {...props}
         className={classnames(classes.externalLink, props.className)}
       >
         {props.children}
@@ -112,10 +127,11 @@ export const Link = React.forwardRef<any, LinkProps>(
     ) : (
       // Interact with React Router for internal links
       <MaterialLink
+        {...props}
         ref={ref}
         component={RouterLink}
         onClick={handleClick}
-        {...props}
+        to={to}
       />
     );
   },

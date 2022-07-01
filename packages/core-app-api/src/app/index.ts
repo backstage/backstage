@@ -16,4 +16,5 @@
 
 export { createSpecializedApp } from './createSpecializedApp';
 export { defaultConfigLoader } from './defaultConfigLoader';
+export { getBasePath } from './AppManager';
 export * from './types';

@@ -29,7 +29,6 @@ import {
   Divider,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
-import { useSearchResultLocation } from './useSearchResultLocation';
 
 /**
  * Props for {@link DefaultResultListItem}
@@ -59,18 +58,15 @@ export const DefaultResultListItemComponent = ({
   lineClamp = 5,
 }: DefaultResultListItemProps) => {
   const analytics = useAnalytics();
-
-  const to = useSearchResultLocation(result);
-
   const handleClick = () => {
     analytics.captureEvent('discover', result.title, {
-      attributes: { to },
+      attributes: { to: result.location },
       value: rank,
     });
   };
 
   return (
-    <Link noTrack to={to} onClick={handleClick}>
+    <Link noTrack to={result.location} onClick={handleClick}>
       <ListItem alignItems="center">
         {icon && <ListItemIcon>{icon}</ListItemIcon>}
         <ListItemText

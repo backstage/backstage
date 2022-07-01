@@ -95,8 +95,9 @@ const InternalAppContext = createContext<{
  * Get the app base path from the configured app baseUrl.
  *
  * The returned path does not have a trailing slash.
+ * @public
  */
-function getBasePath(configApi: Config) {
+export function getBasePath(configApi: Config) {
   let { pathname } = new URL(
     configApi.getOptionalString('app.baseUrl') ?? '/',
     'http://dummy.dev', // baseUrl can be specified as just a path

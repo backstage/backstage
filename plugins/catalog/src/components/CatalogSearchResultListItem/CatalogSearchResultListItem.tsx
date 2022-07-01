@@ -30,10 +30,7 @@ import {
   IndexableDocument,
   ResultHighlight,
 } from '@backstage/plugin-search-common';
-import {
-  HighlightedSearchResultText,
-  useSearchResultLocation,
-} from '@backstage/plugin-search-react';
+import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
 const useStyles = makeStyles({
   flexContainer: {
@@ -66,18 +63,15 @@ export function CatalogSearchResultListItem(
 
   const classes = useStyles();
   const analytics = useAnalytics();
-
-  const to = useSearchResultLocation(result);
-
   const handleClick = () => {
     analytics.captureEvent('discover', result.title, {
-      attributes: { to },
+      attributes: { to: result.location },
       value: props.rank,
     });
   };
 
   return (
-    <Link noTrack to={to} onClick={handleClick}>
+    <Link noTrack to={result.location} onClick={handleClick}>
       <ListItem alignItems="flex-start">
         {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
         <div className={classes.flexContainer}>

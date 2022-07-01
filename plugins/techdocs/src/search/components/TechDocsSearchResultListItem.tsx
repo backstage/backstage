@@ -25,10 +25,7 @@ import {
 import { Link } from '@backstage/core-components';
 import { useAnalytics } from '@backstage/core-plugin-api';
 import { ResultHighlight } from '@backstage/plugin-search-common';
-import {
-  HighlightedSearchResultText,
-  useSearchResultLocation,
-} from '@backstage/plugin-search-react';
+import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
 const useStyles = makeStyles({
   flexContainer: {
@@ -77,12 +74,9 @@ export const TechDocsSearchResultListItem = (
   const classes = useStyles();
 
   const analytics = useAnalytics();
-
-  const to = useSearchResultLocation(result);
-
   const handleClick = () => {
     analytics.captureEvent('discover', result.title, {
-      attributes: { to },
+      attributes: { to: result.location },
       value: rank,
     });
   };
@@ -157,7 +151,7 @@ export const TechDocsSearchResultListItem = (
 
   const LinkWrapper = ({ children }: PropsWithChildren<{}>) =>
     asLink ? (
-      <Link noTrack to={to} onClick={handleClick}>
+      <Link noTrack to={result.location} onClick={handleClick}>
         {children}
       </Link>
     ) : (
