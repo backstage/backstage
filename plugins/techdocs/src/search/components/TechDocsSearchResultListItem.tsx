@@ -23,7 +23,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
-import { useAnalytics } from '@backstage/core-plugin-api';
+import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
@@ -74,9 +74,12 @@ export const TechDocsSearchResultListItem = (
   const classes = useStyles();
 
   const analytics = useAnalytics();
+  const configApi = useApi(configApiRef);
+
   const handleClick = () => {
+    const to = configApi.getString('app.baseUrl').concat(result.location);
     analytics.captureEvent('discover', result.title, {
-      attributes: { to: result.location },
+      attributes: { to },
       value: rank,
     });
   };
@@ -149,14 +152,16 @@ export const TechDocsSearchResultListItem = (
     );
   };
 
-  const LinkWrapper = ({ children }: PropsWithChildren<{}>) =>
-    asLink ? (
-      <Link noTrack to={result.location} onClick={handleClick}>
+  const LinkWrapper = ({ children }: PropsWithChildren<{}>) => {
+    const to = configApi.getString('app.baseUrl').concat(result.location);
+    return asLink ? (
+      <Link noTrack to={to} onClick={handleClick}>
         {children}
       </Link>
     ) : (
       <>{children}</>
     );
+  };
 
   const ListItemWrapper = ({ children }: PropsWithChildren<{}>) =>
     asListItem ? (
