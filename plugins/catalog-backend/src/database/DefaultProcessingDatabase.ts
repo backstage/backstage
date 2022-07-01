@@ -541,7 +541,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const { keys } = options;
 
     const updateResult = await tx<DbRefreshStateRow>('refresh_state')
-      .whereIn('entity_ref', function (tx2) {
+      .whereIn('entity_ref', function selectEntityRefs(tx2) {
         tx2
           .whereIn('key', keys)
           .select({
