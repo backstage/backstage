@@ -128,6 +128,7 @@ describe('resourcesRoutes', () => {
           ],
         });
     });
+    // eslint-disable-next-line jest/expect-expect
     it('400 when missing entity ref', async () => {
       await request(app)
         .post('/resources/workloads/query')
@@ -147,6 +148,7 @@ describe('resourcesRoutes', () => {
           response: { statusCode: 400 },
         });
     });
+    // eslint-disable-next-line jest/expect-expect
     it('400 when bad entity ref', async () => {
       await request(app)
         .post(
@@ -174,6 +176,7 @@ describe('resourcesRoutes', () => {
           response: { statusCode: 400 },
         });
     });
+    // eslint-disable-next-line jest/expect-expect
     it('400 when no entity in catalog', async () => {
       await request(app)
         .post(
@@ -200,6 +203,7 @@ describe('resourcesRoutes', () => {
           response: { statusCode: 400 },
         });
     });
+    // eslint-disable-next-line jest/expect-expect
     it('401 when no Auth header', async () => {
       await request(app)
         .post(
@@ -222,6 +226,7 @@ describe('resourcesRoutes', () => {
           response: { statusCode: 401 },
         });
     });
+    // eslint-disable-next-line jest/expect-expect
     it('401 when invalid Auth header', async () => {
       await request(app)
         .post(
@@ -245,6 +250,7 @@ describe('resourcesRoutes', () => {
           response: { statusCode: 401 },
         });
     });
+    // eslint-disable-next-line jest/expect-expect
     it('500 handle gracefully', async () => {
       await request(app)
         .post(
@@ -263,6 +269,7 @@ describe('resourcesRoutes', () => {
     });
   });
   describe('POST /resources/custom/query', () => {
+    // eslint-disable-next-line jest/expect-expect
     it('200 happy path', async () => {
       await request(app)
         .post(
@@ -300,6 +307,7 @@ describe('resourcesRoutes', () => {
           ],
         });
     });
+    // eslint-disable-next-line jest/expect-expect
     it('400 when missing custom resources', async () => {
       await request(app)
         .post(
@@ -326,6 +334,7 @@ describe('resourcesRoutes', () => {
           response: { statusCode: 400 },
         });
     });
+    // eslint-disable-next-line jest/expect-expect
     it('400 when custom resources not array', async () => {
       await request(app)
         .post(
@@ -353,6 +362,7 @@ describe('resourcesRoutes', () => {
           response: { statusCode: 400 },
         });
     });
+    // eslint-disable-next-line jest/expect-expect
     it('400 when custom resources empty', async () => {
       await request(app)
         .post(
@@ -380,6 +390,7 @@ describe('resourcesRoutes', () => {
           response: { statusCode: 400 },
         });
     });
+    // eslint-disable-next-line jest/expect-expect
     it('400 when missing entity ref', async () => {
       await request(app)
         .post('/resources/custom/query')
@@ -406,6 +417,7 @@ describe('resourcesRoutes', () => {
           response: { statusCode: 400 },
         });
     });
+    // eslint-disable-next-line jest/expect-expect
     it('400 when bad entity ref', async () => {
       await request(app)
         .post(
@@ -440,6 +452,7 @@ describe('resourcesRoutes', () => {
           response: { statusCode: 400 },
         });
     });
+    // eslint-disable-next-line jest/expect-expect
     it('400 when no entity in catalog', async () => {
       await request(app)
         .post(
@@ -473,6 +486,7 @@ describe('resourcesRoutes', () => {
           response: { statusCode: 400 },
         });
     });
+    // eslint-disable-next-line jest/expect-expect
     it('401 when no Auth header', async () => {
       await request(app)
         .post(
@@ -502,6 +516,7 @@ describe('resourcesRoutes', () => {
           response: { statusCode: 401 },
         });
     });
+    // eslint-disable-next-line jest/expect-expect
     it('401 when invalid Auth header', async () => {
       await request(app)
         .post(
@@ -532,6 +547,7 @@ describe('resourcesRoutes', () => {
           response: { statusCode: 401 },
         });
     });
+    // eslint-disable-next-line jest/expect-expect
     it('500 handle gracefully', async () => {
       await request(app)
         .post(
