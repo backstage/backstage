@@ -21,8 +21,21 @@ import {
 } from '@backstage/plugin-tech-insights-node';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 
-export class FactRetrieverRegistry {
-  private readonly retrievers = new Map<string, FactRetrieverRegistration>();
+/**
+ * @public
+ *
+ */
+export interface FactRetrieverRegistry {
+  readonly retrievers: Map<string, FactRetrieverRegistration>;
+  register(registration: FactRetrieverRegistration): void;
+  get(retrieverReference: string): FactRetrieverRegistration;
+  listRetrievers(): FactRetriever[];
+  listRegistrations(): FactRetrieverRegistration[];
+  getSchemas(): FactSchema[];
+}
+
+export class DefaultFactRetrieverRegistry implements FactRetrieverRegistry {
+  readonly retrievers = new Map<string, FactRetrieverRegistration>();
 
   constructor(retrievers: FactRetrieverRegistration[]) {
     retrievers.forEach(it => {

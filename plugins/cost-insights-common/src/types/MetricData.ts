@@ -16,12 +16,13 @@
 
 import { DateAggregation } from './DateAggregation';
 import { ChangeStatistic } from './ChangeStatistic';
-import { Trendline } from './Trendline';
 
-export interface Cost {
+/**
+ * @public
+ */
+export interface MetricData {
   id: string;
+  format: 'number' | 'currency';
   aggregation: DateAggregation[];
-  change?: ChangeStatistic;
-  trendline?: Trendline;
-  groupedCosts?: Record<string, Cost[]>;
+  change: ChangeStatistic;
 }

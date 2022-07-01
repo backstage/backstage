@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
-export type Group = {
-  id: string;
-};
+/**
+ * @public
+ */
+export type Maybe<T> = T | null;
