@@ -16,3 +16,4 @@
 
 export { DefaultResultListItem } from './DefaultResultListItem';
 export type { DefaultResultListItemProps } from './DefaultResultListItem';
+export { useSearchResultLocation } from './useSearchResultLocation';

@@ -23,9 +23,12 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
-import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
+import { useAnalytics } from '@backstage/core-plugin-api';
 import { ResultHighlight } from '@backstage/plugin-search-common';
-import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
+import {
+  HighlightedSearchResultText,
+  useSearchResultLocation,
+} from '@backstage/plugin-search-react';
 
 const useStyles = makeStyles({
   flexContainer: {
@@ -74,14 +77,10 @@ export const TechDocsSearchResultListItem = (
   const classes = useStyles();
 
   const analytics = useAnalytics();
-  const configApi = useApi(configApiRef);
+
+  const to = useSearchResultLocation(result);
 
   const handleClick = () => {
-    let to = result.location;
-    // Is relative url
-    if (!to.match(/^([a-z]*:)?\/\//i)) {
-      to = configApi.getString('app.baseUrl').concat(to);
-    }
     analytics.captureEvent('discover', result.title, {
       attributes: { to },
       value: rank,
@@ -156,20 +155,14 @@ export const TechDocsSearchResultListItem = (
     );
   };
 
-  const LinkWrapper = ({ children }: PropsWithChildren<{}>) => {
-    let to = result.location;
-    // Is relative url
-    if (!to.match(/^([a-z]*:)?\/\//i)) {
-      to = configApi.getString('app.baseUrl').concat(to);
-    }
-    return asLink ? (
+  const LinkWrapper = ({ children }: PropsWithChildren<{}>) =>
+    asLink ? (
       <Link noTrack to={to} onClick={handleClick}>
         {children}
       </Link>
     ) : (
       <>{children}</>
     );
-  };
 
   const ListItemWrapper = ({ children }: PropsWithChildren<{}>) =>
     asListItem ? (

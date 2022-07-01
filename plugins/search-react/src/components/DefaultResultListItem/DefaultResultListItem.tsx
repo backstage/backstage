@@ -15,12 +15,7 @@
  */
 
 import React, { ReactNode } from 'react';
-import {
-  AnalyticsContext,
-  configApiRef,
-  useAnalytics,
-  useApi,
-} from '@backstage/core-plugin-api';
+import { AnalyticsContext, useAnalytics } from '@backstage/core-plugin-api';
 import {
   ResultHighlight,
   SearchDocument,
@@ -34,6 +29,7 @@ import {
   Divider,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
+import { useSearchResultLocation } from './useSearchResultLocation';
 
 /**
  * Props for {@link DefaultResultListItem}
@@ -63,13 +59,8 @@ export const DefaultResultListItemComponent = ({
   lineClamp = 5,
 }: DefaultResultListItemProps) => {
   const analytics = useAnalytics();
-  const configApi = useApi(configApiRef);
 
-  let to = result.location;
-  // Is relative url
-  if (!to.match(/^([a-z]*:)?\/\//i)) {
-    to = configApi.getString('app.baseUrl').concat(to);
-  }
+  const to = useSearchResultLocation(result);
 
   const handleClick = () => {
     analytics.captureEvent('discover', result.title, {

@@ -25,12 +25,15 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
-import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
+import { useAnalytics } from '@backstage/core-plugin-api';
 import {
   IndexableDocument,
   ResultHighlight,
 } from '@backstage/plugin-search-common';
-import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
+import {
+  HighlightedSearchResultText,
+  useSearchResultLocation,
+} from '@backstage/plugin-search-react';
 
 const useStyles = makeStyles({
   flexContainer: {
@@ -64,12 +67,7 @@ export function CatalogSearchResultListItem(
   const classes = useStyles();
   const analytics = useAnalytics();
 
-  const configApi = useApi(configApiRef);
-  let to = result.location;
-  // Is relative url
-  if (!to.match(/^([a-z]*:)?\/\//i)) {
-    to = configApi.getString('app.baseUrl').concat(to);
-  }
+  const to = useSearchResultLocation(result);
 
   const handleClick = () => {
     analytics.captureEvent('discover', result.title, {
