@@ -82,7 +82,7 @@ export const CheckboxFilter = (props: SearchFilterComponentProps) => {
     valuesDebounceMs,
   } = props;
   const classes = useStyles();
-  const { filters, setFilters } = useSearch();
+  const { filters, setFilters, setPageCursor } = useSearch();
   useDefaultFilterValue(name, defaultValue);
   const asyncValues =
     typeof givenValues === 'function' ? givenValues : undefined;
@@ -106,6 +106,7 @@ export const CheckboxFilter = (props: SearchFilterComponentProps) => {
       const items = checked ? [...rest, value] : rest;
       return items.length ? { ...others, [name]: items } : others;
     });
+    setPageCursor(undefined);
   };
 
   return (
@@ -161,7 +162,7 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
     defaultValues,
     valuesDebounceMs,
   );
-  const { filters, setFilters } = useSearch();
+  const { filters, setFilters, setPageCursor } = useSearch();
 
   const handleChange = (e: ChangeEvent<{ value: unknown }>) => {
     const {
@@ -172,6 +173,7 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
       const { [name]: filter, ...others } = prevFilters;
       return value ? { ...others, [name]: value as string } : others;
     });
+    setPageCursor(undefined);
   };
 
   return (

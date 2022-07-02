@@ -23,9 +23,12 @@ import ListItemText, {
   ListItemTextProps,
 } from '@material-ui/core/ListItemText';
 import Popover from '@material-ui/core/Popover';
-import { VerticalMenuIcon } from './VerticalMenuIcon';
+import MoreVert from '@material-ui/icons/MoreVert';
 
-type ActionItemProps = {
+/**
+ * @public
+ */
+export type ActionItemProps = {
   label?: ListItemTextProps['primary'];
   secondaryLabel?: ListItemTextProps['secondary'];
   icon?: ReactElement;
@@ -61,10 +64,16 @@ const ActionItem = ({
   );
 };
 
+/**
+ * @public
+ */
 export type HeaderActionMenuProps = {
   actionItems: ActionItemProps[];
 };
 
+/**
+ * @public
+ */
 export function HeaderActionMenu(props: HeaderActionMenuProps) {
   const { actionItems } = props;
   const [open, setOpen] = React.useState(false);
@@ -84,7 +93,7 @@ export function HeaderActionMenu(props: HeaderActionMenuProps) {
           padding: 0,
         }}
       >
-        <VerticalMenuIcon titleAccess="menu" style={{ fontSize: 40 }} />
+        <MoreVert />
       </IconButton>
       <Popover
         open={open}

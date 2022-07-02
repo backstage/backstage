@@ -16,15 +16,18 @@ import { CardHeaderProps } from '@material-ui/core/CardHeader';
 import { Column } from '@material-table/core';
 import { ComponentClass } from 'react';
 import { ComponentProps } from 'react';
+import { ComponentType } from 'react';
 import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
 import { ElementType } from 'react';
 import { ErrorInfo } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { Icons } from '@material-table/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { LinearProgressProps } from '@material-ui/core/LinearProgress';
 import { LinkProps as LinkProps_2 } from '@material-ui/core/Link';
 import { LinkProps as LinkProps_3 } from 'react-router-dom';
+import { ListItemTextProps } from '@material-ui/core/ListItemText';
 import MaterialBreadcrumbs from '@material-ui/core/Breadcrumbs';
 import { MaterialTableProps } from '@material-table/core';
 import { NavLinkProps } from 'react-router-dom';
@@ -49,6 +52,16 @@ import { TextTruncateProps } from 'react-text-truncate';
 import { Theme } from '@material-ui/core/styles';
 import { TooltipProps } from '@material-ui/core/Tooltip';
 import { WithStyles } from '@material-ui/core/styles';
+
+// @public (undocumented)
+export type ActionItemProps = {
+  label?: ListItemTextProps['primary'];
+  secondaryLabel?: ListItemTextProps['secondary'];
+  icon?: ReactElement;
+  disabled?: boolean;
+  onClick?: (event: React_2.MouseEvent<HTMLDivElement>) => void;
+  WrapperComponent?: ComponentType;
+};
 
 // @public (undocumented)
 export function AlertDisplay(props: AlertDisplayProps): JSX.Element | null;
@@ -431,6 +444,14 @@ export function GroupIcon(props: IconComponentProps): JSX.Element;
 //
 // @public
 export function Header(props: PropsWithChildren<Props_14>): JSX.Element;
+
+// @public (undocumented)
+export function HeaderActionMenu(props: HeaderActionMenuProps): JSX.Element;
+
+// @public (undocumented)
+export type HeaderActionMenuProps = {
+  actionItems: ActionItemProps[];
+};
 
 // @public (undocumented)
 export type HeaderClassKey =
@@ -1332,6 +1353,12 @@ export type TabIconClassKey = 'root';
 //
 // @public (undocumented)
 export function Table<T extends object = {}>(props: TableProps<T>): JSX.Element;
+
+// @public (undocumented)
+export namespace Table {
+  var // (undocumented)
+    tableIcons: Readonly<Icons>;
+}
 
 // Warning: (ae-missing-release-tag) "TableClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

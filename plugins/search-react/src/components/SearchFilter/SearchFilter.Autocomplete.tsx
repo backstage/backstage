@@ -62,7 +62,7 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
     defaultValues,
     valuesDebounceMs,
   );
-  const { filters, setFilters } = useSearch();
+  const { filters, setFilters, setPageCursor } = useSearch();
   const filterValue =
     (filters[name] as string | string[] | undefined) || (multiple ? [] : null);
 
@@ -79,6 +79,7 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
       }
       return { ...others };
     });
+    setPageCursor(undefined);
   };
 
   // Provide the input field.
