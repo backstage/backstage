@@ -131,4 +131,14 @@ export const columnFactories = Object.freeze({
       ),
     };
   },
+  createTitleColumn(options?: {
+    hidden?: boolean;
+  }): TableColumn<CatalogTableRow> {
+    return {
+      title: 'Title',
+      field: 'entity.metadata.title',
+      hidden: options?.hidden,
+      searchable: true,
+    };
+  },
 });

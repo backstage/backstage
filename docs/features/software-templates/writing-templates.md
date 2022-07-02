@@ -320,6 +320,30 @@ The `allowedHosts` part should be set to where you wish to enable this template
 to publish to. And it can be any host that is listed in your `integrations`
 config in `app-config.yaml`.
 
+Besides specifying `allowedHosts` you can also restrict the template to publish to
+repositories owned by specific users/groups/namespaces by setting the `allowedOwners`
+option. With the `allowedRepos` option you are able to narrow it down further to a
+specific set of repository names. A full example could look like this:
+
+```yaml
+- title: Choose a location
+  required:
+    - repoUrl
+  properties:
+    repoUrl:
+      title: Repository Location
+      type: string
+      ui:field: RepoUrlPicker
+      ui:options:
+        allowedHosts:
+          - github.com
+        allowedOwners:
+          - backstage
+          - someGithubUser
+        allowedRepos:
+          - backstage
+```
+
 The `RepoUrlPicker` is a custom field that we provide part of the
 `plugin-scaffolder`. You can provide your own custom fields by
 [writing your own Custom Field Extensions](./writing-custom-field-extensions.md)
@@ -484,6 +508,64 @@ using this template syntax (for example, `${{ parameters.firstName }}` inserts
 the value of `firstName` from the parameters). This is great for passing the
 values from the form into different steps and reusing these input variables.
 These template strings preserve the type of the parameter.
+
+The `${{ parameters.firstName }}` pattern will work only in the template file.
+If you want to start using values provided from the UI in your code, you will have to use
+the `${{ values.firstName }}` pattern. Additionally, you have to pass
+the parameters from the UI to the input of the `fetch:template` step.
+
+```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: v1beta3-demo
+  title: Test Action
+  description: scaffolder v1beta3 template demo
+spec:
+  owner: backstage/techdocs-core
+  type: service
+  parameters:
+    - title: Fill in some steps
+      required:
+        - name
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of your project
+        urlParameter:
+          title: URL endpoint
+          type: string
+          description: URL endpoint at which the component can be reached
+          default: 'https://www.example.com'
+        enabledDB:
+          title: Enable Database
+          type: boolean
+          default: false
+  ...
+  steps:
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:template
+      input:
+        url: ./template
+        values:
+          name: ${{ parameters.name }}
+          url: ${{ parameters.urlParameter }}
+          enabledDB: ${{ parameters.enabledDB }}
+```
+
+Afterwards, if you are using the builtin templating action, you can start using
+the variables in your code. You can use also any other templating functions from
+[Nunjucks](https://mozilla.github.io/nunjucks/templating.html#tags) as well.
+
+```bash
+#!/bin/bash
+echo "Hi my name is ${{ values.name }}, and you can fine me at ${{ values.url }}!"
+{% if values.enabledDB %}
+echo "You have enabled your database!"
+{% endif %}
+```
 
 As you can see above in the `Outputs` section, `actions` and `steps` can also
 output things. You can grab that output using `steps.$stepId.output.$property`.

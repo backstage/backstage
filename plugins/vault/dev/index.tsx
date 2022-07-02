@@ -45,11 +45,13 @@ const mockedApi: VaultApi = {
     return [
       {
         name: 'a::b',
+        path: '',
         editUrl: 'https://example.com',
         showUrl: 'https://example.com',
       },
       {
         name: 'c::d',
+        path: '',
         editUrl: 'https://example.com',
         showUrl: 'https://example.com',
       },

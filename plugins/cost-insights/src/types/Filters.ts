@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { Maybe } from './Maybe';
+import { Maybe } from '@backstage/plugin-cost-insights-common';
 import { Duration } from './Duration';
 
+/**
+ * @public
+ */
 export interface PageFilters {
   group: Maybe<string>;
   project: Maybe<string>;
@@ -24,8 +27,14 @@ export interface PageFilters {
   metric: string | null;
 }
 
+/**
+ * @public
+ */
 export type ProductFilters = Array<ProductPeriod>;
 
+/**
+ * @public
+ */
 export interface ProductPeriod {
   duration: Duration;
   productType: string;

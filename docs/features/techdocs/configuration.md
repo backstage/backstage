@@ -160,7 +160,8 @@ techdocs:
 
   # techdocs.cache is optional, and is only recommended when you've configured
   # an external techdocs.publisher.type above. Also requires backend.cache to
-  # be configured with a valid cache store.
+  # be configured with a valid cache store. Configure techdocs.cache.ttl to
+  # enable caching of techdocs assets.
   cache:
     # Represents the number of milliseconds a statically built asset should
     # stay cached. Cache invalidation is handled automatically by the frontend,

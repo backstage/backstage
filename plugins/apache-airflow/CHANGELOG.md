@@ -1,5 +1,16 @@
 # @backstage/plugin-apache-airflow
 
+## 0.2.0-next.1
+
+### Minor Changes
+
+- 01f976ea72: Exposed DagTableComponent as standalone component + added a prop to get only select DAGs instead of the full list
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.1
+
 ## 0.1.15-next.0
 
 ### Patch Changes

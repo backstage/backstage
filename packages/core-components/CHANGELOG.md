@@ -1,5 +1,15 @@
 # @backstage/core-components
 
+## 0.9.6-next.1
+
+### Patch Changes
+
+- 3c440ea77e: Change BackstageIconLinkVertical style to use pallette instead of explicit color
+- 7e115d42f9: Support displaying subtitle text in `SidebarSubmenuItem`
+- Updated dependencies
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/theme@0.2.16-next.0
+
 ## 0.9.6-next.0
 
 ### Patch Changes

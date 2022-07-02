@@ -30,6 +30,12 @@ import {
 import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
 import { NotAllowedError } from '@backstage/errors';
 
+if (!Promise.any) {
+  (async () => {
+    await import('promise-any-polyfill');
+  })();
+}
+
 export class JenkinsApiImpl {
   private static readonly lastBuildTreeSpec = `lastBuild[
                     number,
@@ -70,18 +76,21 @@ export class JenkinsApiImpl {
    * Get a list of projects for the given JenkinsInfo.
    * @see ../../../jenkins/src/api/JenkinsApi.ts#getProjects
    */
-  async getProjects(jenkinsInfo: JenkinsInfo, branch?: string) {
+  async getProjects(jenkinsInfo: JenkinsInfo, branches?: string[]) {
     const client = await JenkinsApiImpl.getClient(jenkinsInfo);
     const projects: BackstageProject[] = [];
 
-    if (branch) {
-      // we have been asked to filter to a single branch.
+    if (branches) {
       // Assume jenkinsInfo.jobFullName is a folder which contains one job per branch.
       // TODO: extract a strategy interface for this
-      const job = await client.job.get({
-        name: `${jenkinsInfo.jobFullName}/${branch}`,
-        tree: JenkinsApiImpl.jobTreeSpec.replace(/\s/g, ''),
-      });
+      const job = await Promise.any(
+        branches.map(branch =>
+          client.job.get({
+            name: `${jenkinsInfo.jobFullName}/${branch}`,
+            tree: JenkinsApiImpl.jobTreeSpec.replace(/\s/g, ''),
+          }),
+        ),
+      );
       projects.push(this.augmentProject(job));
     } else {
       // We aren't filtering

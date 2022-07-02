@@ -70,6 +70,7 @@ export interface VaultEnvironment {
 // @public
 export type VaultSecret = {
   name: string;
+  path: string;
   showUrl: string;
   editUrl: string;
 };
