@@ -1,5 +1,4 @@
 ---
-'example-backend': minor
 '@backstage/plugin-kubernetes-backend': minor
 ---
 
