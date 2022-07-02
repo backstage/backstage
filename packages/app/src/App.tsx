@@ -103,6 +103,7 @@ import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+import { PlaylistIndexPage } from '@backstage/plugin-playlist';
 
 const app = createApp({
   apis,
@@ -265,6 +266,7 @@ const routes = (
     </Route>
     <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
     <Route path="/apache-airflow" element={<ApacheAirflowPage />} />
+    <Route path="/playlist" element={<PlaylistIndexPage />} />
   </FlatRoutes>
 );
 

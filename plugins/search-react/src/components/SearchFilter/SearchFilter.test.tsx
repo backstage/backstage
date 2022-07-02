@@ -33,6 +33,7 @@ describe('SearchFilter', () => {
     term: '',
     filters: {},
     types: [],
+    pageCursor: 'abc123',
   };
 
   const label = 'Field';
@@ -138,7 +139,10 @@ describe('SearchFilter', () => {
       await userEvent.click(checkBox);
       await waitFor(() => {
         expect(query).toHaveBeenLastCalledWith(
-          expect.objectContaining({ filters: { field: [values[0]] } }),
+          expect.objectContaining({
+            filters: { field: [values[0]] },
+            pageCursor: undefined,
+          }),
         );
       });
 
@@ -146,7 +150,7 @@ describe('SearchFilter', () => {
       await userEvent.click(checkBox);
       await waitFor(() => {
         expect(query).toHaveBeenLastCalledWith(
-          expect.objectContaining({ filters: {} }),
+          expect.objectContaining({ filters: {}, pageCursor: undefined }),
         );
       });
     });
@@ -170,6 +174,7 @@ describe('SearchFilter', () => {
         expect(query).toHaveBeenLastCalledWith(
           expect.objectContaining({
             filters: { ...filters, field: [values[0]] },
+            pageCursor: undefined,
           }),
         );
       });
@@ -178,7 +183,7 @@ describe('SearchFilter', () => {
       await userEvent.click(checkBox);
       await waitFor(() => {
         expect(query).toHaveBeenLastCalledWith(
-          expect.objectContaining({ filters }),
+          expect.objectContaining({ filters, pageCursor: undefined }),
         );
       });
     });
@@ -337,6 +342,7 @@ describe('SearchFilter', () => {
         expect(query).toHaveBeenLastCalledWith(
           expect.objectContaining({
             filters: { [name]: values[0] },
+            pageCursor: undefined,
           }),
         );
       });
@@ -353,6 +359,7 @@ describe('SearchFilter', () => {
         expect(query).toHaveBeenLastCalledWith(
           expect.objectContaining({
             filters: {},
+            pageCursor: undefined,
           }),
         );
       });
@@ -388,6 +395,7 @@ describe('SearchFilter', () => {
         expect(query).toHaveBeenLastCalledWith(
           expect.objectContaining({
             filters: { ...filters, [name]: values[0] },
+            pageCursor: undefined,
           }),
         );
       });
@@ -402,7 +410,7 @@ describe('SearchFilter', () => {
 
       await waitFor(() => {
         expect(query).toHaveBeenLastCalledWith(
-          expect.objectContaining({ filters }),
+          expect.objectContaining({ filters, pageCursor: undefined }),
         );
       });
     });

@@ -15,3 +15,7 @@
  */
 
 export { HeaderActionMenu } from './HeaderActionMenu';
+export type {
+  ActionItemProps,
+  HeaderActionMenuProps,
+} from './HeaderActionMenu';
