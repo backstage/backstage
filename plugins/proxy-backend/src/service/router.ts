@@ -186,8 +186,34 @@ export async function createRouter(
   const { pathname: pathPrefix } = new URL(externalUrl);
 
   const proxyConfig = options.config.getOptional('proxy') ?? {};
+  configureMiddlewares(options, router, pathPrefix, proxyConfig);
 
-  Object.entries(proxyConfig).forEach(([route, proxyRouteConfig]) => {
+  if (options.config.subscribe) {
+    let currentKey = JSON.stringify(proxyConfig);
+
+    options.config.subscribe(() => {
+      const newProxyConfig = options.config.getOptional('proxy') ?? {};
+      const newKey = JSON.stringify(newProxyConfig);
+
+      if (currentKey !== newKey) {
+        currentKey = newKey;
+
+        router.stack = [];
+        configureMiddlewares(options, router, pathPrefix, newProxyConfig);
+      }
+    });
+  }
+
+  return router;
+}
+
+function configureMiddlewares(
+  options: RouterOptions,
+  router: express.Router,
+  pathPrefix: string,
+  proxyConfig: any,
+) {
+  Object.entries<any>(proxyConfig).forEach(([route, proxyRouteConfig]) => {
     try {
       router.use(
         route,
@@ -201,6 +227,4 @@ export async function createRouter(
       }
     }
   });
-
-  return router;
 }
