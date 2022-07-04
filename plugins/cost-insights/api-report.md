@@ -272,7 +272,6 @@ export type BarChartTooltipProps = {
   actions?: ReactNode;
 };
 
-// Warning: (tsdoc-characters-after-block-tag) The token "@backstage" looks like a TSDoc tag but contains an invalid character "/"; if it is not a tag, use a backslash to escape the "@"
 // Warning: (ae-missing-release-tag) "ChangeStatistic" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
@@ -296,7 +295,6 @@ export type ChartData = {
   [key: string]: number;
 };
 
-// Warning: (tsdoc-characters-after-block-tag) The token "@backstage" looks like a TSDoc tag but contains an invalid character "/"; if it is not a tag, use a backslash to escape the "@"
 // Warning: (ae-missing-release-tag) "Cost" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
@@ -450,7 +448,6 @@ export enum DataKey {
   Previous = 'previous',
 }
 
-// Warning: (tsdoc-characters-after-block-tag) The token "@backstage" looks like a TSDoc tag but contains an invalid character "/"; if it is not a tag, use a backslash to escape the "@"
 // Warning: (ae-missing-release-tag) "DateAggregation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
@@ -478,7 +475,6 @@ export enum Duration {
 // @public (undocumented)
 export const EngineerThreshold = 0.5;
 
-// Warning: (tsdoc-characters-after-block-tag) The token "@backstage" looks like a TSDoc tag but contains an invalid character "/"; if it is not a tag, use a backslash to escape the "@"
 // Warning: (ae-missing-release-tag) "Entity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
@@ -506,7 +502,6 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
   getUserGroups(userId: string): Promise<Group[]>;
 }
 
-// Warning: (tsdoc-characters-after-block-tag) The token "@backstage" looks like a TSDoc tag but contains an invalid character "/"; if it is not a tag, use a backslash to escape the "@"
 // Warning: (ae-missing-release-tag) "Group" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
@@ -574,19 +569,16 @@ export type LegendItemProps = {
 // @public (undocumented)
 export type Loading = Record<string, boolean>;
 
-// Warning: (tsdoc-characters-after-block-tag) The token "@backstage" looks like a TSDoc tag but contains an invalid character "/"; if it is not a tag, use a backslash to escape the "@"
 // Warning: (ae-missing-release-tag) "Maybe" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
 export type Maybe<T> = common.Maybe<T>;
 
-// Warning: (tsdoc-characters-after-block-tag) The token "@backstage" looks like a TSDoc tag but contains an invalid character "/"; if it is not a tag, use a backslash to escape the "@"
 // Warning: (ae-missing-release-tag) "Metric" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
 export type Metric = common.Metric;
 
-// Warning: (tsdoc-characters-after-block-tag) The token "@backstage" looks like a TSDoc tag but contains an invalid character "/"; if it is not a tag, use a backslash to escape the "@"
 // Warning: (ae-missing-release-tag) "MetricData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
@@ -622,7 +614,6 @@ export interface PageFilters {
   project: Maybe_2<string>;
 }
 
-// Warning: (tsdoc-characters-after-block-tag) The token "@backstage" looks like a TSDoc tag but contains an invalid character "/"; if it is not a tag, use a backslash to escape the "@"
 // Warning: (ae-missing-release-tag) "Product" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
@@ -649,7 +640,6 @@ export interface ProductPeriod {
   productType: string;
 }
 
-// Warning: (tsdoc-characters-after-block-tag) The token "@backstage" looks like a TSDoc tag but contains an invalid character "/"; if it is not a tag, use a backslash to escape the "@"
 // Warning: (ae-missing-release-tag) "Project" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
@@ -711,7 +701,6 @@ export type TooltipItem = {
   value: string;
 };
 
-// Warning: (tsdoc-characters-after-block-tag) The token "@backstage" looks like a TSDoc tag but contains an invalid character "/"; if it is not a tag, use a backslash to escape the "@"
 // Warning: (ae-missing-release-tag) "Trendline" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
