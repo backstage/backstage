@@ -141,12 +141,24 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       BATCH_SIZE,
     );
 
-    // Insert the refresh keys for the procssed entity
+    // Find the top-level location entity that manages the processedEntity
+    let entityRefToRefresh = sourceEntityRef;
+    const { entityRefs } = await this.listAncestors(tx, {
+      entityRef: sourceEntityRef,
+    });
+    const locationAncestor = entityRefs.find(ref =>
+      ref.startsWith('location:'),
+    );
+    if (locationAncestor) {
+      entityRefToRefresh = locationAncestor;
+    }
+
+    // Insert the refresh keys for the processed entity
     await Promise.all(
       options.refreshKeys.map(k => {
         return tx<DbRefreshKeysRow>('refresh_keys')
           .insert({
-            entity_ref: sourceEntityRef,
+            entity_ref: entityRefToRefresh,
             key: k.key,
           })
           .onConflict(['entity_ref', 'key'])

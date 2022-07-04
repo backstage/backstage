@@ -25,7 +25,7 @@ exports.up = async function up(knex) {
     table
       .text('entity_ref')
       .notNullable()
-      .references('entity_id')
+      .references('entity_ref')
       .inTable('refresh_state')
       .onDelete('CASCADE')
       .comment('A reference to the entity that the refresh key is tied to');
@@ -35,6 +35,7 @@ exports.up = async function up(knex) {
       .comment(
         'A reference to a key which should be used to trigger a refresh on this entity',
       );
+    table.unique(['entity_ref', 'key']);
     table.index('entity_ref', 'refresh_keys_entity_ref_idx');
     table.index('key', 'refresh_keys_key_idx');
   });
