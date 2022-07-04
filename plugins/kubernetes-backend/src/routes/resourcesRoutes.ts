@@ -22,17 +22,15 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { InputError, AuthenticationError } from '@backstage/errors';
 import express, { Request } from 'express';
 import { KubernetesObjectsProvider } from '../types/types';
-import { Logger } from 'winston';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 
 export const addResourceRoutesToRouter = (
   router: express.Router,
   catalogClient: CatalogApi,
   objectsProvider: KubernetesObjectsProvider,
-  logger: Logger,
 ) => {
   const getEntityByReq = async (req: Request<any>) => {
-    const rawEntityRef = req.query.entity;
+    const rawEntityRef = req.body.entityRef;
     if (rawEntityRef && typeof rawEntityRef !== 'string') {
       throw new InputError(`entity query must be a string`);
     } else if (!rawEntityRef) {

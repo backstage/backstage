@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { getVoidLogger, errorHandler } from '@backstage/backend-common';
+import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
 import Router from 'express-promise-router';
 import { addResourceRoutesToRouter } from './resourcesRoutes';
-import querystring from 'node:querystring';
 import { Entity } from '@backstage/catalog-model';
 
 describe('resourcesRoutes', () => {
@@ -29,7 +28,6 @@ describe('resourcesRoutes', () => {
     app = express();
     app.use(express.json());
     const router = Router();
-    const logger = getVoidLogger();
     addResourceRoutesToRouter(
       router,
       {
@@ -90,7 +88,6 @@ describe('resourcesRoutes', () => {
           });
         }),
       } as any,
-      logger,
     );
     app.use('/', router);
     app.use(errorHandler());
@@ -100,12 +97,9 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('200 happy path', async () => {
       await request(app)
-        .post(
-          `/resources/workloads/query?${querystring.stringify({
-            entity: 'kind:namespacec/someComponent',
-          })}`,
-        )
+        .post('/resources/workloads/query')
         .send({
+          entityRef: 'kind:namespacec/someComponent',
           auth: {
             google: 'something',
           },
@@ -151,12 +145,9 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('400 when bad entity ref', async () => {
       await request(app)
-        .post(
-          `/resources/workloads/query?${querystring.stringify({
-            entity: 'ffff',
-          })}`,
-        )
+        .post('/resources/workloads/query')
         .send({
+          entityRef: 'ffff',
           auth: {
             google: 'something',
           },
@@ -171,7 +162,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/resources/workloads/query?entity=ffff',
+            url: '/resources/workloads/query',
           },
           response: { statusCode: 400 },
         });
@@ -179,12 +170,9 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('400 when no entity in catalog', async () => {
       await request(app)
-        .post(
-          `/resources/workloads/query?${querystring.stringify({
-            entity: 'noentity:noentity',
-          })}`,
-        )
+        .post('/resources/workloads/query')
         .send({
+          entityRef: 'noentity:noentity',
           auth: {
             google: 'something',
           },
@@ -198,7 +186,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/resources/workloads/query?entity=noentity%3Anoentity',
+            url: '/resources/workloads/query',
           },
           response: { statusCode: 400 },
         });
@@ -206,12 +194,9 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('401 when no Auth header', async () => {
       await request(app)
-        .post(
-          `/resources/workloads/query?${querystring.stringify({
-            entity: 'component:someComponent',
-          })}`,
-        )
+        .post('/resources/workloads/query')
         .send({
+          entityRef: 'component:someComponent',
           auth: {
             google: 'something',
           },
@@ -221,7 +206,7 @@ describe('resourcesRoutes', () => {
           error: { name: 'AuthenticationError', message: 'No Backstage token' },
           request: {
             method: 'POST',
-            url: '/resources/workloads/query?entity=component%3AsomeComponent',
+            url: '/resources/workloads/query',
           },
           response: { statusCode: 401 },
         });
@@ -229,12 +214,9 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('401 when invalid Auth header', async () => {
       await request(app)
-        .post(
-          `/resources/workloads/query?${querystring.stringify({
-            entity: 'component:someComponent',
-          })}`,
-        )
+        .post('/resources/workloads/query')
         .send({
+          entityRef: 'component:someComponent',
           auth: {
             google: 'something',
           },
@@ -245,7 +227,7 @@ describe('resourcesRoutes', () => {
           error: { name: 'AuthenticationError', message: 'No Backstage token' },
           request: {
             method: 'POST',
-            url: '/resources/workloads/query?entity=component%3AsomeComponent',
+            url: '/resources/workloads/query',
           },
           response: { statusCode: 401 },
         });
@@ -253,31 +235,34 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('500 handle gracefully', async () => {
       await request(app)
-        .post(
-          `/resources/workloads/query?${querystring.stringify({
-            entity: 'inject500:inject500/inject500',
-          })}`,
-        )
+        .post('/resources/workloads/query')
         .send({
+          entityRef: 'inject500:inject500/inject500',
           auth: {
             google: 'something',
           },
         })
         .set('Content-Type', 'application/json')
         .set('Authorization', 'Bearer Zm9vYmFy')
-        .expect(500, { error: 'some internal error' });
+        .expect(500, {
+          error: {
+            name: 'Error',
+            message: 'some internal error',
+            level: 'error',
+            service: 'backstage',
+          },
+          request: { method: 'POST', url: '/resources/workloads/query' },
+          response: { statusCode: 500 },
+        });
     });
   });
   describe('POST /resources/custom/query', () => {
     // eslint-disable-next-line jest/expect-expect
     it('200 happy path', async () => {
       await request(app)
-        .post(
-          `/resources/custom/query?${querystring.stringify({
-            entity: 'component:someComponent',
-          })}`,
-        )
+        .post('/resources/custom/query')
         .send({
+          entityRef: 'component:someComponent',
           auth: {
             google: 'something',
           },
@@ -310,12 +295,9 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('400 when missing custom resources', async () => {
       await request(app)
-        .post(
-          `/resources/custom/query?${querystring.stringify({
-            entity: 'component:someComponent',
-          })}`,
-        )
+        .post('/resources/custom/query')
         .send({
+          entityRef: 'component:someComponent',
           auth: {
             google: 'something',
           },
@@ -329,7 +311,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/resources/custom/query?entity=component%3AsomeComponent',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -337,12 +319,9 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('400 when custom resources not array', async () => {
       await request(app)
-        .post(
-          `/resources/custom/query?${querystring.stringify({
-            entity: 'component:someComponent',
-          })}`,
-        )
+        .post('/resources/custom/query')
         .send({
+          entityRef: 'component:someComponent',
           auth: {
             google: 'something',
           },
@@ -357,7 +336,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/resources/custom/query?entity=component%3AsomeComponent',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -365,12 +344,9 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('400 when custom resources empty', async () => {
       await request(app)
-        .post(
-          `/resources/custom/query?${querystring.stringify({
-            entity: 'component:someComponent',
-          })}`,
-        )
+        .post('/resources/custom/query')
         .send({
+          entityRef: 'component:someComponent',
           auth: {
             google: 'something',
           },
@@ -385,7 +361,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/resources/custom/query?entity=component%3AsomeComponent',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -420,12 +396,9 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('400 when bad entity ref', async () => {
       await request(app)
-        .post(
-          `/resources/custom/query?${querystring.stringify({
-            entity: 'ffff',
-          })}`,
-        )
+        .post('/resources/custom/query')
         .send({
+          entityRef: 'ffff',
           auth: {
             google: 'something',
           },
@@ -447,7 +420,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/resources/custom/query?entity=ffff',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -455,12 +428,9 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('400 when no entity in catalog', async () => {
       await request(app)
-        .post(
-          `/resources/custom/query?${querystring.stringify({
-            entity: 'noentity:noentity',
-          })}`,
-        )
+        .post('/resources/custom/query')
         .send({
+          entityRef: 'noentity:noentity',
           auth: {
             google: 'something',
           },
@@ -481,7 +451,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/resources/custom/query?entity=noentity%3Anoentity',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -489,12 +459,9 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('401 when no Auth header', async () => {
       await request(app)
-        .post(
-          `/resources/custom/query?${querystring.stringify({
-            entity: 'component:someComponent',
-          })}`,
-        )
+        .post('/resources/custom/query')
         .send({
+          entityRef: 'component:someComponent',
           auth: {
             google: 'something',
           },
@@ -511,7 +478,7 @@ describe('resourcesRoutes', () => {
           error: { name: 'AuthenticationError', message: 'No Backstage token' },
           request: {
             method: 'POST',
-            url: '/resources/custom/query?entity=component%3AsomeComponent',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 401 },
         });
@@ -519,12 +486,9 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('401 when invalid Auth header', async () => {
       await request(app)
-        .post(
-          `/resources/custom/query?${querystring.stringify({
-            entity: 'component:someComponent',
-          })}`,
-        )
+        .post('/resources/custom/query')
         .send({
+          entityRef: 'component:someComponent',
           auth: {
             google: 'something',
           },
@@ -542,7 +506,7 @@ describe('resourcesRoutes', () => {
           error: { name: 'AuthenticationError', message: 'No Backstage token' },
           request: {
             method: 'POST',
-            url: '/resources/custom/query?entity=component%3AsomeComponent',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 401 },
         });
@@ -550,12 +514,9 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('500 handle gracefully', async () => {
       await request(app)
-        .post(
-          `/resources/custom/query?${querystring.stringify({
-            entity: 'inject500:inject500/inject500',
-          })}`,
-        )
+        .post('/resources/custom/query')
         .send({
+          entityRef: 'inject500:inject500/inject500',
           auth: {
             google: 'something',
           },
@@ -569,7 +530,16 @@ describe('resourcesRoutes', () => {
         })
         .set('Content-Type', 'application/json')
         .set('Authorization', 'Bearer Zm9vYmFy')
-        .expect(500, { error: 'some internal error' });
+        .expect(500, {
+          error: {
+            name: 'Error',
+            message: 'some internal error',
+            level: 'error',
+            service: 'backstage',
+          },
+          request: { method: 'POST', url: '/resources/custom/query' },
+          response: { statusCode: 500 },
+        });
     });
   });
 });
