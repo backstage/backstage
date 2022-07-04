@@ -959,7 +959,7 @@ describe('LunrSearchEngine', () => {
             filters: {},
           }),
       ).rejects.toThrow(
-        'Missing index for unknown. This means there are no documents to search through',
+        "Missing index for unknown. This could be because the index hasn't been created yet or there was a problem during index creation.",
       );
     });
   });

@@ -19,7 +19,7 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { z } from 'zod';
 import { errorHandler } from '@backstage/backend-common';
-import { InputError } from '@backstage/errors';
+import { ErrorResponseBody, InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
@@ -33,10 +33,7 @@ import {
   IndexableResultSet,
   SearchResultSet,
 } from '@backstage/plugin-search-common';
-import {
-  SearchEngine,
-  MissingIndexError,
-} from '@backstage/plugin-search-backend-node';
+import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import { AuthorizedSearchEngine } from './AuthorizedSearchEngine';
 
 const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
@@ -134,7 +131,7 @@ export async function createRouter(
     '/query',
     async (
       req: express.Request,
-      res: express.Response<SearchResultSet | string>,
+      res: express.Response<SearchResultSet | ErrorResponseBody>,
     ) => {
       const parseResult = requestSchema.safeParse(req.query);
 
@@ -161,8 +158,9 @@ export async function createRouter(
 
         res.send(filterResultSet(toSearchResults(resultSet)));
       } catch (error) {
-        if (error instanceof MissingIndexError) {
-          res.status(400).json(error.message);
+        if (error.name === 'MissingIndexError') {
+          // re-throw and let the default error handler middleware captures it and serializes it with the right response code on the standard form
+          throw error;
         }
 
         throw new Error(

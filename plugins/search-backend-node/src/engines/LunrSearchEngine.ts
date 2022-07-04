@@ -170,7 +170,7 @@ export class LunrSearchEngine implements SearchEngine {
 
     if (documentTypes?.length && !indexKeys.length) {
       throw new MissingIndexError(
-        `Missing index for ${documentTypes?.toString()}. This means there are no documents to search through.`,
+        `Missing index for ${documentTypes?.toString()}. This could be because the index hasn't been created yet or there was a problem during index creation.`,
       );
     }
 

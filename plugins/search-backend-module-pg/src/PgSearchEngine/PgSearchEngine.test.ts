@@ -271,21 +271,6 @@ describe('PgSearchEngine', () => {
         limit: 26,
       });
     });
-
-    it('should throws missing index error', async () => {
-      database.transaction.mockImplementation(fn => fn(tx));
-      database.query.mockResolvedValue([]);
-      await expect(
-        async () =>
-          await searchEngine.query({
-            term: 'testTerm',
-            types: ['unknown'],
-            filters: {},
-          }),
-      ).rejects.toThrow(
-        'Missing index for unknown. This means there are no documents to search through',
-      );
-    });
   });
 });
 

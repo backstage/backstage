@@ -813,7 +813,7 @@ describe('ElasticSearchSearchEngine', () => {
             filters: {},
           }),
       ).rejects.toThrow(
-        'Missing index for unknown__search. This means there are no documents to search through',
+        'Missing index for unknown__search. This means there are no documents to search through.',
       );
     });
   });
