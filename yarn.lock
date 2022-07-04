@@ -14229,9 +14229,9 @@ graphql-type-json@^0.3.2:
   integrity sha512-J+vjof74oMlCWXSvt0DOf2APEdZOCdubEvGDUAlqH//VBYcOYsGgRW7Xzorr44LvkjiuvecWc8fChxuZZbChtg==
 
 graphql-ws@^5.4.1:
-  version "5.9.0"
-  resolved "https://registry.npmjs.org/graphql-ws/-/graphql-ws-5.9.0.tgz#1fea3cca4582bbda15bc3a50bf30b539869b826f"
-  integrity sha512-CXv0l0nI1bgChwl4Rm+BqNOAKwL/C9T2N8RfmTkhQ38YLFdUXCi2WNW4oFp8BJP+t75nCLzjHHgR04sP1oF02w==
+  version "5.9.1"
+  resolved "https://registry.npmjs.org/graphql-ws/-/graphql-ws-5.9.1.tgz#9c0fa48ceb695d61d574ed3ab21b426729e87f2d"
+  integrity sha512-mL/SWGBwIT9Meq0NlfS55yXXTOeWPMbK7bZBEZhFu46bcGk1coTx2Sdtzxdk+9yHWngD+Fk1PZDWaAutQa9tpw==
 
 graphql@^16.0.0, graphql@^16.3.0:
   version "16.5.0"
