@@ -1640,6 +1640,16 @@
     lodash "^4.17.21"
     luxon "^2.0.2"
 
+"@backstage/plugin-auth-node@^0.15.0-next.1":
+  version "0.2.3-next.1"
+  dependencies:
+    "@backstage/backend-common" "^0.14.1-next.1"
+    "@backstage/config" "^1.0.1"
+    "@backstage/errors" "^1.1.0-next.0"
+    jose "^4.6.0"
+    node-fetch "^2.6.7"
+    winston "^3.2.1"
+
 "@backstage/plugin-catalog-common@^1.0.3":
   version "1.0.3"
   resolved "https://registry.npmjs.org/@backstage/plugin-catalog-common/-/plugin-catalog-common-1.0.3.tgz#96b1de2847fec0533c49ee19f93781777eedfd0d"

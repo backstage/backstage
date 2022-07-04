@@ -23,6 +23,7 @@ import { InputError, AuthenticationError } from '@backstage/errors';
 import express, { Request } from 'express';
 import { KubernetesObjectsProvider } from '../types/types';
 import { Logger } from 'winston';
+import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 
 export const addResourceRoutesToRouter = (
   router: express.Router,
@@ -45,10 +46,9 @@ export const addResourceRoutesToRouter = (
       throw new InputError(`Invalid entity ref, ${error}`);
     }
 
-    function getBearerToken(header?: string): string | undefined {
-      return header?.match(/Bearer\s+(\S+)/i)?.[1];
-    }
-    const token = getBearerToken(req.headers.authorization);
+    const token = getBearerTokenFromAuthorizationHeader(
+      req.headers.authorization,
+    );
 
     if (!token) {
       throw new AuthenticationError('No Backstage token');
@@ -68,20 +68,11 @@ export const addResourceRoutesToRouter = (
 
   router.post('/resources/workloads/query', async (req, res) => {
     const entity = await getEntityByReq(req);
-
-    try {
-      const response = await objectsProvider.getKubernetesObjectsByEntity({
-        entity,
-        auth: req.body.auth,
-      });
-      res.json(response);
-    } catch (e) {
-      logger.error(String(e), {
-        action: '/resources/workloads',
-        entityRef: stringifyEntityRef(entity),
-      });
-      res.status(500).json({ error: e.message });
-    }
+    const response = await objectsProvider.getKubernetesObjectsByEntity({
+      entity,
+      auth: req.body.auth,
+    });
+    res.json(response);
   });
 
   router.post('/resources/custom/query', async (req, res) => {
@@ -95,19 +86,11 @@ export const addResourceRoutesToRouter = (
       throw new InputError('at least 1 customResource is required');
     }
 
-    try {
-      const response = await objectsProvider.getCustomResourcesByEntity({
-        entity,
-        customResources: req.body.customResources,
-        auth: req.body.auth,
-      });
-      res.json(response);
-    } catch (e) {
-      logger.error(String(e), {
-        action: '/resources/custom',
-        entityRef: stringifyEntityRef(entity),
-      });
-      res.status(500).json({ error: e.message });
-    }
+    const response = await objectsProvider.getCustomResourcesByEntity({
+      entity,
+      customResources: req.body.customResources,
+      auth: req.body.auth,
+    });
+    res.json(response);
   });
 };
