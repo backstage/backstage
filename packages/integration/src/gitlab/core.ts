@@ -17,6 +17,9 @@
 import { GitLabIntegrationConfig } from './config';
 import fetch from 'cross-fetch';
 import { InputError } from '@backstage/errors';
+import { relative } from 'path';
+import { trimStart } from 'lodash';
+// import { config } from 'process';
 
 /**
  * Given a URL pointing to a file on a provider, returns a URL that is suitable
@@ -44,7 +47,7 @@ export async function getGitLabFileFetchUrl(
   // makes sense and it might require some more work.
   if (url.includes('/-/blob/')) {
     const projectID = await getProjectId(url, config);
-    return buildProjectUrl(url, projectID).toString();
+    return buildProjectUrl(url, projectID, config).toString();
   }
   return buildRawUrl(url).toString();
 }
@@ -101,20 +104,26 @@ export function buildRawUrl(target: string): URL {
 // Converts
 // from: https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath
 // to:   https://gitlab.com/api/v4/projects/projectId/repository/files/filepath?ref=branch
-export function buildProjectUrl(target: string, projectID: Number): URL {
+export function buildProjectUrl(
+  target: string,
+  projectID: Number,
+  config: GitLabIntegrationConfig,
+): URL {
   try {
     const url = new URL(target);
 
     const branchAndFilePath = url.pathname.split('/-/blob/')[1];
     const [branch, ...filePath] = branchAndFilePath.split('/');
 
-    url.pathname = [
-      '/api/v4/projects',
-      projectID,
-      'repository/files',
-      encodeURIComponent(decodeURIComponent(filePath.join('/'))),
-      'raw',
-    ].join('/');
+    url.pathname =
+      [config.relativePath] +
+      [
+        '/api/v4/projects',
+        projectID,
+        'repository/files',
+        encodeURIComponent(decodeURIComponent(filePath.join('/'))),
+        'raw',
+      ].join('/');
     url.search = `?ref=${branch}`;
 
     return url;
@@ -137,19 +146,27 @@ export async function getProjectId(
   }
 
   try {
-    const repo = url.pathname.split('/-/blob/')[0];
+    let repo = url.pathname.split('/-/blob/')[0];
+
+    // Ignore relative path if it's not set
+    const relativePath = config.relativePath ?? '';
+
+    // Should replace first match only
+    repo = repo.replace(relativePath, '');
 
     // Convert
     // to: https://gitlab.com/api/v4/projects/groupA%2Fteams%2FsubgroupA%2FteamA%2Frepo
     const repoIDLookup = new URL(
-      `${url.origin}/api/v4/projects/${encodeURIComponent(
+      `${url.origin}${relativePath}/api/v4/projects/${encodeURIComponent(
         repo.replace(/^\//, ''),
       )}`,
     );
+
     const response = await fetch(
       repoIDLookup.toString(),
       getGitLabRequestOptions(config),
     );
+
     const data = await response.json();
 
     if (!response.ok) {

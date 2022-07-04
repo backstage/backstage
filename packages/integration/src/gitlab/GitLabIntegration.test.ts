@@ -28,6 +28,7 @@ describe('GitLabIntegration', () => {
               token: 't',
               apiBaseUrl: 'https://h.com/api/v4',
               baseUrl: 'https://h.com',
+              relativePath: '',
             },
           ],
         },

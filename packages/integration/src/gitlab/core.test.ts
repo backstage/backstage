@@ -39,12 +39,22 @@ describe('gitlab core', () => {
     token: '0123456789',
     apiBaseUrl: '<ignored>',
     baseUrl: '<ignored>',
+    relativePath: '',
   };
 
   const configWithNoToken: GitLabIntegrationConfig = {
     host: 'g.com',
     apiBaseUrl: '<ignored>',
     baseUrl: '<ignored>',
+    relativePath: '',
+  };
+
+  const configWithSelfHosted: GitLabIntegrationConfig = {
+    host: 'g.com',
+    token: '0123456789',
+    apiBaseUrl: '<ignored>',
+    baseUrl: '<ignored>',
+    relativePath: '/gitlab',
   };
 
   describe('getGitLabFileFetchUrl with .yaml extension', () => {
@@ -120,6 +130,12 @@ describe('gitlab core', () => {
         url: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yml',
         result:
           'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yml/raw?ref=branch',
+      },
+      {
+        config: configWithSelfHosted,
+        url: 'https://gitlab.com/gitlab/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yml',
+        result:
+          'https://gitlab.com/gitlab/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yml/raw?ref=branch',
       },
       {
         config: configWithNoToken,

@@ -37,7 +37,7 @@ import {
   ReadUrlResponse,
   ReadUrlOptions,
 } from './types';
-import { trimEnd } from 'lodash';
+import { trimEnd, trimStart } from 'lodash';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 /**
@@ -117,13 +117,19 @@ export class GitlabUrlReader implements UrlReader {
     const { etag, signal } = options ?? {};
     const { ref, full_name, filepath } = parseGitUrl(url);
 
+    // Considering self hosted gitlab with relative
+    const repo_full_name = trimStart(
+      full_name,
+      this.integration.config.relativePath ?? '',
+    );
+
     // Use GitLab API to get the default branch
     // encodeURIComponent is required for GitLab API
     // https://docs.gitlab.com/ee/api/README.html#namespaced-path-encoding
     const projectGitlabResponse = await fetch(
       new URL(
         `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
-          full_name,
+          repo_full_name,
         )}`,
       ).toString(),
       getGitLabRequestOptions(this.integration.config),
@@ -150,7 +156,7 @@ export class GitlabUrlReader implements UrlReader {
     const commitsGitlabResponse = await fetch(
       new URL(
         `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
-          full_name,
+          repo_full_name,
         )}/repository/commits?${commitsReqParams.toString()}`,
       ).toString(),
       {
@@ -181,7 +187,7 @@ export class GitlabUrlReader implements UrlReader {
     // https://docs.gitlab.com/ee/api/repositories.html#get-file-archive
     const archiveGitLabResponse = await fetch(
       `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
-        full_name,
+        repo_full_name,
       )}/repository/archive?sha=${branch}`,
       {
         ...getGitLabRequestOptions(this.integration.config),
