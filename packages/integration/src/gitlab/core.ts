@@ -17,9 +17,6 @@
 import { GitLabIntegrationConfig } from './config';
 import fetch from 'cross-fetch';
 import { InputError } from '@backstage/errors';
-import { relative } from 'path';
-import { trimStart } from 'lodash';
-// import { config } from 'process';
 
 /**
  * Given a URL pointing to a file on a provider, returns a URL that is suitable
