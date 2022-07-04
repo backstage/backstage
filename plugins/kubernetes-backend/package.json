@@ -41,7 +41,7 @@
     "@backstage/catalog-model": "^1.1.0-next.1",
     "@backstage/config": "^1.0.1",
     "@backstage/errors": "^1.1.0-next.0",
-    "@backstage/plugin-auth-node": "^0.15.0-next.1",
+    "@backstage/plugin-auth-node": "^0.2.3-next.1",
     "@backstage/plugin-kubernetes-common": "^0.4.0-next.0",
     "@google-cloud/container": "^4.0.0",
     "@kubernetes/client-node": "^0.16.0",
