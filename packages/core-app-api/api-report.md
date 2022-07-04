@@ -373,9 +373,6 @@ export type FlatRoutesProps = {
 };
 
 // @public
-export function getBasePath(configApi: Config): string;
-
-// @public
 export class GithubAuth {
   // (undocumented)
   static create(options: OAuthApiCreateOptions): typeof githubAuthApiRef.T;

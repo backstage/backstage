@@ -25,7 +25,7 @@ import {
   Link as RouterLink,
   LinkProps as RouterLinkProps,
 } from 'react-router-dom';
-import { getBasePath } from '@backstage/core-app-api';
+import { trimEnd } from 'lodash';
 
 const useStyles = makeStyles(
   {
@@ -53,14 +53,39 @@ export type LinkProps = MaterialLinkProps &
     noTrack?: boolean;
   };
 
+/**
+ * Returns the app base url that could be empty if the Config API is not properly implemented.
+ * The only cases there would be no Config API are in tests and in storybook stories, and in those cases, it's unlikely that callers would rely on this subpath behavior.
+ */
+const useBaseUrl = () => {
+  try {
+    const config = useApi(configApiRef);
+    return config.getOptionalString('app.baseUrl');
+  } catch {
+    return undefined;
+  }
+};
+
+/**
+ * Get the app base path from the configured app baseUrl.
+ * The returned path does not have a trailing slash.
+ */
+const useBasePath = () => {
+  // baseUrl can be specified as just a path
+  const base = 'http://dummy.dev';
+  const url = useBaseUrl() ?? '/';
+  const { pathname } = new URL(url, base);
+  return trimEnd(pathname, '/');
+};
+
 export const useResolvedPath = (uri: LinkProps['to']) => {
-  const configApi = useApi(configApiRef);
-  const basePath = getBasePath(configApi);
-
   let resolvedPath = String(uri);
-  const external = isExternalUri(resolvedPath);
 
-  if (!external && !resolvedPath.startsWith(basePath)) {
+  const basePath = useBasePath();
+  const external = isExternalUri(resolvedPath);
+  const startsWithBasePath = resolvedPath.startsWith(basePath);
+
+  if (!external && !startsWithBasePath) {
     resolvedPath = basePath.concat(resolvedPath);
   }
 
@@ -130,8 +155,8 @@ export const Link = React.forwardRef<any, LinkProps>(
         {...props}
         ref={ref}
         component={RouterLink}
-        onClick={handleClick}
         to={to}
+        onClick={handleClick}
       />
     );
   },
