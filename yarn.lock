@@ -3443,11 +3443,11 @@
   integrity sha512-zMM9Ds+SawiUkakS7y94Ymqx+S0ORzpG3frZirN3l+UlXUmSUR7hF4wxCVqW+ei94JzV5kt0uXBcoOEAuiydrw==
 
 "@keyv/redis@^2.2.3":
-  version "2.3.6"
-  resolved "https://registry.npmjs.org/@keyv/redis/-/redis-2.3.6.tgz#462991af60b5b35af4e9ac8d05ad99a08ae2cfc2"
-  integrity sha512-MKRAeWaKI7zpGb+lSgAAlznQi725NEN18I/Uj2CJysk1o6hBqyXyxCvyI+b9qKwoFAkzxoogdvONIpstzI7t/Q==
+  version "2.3.7"
+  resolved "https://registry.npmjs.org/@keyv/redis/-/redis-2.3.7.tgz#4f6f6d85be07668a976bb3c9d910c57d1ab12c70"
+  integrity sha512-aBxnl2Bt1D7JUXQwdO9dDOBJi3VmKO5yfIiwxvEr/hVSryho0Zn1EuWr3fi6UE8WYw5X8FPUyD6h5wuVQreQsA==
   dependencies:
-    ioredis "^5.0.4"
+    ioredis "^5.1.0"
 
 "@kubernetes/client-node@^0.16.0":
   version "0.16.3"
@@ -15131,10 +15131,10 @@ invert-kv@^1.0.0:
   resolved "https://registry.npmjs.org/invert-kv/-/invert-kv-1.0.0.tgz#104a8e4aaca6d3d8cd157a8ef8bfab2d7a3ffdb6"
   integrity sha1-EEqOSqym09jNFXqO+L+rLXo//bY=
 
-ioredis@^5.0.4:
-  version "5.0.4"
-  resolved "https://registry.npmjs.org/ioredis/-/ioredis-5.0.4.tgz#0d4abfd818adfc5ef5029fddac4b8f503a1433b7"
-  integrity sha512-qFJw3MnPNsJF1lcIOP3vztbsasOXK3nDdNAgjQj7t7/Bn/w10PGchTOpqylQNxjzPbLoYDu34LjeJtSWiKBntQ==
+ioredis@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.npmjs.org/ioredis/-/ioredis-5.1.0.tgz#17bc0bc40f164ef26910ca6e56981c2a9bfdf57e"
+  integrity sha512-HYHnvwxFwefeUBj0hZFejLvd8Q/YNAfnZlZG/hSRxkRhXMs1H8soMEVccHd1WlLrKkynorXBsAtqDGskOdAfVQ==
   dependencies:
     "@ioredis/commands" "^1.1.1"
     cluster-key-slot "^1.1.0"
