@@ -162,6 +162,24 @@ export const ScoreTable = ({ scores }: ScoreTableProps) => {
     },
   });
 
+  // in case we have less then 10 systems let's show at least 10 rows
+  const minDefaultPageSizeOption = scores.length >= 10 ? scores.length : 10;
+  // so in case we have less then 100 systems we want to see them all in one page after load
+  const maxDefaultPageSizeOption =
+    scores.length < 100 ? minDefaultPageSizeOption : 100;
+  // so now we are in a situation, when
+  // count(systems) | minDefaultPageSizeOption | maxDefaultPageSizeOption | defaultPageSizeOption
+  //   0 |  10 |  10 |  10
+  //   5 |  10 |  10 |  10
+  //  10 |  10 |  10 |  10
+  //  50 |  50 |  50 |  50
+  // 100 | 100 | 100 | 100
+  // 150 | 150 | 100 | 100
+  const defaultPageSizeOption =
+    minDefaultPageSizeOption > maxDefaultPageSizeOption
+      ? maxDefaultPageSizeOption
+      : minDefaultPageSizeOption;
+
   return (
     <Table<SystemScoreExtended>
       title="System scores overview"
@@ -169,8 +187,8 @@ export const ScoreTable = ({ scores }: ScoreTableProps) => {
         search: true,
         paging: true,
         padding: 'dense',
-        pageSize: scores.length,
-        pageSizeOptions: [20, 50, 100, 200],
+        pageSize: defaultPageSizeOption,
+        pageSizeOptions: [defaultPageSizeOption, 20, 50, 100, 200],
       }}
       columns={columns}
       data={scores}
