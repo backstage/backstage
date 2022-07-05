@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Entity } from '@backstage/catalog-model';
 import { createApiRef } from '@backstage/core-plugin-api';
 import { SystemScoreExtended } from './types';
 
@@ -21,6 +22,6 @@ export const scoringDataApiRef = createApiRef<ScoringDataApi>({
 });
 
 export type ScoringDataApi = {
-  getScore(entity: string): Promise<SystemScoreExtended | undefined>;
+  getScore(entity?: Entity): Promise<SystemScoreExtended | undefined>;
   getAllScores(): Promise<SystemScoreExtended[] | undefined>;
 };
