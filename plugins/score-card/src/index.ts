@@ -18,3 +18,8 @@ export {
   ScoreBoardPage,
   EntityScoreCardContent,
 } from './plugin';
+
+/**
+ * The TypeScript API for configuring System Scoring.
+ */
+export * from './api';

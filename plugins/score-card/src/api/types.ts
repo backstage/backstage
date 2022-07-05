@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 
 export interface SystemScore {
   systemEntityName: string;
@@ -48,4 +49,13 @@ export enum ScoreSuccessEnum {
   Partial = 'partial',
   AlmostFailure = 'almost-failure',
   Failure = 'failure',
+}
+
+// TODO: decide what with this interface. It makes the API to be tight coupled with catalog API (the component is coupled anyway). Shall this be internal implementation?
+export interface SystemScoreExtended extends SystemScore {
+  catalogEntity: Entity | undefined;
+  catalogEntityName: CompoundEntityRef | undefined;
+  owner: CompoundEntityRef | undefined;
+  reviewer: CompoundEntityRef | undefined;
+  reviewDate: Date | undefined;
 }

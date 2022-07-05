@@ -17,7 +17,13 @@ import {
   createPlugin,
   createRoutableExtension,
   createComponentExtension,
+  createApiFactory,
+  fetchApiRef,
+  configApiRef,
 } from '@backstage/core-plugin-api';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { ScoringDataJsonClient } from './api';
+import { scoringDataApiRef } from './api';
 
 import { rootRouteRef } from './routes';
 
@@ -26,6 +32,22 @@ export const scoreCardPlugin = createPlugin({
   routes: {
     root: rootRouteRef,
   },
+  apis: [
+    createApiFactory({
+      api: scoringDataApiRef,
+      deps: {
+        configApi: configApiRef,
+        catalogApi: catalogApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory: ({ configApi, catalogApi, fetchApi }) =>
+        new ScoringDataJsonClient({
+          configApi,
+          catalogApi,
+          fetchApi,
+        }),
+    }),
+  ],
 });
 
 export const ScoreBoardPage = scoreCardPlugin.provide(

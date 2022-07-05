@@ -23,4 +23,4 @@ export type {
 } from './types';
 export { scoringDataApiRef } from './ScoringDataApi';
 export type { ScoringDataApi } from './ScoringDataApi';
-export { ScoringDataClient } from './ScoringDataClient';
+export { ScoringDataJsonClient } from './ScoringDataJsonClient';
