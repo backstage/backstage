@@ -54,17 +54,6 @@ describe('GitHubEntityProvider', () => {
     logger: getVoidLogger(),
   };
 
-  it('should have the expected properties', () => {
-    const config = new ConfigReader(backendConfig);
-    const provider = GitHubEntityProvider.fromConfig(config, options);
-    expect(provider).toHaveProperty('connect');
-    expect(typeof provider.connect).toBe('function');
-    expect(provider).toHaveProperty('refresh');
-    expect(typeof provider.refresh).toBe('function');
-    expect(provider).toHaveProperty('getProviderName');
-    expect(typeof provider.getProviderName).toBe('function');
-  });
-
   it('should return the instance providerName', () => {
     const config = new ConfigReader(backendConfig);
     const provider = GitHubEntityProvider.fromConfig(config, options);
