@@ -234,16 +234,6 @@ catalog:
       #       dn: ou=access,ou=groups,ou=example,dc=example,dc=net
       #       options:
       #         filter: (&(objectClass=some-group-class)(!(groupType=email)))
-    microsoftGraphOrg:
-      ### Example for how to add your Microsoft Graph tenant
-      #providers:
-      #  - target: https://graph.microsoft.com/v1.0
-      #    authority: https://login.microsoftonline.com
-      #    tenantId: ${MICROSOFT_GRAPH_TENANT_ID}
-      #    clientId: ${MICROSOFT_GRAPH_CLIENT_ID}
-      #    clientSecret: ${MICROSOFT_GRAPH_CLIENT_SECRET_TOKEN}
-      #    userFilter: accountEnabled eq true and userType eq 'member'
-      #    groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
 
   locations:
     # Add a location here to ingest it, for example from a URL:

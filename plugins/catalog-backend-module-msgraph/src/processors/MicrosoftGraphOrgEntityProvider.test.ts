@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -78,19 +79,30 @@ describe('MicrosoftGraphOrgEntityProvider', () => {
       ],
     });
 
+    const config = {
+      catalog: {
+        providers: {
+          microsoftGraphOrg: {
+            customProviderId: {
+              target: 'target',
+              tenantId: 'tenantId',
+              clientId: 'clientId',
+              clientSecret: 'clientSecret',
+            },
+          },
+        },
+      },
+    };
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
     };
-    const provider = new MicrosoftGraphOrgEntityProvider({
-      id: 'test',
-      logger: getVoidLogger(),
-      provider: {
-        target: 'https://example.com',
-        tenantId: 'tenant',
-        clientId: 'clientid',
-        clientSecret: 'clientsecret',
+    const provider = MicrosoftGraphOrgEntityProvider.fromConfig(
+      new ConfigReader(config),
+      {
+        logger: getVoidLogger(),
+        schedule: 'manual',
       },
-    });
+    )[0];
 
     provider.connect(entityProviderConnection);
 
@@ -104,8 +116,10 @@ describe('MicrosoftGraphOrgEntityProvider', () => {
             kind: 'User',
             metadata: {
               annotations: {
-                'backstage.io/managed-by-location': 'msgraph:test/u1',
-                'backstage.io/managed-by-origin-location': 'msgraph:test/u1',
+                'backstage.io/managed-by-location':
+                  'msgraph:customProviderId/u1',
+                'backstage.io/managed-by-origin-location':
+                  'msgraph:customProviderId/u1',
               },
               name: 'u1',
             },
@@ -113,7 +127,7 @@ describe('MicrosoftGraphOrgEntityProvider', () => {
               memberOf: [],
             },
           },
-          locationKey: 'msgraph-org-provider:test',
+          locationKey: 'msgraph-org-provider:customProviderId',
         },
         {
           entity: {
@@ -121,8 +135,10 @@ describe('MicrosoftGraphOrgEntityProvider', () => {
             kind: 'Group',
             metadata: {
               annotations: {
-                'backstage.io/managed-by-location': 'msgraph:test/g1',
-                'backstage.io/managed-by-origin-location': 'msgraph:test/g1',
+                'backstage.io/managed-by-location':
+                  'msgraph:customProviderId/g1',
+                'backstage.io/managed-by-origin-location':
+                  'msgraph:customProviderId/g1',
               },
               name: 'g1',
             },
@@ -131,7 +147,7 @@ describe('MicrosoftGraphOrgEntityProvider', () => {
               type: 'team',
             },
           },
-          locationKey: 'msgraph-org-provider:test',
+          locationKey: 'msgraph-org-provider:customProviderId',
         },
       ],
       type: 'full',
