@@ -98,6 +98,7 @@ import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { PermissionedRoute } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+import { ScoreBoardPage } from '@backstage/plugin-score-card';
 
 const app = createApp({
   apis,
@@ -239,6 +240,7 @@ const routes = (
     </Route>
     <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
     <Route path="/apache-airflow" element={<ApacheAirflowPage />} />
+    <Route path="/score-board" element={<ScoreBoardPage />} />
   </FlatRoutes>
 );
 
