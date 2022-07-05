@@ -19,7 +19,7 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { z } from 'zod';
 import { errorHandler } from '@backstage/backend-common';
-import { InputError } from '@backstage/errors';
+import { ErrorResponseBody, InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
@@ -129,7 +129,10 @@ export async function createRouter(
   const router = Router();
   router.get(
     '/query',
-    async (req: express.Request, res: express.Response<SearchResultSet>) => {
+    async (
+      req: express.Request,
+      res: express.Response<SearchResultSet | ErrorResponseBody>,
+    ) => {
       const parseResult = requestSchema.safeParse(req.query);
 
       if (!parseResult.success) {
@@ -154,9 +157,14 @@ export async function createRouter(
         const resultSet = await engine?.query(query, { token });
 
         res.send(filterResultSet(toSearchResults(resultSet)));
-      } catch (err) {
+      } catch (error) {
+        if (error.name === 'MissingIndexError') {
+          // re-throw and let the default error handler middleware captures it and serializes it with the right response code on the standard form
+          throw error;
+        }
+
         throw new Error(
-          `There was a problem performing the search query. ${err}`,
+          `There was a problem performing the search query. ${error}`,
         );
       }
     },

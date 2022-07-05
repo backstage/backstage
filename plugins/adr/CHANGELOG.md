@@ -1,5 +1,25 @@
 # @backstage/plugin-adr
 
+## 0.1.2-next.2
+
+### Patch Changes
+
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/plugin-search-react@0.2.2-next.2
+  - @backstage/theme@0.2.16-next.1
+  - @backstage/plugin-catalog-react@1.1.2-next.2
+  - @backstage/integration-react@1.1.2-next.2
+
 ## 0.1.2-next.1
 
 ### Patch Changes

@@ -40,13 +40,64 @@ import {
   readMicrosoftGraphOrg,
   UserTransformer,
 } from '../microsoftGraph';
+import { readProviderConfigs } from '../microsoftGraph/config';
 
 /**
  * Options for {@link MicrosoftGraphOrgEntityProvider}.
  *
  * @public
  */
-export interface MicrosoftGraphOrgEntityProviderOptions {
+export type MicrosoftGraphOrgEntityProviderOptions =
+  | MicrosoftGraphOrgEntityProviderLegacyOptions
+  | {
+      /**
+       * The logger to use.
+       */
+      logger: Logger;
+
+      /**
+       * The refresh schedule to use.
+       *
+       * @remarks
+       *
+       * If you pass in 'manual', you are responsible for calling the `read` method
+       * manually at some interval.
+       *
+       * But more commonly you will pass in the result of
+       * {@link @backstage/backend-tasks#PluginTaskScheduler.createScheduledTaskRunner}
+       * to enable automatic scheduling of tasks.
+       */
+      schedule: 'manual' | TaskRunner;
+
+      /**
+       * The function that transforms a user entry in msgraph to an entity.
+       * Optionally, you can pass separate transformers per provider ID.
+       */
+      userTransformer?: UserTransformer | Record<string, UserTransformer>;
+
+      /**
+       * The function that transforms a group entry in msgraph to an entity.
+       * Optionally, you can pass separate transformers per provider ID.
+       */
+      groupTransformer?: GroupTransformer | Record<string, GroupTransformer>;
+
+      /**
+       * The function that transforms an organization entry in msgraph to an entity.
+       * Optionally, you can pass separate transformers per provider ID.
+       */
+      organizationTransformer?:
+        | OrganizationTransformer
+        | Record<string, OrganizationTransformer>;
+    };
+
+/**
+ * Legacy options for {@link MicrosoftGraphOrgEntityProvider}
+ * based on `catalog.processors.microsoftGraphOrg`.
+ *
+ * @public
+ * @deprecated This interface exists for backwards compatibility only and will be removed in the future.
+ */
+export interface MicrosoftGraphOrgEntityProviderLegacyOptions {
   /**
    * A unique, stable identifier for this provider.
    *
@@ -57,7 +108,7 @@ export interface MicrosoftGraphOrgEntityProviderOptions {
   /**
    * The target that this provider should consume.
    *
-   * Should exactly match the "target" field of one of the providers
+   * Should exactly match the "target" field of one of the provider
    * configuration entries.
    */
   target: string;
@@ -110,7 +161,58 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
   static fromConfig(
     configRoot: Config,
     options: MicrosoftGraphOrgEntityProviderOptions,
-  ) {
+  ): MicrosoftGraphOrgEntityProvider[] {
+    if ('id' in options) {
+      return [
+        MicrosoftGraphOrgEntityProvider.fromLegacyConfig(configRoot, options),
+      ];
+    }
+
+    function getTransformer<T extends Function>(
+      id: string,
+      transformers?: T | Record<string, T>,
+    ): T | undefined {
+      if (['undefined', 'function'].includes(typeof transformers)) {
+        return transformers as T;
+      }
+
+      return (transformers as Record<string, T>)[id];
+    }
+
+    return readProviderConfigs(configRoot).map(providerConfig => {
+      const provider = new MicrosoftGraphOrgEntityProvider({
+        id: providerConfig.id,
+        provider: providerConfig,
+        logger: options.logger,
+        userTransformer: getTransformer(
+          providerConfig.id,
+          options.userTransformer,
+        ),
+        groupTransformer: getTransformer(
+          providerConfig.id,
+          options.groupTransformer,
+        ),
+        organizationTransformer: getTransformer(
+          providerConfig.id,
+          options.organizationTransformer,
+        ),
+      });
+      provider.schedule(options.schedule);
+
+      return provider;
+    });
+  }
+
+  /**
+   * @deprecated Exists for backwards compatibility only and will be removed in the future.
+   */
+  private static fromLegacyConfig(
+    configRoot: Config,
+    options: MicrosoftGraphOrgEntityProviderLegacyOptions,
+  ): MicrosoftGraphOrgEntityProvider {
+    options.logger.warn(
+      'Deprecated msgraph config "catalog.processors.microsoftGraphOrg" used. Use "catalog.providers.microsoftGraphOrg" instead. More info at https://github.com/backstage/backstage/blob/master/.changeset/long-bananas-rescue.md',
+    );
     const config = configRoot.getOptionalConfig(
       'catalog.processors.microsoftGraphOrg',
     );

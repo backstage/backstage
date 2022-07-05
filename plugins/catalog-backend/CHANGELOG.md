@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-backend
 
+## 1.2.1-next.2
+
+### Patch Changes
+
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/backend-common@0.14.1-next.2
+  - @backstage/integration@1.2.2-next.2
+
 ## 1.2.1-next.1
 
 ### Patch Changes

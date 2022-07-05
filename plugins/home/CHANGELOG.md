@@ -1,5 +1,16 @@
 # @backstage/plugin-home
 
+## 0.4.23-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/theme@0.2.16-next.1
+  - @backstage/plugin-catalog-react@1.1.2-next.2
+  - @backstage/plugin-stack-overflow@0.1.3-next.2
+
 ## 0.4.23-next.1
 
 ### Patch Changes
