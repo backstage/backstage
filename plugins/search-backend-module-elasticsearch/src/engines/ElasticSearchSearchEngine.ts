@@ -23,6 +23,7 @@ import {
   SearchEngine,
   SearchQuery,
 } from '@backstage/plugin-search-common';
+import { MissingIndexError } from '@backstage/plugin-search-backend-node';
 import esb from 'elastic-builder';
 import { isEmpty, isNaN as nan, isNumber } from 'lodash';
 import { v4 as uuid } from 'uuid';
@@ -329,10 +330,16 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         nextPageCursor,
         previousPageCursor,
       };
-    } catch (e) {
+    } catch (error) {
+      if (error.meta?.body?.error?.type === 'index_not_found_exception') {
+        throw new MissingIndexError(
+          `Missing index for ${queryIndices}. This means there are no documents to search through.`,
+          error,
+        );
+      }
       this.logger.error(
         `Failed to query documents for indices ${queryIndices}`,
-        e,
+        error,
       );
       return Promise.reject({ results: [] });
     }
