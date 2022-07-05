@@ -1,26 +1,15 @@
 [
   {
-    "systemEntityName": "Identity-backend",
-    "systemTier": "A",
-    "SystemDataConfidentiality": "Confidential",
-    "SystemDataSensitivity": ["PII", "Sensitive-PII"],
-    "generatedDateTimeUtc": "2021-07-22 10:00",
-    "scorePercent": 90,
-    "scoreSuccess": "success",
-    "scoringReviewer": "NonValid"
-  },
-  {
-    "systemEntityName": "Online",
-    "systemTier": "A",
-    "SystemDataConfidentiality": "Confidential",
-    "SystemDataSensitivity": ["PII", "Sensitive-PII"],
+    "systemEntityName": "non-valid-system",
+    "systemTier": "B",
+    "SystemDataConfidentiality": "Public",
     "generatedDateTimeUtc": "2021-07-22 10:00",
     "scorePercent": 20,
     "scoreSuccess": "failure",
-    "scoringReviewDate": "2022-01-04T08:00:00Z"
+    "scoringReviewer": "n/a"
   },
   {
-    "systemEntityName": "our-great-system",
+    "systemEntityName": "audio-playback",
     "systemTier": "A",
     "SystemDataConfidentiality": "Confidential",
     "SystemDataSensitivity": ["PII", "Sensitive-PII"],
