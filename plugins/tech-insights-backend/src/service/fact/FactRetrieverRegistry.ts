@@ -26,16 +26,21 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
  *
  */
 export interface FactRetrieverRegistry {
-  readonly retrievers: Map<string, FactRetrieverRegistration>;
-  register(registration: FactRetrieverRegistration): void;
-  get(retrieverReference: string): FactRetrieverRegistration;
-  listRetrievers(): FactRetriever[];
-  listRegistrations(): FactRetrieverRegistration[];
-  getSchemas(): FactSchema[];
+  register(registration: FactRetrieverRegistration): Promise<void>;
+  get(retrieverReference: string): Promise<FactRetrieverRegistration>;
+  listRetrievers(): Promise<FactRetriever[]>;
+  listRegistrations(): Promise<FactRetrieverRegistration[]>;
+  getSchemas(): Promise<FactSchema[]>;
 }
 
+/**
+ * A basic in memory fact retriever registry.
+ *
+ * You can replace this with a persistance based version using the FactRetrieverRegistry interface.
+ *
+ */
 export class DefaultFactRetrieverRegistry implements FactRetrieverRegistry {
-  readonly retrievers = new Map<string, FactRetrieverRegistration>();
+  private readonly retrievers = new Map<string, FactRetrieverRegistration>();
 
   constructor(retrievers: FactRetrieverRegistration[]) {
     retrievers.forEach(it => {
@@ -50,27 +55,31 @@ export class DefaultFactRetrieverRegistry implements FactRetrieverRegistry {
       );
     }
     this.retrievers.set(registration.factRetriever.id, registration);
+    return Promise.resolve();
   }
 
-  get(retrieverReference: string): FactRetrieverRegistration {
+  get(retrieverReference: string): Promise<FactRetrieverRegistration> {
     const registration = this.retrievers.get(retrieverReference);
     if (!registration) {
       throw new NotFoundError(
         `Tech insight fact retriever with identifier '${retrieverReference}' is not registered.`,
       );
     }
-    return registration;
+    return Promise.resolve(registration);
   }
 
-  listRetrievers(): FactRetriever[] {
-    return [...this.retrievers.values()].map(it => it.factRetriever);
+  listRetrievers(): Promise<FactRetriever[]> {
+    return Promise.resolve(
+      [...this.retrievers.values()].map(it => it.factRetriever),
+    );
   }
 
-  listRegistrations(): FactRetrieverRegistration[] {
-    return [...this.retrievers.values()];
+  listRegistrations(): Promise<FactRetrieverRegistration[]> {
+    return Promise.resolve([...this.retrievers.values()]);
   }
 
-  getSchemas(): FactSchema[] {
-    return this.listRetrievers().map(it => it.schema);
+  async getSchemas(): Promise<FactSchema[]> {
+    const retrievers = await this.listRetrievers();
+    return Promise.resolve(retrievers.map(it => it.schema));
   }
 }
