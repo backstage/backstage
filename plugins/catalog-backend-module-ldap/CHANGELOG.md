@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.5.1-next.1
+
+### Patch Changes
+
+- fbfbff6bf7: Add possibility to resolve relations by RDN, in addition to UUID and DN
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/plugin-catalog-backend@1.2.1-next.1
+  - @backstage/backend-tasks@0.3.3-next.1
+
 ## 0.5.1-next.0
 
 ### Patch Changes

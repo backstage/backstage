@@ -78,6 +78,10 @@ export default async (_opts: OptionValues, cmd: Command) => {
     process.env.TZ = 'UTC';
   }
 
+  if (args.includes('--help')) {
+    (process.stdout as any)._handle.setBlocking(true);
+  }
+
   // eslint-disable-next-line jest/no-jest-import
   await require('jest').run(args);
 };

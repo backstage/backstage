@@ -1,10 +1,7 @@
 name: Sync Release Manifest
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: Version number, without any 'v' prefix
-        required: true
+  repository_dispatch:
+    types: [release-published]
 
 jobs:
   create-new-version:
@@ -23,7 +20,7 @@ jobs:
         with:
           path: backstage
           # 'v' prefix is added here for the tag, we keep it out of the manifest logic
-          ref: v${{ github.event.inputs.version }}
+          ref: v${{ github.event.client_payload.version }}
 
       # Checkout backstage/versions into /backstage/versions, which is where store the output
       - name: Checkout versions
@@ -44,10 +41,10 @@ jobs:
           cd backstage
           mkdir -p scripts
           wget -O scripts/assemble-manifest.js https://raw.githubusercontent.com/backstage/backstage/master/scripts/assemble-manifest.js
-          node scripts/assemble-manifest.js ${{ github.event.inputs.version }}
+          node scripts/assemble-manifest.js ${{ github.event.client_payload.version }}
           cd versions
           git add .
-          git commit -am "${{ github.event.inputs.version }}"
+          git commit -am "${{ github.event.client_payload.version }}"
           git push
 
       - name: Dispatch update-helper update

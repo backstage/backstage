@@ -9,9 +9,12 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePalette } from '@backstage/theme';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
+import { ChangeStatistic as ChangeStatistic_2 } from '@backstage/plugin-cost-insights-common';
+import * as common from '@backstage/plugin-cost-insights-common';
 import { ContentRenderer } from 'recharts';
 import { Dispatch } from 'react';
 import { ForwardRefExoticComponent } from 'react';
+import { Maybe as Maybe_2 } from '@backstage/plugin-cost-insights-common';
 import { PaletteOptions } from '@material-ui/core/styles/createPalette';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
@@ -32,9 +35,9 @@ export type Alert = {
   status?: AlertStatus;
   url?: string;
   buttonText?: string;
-  SnoozeForm?: Maybe<AlertForm>;
-  AcceptForm?: Maybe<AlertForm>;
-  DismissForm?: Maybe<AlertForm>;
+  SnoozeForm?: Maybe_2<AlertForm>;
+  AcceptForm?: Maybe_2<AlertForm>;
+  DismissForm?: Maybe_2<AlertForm>;
   onSnoozed?(options: AlertOptions): Promise<Alert[]>;
   onAccepted?(options: AlertOptions): Promise<Alert[]>;
   onDismissed?(options: AlertOptions): Promise<Alert[]>;
@@ -55,9 +58,9 @@ export interface AlertCost {
 // @public (undocumented)
 export interface AlertDismissFormData {
   // (undocumented)
-  feedback: Maybe<string>;
+  feedback: Maybe_2<string>;
   // (undocumented)
-  other: Maybe<string>;
+  other: Maybe_2<string>;
   // (undocumented)
   reason: AlertDismissReason;
 }
@@ -271,13 +274,8 @@ export type BarChartTooltipProps = {
 
 // Warning: (ae-missing-release-tag) "ChangeStatistic" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
-export interface ChangeStatistic {
-  // (undocumented)
-  amount: number;
-  // (undocumented)
-  ratio?: number;
-}
+// @public @deprecated (undocumented)
+export type ChangeStatistic = common.ChangeStatistic;
 
 // Warning: (ae-missing-release-tag) "ChangeThreshold" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -289,8 +287,6 @@ export enum ChangeThreshold {
   upper = 0.05,
 }
 
-// Warning: (ae-missing-release-tag) "ChartData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ChartData = {
   date: number;
@@ -301,19 +297,8 @@ export type ChartData = {
 
 // Warning: (ae-missing-release-tag) "Cost" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
-export interface Cost {
-  // (undocumented)
-  aggregation: DateAggregation[];
-  // (undocumented)
-  change?: ChangeStatistic;
-  // (undocumented)
-  groupedCosts?: Record<string, Cost[]>;
-  // (undocumented)
-  id: string;
-  // (undocumented)
-  trendline?: Trendline;
-}
+// @public @deprecated (undocumented)
+export type Cost = common.Cost;
 
 // Warning: (ae-missing-release-tag) "CostGrowth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -423,8 +408,6 @@ export interface CostInsightsThemeOptions extends PaletteOptions {
   palette: CostInsightsPaletteOptions;
 }
 
-// Warning: (ae-missing-release-tag) "Currency" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface Currency {
   // (undocumented)
@@ -467,19 +450,14 @@ export enum DataKey {
 
 // Warning: (ae-missing-release-tag) "DateAggregation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
-export type DateAggregation = {
-  date: string;
-  amount: number;
-};
+// @public @deprecated (undocumented)
+export type DateAggregation = common.DateAggregation;
 
 // Warning: (ae-missing-release-tag) "DEFAULT_DATE_FORMAT" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const DEFAULT_DATE_FORMAT = 'yyyy-LL-dd';
 
-// Warning: (ae-missing-release-tag) "Duration" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export enum Duration {
   // (undocumented)
@@ -499,17 +477,8 @@ export const EngineerThreshold = 0.5;
 
 // Warning: (ae-missing-release-tag) "Entity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
-export interface Entity {
-  // (undocumented)
-  aggregation: [number, number];
-  // (undocumented)
-  change: ChangeStatistic;
-  // (undocumented)
-  entities: Record<string, Entity[]>;
-  // (undocumented)
-  id: Maybe<string>;
-}
+// @public @deprecated (undocumented)
+export type Entity = common.Entity;
 
 // Warning: (ae-missing-release-tag) "ExampleCostInsightsClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -535,10 +504,8 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
 
 // Warning: (ae-missing-release-tag) "Group" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
-export type Group = {
-  id: string;
-};
+// @public @deprecated (undocumented)
+export type Group = common.Group;
 
 // Warning: (ae-missing-release-tag) "GrowthType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -604,31 +571,18 @@ export type Loading = Record<string, boolean>;
 
 // Warning: (ae-missing-release-tag) "Maybe" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
-export type Maybe<T> = T | null;
+// @public @deprecated (undocumented)
+export type Maybe<T> = common.Maybe<T>;
 
 // Warning: (ae-missing-release-tag) "Metric" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
-export type Metric = {
-  kind: string;
-  name: string;
-  default: boolean;
-};
+// @public @deprecated (undocumented)
+export type Metric = common.Metric;
 
 // Warning: (ae-missing-release-tag) "MetricData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
-export interface MetricData {
-  // (undocumented)
-  aggregation: DateAggregation[];
-  // (undocumented)
-  change: ChangeStatistic;
-  // (undocumented)
-  format: 'number' | 'currency';
-  // (undocumented)
-  id: string;
-}
+// @public @deprecated (undocumented)
+export type MetricData = common.MetricData;
 
 // Warning: (ae-forgotten-export) The symbol "MockConfigProviderProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "MockConfigProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -648,32 +602,23 @@ export const MockCurrencyProvider: ({
   ...context
 }: MockCurrencyProviderProps) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "PageFilters" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface PageFilters {
   // (undocumented)
   duration: Duration;
   // (undocumented)
-  group: Maybe<string>;
+  group: Maybe_2<string>;
   // (undocumented)
   metric: string | null;
   // (undocumented)
-  project: Maybe<string>;
+  project: Maybe_2<string>;
 }
 
 // Warning: (ae-missing-release-tag) "Product" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
-export interface Product {
-  // (undocumented)
-  kind: string;
-  // (undocumented)
-  name: string;
-}
+// @public @deprecated (undocumented)
+export type Product = common.Product;
 
-// Warning: (ae-missing-release-tag) "ProductFilters" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ProductFilters = Array<ProductPeriod>;
 
@@ -687,8 +632,6 @@ export type ProductInsightsOptions = {
   project: Maybe<string>;
 };
 
-// Warning: (ae-missing-release-tag) "ProductPeriod" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface ProductPeriod {
   // (undocumented)
@@ -699,13 +642,8 @@ export interface ProductPeriod {
 
 // Warning: (ae-missing-release-tag) "Project" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
-export interface Project {
-  // (undocumented)
-  id: string;
-  // (undocumented)
-  name?: string;
-}
+// @public @deprecated (undocumented)
+export type Project = common.Project;
 
 // Warning: (ae-missing-release-tag) "ProjectGrowthAlert" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -731,7 +669,7 @@ export interface ProjectGrowthData {
   // (undocumented)
   aggregation: [number, number];
   // (undocumented)
-  change: ChangeStatistic;
+  change: ChangeStatistic_2;
   // (undocumented)
   periodEnd: string;
   // (undocumented)
@@ -749,7 +687,7 @@ export interface ResourceData {
   // (undocumented)
   current: number;
   // (undocumented)
-  name: Maybe<string>;
+  name: Maybe_2<string>;
   // (undocumented)
   previous: number;
 }
@@ -765,11 +703,8 @@ export type TooltipItem = {
 
 // Warning: (ae-missing-release-tag) "Trendline" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
-export type Trendline = {
-  slope: number;
-  intercept: number;
-};
+// @public @deprecated (undocumented)
+export type Trendline = common.Trendline;
 
 // Warning: (ae-missing-release-tag) "UnlabeledDataflowAlert" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

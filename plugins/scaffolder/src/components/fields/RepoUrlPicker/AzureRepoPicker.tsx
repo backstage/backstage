@@ -27,7 +27,7 @@ export const AzureRepoPicker = (props: {
   rawErrors: string[];
 }) => {
   const { rawErrors, state, onChange } = props;
-  const { organization, repoName, owner } = state;
+  const { organization, owner } = state;
   return (
     <>
       <FormControl
@@ -57,19 +57,6 @@ export const AzureRepoPicker = (props: {
           value={owner}
         />
         <FormHelperText>The Owner that this repo will belong to</FormHelperText>
-      </FormControl>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !repoName}
-      >
-        <InputLabel htmlFor="repoNameInput">Repository</InputLabel>
-        <Input
-          id="repoNameInput"
-          onChange={e => onChange({ repoName: e.target.value })}
-          value={repoName}
-        />
-        <FormHelperText>The name of the repository</FormHelperText>
       </FormControl>
     </>
   );

@@ -26,7 +26,7 @@ export const BitbucketRepoPicker = (props: {
   rawErrors: string[];
 }) => {
   const { onChange, rawErrors, state } = props;
-  const { host, workspace, project, repoName } = state;
+  const { host, workspace, project } = state;
   return (
     <>
       {host === 'bitbucket.org' && (
@@ -60,19 +60,6 @@ export const BitbucketRepoPicker = (props: {
         <FormHelperText>
           The Project that this repo will belong to
         </FormHelperText>
-      </FormControl>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !repoName}
-      >
-        <InputLabel htmlFor="repoNameInput">Repository</InputLabel>
-        <Input
-          id="repoNameInput"
-          onChange={e => onChange({ repoName: e.target.value })}
-          value={repoName}
-        />
-        <FormHelperText>The name of the repository</FormHelperText>
       </FormControl>
     </>
   );

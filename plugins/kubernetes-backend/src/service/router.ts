@@ -20,6 +20,7 @@ import { KubernetesClustersSupplier } from '../types/types';
 import express from 'express';
 import { KubernetesBuilder } from './KubernetesBuilder';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { CatalogApi } from '@backstage/catalog-client';
 
 /**
  *
@@ -28,6 +29,7 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 export interface RouterOptions {
   logger: Logger;
   config: Config;
+  catalogApi: CatalogApi;
   clusterSupplier?: KubernetesClustersSupplier;
   discovery: PluginEndpointDiscovery;
 }

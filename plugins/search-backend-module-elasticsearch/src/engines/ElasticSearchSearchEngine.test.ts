@@ -16,8 +16,9 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { Client, errors } from '@elastic/elasticsearch';
+import { errors } from '@elastic/elasticsearch';
 import Mock from '@elastic/elasticsearch-mock';
+import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import {
   ElasticSearchConcreteQuery,
   decodePageCursor,
@@ -70,7 +71,7 @@ const customIndexTemplate = {
 describe('ElasticSearchSearchEngine', () => {
   let testSearchEngine: ElasticSearchSearchEngine;
   let inspectableSearchEngine: ElasticSearchSearchEngineForTranslatorTests;
-  let client: Client;
+  let clientWrapper: ElasticSearchClientWrapper;
 
   beforeEach(() => {
     testSearchEngine = new ElasticSearchSearchEngine(
@@ -86,7 +87,7 @@ describe('ElasticSearchSearchEngine', () => {
       getVoidLogger(),
     );
     // eslint-disable-next-line dot-notation
-    client = testSearchEngine['elasticSearchClient'];
+    clientWrapper = testSearchEngine['elasticSearchClientWrapper'];
   });
 
   describe('custom index template', () => {
@@ -686,7 +687,7 @@ describe('ElasticSearchSearchEngine', () => {
     });
 
     it('should handle index/search type filtering correctly', async () => {
-      const elasticSearchQuerySpy = jest.spyOn(client, 'search');
+      const elasticSearchQuerySpy = jest.spyOn(clientWrapper, 'search');
       await testSearchEngine.query({
         term: 'testTerm',
         filters: {},
@@ -725,7 +726,7 @@ describe('ElasticSearchSearchEngine', () => {
     });
 
     it('should create matchAll query if no term defined', async () => {
-      const elasticSearchQuerySpy = jest.spyOn(client, 'search');
+      const elasticSearchQuerySpy = jest.spyOn(clientWrapper, 'search');
       await testSearchEngine.query({
         term: '',
         filters: {},
@@ -759,7 +760,7 @@ describe('ElasticSearchSearchEngine', () => {
     });
 
     it('should query only specified indices if defined', async () => {
-      const elasticSearchQuerySpy = jest.spyOn(client, 'search');
+      const elasticSearchQuerySpy = jest.spyOn(clientWrapper, 'search');
       await testSearchEngine.query({
         term: '',
         filters: {},
@@ -792,6 +793,29 @@ describe('ElasticSearchSearchEngine', () => {
 
       elasticSearchQuerySpy.mockClear();
     });
+
+    it('should throws missing index error', async () => {
+      jest.spyOn(clientWrapper, 'search').mockRejectedValue({
+        meta: {
+          body: {
+            error: {
+              type: 'index_not_found_exception',
+            },
+          },
+        },
+      });
+
+      await expect(
+        async () =>
+          await testSearchEngine.query({
+            term: 'testTerm',
+            types: ['unknown'],
+            filters: {},
+          }),
+      ).rejects.toThrow(
+        'Missing index for unknown__search. This means there are no documents to search through.',
+      );
+    });
   });
 
   describe('indexer', () => {
@@ -809,7 +833,7 @@ describe('ElasticSearchSearchEngine', () => {
           type: 'test-index',
           indexPrefix: '',
           indexSeparator: '-index__',
-          elasticSearchClient: client,
+          elasticSearchClientWrapper: clientWrapper,
         }),
       );
       expect(indexerMock.on).toHaveBeenCalledWith(

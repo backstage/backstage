@@ -32,6 +32,7 @@ export const vaultPlugin: BackstagePlugin<{}, {}>;
 // @public
 export type VaultSecret = {
   name: string;
+  path: string;
   showUrl: string;
   editUrl: string;
 };

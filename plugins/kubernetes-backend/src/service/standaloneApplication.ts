@@ -27,6 +27,7 @@ import helmet from 'helmet';
 import { Logger } from 'winston';
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
+import { CatalogClient } from '@backstage/catalog-client';
 
 export interface ApplicationOptions {
   enableCors: boolean;
@@ -42,6 +43,10 @@ export async function createStandaloneApplication(
 
   const app = express();
 
+  const catalogApi = new CatalogClient({
+    discoveryApi: SingleHostDiscovery.fromConfig(config),
+  });
+
   app.use(helmet());
   if (enableCors) {
     app.use(cors());
@@ -49,7 +54,7 @@ export async function createStandaloneApplication(
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());
-  app.use('/', await createRouter({ logger, config, discovery }));
+  app.use('/', await createRouter({ logger, config, discovery, catalogApi }));
   app.use(notFoundHandler());
   app.use(errorHandler());
 

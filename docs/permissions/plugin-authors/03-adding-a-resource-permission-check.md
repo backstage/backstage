@@ -160,12 +160,12 @@ Create a new `plugins/todo-list-backend/src/conditionExports.ts` file and add th
 ```typescript
 import { TODO_LIST_RESOURCE_TYPE } from '@internal/plugin-todo-list-common';
 import { createConditionExports } from '@backstage/plugin-permission-node';
-import { permissionRules } from './service/rules';
+import { rules } from './service/rules';
 
 const { conditions, createConditionalDecision } = createConditionExports({
-  pluginId: 'catalog',
-  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-  rules: permissionRules,
+  pluginId: 'todolist',
+  resourceType: TODO_LIST_RESOURCE_TYPE,
+  rules,
 });
 
 export const todoListConditions = conditions;
@@ -173,7 +173,12 @@ export const todoListConditions = conditions;
 export const createTodoListConditionalDecision = createConditionalDecision;
 ```
 
-Make sure `todoListConditions` and `createTodoListConditionalDecision` are exported from the `todo-list-backend` package.
+Make sure `todoListConditions` and `createTodoListConditionalDecision` are exported from the `todo-list-backend` package by editing `plugins/todo-list-backend/src/index.ts`:
+
+```diff
+  export * from './service/router';
++ export * from './conditionExports';
+```
 
 ## Test the authorized update endpoint
 

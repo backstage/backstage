@@ -181,6 +181,22 @@ export type CookieConfigurer = (ctx: {
   secure: boolean;
 };
 
+// Warning: (ae-missing-release-tag) "createAuthProviderIntegration" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function createAuthProviderIntegration<
+  TCreateOptions extends unknown[],
+  TResolvers extends {
+    [name in string]: (...args: any[]) => SignInResolver<any>;
+  },
+>(config: {
+  create: (...args: TCreateOptions) => AuthProviderFactory;
+  resolvers?: TResolvers;
+}): Readonly<{
+  create: (...args: TCreateOptions) => AuthProviderFactory;
+  resolvers: Readonly<string extends keyof TResolvers ? never : TResolvers>;
+}>;
+
 // Warning: (ae-missing-release-tag) "createOriginFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -649,6 +665,8 @@ export interface RouterOptions {
   //
   // (undocumented)
   providerFactories?: ProviderFactories;
+  // (undocumented)
+  tokenFactoryAlgorithm?: string;
   // (undocumented)
   tokenManager: TokenManager;
 }

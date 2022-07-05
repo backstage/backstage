@@ -44,6 +44,7 @@ export interface RouterOptions {
   config: Config;
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
+  tokenFactoryAlgorithm?: string;
   providerFactories?: ProviderFactories;
 }
 
@@ -56,6 +57,7 @@ export async function createRouter(
     discovery,
     database,
     tokenManager,
+    tokenFactoryAlgorithm,
     providerFactories,
   } = options;
   const router = Router();
@@ -71,6 +73,7 @@ export async function createRouter(
     keyStore,
     keyDurationSeconds,
     logger: logger.child({ component: 'token-factory' }),
+    algorithm: tokenFactoryAlgorithm,
   });
   const catalogApi = new CatalogClient({ discoveryApi: discovery });
 
@@ -137,6 +140,7 @@ export async function createRouter(
         }
         if (provider.refresh) {
           r.get('/refresh', provider.refresh.bind(provider));
+          r.post('/refresh', provider.refresh.bind(provider));
         }
 
         router.use(`/${providerId}`, r);

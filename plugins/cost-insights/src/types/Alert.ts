@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
-import { ChangeStatistic } from './ChangeStatistic';
+import { ChangeStatistic, Maybe } from '@backstage/plugin-cost-insights-common';
 import { Duration } from './Duration';
-import { Maybe } from './Maybe';
 
 /**
  * Generic alert type with required fields for display. The `element` field will be rendered in

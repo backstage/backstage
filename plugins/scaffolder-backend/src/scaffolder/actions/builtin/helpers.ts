@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { SpawnOptionsWithoutStdio, spawn } from 'child_process';
+import { Git } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
+import { assertError } from '@backstage/errors';
+import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
+import { Octokit } from 'octokit';
 import { PassThrough, Writable } from 'stream';
 import { Logger } from 'winston';
-import { Git } from '@backstage/backend-common';
-import { Octokit } from 'octokit';
-import { assertError } from '@backstage/errors';
 
 /** @public */
 export type RunCommandOptions = {
@@ -200,3 +201,12 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
     await tryOnce();
   }
 };
+
+export function getGitCommitMessage(
+  gitCommitMessage: string | undefined,
+  config: Config,
+): string | undefined {
+  return gitCommitMessage
+    ? gitCommitMessage
+    : config.getOptionalString('scaffolder.defaultCommitMessage');
+}

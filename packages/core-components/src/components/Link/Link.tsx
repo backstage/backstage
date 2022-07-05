@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useAnalytics } from '@backstage/core-plugin-api';
+import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import classnames from 'classnames';
 import MaterialLink, {
   LinkProps as MaterialLinkProps,
@@ -25,6 +25,7 @@ import {
   Link as RouterLink,
   LinkProps as RouterLinkProps,
 } from 'react-router-dom';
+import { trimEnd } from 'lodash';
 
 const useStyles = makeStyles(
   {
@@ -51,6 +52,45 @@ export type LinkProps = MaterialLinkProps &
     component?: ElementType<any>;
     noTrack?: boolean;
   };
+
+/**
+ * Returns the app base url that could be empty if the Config API is not properly implemented.
+ * The only cases there would be no Config API are in tests and in storybook stories, and in those cases, it's unlikely that callers would rely on this subpath behavior.
+ */
+const useBaseUrl = () => {
+  try {
+    const config = useApi(configApiRef);
+    return config.getOptionalString('app.baseUrl');
+  } catch {
+    return undefined;
+  }
+};
+
+/**
+ * Get the app base path from the configured app baseUrl.
+ * The returned path does not have a trailing slash.
+ */
+const useBasePath = () => {
+  // baseUrl can be specified as just a path
+  const base = 'http://dummy.dev';
+  const url = useBaseUrl() ?? '/';
+  const { pathname } = new URL(url, base);
+  return trimEnd(pathname, '/');
+};
+
+export const useResolvedPath = (uri: LinkProps['to']) => {
+  let resolvedPath = String(uri);
+
+  const basePath = useBasePath();
+  const external = isExternalUri(resolvedPath);
+  const startsWithBasePath = resolvedPath.startsWith(basePath);
+
+  if (!external && !startsWithBasePath) {
+    resolvedPath = basePath.concat(resolvedPath);
+  }
+
+  return resolvedPath;
+};
 
 /**
  * Given a react node, try to retrieve its text content.
@@ -84,7 +124,7 @@ export const Link = React.forwardRef<any, LinkProps>(
   ({ onClick, noTrack, ...props }, ref) => {
     const classes = useStyles();
     const analytics = useAnalytics();
-    const to = String(props.to);
+    const to = useResolvedPath(props.to);
     const linkText = getNodeText(props.children) || to;
     const external = isExternalUri(to);
     const newWindow = external && !!/^https?:/.exec(to);
@@ -99,11 +139,11 @@ export const Link = React.forwardRef<any, LinkProps>(
     return external ? (
       // External links
       <MaterialLink
+        {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
+        {...props}
         ref={ref}
         href={to}
         onClick={handleClick}
-        {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
-        {...props}
         className={classnames(classes.externalLink, props.className)}
       >
         {props.children}
@@ -112,10 +152,11 @@ export const Link = React.forwardRef<any, LinkProps>(
     ) : (
       // Interact with React Router for internal links
       <MaterialLink
+        {...props}
         ref={ref}
         component={RouterLink}
+        to={to}
         onClick={handleClick}
-        {...props}
       />
     );
   },
