@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import { createApiRef } from '@backstage/core-plugin-api';
-import { SystemScore } from './types';
+import { SystemScoreExtended } from './types';
 
 export const scoringDataApiRef = createApiRef<ScoringDataApi>({
   id: 'plugin.scoringdata.service',
 });
 
 export type ScoringDataApi = {
-  getScore(entity: string): Promise<SystemScore | undefined>;
-  getAllScores(): Promise<SystemScore[] | undefined>;
+  getScore(entity: string): Promise<SystemScoreExtended | undefined>;
+  getAllScores(): Promise<SystemScoreExtended[] | undefined>;
 };
