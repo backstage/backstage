@@ -382,7 +382,6 @@ describe('PlaceholderProcessor', () => {
       { type: 'fake', target: 'http://example.com' },
       result => emitted.push(result),
     );
-    console.log(emitted);
     expect(emitted[0]).toEqual({
       type: 'refresh',
       key: 'url:http://example.com/path-to-file.json',

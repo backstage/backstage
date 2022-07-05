@@ -526,7 +526,7 @@ describe('Default Processing Database', () => {
           .select();
 
         expect(refreshKeys[0]).toEqual({
-          entity_ref: 'location:default/fakelocation',
+          entity_id: id,
           key: 'protocol:foo-bar.com',
         });
       },
