@@ -2288,9 +2288,9 @@
     xcase "^2.0.1"
 
 "@google-cloud/container@^4.0.0":
-  version "4.0.1"
-  resolved "https://registry.npmjs.org/@google-cloud/container/-/container-4.0.1.tgz#a3206d3030539e09b7beee8f351fad86c77af79d"
-  integrity sha512-JpsOsdKnCQm1b5aVNnO/2Urdg+qbCLi/srEnTupRj73Pu5wXLHXOCe3vy8Z2GvyCqu7qr89fMREQ4kO4QijnHA==
+  version "4.1.0"
+  resolved "https://registry.npmjs.org/@google-cloud/container/-/container-4.1.0.tgz#cf929184f668fc40ca8b864b7f638228ae67fc98"
+  integrity sha512-LpVT3wxG73iX/5deF4a2KIEZ7sULF2mksrzyA25OVGtyxFclSZT2Gs5uho5USSLkoKg/Ou+l+ekGMrgBQbLDag==
   dependencies:
     google-gax "^3.0.1"
 
