@@ -50,7 +50,7 @@ export class AwsEKSClusterProcessor implements CatalogProcessor {
   normalizeName(name: string): string {
     return name
       .trim()
-      .toLocaleLowerCase()
+      .toLocaleLowerCase('en-US')
       .replace(/[^a-zA-Z0-9\-]/g, '-');
   }
 
@@ -65,6 +65,12 @@ export class AwsEKSClusterProcessor implements CatalogProcessor {
 
     // location target is of format "account-id/region"
     const [accountId, region] = location.target.split('/');
+
+    if (!accountId || !region) {
+      throw new Error(
+        'AWS EKS location specified without account or region information',
+      );
+    }
 
     let credentials: Credentials | undefined;
 
