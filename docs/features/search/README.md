@@ -55,7 +55,7 @@ the **#search** channel of our
 
 ## Use Cases supported
 
-**Backstage Search Pre-Alpha**
+#### **Backstage Search Pre-Alpha**
 
 Search Frontend letting you search through the entities of the software catalog.
 
@@ -73,7 +73,7 @@ there by means of a front-end only, non-extensible MVP.
 - As a software engineer I should be able to hide the filters if I don’t need to
   use them.
 
-**Backstage Search Alpha**
+#### **Backstage Search Alpha**
 
 Basic “out-of-the-box” in-memory indexing process of entities, and their metadata, registered to the Software Catalog.
 
@@ -91,7 +91,7 @@ met, but built on top of a flexible, extensible platform.
   should be possible to have the pre-alpha user experiences covered without
   having to set up and configure a search engine.
 
-**Backstage Search Beta**
+#### **Backstage Search Beta**
 
 At least one production-ready search engine that supports the same use-cases as in the alpha.
 
@@ -107,7 +107,7 @@ are met, and can be deployed using a production-ready search engine.
   search engine according to my organization's needs, but a sensible default
   query should be in place so that I am not required to do so.
 
-**Backstage Search 1.0**
+#### **Backstage Search 1.0**
 
 A stable Search API for plugin developers to add search to their plugins, and app integrators to expose that to their users.
 
