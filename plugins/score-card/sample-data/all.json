@@ -1,0 +1,330 @@
+[
+  {
+    "systemEntityName": "Identity-backend",
+    "systemTier": "A",
+    "SystemDataConfidentiality": "Confidential",
+    "SystemDataSensitivity": ["PII", "Sensitive-PII"],
+    "generatedDateTimeUtc": "2021-07-22 10:00",
+    "scorePercent": 90,
+    "scoreSuccess": "success",
+    "scoringReviewer": "NonValid"
+  },
+  {
+    "systemEntityName": "Online",
+    "systemTier": "A",
+    "SystemDataConfidentiality": "Confidential",
+    "SystemDataSensitivity": ["PII", "Sensitive-PII"],
+    "generatedDateTimeUtc": "2021-07-22 10:00",
+    "scorePercent": 20,
+    "scoreSuccess": "failure",
+    "scoringReviewDate": "2022-01-04T08:00:00Z"
+  },
+  {
+    "systemEntityName": "our-great-system",
+    "systemTier": "A",
+    "SystemDataConfidentiality": "Confidential",
+    "SystemDataSensitivity": ["PII", "Sensitive-PII"],
+    "generatedDateTimeUtc": "2021-07-22 10:00",
+    "scorePercent": 57,
+    "scoringReviewer": "Guest",
+    "scoringReviewDate": "2022-01-04T08:00:00Z",
+    "scoreSuccess": "partial",
+    "areaScores": [
+      {
+        "id": 2199,
+        "title": "Code",
+        "scorePercent": 90,
+        "scoreSuccess": "success",
+        "scoreEntries": [
+          {
+            "id": 2157,
+            "title": "GitFlow",
+            "scorePercent": 100,
+            "scoreSuccess": "success",
+            "scoreHints": "Gitflow: 100%",
+            "details": "..."
+          },
+          {
+            "id": 2159,
+            "title": "Identity Management",
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2163,
+            "title": "Swagger",
+            "scoreSuccess": "unknown",
+            "isOptional": true,
+            "details": "..."
+          },
+          {
+            "id": 2158,
+            "title": "Https",
+            "scoreSuccess": "unknown",
+            "isOptional": true,
+            "details": "..."
+          },
+          {
+            "id": 2153,
+            "title": "Application Insights",
+            "scorePercent": 80,
+            "scoreSuccess": ["AppInsights configured", "Dashboard present"],
+            "details": "Lorem ipsum for **AppInsights** sit amet, consectetuer adipiscing elit. Aliquam erat volutpat. In laoreet, magna id viverra tincidunt, sem odio bibendum justo, vel imperdiet sapien wisi sed libero. Nullam at arcu a est sollicitudin euismod. Aliquam id dolor. Fusce nibh. Duis sapien nunc, commodo et, interdum suscipit, sollicitudin et, dolor. Etiam sapien elit, consequat eget, tristique non, venenatis quis, ante. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Mauris elementum mauris vitae tortor. Maecenas libero. Duis pulvinar. Pellentesque pretium lectus id turpis. Duis ante orci, molestie vitae vehicula venenatis, tincidunt ac pede. Etiam commodo dui eget wisi. Nunc dapibus tortor vel mi dapibus sollicitudin. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Duis risus."
+          }
+        ]
+      },
+      {
+        "id": 3937,
+        "title": "Documentation",
+        "scorePercent": 75,
+        "scoreSuccess": "almost-success",
+        "scoreEntries": [
+          {
+            "id": 3938,
+            "title": "Project introduction",
+            "scorePercent": 100,
+            "scoreSuccess": "success",
+            "scoreHints": "Well structured/documented/linked with the wiki: 100%",
+            "details": "Project home page is linked to **devops wiki**."
+          },
+          {
+            "id": 3940,
+            "title": "Project wiki",
+            "isOptional": false,
+            "scorePercent": 50,
+            "scoreSuccess": "partial",
+            "scoreHints": "Somewhat usefull: 50%",
+            "details": "Project wiki contains basic information however it is not well structured. It contains brief introduction and few pages about the technology used, but it is missing business context, processes description etc."
+          },
+          {
+            "id": 2207,
+            "title": "README",
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2170,
+            "title": "RFP",
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2164,
+            "title": "Architecture Diagrams",
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2205,
+            "title": "SLA",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2165,
+            "title": "Business Documentation",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2171,
+            "title": "Road Map",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          }
+        ]
+      },
+      {
+        "id": 2208,
+        "title": "Operations",
+        "scorePercent": 50,
+        "scoreSuccess": "partial",
+        "scoreEntries": [
+          {
+            "id": 2210,
+            "title": "Health Checks",
+            "scorePercent": 0,
+            "scoreSuccess": "failure",
+            "details": "Completelly missing healthchecks."
+          },
+          {
+            "id": 2185,
+            "title": "Semantic Versioning",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2176,
+            "title": "CI Pipelines",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2175,
+            "title": "CD Pipelines",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2181,
+            "title": "Insights Dashboard",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2173,
+            "title": "Alerts",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2184,
+            "title": "Release-Notes",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2183,
+            "title": "Release-Annotations-to-App-Insights",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2178,
+            "title": "DNS Record",
+            "isOptional": true,
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2180,
+            "title": "GitOps",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2177,
+            "title": "Canary-Checks",
+            "isOptional": true,
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "...depends on tier/SLA..."
+          },
+          {
+            "id": 2172,
+            "title": "AB Testing",
+            "isOptional": true,
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 3941,
+            "title": "Disaster Recovery Plan",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2179,
+            "title": "Data Refresh For Testing Environments",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2174,
+            "title": "Basic Ops Handed Over to L2",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          }
+        ]
+      },
+      {
+        "id": 4333,
+        "title": "Quality",
+        "scorePercent": 25,
+        "scoreSuccess": "almost-failure",
+        "scoreEntries": [
+          {
+            "id": 2187,
+            "title": "Code Reviews",
+            "scorePercent": 100,
+            "scoreSuccess": "success",
+            "scoreHints": [
+              "PR requires reviewer",
+              "No override possible",
+              "PRs are well described",
+              "PRs are small",
+              "PRs has comments"
+            ],
+            "details": "Development policy is defined. Code review process is done during the pull request with minimum of 2 reviewers."
+          },
+          {
+            "id": 2191,
+            "title": "Unit Tests",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2189,
+            "title": "Integration Tests",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2190,
+            "title": "Performance Tests",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2186,
+            "title": "Automation Tests",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          },
+          {
+            "id": 2188,
+            "title": "Design Reviews",
+            "scorePercent": 0,
+            "scoreSuccess": "unknown",
+            "details": "..."
+          }
+        ]
+      },
+      {
+        "id": 4328,
+        "title": "Security",
+        "scorePercent": 10,
+        "scoreSuccess": "failure",
+        "scoreEntries": [
+          {
+            "id": 2158,
+            "title": "Https",
+            "scorePercent": 0,
+            "scoreSuccess": "failure",
+            "details": "At least one endpoint accessible without SSL protection"
+          }
+        ]
+      }
+    ]
+  }
+]
