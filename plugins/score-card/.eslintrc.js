@@ -1,6 +1,1 @@
-module.exports = {
-  extends: [
-    require.resolve('@backstage/cli/config/eslint'),
-    'plugin:react-hooks/recommended',
-  ],
-};
+module.exports = require('@backstage/cli/config/eslint-factory')(__dirname);
