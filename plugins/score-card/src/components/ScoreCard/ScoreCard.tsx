@@ -18,7 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Chip, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAsync } from 'react-use';
 
 import {
@@ -29,10 +29,8 @@ import {
   Table,
   TableColumn,
 } from '@backstage/core-components';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { SystemScoreExtended } from '../../types/SystemScoreExtended';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { scoreToColorConverter } from '../../helpers/scoreToColorConverter';
-import { extendSystemScore } from '../../helpers/extendSystemScore';
 import { getWarningPanel } from '../../helpers/getWarningPanel';
 import {
   getScoreTableEntries,
@@ -43,8 +41,7 @@ import { detailsColumn } from './columns/detailsColumn';
 import { scorePercentColumn } from './columns/scorePercentColumn';
 import { titleColumn } from './columns/titleColumn';
 import { getReviewerLink } from './sub-components/getReviewerLink';
-import { AsyncState } from 'react-use/lib/useAsyncFn';
-import { SystemScore } from '../../api';
+import { scoringDataApiRef } from '../../api';
 
 // lets prepare some styles
 const useStyles = makeStyles(theme => ({
@@ -62,41 +59,35 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+// data loader
+const useScoringDataLoader = () => {
+  const errorApi = useApi(errorApiRef);
+  const scorigDataApi = useApi(scoringDataApiRef);
+  const { entity } = useEntity();
+
+  const { error, value, loading } = useAsync(
+    async () => scorigDataApi.getScore(entity),
+    [scorigDataApi, entity],
+  );
+
+  useEffect(() => {
+    if (error) {
+      errorApi.post(error);
+    }
+  }, [error, errorApi]);
+
+  return { loading, value, error };
+};
+
 export const ScoreCard = ({
   variant = 'gridItem',
 }: {
   entity?: Entity;
   variant?: InfoCardVariants;
 }) => {
-  const { entity } = useEntity();
-  const systemName = entity.metadata.name;
+  const { loading, error, value: data } = useScoringDataLoader();
 
   // let's load the entity data from url defined in config
-  const configApi = useApi(configApiRef);
-  const jsonDataUrl =
-    configApi.getOptionalString('scorecards.jsonDataUrl') ??
-    'https://unknown-url-please-configure';
-  const {
-    loading: loading,
-    error: error,
-    value: value,
-  }: AsyncState<SystemScoreExtended | null> = useAsync(async () => {
-    const urlWithData = `${jsonDataUrl}${systemName}.json`;
-    const result: SystemScore = await fetch(urlWithData).then(res => {
-      switch (res.status) {
-        case 404:
-          return null;
-        case 200:
-          return res.json();
-        default:
-          throw new Error(`error from server (code ${res.status})`);
-      }
-    });
-    if (!result) {
-      return null;
-    }
-    return extendSystemScore(result, undefined);
-  });
 
   const classes = useStyles();
 
@@ -104,26 +95,26 @@ export const ScoreCard = ({
   let gateLabel = 'Not computed';
   const gateStyle = {
     margin: 0,
-    backgroundColor: scoreToColorConverter(value?.scoreSuccess),
+    backgroundColor: scoreToColorConverter(data?.scoreSuccess),
   };
-  if (value?.scorePercent || value?.scorePercent === 0) {
-    gateLabel = `Total score: ${value?.scorePercent} %`;
+  if (data?.scorePercent || data?.scorePercent === 0) {
+    gateLabel = `Total score: ${data?.scorePercent} %`;
   }
   const qualityBadge = !loading && <Chip label={gateLabel} style={gateStyle} />;
 
   // let's define the main table columns
   const columns: TableColumn<SystemScoreTableEntry>[] = [
-    areaColumn(value),
+    areaColumn(data),
     titleColumn,
     detailsColumn,
     scorePercentColumn,
   ];
 
-  const allEntries = getScoreTableEntries(value);
+  const allEntries = getScoreTableEntries(data);
 
   return (
     <InfoCard
-      title={`Score Card for ${systemName}`}
+      title="Scoring"
       variant={variant}
       headerProps={{
         action: qualityBadge,
@@ -137,15 +128,15 @@ export const ScoreCard = ({
 
       {error && getWarningPanel(error)}
 
-      {!loading && !value && (
+      {!loading && !data && (
         <EmptyState
           missing="info"
           title="No information to display"
-          description={`There is no data available for '${systemName}'.`}
+          description="There is no data available for this entity"
         />
       )}
 
-      {!loading && value && (
+      {!loading && data && (
         <>
           <Grid
             item
@@ -171,7 +162,7 @@ export const ScoreCard = ({
               }}
             />
 
-            {getReviewerLink(value)}
+            {getReviewerLink(data)}
           </Grid>
         </>
       )}
