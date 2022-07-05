@@ -97,7 +97,6 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-msgraph
 
 ```diff
  // packages/backend/src/plugins/catalog.ts
-+import { Duration } from 'luxon';
 +import { MicrosoftGraphOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-msgraph';
 
  export default async function createPlugin(
