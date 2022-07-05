@@ -145,6 +145,10 @@ export class CatalogBuilder {
     processingInterval: ProcessingIntervalFunction,
   ): CatalogBuilder;
   setProcessingIntervalSeconds(seconds: number): CatalogBuilder;
+  // @alpha (undocumented)
+  subscribe(
+    catalogProcessingErrorListeners: CatalogProcessingErrorListener[],
+  ): void;
 }
 
 // @alpha
@@ -203,14 +207,12 @@ export type CatalogPermissionRule<TParams extends unknown[] = unknown[]> =
 // @public (undocumented)
 export interface CatalogProcessingEngine {
   // (undocumented)
-  addErrorListener?(errorListener: CatalogProcessingErrorListener): void;
-  // (undocumented)
   start(): Promise<void>;
   // (undocumented)
   stop(): Promise<void>;
 }
 
-// @public
+// @alpha
 export interface CatalogProcessingErrorListener {
   // (undocumented)
   onError(

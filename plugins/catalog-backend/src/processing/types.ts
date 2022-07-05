@@ -66,13 +66,12 @@ export type DeferredEntity = {
 export interface CatalogProcessingEngine {
   start(): Promise<void>;
   stop(): Promise<void>;
-  addErrorListener?(errorListener: CatalogProcessingErrorListener): void;
 }
 
 /**
  * An error listener for catalog processing engine. It can be used to listen and track entity errors.
  *
- * @public
+ * @alpha
  */
 export interface CatalogProcessingErrorListener {
   onError(

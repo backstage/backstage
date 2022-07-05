@@ -56,7 +56,10 @@ import {
 } from '../modules/core/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../modules/util/parse';
 import { LocationAnalyzer } from '../ingestion/types';
-import { CatalogProcessingEngine } from '../processing/types';
+import {
+  CatalogProcessingEngine,
+  CatalogProcessingErrorListener,
+} from '../processing';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
@@ -133,6 +136,7 @@ export class CatalogBuilder {
   private processors: CatalogProcessor[];
   private processorsReplace: boolean;
   private parser: CatalogProcessorParser | undefined;
+  private catalogProcessingErrorListeners?: CatalogProcessingErrorListener[];
   private processingInterval: ProcessingIntervalFunction =
     createRandomProcessingInterval({
       minSeconds: 100,
@@ -447,6 +451,14 @@ export class CatalogBuilder {
       orchestrator,
       stitcher,
       () => createHash('sha1'),
+      1000,
+      {
+        onError: async (unprocessedEntity, result, resultHash) => {
+          this.catalogProcessingErrorListeners?.forEach(listener =>
+            listener.onError(unprocessedEntity, result, resultHash),
+          );
+        },
+      },
     );
 
     const locationAnalyzer =
@@ -476,6 +488,14 @@ export class CatalogBuilder {
       processingEngine,
       router,
     };
+  }
+
+  /**
+   * @alpha
+   * @param catalogProcessingErrorListeners - a list of listeners to get notified if an error occurs while processing an entity
+   */
+  subscribe(catalogProcessingErrorListeners: CatalogProcessingErrorListener[]) {
+    this.catalogProcessingErrorListeners = catalogProcessingErrorListeners;
   }
 
   private buildEntityPolicy(): EntityPolicy {

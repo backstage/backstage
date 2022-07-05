@@ -34,7 +34,6 @@ const CACHE_TTL = 5;
 
 export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
   private readonly tracker = progressTracker();
-  private readonly errorListeners: CatalogProcessingErrorListener[] = [];
   private stopFunc?: () => void;
 
   constructor(
@@ -44,6 +43,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     private readonly stitcher: Stitcher,
     private readonly createHash: () => Hash,
     private readonly pollingIntervalMs: number = 1000,
+    private readonly catalogProcessingErrorListener?: CatalogProcessingErrorListener,
   ) {}
 
   async start() {
@@ -157,9 +157,11 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
           // just store the errors and trigger a stich so that they become visible to
           // the outside.
           if (!result.ok) {
-            // notify the error listeners if the entity can not be processed.
-            this.errorListeners.forEach(listener =>
-              listener.onError(unprocessedEntity, result, resultHash),
+            // notify the error listener if the entity can not be processed.
+            this.catalogProcessingErrorListener?.onError(
+              unprocessedEntity,
+              result,
+              resultHash,
             );
 
             await this.processingDatabase.transaction(async tx => {
@@ -230,10 +232,6 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       this.stopFunc();
       this.stopFunc = undefined;
     }
-  }
-
-  addErrorListener(errorListener: CatalogProcessingErrorListener) {
-    this.errorListeners.push(errorListener);
   }
 }
 
