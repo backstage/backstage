@@ -219,8 +219,6 @@ const ALLOW_WARNINGS = [
   'plugins/circleci',
   'plugins/cloudbuild',
   'plugins/code-climate',
-  'plugins/code-coverage',
-  'plugins/code-coverage-backend',
   'plugins/config-schema',
   'plugins/cost-insights',
   'plugins/dynatrace',
