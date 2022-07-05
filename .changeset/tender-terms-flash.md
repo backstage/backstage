@@ -2,4 +2,4 @@
 '@backstage/integration': patch
 ---
 
-Avoid double encoding of the filepath in `getBitbucketServerDownloadUrl`
+Avoid double encoding of the file path in `getBitbucketServerDownloadUrl`
