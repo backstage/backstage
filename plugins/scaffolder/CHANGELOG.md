@@ -1,5 +1,31 @@
 # @backstage/plugin-scaffolder
 
+## 1.4.0-next.2
+
+### Minor Changes
+
+- d8eb82f447: Add `allowedRepos` `ui:option` to `RepoUrlPicker` component, and move `repoName` field to own component
+
+### Patch Changes
+
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- 14146703e5: Add `allowArbitraryValues` to `ui:options` in `OwnedEntityPicker`, similar to `allowArbitraryValues` in `EntityPicker`
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/theme@0.2.16-next.1
+  - @backstage/integration@1.2.2-next.2
+  - @backstage/plugin-catalog-react@1.1.2-next.2
+  - @backstage/integration-react@1.1.2-next.2
+
 ## 1.4.0-next.1
 
 ### Patch Changes

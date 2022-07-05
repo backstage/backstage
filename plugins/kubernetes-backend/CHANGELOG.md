@@ -1,5 +1,15 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.7.0-next.2
+
+### Patch Changes
+
+- 60e5f9fe68: Fixed the lack of `limitranges` as part of the Default Objects to fetch from the kubernetes api
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.4.0-next.1
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/backend-common@0.14.1-next.2
+
 ## 0.7.0-next.1
 
 ### Patch Changes
