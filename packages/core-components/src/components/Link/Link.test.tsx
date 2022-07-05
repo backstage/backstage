@@ -21,9 +21,11 @@ import {
   TestApiProvider,
   wrapInTestApp,
 } from '@backstage/test-utils';
-import { analyticsApiRef } from '@backstage/core-plugin-api';
-import { isExternalUri, Link } from './Link';
+import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
+import { isExternalUri, Link, useResolvedPath } from './Link';
 import { Route, Routes } from 'react-router';
+import { renderHook, WrapperComponent } from '@testing-library/react-hooks';
+import { ConfigReader } from '@backstage/config';
 
 describe('<Link />', () => {
   it('navigates using react-router', async () => {
@@ -103,6 +105,58 @@ describe('<Link />', () => {
     });
   });
 
+  describe('resolves a sub-path correctly', () => {
+    it('when it starts with base path', async () => {
+      const testString = 'This is test string';
+      const linkText = 'Navigate!';
+      const configApi = new ConfigReader({
+        app: { baseUrl: 'http://localhost:3000/example' },
+      });
+
+      const { getByText } = render(
+        wrapInTestApp(
+          <TestApiProvider apis={[[configApiRef, configApi]]}>
+            <Routes>
+              <Link to="/example/test">{linkText}</Link>
+              <Route path="/example/test" element={<p>{testString}</p>} />
+            </Routes>
+          </TestApiProvider>,
+        ),
+      );
+
+      expect(() => getByText(testString)).toThrow();
+      fireEvent.click(getByText(linkText));
+      await waitFor(() => {
+        expect(getByText(testString)).toBeInTheDocument();
+      });
+    });
+
+    it('when it does not start with base path', async () => {
+      const testString = 'This is test string';
+      const linkText = 'Navigate!';
+      const configApi = new ConfigReader({
+        app: { baseUrl: 'http://localhost:3000/example' },
+      });
+
+      const { getByText } = render(
+        wrapInTestApp(
+          <TestApiProvider apis={[[configApiRef, configApi]]}>
+            <Routes>
+              <Link to="/test">{linkText}</Link>
+              <Route path="/example/test" element={<p>{testString}</p>} />
+            </Routes>
+          </TestApiProvider>,
+        ),
+      );
+
+      expect(() => getByText(testString)).toThrow();
+      fireEvent.click(getByText(linkText));
+      await waitFor(() => {
+        expect(getByText(testString)).toBeInTheDocument();
+      });
+    });
+  });
+
   describe('isExternalUri', () => {
     it.each([
       [true, 'http://'],
@@ -126,6 +180,47 @@ describe('<Link />', () => {
       [false, '/path/to/something#fragment'],
     ])('should be %p when %p', (expected, uri) => {
       expect(isExternalUri(uri)).toBe(expected);
+    });
+  });
+
+  describe('useResolvedPath', () => {
+    const wrapper: WrapperComponent<{}> = ({ children }) => {
+      const configApi = new ConfigReader({
+        app: { baseUrl: 'http://localhost:3000/example' },
+      });
+      return (
+        <TestApiProvider apis={[[configApiRef, configApi]]}>
+          {children}
+        </TestApiProvider>
+      );
+    };
+
+    describe('concatenate base path', () => {
+      it('when uri is internal and does not start with base path', () => {
+        const path = '/catalog/default/component/artist-lookup';
+        const { result } = renderHook(() => useResolvedPath(path), {
+          wrapper,
+        });
+        expect(result.current).toBe('/example'.concat(path));
+      });
+    });
+
+    describe('does not concatenate base path', () => {
+      it('when uri is external', () => {
+        const path = 'https://stackoverflow.com/questions/1/example';
+        const { result } = renderHook(() => useResolvedPath(path), {
+          wrapper,
+        });
+        expect(result.current).toBe(path);
+      });
+
+      it('when uri already starts with base path', () => {
+        const path = '/example/catalog/default/component/artist-lookup';
+        const { result } = renderHook(() => useResolvedPath(path), {
+          wrapper,
+        });
+        expect(result.current).toBe(path);
+      });
     });
   });
 });

@@ -34,6 +34,7 @@ export type {
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
 } from './types';
+export * from './errors';
 export * from './indexing';
 export * from './test-utils';
 

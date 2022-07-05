@@ -1,5 +1,12 @@
 # @backstage/create-app
 
+## 0.4.29-next.2
+
+### Patch Changes
+
+- f281ad17c0: Adds the ability to define the Backstage app name using a `BACKSTAGE_APP_NAME`
+  environment variable when running `create-app`.
+
 ## 0.4.29-next.1
 
 ### Patch Changes

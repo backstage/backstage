@@ -1,5 +1,11 @@
 # @backstage/catalog-model
 
+## 1.1.0-next.2
+
+### Minor Changes
+
+- 4cc81372f8: Introduced `GroupDefaultParentEntityPolicy` to set a default group entity parent.
+
 ## 1.1.0-next.1
 
 ### Patch Changes
