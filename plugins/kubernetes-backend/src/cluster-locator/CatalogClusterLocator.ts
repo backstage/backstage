@@ -34,19 +34,21 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
   }
 
   async getClusters(): Promise<ClusterDetails[]> {
+    const apiServerKey = `metadata.annotations.${ANNOTATION_KUBERNETES_API_SERVER}`;
+    const apiServerCaKey = `metadata.annotations.${ANNOTATION_KUBERNETES_API_SERVER_CA}`;
+    const authProviderKey = `metadata.annotations.${ANNOTATION_KUBERNETES_AUTH_PROVIDER}`;
+
+    const filter: Record<string, symbol | string> = {
+      kind: 'Resource',
+      'spec.type': 'kubernetes-cluster',
+    };
+
+    filter[apiServerKey] = CATALOG_FILTER_EXISTS;
+    filter[apiServerCaKey] = CATALOG_FILTER_EXISTS;
+    filter[authProviderKey] = CATALOG_FILTER_EXISTS;
+
     const clusters = await this.catalogClient.getEntities({
-      filter: [
-        {
-          kind: 'Resource',
-          'spec.type': 'kubernetes-cluster',
-          'metadata.annotations.kubernetes.io/api-server':
-            CATALOG_FILTER_EXISTS,
-          'metadata.annotations.kubernetes.io/api-server-certificate-authority':
-            CATALOG_FILTER_EXISTS,
-          'metadata.annotations.kubernetes.io/auth-provider':
-            CATALOG_FILTER_EXISTS,
-        },
-      ],
+      filter: [filter],
     });
     return clusters.items.map(entity => {
       const clusterDetails: ClusterDetails = {
