@@ -1,5 +1,14 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.1.24-next.2
+
+### Patch Changes
+
+- 8747824221: feature: added support for multiple branches to the `JenkinsApi`
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/backend-common@0.14.1-next.2
+
 ## 0.1.24-next.1
 
 ### Patch Changes
