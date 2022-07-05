@@ -542,7 +542,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const tx = txOpaque as Knex.Transaction;
     const { keys } = options;
 
-    const updateResult = await tx<DbRefreshStateRow>('refresh_state')
+    await tx<DbRefreshStateRow>('refresh_state')
       .whereIn('entity_id', function selectEntityRefs(tx2) {
         tx2
           .whereIn('key', keys)
@@ -552,12 +552,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
           .from('refresh_keys');
       })
       .update({ next_update_at: tx.fn.now() });
-
-    if (updateResult === 0) {
-      this.options.logger.info(
-        `Failed to schedule ${JSON.stringify(keys)} for keys`,
-      );
-    }
   }
 
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {
