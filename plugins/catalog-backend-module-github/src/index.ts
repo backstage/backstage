@@ -23,8 +23,8 @@
 export { GithubDiscoveryProcessor } from './processors/GithubDiscoveryProcessor';
 export { GithubMultiOrgReaderProcessor } from './processors/GithubMultiOrgReaderProcessor';
 export { GithubOrgReaderProcessor } from './processors/GithubOrgReaderProcessor';
-export { GitHubOrgEntityProvider } from './providers/GitHubOrgEntityProvider';
 export { GitHubEntityProvider } from './providers/GitHubEntityProvider';
-export type { GitHubEntityProviderOptions } from './providers/GitHubEntityProvider';
+export { GitHubOrgEntityProvider } from './providers/GitHubOrgEntityProvider';
 export type { GitHubOrgEntityProviderOptions } from './providers/GitHubOrgEntityProvider';
+export type { GitHubEntityProviderOptions } from './providers/GitHubEntityProvider';
 export type { GithubMultiOrgConfig } from './lib';
