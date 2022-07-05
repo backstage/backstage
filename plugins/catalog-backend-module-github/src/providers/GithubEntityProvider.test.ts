@@ -20,7 +20,7 @@ import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
 import {
   GitHubEntityProvider,
   GitHubEntityProviderOptions,
-} from './GitHubEntityProvider';
+} from '../index';
 
 class PersistingTaskRunner implements TaskRunner {
   private tasks: TaskInvocationDefinition[] = [];
