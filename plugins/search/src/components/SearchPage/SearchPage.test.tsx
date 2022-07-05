@@ -16,7 +16,7 @@
 
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
-import { useLocation, useOutlet } from 'react-router';
+import { useLocation } from 'react-router';
 import { useSearch } from '@backstage/plugin-search-react';
 import { SearchPage } from './SearchPage';
 
@@ -48,11 +48,6 @@ jest.mock('@backstage/plugin-search-react', () => ({
     pageCursor: '',
     setPageCursor: (pageCursor: any) => setPageCursorMock(pageCursor),
   }),
-}));
-
-jest.mock('../LegacySearchPage', () => ({
-  ...jest.requireActual('@backstage/plugin-search-react'),
-  LegacySearchPage: jest.fn().mockReturnValue('LegacySearchPageMock'),
 }));
 
 describe('SearchPage', () => {
@@ -94,13 +89,6 @@ describe('SearchPage', () => {
     const { getByText } = await renderInTestApp(<SearchPage />);
 
     expect(getByText('Route Children')).toBeInTheDocument();
-  });
-
-  it('renders legacy search when no router children are provided', async () => {
-    (useOutlet as jest.Mock).mockReturnValueOnce(null);
-    const { getByText } = await renderInTestApp(<SearchPage />);
-
-    expect(getByText('LegacySearchPageMock')).toBeInTheDocument();
   });
 
   it('replaces window history with expected query parameters', async () => {
