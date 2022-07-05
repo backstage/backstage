@@ -19,7 +19,9 @@ import { Config } from '@backstage/config';
 import {
   GithubCredentialsProvider,
   ScmIntegrations,
+  GitHubIntegrationConfig,
   DefaultGithubCredentialsProvider,
+  SingleInstanceGithubCredentialsProvider,
 } from '@backstage/integration';
 import {
   EntityProvider,
@@ -35,11 +37,11 @@ import { camelCase } from 'lodash';
 import { getOrganizationEntities } from '../lib/github';
 
 /**
- * Options for {@link GithubEntityProvider}.
+ * Options for {@link GitHubEntityProvider}.
  *
  * @public
  */
-export interface GithubEntityProviderOptions {
+export interface GitHubEntityProviderOptions {
   /**
    * A unique, stable identifier for this provider.
    *
@@ -52,14 +54,14 @@ export interface GithubEntityProviderOptions {
    *
    * @example "https://github.com/backstage"
    */
-  orgUrl: string;
+  target: string;
 
   /**
    * An array of entity file names to be parsed and added to the catalog
-   *
+   * @defaultValue "['catalog-info.yaml']"
    * @example "['catalog-info.yaml', 'template.yaml']"
    */
-  files: Array<string>;
+  files?: Array<string>;
 
   /**
    * A Scheduled Task Runner
@@ -89,40 +91,65 @@ type CreateLocationSpec = {
 /**
  * Provider which discovers catalog files (any name) within a Github Organization.
  *
- * Use `GithubEntityProvider.fromConfig(...)` to create instances.
+ * Use `GitHubEntityProvider.fromConfig(...)` to create instances.
  *
  * @public
  */
-export class GithubEntityProvider implements EntityProvider {
+/**
+ * Provider which discovers catalog files (any name) within a Github Organization.
+ *
+ * Use `GitHubEntityProvider.fromConfig(...)` to create instances.
+ *
+ * @public
+ */
+export class GitHubEntityProvider implements EntityProvider {
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
   private readonly githubCredentialsProvider: GithubCredentialsProvider;
 
-  static fromConfig(config: Config, options: GithubEntityProviderOptions) {
+  static fromConfig(config: Config, options: GitHubEntityProviderOptions) {
     const integrations = ScmIntegrations.fromConfig(config);
-    if (!integrations) {
-      throw new Error('No integrations found for github');
+    const gitHubConfig = integrations.github.byUrl(options.target)?.config;
+
+    if (!gitHubConfig) {
+      throw new Error(
+        `There is no GitHub config that matches ${options.target}. Please add a configuration entry for it under integrations.github`,
+      );
     }
-    return new GithubEntityProvider(integrations, options);
+
+    const files = options.files || ['catalog-info.yaml'];
+
+    if (files.length === 0) {
+      throw new Error('"files" array in "options" is empty');
+    }
+
+    return new GitHubEntityProvider({
+      id: options.id,
+      target: options.target,
+      logger: options.logger,
+      schedule: options.schedule,
+      files,
+      gitHubConfig,
+      githubCredentialsProvider:
+        options.githubCredentialsProvider ||
+        DefaultGithubCredentialsProvider.fromIntegrations(integrations),
+    });
   }
 
   private constructor(
-    private integrations: ScmIntegrations,
     private options: {
       id: string;
-      orgUrl: string;
+      target: string;
       files: Array<string>;
       logger: Logger;
       schedule: TaskRunner;
-      githubCredentialsProvider?: any;
+      gitHubConfig: GitHubIntegrationConfig;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ) {
-    options.logger.child({ target: this.getProviderName() });
-
     this.githubCredentialsProvider =
       options.githubCredentialsProvider ||
-      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
-
+      SingleInstanceGithubCredentialsProvider.create(this.options.gitHubConfig);
     this.scheduleFn = this.createScheduleFn(options.schedule);
   }
 
@@ -162,36 +189,20 @@ export class GithubEntityProvider implements EntityProvider {
       throw new Error('Not initialized');
     }
 
-    const gitHubConfig = this.integrations.github.byUrl(
-      this.options.orgUrl,
-    )?.config;
-
-    if (!gitHubConfig) {
-      throw new Error(
-        `There is no GitHub integration that matches ${this.options.orgUrl}. Please add a configuration entry for it under integrations.github`,
-      );
-    }
-
-    const { org, repoSearchPath } = parseUrl(this.options.orgUrl);
+    const { org, repoSearchPath } = parseUrl(this.options.target);
 
     const { headers } = await this.githubCredentialsProvider.getCredentials({
-      url: this.options.orgUrl,
+      url: this.options.target,
     });
 
     const client = graphql.defaults({
-      baseUrl: gitHubConfig.apiBaseUrl,
+      baseUrl: this.options.gitHubConfig.apiBaseUrl,
       headers,
     });
 
     const startTimestamp = Date.now();
 
-    logger.info(`Reading GitHub repositories from ${this.options.orgUrl}`);
-
-    if (!this.options.files) {
-      throw new Error(
-        `Missing 'files' array key in 'options' passed to GithubEntityProvider.fromConfig() : ${this.getProviderName()}`,
-      );
-    }
+    logger.info(`Reading GitHub repositories from ${this.options.target}`);
 
     const expectedEntityFiles = this.options.files;
 
@@ -239,8 +250,12 @@ export class GithubEntityProvider implements EntityProvider {
 
     if (entityLocations.length === 0) {
       logger.info(`No valid entities found by ${this.getProviderName()}.`);
-      return false;
+      return;
     }
+
+    logger.info(
+      `Adding ${entityLocations.length} valid entities to the catalog`,
+    );
 
     await this.connection.applyMutation({
       type: 'full',
@@ -249,12 +264,6 @@ export class GithubEntityProvider implements EntityProvider {
         entity: locationSpecToLocationEntity({ location }),
       })),
     });
-
-    logger.info(
-      `Adding ${entityLocations.length} valid entities to the catalog`,
-    );
-
-    return true;
   }
 
   private createLocationSpec({
@@ -277,31 +286,13 @@ export class GithubEntityProvider implements EntityProvider {
 export function parseUrl(urlString: string): {
   org: string;
   repoSearchPath: RegExp;
-  catalogPath: string;
-  branch: string;
-  host: string;
 } {
   const url = new URL(urlString);
   const path = url.pathname.substr(1).split('/');
-
-  // /backstage/techdocs-*/blob/master/catalog-info.yaml
-  // can also be
-  // /backstage
-  if (path.length > 2 && path[0].length && path[1].length) {
+  if (path.length === 1 && path[0].length) {
     return {
       org: decodeURIComponent(path[0]),
-      repoSearchPath: escapeRegExp(decodeURIComponent(path[1])),
-      branch: decodeURIComponent(path[3]),
-      catalogPath: `/${decodeURIComponent(path.slice(4).join('/'))}`,
-      host: url.host,
-    };
-  } else if (path.length === 1 && path[0].length) {
-    return {
-      org: decodeURIComponent(path[0]),
-      host: url.host,
       repoSearchPath: escapeRegExp('*'),
-      catalogPath: '/catalog-info.yaml',
-      branch: '-',
     };
   }
 
