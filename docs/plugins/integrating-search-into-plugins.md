@@ -14,7 +14,139 @@ Search Platform in your plugin.
 
 ## Providing data to the search platform
 
-> A guide on how to create collators is coming soon!
+### Create a collator
+
+> Knowing what a [collator](../features/search/concepts.md#collators) is will help you as you build it out.
+
+Imagine you have a plugin that is responsible for storing FAQ snippets in a database. You want other engineers to be able to easily find your questions and answers. So that means you want them to be indexed by the search platform. Lets say the FAQ snippets can be viewed at a URL like `backstage.example.biz/faq-snippets`.
+
+The search platform provides an interface (`DocumentCollatorFactory` from package `@backstage/plugin-search-common`) that allows you to do exactly that. It works by registering each of your entries as a "document" that later represents one search result each.
+
+> You can always look at a working example, e.g. [StackOverflowQuestionsCollatorFactory](https://github.com/backstage/backstage/blob/master/plugins/stack-overflow-backend/src/search/StackOverflowQuestionsCollatorFactory.ts), if you are unsure or want to follow best practices.
+
+#### 1. Install collator interface dependencies
+
+We will need the interface `DocumentCollatorFactory` from package `@backstage/plugin-search-common`, so let's add it to your plugins dependencies:
+
+```sh
+# navigate to the plugin directory
+# (for this tutorial our plugin lives in the backstage repo, if your plugin lives in a separate repo you need to clone that first)
+cd plugins/faq-snippets
+
+# Create a new branch using Git command-line
+git checkout -b tutorials/new-faq-snippets-collator
+
+# Install the package containing the interface
+yarn add @backstage/plugin-search-common
+```
+
+#### 2. Define your document type
+
+Before we can start generating documents from our FAQ entries, we first have to define a document type containing all necessary information we need to later display our entry as search result. The package `@backstage/plugin-search-common` we installed earlier contains a type `IndexableDocument` that we can extend.
+
+Create a new file `plugins/faq-snippets/src/search/collators/FaqSnippetDocument.ts` and paste the following below:
+
+```ts
+import { IndexableDocument } from '@backstage/plugin-search-common';
+
+export interface FaqSnippetDocument extends IndexableDocument {
+  answered_by: string;
+}
+```
+
+#### 3. Use Backstage App configuration
+
+Your new collator could benefit from using configuration directly from the Backstage `app-config.yaml` file which is located on the project's root folder:
+
+```yaml
+faq:
+  baseUrl: https://backstage.example.biz/faq-snippets
+```
+
+#### 4. Implement your collator
+
+Imagine your FAQs can be retrieved at the URL `https://backstage.example.biz/faq-snippets` with following JSON response format:
+
+```json
+{
+  "items": [
+    {
+      "id": 42,
+      "question": "What is The Answer to the Ultimate Question of Life, the Universe, and Everything?",
+      "answer": "Forty-two",
+      "user": "Deep Thought"
+    }
+  ]
+}
+```
+
+Below we provide an example implementation of how the FAQ collator factory could look like using our new document type, placed in the `plugins/faq-snippets/src/search/collators/FaqCollatorFactory.ts` file:
+
+```ts
+import fetch from 'cross-fetch';
+import { Logger } from 'winston';
+import { Config } from '@backstage/config';
+import { Readable } from 'stream';
+import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
+
+import { FaqDocument } from './FaqDocument';
+
+export type FaqCollatorFactoryOptions = {
+  baseUrl?: string;
+  logger: Logger;
+};
+
+export class FaqCollatorFactory implements DocumentCollatorFactory {
+  private readonly baseUrl: string | undefined;
+  private readonly logger: Logger;
+  public readonly type: string = 'faq-snippets';
+
+  private constructor(options: FaqCollatorFactoryOptions) {
+    this.baseUrl = options.baseUrl;
+    this.logger = options.logger;
+  }
+
+  static fromConfig(config: Config, options: FaqCollatorFactoryOptions) {
+    const baseUrl =
+      config.getOptionalString('faq.baseUrl') ||
+      'https://backstage.example.biz/faq-snippets';
+    return new FaqCollatorFactory({ ...options, baseUrl });
+  }
+
+  async getCollator() {
+    return Readable.from(this.execute());
+  }
+
+  async *execute(): AsyncGenerator<FaqDocument> {
+    if (!this.baseUrl) {
+      this.logger.error(`No faq.baseUrl configured in your app-config.yaml`);
+      return;
+    }
+
+    const response = await fetch(this.baseUrl);
+    const data = await response.json();
+
+    for (const faq of data.items) {
+      yield {
+        title: faq.question,
+        location: `/faq-snippets/${faq.id}`,
+        text: faq.answer,
+        answered_by: faq.user,
+      };
+    }
+  }
+}
+```
+
+#### 5. Test your collator
+
+To verify your implementation works as expected make sure to add tests for it. For your convenience, there is the [`TestPipeline`](https://backstage.io/docs/reference/plugin-search-backend-node.testpipeline) utility that emulates a pipeline into which you can integrate your custom collator.
+
+Look at [DefaultTechDocsCollatorFactory test](https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/src/search/DefaultTechDocsCollatorFactory.test.ts), for an example.
+
+#### 6. Make your plugins collator discoverable for others
+
+If you want to make your collator discoverable for other adopters, add it to the list of [plugins integrated to search](https://backstage.io/docs/features/search/search-overview#plugins-integrated-with-backstage-search).
 
 ## Building a search experience into your plugin
 
