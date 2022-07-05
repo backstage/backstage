@@ -3,4 +3,4 @@
 '@backstage/integration': patch
 ---
 
-Support self-hosted gitlab installations with relative url
+Support self-hosted gitlab installations with relative URL.
