@@ -443,6 +443,7 @@ export type GitLabIntegrationConfig = {
   apiBaseUrl: string;
   token?: string;
   baseUrl: string;
+  relativePath?: string;
 };
 
 // @public
