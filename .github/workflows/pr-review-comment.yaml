@@ -1,0 +1,24 @@
+# This workflow is triggered by "PR Review Comment Trigger"
+
+name: PR Review Comment
+on:
+  workflow_run:
+    workflows: [PR Review Comment Trigger]
+    types:
+      - completed
+
+jobs:
+  re-review:
+    runs-on: ubuntu-latest
+
+    # The triggering workflow will report success if the PR needs re-review
+    if: github.repository == 'backstage/backstage' && github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - uses: backstage/actions/re-review@v0.5.2
+        with:
+          app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
+          private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
+          installation-id: ${{ secrets.BACKSTAGE_GOALIE_INSTALLATION_ID }}
+          project-id: PVT_kwDOBFKqdc02LQ
+          issue-number: ${{ github.event.workflow_run.pull_requests[0].number }}
