@@ -82,10 +82,6 @@ export type ReplaceUnprocessedEntitiesOptions =
       type: 'delta';
     };
 
-export type RefreshKeyOptions = {
-  refreshKeys: RefreshKeyData[];
-};
-
 export type RefreshByKeyOptions = {
   keys: string[];
 };

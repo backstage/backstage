@@ -44,7 +44,7 @@ export type DbRefreshStateRow = {
 };
 
 export type DbRefreshKeysRow = {
-  entity_ref: string;
+  entity_id: string;
   key: string;
 };
 

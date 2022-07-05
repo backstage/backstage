@@ -522,7 +522,7 @@ describe('Default Processing Database', () => {
         );
 
         const refreshKeys = await knex<DbRefreshKeysRow>('refresh_keys')
-          .where({ entity_ref: stringifyEntityRef(processedEntity) })
+          .where({ entity_id: id })
           .select();
 
         expect(refreshKeys[0]).toEqual({
