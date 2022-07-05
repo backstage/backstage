@@ -13,22 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   createServiceFactory,
   httpRouterServiceRef,
+  configServiceRef,
 } from '@backstage/backend-plugin-api';
 import Router from 'express-promise-router';
-import express, { Handler } from 'express';
+import { Handler } from 'express';
+import { createServiceBuilder } from '@backstage/backend-common';
 
 export const httpRouterFactory = createServiceFactory({
   service: httpRouterServiceRef,
-  deps: {},
-  factory: async () => {
-    const app = express();
+  deps: {
+    configFactory: configServiceRef,
+  },
+  factory: async ({ configFactory }) => {
     const rootRouter = Router();
-
-    app.use(rootRouter);
-    app.listen(8123);
+    const service = createServiceBuilder(module)
+      .loadConfig(await configFactory('root'))
+      .addRouter('', rootRouter);
+    await service.start();
 
     return async (pluginId?: string) => {
       if (!pluginId) {
