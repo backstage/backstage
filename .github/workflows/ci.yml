@@ -9,8 +9,115 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # This step only runs yarn install to make sure that an exact match is available
+  # in the cache. The two following verify and tests jobs then always install from cache.
+  install:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x]
+
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=4096
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: use node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+
+      - name: yarn install
+        uses: backstage/actions/yarn-install@v0.2.2
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
+
+  # The verify jobs runs all the verification that doesn't require a
+  # diff towards master, since it takes some time to fetch that.
   verify:
     runs-on: ubuntu-latest
+
+    needs: install
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x]
+
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=4096
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: use node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+
+      - name: yarn install
+        uses: backstage/actions/yarn-install@v0.2.2
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
+
+      - name: verify changesets
+        run: node scripts/verify-changesets.js
+
+      - name: verify local dependency ranges
+        run: node scripts/verify-local-dependencies.js
+
+      - name: validate config
+        run: yarn backstage-cli config:check --lax
+
+      - name: type checking and declarations
+        run: yarn tsc:full
+
+      - name: prettier
+        run: yarn prettier:check
+
+        # We need to generate the API references as well, so that we can verify the doc links
+      - name: check api reports and generate API reference
+        run: yarn build:api-reports:only --ci --docs
+
+      - name: verify api reference
+        run: node scripts/verify-api-reference.js
+
+      - name: verify doc links
+        run: node scripts/verify-links.js
+
+      - name: build all packages
+        run: yarn backstage-cli repo build --all
+
+      - name: verify type dependencies
+        run: yarn lint:type-deps
+
+      - name: verify plugin template
+        run: yarn lerna -- run diff -- --check
+
+      - name: ensure clean working directory
+        run: |
+          if files=$(git ls-files --exclude-standard --others --modified) && [[ -z "$files" ]]; then
+            exit 0
+          else
+            echo ""
+            echo "Working directory has been modified:"
+            echo ""
+            git status --short
+            echo ""
+            exit 1
+          fi
+
+  # The test job runs all tests as well as any verification step that
+  # requires a diff towards master.
+  test:
+    runs-on: ubuntu-latest
+
+    needs: install
 
     strategy:
       matrix:
@@ -80,47 +187,11 @@ jobs:
         run: git diff --quiet origin/master HEAD -- yarn.lock
         continue-on-error: true
 
-      - name: prettier
-        run: yarn prettier:check
-
       - name: lock
         run: yarn lock:check
 
-      - name: validate config
-        run: yarn backstage-cli config:check --lax
-
       - name: lint
         run: yarn backstage-cli repo lint --since origin/master
-
-      - name: type checking and declarations
-        run: yarn tsc:full
-
-        # We need to generate the API references as well, so that we can verify the doc links
-      - name: check api reports and generate API reference
-        run: yarn build:api-reports:only --ci --docs
-
-      - name: verify api reference
-        run: node scripts/verify-api-reference.js
-
-      - name: verify changesets
-        run: node scripts/verify-changesets.js
-
-      - name: verify doc links
-        run: node scripts/verify-links.js
-
-      - name: verify local dependency ranges
-        run: node scripts/verify-local-dependencies.js
-
-      - name: build changed packages
-        if: ${{ steps.yarn-lock.outcome == 'success' }}
-        run: yarn backstage-cli repo build --all --since origin/master
-
-      - name: build all packages
-        if: ${{ steps.yarn-lock.outcome == 'failure' }}
-        run: yarn backstage-cli repo build --all
-
-      - name: verify type dependencies
-        run: yarn lint:type-deps
 
       - name: test changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}
@@ -143,9 +214,6 @@ jobs:
           BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
-
-      - name: verify plugin template
-        run: yarn lerna -- run diff -- --check
 
       - name: ensure clean working directory
         run: |
