@@ -13,8 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SystemScoreEntry } from './SystemScoreEntry';
-import { ScoreSuccessEnum } from './SystemScoreSuccessEnum';
+
+export interface SystemScore {
+  systemEntityName: string;
+  generatedDateTimeUtc: Date | string;
+  scorePercent: number;
+  scoreSuccess: ScoreSuccessEnum;
+  scoringReviewer: string | undefined | null;
+  scoringReviewDate: Date | string | undefined | null;
+  areaScores: SystemScoreArea[];
+}
 
 export interface SystemScoreArea {
   id: number;
@@ -22,4 +30,22 @@ export interface SystemScoreArea {
   scorePercent: number;
   scoreSuccess: ScoreSuccessEnum;
   scoreEntries: SystemScoreEntry[];
+}
+
+export interface SystemScoreEntry {
+  id: number;
+  title: string;
+  isOptional: boolean;
+  scorePercent: number;
+  scoreSuccess: ScoreSuccessEnum;
+  scoreHints: string | string[];
+  details: string;
+}
+
+export enum ScoreSuccessEnum {
+  Success = 'success',
+  AlmostSuccess = 'almost-success',
+  Partial = 'partial',
+  AlmostFailure = 'almost-failure',
+  Failure = 'failure',
 }

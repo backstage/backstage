@@ -30,7 +30,7 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { SystemScore } from '../../types/SystemScore';
+import { SystemScoreExtended } from '../../types/SystemScoreExtended';
 import { scoreToColorConverter } from '../../helpers/scoreToColorConverter';
 import { extendSystemScore } from '../../helpers/extendSystemScore';
 import { getWarningPanel } from '../../helpers/getWarningPanel';
@@ -43,6 +43,8 @@ import { detailsColumn } from './columns/detailsColumn';
 import { scorePercentColumn } from './columns/scorePercentColumn';
 import { titleColumn } from './columns/titleColumn';
 import { getReviewerLink } from './sub-components/getReviewerLink';
+import { AsyncState } from 'react-use/lib/useAsyncFn';
+import { SystemScore } from '../../api';
 
 // lets prepare some styles
 const useStyles = makeStyles(theme => ({
@@ -78,9 +80,8 @@ export const ScoreCard = ({
     loading: loading,
     error: error,
     value: value,
-  } = useAsync(async () => {
+  }: AsyncState<SystemScoreExtended | null> = useAsync(async () => {
     const urlWithData = `${jsonDataUrl}${systemName}.json`;
-    // DEBUG: console.log(`Fetching data from ${urlWithData}`);
     const result: SystemScore = await fetch(urlWithData).then(res => {
       switch (res.status) {
         case 404:

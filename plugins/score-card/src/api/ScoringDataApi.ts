@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createApiRef } from '@backstage/core-plugin-api';
+import { SystemScore } from './types';
 
-export enum ScoreSuccessEnum {
-  Success = 'success',
-  AlmostSuccess = 'almost-success',
-  Partial = 'partial',
-  AlmostFailure = 'almost-failure',
-  Failure = 'failure',
-}
+export const scoringDataApiRef = createApiRef<ScoringDataApi>({
+  id: 'plugin.scoringdata.service',
+});
+
+export type ScoringDataApi = {
+  getScore(entity: string): Promise<SystemScore | undefined>;
+  getAllScores(): Promise<SystemScore[] | undefined>;
+};

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
-import { SystemScore } from './SystemScore';
+import { SystemScore } from '../api';
 
 export interface SystemScoreExtended extends SystemScore {
   catalogEntity: Entity | undefined;

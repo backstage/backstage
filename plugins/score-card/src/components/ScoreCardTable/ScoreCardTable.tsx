@@ -17,13 +17,13 @@ import React from 'react';
 import { Table, TableColumn, Progress, Link } from '@backstage/core-components';
 import { useAsync } from 'react-use';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { SystemScore } from '../../types/SystemScore';
 import { scoreToColorConverter } from '../../helpers/scoreToColorConverter';
 import { Chip } from '@material-ui/core';
 import { catalogApiRef, EntityRefLink } from '@backstage/plugin-catalog-react';
 import { SystemScoreExtended } from '../../types/SystemScoreExtended';
 import { extendSystemScore } from '../../helpers/extendSystemScore';
 import { getWarningPanel } from '../../helpers/getWarningPanel';
+import { SystemScore } from '../../api';
 
 type ScoreTableProps = {
   scores: SystemScoreExtended[];
@@ -187,12 +187,12 @@ export const ScoreCardTable = () => {
       fields: ['kind', 'metadata.name', 'spec.owner', 'relations'],
     });
     /* TODO cache
-    const cacheKey = `userProjects-${group ?? 'all'}`;
-    const cachedProjects: UserProjects = JSON.parse(
-      localStorage.getItem(cacheKey) || '{}',
-    );
-    localStorage.setItem(cacheKey, JSON.stringify(newCachedProjects));
-    */
+  const cacheKey = `userProjects-${group ?? 'all'}`;
+  const cachedProjects: UserProjects = JSON.parse(
+    localStorage.getItem(cacheKey) || '{}',
+  );
+  localStorage.setItem(cacheKey, JSON.stringify(newCachedProjects));
+  */
     const systems = entities.items;
     return result.map<SystemScoreExtended>(score => {
       return extendSystemScore(score, systems);
