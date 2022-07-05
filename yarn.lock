@@ -21589,9 +21589,9 @@ pupa@^2.1.1:
     escape-goat "^2.0.0"
 
 puppeteer@^15.0.0:
-  version "15.2.0"
-  resolved "https://registry.npmjs.org/puppeteer/-/puppeteer-15.2.0.tgz#9cd81334f9c6a2e1c972b5a7ecf3f18ab3bfb978"
-  integrity sha512-6Mzj5pbq4J4DxJE5o6V+arrOB9Gma0CxOLP1zKYMrMR7AYuNaPzsK7pBrpDwI64W6Mxk5G7NqiLSFTrgSzR1zg==
+  version "15.3.0"
+  resolved "https://registry.npmjs.org/puppeteer/-/puppeteer-15.3.0.tgz#2d79200cb72d938dfc7af4fdedaa03c04e7ace14"
+  integrity sha512-PYZwL0DjGeUOauSie6n9Pf+vDUod+vFnC1uHa1Uj3ex1PhRI6DOheau6oJxxj9oyEPWy8SS19KfZDwln4v4LTg==
   dependencies:
     cross-fetch "3.1.5"
     debug "4.3.4"
