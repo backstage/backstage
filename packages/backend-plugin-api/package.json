@@ -37,10 +37,12 @@
     "@backstage/config": "^1.0.1",
     "@backstage/backend-common": "^0.14.0",
     "@backstage/plugin-permission-common": "^0.6.2",
-    "@backstage/backend-tasks": "^0.3.2"
+    "@backstage/backend-tasks": "^0.3.2",
+    "express": "^4.17.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.2-next.0"
+    "@backstage/cli": "^0.17.2-next.0",
+    "@types/express": "^4.17.6"
   },
   "files": [
     "dist",

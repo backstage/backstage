@@ -27,6 +27,7 @@ import {
   loggerServiceRef,
   permissionsServiceRef,
   urlReaderServiceRef,
+  httpRouterServiceRef,
 } from '@backstage/backend-plugin-api';
 import {
   CatalogBuilder,
@@ -72,8 +73,16 @@ export const catalogPlugin = createBackendPlugin({
         reader: urlReaderServiceRef,
         permissions: permissionsServiceRef,
         database: databaseServiceRef,
+        httpRouter: httpRouterServiceRef,
       },
-      async init({ logger, config, reader, database, permissions }) {
+      async init({
+        logger,
+        config,
+        reader,
+        database,
+        permissions,
+        httpRouter,
+      }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         const builder = await CatalogBuilder.create({
           config,
@@ -82,9 +91,12 @@ export const catalogPlugin = createBackendPlugin({
           database,
           logger: winstonLogger,
         });
-        builder.addProcessor(processingExtensions.processors);
-        const { processingEngine } = await builder.build();
+        builder.addProcessor(...processingExtensions.processors);
+        const { processingEngine, router } = await builder.build();
+
         await processingEngine.start();
+
+        httpRouter.use(router);
       },
     });
   },

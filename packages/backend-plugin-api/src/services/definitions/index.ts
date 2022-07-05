@@ -28,7 +28,7 @@
 
 export { configServiceRef } from './configServiceRef';
 export { httpRouterServiceRef } from './httpRouterServiceRef';
-export type { HttpRouterApi } from './httpRouterServiceRef';
+export type { HttpRouterService } from './httpRouterServiceRef';
 export { loggerServiceRef } from './loggerServiceRef';
 export type { Logger } from './loggerServiceRef';
 export { urlReaderServiceRef } from './urlReaderServiceRef';

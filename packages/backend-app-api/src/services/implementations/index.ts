@@ -23,6 +23,7 @@ import { permissionsFactory } from './permissionsService';
 import { schedulerFactory } from './schedulerService';
 import { tokenManagerFactory } from './tokenManagerService';
 import { urlReaderFactory } from './urlReaderService';
+import { httpRouterFactory } from './httpRouterService';
 
 export const defaultServiceFactories = [
   cacheFactory,
@@ -34,4 +35,5 @@ export const defaultServiceFactories = [
   schedulerFactory,
   tokenManagerFactory,
   urlReaderFactory,
+  httpRouterFactory,
 ];
