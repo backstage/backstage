@@ -37,7 +37,7 @@ describe('KubernetesBuilder', () => {
   let app: express.Express;
   let kubernetesFanOutHandler: jest.Mocked<KubernetesFanOutHandler>;
   let config: Config;
-  let catalogClient: CatalogApi;
+  let catalogApi: CatalogApi;
 
   beforeAll(async () => {
     const logger = getVoidLogger();
@@ -71,12 +71,12 @@ describe('KubernetesBuilder', () => {
       getKubernetesObjectsByEntity: jest.fn(),
     } as any;
 
-    catalogClient = {} as CatalogApi;
+    catalogApi = {} as CatalogApi;
 
     const { router } = await KubernetesBuilder.createBuilder({
       config,
       logger,
-      catalogClient,
+      catalogApi,
     })
       .setObjectsProvider(kubernetesFanOutHandler)
       .setClusterSupplier(clusterSupplier)
@@ -248,7 +248,7 @@ describe('KubernetesBuilder', () => {
       const { router } = await KubernetesBuilder.createBuilder({
         logger,
         config,
-        catalogClient,
+        catalogApi,
       })
         .setClusterSupplier(clusterSupplier)
         .setServiceLocator(serviceLocator)

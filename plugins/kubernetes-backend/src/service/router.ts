@@ -28,7 +28,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 export interface RouterOptions {
   logger: Logger;
   config: Config;
-  catalogClient: CatalogApi;
+  catalogApi: CatalogApi;
   clusterSupplier?: KubernetesClustersSupplier;
 }
 

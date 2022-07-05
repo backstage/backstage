@@ -109,7 +109,7 @@ export class KubernetesBuilder {
   protected buildRouter(
     objectsProvider: KubernetesObjectsProvider,
     clusterSupplier: KubernetesClustersSupplier,
-    catalogClient: CatalogApi,
+    catalogApi: CatalogApi,
   ): express.Router;
   // (undocumented)
   protected buildServiceLocator(
@@ -158,7 +158,7 @@ export interface KubernetesClustersSupplier {
 // @alpha (undocumented)
 export interface KubernetesEnvironment {
   // (undocumented)
-  catalogClient: CatalogApi;
+  catalogApi: CatalogApi;
   // (undocumented)
   config: Config;
   // (undocumented)
@@ -273,7 +273,7 @@ export interface ObjectToFetch {
 // @alpha (undocumented)
 export interface RouterOptions {
   // (undocumented)
-  catalogClient: CatalogApi;
+  catalogApi: CatalogApi;
   // (undocumented)
   clusterSupplier?: KubernetesClustersSupplier;
   // (undocumented)

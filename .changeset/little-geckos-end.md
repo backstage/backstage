@@ -8,11 +8,11 @@ BREAKING: Kubernetes backend plugin now depends on CatalogApi
 
 ```typescript
 // Create new CatalogClient
-const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
+const catalogApi = new CatalogClient({ discoveryApi: env.discovery });
 const { router } = await KubernetesBuilder.createBuilder({
   logger: env.logger,
   config: env.config,
   // Inject it into createBuilder params
-  catalogClient,
+  catalogApi,
 }).build();
 ```

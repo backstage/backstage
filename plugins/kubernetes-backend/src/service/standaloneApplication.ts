@@ -41,7 +41,7 @@ export async function createStandaloneApplication(
   const config = new ConfigReader({});
   const app = express();
 
-  const catalogClient = new CatalogClient({
+  const catalogApi = new CatalogClient({
     discoveryApi: SingleHostDiscovery.fromConfig(config),
   });
 
@@ -52,7 +52,7 @@ export async function createStandaloneApplication(
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());
-  app.use('/', await createRouter({ logger, config, catalogClient }));
+  app.use('/', await createRouter({ logger, config, catalogApi }));
   app.use(notFoundHandler());
   app.use(errorHandler());
 

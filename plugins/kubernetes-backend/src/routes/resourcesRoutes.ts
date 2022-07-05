@@ -26,7 +26,7 @@ import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-no
 
 export const addResourceRoutesToRouter = (
   router: express.Router,
-  catalogClient: CatalogApi,
+  catalogApi: CatalogApi,
   objectsProvider: KubernetesObjectsProvider,
 ) => {
   const getEntityByReq = async (req: Request<any>) => {
@@ -52,7 +52,7 @@ export const addResourceRoutesToRouter = (
       throw new AuthenticationError('No Backstage token');
     }
 
-    const entity = await catalogClient.getEntityByRef(entityRef, {
+    const entity = await catalogApi.getEntityByRef(entityRef, {
       token: token,
     });
 

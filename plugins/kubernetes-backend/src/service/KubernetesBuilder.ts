@@ -47,7 +47,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 export interface KubernetesEnvironment {
   logger: Logger;
   config: Config;
-  catalogClient: CatalogApi;
+  catalogApi: CatalogApi;
 }
 
 /**
@@ -125,7 +125,7 @@ export class KubernetesBuilder {
     const router = this.buildRouter(
       objectsProvider,
       clusterSupplier,
-      this.env.catalogClient,
+      this.env.catalogApi,
     );
 
     return {
@@ -233,7 +233,7 @@ export class KubernetesBuilder {
   protected buildRouter(
     objectsProvider: KubernetesObjectsProvider,
     clusterSupplier: KubernetesClustersSupplier,
-    catalogClient: CatalogApi,
+    catalogApi: CatalogApi,
   ): express.Router {
     const logger = this.env.logger;
     const router = Router();
@@ -269,7 +269,7 @@ export class KubernetesBuilder {
       });
     });
 
-    addResourceRoutesToRouter(router, catalogClient, objectsProvider);
+    addResourceRoutesToRouter(router, catalogApi, objectsProvider);
 
     return router;
   }
