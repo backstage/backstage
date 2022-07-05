@@ -52,6 +52,7 @@ export class FileReaderProcessor implements CatalogProcessor {
       if (fileMatches.length > 0) {
         for (const fileMatch of fileMatches) {
           const data = await fs.readFile(fileMatch);
+          const normalizedFilePath = path.normalize(fileMatch);
 
           // The normalize converts to native slashes; the glob library returns
           // forward slashes even on windows
@@ -59,13 +60,13 @@ export class FileReaderProcessor implements CatalogProcessor {
             data: data,
             location: {
               type: LOCATION_TYPE,
-              target: path.normalize(fileMatch),
+              target: normalizedFilePath,
             },
           })) {
             emit(parseResult);
             emit(
               processingResult.refresh(
-                `${LOCATION_TYPE}:${path.normalize(fileMatch)}`,
+                `${LOCATION_TYPE}://${normalizedFilePath}`,
               ),
             );
           }

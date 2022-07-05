@@ -385,7 +385,7 @@ describe('PlaceholderProcessor', () => {
     console.log(emitted);
     expect(emitted[0]).toEqual({
       type: 'refresh',
-      key: 'url:./path-to-file.json',
+      key: 'url:http://example.com/path-to-file.json',
     });
   });
 });

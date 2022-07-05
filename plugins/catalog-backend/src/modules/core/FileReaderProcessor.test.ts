@@ -89,7 +89,7 @@ describe('FileReaderProcessor', () => {
       type: 'file',
       target: expect.stringMatching(/^[^*]*$/),
     });
-    expect(emit.mock.calls[1][0].key).toContain('file:');
+    expect(emit.mock.calls[1][0].key).toContain('file://');
     expect(emit.mock.calls[1][0].key).toContain(
       'fileReaderProcessor/component.yaml',
     );
