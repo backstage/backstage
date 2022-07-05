@@ -171,6 +171,12 @@ export function createPublishGitlabAction(options: {
         visibility: repoVisibility,
       });
 
+      // When setUserAsOwner is true the input token is expected to come from an unprivileged user GitLab
+      // OAuth flow. In this case GitLab works in a way that allows the unprivileged user to
+      // create the repository, but not to push the default protected branch (e.g. master).
+      // In order to set the user as owner of the newly created repository we need to check that the
+      // GitLab integration configuration for the matching host contains a token and use
+      // such token to bootstrap a new privileged client.
       if (setUserAsOwner && integrationConfig.config.token) {
         const adminClient = new Gitlab({
           host: integrationConfig.config.baseUrl,
