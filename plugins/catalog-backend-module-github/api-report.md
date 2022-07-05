@@ -41,14 +41,14 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
 }
 
 // @public
-export class GithubEntityProvider implements EntityProvider {
+export class GitHubEntityProvider implements EntityProvider {
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
   static fromConfig(
     config: Config,
-    options: GithubEntityProviderOptions,
-  ): GithubEntityProvider;
+    options: GitHubEntityProviderOptions,
+  ): GitHubEntityProvider;
   // (undocumented)
   getProviderName(): string;
   // (undocumented)
@@ -56,7 +56,7 @@ export class GithubEntityProvider implements EntityProvider {
 }
 
 // @public
-export interface GithubEntityProviderOptions {
+export interface GitHubEntityProviderOptions {
   files: Array<string>;
   githubCredentialsProvider?: GithubCredentialsProvider;
   id: string;
