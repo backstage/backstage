@@ -22,11 +22,11 @@ import { CatalogClient } from '@backstage/catalog-client';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
+  const catalogApi = new CatalogClient({ discoveryApi: env.discovery });
   const { router } = await KubernetesBuilder.createBuilder({
     logger: env.logger,
     config: env.config,
-    catalogClient,
+    catalogApi,
   }).build();
   return router;
 }
