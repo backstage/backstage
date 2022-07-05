@@ -156,6 +156,77 @@ describe('fetch:template', () => {
       );
     });
 
+    describe('with optional directories / files', () => {
+      let context: ActionContext<FetchTemplateInput>;
+
+      beforeEach(async () => {
+        context = mockContext({
+          values: {
+            showDummyFile: false,
+            skipRootDirectory: true,
+            skipSubdirectory: true,
+            skipMultiplesDirectories: true
+          },
+        });
+
+        mockFetchContents.mockImplementation(({ outputPath }) => {
+          mockFs({
+            ...realFiles,
+            [outputPath]: {
+              '{% if values.showDummyFile %}dummy-file.txt{% else %}{% endif %}':
+                'dummy file',
+              '${{ "dummy-file2.txt" if values.showDummyFile else "" }}':
+                'some dummy file',
+              '${{ "dummy-dir" if not values.skipRootDirectory else "" }}': {
+                'file.txt':
+                  'file inside optional directory',
+              subdir: {
+                '${{ "dummy-subdir" if not values.skipSubdirectory else "" }}':
+                  'file inside optional subdirectory'
+                }
+              },
+              subdir2: {
+                '${{ "dummy-subdir" if not values.skipMultiplesDirectories else "" }}': {
+                  '${{ "dummy-subdir" if not values.skipMultiplesDirectories else "" }}': {
+                    'multipleDirectorySkippedFile.txt':
+                      'file inside multiple optional subdirectories'
+                  }
+                }
+              }
+            },
+          });
+
+          return Promise.resolve();
+        });
+
+        await action.handler(context);
+      });
+
+      it('skips empty filename', async () => {
+        await expect(
+          fs.pathExists(`${workspacePath}/target/dummy-file.txt`),
+        ).resolves.toEqual(false);
+      });
+
+      it('skips empty filename syntax #2', async () => {
+        await expect(
+          fs.pathExists(`${workspacePath}/target/dummy-file2.txt`),
+        ).resolves.toEqual(false);
+      });
+
+      it('skips empty directory', async () => {
+        await expect(
+          fs.pathExists(`${workspacePath}/target/dummy-dir/dummy-file3.txt`),
+        ).resolves.toEqual(false);
+      });
+
+      it('skips content of empty directory', async () => {
+        await expect(
+          fs.pathExists(`${workspacePath}/target/subdir2/multipleDirectorySkippedFile.txt`),
+        ).resolves.toEqual(false);
+      });
+    });
+
     describe('with valid input', () => {
       let context: ActionContext<FetchTemplateInput>;
 
@@ -189,11 +260,6 @@ describe('fetch:template', () => {
               symlink: mockFs.symlink({
                 path: 'a-binary-file.png',
               }),
-
-              '{% if values.showDummyFile %}dummy-file.txt{% else %}{% endif %}':
-                'dummy file',
-              '${{ "dummy-file2.txt" if values.showDummyFile else "" }}':
-                'some dummy file',
             },
           });
 
@@ -210,18 +276,6 @@ describe('fetch:template', () => {
             fetchUrl: context.input.url,
           }),
         );
-      });
-
-      it('skips empty filename', async () => {
-        await expect(
-          fs.pathExists(`${workspacePath}/target/dummy-file.txt`),
-        ).resolves.toEqual(false);
-      });
-
-      it('skips empty filename syntax #2', async () => {
-        await expect(
-          fs.pathExists(`${workspacePath}/target/dummy-file2.txt`),
-        ).resolves.toEqual(false);
       });
 
       it('copies files with no templating in names or content successfully', async () => {
