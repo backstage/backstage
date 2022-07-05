@@ -18,9 +18,9 @@ import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
 import {
-  GithubEntityProvider,
-  GithubEntityProviderOptions,
-} from './GithubEntityProvider';
+  GitHubEntityProvider,
+  GitHubEntityProviderOptions,
+} from './GitHubEntityProvider';
 
 class PersistingTaskRunner implements TaskRunner {
   private tasks: TaskInvocationDefinition[] = [];
@@ -35,7 +35,7 @@ class PersistingTaskRunner implements TaskRunner {
   }
 }
 
-describe('GithubEntityProvider', () => {
+describe('GitHubEntityProvider', () => {
   const backendConfig = {
     integrations: {
       github: [
@@ -46,23 +46,17 @@ describe('GithubEntityProvider', () => {
     },
   };
 
-  const options: GithubEntityProviderOptions = {
+  const options: GitHubEntityProviderOptions = {
     id: 'mockId',
-    orgUrl: 'http://mockUrl',
+    target: 'http://mockUrl',
     files: ['mockFiles.yaml'],
     schedule: new PersistingTaskRunner(),
     logger: getVoidLogger(),
   };
 
-  it('should return an instance when calling GithubEntityProvider.fromConfig()', () => {
-    const config = new ConfigReader(backendConfig);
-    const provider = GithubEntityProvider.fromConfig(config, options);
-    expect(typeof provider).toBe('object');
-  });
-
   it('should have the expected properties', () => {
     const config = new ConfigReader(backendConfig);
-    const provider = GithubEntityProvider.fromConfig(config, options);
+    const provider = GitHubEntityProvider.fromConfig(config, options);
     expect(provider).toHaveProperty('connect');
     expect(typeof provider.connect).toBe('function');
     expect(provider).toHaveProperty('refresh');
@@ -73,7 +67,7 @@ describe('GithubEntityProvider', () => {
 
   it('should return the instance providerName', () => {
     const config = new ConfigReader(backendConfig);
-    const provider = GithubEntityProvider.fromConfig(config, options);
+    const provider = GitHubEntityProvider.fromConfig(config, options);
     expect(provider.getProviderName()).toBe('github-entity-provider:mockId');
   });
 });
