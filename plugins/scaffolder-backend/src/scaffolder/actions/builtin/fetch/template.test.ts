@@ -220,10 +220,14 @@ describe('fetch:template', () => {
         ).resolves.toEqual(false);
       });
 
-      it('skips content of empty directory', async () => {
+      it('skips content of empty subdirectory', async () => {
         await expect(
           fs.pathExists(`${workspacePath}/target/subdir2/multipleDirectorySkippedFile.txt`),
         ).resolves.toEqual(false);
+
+        await expect(
+          fs.pathExists(`${workspacePath}/target/subdir2/dummy-subdir/dummy-subdir/multipleDirectorySkippedFile.txt`),
+        ).resolves.toEqual(false);        
       });
     });
 
