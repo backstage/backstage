@@ -174,7 +174,7 @@ export function createPublishGitlabAction(options: {
       if (setUserAsOwner && integrationConfig.config.token) {
         const adminClient = new Gitlab({
           host: integrationConfig.config.baseUrl,
-          ['token']: integrationConfig.config.token,
+          token: integrationConfig.config.token,
         });
 
         await adminClient.ProjectMembers.add(projectId, userId, 50);
