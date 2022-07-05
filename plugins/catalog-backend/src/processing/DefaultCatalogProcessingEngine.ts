@@ -134,6 +134,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
               .update(stableStringify({ ...result.completedEntity }))
               .update(stableStringify([...result.deferredEntities]))
               .update(stableStringify([...result.relations]))
+              .update(stableStringify([...result.refreshKeys]))
               .update(stableStringify([...parents]));
           }
 
