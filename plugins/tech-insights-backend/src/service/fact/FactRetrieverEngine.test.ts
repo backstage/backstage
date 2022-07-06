@@ -206,9 +206,7 @@ describe('FactRetrieverEngine', () => {
         { ...testFactRetriever, handler },
       );
       await engine.schedule();
-      const job: FactRetrieverRegistration = engine.getJobRegistration(
-        testFactRetriever.id,
-      );
+      const job = await engine.getJobRegistration(testFactRetriever.id);
       expect(job.cadence!!).toEqual(defaultCadence);
 
       await engine.triggerJob(job.factRetriever.id);
