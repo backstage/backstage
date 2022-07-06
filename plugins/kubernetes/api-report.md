@@ -364,7 +364,7 @@ export const PodsTable: ({
 // @public (undocumented)
 export const Router: (props: { refreshIntervalMs?: number }) => JSX.Element;
 
-// @alpha
+// @public
 export class ServerSideKubernetesAuthProvider
   implements KubernetesAuthProvider
 {

@@ -6,9 +6,8 @@ This can be used to run the kubernetes plugin locally against a mock service.
 
 ## Prerequisites
 
-- kubectl installed
-- Kind installed
-- jq installed
+- [kubectl installed](https://kubernetes.io/docs/tasks/tools/#kubectl)
+- [Kind installed](https://kind.sigs.k8s.io/docs/user/quick-start/)
 - Backstage locally built and ready to run
 
 ## Steps

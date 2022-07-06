@@ -20,7 +20,7 @@ import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 /**
  * No-op KubernetesAuthProvider, authorization will be handled in the kubernetes-backend plugin
  *
- * @alpha
+ * @public
  */
 export class ServerSideKubernetesAuthProvider
   implements KubernetesAuthProvider
@@ -28,7 +28,7 @@ export class ServerSideKubernetesAuthProvider
   async decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody> {
-    // No-op, auth will be taken care of on the serverside
+    // No-op, auth will be taken care of on the server-side
     return requestBody;
   }
 }
