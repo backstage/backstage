@@ -18,7 +18,6 @@ export type {
   CatalogProcessingEngine,
   EntityProcessingResult,
   DeferredEntity,
-  CatalogProcessingErrorListener,
 } from './types';
 
 export { createRandomProcessingInterval } from './refresh';

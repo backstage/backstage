@@ -67,16 +67,3 @@ export interface CatalogProcessingEngine {
   start(): Promise<void>;
   stop(): Promise<void>;
 }
-
-/**
- * An error listener for catalog processing engine. It can be used to listen and track entity errors.
- *
- * @alpha
- */
-export interface CatalogProcessingErrorListener {
-  onError(
-    unprocessedEntity: Entity,
-    result: EntityProcessingResult,
-    resultHash: String,
-  ): Promise<void>;
-}

@@ -145,10 +145,13 @@ export class CatalogBuilder {
     processingInterval: ProcessingIntervalFunction,
   ): CatalogBuilder;
   setProcessingIntervalSeconds(seconds: number): CatalogBuilder;
-  // @alpha (undocumented)
-  subscribe(
-    catalogProcessingErrorListeners: CatalogProcessingErrorListener[],
-  ): void;
+  // (undocumented)
+  subscribe(options: {
+    onProcessingError: (event: {
+      unprocessedEntity: Entity;
+      errors: Error[];
+    }) => Promise<void> | void;
+  }): void;
 }
 
 // @alpha
@@ -210,16 +213,6 @@ export interface CatalogProcessingEngine {
   start(): Promise<void>;
   // (undocumented)
   stop(): Promise<void>;
-}
-
-// @alpha
-export interface CatalogProcessingErrorListener {
-  // (undocumented)
-  onError(
-    unprocessedEntity: Entity,
-    result: EntityProcessingResult,
-    resultHash: String,
-  ): Promise<void>;
 }
 
 // @public (undocumented)

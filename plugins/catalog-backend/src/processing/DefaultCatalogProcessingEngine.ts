@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { stringifyEntityRef } from '@backstage/catalog-model';
-import { assertError, serializeError } from '@backstage/errors';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { assertError, serializeError, stringifyError } from '@backstage/errors';
 import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Logger } from 'winston';
@@ -23,7 +23,6 @@ import { ProcessingDatabase, RefreshStateItem } from '../database/types';
 import { createCounterMetric, createSummaryMetric } from '../util/metrics';
 import {
   CatalogProcessingEngine,
-  CatalogProcessingErrorListener,
   CatalogProcessingOrchestrator,
   EntityProcessingResult,
 } from './types';
@@ -43,7 +42,10 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     private readonly stitcher: Stitcher,
     private readonly createHash: () => Hash,
     private readonly pollingIntervalMs: number = 1000,
-    private readonly catalogProcessingErrorListener?: CatalogProcessingErrorListener,
+    private readonly onProcessingError?: (event: {
+      unprocessedEntity: Entity;
+      errors: Error[];
+    }) => Promise<void> | void,
   ) {}
 
   async start() {
@@ -158,11 +160,20 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
           // the outside.
           if (!result.ok) {
             // notify the error listener if the entity can not be processed.
-            this.catalogProcessingErrorListener?.onError(
-              unprocessedEntity,
-              result,
-              resultHash,
-            );
+            Promise.resolve(undefined)
+              .then(() =>
+                this.onProcessingError?.({
+                  unprocessedEntity,
+                  errors: result.errors,
+                }),
+              )
+              .catch(error => {
+                this.logger.debug(
+                  `Processing error listener threw an exception, ${stringifyError(
+                    error,
+                  )}`,
+                );
+              });
 
             await this.processingDatabase.transaction(async tx => {
               await this.processingDatabase.updateProcessedEntityErrors(tx, {

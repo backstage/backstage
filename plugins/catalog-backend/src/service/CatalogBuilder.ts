@@ -17,6 +17,7 @@
 import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import {
   DefaultNamespaceEntityPolicy,
+  Entity,
   EntityPolicies,
   EntityPolicy,
   FieldFormatEntityPolicy,
@@ -56,10 +57,7 @@ import {
 } from '../modules/core/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../modules/util/parse';
 import { LocationAnalyzer } from '../ingestion/types';
-import {
-  CatalogProcessingEngine,
-  CatalogProcessingErrorListener,
-} from '../processing';
+import { CatalogProcessingEngine } from '../processing';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
@@ -136,7 +134,10 @@ export class CatalogBuilder {
   private processors: CatalogProcessor[];
   private processorsReplace: boolean;
   private parser: CatalogProcessorParser | undefined;
-  private catalogProcessingErrorListeners?: CatalogProcessingErrorListener[];
+  private onProcessingError?: (event: {
+    unprocessedEntity: Entity;
+    errors: Error[];
+  }) => Promise<void> | void;
   private processingInterval: ProcessingIntervalFunction =
     createRandomProcessingInterval({
       minSeconds: 100,
@@ -452,12 +453,8 @@ export class CatalogBuilder {
       stitcher,
       () => createHash('sha1'),
       1000,
-      {
-        onError: async (unprocessedEntity, result, resultHash) => {
-          this.catalogProcessingErrorListeners?.forEach(listener =>
-            listener.onError(unprocessedEntity, result, resultHash),
-          );
-        },
+      event => {
+        this.onProcessingError?.(event);
       },
     );
 
@@ -490,12 +487,13 @@ export class CatalogBuilder {
     };
   }
 
-  /**
-   * @alpha
-   * @param catalogProcessingErrorListeners - a list of listeners to get notified if an error occurs while processing an entity
-   */
-  subscribe(catalogProcessingErrorListeners: CatalogProcessingErrorListener[]) {
-    this.catalogProcessingErrorListeners = catalogProcessingErrorListeners;
+  subscribe(options: {
+    onProcessingError: (event: {
+      unprocessedEntity: Entity;
+      errors: Error[];
+    }) => Promise<void> | void;
+  }) {
+    this.onProcessingError = options.onProcessingError;
   }
 
   private buildEntityPolicy(): EntityPolicy {
