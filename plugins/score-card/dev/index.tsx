@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { createDevApp, DevAppPageOptions } from '@backstage/dev-utils';
-import { Entity } from '@backstage/catalog-model';
+import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
 import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
 
@@ -26,14 +26,17 @@ import {
 } from '../src/plugin';
 
 import {
-  entityAtpService,
+  entityAudioPlaybackSystem,
+  entityTeamC,
+  entityWithoutScoringData,
   entityGuestUser,
-  entityIdentity,
-  entityNonExistent,
-  entityOnline,
-  entityTeamOnline,
 } from './sample-entities';
 import { CatalogEntityPage } from '@backstage/plugin-catalog';
+import {
+  CatalogRequestOptions,
+  GetEntitiesRequest,
+  GetEntitiesResponse,
+} from '@backstage/catalog-client';
 
 const entityContentPage = (
   entity: Entity,
@@ -64,10 +67,9 @@ const entityContentPage = (
 localStorage.setItem('sidebarPinState', 'true');
 
 const mockEntities = [
-  entityOnline,
-  entityAtpService,
-  entityIdentity,
-  entityTeamOnline,
+  entityAudioPlaybackSystem,
+  entityTeamC,
+  entityWithoutScoringData,
   entityGuestUser,
 ] as unknown as Entity[];
 
@@ -78,25 +80,46 @@ createDevApp()
     deps: {},
     factory: () =>
       ({
-        async getEntities() {
-          // TODO test await new Promise(r => setTimeout(r, 1000));
-          return {
-            items: mockEntities.slice(),
-          };
+        async getEntities(
+          _request?: GetEntitiesRequest,
+          _options?: CatalogRequestOptions,
+        ) {
+          return new Promise<GetEntitiesResponse>((resolve, _reject) => {
+            resolve({
+              items: mockEntities.slice(),
+            });
+          });
         },
-        async getEntityByName(name: string) {
-          return mockEntities.find(e => e.metadata.name === name);
+        async getEntityByName(
+          compoundName: CompoundEntityRef,
+          _options?: CatalogRequestOptions,
+        ) {
+          return new Promise<Entity | undefined>((resolve, _reject) => {
+            resolve(
+              mockEntities.find(e => e.metadata.name === compoundName.name),
+            );
+          });
+        },
+        async getEntityByRef(
+          _entityRef: string | CompoundEntityRef,
+          _options?: CatalogRequestOptions,
+        ): Promise<Entity | undefined> {
+          return new Promise<Entity | undefined>((resolve, _reject) => {
+            resolve(undefined); // like this it won't throw an error when opening an entity.. we don't want to mock the whole catalog api though
+          });
         },
       } as unknown as typeof catalogApiRef.T),
   })
   .addPage(
     entityContentPage(
-      entityAtpService,
-      'our-great-system',
-      'score-card/our-great-system/score',
+      entityAudioPlaybackSystem,
+      'audio-playback',
+      'score-card/audio-playback/score',
     ),
   )
-  .addPage(entityContentPage(entityNonExistent, 'Not Found test', 'notFound'))
+  .addPage(
+    entityContentPage(entityWithoutScoringData, 'Not Found test', 'notFound'),
+  )
   .addPage({
     path: '/catalog/:kind/:namespace/:name',
     element: <CatalogEntityPage />,
