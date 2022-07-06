@@ -343,6 +343,11 @@ export function getGitLabFileFetchUrl(
 ): Promise<string>;
 
 // @public
+export function getGitLabIntegrationRelativePath(
+  config: GitLabIntegrationConfig,
+): string;
+
+// @public
 export function getGitLabRequestOptions(config: GitLabIntegrationConfig): {
   headers: Record<string, string>;
 };
@@ -443,7 +448,6 @@ export type GitLabIntegrationConfig = {
   apiBaseUrl: string;
   token?: string;
   baseUrl: string;
-  relativePath?: string;
 };
 
 // @public

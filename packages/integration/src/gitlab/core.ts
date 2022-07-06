@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { GitLabIntegrationConfig } from './config';
+import {
+  getGitLabIntegrationRelativePath,
+  GitLabIntegrationConfig,
+} from './config';
 import fetch from 'cross-fetch';
 import { InputError } from '@backstage/errors';
 
@@ -42,6 +45,7 @@ export async function getGitLabFileFetchUrl(
   // TODO(Rugvip): From the old GitlabReaderProcessor; used
   // the existence of /-/blob/ to switch the logic. Don't know if this
   // makes sense and it might require some more work.
+
   if (url.includes('/-/blob/')) {
     const projectID = await getProjectId(url, config);
     return buildProjectUrl(url, projectID, config).toString();
@@ -111,9 +115,10 @@ export function buildProjectUrl(
 
     const branchAndFilePath = url.pathname.split('/-/blob/')[1];
     const [branch, ...filePath] = branchAndFilePath.split('/');
+    const relativePath = getGitLabIntegrationRelativePath(config);
 
     url.pathname =
-      [config.relativePath] +
+      [relativePath] +
       [
         '/api/v4/projects',
         projectID,
@@ -145,8 +150,8 @@ export async function getProjectId(
   try {
     let repo = url.pathname.split('/-/blob/')[0];
 
-    // Ignore relative path if it's not set
-    const relativePath = config.relativePath ?? '';
+    // Get gitlab relative path
+    const relativePath = getGitLabIntegrationRelativePath(config);
 
     // Should replace first match only
     repo = repo.replace(relativePath, '');

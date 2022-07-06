@@ -66,7 +66,6 @@ describe('readGitLabIntegrationConfig', () => {
       token: 't',
       apiBaseUrl: 'https://a.com',
       baseUrl: 'https://baseurl.for.me/gitlab',
-      relativePath: '/gitlab',
     });
   });
 
@@ -78,7 +77,6 @@ describe('readGitLabIntegrationConfig', () => {
       host: 'gitlab.com',
       apiBaseUrl: 'https://gitlab.com/api/v4',
       baseUrl: 'https://gitlab.com',
-      relativePath: '',
     });
   });
 
@@ -91,7 +89,6 @@ describe('readGitLabIntegrationConfig', () => {
       host: 'gitlab.com',
       baseUrl: 'https://gitlab.com',
       apiBaseUrl: 'https://gitlab.com/api/v4',
-      relativePath: '',
     });
   });
 
@@ -122,7 +119,6 @@ describe('readGitLabIntegrationConfig', () => {
       host: 'a.com',
       apiBaseUrl: 'https://a.com/api',
       baseUrl: 'https://a.com',
-      relativePath: '/',
     });
   });
 });
@@ -148,7 +144,6 @@ describe('readGitLabIntegrationConfigs', () => {
       token: 't',
       apiBaseUrl: 'https://a.com/api/v4',
       baseUrl: 'https://a.com',
-      relativePath: '/',
     });
   });
 

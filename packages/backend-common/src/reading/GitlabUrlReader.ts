@@ -16,6 +16,7 @@
 
 import {
   getGitLabFileFetchUrl,
+  getGitLabIntegrationRelativePath,
   getGitLabRequestOptions,
   GitLabIntegration,
   ScmIntegrations,
@@ -118,10 +119,11 @@ export class GitlabUrlReader implements UrlReader {
     const { ref, full_name, filepath } = parseGitUrl(url);
 
     // Considering self hosted gitlab with relative
-    const repo_full_name = trimStart(
-      full_name,
-      this.integration.config.relativePath ?? '',
+    const relativePath = getGitLabIntegrationRelativePath(
+      this.integration.config,
     );
+
+    const repo_full_name = trimStart(full_name, relativePath);
 
     // Use GitLab API to get the default branch
     // encodeURIComponent is required for GitLab API

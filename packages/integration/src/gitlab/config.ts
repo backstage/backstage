@@ -54,14 +54,6 @@ export type GitLabIntegrationConfig = {
    * If no baseUrl is provided, it will default to `https://${host}`
    */
   baseUrl: string;
-
-  /**
-   * The relative path for gitlab self hosted installations
-   * described here https://docs.gitlab.com/ee/install/relative_url.html
-   *
-   * If no baseUrl is provided, it will default to `/`
-   */
-  relativePath?: string;
 };
 
 /**
@@ -77,7 +69,6 @@ export function readGitLabIntegrationConfig(
   let apiBaseUrl = config.getOptionalString('apiBaseUrl');
   const token = config.getOptionalString('token');
   let baseUrl = config.getOptionalString('baseUrl');
-  let relativePath = '';
   if (apiBaseUrl) {
     apiBaseUrl = trimEnd(apiBaseUrl, '/');
   } else if (host === GITLAB_HOST) {
@@ -104,11 +95,7 @@ export function readGitLabIntegrationConfig(
     );
   }
 
-  if (host !== GITLAB_HOST) {
-    relativePath = new URL(baseUrl).pathname;
-  }
-
-  return { host, token, apiBaseUrl, baseUrl, relativePath };
+  return { host, token, apiBaseUrl, baseUrl };
 }
 
 /**
@@ -135,4 +122,21 @@ export function readGitLabIntegrationConfigs(
   }
 
   return result;
+}
+
+/**
+ * Reads a GitLab integration config, and returns
+ * relative path.
+ *
+ * @param config - GitLabIntegrationConfig object
+ * @public
+ */
+export function getGitLabIntegrationRelativePath(
+  config: GitLabIntegrationConfig,
+): string {
+  let relativePath = '';
+  if (config.host !== GITLAB_HOST) {
+    relativePath = new URL(config.baseUrl).pathname;
+  }
+  return relativePath;
 }
