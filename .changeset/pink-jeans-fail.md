@@ -11,6 +11,6 @@ There are following components"
 - **score board**: overview of scored & reviewed systems
 - **score card**: infocard in catalog to see detailed scoring for each system
 
-There is also a suggested review process, presentation and an Azure DevOps integration pipeline with Sharepoint list "Selfassesment" form.
+There is also a suggested review process, presentation and an Azure DevOps integration pipeline with Sharepoint list "Selfassessment" form.
 
 More info: [README](https://github.com/backstage/backstage/tree/master/plugins/score-card).

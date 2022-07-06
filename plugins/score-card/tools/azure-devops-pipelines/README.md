@@ -69,6 +69,6 @@ Also consider assigning **a condition** to allow editing only system-scores:
 
 ## How to create the Sharepoint list
 
-To prepare all fields in the Sharepoint list use [Update-SharepointSelfAssesmentList.ps1](scripts/Update-SharepointSelfAssesmentList.ps1) script.
+To prepare all fields in the Sharepoint list use [Update-SharepointSelfAssessmentList.ps1](scripts/Update-SharepointSelfAssessmentList.ps1) script.
 
 It will use [@template.json](../../sample-data/@template.json) to generate fields and possible values.
