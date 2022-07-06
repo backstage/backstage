@@ -33,6 +33,7 @@ import {
   CatalogFilterLayout,
   EntityLifecyclePicker,
   EntityListProvider,
+  EntityProcessingStatusPicker,
   EntityTagPicker,
   UserListFilterKind,
 } from '@backstage/plugin-catalog-react';
@@ -95,6 +96,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
               <EntityOwnerPicker />
               <EntityLifecyclePicker />
               <EntityTagPicker />
+              <EntityProcessingStatusPicker />
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
               <CatalogTable

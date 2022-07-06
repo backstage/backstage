@@ -33,9 +33,10 @@ import {
 } from '../microsoftGraph';
 
 /**
- * Extracts teams and users out of a the Microsoft Graph API.
+ * Extracts teams and users out of the Microsoft Graph API.
  *
  * @public
+ * @deprecated Use the MicrosoftGraphOrgEntityProvider instead.
  */
 export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   private readonly providers: MicrosoftGraphProviderConfig[];
@@ -67,6 +68,9 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
   }) {
+    options.logger.warn(
+      'MicrosoftGraphOrgReaderProcessor is deprecated. Please use MicrosoftGraphOrgEntityProvider instead. More info at https://github.com/backstage/backstage/blob/master/.changeset/long-bananas-rescue.md',
+    );
     this.providers = options.providers;
     this.logger = options.logger;
     this.userTransformer = options.userTransformer;

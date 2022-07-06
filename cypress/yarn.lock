@@ -304,9 +304,9 @@ cross-spawn@^7.0.0:
     which "^2.0.1"
 
 cypress@^10.0.0:
-  version "10.1.0"
-  resolved "https://registry.npmjs.org/cypress/-/cypress-10.1.0.tgz#6514a26c721822a02bc194e9a7f72c3142aea174"
-  integrity sha512-aQ4JVZVib4Xd9FZW8IRZfKelUvqF4y5A+oUbNvn8TlsBmEfIg3m5Xd6Mt6PVU/jHiVJ9Psl905B3ZPnrDcmyuQ==
+  version "10.3.0"
+  resolved "https://registry.npmjs.org/cypress/-/cypress-10.3.0.tgz#fae8d32f0822fcfb938e79c7c31ef344794336ae"
+  integrity sha512-txkQWKzvBVnWdCuKs5Xc08gjpO89W2Dom2wpZgT9zWZT5jXxqPIxqP/NC1YArtkpmp3fN5HW8aDjYBizHLUFvg==
   dependencies:
     "@cypress/request" "^2.88.10"
     "@cypress/xvfb" "^1.2.4"

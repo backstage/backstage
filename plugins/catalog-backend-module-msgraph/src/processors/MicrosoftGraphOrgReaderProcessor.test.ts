@@ -38,6 +38,7 @@ describe('MicrosoftGraphOrgReaderProcessor', () => {
     processor = new MicrosoftGraphOrgReaderProcessor({
       providers: [
         {
+          id: 'https://example.com',
           target: 'https://example.com',
           tenantId: 'tenant',
           clientId: 'clientid',

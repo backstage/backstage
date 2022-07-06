@@ -21,7 +21,7 @@ guide to do a repository-based installation.
 
 ### Prerequisites
 
-- Access to a Linux-based operating system, such as Linux, MacOS or
+- Access to a Unix-based operating system, such as Linux, MacOS or
   [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
 - An account with elevated rights to install the dependencies
 - `curl` or `wget` installed

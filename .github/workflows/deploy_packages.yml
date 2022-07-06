@@ -61,33 +61,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # Beginning of yarn setup, keep in sync between all workflows, see ci.yml
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
-      - name: cache all node_modules
-        id: cache-modules
-        uses: actions/cache@v3
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-v${{ matrix.node-version }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
-      - name: find location of global yarn cache
-        id: yarn-cache
-        if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: cache global yarn cache
-        uses: actions/cache@v3
-        if: steps.cache-modules.outputs.cache-hit != 'true'
-        with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
       - name: yarn install
-        run: yarn install --frozen-lockfile
-      # End of yarn setup
+        uses: backstage/actions/yarn-install@v0.5.0
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: Fetch previous commit for release check
         run: git fetch origin '${{ github.event.before }}'
@@ -157,33 +139,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # Beginning of yarn setup, keep in sync between all workflows, see ci.yml
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
-      - name: cache all node_modules
-        id: cache-modules
-        uses: actions/cache@v3
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-v${{ matrix.node-version }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
-      - name: find location of global yarn cache
-        id: yarn-cache
-        if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: cache global yarn cache
-        uses: actions/cache@v3
-        if: steps.cache-modules.outputs.cache-hit != 'true'
-        with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
       - name: yarn install
-        run: yarn install --frozen-lockfile
-      # End of yarn setup
+        uses: backstage/actions/yarn-install@v0.5.0
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: build type declarations
         run: yarn tsc:full
@@ -209,7 +173,7 @@ jobs:
       # Grabs the version in the root package.json and creates a tag on GitHub
       - name: Create a release tag
         id: create_tag
-        run: node scripts/create-release-tag.js --dispatch-workflows
+        run: node scripts/create-release-tag.js
         env:
           GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
 
@@ -218,6 +182,13 @@ jobs:
         run: node scripts/create-github-release.js ${{ steps.create_tag.outputs.tag_name }} 1
         env:
           GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Dispatch repository event
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          event-type: release-published
+          client-payload: '{"version": "${{ steps.create_tag.outputs.version }}"}'
 
       # Notify everyone about this great new release :D
       - name: Discord notification

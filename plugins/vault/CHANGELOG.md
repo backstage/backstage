@@ -1,5 +1,27 @@
 # @backstage/plugin-vault
 
+## 0.1.1-next.2
+
+### Patch Changes
+
+- 7ee4abdcc9: Added a path notion in addition to secret name to allow to differentiate secrets in sub-paths
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/theme@0.2.16-next.1
+  - @backstage/plugin-catalog-react@1.1.2-next.2
+
+## 0.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.1
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/theme@0.2.16-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.1
+
 ## 0.1.1-next.0
 
 ### Patch Changes

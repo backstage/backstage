@@ -169,6 +169,62 @@ export type CreateGithubPullRequestClientFactoryInput = {
 };
 
 // @public
+export function createGithubRepoCreateAction(options: {
+  integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider?: GithubCredentialsProvider;
+}): TemplateAction<{
+  repoUrl: string;
+  description?: string | undefined;
+  access?: string | undefined;
+  deleteBranchOnMerge?: boolean | undefined;
+  gitAuthorName?: string | undefined;
+  gitAuthorEmail?: string | undefined;
+  allowRebaseMerge?: boolean | undefined;
+  allowSquashMerge?: boolean | undefined;
+  allowMergeCommit?: boolean | undefined;
+  requireCodeOwnerReviews?: boolean | undefined;
+  requiredStatusCheckContexts?: string[] | undefined;
+  repoVisibility?: 'internal' | 'private' | 'public' | undefined;
+  collaborators?:
+    | (
+        | {
+            user: string;
+            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          }
+        | {
+            team: string;
+            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          }
+        | {
+            username: string;
+            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          }
+      )[]
+    | undefined;
+  token?: string | undefined;
+  topics?: string[] | undefined;
+}>;
+
+// @public
+export function createGithubRepoPushAction(options: {
+  integrations: ScmIntegrationRegistry;
+  config: Config;
+  githubCredentialsProvider?: GithubCredentialsProvider;
+}): TemplateAction<{
+  repoUrl: string;
+  description?: string | undefined;
+  defaultBranch?: string | undefined;
+  protectDefaultBranch?: boolean | undefined;
+  gitCommitMessage?: string | undefined;
+  gitAuthorName?: string | undefined;
+  gitAuthorEmail?: string | undefined;
+  requireCodeOwnerReviews?: boolean | undefined;
+  requiredStatusCheckContexts?: string[] | undefined;
+  sourcePath?: string | undefined;
+  token?: string | undefined;
+}>;
+
+// @public
 export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
   defaultWebhookSecret?: string;
@@ -345,6 +401,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   targetPath: string;
   token?: string | undefined;
   projectid?: string | undefined;
+  removeSourceBranch?: boolean | undefined;
 }>;
 
 // @public

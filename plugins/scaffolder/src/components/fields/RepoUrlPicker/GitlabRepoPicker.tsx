@@ -23,16 +23,17 @@ import { RepoUrlPickerState } from './types';
 
 export const GitlabRepoPicker = (props: {
   allowedOwners?: string[];
+  allowedRepos?: string[];
   state: RepoUrlPickerState;
   onChange: (state: RepoUrlPickerState) => void;
   rawErrors: string[];
 }) => {
-  const { allowedOwners = [], rawErrors, state, onChange } = props;
+  const { allowedOwners = [], state, onChange, rawErrors } = props;
   const ownerItems: SelectItem[] = allowedOwners
     ? allowedOwners.map(i => ({ label: i, value: i }))
     : [{ label: 'Loading...', value: 'loading' }];
 
-  const { owner, repoName } = state;
+  const { owner } = state;
 
   return (
     <>
@@ -68,19 +69,6 @@ export const GitlabRepoPicker = (props: {
           The organization, groups, subgroups, user, project (also known as
           namespaces in gitlab), that this repo will belong to
         </FormHelperText>
-      </FormControl>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !repoName}
-      >
-        <InputLabel htmlFor="repoNameInput">Repository</InputLabel>
-        <Input
-          id="repoNameInput"
-          onChange={e => onChange({ repoName: e.target.value })}
-          value={repoName}
-        />
-        <FormHelperText>The name of the repository</FormHelperText>
       </FormControl>
     </>
   );

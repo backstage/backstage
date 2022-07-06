@@ -108,40 +108,58 @@ describe('SearchContext', () => {
     expect(result.current).toEqual(expect.objectContaining(initialState));
   });
 
-  it('Resets cursor when term is set (and different from previous)', async () => {
-    const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
-      wrapper,
-      initialProps: {
-        initialState: {
-          ...initialState,
-          pageCursor: 'SOMEPAGE',
+  describe('Resets cursor', () => {
+    it('When term is cleared', async () => {
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState: {
+            ...initialState,
+            term: 'first term',
+            pageCursor: 'SOMEPAGE',
+          },
         },
-      },
+      });
+
+      await waitForNextUpdate();
+
+      expect(result.current.term).toEqual('first term');
+      expect(result.current.pageCursor).toEqual('SOMEPAGE');
+
+      act(() => {
+        result.current.setTerm('');
+      });
+
+      await waitForNextUpdate();
+
+      expect(result.current.pageCursor).toBeUndefined();
     });
 
-    await waitForNextUpdate();
+    it('When term is set (and different from previous)', async () => {
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState: {
+            ...initialState,
+            term: 'first term',
+            pageCursor: 'SOMEPAGE',
+          },
+        },
+      });
 
-    expect(result.current.pageCursor).toEqual('SOMEPAGE');
+      await waitForNextUpdate();
 
-    act(() => {
-      result.current.setTerm('first term');
+      expect(result.current.term).toEqual('first term');
+      expect(result.current.pageCursor).toEqual('SOMEPAGE');
+
+      act(() => {
+        result.current.setTerm('second term');
+      });
+
+      await waitForNextUpdate();
+
+      expect(result.current.pageCursor).toBeUndefined();
     });
-
-    act(() => {
-      result.current.setPageCursor('OTHERPAGE');
-    });
-
-    await waitForNextUpdate();
-
-    expect(result.current.pageCursor).toEqual('OTHERPAGE');
-
-    act(() => {
-      result.current.setTerm('second term');
-    });
-
-    await waitForNextUpdate();
-
-    expect(result.current.pageCursor).toEqual(undefined);
   });
 
   describe('Performs search (and sets results)', () => {

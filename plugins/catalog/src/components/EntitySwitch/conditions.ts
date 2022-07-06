@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, ComponentEntity } from '@backstage/catalog-model';
+import { ComponentEntity, Entity } from '@backstage/catalog-model';
 
 function strCmp(a: string | undefined, b: string | undefined): boolean {
   return Boolean(
