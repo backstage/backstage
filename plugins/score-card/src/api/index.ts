@@ -1,5 +1,3 @@
-import { scoringDataApiRef } from '../api';
-
 /*
  * Copyright 2022 The Backstage Authors
  *
