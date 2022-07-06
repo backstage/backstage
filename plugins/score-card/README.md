@@ -38,9 +38,9 @@ We have based the scoring on a set of non-functional requirements in these areas
 - **Quality**: coverage by unit & automated integration tests, implementation of SonarCloud, performance tests etc.
 - **Operations**: readiness for operating the service such as automated ci/cd pipelines, dashboards, alerts, gitops, DRP etc.
 - **Documentation**: various documentation e.g. project description, README, wiki (business, technical), road map, etc.
-- **Security**: fullfilment of our security standards.
+- **Security**: fulfillment of our security standards.
 
-The **main goal of the scoring** is to visualize the maturity of the services (systems). We do not expect each service to have 100 % fullfilment for every area. Primary goal is to identify where we can help the team to improve and where we should help all teams in general.
+The **main goal of the scoring** is to visualize the maturity of the services (systems). We do not expect each service to have 100 % fulfillment for every area. Primary goal is to identify where we can help the team to improve and where we should help all teams in general.
 
 Also every service is specific and in a different state of implementation. When a team starts building a new service it is absolutely OK to have e.g. low Operations score.
 

@@ -97,7 +97,7 @@
           "title": "Error Handling",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score. APM = application performance monitoring tool, e.g. Application Insights",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score. APM = application performance monitoring tool, e.g. Application Insights",
           "scoreChecks": [
             {
               "Exceptions sent to APM": 30
@@ -128,7 +128,7 @@
           "title": "Service Discovery",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score.",
           "scoreChecks": [
             {
               "Service is listed in Configuration Manager": 50
@@ -167,7 +167,7 @@
           "title": "Client support",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score.",
           "scoreChecks": [
             {
               "Client package provided and versioned": 60
@@ -185,7 +185,7 @@
           "id": 2160,
           "title": "Reliable Communication",
           "scorePercent": 0,
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score.",
           "scoreChecks": [
             {
               "API is idempotent": 25
@@ -219,7 +219,7 @@
           "title": "Code Reviews",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score. PR(s) = Pull Request(s).",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score. PR(s) = Pull Request(s).",
           "scoreChecks": [
             {
               "PR requires reviewer": 20
@@ -255,7 +255,7 @@
           "title": "Integration Tests",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score. IT = Integration Tests.",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score. IT = Integration Tests.",
           "scoreChecks": [
             {
               "IT runs during PR": 20
@@ -283,7 +283,7 @@
           "title": "Performance Tests",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score. PT = Performance Tests.",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score. PT = Performance Tests.",
           "scoreChecks": [
             {
               "PT runs during PR": 20
@@ -311,7 +311,7 @@
           "title": "Automation Tests",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score. E2E = End to end automation tests.",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score. E2E = End to end automation tests.",
           "scoreChecks": [
             {
               "E2E runs during PR": 20
@@ -339,7 +339,7 @@
           "title": "Design Reviews",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score. DR = Design Review.",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score. DR = Design Review.",
           "scoreChecks": [
             {
               "Design reviews are being done only inside team": 10
@@ -420,7 +420,7 @@
           "title": "Health Checks",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score. In the list we use terminology of AKS but anything similar in other runtimes is OK too.",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score. In the list we use terminology of AKS but anything similar in other runtimes is OK too.",
           "scoreChecks": [
             {
               "livenessProbe": 25
@@ -445,7 +445,7 @@
           "title": "Insights Dashboard",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score. Dashboards needs to be used on at least weekly base.",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score. Dashboards needs to be used on at least weekly base.",
           "scoreChecks": [
             {
               "Technical dashboards": 50
@@ -684,7 +684,7 @@
           "title": "Project wiki",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "See the choices. Fullfilment of each documentation (e.g. business, technical,...) will be in following questions.",
+          "howToScore": "See the choices. fulfillment of each documentation (e.g. business, technical,...) will be in following questions.",
           "scoreChoices": [
             {
               "Well structured/documented/cross-linked/...": 100
@@ -706,7 +706,7 @@
           "title": "RFP",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score.",
           "scoreChecks": [
             {
               "Justification": 20
@@ -743,7 +743,7 @@
           "title": "Architecture Diagrams",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score.",
           "scoreChecks": [
             {
               "System Context diagram": 15
@@ -774,7 +774,7 @@
           "title": "SLA",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score.",
           "scoreChecks": [
             {
               "Computed SLA (for components)": 20
@@ -808,7 +808,7 @@
           "title": "Business Documentation",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score.",
           "scoreChecks": [
             {
               "Business intro": 20
@@ -830,7 +830,7 @@
           "title": "Technical Documentation",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score.",
           "scoreChecks": [
             {
               "Technology used": 15
@@ -864,7 +864,7 @@
           "title": "QA Documentation",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score.",
           "scoreChecks": [
             {
               "What is expected from a tester": 25
@@ -889,7 +889,7 @@
           "title": "Road Map",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score.",
           "scoreChecks": [
             {
               "Road map is year+ to the future": 10
@@ -1044,7 +1044,7 @@
           "title": "OWASP",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score.",
           "scoreChecks": [
             {
               "Regular OWASP audits": 40
@@ -1088,7 +1088,7 @@
           "title": "Third-party components scanning",
           "scorePercent": 0,
           "scoreSuccess": "unknown",
-          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "howToScore": "fulfillment of each sub-requirement gives you the final score.",
           "scoreChecks": [
             {
               "3rd party components scanned during PR": 50
