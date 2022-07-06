@@ -1,5 +1,5 @@
 {
-  "systemEntityName": "our-great-system",
+  "systemEntityName": "audio-playback",
   "systemTier": "A",
   "SystemDataConfidentiality": "Confidential",
   "SystemDataSensitivity": ["PII", "Sensitive-PII"],
