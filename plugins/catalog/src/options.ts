@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  EntityTypePickerProps,
-  UserListPickerProps,
-} from '@backstage/plugin-catalog-react';
-
-export type CatalogPageOptionsProps = {
-  EntityOwnerPicker: () => JSX.Element | null;
-  EntityTypePicker: (props: EntityTypePickerProps) => JSX.Element | null;
-  UserListPicker: (props: UserListPickerProps) => JSX.Element | null;
+export type CatalogPluginOptions = {
   createButtonTitle: string;
-  showButtonText: string;
 };

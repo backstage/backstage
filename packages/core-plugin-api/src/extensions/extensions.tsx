@@ -21,7 +21,7 @@ import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
 import { Extension, BackstagePlugin } from '../plugin';
 import { PluginErrorBoundary } from './PluginErrorBoundary';
-import { PluginOptionsProvider } from '../plugin-options';
+import { PluginProvider } from '../plugin-options';
 
 /**
  * Lazy or synchronous retrieving of extension components.
@@ -246,11 +246,9 @@ export function createReactExtension<
                   ...(mountPoint && { routeRef: mountPoint.id }),
                 }}
               >
-                <PluginOptionsProvider
-                  pluginOptions={plugin.getPluginOptions()}
-                >
+                <PluginProvider plugin={plugin}>
                   <Component {...props} />
-                </PluginOptionsProvider>
+                </PluginProvider>
               </AnalyticsContext>
             </PluginErrorBoundary>
           </Suspense>

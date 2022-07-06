@@ -68,10 +68,9 @@ export type BackstagePlugin<
    */
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
   provide<T>(extension: Extension<T>): T;
-  getPluginOptions(): PluginOptions;
-  reconfigure(options: PluginInputOptions): void;
   routes: Routes;
   externalRoutes: ExternalRoutes;
+  __experimentalReconfigure(options: PluginInputOptions): void;
 };
 
 /**
@@ -99,7 +98,7 @@ export type PluginConfig<
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
   options?: PluginOptions;
-  configure?(options?: PluginInputOptions): PluginOptions;
+  __experimentalConfigure?(options?: PluginInputOptions): PluginOptions;
 };
 
 /**

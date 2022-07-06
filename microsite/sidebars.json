@@ -212,7 +212,6 @@
       "plugins/structure-of-a-plugin",
       "plugins/integrating-plugin-into-software-catalog",
       "plugins/integrating-search-into-plugins",
-      "plugins/customization",
       "plugins/composability",
       "plugins/analytics",
       {

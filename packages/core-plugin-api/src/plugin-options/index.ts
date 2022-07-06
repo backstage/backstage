@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { usePluginOptions, PluginOptionsProvider } from './usePluginOptions';
+export { usePluginOptions, PluginProvider } from './usePluginOptions';

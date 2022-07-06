@@ -34,14 +34,17 @@ import {
   EntityLifecyclePicker,
   EntityListProvider,
   EntityProcessingStatusPicker,
+  EntityOwnerPicker,
   EntityTagPicker,
+  EntityTypePicker,
   UserListFilterKind,
+  UserListPicker,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
 import { CatalogKindHeader } from '../CatalogKindHeader';
-import { CatalogPageOptionsProps } from '../../types';
+import { CatalogPluginOptions } from '../../options';
 
 /**
  * Props for root catalog pages.
@@ -68,13 +71,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
 
-  const {
-    EntityOwnerPicker,
-    EntityTypePicker,
-    UserListPicker,
-    createButtonTitle,
-    showButtonText,
-  } = usePluginOptions<CatalogPageOptionsProps>();
+  const { createButtonTitle } = usePluginOptions<CatalogPluginOptions>();
 
   return (
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
@@ -87,7 +84,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
               title={createButtonTitle}
               to={createComponentLink && createComponentLink()}
             />
-            <SupportButton>${showButtonText}</SupportButton>
+            <SupportButton>All your software catalog entities</SupportButton>
           </ContentHeader>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>

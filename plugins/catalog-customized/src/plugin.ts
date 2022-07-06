@@ -16,18 +16,8 @@
 
 import { catalogPlugin } from '@backstage/plugin-catalog';
 
-import {
-  EntityOwnerPicker,
-  EntityTypePicker,
-  UserListPicker,
-} from './components';
-
-catalogPlugin.reconfigure({
-  EntityOwnerPicker,
-  EntityTypePicker,
-  UserListPicker,
+catalogPlugin.__experimentalReconfigure({
   createButtonTitle: 'Maybe Create',
-  showButtonText: 'Mine catalog entities',
 });
 
 export const customizedCatalog = catalogPlugin;

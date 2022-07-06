@@ -16,21 +16,27 @@
 
 import React from 'react';
 import { renderHook } from '@testing-library/react-hooks';
-import { usePluginOptions, PluginOptionsProvider } from './usePluginOptions';
+import { usePluginOptions, PluginProvider } from './usePluginOptions';
+import { createPlugin, PluginOptions } from '../plugin';
 
 describe('usePluginOptions', () => {
   it('should provide a versioned value to hook', () => {
+    const plugin = createPlugin({
+      id: 'my-plugin',
+      options: { 'key-1': 'value-1', 'key-2': 'value-2' },
+    });
+
     const rendered = renderHook(() => usePluginOptions(), {
       wrapper: ({ children }) => (
-        <PluginOptionsProvider
-          pluginOptions={{ 'key-1': 'value-1', 'key-2': 'value-2' }}
-        >
-          {children}
-        </PluginOptionsProvider>
+        <PluginProvider plugin={plugin}>{children}</PluginProvider>
       ),
     });
 
-    expect(rendered.result.current).toEqual({
+    const config = rendered.result.current.config as unknown as {
+      options: PluginOptions;
+    };
+
+    expect(config.options).toEqual({
       'key-1': 'value-1',
       'key-2': 'value-2',
     });

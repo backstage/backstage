@@ -60,15 +60,15 @@ export class PluginImpl<
     return extension.expose(this);
   }
 
-  reconfigure(options: PluginInputOptions): void {
-    if (this.config.configure) {
-      this.config.options = this.config.configure(options);
+  __experimentalReconfigure(options: PluginInputOptions): void {
+    if (this.config.__experimentalConfigure) {
+      this.config.options = this.config.__experimentalConfigure(options);
     }
   }
 
   getPluginOptions(): PluginOptions {
-    if (this.config.configure && !this.config.options) {
-      this.config.options = this.config.configure();
+    if (this.config.__experimentalConfigure && !this.config.options) {
+      this.config.options = this.config.__experimentalConfigure();
     }
     return this.config.options ?? ({} as PluginOptions);
   }
