@@ -38,13 +38,15 @@ export const PluginProvider = ({
   children,
   plugin,
 }: PluginOptionsProviderProps): JSX.Element => {
-  const providerPlugin = plugin as unknown as {
-    getPluginOptions(): PluginOptions;
-  };
-  const value = { pluginOptions: providerPlugin.getPluginOptions() };
   const { Provider } = createVersionedContext<{ 1: PluginOptions }>(contextKey);
   return (
-    <Provider value={createVersionedValueMap({ 1: value })}>
+    <Provider
+      value={createVersionedValueMap({
+        1: plugin as unknown as {
+          getPluginOptions(): PluginOptions;
+        },
+      })}
+    >
       {children}
     </Provider>
   );
@@ -72,5 +74,5 @@ export function usePluginOptions<
     throw new Error('Plugin Options v1 is not available');
   }
 
-  return value.pluginOptions as TPluginOptions;
+  return value.options as TPluginOptions;
 }
