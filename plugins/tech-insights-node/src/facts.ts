@@ -177,12 +177,12 @@ export interface FactRetriever {
   /**
    * A short display title for the fact retriever to be used in the interface
    */
-  title: string;
+  title?: string;
 
   /**
    * A short display description for the fact retriever to be used in the interface.
    */
-  description: string;
+  description?: string;
 
   /**
    * Handler function that needs to be implemented to retrieve fact values for entities.
