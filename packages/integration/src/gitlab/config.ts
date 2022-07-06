@@ -138,5 +138,5 @@ export function getGitLabIntegrationRelativePath(
   if (config.host !== GITLAB_HOST) {
     relativePath = new URL(config.baseUrl).pathname;
   }
-  return relativePath;
+  return trimEnd(relativePath, '/');
 }
