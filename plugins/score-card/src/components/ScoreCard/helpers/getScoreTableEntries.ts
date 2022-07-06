@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SystemScoreEntry } from '../../../types/SystemScoreEntry';
-import { SystemScoreExtended } from '../../../types/SystemScoreExtended';
+
+import { SystemScoreEntry } from '../../../api';
+import { SystemScoreExtended } from '../../../api/types';
 
 // this is an interface used for table entries. We need to enrich the original SystemScoreEntry with the "area" group, see bellow allEntries reduce
 export interface SystemScoreTableEntry extends SystemScoreEntry {
