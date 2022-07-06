@@ -56,6 +56,9 @@ export type AnyServiceFactory = ServiceFactory<
   { [key in string]: unknown }
 >;
 
+/**
+ * @public
+ */
 export function createServiceRef<T>(options: { id: string }): ServiceRef<T> {
   return {
     id: options.id,
@@ -69,6 +72,9 @@ export function createServiceRef<T>(options: { id: string }): ServiceRef<T> {
   };
 }
 
+/**
+ * @public
+ */
 export function createServiceFactory<
   Api,
   Impl extends Api,

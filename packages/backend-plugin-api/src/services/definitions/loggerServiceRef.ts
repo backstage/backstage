@@ -16,11 +16,17 @@
 
 import { createServiceRef } from '../system/types';
 
+/**
+ * @public
+ */
 export interface Logger {
   info(message: string): void;
   child(fields: { [name: string]: string }): Logger;
 }
 
+/**
+ * @public
+ */
 export const loggerServiceRef = createServiceRef<Logger>({
   id: 'core.logger',
 });

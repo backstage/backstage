@@ -17,6 +17,9 @@
 import { createServiceRef } from '../system/types';
 import { PluginCacheManager } from '@backstage/backend-common';
 
+/**
+ * @public
+ */
 export const cacheServiceRef = createServiceRef<PluginCacheManager>({
   id: 'core.cache',
 });

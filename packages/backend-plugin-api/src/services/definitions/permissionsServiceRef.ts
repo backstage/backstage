@@ -20,6 +20,9 @@ import {
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 
+/**
+ * @public
+ */
 export const permissionsServiceRef = createServiceRef<
   PermissionEvaluator | PermissionAuthorizer
 >({

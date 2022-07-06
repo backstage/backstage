@@ -17,28 +17,16 @@
 import { createServiceRef } from '../system/types';
 import { Handler } from 'express';
 
-//   const apiRouter = Router();
-//  apiRouter.use('/catalog', await catalog(catalogEnv));
-// const service = createServiceBuilder(module)
-// .loadConfig(config)
-// .addRouter('', await healthcheck(healthcheckEnv))
-// .addRouter('', metricsHandler())
-// .addRouter('/api', apiRouter)
-// .addRouter('', await app(appEnv));
-
-// interface BackstageRequest extends Request {
-//   identity?: BackstageIdentity;
-//   context?: Context;
-// }
-
-// interface RequestIdentityService {
-//   getRequestIdentity(req: Request): BackstageIdentity | undefined;
-// }
-
+/**
+ * @public
+ */
 export interface HttpRouterService {
   use(handler: Handler): void;
 }
 
+/**
+ * @public
+ */
 export const httpRouterServiceRef = createServiceRef<HttpRouterService>({
   id: 'core.httpRouter',
 });

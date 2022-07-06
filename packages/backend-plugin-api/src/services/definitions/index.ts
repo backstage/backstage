@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-// export type PluginEnvironment = {
-//   logger: Logger;
-//   cache: PluginCacheManager;
-//   database: PluginDatabaseManager;
-//   config: Config;
-//   reader: UrlReader;
-//   discovery: PluginEndpointDiscovery;
-//   tokenManager: TokenManager;
-//   permissions: PermissionEvaluator | PermissionAuthorizer;
-//   scheduler: PluginTaskScheduler;
-// };
-
 export { configServiceRef } from './configServiceRef';
 export { httpRouterServiceRef } from './httpRouterServiceRef';
 export type { HttpRouterService } from './httpRouterServiceRef';

@@ -17,6 +17,9 @@
 import { createServiceRef } from '../system/types';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
+/**
+ * @public
+ */
 export const discoveryServiceRef = createServiceRef<PluginEndpointDiscovery>({
   id: 'core.discovery',
 });

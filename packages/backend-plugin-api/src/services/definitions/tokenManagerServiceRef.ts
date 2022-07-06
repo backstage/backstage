@@ -17,6 +17,9 @@
 import { createServiceRef } from '../system/types';
 import { TokenManager } from '@backstage/backend-common';
 
+/**
+ * @public
+ */
 export const tokenManagerServiceRef = createServiceRef<TokenManager>({
   id: 'core.tokenManager',
 });
