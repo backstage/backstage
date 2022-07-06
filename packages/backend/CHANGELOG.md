@@ -1,5 +1,28 @@
 # example-backend
 
+## 0.2.73-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-backend@0.7.0-next.2
+  - @backstage/plugin-tech-insights-backend@0.5.0-next.2
+  - @backstage/plugin-jenkins-backend@0.1.24-next.2
+  - @backstage/plugin-search-backend-module-pg@0.3.5-next.2
+  - @backstage/plugin-scaffolder-backend@1.4.0-next.2
+  - @backstage/plugin-auth-backend@0.15.0-next.2
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/plugin-kafka-backend@0.2.27-next.2
+  - @backstage/backend-common@0.14.1-next.2
+  - @backstage/backend-tasks@0.3.3-next.2
+  - @backstage/plugin-app-backend@0.3.34-next.2
+  - @backstage/plugin-catalog-backend@1.2.1-next.2
+  - @backstage/plugin-code-coverage-backend@0.1.32-next.2
+  - @backstage/plugin-techdocs-backend@1.2.0-next.2
+  - @backstage/plugin-badges-backend@0.1.28-next.2
+  - @backstage/integration@1.2.2-next.2
+  - example-app@0.2.73-next.2
+
 ## 0.2.73-next.1
 
 ### Patch Changes

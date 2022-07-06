@@ -85,14 +85,14 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
 
     overlayHeader: {
       display: 'flex',
-      color: theme.palette.bursts.fontColor,
+      color: theme.palette.text.primary,
       alignItems: 'center',
       justifyContent: 'space-between',
       padding: theme.spacing(2, 3),
     },
 
     overlayHeaderClose: {
-      color: theme.palette.bursts.fontColor,
+      color: theme.palette.text.primary,
     },
 
     marginMobileSidebar: props => ({

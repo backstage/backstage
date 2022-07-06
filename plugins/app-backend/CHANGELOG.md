@@ -1,5 +1,13 @@
 # @backstage/plugin-app-backend
 
+## 0.3.34-next.2
+
+### Patch Changes
+
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.2
+
 ## 0.3.34-next.1
 
 ### Patch Changes

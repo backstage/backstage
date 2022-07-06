@@ -7,6 +7,15 @@
 - Fix bug where the default time window/snapshot duration was supposed to be 30 days, but ended up being 43 weeks
 - Add a select option to change the time window of the snapshot shown
 
+## 0.1.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/plugin-catalog-react@1.1.2-next.2
+
 ## 0.1.15-next.1
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.3.5-next.2
+
+### Patch Changes
+
+- 423e3d8e95: **DEPRECATED**: `PgSearchEngine` static `from` has been deprecated and will be removed in a future release. Use static `fromConfig` method to instantiate.
+
+  Added support for highlighting matched terms in search result data
+
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.2
+
 ## 0.3.5-next.1
 
 ### Patch Changes

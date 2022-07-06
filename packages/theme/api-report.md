@@ -116,7 +116,13 @@ export function createThemeOverrides(theme: BackstageTheme): Overrides;
 export const darkTheme: BackstageTheme;
 
 // @public
-export function genPageTheme(colors: string[], shape: string): PageTheme;
+export function genPageTheme(props: {
+  colors: string[];
+  shape: string;
+  options?: {
+    fontColor?: string;
+  };
+}): PageTheme;
 
 // @public
 export const lightTheme: BackstageTheme;
@@ -126,6 +132,7 @@ export type PageTheme = {
   colors: string[];
   shape: string;
   backgroundImage: string;
+  fontColor: string;
 };
 
 // @public

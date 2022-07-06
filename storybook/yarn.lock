@@ -8387,9 +8387,9 @@ style-to-object@0.3.0, style-to-object@^0.3.0:
     inline-style-parser "0.1.1"
 
 sucrase@^3.21.0:
-  version "3.21.1"
-  resolved "https://registry.npmjs.org/sucrase/-/sucrase-3.21.1.tgz#7e29ddaca012764cf843280b00e74a843bdf790f"
-  integrity sha512-kxXnC9yZEav5USAu8gooZID9Ph3xqwdJxZoh+WbOWQZHTB7CHj3ANwENVMZ6mAZ9k7UtJtFxvQD9R03q3yU2YQ==
+  version "3.23.0"
+  resolved "https://registry.npmjs.org/sucrase/-/sucrase-3.23.0.tgz#2a7fa80a04f055fb2e95d2aead03fec1dba52838"
+  integrity sha512-xgC1xboStzGhCnRywlBf/DLmkC+SkdAKqrNCDsxGrzM0phR5oUxoFKiQNrsc2D8wDdAm03iLbSZqjHDddo3IzQ==
   dependencies:
     commander "^4.0.0"
     glob "7.1.6"

@@ -32,6 +32,9 @@ const mockGitlabClient = {
   Users: {
     current: jest.fn(),
   },
+  ProjectMembers: {
+    add: jest.fn(),
+  },
 };
 jest.mock('@gitbeaker/node', () => ({
   Gitlab: class {
@@ -113,6 +116,7 @@ describe('publish:gitlab', () => {
   });
 
   it('should work when there is a token provided through ctx.input', async () => {
+    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
@@ -135,6 +139,7 @@ describe('publish:gitlab', () => {
   });
 
   it('should call the correct Gitlab APIs when the owner is an organization', async () => {
+    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
@@ -168,6 +173,7 @@ describe('publish:gitlab', () => {
   });
 
   it('should call initRepoAndPush with the correct values', async () => {
+    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
@@ -187,6 +193,7 @@ describe('publish:gitlab', () => {
   });
 
   it('should call initRepoAndPush with the correct default branch', async () => {
+    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
@@ -241,6 +248,7 @@ describe('publish:gitlab', () => {
       config: customAuthorConfig,
     });
 
+    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
@@ -286,6 +294,7 @@ describe('publish:gitlab', () => {
       config: customAuthorConfig,
     });
 
+    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
@@ -305,6 +314,7 @@ describe('publish:gitlab', () => {
   });
 
   it('should call output with the remoteUrl and repoContentsUrl', async () => {
+    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
@@ -320,5 +330,55 @@ describe('publish:gitlab', () => {
       'repoContentsUrl',
       'http://mockurl/-/blob/master',
     );
+  });
+
+  it('should call the correct Gitlab APIs when setUserAsOwner option is true and integration config has a token', async () => {
+    const customAuthorConfig = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'gitlab.com',
+            token: 'tokenlols',
+            apiBaseUrl: 'https://api.gitlab.com',
+          },
+        ],
+      },
+    });
+
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
+    const customAuthorAction = createPublishGitlabAction({
+      integrations: customAuthorIntegrations,
+      config: customAuthorConfig,
+    });
+
+    mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Projects.create.mockResolvedValue({
+      id: 123456,
+      http_url_to_repo: 'http://mockurl.git',
+    });
+
+    await customAuthorAction.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        token: 'token',
+        setUserAsOwner: true,
+      },
+    });
+
+    expect(mockGitlabClient.Namespaces.show).toHaveBeenCalledWith('owner');
+    expect(mockGitlabClient.Users.current).toHaveBeenCalled();
+    expect(mockGitlabClient.ProjectMembers.add).toHaveBeenCalledWith(
+      123456,
+      12345,
+      50,
+    );
+    expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
+      namespace_id: 1234,
+      name: 'repo',
+      visibility: 'private',
+    });
   });
 });

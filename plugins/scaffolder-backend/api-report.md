@@ -388,6 +388,7 @@ export function createPublishGitlabAction(options: {
   gitCommitMessage?: string | undefined;
   gitAuthorName?: string | undefined;
   gitAuthorEmail?: string | undefined;
+  setUserAsOwner?: boolean | undefined;
 }>;
 
 // @public
