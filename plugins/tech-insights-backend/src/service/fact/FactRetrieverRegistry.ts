@@ -44,17 +44,21 @@ export class DefaultFactRetrieverRegistry implements FactRetrieverRegistry {
 
   constructor(retrievers: FactRetrieverRegistration[]) {
     retrievers.forEach(r => {
-      this.retrievers.set(r.factRetriever.id, r);
+      this.registerSync(r);
     });
   }
 
-  async register(registration: FactRetrieverRegistration) {
+  registerSync(registration: FactRetrieverRegistration) {
     if (this.retrievers.has(registration.factRetriever.id)) {
       throw new ConflictError(
         `Tech insight fact retriever with identifier '${registration.factRetriever.id}' has already been registered`,
       );
     }
     this.retrievers.set(registration.factRetriever.id, registration);
+  }
+
+  async register(registration: FactRetrieverRegistration) {
+    this.registerSync(registration);
   }
 
   async get(retrieverReference: string): Promise<FactRetrieverRegistration> {
