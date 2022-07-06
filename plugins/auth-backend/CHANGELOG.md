@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend
 
+## 0.15.0-next.2
+
+### Patch Changes
+
+- 8e03db907a: Auth provider now also export createAuthProviderIntegration
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/backend-common@0.14.1-next.2
+
 ## 0.15.0-next.1
 
 ### Minor Changes

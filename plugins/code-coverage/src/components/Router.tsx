@@ -13,16 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { CodeCoveragePage } from './CodeCoveragePage';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
-export const isCodeCoverageAvailable = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.['backstage.io/code-coverage']);
+/**
+ * Returns true if the given entity has code coverage enabled.
+ *
+ * @public
+ */
+export function isCodeCoverageAvailable(entity: Entity) {
+  return Boolean(entity.metadata.annotations?.['backstage.io/code-coverage']);
+}
 
-export const Router = () => {
+/**
+ * @public
+ */
+export const Router = (): JSX.Element => {
   const { entity } = useEntity();
 
   if (!isCodeCoverageAvailable(entity)) {
@@ -30,5 +40,6 @@ export const Router = () => {
       <MissingAnnotationEmptyState annotation="backstage.io/code-coverage" />
     );
   }
+
   return <CodeCoveragePage />;
 };

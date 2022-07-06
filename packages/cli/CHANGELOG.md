@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.18.0-next.2
+
+### Patch Changes
+
+- f6b6fb7165: The `test` command now ensures that all IO is flushed before exiting when printing `--help`.
+
 ## 0.18.0-next.1
 
 ### Minor Changes

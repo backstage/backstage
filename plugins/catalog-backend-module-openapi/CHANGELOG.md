@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend-module-openapi
 
+## 0.1.0-next.1
+
+### Patch Changes
+
+- 4881dc4c84: Updated dependency `openapi-types` to `^12.0.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/backend-common@0.14.1-next.2
+  - @backstage/plugin-catalog-backend@1.2.1-next.2
+  - @backstage/integration@1.2.2-next.2
+
 ## 0.1.0-next.0
 
 ### Minor Changes
