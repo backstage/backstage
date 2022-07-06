@@ -12700,7 +12700,6 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@backstage/plugin-techdocs" "^1.2.1-next.2"
     "@backstage/plugin-techdocs-module-addons-contrib" "^1.0.2-next.2"
     "@backstage/plugin-techdocs-react" "^1.0.2-next.1"
-    "@backstage/plugin-test02" "^0.0.0"
     "@backstage/plugin-todo" "^0.2.9-next.2"
     "@backstage/plugin-user-settings" "^0.4.6-next.2"
     "@backstage/theme" "^0.2.16-next.1"
@@ -19814,6 +19813,11 @@ openapi-types@^12.0.0:
   version "12.0.0"
   resolved "https://registry.npmjs.org/openapi-types/-/openapi-types-12.0.0.tgz#458a99d048f9eae1c067e15d56a8bfb3726041f1"
   integrity sha512-6Wd9k8nmGQHgCbehZCP6wwWcfXcvinhybUTBatuhjRsCxUIujuYFZc9QnGeae75CyHASewBtxs0HX/qwREReUw==
+
+opener@^1.5.1:
+  version "1.5.2"
+  resolved "https://registry.npmjs.org/opener/-/opener-1.5.2.tgz#5d37e1f35077b9dcac4301372271afdeb2a13598"
+  integrity sha512-ur5UIdyw5Y7yEj9wLzhqXiy6GZ3Mwx0yGI+5sMn2r0N0v3cKJvUmFH5yPP+WXh9e0xfyzyJX95D8l088DNFj7A==
 
 openid-client@^5.1.3, openid-client@^5.1.6:
   version "5.1.8"
