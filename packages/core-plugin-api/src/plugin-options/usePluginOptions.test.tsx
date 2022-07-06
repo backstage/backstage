@@ -17,13 +17,15 @@
 import React from 'react';
 import { renderHook } from '@testing-library/react-hooks';
 import { usePluginOptions, PluginProvider } from './usePluginOptions';
-import { createPlugin, PluginOptions } from '../plugin';
+import { createPlugin, PluginInputOptions, PluginOptions } from '../plugin';
 
 describe('usePluginOptions', () => {
   it('should provide a versioned value to hook', () => {
     const plugin = createPlugin({
       id: 'my-plugin',
-      options: { 'key-1': 'value-1', 'key-2': 'value-2' },
+      __experimentalConfigure(_: PluginInputOptions): PluginOptions {
+        return { 'key-1': 'value-1', 'key-2': 'value-2' };
+      },
     });
 
     const rendered = renderHook(() => usePluginOptions(), {
@@ -32,11 +34,9 @@ describe('usePluginOptions', () => {
       ),
     });
 
-    const config = rendered.result.current.config as unknown as {
-      options: PluginOptions;
-    };
+    const config = rendered.result.current;
 
-    expect(config.options).toEqual({
+    expect(config).toEqual({
       'key-1': 'value-1',
       'key-2': 'value-2',
     });

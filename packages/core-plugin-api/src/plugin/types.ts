@@ -97,7 +97,6 @@ export type PluginConfig<
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
-  options?: PluginOptions;
   __experimentalConfigure?(options?: PluginInputOptions): PluginOptions;
 };
 

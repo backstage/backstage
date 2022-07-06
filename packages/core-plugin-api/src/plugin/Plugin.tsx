@@ -36,6 +36,8 @@ export class PluginImpl<
 {
   constructor(private readonly config: PluginConfig<Routes, ExternalRoutes>) {}
 
+  options: PluginOptions | undefined = undefined;
+
   getId(): string {
     return this.config.id;
   }
@@ -62,15 +64,15 @@ export class PluginImpl<
 
   __experimentalReconfigure(options: PluginInputOptions): void {
     if (this.config.__experimentalConfigure) {
-      this.config.options = this.config.__experimentalConfigure(options);
+      this.options = this.config.__experimentalConfigure(options);
     }
   }
 
   getPluginOptions(): PluginOptions {
-    if (this.config.__experimentalConfigure && !this.config.options) {
-      this.config.options = this.config.__experimentalConfigure();
+    if (this.config.__experimentalConfigure && !this.options) {
+      this.options = this.config.__experimentalConfigure();
     }
-    return this.config.options ?? ({} as PluginOptions);
+    return this.options ?? ({} as PluginOptions);
   }
 
   toString() {
