@@ -98,9 +98,9 @@ export class MyOwnClient implements TechRadarApi {
         timeline: entry.timeline.map(timeline => ({
           ...timeline,
           date: new Date(timeline.date),
-        }))
-      }))
-    }
+        })),
+      })),
+    };
   }
 }
 
