@@ -39,6 +39,30 @@ import {
 //   },
 // });
 
+// export const appPlugin = createBackendPlugin({
+//   id: 'app',
+//   register(env) {
+//     env.registerInit({
+//       deps: {
+//         httpRouter: httpRouterServiceRef,
+//         database: databaseServiceRef,
+//         logger: loggerServiceRef,
+//         config: configServiceRef,
+//       },
+//       async init({ httpRouter, config, logger, database }) {
+//         console.log('App plugin init');
+
+//         const appBackendRoute = await createAppBackendRouter({
+//           appPackageName: 'example-app',
+//           config,
+//           logger: loggerToWinstonLogger(logger),
+//           database,
+//         });
+//       },
+//     });
+//   },
+// });
+
 const backend = createBackend({
   apis: [],
 });

@@ -30,18 +30,18 @@ export const httpRouterFactory = createServiceFactory({
   },
   factory: async ({ configFactory }) => {
     const rootRouter = Router();
+
     const service = createServiceBuilder(module)
       .loadConfig(await configFactory('root'))
       .addRouter('', rootRouter);
+
     await service.start();
 
     return async (pluginId?: string) => {
-      if (!pluginId) {
-        return rootRouter;
-      }
+      const path = pluginId ? `/api/${pluginId}` : '';
       return {
         use(handler: Handler) {
-          rootRouter.use(`/api/${pluginId}`, handler);
+          rootRouter.use(path, handler);
         },
       };
     };
