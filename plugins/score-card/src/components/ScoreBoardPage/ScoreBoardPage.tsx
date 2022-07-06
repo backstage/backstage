@@ -28,8 +28,8 @@ import { ScoreCardTable } from '../ScoreCardTable';
 export const ScoreBoardPage = () => (
   <Page themeId="tool">
     <Header title="Score board" subtitle="Overview of system scores">
-      <HeaderLabel label="Owner" value="Platform&amp;Tooling team" />
-      <HeaderLabel label="Lifecycle" value="Production" />
+      <HeaderLabel label="Maintainer" value="Oriflame" />
+      <HeaderLabel label="Status" value="Alpha" />
     </Header>
     <Content>
       <ContentHeader title="">
