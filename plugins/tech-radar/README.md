@@ -78,42 +78,11 @@ When defining the radar entries you can see the available properties on the file
 The `TechRadar` plugin uses the `techRadarApiRef` to get a client which implements the `TechRadarApi` interface. The default sample one is located [here](https://github.com/backstage/backstage/blob/master/plugins/tech-radar/src/sample.ts). To load your own data, you'll need to provide a class that implements the `TechRadarApi` and override the `techRadarApiRef` in the `app/src/apis.ts`.
 
 ```ts
-// app/src/lib/DataConverter.ts
-import { TechRadarLoaderResponse } from '@backstage/plugin-tech-radar';
-
-export function convertTechRadarData(json: any): TechRadarLoaderResponse {
-  const { entries, rings, quadrants } = json;
-
-  const normalizedEntries = entries.map(entry => {
-    // convert date of timeline
-    const timelineEntries = entry.timeline.map(timeline => {
-      return {
-        ...timeline,
-        date: new Date(timeline.date),
-      };
-    });
-
-    return {
-      ...entry,
-      timeline: timelineEntries,
-    };
-  });
-
-  return {
-    entries: normalizedEntries,
-    rings,
-    quadrants,
-  };
-}
-```
-
-```ts
 // app/src/lib/MyClient.ts
 import {
   TechRadarApi,
   TechRadarLoaderResponse,
 } from '@backstage/plugin-tech-radar';
-import { convertTechRadarData } from './DataConverter';
 
 export class MyOwnClient implements TechRadarApi {
   async load(id: string | undefined): Promise<TechRadarLoaderResponse> {
@@ -121,9 +90,17 @@ export class MyOwnClient implements TechRadarApi {
 
     const data = await fetch('https://mydata.json').then(res => res.json());
 
-    // maybe you'll need to do some data transformation here to make it look like TechRadarLoaderResponse
-    // Need a converter for the Date object
-    return convertTechRadarData(data);
+    // For example, this converts the timeline dates into date objects
+    return {
+      ...data,
+      entries: data.entries.map(entry => ({
+        ...entry,
+        timeline: entry.timeline.map(timeline => ({
+          ...timeline,
+          date: new Date(timeline.date),
+        }))
+      }))
+    }
   }
 }
 
