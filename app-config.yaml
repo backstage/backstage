@@ -142,7 +142,7 @@ dynatrace:
 # Score-cards sample configuration. TODO: shall we change this to a better location? 
 # E.g. for plugin DEV environment we start http-server.. shal we do the same here?
 scorecards:
-  jsonDataUrl: https://raw.githubusercontent.com/Oriflame/backstage/feature/jvilimek/score-card-plugin/plugins/score-card/sample-data/ #this is being served via http-server
+  jsonDataUrl: https://raw.githubusercontent.com/backstage/backstage/master/plugins/score-card/sample-data/
 
 sentry:
   organization: my-company
