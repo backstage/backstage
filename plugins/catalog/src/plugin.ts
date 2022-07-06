@@ -79,9 +79,6 @@ export const catalogPlugin = createPlugin({
     const defaultOptions = {
       createButtonTitle: 'Create',
     };
-    if (!options) {
-      return defaultOptions;
-    }
     return { ...defaultOptions, ...options };
   },
 });
