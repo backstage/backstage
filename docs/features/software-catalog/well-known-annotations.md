@@ -242,13 +242,14 @@ that entity if the periskop plugin is installed.
 # Example:
 metadata:
   annotations:
-    sentry.io/project-slug: pump-station
+    sentry.io/project-slug: backstage/pump-station
 ```
 
 The value of this annotation is the so-called slug (or alternatively, the ID) of
-a [Sentry](https://sentry.io) project within your organization. The organization
-slug is currently not configurable on a per-entity basis, but is assumed to be
-the same for all entities in the catalog.
+a [Sentry](https://sentry.io) project within your organization. The value can
+be the format of `[organization]/[project-slug]` or just `[project-slug]`. When
+the organization slug is omitted the `app-config.yaml` will be used as a
+fallback (`sentry.organization`).
 
 Specifying this annotation may enable Sentry related features in Backstage for
 that entity.

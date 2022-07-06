@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import {
+  getProjectSlug,
+  getOrganization,
+  SENTRY_PROJECT_SLUG_ANNOTATION,
+} from '../api/annotations';
 
-export const SENTRY_PROJECT_SLUG_ANNOTATION = 'sentry.io/project-slug';
-
-export const useProjectSlug = (entity: Entity) => {
-  return entity?.metadata.annotations?.[SENTRY_PROJECT_SLUG_ANNOTATION] ?? '';
-};
+export const useProjectSlug = getProjectSlug;
+export const useOrganization = getOrganization;
+export { SENTRY_PROJECT_SLUG_ANNOTATION };
