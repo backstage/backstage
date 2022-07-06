@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { WarningPanel } from '@backstage/core-components';
+import { ResponseErrorPanel } from '@backstage/core-components';
 import React from 'react';
 
 export const getWarningPanel = (error: Error) => {
   return (
-    <WarningPanel severity="error" title="Could not load data.">
-      {error.name}: {error.message} <br /> <pre> {error.stack} </pre>
-    </WarningPanel>
+    <ResponseErrorPanel
+      error={error}
+      title="Could not load data"
+      defaultExpanded
+      key="error"
+    />
   );
 };
