@@ -139,9 +139,10 @@ techdocs:
 dynatrace:
   baseUrl: https://your.dynatrace.instance.com
 
-# Score-cards sample configuration. TODO: shall we change this so we do not need to start a http server to mock data?
+# Score-cards sample configuration. TODO: shall we change this to a better location? 
+# E.g. for plugin DEV environment we start http-server.. shal we do the same here?
 scorecards:
-  jsonDataUrl: http://localhost:8090/plugins/score-card/sample-data/ #this is being served via http-server
+  jsonDataUrl: https://raw.githubusercontent.com/Oriflame/backstage/feature/jvilimek/score-card-plugin/plugins/score-card/sample-data/ #this is being served via http-server
 
 sentry:
   organization: my-company
