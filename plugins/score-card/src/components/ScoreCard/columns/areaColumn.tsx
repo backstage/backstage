@@ -17,9 +17,9 @@
 import { TableColumn } from '@backstage/core-components';
 import { Chip, Link } from '@material-ui/core';
 import { scoreToColorConverter } from '../../../helpers/scoreToColorConverter';
-import { SystemScoreExtended } from '../../../types/SystemScoreExtended';
 import { SystemScoreTableEntry } from '../helpers/getScoreTableEntries';
 import React from 'react';
+import { SystemScoreExtended } from '../../../api/types';
 
 export function areaColumn(
   value: SystemScoreExtended | null | undefined,
