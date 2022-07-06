@@ -25,7 +25,7 @@ You may drill down to the details of each score together with explanation why it
 To find out a `score` for your service we follow this process:
 
 - Scoring introduction
-- Team self-assesment
+- Team self-assessment
 - Review process
 - Backstage integration & visualization
 - Regular update
@@ -36,7 +36,7 @@ We have based the scoring on a set of non-functional requirements in these areas
 
 - **Code**: coding standards, implementation of proper logging, audits, resiliency patterns etc.
 - **Quality**: coverage by unit & automated integration tests, implementation of SonarCloud, performance tests etc.
-- **Operations**: readiness for operating the service such as automated ci/cd pipelines, dashboards, alerts, gitops, DRP etc.
+- **Operations**: readiness for operating the service such as automated ci/cd pipelines, dashboards, alerts, GitOps, DRP etc.
 - **Documentation**: various documentation e.g. project description, README, wiki (business, technical), road map, etc.
 - **Security**: fulfillment of our security standards.
 
@@ -44,15 +44,15 @@ The **main goal of the scoring** is to visualize the maturity of the services (s
 
 Also every service is specific and in a different state of implementation. When a team starts building a new service it is absolutely OK to have e.g. low Operations score.
 
-So as a first step the teams need to understand why. Thats why there is an important step to prepare teams for the scoring proces, e.g. with following presentation: [system-scoring.pdf](docs/.assets/system-scoring.pdf).
+So as a first step the teams need to understand why. That is why there is an important step to prepare teams for the scoring process, e.g. with following presentation: [system-scoring.pdf](docs/.assets/system-scoring.pdf).
 
-### Team self-assesment
+### Team self-assessment
 
-Team does the self assesment, that is answering a form (e.g. via Sharepoint list) with list of questions. There is a space for comments. Each requirement is described in detail in a wiki.
+Team does the self assessment, that is answering a form (e.g. via Sharepoint list) with list of questions. There is a space for comments. Each requirement is described in detail in a wiki.
 
 Example how a form in Sharepoint may look like:
 
-![Sharepoint Form: Editation](docs/.assets/sharepoint-form-editation.png)
+![Sharepoint Form](docs/.assets/sharepoint-form-editation.png)
 
 ### Review process
 
