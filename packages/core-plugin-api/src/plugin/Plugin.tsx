@@ -20,8 +20,6 @@ import {
   Extension,
   AnyRoutes,
   AnyExternalRoutes,
-  AnyPluginOptions,
-  AnyPluginInputOptions,
   PluginFeatureFlagConfig,
 } from './types';
 import { AnyApiFactory } from '../apis';
@@ -30,8 +28,8 @@ import { AnyApiFactory } from '../apis';
  * @internal
  */
 export class PluginImpl<
-  PluginInputOptions extends AnyPluginInputOptions,
-  PluginOptions extends AnyPluginOptions,
+  PluginInputOptions extends {},
+  PluginOptions extends {},
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
 > implements BackstagePlugin<PluginInputOptions, Routes, ExternalRoutes>
@@ -45,7 +43,7 @@ export class PluginImpl<
     >,
   ) {}
 
-  options: AnyPluginOptions | undefined = undefined;
+  options: {} | undefined = undefined;
 
   getId(): string {
     return this.config.id;
@@ -77,11 +75,11 @@ export class PluginImpl<
     }
   }
 
-  getPluginOptions(): AnyPluginOptions {
+  getPluginOptions(): {} {
     if (this.config.__experimentalConfigure && !this.options) {
       this.options = this.config.__experimentalConfigure();
     }
-    return this.options ?? ({} as AnyPluginOptions);
+    return this.options ?? {};
   }
 
   toString() {
@@ -96,8 +94,8 @@ export class PluginImpl<
  * @public
  */
 export function createPlugin<
-  PluginInputOptions extends AnyPluginInputOptions = {},
-  PluginOptions extends AnyPluginInputOptions = {},
+  PluginInputOptions extends {},
+  PluginOptions extends {},
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
 >(

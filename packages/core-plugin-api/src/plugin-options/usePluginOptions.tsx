@@ -19,13 +19,13 @@ import {
   createVersionedValueMap,
   useVersionedContext,
 } from '@backstage/version-bridge';
-import { BackstagePlugin, AnyPluginOptions } from '../plugin';
+import { BackstagePlugin } from '../plugin';
 import React, { ReactNode } from 'react';
 
 const contextKey: string = 'plugin-context';
 
 /**
- * Properties for the AsyncEntityProvider component.
+ * Properties for the PluginProvider component.
  *
  * @public
  */
@@ -38,14 +38,15 @@ export const PluginProvider = ({
   children,
   plugin,
 }: PluginOptionsProviderProps): JSX.Element => {
-  const { Provider } = createVersionedContext<{ 1: AnyPluginOptions }>(
-    contextKey,
-  );
+  const { Provider } = createVersionedContext<{
+    1: { plugin: BackstagePlugin<any, any, any> | undefined };
+  }>(contextKey);
+
   return (
     <Provider
       value={createVersionedValueMap({
-        1: plugin as unknown as {
-          getPluginOptions(): AnyPluginOptions;
+        1: {
+          plugin,
         },
       })}
     >
@@ -61,7 +62,7 @@ export const PluginProvider = ({
  * @alpha
  */
 export function usePluginOptions<
-  TPluginOptions extends AnyPluginOptions = AnyPluginOptions,
+  TPluginOptions extends {} = {},
 >(): TPluginOptions {
   const versionedHolder = useVersionedContext<{ 1: TPluginOptions }>(
     contextKey,
@@ -78,7 +79,9 @@ export function usePluginOptions<
 
   return (
     value as unknown as {
-      getPluginOptions(): AnyPluginOptions;
+      plugin: {
+        getPluginOptions(): {};
+      };
     }
-  ).getPluginOptions() as TPluginOptions;
+  ).plugin.getPluginOptions() as TPluginOptions;
 }

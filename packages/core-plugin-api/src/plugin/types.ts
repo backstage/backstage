@@ -45,20 +45,12 @@ export type AnyRoutes = { [name: string]: RouteRef | SubRouteRef };
 export type AnyExternalRoutes = { [name: string]: ExternalRouteRef };
 
 /**
- * Catch-all metadata type.
- *
- * @public
- */
-export type AnyPluginOptions = { [name: string]: unknown };
-export type AnyPluginInputOptions = { [name: string]: unknown };
-
-/**
  * Plugin type.
  *
  * @public
  */
 export type BackstagePlugin<
-  PluginInputOptions extends AnyPluginInputOptions = {},
+  PluginInputOptions extends {} = {},
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
 > = {
@@ -90,8 +82,8 @@ export type PluginFeatureFlagConfig = {
  * @public
  */
 export type PluginConfig<
-  PluginInputOptions extends AnyPluginInputOptions,
-  PluginOptions extends AnyPluginOptions,
+  PluginInputOptions extends {},
+  PluginOptions extends {},
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
 > = {
