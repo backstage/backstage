@@ -58,15 +58,10 @@ export const ScoreTable = ({ scores }: ScoreTableProps) => {
             data-id={systemScore.systemEntityName}
           >
             {systemScore.systemEntityName}
-          </Link>
+          </Link> // NOTE: we can't use EntityRefLink as it does not yet support navigating to "/score" (or other tab) yet
         ) : (
           <>{systemScore.systemEntityName}</>
         ),
-      // this would be better but it cant link to "/score" <EntityRefLink entityRef={{
-      //   kind: 'System',
-      //   namespace: 'default',
-      //   name: systemScore.systemEntityName,
-      // }} defaultKind={'System'} />
     },
     {
       title: 'Owner',
