@@ -90,13 +90,6 @@ export class ScoringDataJsonClient implements ScoringDataApi {
       filter: { kind: ['System'] },
       fields: ['kind', 'metadata.name', 'spec.owner', 'relations'],
     });
-    /* TODO cache
-  const cacheKey = `userProjects-${group ?? 'all'}`;
-  const cachedProjects: UserProjects = JSON.parse(
-    localStorage.getItem(cacheKey) || '{}',
-  );
-  localStorage.setItem(cacheKey, JSON.stringify(newCachedProjects));
-  */
     if (!result) return undefined;
     const systems = entities.items;
     return result.map<SystemScoreExtended>(score => {
