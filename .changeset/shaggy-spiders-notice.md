@@ -2,5 +2,13 @@
 '@backstage/plugin-catalog-backend': patch
 ---
 
-Provide a new listener `CatalogProcessingErrorListener` for the processing engines to notify the caller if an entity can not be processed. Processing engine
-will collect the errors and passes the entity and the results to the given listeners.
+CatalogBuilder supports now subscription to processing engine errors.
+
+```ts
+subscribe(options: {
+  onProcessingError: (event: { unprocessedEntity: Entity, error: Error }) => Promise<void> | void;
+});
+```
+
+If you want to get notified on errors while processing the entities, you call CatalogBuilder.subscribe
+to get notifications with the parameters defined as above.

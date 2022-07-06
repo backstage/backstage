@@ -29,7 +29,7 @@ export type EntityProcessingRequest = {
 
 /**
  * The result of processing an entity.
- * @public
+ * @internal
  */
 export type EntityProcessingResult =
   | {
