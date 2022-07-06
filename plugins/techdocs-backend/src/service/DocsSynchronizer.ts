@@ -25,7 +25,7 @@ import {
   PublisherBase,
 } from '@backstage/plugin-techdocs-node';
 import fetch from 'node-fetch';
-import pLimit, { Limit } from 'p-limit';
+import pLimit, { LimitFunction } from 'p-limit';
 import { PassThrough } from 'stream';
 import * as winston from 'winston';
 import { TechDocsCache } from '../cache';
@@ -48,7 +48,7 @@ export class DocsSynchronizer {
   private readonly config: Config;
   private readonly scmIntegrations: ScmIntegrationRegistry;
   private readonly cache: TechDocsCache | undefined;
-  private readonly buildLimiter: Limit;
+  private readonly buildLimiter: LimitFunction;
 
   constructor({
     publisher,
