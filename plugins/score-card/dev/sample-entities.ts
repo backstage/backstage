@@ -16,71 +16,38 @@
 
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 
-// TODO: owner is ignored in the score board as we are using "relations", see extendSystemScore
-export const entityOnline: Entity = {
+export const entityAudioPlaybackSystem: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
   kind: 'System',
   metadata: {
-    name: 'Online',
-    description: 'Online/Cumulus system',
+    name: 'audio-playback',
+    description: 'Audio playback system',
     annotations: {},
   },
   relations: [
     {
       type: RELATION_OWNED_BY,
-      targetRef: 'Group:team-online',
+      targetRef: 'Group:team-c',
     },
   ],
 };
 
-export const entityAtpService: Entity = {
+export const entityWithoutScoringData: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
   kind: 'System',
   metadata: {
-    name: 'our-great-system',
-    description: '...',
-    annotations: {},
-  },
-  relations: [
-    {
-      type: RELATION_OWNED_BY,
-      targetRef: 'Group:team-market-operations',
-    },
-  ],
-};
-
-export const entityIdentity: Entity = {
-  apiVersion: 'backstage.io/v1alpha1',
-  kind: 'System',
-  metadata: {
-    name: 'Identity-backend',
-    description: '...',
-    annotations: {},
-  },
-  relations: [
-    {
-      type: RELATION_OWNED_BY,
-      targetRef: 'Group:team-identity',
-    },
-  ],
-};
-
-export const entityNonExistent: Entity = {
-  apiVersion: 'backstage.io/v1alpha1',
-  kind: 'System',
-  metadata: {
-    name: 'NonExistentSystem',
-    description: 'Non existent system',
+    name: 'no-scoring-data-system',
+    description: 'System without scoring data',
     annotations: {},
   },
 };
 
-export const entityTeamOnline: Entity = {
+export const entityTeamC: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
   kind: 'Group',
   metadata: {
-    name: 'team-online',
-    description: 'Team Online',
+    name: 'team-c',
+    description: 'Team C',
     annotations: {},
   },
 };
