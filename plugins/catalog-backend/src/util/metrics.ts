@@ -29,27 +29,49 @@ import {
 export function createCounterMetric<T extends string>(
   config: CounterConfiguration<T>,
 ): Counter<T> {
-  const existing = register.getSingleMetric(config.name) as Counter<T>;
-  return existing || new Counter<T>(config);
+  let metric = register.getSingleMetric(config.name);
+  if (!metric) {
+    const newMetric = new Counter<T>(config);
+    register.registerMetric(newMetric);
+    metric = register.getSingleMetric(config.name);
+  }
+  return metric as Counter<T>;
 }
 
 export function createGaugeMetric<T extends string>(
   config: GaugeConfiguration<T>,
 ): Gauge<T> {
-  const existing = register.getSingleMetric(config.name) as Gauge<T>;
-  return existing || new Gauge<T>(config);
+  let metric = register.getSingleMetric(config.name);
+  if (!metric) {
+    const newMetric = new Gauge<T>(config);
+    register.registerMetric(newMetric);
+    metric = register.getSingleMetric(config.name);
+  }
+  return metric as Gauge<T>;
 }
 
 export function createSummaryMetric<T extends string>(
   config: SummaryConfiguration<T>,
 ): Summary<T> {
-  const existing = register.getSingleMetric(config.name) as Summary<T>;
-  return existing || new Summary<T>(config);
+  let metric = register.getSingleMetric(config.name);
+  if (!metric) {
+    const newMetric = new Summary<T>(config);
+    register.registerMetric(newMetric);
+    metric = register.getSingleMetric(config.name);
+  }
+
+  return metric as Summary<T>;
 }
 
 export function createHistogramMetric<T extends string>(
   config: HistogramConfiguration<T>,
 ): Histogram<T> {
-  const existing = register.getSingleMetric(config.name) as Histogram<T>;
-  return existing || new Histogram<T>(config);
+  let metric = register.getSingleMetric(config.name);
+  if (!metric) {
+    const newMetric = new Histogram<T>(config);
+    register.registerMetric(newMetric);
+    metric = register.getSingleMetric(config.name);
+  }
+
+  return metric as Histogram<T>;
 }
