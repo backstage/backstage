@@ -42,13 +42,17 @@ export interface FactRetrieverRegistry {
 export class DefaultFactRetrieverRegistry implements FactRetrieverRegistry {
   private readonly retrievers = new Map<string, FactRetrieverRegistration>();
 
-  constructor(retrievers: FactRetrieverRegistration[]) {
+  static create(
+    retrievers: FactRetrieverRegistration[],
+  ): FactRetrieverRegistry {
+    const registry = new DefaultFactRetrieverRegistry();
     retrievers.forEach(it => {
-      this.register(it);
+      registry.register(it);
     });
+    return registry;
   }
 
-  register(registration: FactRetrieverRegistration) {
+  async register(registration: FactRetrieverRegistration) {
     if (this.retrievers.has(registration.factRetriever.id)) {
       throw new ConflictError(
         `Tech insight fact retriever with identifier '${registration.factRetriever.id}' has already been registered`,
@@ -58,7 +62,7 @@ export class DefaultFactRetrieverRegistry implements FactRetrieverRegistry {
     return Promise.resolve();
   }
 
-  get(retrieverReference: string): Promise<FactRetrieverRegistration> {
+  async get(retrieverReference: string): Promise<FactRetrieverRegistration> {
     const registration = this.retrievers.get(retrieverReference);
     if (!registration) {
       throw new NotFoundError(
@@ -68,13 +72,13 @@ export class DefaultFactRetrieverRegistry implements FactRetrieverRegistry {
     return Promise.resolve(registration);
   }
 
-  listRetrievers(): Promise<FactRetriever[]> {
+  async listRetrievers(): Promise<FactRetriever[]> {
     return Promise.resolve(
       [...this.retrievers.values()].map(it => it.factRetriever),
     );
   }
 
-  listRegistrations(): Promise<FactRetrieverRegistration[]> {
+  async listRegistrations(): Promise<FactRetrieverRegistration[]> {
     return Promise.resolve([...this.retrievers.values()]);
   }
 

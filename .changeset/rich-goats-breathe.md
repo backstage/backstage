@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-tech-insights-backend': patch
+'@backstage/plugin-tech-insights-backend': minor
 ---
 
-Update FactRetrieverRegistry interface to be async so that db backed implementations can be passed through to the FactRetrieverEngine.
+**BREAKING**: Update FactRetrieverRegistry interface to be async so that db backed implementations can be passed through to the FactRetrieverEngine.
