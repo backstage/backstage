@@ -80,22 +80,4 @@ describe('score-card', () => {
         );
     });
   });
-
-  // TODO: add another system without scoring data (once cypress is running again)
-  // describe('Score Cards', () => {
-  //   it('handles no-data available well', () => {
-  //     cy.loginAsGuest();
-
-  //     // this is the system without score
-  //     cy.visit(
-  //       '/catalog/default/system/another-great-system/score',
-  //     );
-  //     cy.contains('Score Card for another-great-system').should('be.visible');
-  //     cy.contains('Not computed').should('be.visible');
-  //     cy.contains(
-  //       "There is no data available for 'another-great-system'.",
-  //     ).should('be.visible');
-  //     cy.checkForErrors();
-  //   });
-  // });
 });
