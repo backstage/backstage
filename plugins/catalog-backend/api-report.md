@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="node" />
 
+import { BackendRegistrable } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
@@ -46,6 +47,7 @@ import { Readable } from 'stream';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Validators } from '@backstage/catalog-model';
@@ -215,6 +217,9 @@ export type CatalogEnvironment = {
 export type CatalogPermissionRule<TParams extends unknown[] = unknown[]> =
   PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
+// @alpha
+export const catalogPlugin: (option: unknown) => BackendRegistrable;
+
 // @public (undocumented)
 export interface CatalogProcessingEngine {
   // (undocumented)
@@ -222,6 +227,15 @@ export interface CatalogProcessingEngine {
   // (undocumented)
   stop(): Promise<void>;
 }
+
+// @alpha (undocumented)
+export interface CatalogProcessingInitApi {
+  // (undocumented)
+  addProcessor(processor: CatalogProcessor): void;
+}
+
+// @alpha (undocumented)
+export const catalogProcessingInitApiRef: ServiceRef<CatalogProcessingInitApi>;
 
 export { CatalogProcessor };
 

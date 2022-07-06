@@ -16,3 +16,6 @@
 
 export type { CatalogEnvironment } from './CatalogBuilder';
 export { CatalogBuilder } from './CatalogBuilder';
+
+export type { CatalogProcessingInitApi } from './CatalogPlugin';
+export { catalogPlugin, catalogProcessingInitApiRef } from './CatalogPlugin';
