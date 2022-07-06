@@ -397,6 +397,7 @@ describe('yamlPlaceholderResolver', () => {
     baseUrl: 'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
     read,
     resolveUrl: (url, base) => integrations.resolveUrl({ url, base }),
+    emit: () => {},
   };
 
   beforeEach(() => {
@@ -442,6 +443,7 @@ describe('jsonPlaceholderResolver', () => {
     baseUrl: 'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
     read,
     resolveUrl: (url, base) => integrations.resolveUrl({ url, base }),
+    emit: () => {},
   };
 
   beforeEach(() => {
