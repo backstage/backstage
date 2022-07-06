@@ -15,7 +15,6 @@
  */
 import {
   FactLifecycle,
-  FactRetriever,
   FactRetrieverContext,
   FactRetrieverRegistration,
   TechInsightFact,
@@ -25,6 +24,7 @@ import { FactRetrieverRegistry } from './FactRetrieverRegistry';
 import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Duration } from 'luxon';
+import { FactRetriever } from '@backstage/plugin-tech-insights-common';
 
 function randomDailyCron() {
   const rand = (min: number, max: number) =>

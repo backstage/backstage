@@ -4,7 +4,10 @@
 
 ```ts
 import { DateTime } from 'luxon';
+import { FactRetrieverContext } from '../../tech-insights-node';
+import { FactSchema } from '../../tech-insights-node';
 import { JsonValue } from '@backstage/types';
+import { TechInsightFact } from '../../tech-insights-node';
 
 // @public
 export interface BooleanCheckResult extends CheckResult {
@@ -46,6 +49,19 @@ export type FactResponse = {
     metadata?: Record<string, any>;
   };
 };
+
+// @public
+export interface FactRetriever {
+  description: string;
+  entityFilter?:
+    | Record<string, string | symbol | (string | symbol)[]>[]
+    | Record<string, string | symbol | (string | symbol)[]>;
+  handler: (ctx: FactRetrieverContext) => Promise<TechInsightFact[]>;
+  id: string;
+  schema: FactSchema;
+  title: string;
+  version: string;
+}
 
 // (No @packageDocumentation comment for this package)
 ```

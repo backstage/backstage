@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import {
-  FactRetriever,
   FactRetrieverRegistration,
   FactSchemaDefinition,
   TechInsightFact,
@@ -30,12 +29,15 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { TaskScheduler } from '@backstage/backend-tasks';
+import { FactRetriever } from '@backstage/plugin-tech-insights-common';
 
 jest.useFakeTimers();
 
 const testFactRetriever: FactRetriever = {
   id: 'test_factretriever',
   version: '0.0.1',
+  title: 'Test 1',
+  description: 'testing',
   entityFilter: [{ kind: 'component' }],
   schema: {
     testnumberfact: {

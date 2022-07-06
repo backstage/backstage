@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  FactRetriever,
-  FactRetrieverContext,
-} from '@backstage/plugin-tech-insights-node';
+import { FactRetrieverContext } from '@backstage/plugin-tech-insights-node';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import isEmpty from 'lodash/isEmpty';
+import { FactRetriever } from '@backstage/plugin-tech-insights-common';
 
 /**
  * Generates facts which indicate the completeness of entity metadata.

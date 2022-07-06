@@ -8,6 +8,7 @@ import { Config } from '@backstage/config';
 import { DateTime } from 'luxon';
 import { Duration } from 'luxon';
 import { DurationLike } from 'luxon';
+import { FactRetriever } from '@backstage/plugin-tech-insights-common';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -43,19 +44,6 @@ export interface FactCheckerFactory<
 
 // @public
 export type FactLifecycle = TTL | MaxItems;
-
-// @public
-export interface FactRetriever {
-  description: string;
-  entityFilter?:
-    | Record<string, string | symbol | (string | symbol)[]>[]
-    | Record<string, string | symbol | (string | symbol)[]>;
-  handler: (ctx: FactRetrieverContext) => Promise<TechInsightFact[]>;
-  id: string;
-  schema: FactSchema;
-  title: string;
-  version: string;
-}
 
 // @public
 export type FactRetrieverContext = {
