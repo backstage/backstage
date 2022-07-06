@@ -2126,12 +2126,13 @@
   dependencies:
     "@date-io/core" "^1.3.13"
 
-"@davidzemon/passport-okta-oauth@^0.0.4-2":
-  version "0.0.4-2"
-  resolved "https://registry.npmjs.org/@davidzemon/passport-okta-oauth/-/passport-okta-oauth-0.0.4-2.tgz#67155fa1f591a30e65bb8b1c8a1433280ec515e2"
-  integrity sha512-RYyDc1w12LbpTfnTzxmVfyyvkVYYPHoH4TIUAozv27TY1VgY/QEpla2G7fidXDFlu/6itsK0s678s2idd2jhhg==
+"@davidzemon/passport-okta-oauth@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.npmjs.org/@davidzemon/passport-okta-oauth/-/passport-okta-oauth-0.0.4.tgz#25cfdb8f4abee1038449d4c62ada9566b286b55d"
+  integrity sha512-LYGDtnYnmAvBDpSfdjzq0Ip6VJRlt3vRPECGrJDT6CQHNlt34UpeqQDvDSPPplSUmZkxJcS+mQk++l4Kqxkzaw==
   dependencies:
-    passport-oauth "^1.0.0"
+    "@types/passport-oauth2" "^1.4.11"
+    passport-oauth2 "^1.6.1"
     pkginfo "^0.4.1"
     uid2 "^1.0.0"
 
@@ -6810,6 +6811,15 @@
   version "1.4.9"
   resolved "https://registry.npmjs.org/@types/passport-oauth2/-/passport-oauth2-1.4.9.tgz#134007c4b505a82548c9cb19094c5baeb2205c92"
   integrity sha512-QP0q+NVQOaIu2r0e10QWkiUA0Ya5mOBHRJN0UrI+LolMLOP1/VN4EVIpJ3xVwFo+xqNFRoFvFwJhBvKnk7kpUA==
+  dependencies:
+    "@types/express" "*"
+    "@types/oauth" "*"
+    "@types/passport" "*"
+
+"@types/passport-oauth2@^1.4.11":
+  version "1.4.11"
+  resolved "https://registry.npmjs.org/@types/passport-oauth2/-/passport-oauth2-1.4.11.tgz#fbca527ecb44258774d17bcb251630c321515fa9"
+  integrity sha512-KUNwmGhe/3xPbjkzkPwwcPmyFwfyiSgtV1qOrPBLaU4i4q9GSCdAOyCbkFG0gUxAyEmYwqo9OAF/rjPjJ6ImdA==
   dependencies:
     "@types/express" "*"
     "@types/oauth" "*"
@@ -20358,7 +20368,7 @@ passport-oauth2@1.6.1, passport-oauth2@1.x.x, passport-oauth2@^1.1.2, passport-o
     uid2 "0.0.x"
     utils-merge "1.x.x"
 
-passport-oauth@1.0.0, passport-oauth@^1.0.0:
+passport-oauth@1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/passport-oauth/-/passport-oauth-1.0.0.tgz#90aff63387540f02089af28cdad39ea7f80d77df"
   integrity sha1-kK/2M4dUDwIImvKM2tOep/gNd98=
