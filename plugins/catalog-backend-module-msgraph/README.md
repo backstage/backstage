@@ -6,13 +6,17 @@ This provider is useful if you want to import users and groups from Azure Active
 
 ## Getting Started
 
-1. Create or use an existing App registration in the [Microsoft Azure Portal](https://portal.azure.com/).
+1. Choose your authentication method
+
+   - If you have a
+
+1. Create or use an existing App registration or Managed Identity in the [Microsoft Azure Portal](https://portal.azure.com/).
    The App registration requires at least the API permissions `Group.Read.All`,
    `GroupMember.Read.All`, `User.Read` and `User.Read.All` for Microsoft Graph
    (if you still run into errors about insufficient privileges, add
    `Team.ReadBasic.All` and `TeamMember.Read.All` too).
 
-2. Configure the entity provider:
+1. Configure the entity provider:
 
 ```yaml
 # app-config.yaml
@@ -159,3 +163,9 @@ export async function myGroupTransformer(
    }),
  );
 ```
+
+## Troubleshooting
+
+### Authentication Errors
+
+If you're having problems authenticating, take a look at (Troubleshooting Azure Identity Authentication Issues)[https://github.com/Azure/azure-sdk-for-js/blob/main/sdk/identity/identity/TROUBLESHOOTING.md]

@@ -216,6 +216,15 @@ catalog:
         - Domain
         - Location
 
+  providers:
+    microsoftGraphOrg:
+      default:
+        tenantId: ${AZURE_TENANT_ID}
+        user:
+          filter: accountEnabled eq true and userType eq 'member'
+        group:
+          filter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
+
   processors:
     ldapOrg:
       ### Example for how to add your enterprise LDAP server
