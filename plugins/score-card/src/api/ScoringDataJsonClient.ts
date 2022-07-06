@@ -46,7 +46,9 @@ export class ScoringDataJsonClient implements ScoringDataApi {
     this.fetchApi = fetchApi;
   }
 
-  public async getScore(entity: string): Promise<SystemScore | undefined> {
+  public async getScore(
+    entity: string,
+  ): Promise<SystemScoreExtended | undefined> {
     if (!entity) {
       throw new Error('Entity is required');
     }
@@ -54,7 +56,7 @@ export class ScoringDataJsonClient implements ScoringDataApi {
     return undefined;
   }
 
-  public async getAllScores(): Promise<SystemScore[] | undefined> {
+  public async getAllScores(): Promise<SystemScoreExtended[] | undefined> {
     const jsonDataUrl =
       this.configApi.getOptionalString('scorecards.jsonDataUrl') ??
       'https://unknown-url-please-configure';
