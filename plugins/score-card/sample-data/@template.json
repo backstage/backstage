@@ -1,0 +1,1108 @@
+{
+  "systemEntityName": "backstage-system-entity-name",
+  "systemTier": "A|B|C",
+  "SystemDataConfidentiality": "Confidential|Internal|Public",
+  "SystemDataSensitivity": "PII,Sensitive-PII,PCI",
+  "generatedDateTimeUtc": "2021-07-22 10:00",
+  "scorePercent": 0,
+  "scoreSuccess": "unknown",
+  "areaScores": [
+    {
+      "id": 2199,
+      "title": "Code",
+      "scorePercent": 0,
+      "scoreSuccess": "unknown",
+      "scoreEntries": [
+        {
+          "id": 2157,
+          "title": "Branching",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "In case the project is using GitFlow or GitHub flow (i.e. isolated development in branches with pull requests to integration trunk that is generating packages being deployed to environments where release branch may exist) give 100% score. In other cases give 0%.",
+          "scoreChoices": [
+            {
+              "Gitflow": 100
+            },
+            {
+              "GitHubflow": 100
+            },
+            {
+              "no branch development": 0
+            }
+          ],
+          "details": "... here write the reasoning for the score, markdown is supported, see [scoring wiki](https://dev.azure.com/organization/project/_wiki/wikis/project.wiki/4335/Scoring)"
+        },
+        {
+          "id": 2163,
+          "title": "Swagger",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "For 100% score application api endpoints (REST, ...) needs to be documented via OpenAPI, e.g. Swagger. Add link for the current UAT endpoint. On LIVE the endpoint must not be public!",
+          "scoreChoices": [
+            {
+              "Swagger available for UAT and well documented": 100
+            },
+            {
+              "Swagger available but API is not well documented": 50
+            },
+            {
+              "No swagger or very little documented": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2153,
+          "title": "Application Insights",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "In case the project is using Application Insights (or other APM tool) for sending both logs and other telemetry (e.g. requests duration, exceptions, events...) the score is 100%. In other cases give 0%.",
+          "scoreChoices": [
+            {
+              "AppInsights used": 100
+            },
+            {
+              "Other APM used": 100
+            },
+            {
+              "no APM used": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2162,
+          "title": "Static Code Analysis",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "In case the project is using SonarCloud, has implemented Pull Request policy gate and is actively reducing the tech dept the score is 100%. In case PR policy is missing and/or the tech dept is not being reduced, give 50%. In case static code analysis is not implemented at all give 0%.",
+          "scoreChoices": [
+            {
+              "SonarCloud activelly used": 100
+            },
+            {
+              "Other SCA tool implemented and enforced via policy": 100
+            },
+            {
+              "SCA implemented but not enforced": 50
+            },
+            {
+              "no SCA implemented": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2156,
+          "title": "Error Handling",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score. APM = application performance monitoring tool, e.g. Application Insights",
+          "scoreChecks": [
+            {
+              "Exceptions sent to APM": 30
+            },
+            {
+              "Proper severity handling": 10
+            },
+            {
+              "Error codes described in documentation": 20
+            },
+            {
+              "Operation cases described": 10
+            },
+            {
+              "Full exception details are not exposed to user": 20
+            },
+            {
+              "User error contains error code and correlation id": 10
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2161,
+          "title": "Service Discovery",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "scoreChecks": [
+            {
+              "Service is listed in Configuration Manager": 50
+            },
+            {
+              "Service call other services with the help of configuration manager": 50
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2155,
+          "title": "Database Schema and Versioning",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "In case the service is not using database with a schema do not score. If yes and the schema is saved in git with history of changes, DB is properly updated during deployments and it has own version give 100% otherwise 0%.",
+          "scoreChoices": [
+            {
+              "Code first approach": 100
+            },
+            {
+              "DB Schema approach": 100
+            },
+            {
+              "No DB versioning": 0
+            }
+          ],
+          "isOptional": true,
+          "details": "..."
+        },
+        {
+          "id": 2154,
+          "title": "Client support",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "scoreChecks": [
+            {
+              "Client package provided and versioned": 60
+            },
+            {
+              "Client package supports mocking": 40
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2160,
+          "title": "Reliable Communication",
+          "scorePercent": 0,
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "scoreChecks": [
+            {
+              "API is idempotent": 25
+            },
+            {
+              "Implementing retry policy": 25
+            },
+            {
+              "Implementing circuit breaker pattern": 25
+            },
+            {
+              "Correct event handling": 25
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "scoreSuccess": "unknown",
+          "details": "..."
+        }
+      ]
+    },
+    {
+      "id": 4333,
+      "title": "Quality",
+      "scorePercent": 0,
+      "scoreSuccess": "unknown",
+      "scoreEntries": [
+        {
+          "id": 2187,
+          "title": "Code Reviews",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score. PR(s) = Pull Request(s).",
+          "scoreChecks": [
+            {
+              "PR requires reviewer": 20
+            },
+            {
+              "No override possible": 20
+            },
+            {
+              "PRs are well described": 20
+            },
+            {
+              "PRs are small": 20
+            },
+            {
+              "PRs has comments": 20
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2191,
+          "title": "Unit Tests",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Enter a score based on SonarCloud. If not connected to SonarCloud or the unit test are too simple and not really testing a logic, give 0 %",
+          "details": "..."
+        },
+        {
+          "id": 2189,
+          "title": "Integration Tests",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score. IT = Integration Tests.",
+          "scoreChecks": [
+            {
+              "IT runs during PR": 20
+            },
+            {
+              "IT runs on regular base against DEV": 20
+            },
+            {
+              "IT runs on regular base against UAT": 20
+            },
+            {
+              "IT runs on regular base against STG": 20
+            },
+            {
+              "IT runs on regular base against LIVE": 20
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2190,
+          "title": "Performance Tests",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score. PT = Performance Tests.",
+          "scoreChecks": [
+            {
+              "PT runs during PR": 20
+            },
+            {
+              "PT runs on regular base against DEV": 20
+            },
+            {
+              "PT runs on regular base against UAT": 20
+            },
+            {
+              "PT runs on regular base against STG": 20
+            },
+            {
+              "PT runs on regular base against LIVE": 20
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2186,
+          "title": "Automation Tests",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score. E2E = End to end automation tests.",
+          "scoreChecks": [
+            {
+              "E2E runs during PR": 20
+            },
+            {
+              "E2E runs on regular base against DEV": 20
+            },
+            {
+              "E2E runs on regular base against UAT": 20
+            },
+            {
+              "E2E runs on regular base against STG": 20
+            },
+            {
+              "E2E runs on regular base against LIVE": 20
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2188,
+          "title": "Design Reviews",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score. DR = Design Review.",
+          "scoreChecks": [
+            {
+              "Design reviews are being done only inside team": 10
+            },
+            {
+              "Global Architecture DR is being done outside team": 30
+            },
+            {
+              "DB/API/Messaging DR is being done outside team": 30
+            },
+            {
+              "Security DR is being done outside team": 30
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "..."
+        }
+      ]
+    },
+    {
+      "id": 2208,
+      "title": "Operations",
+      "scorePercent": 0,
+      "scoreSuccess": "unknown",
+      "scoreEntries": [
+        {
+          "id": 2185,
+          "title": "Semantic Versioning",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "In case the service is fully supporting semantic versioning (Major=breaking change, Minor=any change, Patch=fi) give 100% otherwise 0%.",
+          "scoreChoices": [
+            {
+              "Semenatic versioning used": 100
+            },
+            {
+              "No semantinc versioning": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2176,
+          "title": "CI Pipelines",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "In case the service is either using boilerplate and/or is implementing its own (build/CI) pipelines give 100% otherwise 0%.",
+          "scoreChoices": [
+            {
+              "CI pipeline runs during PR": 100
+            },
+            {
+              "No CI pipeline": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2175,
+          "title": "CD Pipelines",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "In case the service is either using boilerplate and/or is implementing its own (deploy/CD) pipelines give 100% otherwise 0%.",
+          "scoreChoices": [
+            {
+              "CD pipeline for deployment automation": 100
+            },
+            {
+              "No CD pipeline": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2210,
+          "title": "Health Checks",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score. In the list we use terminology of AKS but anything similar in other runtimes is OK too.",
+          "scoreChecks": [
+            {
+              "livenessProbe": 25
+            },
+            {
+              "readinessProbe": 25
+            },
+            {
+              "startupProbe": 25
+            },
+            {
+              "health-info": 25
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "Completelly missing healthchecks."
+        },
+        {
+          "id": 2181,
+          "title": "Insights Dashboard",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score. Dashboards needs to be used on at least weekly base.",
+          "scoreChecks": [
+            {
+              "Technical dashboards": 50
+            },
+            {
+              "Business processes dashboard": 50
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2173,
+          "title": "Alerts",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "In case the service has alerts configured for most of the metrics give 100% otherwise 0%.",
+          "scoreChoices": [
+            {
+              "Alerts defined and processed": 100
+            },
+            {
+              "No alerts or alerts being ignored": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2184,
+          "title": "Release Notes",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "In case the service has available release notes for each version give 100% otherwise 0%.",
+          "scoreChoices": [
+            {
+              "Each deploy produces release notes": 100
+            },
+            {
+              "No release notes available": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2183,
+          "title": "Release Annotations to App Insights",
+          "isOptional": true,
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "See the choices. AI = application insights.",
+          "scoreChoices": [
+            {
+              "Version AND release annotation sent to AI": 100
+            },
+            {
+              "Only version OR release annotation sent to AI": 60
+            },
+            {
+              "Nothing sent": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2178,
+          "title": "DNS Record",
+          "isOptional": true,
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "See the choices.",
+          "scoreChoices": [
+            {
+              "Accessible via DNS only": 100
+            },
+            {
+              "Accessible via DNS or path": 100
+            },
+            {
+              "Accessible via path only": 100
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2180,
+          "title": "GitOps",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "See the choices.",
+          "scoreChoices": [
+            {
+              "GitOps for all resources": 100
+            },
+            {
+              "GitOps for app (e.g. via AKS gitops)": 50
+            },
+            {
+              "No GitOps": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2177,
+          "title": "Canary Checks",
+          "isOptional": true,
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "See the choices.",
+          "scoreChoices": [
+            {
+              "Canary checks implemented": 100
+            },
+            {
+              "No canary checks": 0
+            }
+          ],
+          "details": "...depends on tier/SLA..."
+        },
+        {
+          "id": 2172,
+          "title": "AB Testing",
+          "isOptional": true,
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "See the choices.",
+          "scoreChoices": [
+            {
+              "A/B testing implemented": 100
+            },
+            {
+              "Not implemented": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 3941,
+          "title": "Disaster Recovery Plan",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "See the choices.",
+          "scoreChoices": [
+            {
+              "DRP defined": 100
+            },
+            {
+              "Not defined": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2179,
+          "title": "Data Refresh For Testing Environments",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "See the choices.",
+          "scoreChoices": [
+            {
+              "Automated data refresh implemented": 100
+            },
+            {
+              "Manual data refresh implemented": 50
+            },
+            {
+              "Not implemented": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2174,
+          "title": "Basic Ops Handed Over to L2",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "How many daily/routine tasks that can not be automated were handed over to L2? Calculate percent...",
+          "details": "..."
+        }
+      ]
+    },
+    {
+      "id": 3937,
+      "title": "Documentation",
+      "scorePercent": 0,
+      "scoreSuccess": "unknown",
+      "scoreEntries": [
+        {
+          "id": 3938,
+          "title": "Project introduction",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "See the choices.",
+          "scoreChoices": [
+            {
+              "Well structured/documented/linked with the wiki": 100
+            },
+            {
+              "Somewhat usefull": 50
+            },
+            {
+              "Single line": 10
+            },
+            {
+              "Not present at all": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2207,
+          "title": "README",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "See the choices.",
+          "scoreChoices": [
+            {
+              "Well structured/documented/linked with the wiki": 100
+            },
+            {
+              "Somewhat usefull": 50
+            },
+            {
+              "Single line": 10
+            },
+            {
+              "Not present at all": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 3940,
+          "title": "Project wiki",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "See the choices. Fullfilment of each documentation (e.g. business, technical,...) will be in following questions.",
+          "scoreChoices": [
+            {
+              "Well structured/documented/cross-linked/...": 100
+            },
+            {
+              "Somewhat usefull": 50
+            },
+            {
+              "Single page": 10
+            },
+            {
+              "Not present at all": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2170,
+          "title": "RFP",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "scoreChecks": [
+            {
+              "Justification": 20
+            },
+            {
+              "Estimated budget": 20
+            },
+            {
+              "Estimated delivery plan": 10
+            },
+            {
+              "Contact person/PO": 10
+            },
+            {
+              "Business context": 10
+            },
+            {
+              "Business requirements": 10
+            },
+            {
+              "Non-functional requirements": 10
+            },
+            {
+              "Acceptance criteria": 10
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2164,
+          "title": "Architecture Diagrams",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "scoreChecks": [
+            {
+              "System Context diagram": 15
+            },
+            {
+              "Deployment diagram": 20
+            },
+            {
+              "Dependencies diagram": 15
+            },
+            {
+              "Components diagram": 20
+            },
+            {
+              "Domain Model": 15
+            },
+            {
+              "Process diagram": 15
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2205,
+          "title": "SLA",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "scoreChecks": [
+            {
+              "Computed SLA (for components)": 20
+            },
+            {
+              "Operation times": 20
+            },
+            {
+              "Expected availability": 20
+            },
+            {
+              "Response times for endpoints": 10
+            },
+            {
+              "Response times for incident reaction": 10
+            },
+            {
+              "How maintenance breaks are handled": 10
+            },
+            {
+              "Expected load to be handled": 10
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2165,
+          "title": "Business Documentation",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "scoreChecks": [
+            {
+              "Business intro": 20
+            },
+            {
+              "Business domain definition (entities)": 40
+            },
+            {
+              "Business processes": 40
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 4433,
+          "title": "Technical Documentation",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "scoreChecks": [
+            {
+              "Technology used": 15
+            },
+            {
+              "How to run locally": 15
+            },
+            {
+              "How CI/CD pipeline works": 15
+            },
+            {
+              "Environments current state and provisioning": 15
+            },
+            {
+              "How authentication & authorization work": 15
+            },
+            {
+              "Where and how are stored data": 15
+            },
+            {
+              "How to write and run unit tests": 10
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 4435,
+          "title": "QA Documentation",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "scoreChecks": [
+            {
+              "What is expected from a tester": 25
+            },
+            {
+              "Where and how to run integration tests": 25
+            },
+            {
+              "How to test locally (branch)": 25
+            },
+            {
+              "How to write/run automation tests": 25
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2171,
+          "title": "Road Map",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "scoreChecks": [
+            {
+              "Road map is year+ to the future": 10
+            },
+            {
+              "Road map is 6months+ to the future": 20
+            },
+            {
+              "Road map is 3months+ to the future": 20
+            },
+            {
+              "Items are well described": 20
+            },
+            {
+              "Road map is up to date": 30
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "..."
+        }
+      ]
+    },
+    {
+      "id": 4328,
+      "title": "Security",
+      "scorePercent": 0,
+      "scoreSuccess": "unknown",
+      "scoreEntries": [
+        {
+          "id": 2158,
+          "title": "Https",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "For 100% score application (client) endpoints needs to be accessible via HTTPS and latest secure protocol TLS 1.2+. In case the application is accessible via HTTP or some unsecure protocol (SSL X, weak cypher) the score is 0 %.",
+          "scoreChoices": [
+            {
+              "All endpoints via HTTPS/TLS 1.2": 100
+            },
+            {
+              "No HTTPS or unsecure SSL": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 2159,
+          "title": "Identity Management",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "For 100% score application endpoints (FE, backoffice, API) needs to be authenticated via our identity server or via Azure Active directory.",
+          "scoreChoices": [
+            {
+              "IdentityServer": 100
+            },
+            {
+              "Azure Active Directory (native)": 100
+            },
+            {
+              "Azure Active Directory (SAML)": 100
+            },
+            {
+              "Active Directory": 50
+            },
+            {
+              "Custom user and password": 20
+            },
+            {
+              "not protected": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 4388,
+          "title": "Secrets handling",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "See the choices.",
+          "scoreChoices": [
+            {
+              "There is no secret anywhere in the code or the server": 100
+            },
+            {
+              "This was not checked/there are secrets present": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 4395,
+          "title": "Password rotation",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "See the choices.",
+          "scoreChoices": [
+            {
+              "We need to use secrets but we rotate those automatically every week": 100
+            },
+            {
+              "We need to use secrets but we rotate those automatically every month": 90
+            },
+            {
+              "We need to use secrets but we rotate those automatically every 6months": 80
+            },
+            {
+              "We need to use secrets but we rotate those automatically every year": 70
+            },
+            {
+              "We need to use secrets but we rotate those automatically on demand": 40
+            },
+            {
+              "We need to use secrets but we rotate those only manually on demand": 20
+            },
+            {
+              "We need to use secrets but we can not rotate those without downtime": 0
+            },
+            {
+              "We DO NOT NEED to use secrets": 100
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 4392,
+          "title": "Managed identity",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "See the choices.",
+          "scoreChoices": [
+            {
+              "We use managed identity for every service where its available": 100
+            },
+            {
+              "We use managed identity for most of the services": 80
+            },
+            {
+              "We use managed identity for some of the services": 40
+            },
+            {
+              "We do not use managed identity yet...": 0
+            },
+            {
+              "We can not use managed identity": 100
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 4389,
+          "title": "OWASP",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "scoreChecks": [
+            {
+              "Regular OWASP audits": 40
+            },
+            {
+              "Regular OWASP trainings": 40
+            },
+            {
+              "At least general knowledge about OWASP": 10
+            },
+            {
+              "At least once OWASP audit": 10
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 4391,
+          "title": "Encryption of confidential data",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "See the choices.",
+          "scoreChoices": [
+            {
+              "We have sensitive data and we encrypt those": 100
+            },
+            {
+              "We have sensitive data and DO NOT encrypt": 0
+            },
+            {
+              "We do not have sensitive data...": 100
+            }
+          ],
+          "details": "..."
+        },
+        {
+          "id": 4394,
+          "title": "Third-party components scanning",
+          "scorePercent": 0,
+          "scoreSuccess": "unknown",
+          "howToScore": "Fullfilment of each sub-requirement gives you the final score.",
+          "scoreChecks": [
+            {
+              "3rd party components scanned during PR": 50
+            },
+            {
+              "3rd party components scanned daily on main branch ": 50
+            },
+            {
+              "None of the above": 0
+            }
+          ],
+          "details": "..."
+        }
+      ]
+    }
+  ]
+}
