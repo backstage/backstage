@@ -129,15 +129,17 @@ export const ScoreCard = ({
       {error && getWarningPanel(error)}
 
       {!loading && !data && (
-        <EmptyState
-          missing="info"
-          title="No information to display"
-          description="There is no data available for this entity"
-        />
+        <div data-testid="score-card-no-data">
+          <EmptyState
+            missing="info"
+            title="No information to display"
+            description="There is no data available for this entity"
+          />
+        </div>
       )}
 
       {!loading && data && (
-        <>
+        <div data-testid="score-card">
           <Grid
             item
             container
@@ -164,7 +166,7 @@ export const ScoreCard = ({
 
             {getReviewerLink(data)}
           </Grid>
-        </>
+        </div>
       )}
     </InfoCard>
   );
