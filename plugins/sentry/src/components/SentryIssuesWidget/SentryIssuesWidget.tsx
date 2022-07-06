@@ -19,10 +19,7 @@ import React, { useEffect } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { sentryApiRef } from '../../api';
 import SentryIssuesTable from '../SentryIssuesTable/SentryIssuesTable';
-import {
-  SENTRY_PROJECT_SLUG_ANNOTATION,
-  useProjectSlug,
-} from '../useProjectSlug';
+import { SENTRY_PROJECT_SLUG_ANNOTATION, useProjectSlug } from '../hooks';
 
 import {
   EmptyState,
@@ -54,7 +51,7 @@ export const SentryIssuesWidget = ({
   const projectId = useProjectSlug(entity);
 
   const { loading, value, error } = useAsync(
-    () => sentryApi.fetchIssues(projectId, statsFor, query),
+    () => sentryApi.fetchIssues(entity, { statsFor, query }),
     [sentryApi, statsFor, projectId, query],
   );
 

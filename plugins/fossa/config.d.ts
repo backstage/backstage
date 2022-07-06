@@ -20,6 +20,12 @@ export interface Config {
      * The organization id in fossa.
      * @visibility frontend
      */
-    organizationId: string;
+    organizationId?: string;
+
+    /**
+     * The base url to use for external links (from Backstage to Fossa).
+     * @visibility frontend
+     */
+    externalLinkBaseUrl?: string;
   };
 }

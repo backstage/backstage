@@ -43,6 +43,7 @@ export function createPublishGitlabAction(options: {
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
+    setUserAsOwner?: boolean;
   }>({
     id: 'publish:gitlab',
     description:
@@ -92,6 +93,12 @@ export function createPublishGitlabAction(options: {
             type: 'string',
             description: 'The token to use for authorization to GitLab',
           },
+          setUserAsOwner: {
+            title: 'Set User As Owner',
+            type: 'boolean',
+            description:
+              'Set the token user as owner of the newly created repository. Requires a token authorized to do the edit in the integration configuration for the matching host',
+          },
         },
       },
       output: {
@@ -116,6 +123,7 @@ export function createPublishGitlabAction(options: {
         gitCommitMessage = 'initial commit',
         gitAuthorName,
         gitAuthorEmail,
+        setUserAsOwner = false,
       } = ctx.input;
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
 
@@ -149,18 +157,34 @@ export function createPublishGitlabAction(options: {
         id: number;
       };
 
+      const { id: userId } = (await client.Users.current()) as {
+        id: number;
+      };
+
       if (!targetNamespace) {
-        const { id } = (await client.Users.current()) as {
-          id: number;
-        };
-        targetNamespace = id;
+        targetNamespace = userId;
       }
 
-      const { http_url_to_repo } = await client.Projects.create({
+      const { id: projectId, http_url_to_repo } = await client.Projects.create({
         namespace_id: targetNamespace,
         name: repo,
         visibility: repoVisibility,
       });
+
+      // When setUserAsOwner is true the input token is expected to come from an unprivileged user GitLab
+      // OAuth flow. In this case GitLab works in a way that allows the unprivileged user to
+      // create the repository, but not to push the default protected branch (e.g. master).
+      // In order to set the user as owner of the newly created repository we need to check that the
+      // GitLab integration configuration for the matching host contains a token and use
+      // such token to bootstrap a new privileged client.
+      if (setUserAsOwner && integrationConfig.config.token) {
+        const adminClient = new Gitlab({
+          host: integrationConfig.config.baseUrl,
+          token: integrationConfig.config.token,
+        });
+
+        await adminClient.ProjectMembers.add(projectId, userId, 50);
+      }
 
       const remoteUrl = (http_url_to_repo as string).replace(/\.git$/, '');
       const repoContentsUrl = `${remoteUrl}/-/blob/${defaultBranch}`;

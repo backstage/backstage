@@ -17,6 +17,8 @@
 import { SentryIssue } from './sentry-issue';
 import { SentryApi } from './sentry-api';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import { Entity } from '@backstage/catalog-model';
+import { getProjectSlug, getOrganization } from './annotations';
 
 export class ProductionSentryApi implements SentryApi {
   constructor(
@@ -26,22 +28,29 @@ export class ProductionSentryApi implements SentryApi {
   ) {}
 
   async fetchIssues(
-    project: string,
-    statsFor: string,
-    query?: string,
+    entity: Entity,
+    options: {
+      statsFor: string;
+      query?: string;
+    },
   ): Promise<SentryIssue[]> {
+    const { query, statsFor } = options;
+
+    const project = getProjectSlug(entity);
+    const organization = getOrganization(entity) || this.organization;
+
     if (!project) {
       return [];
     }
 
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/sentry/api`;
-    const options = await this.authOptions();
+    const authOpts = await this.authOptions();
 
     const queryPart = query ? `&query=${query}` : '';
 
     const response = await fetch(
-      `${apiUrl}/0/projects/${this.organization}/${project}/issues/?statsPeriod=${statsFor}${queryPart}`,
-      options,
+      `${apiUrl}/0/projects/${organization}/${project}/issues/?statsPeriod=${statsFor}${queryPart}`,
+      authOpts,
     );
 
     if (response.status >= 400 && response.status < 600) {
