@@ -43,7 +43,7 @@
     "@backstage/types": "^1.0.0",
     "aws-sdk": "^2.840.0",
     "lodash": "^4.17.21",
-    "p-limit": "^3.0.2",
+    "p-limit": "^4.0.0",
     "uuid": "^8.0.0",
     "winston": "^3.2.1"
   },

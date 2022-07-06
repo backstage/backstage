@@ -46,7 +46,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "helmet": "^5.0.2",
-    "p-limit": "^3.1.0",
+    "p-limit": "^4.0.0",
     "winston": "^3.7.2",
     "yn": "^5.0.0"
   },
