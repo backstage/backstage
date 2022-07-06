@@ -144,7 +144,7 @@ export const ScoreCard = ({
             item
             container
             direction="column"
-            justify="space-between"
+            justifyContent="space-between"
             alignItems="stretch"
             style={{ height: '100%' }}
             spacing={0}

@@ -25,7 +25,7 @@ import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 
-describe('ScoreBoardPage-EmptyData', () => {
+describe('ScoreCard-EmptyData', () => {
   class MockClient implements ScoringDataApi {
     getScore(
       _entity?: Entity | undefined,
@@ -76,6 +76,62 @@ describe('ScoreBoardPage-EmptyData', () => {
     expect(getByTestId('progress')).toBeInTheDocument();
 
     await findByTestId('score-card-no-data');
+    jest.useRealTimers();
+  });
+});
+
+describe('ScoreCard-TestWithData', () => {
+  class MockClient implements ScoringDataApi {
+    getScore(
+      _entity?: Entity | undefined,
+    ): Promise<SystemScoreExtended | undefined> {
+      return new Promise<SystemScoreExtended | undefined>(
+        (resolve, _reject) => {
+          const sampleData = require('../../../sample-data/audio-playback.json');
+          resolve(sampleData);
+        },
+      );
+    }
+    getAllScores(): Promise<SystemScoreExtended[] | undefined> {
+      throw new Error('Method not implemented.');
+    }
+  }
+
+  const mockClient = new MockClient();
+
+  const entity: Entity = {
+    apiVersion: 'v1',
+    kind: 'System',
+    metadata: {
+      name: 'audio-playback',
+    },
+  };
+
+  it('should render a progress bar', async () => {
+    jest.useFakeTimers();
+
+    const errorApi = { post: () => {} };
+    const { getByTestId, findByTestId } = render(
+      <ThemeProvider theme={lightTheme}>
+        <TestApiProvider
+          apis={[
+            [errorApiRef, errorApi],
+            [scoringDataApiRef, mockClient],
+          ]}
+        >
+          <EntityProvider entity={entity}>
+            <ScoreCard />
+          </EntityProvider>
+        </TestApiProvider>
+      </ThemeProvider>,
+    );
+
+    act(() => {
+      jest.advanceTimersByTime(250);
+    });
+    expect(getByTestId('progress')).toBeInTheDocument();
+
+    await findByTestId('score-card');
     jest.useRealTimers();
   });
 });
