@@ -3,5 +3,4 @@
 '@backstage/plugin-tech-insights-backend': patch
 ---
 
-The FactRetriever model is extended by adding optional title and description fields. This allows us to display Fact
-Retrievers in the UI in future.
+The `FactRetriever` model has been extended by adding optional title and description fields, allowing you to display them in the UI.
