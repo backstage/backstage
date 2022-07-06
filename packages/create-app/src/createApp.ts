@@ -49,6 +49,14 @@ export default async (opts: OptionValues): Promise<void> => {
         }
         return true;
       },
+      when: (a: Answers) => {
+        const envName = process.env.BACKSTAGE_APP_NAME;
+        if (envName) {
+          a.name = envName;
+          return false;
+        }
+        return true;
+      },
     },
   ]);
 

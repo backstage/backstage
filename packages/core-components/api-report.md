@@ -1110,6 +1110,7 @@ export type SidebarSubmenuItemDropdownItem = {
 // @public
 export type SidebarSubmenuItemProps = {
   title: string;
+  subtitle?: string;
   to?: string;
   icon?: IconComponent;
   dropdownItems?: SidebarSubmenuItemDropdownItem[];

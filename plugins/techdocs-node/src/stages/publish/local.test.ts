@@ -236,5 +236,32 @@ describe('local publisher', () => {
       );
       expect(response.status).toBe(404);
     });
+
+    it('should work with a configured directory', async () => {
+      const customConfig = new ConfigReader({
+        techdocs: {
+          publisher: {
+            local: {
+              publishDirectory: tmpDir,
+            },
+          },
+        },
+      });
+      mockFs({
+        [tmpDir]: {
+          'index.html': 'found it',
+        },
+      });
+      const legacyPublisher = LocalPublish.fromConfig(
+        customConfig,
+        logger,
+        testDiscovery,
+      );
+      app = express().use(legacyPublisher.docsRouter());
+
+      const response = await request(app).get('/index.html');
+      expect(response.status).toBe(200);
+      expect(response.text).toEqual('found it');
+    });
   });
 });

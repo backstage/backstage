@@ -71,6 +71,12 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
     objectType: 'configmaps',
   },
   {
+    group: '',
+    apiVersion: 'v1',
+    plural: 'limitranges',
+    objectType: 'limitranges',
+  },
+  {
     group: 'apps',
     apiVersion: 'v1',
     plural: 'deployments',

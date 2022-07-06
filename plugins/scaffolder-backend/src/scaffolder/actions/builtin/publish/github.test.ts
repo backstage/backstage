@@ -18,20 +18,20 @@ import { TemplateAction } from '../../types';
 
 jest.mock('../helpers');
 
-import { createPublishGithubAction } from './github';
+import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import {
-  ScmIntegrations,
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
+  ScmIntegrations,
 } from '@backstage/integration';
-import { ConfigReader } from '@backstage/config';
-import { getVoidLogger } from '@backstage/backend-common';
+import { when } from 'jest-when';
 import { PassThrough } from 'stream';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
   initRepoAndPush,
 } from '../helpers';
-import { when } from 'jest-when';
+import { createPublishGithubAction } from './github';
 
 const mockOctokit = {
   rest: {
@@ -609,7 +609,7 @@ describe('publish:github', () => {
 
     mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {
-        name: 'repository',
+        name: 'repo',
       },
     });
 
@@ -618,7 +618,7 @@ describe('publish:github', () => {
     expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
       owner: 'owner',
       client: mockOctokit,
-      repoName: 'repository',
+      repoName: 'repo',
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
@@ -636,7 +636,7 @@ describe('publish:github', () => {
     expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
       owner: 'owner',
       client: mockOctokit,
-      repoName: 'repository',
+      repoName: 'repo',
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: true,
@@ -654,7 +654,7 @@ describe('publish:github', () => {
     expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
       owner: 'owner',
       client: mockOctokit,
-      repoName: 'repository',
+      repoName: 'repo',
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
@@ -669,7 +669,7 @@ describe('publish:github', () => {
 
     mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {
-        name: 'repository',
+        name: 'repo',
       },
     });
 
@@ -678,7 +678,7 @@ describe('publish:github', () => {
     expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
       owner: 'owner',
       client: mockOctokit,
-      repoName: 'repository',
+      repoName: 'repo',
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
@@ -696,7 +696,7 @@ describe('publish:github', () => {
     expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
       owner: 'owner',
       client: mockOctokit,
-      repoName: 'repository',
+      repoName: 'repo',
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
@@ -714,7 +714,7 @@ describe('publish:github', () => {
     expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
       owner: 'owner',
       client: mockOctokit,
-      repoName: 'repository',
+      repoName: 'repo',
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
@@ -729,7 +729,7 @@ describe('publish:github', () => {
 
     mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {
-        name: 'repository',
+        name: 'repo',
       },
     });
 

@@ -169,28 +169,6 @@ export class GoogleAuthProvider implements OAuthHandlers {
 }
 
 /**
- * @public
- * @deprecated This type has been inlined into the create method and will be removed.
- */
-export type GoogleProviderOptions = {
-  /**
-   * The profile transformation function used to verify and convert the auth response
-   * into the profile that will be presented to the user.
-   */
-  authHandler?: AuthHandler<OAuthResult>;
-
-  /**
-   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-   */
-  signIn?: {
-    /**
-     * Maps an auth result to a Backstage identity for the user.
-     */
-    resolver: SignInResolver<OAuthResult>;
-  };
-};
-
-/**
  * Auth provider integration for Google auth
  *
  * @public
@@ -272,16 +250,3 @@ export const google = createAuthProviderIntegration({
     },
   },
 });
-
-/**
- * @public
- * @deprecated Use `providers.google.create` instead.
- */
-export const createGoogleProvider = google.create;
-
-/**
- * @public
- * @deprecated Use `providers.google.resolvers.emailMatchingUserEntityAnnotation()` instead.
- */
-export const googleEmailSignInResolver =
-  google.resolvers.emailMatchingUserEntityAnnotation();

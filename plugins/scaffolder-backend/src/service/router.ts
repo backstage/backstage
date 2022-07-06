@@ -23,13 +23,14 @@ import {
 } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { Config, JsonObject } from '@backstage/config';
-import { InputError, NotFoundError } from '@backstage/errors';
+import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import {
   TemplateEntityV1beta3,
   TaskSpec,
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
+import { JsonValue } from '@backstage/types';
 import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
@@ -431,17 +432,36 @@ function parseBearerToken(header?: string): {
   token?: string;
   entityRef?: string;
 } {
-  const token = header?.match(/Bearer\s+(\S+)/i)?.[1];
+  if (!header) {
+    return {};
+  }
 
-  if (!token) return {};
+  try {
+    const token = header.match(/^Bearer\s(\S+\.\S+\.\S+)$/i)?.[1];
+    if (!token) {
+      throw new TypeError('Expected Bearer with JWT');
+    }
 
-  const [_header, rawPayload, _signature] = token.split('.');
-  const payload: { sub: string } = JSON.parse(
-    Buffer.from(rawPayload, 'base64').toString(),
-  );
+    const [_header, rawPayload, _signature] = token.split('.');
+    const payload: JsonValue = JSON.parse(
+      Buffer.from(rawPayload, 'base64').toString(),
+    );
 
-  return {
-    entityRef: payload.sub,
-    token,
-  };
+    if (
+      typeof payload !== 'object' ||
+      payload === null ||
+      Array.isArray(payload)
+    ) {
+      throw new TypeError('Malformed JWT payload');
+    }
+
+    const sub = payload.sub;
+    if (typeof sub !== 'string') {
+      throw new TypeError('Expected string sub claim');
+    }
+
+    return { entityRef: sub, token };
+  } catch (e) {
+    throw new InputError(`Invalid authorization header: ${stringifyError(e)}`);
+  }
 }

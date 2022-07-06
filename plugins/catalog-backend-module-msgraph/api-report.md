@@ -125,14 +125,14 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
   static fromConfig(
     configRoot: Config,
     options: MicrosoftGraphOrgEntityProviderOptions,
-  ): MicrosoftGraphOrgEntityProvider;
+  ): MicrosoftGraphOrgEntityProvider[];
   // (undocumented)
   getProviderName(): string;
   read(options?: { logger?: Logger }): Promise<void>;
 }
 
-// @public
-export interface MicrosoftGraphOrgEntityProviderOptions {
+// @public @deprecated
+export interface MicrosoftGraphOrgEntityProviderLegacyOptions {
   groupTransformer?: GroupTransformer;
   id: string;
   logger: Logger;
@@ -143,6 +143,19 @@ export interface MicrosoftGraphOrgEntityProviderOptions {
 }
 
 // @public
+export type MicrosoftGraphOrgEntityProviderOptions =
+  | MicrosoftGraphOrgEntityProviderLegacyOptions
+  | {
+      logger: Logger;
+      schedule: 'manual' | TaskRunner;
+      userTransformer?: UserTransformer | Record<string, UserTransformer>;
+      groupTransformer?: GroupTransformer | Record<string, GroupTransformer>;
+      organizationTransformer?:
+        | OrganizationTransformer
+        | Record<string, OrganizationTransformer>;
+    };
+
+// @public @deprecated
 export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     providers: MicrosoftGraphProviderConfig[];
@@ -173,6 +186,7 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
 
 // @public
 export type MicrosoftGraphProviderConfig = {
+  id: string;
   target: string;
   authority?: string;
   tenantId: string;
@@ -206,7 +220,7 @@ export type OrganizationTransformer = (
   organization: MicrosoftGraph.Organization,
 ) => Promise<GroupEntity | undefined>;
 
-// @public
+// @public @deprecated
 export function readMicrosoftGraphConfig(
   config: Config,
 ): MicrosoftGraphProviderConfig[];

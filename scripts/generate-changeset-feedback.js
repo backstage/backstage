@@ -42,7 +42,7 @@ function isPublishedPath(path) {
     return false;
   }
   // API report changes by themselves don't count
-  if (path === 'api-report.md') {
+  if (path === 'api-report.md' || path === 'cli-report.md') {
     return false;
   }
   // Lint changes don't count

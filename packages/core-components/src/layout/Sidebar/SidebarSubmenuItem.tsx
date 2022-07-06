@@ -59,6 +59,13 @@ const useStyles = makeStyles<BackstageTheme>(
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       'text-overflow': 'ellipsis',
+      lineHeight: 1,
+    },
+    subtitle: {
+      fontSize: 10,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      'text-overflow': 'ellipsis',
     },
     dropdownArrow: {
       position: 'absolute',
@@ -105,6 +112,7 @@ export type SidebarSubmenuItemDropdownItem = {
  * Holds submenu item content.
  *
  * title: Text content of submenu item
+ * subtitle: A subtitle displayed under the main title
  * to: Path to navigate to when item is clicked
  * icon: Icon displayed on the left of text content
  * dropdownItems: Optional array of dropdown items displayed when submenu item is clicked.
@@ -113,6 +121,7 @@ export type SidebarSubmenuItemDropdownItem = {
  */
 export type SidebarSubmenuItemProps = {
   title: string;
+  subtitle?: string;
   to?: string;
   icon?: IconComponent;
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
@@ -124,7 +133,7 @@ export type SidebarSubmenuItemProps = {
  * @public
  */
 export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
-  const { title, to, icon: Icon, dropdownItems } = props;
+  const { title, subtitle, to, icon: Icon, dropdownItems } = props;
   const classes = useStyles();
   const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const closeSubmenu = () => {
@@ -158,6 +167,12 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
             {Icon && <Icon fontSize="small" />}
             <Typography variant="subtitle1" className={classes.label}>
               {title}
+              <br />
+              {subtitle && (
+                <Typography variant="caption" className={classes.subtitle}>
+                  {subtitle}
+                </Typography>
+              )}
             </Typography>
             {showDropDown ? (
               <ArrowDropUpIcon className={classes.dropdownArrow} />
@@ -210,6 +225,12 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
           {Icon && <Icon fontSize="small" />}
           <Typography variant="subtitle1" className={classes.label}>
             {title}
+            <br />
+            {subtitle && (
+              <Typography variant="caption" className={classes.subtitle}>
+                {subtitle}
+              </Typography>
+            )}
           </Typography>
         </Link>
       </Tooltip>

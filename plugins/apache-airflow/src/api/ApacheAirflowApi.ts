@@ -25,6 +25,7 @@ export type ApacheAirflowApi = {
   discoveryApi: DiscoveryApi;
   baseUrl: string;
   listDags(options?: { objectsPerRequest: number }): Promise<Dag[]>;
+  getDags(dagIds: string[]): Promise<{ dags: Dag[]; dagsNotFound: string[] }>;
   updateDag(dagId: string, isPaused: boolean): Promise<any>;
   getInstanceStatus(): Promise<InstanceStatus>;
   getInstanceVersion(): Promise<InstanceVersion>;

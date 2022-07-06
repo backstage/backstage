@@ -44,40 +44,27 @@ import {
 } from './helpers';
 import { ForwardedError } from '@backstage/errors';
 
-// TODO: Use a more persistent storage than node_modules or /tmp directory.
-// Make it configurable with techdocs.publisher.local.publishDirectory
-let staticDocsDir = '';
-try {
-  staticDocsDir = resolvePackagePath(
-    '@backstage/plugin-techdocs-backend',
-    'static/docs',
-  );
-} catch (err) {
-  // This will most probably never be used.
-  // The try/catch is introduced so that techdocs-cli can import @backstage/plugin-techdocs-node
-  // on CI/CD without installing techdocs backend plugin.
-  staticDocsDir = os.tmpdir();
-}
-
 /**
- * Local publisher which uses the local filesystem to store the generated static files. It uses a directory
- * called "static" at the root of techdocs-backend plugin.
+ * Local publisher which uses the local filesystem to store the generated static files. It uses by default a
+ * directory called "static" at the root of techdocs-backend plugin unless a directory has been configured by
+ * "techdocs.publisher.local.publishDirectory".
  */
 export class LocalPublish implements PublisherBase {
   private readonly legacyPathCasing: boolean;
   private readonly logger: Logger;
   private readonly discovery: PluginEndpointDiscovery;
+  private readonly staticDocsDir: string;
 
-  // TODO: Move the logic of setting staticDocsDir based on config over to
-  // fromConfig, and set the value as a class parameter.
   constructor(options: {
     logger: Logger;
     discovery: PluginEndpointDiscovery;
     legacyPathCasing: boolean;
+    staticDocsDir: string;
   }) {
     this.logger = options.logger;
     this.discovery = options.discovery;
     this.legacyPathCasing = options.legacyPathCasing;
+    this.staticDocsDir = options.staticDocsDir;
   }
 
   static fromConfig(
@@ -90,10 +77,28 @@ export class LocalPublish implements PublisherBase {
         'techdocs.legacyUseCaseSensitiveTripletPaths',
       ) || false;
 
+    let staticDocsDir = config.getOptionalString(
+      'techdocs.publisher.local.publishDirectory',
+    );
+    if (!staticDocsDir) {
+      try {
+        staticDocsDir = resolvePackagePath(
+          '@backstage/plugin-techdocs-backend',
+          'static/docs',
+        );
+      } catch (err) {
+        // This will most probably never be used.
+        // The try/catch is introduced so that techdocs-cli can import @backstage/plugin-techdocs-node
+        // on CI/CD without installing techdocs backend plugin.
+        staticDocsDir = os.tmpdir();
+      }
+    }
+
     return new LocalPublish({
       logger,
       discovery,
       legacyPathCasing,
+      staticDocsDir,
     });
   }
 
@@ -144,7 +149,7 @@ export class LocalPublish implements PublisherBase {
     const techdocsApiUrl = await this.discovery.getBaseUrl('techdocs');
     const publishedFilePaths = (await getFileTreeRecursively(publishDir)).map(
       abs => {
-        return abs.split(`${staticDocsDir}/`)[1];
+        return abs.split(`${this.staticDocsDir}/`)[1];
       },
     );
 
@@ -222,9 +227,8 @@ export class LocalPublish implements PublisherBase {
       // Otherwise, redirect to the new path.
       return res.redirect(301, req.baseUrl + newPath);
     });
-
     router.use(
-      express.static(staticDocsDir, {
+      express.static(this.staticDocsDir, {
         // Handle content-type header the same as all other publishers.
         setHeaders: (res, filePath) => {
           const fileExtension = path.extname(filePath);
@@ -275,13 +279,16 @@ export class LocalPublish implements PublisherBase {
     concurrency = 25,
   }): Promise<void> {
     // Iterate through every file in the root of the publisher.
-    const files = await getFileTreeRecursively(staticDocsDir);
+    const files = await getFileTreeRecursively(this.staticDocsDir);
     const limit = createLimiter(concurrency);
 
     await Promise.all(
       files.map(f =>
         limit(async file => {
-          const relativeFile = file.replace(`${staticDocsDir}${path.sep}`, '');
+          const relativeFile = file.replace(
+            `${this.staticDocsDir}${path.sep}`,
+            '',
+          );
           const newFile = lowerCaseEntityTripletInStoragePath(relativeFile);
 
           // If all parts are already lowercase, ignore.
@@ -311,7 +318,7 @@ export class LocalPublish implements PublisherBase {
    * Utility wrapper around path.join(), used to control legacy case logic.
    */
   protected staticEntityPathJoin(...allParts: string[]): string {
-    let staticEntityPath = staticDocsDir;
+    let staticEntityPath = this.staticDocsDir;
 
     allParts
       .map(part => part.split(path.sep))

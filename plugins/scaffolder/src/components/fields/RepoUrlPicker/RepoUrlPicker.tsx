@@ -26,6 +26,7 @@ import { BitbucketRepoPicker } from './BitbucketRepoPicker';
 import { GerritRepoPicker } from './GerritRepoPicker';
 import { FieldExtensionComponentProps } from '../../../extensions';
 import { RepoUrlPickerHost } from './RepoUrlPickerHost';
+import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
 import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
 import { RepoUrlPickerState } from './types';
 import useDebounce from 'react-use/lib/useDebounce';
@@ -40,6 +41,7 @@ import { useTemplateSecrets } from '../../secrets';
 export interface RepoUrlPickerUiOptions {
   allowedHosts?: string[];
   allowedOwners?: string[];
+  allowedRepos?: string[];
   requestUserCredentials?: {
     secretsKey: string;
     additionalScopes?: {
@@ -76,6 +78,10 @@ export const RepoUrlPicker = (
     () => uiSchema?.['ui:options']?.allowedOwners ?? [],
     [uiSchema],
   );
+  const allowedRepos = useMemo(
+    () => uiSchema?.['ui:options']?.allowedRepos ?? [],
+    [uiSchema],
+  );
 
   useEffect(() => {
     onChange(serializeRepoPickerUrl(state));
@@ -87,6 +93,11 @@ export const RepoUrlPicker = (
       setState(prevState => ({ ...prevState, owner: allowedOwners[0] }));
     }
   }, [setState, allowedOwners]);
+  useEffect(() => {
+    if (allowedRepos.length === 1) {
+      setState(prevState => ({ ...prevState, repoName: allowedRepos[0] }));
+    }
+  }, [setState, allowedRepos]);
 
   const updateLocalState = useCallback(
     (newState: RepoUrlPickerState) => {
@@ -179,6 +190,14 @@ export const RepoUrlPicker = (
           onChange={updateLocalState}
         />
       )}
+      <RepoUrlPickerRepoName
+        repoName={state.repoName}
+        allowedRepos={allowedRepos}
+        onChange={repoName =>
+          setState(prevState => ({ ...prevState, repoName }))
+        }
+        rawErrors={rawErrors}
+      />
     </>
   );
 };

@@ -19,14 +19,14 @@ import { AzureRepoPicker } from './AzureRepoPicker';
 import { render, fireEvent } from '@testing-library/react';
 
 describe('AzureRepoPicker', () => {
-  it('renders the three input fields', async () => {
+  it('renders the two input fields', async () => {
     const { getAllByRole } = render(
       <AzureRepoPicker onChange={jest.fn()} rawErrors={[]} state={{}} />,
     );
 
     const allInputs = getAllByRole('textbox');
 
-    expect(allInputs).toHaveLength(3);
+    expect(allInputs).toHaveLength(2);
   });
 
   describe('org field', () => {
@@ -56,21 +56,6 @@ describe('AzureRepoPicker', () => {
       fireEvent.change(ownerInput, { target: { value: 'owner' } });
 
       expect(onChange).toHaveBeenCalledWith({ owner: 'owner' });
-    });
-  });
-
-  describe('repoName field', () => {
-    it('calls onChange when the repoName changes', () => {
-      const onChange = jest.fn();
-      const { getAllByRole } = render(
-        <AzureRepoPicker onChange={onChange} rawErrors={[]} state={{}} />,
-      );
-
-      const repoNameInput = getAllByRole('textbox')[2];
-
-      fireEvent.change(repoNameInput, { target: { value: 'repoName' } });
-
-      expect(onChange).toHaveBeenCalledWith({ repoName: 'repoName' });
     });
   });
 });

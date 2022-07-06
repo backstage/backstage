@@ -16,17 +16,60 @@
 import type { ConnectionOptions as TLSConnectionOptions } from 'tls';
 
 /**
- * Options used to configure the `@elastic/elasticsearch` client and
- * are what will be passed as an argument to the
- * {@link ElasticSearchSearchEngine.newClient} method
- *
- * They are drawn from the `ClientOptions` class of `@elastic/elasticsearch`,
- * but are maintained separately so that this interface is not coupled to
+ * Typeguard to differentiate ElasticSearch client options which are compatible
+ * with OpenSearch vs. ElasticSearch clients. Useful when calling the
+ * {@link ElasticSearchSearchEngine.newClient} method.
  *
  * @public
  */
-export interface ElasticSearchClientOptions {
-  provider?: 'aws' | 'elastic';
+export const isOpenSearchCompatible = (
+  opts: ElasticSearchClientOptions,
+): opts is OpenSearchElasticSearchClientOptions => {
+  return opts?.provider === 'aws';
+};
+
+/**
+ * Options used to configure the `@elastic/elasticsearch` client or the
+ * `@opensearch-project/opensearch` client, depending on the given config. It
+ * will be passed as an argument to the
+ * {@link ElasticSearchSearchEngine.newClient} method.
+ *
+ * @public
+ */
+export type ElasticSearchClientOptions =
+  | ElasticSearchElasticSearchClientOptions
+  | OpenSearchElasticSearchClientOptions;
+
+/**
+ * Options used to configure the `@opensearch-project/opensearch` client.
+ *
+ * They are drawn from the `ClientOptions` class of `@opensearch-project/opensearch`,
+ * but are maintained separately so that this interface is not coupled to it.
+ *
+ * @public
+ */
+export interface OpenSearchElasticSearchClientOptions
+  extends BaseElasticSearchClientOptions {
+  provider?: 'aws';
+  auth?: OpenSearchAuth;
+  connection?: OpenSearchConnectionConstructor;
+  node?: string | string[] | OpenSearchNodeOptions | OpenSearchNodeOptions[];
+  nodes?: string | string[] | OpenSearchNodeOptions | OpenSearchNodeOptions[];
+}
+
+/**
+ * Options used to configure the `@elastic/elasticsearch` client.
+ *
+ * They are drawn from the `ClientOptions` class of `@elastic/elasticsearch`,
+ * but are maintained separately so that this interface is not coupled to it.
+ *
+ * @public
+ */
+export interface ElasticSearchElasticSearchClientOptions
+  extends BaseElasticSearchClientOptions {
+  provider?: 'elastic';
+  auth?: ElasticSearchAuth;
+  Connection?: ElasticSearchConnectionConstructor;
   node?:
     | string
     | string[]
@@ -37,8 +80,21 @@ export interface ElasticSearchClientOptions {
     | string[]
     | ElasticSearchNodeOptions
     | ElasticSearchNodeOptions[];
+  cloud?: {
+    id: string;
+    username?: string;
+    password?: string;
+  };
+}
+
+/**
+ * Base client options that are shared across `@opensearch-project/opensearch`
+ * and `@elastic/elasticsearch` clients.
+ *
+ * @public
+ */
+export interface BaseElasticSearchClientOptions {
   Transport?: ElasticSearchTransportConstructor;
-  Connection?: ElasticSearchConnectionConstructor;
   maxRetries?: number;
   requestTimeout?: number;
   pingTimeout?: number;
@@ -56,25 +112,24 @@ export interface ElasticSearchClientOptions {
   headers?: Record<string, any>;
   opaqueIdPrefix?: string;
   name?: string | symbol;
-  auth?: ElasticSearchAuth;
   proxy?: string | URL;
   enableMetaHeader?: boolean;
-  cloud?: {
-    id: string;
-    username?: string;
-    password?: string;
-  };
   disablePrototypePoisoningProtection?: boolean | 'proto' | 'constructor';
 }
 
 /**
  * @public
  */
+export type OpenSearchAuth = {
+  username: string;
+  password: string;
+};
+
+/**
+ * @public
+ */
 export type ElasticSearchAuth =
-  | {
-      username: string;
-      password: string;
-    }
+  | OpenSearchAuth
   | {
       apiKey:
         | string
@@ -104,6 +159,22 @@ export interface ElasticSearchNodeOptions {
 /**
  * @public
  */
+export interface OpenSearchNodeOptions {
+  url: URL;
+  id?: string;
+  agent?: ElasticSearchAgentOptions;
+  ssl?: TLSConnectionOptions;
+  headers?: Record<string, any>;
+  roles?: {
+    master: boolean;
+    data: boolean;
+    ingest: boolean;
+  };
+}
+
+/**
+ * @public
+ */
 export interface ElasticSearchAgentOptions {
   keepAlive?: boolean;
   keepAliveMsecs?: number;
@@ -127,6 +198,23 @@ export interface ElasticSearchConnectionConstructor {
     ML: string;
   };
 }
+
+/**
+ * @public
+ */
+export interface OpenSearchConnectionConstructor {
+  new (opts?: any): any;
+  statuses: {
+    ALIVE: string;
+    DEAD: string;
+  };
+  roles: {
+    MASTER: string;
+    DATA: string;
+    INGEST: string;
+  };
+}
+
 /**
  * @public
  */
@@ -139,3 +227,5 @@ export interface ElasticSearchTransportConstructor {
     DEFAULT: string;
   };
 }
+
+// todo(iamEAP) implement canary types to ensure we remain compatible through upgrades.

@@ -25,6 +25,6 @@ jobs:
             If you are the author and the PR has been closed, feel free to re-open the PR and continue the contribution!
           days-before-pr-stale: 7
           days-before-pr-close: 5
-          exempt-pr-labels: reviewer-approved,awaiting-review,will-fix
+          exempt-pr-labels: reviewer-approved,will-fix
           stale-pr-label: stale
           operations-per-run: 100
