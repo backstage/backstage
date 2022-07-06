@@ -8,6 +8,16 @@
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
+import { ServiceRef } from '@backstage/backend-plugin-api';
+
+// @alpha (undocumented)
+export interface CatalogProcessingExtensionPoint {
+  // (undocumented)
+  addProcessor(processor: CatalogProcessor): void;
+}
+
+// @alpha (undocumented)
+export const catalogProcessingExtentionPoint: ServiceRef<CatalogProcessingExtensionPoint>;
 
 // @public (undocumented)
 export type CatalogProcessor = {

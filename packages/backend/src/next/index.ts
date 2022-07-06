@@ -15,34 +15,34 @@
  */
 
 import { createBackend } from '@backstage/backend-app-api';
-import { createBackendModule } from '@backstage/backend-plugin-api';
+// import { createBackendModule } from '@backstage/backend-plugin-api';
 import {
   catalogPlugin,
-  catalogProcessingInitApiRef,
+  // catalogProcessingInitApiRef,
 } from '@backstage/plugin-catalog-backend';
-import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+// import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
 
-export const scaffolderCatalogExtension = createBackendModule({
-  moduleId: 'scaffolder.extention',
-  pluginId: 'catalog',
-  register(env) {
-    env.registerInit({
-      deps: {
-        catalogProcessingInitApi: catalogProcessingInitApiRef,
-      },
-      async init({ catalogProcessingInitApi }) {
-        catalogProcessingInitApi.addProcessor(
-          new ScaffolderEntitiesProcessor(),
-        );
-      },
-    });
-  },
-});
+// export const scaffolderCatalogExtension = createBackendModule({
+//   moduleId: 'scaffolder.extention',
+//   pluginId: 'catalog',
+//   register(env) {
+//     env.registerInit({
+//       deps: {
+//         catalogProcessingInitApi: catalogProcessingInitApiRef,
+//       },
+//       async init({ catalogProcessingInitApi }) {
+//         catalogProcessingInitApi.addProcessor(
+//           new ScaffolderEntitiesProcessor(),
+//         );
+//       },
+//     });
+//   },
+// });
 
 const backend = createBackend({
   apis: [],
 });
 
 backend.add(catalogPlugin({}));
-backend.add(scaffolderCatalogExtension({}));
+// backend.add(scaffolderCatalogExtension({}));
 backend.start();

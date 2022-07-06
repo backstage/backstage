@@ -17,32 +17,20 @@ import { loggerToWinstonLogger } from '@backstage/backend-app-api';
 import {
   configServiceRef,
   createBackendPlugin,
-  createServiceRef,
   databaseServiceRef,
   loggerServiceRef,
   permissionsServiceRef,
   urlReaderServiceRef,
   httpRouterServiceRef,
 } from '@backstage/backend-plugin-api';
-import { CatalogProcessor } from '../api/processor';
+import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogBuilder } from './CatalogBuilder';
+import {
+  CatalogProcessingExtensionPoint,
+  catalogProcessingExtentionPoint,
+} from '@backstage/plugin-catalog-node';
 
-/**
- * @alpha
- */
-export interface CatalogProcessingInitApi {
-  addProcessor(processor: CatalogProcessor): void;
-}
-
-/**
- * @alpha
- */
-export const catalogProcessingInitApiRef =
-  createServiceRef<CatalogProcessingInitApi>({
-    id: 'catalog.processing',
-  });
-
-class CatalogExtensionPointImpl implements CatalogProcessingInitApi {
+class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
   #processors = new Array<CatalogProcessor>();
 
   addProcessor(processor: CatalogProcessor): void {
@@ -64,7 +52,7 @@ export const catalogPlugin = createBackendPlugin({
     const processingExtensions = new CatalogExtensionPointImpl();
     // plugins depending on this API will be initialized before this plugins init method is executed.
     env.registerExtensionPoint(
-      catalogProcessingInitApiRef,
+      catalogProcessingExtentionPoint,
       processingExtensions,
     );
 

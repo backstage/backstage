@@ -25,6 +25,7 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
+    "@backstage/backend-plugin-api": "^0.0.0",
     "@backstage/catalog-model": "^1.1.0-next.2",
     "@backstage/errors": "1.1.0-next.0",
     "@backstage/types": "^1.0.0"
