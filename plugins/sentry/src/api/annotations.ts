@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-import { SentryIssue } from './sentry-issue';
-import { createApiRef } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 
-export const sentryApiRef = createApiRef<SentryApi>({
-  id: 'plugin.sentry.service',
-});
+export const SENTRY_PROJECT_SLUG_ANNOTATION = 'sentry.io/project-slug';
 
-export interface SentryApi {
-  fetchIssues(
-    entity: Entity,
-    options: {
-      statsFor: string;
-      query?: string;
-    },
-  ): Promise<SentryIssue[]>;
-}
+// The value can be the format of `[organization]/[project-slug]` or just `[project-slug]
+const parseAnnotation = (entity: Entity) => {
+  return (entity?.metadata.annotations?.[SENTRY_PROJECT_SLUG_ANNOTATION] ?? '')
+    .split('/')
+    .reverse();
+};
+
+export const getProjectSlug = (entity: Entity) => {
+  const [projectSlug, _] = parseAnnotation(entity);
+  return projectSlug ?? '';
+};
+
+export const getOrganization = (entity: Entity) => {
+  const [_, organization] = parseAnnotation(entity);
+  return organization ?? '';
+};
