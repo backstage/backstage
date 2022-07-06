@@ -118,3 +118,8 @@ Cypress.Commands.add('waitSectionTwoPage', () => {
 Cypress.Commands.add('waitHomePage', () => {
   cy.wait(['@entityMetadata', '@syncEntity', '@techdocsMetadata', '@homeHTML']);
 });
+
+Cypress.Commands.add('checkForErrors', () => {
+  // when an error occurs there is a <div> with an "alert" role attribute. This can change ofc => we shall add also some positive ("when error occurs") test
+  cy.get('div[role="alert"]').should('not.exist');
+});
