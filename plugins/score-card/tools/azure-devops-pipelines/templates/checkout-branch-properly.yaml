@@ -1,0 +1,28 @@
+# this will checkout current branch (e.g. main, PR,...) so we can commit changes
+# may be part of your template steps in some shared repository
+
+steps:
+- checkout: self #see https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/git-commands?view=azure-devops&tabs=yaml
+  displayName: 'Checkout and keep git credentials'
+  persistCredentials: true
+
+- task: PowerShell@2
+  displayName: 'Checkout branch properly'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $pullReqestSrcBranch = '$(System.PullRequest.SourceBranch)'
+      $sourceBranch = '$(Build.SourceBranch)'
+      if ($pullReqestSrcBranch -ne ('$' + '(System.PullRequest.SourceBranch)'))
+      {
+        $sourceBranch = $pullReqestSrcBranch;
+      }
+      $sourceBranch = $sourceBranch.Replace('refs/heads/', '');
+      Write-Output("pullReqestSrcBranch: [$pullReqestSrcBranch], Build.SourceBranch: $(Build.SourceBranch), sourceBranch: [$sourceBranch]")
+      git fetch --depth=1 --quiet origin "+refs/heads/$sourceBranch"
+      git checkout --merge --quiet -B "$sourceBranch" "origin/$sourceBranch"
+    failOnStderr: true
+    showWarnings: true
+    pwsh: true
+    workingDirectory: '$(Build.SourcesDirectory)'
+  
