@@ -47,20 +47,32 @@ export class ScoringDataJsonClient implements ScoringDataApi {
   }
 
   public async getScore(
-    entity: string,
+    entity?: Entity,
   ): Promise<SystemScoreExtended | undefined> {
     if (!entity) {
-      throw new Error('Entity is required');
+      return undefined;
     }
-    // TODO: finish
-    return undefined;
+    const systemName = entity.metadata.name;
+    const jsonDataUrl = this.getJsonDataUrl();
+    const urlWithData = `${jsonDataUrl}${systemName}.json`;
+    const result: SystemScore = await fetch(urlWithData).then(res => {
+      switch (res.status) {
+        case 404:
+          return null;
+        case 200:
+          return res.json();
+        default:
+          throw new Error(`error from server (code ${res.status})`);
+      }
+    });
+    if (!result) {
+      return undefined;
+    }
+    return this.extendSystemScore(result, undefined);
   }
 
   public async getAllScores(): Promise<SystemScoreExtended[] | undefined> {
-    const jsonDataUrl =
-      this.configApi.getOptionalString('scorecards.jsonDataUrl') ??
-      'https://unknown-url-please-configure';
-
+    const jsonDataUrl = this.getJsonDataUrl();
     const urlWithData = `${jsonDataUrl}all.json`;
     const result: SystemScore[] = await fetch(urlWithData).then(res => {
       switch (res.status) {
@@ -88,6 +100,16 @@ export class ScoringDataJsonClient implements ScoringDataApi {
       return this.extendSystemScore(score, systems);
     });
   }
+
+  // ---- HELPER METHODS ---- //
+
+  private getJsonDataUrl() {
+    return (
+      this.configApi.getOptionalString('scorecards.jsonDataUrl') ??
+      'https://unknown-url-please-configure'
+    );
+  }
+
   private extendSystemScore(
     score: SystemScore,
     systems: Entity[] | undefined,
