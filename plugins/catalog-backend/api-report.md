@@ -578,6 +578,7 @@ export type PlaceholderResolverParams = {
   baseUrl: string;
   read: PlaceholderResolverRead;
   resolveUrl: PlaceholderResolverResolveUrl;
+  emit: CatalogProcessorEmit;
 };
 
 // @public (undocumented)
