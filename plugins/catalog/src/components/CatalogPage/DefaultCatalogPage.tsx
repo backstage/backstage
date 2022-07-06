@@ -23,12 +23,7 @@ import {
   TableColumn,
   TableProps,
 } from '@backstage/core-components';
-import {
-  configApiRef,
-  useApi,
-  usePluginOptions,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   CatalogFilterLayout,
   EntityLifecyclePicker,
@@ -44,7 +39,7 @@ import React from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
 import { CatalogKindHeader } from '../CatalogKindHeader';
-import { CatalogPluginOptions } from '../../options';
+import { useCatalogPluginOptions } from '../../options';
 
 /**
  * Props for root catalog pages.
@@ -71,7 +66,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
 
-  const { createButtonTitle } = usePluginOptions<CatalogPluginOptions>();
+  const { createButtonTitle } = useCatalogPluginOptions();
 
   return (
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">

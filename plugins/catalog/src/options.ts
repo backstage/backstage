@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+import { usePluginOptions } from '@backstage/core-plugin-api';
+
 export type CatalogPluginOptions = {
   createButtonTitle: string;
 };
+
+export const useCatalogPluginOptions = () =>
+  usePluginOptions<CatalogPluginOptions>();
