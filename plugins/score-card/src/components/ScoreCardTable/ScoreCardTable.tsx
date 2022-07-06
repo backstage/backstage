@@ -13,17 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Table, TableColumn, Progress, Link } from '@backstage/core-components';
 import { useAsync } from 'react-use';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { scoreToColorConverter } from '../../helpers/scoreToColorConverter';
 import { Chip } from '@material-ui/core';
-import { catalogApiRef, EntityRefLink } from '@backstage/plugin-catalog-react';
-import { SystemScoreExtended } from '../../types/SystemScoreExtended';
-import { extendSystemScore } from '../../helpers/extendSystemScore';
 import { getWarningPanel } from '../../helpers/getWarningPanel';
-import { SystemScore } from '../../api';
+import { scoringDataApiRef } from '../../api';
+import { SystemScoreExtended } from '../../api/types';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
+
+const useScoringAllDataLoader = () => {
+  const errorApi = useApi(errorApiRef);
+  const scorigDataApi = useApi(scoringDataApiRef);
+
+  const { error, value, loading } = useAsync(
+    async () => scorigDataApi.getAllScores(),
+    [scorigDataApi],
+  );
+
+  useEffect(() => {
+    if (error) {
+      errorApi.post(error);
+    }
+  }, [error, errorApi]);
+
+  return { loading, value, error };
+};
 
 type ScoreTableProps = {
   scores: SystemScoreExtended[];
@@ -162,42 +179,7 @@ export const ScoreTable = ({ scores }: ScoreTableProps) => {
 };
 
 export const ScoreCardTable = () => {
-  const configApi = useApi(configApiRef);
-  const catalogApi = useApi(catalogApiRef);
-  const jsonDataUrl =
-    configApi.getOptionalString('scorecards.jsonDataUrl') ??
-    'https://unknown-url-please-configure';
-
-  const { value, loading, error } = useAsync(async (): Promise<
-    SystemScoreExtended[]
-  > => {
-    const urlWithData = `${jsonDataUrl}all.json`;
-    const result: SystemScore[] = await fetch(urlWithData).then(res => {
-      switch (res.status) {
-        case 404:
-          return null;
-        case 200:
-          return res.json();
-        default:
-          throw new Error(`error from server (code ${res.status})`);
-      }
-    });
-    const entities = await catalogApi.getEntities({
-      filter: { kind: ['System'] },
-      fields: ['kind', 'metadata.name', 'spec.owner', 'relations'],
-    });
-    /* TODO cache
-  const cacheKey = `userProjects-${group ?? 'all'}`;
-  const cachedProjects: UserProjects = JSON.parse(
-    localStorage.getItem(cacheKey) || '{}',
-  );
-  localStorage.setItem(cacheKey, JSON.stringify(newCachedProjects));
-  */
-    const systems = entities.items;
-    return result.map<SystemScoreExtended>(score => {
-      return extendSystemScore(score, systems);
-    });
-  }, []);
+  const { loading, error, value: data } = useScoringAllDataLoader();
 
   if (loading) {
     return <Progress />;
@@ -205,5 +187,5 @@ export const ScoreCardTable = () => {
     return getWarningPanel(error);
   }
 
-  return <ScoreTable scores={value || []} />;
+  return <ScoreTable scores={data || []} />;
 };
