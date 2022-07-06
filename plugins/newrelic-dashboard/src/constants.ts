@@ -14,5 +14,3 @@
  * limitations under the License.
  */
 export const NEWRELIC_GUID_ANNOTATION = 'newrelic.com/dashboard-guid';
-export const NEWRELIC_TIME_WINDOW_ANNOTATION =
-  'newrelic.com/dashboard-time-window';

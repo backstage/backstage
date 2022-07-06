@@ -60,24 +60,20 @@ const overviewContent = (
     </EntitySwitch>
 ```
 
-4. Add annotations in catalog descriptor file
+4. Add `newrelic.com/dashboard-guid` annotation in catalog descriptor file
 
-   1. `newrelic.com/dashboard-guid`
-      - To obtain the dashboard's GUID: Click the info icon by the dashboard's name to access the See metadata and manage tags modal and see the dashboard's GUID.
-   1. `newrelic.com/dashboard-time-window` (optional)
-      - The time window of information of the data to show in the snapshot in milliseconds. If not included the time window will default to 30 days
+To Obtain the dashboard's GUID: Click the info icon by the dashboard's name to access the See metadata and manage tags modal and see the dashboard's GUID.
 
-   ```
-   // catalog-info.yaml
-   apiVersion: backstage.io/v1alpha1
-   kind: Component
-   metadata:
-     # ...
-     annotations:
-       newrelic.com/dashboard-guid: <dashboard_guid>
-       newrelic.com/dashboard-time-window: <dashboard_guid> # optional
-   spec:
-     type: service
-   ```
+```
+// catalog-info.yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  # ...
+  annotations:
+    newrelic.com/dashboard-guid: <dashboard_guid>
+spec:
+  type: service
+```
 
 All set , you will be able to see the plugin in action!

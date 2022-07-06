@@ -52,7 +52,6 @@ function a11yProps(index: number) {
 }
 type Props = {
   guid: string;
-  duration: number;
 };
 const useStyles = makeStyles(
   theme => ({
@@ -80,7 +79,7 @@ const useStyles = makeStyles(
   }),
   { name: 'DashboardHeaderTabs' },
 );
-export const DashboardSnapshotList = ({ duration, guid }: Props) => {
+export const DashboardSnapshotList = ({ guid }: Props) => {
   const styles = useStyles();
   const newRelicDashboardAPI = useApi(newRelicDashboardApiRef);
   const { value, loading, error } = useAsync(async (): Promise<
@@ -138,7 +137,6 @@ export const DashboardSnapshotList = ({ duration, guid }: Props) => {
                 name={Entity.name}
                 permalink={Entity.permalink}
                 guid={Entity.guid}
-                duration={duration ? duration : 2592000000}
               />
             </TabPanel>
           );
