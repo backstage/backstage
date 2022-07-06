@@ -26,11 +26,10 @@ describe('score-card', () => {
 
       cy.contains('System scores overview').should('be.visible');
       cy.checkForErrors();
-      cy.get('span:contains("1-3 of 3")').should('be.visible'); // beware, there is also a hidden <P/> element
-      cy.contains('our-great-system').should('be.visible');
-      cy.contains('sample-group-a').should('be.visible');
-      cy.contains('Online').should('be.visible');
-      cy.contains('Identity-backend').should('be.visible');
+      cy.get('span:contains("1-2 of 2")').should('be.visible'); // beware, there is also a hidden <P/> element
+      cy.contains('audio-playback').should('be.visible');
+      cy.contains('team-c').should('be.visible');
+      cy.contains('non-valid-system').should('be.visible');
       cy.contains('Name').should('be.visible');
       cy.contains('Date').should('be.visible');
       cy.contains('Code').should('be.visible');
@@ -41,15 +40,15 @@ describe('score-card', () => {
       cy.contains('Total').should('be.visible');
       cy.contains('50 %').should('be.visible');
       cy.contains('75 %').should('be.visible');
-      cy.get('a[data-id="our-great-system"]').should('be.visible').click();
+      cy.log('navigating to score card detail for audio-playback');
+      cy.get('a[data-id="audio-playback"]').should('be.visible').click();
       cy.screenshot({ capture: 'viewport' });
 
-      cy.log('navigating to score card detail for our-great-system');
       cy.url().should(
         'include',
-        '/catalog/default/System/our-great-system/score',
+        '/catalog/default/System/audio-playback/score',
       );
-      cy.contains('Score Card for our-great-system').should('be.visible');
+      cy.contains('Scoring').should('be.visible');
       cy.contains('Total score: 57 %').should('be.visible');
       cy.contains('Code').should('be.visible');
       cy.contains('90 %').should('be.visible');
@@ -82,20 +81,21 @@ describe('score-card', () => {
     });
   });
 
-  describe('Score Cards', () => {
-    it('handles no-data available well', () => {
-      cy.loginAsGuest();
+  // TODO: add another system without scoring data (once cypress is running again)
+  // describe('Score Cards', () => {
+  //   it('handles no-data available well', () => {
+  //     cy.loginAsGuest();
 
-      // this is the system without score
-      cy.visit(
-        'http://localhost:3003/catalog/default/system/another-great-system/score',
-      );
-      cy.contains('Score Card for another-great-system').should('be.visible');
-      cy.contains('Not computed').should('be.visible');
-      cy.contains(
-        "There is no data available for 'another-great-system'.",
-      ).should('be.visible');
-      cy.checkForErrors();
-    });
-  });
+  //     // this is the system without score
+  //     cy.visit(
+  //       '/catalog/default/system/another-great-system/score',
+  //     );
+  //     cy.contains('Score Card for another-great-system').should('be.visible');
+  //     cy.contains('Not computed').should('be.visible');
+  //     cy.contains(
+  //       "There is no data available for 'another-great-system'.",
+  //     ).should('be.visible');
+  //     cy.checkForErrors();
+  //   });
+  // });
 });
