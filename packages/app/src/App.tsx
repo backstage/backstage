@@ -39,7 +39,7 @@ import { AzurePullRequestsPage } from '@backstage/plugin-azure-devops';
 import {
   CatalogEntityPage,
   CatalogIndexPage,
-  customizedCatalog,
+  catalogPlugin,
 } from '@internal/plugin-catalog-customized';
 
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
@@ -121,7 +121,7 @@ const app = createApp({
     },
   },
   bindRoutes({ bind }) {
-    bind(customizedCatalog.externalRoutes, {
+    bind(catalogPlugin.externalRoutes, {
       createComponent: scaffolderPlugin.routes.root,
       viewTechDoc: techdocsPlugin.routes.docRoot,
     });
@@ -132,7 +132,7 @@ const app = createApp({
       registerComponent: catalogImportPlugin.routes.importPage,
     });
     bind(orgPlugin.externalRoutes, {
-      catalogIndex: customizedCatalog.routes.catalogIndex,
+      catalogIndex: catalogPlugin.routes.catalogIndex,
     });
   },
 });

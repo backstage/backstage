@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export { customizedCatalog } from './plugin';
-
-export { CatalogEntityPage, CatalogIndexPage } from '@backstage/plugin-catalog';
+export * from '@backstage/plugin-catalog';
