@@ -15,11 +15,11 @@
  */
 
 import {
+  FactRetriever,
   FactRetrieverRegistration,
   FactSchema,
 } from '@backstage/plugin-tech-insights-node';
 import { ConflictError, NotFoundError } from '@backstage/errors';
-import { FactRetriever } from '@backstage/plugin-tech-insights-common';
 
 /**
  * @public

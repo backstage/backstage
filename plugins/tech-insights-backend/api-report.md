@@ -9,7 +9,7 @@ import express from 'express';
 import { FactChecker } from '@backstage/plugin-tech-insights-node';
 import { FactCheckerFactory } from '@backstage/plugin-tech-insights-node';
 import { FactLifecycle } from '@backstage/plugin-tech-insights-node';
-import { FactRetriever } from '@backstage/plugin-tech-insights-common';
+import { FactRetriever } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistration } from '@backstage/plugin-tech-insights-node';
 import { FactSchema } from '@backstage/plugin-tech-insights-node';
 import { Logger } from 'winston';

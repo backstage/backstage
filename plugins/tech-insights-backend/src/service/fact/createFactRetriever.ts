@@ -15,15 +15,15 @@
  */
 import {
   FactLifecycle,
+  FactRetriever,
   FactRetrieverRegistration,
 } from '@backstage/plugin-tech-insights-node';
-import { FactRetriever } from '@backstage/plugin-tech-insights-common';
 
 /**
  * @public
  *
  * @param cadence - cron expression to indicate when the fact retriever should be triggered
- * @param factRetriever - Implementation of fact retriever definition
+ * @param factRetriever - Implementation of fact retriever consisting of at least id, version, schema and handler
  * @param lifecycle - Optional lifecycle definition indicating the cleanup logic of facts when this retriever is run
  *
  */

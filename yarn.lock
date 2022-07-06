@@ -1535,59 +1535,6 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
-"@backstage/backend-common@^0.14.0":
-  version "0.14.0"
-  resolved "https://registry.npmjs.org/@backstage/backend-common/-/backend-common-0.14.0.tgz#da7537c7a58ce596db36be3bb584b9c199f58296"
-  integrity sha512-xiEOknaWtyfiWcL8+fkQKMfSnpQr1FsKFX6xVc74Lrgmd46VMW7pbhDQULQDaeCN+jhwTfxCcsemhtcJjimq+w==
-  dependencies:
-    "@backstage/cli-common" "^0.1.9"
-    "@backstage/config" "^1.0.1"
-    "@backstage/config-loader" "^1.1.2"
-    "@backstage/errors" "^1.0.0"
-    "@backstage/integration" "^1.2.1"
-    "@backstage/types" "^1.0.0"
-    "@google-cloud/storage" "^6.0.0"
-    "@keyv/redis" "^2.2.3"
-    "@manypkg/get-packages" "^1.1.3"
-    "@octokit/rest" "^18.5.3"
-    "@types/cors" "^2.8.6"
-    "@types/dockerode" "^3.3.0"
-    "@types/express" "^4.17.6"
-    "@types/luxon" "^2.0.4"
-    "@types/webpack-env" "^1.15.2"
-    archiver "^5.0.2"
-    aws-sdk "^2.840.0"
-    base64-stream "^1.0.0"
-    compression "^1.7.4"
-    concat-stream "^2.0.0"
-    cors "^2.8.5"
-    dockerode "^3.3.1"
-    express "^4.17.1"
-    express-promise-router "^4.1.0"
-    fs-extra "10.1.0"
-    git-url-parse "^11.6.0"
-    helmet "^5.0.2"
-    isomorphic-git "^1.8.0"
-    jose "^4.6.0"
-    keyv "^4.0.3"
-    keyv-memcache "^1.2.5"
-    knex "^1.0.2"
-    lodash "^4.17.21"
-    logform "^2.3.2"
-    luxon "^2.3.1"
-    minimatch "^5.0.0"
-    minimist "^1.2.5"
-    morgan "^1.10.0"
-    node-abort-controller "^3.0.1"
-    node-fetch "^2.6.7"
-    raw-body "^2.4.1"
-    selfsigned "^2.0.0"
-    stoppable "^1.1.0"
-    tar "^6.1.2"
-    unzipper "^0.10.11"
-    winston "^3.2.1"
-    yn "^4.0.0"
-
 "@backstage/catalog-client@^1.0.3":
   version "1.0.3"
   resolved "https://registry.npmjs.org/@backstage/catalog-client/-/catalog-client-1.0.3.tgz#cb91472ccc31df322f69e7e4e80939b3535660cd"
@@ -1609,27 +1556,6 @@
     json-schema "^0.4.0"
     lodash "^4.17.21"
     uuid "^8.0.0"
-
-"@backstage/config-loader@^1.1.2":
-  version "1.1.2"
-  resolved "https://registry.npmjs.org/@backstage/config-loader/-/config-loader-1.1.2.tgz#72cb0d7b2647f5a646bb279360bc34732e06521f"
-  integrity sha512-c5ZO7xDJn609DBIsYAWGE5kgh+7SPYUmG2ADtVX9SbXaql3VCafGlhc2hAZQa/O12W04qi3GgwGg0bqSFmx5uw==
-  dependencies:
-    "@backstage/cli-common" "^0.1.9"
-    "@backstage/config" "^1.0.1"
-    "@backstage/errors" "^1.0.0"
-    "@backstage/types" "^1.0.0"
-    "@types/json-schema" "^7.0.6"
-    ajv "^8.10.0"
-    chokidar "^3.5.2"
-    fs-extra "10.1.0"
-    json-schema "^0.4.0"
-    json-schema-merge-allof "^0.8.1"
-    json-schema-traverse "^1.0.0"
-    node-fetch "^2.6.7"
-    typescript-json-schema "^0.53.0"
-    yaml "^1.9.2"
-    yup "^0.32.9"
 
 "@backstage/core-components@^0.9.0", "@backstage/core-components@^0.9.5":
   version "0.9.5"
@@ -1820,19 +1746,6 @@
     lodash "^4.17.21"
     qs "^6.9.4"
     react-use "^17.2.4"
-
-"@backstage/plugin-tech-insights-node@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.npmjs.org/@backstage/plugin-tech-insights-node/-/plugin-tech-insights-node-0.3.1.tgz#d9bf40b07c57bac67b251ac8d53c0ad26ad2e651"
-  integrity sha512-okfIZIVUVdhejqmd9UHaVg42VukHPT0RIVeUblALXDxip9PND+W4hKgZTRs7/2Z/IWOxGyGLEwAkRG0QSLnysg==
-  dependencies:
-    "@backstage/backend-common" "^0.14.0"
-    "@backstage/config" "^1.0.1"
-    "@backstage/plugin-tech-insights-common" "^0.2.4"
-    "@backstage/types" "^1.0.0"
-    "@types/luxon" "^2.0.5"
-    luxon "^2.0.2"
-    winston "^3.2.1"
 
 "@backstage/theme@^0.2.15", "@backstage/theme@^0.2.6", "@backstage/theme@^0.2.7", "@backstage/theme@^0.2.9":
   version "0.2.15"
@@ -17139,26 +17052,6 @@ kleur@^4.0.3, kleur@^4.1.4:
   resolved "https://registry.npmjs.org/kleur/-/kleur-4.1.4.tgz#8c202987d7e577766d039a8cd461934c01cda04d"
   integrity sha512-8QADVssbrFjivHWQU7KkMgptGTl6WAcSdlbBPY4uNF+mWr6DGcKrvY2w4FQJoXch7+fKMjj0dRrL75vk3k23OA==
 
-knex@^1.0.2:
-  version "1.0.7"
-  resolved "https://registry.npmjs.org/knex/-/knex-1.0.7.tgz#965f4490efc451b140aac4c5c6efa39fd877597b"
-  integrity sha512-89jxuRATt4qJMb9ZyyaKBy0pQ4d5h7eOFRqiNFnUvsgU+9WZ2eIaZKrAPG1+F3mgu5UloPUnkVE5Yo2sKZUs6Q==
-  dependencies:
-    colorette "2.0.16"
-    commander "^9.1.0"
-    debug "4.3.4"
-    escalade "^3.1.1"
-    esm "^3.2.25"
-    get-package-type "^0.1.0"
-    getopts "2.3.0"
-    interpret "^2.2.0"
-    lodash "^4.17.21"
-    pg-connection-string "2.5.0"
-    rechoir "^0.8.0"
-    resolve-from "^5.0.0"
-    tarn "^3.0.2"
-    tildify "2.0.0"
-
 knex@^2.0.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/knex/-/knex-2.1.0.tgz#9348aace3a08ff5be26eb1c8e838416ddf1aa216"
@@ -20526,11 +20419,6 @@ path-case@^3.0.4:
   dependencies:
     dot-case "^3.0.4"
     tslib "^2.0.3"
-
-path-equal@1.1.2:
-  version "1.1.2"
-  resolved "https://registry.npmjs.org/path-equal/-/path-equal-1.1.2.tgz#260e7c449c4c2022f68cc5fa6e617e892858250d"
-  integrity sha512-p5kxPPwCdbf5AdXzT1bUBJomhgBlEjRBavYNr1XUpMFIE4Hnf2roueCMXudZK5tnaAu1tTmp3GPzqwJK45IHEA==
 
 path-equal@^1.1.2:
   version "1.2.2"
@@ -25329,20 +25217,6 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
-
-typescript-json-schema@^0.53.0:
-  version "0.53.1"
-  resolved "https://registry.npmjs.org/typescript-json-schema/-/typescript-json-schema-0.53.1.tgz#9204547f3e145169b40928998366ff6d28b81d32"
-  integrity sha512-Hg+RnOKUd38MOzC0rDft03a8xvwO+gCcj1F77smw2tCoZYQpFoLtrXWBGdvCX+REliko5WYel2kux17HPFqjLQ==
-  dependencies:
-    "@types/json-schema" "^7.0.9"
-    "@types/node" "^16.9.2"
-    glob "^7.1.7"
-    path-equal "1.1.2"
-    safe-stable-stringify "^2.2.0"
-    ts-node "^10.2.1"
-    typescript "~4.6.0"
-    yargs "^17.1.1"
 
 typescript-json-schema@^0.54.0:
   version "0.54.0"

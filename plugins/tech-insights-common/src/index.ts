@@ -16,11 +16,6 @@
 
 import { DateTime } from 'luxon';
 import { JsonValue } from '@backstage/types';
-import {
-  FactRetrieverContext,
-  FactSchema,
-  TechInsightFact,
-} from '@backstage/plugin-tech-insights-node';
 
 /**
  * @public
@@ -105,63 +100,6 @@ export type FactResponse = {
     metadata?: Record<string, any>;
   };
 };
-
-/**
- * FactRetriever interface
- *
- * @public
- */
-export interface FactRetriever {
-  /**
-   * A unique identifier of the retriever.
-   * Used to identify and store individual facts returned from this retriever
-   * and schemas defined by this retriever.
-   */
-  id: string;
-
-  /**
-   * Semver string indicating the version of this fact retriever
-   * This version is used to determine if the schema this fact retriever matches the data this fact retriever provides.
-   *
-   * Should be incremented on changes to returned data from the handler or if the schema changes.
-   */
-  version: string;
-
-  /**
-   * A short display title for the fact retriever to be used in the interface
-   */
-  title: string;
-
-  /**
-   * A short display description for the fact retriever to be used in the interface.
-   */
-  description: string;
-
-  /**
-   * Handler function that needs to be implemented to retrieve fact values for entities.
-   *
-   * @param ctx - FactRetrieverContext which can be used to retrieve config and contact integrations
-   * @returns - A collection of TechInsightFacts grouped by entities.
-   */
-  handler: (ctx: FactRetrieverContext) => Promise<TechInsightFact[]>;
-
-  /**
-   * A fact schema defining the shape of data returned from the handler method for each entity
-   */
-  schema: FactSchema;
-
-  /**
-   * An optional object/array of objects of entity filters to indicate if this fact retriever is valid for an entity type.
-   * If omitted, the retriever should apply to all entities.
-   *
-   * Should be defined for example:
-   *   \{ field: 'kind', values: \['component'\] \}
-   *   \{ field: 'metadata.name', values: \['component-1', 'component-2'\] \}
-   */
-  entityFilter?:
-    | Record<string, string | symbol | (string | symbol)[]>[]
-    | Record<string, string | symbol | (string | symbol)[]>;
-}
 
 /**
  * Generic CheckResult
