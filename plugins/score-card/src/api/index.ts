@@ -1,3 +1,5 @@
+import { scoringDataApiRef } from '../api';
+
 /*
  * Copyright 2022 The Backstage Authors
  *
@@ -13,15 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SystemScoreArea } from './SystemScoreArea';
-import { ScoreSuccessEnum } from './SystemScoreSuccessEnum';
-
-export interface SystemScore {
-  systemEntityName: string;
-  generatedDateTimeUtc: Date | string;
-  scorePercent: number;
-  scoreSuccess: ScoreSuccessEnum;
-  scoringReviewer: string | undefined | null;
-  scoringReviewDate: Date | string | undefined | null;
-  areaScores: SystemScoreArea[];
-}
+export type {
+  SystemScore,
+  SystemScoreArea,
+  SystemScoreEntry,
+  ScoreSuccessEnum,
+} from './types';
+export { scoringDataApiRef } from './ScoringDataApi';
+export type { ScoringDataApi } from './ScoringDataApi';
+export { ScoringDataClient } from './ScoringDataClient';
