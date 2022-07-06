@@ -16,6 +16,12 @@
 import { Entity } from '@backstage/catalog-model';
 import { VAULT_SECRET_PATH_ANNOTATION } from './constants';
 
+/**
+ * Checks if an entity contains the annotation for Vault.
+ * @param entity - The entity to check if the annotation exists
+ * @returns If the annotation exists or not
+ * @public
+ */
 export function isVaultAvailable(entity: Entity): boolean {
   return Boolean(
     entity.metadata.annotations?.hasOwnProperty(VAULT_SECRET_PATH_ANNOTATION),

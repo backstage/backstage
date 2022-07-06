@@ -212,11 +212,17 @@ export function TemplateEditorFormDirectoryEditorDryRun(
       return;
     }
 
-    await dryRun.execute({
-      templateContent: selectedFile.content,
-      values: data,
-      files: directoryEditor.files,
-    });
+    try {
+      await dryRun.execute({
+        templateContent: selectedFile.content,
+        values: data,
+        files: directoryEditor.files,
+      });
+      setErrorText();
+    } catch (e) {
+      setErrorText(String(e.cause || e));
+      throw e;
+    }
   };
 
   const content =

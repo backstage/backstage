@@ -20,6 +20,7 @@ import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { Grid } from '@material-ui/core';
 import React, { ComponentType } from 'react';
+import { StackOverflowIcon } from '../../icons';
 
 export default {
   title: 'Plugins/Home/Components/StackOverflow',
@@ -56,6 +57,21 @@ export const Default = () => {
           site: 'stackoverflow',
           pagesize: 5,
         }}
+      />
+    </Grid>
+  );
+};
+
+export const WithIcon = () => {
+  return (
+    <Grid item xs={12} md={6}>
+      <HomePageStackOverflowQuestions
+        requestParams={{
+          tagged: 'backstage',
+          site: 'stackoverflow',
+          pagesize: 5,
+        }}
+        icon={<StackOverflowIcon />}
       />
     </Grid>
   );

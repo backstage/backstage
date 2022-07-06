@@ -1,5 +1,13 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.3.13-next.0
+
+### Patch Changes
+
+- 13a232ec22: Added comments to example to help avoid confusion as to where lines need to be added
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+
 ## 0.3.12
 
 ### Patch Changes

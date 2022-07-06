@@ -136,3 +136,20 @@ export const HomePageStarredEntities = homePlugin.provide(
     components: () => import('./homePageComponents/StarredEntities'),
   }),
 );
+
+/**
+ * A component to display a configurable list of clocks for various time zones.
+ *
+ * @public
+ */
+export const HeaderWorldClock = homePlugin.provide(
+  createComponentExtension({
+    name: 'HeaderWorldClock',
+    component: {
+      lazy: () =>
+        import('./homePageComponents/HeaderWorldClock').then(
+          m => m.HeaderWorldClock,
+        ),
+    },
+  }),
+);

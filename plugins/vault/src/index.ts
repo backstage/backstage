@@ -14,3 +14,7 @@
  * limitations under the License.
  */
 export { vaultPlugin, EntityVaultCard } from './plugin';
+export { isVaultAvailable } from './conditions';
+export { VAULT_SECRET_PATH_ANNOTATION } from './constants';
+export { vaultApiRef } from './api';
+export type { VaultApi, VaultSecret } from './api';

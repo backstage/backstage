@@ -91,7 +91,7 @@ export const TechDocsReaderPageHeader = (
   }, [metadata, setTitle, setSubtitle]);
 
   const appTitle = configApi.getOptional('app.title') || 'Backstage';
-  const tabTitle = [subtitle, title, appTitle].filter(Boolean).join(' | ');
+  const tabTitle = [title, subtitle, appTitle].filter(Boolean).join(' | ');
 
   const { locationMetadata, spec } = entityMetadata || {};
   const lifecycle = spec?.lifecycle;

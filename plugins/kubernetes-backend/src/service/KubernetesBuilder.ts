@@ -37,16 +37,23 @@ import {
   KubernetesFanOutHandler,
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
+import { CatalogApi } from '@backstage/catalog-client';
 
+/**
+ *
+ * @alpha
+ */
 export interface KubernetesEnvironment {
   logger: Logger;
   config: Config;
+  catalogApi: CatalogApi;
 }
 
 /**
  * The return type of the `KubernetesBuilder.build` method
  *
- * @public
+ * @alpha
  */
 export type KubernetesBuilderReturn = Promise<{
   router: express.Router;
@@ -57,6 +64,10 @@ export type KubernetesBuilderReturn = Promise<{
   serviceLocator: KubernetesServiceLocator;
 }>;
 
+/**
+ *
+ * @alpha
+ */
 export class KubernetesBuilder {
   private clusterSupplier?: KubernetesClustersSupplier;
   private defaultClusterRefreshInterval: Duration = Duration.fromObject({
@@ -111,7 +122,11 @@ export class KubernetesBuilder {
         objectTypesToFetch: this.getObjectTypesToFetch(),
       });
 
-    const router = this.buildRouter(objectsProvider, clusterSupplier);
+    const router = this.buildRouter(
+      objectsProvider,
+      clusterSupplier,
+      this.env.catalogApi,
+    );
 
     return {
       clusterSupplier,
@@ -218,18 +233,21 @@ export class KubernetesBuilder {
   protected buildRouter(
     objectsProvider: KubernetesObjectsProvider,
     clusterSupplier: KubernetesClustersSupplier,
+    catalogApi: CatalogApi,
   ): express.Router {
     const logger = this.env.logger;
     const router = Router();
     router.use(express.json());
 
+    // @deprecated
     router.post('/services/:serviceId', async (req, res) => {
       const serviceId = req.params.serviceId;
       const requestBody: ObjectsByEntityRequest = req.body;
       try {
-        const response = await objectsProvider.getKubernetesObjectsByEntity(
-          requestBody,
-        );
+        const response = await objectsProvider.getKubernetesObjectsByEntity({
+          entity: requestBody.entity,
+          auth: requestBody.auth || {},
+        });
         res.json(response);
       } catch (e) {
         logger.error(
@@ -250,6 +268,9 @@ export class KubernetesBuilder {
         })),
       });
     });
+
+    addResourceRoutesToRouter(router, catalogApi, objectsProvider);
+
     return router;
   }
 

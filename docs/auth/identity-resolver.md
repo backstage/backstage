@@ -110,6 +110,7 @@ Now let's look at the example, with the rest of the commentary being made with i
 the code comments:
 
 ```ts
+// File: packages/backend/src/plugins/auth.ts
 import {
   createRouter,
   providers,
@@ -170,11 +171,21 @@ property of each of the auth provider integrations. For example, the Google prov
 a built in resolver that works just like the one we defined above:
 
 ```ts
-providers.google.create({
-  signIn: {
-    resolver: providers.google.resolvers.emailLocalPartMatchingUserEntityName(),
-  },
-});
+// File: packages/backend/src/plugins/auth.ts
+export default async function createPlugin(
+  // ...
+  return await createRouter({
+    // ...
+    providerFactories: {
+      // ...
+      google: providers.google.create({
+        signIn: {
+          resolver: providers.google.resolvers.emailLocalPartMatchingUserEntityName(),
+        },
+      });
+    }
+  })
+)
 ```
 
 There are also other options, like the this one that looks up a user
@@ -195,40 +206,49 @@ that happens during sign-in you can replace `ctx.signInWithCatalogUser` with a s
 of lower-level calls:
 
 ```ts
+// File: packages/backend/src/plugins/auth.ts
 import { getDefaultOwnershipRefs } from '@backstage/plugin-auth-backend';
 
-// This example only shows the resolver function itself.
-async ({ profile: { email } }, ctx) => {
-  if (!email) {
-    throw new Error('User profile contained no email');
-  }
+export default async function createPlugin(
+  // ...
+  return await createRouter({
+    // ...
+    providerFactories: {
+      // ...
+      google: async ({ profile: { email } }, ctx) => {
+        if (!email) {
+          throw new Error('User profile contained no email');
+        }
 
-  // This step calls the catalog to look up a user entity. You could for example
-  // replace it with a call to a different external system.
-  const { entity } = await ctx.findCatalogUser({
-    annotations: {
-      'acme.org/email': email,
-    },
-  });
+        // This step calls the catalog to look up a user entity. You could for example
+        // replace it with a call to a different external system.
+        const { entity } = await ctx.findCatalogUser({
+          annotations: {
+            'acme.org/email': email,
+          },
+        });
 
-  // In this step we extract the ownership references from the user entity using
-  // the standard logic. It uses a reference to the entity itself, as well as the
-  // target of each `memberOf` relation where the target is of the kind `Group`.
-  //
-  // If you replace the catalog lookup with something does not return
-  // an entity you will need to replace this step as well.
-  //
-  // You might also replace it if you for example want to filter out certain groups.
-  const ownershipRefs = getDefaultOwnershipRefs(entity);
+        // In this step we extract the ownership references from the user entity using
+        // the standard logic. It uses a reference to the entity itself, as well as the
+        // target of each `memberOf` relation where the target is of the kind `Group`.
+        //
+        // If you replace the catalog lookup with something that does not return
+        // an entity you will need to replace this step as well.
+        //
+        // You might also replace it if you for example want to filter out certain groups.
+        const ownershipRefs = getDefaultOwnershipRefs(entity);
 
-  // The last step is to issue the token, where we might provide more options in the future.
-  return ctx.issueToken({
-    claims: {
-      sub: stringifyEntityRef(entity),
-      ent: ownershipRefs,
-    },
-  });
-};
+        // The last step is to issue the token, where we might provide more options in the future.
+        return ctx.issueToken({
+          claims: {
+            sub: stringifyEntityRef(entity),
+            ent: ownershipRefs,
+          },
+        });
+      };
+    }
+  })
+)
 ```
 
 ## Sign-In without Users in the Catalog
@@ -252,38 +272,47 @@ check like in the example below, or you might for example look up the GitHub org
 that the user belongs to using the user access token in the provided result object.
 
 ```ts
+// File: packages/backend/src/plugins/auth.ts
 import { DEFAULT_NAMESPACE, stringifyEntityRef, } from '@backstage/catalog-model';
 
-// This example only shows the resolver function itself.
-async ({ profile }, ctx) => {
-  if (!profile.email) {
-    throw new Error(
-      'Login failed, user profile does not contain an email',
-    );
-  }
-  // Split the email into the local part and the domain.
-  const [localPart, domain] = profile.email.split('@');
+export default async function createPlugin(
+  // ...
+  return await createRouter({
+    // ...
+    providerFactories: {
+      // ...
+      google: async ({ profile }, ctx) => {
+        if (!profile.email) {
+          throw new Error(
+            'Login failed, user profile does not contain an email',
+          );
+        }
+        // Split the email into the local part and the domain.
+        const [localPart, domain] = profile.email.split('@');
 
-  // Next we verify the email domain. It is recommended to include this
-  // kind of check if you don't look up the user in an external service.
-  if (domain !== 'acme.org') {
-    throw new Error('Login failed, user email domain check failed');
-  }
+        // Next we verify the email domain. It is recommended to include this
+        // kind of check if you don't look up the user in an external service.
+        if (domain !== 'acme.org') {
+          throw new Error('Login failed, user email domain check failed');
+        }
 
-  // By using `stringifyEntityRef` we ensure that the reference is formatted correctly
-  const userEntityRef = stringifyEntityRef({
-    kind: 'User',
-    name: localPart,
-    namespace: DEFAULT_NAMESPACE,
-  });
+        // By using `stringifyEntityRef` we ensure that the reference is formatted correctly
+        const userEntityRef = stringifyEntityRef({
+          kind: 'User',
+          name: localPart,
+          namespace: DEFAULT_NAMESPACE,
+        });
 
-  return ctx.issueToken({
-    claims: {
-      sub: userEntityRef,
-      ent: [userEntityRef],
-    },
-  });
-},
+        return ctx.issueToken({
+          claims: {
+            sub: userEntityRef,
+            ent: [userEntityRef],
+          },
+        });
+      },
+    }
+  })
+)
 ```
 
 ## AuthHandler
@@ -304,7 +333,7 @@ export default async function createPlugin(
   return await createRouter({
     ...
     providerFactories: {
-      google: createGoogleProvider({
+      google: providers.google.create({
         authHandler: async ({
           fullProfile  // Type: passport.Profile,
           idToken      // Type: (Optional) string,

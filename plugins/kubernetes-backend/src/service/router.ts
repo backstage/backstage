@@ -19,10 +19,16 @@ import { Logger } from 'winston';
 import { KubernetesClustersSupplier } from '../types/types';
 import express from 'express';
 import { KubernetesBuilder } from './KubernetesBuilder';
+import { CatalogApi } from '@backstage/catalog-client';
 
+/**
+ *
+ * @alpha
+ */
 export interface RouterOptions {
   logger: Logger;
   config: Config;
+  catalogApi: CatalogApi;
   clusterSupplier?: KubernetesClustersSupplier;
 }
 
@@ -38,6 +44,8 @@ export interface RouterOptions {
  *   config,
  * }).build();
  * ```
+ *
+ * @alpha
  */
 export async function createRouter(
   options: RouterOptions,

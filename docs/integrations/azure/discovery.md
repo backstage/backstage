@@ -45,7 +45,7 @@ catalog:
       anotherProviderId: # another identifier
         organization: myorg
         project: myproject
-        repository: '*' # this will match all repos starting with service-*
+        repository: '*' # this will match all repos
         path: /src/*/catalog-info.yaml # this will search for files deep inside the /src folder
       yetAotherProviderId: # guess, what? Another one :)
         host: selfhostedazure.yourcompany.com

@@ -20,4 +20,8 @@
  * @packageDocumentation
  */
 
-export { apacheAirflowPlugin, ApacheAirflowPage } from './plugin';
+export {
+  apacheAirflowPlugin,
+  ApacheAirflowPage,
+  ApacheAirflowDagTable,
+} from './plugin';

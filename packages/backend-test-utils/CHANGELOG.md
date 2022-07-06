@@ -1,5 +1,30 @@
 # @backstage/backend-test-utils
 
+## 0.1.26-next.2
+
+### Patch Changes
+
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.2
+  - @backstage/cli@0.18.0-next.2
+
+## 0.1.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.18.0-next.1
+  - @backstage/backend-common@0.14.1-next.1
+
+## 0.1.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/cli@0.17.3-next.0
+
 ## 0.1.25
 
 ### Patch Changes

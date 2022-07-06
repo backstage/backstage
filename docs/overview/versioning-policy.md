@@ -135,3 +135,21 @@ package export.
   accessed via `<package-name>/beta` or `<package-name>/alpha` imports.
 - `@alpha` - here be dragons. Not visible in the main package entry point, alpha
   exports must be accessed via `<package-name>/alpha` imports.
+
+## Node.js Releases
+
+The Backstage project uses [Node.js](https://nodejs.org/) for both its development
+tooling and backend runtime. In order for expectations to be clear we use the
+following schedule for determining the [Node.js releases](https://nodejs.org/en/about/releases/) that we support:
+
+- At any given point in time we support exactly two adjacent even-numbered
+  releases of Node.js, for example v12 and v14.
+- Three months before a Node.js release becomes _Active LTS_ we switch support
+  to that release and the previous one. This is halfway through the _Current LTS_
+  cycle for that release and occurs at the end of July every year.
+
+When we say _Supporting_ a Node.js release, that means the following:
+
+- The CI pipeline in the main Backstage repo tests towards the supported releases, and we encourage any other Backstage related projects to do the same.
+- New Backstage projects created with `@backstage/create-app` will have their `engines.node` version set accordingly.
+- Dropping compatibility with unsupported releases is not considered a breaking change. This includes using new syntax or APIs, as well as bumping dependencies that drop support for these versions.

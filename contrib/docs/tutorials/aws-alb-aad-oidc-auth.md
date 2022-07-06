@@ -122,10 +122,7 @@ When using ALB auth you can configure it as described [here](https://backstage.i
 - replace the content of `packages/backend/plugin/auth.ts` with the below and tweak it according to your needs.
 
 ```ts
-import {
-  createRouter,
-  createAwsAlbProvider,
-} from '@backstage/plugin-auth-backend';
+import { createRouter, providers } from '@backstage/plugin-auth-backend';
 import {
   DEFAULT_NAMESPACE,
   stringifyEntityRef,
@@ -145,7 +142,7 @@ export default async function createPlugin({
     database,
     discovery,
     providerFactories: {
-      awsalb: createAwsAlbProvider({
+      awsalb: providers.awsAlb.create({
         authHandler: async ({ fullProfile }) => {
           let email: string | undefined = undefined;
           if (fullProfile.emails && fullProfile.emails.length > 0) {

@@ -154,6 +154,8 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent<
 // @public
 export interface OwnedEntityPickerUiOptions {
   // (undocumented)
+  allowArbitraryValues?: boolean;
+  // (undocumented)
   allowedKinds?: string[];
   // (undocumented)
   defaultKind?: string;
@@ -192,6 +194,8 @@ export interface RepoUrlPickerUiOptions {
   allowedHosts?: string[];
   // (undocumented)
   allowedOwners?: string[];
+  // (undocumented)
+  allowedRepos?: string[];
   // (undocumented)
   requestUserCredentials?: {
     secretsKey: string;

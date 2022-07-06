@@ -1,5 +1,35 @@
 # @backstage/core-components
 
+## 0.10.0-next.2
+
+### Minor Changes
+
+- 32204fa794: Add `transformLinkUri` and `transformImageUri` to `MarkdownContent`
+
+### Patch Changes
+
+- b4b711bcc2: Fix the EntityLayout header style so that EntityContextMenu button can display in correct shape when user hover on it
+- 15201b1032: Updated dependency `rc-progress` to `3.4.0`.
+- 385389d23c: Updated to remove usage of the `bursts` object in the theme palette
+- Updated dependencies
+  - @backstage/theme@0.2.16-next.1
+
+## 0.9.6-next.1
+
+### Patch Changes
+
+- 3c440ea77e: Change BackstageIconLinkVertical style to use pallette instead of explicit color
+- 7e115d42f9: Support displaying subtitle text in `SidebarSubmenuItem`
+- Updated dependencies
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/theme@0.2.16-next.0
+
+## 0.9.6-next.0
+
+### Patch Changes
+
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+
 ## 0.9.5
 
 ### Patch Changes

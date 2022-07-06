@@ -110,14 +110,14 @@ const monochromeTheme = (outer: BackstageTheme) =>
     ...outer,
     defaultPageTheme: 'home',
     pageTheme: {
-      home: genPageTheme(['#444'], shapes.wave2),
-      documentation: genPageTheme(['#474747'], shapes.wave2),
-      tool: genPageTheme(['#222'], shapes.wave2),
-      service: genPageTheme(['#aaa'], shapes.wave2),
-      website: genPageTheme(['#0e0e0e'], shapes.wave2),
-      library: genPageTheme(['#9d9d9d'], shapes.wave2),
-      other: genPageTheme(['#aaa'], shapes.wave2),
-      app: genPageTheme(['#666'], shapes.wave2),
+      home: genPageTheme({ colors: ['#444'], shape: shapes.wave2 }),
+      documentation: genPageTheme({ colors: ['#474747'], shape: shapes.wave2 }),
+      tool: genPageTheme({ colors: ['#222'], shape: shapes.wave2 }),
+      service: genPageTheme({ colors: ['#aaa'], shape: shapes.wave2 }),
+      website: genPageTheme({ colors: ['#0e0e0e'], shape: shapes.wave2 }),
+      library: genPageTheme({ colors: ['#9d9d9d'], shape: shapes.wave2 }),
+      other: genPageTheme({ colors: ['#aaa'], shape: shapes.wave2 }),
+      app: genPageTheme({ colors: ['#666'], shape: shapes.wave2 }),
     },
   });
 

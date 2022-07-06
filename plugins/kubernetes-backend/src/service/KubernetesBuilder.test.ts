@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { Entity } from '@backstage/catalog-model';
 import { Config, ConfigReader } from '@backstage/config';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import express from 'express';
@@ -30,11 +31,13 @@ import {
 import { KubernetesBuilder } from './KubernetesBuilder';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 import { PodStatus } from '@kubernetes/client-node';
+import { CatalogApi } from '@backstage/catalog-client';
 
 describe('KubernetesBuilder', () => {
   let app: express.Express;
   let kubernetesFanOutHandler: jest.Mocked<KubernetesFanOutHandler>;
   let config: Config;
+  let catalogApi: CatalogApi;
 
   beforeAll(async () => {
     const logger = getVoidLogger();
@@ -68,7 +71,13 @@ describe('KubernetesBuilder', () => {
       getKubernetesObjectsByEntity: jest.fn(),
     } as any;
 
-    const { router } = await KubernetesBuilder.createBuilder({ config, logger })
+    catalogApi = {} as CatalogApi;
+
+    const { router } = await KubernetesBuilder.createBuilder({
+      config,
+      logger,
+      catalogApi,
+    })
       .setObjectsProvider(kubernetesFanOutHandler)
       .setClusterSupplier(clusterSupplier)
       .build();
@@ -207,8 +216,10 @@ describe('KubernetesBuilder', () => {
       };
 
       const serviceLocator: KubernetesServiceLocator = {
-        getClustersByServiceId(_serviceId: string): Promise<ClusterDetails[]> {
-          return Promise.resolve([someCluster]);
+        getClustersByEntity(
+          _entity: Entity,
+        ): Promise<{ clusters: ClusterDetails[] }> {
+          return Promise.resolve({ clusters: [someCluster] });
         },
       };
 
@@ -237,6 +248,7 @@ describe('KubernetesBuilder', () => {
       const { router } = await KubernetesBuilder.createBuilder({
         logger,
         config,
+        catalogApi,
       })
         .setClusterSupplier(clusterSupplier)
         .setServiceLocator(serviceLocator)
@@ -244,7 +256,15 @@ describe('KubernetesBuilder', () => {
         .build();
       app = express().use(router);
 
-      const response = await request(app).post('/services/test-service');
+      const response = await request(app)
+        .post('/services/test-service')
+        .send({
+          entity: {
+            metadata: {
+              name: 'thing',
+            },
+          },
+        });
 
       expect(response.body).toEqual(result);
       expect(response.status).toEqual(200);

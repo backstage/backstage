@@ -18,11 +18,13 @@ import { StyleRules } from '@material-ui/core/styles/withStyles';
 
 import { EntityLinksEmptyStateClassKey } from './components/EntityLinksCard';
 import { SystemDiagramCardClassKey } from './components/SystemDiagramCard';
+import { EntityContextMenuClassKey } from './components/EntityContextMenu';
 
 /** @public */
 export type PluginCatalogComponentsNameToClassKey = {
   PluginCatalogEntityLinksEmptyState: EntityLinksEmptyStateClassKey;
   PluginCatalogSystemDiagramCard: SystemDiagramCardClassKey;
+  PluginCatalogEntityContextMenu: EntityContextMenuClassKey;
 };
 
 /** @public */

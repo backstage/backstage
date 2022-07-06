@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import {
+  AlphaEntity,
+  Entity,
+  RELATION_OWNED_BY,
+} from '@backstage/catalog-model';
 import { humanizeEntityRef } from './components/EntityRefLink';
 import { EntityFilter, UserListFilterKind } from './types';
 import { getEntityRelations } from './utils';
@@ -157,5 +161,30 @@ export class UserListFilter implements EntityFilter {
 
   toQueryValue(): string {
     return this.value;
+  }
+}
+
+/**
+ * Filters entities based if it is an orphan or not.
+ * @public
+ */
+export class EntityOrphanFilter implements EntityFilter {
+  constructor(readonly value: boolean) {}
+  filterEntity(entity: Entity): boolean {
+    const orphan = entity.metadata.annotations?.['backstage.io/orphan'];
+    return orphan !== undefined && this.value.toString() === orphan;
+  }
+}
+
+/**
+ * Filters entities based on if it has errors or not.
+ * @public
+ */
+export class EntityErrorFilter implements EntityFilter {
+  constructor(readonly value: boolean) {}
+  filterEntity(entity: Entity): boolean {
+    const error =
+      ((entity as AlphaEntity)?.status?.items?.length as number) > 0;
+    return error !== undefined && this.value === error;
   }
 }

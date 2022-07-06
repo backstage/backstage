@@ -22,14 +22,15 @@ import {
   Link,
   Page,
   Progress,
+  Table,
 } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/lib/useAsync';
-import MaterialTable from '@material-table/core';
 import React, { useState } from 'react';
 import { scaffolderApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';
+import { ScaffolderTask } from '../../types';
 import { OwnerListPicker } from './OwnerListPicker';
 import {
   CreatedAtColumn,
@@ -88,7 +89,7 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
         />
       </CatalogFilterLayout.Filters>
       <CatalogFilterLayout.Content>
-        <MaterialTable
+        <Table<ScaffolderTask>
           data={value?.tasks ?? []}
           title="Tasks"
           columns={[
