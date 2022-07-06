@@ -140,6 +140,7 @@ export async function createRouter(
         }
         if (provider.refresh) {
           r.get('/refresh', provider.refresh.bind(provider));
+          r.post('/refresh', provider.refresh.bind(provider));
         }
 
         router.use(`/${providerId}`, r);
