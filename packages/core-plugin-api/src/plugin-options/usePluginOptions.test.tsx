@@ -17,13 +17,22 @@
 import React from 'react';
 import { renderHook } from '@testing-library/react-hooks';
 import { usePluginOptions, PluginProvider } from './usePluginOptions';
-import { createPlugin, PluginInputOptions, PluginOptions } from '../plugin';
+import { createPlugin } from '../plugin';
 
 describe('usePluginOptions', () => {
   it('should provide a versioned value to hook', () => {
+    type TestInputPluginOptions = {
+      'key-1': string;
+    };
+
+    type TestPluginOptions = {
+      'key-1': string;
+      'key-2': string;
+    };
+
     const plugin = createPlugin({
       id: 'my-plugin',
-      __experimentalConfigure(_: PluginInputOptions): PluginOptions {
+      __experimentalConfigure(_: TestInputPluginOptions): TestPluginOptions {
         return { 'key-1': 'value-1', 'key-2': 'value-2' };
       },
     });

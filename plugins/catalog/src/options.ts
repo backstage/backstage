@@ -20,5 +20,9 @@ export type CatalogPluginOptions = {
   createButtonTitle: string;
 };
 
+export type CatalogInputPluginOptions = {
+  createButtonTitle: string;
+};
+
 export const useCatalogPluginOptions = () =>
   usePluginOptions<CatalogPluginOptions>();

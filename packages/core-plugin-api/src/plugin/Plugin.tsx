@@ -20,8 +20,8 @@ import {
   Extension,
   AnyRoutes,
   AnyExternalRoutes,
-  PluginOptions,
-  PluginInputOptions,
+  AnyPluginOptions,
+  AnyPluginInputOptions,
   PluginFeatureFlagConfig,
 } from './types';
 import { AnyApiFactory } from '../apis';
@@ -30,13 +30,22 @@ import { AnyApiFactory } from '../apis';
  * @internal
  */
 export class PluginImpl<
+  PluginInputOptions extends AnyPluginInputOptions,
+  PluginOptions extends AnyPluginOptions,
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
-> implements BackstagePlugin<Routes, ExternalRoutes>
+> implements BackstagePlugin<PluginInputOptions, Routes, ExternalRoutes>
 {
-  constructor(private readonly config: PluginConfig<Routes, ExternalRoutes>) {}
+  constructor(
+    private readonly config: PluginConfig<
+      PluginInputOptions,
+      PluginOptions,
+      Routes,
+      ExternalRoutes
+    >,
+  ) {}
 
-  options: PluginOptions | undefined = undefined;
+  options: AnyPluginOptions | undefined = undefined;
 
   getId(): string {
     return this.config.id;
@@ -68,11 +77,11 @@ export class PluginImpl<
     }
   }
 
-  getPluginOptions(): PluginOptions {
+  getPluginOptions(): AnyPluginOptions {
     if (this.config.__experimentalConfigure && !this.options) {
       this.options = this.config.__experimentalConfigure();
     }
-    return this.options ?? ({} as PluginOptions);
+    return this.options ?? ({} as AnyPluginOptions);
   }
 
   toString() {
@@ -87,10 +96,17 @@ export class PluginImpl<
  * @public
  */
 export function createPlugin<
+  PluginInputOptions extends AnyPluginInputOptions = {},
+  PluginOptions extends AnyPluginInputOptions = {},
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
 >(
-  config: PluginConfig<Routes, ExternalRoutes>,
-): BackstagePlugin<Routes, ExternalRoutes> {
+  config: PluginConfig<
+    PluginInputOptions,
+    PluginOptions,
+    Routes,
+    ExternalRoutes
+  >,
+): BackstagePlugin<PluginInputOptions, Routes, ExternalRoutes> {
   return new PluginImpl(config);
 }

@@ -30,8 +30,6 @@ import {
   discoveryApiRef,
   fetchApiRef,
   storageApiRef,
-  PluginOptions,
-  PluginInputOptions,
 } from '@backstage/core-plugin-api';
 import { DefaultStarredEntitiesApi } from './apis';
 import { AboutCardProps } from './components/AboutCard';
@@ -45,6 +43,7 @@ import { HasSubcomponentsCardProps } from './components/HasSubcomponentsCard';
 import { HasSystemsCardProps } from './components/HasSystemsCard';
 import { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
 import { rootRouteRef } from './routes';
+import { CatalogInputPluginOptions, CatalogPluginOptions } from './options';
 
 /** @public */
 export const catalogPlugin = createPlugin({
@@ -74,7 +73,9 @@ export const catalogPlugin = createPlugin({
     createComponent: createComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
   },
-  __experimentalConfigure(options?: PluginInputOptions): PluginOptions {
+  __experimentalConfigure(
+    options?: CatalogInputPluginOptions,
+  ): CatalogPluginOptions {
     const defaultOptions = {
       createButtonTitle: 'Create',
     };

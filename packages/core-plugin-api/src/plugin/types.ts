@@ -27,7 +27,7 @@ import { AnyApiFactory } from '../apis';
  * @public
  */
 export type Extension<T> = {
-  expose(plugin: BackstagePlugin<any, any>): T;
+  expose(plugin: BackstagePlugin<any, any, any>): T;
 };
 
 /**
@@ -49,8 +49,8 @@ export type AnyExternalRoutes = { [name: string]: ExternalRouteRef };
  *
  * @public
  */
-export type PluginOptions = { [name: string]: unknown };
-export type PluginInputOptions = { [name: string]: unknown };
+export type AnyPluginOptions = { [name: string]: unknown };
+export type AnyPluginInputOptions = { [name: string]: unknown };
 
 /**
  * Plugin type.
@@ -58,6 +58,7 @@ export type PluginInputOptions = { [name: string]: unknown };
  * @public
  */
 export type BackstagePlugin<
+  PluginInputOptions extends AnyPluginInputOptions = {},
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
 > = {
@@ -89,6 +90,8 @@ export type PluginFeatureFlagConfig = {
  * @public
  */
 export type PluginConfig<
+  PluginInputOptions extends AnyPluginInputOptions,
+  PluginOptions extends AnyPluginOptions,
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
 > = {
