@@ -27,6 +27,7 @@ import {
   TemplateFilter,
   SecureTemplater,
 } from '../../../../lib/templating/SecureTemplater';
+import path from 'node:path';
 
 /**
  * Downloads a skeleton, templates variables into file and directory names and content.
@@ -260,12 +261,12 @@ export function createFetchTemplateAction(options: {
 }
 
 function containsSkippedContent(localOutputPath: string): boolean {
-  // if the path starts with / means that the root directory has been skipped
+  // if the path is absolute means that the root directory has been skipped
   // if the path is empty means that there is a file skipped in the root
   // if the path includes // means that there is a subdirectory skipped
   return (
-    localOutputPath.startsWith('/') ||
     localOutputPath === '' ||
-    localOutputPath.includes('//')
+    path.isAbsolute(localOutputPath) ||
+    localOutputPath.includes(`${path.sep}${path.sep}`)
   );
 }
