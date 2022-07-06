@@ -165,7 +165,7 @@ describe('fetch:template', () => {
             showDummyFile: false,
             skipRootDirectory: true,
             skipSubdirectory: true,
-            skipMultiplesDirectories: true
+            skipMultiplesDirectories: true,
           },
         });
 
@@ -178,21 +178,22 @@ describe('fetch:template', () => {
               '${{ "dummy-file2.txt" if values.showDummyFile else "" }}':
                 'some dummy file',
               '${{ "dummy-dir" if not values.skipRootDirectory else "" }}': {
-                'file.txt':
-                  'file inside optional directory',
-              subdir: {
-                '${{ "dummy-subdir" if not values.skipSubdirectory else "" }}':
-                  'file inside optional subdirectory'
-                }
+                'file.txt': 'file inside optional directory',
+                subdir: {
+                  '${{ "dummy-subdir" if not values.skipSubdirectory else "" }}':
+                    'file inside optional subdirectory',
+                },
               },
               subdir2: {
-                '${{ "dummy-subdir" if not values.skipMultiplesDirectories else "" }}': {
-                  '${{ "dummy-subdir" if not values.skipMultiplesDirectories else "" }}': {
-                    'multipleDirectorySkippedFile.txt':
-                      'file inside multiple optional subdirectories'
-                  }
-                }
-              }
+                '${{ "dummy-subdir" if not values.skipMultiplesDirectories else "" }}':
+                  {
+                    '${{ "dummy-subdir" if not values.skipMultiplesDirectories else "" }}':
+                      {
+                        'multipleDirectorySkippedFile.txt':
+                          'file inside multiple optional subdirectories',
+                      },
+                  },
+              },
             },
           });
 
@@ -222,12 +223,16 @@ describe('fetch:template', () => {
 
       it('skips content of empty subdirectory', async () => {
         await expect(
-          fs.pathExists(`${workspacePath}/target/subdir2/multipleDirectorySkippedFile.txt`),
+          fs.pathExists(
+            `${workspacePath}/target/subdir2/multipleDirectorySkippedFile.txt`,
+          ),
         ).resolves.toEqual(false);
 
         await expect(
-          fs.pathExists(`${workspacePath}/target/subdir2/dummy-subdir/dummy-subdir/multipleDirectorySkippedFile.txt`),
-        ).resolves.toEqual(false);        
+          fs.pathExists(
+            `${workspacePath}/target/subdir2/dummy-subdir/dummy-subdir/multipleDirectorySkippedFile.txt`,
+          ),
+        ).resolves.toEqual(false);
       });
     });
 
