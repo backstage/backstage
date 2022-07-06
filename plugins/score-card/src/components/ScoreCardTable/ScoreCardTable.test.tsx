@@ -14,27 +14,57 @@
  * limitations under the License.
  */
 import React from 'react';
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { ScoreCardTable } from './ScoreCardTable';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { TestApiProvider } from '@backstage/test-utils';
+import { ScoringDataApi, scoringDataApiRef } from '../../api';
+import { Entity } from '@backstage/catalog-model';
+import { SystemScoreExtended } from '../../api/types';
+import { errorApiRef } from '@backstage/core-plugin-api';
+import { lightTheme } from '@backstage/theme';
+import { ThemeProvider } from '@material-ui/core';
 
-describe('ScoreBoardPageFetchComponent', () => {
-  const server = setupServer();
-  // Enable sane handlers for network requests
-  setupRequestMockHandlers(server);
+describe('ScoreBoardPage-EmptyData', () => {
+  class MockClient implements ScoringDataApi {
+    getScore(
+      _entity?: Entity | undefined,
+    ): Promise<SystemScoreExtended | undefined> {
+      throw new Error('Method not implemented.');
+    }
+    getAllScores(): Promise<SystemScoreExtended[] | undefined> {
+      return new Promise<SystemScoreExtended[] | undefined>(
+        (resolve, _reject) => {
+          resolve([]);
+        },
+      );
+    }
+  }
 
-  // setup mock response
-  beforeEach(() => {
-    server.use(
-      rest.get('https://randomuser.me/*', (_, res, ctx) =>
-        res(ctx.status(200), ctx.delay(2000), ctx.json({})),
-      ),
+  const mockClient = new MockClient();
+
+  it('should render a progress bar', async () => {
+    jest.useFakeTimers();
+
+    const errorApi = { post: () => {} };
+    const { getByTestId, findByTestId } = render(
+      <ThemeProvider theme={lightTheme}>
+        <TestApiProvider
+          apis={[
+            [errorApiRef, errorApi],
+            [scoringDataApiRef, mockClient],
+          ]}
+        >
+          <ScoreCardTable />
+        </TestApiProvider>
+      </ThemeProvider>,
     );
-  });
-  it('should render', async () => {
-    const rendered = render(<ScoreCardTable />);
-    expect(await rendered.findByTestId('progress')).toBeInTheDocument();
+
+    act(() => {
+      jest.advanceTimersByTime(250);
+    });
+    expect(getByTestId('progress')).toBeInTheDocument();
+
+    await findByTestId('score-board-table');
+    jest.useRealTimers();
   });
 });

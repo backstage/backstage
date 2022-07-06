@@ -74,7 +74,7 @@ Navigate to the plugin directory `/plugins/score-card` and run `yarn start:dev`.
 
 ## Unit testing
 
-TBD
+To run unit tests simply execute `yarn test score-card`;
 
 ## Integration testing
 

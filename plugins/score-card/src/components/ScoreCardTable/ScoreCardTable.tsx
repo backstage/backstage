@@ -181,18 +181,20 @@ export const ScoreTable = ({ scores }: ScoreTableProps) => {
       : minDefaultPageSizeOption;
 
   return (
-    <Table<SystemScoreExtended>
-      title="System scores overview"
-      options={{
-        search: true,
-        paging: true,
-        padding: 'dense',
-        pageSize: defaultPageSizeOption,
-        pageSizeOptions: [defaultPageSizeOption, 20, 50, 100, 200],
-      }}
-      columns={columns}
-      data={scores}
-    />
+    <div data-testid="score-board-table">
+      <Table<SystemScoreExtended>
+        title="System scores overview"
+        options={{
+          search: true,
+          paging: true,
+          padding: 'dense',
+          pageSize: defaultPageSizeOption,
+          pageSizeOptions: [defaultPageSizeOption, 20, 50, 100, 200],
+        }}
+        columns={columns}
+        data={scores}
+      />
+    </div>
   );
 };
 
