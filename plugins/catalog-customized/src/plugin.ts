@@ -17,7 +17,7 @@
 import { catalogPlugin } from '@backstage/plugin-catalog';
 
 catalogPlugin.__experimentalReconfigure({
-  createButtonTitle: 'Maybe Create',
+  createButtonTitle: 'New',
 });
 
 export const customizedCatalog = catalogPlugin;

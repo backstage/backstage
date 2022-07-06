@@ -22,7 +22,7 @@ import {
 import { BackstagePlugin, PluginOptions } from '../plugin';
 import React, { ReactNode } from 'react';
 
-const contextKey: string = 'plugin-options-context';
+const contextKey: string = 'plugin-context';
 
 /**
  * Properties for the AsyncEntityProvider component.

@@ -35,14 +35,12 @@ import {
 } from '@backstage/core-components';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import { AzurePullRequestsPage } from '@backstage/plugin-azure-devops';
+
 import {
   CatalogEntityPage,
   CatalogIndexPage,
   catalogPlugin,
-} from '@backstage/plugin-catalog';
-
-/* Uncomment this import to enable a customized version of a catalog */
-// import '@internal/plugin-catalog-customized';
+} from '@internal/plugin-catalog-customized';
 
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import {
