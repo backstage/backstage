@@ -66,7 +66,7 @@ export class FileReaderProcessor implements CatalogProcessor {
             emit(parseResult);
             emit(
               processingResult.refresh(
-                `${LOCATION_TYPE}://${normalizedFilePath}`,
+                `${LOCATION_TYPE}:${normalizedFilePath}`,
               ),
             );
           }
