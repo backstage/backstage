@@ -23,9 +23,9 @@ import {
   urlReaderServiceRef,
   httpRouterServiceRef,
 } from '@backstage/backend-plugin-api';
-import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogBuilder } from './CatalogBuilder';
 import {
+  CatalogProcessor,
   CatalogProcessingExtensionPoint,
   catalogProcessingExtentionPoint,
 } from '@backstage/plugin-catalog-node';
