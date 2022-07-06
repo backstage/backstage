@@ -20,6 +20,78 @@ You may drill down to the details of each score together with explanation why it
 
 ![Score Card Detail](./docs/.assets/score-card-detail.png)
 
+### ScoringDataJsonClient
+
+Implementation of `ScoringDataApi` that the above components are using to load data. This client simply reads it from a JSON files located e.g. on a blob storage account.
+
+The location of the JSON files may be configured in `app-config.yaml' like this:
+
+```yaml
+scorecards:
+  jsonDataUrl: https://some.server/folder-with-data/
+```
+
+In the above location it expects data in a format see [scoring data](https://github.com/backstage/backstage/tree/master/plugins/score-card/sample-data).
+
+### How to use the plugin
+
+1. Add Score board to `packages/app/src/App.tsx`:
+
+   ```diff
+   +import { ScoreBoardPage } from '@backstage/plugin-score-card';
+
+   const routes = (
+     <FlatRoutes>
+   +    <Route path="/score-board" element={<ScoreBoardPage />} />
+     </FlatRoutes>
+   );
+   ```
+
+2. Add Link to menu `packages/app/src/components/Root/Root.tsx`:
+
+   ```diff
+   +import Score from '@material-ui/icons/Score';
+
+   export const Root = ({ children }: PropsWithChildren<{}>) => (
+      <SidebarPage>
+        <Sidebar>
+          <SidebarGroup label="Menu" icon={<MenuIcon />}>
+            ...
+            <SidebarScrollWrapper>
+              ...
+   +          <SidebarItem icon={Score} to="score-board" text="Score board" />
+            </SidebarScrollWrapper>
+          </SidebarGroup>
+          ...
+        </Sidebar>
+        {children}
+      </SidebarPage>
+    );
+   ```
+
+3. Add Score Card to `packages/app/src/components/catalog/EntityPage.tsx`:
+
+   ```diff
+   +import { EntityScoreCardContent } from '@backstage/plugin-score-card';
+
+   const systemPage = (
+      <EntityLayoutWrapper>
+        <EntityLayout.Route path="/" title="Overview">
+          ...
+        </EntityLayout.Route>
+   +
+   +    <EntityLayout.Route path="/score" title="Score">
+   +      <Grid container spacing={3} alignItems="stretch">
+   +        <Grid item xs={12}>
+   +          <EntityScoreCardContent />
+   +        </Grid>
+   +      </Grid>
+   +    </EntityLayout.Route>
+   +
+      </EntityLayoutWrapper>
+   );
+   ```
+
 ## Scoring process
 
 To find out a `score` for your service we follow this process:
@@ -60,7 +132,9 @@ Answers & comments are reviewed together with the team by an architect. Question
 
 ### Backstage integration & visualization
 
-There is an [integration pipeline](tools/azure-devops-pipelines/integration-with-sharepoint.yaml) that runs regularly that integrates the Sharepoint list, git repository with the [scoring data](sample-data/) and the storage account that provides JSON scoring data for the Backstage plugin to visualize results.
+There is an [integration pipeline](tools/azure-devops-pipelines/integration-with-sharepoint.yaml) that runs regularly that integrates the Sharepoint list, git repository with the [scoring data](https://github.com/backstage/backstage/tree/master/plugins/score-card/sample-data) and the storage account that provides JSON scoring data for the Backstage plugin to visualize results.
+
+For more detailed info see [README](tools/azure-devops-pipelines/README.md).
 
 ### Regular update
 
