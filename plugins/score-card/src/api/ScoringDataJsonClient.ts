@@ -74,16 +74,18 @@ export class ScoringDataJsonClient implements ScoringDataApi {
   public async getAllScores(): Promise<SystemScoreExtended[] | undefined> {
     const jsonDataUrl = this.getJsonDataUrl();
     const urlWithData = `${jsonDataUrl}all.json`;
-    const result: SystemScore[] = await fetch(urlWithData).then(res => {
-      switch (res.status) {
-        case 404:
-          return null;
-        case 200:
-          return res.json();
-        default:
-          throw new Error(`error from server (code ${res.status})`);
-      }
-    });
+    const result: SystemScore[] | undefined = await fetch(urlWithData).then(
+      res => {
+        switch (res.status) {
+          case 404:
+            return undefined;
+          case 200:
+            return res.json();
+          default:
+            throw new Error(`error from server (code ${res.status})`);
+        }
+      },
+    );
     const entities = await this.catalogApi.getEntities({
       filter: { kind: ['System'] },
       fields: ['kind', 'metadata.name', 'spec.owner', 'relations'],
@@ -95,6 +97,7 @@ export class ScoringDataJsonClient implements ScoringDataApi {
   );
   localStorage.setItem(cacheKey, JSON.stringify(newCachedProjects));
   */
+    if (!result) return undefined;
     const systems = entities.items;
     return result.map<SystemScoreExtended>(score => {
       return this.extendSystemScore(score, systems);
