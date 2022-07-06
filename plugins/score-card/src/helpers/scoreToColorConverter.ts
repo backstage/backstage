@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ScoreSuccessEnum } from '../types/SystemScoreSuccessEnum';
 import { createTheme } from '@material-ui/core/styles';
+import { ScoreSuccessEnum } from '../api';
 
 export const scoreToColorConverter = (
   scoreSuccess: ScoreSuccessEnum | undefined,

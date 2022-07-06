@@ -15,12 +15,8 @@ import { scoringDataApiRef } from '../api';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export type {
-  SystemScore,
-  SystemScoreArea,
-  SystemScoreEntry,
-  ScoreSuccessEnum,
-} from './types';
+export type { SystemScore, SystemScoreArea, SystemScoreEntry } from './types';
+export { ScoreSuccessEnum } from './types';
 export { scoringDataApiRef } from './ScoringDataApi';
 export type { ScoringDataApi } from './ScoringDataApi';
 export { ScoringDataJsonClient } from './ScoringDataJsonClient';
