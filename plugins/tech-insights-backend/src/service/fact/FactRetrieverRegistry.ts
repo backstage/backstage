@@ -42,14 +42,10 @@ export interface FactRetrieverRegistry {
 export class DefaultFactRetrieverRegistry implements FactRetrieverRegistry {
   private readonly retrievers = new Map<string, FactRetrieverRegistration>();
 
-  static create(
-    retrievers: FactRetrieverRegistration[],
-  ): FactRetrieverRegistry {
-    const registry = new DefaultFactRetrieverRegistry();
-    retrievers.forEach(it => {
-      registry.register(it);
+  constructor(retrievers: FactRetrieverRegistration[]) {
+    retrievers.forEach(r => {
+      this.retrievers.set(r.factRetriever.id, r);
     });
-    return registry;
   }
 
   async register(registration: FactRetrieverRegistration) {
@@ -59,7 +55,6 @@ export class DefaultFactRetrieverRegistry implements FactRetrieverRegistry {
       );
     }
     this.retrievers.set(registration.factRetriever.id, registration);
-    return Promise.resolve();
   }
 
   async get(retrieverReference: string): Promise<FactRetrieverRegistration> {
@@ -69,21 +64,19 @@ export class DefaultFactRetrieverRegistry implements FactRetrieverRegistry {
         `Tech insight fact retriever with identifier '${retrieverReference}' is not registered.`,
       );
     }
-    return Promise.resolve(registration);
+    return registration;
   }
 
   async listRetrievers(): Promise<FactRetriever[]> {
-    return Promise.resolve(
-      [...this.retrievers.values()].map(it => it.factRetriever),
-    );
+    return [...this.retrievers.values()].map(it => it.factRetriever);
   }
 
   async listRegistrations(): Promise<FactRetrieverRegistration[]> {
-    return Promise.resolve([...this.retrievers.values()]);
+    return [...this.retrievers.values()];
   }
 
   async getSchemas(): Promise<FactSchema[]> {
     const retrievers = await this.listRetrievers();
-    return Promise.resolve(retrievers.map(it => it.schema));
+    return retrievers.map(it => it.schema);
   }
 }
