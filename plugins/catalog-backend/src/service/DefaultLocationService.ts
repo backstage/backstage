@@ -81,7 +81,7 @@ export class DefaultLocationService implements LocationService {
               stringifyEntityRef(processed.completedEntity),
           )
         ) {
-          throw new Error(
+          throw new InputError(
             `Duplicate nested entity: ${stringifyEntityRef(
               processed.completedEntity,
             )}`,
@@ -90,7 +90,7 @@ export class DefaultLocationService implements LocationService {
         unprocessedEntities.push(...processed.deferredEntities);
         entities.push(processed.completedEntity);
       } else {
-        throw Error(processed.errors.map(String).join(', '));
+        throw new InputError(processed.errors.map(String).join(', '));
       }
     }
     return entities;
