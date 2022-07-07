@@ -22,7 +22,7 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
-import { Config, JsonObject } from '@backstage/config';
+import { Config, JsonObject, JsonValue } from '@backstage/config';
 import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -30,7 +30,6 @@ import {
   TaskSpec,
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
-import { JsonValue } from '@backstage/types';
 import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
@@ -48,6 +47,7 @@ import {
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { getEntityBaseUrl, getWorkingDirectory, findTemplate } from './helpers';
+import { AuthenticatedBackstageRequest } from '@backstage/plugin-authentication-middleware-backend';
 
 /**
  * RouterOptions
@@ -144,9 +144,12 @@ export async function createRouter(
   router
     .get(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
-      async (req, res) => {
+      async (req: AuthenticatedBackstageRequest, res) => {
         const { namespace, kind, name } = req.params;
-        const { token } = parseBearerToken(req.headers.authorization);
+        const token =
+          req.backstage?.identity?.token ||
+          parseBearerToken(req.headers.authorization).token;
+
         const template = await findTemplate({
           catalogApi: catalogClient,
           entityRef: { kind, namespace, name },
@@ -180,15 +183,19 @@ export async function createRouter(
       });
       res.json(actionsList);
     })
-    .post('/v2/tasks', async (req, res) => {
+    .post('/v2/tasks', async (req: AuthenticatedBackstageRequest, res) => {
       const templateRef: string = req.body.templateRef;
       const { kind, namespace, name } = parseEntityRef(templateRef, {
         defaultKind: 'template',
       });
-      const { token, entityRef: userEntityRef } = parseBearerToken(
-        req.headers.authorization,
-      );
+      const token =
+        req.backstage?.identity?.token ||
+        parseBearerToken(req.headers.authorization).token;
+      const userEntityRef =
+        req.backstage?.identity?.identity?.userEntityRef ||
+        parseBearerToken(req.headers.authorization).entityRef;
 
+      console.log(`xxx getting user entity ${userEntityRef}`);
       const userEntity = userEntityRef
         ? await catalogClient.getEntityByRef(userEntityRef, { token })
         : undefined;
@@ -359,7 +366,7 @@ export async function createRouter(
         clearTimeout(timeout);
       });
     })
-    .post('/v2/dry-run', async (req, res) => {
+    .post('/v2/dry-run', async (req: AuthenticatedBackstageRequest, res) => {
       const bodySchema = z.object({
         template: z.unknown(),
         values: z.record(z.unknown()),
@@ -377,7 +384,9 @@ export async function createRouter(
         throw new InputError('Input template is not a template');
       }
 
-      const { token } = parseBearerToken(req.headers.authorization);
+      const token =
+        req.backstage?.identity?.token ||
+        parseBearerToken(req.headers.authorization).token;
 
       for (const parameters of [template.spec.parameters ?? []].flat()) {
         const result = validate(body.values, parameters);

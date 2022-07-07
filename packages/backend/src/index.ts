@@ -57,6 +57,7 @@ import app from './plugins/app';
 import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
 import permission from './plugins/permission';
+import authenticationMiddleware from './plugins/authentication-middleware';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
@@ -124,6 +125,9 @@ async function main() {
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
   const todoEnv = useHotMemoize(module, () => createEnv('todo'));
   const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
+  const authenticationMiddlewareEnv = useHotMemoize(module, () =>
+    createEnv('authentication-middleware'),
+  );
   const kafkaEnv = useHotMemoize(module, () => createEnv('kafka'));
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
@@ -135,6 +139,7 @@ async function main() {
   const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
 
   const apiRouter = Router();
+  apiRouter.use(await authenticationMiddleware(authenticationMiddlewareEnv));
   apiRouter.use('/catalog', await catalog(catalogEnv));
   apiRouter.use('/code-coverage', await codeCoverage(codeCoverageEnv));
   apiRouter.use('/rollbar', await rollbar(rollbarEnv));

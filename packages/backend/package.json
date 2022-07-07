@@ -34,6 +34,7 @@
     "@backstage/integration": "^1.2.2-next.2",
     "@backstage/plugin-app-backend": "^0.3.34-next.2",
     "@backstage/plugin-auth-backend": "^0.15.0-next.2",
+    "@backstage/plugin-authentication-middleware-backend": "^0.0.1",
     "@backstage/plugin-auth-node": "^0.2.3-next.1",
     "@backstage/plugin-azure-devops-backend": "^0.3.13-next.0",
     "@backstage/plugin-badges-backend": "^0.1.28-next.2",
