@@ -16,5 +16,10 @@
 
 import { AuthenticationMiddlewareProvider } from '.';
 
+/**
+ * An authentication middleware that always returns undefined.
+ *
+ * @public
+ */
 export const nullMiddlewareProvider: AuthenticationMiddlewareProvider =
   async _req => undefined;

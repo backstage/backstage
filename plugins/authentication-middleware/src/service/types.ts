@@ -19,11 +19,22 @@ import { AuthenticationMiddlewareProvider } from '../providers';
 import { Request } from 'express';
 import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
 
+/**
+ * Options to configure the authentication middleware
+ *
+ * @public
+ */
 export interface MiddlewareOptions {
   logger: Logger;
   authenticationMiddlewareProvider?: AuthenticationMiddlewareProvider;
 }
 
+/**
+ * Custom express.Request object also containing the backstage identity
+ * if it can be determined. If not it will be undefined.
+ *
+ * @public
+ */
 export type AuthenticatedBackstageRequest = Request & {
   backstage?: {
     identity?: BackstageIdentityResponse;

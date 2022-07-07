@@ -18,6 +18,13 @@ import { AuthenticationMiddlewareProvider } from '.';
 import { JsonValue } from '@backstage/types';
 import { InputError, stringifyError } from '@backstage/errors';
 
+/**
+ * An authentication middleware that parses a jwt token in the authorization header
+ * and returns the identity. If it can't find the token, or fails to parse it, it will
+ * return undefined.
+ *
+ * @public
+ */
 export const unverifiedJWTMiddlewareProvider: AuthenticationMiddlewareProvider =
   async req => {
     if (!req.headers?.authorization) {

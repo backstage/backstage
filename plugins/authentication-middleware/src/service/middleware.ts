@@ -18,6 +18,11 @@ import { RequestHandler } from 'express';
 import { nullMiddlewareProvider } from '../providers';
 import { MiddlewareOptions, AuthenticatedBackstageRequest } from './types';
 
+/**
+ * This function creates the authentication middleware.
+ *
+ * @public
+ */
 export async function createMiddleware(
   options: MiddlewareOptions,
 ): Promise<RequestHandler> {

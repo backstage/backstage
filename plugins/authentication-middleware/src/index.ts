@@ -21,5 +21,8 @@
  */
 
 export * from './service/middleware';
-export type { AuthenticatedBackstageRequest } from './service/types';
+export type {
+  AuthenticatedBackstageRequest,
+  MiddlewareOptions,
+} from './service/types';
 export * from './providers';

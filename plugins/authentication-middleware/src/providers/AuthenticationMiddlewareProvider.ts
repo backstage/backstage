@@ -17,6 +17,12 @@
 import { Request } from 'express';
 import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
 
+/**
+ * Authentication middleware. It can be implemented to determine the backstage
+ * identity from an express.Request
+ *
+ * @public
+ */
 export type AuthenticationMiddlewareProvider = (
   req: Request,
 ) => Promise<BackstageIdentityResponse | undefined>;
