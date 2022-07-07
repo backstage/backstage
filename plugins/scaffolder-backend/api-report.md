@@ -106,6 +106,7 @@ export function createFetchTemplateAction(options: {
   values: any;
   templateFileExtension?: string | boolean | undefined;
   copyWithoutRender?: string[] | undefined;
+  copyWithoutTemplating?: string[] | undefined;
   cookiecutterCompat?: boolean | undefined;
 }>;
 
