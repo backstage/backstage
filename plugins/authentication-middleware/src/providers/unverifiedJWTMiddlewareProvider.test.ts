@@ -39,7 +39,8 @@ describe('jwtMiddlewareProvider', () => {
 
   describe('without a non-jwt header', () => {
     beforeEach(() => {
-      mockToken = 'garbage';
+      mockToken = ['blob', rawPayload, 'blob'].join('.');
+      mockToken = mockToken.split('').reverse().join('');
       req = {
         headers: {
           authorization: `Bearer ${mockToken}`,
@@ -54,10 +55,12 @@ describe('jwtMiddlewareProvider', () => {
 
   describe('with a user/password header', () => {
     beforeEach(() => {
-      mockToken = mockToken.split('').reverse().join('');
+      const credentials = Buffer.from('username:password', 'utf-8').toString(
+        'base64',
+      );
       req = {
         headers: {
-          authorization: `Basic ${mockToken}`,
+          authorization: `Basic ${credentials}`,
         },
       } as Request;
     });

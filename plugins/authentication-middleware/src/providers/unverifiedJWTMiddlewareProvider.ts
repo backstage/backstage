@@ -16,7 +16,6 @@
 
 import { AuthenticationMiddlewareProvider } from '.';
 import { JsonValue } from '@backstage/types';
-import { InputError, stringifyError } from '@backstage/errors';
 
 /**
  * An authentication middleware that parses a jwt token in the authorization header
@@ -33,12 +32,12 @@ export const unverifiedJWTMiddlewareProvider: AuthenticationMiddlewareProvider =
     }
 
     try {
-      const token = req.headers.authorization.match(
-        /^Bearer\s(\S+\.\S+\.\S+)$/i,
-      )?.[1];
-      console.log(token);
+      if (!req.headers.authorization.startsWith('Bearer ')) {
+        return undefined;
+      }
+      const token = req.headers.authorization.replace(/^Bearer /, '');
 
-      if (!token) {
+      if (!token.match(/^(\S+\.\S+\.\S+)$/)) {
         return undefined;
       }
 
@@ -71,8 +70,6 @@ export const unverifiedJWTMiddlewareProvider: AuthenticationMiddlewareProvider =
         },
       };
     } catch (e) {
-      throw new InputError(
-        `Invalid authorization header: ${stringifyError(e)}`,
-      );
+      return undefined;
     }
   };

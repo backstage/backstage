@@ -195,7 +195,6 @@ export async function createRouter(
         req.backstage?.identity?.identity?.userEntityRef ||
         parseBearerToken(req.headers.authorization).entityRef;
 
-      console.log(`xxx getting user entity ${userEntityRef}`);
       const userEntity = userEntityRef
         ? await catalogClient.getEntityByRef(userEntityRef, { token })
         : undefined;
