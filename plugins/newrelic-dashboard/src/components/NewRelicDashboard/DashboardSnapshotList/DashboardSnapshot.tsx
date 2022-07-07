@@ -25,7 +25,7 @@ import {
 } from '@backstage/core-components';
 import { newRelicDashboardApiRef } from '../../../api';
 import { DashboardSnapshotSummary } from '../../../api/NewRelicDashboardApi';
-import { useObservable } from 'react-use';
+import useObservable from 'react-use/lib/useObservable';
 
 type Props = {
   guid: string;
