@@ -41,7 +41,7 @@ export class PluginImpl<
     >,
   ) {}
 
-  options: {} | undefined = undefined;
+  private options: {} | undefined = undefined;
 
   getId(): string {
     return this.config.id;
