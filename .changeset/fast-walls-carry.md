@@ -10,6 +10,8 @@ component can reconfigure it if necessary.
 
 ## @backstage/app-defaults
 
+---
+
 Introduced an extra parameter in BackstagePlugin.
 This optional parameter is responsible for providing a type for input options for the plugin.
 
@@ -17,12 +19,16 @@ This optional parameter is responsible for providing a type for input options fo
 
 ## @backstage/core-app-api
 
+---
+
 Introduced an extra parameter in BackstagePlugin.
 This optional parameter is responsible for providing a type for input options for the plugin.
 
 ---
 
 ## @backstage/core-plugin-api
+
+---
 
 Introduced plugin options for the components, to be able to customise existing components.
 Those customizations are stored in React context of the plugin.
@@ -38,6 +44,8 @@ myPlugin.__experimentalReconfigure({
 ---
 
 ## @backstage/plugin-catalog
+
+---
 
 Plugin catalog has been modified to use an experimental feature where you can customize the title of the create button.
 
