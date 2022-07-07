@@ -1,12 +1,5 @@
 # @backstage/plugin-newrelic-dashboard
 
-## 0.1.16
-
-### Patch Changes
-
-- Fix bug where the default time window/snapshot duration was supposed to be 30 days, but ended up being 43 weeks
-- Add a select option to change the time window of the snapshot shown
-
 ## 0.1.15-next.2
 
 ### Patch Changes
