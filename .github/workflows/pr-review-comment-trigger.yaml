@@ -16,4 +16,13 @@ jobs:
     if: github.repository == 'backstage/backstage' && github.event.comment.user.id == github.event.pull_request.user.id
 
     steps:
-      - run: echo "This PR needs another review"
+      - name: Save PR number
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          mkdir -p ./pr
+          echo $PR_NUMBER > ./pr/pr_number
+      - uses: actions/upload-artifact@v3
+        with:
+          name: pr_number-${{ github.event.pull_request.number }}
+          path: pr/
