@@ -25,6 +25,7 @@ import {
 } from '@backstage/core-components';
 import { newRelicDashboardApiRef } from '../../../api';
 import { DashboardSnapshotSummary } from '../../../api/NewRelicDashboardApi';
+import { useObservable } from 'react-use';
 
 type Props = {
   guid: string;
@@ -34,14 +35,19 @@ type Props = {
 
 export const DashboardSnapshot = ({ guid, name, permalink }: Props) => {
   const newRelicDashboardAPI = useApi(newRelicDashboardApiRef);
-  const storageApi = useApi(storageApiRef);
-  const newrelicDashboardStore = storageApi.forBucket('newrelic-dashboard');
+  const storageApi = useApi(storageApiRef).forBucket('newrelic-dashboard');
+  const setStorageValue = (value: number) => {
+    storageApi.set(guid, value);
+  };
+  const storageSnapshot = useObservable(
+    storageApi.observe$<number>(guid),
+    storageApi.snapshot(guid),
+  );
   const [newDuration, setNewDuration] = useState(2592000000);
 
   useEffect(() => {
-    if (newrelicDashboardStore.snapshot(guid).value)
-      setNewDuration(Number(newrelicDashboardStore.snapshot(guid).value));
-  }, [guid, newrelicDashboardStore]);
+    if (storageSnapshot.value) setNewDuration(Number(storageSnapshot.value));
+  }, [guid, storageSnapshot]);
 
   const { value, loading, error } = useAsync(async (): Promise<
     DashboardSnapshotSummary | undefined
@@ -74,7 +80,7 @@ export const DashboardSnapshot = ({ guid, name, permalink }: Props) => {
             value={newDuration}
             onChange={event => {
               setNewDuration(Number(event.target.value));
-              newrelicDashboardStore.set(guid, Number(event.target.value));
+              setStorageValue(Number(event.target.value));
             }}
           >
             <MenuItem value={3600000}>1 Hour</MenuItem>
