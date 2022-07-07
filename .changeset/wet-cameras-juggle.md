@@ -1,6 +1,6 @@
 ---
-'@backstage/plugin-azure-devops-backend': minor
-'@backstage/plugin-azure-devops-common': minor
+'@backstage/plugin-azure-devops-backend': patch
+'@backstage/plugin-azure-devops-common': patch
 ---
 
 Adding getProjects endpoint to list out all projects associated with the Azure DevOps organization.
