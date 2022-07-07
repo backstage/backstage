@@ -41,7 +41,7 @@
     "marked": "^4.0.14",
     "winston": "^3.2.1",
     "node-fetch": "^2.6.5",
-    "yn": "^4.0.0"
+    "yn": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.18.0-next.1",

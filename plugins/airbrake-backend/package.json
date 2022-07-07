@@ -30,7 +30,7 @@
     "http-proxy-middleware": "^2.0.0",
     "winston": "^3.2.1",
     "cross-fetch": "^3.0.6",
-    "yn": "^4.0.0"
+    "yn": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.18.0-next.1",
