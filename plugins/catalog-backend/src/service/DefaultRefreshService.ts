@@ -15,11 +15,7 @@
  */
 
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
-import {
-  RefreshByRefreshKeysOptions,
-  RefreshOptions,
-  RefreshService,
-} from './types';
+import { RefreshOptions, RefreshService } from './types';
 
 export class DefaultRefreshService implements RefreshService {
   private database: DefaultProcessingDatabase;
@@ -47,11 +43,6 @@ export class DefaultRefreshService implements RefreshService {
       await this.database.refresh(tx, {
         entityRef: options.entityRef,
       });
-    });
-  }
-  async refreshByRefreshKeys(options: RefreshByRefreshKeysOptions) {
-    await this.database.transaction(async tx => {
-      await this.database.refreshByRefreshKeys(tx, options);
     });
   }
 }

@@ -22,7 +22,6 @@ import { AuthorizedRefreshService } from './AuthorizedRefreshService';
 describe('AuthorizedRefreshService', () => {
   const refreshService = {
     refresh: jest.fn(),
-    refreshByRefreshKeys: jest.fn(),
   };
   const permissionApi = {
     authorize: jest.fn(),
