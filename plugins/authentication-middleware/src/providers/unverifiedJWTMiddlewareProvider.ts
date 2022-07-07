@@ -36,11 +36,11 @@ export const unverifiedJWTMiddlewareProvider: AuthenticationMiddlewareProvider =
       }
       const token = req.headers.authorization.replace(/^Bearer /, '');
 
-      if (!token.match(/^(\S+\.\S+\.\S+)$/)) {
+      const [_header, rawPayload, _signature] = token.split('.');
+      if (!rawPayload.match(/^\S+$/)) {
         return undefined;
       }
 
-      const [_header, rawPayload, _signature] = token.split('.');
       const payload: JsonValue = JSON.parse(
         Buffer.from(rawPayload, 'base64').toString(),
       );
