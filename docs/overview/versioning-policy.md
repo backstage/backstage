@@ -49,7 +49,7 @@ functionality, breaking changes, and bug fixes, according the
 [versioning policy](#release-versioning-policy).
 
 Patch versions will only be released to address critical bug fixes. They are not
-bound to the regular cadence and are instead releases whenever needed.
+bound to the regular cadence and are instead released whenever needed.
 
 ## Next Release Line
 
