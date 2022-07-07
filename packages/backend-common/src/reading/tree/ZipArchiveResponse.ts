@@ -15,25 +15,27 @@
  */
 
 import archiver from 'archiver';
+import unzipper2, { Entry } from 'yauzl';
 import fs from 'fs-extra';
 import platformPath from 'path';
 import { Readable } from 'stream';
-import unzipper, { Entry } from 'unzipper';
+// import unzipper, { Entry } from 'unzipper';
 import {
   ReadTreeResponse,
   ReadTreeResponseDirOptions,
   ReadTreeResponseFile,
 } from '../types';
 import { streamToTimeoutPromise } from './util';
+import { zip } from 'lodash';
 
-const guardCorruptZipStream = (stream: Readable) =>
-  streamToTimeoutPromise(stream, {
-    eventName: 'entry',
-    timeoutMs: 3000,
-    getError: (entry: Entry) =>
-      new Error(`Timed out while unzipping ${entry.type}: ${entry.path}`),
+const streamToBuffer = async (stream: Readable): Promise<Buffer> => {
+  const buffers: Buffer[] = [];
+  return new Promise((resolve, reject) => {
+    stream.on('data', (data: Buffer) => buffers.push(data));
+    stream.on('error', reject);
+    stream.on('end', () => resolve(Buffer.concat(buffers)));
   });
-
+};
 /**
  * Wraps a zip archive stream into a tree response reader.
  */
@@ -76,15 +78,13 @@ export class ZipArchiveResponse implements ReadTreeResponse {
 
   private shouldBeIncluded(entry: Entry): boolean {
     if (this.subPath) {
-      if (!entry.path.startsWith(this.subPath)) {
+      if (!entry.fileName.startsWith(this.subPath)) {
         return false;
       }
     }
     if (this.filter) {
-      return this.filter(this.getInnerPath(entry.path), {
-        size:
-          (entry.vars as { uncompressedSize?: number }).uncompressedSize ??
-          entry.vars.compressedSize,
+      return this.filter(this.getInnerPath(entry.fileName), {
+        size: entry.uncompressedSize,
       });
     }
     return true;
@@ -92,29 +92,36 @@ export class ZipArchiveResponse implements ReadTreeResponse {
 
   async files(): Promise<ReadTreeResponseFile[]> {
     this.onlyOnce();
-
     const files = Array<ReadTreeResponseFile>();
 
-    const parseStream = this.stream
-      .pipe(unzipper.Parse())
-      .on('entry', (entry: Entry) => {
-        if (entry.type === 'Directory') {
-          entry.resume();
+    const buffer = await streamToBuffer(this.stream);
+    return await new Promise((resolve, reject) => {
+      unzipper2.fromBuffer(buffer, { lazyEntries: false }, (err, zipfile) => {
+        if (err) {
+          reject(err);
           return;
         }
+        zipfile.on('entry', async (entry: Entry) => {
+          // If it's not a directory, and it's included, then grab the contents of the file from the buffer
+          if (!/\/$/.test(entry.fileName) && this.shouldBeIncluded(entry)) {
+            files.push({
+              path: this.getInnerPath(entry.fileName),
+              content: () =>
+                new Promise<Buffer>((cResolve, cReject) => {
+                  zipfile.openReadStream(entry, async (cError, readStream) => {
+                    if (cError) {
+                      return cReject(cError);
+                    }
+                    return cResolve(await streamToBuffer(readStream));
+                  });
+                }),
+            });
+          }
+        });
 
-        if (this.shouldBeIncluded(entry)) {
-          files.push({
-            path: this.getInnerPath(entry.path),
-            content: () => entry.buffer(),
-          });
-        } else {
-          entry.autodrain();
-        }
+        zipfile.once('end', () => resolve(files));
       });
-    await guardCorruptZipStream(parseStream);
-
-    return files;
+    });
   }
 
   async archive(): Promise<Readable> {
@@ -124,17 +131,32 @@ export class ZipArchiveResponse implements ReadTreeResponse {
       return this.stream;
     }
 
+    const buffer = await streamToBuffer(this.stream);
     const archive = archiver('zip');
-    const parseStream = this.stream
-      .pipe(unzipper.Parse())
-      .on('entry', (entry: Entry) => {
-        if (entry.type === 'File' && this.shouldBeIncluded(entry)) {
-          archive.append(entry, { name: this.getInnerPath(entry.path) });
-        } else {
-          entry.autodrain();
+
+    await new Promise<void>((resolve, reject) => {
+      unzipper2.fromBuffer(buffer, { lazyEntries: false }, (err, zipfile) => {
+        if (err) {
+          reject(err);
+          return;
         }
+        zipfile.on('entry', async (entry: Entry) => {
+          // If it's not a directory, and it's included, then grab the contents of the file from the buffer
+          if (!/\/$/.test(entry.fileName) && this.shouldBeIncluded(entry)) {
+            zipfile.openReadStream(entry, async (err2, readStream) => {
+              if (err2) {
+                reject(err2);
+                return;
+              }
+              archive.append(await streamToBuffer(readStream), {
+                name: this.getInnerPath(entry.fileName),
+              });
+            });
+          }
+        });
+        zipfile.once('end', () => resolve());
       });
-    await guardCorruptZipStream(parseStream);
+    });
 
     archive.finalize();
 
@@ -143,29 +165,28 @@ export class ZipArchiveResponse implements ReadTreeResponse {
 
   async dir(options?: ReadTreeResponseDirOptions): Promise<string> {
     this.onlyOnce();
-
     const dir =
       options?.targetDir ??
       (await fs.mkdtemp(platformPath.join(this.workDir, 'backstage-')));
 
-    const parseStream = this.stream
-      .pipe(unzipper.Parse())
-      .on('entry', async (entry: Entry) => {
-        // Ignore directory entries since we handle that with the file entries
-        // as a zip can have files with directories without directory entries
-        if (entry.type === 'File' && this.shouldBeIncluded(entry)) {
-          const entryPath = this.getInnerPath(entry.path);
-          const dirname = platformPath.dirname(entryPath);
-          if (dirname) {
-            await fs.mkdirp(platformPath.join(dir, dirname));
+    return new Promise((resolve, reject) => {
+      const parseStream = this.stream
+        .pipe(unzipper.Parse())
+        .on('entry', async (entry: Entry) => {
+          // Ignore directory entries since we handle that with the file entries
+          // as a zip can have files with directories without directory entries
+          if (entry.type === 'File' && this.shouldBeIncluded(entry)) {
+            const entryPath = this.getInnerPath(entry.path);
+            const dirname = platformPath.dirname(entryPath);
+            if (dirname) {
+              await fs.mkdirp(platformPath.join(dir, dirname));
+            }
+            entry.pipe(fs.createWriteStream(platformPath.join(dir, entryPath)));
+          } else {
+            entry.autodrain();
           }
-          entry.pipe(fs.createWriteStream(platformPath.join(dir, entryPath)));
-        } else {
-          entry.autodrain();
-        }
-      });
-    await guardCorruptZipStream(parseStream);
-
-    return dir;
+        })
+        .on('finish', () => resolve(dir));
+    });
   }
 }
