@@ -60,8 +60,6 @@ export class AzureDevOpsApi {
   ) {}
 
   public async getProjects(): Promise<Project[]> {
-    this.logger?.debug(`Getting all projects.`);
-
     const client = await this.webApi.getCoreApi();
     const projectList: TeamProjectReference[] = await client.getProjects();
 
