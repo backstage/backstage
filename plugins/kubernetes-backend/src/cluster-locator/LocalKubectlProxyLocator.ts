@@ -14,14 +14,25 @@
  * limitations under the License.
  */
 
-import { KubernetesAuthProvider } from './types';
-import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
+import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 
-export class AzureKubernetesAuthProvider implements KubernetesAuthProvider {
-  async decorateRequestBodyForAuth(
-    requestBody: KubernetesRequestBody,
-  ): Promise<KubernetesRequestBody> {
-    // No-op, with azure auth, server's Azure credentials are used for access
-    return requestBody;
+export class LocalKubectlProxyClusterLocator
+  implements KubernetesClustersSupplier
+{
+  private readonly clusterDetails: ClusterDetails[];
+
+  public constructor() {
+    this.clusterDetails = [
+      {
+        name: 'local',
+        url: 'http:/localhost:8001',
+        authProvider: 'localKubectlProxy',
+        skipMetricsLookup: true,
+      },
+    ];
+  }
+
+  async getClusters(): Promise<ClusterDetails[]> {
+    return this.clusterDetails;
   }
 }

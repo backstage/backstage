@@ -32,17 +32,6 @@ import { V1ReplicaSet } from '@kubernetes/client-node';
 import { V1Service } from '@kubernetes/client-node';
 import { V1StatefulSet } from '@kubernetes/client-node';
 
-// Warning: (ae-forgotten-export) The symbol "KubernetesAuthProvider" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "AwsKubernetesAuthProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export class AwsKubernetesAuthProvider implements KubernetesAuthProvider {
-  // (undocumented)
-  decorateRequestBodyForAuth(
-    requestBody: KubernetesRequestBody,
-  ): Promise<KubernetesRequestBody>;
-}
-
 // Warning: (ae-forgotten-export) The symbol "ClusterProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Cluster" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -147,6 +136,7 @@ export function formatClusterLink(
   options: FormatClusterLinkOptions,
 ): string | undefined;
 
+// Warning: (ae-forgotten-export) The symbol "KubernetesAuthProvider" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "GoogleKubernetesAuthProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -154,18 +144,6 @@ export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
   constructor(authProvider: OAuthApi);
   // (undocumented)
   authProvider: OAuthApi;
-  // (undocumented)
-  decorateRequestBodyForAuth(
-    requestBody: KubernetesRequestBody,
-  ): Promise<KubernetesRequestBody>;
-}
-
-// Warning: (ae-missing-release-tag) "GoogleServiceAccountAuthProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export class GoogleServiceAccountAuthProvider
-  implements KubernetesAuthProvider
-{
   // (undocumented)
   decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
@@ -386,10 +364,8 @@ export const PodsTable: ({
 // @public (undocumented)
 export const Router: (props: { refreshIntervalMs?: number }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "ServiceAccountKubernetesAuthProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export class ServiceAccountKubernetesAuthProvider
+// @public
+export class ServerSideKubernetesAuthProvider
   implements KubernetesAuthProvider
 {
   // (undocumented)
