@@ -17,6 +17,7 @@ import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
+import { CatalogProcessorResult } from '../../api';
 import {
   jsonPlaceholderResolver,
   PlaceholderProcessor,
@@ -51,7 +52,7 @@ describe('PlaceholderProcessor', () => {
       integrations,
     });
     await expect(
-      processor.preProcessEntity(input, { type: 't', target: 'l' }),
+      processor.preProcessEntity(input, { type: 't', target: 'l' }, () => {}),
     ).resolves.toBe(input);
   });
 
@@ -76,6 +77,7 @@ describe('PlaceholderProcessor', () => {
           spec: { a: [{ b: { $upper: 'text' } }] },
         },
         { type: 'fake', target: 'http://example.com' },
+        () => {},
       ),
     ).resolves.toEqual({
       apiVersion: 'a',
@@ -110,7 +112,7 @@ describe('PlaceholderProcessor', () => {
     };
 
     await expect(
-      processor.preProcessEntity(entity, { type: 'a', target: 'b' }),
+      processor.preProcessEntity(entity, { type: 'a', target: 'b' }, () => {}),
     ).resolves.toEqual(entity);
 
     expect(read).not.toBeCalled();
@@ -131,7 +133,7 @@ describe('PlaceholderProcessor', () => {
     };
 
     await expect(
-      processor.preProcessEntity(entity, { type: 'a', target: 'b' }),
+      processor.preProcessEntity(entity, { type: 'a', target: 'b' }, () => {}),
     ).resolves.toEqual(entity);
 
     expect(read).not.toBeCalled();
@@ -158,6 +160,7 @@ describe('PlaceholderProcessor', () => {
           target:
             'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
         },
+        () => {},
       ),
     ).resolves.toEqual({
       apiVersion: 'a',
@@ -194,6 +197,7 @@ describe('PlaceholderProcessor', () => {
           target:
             'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
         },
+        () => {},
       ),
     ).resolves.toEqual({
       apiVersion: 'a',
@@ -228,6 +232,7 @@ describe('PlaceholderProcessor', () => {
           target:
             'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
         },
+        () => {},
       ),
     ).resolves.toEqual({
       apiVersion: 'a',
@@ -266,6 +271,7 @@ describe('PlaceholderProcessor', () => {
           target:
             'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
         },
+        () => {},
       ),
     ).resolves.toEqual({
       apiVersion: 'a',
@@ -303,6 +309,7 @@ describe('PlaceholderProcessor', () => {
           type: 'url',
           target: './a/b/catalog-info.yaml',
         },
+        () => {},
       ),
     ).resolves.toEqual({
       apiVersion: 'a',
@@ -343,12 +350,42 @@ describe('PlaceholderProcessor', () => {
           type: 'url',
           target: './a/b/catalog-info.yaml',
         },
+        () => {},
       ),
     ).rejects.toThrow(
       /^Placeholder \$text could not form a URL out of \.\/a\/b\/catalog-info\.yaml and \.\.\/c\/catalog-info\.yaml, TypeError \[ERR_INVALID_URL\]/,
     );
 
     expect(read).not.toBeCalled();
+  });
+  it('should emit the resolverValue as a refreshKey', async () => {
+    read.mockResolvedValue(
+      Buffer.from(JSON.stringify({ a: ['b', 7] }), 'utf-8'),
+    );
+
+    const processor = new PlaceholderProcessor({
+      resolvers: {
+        json: jsonPlaceholderResolver,
+      },
+      reader,
+      integrations,
+    });
+
+    const emitted = new Array<CatalogProcessorResult>();
+    await processor.preProcessEntity(
+      {
+        apiVersion: 'a',
+        kind: 'k',
+        metadata: { name: 'n' },
+        spec: { a: [{ b: { $json: './path-to-file.json' } }] },
+      },
+      { type: 'fake', target: 'http://example.com' },
+      result => emitted.push(result),
+    );
+    expect(emitted[0]).toEqual({
+      type: 'refresh',
+      key: 'url:http://example.com/path-to-file.json',
+    });
   });
 });
 
@@ -360,6 +397,7 @@ describe('yamlPlaceholderResolver', () => {
     baseUrl: 'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
     read,
     resolveUrl: (url, base) => integrations.resolveUrl({ url, base }),
+    emit: () => {},
   };
 
   beforeEach(() => {
@@ -405,6 +443,7 @@ describe('jsonPlaceholderResolver', () => {
     baseUrl: 'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
     read,
     resolveUrl: (url, base) => integrations.resolveUrl({ url, base }),
+    emit: () => {},
   };
 
   beforeEach(() => {

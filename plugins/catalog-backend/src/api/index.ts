@@ -26,6 +26,7 @@ export type {
   CatalogProcessorRelationResult,
   CatalogProcessorErrorResult,
   CatalogProcessorResult,
+  CatalogProcessorRefreshKeysResult,
 } from './processor';
 export type {
   EntityProvider,
