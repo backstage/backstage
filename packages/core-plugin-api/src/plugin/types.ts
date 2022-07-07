@@ -50,9 +50,9 @@ export type AnyExternalRoutes = { [name: string]: ExternalRouteRef };
  * @public
  */
 export type BackstagePlugin<
-  PluginInputOptions extends {} = {},
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
+  PluginInputOptions extends {} = {},
 > = {
   getId(): string;
   getApis(): Iterable<AnyApiFactory>;
@@ -82,9 +82,9 @@ export type PluginFeatureFlagConfig = {
  * @public
  */
 export type PluginConfig<
-  PluginInputOptions extends {},
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
+  PluginInputOptions extends {},
 > = {
   id: string;
   apis?: Iterable<AnyApiFactory>;
