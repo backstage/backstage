@@ -83,7 +83,6 @@ export type PluginFeatureFlagConfig = {
  */
 export type PluginConfig<
   PluginInputOptions extends {},
-  PluginOptions extends {},
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
 > = {
@@ -92,7 +91,7 @@ export type PluginConfig<
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
-  __experimentalConfigure?(options?: PluginInputOptions): PluginOptions;
+  __experimentalConfigure?(options?: PluginInputOptions): {};
 };
 
 /**
