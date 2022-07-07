@@ -24,7 +24,7 @@ import { assertError } from '@backstage/errors';
 import { Logger } from 'winston';
 import { CatalogProcessorResult, EntityRelationSpec } from '../api';
 import { locationSpecToLocationEntity } from '../util/conversion';
-import { DeferredEntity } from './types';
+import { DeferredEntity, RefreshKeyData } from './types';
 import {
   getEntityLocationRef,
   getEntityOriginLocationRef,
@@ -38,6 +38,7 @@ export class ProcessorOutputCollector {
   private readonly errors = new Array<Error>();
   private readonly relations = new Array<EntityRelationSpec>();
   private readonly deferredEntities = new Array<DeferredEntity>();
+  private readonly refreshKeys = new Array<RefreshKeyData>();
   private done = false;
 
   constructor(
@@ -54,6 +55,7 @@ export class ProcessorOutputCollector {
     return {
       errors: this.errors,
       relations: this.relations,
+      refreshKeys: this.refreshKeys,
       deferredEntities: this.deferredEntities,
     };
   }
@@ -116,6 +118,8 @@ export class ProcessorOutputCollector {
       this.relations.push(i.relation);
     } else if (i.type === 'error') {
       this.errors.push(i.error);
+    } else if (i.type === 'refresh') {
+      this.refreshKeys.push({ key: i.key });
     }
   }
 }

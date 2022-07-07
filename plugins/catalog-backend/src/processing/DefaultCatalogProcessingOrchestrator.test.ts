@@ -102,6 +102,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         ok: true,
         completedEntity: entity,
         deferredEntities: [],
+        refreshKeys: [],
         errors: [],
         relations: [],
         state: {
@@ -119,6 +120,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
       ).resolves.toEqual({
         ok: true,
         completedEntity: entity,
+        refreshKeys: [],
         deferredEntities: [
           {
             locationKey: 'url:./new-place',

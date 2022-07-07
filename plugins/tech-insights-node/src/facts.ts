@@ -175,6 +175,16 @@ export interface FactRetriever {
   version: string;
 
   /**
+   * A short display title for the fact retriever to be used in the interface
+   */
+  title?: string;
+
+  /**
+   * A short display description for the fact retriever to be used in the interface.
+   */
+  description?: string;
+
+  /**
    * Handler function that needs to be implemented to retrieve fact values for entities.
    *
    * @param ctx - FactRetrieverContext which can be used to retrieve config and contact integrations

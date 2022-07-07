@@ -93,6 +93,8 @@ export class UrlReaderProcessor implements CatalogProcessor {
           value: parseResults as CatalogProcessorEntityResult[],
         });
       }
+
+      emit(processingResult.refresh(`${location.type}:${location.target}`));
     } catch (error) {
       assertError(error);
       const message = `Unable to read ${location.type}, ${error}`;

@@ -33,12 +33,14 @@ import {
   UpdateEntityCacheOptions,
   ListParentsOptions,
   ListParentsResult,
+  RefreshByKeyOptions,
 } from './types';
 import { DeferredEntity } from '../processing/types';
 import { ProcessingIntervalFunction } from '../processing/refresh';
 import { rethrowError, timestampToDateTime } from './conversion';
 import { initDatabaseMetrics } from './metrics';
 import {
+  DbRefreshKeysRow,
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
   DbRelationsRow,
@@ -77,6 +79,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       errors,
       relations,
       deferredEntities,
+      refreshKeys,
       locationKey,
     } = options;
     const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
@@ -100,11 +103,12 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         `Conflicting write of processing result for ${id} with location key '${locationKey}'`,
       );
     }
+    const sourceEntityRef = stringifyEntityRef(processedEntity);
 
     // Schedule all deferred entities for future processing.
     await this.addUnprocessedEntities(tx, {
       entities: deferredEntities,
-      sourceEntityRef: stringifyEntityRef(processedEntity),
+      sourceEntityRef,
     });
 
     // Delete old relations
@@ -135,6 +139,21 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     await tx.batchInsert(
       'relations',
       this.deduplicateRelations(relationRows),
+      BATCH_SIZE,
+    );
+
+    // Delete old refresh keys
+    await tx<DbRefreshKeysRow>('refresh_keys')
+      .where({ entity_id: id })
+      .delete();
+
+    // Insert the refresh keys for the processed entity
+    await tx.batchInsert(
+      'refresh_keys',
+      refreshKeys.map(k => ({
+        entity_id: id,
+        key: k.key,
+      })),
       BATCH_SIZE,
     );
 
@@ -514,6 +533,25 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     if (updateResult === 0) {
       throw new NotFoundError(`Failed to schedule ${entityRef} for refresh`);
     }
+  }
+
+  async refreshByRefreshKeys(
+    txOpaque: Transaction,
+    options: RefreshByKeyOptions,
+  ) {
+    const tx = txOpaque as Knex.Transaction;
+    const { keys } = options;
+
+    await tx<DbRefreshStateRow>('refresh_state')
+      .whereIn('entity_id', function selectEntityRefs(tx2) {
+        tx2
+          .whereIn('key', keys)
+          .select({
+            entity_id: 'refresh_keys.entity_id',
+          })
+          .from('refresh_keys');
+      })
+      .update({ next_update_at: tx.fn.now() });
   }
 
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {

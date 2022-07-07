@@ -2126,6 +2126,16 @@
   dependencies:
     "@date-io/core" "^1.3.13"
 
+"@davidzemon/passport-okta-oauth@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.npmjs.org/@davidzemon/passport-okta-oauth/-/passport-okta-oauth-0.0.5.tgz#905d14521f4e8b422f4074c1f7fe1cbe0c88e44b"
+  integrity sha512-eaC2Ve2MIoqR7dLKgpHxhVKRcfgJCes0Fozxm5SefZh/zqLNb8tGIou+dj0EbylksLmB+nVlhr8p8qwjA9n2sA==
+  dependencies:
+    "@types/passport-oauth2" "^1.4.11"
+    passport-oauth2 "^1.6.1"
+    pkginfo "^0.4.1"
+    uid2 "^1.0.0"
+
 "@elastic/elasticsearch-mock@^1.0.0":
   version "1.0.0"
   resolved "https://registry.npmjs.org/@elastic/elasticsearch-mock/-/elasticsearch-mock-1.0.0.tgz#1fbaf6bf220cd74a34494ff3a8673551d9dfc66f"
@@ -2348,10 +2358,10 @@
     teeny-request "^8.0.0"
     uuid "^8.0.0"
 
-"@graphiql/react@^0.4.3":
-  version "0.4.3"
-  resolved "https://registry.npmjs.org/@graphiql/react/-/react-0.4.3.tgz#29ca3125c7a349de5e9beb2aef660137fbcbde2e"
-  integrity sha512-MnH+7LqRqFnwo8YBDtgDfJOdeS5QqNTzH2gTvTbEYYWaNQW1+Vhbsyu2RKHnPSgKVQlfLzdjw6SAMtSb3q1Qog==
+"@graphiql/react@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.npmjs.org/@graphiql/react/-/react-0.5.0.tgz#3bc00de581b09d962a9f391ed725d06f34a757d3"
+  integrity sha512-Tn0V4yTcRPBgBVq9SVkqGkmlUi7aqmOrn4+vmhwnlxSFJU7mnKak7DZRc9wPVFBTdcHc0pWNKBzY/demFHSxSw==
   dependencies:
     "@graphiql/toolkit" "^0.6.0"
     codemirror "^5.65.3"
@@ -5212,7 +5222,22 @@
   resolved "https://registry.npmjs.org/@octokit/webhooks-types/-/webhooks-types-5.8.0.tgz#b76d1a3e3ad82cec5680d3c6c3443a620047a6ef"
   integrity sha512-8adktjIb76A7viIdayQSFuBEwOzwhDC+9yxZpKNHjfzrlostHCw0/N7JWpWMObfElwvJMk2fY2l1noENCk9wmw==
 
-"@octokit/webhooks@^9.0.1", "@octokit/webhooks@^9.14.1":
+"@octokit/webhooks-types@6.2.0":
+  version "6.2.0"
+  resolved "https://registry.npmjs.org/@octokit/webhooks-types/-/webhooks-types-6.2.0.tgz#ae84341dadd4a44d032f58b2dce7e3b766ef9da0"
+  integrity sha512-1YOSIrdb7WwLXHfCwa+7+VKcsZZ0sRsCiqvYvBwzstF4xg0qZ0w2K5Y8OkNvd7NtzKPP7KKgP9hSQZUccbPg0Q==
+
+"@octokit/webhooks@^10.0.0":
+  version "10.0.3"
+  resolved "https://registry.npmjs.org/@octokit/webhooks/-/webhooks-10.0.3.tgz#13c20477b397731bff15e2578f6c86984bb41432"
+  integrity sha512-ormPrmocaqcZZdGOrLLlVH+FKJJY+I8fdUXzXRhiVpYCBctXHkfJ92MwNDq5vdQ4XeC2IacDhNEu1vfGfwGyFg==
+  dependencies:
+    "@octokit/request-error" "^2.0.2"
+    "@octokit/webhooks-methods" "^2.0.0"
+    "@octokit/webhooks-types" "6.2.0"
+    aggregate-error "^3.1.0"
+
+"@octokit/webhooks@^9.0.1":
   version "9.26.0"
   resolved "https://registry.npmjs.org/@octokit/webhooks/-/webhooks-9.26.0.tgz#cf453bb313da3b66f1a90c84464d978e1c625cce"
   integrity sha512-foZlsgrTDwAmD5j2Czn6ji10lbWjGDVsUxTIydjG9KTkAWKJrFapXJgO5SbGxRwfPd3OJdhK3nA2YPqVhxLXqA==
@@ -6333,9 +6358,9 @@
     "@types/range-parser" "*"
 
 "@types/express-session@^1.17.2":
-  version "1.17.4"
-  resolved "https://registry.npmjs.org/@types/express-session/-/express-session-1.17.4.tgz#97a30a35e853a61bdd26e727453b8ed314d6166b"
-  integrity sha512-7cNlSI8+oOBUHTfPXMwDxF/Lchx5aJ3ho7+p9jJZYVg9dVDJFh3qdMXmJtRsysnvS+C6x46k9DRYmrmCkE+MVg==
+  version "1.17.5"
+  resolved "https://registry.npmjs.org/@types/express-session/-/express-session-1.17.5.tgz#13f48852b4aa60ff595835faeb4b4dda0ba0866e"
+  integrity sha512-l0DhkvNVfyUPEEis8fcwbd46VptfA/jmMwHfob2TfDMf3HyPLiB9mKD71LXhz5TMUobODXPD27zXSwtFQLHm+w==
   dependencies:
     "@types/express" "*"
 
@@ -6801,6 +6826,15 @@
   version "1.4.9"
   resolved "https://registry.npmjs.org/@types/passport-oauth2/-/passport-oauth2-1.4.9.tgz#134007c4b505a82548c9cb19094c5baeb2205c92"
   integrity sha512-QP0q+NVQOaIu2r0e10QWkiUA0Ya5mOBHRJN0UrI+LolMLOP1/VN4EVIpJ3xVwFo+xqNFRoFvFwJhBvKnk7kpUA==
+  dependencies:
+    "@types/express" "*"
+    "@types/oauth" "*"
+    "@types/passport" "*"
+
+"@types/passport-oauth2@^1.4.11":
+  version "1.4.11"
+  resolved "https://registry.npmjs.org/@types/passport-oauth2/-/passport-oauth2-1.4.11.tgz#fbca527ecb44258774d17bcb251630c321515fa9"
+  integrity sha512-KUNwmGhe/3xPbjkzkPwwcPmyFwfyiSgtV1qOrPBLaU4i4q9GSCdAOyCbkFG0gUxAyEmYwqo9OAF/rjPjJ6ImdA==
   dependencies:
     "@types/express" "*"
     "@types/oauth" "*"
@@ -8411,9 +8445,9 @@ aws-sdk-mock@^5.2.1:
     traverse "^0.6.6"
 
 aws-sdk@^2.1122.0, aws-sdk@^2.840.0, aws-sdk@^2.948.0:
-  version "2.1168.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1168.0.tgz#7936459edee0c999065f1ecf2ef0bea89ea056c1"
-  integrity sha512-9+WYoYTHHjLqeWdSSLbNpmc/NgnZpX4LGiyYjXenh4WNRBXshXI0XioTK8BQgDscVzB978EJV8kG1nZGE3USzw==
+  version "2.1169.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1169.0.tgz#06c910092e0dd97ac884ce0939a69c062308184a"
+  integrity sha512-zBJXLih/iBueYt7hDednt7Jncb+6wzUjDh6JMdl2e0A61xb+Z5o0NNkjbJTUJELdx96u3R4+yil0DoRTOipksA==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -14174,11 +14208,11 @@ grapheme-splitter@^1.0.4:
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
 graphiql@^1.5.12, graphiql@^1.8.8:
-  version "1.9.10"
-  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.9.10.tgz#ba7113ed8b1bc988d00d8d7cc51901b51b684bde"
-  integrity sha512-uYYK/zBTV9Y/IHw4uopGVRusbF2xmPnptx7OMFTnTHOTQOmzfIGRTn58WuPgevyEi+9zSLojM86lot9xvNA1/w==
+  version "1.9.11"
+  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.9.11.tgz#3ade0802a0459792d1533f71e95b39bedce9c3ac"
+  integrity sha512-/nIFi+y8PNpkC/fb/mmkWUDsX+nIS7DdemxrTPugKpGku/hqVLe0ppXFsJbPuT0UrleL1XASv0sZm+Axh4XGWA==
   dependencies:
-    "@graphiql/react" "^0.4.3"
+    "@graphiql/react" "^0.5.0"
     "@graphiql/toolkit" "^0.6.0"
     entities "^2.0.0"
     graphql-language-service "^5.0.6"
@@ -18878,9 +18912,9 @@ modify-values@^1.0.0:
   integrity sha512-xV2bxeN6F7oYjZWTe/YPAy6MN2M+sL4u/Rlm2AHCIVGfo2p1yGmBHQ6vHehl4bRTZBdHu3TSkWdYgkwpYzAGSw==
 
 moment@^2.27.0, moment@^2.29.1:
-  version "2.29.3"
-  resolved "https://registry.npmjs.org/moment/-/moment-2.29.3.tgz#edd47411c322413999f7a5940d526de183c031f3"
-  integrity sha512-c6YRvhEo//6T2Jz/vVtYzqBzwvPT95JBQ+smCytzf7c50oMZRsR/a4w88aD34I+/QVSfnoAnSBFPJHItlOMJVw==
+  version "2.29.4"
+  resolved "https://registry.npmjs.org/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
+  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
 
 morgan@^1.10.0:
   version "1.10.0"
@@ -18944,9 +18978,9 @@ msw@^0.39.2:
     yargs "^17.3.1"
 
 msw@^0.43.0:
-  version "0.43.0"
-  resolved "https://registry.npmjs.org/msw/-/msw-0.43.0.tgz#10c6fc3fb1752c0a144179e5ab04c6a512cc9959"
-  integrity sha512-XJylZP0qW3D5WUGWh9FFefJEl3MGG4y1I+/8a833d0eedm6B+GaPm6wPVZNcnlS2YVTagvEgShVJ7ZtY66tTRQ==
+  version "0.43.1"
+  resolved "https://registry.npmjs.org/msw/-/msw-0.43.1.tgz#57cb4af56f07442e8a6d14d76032a0ab41434256"
+  integrity sha512-wzhPpL6RsiYkyIUlTCg0aZY0aRZa4Eiubd6MOA5oJVgfuapDmvZrI8OMi4h4e+fpHD+Qsy+4unAjv3wpWia5yw==
   dependencies:
     "@mswjs/cookies" "^0.2.0"
     "@mswjs/interceptors" "^0.16.3"
@@ -20357,15 +20391,6 @@ passport-oauth@1.0.0:
     passport-oauth1 "1.x.x"
     passport-oauth2 "1.x.x"
 
-passport-okta-oauth@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.npmjs.org/passport-okta-oauth/-/passport-okta-oauth-0.0.1.tgz#c8bcee02af3d56ca79d3cca776f2df7cf15a5748"
-  integrity sha1-yLzuAq89Vsp508yndvLffPFaV0g=
-  dependencies:
-    passport-oauth "1.0.0"
-    pkginfo "0.2.x"
-    uid2 "0.0.3"
-
 passport-onelogin-oauth@^0.0.1:
   version "0.0.1"
   resolved "https://registry.npmjs.org/passport-onelogin-oauth/-/passport-onelogin-oauth-0.0.1.tgz#6e991ac6720783fdd80d4caa08c36cc71ef19962"
@@ -20760,7 +20785,7 @@ pkginfo@0.2.x:
   resolved "https://registry.npmjs.org/pkginfo/-/pkginfo-0.2.3.tgz#7239c42a5ef6c30b8f328439d9b9ff71042490f8"
   integrity sha1-cjnEKl72wwuPMoQ52bn/cQQkkPg=
 
-pkginfo@0.4.x:
+pkginfo@0.4.x, pkginfo@^0.4.1:
   version "0.4.1"
   resolved "https://registry.npmjs.org/pkginfo/-/pkginfo-0.4.1.tgz#b5418ef0439de5425fc4995042dced14fb2a84ff"
   integrity sha1-tUGO8EOd5UJfxJlQQtztFPsqhP8=
@@ -25268,6 +25293,11 @@ uid2@0.0.3, uid2@0.0.x:
   version "0.0.3"
   resolved "https://registry.npmjs.org/uid2/-/uid2-0.0.3.tgz#483126e11774df2f71b8b639dcd799c376162b82"
   integrity sha1-SDEm4Rd03y9xuLY53NeZw3YWK4I=
+
+uid2@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/uid2/-/uid2-1.0.0.tgz#ef8d95a128d7c5c44defa1a3d052eecc17a06bfb"
+  integrity sha512-+I6aJUv63YAcY9n4mQreLUt0d4lvwkkopDNmpomkAUz0fAkEMV9pRWxN0EjhW1YfRhcuyHg2v3mwddCDW1+LFQ==
 
 unbox-primitive@^1.0.1, unbox-primitive@^1.0.2:
   version "1.0.2"
