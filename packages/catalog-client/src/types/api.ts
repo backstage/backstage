@@ -116,8 +116,8 @@ export interface GetEntitiesRequest {
  *
  * @public
  */
-export interface GetEntitiesResponse {
-  items: Entity[];
+export interface GetEntitiesResponse<EntityKind = Entity> {
+  items: EntityKind[];
 }
 
 /**

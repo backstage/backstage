@@ -92,10 +92,10 @@ export class CatalogClient implements CatalogApi {
   /**
    * {@inheritdoc CatalogApi.getEntities}
    */
-  async getEntities(
+  async getEntities<EntityKind extends Entity = Entity>(
     request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): Promise<GetEntitiesResponse> {
+  ): Promise<GetEntitiesResponse<EntityKind>> {
     const { filter = [], fields = [], offset, limit, after } = request ?? {};
     const params: string[] = [];
 
@@ -137,7 +137,7 @@ export class CatalogClient implements CatalogApi {
     }
 
     const query = params.length ? `?${params.join('&')}` : '';
-    const entities: Entity[] = await this.requestRequired(
+    const entities: EntityKind[] = await this.requestRequired(
       'GET',
       `/entities${query}`,
       options,
@@ -171,10 +171,10 @@ export class CatalogClient implements CatalogApi {
   /**
    * {@inheritdoc CatalogApi.getEntityByRef}
    */
-  async getEntityByRef(
+  async getEntityByRef<EntityKind extends Entity = Entity>(
     entityRef: string | CompoundEntityRef,
     options?: CatalogRequestOptions,
-  ): Promise<Entity | undefined> {
+  ): Promise<EntityKind | undefined> {
     const { kind, namespace, name } = parseEntityRef(entityRef);
     return this.requestOptional(
       'GET',
