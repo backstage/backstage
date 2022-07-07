@@ -26,7 +26,6 @@ import { JsonValue } from '@backstage/types';
  */
 export const unverifiedJWTMiddlewareProvider: AuthenticationMiddlewareProvider =
   async req => {
-    console.log(req.headers?.authorization);
     if (!req.headers?.authorization) {
       return undefined;
     }
