@@ -27,6 +27,7 @@ import { InputError, stringifyError } from '@backstage/errors';
  */
 export const unverifiedJWTMiddlewareProvider: AuthenticationMiddlewareProvider =
   async req => {
+    console.log(req.headers?.authorization);
     if (!req.headers?.authorization) {
       return undefined;
     }
@@ -35,6 +36,8 @@ export const unverifiedJWTMiddlewareProvider: AuthenticationMiddlewareProvider =
       const token = req.headers.authorization.match(
         /^Bearer\s(\S+\.\S+\.\S+)$/i,
       )?.[1];
+      console.log(token);
+
       if (!token) {
         return undefined;
       }

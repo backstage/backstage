@@ -75,6 +75,15 @@ const mockUrlReader = UrlReaders.default({
   config: new ConfigReader({}),
 });
 
+const rawPayload = Buffer.from(
+  JSON.stringify({
+    sub: 'user:default/guest',
+    ent: ['group:default/guests'],
+  }),
+  'utf8',
+).toString('base64');
+const mockToken = ['blob', rawPayload, 'blob'].join('.');
+
 describe('createRouter', () => {
   let app: express.Express;
   let router: Router;
@@ -139,6 +148,7 @@ describe('createRouter', () => {
     jest.spyOn(taskBroker, 'event$');
 
     router = Router();
+
     router.use(
       await createMiddleware({
         logger,
@@ -149,8 +159,7 @@ describe('createRouter', () => {
               ownershipEntityRefs: ['group:default/guests'],
               type: 'user',
             },
-            token:
-              'blob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvZ3Vlc3QiLCJuYW1lIjoiSm9obiBEb2UifQ.blob',
+            token: mockToken,
           };
         },
       }),
@@ -238,8 +247,6 @@ describe('createRouter', () => {
 
     it('should call the broker with a correct spec', async () => {
       const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
-      const mockToken =
-        'blob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvZ3Vlc3QiLCJuYW1lIjoiSm9obiBEb2UifQ.blob';
 
       await request(app)
         .post('/v2/tasks')
@@ -308,8 +315,6 @@ describe('createRouter', () => {
       it('should call the broker with a correct spec', async () => {
         const broker =
           taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
-        const mockToken =
-          'blob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvZ3Vlc3QiLCJuYW1lIjoiSm9obiBEb2UifQ.blob';
 
         await request(app)
           .post('/v2/tasks')

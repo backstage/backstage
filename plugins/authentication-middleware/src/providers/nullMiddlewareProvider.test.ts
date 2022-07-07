@@ -18,43 +18,66 @@ import { nullMiddlewareProvider } from '.';
 import { Request } from 'express';
 
 describe('nullMiddlewareProvider', () => {
+  const rawPayload = Buffer.from(
+    JSON.stringify({
+      sub: 'user:default/guest',
+      ent: ['group:default/guests'],
+    }),
+    'utf8',
+  ).toString('base64');
+  let mockToken = ['blob', rawPayload, 'blob'].join('.');
+  let req: Request;
+
   describe('without authorization header', () => {
-    const req = {} as Request;
+    beforeEach(() => {
+      req = {} as Request;
+    });
     it('returns the correct identity from a jwt token', async () => {
       expect(await nullMiddlewareProvider(req)).toEqual(undefined);
     });
   });
 
-  describe('without a non-jwt header', () => {
-    const req = {
-      headers: {
-        authorization: 'Bearer garbage',
-      },
-    } as Request;
+  describe('with a non-jwt header', () => {
+    beforeEach(() => {
+      ('');
+      mockToken = mockToken.split('').reverse().join('');
+      req = {
+        headers: {
+          authorization: `Bearer ${mockToken}`,
+        },
+      } as Request;
+    });
+
     it('returns the correct identity from a jwt token', async () => {
       expect(await nullMiddlewareProvider(req)).toEqual(undefined);
     });
   });
 
   describe('with a user/password header', () => {
-    const req = {
-      headers: {
-        authorization: 'Basic garbage',
-      },
-    } as Request;
+    beforeEach(() => {
+      const credentials = Buffer.from('user:password', 'utf-8').toString(
+        'base64',
+      );
+      req = {
+        headers: {
+          authorization: `Basic ${credentials}`,
+        },
+      } as Request;
+    });
+
     it('returns the correct identity from a jwt token', async () => {
       expect(await nullMiddlewareProvider(req)).toEqual(undefined);
     });
   });
 
   describe('with a jwt token', () => {
-    const token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvZm5hbWUiLCJlbnQiOlsiZ3JvdXA6ZGVmYXVsdC90ZWFtIl19.Av1EIExRJ79vHiZ1MCC6xaX15xUcqYPv0uUNbvhMXDU';
-    const req = {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    } as Request;
+    beforeEach(() => {
+      req = {
+        headers: {
+          authorization: `Bearer ${mockToken}`,
+        },
+      } as Request;
+    });
     it('returns undefined', async () => {
       const identity = await nullMiddlewareProvider(req);
       expect(identity?.identity).toEqual(undefined);

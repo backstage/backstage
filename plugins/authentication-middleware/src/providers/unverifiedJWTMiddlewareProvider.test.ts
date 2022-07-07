@@ -18,49 +18,71 @@ import { unverifiedJWTMiddlewareProvider } from '.';
 import { Request } from 'express';
 
 describe('jwtMiddlewareProvider', () => {
+  const rawPayload = Buffer.from(
+    JSON.stringify({
+      sub: 'user:default/guest',
+      ent: ['group:default/guests'],
+    }),
+    'utf8',
+  ).toString('base64');
+  let mockToken: string;
+  let req: Request;
+
   describe('without authorization header', () => {
-    const req = {} as Request;
+    beforeEach(() => {
+      req = {} as Request;
+    });
     it('returns the correct identity from a jwt token', async () => {
       expect(await unverifiedJWTMiddlewareProvider(req)).toEqual(undefined);
     });
   });
 
   describe('without a non-jwt header', () => {
-    const req = {
-      headers: {
-        authorization: 'Bearer garbage',
-      },
-    } as Request;
+    beforeEach(() => {
+      mockToken = 'garbage';
+      req = {
+        headers: {
+          authorization: `Bearer ${mockToken}`,
+        },
+      } as Request;
+    });
+
     it('returns the correct identity from a jwt token', async () => {
       expect(await unverifiedJWTMiddlewareProvider(req)).toEqual(undefined);
     });
   });
 
   describe('with a user/password header', () => {
-    const req = {
-      headers: {
-        authorization: 'Basic garbage',
-      },
-    } as Request;
+    beforeEach(() => {
+      mockToken = mockToken.split('').reverse().join('');
+      req = {
+        headers: {
+          authorization: `Basic ${mockToken}`,
+        },
+      } as Request;
+    });
+
     it('returns the correct identity from a jwt token', async () => {
       expect(await unverifiedJWTMiddlewareProvider(req)).toEqual(undefined);
     });
   });
 
   describe('with a correct jwt token', () => {
-    const token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvZm5hbWUiLCJlbnQiOlsiZ3JvdXA6ZGVmYXVsdC90ZWFtIl19.Av1EIExRJ79vHiZ1MCC6xaX15xUcqYPv0uUNbvhMXDU';
-    const req = {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    } as Request;
+    beforeEach(() => {
+      mockToken = ['blob', rawPayload, 'blob'].join('.');
+      req = {
+        headers: {
+          authorization: `Bearer ${mockToken}`,
+        },
+      } as Request;
+    });
+
     it('returns the correct identity from a jwt token', async () => {
       const identity = await unverifiedJWTMiddlewareProvider(req);
-      expect(identity?.token).toEqual(token);
-      expect(identity?.identity.userEntityRef).toEqual('user:default/fname');
+      expect(identity?.token).toEqual(mockToken);
+      expect(identity?.identity.userEntityRef).toEqual('user:default/guest');
       expect(identity?.identity.ownershipEntityRefs).toEqual([
-        'group:default/team',
+        'group:default/guests',
       ]);
     });
   });
