@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { isError } from '@backstage/errors';
 
-export const SENTRY_PROJECT_SLUG_ANNOTATION = 'sentry.io/project-slug';
+/**
+ *  Failed to query documents for index that does not exist.
+ *  @public
+ */
+export class MissingIndexError extends Error {
+  /**
+   * An inner error that caused this error to be thrown, if any.
+   */
+  readonly cause?: Error | undefined;
 
-export const useProjectSlug = (entity: Entity) => {
-  return entity?.metadata.annotations?.[SENTRY_PROJECT_SLUG_ANNOTATION] ?? '';
-};
+  constructor(message?: string, cause?: Error | unknown) {
+    super(message);
+
+    Error.captureStackTrace?.(this, this.constructor);
+
+    this.name = this.constructor.name;
+    this.cause = isError(cause) ? cause : undefined;
+  }
+}

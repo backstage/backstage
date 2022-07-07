@@ -39,6 +39,9 @@ export const fossaPlugin = createPlugin({
           discoveryApi,
           identityApi,
           organizationId: configApi.getOptionalString('fossa.organizationId'),
+          externalLinkBaseUrl: configApi.getOptionalString(
+            'fossa.externalLinkBaseUrl',
+          ),
         }),
     }),
   ],

@@ -1,5 +1,15 @@
 # @backstage/plugin-vault-backend
 
+## 0.2.0-next.2
+
+### Patch Changes
+
+- 7ee4abdcc9: Added a path notion in addition to secret name to allow to differentiate secrets in sub-paths
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.2
+  - @backstage/backend-tasks@0.3.3-next.2
+  - @backstage/backend-test-utils@0.1.26-next.2
+
 ## 0.2.0-next.1
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.29-next.2
+
+### Patch Changes
+
+- 3e032a5de2: Move cost-insights data specific API types (non react) into an @backstage/plugin-cost-insights-common
+  isomorphic package. This allows these types to be shared in any backend packages or other cost-insight
+  modules.
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/plugin-cost-insights-common@0.1.0-next.0
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/theme@0.2.16-next.1
+
 ## 0.11.29-next.1
 
 ### Patch Changes
