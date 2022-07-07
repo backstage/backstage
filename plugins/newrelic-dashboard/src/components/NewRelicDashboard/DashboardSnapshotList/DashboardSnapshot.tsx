@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Box, Grid, MenuItem, Select } from '@material-ui/core';
 import { useApi, storageApiRef } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
@@ -43,19 +43,17 @@ export const DashboardSnapshot = ({ guid, name, permalink }: Props) => {
     storageApi.observe$<number>(guid),
     storageApi.snapshot(guid),
   );
-  const [newDuration, setNewDuration] = useState(2592000000);
-
-  useEffect(() => {
-    if (storageSnapshot.value) setNewDuration(Number(storageSnapshot.value));
-  }, [guid, storageSnapshot]);
 
   const { value, loading, error } = useAsync(async (): Promise<
     DashboardSnapshotSummary | undefined
   > => {
     const dashboardObject: Promise<DashboardSnapshotSummary | undefined> =
-      newRelicDashboardAPI.getDashboardSnapshot(guid, newDuration);
+      newRelicDashboardAPI.getDashboardSnapshot(
+        guid,
+        storageSnapshot.value || 2592000000,
+      );
     return dashboardObject;
-  }, [guid, newDuration]);
+  }, [guid, storageSnapshot.value]);
 
   if (loading) {
     return <Progress />;
@@ -77,9 +75,9 @@ export const DashboardSnapshot = ({ guid, name, permalink }: Props) => {
         action={
           <Select
             style={{ margin: '15px 10px 0 0' }}
-            value={newDuration}
+            defaultValue={2592000000}
+            value={storageSnapshot.value}
             onChange={event => {
-              setNewDuration(Number(event.target.value));
               setStorageValue(Number(event.target.value));
             }}
           >
