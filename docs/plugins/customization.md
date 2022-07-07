@@ -18,11 +18,12 @@ customizable elements. For example
 ```typescript jsx
 const plugin = createPlugin({
   id: 'my-plugin',
-  configure(options?: PluginInputOptions): PluginOptions {
-    const defaultOptions = { createButtonTitle: 'Create' };
-    if (!options) {
-      return defaultOptions;
-    }
+  __experimentalConfigure(
+    options?: CatalogInputPluginOptions,
+  ): CatalogPluginOptions {
+    const defaultOptions = {
+      createButtonTitle: 'Create',
+    };
     return { ...defaultOptions, ...options };
   },
 });
@@ -31,12 +32,19 @@ const plugin = createPlugin({
 And the rendering part of the exposed component can retrieve that metadata as:
 
 ```typescript jsx
-export type CatalogPageOptionsProps = {
+export type CatalogPluginOptions = {
   createButtonTitle: string;
 };
 
+export type CatalogInputPluginOptions = {
+  createButtonTitle: string;
+};
+
+export const useCatalogPluginOptions = () =>
+  usePluginOptions<CatalogPluginOptions>();
+
 export function DefaultMyPluginWelcomePage() {
-  const { createButtonTitle } = usePluginOptions<CatalogPageOptionsProps>();
+  const { createButtonTitle } = useCatalogPluginOptions();
 
   return (
     <div>
@@ -54,7 +62,7 @@ plugin. Example:
 ```typescript jsx
 import { myPlugin } from '@backstage/my-plugin';
 
-myPlugin.reconfigure({
-  createButtonTitle: 'Maybe Create',
+myPlugin.__experimentalReconfigure({
+  createButtonTitle: 'New',
 });
 ```
