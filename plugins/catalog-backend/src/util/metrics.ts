@@ -31,9 +31,8 @@ export function createCounterMetric<T extends string>(
 ): Counter<T> {
   let metric = register.getSingleMetric(config.name);
   if (!metric) {
-    const newMetric = new Counter<T>(config);
-    register.registerMetric(newMetric);
-    metric = register.getSingleMetric(config.name);
+    metric = new Counter<T>(config);
+    register.registerMetric(metric);
   }
   return metric as Counter<T>;
 }
@@ -43,9 +42,8 @@ export function createGaugeMetric<T extends string>(
 ): Gauge<T> {
   let metric = register.getSingleMetric(config.name);
   if (!metric) {
-    const newMetric = new Gauge<T>(config);
-    register.registerMetric(newMetric);
-    metric = register.getSingleMetric(config.name);
+    metric = new Gauge<T>(config);
+    register.registerMetric(metric);
   }
   return metric as Gauge<T>;
 }
@@ -55,9 +53,8 @@ export function createSummaryMetric<T extends string>(
 ): Summary<T> {
   let metric = register.getSingleMetric(config.name);
   if (!metric) {
-    const newMetric = new Summary<T>(config);
-    register.registerMetric(newMetric);
-    metric = register.getSingleMetric(config.name);
+    metric = new Summary<T>(config);
+    register.registerMetric(metric);
   }
 
   return metric as Summary<T>;
@@ -68,9 +65,8 @@ export function createHistogramMetric<T extends string>(
 ): Histogram<T> {
   let metric = register.getSingleMetric(config.name);
   if (!metric) {
-    const newMetric = new Histogram<T>(config);
-    register.registerMetric(newMetric);
-    metric = register.getSingleMetric(config.name);
+    metric = new Histogram<T>(config);
+    register.registerMetric(metric);
   }
 
   return metric as Histogram<T>;
