@@ -117,15 +117,15 @@ export function buildProjectUrl(
     const [branch, ...filePath] = branchAndFilePath.split('/');
     const relativePath = getGitLabIntegrationRelativePath(config);
 
-    url.pathname =
-      [relativePath] +
-      [
-        '/api/v4/projects',
-        projectID,
-        'repository/files',
-        encodeURIComponent(decodeURIComponent(filePath.join('/'))),
-        'raw',
-      ].join('/');
+    url.pathname = [
+      ...(relativePath ? [relativePath] : []),
+      'api/v4/projects',
+      projectID,
+      'repository/files',
+      encodeURIComponent(decodeURIComponent(filePath.join('/'))),
+      'raw',
+    ].join('/');
+
     url.search = `?ref=${branch}`;
 
     return url;
@@ -153,8 +153,10 @@ export async function getProjectId(
     // Get gitlab relative path
     const relativePath = getGitLabIntegrationRelativePath(config);
 
-    // Should replace first match only
-    repo = repo.replace(relativePath, '');
+    // Check relative path exist and replace it if it's the case.
+    if (relativePath) {
+      repo = repo.replace(relativePath, '');
+    }
 
     // Convert
     // to: https://gitlab.com/api/v4/projects/groupA%2Fteams%2FsubgroupA%2FteamA%2Frepo
