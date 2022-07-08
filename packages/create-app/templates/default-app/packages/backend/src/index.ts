@@ -30,6 +30,7 @@ import techdocs from './plugins/techdocs';
 import search from './plugins/search';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
+import {DefaultIdentityClient} from "../../../../../../../dist-types/plugins/auth-node/src";
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -39,6 +40,13 @@ function makeCreateEnv(config: Config) {
   const databaseManager = DatabaseManager.fromConfig(config);
   const tokenManager = ServerTokenManager.noop();
   const taskScheduler = TaskScheduler.fromConfig(config);
+
+  const identity = DefaultIdentityClient.create({
+    discovery,
+    issuer: undefined,
+    algorithms: undefined,
+  });
+
   const permissions = ServerPermissionClient.fromConfig(config, {
     discovery,
     tokenManager,
@@ -61,6 +69,7 @@ function makeCreateEnv(config: Config) {
       tokenManager,
       scheduler,
       permissions,
+      identity,
     };
   };
 }
