@@ -166,6 +166,7 @@ describe('fetch:template', () => {
             skipRootDirectory: true,
             skipSubdirectory: true,
             skipMultiplesDirectories: true,
+            skipFileInsideDirectory: true
           },
         });
 
@@ -194,6 +195,10 @@ describe('fetch:template', () => {
                       },
                   },
               },
+              subdir3: {
+                '${{ "fileSkippedInsideDirectory.txt" if not values.skipFileInsideDirectory else "" }}':
+                  'skipped file inside directory',
+              },              
             },
           });
 
