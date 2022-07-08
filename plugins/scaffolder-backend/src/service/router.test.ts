@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+
 const mockAccess = jest.fn();
 jest.doMock('fs-extra', () => ({
   access: mockAccess,
@@ -75,6 +77,16 @@ const mockUrlReader = UrlReaders.default({
 describe('createRouter', () => {
   let app: express.Express;
   let taskBroker: TaskBroker;
+  const getIdentity = jest.fn();
+  const rawPayload = Buffer.from(
+    JSON.stringify({
+      sub: 'user:default/guest',
+      ent: ['group:default/guests'],
+    }),
+    'utf8',
+  ).toString('base64');
+  const mockToken = ['blob', rawPayload, 'blob'].join('.');
+
   const catalogClient = { getEntityByRef: jest.fn() } as unknown as CatalogApi;
 
   const mockTemplate: TemplateEntityV1beta3 = {
@@ -123,6 +135,7 @@ describe('createRouter', () => {
   };
 
   beforeEach(async () => {
+    getIdentity.mockReset();
     const logger = getVoidLogger();
     const databaseTaskStore = await DatabaseTaskStore.create({
       database: await createDatabase().getClient(),
@@ -134,6 +147,18 @@ describe('createRouter', () => {
     jest.spyOn(taskBroker, 'list');
     jest.spyOn(taskBroker, 'event$');
 
+    getIdentity.mockImplementation(
+      async (_req): Promise<BackstageIdentityResponse | undefined> => {
+        return {
+          token: mockToken,
+          identity: {
+            type: 'user',
+            userEntityRef: 'user:default/guest',
+            ownershipEntityRefs: ['group:default/guests'],
+          },
+        };
+      },
+    );
     const router = await createRouter({
       logger: getVoidLogger(),
       config: new ConfigReader({}),
@@ -141,6 +166,9 @@ describe('createRouter', () => {
       catalogClient,
       reader: mockUrlReader,
       taskBroker,
+      identity: {
+        getIdentity,
+      },
     });
     app = express().use(router);
 
@@ -214,8 +242,6 @@ describe('createRouter', () => {
 
     it('should call the broker with a correct spec', async () => {
       const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
-      const mockToken =
-        'blob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvZ3Vlc3QiLCJuYW1lIjoiSm9obiBEb2UifQ.blob';
 
       await request(app)
         .post('/v2/tasks')
@@ -264,29 +290,51 @@ describe('createRouter', () => {
       );
     });
 
-    it('should not decorate a user when no backstage auth is passed', async () => {
-      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
-
-      await request(app)
-        .post('/v2/tasks')
-        .send({
-          templateRef: stringifyEntityRef({
-            kind: 'template',
-            name: 'create-react-app-template',
-          }),
-          values: {
-            required: 'required-value',
+    describe('no auth is passed', () => {
+      beforeEach(async () => {
+        getIdentity.mockImplementation(
+          async (_req): Promise<BackstageIdentityResponse | undefined> => {
+            return undefined;
+          },
+        );
+        const router = await createRouter({
+          logger: getVoidLogger(),
+          config: new ConfigReader({}),
+          database: createDatabase(),
+          catalogClient,
+          reader: mockUrlReader,
+          taskBroker,
+          identity: {
+            getIdentity,
           },
         });
+        app = express().use(router);
+      });
+      it('should not decorate a user when no backstage auth is passed', async () => {
+        const broker =
+          taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
 
-      expect(broker).toHaveBeenCalledWith(
-        expect.objectContaining({
-          createdBy: undefined,
-          spec: expect.objectContaining({
-            user: { entity: undefined, ref: undefined },
+        await request(app)
+          .post('/v2/tasks')
+          .send({
+            templateRef: stringifyEntityRef({
+              kind: 'template',
+              name: 'create-react-app-template',
+            }),
+            values: {
+              required: 'required-value',
+            },
+          });
+
+        expect(broker).toHaveBeenCalledWith(
+          expect.objectContaining({
+            createdBy: undefined,
+            spec: expect.objectContaining({
+              user: { entity: undefined, ref: undefined },
+            }),
           }),
-        }),
-      );
+        );
+      });
     });
   });
 

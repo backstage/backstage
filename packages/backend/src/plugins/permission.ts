@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IdentityClient } from '@backstage/plugin-auth-node';
+import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 import { createRouter } from '@backstage/plugin-permission-backend';
 import {
   AuthorizeResult,
@@ -40,7 +40,7 @@ export default async function createPlugin(
     logger: env.logger,
     discovery: env.discovery,
     policy: new AllowAllPermissionPolicy(),
-    identity: IdentityClient.create({
+    identity: DefaultIdentityClient.create({
       discovery: env.discovery,
       issuer: await env.discovery.getExternalBaseUrl('auth'),
     }),

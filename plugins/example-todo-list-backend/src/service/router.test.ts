@@ -15,7 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { IdentityClient } from '@backstage/plugin-auth-node';
+import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 import express from 'express';
 import request from 'supertest';
 
@@ -27,7 +27,7 @@ describe('createRouter', () => {
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
-      identity: {} as IdentityClient,
+      identity: {} as DefaultIdentityClient,
     });
     app = express().use(router);
   });

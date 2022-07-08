@@ -13,25 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Request } from 'express';
+import { BackstageIdentityResponse } from './types';
 
-import { CatalogClient } from '@backstage/catalog-client';
-import { createRouter } from '@backstage/plugin-scaffolder-backend';
-import { Router } from 'express';
-import type { PluginEnvironment } from '../types';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const catalogClient = new CatalogClient({
-    discoveryApi: env.discovery,
-  });
-
-  return await createRouter({
-    logger: env.logger,
-    config: env.config,
-    database: env.database,
-    catalogClient: catalogClient,
-    reader: env.reader,
-    identity: env.identity,
-  });
+/**
+ * An identity client api to authenticate Backstage
+ * tokens
+ *
+ * @experimental This is not a stable API yet
+ * @public
+ */
+export interface IdentityApi {
+  /**
+   * Verifies the given backstage identity token
+   * Returns a BackstageIdentity (user) matching the token.
+   * The method throws an error if verification fails.
+   */
+  getIdentity(
+    req: Request<any>,
+  ): Promise<BackstageIdentityResponse | undefined>;
 }

@@ -26,6 +26,7 @@
     "@backstage/backend-common": "^0.14.1-next.1",
     "@backstage/config": "^1.0.1",
     "@backstage/errors": "^1.1.0-next.0",
+    "express": "^4.18.1",
     "jose": "^4.6.0",
     "node-fetch": "^2.6.7",
     "winston": "^3.2.1"

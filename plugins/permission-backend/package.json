@@ -28,6 +28,7 @@
     "@backstage/plugin-auth-node": "^0.2.3-next.1",
     "@backstage/plugin-permission-common": "^0.6.3-next.0",
     "@backstage/plugin-permission-node": "^0.6.3-next.1",
+    "@backstage/plugin-auth-node": "^0.0.1",
     "@types/express": "*",
     "dataloader": "^2.0.0",
     "express": "^4.17.1",

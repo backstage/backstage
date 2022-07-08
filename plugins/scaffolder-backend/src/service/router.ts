@@ -23,14 +23,13 @@ import {
 } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { Config, JsonObject } from '@backstage/config';
-import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
+import { InputError, NotFoundError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import {
   TemplateEntityV1beta3,
   TaskSpec,
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
-import { JsonValue } from '@backstage/types';
 import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
@@ -48,6 +47,7 @@ import {
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { getEntityBaseUrl, getWorkingDirectory, findTemplate } from './helpers';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 
 /**
  * RouterOptions
@@ -64,6 +64,7 @@ export interface RouterOptions {
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  identity: IdentityApi;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
@@ -89,6 +90,7 @@ export async function createRouter(
     actions,
     taskWorkers,
     additionalTemplateFilters,
+    identity,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
@@ -146,7 +148,8 @@ export async function createRouter(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
       async (req, res) => {
         const { namespace, kind, name } = req.params;
-        const { token } = parseBearerToken(req.headers.authorization);
+        const userIdentity = await identity.getIdentity(req);
+        const token = userIdentity?.token;
         const template = await findTemplate({
           catalogApi: catalogClient,
           entityRef: { kind, namespace, name },
@@ -185,9 +188,9 @@ export async function createRouter(
       const { kind, namespace, name } = parseEntityRef(templateRef, {
         defaultKind: 'template',
       });
-      const { token, entityRef: userEntityRef } = parseBearerToken(
-        req.headers.authorization,
-      );
+      const callerIdentity = await identity.getIdentity(req);
+      const token = callerIdentity?.token;
+      const userEntityRef = callerIdentity?.identity.userEntityRef;
 
       const userEntity = userEntityRef
         ? await catalogClient.getEntityByRef(userEntityRef, { token })
@@ -377,7 +380,7 @@ export async function createRouter(
         throw new InputError('Input template is not a template');
       }
 
-      const { token } = parseBearerToken(req.headers.authorization);
+      const token = (await identity.getIdentity(req))?.token;
 
       for (const parameters of [template.spec.parameters ?? []].flat()) {
         const result = validate(body.values, parameters);
@@ -426,42 +429,4 @@ export async function createRouter(
   app.use('/', router);
 
   return app;
-}
-
-function parseBearerToken(header?: string): {
-  token?: string;
-  entityRef?: string;
-} {
-  if (!header) {
-    return {};
-  }
-
-  try {
-    const token = header.match(/^Bearer\s(\S+\.\S+\.\S+)$/i)?.[1];
-    if (!token) {
-      throw new TypeError('Expected Bearer with JWT');
-    }
-
-    const [_header, rawPayload, _signature] = token.split('.');
-    const payload: JsonValue = JSON.parse(
-      Buffer.from(rawPayload, 'base64').toString(),
-    );
-
-    if (
-      typeof payload !== 'object' ||
-      payload === null ||
-      Array.isArray(payload)
-    ) {
-      throw new TypeError('Malformed JWT payload');
-    }
-
-    const sub = payload.sub;
-    if (typeof sub !== 'string') {
-      throw new TypeError('Expected string sub claim');
-    }
-
-    return { entityRef: sub, token };
-  } catch (e) {
-    throw new InputError(`Invalid authorization header: ${stringifyError(e)}`);
-  }
 }

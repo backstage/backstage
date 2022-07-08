@@ -4,7 +4,7 @@
 
 ```ts
 import express from 'express';
-import { IdentityClient } from '@backstage/plugin-auth-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Logger } from 'winston';
 
 // @public
@@ -13,7 +13,7 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 // @public
 export interface RouterOptions {
   // (undocumented)
-  identity: IdentityClient;
+  identity: IdentityApi;
   // (undocumented)
   logger: Logger;
 }

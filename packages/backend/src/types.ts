@@ -28,6 +28,7 @@ import {
   PermissionAuthorizer,
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 
 export type PluginEnvironment = {
   logger: Logger;
@@ -39,4 +40,5 @@ export type PluginEnvironment = {
   tokenManager: TokenManager;
   permissions: PermissionEvaluator | PermissionAuthorizer;
   scheduler: PluginTaskScheduler;
+  identity: IdentityApi;
 };
