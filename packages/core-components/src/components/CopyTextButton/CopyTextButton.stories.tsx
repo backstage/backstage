@@ -40,3 +40,10 @@ export const LongerTooltipDelay = () => (
     tooltipDelay={3000}
   />
 );
+
+export const WithAriaLabel = () => (
+  <CopyTextButton
+    text="The text to copy to clipboard"
+    ariaLabel="This is an aria label"
+  />
+);
