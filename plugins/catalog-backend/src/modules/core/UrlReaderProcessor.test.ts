@@ -61,7 +61,13 @@ describe('UrlReaderProcessor', () => {
 
     server.use(
       rest.get(`${mockApiOrigin}/component.yaml`, (_, res, ctx) =>
-        res(ctx.set({ ETag: 'my-etag' }), ctx.json({ mock: 'entity' })),
+        res(
+          ctx.set({ ETag: 'my-etag' }),
+          ctx.json({
+            kind: 'component',
+            metadata: { name: 'mock-url-entity' },
+          }),
+        ),
       ),
     );
 
@@ -74,15 +80,25 @@ describe('UrlReaderProcessor', () => {
       mockCache,
     );
 
-    expect(emitted.length).toBe(1);
+    expect(emitted.length).toBe(2);
     expect(emitted[0]).toEqual({
       type: 'entity',
       location: spec,
-      entity: { mock: 'entity' },
+      entity: { kind: 'component', metadata: { name: 'mock-url-entity' } },
+    });
+    expect(emitted[1]).toEqual({
+      type: 'refresh',
+      key: 'url:http://localhost/component.yaml',
     });
     expect(mockCache.set).toBeCalledWith('v1', {
       etag: 'my-etag',
-      value: [{ type: 'entity', location: spec, entity: { mock: 'entity' } }],
+      value: [
+        {
+          type: 'entity',
+          location: spec,
+          entity: { kind: 'component', metadata: { name: 'mock-url-entity' } },
+        },
+      ],
     });
     expect(mockCache.set).toBeCalledTimes(1);
   });

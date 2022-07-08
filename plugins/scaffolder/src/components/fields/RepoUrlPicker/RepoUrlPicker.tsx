@@ -89,12 +89,12 @@ export const RepoUrlPicker = (
 
   /* we deal with calling the repo setting here instead of in each components for ease */
   useEffect(() => {
-    if (allowedOwners.length === 1) {
+    if (allowedOwners.length > 0) {
       setState(prevState => ({ ...prevState, owner: allowedOwners[0] }));
     }
   }, [setState, allowedOwners]);
   useEffect(() => {
-    if (allowedRepos.length === 1) {
+    if (allowedRepos.length > 0) {
       setState(prevState => ({ ...prevState, repoName: allowedRepos[0] }));
     }
   }, [setState, allowedRepos]);

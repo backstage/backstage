@@ -48,6 +48,7 @@ describe('DefaultLocationServiceTest', () => {
             name: 'foo',
           },
         },
+        refreshKeys: [],
         deferredEntities: [
           {
             entity: {
@@ -75,6 +76,7 @@ describe('DefaultLocationServiceTest', () => {
           },
         },
         deferredEntities: [],
+        refreshKeys: [],
         relations: [],
         errors: [],
       });
@@ -134,6 +136,7 @@ describe('DefaultLocationServiceTest', () => {
           },
         },
         deferredEntities: [],
+        refreshKeys: [],
         relations: [],
         errors: [],
       });
@@ -161,6 +164,7 @@ describe('DefaultLocationServiceTest', () => {
             name: 'foo',
           },
         },
+        refreshKeys: [],
         deferredEntities: [
           {
             entity: {
@@ -188,6 +192,7 @@ describe('DefaultLocationServiceTest', () => {
           },
         },
         deferredEntities: [],
+        refreshKeys: [],
         relations: [],
         errors: [],
       });
@@ -211,6 +216,7 @@ describe('DefaultLocationServiceTest', () => {
             name: 'bar',
           },
         },
+        refreshKeys: [],
         deferredEntities: [],
         relations: [],
         errors: [],

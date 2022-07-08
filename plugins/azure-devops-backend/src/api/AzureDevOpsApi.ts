@@ -30,6 +30,7 @@ import {
   RepoBuild,
   Team,
   TeamMember,
+  Project,
 } from '@backstage/plugin-azure-devops-common';
 import {
   GitPullRequest,
@@ -47,7 +48,10 @@ import { TeamMember as AdoTeamMember } from 'azure-devops-node-api/interfaces/co
 import { Logger } from 'winston';
 import { PolicyEvaluationRecord } from 'azure-devops-node-api/interfaces/PolicyInterfaces';
 import { WebApi } from 'azure-devops-node-api';
-import { WebApiTeam } from 'azure-devops-node-api/interfaces/CoreInterfaces';
+import {
+  TeamProjectReference,
+  WebApiTeam,
+} from 'azure-devops-node-api/interfaces/CoreInterfaces';
 
 export class AzureDevOpsApi {
   public constructor(
@@ -55,6 +59,20 @@ export class AzureDevOpsApi {
     private readonly webApi: WebApi,
   ) {}
 
+  public async getProjects(): Promise<Project[]> {
+    const client = await this.webApi.getCoreApi();
+    const projectList: TeamProjectReference[] = await client.getProjects();
+
+    const projects: Project[] = projectList.map(project => ({
+      id: project.id,
+      name: project.name,
+      description: project.description,
+    }));
+
+    return projects.sort((a, b) =>
+      a.name && b.name ? a.name.localeCompare(b.name) : 0,
+    );
+  }
   public async getGitRepository(
     projectName: string,
     repoName: string,

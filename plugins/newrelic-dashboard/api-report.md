@@ -14,12 +14,10 @@ export const DashboardSnapshotComponent: ({
   guid,
   name,
   permalink,
-  duration,
 }: {
   guid: string;
   name: string;
   permalink: string;
-  duration: number;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityNewRelicDashboardCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
