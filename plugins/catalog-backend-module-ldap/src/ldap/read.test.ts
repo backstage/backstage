@@ -32,7 +32,11 @@ import {
   resolveRelations,
 } from './read';
 import { RecursivePartial } from './util';
-import { ActiveDirectoryVendor, DefaultLdapVendor, FreeIpaVendor } from './vendors';
+import {
+  ActiveDirectoryVendor,
+  DefaultLdapVendor,
+  FreeIpaVendor,
+} from './vendors';
 
 function user(data: RecursivePartial<UserEntity>): UserEntity {
   return merge(
@@ -252,7 +256,6 @@ describe('readLdapUsers', () => {
     );
   });
 });
-
 
 describe('readLdapGroups', () => {
   const client: jest.Mocked<LdapClient> = {
