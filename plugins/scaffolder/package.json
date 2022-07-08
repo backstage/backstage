@@ -72,7 +72,7 @@
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4",
     "use-immer": "^0.7.0",
-    "yaml": "^1.9.2",
+    "yaml": "^2.0.0",
     "zen-observable": "^0.8.15"
   },
   "peerDependencies": {

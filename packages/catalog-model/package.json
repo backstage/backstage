@@ -47,7 +47,7 @@
     "@types/jest": "^26.0.7",
     "@types/json-schema": "^7.0.5",
     "@types/lodash": "^4.14.151",
-    "yaml": "^1.9.2"
+    "yaml": "^2.0.0"
   },
   "files": [
     "dist",

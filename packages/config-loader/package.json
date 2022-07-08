@@ -47,7 +47,7 @@
     "json-schema-traverse": "^1.0.0",
     "node-fetch": "^2.6.7",
     "typescript-json-schema": "^0.54.0",
-    "yaml": "^1.9.2",
+    "yaml": "^2.0.0",
     "yup": "^0.32.9"
   },
   "devDependencies": {
