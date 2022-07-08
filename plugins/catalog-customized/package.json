@@ -37,8 +37,10 @@
     "@backstage/plugin-catalog": "1.4.0-next.2",
     "@backstage/plugin-catalog-react": "^1.1.2-next.2"
   },
+  "devDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0"
+  },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0"
   },
   "files": [
