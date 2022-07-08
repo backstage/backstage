@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { stringifyEntityRef } from '@backstage/catalog-model';
-import { assertError, serializeError } from '@backstage/errors';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { assertError, serializeError, stringifyError } from '@backstage/errors';
 import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Logger } from 'winston';
@@ -25,7 +25,7 @@ import {
   CatalogProcessingEngine,
   CatalogProcessingOrchestrator,
   EntityProcessingResult,
-} from '../processing/types';
+} from './types';
 import { Stitcher } from '../stitching/Stitcher';
 import { startTaskPipeline } from './TaskPipeline';
 
@@ -42,6 +42,10 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     private readonly stitcher: Stitcher,
     private readonly createHash: () => Hash,
     private readonly pollingIntervalMs: number = 1000,
+    private readonly onProcessingError?: (event: {
+      unprocessedEntity: Entity;
+      errors: Error[];
+    }) => Promise<void> | void,
   ) {}
 
   async start() {
@@ -122,6 +126,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
           );
 
           let hashBuilder = this.createHash().update(errorsString);
+
           if (result.ok) {
             const { entityRefs: parents } =
               await this.processingDatabase.transaction(tx =>
@@ -155,6 +160,22 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
           // just store the errors and trigger a stich so that they become visible to
           // the outside.
           if (!result.ok) {
+            // notify the error listener if the entity can not be processed.
+            Promise.resolve(undefined)
+              .then(() =>
+                this.onProcessingError?.({
+                  unprocessedEntity,
+                  errors: result.errors,
+                }),
+              )
+              .catch(error => {
+                this.logger.debug(
+                  `Processing error listener threw an exception, ${stringifyError(
+                    error,
+                  )}`,
+                );
+              });
+
             await this.processingDatabase.transaction(async tx => {
               await this.processingDatabase.updateProcessedEntityErrors(tx, {
                 id,

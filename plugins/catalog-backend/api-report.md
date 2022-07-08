@@ -144,6 +144,13 @@ export class CatalogBuilder {
     processingInterval: ProcessingIntervalFunction,
   ): CatalogBuilder;
   setProcessingIntervalSeconds(seconds: number): CatalogBuilder;
+  // (undocumented)
+  subscribe(options: {
+    onProcessingError: (event: {
+      unprocessedEntity: Entity;
+      errors: Error[];
+    }) => Promise<void> | void;
+  }): void;
 }
 
 // @alpha
