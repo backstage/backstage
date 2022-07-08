@@ -18,9 +18,9 @@ import { loadBackendConfig } from '@backstage/backend-common';
 import {
   configServiceRef,
   createServiceFactory,
+  loggerToWinstonLogger,
   loggerServiceRef,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from './loggerService';
 
 export const configFactory = createServiceFactory({
   service: configServiceRef,

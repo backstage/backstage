@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { loggerToWinstonLogger } from '@backstage/backend-app-api';
 import {
   configServiceRef,
   createBackendPlugin,
   databaseServiceRef,
   loggerServiceRef,
+  loggerToWinstonLogger,
   permissionsServiceRef,
   urlReaderServiceRef,
   httpRouterServiceRef,

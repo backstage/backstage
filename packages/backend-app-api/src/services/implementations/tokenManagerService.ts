@@ -19,9 +19,9 @@ import {
   loggerServiceRef,
   createServiceFactory,
   tokenManagerServiceRef,
+  loggerToWinstonLogger,
 } from '@backstage/backend-plugin-api';
 import { ServerTokenManager } from '@backstage/backend-common';
-import { loggerToWinstonLogger } from './loggerService';
 
 export const tokenManagerFactory = createServiceFactory({
   service: tokenManagerServiceRef,

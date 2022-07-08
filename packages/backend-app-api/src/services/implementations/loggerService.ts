@@ -23,38 +23,26 @@ import {
 import { Logger as WinstonLogger } from 'winston';
 
 class BackstageLogger implements Logger {
-  constructor(
-    private readonly options: {
-      winston: WinstonLogger;
-    },
-  ) {}
+  static fromWinston(logger: WinstonLogger): BackstageLogger {
+    return new BackstageLogger(logger);
+  }
+
+  private constructor(private readonly winston: WinstonLogger) {}
 
   info(message: string, ...meta: any[]): void {
-    this.options.winston.info(message, ...meta);
+    this.winston.info(message, ...meta);
   }
 
   child(fields: { [name: string]: string }): Logger {
-    return new BackstageLogger({
-      winston: this.options.winston.child(fields),
-    });
+    return new BackstageLogger(this.winston.child(fields));
   }
-
-  toWinston() {
-    return this.options.winston;
-  }
-}
-
-export function loggerToWinstonLogger(logger: Logger): WinstonLogger {
-  return (logger as BackstageLogger).toWinston();
 }
 
 export const loggerFactory = createServiceFactory({
   service: loggerServiceRef,
   deps: {},
   factory: async () => {
-    const root = new BackstageLogger({
-      winston: createRootLogger(),
-    });
+    const root = BackstageLogger.fromWinston(createRootLogger());
     return async (pluginId: string) => {
       return root.child({ pluginId });
     };

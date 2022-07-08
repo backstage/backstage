@@ -19,9 +19,9 @@ import {
   configServiceRef,
   createServiceFactory,
   loggerServiceRef,
+  loggerToWinstonLogger,
   urlReaderServiceRef,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from './loggerService';
 
 export const urlReaderFactory = createServiceFactory({
   service: urlReaderServiceRef,

@@ -20,6 +20,5 @@
  * @packageDocumentation
  */
 
+export * from './services';
 export * from './wiring';
-export * from './services/system/types';
-export * from './services/definitions';
