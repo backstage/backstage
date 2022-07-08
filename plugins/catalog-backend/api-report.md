@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="node" />
 
+import { BackendRegistrable } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
@@ -221,6 +222,9 @@ export type CatalogEnvironment = {
 // @alpha
 export type CatalogPermissionRule<TParams extends unknown[] = unknown[]> =
   PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
+
+// @alpha
+export const catalogPlugin: (option: unknown) => BackendRegistrable;
 
 // @public (undocumented)
 export interface CatalogProcessingEngine {

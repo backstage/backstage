@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-/**
- * The catalog-backend-node module for `@backstage/plugin-catalog-backend`.
- *
- * @packageDocumentation
- */
+import { DatabaseManager } from '@backstage/backend-common';
+import {
+  configServiceRef,
+  createServiceFactory,
+  databaseServiceRef,
+} from '@backstage/backend-plugin-api';
 
-export type { CatalogProcessingExtensionPoint } from './extensions';
-export { catalogProcessingExtentionPoint } from './extensions';
-export * from './api';
-export * from './processing';
+export const databaseFactory = createServiceFactory({
+  service: databaseServiceRef,
+  deps: {
+    configFactory: configServiceRef,
+  },
+  factory: async ({ configFactory }) => {
+    const config = await configFactory('root');
+    const databaseManager = DatabaseManager.fromConfig(config);
+    return async (pluginId: string) => {
+      return databaseManager.forPlugin(pluginId);
+    };
+  },
+});

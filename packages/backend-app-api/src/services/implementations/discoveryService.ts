@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-/**
- * The catalog-backend-node module for `@backstage/plugin-catalog-backend`.
- *
- * @packageDocumentation
- */
+import { SingleHostDiscovery } from '@backstage/backend-common';
+import {
+  configServiceRef,
+  createServiceFactory,
+  discoveryServiceRef,
+} from '@backstage/backend-plugin-api';
 
-export type { CatalogProcessingExtensionPoint } from './extensions';
-export { catalogProcessingExtentionPoint } from './extensions';
-export * from './api';
-export * from './processing';
+export const discoveryFactory = createServiceFactory({
+  service: discoveryServiceRef,
+  deps: {
+    configFactory: configServiceRef,
+  },
+  factory: async ({ configFactory }) => {
+    const config = await configFactory('root');
+    const discovery = SingleHostDiscovery.fromConfig(config);
+    return async () => {
+      return discovery;
+    };
+  },
+});

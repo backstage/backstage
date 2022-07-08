@@ -9,7 +9,8 @@
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "types": "dist/index.d.ts",
+    "alphaTypes": "dist/index.alpha.d.ts"
   },
   "backstage": {
     "role": "backend-plugin"
@@ -25,7 +26,7 @@
   ],
   "scripts": {
     "start": "backstage-cli package start",
-    "build": "backstage-cli package build",
+    "build": "backstage-cli package build --experimental-type-build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
@@ -42,6 +43,8 @@
     "@backstage/integration": "^1.2.2-next.2",
     "@backstage/plugin-catalog-backend": "^1.2.1-next.2",
     "@backstage/plugin-scaffolder-common": "^1.1.2-next.0",
+    "@backstage/backend-plugin-api": "^0.0.0",
+    "@backstage/plugin-catalog-node": "^0.0.0",
     "@backstage/types": "^1.0.0",
     "@gitbeaker/core": "^35.6.0",
     "@gitbeaker/node": "^35.1.0",
@@ -93,6 +96,7 @@
     "yaml": "^2.0.0"
   },
   "files": [
+    "alpha",
     "dist",
     "migrations",
     "config.d.ts",

@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-/**
- * The catalog-backend-node module for `@backstage/plugin-catalog-backend`.
- *
- * @packageDocumentation
- */
+import {
+  configServiceRef,
+  createServiceFactory,
+  schedulerServiceRef,
+} from '@backstage/backend-plugin-api';
+import { TaskScheduler } from '@backstage/backend-tasks';
 
-export type { CatalogProcessingExtensionPoint } from './extensions';
-export { catalogProcessingExtentionPoint } from './extensions';
-export * from './api';
-export * from './processing';
+export const schedulerFactory = createServiceFactory({
+  service: schedulerServiceRef,
+  deps: {
+    configFactory: configServiceRef,
+  },
+  factory: async ({ configFactory }) => {
+    const config = await configFactory('root');
+    const taskScheduler = TaskScheduler.fromConfig(config);
+    return async (pluginId: string) => {
+      return taskScheduler.forPlugin(pluginId);
+    };
+  },
+});
