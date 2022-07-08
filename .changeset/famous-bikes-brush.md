@@ -2,7 +2,7 @@
 '@backstage/core-plugin-api': patch
 ---
 
-Introduced plugin options for the components, to be able to customise existing components.
-Those customizations are stored in React context of the plugin.
-The configurable options could be defined during the creation of the plugin via `__experimentalConfigure` method.
-And the user of the plugin can redefine it with.
+Introduced a new experimental feature that allows you to declare plugin-wide options for your plugin by defining
+`__experimentalConfigure` in your `createPlugin` options. See https://backstage.io/docs/plugins/customization.md for more information.
+
+This is an experimental feature and it will have breaking changes in the future.
