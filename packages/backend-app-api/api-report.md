@@ -6,10 +6,20 @@
 import { AnyServiceFactory } from '@backstage/backend-plugin-api';
 import { BackendRegistrable } from '@backstage/backend-plugin-api';
 
-// Warning: (ae-forgotten-export) The symbol "CreateBackendOptions" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "Backend" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "createBackend" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export interface Backend {
+  // (undocumented)
+  add(extension: BackendRegistrable): void;
+  // (undocumented)
+  start(): Promise<void>;
+}
+
 // @public (undocumented)
 export function createBackend(options?: CreateBackendOptions): Backend;
+
+// @public (undocumented)
+export interface CreateBackendOptions {
+  // (undocumented)
+  apis: AnyServiceFactory[];
+}
 ```

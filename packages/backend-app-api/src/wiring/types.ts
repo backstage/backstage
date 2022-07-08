@@ -23,6 +23,9 @@ import {
 import { defaultServiceFactories } from '../services/implementations';
 import { BackstageBackend } from './BackstageBackend';
 
+/**
+ * @public
+ */
 export interface Backend {
   add(extension: BackendRegistrable): void;
   start(): Promise<void>;
@@ -36,14 +39,20 @@ export interface BackendRegisterInit {
   init: (deps: { [name: string]: unknown }) => Promise<void>;
 }
 
-interface CreateBackendOptions {
+/**
+ * @public
+ */
+export interface CreateBackendOptions {
   apis: AnyServiceFactory[];
 }
 
-export type ApiHolder = {
+export type ServiceHolder = {
   get<T>(api: ServiceRef<T>): FactoryFunc<T> | undefined;
 };
 
+/**
+ * @public
+ */
 export function createBackend(options?: CreateBackendOptions): Backend {
   // TODO: merge with provided APIs
   return new BackstageBackend([

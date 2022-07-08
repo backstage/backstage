@@ -1,5 +1,7 @@
 # @backstage/backend-app-api
 
+**This package is HIGHLY EXPERIMENTAL, do not use this for production**
+
 This package provides the core API used by Backstage backend apps.
 
 ## Installation

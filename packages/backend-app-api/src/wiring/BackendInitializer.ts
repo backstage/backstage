@@ -14,31 +14,38 @@
  * limitations under the License.
  */
 
-import { BackendRegistrable, ServiceRef } from '@backstage/backend-plugin-api';
-import { BackendRegisterInit, ApiHolder } from './types';
+import {
+  BackendRegistrable,
+  ExtensionPoint,
+  ServiceRef,
+} from '@backstage/backend-plugin-api';
+import { BackendRegisterInit, ServiceHolder } from './types';
+
+type ServiceOrExtensionPoint = ExtensionPoint<unknown> | ServiceRef<unknown>;
 
 export class BackendInitializer {
   #started = false;
   #extensions = new Map<BackendRegistrable, unknown>();
-  // #stops = [];
   #registerInits = new Array<BackendRegisterInit>();
-  #apis = new Map<ServiceRef<unknown>, unknown>();
-  #apiHolder: ApiHolder;
+  #extensionPoints = new Map<ServiceOrExtensionPoint, unknown>();
+  #serviceHolder: ServiceHolder;
 
-  constructor(apiHolder: ApiHolder) {
-    this.#apiHolder = apiHolder;
+  constructor(serviceHolder: ServiceHolder) {
+    this.#serviceHolder = serviceHolder;
   }
 
   async #getInitDeps(
-    deps: { [name: string]: ServiceRef<unknown> },
+    deps: { [name: string]: ServiceOrExtensionPoint },
     pluginId: string,
   ) {
     return Object.fromEntries(
       await Promise.all(
-        Object.entries(deps).map(async ([name, apiRef]) => [
+        Object.entries(deps).map(async ([name, ref]) => [
           name,
-          this.#apis.get(apiRef) ||
-            (await this.#apiHolder.get(apiRef)!(pluginId)),
+          this.#extensionPoints.get(ref) ||
+            (await this.#serviceHolder.get(ref as ServiceRef<unknown>)!(
+              pluginId,
+            )),
         ]),
       ),
     );
@@ -67,15 +74,15 @@ export class BackendInitializer {
 
       console.log('Registering', extension.id);
       extension.register({
-        registerExtensionPoint: (api, impl) => {
+        registerExtensionPoint: (extensionPointRef, impl) => {
           if (registerInit) {
             throw new Error('registerExtensionPoint called after registerInit');
           }
-          if (this.#apis.has(api)) {
-            throw new Error(`API ${api.id} already registered`);
+          if (this.#extensionPoints.has(extensionPointRef)) {
+            throw new Error(`API ${extensionPointRef.id} already registered`);
           }
-          this.#apis.set(api, impl);
-          provides.add(api);
+          this.#extensionPoints.set(extensionPointRef, impl);
+          provides.add(extensionPointRef);
         },
         registerInit: registerOptions => {
           if (registerInit) {
@@ -105,19 +112,10 @@ export class BackendInitializer {
     const orderedRegisterResults = this.#resolveInitOrder(this.#registerInits);
 
     for (const registerInit of orderedRegisterResults) {
-      // TODO: DI
       const deps = await this.#getInitDeps(registerInit.deps, registerInit.id);
       await registerInit.init(deps);
-      // Maybe return stop? or lifecycle API
-      // this.#stops.push();
     }
   }
-
-  // async stop(): Promise<void> {
-  //   for (const stop of this.#stops) {
-  //     await stop.stop();
-  //   }
-  // }
 
   private validateSetup() {}
 
@@ -133,13 +131,13 @@ export class BackendInitializer {
       for (const registerInit of registerInitsToOrder) {
         const unInitializedDependents = [];
 
-        for (const api of registerInit.provides) {
+        for (const serviceRef of registerInit.provides) {
           if (
             registerInitsToOrder.some(
-              init => init !== registerInit && init.consumes.has(api),
+              init => init !== registerInit && init.consumes.has(serviceRef),
             )
           ) {
-            unInitializedDependents.push(api);
+            unInitializedDependents.push(serviceRef);
           }
         }
 

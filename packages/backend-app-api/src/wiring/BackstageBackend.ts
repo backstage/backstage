@@ -19,16 +19,16 @@ import {
   BackendRegistrable,
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
-import { CoreApiRegistry } from './CoreApiRegistry';
+import { ServiceRegistry } from './ServiceRegistry';
 import { Backend } from './types';
 
 export class BackstageBackend implements Backend {
-  #coreApis: CoreApiRegistry;
+  #services: ServiceRegistry;
   #initializer: BackendInitializer;
 
   constructor(apiFactories: AnyServiceFactory[]) {
-    this.#coreApis = new CoreApiRegistry(apiFactories);
-    this.#initializer = new BackendInitializer(this.#coreApis);
+    this.#services = new ServiceRegistry(apiFactories);
+    this.#initializer = new BackendInitializer(this.#services);
   }
 
   add(extension: BackendRegistrable): void {
