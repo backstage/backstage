@@ -4900,6 +4900,22 @@
     universal-github-app-jwt "^1.0.1"
     universal-user-agent "^6.0.0"
 
+"@octokit/auth-app@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/@octokit/auth-app/-/auth-app-4.0.0.tgz#3e2699047137de3915ea32367b8379bbdc44bf20"
+  integrity sha512-TFNu24oY9c3VyaVIkZxBTokZ3Q3Qw5N+dMNMUa0sGCVbJb1ddyEyFrLBua6KILgw+2QLnBh/igP6HUhNT5HlpQ==
+  dependencies:
+    "@octokit/auth-oauth-app" "^4.3.0"
+    "@octokit/auth-oauth-user" "^1.2.3"
+    "@octokit/request" "^5.6.0"
+    "@octokit/request-error" "^2.1.0"
+    "@octokit/types" "^6.0.3"
+    "@types/lru-cache" "^5.1.0"
+    deprecation "^2.3.1"
+    lru-cache "^6.0.0"
+    universal-github-app-jwt "^1.0.1"
+    universal-user-agent "^6.0.0"
+
 "@octokit/auth-oauth-app@^4.0.0", "@octokit/auth-oauth-app@^4.3.0":
   version "4.3.0"
   resolved "https://registry.npmjs.org/@octokit/auth-oauth-app/-/auth-oauth-app-4.3.0.tgz#de02f184360ffd7cfccef861053784fc4410e7ea"
