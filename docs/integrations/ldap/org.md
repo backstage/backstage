@@ -12,7 +12,7 @@ groups - directly from an LDAP compatible service. The result is a hierarchy of
 [`Group`](../../features/software-catalog/descriptor-format.md#kind-group) kind
 entities that mirror your org setup.
 
-## Suported vendors
+## Supported vendors
 
 Currently, Backstage only supports the following LDAP vendors:
 
