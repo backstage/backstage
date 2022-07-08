@@ -112,6 +112,8 @@ of the `SearchType` component.
 </Paper>
 ```
 
+> Check out the documentation around [integrating search into plugins](../../plugins/integrating-search-into-plugins.md#create-a-collator) for how to create your own collator.
+
 ## How to limit what can be searched in the Software Catalog
 
 The Software Catalog includes a wealth of information about the components,
