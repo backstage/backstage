@@ -4901,13 +4901,13 @@
     universal-user-agent "^6.0.0"
 
 "@octokit/auth-app@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/@octokit/auth-app/-/auth-app-4.0.0.tgz#3e2699047137de3915ea32367b8379bbdc44bf20"
-  integrity sha512-TFNu24oY9c3VyaVIkZxBTokZ3Q3Qw5N+dMNMUa0sGCVbJb1ddyEyFrLBua6KILgw+2QLnBh/igP6HUhNT5HlpQ==
+  version "4.0.2"
+  resolved "https://registry.npmjs.org/@octokit/auth-app/-/auth-app-4.0.2.tgz#5a271413e539e57feaf1013d94338b85d5c93003"
+  integrity sha512-OAL8jp8/3OfdRHpe1NJ3G6LlFIDY7GDLowr0NnoOO6ZXRk7VO5lOqgHPOtg9KqcV9LYNZBhvvHKfHoCrVtcFXg==
   dependencies:
     "@octokit/auth-oauth-app" "^4.3.0"
-    "@octokit/auth-oauth-user" "^1.2.3"
-    "@octokit/request" "^5.6.0"
+    "@octokit/auth-oauth-user" "^2.0.0"
+    "@octokit/request" "^6.0.0"
     "@octokit/request-error" "^2.1.0"
     "@octokit/types" "^6.0.3"
     "@types/lru-cache" "^5.1.0"
@@ -4959,6 +4959,18 @@
     "@octokit/auth-oauth-device" "^3.1.1"
     "@octokit/oauth-methods" "^1.1.0"
     "@octokit/request" "^5.4.14"
+    "@octokit/types" "^6.12.2"
+    btoa-lite "^1.0.0"
+    universal-user-agent "^6.0.0"
+
+"@octokit/auth-oauth-user@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@octokit/auth-oauth-user/-/auth-oauth-user-2.0.0.tgz#7fe448bb06a4c55102098dd7105670e723d2f7ec"
+  integrity sha512-rrXWR2jdM9HwrM8C5ozGt8oz6rOK5MI/dNEUQ7uUusXBAvnTqRpT9DZ8ekFZKTe8U0dAKq+382NWiZX26rx1kw==
+  dependencies:
+    "@octokit/auth-oauth-device" "^3.1.1"
+    "@octokit/oauth-methods" "^1.1.0"
+    "@octokit/request" "^6.0.0"
     "@octokit/types" "^6.12.2"
     btoa-lite "^1.0.0"
     universal-user-agent "^6.0.0"
