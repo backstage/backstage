@@ -14,11 +14,7 @@ entities that mirror your org setup.
 
 ## Supported vendors
 
-Currently, Backstage only supports the following LDAP vendors:
-
-1. OpenLDAP (default)
-2. Active Directory
-3. FreeIPA
+Backstage in general supports OpenLDAP compatible vendors, as well as Active Directory and FreeIPA. If you are using a vendor that does not seem to be supported, please [file an issue](https://github.com/backstage/backstage/issues/new?assignees=&labels=enhancement&template=feature_template.md).
 
 ## Installation
 
