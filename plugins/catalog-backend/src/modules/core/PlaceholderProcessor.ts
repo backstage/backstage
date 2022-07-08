@@ -24,7 +24,7 @@ import {
   CatalogProcessorEmit,
   LocationSpec,
   processingResult,
-} from '../../api';
+} from '@backstage/plugin-catalog-node';
 
 /** @public */
 export type PlaceholderResolverRead = (url: string) => Promise<Buffer>;

@@ -22,14 +22,18 @@ import {
 } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
 import { Logger } from 'winston';
-import { CatalogProcessorResult, EntityRelationSpec } from '../api';
+import {
+  CatalogProcessorResult,
+  DeferredEntity,
+  EntityRelationSpec,
+} from '@backstage/plugin-catalog-node';
 import { locationSpecToLocationEntity } from '../util/conversion';
-import { DeferredEntity, RefreshKeyData } from './types';
 import {
   getEntityLocationRef,
   getEntityOriginLocationRef,
   validateEntityEnvelope,
 } from './util';
+import { RefreshKeyData } from './types';
 
 /**
  * Helper class for aggregating all of the emitted data from processors.
