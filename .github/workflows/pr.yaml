@@ -26,4 +26,4 @@ jobs:
           installation-id: ${{ secrets.BACKSTAGE_GOALIE_INSTALLATION_ID }}
           project-id: PVT_kwDOBFKqdc02LQ
           excluded-users: ${{ secrets.OOO_USERS }}
-          owning-teams: '@backstage/techdocs'
+          owning-teams: '@backstage/techdocs-core'
