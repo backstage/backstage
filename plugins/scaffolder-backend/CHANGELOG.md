@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.3.1
+
+### Patch Changes
+
+- Don't resolve symlinks, treat them as binary files and copy them as-is
+
 ## 1.3.0
 
 ### Minor Changes
