@@ -75,6 +75,7 @@ export interface BackendPluginConfig<TOptions> {
   register(reg: BackendInitRegistry, options: TOptions): void;
 }
 
+// TODO: Make option optional in the returned factory if they are indeed optional
 /** @public */
 export function createBackendPlugin<TOptions>(
   config: BackendPluginConfig<TOptions>,
@@ -97,6 +98,7 @@ export interface BackendModuleConfig<TOptions> {
   ): void;
 }
 
+// TODO: Make option optional in the returned factory if they are indeed optional
 /** @public */
 export function createBackendModule<TOptions>(
   config: BackendModuleConfig<TOptions>,
@@ -104,6 +106,7 @@ export function createBackendModule<TOptions>(
   return options => ({
     id: `${config.pluginId}.${config.moduleId}`,
     register(register) {
+      // TODO: Hide registerExtensionPoint
       return config.register(register, options);
     },
   });
