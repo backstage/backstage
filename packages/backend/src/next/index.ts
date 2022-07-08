@@ -16,7 +16,7 @@
 
 import { createBackend } from '@backstage/backend-app-api';
 import { catalogPlugin } from '@backstage/plugin-catalog-backend';
-import { scaffolderCatalogExtension } from '@backstage/plugin-scaffolder-backend';
+import { scaffolderCatalogModule } from '@backstage/plugin-scaffolder-backend';
 
 // export const appPlugin = createBackendPlugin({
 //   id: 'app',
@@ -47,5 +47,5 @@ const backend = createBackend({
 });
 
 backend.add(catalogPlugin({}));
-backend.add(scaffolderCatalogExtension({}));
+backend.add(scaffolderCatalogModule({}));
 backend.start();

@@ -21,8 +21,8 @@ import { ScaffolderEntitiesProcessor } from '../processor';
  * @alpha
  * Registers the ScaffolderEntitiesProcessor with the catalog processing extension point.
  */
-export const scaffolderCatalogExtension = createBackendModule({
-  moduleId: 'scaffolder.extention',
+export const scaffolderCatalogModule = createBackendModule({
+  moduleId: 'scaffolder.module',
   pluginId: 'catalog',
   register(env) {
     env.registerInit({
