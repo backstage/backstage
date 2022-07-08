@@ -359,9 +359,9 @@
     uuid "^8.3.0"
 
 "@azure/storage-blob@^12.5.0":
-  version "12.10.0"
-  resolved "https://registry.npmjs.org/@azure/storage-blob/-/storage-blob-12.10.0.tgz#b92269f45a1765700a900b41ca81a474a6e36ea4"
-  integrity sha512-FBEPKGnvtQJS8V8Tg1P9obgmVD9AodrIfwtwhBpsjenClhFyugMp3HPJY0tF7rInUB/CivKBCbnQKrUnKxqxzw==
+  version "12.11.0"
+  resolved "https://registry.npmjs.org/@azure/storage-blob/-/storage-blob-12.11.0.tgz#2e27902ab293715411ab1f7c8fae422ad0b4b827"
+  integrity sha512-na+FisoARuaOWaHWpmdtk3FeuTWf2VWamdJ9/TJJzj5ZdXPLC3juoDgFs6XVuJIoK30yuBpyFBEDXVRK4pB7Tg==
   dependencies:
     "@azure/abort-controller" "^1.0.0"
     "@azure/core-http" "^2.0.0"
