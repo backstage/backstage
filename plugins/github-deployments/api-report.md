@@ -47,7 +47,7 @@ export const EntityGithubDeploymentsCard: (props: {
 // Warning: (ae-missing-release-tag) "githubDeploymentsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const githubDeploymentsPlugin: BackstagePlugin<{}, {}>;
+export const githubDeploymentsPlugin: BackstagePlugin<{}, {}, {}>;
 
 // Warning: (ae-forgotten-export) The symbol "GithubDeploymentsTableProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "GithubDeploymentsTable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

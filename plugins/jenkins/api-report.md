@@ -108,6 +108,7 @@ const jenkinsPlugin: BackstagePlugin<
   {
     entityContent: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export { jenkinsPlugin };

@@ -365,7 +365,8 @@ export const scaffolderPlugin: BackstagePlugin<
   },
   {
     registerComponent: ExternalRouteRef<undefined, true>;
-  }
+  },
+  {}
 >;
 
 // @public
