@@ -12,6 +12,14 @@ groups - directly from an LDAP compatible service. The result is a hierarchy of
 [`Group`](../../features/software-catalog/descriptor-format.md#kind-group) kind
 entities that mirror your org setup.
 
+## Suported vendors
+
+Currently, Backstage only supports the following LDAP vendors:
+
+1. OpenLDAP (default)
+2. Active Directory
+3. FreeIPA
+
 ## Installation
 
 This guide will use the Entity Provider method. If you for some reason prefer
