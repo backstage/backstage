@@ -13,6 +13,8 @@ import { ServiceRef } from '@backstage/backend-plugin-api';
 // @alpha (undocumented)
 export interface CatalogProcessingExtensionPoint {
   // (undocumented)
+  addEntityProvider(provider: EntityProvider): void;
+  // (undocumented)
   addProcessor(processor: CatalogProcessor): void;
 }
 

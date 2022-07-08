@@ -33,6 +33,7 @@ class BackstageLoggerTransport extends Transport {
   }
 }
 
+/** @public */
 export function loggerToWinstonLogger(
   logger: BackstageLogger,
   opts?: TransportStreamOptions,

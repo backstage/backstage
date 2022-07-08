@@ -545,9 +545,7 @@ export type RunCommandOptions = {
 };
 
 // @alpha
-export const scaffolderCatalogExtension: (
-  option: unknown,
-) => BackendRegistrable;
+export const scaffolderCatalogModule: (option: unknown) => BackendRegistrable;
 
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {

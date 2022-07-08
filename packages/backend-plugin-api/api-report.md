@@ -5,6 +5,7 @@
 ```ts
 import { Config } from '@backstage/config';
 import { Handler } from 'express';
+import { Logger as Logger_2 } from 'winston';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PluginCacheManager } from '@backstage/backend-common';
@@ -12,6 +13,7 @@ import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TokenManager } from '@backstage/backend-common';
+import { TransportStreamOptions } from 'winston-transport';
 import { UrlReader } from '@backstage/backend-common';
 
 // @public (undocumented)
@@ -146,6 +148,12 @@ export interface Logger {
 
 // @public (undocumented)
 export const loggerServiceRef: ServiceRef<Logger>;
+
+// @public (undocumented)
+export function loggerToWinstonLogger(
+  logger: Logger,
+  opts?: TransportStreamOptions,
+): Logger_2;
 
 // @public (undocumented)
 export const permissionsServiceRef: ServiceRef<
