@@ -53,6 +53,7 @@ const useStyles = makeStyles(theme => ({
           .opblock-summary-operation-id,
           .opblock-summary-path,
           .opblock-summary-path__deprecated,
+          .opblock-description-wrapper,
           .opblock-external-docs-wrapper,
           .opblock-section-header .btn,
           .opblock-section-header>label,
@@ -66,7 +67,7 @@ const useStyles = makeStyles(theme => ({
         fontFamily: theme.typography.fontFamily,
         color: theme.palette.text.primary,
       },
-      [`& .opblock .opblock-section-header, 
+      [`& .opblock .opblock-section-header,
           .model-box,
           section.models .model-container`]: {
         background: theme.palette.background.default,
@@ -75,7 +76,7 @@ const useStyles = makeStyles(theme => ({
           .parameter__in`]: {
         color: theme.palette.text.disabled,
       },
-      [`& table.model, 
+      [`& table.model,
           .parameter__type,
           .model.model-title,
           .model-title,
@@ -91,7 +92,7 @@ const useStyles = makeStyles(theme => ({
       [`& .parameter__name.required:after`]: {
         color: theme.palette.warning.dark,
       },
-      [`& table.model, 
+      [`& table.model,
           table.model .model,
           .opblock-external-docs-wrapper`]: {
         fontSize: theme.typography.fontSize,
@@ -104,7 +105,7 @@ const useStyles = makeStyles(theme => ({
         color: theme.palette.text.hint,
         backgroundColor: theme.palette.background.paper,
       },
-      [`& .opblock-summary-method, 
+      [`& .opblock-summary-method,
           .info a`]: {
         fontFamily: theme.typography.fontFamily,
       },
