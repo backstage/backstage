@@ -57,7 +57,7 @@ The recommended way of instantiating the catalog backend classes is to use the
 `CatalogBuilder`, as illustrated in the
 [example backend here](https://github.com/backstage/backstage/blob/master/packages/backend/src/plugins/catalog.ts).
 We will create a new
-[`EntityProvider`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/api/provider.ts)
+[`EntityProvider`](https://github.com/backstage/backstage/blob/master/plugins/catalog-node/src/api/provider.ts)
 subclass that can be added to this catalog builder.
 
 Let's make a simple provider that can refresh a set of entities based on a
@@ -79,7 +79,7 @@ import { Entity } from '@backstage/catalog-model';
 import {
   EntityProvider,
   EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 
 /**
  * Provides entities from fictional frobs service.
@@ -354,7 +354,7 @@ The recommended way of instantiating the catalog backend classes is to use the
 `CatalogBuilder`, as illustrated in the
 [example backend here](https://github.com/backstage/backstage/blob/master/packages/backend/src/plugins/catalog.ts).
 We will create a new
-[`CatalogProcessor`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/api/processor.ts)
+[`CatalogProcessor`](https://github.com/backstage/backstage/blob/master/plugins/catalog-node/src/api/processor.ts)
 subclass that can be added to this catalog builder.
 
 It is up to you where you put the code for this new processor class. For quick
@@ -371,7 +371,7 @@ import {
   CatalogProcessor,
   CatalogProcessorEmit,
   LocationSpec,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 
 // A processor that reads from the fictional System-X
 export class SystemXReaderProcessor implements CatalogProcessor {
@@ -455,7 +455,7 @@ import {
   CatalogProcessorCache,
   CatalogProcessorParser,
   LocationSpec,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 
 // It's recommended to always bump the CACHE_KEY version if you make
 // changes to the processor implementation or CacheItem.

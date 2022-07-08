@@ -17,7 +17,7 @@ import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import { CatalogProcessorResult } from '../../api';
+import { CatalogProcessorResult } from '@backstage/plugin-catalog-node';
 import {
   jsonPlaceholderResolver,
   PlaceholderProcessor,
@@ -414,7 +414,7 @@ describe('yamlPlaceholderResolver', () => {
   it('rejects invalid yaml', async () => {
     read.mockResolvedValue(Buffer.from('a: 1\n----\n', 'utf-8'));
     await expect(yamlPlaceholderResolver(params)).rejects.toThrow(
-      'Placeholder $a found an error in the data at ./file.yaml, YAMLSemanticError: Implicit map keys need to be followed by map values',
+      /Placeholder \$a found an error in the data at .\/file.yaml, YAMLParseError: Implicit map keys need to be followed by map values at line 2, column 1:\s+a: 1/,
     );
   });
 
