@@ -14,7 +14,4 @@
  * limitations under the License.
  */
 
-export type { CatalogProcessingEngine } from './types';
-
-export { createRandomProcessingInterval } from './refresh';
-export type { ProcessingIntervalFunction } from './refresh';
+export type { DeferredEntity } from './types';

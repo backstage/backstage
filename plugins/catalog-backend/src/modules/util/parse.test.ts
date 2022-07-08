@@ -15,7 +15,7 @@
  */
 
 import { parseEntityYaml } from './parse';
-import { processingResult } from '../../api';
+import { processingResult } from '@backstage/plugin-catalog-node';
 
 const testLoc = {
   target: 'my-loc-target',

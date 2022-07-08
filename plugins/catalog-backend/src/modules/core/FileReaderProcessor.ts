@@ -24,7 +24,7 @@ import {
   CatalogProcessorParser,
   LocationSpec,
   processingResult,
-} from '../../api';
+} from '@backstage/plugin-catalog-node';
 
 const glob = promisify(g);
 
