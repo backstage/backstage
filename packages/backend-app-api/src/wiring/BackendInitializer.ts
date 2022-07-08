@@ -69,7 +69,7 @@ export class BackendInitializer {
       extension.register({
         registerExtensionPoint: (api, impl) => {
           if (registerInit) {
-            throw new Error('registerInitApi called after registerInit');
+            throw new Error('registerExtensionPoint called after registerInit');
           }
           if (this.#apis.has(api)) {
             throw new Error(`API ${api.id} already registered`);
