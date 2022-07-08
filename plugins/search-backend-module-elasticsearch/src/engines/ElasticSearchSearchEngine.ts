@@ -107,6 +107,8 @@ function isBlank(str: string) {
   return (isEmpty(str) && !isNumber(str)) || nan(str);
 }
 
+const DEFAULT_INDEXER_BATCH_SIZE = 1000;
+
 /**
  * @public
  */
@@ -119,6 +121,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     private readonly aliasPostfix: string,
     private readonly indexPrefix: string,
     private readonly logger: Logger,
+    private readonly batchSize: number,
     highlightOptions?: ElasticSearchHighlightOptions,
   ) {
     this.elasticSearchClientWrapper =
@@ -156,6 +159,8 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       aliasPostfix,
       indexPrefix,
       logger,
+      config.getOptionalNumber('search.elasticsearch.batchSize') ??
+        DEFAULT_INDEXER_BATCH_SIZE,
       config.getOptional<ElasticSearchHighlightOptions>(
         'search.elasticsearch.highlightOptions',
       ),
@@ -255,6 +260,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       alias,
       elasticSearchClientWrapper: this.elasticSearchClientWrapper,
       logger: this.logger,
+      batchSize: this.batchSize,
     });
 
     // Attempt cleanup upon failure.

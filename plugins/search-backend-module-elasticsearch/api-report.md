@@ -315,6 +315,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     aliasPostfix: string,
     indexPrefix: string,
     logger: Logger,
+    batchSize: number,
     highlightOptions?: ElasticSearchHighlightOptions,
   );
   // (undocumented)
@@ -361,6 +362,7 @@ export type ElasticSearchSearchEngineIndexerOptions = {
   alias: string;
   logger: Logger;
   elasticSearchClientWrapper: ElasticSearchClientWrapper;
+  batchSize: number;
 };
 
 // @public (undocumented)
