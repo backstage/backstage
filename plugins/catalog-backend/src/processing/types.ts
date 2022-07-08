@@ -16,7 +16,10 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
-import { EntityRelationSpec } from '../api';
+import {
+  DeferredEntity,
+  EntityRelationSpec,
+} from '@backstage/plugin-catalog-node';
 
 /**
  * The request to process an entity.
@@ -28,7 +31,7 @@ export type EntityProcessingRequest = {
 };
 /**
  * The result of processing an entity.
- * @public
+ * @internal
  */
 export type EntityProcessingResult =
   | {
@@ -47,7 +50,6 @@ export type EntityProcessingResult =
 
 /**
  * A string to associate to the entity itself.
- * @public
  */
 export type RefreshKeyData = {
   key: string;
@@ -60,15 +62,6 @@ export type RefreshKeyData = {
 export interface CatalogProcessingOrchestrator {
   process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
 }
-
-/**
- * Entities that are not yet processed.
- * @public
- */
-export type DeferredEntity = {
-  entity: Entity;
-  locationKey?: string;
-};
 
 /** @public */
 export interface CatalogProcessingEngine {

@@ -34,6 +34,8 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "@backstage/backend-plugin-api": "^0.0.0",
+    "@backstage/plugin-catalog-node": "^0.0.0",
     "@backstage/backend-common": "^0.14.1-next.2",
     "@backstage/catalog-client": "^1.0.4-next.1",
     "@backstage/catalog-model": "^1.1.0-next.2",
@@ -63,7 +65,7 @@
     "prom-client": "^14.0.1",
     "uuid": "^8.0.0",
     "winston": "^3.2.1",
-    "yaml": "^1.9.2",
+    "yaml": "^2.0.0",
     "yn": "^4.0.0",
     "zod": "^3.11.6"
   },

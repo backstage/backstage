@@ -19,7 +19,7 @@ import {
   CatalogProcessorEntityResult,
   CatalogProcessorErrorResult,
   CatalogProcessorResult,
-} from '../../api';
+} from '@backstage/plugin-catalog-node';
 import path from 'path';
 import { defaultEntityDataParser } from '../util/parse';
 
