@@ -19,7 +19,7 @@
  *
  * @public
  */
-export interface ServiceRef<T> {
+export type ServiceRef<T> = {
   id: string;
 
   /**
@@ -31,7 +31,7 @@ export interface ServiceRef<T> {
   toString(): string;
 
   $$ref: 'service';
-}
+};
 
 type TypesToServiceRef<T> = { [key in keyof T]: ServiceRef<T[key]> };
 type DepsToDepFactories<T> = {

@@ -21,7 +21,7 @@ import { ServiceRef } from '../services/system/types';
  *
  * @public
  */
-export interface ExtensionPoint<T> {
+export type ExtensionPoint<T> = {
   id: string;
 
   /**
@@ -34,7 +34,7 @@ export interface ExtensionPoint<T> {
   toString(): string;
 
   $$ref: 'extension-point';
-}
+};
 
 export function createExtensionPoint<T>(options: {
   id: string;
