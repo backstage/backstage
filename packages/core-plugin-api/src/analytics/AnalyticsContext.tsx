@@ -61,7 +61,7 @@ export const useAnalyticsContext = (): AnalyticsContextValue => {
  * Analytics contexts are additive, meaning the context ultimately emitted with
  * an event is the combination of all contexts in the parent tree.
  *
- * @alpha
+ * @public
  */
 export const AnalyticsContext = (options: {
   attributes: Partial<AnalyticsContextValue>;
