@@ -27,7 +27,7 @@ import {
   TemplateFilter,
   SecureTemplater,
 } from '../../../../lib/templating/SecureTemplater';
-import path from 'node:path';
+import path from 'path';
 
 /**
  * Downloads a skeleton, templates variables into file and directory names and content.
