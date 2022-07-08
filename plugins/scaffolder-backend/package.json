@@ -43,7 +43,7 @@
     "@backstage/integration": "^1.2.2-next.2",
     "@backstage/plugin-catalog-backend": "^1.2.1-next.2",
     "@backstage/plugin-scaffolder-common": "^1.1.2-next.0",
-    "@backstage/plugin-auth-node": "^0.0.1",
+    "@backstage/plugin-auth-node": "^0.2.3-next.1",
     "@backstage/backend-plugin-api": "^0.0.0",
     "@backstage/plugin-catalog-node": "^0.0.0",
     "@backstage/types": "^1.0.0",
