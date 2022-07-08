@@ -28,17 +28,27 @@ import {
   CatalogProcessor,
   CatalogProcessingExtensionPoint,
   catalogProcessingExtentionPoint,
+  EntityProvider,
 } from '@backstage/plugin-catalog-node';
 
 class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
   #processors = new Array<CatalogProcessor>();
+  #entityProviders = new Array<EntityProvider>();
 
   addProcessor(processor: CatalogProcessor): void {
     this.#processors.push(processor);
   }
 
+  addEntityProvider(provider: EntityProvider): void {
+    this.#entityProviders.push(provider);
+  }
+
   get processors() {
     return this.#processors;
+  }
+
+  get entityProviders() {
+    return this.#entityProviders;
   }
 }
 
@@ -82,6 +92,7 @@ export const catalogPlugin = createBackendPlugin({
           logger: winstonLogger,
         });
         builder.addProcessor(...processingExtensions.processors);
+        builder.addEntityProvider(...processingExtensions.entityProviders);
         const { processingEngine, router } = await builder.build();
 
         await processingEngine.start();

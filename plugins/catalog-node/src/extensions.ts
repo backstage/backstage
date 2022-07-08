@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { createServiceRef } from '@backstage/backend-plugin-api';
+import { EntityProvider } from './api';
 import { CatalogProcessor } from './api/processor';
 
 /**
@@ -21,6 +22,7 @@ import { CatalogProcessor } from './api/processor';
  */
 export interface CatalogProcessingExtensionPoint {
   addProcessor(processor: CatalogProcessor): void;
+  addEntityProvider(provider: EntityProvider): void;
 }
 
 /**
