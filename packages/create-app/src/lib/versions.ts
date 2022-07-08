@@ -49,6 +49,7 @@ import { version as theme } from '../../../theme/package.json';
 import { version as pluginApiDocs } from '../../../../plugins/api-docs/package.json';
 import { version as pluginAppBackend } from '../../../../plugins/app-backend/package.json';
 import { version as pluginAuthBackend } from '../../../../plugins/auth-backend/package.json';
+import { version as pluginAuthNode } from '../../../../plugins/auth-node/package.json';
 import { version as pluginCatalog } from '../../../../plugins/catalog/package.json';
 import { version as pluginCatalogCommon } from '../../../../plugins/catalog-common/package.json';
 import { version as pluginCatalogReact } from '../../../../plugins/catalog-react/package.json';
@@ -96,6 +97,7 @@ export const packageVersions = {
   '@backstage/plugin-api-docs': pluginApiDocs,
   '@backstage/plugin-app-backend': pluginAppBackend,
   '@backstage/plugin-auth-backend': pluginAuthBackend,
+  '@backstage/plugin-auth-node': pluginAuthNode,
   '@backstage/plugin-catalog': pluginCatalog,
   '@backstage/plugin-catalog-common': pluginCatalogCommon,
   '@backstage/plugin-catalog-react': pluginCatalogReact,
