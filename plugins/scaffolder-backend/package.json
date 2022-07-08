@@ -65,7 +65,7 @@
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.7",
     "nunjucks": "^3.2.3",
-    "octokit": "^1.7.1",
+    "octokit": "^2.0.0",
     "octokit-plugin-create-pull-request": "^3.10.0",
     "p-limit": "^3.1.0",
     "uuid": "^8.2.0",
