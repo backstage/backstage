@@ -186,6 +186,10 @@ describe('fetch:template', () => {
               },
               '.${{ values.name }}': '${{ values.itemList | dump }}',
               'a-binary-file.png': aBinaryFile,
+              symlink: mockFs.symlink({
+                path: 'a-binary-file.png',
+              }),
+
               '{% if values.showDummyFile %}dummy-file.txt{% else %}{% endif %}':
                 'dummy file',
               '${{ "dummy-file2.txt" if values.showDummyFile else "" }}':
@@ -264,6 +268,17 @@ describe('fetch:template', () => {
             .stat(`${workspacePath}/target/an-executable.sh`)
             .then(fObj => fObj.mode),
         ).resolves.toEqual(parseInt('100755', 8));
+      });
+      it('copies file symlinks as-is without processing them', async () => {
+        await expect(
+          fs
+            .lstat(`${workspacePath}/target/symlink`)
+            .then(i => i.isSymbolicLink()),
+        ).resolves.toBe(true);
+
+        await expect(
+          fs.realpath(`${workspacePath}/target/symlink`),
+        ).resolves.toBe(`${workspacePath}/target/a-binary-file.png`);
       });
     });
 

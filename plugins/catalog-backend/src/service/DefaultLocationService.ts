@@ -21,13 +21,11 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Location } from '@backstage/catalog-client';
-import {
-  CatalogProcessingOrchestrator,
-  DeferredEntity,
-} from '../processing/types';
+import { CatalogProcessingOrchestrator } from '../processing/types';
 import { LocationInput, LocationService, LocationStore } from './types';
 import { locationSpecToMetadataName } from '../util/conversion';
 import { InputError } from '@backstage/errors';
+import { DeferredEntity } from '@backstage/plugin-catalog-node';
 
 export class DefaultLocationService implements LocationService {
   constructor(

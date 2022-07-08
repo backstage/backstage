@@ -17,7 +17,7 @@ import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import { CatalogProcessorResult } from '../../api';
+import { CatalogProcessorResult } from '@backstage/plugin-catalog-node';
 import {
   jsonPlaceholderResolver,
   PlaceholderProcessor,

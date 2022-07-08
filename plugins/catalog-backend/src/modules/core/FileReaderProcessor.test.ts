@@ -19,7 +19,7 @@ import {
   CatalogProcessorEntityResult,
   CatalogProcessorErrorResult,
   CatalogProcessorResult,
-} from '../../api';
+} from '@backstage/plugin-catalog-node';
 import path from 'path';
 import { defaultEntityDataParser } from '../util/parse';
 
@@ -91,7 +91,7 @@ describe('FileReaderProcessor', () => {
     });
     expect(emit.mock.calls[1][0].key).toContain('file:');
     expect(emit.mock.calls[1][0].key).toContain(
-      'fileReaderProcessor/component.yaml',
+      path.join('fileReaderProcessor', 'component.yaml'),
     );
     expect(emit.mock.calls[2][0].entity).toEqual({
       kind: 'API',

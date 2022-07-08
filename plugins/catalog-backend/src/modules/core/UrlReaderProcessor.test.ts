@@ -28,7 +28,7 @@ import {
   CatalogProcessorEntityResult,
   CatalogProcessorErrorResult,
   CatalogProcessorResult,
-} from '../../api';
+} from '@backstage/plugin-catalog-node';
 import { defaultEntityDataParser } from '../util/parse';
 import { UrlReaderProcessor } from './UrlReaderProcessor';
 

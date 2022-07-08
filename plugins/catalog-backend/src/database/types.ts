@@ -17,9 +17,12 @@
 import { Entity } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
 import { DateTime } from 'luxon';
-import { EntityRelationSpec } from '../api';
-import { DeferredEntity, RefreshKeyData } from '../processing/types';
+import {
+  EntityRelationSpec,
+  DeferredEntity,
+} from '@backstage/plugin-catalog-node';
 import { DbRelationsRow } from './tables';
+import { RefreshKeyData } from '../processing/types';
 
 /**
  * An abstraction for transactions of the underlying database technology.
