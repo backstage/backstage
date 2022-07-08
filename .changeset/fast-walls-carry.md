@@ -1,8 +1,8 @@
 ---
-'@backstage/app-defaults': none
-'@backstage/core-app-api': none
-'@backstage/core-plugin-api': none
-'@backstage/plugin-catalog': none
+'@backstage/app-defaults': patch
+'@backstage/core-app-api': patch
+'@backstage/core-plugin-api': patch
+'@backstage/plugin-catalog': patch
 ---
 
 Introduced plugin options for the components, to be able to customise existing components.
