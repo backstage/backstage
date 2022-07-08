@@ -34,6 +34,11 @@ export interface PluginOptionsProviderProps {
   plugin?: BackstagePlugin;
 }
 
+/**
+ * Contains the plugin configuration.
+ *
+ * @alpha
+ */
 export const PluginProvider = ({
   children,
   plugin,

@@ -639,10 +639,15 @@ export type PluginFeatureFlagConfig = {
   name: string;
 };
 
-// Warning: (ae-forgotten-export) The symbol "PluginOptionsProviderProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "PluginProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export interface PluginOptionsProviderProps {
+  // (undocumented)
+  children: ReactNode;
+  // (undocumented)
+  plugin?: BackstagePlugin;
+}
+
+// @alpha
 export const PluginProvider: ({
   children,
   plugin,

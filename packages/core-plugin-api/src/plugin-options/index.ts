@@ -15,3 +15,4 @@
  */
 
 export { usePluginOptions, PluginProvider } from './usePluginOptions';
+export type { PluginOptionsProviderProps } from './usePluginOptions';
