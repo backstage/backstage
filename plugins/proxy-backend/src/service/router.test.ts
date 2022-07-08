@@ -57,55 +57,6 @@ describe('createRouter', () => {
       });
       expect(router).toBeDefined();
     });
-
-    it('should be able to observe the config', async () => {
-      const logger = getVoidLogger();
-
-      // Grab the subscriber function and use mutable config data to mock a config file change
-      let subscriber: () => void;
-      const mutableConfigData: any = {
-        backend: {
-          baseUrl: 'https://example.com:7007',
-          listen: {
-            port: 7007,
-          },
-        },
-        proxy: {
-          '/test': {
-            target: 'https://example.com',
-            headers: {
-              Authorization: 'Bearer supersecret',
-            },
-          },
-        },
-      };
-
-      const mockConfig = Object.assign(new ConfigReader(mutableConfigData), {
-        subscribe: (s: () => void) => {
-          subscriber = s;
-          return { unsubscribe: () => {} };
-        },
-      });
-
-      const discovery = SingleHostDiscovery.fromConfig(mockConfig);
-      const router = await createRouter({
-        config: mockConfig,
-        logger,
-        discovery,
-      });
-      expect(router).toBeDefined();
-
-      expect(router.stack[0].regexp).toEqual(/^\/test\/?(?=\/|$)/i);
-      expect(router.stack[1]).toBeUndefined();
-
-      mutableConfigData.proxy['/test2'] = {
-        target: 'https://example.com',
-      };
-      subscriber!();
-
-      expect(router.stack[0].regexp).toEqual(/^\/test\/?(?=\/|$)/i);
-      expect(router.stack[1].regexp).toEqual(/^\/test2\/?(?=\/|$)/i);
-    });
   });
 
   describe('where buildMiddleware would fail', () => {
