@@ -14,8 +14,6 @@ import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 
-// Warning: (ae-missing-release-tag) "AnyServiceFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type AnyServiceFactory = ServiceFactory<
   unknown,
@@ -25,8 +23,6 @@ export type AnyServiceFactory = ServiceFactory<
   }
 >;
 
-// Warning: (ae-missing-release-tag) "BackendInitRegistry" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface BackendInitRegistry {
   // (undocumented)
@@ -47,8 +43,6 @@ export interface BackendInitRegistry {
   }): void;
 }
 
-// Warning: (ae-missing-release-tag) "BackendModuleConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface BackendModuleConfig<TOptions> {
   // (undocumented)
@@ -62,8 +56,6 @@ export interface BackendModuleConfig<TOptions> {
   ): void;
 }
 
-// Warning: (ae-missing-release-tag) "BackendPluginConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface BackendPluginConfig<TOptions> {
   // (undocumented)
@@ -72,8 +64,6 @@ export interface BackendPluginConfig<TOptions> {
   register(reg: BackendInitRegistry, options: TOptions): void;
 }
 
-// Warning: (ae-missing-release-tag) "BackendRegistrable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface BackendRegistrable {
   // (undocumented)
@@ -88,22 +78,16 @@ export const cacheServiceRef: ServiceRef<PluginCacheManager>;
 // @public (undocumented)
 export const configServiceRef: ServiceRef<Config>;
 
-// Warning: (ae-missing-release-tag) "createBackendModule" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function createBackendModule<TOptions>(
   config: BackendModuleConfig<TOptions>,
 ): (option: TOptions) => BackendRegistrable;
 
-// Warning: (ae-missing-release-tag) "createBackendPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function createBackendPlugin<TOptions>(
   config: BackendPluginConfig<TOptions>,
 ): (option: TOptions) => BackendRegistrable;
 
-// Warning: (ae-missing-release-tag) "createExtensionPoint" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function createExtensionPoint<T>(options: {
   id: string;
@@ -125,6 +109,11 @@ export function createServiceRef<T>(options: { id: string }): ServiceRef<T>;
 export const databaseServiceRef: ServiceRef<PluginDatabaseManager>;
 
 // @public (undocumented)
+export type DepsToDepFactories<T> = {
+  [key in keyof T]: (pluginId: string) => Promise<T[key]>;
+};
+
+// @public (undocumented)
 export const discoveryServiceRef: ServiceRef<PluginEndpointDiscovery>;
 
 // @public
@@ -135,8 +124,6 @@ export type ExtensionPoint<T> = {
   $$ref: 'extension-point';
 };
 
-// Warning: (ae-missing-release-tag) "FactoryFunc" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type FactoryFunc<Impl> = (pluginId: string) => Promise<Impl>;
 
@@ -168,8 +155,6 @@ export const permissionsServiceRef: ServiceRef<
 // @public (undocumented)
 export const schedulerServiceRef: ServiceRef<PluginTaskScheduler>;
 
-// Warning: (ae-missing-release-tag) "ServiceFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ServiceFactory<
   TApi,
@@ -195,12 +180,10 @@ export type ServiceRef<T> = {
 export const tokenManagerServiceRef: ServiceRef<TokenManager>;
 
 // @public (undocumented)
-export const urlReaderServiceRef: ServiceRef<UrlReader>;
+export type TypesToServiceRef<T> = {
+  [key in keyof T]: ServiceRef<T[key]>;
+};
 
-// Warnings were encountered during analysis:
-//
-// src/services/system/types.d.ts:27:5 - (ae-forgotten-export) The symbol "TypesToServiceRef" needs to be exported by the entry point index.d.ts
-// src/services/system/types.d.ts:28:5 - (ae-forgotten-export) The symbol "DepsToDepFactories" needs to be exported by the entry point index.d.ts
-// src/wiring/types.d.ts:10:67 - (tsdoc-code-span-missing-delimiter) The code span is missing its closing backtick
-// src/wiring/types.d.ts:11:24 - (tsdoc-code-span-missing-delimiter) The code span is missing its closing backtick
+// @public (undocumented)
+export const urlReaderServiceRef: ServiceRef<UrlReader>;
 ```

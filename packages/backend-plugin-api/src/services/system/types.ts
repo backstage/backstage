@@ -33,13 +33,18 @@ export type ServiceRef<T> = {
   $$ref: 'service';
 };
 
-type TypesToServiceRef<T> = { [key in keyof T]: ServiceRef<T[key]> };
-type DepsToDepFactories<T> = {
+/** @public */
+export type TypesToServiceRef<T> = { [key in keyof T]: ServiceRef<T[key]> };
+
+/** @public */
+export type DepsToDepFactories<T> = {
   [key in keyof T]: (pluginId: string) => Promise<T[key]>;
 };
 
+/** @public */
 export type FactoryFunc<Impl> = (pluginId: string) => Promise<Impl>;
 
+/** @public */
 export type ServiceFactory<
   TApi,
   TImpl extends TApi,
@@ -50,6 +55,7 @@ export type ServiceFactory<
   factory(deps: DepsToDepFactories<TDeps>): Promise<FactoryFunc<TImpl>>;
 };
 
+/** @public */
 export type AnyServiceFactory = ServiceFactory<
   unknown,
   unknown,

@@ -25,9 +25,8 @@ export type ExtensionPoint<T> = {
   id: string;
 
   /**
-   * Utility for getting the type of the extension point, using `typeof
-   * extensionPoint.T`. Attempting to actually read this value will result in an
-   * exception.
+   * Utility for getting the type of the extension point, using `typeof extensionPoint.T`.
+   * Attempting to actually read this value will result in an exception.
    */
   T: T;
 
@@ -36,6 +35,7 @@ export type ExtensionPoint<T> = {
   $$ref: 'extension-point';
 };
 
+/** @public */
 export function createExtensionPoint<T>(options: {
   id: string;
 }): ExtensionPoint<T> {
@@ -51,6 +51,7 @@ export function createExtensionPoint<T>(options: {
   };
 }
 
+/** @public */
 export interface BackendInitRegistry {
   registerExtensionPoint<TExtensionPoint>(
     ref: ServiceRef<TExtensionPoint>,
@@ -62,16 +63,19 @@ export interface BackendInitRegistry {
   }): void;
 }
 
+/** @public */
 export interface BackendRegistrable {
   id: string;
   register(reg: BackendInitRegistry): void;
 }
 
+/** @public */
 export interface BackendPluginConfig<TOptions> {
   id: string;
   register(reg: BackendInitRegistry, options: TOptions): void;
 }
 
+/** @public */
 export function createBackendPlugin<TOptions>(
   config: BackendPluginConfig<TOptions>,
 ): (option: TOptions) => BackendRegistrable {
@@ -83,6 +87,7 @@ export function createBackendPlugin<TOptions>(
   });
 }
 
+/** @public */
 export interface BackendModuleConfig<TOptions> {
   pluginId: string;
   moduleId: string;
@@ -92,6 +97,7 @@ export interface BackendModuleConfig<TOptions> {
   ): void;
 }
 
+/** @public */
 export function createBackendModule<TOptions>(
   config: BackendModuleConfig<TOptions>,
 ): (option: TOptions) => BackendRegistrable {
