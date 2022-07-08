@@ -26,7 +26,6 @@ export type EntityProcessingRequest = {
   entity: Entity;
   state?: JsonObject; // Versions for multiple deployments etc
 };
-
 /**
  * The result of processing an entity.
  * @public
@@ -38,12 +37,21 @@ export type EntityProcessingResult =
       completedEntity: Entity;
       deferredEntities: DeferredEntity[];
       relations: EntityRelationSpec[];
+      refreshKeys: RefreshKeyData[];
       errors: Error[];
     }
   | {
       ok: false;
       errors: Error[];
     };
+
+/**
+ * A string to associate to the entity itself.
+ * @public
+ */
+export type RefreshKeyData = {
+  key: string;
+};
 
 /**
  * Responsible for executing the individual processing steps in order to fully process an entity.

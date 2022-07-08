@@ -63,6 +63,11 @@ export async function createRouter(
     res.status(200).json({ status: 'ok' });
   });
 
+  router.get('/projects', async (_req, res) => {
+    const projects = await azureDevOpsApi.getProjects();
+    res.status(200).json(projects);
+  });
+
   router.get('/repository/:projectName/:repoName', async (req, res) => {
     const { projectName, repoName } = req.params;
     const gitRepository = await azureDevOpsApi.getGitRepository(

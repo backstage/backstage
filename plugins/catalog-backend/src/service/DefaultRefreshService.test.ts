@@ -138,6 +138,7 @@ describe('Refresh integration', () => {
             errors: [],
             deferredEntities,
             state: {},
+            refreshKeys: [],
           };
         },
       },

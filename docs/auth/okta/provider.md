@@ -41,6 +41,8 @@ auth:
         clientId: ${AUTH_OKTA_CLIENT_ID}
         clientSecret: ${AUTH_OKTA_CLIENT_SECRET}
         audience: ${AUTH_OKTA_DOMAIN}
+        authServerId: ${AUTH_OKTA_AUTH_SERVER_ID} # Optional
+        idp: ${AUTH_OKTA_IDP} # Optional
 ```
 
 The values referenced are found on the Application page on your Okta site.
@@ -48,8 +50,10 @@ The values referenced are found on the Application page on your Okta site.
 - `clientId`: The client ID that you generated on Okta, e.g.
   `3abe134ejxzF21HU74c1`
 - `clientSecret`: The client secret shown for the Application.
-- `audience`: The Okta domain shown for your Application, e.g.
+- `audience`: The Okta domain shown for the Application, e.g.
   `https://company.okta.com`
+- `authServerId`: The authorization server ID for the Application
+- `idp`: The identity provider for the application, e.g. `0oaulob4BFVa4zQvt0g3`
 
 ## Adding the provider to the Backstage frontend
 

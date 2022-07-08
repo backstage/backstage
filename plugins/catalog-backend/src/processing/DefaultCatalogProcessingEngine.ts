@@ -134,6 +134,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
               .update(stableStringify({ ...result.completedEntity }))
               .update(stableStringify([...result.deferredEntities]))
               .update(stableStringify([...result.relations]))
+              .update(stableStringify([...result.refreshKeys]))
               .update(stableStringify([...parents]));
           }
 
@@ -180,6 +181,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
                 relations: result.relations,
                 deferredEntities: result.deferredEntities,
                 locationKey,
+                refreshKeys: result.refreshKeys,
               });
             oldRelationSources = new Set(
               previous.relations.map(r => r.source_entity_ref),

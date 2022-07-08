@@ -19,7 +19,12 @@ import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import yaml from 'yaml';
-import { CatalogProcessor, LocationSpec } from '../../api';
+import {
+  CatalogProcessor,
+  CatalogProcessorEmit,
+  LocationSpec,
+  processingResult,
+} from '../../api';
 
 /** @public */
 export type PlaceholderResolverRead = (url: string) => Promise<Buffer>;
@@ -37,6 +42,7 @@ export type PlaceholderResolverParams = {
   baseUrl: string;
   read: PlaceholderResolverRead;
   resolveUrl: PlaceholderResolverResolveUrl;
+  emit: CatalogProcessorEmit;
 };
 
 /** @public */
@@ -66,6 +72,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
   async preProcessEntity(
     entity: Entity,
     location: LocationSpec,
+    emit: CatalogProcessorEmit,
   ): Promise<Entity> {
     const process = async (data: any): Promise<[any, boolean]> => {
       if (!data || !(data instanceof Object)) {
@@ -102,6 +109,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
 
       const resolverKey = keys[0].substr(1);
       const resolverValue = data[keys[0]];
+
       const resolver = this.options.resolvers[resolverKey];
       if (!resolver || typeof resolverValue !== 'string') {
         // If there was no such placeholder resolver or if the value was not a
@@ -134,6 +142,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
           baseUrl: location.target,
           read,
           resolveUrl,
+          emit,
         }),
         true,
       ];
@@ -151,11 +160,13 @@ export class PlaceholderProcessor implements CatalogProcessor {
 export async function yamlPlaceholderResolver(
   params: PlaceholderResolverParams,
 ): Promise<JsonValue> {
-  const text = await readTextLocation(params);
+  const { content, url } = await readTextLocation(params);
+
+  params.emit(processingResult.refresh(`url:${url}`));
 
   let documents: yaml.Document.Parsed[];
   try {
-    documents = yaml.parseAllDocuments(text).filter(d => d);
+    documents = yaml.parseAllDocuments(content).filter(d => d);
   } catch (e) {
     throw new Error(
       `Placeholder \$${params.key} failed to parse YAML data at ${params.value}, ${e}`,
@@ -182,10 +193,12 @@ export async function yamlPlaceholderResolver(
 export async function jsonPlaceholderResolver(
   params: PlaceholderResolverParams,
 ): Promise<JsonValue> {
-  const text = await readTextLocation(params);
+  const { content, url } = await readTextLocation(params);
+
+  params.emit(processingResult.refresh(`url:${url}`));
 
   try {
-    return JSON.parse(text);
+    return JSON.parse(content);
   } catch (e) {
     throw new Error(
       `Placeholder \$${params.key} failed to parse JSON data at ${params.value}, ${e}`,
@@ -196,7 +209,11 @@ export async function jsonPlaceholderResolver(
 export async function textPlaceholderResolver(
   params: PlaceholderResolverParams,
 ): Promise<JsonValue> {
-  return await readTextLocation(params);
+  const { content, url } = await readTextLocation(params);
+
+  params.emit(processingResult.refresh(`url:${url}`));
+
+  return content;
 }
 
 /*
@@ -205,12 +222,12 @@ export async function textPlaceholderResolver(
 
 async function readTextLocation(
   params: PlaceholderResolverParams,
-): Promise<string> {
+): Promise<{ content: string; url: string }> {
   const newUrl = relativeUrl(params);
 
   try {
     const data = await params.read(newUrl);
-    return data.toString('utf-8');
+    return { content: data.toString('utf-8'), url: newUrl };
   } catch (e) {
     throw new Error(
       `Placeholder \$${params.key} could not read location ${params.value}, ${e}`,

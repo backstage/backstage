@@ -66,11 +66,8 @@ export class FactRetrieverEngine {
       defaultTimeout,
     } = options;
 
-    await Promise.all(
-      factRetrieverRegistry
-        .listRetrievers()
-        .map(it => repository.insertFactSchema(it)),
-    );
+    const retrievers = await factRetrieverRegistry.listRetrievers();
+    await Promise.all(retrievers.map(it => repository.insertFactSchema(it)));
 
     return new FactRetrieverEngine(
       repository,
@@ -84,7 +81,7 @@ export class FactRetrieverEngine {
   }
 
   async schedule() {
-    const registrations = this.factRetrieverRegistry.listRegistrations();
+    const registrations = await this.factRetrieverRegistry.listRegistrations();
     const newRegs: string[] = [];
 
     await Promise.all(
@@ -115,7 +112,7 @@ export class FactRetrieverEngine {
     );
   }
 
-  getJobRegistration(ref: string): FactRetrieverRegistration {
+  getJobRegistration(ref: string): Promise<FactRetrieverRegistration> {
     return this.factRetrieverRegistry.get(ref);
   }
 
