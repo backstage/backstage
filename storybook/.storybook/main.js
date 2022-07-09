@@ -14,7 +14,22 @@ const BACKSTAGE_CORE_STORIES = [
   'plugins/stack-overflow',
 ];
 
-module.exports = ({ args }) => {
+// Some configuration needs to be available directly on the exported object
+const staticConfig = {
+  core: {
+    builder: 'webpack5',
+  },
+  addons: [
+    '@storybook/addon-controls',
+    '@storybook/addon-a11y',
+    '@storybook/addon-actions',
+    '@storybook/addon-links',
+    '@storybook/addon-storysource',
+    'storybook-dark-mode/register',
+  ],
+};
+
+module.exports = Object.assign(({ args }) => {
   // Calling storybook with no args causes our default list of stories to be used.
   // This set of stories are the ones that we publish to backstage.io
   //
@@ -31,15 +46,8 @@ module.exports = ({ args }) => {
   const stories = packages.map(getStoriesPath);
 
   return {
+    ...staticConfig,
     stories,
-    addons: [
-      '@storybook/addon-controls',
-      '@storybook/addon-a11y',
-      '@storybook/addon-actions',
-      '@storybook/addon-links',
-      '@storybook/addon-storysource',
-      'storybook-dark-mode/register',
-    ],
     webpackFinal: async config => {
       // Mirror config in packages/cli/src/lib/bundler
       config.resolve.mainFields = ['browser', 'module', 'main'];
@@ -86,4 +94,4 @@ module.exports = ({ args }) => {
       return config;
     },
   };
-};
+}, staticConfig);
