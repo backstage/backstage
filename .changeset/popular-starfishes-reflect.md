@@ -1,6 +1,4 @@
 ---
-'example-app': patch
-'example-backend': patch
 '@backstage/backend-common': patch
 '@backstage/integration': patch
 '@backstage/plugin-catalog-import': patch
