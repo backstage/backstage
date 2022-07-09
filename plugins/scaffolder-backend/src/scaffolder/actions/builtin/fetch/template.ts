@@ -217,6 +217,9 @@ export function createFetchTemplateAction(options: {
         }
 
         const outputPath = resolveSafeChildPath(outputDir, localOutputPath);
+        if (fs.existsSync(outputPath)) {
+          continue;
+        }
 
         if (!renderContents && !extension) {
           ctx.logger.info(

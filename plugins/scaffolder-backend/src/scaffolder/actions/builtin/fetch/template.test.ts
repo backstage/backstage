@@ -226,6 +226,12 @@ describe('fetch:template', () => {
         ).resolves.toEqual(false);
       });
 
+      it('skips empty filename inside directory', async () => {
+        await expect(
+          fs.pathExists(`${workspacePath}/target/subdir3/fileSkippedInsideDirectory.txt`),
+        ).resolves.toEqual(false);
+      });      
+
       it('skips content of empty subdirectory', async () => {
         await expect(
           fs.pathExists(
