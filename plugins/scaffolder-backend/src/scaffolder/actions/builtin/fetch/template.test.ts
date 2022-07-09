@@ -166,7 +166,7 @@ describe('fetch:template', () => {
             skipRootDirectory: true,
             skipSubdirectory: true,
             skipMultiplesDirectories: true,
-            skipFileInsideDirectory: true
+            skipFileInsideDirectory: true,
           },
         });
 
@@ -198,7 +198,7 @@ describe('fetch:template', () => {
               subdir3: {
                 '${{ "fileSkippedInsideDirectory.txt" if not values.skipFileInsideDirectory else "" }}':
                   'skipped file inside directory',
-              },              
+              },
             },
           });
 
@@ -228,9 +228,11 @@ describe('fetch:template', () => {
 
       it('skips empty filename inside directory', async () => {
         await expect(
-          fs.pathExists(`${workspacePath}/target/subdir3/fileSkippedInsideDirectory.txt`),
+          fs.pathExists(
+            `${workspacePath}/target/subdir3/fileSkippedInsideDirectory.txt`,
+          ),
         ).resolves.toEqual(false);
-      });      
+      });
 
       it('skips content of empty subdirectory', async () => {
         await expect(
