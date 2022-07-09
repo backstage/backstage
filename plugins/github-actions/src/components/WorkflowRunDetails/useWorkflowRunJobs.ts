@@ -45,20 +45,20 @@ export const useWorkflowRunJobs = ({
     return {
       total_count: jobs.total_count,
       jobs: jobs.jobs.map<Job>(job => ({
-        html_url: job.html_url || undefined,
+        html_url: job.html_url ?? undefined,
         status: job.status,
-        conclusion: job.conclusion || undefined,
+        conclusion: job.conclusion ?? undefined,
         started_at: job.started_at,
-        completed_at: job.completed_at || undefined,
+        completed_at: job.completed_at ?? undefined,
         id: job.id,
         name: job.name,
         steps: job.steps?.map<Step>(step => ({
           name: step.name,
           status: step.status,
-          conclusion: step.conclusion || undefined,
+          conclusion: step.conclusion ?? undefined,
           number: step.number,
-          started_at: step.started_at || undefined,
-          completed_at: step.completed_at || undefined,
+          started_at: step.started_at ?? undefined,
+          completed_at: step.completed_at ?? undefined,
         })),
       })),
     };

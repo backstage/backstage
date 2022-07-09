@@ -107,7 +107,7 @@ export const RecentWorkflowRunsCard = ({
                   component={RouterLink}
                   to={generatePath('./ci-cd/:id', { id: data.id! })}
                 >
-                  {firstLine(data.message || '')}
+                  {firstLine(data.message ?? '')}
                 </Link>
               ),
             },

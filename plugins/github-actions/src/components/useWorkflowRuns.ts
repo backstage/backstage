@@ -75,7 +75,7 @@ export function useWorkflowRuns({
     setTotal(workflowRunsData.total_count);
     // Transformation here
     return workflowRunsData.workflow_runs.map(run => ({
-      workflowName: run.name || undefined,
+      workflowName: run.name ?? undefined,
       message: run.head_commit?.message,
       id: `${run.id}`,
       onReRunClick: async () => {
@@ -91,17 +91,17 @@ export function useWorkflowRuns({
         }
       },
       source: {
-        branchName: run.head_branch || undefined,
+        branchName: run.head_branch ?? undefined,
         commit: {
           hash: run.head_commit?.id,
           url: run.head_repository?.branches_url?.replace(
             '{/branch}',
-            run.head_branch || '',
+            run.head_branch ?? '',
           ),
         },
       },
-      status: run.status || undefined,
-      conclusion: run.conclusion || undefined,
+      status: run.status ?? undefined,
+      conclusion: run.conclusion ?? undefined,
       url: run.url,
       githubUrl: run.html_url,
     }));
