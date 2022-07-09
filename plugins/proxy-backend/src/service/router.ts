@@ -181,13 +181,45 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
+  let currentRouter = Router();
 
   const externalUrl = await options.discovery.getExternalBaseUrl('proxy');
   const { pathname: pathPrefix } = new URL(externalUrl);
 
   const proxyConfig = options.config.getOptional('proxy') ?? {};
+  configureMiddlewares(options, currentRouter, pathPrefix, proxyConfig);
+  router.use((...args) => currentRouter(...args));
 
-  Object.entries(proxyConfig).forEach(([route, proxyRouteConfig]) => {
+  if (options.config.subscribe) {
+    let currentKey = JSON.stringify(proxyConfig);
+
+    options.config.subscribe(() => {
+      const newProxyConfig = options.config.getOptional('proxy') ?? {};
+      const newKey = JSON.stringify(newProxyConfig);
+
+      if (currentKey !== newKey) {
+        currentKey = newKey;
+        currentRouter = Router();
+        configureMiddlewares(
+          options,
+          currentRouter,
+          pathPrefix,
+          newProxyConfig,
+        );
+      }
+    });
+  }
+
+  return router;
+}
+
+function configureMiddlewares(
+  options: RouterOptions,
+  router: express.Router,
+  pathPrefix: string,
+  proxyConfig: any,
+) {
+  Object.entries<any>(proxyConfig).forEach(([route, proxyRouteConfig]) => {
     try {
       router.use(
         route,
@@ -201,6 +233,4 @@ export async function createRouter(
       }
     }
   });
-
-  return router;
 }
