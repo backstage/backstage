@@ -5179,9 +5179,9 @@
     universal-user-agent "^6.0.0"
 
 "@octokit/request@^6.0.0":
-  version "6.0.2"
-  resolved "https://registry.npmjs.org/@octokit/request/-/request-6.0.2.tgz#c27fff8b001692014a21d96dc38ace74d3cb3958"
-  integrity sha512-WPMcm8nUET2v6P5AbTIhNzEorMLFPbFnzfP/VMAaRFwNzaqHmVvS+YLvqtWyKq0vnZ6a9ImQuCHNb3L4oNovRw==
+  version "6.1.0"
+  resolved "https://registry.npmjs.org/@octokit/request/-/request-6.1.0.tgz#80bdac78dff583a8fa0978baeda139a71d98d10c"
+  integrity sha512-36V+sP4bJli31TRq8sea3d/Q1XGgZ9cnqpsegkLCnvpu+hoYephSkxGlWg4KB6dyUM1IWPXVrLFOKYzObQ+MZg==
   dependencies:
     "@octokit/endpoint" "^7.0.0"
     "@octokit/request-error" "^3.0.0"
