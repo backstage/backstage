@@ -73,8 +73,6 @@ This cluster locator method will assume a locally running [`kubectl proxy`](http
 
 NOTE: This cluster locator method is for local development only and should not be used in production.
 
-> > > > > > > master
-
 #### `config`
 
 This cluster locator method will read cluster information from your app-config
