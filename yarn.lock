@@ -5260,10 +5260,10 @@
     rxjs "7.5.5"
     tslib "2.0.3"
 
-"@opensearch-project/opensearch@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.npmjs.org/@opensearch-project/opensearch/-/opensearch-1.1.0.tgz#8b3c8b4cbcea01755ba092d2997bf0b4ca7f22f7"
-  integrity sha512-1TDw92JL8rD1b2QGluqBsIBLIiD5SGciIpz4qkrGAe9tcdfQ1ptub5e677rhWl35UULSjr6hP8M6HmISZ/M5HQ==
+"@opensearch-project/opensearch@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@opensearch-project/opensearch/-/opensearch-2.0.0.tgz#baa3d02fa76e6f00802ebd88cda40fc515a4d40f"
+  integrity sha512-/5wP76x90clGq0Xw0MbMsml1+PQHpyY+WVqLCzAFNXSFEjSbq+fWrVjH1vX+VZkRQTzKrqNjaUTqYMA9YHRggA==
   dependencies:
     debug "^4.3.1"
     hpagent "^0.1.1"
