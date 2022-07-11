@@ -15,25 +15,50 @@
  */
 
 import { errorHandler } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
+import {
+  DefaultGithubCredentialsProvider,
+  ScmIntegrations,
+} from '@backstage/integration';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+import { Octokit } from 'octokit';
 
 export interface RouterOptions {
   logger: Logger;
+  integrations: ScmIntegrations;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const { logger } = options;
-
+  const githubCredentialsProvider =
+    DefaultGithubCredentialsProvider.fromIntegrations(options.integrations);
   const router = Router();
   router.use(express.json());
 
-  router.get('/health', (_, response) => {
-    logger.info('PONG!');
-    response.send({ status: 'ok' });
+  router.use('/v1/github/orgs', async (request, response) => {
+    if (!request.query.host || typeof request.query.host !== 'string') {
+      throw new InputError('Missing or invalid host parameter');
+    }
+
+    const { token, type } = request.headers['repo-token']
+      ? { token: request.headers['repo-token'] as string, type: 'token' }
+      : await githubCredentialsProvider.getCredentials({
+          url: `https://${request.query.host}/blamdemo`,
+        });
+
+    console.log(token, type);
+    // with the token and type of token, get the organisations available for the user or the app
+    const octokit = new Octokit({ auth: token });
+
+    // need to get all app installations here, and then get the orgs for each installation
+
+    response.json({
+      repos: await octokit.rest.orgs.listForAuthenticatedUser(),
+    });
   });
   router.use(errorHandler());
   return router;

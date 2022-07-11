@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { createServiceBuilder } from '@backstage/backend-common';
+import {
+  createServiceBuilder,
+  loadBackendConfig,
+} from '@backstage/backend-common';
+import { ScmIntegrations } from '@backstage/integration';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
@@ -29,16 +33,19 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({
-    service: 'integrations-backend-backend-backend',
+    service: 'integrations-backend',
   });
+  const config = await loadBackendConfig({ logger, argv: process.argv });
   logger.debug('Starting application server...');
   const router = await createRouter({
     logger,
+    integrations: ScmIntegrations.fromConfig(config),
   });
 
   let service = createServiceBuilder(module)
     .setPort(options.port)
-    .addRouter('/integrations-backend-backend', router);
+    .addRouter('/integrations', router);
+
   if (options.enableCors) {
     service = service.enableCors({ origin: 'http://localhost:3000' });
   }
