@@ -25,7 +25,11 @@ import { StorageApi } from '@backstage/core-plugin-api';
  * Implementation of the ShortcutApi that uses the StorageApi to store shortcuts.
  */
 export class LocalStoredShortcuts implements ShortcutApi {
-  constructor(private readonly storageApi: StorageApi) {}
+  constructor(private readonly storageApi: StorageApi) {
+    this.storageApi.observe$<Shortcut[]>('items').subscribe({
+      next: () => this.notify(),
+    });
+  }
 
   shortcut$() {
     return this.observable;
@@ -36,14 +40,12 @@ export class LocalStoredShortcuts implements ShortcutApi {
     shortcuts.push({ ...shortcut, id: uuid() });
 
     await this.storageApi.set('items', shortcuts);
-    this.notify();
   }
 
   async remove(id: string) {
     const shortcuts = this.get().filter(s => s.id !== id);
 
     await this.storageApi.set('items', shortcuts);
-    this.notify();
   }
 
   async update(shortcut: Shortcut) {
@@ -51,7 +53,6 @@ export class LocalStoredShortcuts implements ShortcutApi {
     shortcuts.push(shortcut);
 
     await this.storageApi.set('items', shortcuts);
-    this.notify();
   }
 
   getColor(url: string) {
