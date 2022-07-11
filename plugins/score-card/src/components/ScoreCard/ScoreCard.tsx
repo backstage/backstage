@@ -19,7 +19,7 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import { Chip, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useEffect } from 'react';
-import { useAsync } from 'react-use';
+import { useAsync } from 'react-use/lib/useAsync';
 
 import {
   EmptyState,

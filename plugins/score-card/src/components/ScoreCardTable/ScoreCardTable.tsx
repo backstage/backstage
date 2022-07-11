@@ -15,7 +15,7 @@
  */
 import React, { useEffect } from 'react';
 import { Table, TableColumn, Progress, Link } from '@backstage/core-components';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { scoreToColorConverter } from '../../helpers/scoreToColorConverter';
 import { Chip } from '@material-ui/core';
