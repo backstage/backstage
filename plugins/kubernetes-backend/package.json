@@ -56,7 +56,7 @@
     "fs-extra": "10.1.0",
     "helmet": "^5.0.2",
     "lodash": "^4.17.21",
-    "luxon": "^2.0.2",
+    "luxon": "^3.0.0",
     "morgan": "^1.10.0",
     "stream-buffers": "^3.0.2",
     "winston": "^3.2.1",

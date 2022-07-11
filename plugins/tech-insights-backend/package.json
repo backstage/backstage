@@ -47,7 +47,7 @@
     "express-promise-router": "^4.1.0",
     "knex": "^2.0.0",
     "lodash": "^4.17.21",
-    "luxon": "^2.0.2",
+    "luxon": "^3.0.0",
     "semver": "^7.3.5",
     "uuid": "^8.3.2",
     "winston": "^3.2.1",
