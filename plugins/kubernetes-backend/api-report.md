@@ -163,8 +163,6 @@ export interface KubernetesEnvironment {
   // (undocumented)
   config: Config;
   // (undocumented)
-  discovery: PluginEndpointDiscovery;
-  // (undocumented)
   logger: Logger;
 }
 
