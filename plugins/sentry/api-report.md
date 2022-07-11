@@ -53,9 +53,11 @@ export class ProductionSentryApi implements SentryApi {
   );
   // (undocumented)
   fetchIssues(
-    project: string,
-    statsFor: string,
-    query?: string,
+    entity: Entity,
+    options: {
+      statsFor: string;
+      query?: string;
+    },
   ): Promise<SentryIssue[]>;
 }
 
@@ -70,9 +72,11 @@ export const Router: ({ entity }: { entity: Entity }) => JSX.Element;
 export interface SentryApi {
   // (undocumented)
   fetchIssues(
-    project: string,
-    statsFor: string,
-    query?: string,
+    entity: Entity,
+    options: {
+      statsFor: string;
+      query?: string;
+    },
   ): Promise<SentryIssue[]>;
 }
 

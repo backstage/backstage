@@ -21,6 +21,7 @@ import { ConfigClusterLocator } from './ConfigClusterLocator';
 import { GkeClusterLocator } from './GkeClusterLocator';
 import { CatalogClusterLocator } from './CatalogClusterLocator';
 import { CatalogApi } from '@backstage/catalog-client';
+import { LocalKubectlProxyClusterLocator } from './LocalKubectlProxyLocator';
 
 class CombinedClustersSupplier implements KubernetesClustersSupplier {
   constructor(readonly clusterSuppliers: KubernetesClustersSupplier[]) {}
@@ -50,6 +51,8 @@ export const getCombinedClusterSupplier = (
       switch (type) {
         case 'catalog':
           return CatalogClusterLocator.fromConfig(catalogClient);
+        case 'localKubectlProxy':
+          return new LocalKubectlProxyClusterLocator();
         case 'config':
           return ConfigClusterLocator.fromConfig(clusterLocatorMethod);
         case 'gke':

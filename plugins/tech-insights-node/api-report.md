@@ -46,12 +46,14 @@ export type FactLifecycle = TTL | MaxItems;
 
 // @public
 export interface FactRetriever {
+  description?: string;
   entityFilter?:
     | Record<string, string | symbol | (string | symbol)[]>[]
     | Record<string, string | symbol | (string | symbol)[]>;
   handler: (ctx: FactRetrieverContext) => Promise<TechInsightFact[]>;
   id: string;
   schema: FactSchema;
+  title?: string;
   version: string;
 }
 

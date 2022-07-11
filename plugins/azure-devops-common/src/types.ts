@@ -288,3 +288,9 @@ export type BuildRun = {
 export type BuildRunOptions = {
   top?: number;
 };
+
+export type Project = {
+  id?: string;
+  name?: string;
+  description?: string;
+};

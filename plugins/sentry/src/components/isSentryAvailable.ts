@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { SENTRY_PROJECT_SLUG_ANNOTATION } from './useProjectSlug';
+import { SENTRY_PROJECT_SLUG_ANNOTATION } from './hooks';
 
 /**
  * @public

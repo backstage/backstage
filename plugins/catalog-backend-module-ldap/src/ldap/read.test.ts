@@ -32,7 +32,11 @@ import {
   resolveRelations,
 } from './read';
 import { RecursivePartial } from './util';
-import { ActiveDirectoryVendor, DefaultLdapVendor } from './vendors';
+import {
+  ActiveDirectoryVendor,
+  DefaultLdapVendor,
+  FreeIpaVendor,
+} from './vendors';
 
 function user(data: RecursivePartial<UserEntity>): UserEntity {
   return merge(
@@ -179,6 +183,62 @@ describe('readLdapUsers', () => {
             [LDAP_DN_ANNOTATION]: 'dn-value',
             [LDAP_RDN_ANNOTATION]: 'uid-value',
             [LDAP_UUID_ANNOTATION]: 'be7d0244-00d1-495e-8521-e6aeeac3a098',
+          },
+        },
+        spec: {
+          profile: {
+            displayName: 'cn-value',
+            email: 'mail-value',
+            picture: 'avatarUrl-value',
+          },
+          memberOf: [],
+        },
+      }),
+    ]);
+    expect(userMemberOf).toEqual(
+      new Map([['dn-value', new Set(['x', 'y', 'z'])]]),
+    );
+  });
+
+  it('transfers all attributes from FreeIPA', async () => {
+    client.getVendor.mockResolvedValue(FreeIpaVendor);
+    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
+      await fn(
+        searchEntry({
+          uid: ['uid-value'],
+          description: ['description-value'],
+          cn: ['cn-value'],
+          mail: ['mail-value'],
+          avatarUrl: ['avatarUrl-value'],
+          memberOf: ['x', 'y', 'z'],
+          dn: ['dn-value'],
+          ipaUniqueID: ['uuid-value'],
+        }),
+      );
+    });
+    const config: UserConfig = {
+      dn: 'ddd',
+      options: {},
+      map: {
+        rdn: 'uid',
+        name: 'uid',
+        description: 'description',
+        displayName: 'cn',
+        email: 'mail',
+        picture: 'avatarUrl',
+        memberOf: 'memberOf',
+      },
+    };
+    const { users, userMemberOf } = await readLdapUsers(client, config);
+    expect(users).toEqual([
+      expect.objectContaining({
+        metadata: {
+          name: 'uid-value',
+          description: 'description-value',
+          annotations: {
+            [LDAP_DN_ANNOTATION]: 'dn-value',
+            [LDAP_RDN_ANNOTATION]: 'uid-value',
+            [LDAP_UUID_ANNOTATION]: 'uuid-value',
           },
         },
         spec: {
