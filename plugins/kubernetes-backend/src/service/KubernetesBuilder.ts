@@ -37,7 +37,6 @@ import {
   KubernetesFanOutHandler,
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
 import { CatalogApi } from '@backstage/catalog-client';
 
@@ -48,7 +47,6 @@ import { CatalogApi } from '@backstage/catalog-client';
 export interface KubernetesEnvironment {
   logger: Logger;
   config: Config;
-  discovery: PluginEndpointDiscovery;
   catalogApi: CatalogApi;
 }
 
@@ -190,7 +188,7 @@ export class KubernetesBuilder {
     const config = this.env.config;
     return getCombinedClusterSupplier(
       config,
-      this.env.discovery,
+      this.env.catalogApi,
       refreshInterval,
     );
   }

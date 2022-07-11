@@ -20,8 +20,7 @@ import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
 import { GkeClusterLocator } from './GkeClusterLocator';
 import { CatalogClusterLocator } from './CatalogClusterLocator';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { CatalogClient } from '@backstage/catalog-client';
+import { CatalogApi } from '@backstage/catalog-client';
 
 class CombinedClustersSupplier implements KubernetesClustersSupplier {
   constructor(readonly clusterSuppliers: KubernetesClustersSupplier[]) {}
@@ -41,10 +40,9 @@ class CombinedClustersSupplier implements KubernetesClustersSupplier {
 
 export const getCombinedClusterSupplier = (
   rootConfig: Config,
-  discovery: PluginEndpointDiscovery,
+  catalogClient: CatalogApi,
   refreshInterval: Duration | undefined = undefined,
 ): KubernetesClustersSupplier => {
-  const catalogClient = new CatalogClient({ discoveryApi: discovery });
   const clusterSuppliers = rootConfig
     .getConfigArray('kubernetes.clusterLocatorMethods')
     .map(clusterLocatorMethod => {

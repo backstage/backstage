@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  getVoidLogger,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
+import { getVoidLogger } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config, ConfigReader } from '@backstage/config';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
@@ -50,10 +47,6 @@ describe('KubernetesBuilder', () => {
         clusterLocatorMethods: [{ type: 'config', clusters: [] }],
       },
     });
-    const discovery: PluginEndpointDiscovery = {
-      getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
-      getExternalBaseUrl: jest.fn(),
-    };
 
     const clusters: ClusterDetails[] = [
       {
@@ -81,7 +74,6 @@ describe('KubernetesBuilder', () => {
     const { router } = await KubernetesBuilder.createBuilder({
       config,
       logger,
-      discovery,
       catalogApi,
     })
       .setObjectsProvider(kubernetesFanOutHandler)
@@ -179,10 +171,6 @@ describe('KubernetesBuilder', () => {
 
     it('custom service locator', async () => {
       const logger = getVoidLogger();
-      const discovery: PluginEndpointDiscovery = {
-        getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
-        getExternalBaseUrl: jest.fn(),
-      };
       const someCluster: ClusterDetails = {
         name: 'some-cluster',
         authProvider: 'serviceAccount',
@@ -258,7 +246,6 @@ describe('KubernetesBuilder', () => {
       const { router } = await KubernetesBuilder.createBuilder({
         logger,
         config,
-        discovery,
         catalogApi,
       })
         .setClusterSupplier(clusterSupplier)

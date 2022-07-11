@@ -26,7 +26,6 @@ export default async function createPlugin(
   const { router } = await KubernetesBuilder.createBuilder({
     logger: env.logger,
     config: env.config,
-    discovery: env.discovery,
     catalogApi,
   }).build();
   return router;

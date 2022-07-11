@@ -16,9 +16,11 @@
 
 import { Config, ConfigReader } from '@backstage/config';
 import { getCombinedClusterSupplier } from './index';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { CatalogApi } from '@backstage/catalog-client';
 
 describe('getCombinedClusterSupplier', () => {
+  let catalogApi: CatalogApi;
+
   it('should retrieve cluster details from config', async () => {
     const config: Config = new ConfigReader(
       {
@@ -45,12 +47,8 @@ describe('getCombinedClusterSupplier', () => {
       },
       'ctx',
     );
-    const discovery: PluginEndpointDiscovery = {
-      getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
-      getExternalBaseUrl: jest.fn(),
-    };
 
-    const clusterSupplier = getCombinedClusterSupplier(config, discovery);
+    const clusterSupplier = getCombinedClusterSupplier(config, catalogApi);
     const result = await clusterSupplier.getClusters();
 
     expect(result).toStrictEqual([
@@ -104,12 +102,8 @@ describe('getCombinedClusterSupplier', () => {
       },
       'ctx',
     );
-    const discovery: PluginEndpointDiscovery = {
-      getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
-      getExternalBaseUrl: jest.fn(),
-    };
 
-    expect(() => getCombinedClusterSupplier(config, discovery)).toThrowError(
+    expect(() => getCombinedClusterSupplier(config, catalogApi)).toThrowError(
       new Error('Unsupported kubernetes.clusterLocatorMethods: "magic"'),
     );
   });

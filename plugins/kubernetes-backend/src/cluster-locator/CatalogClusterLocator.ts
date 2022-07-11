@@ -41,11 +41,10 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
     const filter: Record<string, symbol | string> = {
       kind: 'Resource',
       'spec.type': 'kubernetes-cluster',
+      [apiServerKey]: CATALOG_FILTER_EXISTS,
+      [apiServerCaKey]: CATALOG_FILTER_EXISTS,
+      [authProviderKey]: CATALOG_FILTER_EXISTS,
     };
-
-    filter[apiServerKey] = CATALOG_FILTER_EXISTS;
-    filter[apiServerCaKey] = CATALOG_FILTER_EXISTS;
-    filter[authProviderKey] = CATALOG_FILTER_EXISTS;
 
     const clusters = await this.catalogClient.getEntities({
       filter: [filter],
