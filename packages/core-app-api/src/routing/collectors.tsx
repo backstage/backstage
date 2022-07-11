@@ -128,12 +128,16 @@ export const routingV2Collector = createCollector(
       }
 
       if (elementProp) {
-        const [{ routeRef, plugin }, ...others] = collectSubTree(elementProp);
+        const [extension, ...others] = collectSubTree(elementProp);
         if (others.length > 0) {
           throw new Error(
             'Route element may not contain multiple routable extensions',
           );
         }
+        if (!extension) {
+          return ctx;
+        }
+        const { routeRef, plugin } = extension;
 
         const newObj = {
           path,

@@ -58,6 +58,7 @@ import { pluginCollector } from '../plugins/collectors';
 import {
   featureFlagCollector,
   routingV1Collector,
+  routingV2Collector,
 } from '../routing/collectors';
 import { RoutingProvider } from '../routing/RoutingProvider';
 import { RouteTracker } from '../routing/RouteTracker';
@@ -221,9 +222,9 @@ export class AppManager implements BackstageApp {
       const { routing, featureFlags, routeBindings } = useMemo(() => {
         const result = traverseElementTree({
           root: children,
-          discoverers: [childDiscoverer, routeElementDiscoverer],
+          discoverers: [childDiscoverer],
           collectors: {
-            routing: routingV1Collector,
+            routing: routingV2Collector,
             collectedPlugins: pluginCollector,
             featureFlags: featureFlagCollector,
           },
