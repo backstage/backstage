@@ -111,10 +111,10 @@ export class TechdocsGenerator implements GeneratorBase {
         parsedLocationAnnotation,
         this.scmIntegrations,
       );
+    }
 
-      if (this.options.legacyCopyReadmeMdToIndexMd) {
-        await patchIndexPreBuild({ inputDir, logger: childLogger, docsDir });
-      }
+    if (this.options.legacyCopyReadmeMdToIndexMd) {
+      await patchIndexPreBuild({ inputDir, logger: childLogger, docsDir });
     }
 
     if (!this.options.omitTechdocsCoreMkdocsPlugin) {

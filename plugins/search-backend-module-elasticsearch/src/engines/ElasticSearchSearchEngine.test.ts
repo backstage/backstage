@@ -16,10 +16,11 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { Client, errors } from '@elastic/elasticsearch';
+import { errors } from '@elastic/elasticsearch';
 import Mock from '@elastic/elasticsearch-mock';
+import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import {
-  ConcreteElasticSearchQuery,
+  ElasticSearchConcreteQuery,
   decodePageCursor,
   ElasticSearchSearchEngine,
   encodePageCursor,
@@ -50,10 +51,27 @@ jest.mock('./ElasticSearchSearchEngineIndexer', () => ({
     .mockImplementation(() => indexerMock),
 }));
 
+const customIndexTemplate = {
+  name: 'custom-index-template',
+  body: {
+    index_patterns: ['*'],
+    template: {
+      settings: {
+        number_of_shards: 1,
+      },
+      mappings: {
+        _source: {
+          enabled: false,
+        },
+      },
+    },
+  },
+};
+
 describe('ElasticSearchSearchEngine', () => {
   let testSearchEngine: ElasticSearchSearchEngine;
   let inspectableSearchEngine: ElasticSearchSearchEngineForTranslatorTests;
-  let client: Client;
+  let clientWrapper: ElasticSearchClientWrapper;
 
   beforeEach(() => {
     testSearchEngine = new ElasticSearchSearchEngine(
@@ -69,7 +87,21 @@ describe('ElasticSearchSearchEngine', () => {
       getVoidLogger(),
     );
     // eslint-disable-next-line dot-notation
-    client = testSearchEngine['elasticSearchClient'];
+    clientWrapper = testSearchEngine['elasticSearchClientWrapper'];
+  });
+
+  describe('custom index template', () => {
+    it('should set custom index template', async () => {
+      const indexTemplateSpy = jest.fn().mockReturnValue(customIndexTemplate);
+      mock.add(
+        { method: 'PUT', path: '/_index_template/custom-index-template' },
+        indexTemplateSpy,
+      );
+      await inspectableSearchEngine.setIndexTemplate(customIndexTemplate);
+
+      expect(indexTemplateSpy).toHaveBeenCalled();
+      expect(indexTemplateSpy).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('queryTranslator', () => {
@@ -131,7 +163,7 @@ describe('ElasticSearchSearchEngine', () => {
         types: ['indexName'],
         term: 'testTerm',
         filters: { kind: 'testKind' },
-      }) as ConcreteElasticSearchQuery;
+      }) as ElasticSearchConcreteQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         documentTypes: ['indexName'],
@@ -153,7 +185,7 @@ describe('ElasticSearchSearchEngine', () => {
             },
             filter: {
               match: {
-                kind: 'testKind',
+                'kind.keyword': 'testKind',
               },
             },
           },
@@ -170,7 +202,7 @@ describe('ElasticSearchSearchEngine', () => {
         types: ['indexName'],
         term: 'testTerm',
         pageCursor: 'MQ==',
-      }) as ConcreteElasticSearchQuery;
+      }) as ElasticSearchConcreteQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         documentTypes: ['indexName'],
@@ -204,8 +236,13 @@ describe('ElasticSearchSearchEngine', () => {
       const actualTranslatedQuery = translatorUnderTest({
         types: ['indexName'],
         term: 'testTerm',
-        filters: { kind: 'testKind', namespace: 'testNameSpace' },
-      }) as ConcreteElasticSearchQuery;
+        filters: {
+          kind: 'testKind',
+          namespace: 'testNameSpace',
+          foo: 123,
+          bar: true,
+        },
+      }) as ElasticSearchConcreteQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         documentTypes: ['indexName'],
@@ -228,12 +265,22 @@ describe('ElasticSearchSearchEngine', () => {
             filter: [
               {
                 match: {
-                  kind: 'testKind',
+                  'kind.keyword': 'testKind',
                 },
               },
               {
                 match: {
-                  namespace: 'testNameSpace',
+                  'namespace.keyword': 'testNameSpace',
+                },
+              },
+              {
+                match: {
+                  foo: '123',
+                },
+              },
+              {
+                match: {
+                  bar: 'true',
                 },
               },
             ],
@@ -251,7 +298,7 @@ describe('ElasticSearchSearchEngine', () => {
         types: ['indexName'],
         term: 'testTerm',
         filters: { kind: ['testKind', 'kastTeint'] },
-      }) as ConcreteElasticSearchQuery;
+      }) as ElasticSearchConcreteQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         documentTypes: ['indexName'],
@@ -312,7 +359,7 @@ describe('ElasticSearchSearchEngine', () => {
             fragmentDelimiter: ' ... ',
           },
         },
-      ) as ConcreteElasticSearchQuery;
+      ) as ElasticSearchConcreteQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
         documentTypes: ['indexName'],
@@ -354,7 +401,7 @@ describe('ElasticSearchSearchEngine', () => {
           types: ['indexName'],
           term: 'testTerm',
           filters: { kind: { a: 'b' } },
-        }) as ConcreteElasticSearchQuery;
+        }) as ElasticSearchConcreteQuery;
       expect(actualTranslatedQuery).toThrow();
     });
   });
@@ -438,6 +485,51 @@ describe('ElasticSearchSearchEngine', () => {
       });
     });
 
+    it('should perform search query with less results than one page', async () => {
+      mock.clear({
+        method: 'POST',
+        path: '/*__search/_search',
+      });
+      mock.add(
+        {
+          method: 'POST',
+          path: '/*__search/_search',
+        },
+        () => {
+          return {
+            hits: {
+              total: { value: 20, relation: 'eq' },
+              hits: Array(20)
+                .fill(null)
+                .map((_, i) => ({
+                  _index: 'mytype-index__',
+                  _source: {
+                    value: `${i}`,
+                  },
+                })),
+            },
+          };
+        },
+      );
+
+      const mockedSearchResult = await testSearchEngine.query({
+        term: 'testTerm',
+        filters: {},
+      });
+
+      expect(mockedSearchResult).toMatchObject({
+        results: expect.arrayContaining(
+          Array(20)
+            .fill(null)
+            .map((_, i) => ({
+              type: 'mytype',
+              document: { value: `${i}` },
+              rank: i + 1,
+            })),
+        ),
+      });
+    });
+
     it('should perform search query with more results than one page', async () => {
       mock.clear({
         method: 'POST',
@@ -477,6 +569,7 @@ describe('ElasticSearchSearchEngine', () => {
             .map((_, i) => ({
               type: 'mytype',
               document: { value: `${i}` },
+              rank: i + 1,
             })),
         ),
         nextPageCursor: 'MQ==',
@@ -524,6 +617,7 @@ describe('ElasticSearchSearchEngine', () => {
             .map((_, i) => ({
               type: 'mytype',
               document: { value: `${i}` },
+              rank: i + 1,
             }))
             .slice(25),
         ),
@@ -577,6 +671,7 @@ describe('ElasticSearchSearchEngine', () => {
             .map((_, i) => ({
               type: 'mytype',
               document: { value: `${i}` },
+              rank: i + 1,
               highlight: {
                 preTag: '<tag>',
                 postTag: '</tag>',
@@ -592,7 +687,7 @@ describe('ElasticSearchSearchEngine', () => {
     });
 
     it('should handle index/search type filtering correctly', async () => {
-      const elasticSearchQuerySpy = jest.spyOn(client, 'search');
+      const elasticSearchQuerySpy = jest.spyOn(clientWrapper, 'search');
       await testSearchEngine.query({
         term: 'testTerm',
         filters: {},
@@ -631,7 +726,7 @@ describe('ElasticSearchSearchEngine', () => {
     });
 
     it('should create matchAll query if no term defined', async () => {
-      const elasticSearchQuerySpy = jest.spyOn(client, 'search');
+      const elasticSearchQuerySpy = jest.spyOn(clientWrapper, 'search');
       await testSearchEngine.query({
         term: '',
         filters: {},
@@ -665,7 +760,7 @@ describe('ElasticSearchSearchEngine', () => {
     });
 
     it('should query only specified indices if defined', async () => {
-      const elasticSearchQuerySpy = jest.spyOn(client, 'search');
+      const elasticSearchQuerySpy = jest.spyOn(clientWrapper, 'search');
       await testSearchEngine.query({
         term: '',
         filters: {},
@@ -698,9 +793,36 @@ describe('ElasticSearchSearchEngine', () => {
 
       elasticSearchQuerySpy.mockClear();
     });
+
+    it('should throws missing index error', async () => {
+      jest.spyOn(clientWrapper, 'search').mockRejectedValue({
+        meta: {
+          body: {
+            error: {
+              type: 'index_not_found_exception',
+            },
+          },
+        },
+      });
+
+      await expect(
+        async () =>
+          await testSearchEngine.query({
+            term: 'testTerm',
+            types: ['unknown'],
+            filters: {},
+          }),
+      ).rejects.toThrow(
+        'Missing index for unknown__search. This means there are no documents to search through.',
+      );
+    });
   });
 
   describe('indexer', () => {
+    beforeEach(async () => {
+      await testSearchEngine.setIndexTemplate(customIndexTemplate);
+    });
+
     it('should get indexer', async () => {
       const indexer = await testSearchEngine.getIndexer('test-index');
 
@@ -711,7 +833,7 @@ describe('ElasticSearchSearchEngine', () => {
           type: 'test-index',
           indexPrefix: '',
           indexSeparator: '-index__',
-          elasticSearchClient: client,
+          elasticSearchClientWrapper: clientWrapper,
         }),
       );
       expect(indexerMock.on).toHaveBeenCalledWith(

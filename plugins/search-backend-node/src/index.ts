@@ -22,6 +22,7 @@
 
 export { IndexBuilder } from './IndexBuilder';
 export { Scheduler } from './Scheduler';
+export * from './collators';
 export { LunrSearchEngine } from './engines';
 export type {
   ConcreteLunrQuery,
@@ -33,6 +34,7 @@ export type {
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
 } from './types';
+export * from './errors';
 export * from './indexing';
 export * from './test-utils';
 

@@ -17,6 +17,7 @@
 import { DefaultLocationService } from './DefaultLocationService';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { LocationStore } from './types';
+import { InputError } from '@backstage/errors';
 
 describe('DefaultLocationServiceTest', () => {
   const orchestrator: jest.Mocked<CatalogProcessingOrchestrator> = {
@@ -47,6 +48,7 @@ describe('DefaultLocationServiceTest', () => {
             name: 'foo',
           },
         },
+        refreshKeys: [],
         deferredEntities: [
           {
             entity: {
@@ -74,6 +76,7 @@ describe('DefaultLocationServiceTest', () => {
           },
         },
         deferredEntities: [],
+        refreshKeys: [],
         relations: [],
         errors: [],
       });
@@ -133,6 +136,7 @@ describe('DefaultLocationServiceTest', () => {
           },
         },
         deferredEntities: [],
+        refreshKeys: [],
         relations: [],
         errors: [],
       });
@@ -160,6 +164,7 @@ describe('DefaultLocationServiceTest', () => {
             name: 'foo',
           },
         },
+        refreshKeys: [],
         deferredEntities: [
           {
             entity: {
@@ -187,6 +192,7 @@ describe('DefaultLocationServiceTest', () => {
           },
         },
         deferredEntities: [],
+        refreshKeys: [],
         relations: [],
         errors: [],
       });
@@ -210,6 +216,7 @@ describe('DefaultLocationServiceTest', () => {
             name: 'bar',
           },
         },
+        refreshKeys: [],
         deferredEntities: [],
         relations: [],
         errors: [],
@@ -250,6 +257,18 @@ describe('DefaultLocationServiceTest', () => {
         target: 'https://backstage.io/catalog-info.yaml',
         type: 'url',
       });
+    });
+
+    it('should not allow locations of unknown types', async () => {
+      await expect(
+        locationService.createLocation(
+          {
+            type: 'unknown',
+            target: 'https://backstage.io/catalog-info.yaml',
+          },
+          false,
+        ),
+      ).rejects.toThrow(InputError);
     });
   });
 

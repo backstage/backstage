@@ -37,12 +37,8 @@ export type TokenParams = {
   };
 };
 
-// TODO(Rugvip): This should at least be made internal
 /**
  * A TokenIssuer is able to issue verifiable ID Tokens on demand.
- *
- * @public
- * @deprecated This interface is deprecated and will be removed in a future release.
  */
 export type TokenIssuer = {
   /**

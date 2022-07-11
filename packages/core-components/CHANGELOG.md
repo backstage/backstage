@@ -1,5 +1,113 @@
 # @backstage/core-components
 
+## 0.10.0-next.2
+
+### Minor Changes
+
+- 32204fa794: Add `transformLinkUri` and `transformImageUri` to `MarkdownContent`
+
+### Patch Changes
+
+- b4b711bcc2: Fix the EntityLayout header style so that EntityContextMenu button can display in correct shape when user hover on it
+- 15201b1032: Updated dependency `rc-progress` to `3.4.0`.
+- 385389d23c: Updated to remove usage of the `bursts` object in the theme palette
+- Updated dependencies
+  - @backstage/theme@0.2.16-next.1
+
+## 0.9.6-next.1
+
+### Patch Changes
+
+- 3c440ea77e: Change BackstageIconLinkVertical style to use pallette instead of explicit color
+- 7e115d42f9: Support displaying subtitle text in `SidebarSubmenuItem`
+- Updated dependencies
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/theme@0.2.16-next.0
+
+## 0.9.6-next.0
+
+### Patch Changes
+
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+
+## 0.9.5
+
+### Patch Changes
+
+- feb4e8de07: Fix EntityPage tab scrolling overflow bug on Firefox
+- 65840b17be: Fix issue where right arrow icon was incorrectly added to side bar items without a sub-menu
+- de593ec78f: Updated dependency `react-text-truncate` to `^0.19.0`.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 6968b65ba1: Updated dependency `@react-hookz/web` to `^14.0.0`.
+- ee2cd642c5: Updated dependency `rc-progress` to `3.3.3`.
+- 96d1e01641: Accessibility updates:
+
+  - Added `aria-label` to the `Select` component
+  - Changed heading level used in the header of `Table` component
+
+- 7d355c4b3f: Fix the missing filter in the toolbar when passing a custom component in the core-components Table
+- 1cf9caecd6: fix Sidebar Contexts deprecation message
+- bff65e6958: The `SidebarPinStateContext` and `SidebarContext` have been deprecated and will be removed in a future release. Instead, use `<SidebarPinStateProvider>` + `useSidebarPinState()` and/or `<SidebarOpenStateProvider>` + `useSidebarOpenState()`.
+
+  This was done to ensure that sidebar state can be shared successfully across components exported by different packages, regardless of what version of this package is resolved and installed for each individual package.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.3
+
+## 0.9.5-next.2
+
+### Patch Changes
+
+- ee2cd642c5: Updated dependency `rc-progress` to `3.3.3`.
+- 1cf9caecd6: fix Sidebar Contexts deprecation message
+
+## 0.9.5-next.1
+
+### Patch Changes
+
+- feb4e8de07: Fix EntityPage tab scrolling overflow bug on Firefox
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- bff65e6958: The `SidebarPinStateContext` and `SidebarContext` have been deprecated and will be removed in a future release. Instead, use `<SidebarPinStateProvider>` + `useSidebarPinState()` and/or `<SidebarOpenStateProvider>` + `useSidebarOpenState()`.
+
+  This was done to ensure that sidebar state can be shared successfully across components exported by different packages, regardless of what version of this package is resolved and installed for each individual package.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.3-next.0
+
+## 0.9.5-next.0
+
+### Patch Changes
+
+- 65840b17be: Fix issue where right arrow icon was incorrectly added to side bar items without a sub-menu
+- 6968b65ba1: Updated dependency `@react-hookz/web` to `^14.0.0`.
+- 96d1e01641: Accessibility updates:
+
+  - Added `aria-label` to the `Select` component
+  - Changed heading level used in the header of `Table` component
+
+## 0.9.4
+
+### Patch Changes
+
+- ac19f82936: Added ARIA landmark <main> to Page component and added ARIA landmark <nav> to DesktopSidebar and Sidebar components
+- 55f68c386a: Enabled select component to be enabled by keyboard
+- c0055ece91: Announce external links to screen readers
+- e210c0cab8: Add ability to customize `Read More` destination with `readMoreUrl` prop for `MissingAnnotationEmptyState` component.
+- 52c02ac02b: Don't set the background color on an Avatar component that has a picture.
+- cfc0f2e5bd: Added optional anchorOrigin alignment prop to AlertDisplay
+- f4380eb602: Add an aria-label to the support button to improve accessibility for screen readers
+- ba97b80421: Updated dependency `@types/react-syntax-highlighter` to `^15.0.0`.
+- e462112be5: Updated dependency `rc-progress` to `3.3.2`.
+- 2bcb0a0e2b: Sidebar NAV now includes aria-label. Component AboutField now uses h2 variant instead of subtitle2 (font properties unchanged)
+- c7f32b53a4: Fixed multiple scrolls appearing on Page when added InfoCard with external bottom link
+- 3603014e0e: Add ARIA landmark( <main>), & label and a heading to OAuthRequestDialog. Removed nested interactive control (button).
+- 2025d7c123: Properly highlight `SidebarSubmenuItem` dropdown items on hover, use ellipsis styling on long labels in `SidebarSubmenu`, allow `icon` and `to` properties to be optional on `SidebarSubmenuItem`, and fix `SidebarPage` padding to be responsive to pinned state
+- 2295b4ab2b: Add controls to Storybook stories
+- 521293b22e: Added a chevron Indicator when the sidebar is collapsed and has a sub-menu
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/config@1.0.1
+
 ## 0.9.4-next.2
 
 ### Patch Changes

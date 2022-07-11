@@ -1,5 +1,90 @@
 # @backstage/plugin-search-backend
 
+## 0.5.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/plugin-auth-node@0.2.3-next.1
+  - @backstage/plugin-permission-common@0.6.3-next.0
+  - @backstage/plugin-permission-node@0.6.3-next.1
+  - @backstage/plugin-search-backend-node@0.6.3-next.1
+  - @backstage/plugin-search-common@0.3.6-next.0
+
+## 0.5.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/plugin-auth-node@0.2.3-next.0
+  - @backstage/plugin-permission-node@0.6.3-next.0
+  - @backstage/plugin-search-backend-node@0.6.3-next.0
+
+## 0.5.3
+
+### Patch Changes
+
+- 7d8acfc32e: `RouterOptions` and `createRouter` now marked as public exports
+- 915700f64f: The provided search engine now adds a pagination-aware `rank` value to all results.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/plugin-permission-node@0.6.2
+  - @backstage/backend-common@0.14.0
+  - @backstage/plugin-auth-node@0.2.2
+  - @backstage/plugin-search-backend-node@0.6.2
+  - @backstage/plugin-permission-common@0.6.2
+
+## 0.5.3-next.2
+
+### Patch Changes
+
+- 7d8acfc32e: `RouterOptions` and `createRouter` now marked as public exports
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5-next.1
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/plugin-search-backend-node@0.6.2-next.2
+  - @backstage/plugin-auth-node@0.2.2-next.2
+  - @backstage/plugin-permission-node@0.6.2-next.2
+
+## 0.5.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/plugin-auth-node@0.2.2-next.1
+  - @backstage/plugin-permission-common@0.6.2-next.0
+  - @backstage/plugin-permission-node@0.6.2-next.1
+  - @backstage/plugin-search-backend-node@0.6.2-next.1
+  - @backstage/plugin-search-common@0.3.5-next.0
+
+## 0.5.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+  - @backstage/plugin-search-backend-node@0.6.2-next.0
+  - @backstage/plugin-auth-node@0.2.2-next.0
+  - @backstage/plugin-permission-node@0.6.2-next.0
+
+## 0.5.2
+
+### Patch Changes
+
+- 8cc75993a6: Fixed issue in `PermissionEvaluator` instance check that would cause unexpected "invalid union" errors.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/config@1.0.1
+  - @backstage/plugin-search-backend-node@0.6.1
+  - @backstage/plugin-auth-node@0.2.1
+  - @backstage/plugin-search-common@0.3.4
+  - @backstage/plugin-permission-common@0.6.1
+  - @backstage/plugin-permission-node@0.6.1
+
 ## 0.5.2-next.1
 
 ### Patch Changes

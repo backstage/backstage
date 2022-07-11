@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import {
   Box,
   Chip,
   Divider,
   ListItem,
+  ListItemIcon,
   ListItemText,
   makeStyles,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
+import { useAnalytics } from '@backstage/core-plugin-api';
 import {
   IndexableDocument,
   ResultHighlight,
@@ -47,8 +49,10 @@ const useStyles = makeStyles({
  * @public
  */
 export interface CatalogSearchResultListItemProps {
+  icon?: ReactNode;
   result: IndexableDocument;
   highlight?: ResultHighlight;
+  rank?: number;
 }
 
 /** @public */
@@ -58,41 +62,54 @@ export function CatalogSearchResultListItem(
   const result = props.result as any;
 
   const classes = useStyles();
+  const analytics = useAnalytics();
+  const handleClick = () => {
+    analytics.captureEvent('discover', result.title, {
+      attributes: { to: result.location },
+      value: props.rank,
+    });
+  };
+
   return (
-    <Link to={result.location}>
-      <ListItem alignItems="flex-start" className={classes.flexContainer}>
-        <ListItemText
-          className={classes.itemText}
-          primaryTypographyProps={{ variant: 'h6' }}
-          primary={
-            props.highlight?.fields.title ? (
-              <HighlightedSearchResultText
-                text={props.highlight.fields.title}
-                preTag={props.highlight.preTag}
-                postTag={props.highlight.postTag}
-              />
-            ) : (
-              result.title
-            )
-          }
-          secondary={
-            props.highlight?.fields.text ? (
-              <HighlightedSearchResultText
-                text={props.highlight.fields.text}
-                preTag={props.highlight.preTag}
-                postTag={props.highlight.postTag}
-              />
-            ) : (
-              result.text
-            )
-          }
-        />
-        <Box>
-          {result.kind && <Chip label={`Kind: ${result.kind}`} size="small" />}
-          {result.lifecycle && (
-            <Chip label={`Lifecycle: ${result.lifecycle}`} size="small" />
-          )}
-        </Box>
+    <Link noTrack to={result.location} onClick={handleClick}>
+      <ListItem alignItems="flex-start">
+        {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
+        <div className={classes.flexContainer}>
+          <ListItemText
+            className={classes.itemText}
+            primaryTypographyProps={{ variant: 'h6' }}
+            primary={
+              props.highlight?.fields.title ? (
+                <HighlightedSearchResultText
+                  text={props.highlight.fields.title}
+                  preTag={props.highlight.preTag}
+                  postTag={props.highlight.postTag}
+                />
+              ) : (
+                result.title
+              )
+            }
+            secondary={
+              props.highlight?.fields.text ? (
+                <HighlightedSearchResultText
+                  text={props.highlight.fields.text}
+                  preTag={props.highlight.preTag}
+                  postTag={props.highlight.postTag}
+                />
+              ) : (
+                result.text
+              )
+            }
+          />
+          <Box>
+            {result.kind && (
+              <Chip label={`Kind: ${result.kind}`} size="small" />
+            )}
+            {result.lifecycle && (
+              <Chip label={`Lifecycle: ${result.lifecycle}`} size="small" />
+            )}
+          </Box>
+        </div>
       </ListItem>
       <Divider component="li" />
     </Link>

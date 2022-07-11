@@ -120,6 +120,31 @@ describe('TaskWorker', () => {
   );
 
   it.each(databases.eachSupportedId())(
+    'logs error when the task throws, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await migrateBackendTasks(knex);
+
+      jest.spyOn(logger, 'error');
+      const fn = jest.fn().mockRejectedValue(new Error('failed'));
+      const settings: TaskSettingsV2 = {
+        version: 2,
+        initialDelayDuration: undefined,
+        cadence: '* * * * * *',
+        timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
+      };
+      const checkFrequency = Duration.fromObject({ milliseconds: 100 });
+      const worker = new TaskWorker('task1', fn, knex, logger, checkFrequency);
+      worker.start(settings);
+
+      await waitForExpect(() => {
+        expect(logger.error).toBeCalled();
+      });
+    },
+    60_000,
+  );
+
+  it.each(databases.eachSupportedId())(
     'runs tasks more than once even when the task throws, %p',
     async databaseId => {
       const knex = await databases.init(databaseId);

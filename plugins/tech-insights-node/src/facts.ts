@@ -15,6 +15,7 @@
  */
 import { DateTime, Duration, DurationLike } from 'luxon';
 import { Config } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 import {
   PluginEndpointDiscovery,
   TokenManager,
@@ -55,6 +56,7 @@ export type TechInsightFact = {
     | string[]
     | boolean[]
     | DateTime[]
+    | JsonValue
   >;
 
   /**
@@ -94,9 +96,16 @@ export type FactSchema = {
      * Type of the individual fact value
      *
      * Numbers are split into integers and floating point values.
-     * `set` indicates a collection of values
+     * `set` indicates a collection of values, `object` indicates JSON serializable value
      */
-    type: 'integer' | 'float' | 'string' | 'boolean' | 'datetime' | 'set';
+    type:
+      | 'integer'
+      | 'float'
+      | 'string'
+      | 'boolean'
+      | 'datetime'
+      | 'set'
+      | 'object';
 
     /**
      * A description of this individual fact value
@@ -164,6 +173,16 @@ export interface FactRetriever {
    * Should be incremented on changes to returned data from the handler or if the schema changes.
    */
   version: string;
+
+  /**
+   * A short display title for the fact retriever to be used in the interface
+   */
+  title?: string;
+
+  /**
+   * A short display description for the fact retriever to be used in the interface.
+   */
+  description?: string;
 
   /**
    * Handler function that needs to be implemented to retrieve fact values for entities.

@@ -10,14 +10,23 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Dispatch } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Extension } from '@backstage/core-plugin-api';
+import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { SetStateAction } from 'react';
 
 // @public
+export function createTechDocsAddonExtension(
+  options: TechDocsAddonOptions,
+): Extension<() => JSX.Element | null>;
+
+// @public
 export function createTechDocsAddonExtension<TComponentProps>(
   options: TechDocsAddonOptions<TComponentProps>,
 ): Extension<(props: TComponentProps) => JSX.Element | null>;
+
+// @public
+export const SHADOW_DOM_STYLE_LOAD_EVENT = 'TECH_DOCS_SHADOW_DOM_STYLE_LOAD';
 
 // @public
 export type SyncResult = 'cached' | 'updated';
@@ -105,6 +114,19 @@ export type TechDocsReaderPageValue = {
 };
 
 // @public
+export const TechDocsShadowDom: ({
+  element,
+  onAppend,
+  children,
+}: TechDocsShadowDomProps) => JSX.Element;
+
+// @public
+export type TechDocsShadowDomProps = PropsWithChildren<{
+  element: Element;
+  onAppend?: (shadowRoot: ShadowRoot) => void;
+}>;
+
+// @public
 export interface TechDocsStorageApi {
   // (undocumented)
   getApiOrigin(): Promise<string>;
@@ -129,6 +151,9 @@ export interface TechDocsStorageApi {
 
 // @public
 export const techdocsStorageApiRef: ApiRef<TechDocsStorageApi>;
+
+// @public
+export const useShadowDomStylesLoading: (element: Element | null) => boolean;
 
 // @public
 export const useShadowRoot: () => ShadowRoot | undefined;

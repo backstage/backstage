@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { getVoidLogger } from '@backstage/backend-common';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { createLocalJWKSet, decodeProtectedHeader, jwtVerify } from 'jose';
 
 import { MemoryKeyStore } from './MemoryKeyStore';
 import { TokenFactory } from './TokenFactory';
-import { getVoidLogger } from '@backstage/backend-common';
-import { createLocalJWKSet, decodeProtectedHeader, jwtVerify } from 'jose';
-import { stringifyEntityRef } from '@backstage/catalog-model';
 
 const logger = getVoidLogger();
 
@@ -129,5 +129,42 @@ describe('TokenFactory', () => {
         claims: { sub: 'UserId' },
       });
     }).rejects.toThrowError();
+  });
+
+  it('should throw error on empty algorithm string', async () => {
+    const keyDurationSeconds = 5;
+    const factory = new TokenFactory({
+      issuer: 'my-issuer',
+      keyStore: new MemoryKeyStore(),
+      keyDurationSeconds,
+      logger,
+      algorithm: '',
+    });
+
+    await expect(() => {
+      return factory.issueToken({
+        claims: { sub: 'UserId' },
+      });
+    }).rejects.toThrowError();
+  });
+
+  it('should defaults to ES256 when no algorithm string is supplied', async () => {
+    const keyDurationSeconds = 5;
+    const factory = new TokenFactory({
+      issuer: 'my-issuer',
+      keyStore: new MemoryKeyStore(),
+      keyDurationSeconds,
+      logger,
+    });
+
+    const token = await factory.issueToken({
+      claims: { sub: entityRef, ent: [entityRef] },
+    });
+
+    const { keys } = await factory.listPublicKeys();
+    const keyStore = createLocalJWKSet({ keys: keys });
+
+    const verifyResult = await jwtVerify(token, keyStore);
+    expect(verifyResult.protectedHeader.alg).toBe('ES256');
   });
 });

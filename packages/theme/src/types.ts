@@ -63,6 +63,9 @@ export type BackstagePaletteAdditions = {
   tabbar: {
     indicator: string;
   };
+  /**
+   * @deprecated The entire `bursts` section will be removed in a future release
+   */
   bursts: {
     fontColor: string;
     slackChannelText: string;
@@ -149,6 +152,7 @@ export type SimpleThemeOptions = {
   defaultPageTheme: string;
   pageTheme?: Record<string, PageTheme>;
   fontFamily?: string;
+  htmlFontSize?: number;
 };
 
 /**
@@ -160,4 +164,5 @@ export type PageTheme = {
   colors: string[];
   shape: string;
   backgroundImage: string;
+  fontColor: string;
 };

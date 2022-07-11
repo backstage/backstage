@@ -1,5 +1,118 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.5.0-next.2
+
+### Minor Changes
+
+- 818fa28d71: Allow FactRetrieverRegistry to be injected into buildTechInsightsContext so that we can override default registry implementation.
+
+### Patch Changes
+
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/backend-common@0.14.1-next.2
+  - @backstage/backend-tasks@0.3.3-next.2
+
+## 0.4.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/backend-tasks@0.3.3-next.1
+  - @backstage/catalog-client@1.0.4-next.1
+
+## 0.4.2-next.0
+
+### Patch Changes
+
+- 2ef58ab539: TechInsightsBackend: Added missing 'scheduler' to code examples
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/backend-tasks@0.3.3-next.0
+  - @backstage/plugin-tech-insights-node@0.3.2-next.0
+  - @backstage/catalog-client@1.0.4-next.0
+
+## 0.4.1
+
+### Patch Changes
+
+- 4fee8f59e3: Updated tech-insights fetch/latest endpoint to return the actual latest row based on the timestamp
+- aa15229ec3: Introduce additional JsonValue types to be storable as facts. This enables the possibility to store more complex objects for fact checking purposes. The rules engine supports walking keyed object values directly to create rules and checks
+
+  Modify facts database table to have a more restricted timestamp precision for cases where the postgres server isn't configured to contain such value. This fixes the issue where in some cases `maxItems` lifecycle condition didn't work as expected.
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.2
+  - @backstage/backend-common@0.14.0
+  - @backstage/catalog-client@1.0.3
+  - @backstage/catalog-model@1.0.3
+  - @backstage/plugin-tech-insights-node@0.3.1
+
+## 0.4.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/backend-tasks@0.3.2-next.2
+  - @backstage/plugin-tech-insights-node@0.3.1-next.1
+
+## 0.4.1-next.1
+
+### Patch Changes
+
+- 4fee8f59e3: Updated tech-insights fetch/latest endpoint to return the actual latest row based on the timestamp
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.2-next.1
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/catalog-client@1.0.3-next.0
+  - @backstage/catalog-model@1.0.3-next.0
+
+## 0.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.2-next.0
+  - @backstage/backend-common@0.13.6-next.0
+  - @backstage/plugin-tech-insights-node@0.3.1-next.0
+
+## 0.4.0
+
+### Minor Changes
+
+- 3333e20b27: **BREAKING**: The `buildTechInsightsContext` function now takes an additional
+  field in its options argument: `tokenManager`. This is an instance of
+  `TokenManager`, which can be found in your backend initialization code's
+  `env`.
+
+  ```diff
+   const builder = buildTechInsightsContext({
+     logger: env.logger,
+     config: env.config,
+     database: env.database,
+     discovery: env.discovery,
+     scheduler: env.scheduler,
+  +  tokenManager: env.tokenManager,
+     factRetrievers: [ /* ... */ ],
+   });
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/backend-tasks@0.3.1
+  - @backstage/plugin-tech-insights-node@0.3.0
+  - @backstage/config@1.0.1
+  - @backstage/catalog-client@1.0.2
+  - @backstage/catalog-model@1.0.2
+
 ## 0.4.0-next.2
 
 ### Patch Changes

@@ -21,7 +21,7 @@ import {
   Header,
   Lifecycle,
   Page,
-  SidebarPinStateContext,
+  useSidebarPinState,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
@@ -29,18 +29,18 @@ import {
   catalogApiRef,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/plugin-catalog-react';
+import { SearchType } from '@backstage/plugin-search';
 import {
   DefaultResultListItem,
   SearchBar,
   SearchFilter,
   SearchResult,
   SearchResultPager,
-  SearchType,
-} from '@backstage/plugin-search';
-import { useSearch } from '@backstage/plugin-search-react';
+  useSearch,
+} from '@backstage/plugin-search-react';
 import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
 import { Grid, List, makeStyles, Paper, Theme } from '@material-ui/core';
-import React, { useContext } from 'react';
+import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   bar: {
@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const SearchPage = () => {
   const classes = useStyles();
-  const { isMobile } = useContext(SidebarPinStateContext);
+  const { isMobile } = useSidebarPinState();
   const { types } = useSearch();
   const catalogApi = useApi(catalogApiRef);
 
@@ -132,22 +132,26 @@ const SearchPage = () => {
             <SearchResult>
               {({ results }) => (
                 <List>
-                  {results.map(({ type, document, highlight }) => {
+                  {results.map(({ type, document, highlight, rank }) => {
                     switch (type) {
                       case 'software-catalog':
                         return (
                           <CatalogSearchResultListItem
+                            icon={<CatalogIcon />}
                             key={document.location}
                             result={document}
                             highlight={highlight}
+                            rank={rank}
                           />
                         );
                       case 'techdocs':
                         return (
                           <TechDocsSearchResultListItem
+                            icon={<DocsIcon />}
                             key={document.location}
                             result={document}
                             highlight={highlight}
+                            rank={rank}
                           />
                         );
                       default:
@@ -156,6 +160,7 @@ const SearchPage = () => {
                             key={document.location}
                             result={document}
                             highlight={highlight}
+                            rank={rank}
                           />
                         );
                     }

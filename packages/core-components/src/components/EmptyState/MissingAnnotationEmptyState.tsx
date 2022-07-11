@@ -37,6 +37,7 @@ spec:
 
 type Props = {
   annotation: string;
+  readMoreUrl?: string;
 };
 
 export type MissingAnnotationEmptyStateClassKey = 'code';
@@ -53,7 +54,10 @@ const useStyles = makeStyles<BackstageTheme>(
 );
 
 export function MissingAnnotationEmptyState(props: Props) {
-  const { annotation } = props;
+  const { annotation, readMoreUrl } = props;
+  const url =
+    readMoreUrl ||
+    'https://backstage.io/docs/features/software-catalog/well-known-annotations';
   const classes = useStyles();
   const description = (
     <>
@@ -81,11 +85,7 @@ export function MissingAnnotationEmptyState(props: Props) {
               customStyle={{ background: 'inherit', fontSize: '115%' }}
             />
           </div>
-          <Button
-            color="primary"
-            component={Link}
-            to="https://backstage.io/docs/features/software-catalog/well-known-annotations"
-          >
+          <Button color="primary" component={Link} to={url}>
             Read more
           </Button>
         </>

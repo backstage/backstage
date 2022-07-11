@@ -1,5 +1,103 @@
 # @backstage/integration
 
+## 1.2.2-next.2
+
+### Patch Changes
+
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+## 1.2.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.1.0-next.0
+
+## 1.2.2-next.0
+
+### Patch Changes
+
+- 8829e175f2: Allow frontend visibility for `integrations` itself.
+
+## 1.2.1
+
+### Patch Changes
+
+- 72dfcbc8bf: Gerrit Integration: Handle absolute paths in `resolveUrl` properly.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- e37c71b5a4: Updated to support deployments of Azure DevOps Server under TFS or similar sub path
+
+## 1.2.1-next.2
+
+### Patch Changes
+
+- e37c71b5a4: Updated to support deployments of Azure DevOps Server under TFS or similar sub path
+
+## 1.2.1-next.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- 72dfcbc8bf: Gerrit Integration: Handle absolute paths in `resolveUrl` properly.
+
+## 1.2.0
+
+### Minor Changes
+
+- e295ce87de: added the possibility to handle raw Gitlab URLs with nested namespaces
+- 6673babab9: Gerrit UrlReader: Implemented `readTree`
+- 1b4e1e2306: Split `bitbucket` integration into `bitbucketCloud` and `bitbucketServer`
+  (backwards compatible).
+
+  In order to migrate to the new integration configs,
+  move your configs from `integrations.bitbucket`
+  to `integrations.bitbucketCloud` or `integrations.bitbucketServer`.
+
+  Migration example:
+
+  **Before:**
+
+  ```yaml
+  integrations:
+    bitbucket:
+      - host: bitbucket.org
+        username: bitbucket_user
+        appPassword: app-password
+      - host: bitbucket-server.company.com
+        token: my-token
+  ```
+
+  **After:**
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - username: bitbucket_user
+        appPassword: app-password
+    bitbucketServer:
+      - host: bitbucket-server.company.com
+        token: my-token
+  ```
+
+- 566407bf8a: Gerrit Integration: Added the `getGerritProjectsApiUrl` function
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.1
+
 ## 1.2.0-next.1
 
 ### Patch Changes

@@ -49,6 +49,7 @@ export class AppIdentityProxy implements IdentityApi {
   private target?: CompatibilityIdentityApi;
   private waitForTarget: Promise<CompatibilityIdentityApi>;
   private resolveTarget: (api: CompatibilityIdentityApi) => void = () => {};
+  private signOutTargetUrl = '/';
 
   constructor() {
     this.waitForTarget = new Promise<CompatibilityIdentityApi>(resolve => {
@@ -57,8 +58,12 @@ export class AppIdentityProxy implements IdentityApi {
   }
 
   // This is called by the app manager once the sign-in page provides us with an implementation
-  setTarget(identityApi: CompatibilityIdentityApi) {
+  setTarget(
+    identityApi: CompatibilityIdentityApi,
+    targetOptions: { signOutTargetUrl: string },
+  ) {
     this.target = identityApi;
+    this.signOutTargetUrl = targetOptions.signOutTargetUrl;
     this.resolveTarget(identityApi);
   }
 
@@ -119,6 +124,6 @@ export class AppIdentityProxy implements IdentityApi {
 
   async signOut(): Promise<void> {
     await this.waitForTarget.then(target => target.signOut());
-    location.reload();
+    location.href = this.signOutTargetUrl;
   }
 }

@@ -1,5 +1,60 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.4.0-next.1
+
+### Patch Changes
+
+- 60e5f9fe68: Fixed the lack of `limitranges` as part of the Default Objects to fetch from the kubernetes api
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.2
+
+## 0.4.0-next.0
+
+### Minor Changes
+
+- 0791af993f: Refactor `KubernetesObjectsProvider` with new methods, `KubernetesServiceLocator` now takes an `Entity` instead of `serviceId`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+
+## 0.3.0
+
+### Minor Changes
+
+- 4328737af6: Add support to fetch data for Stateful Sets
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.3
+
+## 0.3.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.3-next.0
+
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 4328737af6: Add support to fetch data for Stateful Sets
+
+## 0.2.10
+
+### Patch Changes
+
+- 1ef98cfe48: add Azure Identity auth provider and AKS dashboard formatter
+- 447e060872: Add support for 'oidc' as authProvider for kubernetes authentication
+  and adds optional 'oidcTokenProvider' config value. This will allow
+  users to authenticate to kubernetes cluster using id tokens obtained
+  from the configured auth provider in their backstage instance.
+- Updated dependencies
+  - @backstage/catalog-model@1.0.2
+
 ## 0.2.10-next.1
 
 ### Patch Changes

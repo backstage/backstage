@@ -175,6 +175,58 @@ describe('FossaClient', () => {
       expect(summary).toBeUndefined();
     });
 
+    it('should allow custom external link base url', async () => {
+      client = new FossaClient({
+        discoveryApi,
+        identityApi,
+        organizationId: '8736',
+        externalLinkBaseUrl: 'https://custom.fossa.com', // overrides the default app.fossa.com
+      });
+      server.use(
+        rest.get(`${mockBaseUrl}/fossa/projects`, (req, res, ctx) => {
+          const expectedQuery =
+            'count=1000&page=0&sort=title%2B&organizationId=8736&title=our-service';
+          if (req.url.searchParams.toString() !== expectedQuery) {
+            return res(
+              ctx.status(500),
+              ctx.body(
+                `${req.url.searchParams.toString()} !== ${expectedQuery}`,
+              ),
+            );
+          }
+
+          return res(
+            ctx.json([
+              {
+                locator: 'custom+8736/our-service',
+                title: 'our-service',
+                default_branch: 'develop',
+                revisions: [
+                  {
+                    updatedAt: '2020-01-01T00:00:00Z',
+                    dependency_count: 160,
+                    unresolved_licensing_issue_count: 5,
+                    unresolved_issue_count: 100,
+                  },
+                ],
+              },
+            ]),
+          );
+        }),
+      );
+
+      const summary = await client.getFindingSummary('our-service');
+
+      expect(summary).toEqual({
+        timestamp: '2020-01-01T00:00:00Z',
+        issueCount: 5,
+        dependencyCount: 160,
+        projectDefaultBranch: 'develop',
+        projectUrl:
+          'https://custom.fossa.com/projects/custom%2B8736%2Four-service',
+      } as FindingSummary);
+    });
+
     it('should handle 404 status', async () => {
       server.use(
         rest.get(`${mockBaseUrl}/fossa/projects`, (_req, res, ctx) => {

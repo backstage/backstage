@@ -26,7 +26,10 @@ import {
   SentryApi,
   sentryApiRef,
 } from '../src';
-import { SENTRY_PROJECT_SLUG_ANNOTATION } from '../src/components/useProjectSlug';
+import {
+  SENTRY_PROJECT_SLUG_ANNOTATION,
+  getProjectSlug,
+} from '../src/api/annotations';
 import { Content, Header, Page } from '@backstage/core-components';
 
 const entity = (name?: string) =>
@@ -47,8 +50,8 @@ createDevApp()
     deps: {},
     factory: () =>
       ({
-        fetchIssues: async (project: string) => {
-          switch (project) {
+        fetchIssues: async (e: Entity) => {
+          switch (getProjectSlug(e)) {
             case 'error':
               throw new Error('Error!');
 

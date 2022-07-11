@@ -1,5 +1,98 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.7.0-next.2
+
+### Patch Changes
+
+- 60e5f9fe68: Fixed the lack of `limitranges` as part of the Default Objects to fetch from the kubernetes api
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.4.0-next.1
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/backend-common@0.14.1-next.2
+
+## 0.7.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+
+## 0.7.0-next.0
+
+### Minor Changes
+
+- 0791af993f: Refactor `KubernetesObjectsProvider` with new methods, `KubernetesServiceLocator` now takes an `Entity` instead of `serviceId`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/plugin-kubernetes-common@0.4.0-next.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 4328737af6: Add support to fetch data for Stateful Sets from Kubernetes
+
+### Patch Changes
+
+- 0c70cd8e1d: cache and refresh Azure tokens to avoid excessive calls to Azure Identity
+- 2aedf64ad3: Updated dependency `@google-cloud/container` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+  - @backstage/plugin-kubernetes-common@0.3.0
+  - @backstage/catalog-model@1.0.3
+
+## 0.6.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+
+## 0.6.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/catalog-model@1.0.3-next.0
+  - @backstage/plugin-kubernetes-common@0.3.0-next.1
+
+## 0.6.0-next.0
+
+### Minor Changes
+
+- 4328737af6: Add support to fetch data for Stateful Sets from Kubernetes
+
+### Patch Changes
+
+- 0c70cd8e1d: cache and refresh Azure tokens to avoid excessive calls to Azure Identity
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+  - @backstage/plugin-kubernetes-common@0.3.0-next.0
+
+## 0.5.1
+
+### Patch Changes
+
+- 1ef98cfe48: add Azure Identity auth provider and AKS dashboard formatter
+- b9f7ffb162: Add filtering to GKE cluster locator
+- 447e060872: Add support for 'oidc' as authProvider for kubernetes authentication
+  and adds optional 'oidcTokenProvider' config value. This will allow
+  users to authenticate to kubernetes cluster using id tokens obtained
+  from the configured auth provider in their backstage instance.
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/plugin-kubernetes-common@0.2.10
+  - @backstage/config@1.0.1
+  - @backstage/catalog-model@1.0.2
+
 ## 0.5.1-next.2
 
 ### Patch Changes

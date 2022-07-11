@@ -29,16 +29,15 @@ import {
   defaultCheckResultRenderers,
 } from '../components/CheckResultRenderer';
 
-export type Options = {
-  discoveryApi: DiscoveryApi;
-  identityApi: IdentityApi;
-};
-
+/** @public */
 export class TechInsightsClient implements TechInsightsApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
 
-  constructor(options: Options) {
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+  }) {
     this.discoveryApi = options.discoveryApi;
     this.identityApi = options.identityApi;
   }

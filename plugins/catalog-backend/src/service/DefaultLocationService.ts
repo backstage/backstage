@@ -21,12 +21,11 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Location } from '@backstage/catalog-client';
-import {
-  CatalogProcessingOrchestrator,
-  DeferredEntity,
-} from '../processing/types';
+import { CatalogProcessingOrchestrator } from '../processing/types';
 import { LocationInput, LocationService, LocationStore } from './types';
 import { locationSpecToMetadataName } from '../util/conversion';
+import { InputError } from '@backstage/errors';
+import { DeferredEntity } from '@backstage/plugin-catalog-node';
 
 export class DefaultLocationService implements LocationService {
   constructor(
@@ -38,6 +37,9 @@ export class DefaultLocationService implements LocationService {
     input: LocationInput,
     dryRun: boolean,
   ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }> {
+    if (input.type !== 'url') {
+      throw new InputError(`Registered locations must be of type 'url'`);
+    }
     if (dryRun) {
       return this.dryRunCreateLocation(input);
     }

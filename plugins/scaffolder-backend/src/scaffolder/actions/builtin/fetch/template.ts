@@ -101,6 +101,7 @@ export function createFetchTemplateAction(options: {
         },
       },
     },
+    supportsDryRun: true,
     async handler(ctx) {
       ctx.logger.info('Fetching template content from remote URL');
 
@@ -153,6 +154,7 @@ export function createFetchTemplateAction(options: {
         dot: true,
         onlyFiles: false,
         markDirectories: true,
+        followSymbolicLinks: false,
       });
 
       const nonTemplatedEntries = new Set(
@@ -164,6 +166,7 @@ export function createFetchTemplateAction(options: {
                 dot: true,
                 onlyFiles: false,
                 markDirectories: true,
+                followSymbolicLinks: false,
               }),
             ),
           )
@@ -226,10 +229,11 @@ export function createFetchTemplateAction(options: {
           await fs.ensureDir(outputPath);
         } else {
           const inputFilePath = resolveSafeChildPath(templateDir, location);
+          const stats = await fs.promises.lstat(inputFilePath);
 
-          if (await isBinaryFile(inputFilePath)) {
+          if (stats.isSymbolicLink() || (await isBinaryFile(inputFilePath))) {
             ctx.logger.info(
-              `Copying binary file ${location} to template output path.`,
+              `Copying file binary or symbolic link at ${location}, to template output path.`,
             );
             await fs.copy(inputFilePath, outputPath);
           } else {

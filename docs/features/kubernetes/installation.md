@@ -33,9 +33,13 @@ const serviceEntityPage = (
   <EntityLayout>
     {/* other tabs... */}
     <EntityLayout.Route path="/kubernetes" title="Kubernetes">
-      <EntityKubernetesContent />
+      <EntityKubernetesContent refreshIntervalMs={30000} />
     </EntityLayout.Route>
 ```
+
+**Notes:**
+
+- The optional `refreshIntervalMs` property on the `EntityKubernetesContent` defines the interval in which the content automatically refreshes, if not set this will default to 10 seconds.
 
 That's it! But now, we need the Kubernetes Backend plugin for the frontend to
 work.

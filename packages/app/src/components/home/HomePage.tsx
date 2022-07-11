@@ -49,10 +49,19 @@ const clockConfigs: ClockConfig[] = [
   },
 ];
 
+const timeFormat: Intl.DateTimeFormatOptions = {
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+};
+
 export const homePage = (
   <Page themeId="home">
     <Header title={<WelcomeTitle />} pageTitleOverride="Home">
-      <HeaderWorldClock clockConfigs={clockConfigs} />
+      <HeaderWorldClock
+        clockConfigs={clockConfigs}
+        customTimeFormat={timeFormat}
+      />
     </Header>
     <Content>
       <Grid container spacing={3}>

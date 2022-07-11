@@ -1,5 +1,529 @@
 # @backstage/create-app
 
+## 0.4.29-next.2
+
+### Patch Changes
+
+- f281ad17c0: Adds the ability to define the Backstage app name using a `BACKSTAGE_APP_NAME`
+  environment variable when running `create-app`.
+
+## 0.4.29-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.4.29-next.0
+
+### Patch Changes
+
+- bc87604c26: Added an explicit `node-gyp` dependency to the root `package.json`. This is to work around a bug in older versions of `node-gyp` that causes Python execution to fail on macOS.
+
+  You can add this workaround to your existing project by adding `node-gyp` as a `devDependency` in your root `package.json` file:
+
+  ```diff
+     "devDependencies": {
+  +    "node-gyp": "^9.0.0"
+     },
+  ```
+
+## 0.4.28
+
+### Patch Changes
+
+- 881fbd7e8d: Register `TechDocs` addons on catalog entity pages, follow the steps below to add them manually:
+
+  ```diff
+  // packages/app/src/components/catalog/EntityPage.tsx
+
+  + import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+  + import {
+  +   ReportIssue,
+  + } from '@backstage/plugin-techdocs-module-addons-contrib';
+
+  + const techdocsContent = (
+  +   <EntityTechdocsContent>
+  +     <TechDocsAddons>
+  +       <ReportIssue />
+  +     </TechDocsAddons>
+  +   </EntityTechdocsContent>
+  + );
+
+  const defaultEntityPage = (
+    ...
+    <EntityLayout.Route path="/docs" title="Docs">
+  +    {techdocsContent}
+    </EntityLayout.Route>
+    ...
+  );
+
+  const serviceEntityPage = (
+    ...
+    <EntityLayout.Route path="/docs" title="Docs">
+  +    {techdocsContent}
+    </EntityLayout.Route>
+    ...
+  );
+
+  const websiteEntityPage = (
+    ...
+    <EntityLayout.Route path="/docs" title="Docs">
+  +    {techdocsContent}
+    </EntityLayout.Route>
+    ...
+  );
+  ```
+
+- 0e870fe0ac: Removed peer dependencies, as they are no longer needed.
+- bff65e6958: Use of `SidebarContext` has been deprecated and will be removed in a future release. Instead, `useSidebarOpenState()` should be used to consume the context and `<SidebarOpenStateProvider>` should be used to provide it.
+
+  To prepare your app, update `packages/app/src/components/Root/Root.tsx` as follows:
+
+  ```diff
+  import {
+    Sidebar,
+    sidebarConfig,
+  - SidebarContext
+    SidebarDivider,
+    // ...
+    SidebarSpace,
+  + useSidebarOpenState,
+  } from '@backstage/core-components';
+
+  // ...
+
+  const SidebarLogo = () => {
+    const classes = useSidebarLogoStyles();
+  - const { isOpen } = useContext(SidebarContext);
+  + const { isOpen } = useSidebarOpenState();
+
+    // ...
+  };
+  ```
+
+- 935d8515da: Updated the `--version` flag to output the version of the current backstage release instead of the version of create-app.
+- 18d4c3e50a: Updated `app-config.production.yaml` to specify an empty list of catalog locations. This is done to prevent example locations stored in `app-config.yaml` from being loaded as these are examples.
+- 1f70704580: Accessibility updates:
+
+  - Added `aria-label` to the sidebar Logo link. To enable this for an existing app, please make the following changes:
+
+  `packages/app/src/components/Root/Root.tsx`
+
+  ```diff
+  const SidebarLogo = () => {
+    const classes = useSidebarLogoStyles();
+    const { isOpen } = useContext(SidebarContext);
+
+    return (
+      <div className={classes.root}>
+        <Link
+          component={NavLink}
+          to="/"
+          underline="none"
+          className={classes.link}
+  +       aria-label="Home"
+        >
+          {isOpen ? <LogoFull /> : <LogoIcon />}
+        </Link>
+      </div>
+    );
+  };
+  ```
+
+- 30f04d1497: Components `<DefaultResultListItem>`, `<SearchBar>`, `<SearchFilter>`, and `<SearchResult>` are now deprecated in `@backstage/plugin-search` and should be imported from `@backstage/plugin-search-react` instead.
+
+  To upgrade your App, update the following in `packages/app/src/components/search/SearchPage.tsx`:
+
+  ```diff
+  import {
+    DefaultResultListItem
+    SearchBar
+    SearchFilter
+    SearchResult
+  - } from `@backstage/plugin-search`;
+  + } from `@backstage/plugin-search-react`;
+  ```
+
+- f7f5a6c6a3: It's now possible to pass result item components a `rank`, which is captured by the analytics API when a user clicks on a search result. To apply this change, update your `/packages/app/src/components/search/SearchPage.tsx` in the following way:
+
+  ```diff
+  // ...
+  <SearchResult>
+    {({ results }) => (
+      <List>
+  -     {results.map(({ type, document, highlight }) => {
+  +     {results.map(({ type, document, highlight, rank }) => {
+          switch (type) {
+            case 'software-catalog':
+              return (
+                <CatalogSearchResultListItem
+                  key={document.location}
+                  result={document}
+                  highlight={highlight}
+  +               rank={rank}
+                />
+              );
+            case 'techdocs':
+              return (
+                <TechDocsSearchResultListItem
+                  key={document.location}
+                  result={document}
+                  highlight={highlight}
+  +               rank={rank}
+                />
+              );
+            default:
+              return (
+                <DefaultResultListItem
+                  key={document.location}
+                  result={document}
+                  highlight={highlight}
+  +               rank={rank}
+                />
+              );
+          }
+        })}
+      </List>
+    )}
+  </SearchResult>
+  // ...
+  ```
+
+  If you have implemented a custom Search Modal or other custom search experience, you will want to make similar changes in those components.
+
+- aaf7652084: Bump version of `cypress` in newly scaffolded Backstage Applications. To apply this change to your own instance, please make the following change to `packages/app/package.json` under `devDependencies`.
+
+  ```diff
+  -   "cypress": "^7.3.0",
+  +   "cypress": "^9.7.0",
+  ```
+
+- 141a1caebe: Updated the auth backend setup in the template to include a guest sign-in resolver in order to make it quicker to get up and running with a basic sign-in setup. There is no need to update existing apps to match this change, but in case you want to use the guest sign-in resolver you can find it at https://backstage.io/docs/auth/identity-resolver#guest-sign-in-resolver
+
+## 0.4.28-next.2
+
+### Patch Changes
+
+- aaf7652084: Bump version of `cypress` in newly scaffolded Backstage Applications. To apply this change to your own instance, please make the following change to `packages/app/package.json` under `devDependencies`.
+
+  ```diff
+  -   "cypress": "^7.3.0",
+  +   "cypress": "^9.7.0",
+  ```
+
+## 0.4.28-next.1
+
+### Patch Changes
+
+- bff65e6958: Use of `SidebarContext` has been deprecated and will be removed in a future release. Instead, `useSidebarOpenState()` should be used to consume the context and `<SidebarOpenStateProvider>` should be used to provide it.
+
+  To prepare your app, update `packages/app/src/components/Root/Root.tsx` as follows:
+
+  ```diff
+  import {
+    Sidebar,
+    sidebarConfig,
+  - SidebarContext
+    SidebarDivider,
+    // ...
+    SidebarSpace,
+  + useSidebarOpenState,
+  } from '@backstage/core-components';
+
+  // ...
+
+  const SidebarLogo = () => {
+    const classes = useSidebarLogoStyles();
+  - const { isOpen } = useContext(SidebarContext);
+  + const { isOpen } = useSidebarOpenState();
+
+    // ...
+  };
+  ```
+
+## 0.4.28-next.0
+
+### Patch Changes
+
+- 881fbd7e8d: Register `TechDocs` addons on catalog entity pages, follow the steps below to add them manually:
+
+  ```diff
+  // packages/app/src/components/catalog/EntityPage.tsx
+
+  + import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+  + import {
+  +   ReportIssue,
+  + } from '@backstage/plugin-techdocs-module-addons-contrib';
+
+  + const techdocsContent = (
+  +   <EntityTechdocsContent>
+  +     <TechDocsAddons>
+  +       <ReportIssue />
+  +     </TechDocsAddons>
+  +   </EntityTechdocsContent>
+  + );
+
+  const defaultEntityPage = (
+    ...
+    <EntityLayout.Route path="/docs" title="Docs">
+  +    {techdocsContent}
+    </EntityLayout.Route>
+    ...
+  );
+
+  const serviceEntityPage = (
+    ...
+    <EntityLayout.Route path="/docs" title="Docs">
+  +    {techdocsContent}
+    </EntityLayout.Route>
+    ...
+  );
+
+  const websiteEntityPage = (
+    ...
+    <EntityLayout.Route path="/docs" title="Docs">
+  +    {techdocsContent}
+    </EntityLayout.Route>
+    ...
+  );
+  ```
+
+- 935d8515da: Updated the `--version` flag to output the version of the current backstage release instead of the version of create-app.
+- 1f70704580: Accessibility updates:
+
+  - Added `aria-label` to the sidebar Logo link. To enable this for an existing app, please make the following changes:
+
+  `packages/app/src/components/Root/Root.tsx`
+
+  ```diff
+  const SidebarLogo = () => {
+    const classes = useSidebarLogoStyles();
+    const { isOpen } = useContext(SidebarContext);
+
+    return (
+      <div className={classes.root}>
+        <Link
+          component={NavLink}
+          to="/"
+          underline="none"
+          className={classes.link}
+  +       aria-label="Home"
+        >
+          {isOpen ? <LogoFull /> : <LogoIcon />}
+        </Link>
+      </div>
+    );
+  };
+  ```
+
+## 0.4.27
+
+### Patch Changes
+
+- 73480846dd: Simplified the search collator scheduling by removing the need for the `luxon` dependency.
+
+  For existing installations the scheduling can be simplified by removing the `luxon` dependency and using the human friendly duration object instead.
+  Please note that this only applies if luxon is not used elsewhere in your installation.
+
+  `packages/backend/package.json`
+
+  ```diff
+       "express": "^4.17.1",
+       "express-promise-router": "^4.1.0",
+  -    "luxon": "^2.0.2",
+  ```
+
+  `packages/backend/src/plugins/search.ts`
+
+  ```diff
+   import { Router } from 'express';
+  -import { Duration } from 'luxon';
+
+   // omitted other code
+
+     const schedule = env.scheduler.createScheduledTaskRunner({
+  -    frequency: Duration.fromObject({ minutes: 10 }),
+  -    timeout: Duration.fromObject({ minutes: 15 }),
+  +    frequency: { minutes: 10 },
+  +    timeout: { minutes: 15 },
+       // A 3 second delay gives the backend server a chance to initialize before
+       // any collators are executed, which may attempt requests against the API.
+  -    initialDelay: Duration.fromObject({ seconds: 3 }),
+  +    initialDelay: { seconds: 3 },
+     });
+  ```
+
+- 7cda923c16: Tweaked the `.dockerignore` file so that it's easier to add additional backend packages if desired.
+
+  To apply this change to an existing app, make the following change to `.dockerignore`:
+
+  ```diff
+   cypress
+   microsite
+   node_modules
+  -packages
+  -!packages/backend/dist
+  +packages/*/src
+  +packages/*/node_modules
+   plugins
+  ```
+
+- 3983940a21: Optimized the command order in `packages/backend/Dockerfile` as well as added the `--no-install-recommends` to the `apt-get install` and tweaked the installed packages.
+
+  To apply this change to an existing app, update your `packages/backend/Dockerfile` to match the documented `Dockerfile` at https://backstage.io/docs/deployment/docker#host-build.
+
+- 28bbf5aff6: Added some instruction comments to the generated config files, to clarify the
+  usage of `backend.baseUrl` and `backend.listen.host`. Importantly, it also per
+  default now listens on all IPv4 interfaces, to make it easier to take the step
+  over to production. If you want to do the same, update your
+  `app-config.production.yaml` as follows:
+
+  ```diff
+   backend:
+     listen:
+       port: 7007
+  +    host: 0.0.0.0
+  ```
+
+  Also, updated the builtin backend Dockerfile to honor the
+  `app-config.production.yaml` file. If you want to do the same, change
+  `packages/backend/Dockerfile` as follows:
+
+  ```diff
+  -COPY packages/backend/dist/bundle.tar.gz app-config.yaml ./
+  +COPY packages/backend/dist/bundle.tar.gz app-config*.yaml ./
+   RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
+
+  -CMD ["node", "packages/backend", "--config", "app-config.yaml"]
+  +CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
+  ```
+
+  If you look carefully, this adds a glob match on app-config files. For those
+  that try out the build flows locally, you also want to make sure that the docker
+  daemon does NOT pick up any local/private config files that might contain
+  secrets. You should therefore also update your local `.dockerignore` file at the
+  same time:
+
+  ```diff
+  +*.local.yaml
+  ```
+
+- 7b253072c6: Tweaked template to provide an example and guidance for how to configure sign-in in `packages/backend/src/plugins/auth.ts`. There is no need to add this to existing apps, but for more information about sign-in configuration, see https://backstage.io/docs/auth/identity-resolver.
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- f55414f895: Added sample catalog data to the template under a top-level `examples` directory. This includes some simple entities, org data, and a template. You can find the sample data at https://github.com/backstage/backstage/tree/master/packages/create-app/templates/default-app/examples.
+- 344ea56acc: Bump `commander` to version 9.1.0
+- 00fa0dada0: Removed the database choice from the `create-app` command.
+
+  This reduces the step from development to production by always installing the dependencies and templating the production configuration in `app-config.production.yaml`.
+
+  Added `app-config.local.yaml` to allow for local configuration overrides.
+  To replicate this behavior in an existing installation simply `touch app-config.local.yaml` in the project root and apply your local configuration.
+
+  `better-sqlite3` has been moved to devDependencies, for existing installations using postgres in production and SQLite in development it's recommended to move SQLite into the devDependencies section to avoid unnecessary dependencies during builds.
+
+  in `packages/backend/package.json`
+
+  ```diff
+    "dependencies": {
+      ...
+      "pg": "^8.3.0",
+  -   "better-sqlite3": "^7.5.0",
+      "winston": "^3.2.1"
+    },
+    "devDependencies": {
+      ...
+      "@types/luxon": "^2.0.4",
+  +   "better-sqlite3": "^7.5.0"
+    }
+  ```
+
+- 10d86dedc0: Integrates TechDocs add-ons with the app package so add-ons are configured when creating an app using the Backstage CLI. To apply these changes to an existing application do the following:
+
+  1. Add the `@backstage/plugin-techdocs-react` and `@backstage/plugin-techdocs-module-addons-contrib` packages to your app's dependencies;
+  2. And then register the `<ReportIssue/ >` Addon in your `packages/app/src/App.tsx` file, there where you define a route to `<TechDocsReaderPage />`:
+
+  ```diff
+  import {
+    DefaultTechDocsHome,
+    TechDocsIndexPage,
+    TechDocsReaderPage,
+  } from '@backstage/plugin-techdocs';
+  + import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+  + import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
+
+  // ...
+
+  const AppRoutes = () => {
+    <FlatRoutes>
+      // ... other plugin routes
+      <Route path="/docs" element={<TechDocsIndexPage />}>
+        <DefaultTechDocsHome />
+      </Route>
+      <Route
+        path="/docs/:namespace/:kind/:name/*"
+        element={<TechDocsReaderPage />}
+      >
+  +     <TechDocsAddons>
+  +       <ReportIssue />
+  +     </TechDocsAddons>
+      </Route>
+    </FlatRoutes>;
+  };
+  ```
+
+- 806427545f: Added a link to the `${GITHUB_TOKEN}` to document how to generate a token
+- 3a74e203a8: Implement highlighting matching terms in search results. To enable this for an existing app, make the following changes:
+
+  ```diff
+  // packages/app/src/components/search/SearchPage.tsx
+  ...
+  -  {results.map(({ type, document }) => {
+  +  {results.map(({ type, document, highlight }) => {
+       switch (type) {
+         case 'software-catalog':
+           return (
+             <CatalogSearchResultListItem
+               key={document.location}
+               result={document}
+  +            highlight={highlight}
+             />
+           );
+         case 'techdocs':
+           return (
+             <TechDocsSearchResultListItem
+               key={document.location}
+               result={document}
+  +            highlight={highlight}
+             />
+           );
+         default:
+           return (
+             <DefaultResultListItem
+               key={document.location}
+               result={document}
+  +            highlight={highlight}
+             />
+           );
+       }
+     })}
+  ...
+  ```
+
+- d41f19ca2a: Bumped the `typescript` version in the template to `~4.6.4`.
+
+  To apply this change to an existing app, make the following change to the root `package.json`:
+
+  ```diff
+     dependencies: {
+       ...
+  -    "typescript": "~4.5.4"
+  +    "typescript": "~4.6.4"
+     },
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.9
+
 ## 0.4.27-next.2
 
 ### Patch Changes

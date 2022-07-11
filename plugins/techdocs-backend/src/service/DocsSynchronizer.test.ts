@@ -25,6 +25,8 @@ import {
   PreparerBuilder,
   PublisherBase,
 } from '@backstage/plugin-techdocs-node';
+import { PassThrough } from 'stream';
+import * as winston from 'winston';
 import { TechDocsCache } from '../cache';
 import { DocsBuilder, shouldCheckForUpdate } from '../DocsBuilder';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
@@ -74,11 +76,16 @@ describe('DocsSynchronizer', () => {
   } as unknown as jest.Mocked<TechDocsCache>;
 
   let docsSynchronizer: DocsSynchronizer;
+
   const mockResponseHandler: jest.Mocked<DocsSynchronizerSyncOpts> = {
     log: jest.fn(),
     finish: jest.fn(),
     error: jest.fn(),
   };
+
+  const mockBuildLogTransport = new winston.transports.Stream({
+    stream: new PassThrough(),
+  });
 
   beforeEach(async () => {
     publisher.docsRouter.mockReturnValue(() => {});
@@ -90,6 +97,7 @@ describe('DocsSynchronizer', () => {
       publisher,
       config: new ConfigReader({}),
       logger: getVoidLogger(),
+      buildLogTransport: mockBuildLogTransport,
       scmIntegrations: ScmIntegrations.fromConfig(new ConfigReader({})),
       cache,
     });
@@ -149,6 +157,37 @@ describe('DocsSynchronizer', () => {
 
       expect(shouldCheckForUpdate).toBeCalledTimes(1);
       expect(DocsBuilder.prototype.build).toBeCalledTimes(1);
+    });
+
+    it('should limit concurrent updates', async () => {
+      // Given a build implementation that runs long...
+      MockedDocsBuilder.prototype.build.mockImplementation(
+        () => new Promise(() => {}),
+      );
+      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
+      const entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          uid: '0',
+          name: 'test',
+          namespace: 'default',
+        },
+      };
+
+      // When more than 10 syncs are attempted...
+      for (let i = 0; i < 12; i++) {
+        docsSynchronizer.doSync({
+          responseHandler: mockResponseHandler,
+          entity,
+          preparers,
+          generators,
+        });
+      }
+
+      // Then still only 10 builds should have been triggered.
+      await new Promise<void>(resolve => resolve());
+      expect(DocsBuilder.prototype.build).toHaveBeenCalledTimes(10);
     });
 
     it('should not check for an update too often', async () => {
@@ -289,6 +328,9 @@ describe('DocsSynchronizer', () => {
           techdocs: { legacyUseCaseSensitiveTripletPaths: true },
         }),
         logger: getVoidLogger(),
+        buildLogTransport: new winston.transports.Stream({
+          stream: new PassThrough(),
+        }),
         scmIntegrations: ScmIntegrations.fromConfig(new ConfigReader({})),
         cache,
       });
@@ -320,6 +362,23 @@ describe('DocsSynchronizer', () => {
       });
 
       expect(mockResponseHandler.finish).toBeCalledWith({ updated: false });
+    });
+
+    it("adds the build log transport to the logger's list of transports", async () => {
+      let logger: winston.Logger;
+      MockedDocsBuilder.prototype.build.mockImplementation(async () => {
+        logger = MockedDocsBuilder.mock.calls[0][0].logger;
+        expect(logger.transports).toContain(mockBuildLogTransport);
+
+        return true;
+      });
+
+      await docsSynchronizer.doSync({
+        responseHandler: mockResponseHandler,
+        entity,
+        preparers,
+        generators,
+      });
     });
   });
 });

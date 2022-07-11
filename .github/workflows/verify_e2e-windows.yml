@@ -56,3 +56,4 @@ jobs:
         run: yarn e2e-test run
         env:
           DEBUG: zombie
+          CYPRESS_VERIFY_TIMEOUT: 600000

@@ -64,12 +64,12 @@ export async function createRouter(
         request.header('authorization'),
       );
       const branch = request.query.branch;
-      let branchStr: string | undefined;
+      let branches: string[] | undefined;
 
       if (branch === undefined) {
-        branchStr = undefined;
+        branches = undefined;
       } else if (typeof branch === 'string') {
-        branchStr = branch;
+        branches = branch.split(/,/g);
       } else {
         // this was passed in as something weird -> 400
         // https://evanhahn.com/gotchas-with-express-query-parsing-and-how-to-avoid-them/
@@ -88,7 +88,7 @@ export async function createRouter(
         },
         backstageToken: token,
       });
-      const projects = await jenkinsApi.getProjects(jenkinsInfo, branchStr);
+      const projects = await jenkinsApi.getProjects(jenkinsInfo, branches);
 
       response.json({
         projects: projects,
@@ -131,6 +131,9 @@ export async function createRouter(
     '/v1/entity/:namespace/:kind/:name/job/:jobFullName/:buildNumber::rebuild',
     async (request, response) => {
       const { namespace, kind, name, jobFullName } = request.params;
+      const token = getBearerTokenFromAuthorizationHeader(
+        request.header('authorization'),
+      );
       const jenkinsInfo = await jenkinsInfoProvider.getInstance({
         entityRef: {
           kind,
@@ -138,10 +141,8 @@ export async function createRouter(
           name,
         },
         jobFullName,
+        backstageToken: token,
       });
-      const token = getBearerTokenFromAuthorizationHeader(
-        request.header('authorization'),
-      );
 
       const resourceRef = stringifyEntityRef({ kind, namespace, name });
       await jenkinsApi.buildProject(jenkinsInfo, jobFullName, resourceRef, {

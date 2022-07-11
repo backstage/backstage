@@ -31,7 +31,6 @@ import {
   isError,
   NotAllowedError,
 } from '@backstage/errors';
-import { TokenIssuer } from '../../identity/types';
 import { defaultCookieConfigurer, readState, verifyNonce } from './helpers';
 import { postMessageResponse, ensuresXRequestedWith } from '../flow';
 import {
@@ -48,13 +47,10 @@ export const TEN_MINUTES_MS = 600 * 1000;
 export type Options = {
   providerId: string;
   secure: boolean;
-  disableRefresh?: boolean;
   persistScopes?: boolean;
   cookieDomain: string;
   cookiePath: string;
   appOrigin: string;
-  /** @deprecated This option is no longer needed */
-  tokenIssuer?: TokenIssuer;
   isOriginAllowed: (origin: string) => boolean;
   callbackUrl: string;
 };
@@ -62,14 +58,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
   static fromConfig(
     config: AuthProviderConfig,
     handlers: OAuthHandlers,
-    options: Pick<
-      Options,
-      | 'providerId'
-      | 'persistScopes'
-      | 'disableRefresh'
-      | 'tokenIssuer'
-      | 'callbackUrl'
-    >,
+    options: Pick<Options, 'providerId' | 'persistScopes' | 'callbackUrl'>,
   ): OAuthAdapter {
     const { origin: appOrigin } = new URL(config.appUrl);
 
@@ -170,7 +159,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
         response.providerInfo.scope = state.scope;
       }
 
-      if (refreshToken && !this.options.disableRefresh) {
+      if (refreshToken) {
         // set new refresh token
         this.setRefreshTokenCookie(res, refreshToken);
       }
@@ -210,7 +199,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       throw new AuthenticationError('Invalid X-Requested-With header');
     }
 
-    if (!this.handlers.refresh || this.options.disableRefresh) {
+    if (!this.handlers.refresh) {
       throw new InputError(
         `Refresh token is not supported for provider ${this.options.providerId}`,
       );

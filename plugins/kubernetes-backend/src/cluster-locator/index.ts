@@ -19,6 +19,7 @@ import { Duration } from 'luxon';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
 import { GkeClusterLocator } from './GkeClusterLocator';
+import { LocalKubectlProxyClusterLocator } from './LocalKubectlProxyLocator';
 
 class CombinedClustersSupplier implements KubernetesClustersSupplier {
   constructor(readonly clusterSuppliers: KubernetesClustersSupplier[]) {}
@@ -45,6 +46,8 @@ export const getCombinedClusterSupplier = (
     .map(clusterLocatorMethod => {
       const type = clusterLocatorMethod.getString('type');
       switch (type) {
+        case 'localKubectlProxy':
+          return new LocalKubectlProxyClusterLocator();
         case 'config':
           return ConfigClusterLocator.fromConfig(clusterLocatorMethod);
         case 'gke':

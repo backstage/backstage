@@ -1,5 +1,93 @@
 # @backstage/backend-tasks
 
+## 0.3.3-next.2
+
+### Patch Changes
+
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.2
+
+## 0.3.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+
+## 0.3.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+
+## 0.3.2
+
+### Patch Changes
+
+- fde10d24f6: Allow tasks that fail to retry on a loop emitting a warning log every time it fails with the amount of attempts it has
+- f7146b516f: Updated dependency `cron` to `^2.0.0`.
+  Updated dependency `@types/cron` to `^2.0.0`.
+- 7f108513b8: Add error logging when a background task throws an error rather than silently swallowing it.
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+
+## 0.3.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+
+## 0.3.2-next.1
+
+### Patch Changes
+
+- f7146b516f: Updated dependency `cron` to `^2.0.0`.
+  Updated dependency `@types/cron` to `^2.0.0`.
+- 7f108513b8: Add error logging when a background task throws an error rather than silently swallowing it.
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- fde10d24f6: Allow tasks that fail to retry on a loop emitting a warning log every time it fails with the amount of attempts it has
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+
+## 0.3.1
+
+### Patch Changes
+
+- 73480846dd: `TaskScheduleDefinition` has been updated to also accept an options object containing duration information in the form of days, hours, seconds and so on. This allows for scheduling without importing `luxon`.
+
+  ```diff
+  -import { Duration } from 'luxon';
+  // omitted other code
+
+  const schedule = env.scheduler.createScheduledTaskRunner({
+  -  frequency: Duration.fromObject({ minutes: 10 }),
+  -  timeout: Duration.fromObject({ minutes: 15 }),
+  +  frequency: { minutes: 10 },
+  +  timeout: { minutes: 15 },
+     // omitted other code
+  });
+  ```
+
+- cfd779a9bc: Scheduled tasks now have an optional `scope` field. If unset, or having the
+  value `'global'`, the old behavior with cross-worker locking is retained. If
+  having the value `'local'`, there is no coordination across workers and the
+  behavior is more like `setInterval`. This can be used to replace usages of
+  `runPeriodically` helpers.
+- ebbec677e1: Correctly set next run time for tasks
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/config@1.0.1
+
 ## 0.3.1-next.1
 
 ### Patch Changes

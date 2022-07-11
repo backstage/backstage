@@ -303,6 +303,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     initialState,
     emptyContent,
     onStateChange,
+    components,
     ...restProps
   } = props;
   const tableClasses = useTableStyles();
@@ -493,13 +494,14 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
           Header: StyledMTableHeader,
           Toolbar,
           Body,
+          ...components,
         }}
         options={{ ...defaultOptions, ...options }}
         columns={MTColumns}
         icons={tableIcons}
         title={
           <>
-            <Typography variant="h5" component="h3">
+            <Typography variant="h5" component="h2">
               {title}
             </Typography>
             {subtitle && (

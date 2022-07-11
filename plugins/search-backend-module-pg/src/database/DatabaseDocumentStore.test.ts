@@ -15,7 +15,20 @@
  */
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { IndexableDocument } from '@backstage/plugin-search-common';
+import { PgSearchHighlightOptions } from '../PgSearchEngine';
 import { DatabaseDocumentStore } from './DatabaseDocumentStore';
+
+const highlightOptions: PgSearchHighlightOptions = {
+  preTag: '<tag>',
+  postTag: '</tag>',
+  useHighlight: false,
+  maxWords: 35,
+  minWords: 15,
+  shortWord: 3,
+  highlightAll: false,
+  maxFragments: 0,
+  fragmentDelimiter: ' ... ',
+};
 
 describe('DatabaseDocumentStore', () => {
   describe('unsupported', () => {
@@ -220,7 +233,12 @@ describe('DatabaseDocumentStore', () => {
         });
 
         const rows = await store.transaction(tx =>
-          store.query(tx, { pgTerm: 'Hello & World', offset: 1, limit: 1 }),
+          store.query(tx, {
+            pgTerm: 'Hello & World',
+            offset: 1,
+            limit: 1,
+            options: highlightOptions,
+          }),
         );
 
         expect(rows).toEqual([
@@ -261,7 +279,12 @@ describe('DatabaseDocumentStore', () => {
         });
 
         const rows = await store.transaction(tx =>
-          store.query(tx, { pgTerm: 'Hello & World', offset: 0, limit: 25 }),
+          store.query(tx, {
+            pgTerm: 'Hello & World',
+            offset: 0,
+            limit: 25,
+            options: highlightOptions,
+          }),
         );
 
         expect(rows).toEqual([
@@ -322,6 +345,7 @@ describe('DatabaseDocumentStore', () => {
             types: ['my-type'],
             offset: 0,
             limit: 25,
+            options: highlightOptions,
           }),
         );
 
@@ -375,6 +399,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this' },
             offset: 0,
             limit: 25,
+            options: highlightOptions,
           }),
         );
 
@@ -429,6 +454,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: ['this', 'that'] },
             offset: 0,
             limit: 25,
+            options: highlightOptions,
           }),
         );
 
@@ -490,6 +516,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this', otherField: 'another' },
             offset: 0,
             limit: 25,
+            options: highlightOptions,
           }),
         );
 
@@ -539,6 +566,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this' },
             offset: 0,
             limit: 25,
+            options: highlightOptions,
           }),
         );
 

@@ -1,5 +1,78 @@
 # @backstage/plugin-search-react
 
+## 0.2.2-next.2
+
+### Patch Changes
+
+- 60408ca9d4: Fix search pagination to reset page cursor also when a term is cleared.
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/theme@0.2.16-next.1
+
+## 0.2.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.1
+  - @backstage/theme@0.2.16-next.0
+  - @backstage/plugin-search-common@0.3.6-next.0
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.0
+
+## 0.2.1
+
+### Patch Changes
+
+- 8809159148: Components `<DefaultResultListItem>`, `<SearchBar>` (including `<SearchBarBase>`), `<SearchFilter>` (including `.Checkbox`, `.Select`, and `.Autocomplete` static prop components), `<SearchResult>`, and `<SearchResultPager>` are now exported from `@backstage/plugin-search-react`. They are now deprecated in `@backstage/plugin-search` and will be removed in a future release.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.3-next.0
+  - @backstage/plugin-search-common@0.3.5-next.0
+
+## 0.2.0
+
+### Minor Changes
+
+- bdbe620797: **BREAKING**: `SearchContextProviderForStorybook` and `SearchApiProviderForStorybook` has been deleted. New mock implementation of the `SearchApi` introduced. If you need to mock the api we recommend you to do the following:
+
+  ```tsx
+  import {
+    searchApiRef,
+    MockSearchApi,
+    SearchContextProvider,
+  } from '@backstage/plugin-search-react';
+  import { TestApiProvider } from '@backstage/test-utils';
+
+  <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
+    <SearchContextProvider>
+      <Component />
+    </SearchContextProvider>
+  </TestApiProvider>;
+  ```
+
+### Patch Changes
+
+- 11a46863de: Export `useSearchContextCheck` hook to check if the search context is available
+- a307a14be0: Removed dependency on `@backstage/core-app-api`.
+- 3a74e203a8: Updated search result components to support rendering content with highlighted matched terms
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/plugin-search-common@0.3.4
+
 ## 0.2.0-next.2
 
 ### Patch Changes

@@ -17,11 +17,8 @@
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { KubernetesAuthProvider, KubernetesAuthProvidersApi } from './types';
 import { GoogleKubernetesAuthProvider } from './GoogleKubernetesAuthProvider';
-import { ServiceAccountKubernetesAuthProvider } from './ServiceAccountKubernetesAuthProvider';
-import { AwsKubernetesAuthProvider } from './AwsKubernetesAuthProvider';
+import { ServerSideKubernetesAuthProvider } from './ServerSideAuthProvider';
 import { OAuthApi, OpenIdConnectApi } from '@backstage/core-plugin-api';
-import { GoogleServiceAccountAuthProvider } from './GoogleServiceAccountAuthProvider';
-import { AzureKubernetesAuthProvider } from './AzureKubernetesAuthProvider';
 import { OidcKubernetesAuthProvider } from './OidcKubernetesAuthProvider';
 
 export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
@@ -41,16 +38,23 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
     );
     this.kubernetesAuthProviderMap.set(
       'serviceAccount',
-      new ServiceAccountKubernetesAuthProvider(),
+      new ServerSideKubernetesAuthProvider(),
     );
     this.kubernetesAuthProviderMap.set(
       'googleServiceAccount',
-      new GoogleServiceAccountAuthProvider(),
+      new ServerSideKubernetesAuthProvider(),
     );
-    this.kubernetesAuthProviderMap.set('aws', new AwsKubernetesAuthProvider());
+    this.kubernetesAuthProviderMap.set(
+      'aws',
+      new ServerSideKubernetesAuthProvider(),
+    );
     this.kubernetesAuthProviderMap.set(
       'azure',
-      new AzureKubernetesAuthProvider(),
+      new ServerSideKubernetesAuthProvider(),
+    );
+    this.kubernetesAuthProviderMap.set(
+      'localKubectlProxy',
+      new ServerSideKubernetesAuthProvider(),
     );
 
     if (options.oidcProviders) {

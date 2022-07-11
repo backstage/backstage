@@ -14,10 +14,25 @@
  * limitations under the License.
  */
 
+export type GitlabGroupDescription = {
+  id: number;
+  web_url: string;
+  projects: GitLabProject[];
+};
+
 export type GitLabProject = {
   id: number;
   default_branch?: string;
   archived: boolean;
   last_activity_at: string;
   web_url: string;
+  path_with_namespace?: string;
+};
+
+export type GitlabProviderConfig = {
+  host: string;
+  group: string;
+  id: string;
+  branch: string;
+  catalogFile: string;
 };

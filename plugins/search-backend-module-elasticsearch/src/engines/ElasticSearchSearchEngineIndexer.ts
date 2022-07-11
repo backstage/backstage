@@ -16,17 +16,21 @@
 
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { Client } from '@elastic/elasticsearch';
 import { Readable } from 'stream';
 import { Logger } from 'winston';
+import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 
+/**
+ * Options for instansiate ElasticSearchSearchEngineIndexer
+ * @public
+ */
 export type ElasticSearchSearchEngineIndexerOptions = {
   type: string;
   indexPrefix: string;
   indexSeparator: string;
   alias: string;
   logger: Logger;
-  elasticSearchClient: Client;
+  elasticSearchClientWrapper: ElasticSearchClientWrapper;
 };
 
 function duration(startTimestamp: [number, number]): string {
@@ -35,6 +39,10 @@ function duration(startTimestamp: [number, number]): string {
   return `${seconds.toFixed(1)}s`;
 }
 
+/**
+ * Elasticsearch specific search engine indexer.
+ * @public
+ */
 export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
   private received: number = 0;
   private processed: number = 0;
@@ -49,7 +57,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
   private readonly removableAlias: string;
   private readonly logger: Logger;
   private readonly sourceStream: Readable;
-  private readonly elasticSearchClient: Client;
+  private readonly elasticSearchClientWrapper: ElasticSearchClientWrapper;
   private bulkResult: Promise<any>;
 
   constructor(options: ElasticSearchSearchEngineIndexerOptions) {
@@ -62,7 +70,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
     this.indexName = this.constructIndexName(`${Date.now()}`);
     this.alias = options.alias;
     this.removableAlias = `${this.alias}_removable`;
-    this.elasticSearchClient = options.elasticSearchClient;
+    this.elasticSearchClientWrapper = options.elasticSearchClientWrapper;
 
     // The ES client bulk helper supports stream-based indexing, but we have to
     // supply the stream directly to it at instantiation-time. We can't supply
@@ -75,7 +83,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
 
     // Keep a reference to the ES Bulk helper so that we can know when all
     // documents have been successfully written to ES.
-    this.bulkResult = this.elasticSearchClient.helpers.bulk({
+    this.bulkResult = this.elasticSearchClientWrapper.bulk({
       datasource: this.sourceStream,
       onDocument() {
         that.processed++;
@@ -90,16 +98,15 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
   async initialize(): Promise<void> {
     this.logger.info(`Started indexing documents for index ${this.type}`);
 
-    const aliases = await this.elasticSearchClient.cat.aliases({
-      format: 'json',
-      name: [this.alias, this.removableAlias],
+    const aliases = await this.elasticSearchClientWrapper.getAliases({
+      aliases: [this.alias, this.removableAlias],
     });
 
     this.removableIndices = [
       ...new Set(aliases.body.map((r: Record<string, any>) => r.index)),
     ] as string[];
 
-    await this.elasticSearchClient.indices.create({
+    await this.elasticSearchClientWrapper.createIndex({
       index: this.indexName,
     });
   }
@@ -132,25 +139,23 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
       )}`,
       result,
     );
-    await this.elasticSearchClient.indices.updateAliases({
-      body: {
-        actions: [
-          {
-            remove: { index: this.constructIndexName('*'), alias: this.alias },
-          },
-          this.removableIndices.length
-            ? {
-                add: {
-                  indices: this.removableIndices,
-                  alias: this.removableAlias,
-                },
-              }
-            : undefined,
-          {
-            add: { index: this.indexName, alias: this.alias },
-          },
-        ].filter(Boolean),
-      },
+    await this.elasticSearchClientWrapper.updateAliases({
+      actions: [
+        {
+          remove: { index: this.constructIndexName('*'), alias: this.alias },
+        },
+        this.removableIndices.length
+          ? {
+              add: {
+                indices: this.removableIndices,
+                alias: this.removableAlias,
+              },
+            }
+          : undefined,
+        {
+          add: { index: this.indexName, alias: this.alias },
+        },
+      ].filter(Boolean),
     });
 
     // If any indices are removable, remove them. Do not bubble up this error,
@@ -158,7 +163,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
     if (this.removableIndices.length) {
       this.logger.info('Removing stale search indices', this.removableIndices);
       try {
-        await this.elasticSearchClient.indices.delete({
+        await this.elasticSearchClientWrapper.deleteIndex({
           index: this.removableIndices,
         });
       } catch (e) {

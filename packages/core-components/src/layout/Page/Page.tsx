@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
-import { SidebarPinStateContext } from '../Sidebar/Page';
+import { useSidebarPinState } from '../Sidebar/SidebarPinStateContext';
 
 export type PageClassKey = 'root';
 
@@ -43,7 +43,7 @@ type Props = {
 
 export function Page(props: Props) {
   const { themeId, children } = props;
-  const { isMobile } = useContext(SidebarPinStateContext);
+  const { isMobile } = useSidebarPinState();
   const classes = useStyles({ isMobile });
   return (
     <ThemeProvider

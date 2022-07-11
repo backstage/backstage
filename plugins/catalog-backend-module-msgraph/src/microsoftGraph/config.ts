@@ -17,12 +17,21 @@
 import { Config } from '@backstage/config';
 import { trimEnd } from 'lodash';
 
+const DEFAULT_AUTHORITY = 'https://login.microsoftonline.com';
+const DEFAULT_PROVIDER_ID = 'default';
+const DEFAULT_TARGET = 'https://graph.microsoft.com/v1.0';
+
 /**
  * The configuration parameters for a single Microsoft Graph provider.
  *
  * @public
  */
 export type MicrosoftGraphProviderConfig = {
+  /**
+   * Identifier of the provider which will be used i.e. at the location key for ingested entities.
+   */
+  id: string;
+
   /**
    * The prefix of the target that this matches on, e.g.
    * "https://graph.microsoft.com/v1.0", with no trailing slash.
@@ -55,7 +64,7 @@ export type MicrosoftGraphProviderConfig = {
   /**
    * The "expand" argument to apply to users.
    *
-   * E.g. "manager"
+   * E.g. "manager".
    */
   userExpand?: string;
   /**
@@ -73,7 +82,7 @@ export type MicrosoftGraphProviderConfig = {
   /**
    * The "expand" argument to apply to groups.
    *
-   * E.g. "member"
+   * E.g. "member".
    */
   groupExpand?: string;
   /**
@@ -113,6 +122,7 @@ export type MicrosoftGraphProviderConfig = {
  * @param config - The root of the msgraph config hierarchy
  *
  * @public
+ * @deprecated Replaced by not exported `readProviderConfigs` and kept for backwards compatibility only.
  */
 export function readMicrosoftGraphConfig(
   config: Config,
@@ -125,7 +135,7 @@ export function readMicrosoftGraphConfig(
 
     const authority = providerConfig.getOptionalString('authority')
       ? trimEnd(providerConfig.getOptionalString('authority'), '/')
-      : 'https://login.microsoftonline.com';
+      : DEFAULT_AUTHORITY;
     const tenantId = providerConfig.getString('tenantId');
     const clientId = providerConfig.getString('clientId');
     const clientSecret = providerConfig.getString('clientSecret');
@@ -164,6 +174,7 @@ export function readMicrosoftGraphConfig(
     }
 
     providers.push({
+      id: target,
       target,
       authority,
       tenantId,
@@ -182,4 +193,87 @@ export function readMicrosoftGraphConfig(
   }
 
   return providers;
+}
+
+export function readProviderConfigs(
+  config: Config,
+): MicrosoftGraphProviderConfig[] {
+  const providersConfig = config.getOptionalConfig(
+    'catalog.providers.microsoftGraphOrg',
+  );
+  if (!providersConfig) {
+    return [];
+  }
+
+  if (providersConfig.has('clientId')) {
+    // simple/single config variant
+    return [readProviderConfig(DEFAULT_PROVIDER_ID, providersConfig)];
+  }
+
+  return providersConfig.keys().map(id => {
+    const providerConfig = providersConfig.getConfig(id);
+
+    return readProviderConfig(id, providerConfig);
+  });
+}
+
+export function readProviderConfig(
+  id: string,
+  config: Config,
+): MicrosoftGraphProviderConfig {
+  const target = trimEnd(
+    config.getOptionalString('target') ?? DEFAULT_TARGET,
+    '/',
+  );
+  const authority = trimEnd(
+    config.getOptionalString('authority') ?? DEFAULT_AUTHORITY,
+    '/',
+  );
+
+  const clientId = config.getString('clientId');
+  const clientSecret = config.getString('clientSecret');
+  const tenantId = config.getString('tenantId');
+
+  const userExpand = config.getOptionalString('user.expand');
+  const userFilter = config.getOptionalString('user.filter');
+
+  const groupExpand = config.getOptionalString('group.expand');
+  const groupFilter = config.getOptionalString('group.filter');
+  const groupSearch = config.getOptionalString('group.search');
+  const groupSelect = config.getOptionalStringArray('group.select');
+
+  const userGroupMemberFilter = config.getOptionalString(
+    'userGroupMember.filter',
+  );
+  const userGroupMemberSearch = config.getOptionalString(
+    'userGroupMember.search',
+  );
+
+  if (userFilter && userGroupMemberFilter) {
+    throw new Error(
+      `userFilter and userGroupMemberFilter are mutually exclusive, only one can be specified.`,
+    );
+  }
+  if (userFilter && userGroupMemberSearch) {
+    throw new Error(
+      `userGroupMemberSearch cannot be specified when userFilter is defined.`,
+    );
+  }
+
+  return {
+    id,
+    target,
+    authority,
+    clientId,
+    clientSecret,
+    tenantId,
+    userExpand,
+    userFilter,
+    groupExpand,
+    groupFilter,
+    groupSearch,
+    groupSelect,
+    userGroupMemberFilter,
+    userGroupMemberSearch,
+  };
 }

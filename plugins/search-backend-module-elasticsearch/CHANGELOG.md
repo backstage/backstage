@@ -1,5 +1,113 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 0.2.0-next.1
+
+### Minor Changes
+
+- c5af773757: **BREAKING**: In order to remain interoperable with all currently supported
+  deployments of Elasticsearch, this package will now conditionally use either
+  the `@elastic/elasticsearch` or `@opensearch-project/opensearch` client when
+  communicating with your deployed cluster.
+
+  If you do not rely on types exported from this package, or if you do not make
+  use of the `createElasticSearchClientOptions` or `newClient` methods on the
+  `ElasticSearchSearchEngine` class, then upgrading to this version should not
+  require any further action on your part. Everything will continue to work as it
+  always has.
+
+  If you _do_ rely on either of the above methods or any underlying types, some
+  changes may be needed to your custom code. A type guard is now exported by this
+  package (`isOpenSearchCompatible(options)`), which you may use to help clarify
+  which client options are compatible with which client constructors.
+
+  If you are using this package with the `search.elasticsearch.provider` set to
+  `aws`, and you are making use of the `newClient` method in particular, you may
+  wish to start using the `@opensearch-project/opensearch` client in your custom
+  code.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@0.6.3-next.1
+  - @backstage/plugin-search-common@0.3.6-next.0
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@0.6.3-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- 281cec1b61: Use more precise matching for query filters
+- 915700f64f: The provided search engine now adds a pagination-aware `rank` value to all results.
+- ddce23d080: Now possible to set a custom index template on the elasticsearch search engine.
+- 7d8acfc32e: Additional types now exported publicly:
+
+  - ElasticSearchAgentOptions
+  - ElasticSearchConcreteQuery
+  - ElasticSearchQueryTranslator
+  - ElasticSearchConnectionConstructor,
+  - ElasticSearchTransportConstructor,
+  - ElasticSearchNodeOptions,
+  - ElasticSearchOptions,
+  - ElasticSearchAuth,
+
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/plugin-search-backend-node@0.6.2
+
+## 0.1.5-next.2
+
+### Patch Changes
+
+- 7d8acfc32e: Additional types now exported publicly:
+
+  - ElasticSearchAgentOptions
+  - ElasticSearchConcreteQuery
+  - ElasticSearchQueryTranslator
+  - ElasticSearchConnectionConstructor,
+  - ElasticSearchTransportConstructor,
+  - ElasticSearchNodeOptions,
+  - ElasticSearchOptions,
+  - ElasticSearchAuth,
+
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5-next.1
+  - @backstage/plugin-search-backend-node@0.6.2-next.2
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- 281cec1b61: Use more precise matching for query filters
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@0.6.2-next.1
+  - @backstage/plugin-search-common@0.3.5-next.0
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@0.6.2-next.0
+
+## 0.1.4
+
+### Patch Changes
+
+- 9eef9c9db4: Fix issue where `nextPageCursor` is defined on the last page of results
+- 71d3432710: Search Engines will now index documents in batches of 1000 instead of 100 (under the hood). This may result in your Backstage backend consuming slightly more memory during index runs, but should dramatically improve indexing performance for large document sets.
+- a7f7a63d14: Prevent orphaned stale indices by permanently marking them for deletion so removal can be re-attempted if it failed previously
+- 3a74e203a8: Support generating highlighted matched terms in search result data
+- Updated dependencies
+  - @backstage/config@1.0.1
+  - @backstage/plugin-search-backend-node@0.6.1
+  - @backstage/plugin-search-common@0.3.4
+
 ## 0.1.4-next.1
 
 ### Patch Changes
@@ -78,10 +186,10 @@
 - 022507c860: **BREAKING**
 
   The `ElasticSearchSearchEngine` implements the new stream-based indexing
-  process expected by the latest `@backstage/search-backend-node`.
+  process expected by the latest `@backstage/plugin-search-backend-node`.
 
   When updating to this version, you must also update to the latest version of
-  `@backstage/search-backend-node`. Check [this upgrade guide](https://backstage.io/docs/features/search/how-to-guides#how-to-migrate-from-search-alpha-to-beta)
+  `@backstage/plugin-search-backend-node`. Check [this upgrade guide](https://backstage.io/docs/features/search/how-to-guides#how-to-migrate-from-search-alpha-to-beta)
   for further details.
 
 ### Patch Changes

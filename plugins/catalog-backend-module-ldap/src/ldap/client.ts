@@ -18,11 +18,12 @@ import { ForwardedError } from '@backstage/errors';
 import ldap, { Client, SearchEntry, SearchOptions } from 'ldapjs';
 import { cloneDeep } from 'lodash';
 import { Logger } from 'winston';
-import { BindConfig } from './config';
+import { BindConfig, TLSConfig } from './config';
 import { errorString } from './util';
 import {
   ActiveDirectoryVendor,
   DefaultLdapVendor,
+  FreeIpaVendor,
   LdapVendor,
 } from './vendors';
 
@@ -40,8 +41,12 @@ export class LdapClient {
     logger: Logger,
     target: string,
     bind?: BindConfig,
+    tls?: TLSConfig,
   ): Promise<LdapClient> {
-    const client = ldap.createClient({ url: target });
+    const client = ldap.createClient({
+      url: target,
+      tlsOptions: tls,
+    });
 
     // We want to have a catch-all error handler at the top, since the default
     // behavior of the client is to blow up the entire process when it fails,
@@ -195,6 +200,8 @@ export class LdapClient {
       .then(root => {
         if (root && root.raw?.forestFunctionality) {
           return ActiveDirectoryVendor;
+        } else if (root && root.raw?.ipaDomainLevel) {
+          return FreeIpaVendor;
         }
         return DefaultLdapVendor;
       })

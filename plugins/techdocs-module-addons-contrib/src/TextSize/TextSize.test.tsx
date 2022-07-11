@@ -20,7 +20,7 @@ import React from 'react';
 
 import { fireEvent, waitFor } from '@testing-library/react';
 
-import { TextSize } from '..';
+import { TextSize } from '../plugin';
 
 describe('TextSize', () => {
   it('renders without exploding', async () => {

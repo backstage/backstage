@@ -35,6 +35,8 @@ import { ForwardedError, NotModifiedError } from '@backstage/errors';
 import { ListObjectsV2Output, ObjectList } from 'aws-sdk/clients/s3';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
+const DEFAULT_REGION = 'us-east-1';
+
 /**
  * Path style URLs: https://s3.(region).amazonaws.com/(bucket)/(key)
  * The region can also be on the old form: https://s3-(region).amazonaws.com/(bucket)/(key)
@@ -57,7 +59,7 @@ export function parseUrl(
   // Treat Amazon hosted separately because it has special region logic
   if (config.host === 'amazonaws.com') {
     const match = host.match(
-      /^(?:([a-z0-9.-]+)\.)?s3[.-]([a-z0-9-]+)\.amazonaws\.com$/,
+      /^(?:([a-z0-9.-]+)\.)?s3(?:[.-]([a-z0-9-]+))?\.amazonaws\.com$/,
     );
     if (!match) {
       throw new Error(`Invalid AWS S3 URL ${url}`);
@@ -76,14 +78,14 @@ export function parseUrl(
       return {
         path: pathname.substring(slashIndex + 1),
         bucket: pathname.substring(0, slashIndex),
-        region: hostRegion,
+        region: hostRegion ?? DEFAULT_REGION,
       };
     }
 
     return {
       path: pathname,
       bucket: hostBucket,
-      region: hostRegion,
+      region: hostRegion ?? DEFAULT_REGION,
     };
   }
 
@@ -214,10 +216,38 @@ export class AwsS3UrlReader implements UrlReader {
 
       const request = this.deps.s3.getObject(params);
       options?.signal?.addEventListener('abort', () => request.abort());
-      const etag = (await request.promise()).ETag;
 
-      return ReadUrlResponseFactory.fromReadable(request.createReadStream(), {
-        etag,
+      // Since we're consuming the read stream we need to consume headers and errors via events.
+      const etagPromise = new Promise<string | undefined>((resolve, reject) => {
+        request.on('httpHeaders', (status, headers) => {
+          if (status < 400) {
+            if (status === 200) {
+              resolve(headers.etag);
+            } else if (status !== 304 /* not modified */) {
+              reject(
+                new Error(
+                  `S3 readUrl request received unexpected status '${status}' in response`,
+                ),
+              );
+            }
+          }
+        });
+        request.on('error', error => reject(error));
+        request.on('complete', () =>
+          reject(
+            new Error('S3 readUrl request completed without receiving headers'),
+          ),
+        );
+      });
+
+      const stream = request.createReadStream();
+      stream.on('error', () => {
+        // The AWS SDK forwards request errors to the stream, so we need to
+        // ignore those errors here or the process will crash.
+      });
+
+      return ReadUrlResponseFactory.fromReadable(stream, {
+        etag: await etagPromise,
       });
     } catch (e) {
       if (e.statusCode === 304) {

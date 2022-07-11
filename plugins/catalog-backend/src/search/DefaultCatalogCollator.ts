@@ -20,8 +20,8 @@ import {
 } from '@backstage/backend-common';
 import {
   Entity,
+  isUserEntity,
   stringifyEntityRef,
-  UserEntity,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
@@ -37,7 +37,7 @@ import { Permission } from '@backstage/plugin-permission-common';
 
 /**
  * @public
- * @deprecated Upgrade to a more recent `@backstage/search-backend-node` and
+ * @deprecated Upgrade to a more recent `@backstage/plugin-search-backend-node` and
  * use `DefaultCatalogCollatorFactory` instead.
  */
 export class DefaultCatalogCollator {
@@ -93,13 +93,9 @@ export class DefaultCatalogCollator {
     return formatted.toLowerCase();
   }
 
-  private isUserEntity(entity: Entity): entity is UserEntity {
-    return entity.kind.toLocaleUpperCase('en-US') === 'USER';
-  }
-
   private getDocumentText(entity: Entity): string {
     let documentText = entity.metadata.description || '';
-    if (this.isUserEntity(entity)) {
+    if (isUserEntity(entity)) {
       if (entity.spec?.profile?.displayName && documentText) {
         // combine displayName and description
         const displayName = entity.spec?.profile?.displayName;

@@ -28,7 +28,8 @@ import {
 } from './types';
 
 /**
- * @beta
+ * Used for adding collators, decorators and compile them into tasks which are added to a scheduler returned to the caller.
+ * @public
  */
 export class IndexBuilder {
   private collators: Record<string, RegisterCollatorParameters>;
@@ -45,10 +46,16 @@ export class IndexBuilder {
     this.searchEngine = searchEngine;
   }
 
+  /**
+   * Responsible for returning the registered search engine.
+   */
   getSearchEngine(): SearchEngine {
     return this.searchEngine;
   }
 
+  /**
+   * Responsible for returning the registered document types.
+   */
   getDocumentTypes(): Record<string, DocumentTypeInfo> {
     return this.documentTypes;
   }
@@ -128,7 +135,7 @@ export class IndexBuilder {
           const indexer = await this.searchEngine.getIndexer(type);
 
           // Compose collator/decorators/indexer into a pipeline
-          return new Promise<void>(done => {
+          return new Promise<void>((resolve, reject) => {
             pipeline(
               [collator, ...decorators, indexer],
               (error: NodeJS.ErrnoException | null) => {
@@ -136,12 +143,12 @@ export class IndexBuilder {
                   this.logger.error(
                     `Collating documents for ${type} failed: ${error}`,
                   );
+                  reject(error);
                 } else {
+                  // Signal index pipeline completion!
                   this.logger.info(`Collating documents for ${type} succeeded`);
+                  resolve();
                 }
-
-                // Signal index pipeline completion!
-                done();
               },
             );
           });

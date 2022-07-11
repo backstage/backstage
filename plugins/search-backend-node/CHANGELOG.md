@@ -1,5 +1,85 @@
 # @backstage/plugin-search-backend-node
 
+## 0.6.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/backend-tasks@0.3.3-next.1
+  - @backstage/plugin-permission-common@0.6.3-next.0
+  - @backstage/plugin-search-common@0.3.6-next.0
+
+## 0.6.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/backend-tasks@0.3.3-next.0
+
+## 0.6.2
+
+### Patch Changes
+
+- e7794a0aaa: propagate indexing errors so they don't appear successful to the task scheduler
+- 3bb25a9acc: Introducing a `NewlineDelimitedJsonCollatorFactory`, which can be used to create search indices from newline delimited JSON files stored in external storage readable via a configured `UrlReader` instance.
+
+  This is useful if you have an independent process periodically generating `*.ndjson` files consisting of `IndexableDocument` objects and want to be able to generate a fresh index based on the latest version of such a file.
+
+- 3bb25a9acc: Fixed a bug that prevented `TestPipeline.withSubject` from identifying valid `Readable` subjects that were technically transform streams.
+- 915700f64f: The provided search engine now adds a pagination-aware `rank` value to all results.
+- 7d8acfc32e: Replaced all `@beta` exports with `@public` exports
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/backend-tasks@0.3.2
+  - @backstage/backend-common@0.14.0
+  - @backstage/plugin-permission-common@0.6.2
+
+## 0.6.2-next.2
+
+### Patch Changes
+
+- 7d8acfc32e: Replaced all `@beta` exports with `@public` exports
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5-next.1
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/backend-tasks@0.3.2-next.2
+
+## 0.6.2-next.1
+
+### Patch Changes
+
+- 3bb25a9acc: Introducing a `NewlineDelimitedJsonCollatorFactory`, which can be used to create search indices from newline delimited JSON files stored in external storage readable via a configured `UrlReader` instance.
+
+  This is useful if you have an independent process periodically generating `*.ndjson` files consisting of `IndexableDocument` objects and want to be able to generate a fresh index based on the latest version of such a file.
+
+- 3bb25a9acc: Fixed a bug that prevented `TestPipeline.withSubject` from identifying valid `Readable` subjects that were technically transform streams.
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.2-next.1
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/plugin-permission-common@0.6.2-next.0
+  - @backstage/plugin-search-common@0.3.5-next.0
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- e7794a0aaa: propagate indexing errors so they don't appear successful to the task scheduler
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.2-next.0
+
+## 0.6.1
+
+### Patch Changes
+
+- 71d3432710: Search Engines will now index documents in batches of 1000 instead of 100 (under the hood). This may result in your Backstage backend consuming slightly more memory during index runs, but should dramatically improve indexing performance for large document sets.
+- 3a74e203a8: Support generating highlighted matched terms in search result data
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.1
+  - @backstage/plugin-search-common@0.3.4
+
 ## 0.6.1-next.1
 
 ### Patch Changes

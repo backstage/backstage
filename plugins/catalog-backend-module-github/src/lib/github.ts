@@ -52,6 +52,7 @@ export type Team = {
   name?: string;
   description?: string;
   avatarUrl?: string;
+  editTeamUrl?: string;
   parentTeam?: Team;
   members: Connection<User>;
 };
@@ -165,6 +166,7 @@ export async function getOrganizationTeams(
             name
             description
             avatarUrl
+            editTeamUrl
             parentTeam { slug }
             members(first: 100, membership: IMMEDIATE) {
               pageInfo { hasNextPage }
@@ -179,14 +181,20 @@ export async function getOrganizationTeams(
   const groupMemberUsers = new Map<string, string[]>();
 
   const mapper = async (team: Team) => {
+    const annotations: { [annotationName: string]: string } = {
+      'github.com/team-slug': team.combinedSlug,
+    };
+
+    if (team.editTeamUrl) {
+      annotations['backstage.io/edit-url'] = team.editTeamUrl;
+    }
+
     const entity: GroupEntity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Group',
       metadata: {
         name: team.slug,
-        annotations: {
-          'github.com/team-slug': team.combinedSlug,
-        },
+        annotations,
       },
       spec: {
         type: 'team',

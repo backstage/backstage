@@ -1,5 +1,132 @@
 # @backstage/plugin-org
 
+## 0.5.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/theme@0.2.16-next.1
+  - @backstage/plugin-catalog-react@1.1.2-next.2
+
+## 0.5.7-next.1
+
+### Patch Changes
+
+- 1e984b11fc: Render namespaces for teams with subtitles in `MyGroupsSidebarItem`
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.1
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/theme@0.2.16-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.1
+
+## 0.5.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.0
+
+## 0.5.6
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 306d0b4fdd: Added the ability to use an additional `filter` when fetching groups in `MyGroupsSidebarItem` component. Example:
+
+  ```diff
+  // app/src/components/Root/Root.tsx
+  <SidebarPage>
+      <Sidebar>
+        //...
+        <SidebarGroup label="Menu" icon={<MenuIcon />}>
+          {/* Global nav, not org-specific */}
+          //...
+          <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+          <MyGroupsSidebarItem
+            singularTitle="My Squad"
+            pluralTitle="My Squads"
+            icon={GroupIcon}
+  +         filter={{ 'spec.type': 'team' }}
+          />
+         //...
+        </SidebarGroup>
+      </ Sidebar>
+  </SidebarPage>
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/catalog-model@1.0.3
+
+## 0.5.6-next.2
+
+### Patch Changes
+
+- 306d0b4fdd: Added the ability to use an additional `filter` when fetching groups in `MyGroupsSidebarItem` component. Example:
+
+  ```diff
+  // app/src/components/Root/Root.tsx
+  <SidebarPage>
+      <Sidebar>
+        //...
+        <SidebarGroup label="Menu" icon={<MenuIcon />}>
+          {/* Global nav, not org-specific */}
+          //...
+          <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+          <MyGroupsSidebarItem
+            singularTitle="My Squad"
+            pluralTitle="My Squads"
+            icon={GroupIcon}
+  +         filter={{ 'spec.type': 'team' }}
+          />
+         //...
+        </SidebarGroup>
+      </ Sidebar>
+  </SidebarPage>
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.2
+
+## 0.5.6-next.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.1
+  - @backstage/core-plugin-api@1.0.3-next.0
+  - @backstage/catalog-model@1.0.3-next.0
+  - @backstage/plugin-catalog-react@1.1.1-next.1
+
+## 0.5.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1-next.0
+  - @backstage/core-components@0.9.5-next.0
+
+## 0.5.5
+
+### Patch Changes
+
+- dfee1002d7: Fixed overflow bug of name and email on EntitiyMembersListCard component which can occur on specific 'screen width' + ’character length' combinations
+- cb0db62344: Fix linking ownership card to catalog owner filter when namespaces are used
+- 8da4a207dd: Fix ref to filtered catalog table view when using aggregated relations.
+- 2025d7c123: Include namespace in `MyGroupSidebarItem` if not default and remove root item routing if there are multiple groups
+- Updated dependencies
+  - @backstage/core-components@0.9.4
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/plugin-catalog-react@1.1.0
+  - @backstage/catalog-model@1.0.2
+
 ## 0.5.5-next.3
 
 ### Patch Changes

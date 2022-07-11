@@ -1,5 +1,53 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.3.13-next.0
+
+### Patch Changes
+
+- 13a232ec22: Added comments to example to help avoid confusion as to where lines need to be added
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+
+## 0.3.12
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+
+## 0.3.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+
+## 0.3.12-next.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+
+## 0.3.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+
+## 0.3.11
+
+### Patch Changes
+
+- ac14fcaf38: Added entity view for Azure Git Tags, based on existing Pull Requests view
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/config@1.0.1
+  - @backstage/plugin-azure-devops-common@0.2.3
+
 ## 0.3.11-next.1
 
 ### Patch Changes

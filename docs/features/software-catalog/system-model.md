@@ -33,8 +33,8 @@ tracked in source control, or use some existing open source or commercial
 software.
 
 A component can implement APIs for other components to consume. In turn it might
-depend on APIs implemented by other components, or resources that are attached
-to it at runtime.
+consume APIs implemented by other components, or directly depend on components or
+resources that are attached to it at runtime.
 
 ### API
 

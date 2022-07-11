@@ -155,7 +155,7 @@ describe('includeTransform', () => {
     await expect(
       includeTransform({ $include: 'invalid.yaml' }, root),
     ).rejects.toThrow(
-      'failed to parse included file invalid.yaml, YAMLSyntaxError: Flow sequence contains an unexpected }',
+      /failed to parse included file invalid.yaml, YAMLParseError: Flow sequence in block collection must be sufficiently indented and end with a \] at line 1, column 7:\s+foo: \[\}/,
     );
   });
 

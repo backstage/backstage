@@ -16,6 +16,7 @@ import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { FieldProps } from '@rjsf/core';
 import { FieldValidation } from '@rjsf/core';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
@@ -25,6 +26,7 @@ import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 // @public
@@ -152,6 +154,8 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent<
 // @public
 export interface OwnedEntityPickerUiOptions {
   // (undocumented)
+  allowArbitraryValues?: boolean;
+  // (undocumented)
   allowedKinds?: string[];
   // (undocumented)
   defaultKind?: string;
@@ -191,9 +195,12 @@ export interface RepoUrlPickerUiOptions {
   // (undocumented)
   allowedOwners?: string[];
   // (undocumented)
+  allowedRepos?: string[];
+  // (undocumented)
   requestUserCredentials?: {
     secretsKey: string;
     additionalScopes?: {
+      gerrit?: string[];
       github?: string[];
       gitlab?: string[];
       bitbucket?: string[];
@@ -226,6 +233,8 @@ export type RouterProps = {
 // @public
 export interface ScaffolderApi {
   // (undocumented)
+  dryRun?(options: ScaffolderDryRunOptions): Promise<ScaffolderDryRunResponse>;
+  // (undocumented)
   getIntegrationsList(
     options: ScaffolderGetIntegrationsListOptions,
   ): Promise<ScaffolderGetIntegrationsListResponse>;
@@ -236,6 +245,14 @@ export interface ScaffolderApi {
     templateRef: string,
   ): Promise<TemplateParameterSchema>;
   listActions(): Promise<ListActionsResponse>;
+  // (undocumented)
+  listTasks?({
+    filterByOwnership,
+  }: {
+    filterByOwnership: 'owned' | 'all';
+  }): Promise<{
+    tasks: ScaffolderTask[];
+  }>;
   scaffold(
     options: ScaffolderScaffoldOptions,
   ): Promise<ScaffolderScaffoldResponse>;
@@ -251,9 +268,12 @@ export class ScaffolderClient implements ScaffolderApi {
   constructor(options: {
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
+    identityApi?: IdentityApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
     useLongPollingLogs?: boolean;
   });
+  // (undocumented)
+  dryRun(options: ScaffolderDryRunOptions): Promise<ScaffolderDryRunResponse>;
   // (undocumented)
   getIntegrationsList(
     options: ScaffolderGetIntegrationsListOptions,
@@ -266,11 +286,46 @@ export class ScaffolderClient implements ScaffolderApi {
   ): Promise<TemplateParameterSchema>;
   // (undocumented)
   listActions(): Promise<ListActionsResponse>;
+  // (undocumented)
+  listTasks(options: { filterByOwnership: 'owned' | 'all' }): Promise<{
+    tasks: ScaffolderTask[];
+  }>;
   scaffold(
     options: ScaffolderScaffoldOptions,
   ): Promise<ScaffolderScaffoldResponse>;
   // (undocumented)
   streamLogs(options: ScaffolderStreamLogsOptions): Observable<LogEvent>;
+}
+
+// @public (undocumented)
+export interface ScaffolderDryRunOptions {
+  // (undocumented)
+  directoryContents: {
+    path: string;
+    base64Content: string;
+  }[];
+  // (undocumented)
+  secrets?: Record<string, string>;
+  // (undocumented)
+  template: JsonValue;
+  // (undocumented)
+  values: JsonObject;
+}
+
+// @public (undocumented)
+export interface ScaffolderDryRunResponse {
+  // (undocumented)
+  directoryContents: Array<{
+    path: string;
+    base64Content: string;
+    executable: boolean;
+  }>;
+  // (undocumented)
+  log: Array<Pick<LogEvent, 'body'>>;
+  // (undocumented)
+  output: ScaffolderTaskOutput;
+  // (undocumented)
+  steps: TaskStep[];
 }
 
 // @public

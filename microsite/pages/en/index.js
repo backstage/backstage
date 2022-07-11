@@ -12,6 +12,7 @@ const ActionBlock = Components.ActionBlock;
 const Breakpoint = Components.Breakpoint;
 const BulletLine = Components.BulletLine;
 const Banner = Components.Banner;
+const { Typeform } = require(`${process.cwd()}/core/Typeform.js`);
 
 class Index extends React.Component {
   render() {
@@ -20,6 +21,7 @@ class Index extends React.Component {
 
     return (
       <main className="MainContent MainContent--gradient">
+        <Typeform />
         <Banner.Container>
           <Banner.Dismissable storageKey="2022-03-16-newsletter-cta">
             <div>

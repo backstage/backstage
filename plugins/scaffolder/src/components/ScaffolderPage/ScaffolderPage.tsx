@@ -52,6 +52,7 @@ export type ScaffolderPageProps = {
   contextMenu?: {
     editor?: boolean;
     actions?: boolean;
+    tasks?: boolean;
   };
 };
 
@@ -132,11 +133,13 @@ export const ScaffolderPageContents = ({
 export const ScaffolderPage = ({
   TemplateCardComponent,
   groups,
+  contextMenu,
 }: ScaffolderPageProps) => (
   <EntityListProvider>
     <ScaffolderPageContents
       TemplateCardComponent={TemplateCardComponent}
       groups={groups}
+      contextMenu={contextMenu}
     />
   </EntityListProvider>
 );

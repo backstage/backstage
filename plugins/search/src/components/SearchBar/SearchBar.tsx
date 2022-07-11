@@ -14,35 +14,20 @@
  * limitations under the License.
  */
 
-import React, {
-  ChangeEvent,
-  KeyboardEvent,
-  useState,
-  useEffect,
-  useCallback,
-} from 'react';
-import useDebounce from 'react-use/lib/useDebounce';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import {
-  InputBase,
-  InputBaseProps,
-  InputAdornment,
-  IconButton,
-} from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import ClearButton from '@material-ui/icons/Clear';
+import React, { useCallback } from 'react';
+
+import { InputBaseProps } from '@material-ui/core';
 
 import {
-  SearchContextProvider,
+  SearchBarBase as RealSearchBarBase,
   useSearch,
-  useSearchContextCheck,
 } from '@backstage/plugin-search-react';
-import { TrackSearch } from '../SearchTracker';
 
 /**
  * Props for {@link SearchBarBase}.
  *
  * @public
+ * @deprecated Import from `@backstage/plugin-search-react` instead.
  */
 export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
   debounceTime?: number;
@@ -58,100 +43,15 @@ export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
  * Recommended if you don't use Search Provider or Search Context.
  *
  * @public
+ * @deprecated Import from `@backstage/plugin-search-react` instead.
  */
-export const SearchBarBase = ({
-  onChange,
-  onKeyDown,
-  onSubmit,
-  debounceTime = 200,
-  clearButton = true,
-  fullWidth = true,
-  value: defaultValue,
-  inputProps: defaultInputProps = {},
-  endAdornment: defaultEndAdornment,
-  ...props
-}: SearchBarBaseProps) => {
-  const configApi = useApi(configApiRef);
-  const [value, setValue] = useState<string>(defaultValue as string);
-  const hasSearchContext = useSearchContextCheck();
-
-  useEffect(() => {
-    setValue(prevValue =>
-      prevValue !== defaultValue ? (defaultValue as string) : prevValue,
-    );
-  }, [defaultValue]);
-
-  useDebounce(() => onChange(value), debounceTime, [value]);
-
-  const handleChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setValue(e.target.value);
-    },
-    [setValue],
-  );
-
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLInputElement>) => {
-      if (onKeyDown) onKeyDown(e);
-      if (onSubmit && e.key === 'Enter') {
-        onSubmit();
-      }
-    },
-    [onKeyDown, onSubmit],
-  );
-
-  const handleClear = useCallback(() => {
-    onChange('');
-  }, [onChange]);
-
-  const placeholder = `Search in ${
-    configApi.getOptionalString('app.title') || 'Backstage'
-  }`;
-
-  const startAdornment = (
-    <InputAdornment position="start">
-      <IconButton aria-label="Query" disabled>
-        <SearchIcon />
-      </IconButton>
-    </InputAdornment>
-  );
-
-  const endAdornment = (
-    <InputAdornment position="end">
-      <IconButton aria-label="Clear" onClick={handleClear}>
-        <ClearButton />
-      </IconButton>
-    </InputAdornment>
-  );
-
-  const searchBar = (
-    <TrackSearch>
-      <InputBase
-        data-testid="search-bar-next"
-        value={value}
-        placeholder={placeholder}
-        startAdornment={startAdornment}
-        endAdornment={clearButton ? endAdornment : defaultEndAdornment}
-        inputProps={{ 'aria-label': 'Search', ...defaultInputProps }}
-        fullWidth={fullWidth}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        {...props}
-      />
-    </TrackSearch>
-  );
-
-  return hasSearchContext ? (
-    searchBar
-  ) : (
-    <SearchContextProvider>{searchBar}</SearchContextProvider>
-  );
-};
+export const SearchBarBase = RealSearchBarBase;
 
 /**
  * Props for {@link SearchBar}.
  *
  * @public
+ * @deprecated Import from `@backstage/plugin-search-react` instead.
  */
 export type SearchBarProps = Partial<SearchBarBaseProps>;
 
@@ -159,6 +59,7 @@ export type SearchBarProps = Partial<SearchBarBaseProps>;
  * Recommended search bar when you use the Search Provider or Search Context.
  *
  * @public
+ * @deprecated Import from `@backstage/plugin-search-react` instead.
  */
 export const SearchBar = ({ onChange, ...props }: SearchBarProps) => {
   const { term, setTerm } = useSearch();

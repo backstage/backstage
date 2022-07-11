@@ -31,6 +31,9 @@ export const EntitySentryContent: ({
   tableOptions,
 }: SentryPageProps) => JSX.Element;
 
+// @public
+export const isSentryAvailable: (entity: Entity) => boolean;
+
 // Warning: (ae-missing-release-tag) "MockSentryApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -50,9 +53,11 @@ export class ProductionSentryApi implements SentryApi {
   );
   // (undocumented)
   fetchIssues(
-    project: string,
-    statsFor: string,
-    query?: string,
+    entity: Entity,
+    options: {
+      statsFor: string;
+      query?: string;
+    },
   ): Promise<SentryIssue[]>;
 }
 
@@ -67,9 +72,11 @@ export const Router: ({ entity }: { entity: Entity }) => JSX.Element;
 export interface SentryApi {
   // (undocumented)
   fetchIssues(
-    project: string,
-    statsFor: string,
-    query?: string,
+    entity: Entity,
+    options: {
+      statsFor: string;
+      query?: string;
+    },
   ): Promise<SentryIssue[]>;
 }
 

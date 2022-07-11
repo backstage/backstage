@@ -17,6 +17,7 @@
 import { StackOverflowSearchResultListItem } from '../../plugin';
 import { wrapInTestApp } from '@backstage/test-utils';
 import React, { ComponentType } from 'react';
+import { StackOverflowIcon } from '../../icons';
 
 export default {
   title: 'Plugins/Search/StackOverflowResultListItem',
@@ -34,6 +35,21 @@ export const Default = () => {
         answers: 0,
         tags: ['backstage'],
       }}
+    />
+  );
+};
+
+export const WithIcon = () => {
+  return (
+    <StackOverflowSearchResultListItem
+      result={{
+        title: 'Customizing Spotify backstage UI',
+        text: 'Name of Author',
+        location: 'stackoverflow.question/1',
+        answers: 0,
+        tags: ['backstage'],
+      }}
+      icon={<StackOverflowIcon />}
     />
   );
 };

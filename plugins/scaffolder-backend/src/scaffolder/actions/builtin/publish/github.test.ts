@@ -18,20 +18,20 @@ import { TemplateAction } from '../../types';
 
 jest.mock('../helpers');
 
-import { createPublishGithubAction } from './github';
+import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import {
-  ScmIntegrations,
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
+  ScmIntegrations,
 } from '@backstage/integration';
-import { ConfigReader } from '@backstage/config';
-import { getVoidLogger } from '@backstage/backend-common';
+import { when } from 'jest-when';
 import { PassThrough } from 'stream';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
   initRepoAndPush,
 } from '../helpers';
-import { when } from 'jest-when';
+import { createPublishGithubAction } from './github';
 
 const mockOctokit = {
   rest: {
@@ -399,41 +399,35 @@ describe('publish:github', () => {
         collaborators: [
           {
             access: 'pull',
-            username: 'robot-1',
+            user: 'robot-1',
           },
           {
             access: 'push',
-            username: 'robot-2',
+            team: 'robot-2',
           },
         ],
       },
     });
 
     const commonProperties = {
-      org: 'owner',
       owner: 'owner',
       repo: 'repo',
     };
 
-    expect(
-      mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg.mock.calls[1],
-    ).toEqual([
-      {
-        ...commonProperties,
-        team_slug: 'robot-1',
-        permission: 'pull',
-      },
-    ]);
+    expect(mockOctokit.rest.repos.addCollaborator).toHaveBeenCalledWith({
+      ...commonProperties,
+      username: 'robot-1',
+      permission: 'pull',
+    });
 
     expect(
-      mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg.mock.calls[2],
-    ).toEqual([
-      {
-        ...commonProperties,
-        team_slug: 'robot-2',
-        permission: 'push',
-      },
-    ]);
+      mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg,
+    ).toHaveBeenCalledWith({
+      ...commonProperties,
+      org: 'owner',
+      team_slug: 'robot-2',
+      permission: 'push',
+    });
   });
 
   it('should ignore failures when adding multiple collaborators', async () => {
@@ -465,11 +459,11 @@ describe('publish:github', () => {
         collaborators: [
           {
             access: 'pull',
-            username: 'robot-1',
+            team: 'robot-1',
           },
           {
             access: 'push',
-            username: 'robot-2',
+            team: 'robot-2',
           },
         ],
       },
@@ -615,7 +609,7 @@ describe('publish:github', () => {
 
     mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {
-        name: 'repository',
+        name: 'repo',
       },
     });
 
@@ -624,7 +618,7 @@ describe('publish:github', () => {
     expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
       owner: 'owner',
       client: mockOctokit,
-      repoName: 'repository',
+      repoName: 'repo',
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
@@ -642,7 +636,7 @@ describe('publish:github', () => {
     expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
       owner: 'owner',
       client: mockOctokit,
-      repoName: 'repository',
+      repoName: 'repo',
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: true,
@@ -660,7 +654,7 @@ describe('publish:github', () => {
     expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
       owner: 'owner',
       client: mockOctokit,
-      repoName: 'repository',
+      repoName: 'repo',
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
@@ -675,7 +669,7 @@ describe('publish:github', () => {
 
     mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {
-        name: 'repository',
+        name: 'repo',
       },
     });
 
@@ -684,7 +678,7 @@ describe('publish:github', () => {
     expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
       owner: 'owner',
       client: mockOctokit,
-      repoName: 'repository',
+      repoName: 'repo',
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
@@ -702,7 +696,7 @@ describe('publish:github', () => {
     expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
       owner: 'owner',
       client: mockOctokit,
-      repoName: 'repository',
+      repoName: 'repo',
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
@@ -720,11 +714,33 @@ describe('publish:github', () => {
     expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
       owner: 'owner',
       client: mockOctokit,
-      repoName: 'repository',
+      repoName: 'repo',
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
     });
+  });
+
+  it('should not call enableBranchProtectionOnDefaultRepoBranch with protectDefaultBranch disabled', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        name: 'repo',
+      },
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        protectDefaultBranch: false,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).not.toHaveBeenCalled();
   });
 });

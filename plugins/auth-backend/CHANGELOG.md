@@ -1,5 +1,132 @@
 # @backstage/plugin-auth-backend
 
+## 0.15.0-next.2
+
+### Patch Changes
+
+- 8e03db907a: Auth provider now also export createAuthProviderIntegration
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/backend-common@0.14.1-next.2
+
+## 0.15.0-next.1
+
+### Minor Changes
+
+- 9d4040777e: **BREAKING**: Removed all directly exported auth provider factories, option types, and sign-in resolvers. For example: `AwsAlbProviderOptions`, `bitbucketUserIdSignInResolver`, `createGithubProvider`. These are all still accessible via the `providers` export. For example, use `providers.github.create()` rather than `createGithubProvider()`, and `providers.bitbucket.resolvers.userIdMatchingUserEntityAnnotation()` rather than `bitbucketUserIdSignInResolver`.
+
+  **BREAKING**: Removed the exported `AuthProviderFactoryOptions` type as well as the deprecated option fields of the `AuthProviderFactory` callback. This includes the `tokenManager`, `tokenIssuer`, `discovery`, and `catalogApi` fields. Existing usage of these should be replaced with the new utilities in the `resolverContext` field. The deprecated `TokenIssuer` type is now also removed, since it is no longer used.
+
+  **BREAKING**: Removed `getEntityClaims`, use `getDefaultOwnershipEntityRefs` instead.
+
+  **DEPRECATION**: Deprecated `AtlassianAuthProvider` as it was unintentionally exported.
+
+### Patch Changes
+
+- f2cf79d62e: Added an option for the auth backend router to select the algorithm for the JWT token signing keys
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/catalog-client@1.0.4-next.1
+  - @backstage/plugin-auth-node@0.2.3-next.1
+
+## 0.14.2-next.0
+
+### Patch Changes
+
+- 859346bfbb: Updated dependency `google-auth-library` to `^8.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/plugin-auth-node@0.2.3-next.0
+  - @backstage/catalog-client@1.0.4-next.0
+
+## 0.14.1
+
+### Patch Changes
+
+- 5e055079f0: Increased key field size for signing_keys table to account for larger signature keys
+- f6aae90e4e: Added configurable algorithm field for TokenFactory
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- bc6fb57094: Updated dependency `passport` to `^0.6.0`.
+- 467facc6ea: Fix improper binding of 'this' in ALB Auth provider
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+  - @backstage/plugin-auth-node@0.2.2
+  - @backstage/catalog-client@1.0.3
+  - @backstage/catalog-model@1.0.3
+
+## 0.14.1-next.2
+
+### Patch Changes
+
+- bc6fb57094: Updated dependency `passport` to `^0.6.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/plugin-auth-node@0.2.2-next.2
+
+## 0.14.1-next.1
+
+### Patch Changes
+
+- 5e055079f0: Increased key field size for signing_keys table to account for larger signature keys
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 467facc6ea: Fix improper binding of 'this' in ALB Auth provider
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/catalog-client@1.0.3-next.0
+  - @backstage/plugin-auth-node@0.2.2-next.1
+  - @backstage/catalog-model@1.0.3-next.0
+
+## 0.14.1-next.0
+
+### Patch Changes
+
+- f6aae90e4e: Added configurable algorithm field for TokenFactory
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+  - @backstage/plugin-auth-node@0.2.2-next.0
+
+## 0.14.0
+
+### Minor Changes
+
+- 2df2f01a29: Removed the explicit `disableRefresh` option from `OAuthAdapter`. Refresh can still be disabled for a provider by not implementing the `refresh` method.
+
+### Patch Changes
+
+- cac3ba68a2: Fixed a bug that was introduced in `0.13.1-next.0` which caused the `ent` claim of issued tokens to be dropped.
+- 5d268623dd: Updates the OAuth2 Proxy provider to require less infrastructure configuration.
+
+  The auth result object of the OAuth2 Proxy now provides access to the request headers, both through the `headers` object as well as `getHeader` method. The existing logic that parses and extracts the user information from ID tokens is deprecated and will be removed in a future release. See the OAuth2 Proxy provider documentation for more details.
+
+  The OAuth2 Proxy provider now also has a default `authHandler` implementation that reads the display name and email from the incoming request headers.
+
+- 2df2f01a29: The Auth0 adapter no longer disables session refreshing.
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 787ae0d541: Add more common predefined sign-in resolvers to auth providers.
+
+  Add the existing resolver to more providers (already available at `google`):
+
+  - `providers.microsoft.resolvers.emailLocalPartMatchingUserEntityName()`
+  - `providers.okta.resolvers.emailLocalPartMatchingUserEntityName()`
+
+  Add a new resolver for simple email-to-email matching:
+
+  - `providers.google.resolvers.emailMatchingUserEntityProfileEmail()`
+  - `providers.microsoft.resolvers.emailMatchingUserEntityProfileEmail()`
+  - `providers.okta.resolvers.emailMatchingUserEntityProfileEmail()`
+
+- 9ec4e0613e: Update to `jose` 4.6.0
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/config@1.0.1
+  - @backstage/plugin-auth-node@0.2.1
+  - @backstage/catalog-client@1.0.2
+  - @backstage/catalog-model@1.0.2
+
 ## 0.13.1-next.2
 
 ### Patch Changes

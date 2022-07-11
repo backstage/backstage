@@ -1,5 +1,107 @@
 # @backstage/cli
 
+## 0.18.0-next.2
+
+### Patch Changes
+
+- f6b6fb7165: The `test` command now ensures that all IO is flushed before exiting when printing `--help`.
+
+## 0.18.0-next.1
+
+### Minor Changes
+
+- 96a82d9791: **BREAKING**: Removed the following deprecated package commands:
+
+  - `app:build` - Use `package build` instead
+  - `app:serve` - Use `package start` instead
+  - `backend:build` - Use `package build` instead
+  - `backend:bundle` - Use `package build` instead
+  - `backend:dev` - Use `package start` instead
+  - `plugin:build` - Use `package build` instead
+  - `plugin:serve` - Use `package start` instead
+  - `build` - Use `package build` instead
+  - `lint` - Use `package lint` instead
+  - `prepack` - Use `package prepack` instead
+  - `postpack` - Use `package postpack` instead
+
+  In order to replace these you need to have [migrated to using package roles](https://backstage.io/docs/tutorials/package-role-migration).
+
+### Patch Changes
+
+- 86640214f0: Upgrade `@rollup/plugin-node-resolve` to `^13.0.6`
+- e661242844: Updated dependency `run-script-webpack-plugin` to `^0.1.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/config-loader@1.1.3-next.0
+
+## 0.17.3-next.0
+
+### Patch Changes
+
+- d2256c0384: Fix `webpack-dev-server` deprecations.
+
+## 0.17.2
+
+### Patch Changes
+
+- 026cfe525a: Fix the public path configuration of the frontend app build so that a trailing `/` is always appended when needed.
+- 4f73352608: Updated Lockfile to support new versions of yarn as well as the legacy 1 version
+- b8970b8941: Improved the `create-github-app` permissions selection prompt by converting it into a multi-select with clearer descriptions. The `members` permission is now also included in the list which is required for ingesting user data into the catalog.
+- bd58365d09: Updated dependency `run-script-webpack-plugin` to `^0.0.14`.
+- 9002ebd76b: Updated dependency `@rollup/plugin-commonjs` to `^22.0.0`.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 1a33e8b287: Updated dependency `minimatch` to `5.1.0`.
+- 6de866ea74: Added console warning to frontend start when the `app.baseUrl` and `backend.baseUrl` are identical
+- Updated dependencies
+  - @backstage/config-loader@1.1.2
+  - @backstage/release-manifests@0.0.4
+
+## 0.17.2-next.2
+
+### Patch Changes
+
+- 026cfe525a: Fix the public path configuration of the frontend app build so that a trailing `/` is always appended when needed.
+- 9002ebd76b: Updated dependency `@rollup/plugin-commonjs` to `^22.0.0`.
+- 1a33e8b287: Updated dependency `minimatch` to `5.1.0`.
+
+## 0.17.2-next.1
+
+### Patch Changes
+
+- bd58365d09: Updated dependency `run-script-webpack-plugin` to `^0.0.14`.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.2-next.0
+  - @backstage/release-manifests@0.0.4-next.0
+
+## 0.17.2-next.0
+
+### Patch Changes
+
+- 4f73352608: Updated Lockfile to support new versions of yarn as well as the legacy 1 version
+- 6de866ea74: Added console warning to frontend start when the `app.baseUrl` and `backend.baseUrl` are identical
+
+## 0.17.1
+
+### Patch Changes
+
+- 52fb9920ac: Fixed coverage configuration when using `BACKSTAGE_NEXT_TESTS`.
+- 6cd1f50ae1: Extended lint rule to prevents imports of stories or tests from production code.
+- 97cce67ac7: Add instructions to `create-github-app` command.
+- 08e12a3a14: Add package global-agent to support behind a proxy for backstage-cli commands like versions:bump.
+- 4d8736eded: Changed Rollup configuration for TypeScript definition plugin to ignore `css`,
+  `scss`, `sass`, `svg`, `eot`, `woff`, `woff2` and `ttf` files.
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 2737777e02: Added the ability to help a user get started with a new organization
+- 344ea56acc: Bump `commander` to version 9.1.0
+- 8ab2a8226b: Updated the `create-github-app` command to throw an error if the organization argument is a user or a non existing organization.
+- 632be18bbc: Updated `create-github-app` command to prompt for read or write permissions to simplify setup.
+- Updated dependencies
+  - @backstage/cli-common@0.1.9
+  - @backstage/config@1.0.1
+  - @backstage/release-manifests@0.0.3
+  - @backstage/config-loader@1.1.1
+
 ## 0.17.1-next.2
 
 ### Patch Changes

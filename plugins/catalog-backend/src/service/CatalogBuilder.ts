@@ -17,6 +17,7 @@
 import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import {
   DefaultNamespaceEntityPolicy,
+  Entity,
   EntityPolicies,
   EntityPolicy,
   FieldFormatEntityPolicy,
@@ -36,7 +37,7 @@ import {
   CatalogProcessor,
   CatalogProcessorParser,
   EntityProvider,
-} from '../api';
+} from '@backstage/plugin-catalog-node';
 import {
   AnnotateLocationEntityProcessor,
   BuiltinKindsEntityProcessor,
@@ -56,7 +57,7 @@ import {
 } from '../modules/core/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../modules/util/parse';
 import { LocationAnalyzer } from '../ingestion/types';
-import { CatalogProcessingEngine } from '../processing/types';
+import { CatalogProcessingEngine } from '../processing';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
@@ -133,6 +134,10 @@ export class CatalogBuilder {
   private processors: CatalogProcessor[];
   private processorsReplace: boolean;
   private parser: CatalogProcessorParser | undefined;
+  private onProcessingError?: (event: {
+    unprocessedEntity: Entity;
+    errors: Error[];
+  }) => Promise<void> | void;
   private processingInterval: ProcessingIntervalFunction =
     createRandomProcessingInterval({
       minSeconds: 100,
@@ -172,8 +177,10 @@ export class CatalogBuilder {
    *
    * @param policies - One or more policies
    */
-  addEntityPolicy(...policies: EntityPolicy[]): CatalogBuilder {
-    this.entityPolicies.push(...policies);
+  addEntityPolicy(
+    ...policies: Array<EntityPolicy | Array<EntityPolicy>>
+  ): CatalogBuilder {
+    this.entityPolicies.push(...policies.flat());
     return this;
   }
 
@@ -268,8 +275,10 @@ export class CatalogBuilder {
    *
    * @param providers - One or more entity providers
    */
-  addEntityProvider(...providers: EntityProvider[]): CatalogBuilder {
-    this.entityProviders.push(...providers);
+  addEntityProvider(
+    ...providers: Array<EntityProvider | Array<EntityProvider>>
+  ): CatalogBuilder {
+    this.entityProviders.push(...providers.flat());
     return this;
   }
 
@@ -279,8 +288,10 @@ export class CatalogBuilder {
    *
    * @param processors - One or more processors
    */
-  addProcessor(...processors: CatalogProcessor[]): CatalogBuilder {
-    this.processors.push(...processors);
+  addProcessor(
+    ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
+  ): CatalogBuilder {
+    this.processors.push(...processors.flat());
     return this;
   }
 
@@ -341,8 +352,12 @@ export class CatalogBuilder {
    * @param permissionRules - Additional permission rules
    * @alpha
    */
-  addPermissionRules(...permissionRules: CatalogPermissionRule[]) {
-    this.permissionRules.push(...permissionRules);
+  addPermissionRules(
+    ...permissionRules: Array<
+      CatalogPermissionRule | Array<CatalogPermissionRule>
+    >
+  ) {
+    this.permissionRules.push(...permissionRules.flat());
   }
 
   /**
@@ -437,6 +452,10 @@ export class CatalogBuilder {
       orchestrator,
       stitcher,
       () => createHash('sha1'),
+      1000,
+      event => {
+        this.onProcessingError?.(event);
+      },
     );
 
     const locationAnalyzer =
@@ -466,6 +485,15 @@ export class CatalogBuilder {
       processingEngine,
       router,
     };
+  }
+
+  subscribe(options: {
+    onProcessingError: (event: {
+      unprocessedEntity: Entity;
+      errors: Error[];
+    }) => Promise<void> | void;
+  }) {
+    this.onProcessingError = options.onProcessingError;
   }
 
   private buildEntityPolicy(): EntityPolicy {

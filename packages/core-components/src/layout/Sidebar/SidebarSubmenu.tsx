@@ -19,10 +19,10 @@ import classnames from 'classnames';
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import {
   SidebarItemWithSubmenuContext,
-  SidebarContext,
   SidebarConfigContext,
   SubmenuConfig,
 } from './config';
+import { useSidebarOpenState } from './SidebarOpenStateContext';
 import { BackstageTheme } from '@backstage/theme';
 
 const useStyles = makeStyles<
@@ -105,7 +105,7 @@ export type SidebarSubmenuProps = {
  * @public
  */
 export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
-  const { isOpen } = useContext(SidebarContext);
+  const { isOpen } = useSidebarOpenState();
   const { sidebarConfig, submenuConfig } = useContext(SidebarConfigContext);
   const left = isOpen
     ? sidebarConfig.drawerWidthOpen

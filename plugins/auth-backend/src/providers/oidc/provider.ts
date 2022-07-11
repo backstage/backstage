@@ -199,18 +199,6 @@ export class OidcAuthProvider implements OAuthHandlers {
 }
 
 /**
- * @public
- * @deprecated This type has been inlined into the create method and will be removed.
- */
-export type OidcProviderOptions = {
-  authHandler?: AuthHandler<OidcAuthResult>;
-
-  signIn?: {
-    resolver: SignInResolver<OidcAuthResult>;
-  };
-};
-
-/**
  * Auth provider integration for generic OpenID Connect auth
  *
  * @public
@@ -262,16 +250,9 @@ export const oidc = createAuthProviderIntegration({
         });
 
         return OAuthAdapter.fromConfig(globalConfig, provider, {
-          disableRefresh: false,
           providerId,
           callbackUrl,
         });
       });
   },
 });
-
-/**
- * @public
- * @deprecated Use `providers.oidc.create` instead
- */
-export const createOidcProvider = oidc.create;

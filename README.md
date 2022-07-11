@@ -1,5 +1,7 @@
 ![headline](docs/assets/headline.png)
 
+> 🏖 From July 7th due to Summer Vacations for some of the maintainers, expect the project to move a little slower than normal, and support to be limited. Normal service will resume on August 8th 🏝
+
 # [Backstage](https://backstage.io)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -58,7 +60,7 @@ Check out [the documentation](https://backstage.io/docs/getting-started) on how 
 
 ## License
 
-Copyright 2020-2021 © The Backstage Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage
+Copyright 2020-2022 © The Backstage Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage
 
 Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0
 

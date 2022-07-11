@@ -18,7 +18,7 @@ If you haven't setup Backstage already, start
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-search
+yarn add --cwd packages/app @backstage/plugin-search @backstage/plugin-search-react
 ```
 
 Create a new `packages/app/src/components/search/SearchPage.tsx` file in your
@@ -33,7 +33,7 @@ import {
   SearchResult,
   DefaultResultListItem,
   SearchFilter,
-} from '@backstage/plugin-search';
+} from '@backstage/plugin-search-react';
 import { CatalogResultListItem } from '@backstage/plugin-catalog';
 
 export const searchPage = (
@@ -213,7 +213,7 @@ apiRouter.use('/search', await search(searchEnv));
 
 ### Frontend
 
-The Search Plugin exposes several default filter types as static properties,
+The Search Plugin web library (`@backstage/plugin-search-react`) exposes several default filter types as static properties,
 including `<SearchFilter.Select />` and `<SearchFilter.Checkbox />`. These allow
 you to provide values relevant to your Backstage instance that, when selected,
 get passed to the backend.
@@ -237,7 +237,7 @@ If you have advanced filter needs, you can specify your own filter component
 like this (although new core filter contributions are welcome):
 
 ```tsx
-import { useSearch, SearchFilter } from '@backstage/plugin-search';
+import { useSearch, SearchFilter } from '@backstage/plugin-search-react';
 
 const MyCustomFilter = () => {
   // Note: filters contain filter data from other filter components. Be sure

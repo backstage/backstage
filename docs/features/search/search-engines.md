@@ -59,9 +59,37 @@ configured and make the following changes to your backend:
 
 // Initialize a connection to a search engine.
 const searchEngine = (await PgSearchEngine.supported(env.database))
-  ? await PgSearchEngine.from({ database: env.database })
+  ? await PgSearchEngine.fromConfig(env.config, { database: env.database })
   : new LunrSearchEngine({ logger: env.logger });
 ```
+
+## Optional Configuration
+
+The following is an example of the optional configuration that can be applied when using Postgres as the search backend. Currently this is mostly for just the highlight feature:
+
+```yaml
+search:
+  pg:
+    highlightOptions:
+      useHighlight: true # Used to enable to disable the highlight feature. The default value is true
+      maxWord: 35 # Used to set the longest headlines to output. The default value is 35.
+      minWord: 15 # Used to set the shortest headlines to output. The default value is 15.
+      shortWord: 3 # Words of this length or less will be dropped at the start and end of a headline, unless they are query terms. The default value of three (3) eliminates common English articles.
+      highlightAll: false # If true the whole document will be used as the headline, ignoring the preceding three parameters. The default is false.
+      maxFragments: 0 # Maximum number of text fragments to display. The default value of zero selects a non-fragment-based headline generation method. A value greater than zero selects fragment-based headline generation (see the linked documentation above for more details).
+      fragmentDelimiter: ' ... ' # Delimiter string used to concatenate fragments. Defaults to " ... ".
+```
+
+**Note:** the highlight search term feature uses `ts_headline` which has been known to potentially impact performance. You only need this minimal config to disable it should you have issues:
+
+```yaml
+search:
+  pg:
+    highlightOptions:
+      useHighlight: false
+```
+
+The Postgres documentation on [Highlighting Results](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-HEADLINE) has more details.
 
 ## ElasticSearch
 
@@ -80,15 +108,16 @@ const searchEngine = await ElasticSearchSearchEngine.initialize({
 const indexBuilder = new IndexBuilder({ logger: env.logger, searchEngine });
 ```
 
-For the engine to be available, your backend package needs a dependency into
+For the engine to be available, your backend package needs a dependency on
 package `@backstage/plugin-search-backend-module-elasticsearch`.
 
 ElasticSearch needs some additional configuration before it is ready to use
 within your instance. The configuration options are documented in the
 [configuration schema definition file.](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-elasticsearch/config.d.ts)
 
-The underlying functionality is using official ElasticSearch client version 7.x,
-meaning that ElasticSearch version 7 is the only one confirmed to be supported.
+The underlying functionality uses either the official ElasticSearch client
+version 7.x (meaning that ElasticSearch version 7 is the only one confirmed to
+be supported), or the OpenSearch client, when the `aws` provider is configured.
 
 Should you need to create your own bespoke search experiences that require more
 than just a query translator (such as faceted search or Relay pagination), you
@@ -97,9 +126,44 @@ search clients. The version of the client need not be the same as one used
 internally by the elastic search engine plugin. For example:
 
 ```typescript
-import { Client } from '@elastic/elastic-search';
+import { isOpenSearchCompatible } from '@backstage/plugin-search-backend-module-elasticsearch';
+import { Client as ElasticClient } from '@elastic/elastic-search';
+import { Client as OpenSearchClient } from '@opensearch-project/opensearch';
 
-const client = searchEngine.newClient(options => new Client(options));
+const client = searchEngine.newClient(options => {
+  // In reality, you would only import / instantiate one of the following, but
+  // for illustrative purposes, here are both:
+  if (isOpenSearchCompatible(options)) {
+    return new OpenSearchClient(options);
+  } else {
+    return new ElasticClient(options);
+  }
+});
+```
+
+#### Set custom index template
+
+The elasticsearch engine gives you the ability to set a custom index template if needed.
+
+> Index templates define settings, mappings, and aliases that can be applied automatically to new indices.
+
+```typescript
+// app/backend/src/plugins/search.ts
+const searchEngine = await ElasticSearchSearchEngine.initialize({
+  logger: env.logger,
+  config: env.config,
+});
+
+searchEngine.setIndexTemplate({
+  name: '<name-of-your-custom-template>',
+  body: {
+    index_patterns: ['<your-index-pattern>'],
+    template: {
+      mappings: {},
+      settings: {},
+    },
+  },
+});
 ```
 
 ## Example configurations

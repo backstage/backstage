@@ -15,19 +15,21 @@
  */
 
 import { UrlReader } from '@backstage/backend-common';
-import { JsonObject } from '@backstage/types';
 import { CatalogApi } from '@backstage/catalog-client';
-import {
-  GithubCredentialsProvider,
-  ScmIntegrations,
-  DefaultGithubCredentialsProvider,
-} from '@backstage/integration';
 import { Config } from '@backstage/config';
 import {
-  createCatalogWriteAction,
+  DefaultGithubCredentialsProvider,
+  GithubCredentialsProvider,
+  ScmIntegrations,
+} from '@backstage/integration';
+import { JsonObject } from '@backstage/types';
+import {
   createCatalogRegisterAction,
+  createCatalogWriteAction,
 } from './catalog';
 
+import { TemplateFilter } from '../../../lib';
+import { TemplateAction } from '../types';
 import { createDebugLogAction } from './debug';
 import { createFetchPlainAction, createFetchTemplateAction } from './fetch';
 import {
@@ -35,22 +37,23 @@ import {
   createFilesystemRenameAction,
 } from './filesystem';
 import {
+  createGithubActionsDispatchAction,
+  createGithubIssuesLabelAction,
+  createGithubRepoCreateAction,
+  createGithubRepoPushAction,
+  createGithubWebhookAction,
+} from './github';
+import {
   createPublishAzureAction,
   createPublishBitbucketAction,
   createPublishBitbucketCloudAction,
   createPublishBitbucketServerAction,
+  createPublishGerritAction,
   createPublishGithubAction,
   createPublishGithubPullRequestAction,
   createPublishGitlabAction,
   createPublishGitlabMergeRequestAction,
 } from './publish';
-import {
-  createGithubActionsDispatchAction,
-  createGithubWebhookAction,
-  createGithubIssuesLabelAction,
-} from './github';
-import { TemplateFilter } from '../../../lib';
-import { TemplateAction } from '../types';
 
 /**
  * The options passed to {@link createBuiltinActions}
@@ -111,6 +114,10 @@ export const createBuiltinActions = (
       reader,
       additionalTemplateFilters,
     }),
+    createPublishGerritAction({
+      integrations,
+      config,
+    }),
     createPublishGithubAction({
       integrations,
       config,
@@ -158,6 +165,15 @@ export const createBuiltinActions = (
     }),
     createGithubIssuesLabelAction({
       integrations,
+      githubCredentialsProvider,
+    }),
+    createGithubRepoCreateAction({
+      integrations,
+      githubCredentialsProvider,
+    }),
+    createGithubRepoPushAction({
+      integrations,
+      config,
       githubCredentialsProvider,
     }),
   ];

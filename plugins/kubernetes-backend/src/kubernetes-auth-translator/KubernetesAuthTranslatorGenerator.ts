@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { Logger } from 'winston';
 import { KubernetesAuthTranslator } from './types';
 import { GoogleKubernetesAuthTranslator } from './GoogleKubernetesAuthTranslator';
-import { ServiceAccountKubernetesAuthTranslator } from './ServiceAccountKubernetesAuthTranslator';
+import { NoopKubernetesAuthTranslator } from './NoopKubernetesAuthTranslator';
 import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator';
 import { GoogleServiceAccountAuthTranslator } from './GoogleServiceAccountAuthProvider';
 import { AzureIdentityKubernetesAuthTranslator } from './AzureIdentityKubernetesAuthTranslator';
@@ -25,6 +26,9 @@ import { OidcKubernetesAuthTranslator } from './OidcKubernetesAuthTranslator';
 export class KubernetesAuthTranslatorGenerator {
   static getKubernetesAuthTranslatorInstance(
     authProvider: string,
+    options: {
+      logger: Logger;
+    },
   ): KubernetesAuthTranslator {
     switch (authProvider) {
       case 'google': {
@@ -34,16 +38,19 @@ export class KubernetesAuthTranslatorGenerator {
         return new AwsIamKubernetesAuthTranslator();
       }
       case 'azure': {
-        return new AzureIdentityKubernetesAuthTranslator();
+        return new AzureIdentityKubernetesAuthTranslator(options.logger);
       }
       case 'serviceAccount': {
-        return new ServiceAccountKubernetesAuthTranslator();
+        return new NoopKubernetesAuthTranslator();
       }
       case 'googleServiceAccount': {
         return new GoogleServiceAccountAuthTranslator();
       }
       case 'oidc': {
         return new OidcKubernetesAuthTranslator();
+      }
+      case 'localKubectlProxy': {
+        return new NoopKubernetesAuthTranslator();
       }
       default: {
         throw new Error(

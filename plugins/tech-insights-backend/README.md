@@ -106,6 +106,7 @@ const builder = buildTechInsightsContext({
   database: env.database,
   discovery: env.discovery,
   tokenManager: env.tokenManager,
+  scheduler: env.scheduler,
 - factRetrievers: [],
 + factRetrievers: [myFactRetrieverRegistration],
 });
@@ -122,6 +123,7 @@ const builder = buildTechInsightsContext({
   database: env.database,
   discovery: env.discovery,
   tokenManager: env.tokenManager,
+  scheduler: env.scheduler,
 - factRetrievers: [],
 + factRetrievers: process.env.MAIN_FACT_RETRIEVER_INSTANCE ? [myFactRetrieverRegistration] : [],
 });
@@ -281,6 +283,7 @@ export default async function createPlugin(
     database: env.database,
     discovery: env.discovery,
     tokenManager: env.tokenManager,
+    scheduler: env.scheduler,
     factRetrievers: [
       createFactRetrieverRegistration({
         cadence: '0 */6 * * *', // Run every 6 hours - https://crontab.guru/#0_*/6_*_*_*

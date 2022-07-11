@@ -97,6 +97,9 @@ nav:
       - Bitbucket:
           - Locations: 'integrations/bitbucket/locations.md'
           - Discovery: 'integrations/bitbucket/discovery.md'
+      - Bitbucket Cloud:
+          - Locations: 'integrations/bitbucketCloud/locations.md'
+          - Discovery: 'integrations/bitbucketCloud/discovery.md'
       - Datadog:
           - Installation: 'integrations/datadog-rum/installation.md'
       - Gerrit:
@@ -153,18 +156,16 @@ nav:
           - OneLogin: 'auth/onelogin/provider.md'
           - OAuth2Proxy: 'auth/oauth2-proxy/provider.md'
           - Bitbucket: 'auth/bitbucket/provider.md'
-      - Adding authentication providers: 'auth/add-auth-provider.md'
       - Sign in resolvers: 'auth/identity-resolver.md'
       - Auth backend: 'auth/auth-backend.md'
       - OAuth and OpenID Connect: 'auth/oauth.md'
-      - Auth backend classes: 'auth/auth-backend-classes.md'
+      - Contributing New Providers: 'auth/add-auth-provider.md'
       - Troubleshooting Auth: 'auth/troubleshooting.md'
       - Glossary: 'auth/glossary.md'
   - Deployment:
       - Deploying Backstage: 'deployment/index.md'
       - Docker: 'deployment/docker.md'
       - Kubernetes: 'deployment/k8s.md'
-      - Helm: 'deployment/helm.md'
       - Heroku: 'deployment/heroku.md'
   - Designing for Backstage:
       - Design: 'dls/design.md'

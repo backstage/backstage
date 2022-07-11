@@ -27,17 +27,17 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import React, { ComponentType } from 'react';
 import { rootRouteRef } from '../../plugin';
-import { DefaultResultListItem } from '../DefaultResultListItem';
 import { SearchBar } from '../SearchBar';
 import {
+  DefaultResultListItem,
   searchApiRef,
   MockSearchApi,
   SearchContextProvider,
+  SearchResult,
+  SearchResultPager,
 } from '@backstage/plugin-search-react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { SearchModal } from './SearchModal';
-import { SearchResult } from '../SearchResult';
-import { SearchResultPager } from '../SearchResultPager';
 import { SearchType } from '../SearchType';
 import { useSearchModal } from './useSearchModal';
 

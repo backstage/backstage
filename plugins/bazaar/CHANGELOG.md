@@ -1,5 +1,90 @@
 # @backstage/plugin-bazaar
 
+## 0.1.22-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/plugin-catalog@1.4.0-next.2
+  - @backstage/cli@0.18.0-next.2
+  - @backstage/plugin-catalog-react@1.1.2-next.2
+
+## 0.1.22-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.1
+  - @backstage/cli@0.18.0-next.1
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/plugin-catalog@1.3.1-next.1
+  - @backstage/catalog-client@1.0.4-next.1
+  - @backstage/plugin-catalog-react@1.1.2-next.1
+
+## 0.1.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/plugin-catalog@1.3.1-next.0
+  - @backstage/cli@0.17.3-next.0
+  - @backstage/catalog-client@1.0.4-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.0
+
+## 0.1.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.3.0
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/cli@0.17.2
+  - @backstage/core-components@0.9.5
+  - @backstage/catalog-client@1.0.3
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/catalog-model@1.0.3
+
+## 0.1.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.1
+  - @backstage/cli@0.17.2-next.1
+  - @backstage/catalog-client@1.0.3-next.0
+  - @backstage/core-plugin-api@1.0.3-next.0
+  - @backstage/catalog-model@1.0.3-next.0
+  - @backstage/plugin-catalog@1.2.1-next.1
+  - @backstage/plugin-catalog-react@1.1.1-next.1
+
+## 0.1.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1-next.0
+  - @backstage/plugin-catalog@1.2.1-next.0
+  - @backstage/cli@0.17.2-next.0
+  - @backstage/core-components@0.9.5-next.0
+
+## 0.1.20
+
+### Patch Changes
+
+- 84c9e35a2f: Exported the SortView component from the Bazaar plugin for use directly
+- Updated dependencies
+  - @backstage/core-components@0.9.4
+  - @backstage/cli@0.17.1
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/plugin-catalog@1.2.0
+  - @backstage/plugin-catalog-react@1.1.0
+  - @backstage/catalog-client@1.0.2
+  - @backstage/catalog-model@1.0.2
+
 ## 0.1.20-next.2
 
 ### Patch Changes

@@ -1,5 +1,77 @@
 # @techdocs/cli
 
+## 1.1.3-next.1
+
+### Patch Changes
+
+- a5d73da942: Fix the flag parsing for `legacyCopyReadmeMdToIndexMd` in `techdocs-cli generate` command, and decouple it's logic from the `techdocs-ref` flag.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.2.0-next.1
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/backend-common@0.14.1-next.1
+
+## 1.1.3-next.0
+
+### Patch Changes
+
+- 14ce0d9347: Fixed a bug that prevented docker images from being pulled by default when generating TechDocs.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/plugin-techdocs-node@1.1.3-next.0
+
+## 1.1.2
+
+### Patch Changes
+
+- f96e98f4cd: Updated dependency `cypress` to `^10.0.0`.
+- bff65e6958: Updated sidebar-related logic to use `<SidebarPinStateProvider>` + `useSidebarPinState()` and/or `<SidebarOpenStateProvider>` + `useSidebarOpenState()` from `@backstage/core-components`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+  - @backstage/plugin-techdocs-node@1.1.2
+  - @backstage/catalog-model@1.0.3
+
+## 1.1.2-next.2
+
+### Patch Changes
+
+- f96e98f4cd: Updated dependency `cypress` to `^10.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/plugin-techdocs-node@1.1.2-next.2
+
+## 1.1.2-next.1
+
+### Patch Changes
+
+- bff65e6958: Updated sidebar-related logic to use `<SidebarPinStateProvider>` + `useSidebarPinState()` and/or `<SidebarOpenStateProvider>` + `useSidebarOpenState()` from `@backstage/core-components`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/catalog-model@1.0.3-next.0
+  - @backstage/plugin-techdocs-node@1.1.2-next.1
+
+## 1.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+  - @backstage/plugin-techdocs-node@1.1.2-next.0
+
+## 1.1.1
+
+### Patch Changes
+
+- 344ea56acc: Bump `commander` to version 9.1.0
+- 52fddad92d: The TechDocs CLI's embedded app now imports all API refs from the `@backstage/plugin-techdocs-react` package.
+- c14e78a367: Update `techdocs-cli serve`'s `proxyEndpoint` to match the base URL of the embedded techdocs app.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/cli-common@0.1.9
+  - @backstage/config@1.0.1
+  - @backstage/plugin-techdocs-node@1.1.1
+  - @backstage/catalog-model@1.0.2
+
 ## 1.1.1-next.2
 
 ### Patch Changes

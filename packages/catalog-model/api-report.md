@@ -159,6 +159,7 @@ export type EntityLink = {
   url: string;
   title?: string;
   icon?: string;
+  type?: string;
 };
 
 // @public
@@ -230,6 +231,13 @@ export function getEntitySourceLocation(entity: Entity): {
 };
 
 // @public
+export class GroupDefaultParentEntityPolicy implements EntityPolicy {
+  constructor(parentEntityRef: string);
+  // (undocumented)
+  enforce(entity: Entity): Promise<Entity>;
+}
+
+// @public
 interface GroupEntityV1alpha1 extends Entity {
   // (undocumented)
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
@@ -253,6 +261,36 @@ export { GroupEntityV1alpha1 };
 
 // @public
 export const groupEntityV1alpha1Validator: KindValidator;
+
+// @public (undocumented)
+export function isApiEntity(entity: Entity): entity is ApiEntityV1alpha1;
+
+// @public (undocumented)
+export function isComponentEntity(
+  entity: Entity,
+): entity is ComponentEntityV1alpha1;
+
+// @public (undocumented)
+export function isDomainEntity(entity: Entity): entity is DomainEntityV1alpha1;
+
+// @public (undocumented)
+export function isGroupEntity(entity: Entity): entity is GroupEntityV1alpha1;
+
+// @public (undocumented)
+export function isLocationEntity(
+  entity: Entity,
+): entity is LocationEntityV1alpha1;
+
+// @public (undocumented)
+export function isResourceEntity(
+  entity: Entity,
+): entity is ResourceEntityV1alpha1;
+
+// @public (undocumented)
+export function isSystemEntity(entity: Entity): entity is SystemEntityV1alpha1;
+
+// @public (undocumented)
+export function isUserEntity(entity: Entity): entity is UserEntityV1alpha1;
 
 // @public
 export type KindValidator = {

@@ -103,31 +103,36 @@ export const EntityOwnerPicker = () => {
 
   return (
     <Box pb={1} pt={1}>
-      <Typography variant="button">Owner</Typography>
-      <Autocomplete
-        multiple
-        aria-label="Owner"
-        options={availableOwners}
-        value={selectedOwners}
-        onChange={(_: object, value: string[]) => setSelectedOwners(value)}
-        renderOption={(option, { selected }) => (
-          <FormControlLabel
-            control={
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                checked={selected}
-              />
-            }
-            label={option}
-          />
-        )}
-        size="small"
-        popupIcon={<ExpandMoreIcon data-testid="owner-picker-expand" />}
-        renderInput={params => (
-          <TextField {...params} className={classes.input} variant="outlined" />
-        )}
-      />
+      <Typography variant="button" component="label">
+        Owner
+        <Autocomplete
+          multiple
+          options={availableOwners}
+          value={selectedOwners}
+          onChange={(_: object, value: string[]) => setSelectedOwners(value)}
+          renderOption={(option, { selected }) => (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  icon={icon}
+                  checkedIcon={checkedIcon}
+                  checked={selected}
+                />
+              }
+              label={option}
+            />
+          )}
+          size="small"
+          popupIcon={<ExpandMoreIcon data-testid="owner-picker-expand" />}
+          renderInput={params => (
+            <TextField
+              {...params}
+              className={classes.input}
+              variant="outlined"
+            />
+          )}
+        />
+      </Typography>
     </Box>
   );
 };

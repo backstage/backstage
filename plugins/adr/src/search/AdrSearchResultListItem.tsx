@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import TextTruncate from 'react-text-truncate';
 import {
   Box,
   Chip,
@@ -25,7 +24,10 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
+import { useAnalytics } from '@backstage/core-plugin-api';
 import { AdrDocument } from '@backstage/plugin-adr-common';
+import { ResultHighlight } from '@backstage/plugin-search-common';
+import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
 const useStyles = makeStyles({
   flexContainer: {
@@ -44,27 +46,61 @@ const useStyles = makeStyles({
  */
 export const AdrSearchResultListItem = ({
   lineClamp = 5,
+  highlight,
+  rank,
   result,
 }: {
   lineClamp?: number;
+  highlight?: ResultHighlight;
+  rank?: number;
   result: AdrDocument;
 }) => {
   const classes = useStyles();
+  const analytics = useAnalytics();
+
+  const handleClick = () => {
+    analytics.captureEvent('discover', result.title, {
+      attributes: { to: result.location },
+      value: rank,
+    });
+  };
 
   return (
-    <Link to={result.location}>
+    <Link noTrack to={result.location} onClick={handleClick}>
       <ListItem alignItems="flex-start" className={classes.flexContainer}>
         <ListItemText
           className={classes.itemText}
           primaryTypographyProps={{ variant: 'h6' }}
-          primary={result.title}
+          primary={
+            highlight?.fields.title ? (
+              <HighlightedSearchResultText
+                text={highlight.fields.title}
+                preTag={highlight.preTag}
+                postTag={highlight.postTag}
+              />
+            ) : (
+              result.title
+            )
+          }
           secondary={
-            <TextTruncate
-              line={lineClamp}
-              truncateText="…"
-              text={result.text}
-              element="span"
-            />
+            <span
+              style={{
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: lineClamp,
+                overflow: 'hidden',
+              }}
+            >
+              {highlight?.fields.text ? (
+                <HighlightedSearchResultText
+                  text={highlight.fields.text}
+                  preTag={highlight.preTag}
+                  postTag={highlight.postTag}
+                />
+              ) : (
+                result.text
+              )}
+            </span>
           }
         />
         <Box>

@@ -27,8 +27,9 @@ import MenuIcon from '@material-ui/icons/Menu';
 import { orderBy } from 'lodash';
 import React, { createContext, useEffect, useState, useContext } from 'react';
 import { useLocation } from 'react-router';
+import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
 import { SidebarGroup } from './SidebarGroup';
-import { SidebarConfigContext, SidebarContext, SidebarConfig } from './config';
+import { SidebarConfigContext, SidebarConfig } from './config';
 
 /**
  * Type of `MobileSidebarContext`
@@ -84,14 +85,14 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
 
     overlayHeader: {
       display: 'flex',
-      color: theme.palette.bursts.fontColor,
+      color: theme.palette.text.primary,
       alignItems: 'center',
       justifyContent: 'space-between',
       padding: theme.spacing(2, 3),
     },
 
     overlayHeaderClose: {
-      color: theme.palette.bursts.fontColor,
+      color: theme.palette.text.primary,
     },
 
     marginMobileSidebar: props => ({
@@ -207,7 +208,7 @@ export const MobileSidebar = (props: MobileSidebarProps) => {
     !sidebarGroups[selectedMenuItemIndex].props.to;
 
   return (
-    <SidebarContext.Provider value={{ isOpen: true, setOpen: () => {} }}>
+    <SidebarOpenStateProvider value={{ isOpen: true, setOpen: () => {} }}>
       <MobileSidebarContext.Provider
         value={{ selectedMenuItemIndex, setSelectedMenuItemIndex }}
       >
@@ -231,6 +232,6 @@ export const MobileSidebar = (props: MobileSidebarProps) => {
           {sidebarGroups}
         </BottomNavigation>
       </MobileSidebarContext.Provider>
-    </SidebarContext.Provider>
+    </SidebarOpenStateProvider>
   );
 };
