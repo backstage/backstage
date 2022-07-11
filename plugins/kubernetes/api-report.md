@@ -98,34 +98,24 @@ export interface DeploymentResources {
   replicaSets: V1ReplicaSet[];
 }
 
-// Warning: (ae-missing-release-tag) "DetectedError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @alpha
 export interface DetectedError {
   // (undocumented)
   cluster: string;
-  // Warning: (ae-forgotten-export) The symbol "ErrorDetectableKind" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   kind: ErrorDetectableKind;
   // (undocumented)
   message: string[];
   // (undocumented)
   names: string[];
-  // Warning: (ae-forgotten-export) The symbol "ErrorSeverity" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   severity: ErrorSeverity;
 }
 
-// Warning: (ae-missing-release-tag) "DetectedErrorsByCluster" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @alpha
 export type DetectedErrorsByCluster = Map<string, DetectedError[]>;
 
-// Warning: (ae-missing-release-tag) "detectErrors" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @alpha
 export const detectErrors: (
   objects: ObjectsByEntityResponse,
 ) => DetectedErrorsByCluster;
@@ -141,6 +131,12 @@ export const EntityKubernetesContent: (
 export type EntityKubernetesContentProps = {
   refreshIntervalMs?: number;
 };
+
+// @alpha
+export type ErrorDetectableKind =
+  | 'Pod'
+  | 'Deployment'
+  | 'HorizontalPodAutoscaler';
 
 // Warning: (ae-forgotten-export) The symbol "ErrorPanelProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ErrorPanel" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -159,6 +155,9 @@ export const ErrorPanel: ({
 export const ErrorReporting: ({
   detectedErrors,
 }: ErrorReportingProps) => JSX.Element;
+
+// @alpha
+export type ErrorSeverity = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
 // Warning: (ae-forgotten-export) The symbol "FormatClusterLinkOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "formatClusterLink" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
