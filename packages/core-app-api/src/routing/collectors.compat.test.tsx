@@ -16,17 +16,25 @@
 
 import React from 'react';
 import type { PropsWithChildren } from 'react';
-import type { RouteRef, BackstagePlugin } from '@backstage/core-plugin-api';
+import {
+  RouteRef,
+  BackstagePlugin,
+  createPlugin,
+  createRouteRef,
+  createRoutableExtension,
+  attachComponentData,
+} from '@backstage/core-plugin-api';
+import { Collector, Discoverer } from '../extensions/traversal';
 
-describe.each(['beta', 'stable'])('react-router %s', v => {
+describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   beforeAll(() => {
     jest.doMock('react-router', () =>
-      v === 'beta'
+      rrVersion === 'beta'
         ? jest.requireActual('react-router')
         : jest.requireActual('react-router-stable'),
     );
     jest.doMock('react-router-dom', () =>
-      v === 'beta'
+      rrVersion === 'beta'
         ? jest.requireActual('react-router-dom')
         : jest.requireActual('react-router-dom-stable'),
     );
@@ -46,11 +54,6 @@ describe.each(['beta', 'stable'])('react-router %s', v => {
     jest.resetAllMocks();
     jest.restoreAllMocks();
     jest.clearAllMocks();
-  });
-
-  it('does something', () => {
-    const { Route } = requireDeps();
-    console.log('DEBUG: Route =', Route);
   });
 
   const MockComponent = ({
@@ -141,8 +144,34 @@ describe.each(['beta', 'stable'])('react-router %s', v => {
     };
   }
 
-  describe('routingV1Collector', () => {
+  describe(`routing with ${rrVersion}`, () => {
+    let traversalOptions: {
+      discoverers: Discoverer[];
+      collectors: { routing: Collector<any, any> };
+    };
+    beforeEach(() => {
+      const {
+        routingV1Collector,
+        routingV2Collector,
+        childDiscoverer,
+        routeElementDiscoverer,
+      } = requireDeps();
+
+      traversalOptions = {
+        discoverers:
+          rrVersion === 'beta'
+            ? [childDiscoverer, routeElementDiscoverer]
+            : [childDiscoverer],
+        collectors: {
+          routing:
+            rrVersion === 'beta' ? routingV1Collector : routingV2Collector,
+        },
+      };
+    });
+
     it('should collect routes', () => {
+      const { MemoryRouter, Routes, Route, traverseElementTree } =
+        requireDeps();
       const list = [
         <div key={0} />,
         <div key={1} />,
@@ -181,11 +210,9 @@ describe.each(['beta', 'stable'])('react-router %s', v => {
 
       const { routing } = traverseElementTree({
         root,
-        discoverers: [childDiscoverer, routeElementDiscoverer],
-        collectors: {
-          routing: routingV1Collector,
-        },
+        ...traversalOptions,
       });
+
       expect(sortedEntries(routing.paths)).toEqual([
         [ref1, '/foo'],
         [ref2, '/bar/:id'],
