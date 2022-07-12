@@ -33,15 +33,14 @@ import {
 import { graphql } from '@octokit/graphql';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
-import { camelCase } from 'lodash';
-import { getOrganizationEntities } from '../lib/github';
+import { getOrganizationRepositories } from '../lib/github';
 
 /**
  * Options for {@link GitHubEntityProvider}.
  *
  * @public
  */
-export interface GitHubEntityProviderOptions {
+ export interface GitHubEntityProviderOptions {
   /**
    * A unique, stable identifier for this provider.
    *
@@ -51,17 +50,16 @@ export interface GitHubEntityProviderOptions {
 
   /**
    * The target that this provider should consume.
-   *
+   * A GitHub Organization
    * @example "https://github.com/backstage"
+   * 
+   * A Github Repository with a default branch wildcard and specified file to consume
+   * @example "https://github.com/backstage/backstage/blob/-/catalog-info.yaml"
+   * 
+   * * A Github Repository with a hardcoded branch and specified file to consume
+   * @example "https://github.com/backstage/backstage/blob/development/template.yaml"
    */
   target: string;
-
-  /**
-   * An array of entity file names to be parsed and added to the catalog
-   * @defaultValue "['catalog-info.yaml']"
-   * @example "['catalog-info.yaml', 'template.yaml']"
-   */
-  files?: Array<string>;
 
   /**
    * A Scheduled Task Runner
@@ -84,25 +82,33 @@ export interface GitHubEntityProviderOptions {
 
 type CreateLocationSpec = {
   url: string;
-  branch: string;
-  file: string;
+  branchName: string | undefined;
+  catalogFile: string;
 };
 
 /**
- * Provider which discovers catalog files (any name) within a Github Organization.
+ * Provider which discovers entities within a Github Organization
+ * 
+ * The following will create locations for all projects which have a catalog-info.yaml
+ * on the default branch. The first is shorthand for the second.
  *
+ *    target: "https://github.com/backstage"
+ *    or
+ *    target: https://github.com/backstage/*\/blob/-/catalog-info.yaml
+ *
+ * You may also explicitly specify the source branch:
+ *
+ *    target: https://github.com/backstage/*\/blob/main/catalog-info.yaml
+ * 
+ * You may also consume other supported files such as template.yaml
+ * 
+ *    target: https://github.com/backstage/*\/blob/-/template.yaml
+ * 
  * Use `GitHubEntityProvider.fromConfig(...)` to create instances.
  *
  * @public
  */
-/**
- * Provider which discovers catalog files (any name) within a Github Organization.
- *
- * Use `GitHubEntityProvider.fromConfig(...)` to create instances.
- *
- * @public
- */
-export class GitHubEntityProvider implements EntityProvider {
+ export class GitHubEntityProvider implements EntityProvider {
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
   private readonly githubCredentialsProvider: GithubCredentialsProvider;
@@ -117,18 +123,11 @@ export class GitHubEntityProvider implements EntityProvider {
       );
     }
 
-    const files = options.files || ['catalog-info.yaml'];
-
-    if (files.length === 0) {
-      throw new Error('"files" array in "options" is empty');
-    }
-
     return new GitHubEntityProvider({
       id: options.id,
       target: options.target,
       logger: options.logger,
       schedule: options.schedule,
-      files,
       gitHubConfig,
       githubCredentialsProvider:
         options.githubCredentialsProvider ||
@@ -140,7 +139,6 @@ export class GitHubEntityProvider implements EntityProvider {
     private options: {
       id: string;
       target: string;
-      files: Array<string>;
       logger: Logger;
       schedule: TaskRunner;
       gitHubConfig: GitHubIntegrationConfig;
@@ -155,7 +153,7 @@ export class GitHubEntityProvider implements EntityProvider {
 
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
   getProviderName(): string {
-    return `github-entity-provider:${this.options.id}`;
+    return `github-provider:${this.options.id}`;
   }
 
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
@@ -189,10 +187,16 @@ export class GitHubEntityProvider implements EntityProvider {
       throw new Error('Not initialized');
     }
 
-    const { org, repoSearchPath } = parseUrl(this.options.target);
+    const { org, repoSearchPath, catalogPath, branch, host } = parseUrl(
+      this.options.target,
+    );
+
+    // Building the org url here so that the github creds provider doesn't need to know
+    // about how to handle the wild card
+    const orgUrl = `https://${host}/${org}`;
 
     const { headers } = await this.githubCredentialsProvider.getCredentials({
-      url: this.options.target,
+      url: orgUrl,
     });
 
     const client = graphql.defaults({
@@ -200,18 +204,11 @@ export class GitHubEntityProvider implements EntityProvider {
       headers,
     });
 
+    // Read out all of the raw data
     const startTimestamp = Date.now();
-
     logger.info(`Reading GitHub repositories from ${this.options.target}`);
 
-    const expectedEntityFiles = this.options.files;
-
-    const { repositories } = await getOrganizationEntities(
-      client,
-      org,
-      expectedEntityFiles,
-    );
-
+    const { repositories } = await getOrganizationRepositories(client, org);
     const matching = repositories.filter(
       r =>
         !r.isArchived &&
@@ -220,46 +217,23 @@ export class GitHubEntityProvider implements EntityProvider {
     );
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
-
-    logger.info(
+    logger.debug(
       `Read ${repositories.length} GitHub repositories (${matching.length} matching the pattern) in ${duration} seconds`,
     );
 
-    const files = expectedEntityFiles.map(fileName => ({
-      name: fileName,
-      key: camelCase(fileName),
-    }));
-
-    const repoEntities: Array<LocationSpec | Array<LocationSpec>> = [];
-
-    for (const entity of matching) {
-      for (const { name: fileName, key } of files) {
-        const entityObj: any = entity[key as keyof typeof entity];
-        if (entityObj) {
-          const locationEntity = this.createLocationSpec({
-            url: entity.url,
-            branch: entity.defaultBranchRef?.name || '',
-            file: fileName,
-          });
-          repoEntities.push(locationEntity);
-        }
-      }
-    }
-
-    const entityLocations = repoEntities.flat();
-
-    if (entityLocations.length === 0) {
-      logger.info(`No valid entities found by ${this.getProviderName()}.`);
-      return;
-    }
-
-    logger.info(
-      `Adding ${entityLocations.length} valid entities to the catalog`,
-    );
+    const locations = matching.map(repository => {
+      const branchName =
+        branch === '-' ? repository.defaultBranchRef?.name : branch;
+      return this.createLocationSpec({
+        url: repository.url,
+        branchName,
+        catalogFile: catalogPath,
+      });
+    });
 
     await this.connection.applyMutation({
       type: 'full',
-      entities: entityLocations.map(location => ({
+      entities: locations.flat().map(location => ({
         locationKey: this.getProviderName(),
         entity: locationSpecToLocationEntity({ location }),
       })),
@@ -268,12 +242,12 @@ export class GitHubEntityProvider implements EntityProvider {
 
   private createLocationSpec({
     url,
-    branch,
-    file,
+    branchName,
+    catalogFile,
   }: CreateLocationSpec): LocationSpec {
     return {
       type: 'url',
-      target: `${url}/blob/${branch}/${file}`,
+      target: `${url}/blob/${branchName}/${catalogFile}`,
       presence: 'optional',
     };
   }
@@ -286,13 +260,31 @@ export class GitHubEntityProvider implements EntityProvider {
 export function parseUrl(urlString: string): {
   org: string;
   repoSearchPath: RegExp;
+  catalogPath: string;
+  branch: string;
+  host: string;
 } {
   const url = new URL(urlString);
   const path = url.pathname.substr(1).split('/');
-  if (path.length === 1 && path[0].length) {
+
+  // /backstage/techdocs-*/blob/master/catalog-info.yaml
+  // can also be
+  // /backstage
+  if (path.length > 2 && path[0].length && path[1].length) {
     return {
       org: decodeURIComponent(path[0]),
+      repoSearchPath: escapeRegExp(decodeURIComponent(path[1])),
+      branch: decodeURIComponent(path[3]),
+      catalogPath: `/${decodeURIComponent(path.slice(4).join('/'))}`,
+      host: url.host,
+    };
+  } else if (path.length === 1 && path[0].length) {
+    return {
+      org: decodeURIComponent(path[0]),
+      host: url.host,
       repoSearchPath: escapeRegExp('*'),
+      catalogPath: '/catalog-info.yaml',
+      branch: '-',
     };
   }
 

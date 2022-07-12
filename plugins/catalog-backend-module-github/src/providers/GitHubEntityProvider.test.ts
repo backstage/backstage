@@ -49,7 +49,6 @@ describe('GitHubEntityProvider', () => {
   const options: GitHubEntityProviderOptions = {
     id: 'mockId',
     target: 'http://mockUrl',
-    files: ['mockFiles.yaml'],
     schedule: new PersistingTaskRunner(),
     logger: getVoidLogger(),
   };
