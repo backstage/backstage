@@ -1,5 +1,18 @@
 # @backstage/plugin-adr
 
+## 0.1.2-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 511f49ee43: Updated dependency `octokit` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+  - @backstage/integration-react@1.1.2-next.3
+  - @backstage/plugin-catalog-react@1.1.2-next.3
+  - @backstage/plugin-search-react@0.2.2-next.3
+
 ## 0.1.2-next.2
 
 ### Patch Changes

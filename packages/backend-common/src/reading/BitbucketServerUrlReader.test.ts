@@ -83,13 +83,11 @@ describe('BitbucketServerUrlReader', () => {
             ),
         ),
         rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits',
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits/*',
           (_, res, ctx) =>
             res(
               ctx.status(200),
-              ctx.json({
-                values: [{ id: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }],
-              }),
+              ctx.json({ id: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }),
             ),
         ),
       );
@@ -132,13 +130,11 @@ describe('BitbucketServerUrlReader', () => {
             ),
         ),
         rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits',
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits/*',
           (_, res, ctx) =>
             res(
               ctx.status(200),
-              ctx.json({
-                values: [{ id: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }],
-              }),
+              ctx.json({ id: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }),
             ),
         ),
       );
