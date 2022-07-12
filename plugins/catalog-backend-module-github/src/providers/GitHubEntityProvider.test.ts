@@ -48,7 +48,7 @@ describe('GitHubEntityProvider', () => {
 
   const options: GitHubEntityProviderOptions = {
     id: 'mockId',
-    target: 'http://mockUrl',
+    target: 'http://github.com',
     schedule: new PersistingTaskRunner(),
     logger: getVoidLogger(),
   };
@@ -56,6 +56,6 @@ describe('GitHubEntityProvider', () => {
   it('should return the instance providerName', () => {
     const config = new ConfigReader(backendConfig);
     const provider = GitHubEntityProvider.fromConfig(config, options);
-    expect(provider.getProviderName()).toBe('github-entity-provider:mockId');
+    expect(provider.getProviderName()).toBe('github-provider:mockId');
   });
 });
