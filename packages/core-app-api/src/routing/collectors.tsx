@@ -35,6 +35,13 @@ export const MATCH_ALL_ROUTE: BackstageRouteObject = {
   routeRefs: new Set(),
 };
 
+function stringifyNode(node: ReactNode): string {
+  if (!isValidElement(node)) {
+    return String(node);
+  }
+  return (node.type as { displayName?: string })?.displayName ?? String(node);
+}
+
 interface RoutingV2CollectorContext {
   routeRef?: RouteRef;
   gatherPath?: string;
@@ -162,7 +169,11 @@ export const routingV2Collector = createCollector(
 
     if (mountPoint) {
       if (!ctx?.gatherPath) {
-        throw new Error('Routable extension must be assigned a path');
+        throw new Error(
+          `Routable extension ${stringifyNode(
+            node,
+          )} with mount point ${mountPoint} must be assigned a path`,
+        );
       }
 
       ctx?.obj?.routeRefs.add(mountPoint);

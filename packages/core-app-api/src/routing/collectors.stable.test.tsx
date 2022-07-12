@@ -15,13 +15,9 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { routingV1Collector } from './collectors';
+import { routingV2Collector } from './collectors';
 
-import {
-  traverseElementTree,
-  childDiscoverer,
-  routeElementDiscoverer,
-} from '../extensions/traversal';
+import { traverseElementTree, childDiscoverer } from '../extensions/traversal';
 import {
   createRoutableExtension,
   createRouteRef,
@@ -31,6 +27,11 @@ import {
   BackstagePlugin,
 } from '@backstage/core-plugin-api';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
+
+jest.mock('react-router', () => jest.requireActual('react-router-stable'));
+jest.mock('react-router-dom', () =>
+  jest.requireActual('react-router-dom-stable'),
+);
 
 const MockComponent = ({ children }: PropsWithChildren<{ path?: string }>) => (
   <>{children}</>
@@ -109,7 +110,7 @@ function routeObj(
     routeRefs: new Set(refs),
     children: [
       {
-        path: '/*',
+        path: '*',
         caseSensitive: false,
         element: 'match-all',
         routeRefs: new Set(),
@@ -126,33 +127,33 @@ describe('discovery', () => {
       <div key={0} />,
       <div key={1} />,
       <div key={3}>
-        <Extension5 path="/blop" />
+        <Route path="blop" element={<Extension5 />} />
       </div>,
     ];
 
     const root = (
       <MemoryRouter>
         <Routes>
-          <Extension1 path="/foo">
+          <Route path="foo" element={<Extension1 />}>
             <div>
-              <Extension2 path="/bar/:id">
+              <Route path="bar/:id" element={<Extension2 />}>
                 <div>
                   <div />
                   Some text here shouldn't be a problem
                   <div />
                   {null}
                   <div />
-                  <Extension3 path="/baz" />
+                  <Route path="baz" element={<Extension3 />} />
                 </div>
-              </Extension2>
+              </Route>
               {false}
               {list}
               {true}
               {0}
             </div>
-          </Extension1>
+          </Route>
           <div>
-            <Route path="/divsoup" element={<Extension4 />} />
+            <Route path="divsoup" element={<Extension4 />} />
           </div>
         </Routes>
       </MemoryRouter>
@@ -160,17 +161,17 @@ describe('discovery', () => {
 
     const { routing } = traverseElementTree({
       root,
-      discoverers: [childDiscoverer, routeElementDiscoverer],
+      discoverers: [childDiscoverer],
       collectors: {
-        routing: routingV1Collector,
+        routing: routingV2Collector,
       },
     });
     expect(sortedEntries(routing.paths)).toEqual([
-      [ref1, '/foo'],
-      [ref2, '/bar/:id'],
-      [ref3, '/baz'],
-      [ref4, '/divsoup'],
-      [ref5, '/blop'],
+      [ref1, 'foo'],
+      [ref2, 'bar/:id'],
+      [ref3, 'baz'],
+      [ref4, 'divsoup'],
+      [ref5, 'blop'],
     ]);
     expect(sortedEntries(routing.parents)).toEqual([
       [ref1, undefined],
@@ -181,14 +182,22 @@ describe('discovery', () => {
     ]);
     expect(routing.objects).toEqual([
       routeObj(
-        '/foo',
+        'foo',
         [ref1],
         [
-          routeObj('/bar/:id', [ref2], [routeObj('/baz', [ref3])]),
-          routeObj('/blop', [ref5]),
+          routeObj(
+            'bar/:id',
+            [ref2],
+            [routeObj('baz', [ref3], undefined, undefined, plugin)],
+            undefined,
+            plugin,
+          ),
+          routeObj('blop', [ref5], undefined, undefined, plugin),
         ],
+        undefined,
+        plugin,
       ),
-      routeObj('/divsoup', [ref4], undefined, undefined, plugin),
+      routeObj('divsoup', [ref4], undefined, undefined, plugin),
     ]);
   });
 
@@ -216,9 +225,9 @@ describe('discovery', () => {
 
     const { routing } = traverseElementTree({
       root,
-      discoverers: [childDiscoverer, routeElementDiscoverer],
+      discoverers: [childDiscoverer],
       collectors: {
-        routing: routingV1Collector,
+        routing: routingV2Collector,
       },
     });
     expect(sortedEntries(routing.paths)).toEqual([
@@ -261,9 +270,9 @@ describe('discovery', () => {
 
     const { routing } = traverseElementTree({
       root,
-      discoverers: [childDiscoverer, routeElementDiscoverer],
+      discoverers: [childDiscoverer],
       collectors: {
-        routing: routingV1Collector,
+        routing: routingV2Collector,
       },
     });
     expect(sortedEntries(routing.paths)).toEqual([
@@ -310,9 +319,9 @@ describe('discovery', () => {
 
     const { routing } = traverseElementTree({
       root,
-      discoverers: [childDiscoverer, routeElementDiscoverer],
+      discoverers: [childDiscoverer],
       collectors: {
-        routing: routingV1Collector,
+        routing: routingV2Collector,
       },
     });
     expect(sortedEntries(routing.paths)).toEqual([
@@ -363,9 +372,9 @@ describe('discovery', () => {
     expect(() => {
       traverseElementTree({
         root,
-        discoverers: [childDiscoverer, routeElementDiscoverer],
+        discoverers: [childDiscoverer],
         collectors: {
-          routing: routingV1Collector,
+          routing: routingV2Collector,
         },
       });
     }).toThrow('Mounted routable extension must have a path');
