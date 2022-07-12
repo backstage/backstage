@@ -1,5 +1,15 @@
 # @backstage/plugin-tech-insights-backend-module-jsonfc
 
+## 0.1.18-next.2
+
+### Patch Changes
+
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/plugin-tech-insights-common@0.2.5-next.0
+  - @backstage/plugin-tech-insights-node@0.3.2-next.1
+
 ## 0.1.18-next.1
 
 ### Patch Changes

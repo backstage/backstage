@@ -1,5 +1,14 @@
 # @backstage/integration
 
+## 1.2.2-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 1f29047bad: Updated dependency `@octokit/auth-app` to `^4.0.0`.
+- 4df3390795: Avoid double encoding of the file path in `getBitbucketServerDownloadUrl`
+
 ## 1.2.2-next.2
 
 ### Patch Changes

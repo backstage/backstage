@@ -1,5 +1,16 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.20-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+  - @backstage/integration@1.2.2-next.3
+
 ## 0.3.20-next.2
 
 ### Patch Changes
