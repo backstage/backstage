@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-react
 
+## 1.1.2-next.3
+
+### Patch Changes
+
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+  - @backstage/catalog-client@1.0.4-next.2
+  - @backstage/integration@1.2.2-next.3
+  - @backstage/plugin-permission-common@0.6.3-next.1
+  - @backstage/catalog-model@1.1.0-next.3
+  - @backstage/plugin-permission-react@0.4.3-next.1
+
 ## 1.1.2-next.2
 
 ### Patch Changes

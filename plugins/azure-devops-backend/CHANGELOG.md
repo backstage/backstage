@@ -1,5 +1,18 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.3.13-next.1
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- e67c4b7d5a: Adding getProjects endpoint to list out all projects associated with the Azure DevOps organization.
+
+  It can be accessed by using this endpoint `{backendUrl}/api/azure-devops/projects`
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/plugin-azure-devops-common@0.2.4-next.0
+
 ## 0.3.13-next.0
 
 ### Patch Changes

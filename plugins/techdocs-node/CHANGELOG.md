@@ -1,5 +1,15 @@
 # @backstage/plugin-techdocs-node
 
+## 1.2.0-next.3
+
+### Patch Changes
+
+- d505b7b37d: Fixed issue with git feedback buttons not appearing automatically in docs pages. This was done by appending repo_url to the helper function getRepoUrlFromLocationAnnotation.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/integration@1.2.2-next.3
+  - @backstage/catalog-model@1.1.0-next.3
+
 ## 1.2.0-next.2
 
 ### Patch Changes
