@@ -197,7 +197,7 @@ describe('DefaultLocationServiceTest', () => {
           { type: 'url', target: 'https://backstage.io/catalog-info.yaml' },
           true,
         ),
-      ).rejects.toThrow(InputError);
+      ).rejects.toThrow('Duplicate nested entity: location:default/foo');
     });
 
     it('should return exists false when the location does not exist beforehand', async () => {
