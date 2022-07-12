@@ -57,7 +57,6 @@ export class GitHubEntityProvider implements EntityProvider {
 
 // @public
 export interface GitHubEntityProviderOptions {
-  files: Array<string>;
   githubCredentialsProvider?: GithubCredentialsProvider;
   id: string;
   logger: Logger;
