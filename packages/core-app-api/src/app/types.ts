@@ -206,7 +206,7 @@ export type AppOptions = {
    * A list of all plugins to include in the app.
    */
   plugins?: Array<
-    BackstagePlugin<any, any> & {
+    BackstagePlugin & {
       output?(): Array<
         { type: 'feature-flag'; name: string } | { type: string }
       >; // support for old plugins
