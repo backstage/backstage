@@ -6,7 +6,8 @@
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+    "types": "dist/index.d.ts",
+    "alphaTypes": "dist/index.alpha.d.ts"
   },
   "backstage": {
     "role": "web-library"
@@ -61,6 +62,7 @@
     "msw": "^0.43.0"
   },
   "files": [
-    "dist"
+    "dist",
+    "alpha"
   ]
 }
