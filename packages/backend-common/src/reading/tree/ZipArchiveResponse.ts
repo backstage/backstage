@@ -25,8 +25,6 @@ import {
   ReadTreeResponseDirOptions,
   ReadTreeResponseFile,
 } from '../types';
-import { streamToTimeoutPromise } from './util';
-import { zip } from 'lodash';
 
 const streamToBuffer = async (stream: Readable): Promise<Buffer> => {
   const buffers: Buffer[] = [];
@@ -169,24 +167,37 @@ export class ZipArchiveResponse implements ReadTreeResponse {
       options?.targetDir ??
       (await fs.mkdtemp(platformPath.join(this.workDir, 'backstage-')));
 
-    return new Promise((resolve, reject) => {
-      const parseStream = this.stream
-        .pipe(unzipper.Parse())
-        .on('entry', async (entry: Entry) => {
-          // Ignore directory entries since we handle that with the file entries
-          // as a zip can have files with directories without directory entries
-          if (entry.type === 'File' && this.shouldBeIncluded(entry)) {
-            const entryPath = this.getInnerPath(entry.path);
+    const buffer = await streamToBuffer(this.stream);
+    return await new Promise<string>((resolve, reject) => {
+      unzipper2.fromBuffer(buffer, { lazyEntries: false }, (err, zipfile) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        zipfile.on('entry', async (entry: Entry) => {
+          // If it's not a directory, and it's included, then grab the contents of the file from the buffer
+          if (!/\/$/.test(entry.fileName) && this.shouldBeIncluded(entry)) {
+            const entryPath = this.getInnerPath(entry.fileName);
             const dirname = platformPath.dirname(entryPath);
+
             if (dirname) {
               await fs.mkdirp(platformPath.join(dir, dirname));
             }
-            entry.pipe(fs.createWriteStream(platformPath.join(dir, entryPath)));
-          } else {
-            entry.autodrain();
+
+            zipfile.openReadStream(entry, async (err2, readStream) => {
+              if (err2) {
+                reject(err2);
+                return;
+              }
+
+              readStream.pipe(
+                fs.createWriteStream(platformPath.join(dir, entryPath)),
+              );
+            });
           }
-        })
-        .on('finish', () => resolve(dir));
+        });
+        zipfile.once('end', () => resolve(dir));
+      });
     });
   }
 }

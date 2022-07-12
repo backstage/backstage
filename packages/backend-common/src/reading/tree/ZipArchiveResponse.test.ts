@@ -120,6 +120,7 @@ describe('ZipArchiveResponse', () => {
     const res = new ZipArchiveResponse(stream, '', '/tmp', 'etag');
     const dir = await res.dir();
 
+    await new Promise(resolve => setTimeout(resolve, 1000));
     await expect(
       fs.readFile(resolvePath(dir, 'mkdocs.yml'), 'utf8'),
     ).resolves.toBe('site_name: Test\n');
@@ -133,7 +134,7 @@ describe('ZipArchiveResponse', () => {
 
     const res = new ZipArchiveResponse(stream, 'docs/', '/tmp', 'etag');
     const dir = await res.dir();
-
+    await new Promise(resolve => setTimeout(resolve, 1000));
     expect(dir).toMatch(/^[\/\\]tmp[\/\\].*$/);
     await expect(
       fs.readFile(resolvePath(dir, 'index.md'), 'utf8'),
@@ -164,7 +165,7 @@ describe('ZipArchiveResponse', () => {
     const filesPromise = res.files();
 
     await expect(filesPromise).rejects.toThrow(
-      'Timed out while unzipping File: docs/corrupted.zip',
+      'invalid comment length. expected: 55. found: 0',
     );
   });
 });
