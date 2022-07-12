@@ -52,7 +52,7 @@ export class GitHubEntityProvider implements EntityProvider {
   // (undocumented)
   getProviderName(): string;
   // (undocumented)
-  refresh(logger: Logger): Promise<boolean>;
+  refresh(logger: Logger): Promise<void>;
 }
 
 // @public
@@ -60,8 +60,8 @@ export interface GitHubEntityProviderOptions {
   githubCredentialsProvider?: GithubCredentialsProvider;
   id: string;
   logger: Logger;
-  orgUrl: string;
   schedule: TaskRunner;
+  target: string;
 }
 
 // @public
