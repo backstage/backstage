@@ -37,7 +37,7 @@
     "@backstage/integration": "^1.2.2-next.1",
     "@backstage/plugin-adr-common": "^0.1.2-next.1",
     "@backstage/plugin-search-common": "^0.3.6-next.0",
-    "luxon": "^2.0.2",
+    "luxon": "^3.0.0",
     "marked": "^4.0.14",
     "winston": "^3.2.1",
     "node-fetch": "^2.6.5",

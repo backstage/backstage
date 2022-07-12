@@ -48,7 +48,7 @@
     "humanize-duration": "^3.27.0",
     "already": "^3.2.0",
     "lodash": "^4.17.21",
-    "luxon": "^2.0.2",
+    "luxon": "^3.0.0",
     "react-use": "^17.3.1",
     "recharts": "^2.1.5"
   },

@@ -41,7 +41,7 @@
     "cron": "^2.0.0",
     "knex": "^2.0.0",
     "lodash": "^4.17.21",
-    "luxon": "^2.0.2",
+    "luxon": "^3.0.0",
     "node-abort-controller": "^3.0.1",
     "uuid": "^8.0.0",
     "winston": "^3.2.1",
