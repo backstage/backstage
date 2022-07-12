@@ -16,7 +16,7 @@ Implementation example inside `catalog.ts`
   const integrations = ScmIntegrations.fromConfig(config);
   const githubCredentialsProvider =
     DefaultGithubCredentialsProvider.fromIntegrations(integrations);
-  
+
   builder.addEntityProvider(GitHubEntityProvider.fromConfig(env.config, {
     githubCredentialsProvider,
     logger,
