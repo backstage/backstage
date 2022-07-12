@@ -17,7 +17,6 @@
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { GithubCredentialType } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
-import { camelCase } from 'lodash';
 
 // Graphql types
 
@@ -332,66 +331,6 @@ export async function getTeamMembers(
   );
 
   return { members };
-}
-
-/**
- *
- * Gets the specified yaml files from a github repo and returns the yaml data so it can be used
- *  in a provider to be turned into entities.
- *
- * @param client - An octokit graphql client
- * @param org - The slug of the org to read
- * @param files - List of file entries pulled from the config
- */
-
-export async function getOrganizationEntities(
-  client: typeof graphql,
-  org: string,
-  files: Array<string>,
-): Promise<{ repositories: Array<Repository | RepositoryWithFiles> }> {
-  let queryFiles = ``;
-
-  for (const file of files) {
-    queryFiles += `
-    ${camelCase(file)}: object(expression: "HEAD:${file}") {
-      ... on Blob {
-        text
-      }
-    }
-    `;
-  }
-
-  const query = `
-    query repositories($org: String!, $cursor: String) {
-      repositoryOwner(login: $org) {
-        repositories(first: 75, after: $cursor) {
-          nodes {
-            name
-            url
-            isArchived
-            defaultBranchRef {
-              name
-            }
-            ${queryFiles}
-          }
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-        }
-      }
-    }
-  `;
-
-  const repositories = await queryWithPaging(
-    client,
-    query,
-    r => r.repositoryOwner?.repositories,
-    x => x,
-    { org },
-  );
-
-  return { repositories };
 }
 
 //
