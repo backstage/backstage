@@ -291,7 +291,7 @@ export type BackstageApp = {
   /**
    * Returns all plugins registered for the app.
    */
-  getPlugins(): BackstagePlugin<any, any, any>[];
+  getPlugins(): BackstagePlugin[];
 
   /**
    * Get a common or custom icon for this app.
@@ -321,7 +321,7 @@ export type AppContext = {
   /**
    * Get a list of all plugins that are installed in the app.
    */
-  getPlugins(): BackstagePlugin<any, any, any>[];
+  getPlugins(): BackstagePlugin[];
 
   /**
    * Get a common or custom icon for this app.

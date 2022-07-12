@@ -27,7 +27,7 @@ const contextKey: string = 'plugin-context';
 /**
  * Properties for the PluginProvider component.
  *
- * @public
+ * @alpha
  */
 export interface PluginOptionsProviderProps {
   children: ReactNode;
@@ -44,7 +44,7 @@ export const PluginProvider = ({
   plugin,
 }: PluginOptionsProviderProps): JSX.Element => {
   const { Provider } = createVersionedContext<{
-    1: { plugin: BackstagePlugin<any, any, any> | undefined };
+    1: { plugin: BackstagePlugin | undefined };
   }>(contextKey);
 
   return (

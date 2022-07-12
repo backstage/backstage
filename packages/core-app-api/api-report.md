@@ -155,7 +155,7 @@ export type AppConfigLoader = () => Promise<AppConfig[]>;
 
 // @public
 export type AppContext = {
-  getPlugins(): BackstagePlugin<any, any, any>[];
+  getPlugins(): BackstagePlugin[];
   getSystemIcon(key: string): IconComponent | undefined;
   getComponents(): AppComponents;
 };
@@ -254,7 +254,7 @@ export type AuthApiCreateOptions = {
 
 // @public
 export type BackstageApp = {
-  getPlugins(): BackstagePlugin<any, any, any>[];
+  getPlugins(): BackstagePlugin[];
   getSystemIcon(key: string): IconComponent | undefined;
   getProvider(): ComponentType<{}>;
   getRouter(): ComponentType<{}>;
