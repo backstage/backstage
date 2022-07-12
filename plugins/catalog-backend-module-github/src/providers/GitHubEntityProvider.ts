@@ -40,7 +40,7 @@ import { getOrganizationRepositories } from '../lib/github';
  *
  * @public
  */
- export interface GitHubEntityProviderOptions {
+export interface GitHubEntityProviderOptions {
   /**
    * A unique, stable identifier for this provider.
    *
@@ -52,10 +52,10 @@ import { getOrganizationRepositories } from '../lib/github';
    * The target that this provider should consume.
    * A GitHub Organization
    * @example "https://github.com/backstage"
-   * 
+   *
    * A Github Repository with a default branch wildcard and specified file to consume
    * @example "https://github.com/backstage/backstage/blob/-/catalog-info.yaml"
-   * 
+   *
    * * A Github Repository with a hardcoded branch and specified file to consume
    * @example "https://github.com/backstage/backstage/blob/development/template.yaml"
    */
@@ -88,7 +88,7 @@ type CreateLocationSpec = {
 
 /**
  * Provider which discovers entities within a Github Organization
- * 
+ *
  * The following will create locations for all projects which have a catalog-info.yaml
  * on the default branch. The first is shorthand for the second.
  *
@@ -99,16 +99,16 @@ type CreateLocationSpec = {
  * You may also explicitly specify the source branch:
  *
  *    target: https://github.com/backstage/*\/blob/main/catalog-info.yaml
- * 
+ *
  * You may also consume other supported files such as template.yaml
- * 
+ *
  *    target: https://github.com/backstage/*\/blob/-/template.yaml
- * 
+ *
  * Use `GitHubEntityProvider.fromConfig(...)` to create instances.
  *
  * @public
  */
- export class GitHubEntityProvider implements EntityProvider {
+export class GitHubEntityProvider implements EntityProvider {
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
   private readonly githubCredentialsProvider: GithubCredentialsProvider;

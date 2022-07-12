@@ -17,10 +17,7 @@
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
-import {
-  GitHubEntityProvider,
-  GitHubEntityProviderOptions,
-} from '../index';
+import { GitHubEntityProvider, GitHubEntityProviderOptions } from '../index';
 
 class PersistingTaskRunner implements TaskRunner {
   private tasks: TaskInvocationDefinition[] = [];
