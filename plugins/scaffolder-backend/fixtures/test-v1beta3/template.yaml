@@ -8,82 +8,28 @@ spec:
   type: website
   owner: team-a
   parameters:
-    - name: Repositories
-      description: Some repo
+    - name: Enter some stuff
+      description: Enter some stuff
       properties:
-        appRepoUrl:
+        inputString:
           type: string
-          title: First Repository
-          ui:field: RepoUrlPicker
-        serviceRepoUrl:
-          type: string
-          title: First Repository
-          ui:field: RepoUrlPicker
+          title: string input test
+        inputObject:
+          type: object
+          title: object input test
+          description: a little nested thing never hurt anyone right?
+          properties:
+            first:
+              type: string
+              title: first
+            second:
+              type: number
+              title: second
   steps:
-    # First get the app template folder, and template into ./app
-    - id: app_template
-      name: Fetch Skeleton + Template
-      action: fetch:template
+    - id: debug
+      if: ${{ true === true }}
+      name: Debug
+      action: debug:log
       input:
-        url: ./skeleton
-        targetPath: ./app
-        copyWithoutRender:
-          - .github/*
-        values:
-          component_id: ${{ parameters.component_id }}
-          description: ${{ parameters.description }}
-          services_app_port: ${{ parameters.services_app_port }}
-          owner: ${{ parameters.owner }}
-          destination: ${{ parameters.appRepoUrl | parseRepoUrl }}
-
-    # First then service into ./service
-    - id: app_service_config_template
-      name: Fetch App Servcie Config. Skeleton + Template
-      action: fetch:template
-      input:
-        url: https://github.com/my-org/helm-values-template
-        targetPath: ./service
-        copyWithoutRender:
-          - .github/*
-        values:
-          component_id: ${{ parameters.component_id }}
-          description: ${{ parameters.description }}
-          services_app_port: ${{ parameters.services_app_port }}
-          owner: ${{ parameters.owner }}
-          destination: ${{ parameters.serviceRepoUrl | parseRepoUrl }}
-
-    # Publish the app
-    - id: publish_app
-      name: Publish App
-      action: publish:github
-      input:
-        sourcePath: ./app
-        allowedHosts: ['github.com']
-        description: This is ${{ parameters.component_id }}
-        repoUrl: ${{ parameters.appRepoUrl }}
-
-    # Publish the service
-    - id: publish_service
-      name: Publish Service
-      action: publish:github
-      input:
-        sourcePath: ./service
-        allowedHosts: ['github.com']
-        description: This is ${{ parameters.component_id }}
-        repoUrl: ${{ parameters.serviceRepoUrl }}
-
-    # Register the app
-    - id: register_app
-      name: Register Application
-      action: catalog:register
-      input:
-        repoContentsUrl: ${{ steps.publish_app.output.repoContentsUrl }}
-        catalogInfoPath: '/catalog-info.yaml'
-
-    # Register the service
-    - id: register_service
-      name: Register Application
-      action: catalog:register
-      input:
-        repoContentsUrl: ${{ steps.publish_service.output.repoContentsUrl }}
-        catalogInfoPath: '/catalog-info.yaml'
+        message: ${{ parameters.inputString }}
+        extra: ${{ parameters.inputObject }}
