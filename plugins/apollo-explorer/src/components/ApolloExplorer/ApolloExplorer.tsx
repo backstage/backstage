@@ -15,9 +15,10 @@
  */
 
 import React from 'react';
-import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
+import { Content, Header, Page } from '@backstage/core-components';
 import { ApolloExplorer as ApolloExplorerReact } from '@apollo/explorer/react';
 import { makeStyles } from '@material-ui/core';
+import { JSONObject } from '@apollo/explorer/src/helpers/types';
 
 const useStyles = makeStyles(() => ({
   explorer: {
@@ -25,23 +26,45 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-type Props = {
-  graphRef: string;
+type PluginProps = {
+  title?: string;
+  subtitle?: string | undefined;
 };
 
-export const ApolloExplorer = ({ graphRef }: Props) => {
+type GraphProps = {
+  graphRef: string;
+  persistExplorerState?: boolean;
+  initialState?: {
+    document?: string;
+    variables?: JSONObject;
+    headers?: Record<string, string>;
+    displayOptions: {
+      docsPanelState?: 'open' | 'closed';
+      showHeadersAndEnvVars?: boolean;
+      theme?: 'dark' | 'light';
+    };
+  };
+};
+
+type Props = PluginProps & GraphProps;
+
+export const ApolloExplorer = ({
+  graphRef,
+  persistExplorerState = true,
+  initialState,
+  title = 'Welcome to the Apollo Explorer 👩‍🚀',
+  subtitle,
+}: Props) => {
   const classes = useStyles();
   return (
     <Page themeId="tool">
-      <Header title="Welcome to apollo-explorer!" subtitle="Optional subtitle">
-        <HeaderLabel label="Owner" value="Team X" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
+      <Header title={title} subtitle={subtitle ?? ''} />
       <Content>
         <ApolloExplorerReact
           className={classes.explorer}
           graphRef={graphRef}
-          persistExplorerState
+          persistExplorerState={persistExplorerState}
+          initialState={initialState}
         />
       </Content>
     </Page>
