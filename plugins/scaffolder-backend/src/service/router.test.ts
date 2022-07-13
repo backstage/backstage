@@ -35,24 +35,25 @@ import {
   UrlReaders,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ConfigReader } from '@backstage/config';
-import ObservableImpl from 'zen-observable';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import express from 'express';
 import request from 'supertest';
+import ObservableImpl from 'zen-observable';
+
 /**
  * TODO: The following should import directly from the router file.
  * Due to a circular dependency between this plugin and the
  * plugin-scaffolder-backend-module-cookiecutter plugin, it results in an error:
  * TypeError: _pluginscaffolderbackend.createTemplateAction is not a function
  */
-import { createRouter, DatabaseTaskStore, TaskBroker } from '../index';
-import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import {
   parseEntityRef,
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
+import { createRouter, DatabaseTaskStore, TaskBroker } from '../index';
+import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -592,6 +593,298 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         after: 10,
       });
       expect(subscriber!.closed).toBe(true);
+    });
+  });
+});
+
+describe('createRouter logging', () => {
+  let app: express.Express;
+  let taskBroker: TaskBroker;
+  const catalogClient = { getEntityByRef: jest.fn() } as unknown as CatalogApi;
+
+  const mockTemplate: TemplateEntityV1beta3 = {
+    apiVersion: 'scaffolder.backstage.io/v1beta3',
+    kind: 'Template',
+    metadata: {
+      description: 'Create a new CRA website project',
+      name: 'create-react-app-template',
+      tags: ['experimental', 'react', 'cra'],
+      title: 'Create React App Template',
+      annotations: {
+        'backstage.io/managed-by-location': 'url:https://dev.azure.com',
+      },
+    },
+    spec: {
+      owner: 'web@example.com',
+      type: 'website',
+      steps: [],
+      parameters: {
+        type: 'object',
+        required: ['required'],
+        properties: {
+          required: {
+            type: 'string',
+            description: 'Required parameter',
+          },
+        },
+      },
+    },
+  };
+
+  const mockUser: UserEntity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'User',
+    metadata: {
+      name: 'guest',
+      annotations: {
+        'google.com/email': 'bobby@tables.com',
+        'example.com/uuid': 'bc48e920-f1c9-4094-bb5c-99d120e87ab8',
+      },
+    },
+    spec: {
+      profile: {
+        displayName: 'Robert Tables of the North',
+      },
+    },
+  };
+
+  beforeEach(async () => {
+    const logger = getVoidLogger();
+
+    const databaseTaskStore = await DatabaseTaskStore.create({
+      database: await createDatabase().getClient(),
+    });
+    taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+
+    jest.spyOn(taskBroker, 'dispatch');
+    jest.spyOn(taskBroker, 'get');
+    jest.spyOn(taskBroker, 'list');
+    jest.spyOn(taskBroker, 'event$');
+
+    jest
+      .spyOn(catalogClient, 'getEntityByRef')
+      .mockImplementation(async ref => {
+        const { kind } = parseEntityRef(ref);
+
+        if (kind === 'template') {
+          return mockTemplate;
+        }
+
+        if (kind === 'user') {
+          return mockUser;
+        }
+        throw new Error(`no mock found for kind: ${kind}`);
+      });
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  describe('POST /v2/tasks', () => {
+    it('does not log auditlog by default', async () => {
+      const config = new ConfigReader({});
+
+      const logger = getVoidLogger();
+      const loggerSpy = jest.spyOn(logger, 'info');
+
+      const router = await createRouter({
+        logger: logger,
+        config: config,
+        database: createDatabase(),
+        catalogClient,
+        reader: mockUrlReader,
+        taskBroker,
+      });
+      app = express().use(router);
+
+      const response = await request(app)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            required: 'required-value',
+          },
+        });
+
+      expect(loggerSpy).toHaveBeenCalledTimes(0);
+      expect(response.status).toEqual(201);
+    });
+
+    it('does not log auditlog when not enabled', async () => {
+      const config = new ConfigReader({
+        scaffolder: {
+          auditlog: {
+            enabled: false,
+          },
+        },
+      });
+
+      const logger = getVoidLogger();
+      const loggerSpy = jest.spyOn(logger, 'info');
+
+      const router = await createRouter({
+        logger: logger,
+        config: config,
+        database: createDatabase(),
+        catalogClient,
+        reader: mockUrlReader,
+        taskBroker,
+      });
+      app = express().use(router);
+
+      const response = await request(app)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            required: 'required-value',
+          },
+        });
+
+      expect(loggerSpy).toHaveBeenCalledTimes(0);
+      expect(response.status).toEqual(201);
+    });
+
+    it('emits auditlog when enabled without identity', async () => {
+      const config = new ConfigReader({
+        scaffolder: {
+          auditlog: {
+            enabled: true,
+          },
+        },
+      });
+
+      const logger = getVoidLogger();
+      const loggerSpy = jest.spyOn(logger, 'info');
+
+      const router = await createRouter({
+        logger: logger,
+        config: config,
+        database: createDatabase(),
+        catalogClient,
+        reader: mockUrlReader,
+        taskBroker,
+      });
+      app = express().use(router);
+
+      const response = await request(app)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            required: 'required-value',
+          },
+        });
+
+      expect(loggerSpy).toHaveBeenCalledTimes(1);
+      expect(loggerSpy).toHaveBeenCalledWith(
+        "Scaffolding task for 'template:default/create-react-app-template'",
+      );
+
+      expect(response.status).toEqual(201);
+    });
+
+    it('emits auditlog when enabled with identity', async () => {
+      const config = new ConfigReader({
+        scaffolder: {
+          auditlog: {
+            enabled: true,
+          },
+        },
+      });
+
+      const logger = getVoidLogger();
+      const loggerSpy = jest.spyOn(logger, 'info');
+
+      const router = await createRouter({
+        logger: logger,
+        config: config,
+        database: createDatabase(),
+        catalogClient,
+        reader: mockUrlReader,
+        taskBroker,
+      });
+      app = express().use(router);
+
+      const mockToken =
+        'blob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvZ3Vlc3QiLCJuYW1lIjoiSm9obiBEb2UifQ.blob';
+
+      const response = await request(app)
+        .post('/v2/tasks')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            required: 'required-value',
+          },
+        });
+
+      expect(loggerSpy).toHaveBeenCalledTimes(1);
+      expect(loggerSpy).toHaveBeenCalledWith(
+        "Scaffolding task for 'template:default/create-react-app-template' created by guest",
+      );
+
+      expect(response.status).toEqual(201);
+    });
+
+    it('emits auditlog when enabled with identity and annotations', async () => {
+      const config = new ConfigReader({
+        scaffolder: {
+          auditlog: {
+            enabled: true,
+            identityAnnotations: ['google.com/email', 'example.com/uuid'],
+          },
+        },
+      });
+
+      const logger = getVoidLogger();
+      const loggerSpy = jest.spyOn(logger, 'info');
+
+      const router = await createRouter({
+        logger: logger,
+        config: config,
+        database: createDatabase(),
+        catalogClient,
+        reader: mockUrlReader,
+        taskBroker,
+      });
+      app = express().use(router);
+
+      const mockToken =
+        'blob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvZ3Vlc3QiLCJuYW1lIjoiSm9obiBEb2UifQ.blob';
+
+      const response = await request(app)
+        .post('/v2/tasks')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            required: 'required-value',
+          },
+        });
+
+      expect(loggerSpy).toHaveBeenCalledTimes(1);
+      expect(loggerSpy).toHaveBeenCalledWith(
+        'Scaffolding task for \'template:default/create-react-app-template\' created by guest [{"google.com/email":"bobby@tables.com"},{"example.com/uuid":"bc48e920-f1c9-4094-bb5c-99d120e87ab8"}]',
+      );
+
+      expect(response.status).toEqual(201);
     });
   });
 });

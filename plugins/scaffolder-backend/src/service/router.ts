@@ -198,29 +198,27 @@ export async function createRouter(
       );
 
       if (auditlogEnabled) {
-        const identityMetadata = config.getOptionalStringArray(
-          'scaffolder.auditlog.identityMetadata',
-        );
         const identityAnnotations = config.getOptionalStringArray(
           'scaffolder.auditlog.identityAnnotations',
         );
 
         const logMe: { [key: string]: string }[] = [];
 
-        identityMetadata?.forEach((prop: string) =>
-          logMe.push({ [prop]: userEntity?.metadata[prop] as string }),
-        );
         identityAnnotations?.forEach((prop: string) =>
           logMe.push({
             [prop]: userEntity?.metadata.annotations?.[prop] as string,
           }),
         );
 
-        logger.info(
-          `Scaffolding template '${templateRef}'. ${
-            logMe.length > 0 && JSON.stringify(logMe)
-          }`,
-        );
+        let userLog = '';
+        if (userEntity) {
+          userLog = ` created by ${userEntity.metadata.name}`;
+          if (logMe.length > 0) {
+            userLog += ` ${JSON.stringify(logMe)}`;
+          }
+        }
+
+        logger.info(`Scaffolding task for '${templateRef}'${userLog}`);
       }
 
       const values = req.body.values;
