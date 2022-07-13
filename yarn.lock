@@ -2252,31 +2252,7 @@
     delay "^5.0.0"
     ky "0.28.7"
 
-"@gitbeaker/core@^35.6.0":
-  version "35.7.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-35.7.0.tgz#426e426dff597c1d094bf1fe66fb1109980e816d"
-  integrity sha512-1N9QcHElYa1NuLhX9mJJ6tnL7wbCsK8Naj2kLXwNC4qyEcDhMiJDnI3YoqNIXSzPTufoNUAbgIsc/h/JmO17/A==
-  dependencies:
-    "@gitbeaker/requester-utils" "^35.7.0"
-    form-data "^4.0.0"
-    li "^1.3.0"
-    mime "^3.0.0"
-    query-string "^7.0.0"
-    xcase "^2.0.1"
-
-"@gitbeaker/core@^35.7.0":
-  version "35.7.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-35.7.0.tgz#426e426dff597c1d094bf1fe66fb1109980e816d"
-  integrity sha512-1N9QcHElYa1NuLhX9mJJ6tnL7wbCsK8Naj2kLXwNC4qyEcDhMiJDnI3YoqNIXSzPTufoNUAbgIsc/h/JmO17/A==
-  dependencies:
-    "@gitbeaker/requester-utils" "^35.7.0"
-    form-data "^4.0.0"
-    li "^1.3.0"
-    mime "^3.0.0"
-    query-string "^7.0.0"
-    xcase "^2.0.1"
-
-"@gitbeaker/core@^35.7.0":
+"@gitbeaker/core@^35.6.0", "@gitbeaker/core@^35.7.0":
   version "35.7.0"
   resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-35.7.0.tgz#426e426dff597c1d094bf1fe66fb1109980e816d"
   integrity sha512-1N9QcHElYa1NuLhX9mJJ6tnL7wbCsK8Naj2kLXwNC4qyEcDhMiJDnI3YoqNIXSzPTufoNUAbgIsc/h/JmO17/A==
@@ -2297,15 +2273,6 @@
     "@gitbeaker/requester-utils" "^35.7.0"
     delay "^5.0.0"
     got "^11.8.3"
-    xcase "^2.0.1"
-
-"@gitbeaker/requester-utils@^35.6.0":
-  version "35.6.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-35.6.0.tgz#41e5008f64f5910b3c0793488a2a41b23c9f081f"
-  integrity sha512-5IVzv1gO626qaC7CEV7LUG68IHgEjWovIHXQsbI9MraxhrI9eSV5/l/81Povv7tJlni7u8OnARPU7bmxlXlx7g==
-  dependencies:
-    form-data "^4.0.0"
-    qs "^6.10.1"
     xcase "^2.0.1"
 
 "@gitbeaker/requester-utils@^35.7.0":
@@ -5730,25 +5697,25 @@
   resolved "https://registry.npmjs.org/@sinonjs/text-encoding/-/text-encoding-0.7.1.tgz#8da5c6530915653f3a1f38fd5f101d8c3f8079c5"
   integrity sha512-+iTbntw2IZPb/anVDbypzfQa+ay64MW0Zo8aJ8gZPWMMK6/OubMVb6lUPMagqjOPnmtauXnFCACVl3O7ogjeqQ==
 
-"@spotify/eslint-config-base@^13.0.0":
-  version "13.0.0"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config-base/-/eslint-config-base-13.0.0.tgz#bb748bb2b705ffb5085f873aa0daf94dfad59985"
-  integrity sha512-BrnexUcUQkp6XUw8HWSmE4LpWtJGgEC6A7vrSkgpgKJtZaYkpw8O+Xnk60DA266ecbFHYbQD6ngqKHlvjNB+pA==
+"@spotify/eslint-config-base@^14.0.0":
+  version "14.0.1"
+  resolved "https://registry.npmjs.org/@spotify/eslint-config-base/-/eslint-config-base-14.0.1.tgz#a67a1aff30e20ce6f5d83895d52609af18d7d33f"
+  integrity sha512-wT3ejMg81CrOhrGlt2HwqgiDQI7mdY3AkzfhR+AlZZM9FFL+7QEvQYeejlfATu2UPOJbEU8C1WsL9XMKKlC+8g==
 
-"@spotify/eslint-config-react@^13.0.0":
-  version "13.0.1"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config-react/-/eslint-config-react-13.0.1.tgz#f309f5d3c53ef1e2c7c6ce05f76ee681970112c3"
-  integrity sha512-gyC0CtJ2H9K57HyQG5/RcMsJiB6qmVbBHOHWukZcPLfYtwkK201kgMjHrVfJXoSN+mJxcWhDVPxqe+eA7LHshQ==
+"@spotify/eslint-config-react@^14.0.0":
+  version "14.0.1"
+  resolved "https://registry.npmjs.org/@spotify/eslint-config-react/-/eslint-config-react-14.0.1.tgz#8269c4c4267e8cec8d7e2252b65831651aa31023"
+  integrity sha512-Ap3gLGoKsvX4WtclaBaLKVpmnOU2G52k/2c0C1XO98Vix1gBmN1aR2ZMrfv1qq+W7P6LsPt/+YQfkT8M1qNaxQ==
 
-"@spotify/eslint-config-typescript@^13.0.0":
-  version "13.0.1"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config-typescript/-/eslint-config-typescript-13.0.1.tgz#47801a66d5569074a110f4422eba60aafc6bd7f8"
-  integrity sha512-1wLQFyN2H2v+rn/mytA2PGzmGxOmdZdcKBpNyW+4z0qJydpvavp2SeBj/X+FEbwKoYBoUdG9QLr40eLQh1ZHZA==
+"@spotify/eslint-config-typescript@^14.0.0":
+  version "14.0.1"
+  resolved "https://registry.npmjs.org/@spotify/eslint-config-typescript/-/eslint-config-typescript-14.0.1.tgz#850a435b0defebbb3de591d83e3fc369bbc51753"
+  integrity sha512-y/8on49Wtg3HvKd9A32Q7iJaOgngcSJR8hjGx/POFhJFcPRcZuTJSlhd31CF8fg78bMuzdvYH8au7FhNKjnEVw==
 
-"@spotify/prettier-config@^13.0.0":
-  version "13.0.1"
-  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-13.0.1.tgz#0fdceb3d4ab543259ce6adc0ec1d10e34898b812"
-  integrity sha512-oVd4hjx2+y0MeUdk1l+ItwVLwlrDlvTlGwXBWMMzPYc7DLyxuxFvDfoHGkAQkrikfAgtdnzxrW6u9a8ywUqdfw==
+"@spotify/prettier-config@^14.0.0":
+  version "14.0.1"
+  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-14.0.1.tgz#a3a2342ec07693647ab76a64a623fbb79d464fa7"
+  integrity sha512-NHT7IpIVOsAMhPfDVf1S/jfq59j7d2ru3XoU9An/Aqy9MDr/ZmAvQEAPFiz+qlm41xEGkNK34yEi71LC03G2oA==
 
 "@sucrase/jest-plugin@^2.1.1":
   version "2.2.1"
