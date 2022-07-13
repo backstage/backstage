@@ -74,7 +74,7 @@ The extension type is a simple one:
 
 ```ts
 export type Extension<T> = {
-  expose(plugin: BackstagePlugin<any, any>): T;
+  expose(plugin: BackstagePlugin): T;
 };
 ```
 

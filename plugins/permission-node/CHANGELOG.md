@@ -1,5 +1,15 @@
 # @backstage/plugin-permission-node
 
+## 0.6.3-next.2
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/plugin-auth-node@0.2.3-next.2
+  - @backstage/plugin-permission-common@0.6.3-next.1
+
 ## 0.6.3-next.1
 
 ### Patch Changes

@@ -193,7 +193,7 @@ export type AppOptions = {
     [key in string]: IconComponent;
   };
   plugins?: Array<
-    BackstagePlugin<any, any> & {
+    BackstagePlugin & {
       output?(): Array<
         | {
             type: 'feature-flag';

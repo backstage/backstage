@@ -14,30 +14,26 @@
  * limitations under the License.
  */
 
-import * as msal from '@azure/msal-node';
+import { TokenCredential } from '@azure/identity';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { MicrosoftGraphClient } from './client';
 
 describe('MicrosoftGraphClient', () => {
-  const confidentialClientApplication: jest.Mocked<msal.ConfidentialClientApplication> =
-    {
-      acquireTokenByClientCredential: jest.fn(),
-    } as any;
+  const tokenCredential: jest.Mocked<TokenCredential> = {
+    getToken: jest.fn(),
+  } as any;
   let client: MicrosoftGraphClient;
   const worker = setupServer();
 
   setupRequestMockHandlers(worker);
 
   beforeEach(() => {
-    confidentialClientApplication.acquireTokenByClientCredential.mockResolvedValue(
-      { token: 'ACCESS_TOKEN' } as any,
-    );
-    client = new MicrosoftGraphClient(
-      'https://example.com',
-      confidentialClientApplication,
-    );
+    tokenCredential.getToken.mockResolvedValue({
+      token: 'ACCESS_TOKEN',
+    } as any);
+    client = new MicrosoftGraphClient('https://example.com', tokenCredential);
   });
 
   afterEach(() => {
@@ -55,12 +51,10 @@ describe('MicrosoftGraphClient', () => {
 
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ value: 'example' });
-    expect(
-      confidentialClientApplication.acquireTokenByClientCredential,
-    ).toBeCalledTimes(1);
-    expect(
-      confidentialClientApplication.acquireTokenByClientCredential,
-    ).toBeCalledWith({ scopes: ['https://graph.microsoft.com/.default'] });
+    expect(tokenCredential.getToken).toBeCalledTimes(1);
+    expect(tokenCredential.getToken).toBeCalledWith(
+      'https://graph.microsoft.com/.default',
+    );
   });
 
   it('should perform simple api request', async () => {

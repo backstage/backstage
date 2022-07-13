@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         node-version: [14.x, 16.x]
 
@@ -44,6 +45,7 @@ jobs:
     needs: install
 
     strategy:
+      fail-fast: false
       matrix:
         node-version: [14.x, 16.x]
 
@@ -120,6 +122,7 @@ jobs:
     needs: install
 
     strategy:
+      fail-fast: false
       matrix:
         node-version: [14.x, 16.x]
 

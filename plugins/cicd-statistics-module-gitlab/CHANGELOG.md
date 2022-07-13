@@ -1,5 +1,15 @@
 # @backstage/plugin-cicd-statistics-module-gitlab
 
+## 0.1.3-next.1
+
+### Patch Changes
+
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/plugin-cicd-statistics@0.1.9-next.1
+  - @backstage/catalog-model@1.1.0-next.3
+
 ## 0.1.3-next.0
 
 ### Patch Changes
