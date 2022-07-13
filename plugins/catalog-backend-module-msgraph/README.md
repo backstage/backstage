@@ -22,10 +22,10 @@ This provider is useful if you want to import users and groups from Azure Active
 ```yaml
 # app-config.yaml
 catalog:
-  providers:
+  processors:
     microsoftGraphOrg:
-      providerId:
-        target: https://graph.microsoft.com/v1.0
+      providers:
+      - target: https://graph.microsoft.com/v1.0
         authority: https://login.microsoftonline.com
         # If you don't know you tenantId, you can use Microsoft Graph Explorer
         # to query it
