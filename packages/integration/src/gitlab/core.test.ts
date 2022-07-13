@@ -35,16 +35,30 @@ describe('gitlab core', () => {
   });
 
   const configWithToken: GitLabIntegrationConfig = {
-    host: 'g.com',
+    host: 'gitlab.com',
     token: '0123456789',
     apiBaseUrl: '<ignored>',
     baseUrl: '<ignored>',
   };
 
   const configWithNoToken: GitLabIntegrationConfig = {
-    host: 'g.com',
+    host: 'gitlab.com',
     apiBaseUrl: '<ignored>',
     baseUrl: '<ignored>',
+  };
+
+  const configSelfHosteWithRelativePath: GitLabIntegrationConfig = {
+    host: 'gitlab.mycompany.com',
+    token: '0123456789',
+    apiBaseUrl: '<ignored>',
+    baseUrl: 'https://gitlab.mycompany.com/gitlab',
+  };
+
+  const configSelfHostedWithoutRelativePath: GitLabIntegrationConfig = {
+    host: 'gitlab.mycompany.com',
+    token: '0123456789',
+    apiBaseUrl: '<ignored>',
+    baseUrl: 'https://gitlab.mycompany.com',
   };
 
   describe('getGitLabFileFetchUrl with .yaml extension', () => {
@@ -57,11 +71,35 @@ describe('gitlab core', () => {
           'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
       },
       {
+        config: configSelfHosteWithRelativePath,
+        url: 'https://gitlab.mycompany.com/gitlab/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
+        result:
+          'https://gitlab.mycompany.com/gitlab/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
+      },
+      {
+        config: configSelfHostedWithoutRelativePath,
+        url: 'https://gitlab.mycompany.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
+        result:
+          'https://gitlab.mycompany.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
+      },
+      {
         config: configWithNoToken,
         // Works with non URI encoded link
         url: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file with spaces.yaml',
         result:
           'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile%20with%20spaces.yaml/raw?ref=branch',
+      },
+      {
+        config: configSelfHosteWithRelativePath,
+        url: 'https://gitlab.mycompany.com/gitlab/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file with spaces.yaml',
+        result:
+          'https://gitlab.mycompany.com/gitlab/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile%20with%20spaces.yaml/raw?ref=branch',
+      },
+      {
+        config: configSelfHostedWithoutRelativePath,
+        url: 'https://gitlab.mycompany.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file with spaces.yaml',
+        result:
+          'https://gitlab.mycompany.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile%20with%20spaces.yaml/raw?ref=branch',
       },
       {
         config: configWithNoToken,
@@ -122,11 +160,37 @@ describe('gitlab core', () => {
           'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yml/raw?ref=branch',
       },
       {
+        config: configSelfHosteWithRelativePath,
+        url: 'https://gitlab.mycompany.com/gitlab/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yml',
+        result:
+          'https://gitlab.mycompany.com/gitlab/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yml/raw?ref=branch',
+      },
+      {
+        config: configSelfHostedWithoutRelativePath,
+        url: 'https://gitlab.mycompany.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yml',
+        result:
+          'https://gitlab.mycompany.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yml/raw?ref=branch',
+      },
+      {
         config: configWithNoToken,
         // Works with non URI encoded link
         url: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file with spaces.yml',
         result:
           'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile%20with%20spaces.yml/raw?ref=branch',
+      },
+      {
+        config: configSelfHosteWithRelativePath,
+        // Works with non URI encoded link
+        url: 'https://gitlab.mycompany.com/gitlab/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file with spaces.yml',
+        result:
+          'https://gitlab.mycompany.com/gitlab/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile%20with%20spaces.yml/raw?ref=branch',
+      },
+      {
+        config: configSelfHostedWithoutRelativePath,
+        // Works with non URI encoded link
+        url: 'https://gitlab.mycompany.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file with spaces.yml',
+        result:
+          'https://gitlab.mycompany.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile%20with%20spaces.yml/raw?ref=branch',
       },
       {
         config: configWithNoToken,
