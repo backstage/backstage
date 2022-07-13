@@ -119,6 +119,8 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-msgraph
 +        timeout: { minutes: 50 },
 +        initialDelay: { seconds: 15}
 +      }),
++      id: 'development',
++      target: 'https://graph.microsoft.com/v1.0'
 +    }),
 +  );
 ```
