@@ -18764,43 +18764,10 @@ msw@^0.39.2:
     type-fest "^1.2.2"
     yargs "^17.3.1"
 
-<<<<<<< HEAD
-msw@^0.42.0:
-  version "0.42.3"
-  resolved "https://registry.npmjs.org/msw/-/msw-0.42.3.tgz#150c475e2cb6d53c67503bd0e3f6251bfd075328"
-  integrity sha512-zrKBIGCDsNUCZLd3DLSeUtRruZ0riwJgORg9/bSDw3D0PTI8XUGAK3nC0LJA9g0rChGuKaWK/SwObA8wpFrz4g==
-  dependencies:
-    "@mswjs/cookies" "^0.2.0"
-    "@mswjs/interceptors" "^0.16.3"
-    "@open-draft/until" "^1.0.3"
-    "@types/cookie" "^0.4.1"
-    "@types/js-levenshtein" "^1.1.1"
-    chalk "4.1.1"
-    chokidar "^3.4.2"
-    cookie "^0.4.2"
-    graphql "^16.3.0"
-    headers-polyfill "^3.0.4"
-    inquirer "^8.2.0"
-    is-node-process "^1.0.1"
-    js-levenshtein "^1.1.6"
-    node-fetch "^2.6.7"
-    outvariant "^1.3.0"
-    path-to-regexp "^6.2.0"
-    statuses "^2.0.0"
-    strict-event-emitter "^0.2.0"
-    type-fest "^1.2.2"
-    yargs "^17.3.1"
-
-msw@^0.43.0:
-  version "0.43.1"
-  resolved "https://registry.npmjs.org/msw/-/msw-0.43.1.tgz#57cb4af56f07442e8a6d14d76032a0ab41434256"
-  integrity sha512-wzhPpL6RsiYkyIUlTCg0aZY0aRZa4Eiubd6MOA5oJVgfuapDmvZrI8OMi4h4e+fpHD+Qsy+4unAjv3wpWia5yw==
-=======
 msw@^0.44.0:
   version "0.44.0"
   resolved "https://registry.npmjs.org/msw/-/msw-0.44.0.tgz#28f81a789f05855e5403a399d7eefaa2d0216adf"
   integrity sha512-LLXfLos7JwzI1bfh0cBIKffXfyISezsMXALS2M1uq56pn1UhGVtyz8OaAguiJFxkirqn+S6e0GcKuGVDwZG1dg==
->>>>>>> master
   dependencies:
     "@mswjs/cookies" "^0.2.2"
     "@mswjs/interceptors" "^0.17.2"
