@@ -2345,10 +2345,10 @@
     teeny-request "^8.0.0"
     uuid "^8.0.0"
 
-"@graphiql/react@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.npmjs.org/@graphiql/react/-/react-0.5.0.tgz#3bc00de581b09d962a9f391ed725d06f34a757d3"
-  integrity sha512-Tn0V4yTcRPBgBVq9SVkqGkmlUi7aqmOrn4+vmhwnlxSFJU7mnKak7DZRc9wPVFBTdcHc0pWNKBzY/demFHSxSw==
+"@graphiql/react@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.npmjs.org/@graphiql/react/-/react-0.5.1.tgz#03c89fbe9ae8258b72ac744f2a0cb3d102b9fa9a"
+  integrity sha512-xkmi9RhjnIlbkCndLDDfYsEAv5M0AIbziPmRcJIFypPWoS917Qoej+AjWYgmx1VCyNry/pWlPB9BM+aU1CGeIQ==
   dependencies:
     "@graphiql/toolkit" "^0.6.0"
     codemirror "^5.65.3"
@@ -14099,11 +14099,11 @@ grapheme-splitter@^1.0.4:
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
 graphiql@^1.5.12, graphiql@^1.8.8:
-  version "1.9.11"
-  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.9.11.tgz#3ade0802a0459792d1533f71e95b39bedce9c3ac"
-  integrity sha512-/nIFi+y8PNpkC/fb/mmkWUDsX+nIS7DdemxrTPugKpGku/hqVLe0ppXFsJbPuT0UrleL1XASv0sZm+Axh4XGWA==
+  version "1.9.12"
+  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.9.12.tgz#1177eabb0cc57112df57f59d483c6471966c0d50"
+  integrity sha512-eS4tDR9ypsdVS2D5bK8i++4TesoZMgxtGbajxzSFE2WNo20GyZaOELycmgzF54RbhuGYfj9DYKzWWeLamu9/sA==
   dependencies:
-    "@graphiql/react" "^0.5.0"
+    "@graphiql/react" "^0.5.1"
     "@graphiql/toolkit" "^0.6.0"
     entities "^2.0.0"
     graphql-language-service "^5.0.6"
