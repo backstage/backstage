@@ -24,6 +24,8 @@ app:
   #   env: 'staging'
 ```
 
+If during [`yarn backstage-create-app`](https://github.com/backstage/backstage/tree/master/packages/create-app) time your [`app-config.yaml`](https://github.com/backstage/backstage/blob/master/app-config.yaml#L5) file did not have this configuration, you have to adjust your [`packages/app/public/index.html`](https://github.com/backstage/backstage/blob/master/packages/app/public/index.html#L64) to include the Datadog RUM `init()` section manually.
+
 The `clientToken` and `applicationId` are generated from the Datadog RUM page
 following
 [these instructions](https://docs.datadoghq.com/real_user_monitoring/browser/).
