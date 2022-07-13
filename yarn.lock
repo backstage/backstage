@@ -1826,9 +1826,9 @@
     "@changesets/types" "^5.0.0"
 
 "@changesets/cli@^2.14.0":
-  version "2.23.1"
-  resolved "https://registry.npmjs.org/@changesets/cli/-/cli-2.23.1.tgz#3ab7f26db865ed0ca3185ec6919e1a62e9c7fcbd"
-  integrity sha512-yXQ29Iw/26yq1oJpOCa7BJDeUvuurZmREmCX9p9m5RxlKNDnROJBylQDCVfqQdZbeV2jfvd3XRKvci80SvGssg==
+  version "2.23.2"
+  resolved "https://registry.npmjs.org/@changesets/cli/-/cli-2.23.2.tgz#f32d3d9388816721419cff204010b64a864c950e"
+  integrity sha512-o7CWC+mcwOmA3yK5axqHOSYPYEjX/x+nq/s9aX78AyzH1SQZa6L5HX4P9uUXibyjcKynklkmusxv8vN8+hJggA==
   dependencies:
     "@babel/runtime" "^7.10.4"
     "@changesets/apply-release-plan" "^6.0.1"
