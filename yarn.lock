@@ -320,7 +320,7 @@
   dependencies:
     tslib "^2.2.0"
 
-"@azure/identity@^2.0.1", "@azure/identity@^2.0.4":
+"@azure/identity@^2.0.1", "@azure/identity@^2.0.4", "@azure/identity@^2.1.0":
   version "2.1.0"
   resolved "https://registry.npmjs.org/@azure/identity/-/identity-2.1.0.tgz#89f0bfc1d1264dfd3d0cb19837c33a9c6706d548"
   integrity sha512-BPDz1sK7Ul9t0l9YKLEa8PHqWU4iCfhGJ+ELJl6c8CP3TpJt2urNCbm0ZHsthmxRsYoMPbz2Dvzj30zXZVmAFw==
@@ -361,7 +361,7 @@
   resolved "https://registry.npmjs.org/@azure/msal-common/-/msal-common-7.1.0.tgz#b77dbf9ae581f1ed254f81d56422e3cdd6664b32"
   integrity sha512-WyfqE5mY/rggjqvq0Q5DxLnA33KSb0vfsUjxa95rycFknI03L5GPYI4HTU9D+g0PL5TtsQGnV3xzAGq9BFCVJQ==
 
-"@azure/msal-node@^1.1.0", "@azure/msal-node@^1.10.0":
+"@azure/msal-node@^1.10.0":
   version "1.11.0"
   resolved "https://registry.npmjs.org/@azure/msal-node/-/msal-node-1.11.0.tgz#d8bd3f15c1f05bf806ba6f9479c48c2eddd6a98d"
   integrity sha512-KW/XEexfCrPzdYbjY7NVmhq9okZT3Jvck55CGXpz9W5asxeq3EtrP45p+ZXtQVEfko0YJdolpCNqWUyXvanWZg==
