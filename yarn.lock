@@ -6948,9 +6948,9 @@
     "@types/react" "*"
 
 "@types/react-syntax-highlighter@^15.0.0":
-  version "15.5.2"
-  resolved "https://registry.npmjs.org/@types/react-syntax-highlighter/-/react-syntax-highlighter-15.5.2.tgz#b3450851c11b8526a27edf51d00769b69d8fbf20"
-  integrity sha512-cJJvwU8lQv/efGSo/LmPoaOqWi/B0AG4CNKKCn7HPUL25SqiPn1Vl+fV1JiUigJv97ruTZ8mo08+b8/0zoYufA==
+  version "15.5.3"
+  resolved "https://registry.npmjs.org/@types/react-syntax-highlighter/-/react-syntax-highlighter-15.5.3.tgz#6f23839167ac254d922a0db918cb0d37bd2abff0"
+  integrity sha512-N5bgZxolo+wFuYnx4nOvIQO2P0E+KYHt3dDwb8ydUvZ96QN8Lpq60ReT+0W0JmXKZjp4udkYkIDYt9GIygBY1Q==
   dependencies:
     "@types/react" "*"
 
