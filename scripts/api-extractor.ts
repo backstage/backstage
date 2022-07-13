@@ -241,7 +241,6 @@ const ALLOW_WARNINGS = [
   'plugins/kafka',
   'plugins/kafka-backend',
   'plugins/kubernetes',
-  'plugins/kubernetes-backend',
   'plugins/kubernetes-common',
   'plugins/lighthouse',
   'plugins/newrelic',
@@ -564,6 +563,11 @@ async function runApiExtraction({
     if (warningCountAfter > 0 && !ALLOW_WARNINGS.includes(packageDir)) {
       throw new Error(
         `The API Report for ${packageDir} is not allowed to have warnings`,
+      );
+    }
+    if (warningCountAfter === 0 && ALLOW_WARNINGS.includes(packageDir)) {
+      console.log(
+        `No need to allow warnings for ${packageDir}, it does not have any`,
       );
     }
     if (warningCountAfter > warningCountBefore) {
