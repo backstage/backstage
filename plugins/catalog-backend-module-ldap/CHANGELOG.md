@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.5.1-next.2
+
+### Patch Changes
+
+- ddfd566606: Fix mapping between users and groups for FreeIPA when using the LdapOrgProcessor
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.3.0-next.3
+  - @backstage/backend-tasks@0.3.3-next.3
+  - @backstage/catalog-model@1.1.0-next.3
+
 ## 0.5.1-next.1
 
 ### Patch Changes

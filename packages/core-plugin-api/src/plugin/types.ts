@@ -27,7 +27,7 @@ import { AnyApiFactory } from '../apis/system';
  * @public
  */
 export type Extension<T> = {
-  expose(plugin: BackstagePlugin<any, any>): T;
+  expose(plugin: BackstagePlugin): T;
 };
 
 /**

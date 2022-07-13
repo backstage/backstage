@@ -27,6 +27,7 @@ import {
   TemplateFilter,
   SecureTemplater,
 } from '../../../../lib/templating/SecureTemplater';
+import path from 'path';
 
 /**
  * Downloads a skeleton, templates variables into file and directory names and content.
@@ -206,13 +207,17 @@ export function createFetchTemplateAction(options: {
         } else {
           renderFilename = renderContents = !nonTemplatedEntries.has(location);
         }
+
         if (renderFilename) {
           localOutputPath = renderTemplate(localOutputPath, context);
         }
+
+        if (containsSkippedContent(localOutputPath)) {
+          continue;
+        }
+
         const outputPath = resolveSafeChildPath(outputDir, localOutputPath);
-        // variables have been expanded to make an empty file name
-        // this is due to a conditional like if values.my_condition then file-name.txt else empty string so skip
-        if (outputDir === outputPath) {
+        if (fs.existsSync(outputPath)) {
           continue;
         }
 
@@ -256,4 +261,15 @@ export function createFetchTemplateAction(options: {
       ctx.logger.info(`Template result written to ${outputDir}`);
     },
   });
+}
+
+function containsSkippedContent(localOutputPath: string): boolean {
+  // if the path is absolute means that the root directory has been skipped
+  // if the path is empty means that there is a file skipped in the root
+  // if the path includes // means that there is a subdirectory skipped
+  return (
+    localOutputPath === '' ||
+    path.isAbsolute(localOutputPath) ||
+    localOutputPath.includes(`${path.sep}${path.sep}`)
+  );
 }

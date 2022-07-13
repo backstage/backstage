@@ -1,5 +1,16 @@
 # @backstage/app-defaults
 
+## 1.0.4-next.3
+
+### Patch Changes
+
+- 881fc75a75: Internal tweak removing usage of explicit type parameters for the `BackstagePlugin` type.
+- Updated dependencies
+  - @backstage/core-app-api@1.0.4-next.1
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+  - @backstage/plugin-permission-react@0.4.3-next.1
+
 ## 1.0.4-next.2
 
 ### Patch Changes

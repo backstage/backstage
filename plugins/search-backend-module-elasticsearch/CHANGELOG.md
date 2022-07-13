@@ -1,5 +1,14 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 0.2.0-next.2
+
+### Patch Changes
+
+- 71de198828: Updated dependency `@opensearch-project/opensearch` to `^2.0.0`.
+- a21cd43467: Throws `MissingIndexError` when no index of type exist.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@0.6.3-next.2
+
 ## 0.2.0-next.1
 
 ### Minor Changes

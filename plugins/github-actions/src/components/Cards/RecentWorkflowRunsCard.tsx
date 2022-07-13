@@ -18,7 +18,7 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import React, { useEffect } from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { GITHUB_ACTIONS_ANNOTATION } from '../getProjectNameFromEntity';
-import { useWorkflowRuns } from '../useWorkflowRuns';
+import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { Typography } from '@material-ui/core';
 
@@ -90,7 +90,7 @@ export const RecentWorkflowRunsCard = ({
           </Typography>
         </div>
       ) : (
-        <Table
+        <Table<WorkflowRun>
           isLoading={loading}
           options={{
             search: false,
@@ -107,7 +107,7 @@ export const RecentWorkflowRunsCard = ({
                   component={RouterLink}
                   to={generatePath('./ci-cd/:id', { id: data.id! })}
                 >
-                  {firstLine(data.message)}
+                  {firstLine(data.message ?? '')}
                 </Link>
               ),
             },
