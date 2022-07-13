@@ -98,7 +98,6 @@ import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { PermissionedRoute } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
-import { ApolloExplorerPage } from '@backstage/plugin-apollo-explorer';
 
 const app = createApp({
   apis,
@@ -240,10 +239,6 @@ const routes = (
     </Route>
     <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
     <Route path="/apache-airflow" element={<ApacheAirflowPage />} />
-    <Route
-      path="/apollo-explorer"
-      element={<ApolloExplorerPage graphRef="Github-API-ikji88@current" />}
-    />
   </FlatRoutes>
 );
 
