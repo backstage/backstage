@@ -1695,33 +1695,6 @@
     yaml "^1.10.0"
     zen-observable "^0.8.15"
 
-"@backstage/plugin-catalog@1.4.0-next.2":
-  version "1.4.0-next.2"
-  resolved "https://registry.npmjs.org/@backstage/plugin-catalog/-/plugin-catalog-1.4.0-next.2.tgz#57d32877f0b4bf255384053f8a58c2865efd5fa8"
-  integrity sha512-pLdEnlggXmYZQYPdG4m2ZqfiQlrKPnZ9MVVQmvKtd7FGVrguif7Wr5jPiP4DBOPlWQZoyeqqDu5+AWuNvcq/MQ==
-  dependencies:
-    "@backstage/catalog-client" "^1.0.4-next.1"
-    "@backstage/catalog-model" "^1.1.0-next.2"
-    "@backstage/core-components" "^0.10.0-next.2"
-    "@backstage/core-plugin-api" "^1.0.3"
-    "@backstage/errors" "^1.1.0-next.0"
-    "@backstage/integration-react" "^1.1.2-next.2"
-    "@backstage/plugin-catalog-common" "^1.0.4-next.0"
-    "@backstage/plugin-catalog-react" "^1.1.2-next.2"
-    "@backstage/plugin-search-common" "^0.3.6-next.0"
-    "@backstage/plugin-search-react" "^0.2.2-next.2"
-    "@backstage/theme" "^0.2.16-next.1"
-    "@backstage/types" "^1.0.0"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.57"
-    history "^5.0.0"
-    lodash "^4.17.21"
-    react-helmet "6.1.0"
-    react-router "6.0.0-beta.0"
-    react-use "^17.2.4"
-    zen-observable "^0.8.15"
-
 "@backstage/plugin-home@^0.4.19", "@backstage/plugin-home@^0.4.22":
   version "0.4.22"
   resolved "https://registry.npmjs.org/@backstage/plugin-home/-/plugin-home-0.4.22.tgz#efc54ebffb83a2a36dcd43e65142c30be5d8559d"
@@ -5128,6 +5101,11 @@
   resolved "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-12.4.0.tgz#fd8bf5db72bd566c5ba2cb76754512a9ebe66e71"
   integrity sha512-Npcb7Pv30b33U04jvcD7l75yLU0mxhuX2Xqrn51YyZ5WTkF04bpbxLaZ6GcaTqu03WZQHoO/Gbfp95NGRueDUA==
 
+"@octokit/openapi-types@^12.7.0":
+  version "12.8.0"
+  resolved "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-12.8.0.tgz#f4708cf948724d6e8f7d878cfd91584c1c5c0523"
+  integrity sha512-ydcKLs2KKcxlhpdWLzJxEBDEk/U5MUeqtqkXlrtAUXXFPs6vLl1PEGghFC/BbpleosB7iXs0Z4P2DGe7ZT5ZNg==
+
 "@octokit/openapi-types@^7.3.2":
   version "7.3.2"
   resolved "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-7.3.2.tgz#065ce49b338043ec7f741316ce06afd4d459d944"
@@ -5158,6 +5136,13 @@
   integrity sha512-+zARyncLjt9b0FjqPAbJo4ss7HOlBi1nprq+cPlw5vu2+qjy7WvlXhtXFdRHQbSL1Pt+bfAKaLADEkkvg8sP8w==
   dependencies:
     "@octokit/types" "^6.0.1"
+
+"@octokit/plugin-paginate-rest@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/@octokit/plugin-paginate-rest/-/plugin-paginate-rest-3.0.0.tgz#df779de686aeb21b5e776e4318defc33b0418566"
+  integrity sha512-fvw0Q5IXnn60D32sKeLIxgXCEZ7BTSAjJd8cFAE6QU5qUp0xo7LjFUjjX1J5D7HgN355CN4EXE4+Q1/96JaNUA==
+  dependencies:
+    "@octokit/types" "^6.39.0"
 
 "@octokit/plugin-request-log@^1.0.2":
   version "1.0.2"
@@ -5191,6 +5176,14 @@
   integrity sha512-Gsw9+Xm56jVhfbJoy4pt6eOOyf8/3K6CAnx1Sl7U2GhZWcg8MR6YgXWnpfdF69S2ViMXLA7nfvTDAsZpFlkLRw==
   dependencies:
     "@octokit/types" "^6.36.0"
+    deprecation "^2.3.1"
+
+"@octokit/plugin-rest-endpoint-methods@^6.0.0":
+  version "6.0.1"
+  resolved "https://registry.npmjs.org/@octokit/plugin-rest-endpoint-methods/-/plugin-rest-endpoint-methods-6.0.1.tgz#dedf1698e7970ed1fd0d9fce09a6c5bb808a896f"
+  integrity sha512-Ge227MjEykkRI7OYkJ0NIZexjO1kzKAPW/pFyWZAGWT9uO3bChn57+NKleK8r9iXXN4SM0JkpJxK8TdbeCTPYw==
+  dependencies:
+    "@octokit/types" "^6.39.0"
     deprecation "^2.3.1"
 
 "@octokit/plugin-retry@^3.0.9":
@@ -5271,6 +5264,16 @@
     "@octokit/plugin-request-log" "^1.0.4"
     "@octokit/plugin-rest-endpoint-methods" "^5.12.0"
 
+"@octokit/rest@^19.0.3":
+  version "19.0.3"
+  resolved "https://registry.npmjs.org/@octokit/rest/-/rest-19.0.3.tgz#b9a4e8dc8d53e030d611c053153ee6045f080f02"
+  integrity sha512-5arkTsnnRT7/sbI4fqgSJ35KiFaN7zQm0uQiQtivNQLI8RQx8EHwJCajcTUwmaCMNDg7tdCvqAnc7uvHHPxrtQ==
+  dependencies:
+    "@octokit/core" "^4.0.0"
+    "@octokit/plugin-paginate-rest" "^3.0.0"
+    "@octokit/plugin-request-log" "^1.0.4"
+    "@octokit/plugin-rest-endpoint-methods" "^6.0.0"
+
 "@octokit/types@^5.0.0", "@octokit/types@^5.0.1":
   version "5.5.0"
   resolved "https://registry.npmjs.org/@octokit/types/-/types-5.5.0.tgz#e5f06e8db21246ca102aa28444cdb13ae17a139b"
@@ -5298,6 +5301,13 @@
   integrity sha512-BXWQhFKRkjX4dVW5L2oYa0hzWOAqsEsujXsQLSdepPoDZfYdubrD1KDGpyNldGXtR8QM/WezDcxcIN1UKJMGPA==
   dependencies:
     "@octokit/openapi-types" "^12.4.0"
+
+"@octokit/types@^6.39.0":
+  version "6.39.0"
+  resolved "https://registry.npmjs.org/@octokit/types/-/types-6.39.0.tgz#46ce28ca59a3d4bac0e487015949008302e78eee"
+  integrity sha512-Mq4N9sOAYCitTsBtDdRVrBE80lIrMBhL9Jbrw0d+j96BAzlq4V+GLHFJbHokEsVvO/9tQupQdoFdgVYhD2C8UQ==
+  dependencies:
+    "@octokit/openapi-types" "^12.7.0"
 
 "@octokit/webhooks-methods@^3.0.0":
   version "3.0.0"
@@ -12686,7 +12696,7 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@material-ui/core" "^4.12.2"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.57"
-    "@octokit/rest" "^18.5.3"
+    "@octokit/rest" "^19.0.3"
     "@roadiehq/backstage-plugin-buildkite" "^2.0.0"
     "@roadiehq/backstage-plugin-github-insights" "^2.0.0"
     "@roadiehq/backstage-plugin-github-pull-requests" "^2.0.0"
