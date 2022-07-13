@@ -104,7 +104,7 @@ describe('<CopyTextButton />', () => {
   it('aria-label', async () => {
     const { getByLabelText } = await renderInTestApp(
       <TestApiProvider apis={apis}>
-        <CopyTextButton {...props} ariaLabel="text for aria-label" />
+        <CopyTextButton {...props} aria-label="text for aria-label" />
       </TestApiProvider>,
     );
     expect(getByLabelText('text for aria-label')).toBeInTheDocument();

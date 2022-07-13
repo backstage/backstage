@@ -50,7 +50,7 @@ export interface CopyTextButtonProps {
 }
 
 type LabelledCopyTextButtonProps = CopyTextButtonProps & {
-  ariaLabel?: string;
+  'aria-label'?: string;
 };
 
 /**
@@ -69,7 +69,7 @@ type LabelledCopyTextButtonProps = CopyTextButtonProps & {
  * ```
  * <CopyTextButton
  *   text="My text that I want to be copied to the clipboard"
- *   ariaLabel="Accessible label for this button" />
+ *   arial-label="Accessible label for this button" />
  * ```
  */
 export function CopyTextButton(props: LabelledCopyTextButtonProps) {
@@ -77,7 +77,7 @@ export function CopyTextButton(props: LabelledCopyTextButtonProps) {
     text,
     tooltipDelay = 1000,
     tooltipText = 'Text copied to clipboard',
-    ariaLabel = 'Copy text',
+    'aria-label': ariaLabel = 'Copy text',
   } = props;
   const errorApi = useApi(errorApiRef);
   const [open, setOpen] = useState(false);
