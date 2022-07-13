@@ -40,7 +40,6 @@ export const ApolloExplorer = ({ graphRef }: Props) => {
       <Content>
         <ApolloExplorerReact
           className={classes.explorer}
-          // graphRef="Github-API-ikji88@current"
           graphRef={graphRef}
           persistExplorerState
         />
