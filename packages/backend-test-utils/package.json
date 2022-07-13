@@ -39,7 +39,7 @@
     "@backstage/config": "^1.0.1",
     "better-sqlite3": "^7.5.0",
     "knex": "^2.0.0",
-    "msw": "^0.43.0",
+    "msw": "^0.44.0",
     "mysql2": "^2.2.5",
     "pg": "^8.3.0",
     "testcontainers": "^8.1.2",

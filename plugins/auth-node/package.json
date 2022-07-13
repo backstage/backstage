@@ -33,7 +33,7 @@
   "devDependencies": {
     "@backstage/cli": "^0.18.0-next.3",
     "lodash": "^4.17.21",
-    "msw": "^0.43.0",
+    "msw": "^0.44.0",
     "uuid": "^8.0.0"
   },
   "files": [
