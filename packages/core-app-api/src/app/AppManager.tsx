@@ -222,7 +222,7 @@ export class AppManager implements BackstageApp {
       const { routing, featureFlags, routeBindings } = useMemo(() => {
         const result = traverseElementTree({
           root: children,
-          discoverers: [childDiscoverer],
+          discoverers: [childDiscoverer, routeElementDiscoverer],
           collectors: {
             routing: routingV2Collector,
             collectedPlugins: pluginCollector,
