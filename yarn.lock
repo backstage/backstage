@@ -287,6 +287,20 @@
     "@opentelemetry/api" "^1.0.1"
     tslib "^2.2.0"
 
+"@azure/core-tracing@^1.0.0":
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/@azure/core-tracing/-/core-tracing-1.0.1.tgz#352a38cbea438c4a83c86b314f48017d70ba9503"
+  integrity sha512-I5CGMoLtX+pI17ZdiFJZgxMJApsK6jjfm85hpgp3oazCdq5Wxgh4wMr7ge/TTWW1B5WBuvIOI1fMU/FrOAMKrw==
+  dependencies:
+    tslib "^2.2.0"
+
+"@azure/core-util@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@azure/core-util/-/core-util-1.0.0.tgz#07c7175670e0abe725ad88f9c3d65d074107a3af"
+  integrity sha512-yWshY9cdPthlebnb3Zuz/j0Lv4kjU6u7PR5sW7A9FF7EX+0irMRJAtyTq5TPiDHJfjH8gTSlnIYFj9m7Ed76IQ==
+  dependencies:
+    tslib "^2.2.0"
+
 "@azure/core-util@^1.0.0-beta.1":
   version "1.0.0-beta.1"
   resolved "https://registry.npmjs.org/@azure/core-util/-/core-util-1.0.0-beta.1.tgz#2efd2c74b4b0a38180369f50fe274a3c4cd36e98"
@@ -316,6 +330,28 @@
     tslib "^2.2.0"
     uuid "^8.3.0"
 
+"@azure/identity@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@azure/identity/-/identity-2.1.0.tgz#89f0bfc1d1264dfd3d0cb19837c33a9c6706d548"
+  integrity sha512-BPDz1sK7Ul9t0l9YKLEa8PHqWU4iCfhGJ+ELJl6c8CP3TpJt2urNCbm0ZHsthmxRsYoMPbz2Dvzj30zXZVmAFw==
+  dependencies:
+    "@azure/abort-controller" "^1.0.0"
+    "@azure/core-auth" "^1.3.0"
+    "@azure/core-client" "^1.4.0"
+    "@azure/core-rest-pipeline" "^1.1.0"
+    "@azure/core-tracing" "^1.0.0"
+    "@azure/core-util" "^1.0.0"
+    "@azure/logger" "^1.0.0"
+    "@azure/msal-browser" "^2.26.0"
+    "@azure/msal-common" "^7.0.0"
+    "@azure/msal-node" "^1.10.0"
+    events "^3.0.0"
+    jws "^4.0.0"
+    open "^8.0.0"
+    stoppable "^1.1.0"
+    tslib "^2.2.0"
+    uuid "^8.3.0"
+
 "@azure/logger@^1.0.0":
   version "1.0.1"
   resolved "https://registry.npmjs.org/@azure/logger/-/logger-1.0.1.tgz#19b333203d1b2931353d8879e814b64a7274837a"
@@ -329,6 +365,13 @@
   integrity sha512-Fl8boo38fPNlEm84fRCulbTfHJo+Z/i+1gcdJTG+PqmrkMOUVTdpkwznGh6ZQdAM34uumEgzukmqMr8lVKrytA==
   dependencies:
     "@azure/msal-common" "^5.2.0"
+
+"@azure/msal-browser@^2.26.0":
+  version "2.27.0"
+  resolved "https://registry.npmjs.org/@azure/msal-browser/-/msal-browser-2.27.0.tgz#3db38db6bc2bae44485025ba9bb99c43ed7f4302"
+  integrity sha512-PyATq2WvK+x32waRqqikym8wvn939iO9UhpFqhLwitNrfLa3PHUgJuuI9oLSQOS3/UzjYb8aqN+XzchU3n/ZuQ==
+  dependencies:
+    "@azure/msal-common" "^7.1.0"
 
 "@azure/msal-common@^4.5.1":
   version "4.5.1"
@@ -344,12 +387,12 @@
   dependencies:
     debug "^4.1.1"
 
-"@azure/msal-common@^7.1.0":
+"@azure/msal-common@^7.0.0", "@azure/msal-common@^7.1.0":
   version "7.1.0"
   resolved "https://registry.npmjs.org/@azure/msal-common/-/msal-common-7.1.0.tgz#b77dbf9ae581f1ed254f81d56422e3cdd6664b32"
   integrity sha512-WyfqE5mY/rggjqvq0Q5DxLnA33KSb0vfsUjxa95rycFknI03L5GPYI4HTU9D+g0PL5TtsQGnV3xzAGq9BFCVJQ==
 
-"@azure/msal-node@^1.3.0":
+"@azure/msal-node@^1.10.0", "@azure/msal-node@^1.3.0":
   version "1.11.0"
   resolved "https://registry.npmjs.org/@azure/msal-node/-/msal-node-1.11.0.tgz#d8bd3f15c1f05bf806ba6f9479c48c2eddd6a98d"
   integrity sha512-KW/XEexfCrPzdYbjY7NVmhq9okZT3Jvck55CGXpz9W5asxeq3EtrP45p+ZXtQVEfko0YJdolpCNqWUyXvanWZg==

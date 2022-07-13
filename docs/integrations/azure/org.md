@@ -230,12 +230,12 @@ export async function myOrganizationTransformer(
 
 ### Authentication / Token Errors
 
-See (Troubleshooting Azure Identity Authentication Issues)[https://aka.ms/azsdk/js/identity/troubleshoot]
+See [Troubleshooting Azure Identity Authentication Issues](https://aka.ms/azsdk/js/identity/troubleshoot)
 
 ### Error while reading users from Microsoft Graph: Authorization_RequestDenied - Insufficient privileges to complete the operation.
 
-- Make sure you've granted all the permissions required
-- Make sure the permission is an `Application` permission rather than `Delegated`
+- Make sure you've granted all the required permissions to your application registration or managed identity
+- Make sure the permissions are `Application` permissions rather than `Delegated`
 - If your organization has configured "Admin consent" to be required, make sure this has been granted for your application permissions
 - If your group queries are returning Microsoft Teams groups, you may need to grant addition permissions (e.g. `Team.ReadBasic.All`, `TeamMember.Read.All`)
-- If you've added additional `select` fields, those may need additional permissions granted
+- If you've added additional `select` or `expand` fields, those may need additional permissions granted

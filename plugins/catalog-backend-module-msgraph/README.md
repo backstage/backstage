@@ -167,5 +167,3 @@ export async function myGroupTransformer(
    }),
  );
 ```
-
-## Troubleshooting
