@@ -354,7 +354,7 @@ describe('fetch:template', () => {
 
         await expect(
           fs.realpath(`${workspacePath}/target/symlink`),
-        ).resolves.toBe(`${workspacePath}/target/a-binary-file.png`);
+        ).resolves.toBe(joinPath(workspacePath, 'target', 'a-binary-file.png'));
       });
     });
 

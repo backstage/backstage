@@ -16,6 +16,7 @@
 
 jest.mock('../helpers');
 
+import path from 'path';
 import { createPublishGerritAction } from './gerrit';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -169,7 +170,7 @@ describe('publish:gerrit', () => {
     });
 
     expect(initRepoAndPush).toHaveBeenCalledWith({
-      dir: `${mockContext.workspacePath}/repository/`,
+      dir: `${mockContext.workspacePath}${path.sep}repository${path.sep}`,
       remoteUrl: 'https://gerrithost.org/a/repo',
       defaultBranch: 'master',
       auth: { username: 'gerrituser', password: 'usertoken' },
