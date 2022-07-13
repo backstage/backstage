@@ -47,11 +47,16 @@ export interface CopyTextButtonProps {
    * Default: "Text copied to clipboard"
    */
   tooltipText?: string;
-}
 
-type LabelledCopyTextButtonProps = CopyTextButtonProps & {
+  /**
+   * Text to use as aria-label prop on the button
+   *
+   * @remarks
+   *
+   * Default: "Copy text"
+   */
   'aria-label'?: string;
-};
+}
 
 /**
  * Copy text button with visual feedback
@@ -72,7 +77,7 @@ type LabelledCopyTextButtonProps = CopyTextButtonProps & {
  *   arial-label="Accessible label for this button" />
  * ```
  */
-export function CopyTextButton(props: LabelledCopyTextButtonProps) {
+export function CopyTextButton(props: CopyTextButtonProps) {
   const {
     text,
     tooltipDelay = 1000,
