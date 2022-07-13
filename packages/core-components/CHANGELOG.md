@@ -1,5 +1,15 @@
 # @backstage/core-components
 
+## 0.10.0-next.3
+
+### Patch Changes
+
+- 7f5e79961d: Fix relative `sub-paths` by concatenating the app's base path with them.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 693990d4fe: Updated dependency `@react-hookz/web` to `^15.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+
 ## 0.10.0-next.2
 
 ### Minor Changes

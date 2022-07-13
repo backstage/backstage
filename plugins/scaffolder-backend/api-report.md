@@ -316,6 +316,7 @@ export function createPublishGerritAction(options: {
   gitCommitMessage?: string | undefined;
   gitAuthorName?: string | undefined;
   gitAuthorEmail?: string | undefined;
+  sourcePath?: string | undefined;
 }>;
 
 // @public

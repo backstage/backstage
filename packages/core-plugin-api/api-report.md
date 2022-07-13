@@ -147,7 +147,7 @@ export type AppComponents = {
 
 // @public
 export type AppContext = {
-  getPlugins(): BackstagePlugin_2<any, any>[];
+  getPlugins(): BackstagePlugin_2[];
   getSystemIcon(key: string): IconComponent_2 | undefined;
   getComponents(): AppComponents;
 };
@@ -401,7 +401,7 @@ export type ErrorBoundaryFallbackProps = {
 
 // @public
 export type Extension<T> = {
-  expose(plugin: BackstagePlugin<any, any>): T;
+  expose(plugin: BackstagePlugin): T;
 };
 
 // @public
