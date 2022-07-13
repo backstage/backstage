@@ -60,7 +60,7 @@
     "@backstage/plugin-tech-insights-backend-module-jsonfc": "^0.1.18-next.2",
     "@backstage/plugin-todo-backend": "^0.1.31-next.2",
     "@gitbeaker/node": "^35.1.0",
-    "@octokit/rest": "^18.5.3",
+    "@octokit/rest": "^19.0.3",
     "better-sqlite3": "^7.5.0",
     "azure-devops-node-api": "^11.0.1",
     "dockerode": "^3.3.1",
