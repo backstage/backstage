@@ -2345,10 +2345,10 @@
     teeny-request "^8.0.0"
     uuid "^8.0.0"
 
-"@graphiql/react@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.npmjs.org/@graphiql/react/-/react-0.5.1.tgz#03c89fbe9ae8258b72ac744f2a0cb3d102b9fa9a"
-  integrity sha512-xkmi9RhjnIlbkCndLDDfYsEAv5M0AIbziPmRcJIFypPWoS917Qoej+AjWYgmx1VCyNry/pWlPB9BM+aU1CGeIQ==
+"@graphiql/react@^0.5.2":
+  version "0.5.2"
+  resolved "https://registry.npmjs.org/@graphiql/react/-/react-0.5.2.tgz#5beb7bab57103d72efbaaace57157b11efd4b2ce"
+  integrity sha512-8rfyrFOrZaG/fWHE4nX7XApuiNCd89XatvdJSO1ndXDUz94W3Ob0DHKufWpxXJ7RtJUNat25K+zrLYUP+C2iQw==
   dependencies:
     "@graphiql/toolkit" "^0.6.0"
     codemirror "^5.65.3"
@@ -8444,22 +8444,7 @@ aws-sdk-mock@^5.2.1:
     sinon "^13.0.2"
     traverse "^0.6.6"
 
-aws-sdk@^2.1122.0, aws-sdk@^2.840.0, aws-sdk@^2.948.0:
-  version "2.1173.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1173.0.tgz#3da6cd33dff4de7c5572fee3e34483b5553992d7"
-  integrity sha512-RR5OENCE5N7J9sp6Are+8WacIa4sGgeVi3K0wezV97nDTHXJD82hSiaRCCN/xGfnB/GcWtPIBCetRD2tpiCN2w==
-  dependencies:
-    buffer "4.9.2"
-    events "1.1.1"
-    ieee754 "1.1.13"
-    jmespath "0.16.0"
-    querystring "0.2.0"
-    sax "1.2.1"
-    url "0.10.3"
-    uuid "8.0.0"
-    xml2js "0.4.19"
-
-aws-sdk@^2.814.0:
+aws-sdk@^2.1122.0, aws-sdk@^2.814.0, aws-sdk@^2.840.0, aws-sdk@^2.948.0:
   version "2.1173.0"
   resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1173.0.tgz#3da6cd33dff4de7c5572fee3e34483b5553992d7"
   integrity sha512-RR5OENCE5N7J9sp6Are+8WacIa4sGgeVi3K0wezV97nDTHXJD82hSiaRCCN/xGfnB/GcWtPIBCetRD2tpiCN2w==
@@ -14106,11 +14091,11 @@ grapheme-splitter@^1.0.4:
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
 graphiql@^1.5.12, graphiql@^1.8.8:
-  version "1.9.12"
-  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.9.12.tgz#1177eabb0cc57112df57f59d483c6471966c0d50"
-  integrity sha512-eS4tDR9ypsdVS2D5bK8i++4TesoZMgxtGbajxzSFE2WNo20GyZaOELycmgzF54RbhuGYfj9DYKzWWeLamu9/sA==
+  version "1.9.13"
+  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.9.13.tgz#f379425b407bad6eec4aa36a2e38d764a2c13b25"
+  integrity sha512-w/kFnK0N8ooN07vw5dKcDZ4CAmRfkjkTQbSj6LkEigJB/yTZ92r2QA/XROGlff0xn4r6aWfHjRp5AMrND4dLZg==
   dependencies:
-    "@graphiql/react" "^0.5.1"
+    "@graphiql/react" "^0.5.2"
     "@graphiql/toolkit" "^0.6.0"
     entities "^2.0.0"
     graphql-language-service "^5.0.6"
