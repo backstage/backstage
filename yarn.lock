@@ -2276,15 +2276,27 @@
     query-string "^7.0.0"
     xcase "^2.0.1"
 
-"@gitbeaker/node@^35.1.0":
-  version "35.6.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-35.6.0.tgz#7dffaf2de5df822ccc835d12129efe3e52c49302"
-  integrity sha512-cJBxZdh8elrdLA8V4yEdISGinycESNaIO8JEIyAhemsovqv29XCJ40A9TBA4RlKNjkKVyVSN23BvcZimgqZSzA==
+"@gitbeaker/core@^35.7.0":
+  version "35.7.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-35.7.0.tgz#426e426dff597c1d094bf1fe66fb1109980e816d"
+  integrity sha512-1N9QcHElYa1NuLhX9mJJ6tnL7wbCsK8Naj2kLXwNC4qyEcDhMiJDnI3YoqNIXSzPTufoNUAbgIsc/h/JmO17/A==
   dependencies:
-    "@gitbeaker/core" "^35.6.0"
-    "@gitbeaker/requester-utils" "^35.6.0"
+    "@gitbeaker/requester-utils" "^35.7.0"
+    form-data "^4.0.0"
+    li "^1.3.0"
+    mime "^3.0.0"
+    query-string "^7.0.0"
+    xcase "^2.0.1"
+
+"@gitbeaker/node@^35.1.0":
+  version "35.7.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-35.7.0.tgz#ba4ece7aff388132bdcab8d6fb08c8d063a70e7d"
+  integrity sha512-zh215EUloAxj2gwTHevBVypEiiwQR0WsFLGPWJwY+yUFJVQRcya+3mcsDbxgCLAk00wwhrTVYyNppvmoYbEZNg==
+  dependencies:
+    "@gitbeaker/core" "^35.7.0"
+    "@gitbeaker/requester-utils" "^35.7.0"
     delay "^5.0.0"
-    got "11.8.3"
+    got "^11.8.3"
     xcase "^2.0.1"
 
 "@gitbeaker/requester-utils@^35.6.0":
@@ -14120,10 +14132,10 @@ google-protobuf@^3.15.8, google-protobuf@^3.19.1:
   resolved "https://registry.npmjs.org/google-protobuf/-/google-protobuf-3.20.1.tgz#1b255c2b59bcda7c399df46c65206aa3c7a0ce8b"
   integrity sha512-XMf1+O32FjYIV3CYu6Tuh5PNbfNEU5Xu22X+Xkdb/DUexFlCzhvv7d5Iirm4AOwn8lv4al1YvIhzGrg2j9Zfzw==
 
-got@11.8.3:
-  version "11.8.3"
-  resolved "https://registry.npmjs.org/got/-/got-11.8.3.tgz#f496c8fdda5d729a90b4905d2b07dbd148170770"
-  integrity sha512-7gtQ5KiPh1RtGS9/Jbv1ofDpBFuq42gyfEib+ejaRBJuj/3tQFeR5+gw57e4ipaU8c/rCjvX6fkQz2lyDlGAOg==
+got@^11.8.3:
+  version "11.8.5"
+  resolved "https://registry.npmjs.org/got/-/got-11.8.5.tgz#ce77d045136de56e8f024bebb82ea349bc730046"
+  integrity sha512-o0Je4NvQObAuZPHLFoRSkdG2lTgtcynqymzg2Vupdx6PorhaT5MCbIyXG6d4D94kk8ZG57QeosgdiqfJWhEhlQ==
   dependencies:
     "@sindresorhus/is" "^4.0.0"
     "@szmarczak/http-timer" "^4.0.5"
