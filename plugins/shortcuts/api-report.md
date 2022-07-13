@@ -9,7 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
-import ObservableImpl from 'zen-observable';
+import { default as Observable_2 } from 'zen-observable';
 import { StorageApi } from '@backstage/core-plugin-api';
 
 // Warning: (ae-missing-release-tag) "LocalStoredShortcuts" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -24,7 +24,9 @@ export class LocalStoredShortcuts implements ShortcutApi {
   // (undocumented)
   remove(id: string): Promise<void>;
   // (undocumented)
-  shortcut$(): ObservableImpl<Shortcut[]>;
+  shortcut$(): Observable_2<Shortcut[]>;
+  // (undocumented)
+  snapshot(): Shortcut[];
   // (undocumented)
   update(shortcut: Shortcut): Promise<void>;
 }
@@ -46,6 +48,7 @@ export interface ShortcutApi {
   getColor(url: string): string;
   remove(id: string): Promise<void>;
   shortcut$(): Observable<Shortcut[]>;
+  snapshot(): Shortcut[];
   update(shortcut: Shortcut): Promise<void>;
 }
 
