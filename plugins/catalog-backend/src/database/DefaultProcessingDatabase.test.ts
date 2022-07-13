@@ -24,6 +24,7 @@ import { DateTime } from 'luxon';
 import { applyDatabaseMigrations } from './migrations';
 import { DefaultProcessingDatabase } from './DefaultProcessingDatabase';
 import {
+  DbRefreshKeysRow,
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
   DbRelationsRow,
@@ -98,6 +99,7 @@ describe('Default Processing Database', () => {
               resultHash: '',
               relations: [],
               deferredEntities: [],
+              refreshKeys: [],
             }),
           ).rejects.toThrow(
             `Conflicting write of processing result for ${id} with location key 'undefined'`,
@@ -117,6 +119,7 @@ describe('Default Processing Database', () => {
           relations: [],
           deferredEntities: [],
           locationKey: 'key',
+          refreshKeys: [],
           errors: "['something broke']",
         };
         const { knex, db } = await createDatabase(databaseId);
@@ -143,6 +146,7 @@ describe('Default Processing Database', () => {
               ...options,
               resultHash: '',
               locationKey: 'fail',
+              refreshKeys: [],
             }),
           ).rejects.toThrow(
             `Conflicting write of processing result for ${id} with location key 'fail'`,
@@ -174,6 +178,7 @@ describe('Default Processing Database', () => {
             relations: [],
             deferredEntities: [],
             locationKey: 'key',
+            refreshKeys: [],
             errors: "['something broke']",
           }),
         );
@@ -228,6 +233,7 @@ describe('Default Processing Database', () => {
             resultHash: '',
             relations: relations,
             deferredEntities: [],
+            refreshKeys: [],
           }),
         );
 
@@ -250,6 +256,7 @@ describe('Default Processing Database', () => {
             resultHash: '',
             relations: relations,
             deferredEntities: [],
+            refreshKeys: [],
           }),
         );
 
@@ -309,6 +316,7 @@ describe('Default Processing Database', () => {
             resultHash: '',
             relations: [],
             deferredEntities,
+            refreshKeys: [],
           }),
         );
 
@@ -400,6 +408,7 @@ describe('Default Processing Database', () => {
               processedEntity,
               resultHash: '',
               relations: [],
+              refreshKeys: [],
               deferredEntities: [
                 {
                   entity: {
@@ -464,6 +473,63 @@ describe('Default Processing Database', () => {
         });
       },
       60_000,
+    );
+
+    it.each(databases.eachSupportedId())(
+      'stores the refresh keys for the entity',
+      async databaseId => {
+        const mockLogger = {
+          debug: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+        };
+        const { knex, db } = await createDatabase(
+          databaseId,
+          mockLogger as unknown as Logger,
+        );
+        await insertRefreshStateRow(knex, {
+          entity_id: id,
+          entity_ref: 'location:default/fakelocation',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+
+        const deferredEntities = [
+          {
+            entity: {
+              apiVersion: '1',
+              kind: 'Location',
+              metadata: {
+                name: 'next',
+              },
+            },
+            locationKey: 'mock',
+          },
+        ];
+
+        await db.transaction(tx =>
+          db.updateProcessedEntity(tx, {
+            id,
+            processedEntity,
+            resultHash: '',
+            relations: [],
+            deferredEntities,
+            refreshKeys: [{ key: 'protocol:foo-bar.com' }],
+          }),
+        );
+
+        const refreshKeys = await knex<DbRefreshKeysRow>('refresh_keys')
+          .where({ entity_id: id })
+          .select();
+
+        expect(refreshKeys[0]).toEqual({
+          entity_id: id,
+          key: 'protocol:foo-bar.com',
+        });
+      },
     );
   });
 

@@ -23,7 +23,7 @@ import {
   EntityProvider,
   EntityProviderConnection,
   EntityProviderMutation,
-} from '../api';
+} from '@backstage/plugin-catalog-node';
 
 class Connection implements EntityProviderConnection {
   readonly validateEntityEnvelope = entityEnvelopeSchemaValidator();

@@ -225,7 +225,7 @@ export function createReactExtension<
     'Component';
 
   return {
-    expose(plugin: BackstagePlugin<any, any>) {
+    expose(plugin: BackstagePlugin) {
       const Result: any = (props: any) => {
         const app = useApp();
         const { Progress } = app.getComponents();

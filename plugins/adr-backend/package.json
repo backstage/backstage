@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-adr-backend",
-  "version": "0.1.2-next.1",
+  "version": "0.1.2-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -29,22 +29,22 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.14.1-next.1",
-    "@backstage/catalog-client": "^1.0.4-next.1",
-    "@backstage/catalog-model": "^1.1.0-next.1",
+    "@backstage/backend-common": "^0.14.1-next.3",
+    "@backstage/catalog-client": "^1.0.4-next.2",
+    "@backstage/catalog-model": "^1.1.0-next.3",
     "@backstage/config": "^1.0.1",
     "@backstage/errors": "^1.1.0-next.0",
-    "@backstage/integration": "^1.2.2-next.1",
+    "@backstage/integration": "^1.2.2-next.3",
     "@backstage/plugin-adr-common": "^0.1.2-next.1",
     "@backstage/plugin-search-common": "^0.3.6-next.0",
-    "luxon": "^2.0.2",
+    "luxon": "^3.0.0",
     "marked": "^4.0.14",
     "winston": "^3.2.1",
     "node-fetch": "^2.6.5",
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.18.0-next.1",
+    "@backstage/cli": "^0.18.0-next.3",
     "@types/marked": "^4.0.0",
     "@types/supertest": "^2.0.8",
     "supertest": "^6.1.3",

@@ -1,5 +1,11 @@
 # @backstage/release-manifests
 
+## 0.0.5-next.0
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+
 ## 0.0.4
 
 ### Patch Changes

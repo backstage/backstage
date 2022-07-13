@@ -1,5 +1,11 @@
 # @backstage/plugin-permission-common
 
+## 0.6.3-next.1
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+
 ## 0.6.3-next.0
 
 ### Patch Changes

@@ -12,6 +12,7 @@ import express from 'express';
 import { GitRepository } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { GitTag } from '@backstage/plugin-azure-devops-common';
 import { Logger } from 'winston';
+import { Project } from '@backstage/plugin-azure-devops-common';
 import { PullRequest } from '@backstage/plugin-azure-devops-common';
 import { PullRequestOptions } from '@backstage/plugin-azure-devops-common';
 import { RepoBuild } from '@backstage/plugin-azure-devops-common';
@@ -63,6 +64,8 @@ export class AzureDevOpsApi {
   ): Promise<GitRepository>;
   // (undocumented)
   getGitTags(projectName: string, repoName: string): Promise<GitTag[]>;
+  // (undocumented)
+  getProjects(): Promise<Project[]>;
   // (undocumented)
   getPullRequests(
     projectName: string,

@@ -1,5 +1,16 @@
 # @backstage/backend-common
 
+## 0.14.1-next.3
+
+### Patch Changes
+
+- 90c87f28e8: Moving from Bitbucket Server endpoint from https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp222 to https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp224, to have the last commit in function of different branch, and not only the list of default branch
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.3-next.1
+  - @backstage/integration@1.2.2-next.3
+
 ## 0.14.1-next.2
 
 ### Patch Changes

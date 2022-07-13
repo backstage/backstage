@@ -36,6 +36,8 @@ jest.useFakeTimers();
 const testFactRetriever: FactRetriever = {
   id: 'test_factretriever',
   version: '0.0.1',
+  title: 'Test 1',
+  description: 'testing',
   entityFilter: [{ kind: 'component' }],
   schema: {
     testnumberfact: {
@@ -206,9 +208,7 @@ describe('FactRetrieverEngine', () => {
         { ...testFactRetriever, handler },
       );
       await engine.schedule();
-      const job: FactRetrieverRegistration = engine.getJobRegistration(
-        testFactRetriever.id,
-      );
+      const job = await engine.getJobRegistration(testFactRetriever.id);
       expect(job.cadence!!).toEqual(defaultCadence);
 
       await engine.triggerJob(job.factRetriever.id);

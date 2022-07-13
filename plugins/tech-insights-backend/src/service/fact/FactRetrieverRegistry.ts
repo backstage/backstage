@@ -26,24 +26,29 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
  *
  */
 export interface FactRetrieverRegistry {
-  readonly retrievers: Map<string, FactRetrieverRegistration>;
-  register(registration: FactRetrieverRegistration): void;
-  get(retrieverReference: string): FactRetrieverRegistration;
-  listRetrievers(): FactRetriever[];
-  listRegistrations(): FactRetrieverRegistration[];
-  getSchemas(): FactSchema[];
+  register(registration: FactRetrieverRegistration): Promise<void>;
+  get(retrieverReference: string): Promise<FactRetrieverRegistration>;
+  listRetrievers(): Promise<FactRetriever[]>;
+  listRegistrations(): Promise<FactRetrieverRegistration[]>;
+  getSchemas(): Promise<FactSchema[]>;
 }
 
+/**
+ * A basic in memory fact retriever registry.
+ *
+ * You can replace this with a persistance based version using the FactRetrieverRegistry interface.
+ *
+ */
 export class DefaultFactRetrieverRegistry implements FactRetrieverRegistry {
-  readonly retrievers = new Map<string, FactRetrieverRegistration>();
+  private readonly retrievers = new Map<string, FactRetrieverRegistration>();
 
   constructor(retrievers: FactRetrieverRegistration[]) {
-    retrievers.forEach(it => {
-      this.register(it);
+    retrievers.forEach(r => {
+      this.registerSync(r);
     });
   }
 
-  register(registration: FactRetrieverRegistration) {
+  registerSync(registration: FactRetrieverRegistration) {
     if (this.retrievers.has(registration.factRetriever.id)) {
       throw new ConflictError(
         `Tech insight fact retriever with identifier '${registration.factRetriever.id}' has already been registered`,
@@ -52,7 +57,11 @@ export class DefaultFactRetrieverRegistry implements FactRetrieverRegistry {
     this.retrievers.set(registration.factRetriever.id, registration);
   }
 
-  get(retrieverReference: string): FactRetrieverRegistration {
+  async register(registration: FactRetrieverRegistration) {
+    this.registerSync(registration);
+  }
+
+  async get(retrieverReference: string): Promise<FactRetrieverRegistration> {
     const registration = this.retrievers.get(retrieverReference);
     if (!registration) {
       throw new NotFoundError(
@@ -62,15 +71,16 @@ export class DefaultFactRetrieverRegistry implements FactRetrieverRegistry {
     return registration;
   }
 
-  listRetrievers(): FactRetriever[] {
+  async listRetrievers(): Promise<FactRetriever[]> {
     return [...this.retrievers.values()].map(it => it.factRetriever);
   }
 
-  listRegistrations(): FactRetrieverRegistration[] {
+  async listRegistrations(): Promise<FactRetrieverRegistration[]> {
     return [...this.retrievers.values()];
   }
 
-  getSchemas(): FactSchema[] {
-    return this.listRetrievers().map(it => it.schema);
+  async getSchemas(): Promise<FactSchema[]> {
+    const retrievers = await this.listRetrievers();
+    return retrievers.map(it => it.schema);
   }
 }

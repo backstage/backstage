@@ -57,9 +57,16 @@ This is an array used to determine where to retrieve cluster configuration from.
 
 Valid cluster locator methods are:
 
+- [`localKubectlProxy`](#localKubectlProxy)
 - [`config`](#config)
 - [`gke`](#gke)
 - [custom `KubernetesClustersSupplier`](#custom-kubernetesclusterssupplier)
+
+#### `localKubectlProxy`
+
+This cluster locator method will assume a locally running [`kubectl proxy`](https://kubernetes.io/docs/tasks/extend-kubernetes/http-proxy-access-api/#using-kubectl-to-start-a-proxy-server) process using the default port (8001).
+
+NOTE: This cluster locator method is for local development only and should not be used in production.
 
 #### `config`
 

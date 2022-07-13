@@ -97,6 +97,52 @@ describe('serializeDirectoryContents', () => {
     ]);
   });
 
+  it('should ignore symlinked files', async () => {
+    mockFs({
+      root: {
+        'a.txt': 'some text',
+        sym: mockFs.symlink({
+          path: './a.txt',
+        }),
+      },
+    });
+
+    await expect(serializeDirectoryContents('root')).resolves.toEqual([
+      {
+        path: 'a.txt',
+        executable: false,
+        content: Buffer.from('some text', 'utf8'),
+      },
+    ]);
+  });
+
+  it('should ignore symlinked folder files', async () => {
+    mockFs({
+      root: {
+        'a.txt': 'some text',
+        linkme: {
+          'b.txt': 'lols',
+        },
+        sym: mockFs.symlink({
+          path: './linkme',
+        }),
+      },
+    });
+
+    await expect(serializeDirectoryContents('root')).resolves.toEqual([
+      {
+        path: 'a.txt',
+        executable: false,
+        content: Buffer.from('some text', 'utf8'),
+      },
+      {
+        path: 'linkme/b.txt',
+        executable: false,
+        content: Buffer.from('lols', 'utf8'),
+      },
+    ]);
+  });
+
   it('should ignore gitignored files', async () => {
     mockFs({
       root: {
