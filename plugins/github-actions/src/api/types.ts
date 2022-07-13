@@ -19,19 +19,19 @@ export type Step = {
   status: string;
   conclusion?: string;
   number: number; // starts from 1
-  started_at: string;
-  completed_at: string;
+  started_at?: string;
+  completed_at?: string;
 };
 
 export type Job = {
-  html_url: string;
+  html_url?: string;
   status: string;
-  conclusion: string;
+  conclusion?: string;
   started_at: string;
-  completed_at: string;
+  completed_at?: string;
   id: number;
   name: string;
-  steps: Step[];
+  steps?: Step[];
 };
 
 export type Jobs = {

@@ -214,14 +214,14 @@ export { isGithubActionsAvailable as isPluginApplicableToEntity };
 //
 // @public (undocumented)
 export type Job = {
-  html_url: string;
+  html_url?: string;
   status: string;
-  conclusion: string;
+  conclusion?: string;
   started_at: string;
-  completed_at: string;
+  completed_at?: string;
   id: number;
   name: string;
-  steps: Step[];
+  steps?: Step[];
 };
 
 // Warning: (ae-missing-release-tag) "Jobs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -272,7 +272,7 @@ export type Step = {
   status: string;
   conclusion?: string;
   number: number;
-  started_at: string;
-  completed_at: string;
+  started_at?: string;
+  completed_at?: string;
 };
 ```
