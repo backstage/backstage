@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 import { routingV2Collector } from './collectors';
 
-import { traverseElementTree, childDiscoverer } from '../extensions/traversal';
+import {
+  traverseElementTree,
+  childDiscoverer,
+  routeElementDiscoverer,
+} from '../extensions/traversal';
 import {
   createRoutableExtension,
   createRouteRef,
@@ -134,9 +138,13 @@ describe('discovery', () => {
     const root = (
       <MemoryRouter>
         <Routes>
+          <Route path="nothing" element={<div />} />
           <Route path="foo" element={<Extension1 />}>
             <div>
-              <Route path="bar/:id" element={<Extension2 />}>
+              <Route
+                path="bar/:id"
+                element={<>{[<Extension2 key={1} />, 'a string']}</>}
+              >
                 <div>
                   <div />
                   Some text here shouldn't be a problem
@@ -161,7 +169,7 @@ describe('discovery', () => {
 
     const { routing } = traverseElementTree({
       root,
-      discoverers: [childDiscoverer],
+      discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
         routing: routingV2Collector,
       },
@@ -205,19 +213,14 @@ describe('discovery', () => {
     const root = (
       <MemoryRouter>
         <Routes>
-          <Route
-            path="/foo"
-            element={
-              <Extension1>
-                <Routes>
-                  <Extension2 path="/bar/:id" />
-                </Routes>
-              </Extension1>
-            }
-          />
-          <Route path="/baz" element={<Extension3 path="/not-used" />}>
-            <Route path="/divsoup" element={<Extension4 />} />
-            <Extension5 path="/blop" />
+          <Route path="foo" element={<Extension1 />}>
+            <Routes>
+              <Route path="bar/:id" element={<Extension2 />} />
+            </Routes>
+          </Route>
+          <Route path="baz" element={<Extension3 />}>
+            <Route path="divsoup" element={<Extension4 />} />
+            <Route path="blop" element={<Extension5 />} />
           </Route>
         </Routes>
       </MemoryRouter>
@@ -225,17 +228,17 @@ describe('discovery', () => {
 
     const { routing } = traverseElementTree({
       root,
-      discoverers: [childDiscoverer],
+      discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
         routing: routingV2Collector,
       },
     });
     expect(sortedEntries(routing.paths)).toEqual([
-      [ref1, '/foo'],
-      [ref2, '/bar/:id'],
-      [ref3, '/baz'],
-      [ref4, '/divsoup'],
-      [ref5, '/blop'],
+      [ref1, 'foo'],
+      [ref2, 'bar/:id'],
+      [ref3, 'baz'],
+      [ref4, 'divsoup'],
+      [ref5, 'blop'],
     ]);
     expect(sortedEntries(routing.parents)).toEqual([
       [ref1, undefined],
@@ -250,37 +253,37 @@ describe('discovery', () => {
     const root = (
       <MemoryRouter>
         <Routes>
-          <AggregationComponent path="/foo">
+          <AggregationComponent path="foo">
             <Extension1 />
             <div>
               <Extension2 />
             </div>
             HELLO
           </AggregationComponent>
-          <Extension3 path="/bar">
-            <AggregationComponent path="/baz">
+          <Route path="bar" element={<Extension3 />}>
+            <AggregationComponent path="baz">
               <Extension4>
                 <Extension5 />
               </Extension4>
             </AggregationComponent>
-          </Extension3>
+          </Route>
         </Routes>
       </MemoryRouter>
     );
 
     const { routing } = traverseElementTree({
       root,
-      discoverers: [childDiscoverer],
+      discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
         routing: routingV2Collector,
       },
     });
     expect(sortedEntries(routing.paths)).toEqual([
-      [ref1, '/foo'],
-      [ref2, '/foo'],
-      [ref3, '/bar'],
-      [ref4, '/baz'],
-      [ref5, '/baz'],
+      [ref1, 'foo'],
+      [ref2, 'foo'],
+      [ref3, 'bar'],
+      [ref4, 'baz'],
+      [ref5, 'baz'],
     ]);
     expect(sortedEntries(routing.parents)).toEqual([
       [ref1, undefined],
@@ -290,11 +293,13 @@ describe('discovery', () => {
       [ref5, ref3],
     ]);
     expect(routing.objects).toEqual([
-      routeObj('/foo', [ref1, ref2], [], 'gathered'),
+      routeObj('foo', [ref1, ref2], [], 'gathered'),
       routeObj(
-        '/bar',
+        'bar',
         [ref3],
-        [routeObj('/baz', [ref4, ref5], [], 'gathered')],
+        [routeObj('baz', [ref4, ref5], [], 'gathered')],
+        undefined,
+        plugin,
       ),
     ]);
   });
@@ -303,80 +308,160 @@ describe('discovery', () => {
     const root = (
       <MemoryRouter>
         <Routes>
-          <Extension1 path="/foo">
-            <AggregationComponent path="/bar">
+          <Route path="foo" element={<Extension1 />}>
+            <AggregationComponent path="bar">
               <Extension2>
-                <Extension3 path="/baz">
-                  <Extension4 path="/blop" />
-                </Extension3>
+                <Routes>
+                  <Route path="baz" element={<Extension3 />}>
+                    <Route path="blop" element={<Extension4 />} />
+                  </Route>
+                </Routes>
                 <Extension5 />
               </Extension2>
             </AggregationComponent>
-          </Extension1>
+          </Route>
         </Routes>
       </MemoryRouter>
     );
 
     const { routing } = traverseElementTree({
       root,
-      discoverers: [childDiscoverer],
+      discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
         routing: routingV2Collector,
       },
     });
     expect(sortedEntries(routing.paths)).toEqual([
-      [ref1, '/foo'],
-      [ref2, '/bar'],
-      [ref3, '/baz'],
-      [ref4, '/blop'],
-      [ref5, '/bar'],
+      [ref1, 'foo'],
+      [ref2, 'bar'],
+      [ref3, 'baz'],
+      [ref4, 'blop'],
+      [ref5, 'bar'],
     ]);
     expect(sortedEntries(routing.parents)).toEqual([
       [ref1, undefined],
       [ref2, ref1],
-      [ref3, ref1],
+      [ref3, ref2],
       [ref4, ref3],
       [ref5, ref1],
     ]);
     expect(routing.objects).toEqual([
       routeObj(
-        '/foo',
+        'foo',
         [ref1],
         [
           routeObj(
-            '/bar',
+            'bar',
             [ref2, ref5],
-            [routeObj('/baz', [ref3], [routeObj('/blop', [ref4])])],
+            [
+              routeObj(
+                'baz',
+                [ref3],
+                [routeObj('blop', [ref4], undefined, undefined, plugin)],
+                undefined,
+                plugin,
+              ),
+            ],
             'gathered',
           ),
         ],
+        undefined,
+        plugin,
       ),
     ]);
   });
 
-  it('should stop gathering mount points after encountering explicit path', () => {
-    const root = (
-      <MemoryRouter>
-        <Routes>
-          <Extension1 path="/foo">
-            <AggregationComponent path="/bar">
-              <Extension2 path="/baz">
-                <Extension3 />
-              </Extension2>
-            </AggregationComponent>
-          </Extension1>
-        </Routes>
-      </MemoryRouter>
-    );
-
+  it('should throw when you provide path property on an extension', () => {
     expect(() => {
       traverseElementTree({
-        root,
-        discoverers: [childDiscoverer],
+        root: <Extension1 path="/foo" />,
+        discoverers: [childDiscoverer, routeElementDiscoverer],
         collectors: {
           routing: routingV2Collector,
         },
       });
-    }).toThrow('Mounted routable extension must have a path');
+    }).toThrow(
+      'Path property may not be set directly on a routable extension "Extension(Extension1)"',
+    );
+  });
+
+  it('should throw when element prop is not a string', () => {
+    const Div = 'div' as unknown as ComponentType<{ path: boolean }>;
+    expect(() => {
+      traverseElementTree({
+        root: <Div path />,
+        discoverers: [childDiscoverer, routeElementDiscoverer],
+        collectors: {
+          routing: routingV2Collector,
+        },
+      });
+    }).toThrow('Element path must be a string at "div"');
+  });
+
+  it('should throw when the mount point gatherers have an element prop', () => {
+    const AnyAggregationComponent = AggregationComponent as any;
+    expect(() => {
+      traverseElementTree({
+        root: <AnyAggregationComponent path="test" element={<Extension3 />} />,
+        discoverers: [childDiscoverer, routeElementDiscoverer],
+        collectors: {
+          routing: routingV2Collector,
+        },
+      });
+    }).toThrow(
+      'Mount point gatherers may not have an element prop "AggregationComponent"',
+    );
+  });
+
+  it('should throw elements within element prop contains a path', () => {
+    expect(() => {
+      traverseElementTree({
+        root: <Route path="foo" element={<Extension3 path="bar" />} />,
+        discoverers: [childDiscoverer, routeElementDiscoverer],
+        collectors: {
+          routing: routingV2Collector,
+        },
+      });
+    }).toThrow(
+      'Elements within the element prop tree may not have paths, found "bar"',
+    );
+  });
+
+  it('should throw when a routable extension does not have a path set', () => {
+    expect(() => {
+      traverseElementTree({
+        root: <Extension3 />,
+        discoverers: [childDiscoverer, routeElementDiscoverer],
+        collectors: {
+          routing: routingV2Collector,
+        },
+      });
+    }).toThrow(
+      'Routable extension "Extension(Extension3)" with mount point "routeRef{type=absolute,id=ref3}" must be assigned a path',
+    );
+  });
+
+  it('should throw when Route elements contain multiple routable extensions', () => {
+    expect(() => {
+      traverseElementTree({
+        root: (
+          <Route
+            path="foo"
+            element={
+              <>
+                <Extension1 />
+                <Extension2 />
+              </>
+            }
+          />
+        ),
+        discoverers: [childDiscoverer, routeElementDiscoverer],
+        collectors: {
+          routing: routingV2Collector,
+        },
+      });
+    }).toThrow(
+      'Route element with path "foo" may not contain multiple routable extensions',
+    );
   });
 });

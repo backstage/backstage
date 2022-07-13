@@ -36,10 +36,13 @@ export const MATCH_ALL_ROUTE: BackstageRouteObject = {
 };
 
 function stringifyNode(node: ReactNode): string {
-  if (!isValidElement(node)) {
-    return String(node);
+  const anyNode = node as { type?: { displayName?: string; name?: string } };
+  if (anyNode?.type) {
+    return (
+      anyNode.type.displayName ?? anyNode.type.name ?? String(anyNode.type)
+    );
   }
-  return (node.type as { displayName?: string })?.displayName ?? String(node);
+  return String(anyNode);
 }
 
 interface RoutingV2CollectorContext {
@@ -61,7 +64,7 @@ function collectSubTree(
 
     if (element.props.path) {
       throw new Error(
-        'Elements within the element prop tree may not contain paths',
+        `Elements within the element prop tree may not have paths, found "${element.props.path}"`,
       );
     }
 
@@ -89,7 +92,9 @@ export const routingV2Collector = createCollector(
     const mountPoint = getComponentData<RouteRef>(node, 'core.mountPoint');
     if (mountPoint && path) {
       throw new Error(
-        'Path property may not be set directly on a routable extension',
+        `Path property may not be set directly on a routable extension "${stringifyNode(
+          node,
+        )}"`,
       );
     }
 
@@ -106,14 +111,20 @@ export const routingV2Collector = createCollector(
 
     if (path) {
       if (typeof path !== 'string') {
-        throw new Error('Element path must be a string');
+        throw new Error(
+          `Element path must be a string at "${stringifyNode(node)}"`,
+        );
       }
 
       const elementProp = node.props.element;
 
       if (getComponentData<boolean>(node, 'core.gatherMountPoints')) {
         if (elementProp) {
-          throw new Error('Mount point gatherers may not have an element prop');
+          throw new Error(
+            `Mount point gatherers may not have an element prop "${stringifyNode(
+              node,
+            )}"`,
+          );
         }
 
         const newObj = {
@@ -138,7 +149,7 @@ export const routingV2Collector = createCollector(
         const [extension, ...others] = collectSubTree(elementProp);
         if (others.length > 0) {
           throw new Error(
-            'Route element may not contain multiple routable extensions',
+            `Route element with path "${path}" may not contain multiple routable extensions`,
           );
         }
         if (!extension) {
@@ -170,9 +181,9 @@ export const routingV2Collector = createCollector(
     if (mountPoint) {
       if (!ctx?.gatherPath) {
         throw new Error(
-          `Routable extension ${stringifyNode(
+          `Routable extension "${stringifyNode(
             node,
-          )} with mount point ${mountPoint} must be assigned a path`,
+          )}" with mount point "${mountPoint}" must be assigned a path`,
         );
       }
 
