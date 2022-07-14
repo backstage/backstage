@@ -50,7 +50,11 @@ export function createFetchTemplateAction(options: {
     templateFileExtension?: string | boolean;
 
     // Cookiecutter compat options
+    /**
+     * @deprecated This field is deprecated in favor of copyWithoutTemplating.
+     */
     copyWithoutRender?: string[];
+    copyWithoutTemplating?: string[];
     cookiecutterCompat?: boolean;
   }>({
     id: 'fetch:template',
@@ -79,9 +83,18 @@ export function createFetchTemplateAction(options: {
             type: 'object',
           },
           copyWithoutRender: {
-            title: 'Copy Without Render',
+            title: '[Deprecated] Copy Without Render',
             description:
               'An array of glob patterns. Any files or directories which match are copied without being processed as templates.',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
+          copyWithoutTemplating: {
+            title: 'Copy Without Templating',
+            description:
+              'An array of glob patterns. Contents of matched files or directories are copied without being processed, but paths are subject to rendering.',
             type: 'array',
             items: {
               type: 'string',
@@ -111,22 +124,37 @@ export function createFetchTemplateAction(options: {
 
       const targetPath = ctx.input.targetPath ?? './';
       const outputDir = resolveSafeChildPath(ctx.workspacePath, targetPath);
-
-      if (
-        ctx.input.copyWithoutRender &&
-        !Array.isArray(ctx.input.copyWithoutRender)
-      ) {
+      if (ctx.input.copyWithoutRender && ctx.input.copyWithoutTemplating) {
         throw new InputError(
-          'Fetch action input copyWithoutRender must be an Array',
+          'Fetch action input copyWithoutRender and copyWithoutTemplating can not be used at the same time',
+        );
+      }
+
+      let copyOnlyPatterns: string[] | undefined;
+      let renderFilename: boolean;
+      if (ctx.input.copyWithoutRender) {
+        ctx.logger.warn(
+          '[Deprecated] Please use copyWithoutTemplating instead.',
+        );
+        copyOnlyPatterns = ctx.input.copyWithoutRender;
+        renderFilename = false;
+      } else {
+        copyOnlyPatterns = ctx.input.copyWithoutTemplating;
+        renderFilename = true;
+      }
+
+      if (copyOnlyPatterns && !Array.isArray(copyOnlyPatterns)) {
+        throw new InputError(
+          'Fetch action input copyWithoutRender/copyWithoutTemplating must be an Array',
         );
       }
 
       if (
         ctx.input.templateFileExtension &&
-        (ctx.input.copyWithoutRender || ctx.input.cookiecutterCompat)
+        (copyOnlyPatterns || ctx.input.cookiecutterCompat)
       ) {
         throw new InputError(
-          'Fetch action input extension incompatible with copyWithoutRender and cookiecutterCompat',
+          'Fetch action input extension incompatible with copyWithoutRender/copyWithoutTemplating and cookiecutterCompat',
         );
       }
 
@@ -161,7 +189,7 @@ export function createFetchTemplateAction(options: {
       const nonTemplatedEntries = new Set(
         (
           await Promise.all(
-            (ctx.input.copyWithoutRender || []).map(pattern =>
+            (copyOnlyPatterns || []).map(pattern =>
               globby(pattern, {
                 cwd: templateDir,
                 dot: true,
@@ -194,22 +222,31 @@ export function createFetchTemplateAction(options: {
       });
 
       for (const location of allEntriesInTemplate) {
-        let renderFilename: boolean;
         let renderContents: boolean;
 
         let localOutputPath = location;
         if (extension) {
-          renderFilename = true;
           renderContents = extname(localOutputPath) === extension;
           if (renderContents) {
             localOutputPath = localOutputPath.slice(0, -extension.length);
           }
-        } else {
-          renderFilename = renderContents = !nonTemplatedEntries.has(location);
-        }
-
-        if (renderFilename) {
+          // extension is mutual exclusive with copyWithoutRender/copyWithoutTemplating,
+          // therefore the output path is always rendered.
           localOutputPath = renderTemplate(localOutputPath, context);
+        } else {
+          renderContents = !nonTemplatedEntries.has(location);
+          // The logic here is a bit tangled because it depends on two variables.
+          // If renderFilename is true, which means copyWithoutTemplating is used,
+          // then the path is always rendered.
+          // If renderFilename is false, which means copyWithoutRender is used,
+          // then matched file/directory won't be processed, same as before.
+          if (renderFilename) {
+            localOutputPath = renderTemplate(localOutputPath, context);
+          } else {
+            localOutputPath = renderContents
+              ? renderTemplate(localOutputPath, context)
+              : localOutputPath;
+          }
         }
 
         if (containsSkippedContent(localOutputPath)) {
