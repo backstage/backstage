@@ -19,6 +19,7 @@ import { Logger } from 'winston';
 import { KubernetesClustersSupplier } from '../types/types';
 import express from 'express';
 import { KubernetesBuilder } from './KubernetesBuilder';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 
 /**
@@ -30,6 +31,7 @@ export interface RouterOptions {
   config: Config;
   catalogApi: CatalogApi;
   clusterSupplier?: KubernetesClustersSupplier;
+  discovery: PluginEndpointDiscovery;
 }
 
 /**
