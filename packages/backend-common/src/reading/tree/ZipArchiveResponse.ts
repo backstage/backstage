@@ -80,6 +80,54 @@ export class ZipArchiveResponse implements ReadTreeResponse {
     return true;
   }
 
+  private async streamToTemporaryFile(stream: Readable): Promise<string> {
+    const tmpDir = await fs.mkdtemp(
+      platformPath.join(this.workDir, 'backstage-tmp'),
+    );
+    const tmpFile = platformPath.join(tmpDir, 'tmp.zip');
+
+    const writeStream = fs.createWriteStream(tmpFile);
+
+    return new Promise((resolve, reject) => {
+      writeStream.on('error', reject);
+      writeStream.on('finish', () => resolve(tmpFile));
+      stream.pipe(writeStream);
+    });
+  }
+
+  private forEveryZipEntry(
+    zip: string,
+    callback: (entry: Entry, content: Readable) => Promise<void>,
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      yauzl.open(zip, { lazyEntries: true }, (err, zipfile) => {
+        if (err || !zipfile) {
+          reject(err || new Error(`Failed to open zip file ${zip}`));
+          return;
+        }
+
+        zipfile.on('entry', async (entry: Entry) => {
+          if (!/\/$/.test(entry.fileName) && this.shouldBeIncluded(entry)) {
+            zipfile.openReadStream(entry, async (openErr, readStream) => {
+              if (openErr || !readStream) {
+                reject(
+                  openErr ||
+                    new Error(`Failed to open zip entry ${entry.fileName}`),
+                );
+                return;
+              }
+
+              await callback(entry, readStream);
+            });
+          }
+          zipfile.readEntry();
+        });
+        zipfile.once('end', () => resolve());
+        zipfile.readEntry();
+      });
+    });
+  }
+
   async files(): Promise<ReadTreeResponseFile[]> {
     this.onlyOnce();
     const files = Array<ReadTreeResponseFile>();
@@ -114,62 +162,6 @@ export class ZipArchiveResponse implements ReadTreeResponse {
     archive.finalize();
 
     return archive;
-  }
-
-  private async streamToTemporaryFile(stream: Readable): Promise<string> {
-    const tmpDir = await fs.mkdtemp(
-      platformPath.join(this.workDir, 'backstage-tmp'),
-    );
-    const tmpFile = platformPath.join(tmpDir, 'tmp.zip');
-
-    const writeStream = fs.createWriteStream(tmpFile);
-
-    return new Promise((resolve, reject) => {
-      writeStream.on('error', reject);
-      writeStream.on('finish', () => resolve(tmpFile));
-      stream.pipe(writeStream);
-    });
-  }
-
-  private forEveryZipEntry(
-    zip: string,
-    callback: (entry: Entry, content: Readable) => Promise<void>,
-  ): Promise<void> {
-    return new Promise((resolve, reject) => {
-      yauzl.open(zip, { lazyEntries: true }, (err, zipfile) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-
-        if (!zipfile) {
-          reject(new Error('Zip file is empty'));
-          return;
-        }
-
-        zipfile.on('entry', async (entry: Entry) => {
-          // If it's not a directory, and it's included, then grab the contents of the file from the buffer
-          if (!/\/$/.test(entry.fileName) && this.shouldBeIncluded(entry)) {
-            zipfile.openReadStream(entry, async (openErr, readStream) => {
-              if (openErr) {
-                reject(openErr);
-                return;
-              }
-
-              if (!readStream) {
-                reject(new Error('Zip file is empty'));
-                return;
-              }
-
-              await callback(entry, readStream);
-            });
-          }
-          zipfile.readEntry();
-        });
-        zipfile.once('end', () => resolve());
-        zipfile.readEntry();
-      });
-    });
   }
 
   async dir(options?: ReadTreeResponseDirOptions): Promise<string> {
