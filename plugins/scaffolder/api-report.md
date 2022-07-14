@@ -170,6 +170,8 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent<
 // @public
 export interface OwnerPickerUiOptions {
   // (undocumented)
+  allowArbitraryValues?: boolean;
+  // (undocumented)
   allowedKinds?: string[];
 }
 
