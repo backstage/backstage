@@ -21,19 +21,14 @@ import {
   CF_AUTH_IDENTITY,
   CloudflareAccessAuthProvider,
 } from './provider';
-import { makeProfileInfo } from '../../lib/passport';
 import { AuthResolverContext } from '../types';
 import fetch from 'node-fetch';
-import * as winston from 'winston';
 
 const jwtMock = jwtVerify as jest.Mocked<any>;
 const mockJwt =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IktFWV9JRCIsImlzcyI6IklTU1VFUl9VUkwifQ.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlVzZXIgTmFtZSIsImlhdCI6MTUxNjIzOTAyMn0.uMCSBGhij1xn5pnot8XgD-huQuTIBOFGs6kkW_p_X94';
 const mockClaims = {
   sub: '1234567890',
-  name: 'User Name',
-  family_name: 'Name',
-  given_name: 'User',
   email: 'user.name@email.test',
   iat: 1632833760,
   exp: 1632833763,
@@ -52,27 +47,6 @@ const mockCfIdentity = {
   ],
 };
 
-// For cases where fetch resolves, but not ok and;
-// fetch failed and returns rejected promise
-const identityFailResponse = {
-  backstageIdentity: {
-    token:
-      'eyblob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iLCJlbnQiOlsidXNlcjpkZWZhdWx0L2ppbW15bWFya3VtIl19.eyblob',
-    identity: {
-      ownershipEntityRefs: ['user:default/jimmymarkum'],
-      type: 'user',
-      userEntityRef: 'user:default/jimmymarkum',
-    },
-  },
-  profile: {
-    displayName: 'User Name',
-    email: 'user.name@email.test',
-  },
-  providerInfo: {
-    expiresInSeconds: mockClaims.exp - mockClaims.iat,
-  },
-};
-
 const identityOkResponse = {
   backstageIdentity: {
     identity: {
@@ -84,9 +58,7 @@ const identityOkResponse = {
       'eyblob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iLCJlbnQiOlsidXNlcjpkZWZhdWx0L2ppbW15bWFya3VtIl19.eyblob',
   },
   profile: {
-    displayName: 'foo',
-    email: 'foo@bar.com',
-    picture: undefined,
+    email: 'user.name@email.test',
   },
   providerInfo: {
     cfAccessIdentityProfile: {
@@ -101,6 +73,7 @@ const identityOkResponse = {
       id: '123',
       name: 'foo',
     },
+    claims: mockClaims,
     expiresInSeconds: 3,
   },
 };
@@ -160,13 +133,15 @@ describe('CloudflareAccessAuthProvider', () => {
     status: jest.fn(),
   } as unknown as express.Response;
 
-  const mockFetch = fetch as unknown as jest.MockedFn<any>;
+  const mockFetch = fetch as unknown as jest.Mocked<any>;
 
   const provider = new CloudflareAccessAuthProvider({
     teamName: 'foobar',
     resolverContext: {} as AuthResolverContext,
-    authHandler: async ({ fullProfile }) => ({
-      profile: makeProfileInfo(fullProfile),
+    authHandler: async ({ claims }) => ({
+      profile: {
+        email: claims.email,
+      },
     }),
     signInResolver: async () => {
       return {
@@ -175,49 +150,22 @@ describe('CloudflareAccessAuthProvider', () => {
       };
     },
     cache: mockCacheClient,
-    logger: winston.createLogger({
-      transports: [new winston.transports.File({ filename: '/dev/null' })],
-    }),
   });
 
   describe('when JWT is valid', () => {
-    describe('resolves when passed in header', () => {
-      it('returns cfidentity also when get-identity succeeds', async () => {
-        jwtMock.mockReturnValue(Promise.resolve({ payload: mockClaims }));
-        mockFetch.mockReturnValueOnce(
-          Promise.resolve({
-            ok: true,
-            status: 200,
-            json: () => {
-              return mockCfIdentity;
-            },
-          }),
-        );
-        await provider.refresh(mockRequestWithJwtHeader, mockResponse);
-        expect(mockResponse.json).toHaveBeenCalledWith(identityOkResponse);
-      });
-
-      it('does not return cfidentity when get-identity returns bad status code', async () => {
-        // when fetch resolves, but response code is bad
-        mockFetch.mockReturnValueOnce(
-          Promise.resolve({
-            ok: false,
-            status: 400,
-            json: () => {
-              return { err: 'bad request' };
-            },
-          }),
-        );
-        await provider.refresh(mockRequestWithJwtHeader, mockResponse);
-        expect(mockResponse.json).toHaveBeenCalledWith(identityFailResponse);
-      });
-
-      it('does not return cfidentity when get-identity fetch fails', async () => {
-        // when fetch rejects
-        mockFetch.mockReturnValueOnce(Promise.reject());
-        await provider.refresh(mockRequestWithJwtHeader, mockResponse);
-        expect(mockResponse.json).toHaveBeenCalledWith(identityFailResponse);
-      });
+    it('returns cfidentity also when get-identity succeeds', async () => {
+      jwtMock.mockReturnValue(Promise.resolve({ payload: mockClaims }));
+      mockFetch.mockReturnValueOnce(
+        Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => {
+            return mockCfIdentity;
+          },
+        }),
+      );
+      await provider.refresh(mockRequestWithJwtHeader, mockResponse);
+      expect(mockResponse.json).toHaveBeenCalledWith(identityOkResponse);
     });
 
     it('should resolve when passed in cookie', async () => {
@@ -234,46 +182,6 @@ describe('CloudflareAccessAuthProvider', () => {
       );
       await provider.refresh(mockRequestWithJwtCookie, mockResponse);
       expect(mockResponse.json).toHaveBeenCalledWith(identityOkResponse);
-
-      // when mockFetch rejects
-      mockFetch.mockReturnValueOnce(Promise.reject());
-      await provider.refresh(mockRequestWithJwtCookie, mockResponse);
-      expect(mockResponse.json).toHaveBeenCalledWith(identityFailResponse);
-    });
-
-    it('should return a response error when response code is not 200', async () => {
-      // when get-identity api responds and responds with status 400
-      mockFetch.mockResolvedValueOnce(
-        Promise.resolve({
-          ok: false,
-          status: 400,
-          json: () => {
-            return Promise.resolve({
-              err: 'bad request',
-            });
-          },
-        }),
-      );
-      jwtMock.mockReturnValueOnce(Promise.resolve({ payload: mockClaims }));
-      await provider.refresh(mockRequestWithJwtCookie, mockResponse);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        backstageIdentity: {
-          token:
-            'eyblob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iLCJlbnQiOlsidXNlcjpkZWZhdWx0L2ppbW15bWFya3VtIl19.eyblob',
-          identity: {
-            ownershipEntityRefs: ['user:default/jimmymarkum'],
-            type: 'user',
-            userEntityRef: 'user:default/jimmymarkum',
-          },
-        },
-        profile: {
-          displayName: 'User Name',
-          email: 'user.name@email.test',
-        },
-        providerInfo: {
-          expiresInSeconds: mockClaims.exp - mockClaims.iat,
-        },
-      });
     });
 
     it('should resolve an identity and populate access groups when there are groups', async () => {
@@ -302,37 +210,14 @@ describe('CloudflareAccessAuthProvider', () => {
       );
       jwtMock.mockReturnValueOnce(Promise.resolve({ payload: mockClaims }));
       await provider.refresh(mockRequestWithJwtCookie, mockResponse);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        backstageIdentity: {
-          token:
-            'eyblob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iLCJlbnQiOlsidXNlcjpkZWZhdWx0L2ppbW15bWFya3VtIl19.eyblob',
-          identity: {
-            ownershipEntityRefs: ['user:default/jimmymarkum'],
-            type: 'user',
-            userEntityRef: 'user:default/jimmymarkum',
-          },
-        },
-        profile: {
-          displayName: 'foo',
-          email: 'foo@bar.com',
-          picture: undefined,
-        },
-        providerInfo: {
-          expiresInSeconds: mockClaims.exp - mockClaims.iat,
-          cfAccessIdentityProfile: {
-            name: 'foo',
-            id: '123',
-            email: 'foo@bar.com',
-            groups: [
-              {
-                id: '123',
-                email: 'foo@bar.com',
-                name: 'foo',
-              },
-            ],
-          },
-        },
-      });
+      expect(mockResponse.json).toHaveBeenCalledWith(identityOkResponse);
+    });
+
+    it('should throw an error when get-identity fails', async () => {
+      mockFetch.mockReturnValue(Promise.reject());
+      await expect(
+        provider.refresh(mockRequestWithJwtCookie, mockResponse),
+      ).rejects.toThrowError();
     });
   });
 
