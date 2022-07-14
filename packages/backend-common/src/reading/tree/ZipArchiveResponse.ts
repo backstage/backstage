@@ -161,43 +161,101 @@ export class ZipArchiveResponse implements ReadTreeResponse {
     return archive;
   }
 
+  private async streamToTemporaryFile(stream: Readable): Promise<string> {
+    const tmpDir = await fs.mkdtemp(
+      platformPath.join(this.workDir, 'backstage-tmp'),
+    );
+    const tmpFile = platformPath.join(tmpDir, 'tmp.zip');
+
+    const writeStream = fs.createWriteStream(tmpFile);
+
+    return new Promise((resolve, reject) => {
+      writeStream.on('error', reject);
+      writeStream.on('finish', () => resolve(tmpFile));
+      stream.pipe(writeStream);
+    });
+  }
+
+  private forEveryZipEntry(
+    zip: string,
+    callback: (entry: Entry, content: Readable) => Promise<void>,
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      unzipper2.open(zip, { lazyEntries: true }, (err, zipfile) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        if (!zipfile) {
+          reject(new Error('Zip file is empty'));
+          return;
+        }
+
+        zipfile.on('entry', async (entry: Entry) => {
+          // If it's not a directory, and it's included, then grab the contents of the file from the buffer
+          if (!/\/$/.test(entry.fileName) && this.shouldBeIncluded(entry)) {
+            zipfile.openReadStream(entry, async (openErr, readStream) => {
+              if (openErr) {
+                reject(openErr);
+                return;
+              }
+
+              if (!readStream) {
+                reject(new Error('Zip file is empty'));
+                return;
+              }
+
+              await callback(entry, readStream);
+            });
+          }
+          zipfile.readEntry();
+        });
+        zipfile.once('end', () => resolve());
+        zipfile.readEntry();
+      });
+    });
+  }
+
   async dir(options?: ReadTreeResponseDirOptions): Promise<string> {
     this.onlyOnce();
     const dir =
       options?.targetDir ??
       (await fs.mkdtemp(platformPath.join(this.workDir, 'backstage-')));
 
-    const buffer = await streamToBuffer(this.stream);
-    return await new Promise<string>((resolve, reject) => {
-      unzipper2.fromBuffer(buffer, { lazyEntries: false }, (err, zipfile) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        zipfile.on('entry', async (entry: Entry) => {
-          // If it's not a directory, and it's included, then grab the contents of the file from the buffer
-          if (!/\/$/.test(entry.fileName) && this.shouldBeIncluded(entry)) {
-            const entryPath = this.getInnerPath(entry.fileName);
-            const dirname = platformPath.dirname(entryPath);
+    const tmpFile = await this.streamToTemporaryFile(this.stream);
 
-            if (dirname) {
-              await fs.mkdirp(platformPath.join(dir, dirname));
-            }
-
-            zipfile.openReadStream(entry, async (err2, readStream) => {
-              if (err2) {
-                reject(err2);
-                return;
-              }
-
-              readStream.pipe(
-                fs.createWriteStream(platformPath.join(dir, entryPath)),
-              );
-            });
-          }
-        });
-        zipfile.once('end', () => resolve(dir));
-      });
+    await this.forEveryZipEntry(tmpFile, async (entry, content) => {
+      console.log(entry);
     });
+    // return await new Promise<string>(async (resolve, reject) => {
+    //   const zipFile = await this.openZipArchive(tmpFile);
+    //   console.log('hjere');
+    //   zipFile.readEntry();
+    //   zipFile.on('entry', async (entry: Entry) => {
+    //     console.log('entry');
+    //     // If it's not a directory, and it's included, then grab the contents of the file from the buffer
+    //     if (!/\/$/.test(entry.fileName) && this.shouldBeIncluded(entry)) {
+    //       const entryPath = this.getInnerPath(entry.fileName);
+    //       const dirname = platformPath.dirname(entryPath);
+
+    //       if (dirname) {
+    //         await fs.mkdirp(platformPath.join(dir, dirname));
+    //       }
+
+    //       zipFile.openReadStream(entry, async (err2, readStream) => {
+    //         if (err2) {
+    //           reject(err2);
+    //           return;
+    //         }
+
+    //         readStream.pipe(
+    //           fs.createWriteStream(platformPath.join(dir, entryPath)),
+    //         );
+    //       });
+    //     }
+    //   });
+    //   zipFile.once('end', () => resolve(dir));
+    // });
   }
 }
