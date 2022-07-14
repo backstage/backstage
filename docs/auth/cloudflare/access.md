@@ -97,4 +97,17 @@ installed in `packages/app/src/App.tsx` like this:
 +    SignInPage: props => <ProxiedSignInPage {...props} provider="cfaccess" />,
 ```
 
-See the [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) section for more information.
+## Adding the provider to the Backstage frontend
+
+It is recommended to use the `ProxiedSignInPage` for this provider, which is
+installed in `packages/app/src/App.tsx` like this:
+
+```diff
++import { ProxiedSignInPage } from '@backstage/core-components';
+
+ const app = createApp({
+   components: {
++    SignInPage: props => <ProxiedSignInPage {...props} provider="cfaccess" />,
+```
+
+See [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) for pointers on how to set up the sign-in page to also work smoothly for local development.

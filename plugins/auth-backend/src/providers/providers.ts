@@ -42,6 +42,7 @@ export const providers = Object.freeze({
   auth0,
   awsAlb,
   bitbucket,
+  cfAccess,
   gcpIap,
   github,
   gitlab,
@@ -76,5 +77,4 @@ export const defaultAuthProviderFactories: {
   awsalb: awsAlb.create(),
   bitbucket: bitbucket.create(),
   atlassian: atlassian.create(),
-  cfaccess: cfAccess.create(),
 };

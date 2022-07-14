@@ -23,16 +23,10 @@ import {
 } from './provider';
 import { makeProfileInfo } from '../../lib/passport';
 import { AuthResolverContext } from '../types';
+import fetch from 'node-fetch';
+import * as winston from 'winston';
 
 const jwtMock = jwtVerify as jest.Mocked<any>;
-
-const mockKey = async () => {
-  return `-----BEGIN PUBLIC KEY-----
-MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnuN4LlaJhaUpx+qZFTzYCrSBLk0I
-yOlxJ2VW88mLAQGJ7HPAvOdylxZsItMnzCuqNzZvie8m/NJsOjhDncVkrw==
------END PUBLIC KEY-----
-`;
-};
 const mockJwt =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IktFWV9JRCIsImlzcyI6IklTU1VFUl9VUkwifQ.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlVzZXIgTmFtZSIsImlhdCI6MTUxNjIzOTAyMn0.uMCSBGhij1xn5pnot8XgD-huQuTIBOFGs6kkW_p_X94';
 const mockClaims = {
@@ -45,26 +39,96 @@ const mockClaims = {
   exp: 1632833763,
   iss: 'ISSUER_URL',
 };
+const mockCfIdentity = {
+  name: 'foo',
+  id: '123',
+  email: 'foo@bar.com',
+  groups: [
+    {
+      id: '123',
+      email: 'foo@bar.com',
+      name: 'foo',
+    },
+  ],
+};
+
+// For cases where fetch resolves, but not ok and;
+// fetch failed and returns rejected promise
+const identityFailResponse = {
+  backstageIdentity: {
+    token:
+      'eyblob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iLCJlbnQiOlsidXNlcjpkZWZhdWx0L2ppbW15bWFya3VtIl19.eyblob',
+    identity: {
+      ownershipEntityRefs: ['user:default/jimmymarkum'],
+      type: 'user',
+      userEntityRef: 'user:default/jimmymarkum',
+    },
+  },
+  profile: {
+    displayName: 'User Name',
+    email: 'user.name@email.test',
+  },
+  providerInfo: {
+    expiresInSeconds: mockClaims.exp - mockClaims.iat,
+  },
+};
+
+const identityOkResponse = {
+  backstageIdentity: {
+    identity: {
+      ownershipEntityRefs: ['user:default/jimmymarkum'],
+      type: 'user',
+      userEntityRef: 'user:default/jimmymarkum',
+    },
+    token:
+      'eyblob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iLCJlbnQiOlsidXNlcjpkZWZhdWx0L2ppbW15bWFya3VtIl19.eyblob',
+  },
+  profile: {
+    displayName: 'foo',
+    email: 'foo@bar.com',
+    picture: undefined,
+  },
+  providerInfo: {
+    cfAccessIdentityProfile: {
+      email: 'foo@bar.com',
+      groups: [
+        {
+          email: 'foo@bar.com',
+          id: '123',
+          name: 'foo',
+        },
+      ],
+      id: '123',
+      name: 'foo',
+    },
+    expiresInSeconds: 3,
+  },
+};
+
 const mockAuthenticatedUserEmail = 'user.name@email.test';
+const mockCacheClient = {
+  get: jest.fn(),
+  set: jest.fn(),
+  delete: jest.fn(),
+};
 
 jest.mock('jose');
-jest.mock('node-fetch', () => ({
-  __esModule: true,
-  default: async () => {
-    return {
-      text: async () => {
-        return mockKey();
-      },
-    };
-  },
-}));
+jest.mock('node-fetch', () => {
+  const original = jest.requireActual('node-fetch');
+  return {
+    __esModule: true,
+    default: jest.fn(),
+    Headers: original.Headers,
+  };
+});
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
 describe('CloudflareAccessAuthProvider', () => {
-  const mockRequest = {
+  // Cloudflare access provides jwt in two ways.
+  const mockRequestWithJwtHeader = {
     header: jest.fn(name => {
       if (name === CF_JWT_HEADER) {
         return mockJwt;
@@ -74,6 +138,15 @@ describe('CloudflareAccessAuthProvider', () => {
       return undefined;
     }),
   } as unknown as express.Request;
+  const mockRequestWithJwtCookie = {
+    header: jest.fn(_ => {
+      return undefined;
+    }),
+    cookies: {
+      CF_Authorization: `${mockJwt}`,
+    },
+  } as unknown as express.Request;
+
   const mockRequestWithoutJwt = {
     header: jest.fn(_ => {
       return undefined;
@@ -83,30 +156,106 @@ describe('CloudflareAccessAuthProvider', () => {
   const mockResponse = {
     end: jest.fn(),
     header: () => jest.fn(),
-    json: jest.fn().mockReturnThis(),
+    json: jest.fn(),
     status: jest.fn(),
   } as unknown as express.Response;
 
-  describe('should transform to type CloudflareAccessResponse', () => {
-    it('when JWT is valid and identity is resolved successfully', async () => {
-      const provider = new CloudflareAccessAuthProvider({
-        teamName: 'foobar',
-        resolverContext: {} as AuthResolverContext,
-        authHandler: async ({ fullProfile }) => ({
-          profile: makeProfileInfo(fullProfile),
-        }),
-        signInResolver: async () => {
-          return {
-            token:
-              'eyblob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iLCJlbnQiOlsidXNlcjpkZWZhdWx0L2ppbW15bWFya3VtIl19.eyblob',
-          };
-        },
+  const mockFetch = fetch as unknown as jest.MockedFn<any>;
+
+  const provider = new CloudflareAccessAuthProvider({
+    teamName: 'foobar',
+    resolverContext: {} as AuthResolverContext,
+    authHandler: async ({ fullProfile }) => ({
+      profile: makeProfileInfo(fullProfile),
+    }),
+    signInResolver: async () => {
+      return {
+        token:
+          'eyblob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iLCJlbnQiOlsidXNlcjpkZWZhdWx0L2ppbW15bWFya3VtIl19.eyblob',
+      };
+    },
+    cache: mockCacheClient,
+    logger: winston.createLogger({
+      transports: [new winston.transports.File({ filename: '/dev/null' })],
+    }),
+  });
+
+  describe('when JWT is valid', () => {
+    describe('resolves when passed in header', () => {
+      it('returns cfidentity also when get-identity succeeds', async () => {
+        jwtMock.mockReturnValue(Promise.resolve({ payload: mockClaims }));
+        mockFetch.mockReturnValueOnce(
+          Promise.resolve({
+            ok: true,
+            status: 200,
+            json: () => {
+              return mockCfIdentity;
+            },
+          }),
+        );
+        await provider.refresh(mockRequestWithJwtHeader, mockResponse);
+        expect(mockResponse.json).toHaveBeenCalledWith(identityOkResponse);
       });
 
+      it('does not return cfidentity when get-identity returns bad status code', async () => {
+        // when fetch resolves, but response code is bad
+        mockFetch.mockReturnValueOnce(
+          Promise.resolve({
+            ok: false,
+            status: 400,
+            json: () => {
+              return { err: 'bad request' };
+            },
+          }),
+        );
+        await provider.refresh(mockRequestWithJwtHeader, mockResponse);
+        expect(mockResponse.json).toHaveBeenCalledWith(identityFailResponse);
+      });
+
+      it('does not return cfidentity when get-identity fetch fails', async () => {
+        // when fetch rejects
+        mockFetch.mockReturnValueOnce(Promise.reject());
+        await provider.refresh(mockRequestWithJwtHeader, mockResponse);
+        expect(mockResponse.json).toHaveBeenCalledWith(identityFailResponse);
+      });
+    });
+
+    it('should resolve when passed in cookie', async () => {
+      jwtMock.mockReturnValue(Promise.resolve({ payload: mockClaims }));
+      // when mockFetch resolves and there nothing gets returned from /get-identity
+      mockFetch.mockReturnValueOnce(
+        Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => {
+            return mockCfIdentity;
+          },
+        }),
+      );
+      await provider.refresh(mockRequestWithJwtCookie, mockResponse);
+      expect(mockResponse.json).toHaveBeenCalledWith(identityOkResponse);
+
+      // when mockFetch rejects
+      mockFetch.mockReturnValueOnce(Promise.reject());
+      await provider.refresh(mockRequestWithJwtCookie, mockResponse);
+      expect(mockResponse.json).toHaveBeenCalledWith(identityFailResponse);
+    });
+
+    it('should return a response error when response code is not 200', async () => {
+      // when get-identity api responds and responds with status 400
+      mockFetch.mockResolvedValueOnce(
+        Promise.resolve({
+          ok: false,
+          status: 400,
+          json: () => {
+            return Promise.resolve({
+              err: 'bad request',
+            });
+          },
+        }),
+      );
       jwtMock.mockReturnValueOnce(Promise.resolve({ payload: mockClaims }));
-
-      await provider.refresh(mockRequest, mockResponse);
-
+      await provider.refresh(mockRequestWithJwtCookie, mockResponse);
       expect(mockResponse.json).toHaveBeenCalledWith({
         backstageIdentity: {
           token:
@@ -126,83 +275,108 @@ describe('CloudflareAccessAuthProvider', () => {
         },
       });
     });
+
+    it('should resolve an identity and populate access groups when there are groups', async () => {
+      // when get-identity api responds and responds with status 200
+      mockFetch.mockResolvedValueOnce(
+        Promise.resolve({
+          ok: () => {
+            return true;
+          },
+          status: 200,
+          json: () => {
+            return Promise.resolve({
+              name: 'foo',
+              id: '123',
+              email: 'foo@bar.com',
+              groups: [
+                {
+                  id: '123',
+                  email: 'foo@bar.com',
+                  name: 'foo',
+                },
+              ],
+            });
+          },
+        }),
+      );
+      jwtMock.mockReturnValueOnce(Promise.resolve({ payload: mockClaims }));
+      await provider.refresh(mockRequestWithJwtCookie, mockResponse);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        backstageIdentity: {
+          token:
+            'eyblob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iLCJlbnQiOlsidXNlcjpkZWZhdWx0L2ppbW15bWFya3VtIl19.eyblob',
+          identity: {
+            ownershipEntityRefs: ['user:default/jimmymarkum'],
+            type: 'user',
+            userEntityRef: 'user:default/jimmymarkum',
+          },
+        },
+        profile: {
+          displayName: 'foo',
+          email: 'foo@bar.com',
+          picture: undefined,
+        },
+        providerInfo: {
+          expiresInSeconds: mockClaims.exp - mockClaims.iat,
+          cfAccessIdentityProfile: {
+            name: 'foo',
+            id: '123',
+            email: 'foo@bar.com',
+            groups: [
+              {
+                id: '123',
+                email: 'foo@bar.com',
+                name: 'foo',
+              },
+            ],
+          },
+        },
+      });
+    });
   });
 
   describe('should fail when', () => {
     it('JWT is missing', async () => {
-      const provider = new CloudflareAccessAuthProvider({
-        teamName: 'foobar',
-        resolverContext: {} as AuthResolverContext,
-        authHandler: async ({ fullProfile }) => ({
-          profile: makeProfileInfo(fullProfile),
-        }),
-        signInResolver: async () => {
-          return { id: 'user.name', token: 'TOKEN' };
-        },
-      });
-
       await expect(
         provider.refresh(mockRequestWithoutJwt, mockResponse),
       ).rejects.toThrow();
     });
 
     it('JWT is invalid', async () => {
-      const provider = new CloudflareAccessAuthProvider({
-        teamName: 'foobar',
-        resolverContext: {} as AuthResolverContext,
-        authHandler: async ({ fullProfile }) => ({
-          profile: makeProfileInfo(fullProfile),
-        }),
-        signInResolver: async () => {
-          return { id: 'user.name', token: 'TOKEN' };
-        },
-      });
-
-      jwtMock.mockImplementationOnce(() => {
+      jwtMock.mockImplementation(() => {
         throw new Error('bad JWT');
       });
-
       await expect(
-        provider.refresh(mockRequest, mockResponse),
+        provider.refresh(mockRequestWithJwtCookie, mockResponse),
       ).rejects.toThrow();
+      await expect(
+        provider.refresh(mockRequestWithJwtHeader, mockResponse),
+      ).rejects.toThrow();
+      jwtMock.mockReset();
     });
 
     it('SignInResolver rejects', async () => {
-      const provider = new CloudflareAccessAuthProvider({
-        teamName: 'foobar',
-        resolverContext: {} as AuthResolverContext,
-        authHandler: async ({ fullProfile }) => ({
-          profile: makeProfileInfo(fullProfile),
-        }),
-        signInResolver: async () => {
-          throw new Error();
-        },
-      });
-
-      jwtMock.mockReturnValueOnce(mockClaims);
-
+      jwtMock.mockReturnValue(mockClaims);
       await expect(
-        provider.refresh(mockRequest, mockResponse),
+        provider.refresh(mockRequestWithJwtCookie, mockResponse),
       ).rejects.toThrow();
+      await expect(
+        provider.refresh(mockRequestWithJwtHeader, mockResponse),
+      ).rejects.toThrow();
+      jwtMock.mockReset();
     });
 
     it('AuthHandler rejects', async () => {
-      const provider = new CloudflareAccessAuthProvider({
-        teamName: 'foobar',
-        resolverContext: {} as AuthResolverContext,
-        authHandler: async () => {
-          throw new Error();
-        },
-        signInResolver: async () => {
-          return { id: 'user.name', token: 'TOKEN' };
-        },
-      });
-
-      jwtMock.mockReturnValueOnce(mockClaims);
+      jwtMock.mockReturnValue(mockClaims);
 
       await expect(
-        provider.refresh(mockRequest, mockResponse),
+        provider.refresh(mockRequestWithJwtCookie, mockResponse),
       ).rejects.toThrow();
+      await expect(
+        provider.refresh(mockRequestWithJwtHeader, mockResponse),
+      ).rejects.toThrow();
+      jwtMock.mockReset();
     });
   });
 });

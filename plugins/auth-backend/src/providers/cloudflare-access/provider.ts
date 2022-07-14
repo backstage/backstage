@@ -22,17 +22,29 @@ import {
 } from '../types';
 import express from 'express';
 import * as _ from 'lodash';
+import fetch, { Headers, Response as FetchResponse } from 'node-fetch';
 import { jwtVerify, createRemoteJWKSet } from 'jose';
 import { Profile as PassportProfile } from 'passport';
-import { AuthenticationError } from '@backstage/errors';
+import { AuthenticationError, ResponseError } from '@backstage/errors';
+import { CacheClient } from '@backstage/backend-common';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
 import { makeProfileInfo } from '../../lib/passport';
+import { commonByEmailResolver } from '../resolvers';
+import { Logger } from 'winston';
 
 // JWT Web Token definitions are in the URL below
 // https://developers.cloudflare.com/cloudflare-one/identity/users/validating-json/
 export const CF_JWT_HEADER = 'cf-access-jwt-assertion';
 export const CF_AUTH_IDENTITY = 'cf-access-authenticated-user-email';
+const COOKIE_AUTH_NAME = 'CF_Authorization';
+
+/**
+ * Default cache TTL
+ *
+ * @public
+ */
+export const CF_DEFAULT_CACHE_TTL = 3600;
 
 /** @public */
 export type Options = {
@@ -47,6 +59,8 @@ export type Options = {
   authHandler: AuthHandler<CloudflareAccessResult>;
   signInResolver: SignInResolver<CloudflareAccessResult>;
   resolverContext: AuthResolverContext;
+  logger: Logger;
+  cache?: CacheClient;
 };
 
 /** @public */
@@ -88,17 +102,37 @@ export type CloudflareAccessClaims = {
   custom: string;
 };
 
-/** @public */
+type CloudflareAccessGroup = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+type CloudflareAccessIdentityProfile = {
+  id: string;
+  name: string;
+  email: string;
+  groups: CloudflareAccessGroup[];
+};
+
 export type CloudflareAccessResult = {
   fullProfile: PassportProfile;
+  cfIdentity?: CloudflareAccessIdentityProfile;
   expiresInSeconds?: number;
 };
 
+/**
+ * @public
+ */
 export type CloudflareAccessProviderInfo = {
   /**
    * Expiry of the access token in seconds.
    */
   expiresInSeconds?: number;
+  /**
+   * Cloudflare access identity profile with cloudflare access groups
+   */
+  cfAccessIdentityProfile?: CloudflareAccessIdentityProfile;
 };
 
 export type CloudflareAccessResponse =
@@ -110,6 +144,8 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
   private readonly authHandler: AuthHandler<CloudflareAccessResult>;
   private readonly signInResolver: SignInResolver<CloudflareAccessResult>;
   private readonly jwtKeySet: any;
+  private readonly logger: Logger;
+  private readonly cache?: CacheClient;
 
   constructor(options: Options) {
     this.teamName = options.teamName;
@@ -121,6 +157,8 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
         `https://${this.teamName}.cloudflareaccess.com/cdn-cgi/access/certs`,
       ),
     );
+    this.logger = options.logger;
+    this.cache = options.cache;
   }
 
   frameHandler(): Promise<void> {
@@ -138,6 +176,30 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
 
   start(): Promise<void> {
     return Promise.resolve();
+  }
+
+  private async getIdentityProfile(
+    jwt: string,
+  ): Promise<CloudflareAccessIdentityProfile> {
+    const headers = new Headers();
+    // set both headers just the way inbound responses are set
+    headers.set(CF_JWT_HEADER, jwt);
+    headers.set('cookie', `${COOKIE_AUTH_NAME}=${jwt}`);
+    try {
+      const res: FetchResponse = await fetch(
+        `https://${this.teamName}.cloudflareaccess.com/cdn-cgi/access/get-identity`,
+        { headers },
+      );
+      if (!res.ok) {
+        // Cast to work around https://github.com/backstage/backstage/issues/12166
+        throw await ResponseError.fromResponse(res as unknown as Response);
+      }
+      const cfIdentity = await res.json();
+      return cfIdentity as unknown as CloudflareAccessIdentityProfile;
+    } catch (err) {
+      this.logger.error(`getIdentityProfile failed: ${err}`);
+      return Promise.reject(err);
+    }
   }
 
   private async getResult(
@@ -161,26 +223,44 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
     // RS256 follows an asymmetric algorithm; a private key signs the JWTs and
     // a separate public key verifies the signature.
     const verifyResult = await jwtVerify(jwt, this.jwtKeySet, {
-      // Cloudflare signs the JWT using the RSA Signature with SHA-256 (RS256).
-      algorithms: ['RS256'],
       issuer: `https://${this.teamName}.cloudflareaccess.com`,
     });
+    const cfAccessResultStr = await this.cache?.get(jwt);
+    if (typeof cfAccessResultStr === 'string') {
+      return JSON.parse(cfAccessResultStr) as CloudflareAccessResult;
+    }
     const claims = verifyResult.payload as CloudflareAccessClaims;
-
+    // Builds a passport profile from JWT claims first
+    const username = claims.email.split('@')[0].toLowerCase();
     const fullProfile: PassportProfile = {
       provider: 'cfAccess',
       id: claims.sub,
-      displayName: _.startCase(
-        claims.email.split('@')[0].toLowerCase().replace('.', ' '),
-      ),
-      username: claims.email.split('@')[0].toLowerCase(),
-      emails: [{ value: claims.email.toLowerCase() }],
+      displayName: _.startCase(username.replace('.', ' ')),
+      username: username,
+      emails: [{ value: claims.email }],
     };
-
-    return {
+    const cfAccessResult: CloudflareAccessResult = {
       fullProfile,
       expiresInSeconds: claims.exp - claims.iat,
     };
+    try {
+      // If we successfully fetch the get-identity endpoint,
+      // We supplement the passport profile with richer user identity
+      // information here.
+      const cfIdentity = await this.getIdentityProfile(jwt);
+      fullProfile.displayName = cfIdentity.name;
+      fullProfile.emails = [{ value: cfIdentity.email }];
+      fullProfile.username = cfIdentity.email.split('@')[0].toLowerCase();
+      cfAccessResult.cfIdentity = cfIdentity;
+      // Stores a stringified JSON object in cfaccess provider cache only when
+      // we complete all steps
+      this.cache?.set(jwt, JSON.stringify(cfAccessResult));
+    } catch (err) {
+      this.logger.error(
+        `failed to populate access identity information: ${err}`,
+      );
+    }
+    return cfAccessResult;
   }
 
   private async handleResult(
@@ -198,6 +278,7 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
     return {
       providerInfo: {
         expiresInSeconds: result.expiresInSeconds,
+        cfAccessIdentityProfile: result.cfIdentity,
       },
       backstageIdentity: prepareBackstageIdentityResponse(backstageIdentity),
       profile,
@@ -211,7 +292,7 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
  * @public
  */
 export const cfAccess = createAuthProviderIntegration({
-  create(options?: {
+  create(options: {
     /**
      * The profile transformation function used to verify and convert the auth response
      * into the profile that will be presented to the user.
@@ -227,11 +308,16 @@ export const cfAccess = createAuthProviderIntegration({
        */
       resolver: SignInResolver<CloudflareAccessResult>;
     };
+    /**
+     * CacheClient object that was configured for the Backstage backend,
+     * should be provided via the backend auth plugin.
+     */
+    cache?: CacheClient;
   }) {
-    return ({ config, resolverContext }) => {
+    return ({ config, logger, resolverContext }) => {
       const teamName = config.getString('teamName');
 
-      if (!options?.signIn.resolver) {
+      if (!options.signIn.resolver) {
         throw new Error(
           'SignInResolver is required to use this authentication provider',
         );
@@ -249,7 +335,15 @@ export const cfAccess = createAuthProviderIntegration({
         signInResolver: options?.signIn.resolver,
         authHandler,
         resolverContext,
+        logger,
+        ...(options.cache && { cache: options.cache }),
       });
     };
+  },
+  resolvers: {
+    /**
+     * Looks up the user by matching their email to the entity email.
+     */
+    emailMatchingUserEntityProfileEmail: () => commonByEmailResolver,
   },
 });
