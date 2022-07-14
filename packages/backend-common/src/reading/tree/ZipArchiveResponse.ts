@@ -15,25 +15,17 @@
  */
 
 import archiver from 'archiver';
-import unzipper2, { Entry } from 'yauzl';
+import yauzl, { Entry } from 'yauzl';
 import fs from 'fs-extra';
 import platformPath from 'path';
 import { Readable } from 'stream';
-// import unzipper, { Entry } from 'unzipper';
 import {
   ReadTreeResponse,
   ReadTreeResponseDirOptions,
   ReadTreeResponseFile,
 } from '../types';
+import { streamToBuffer } from './util';
 
-const streamToBuffer = async (stream: Readable): Promise<Buffer> => {
-  const buffers: Buffer[] = [];
-  return new Promise((resolve, reject) => {
-    stream.on('data', (data: Buffer) => buffers.push(data));
-    stream.on('error', reject);
-    stream.on('end', () => resolve(Buffer.concat(buffers)));
-  });
-};
 /**
  * Wraps a zip archive stream into a tree response reader.
  */
@@ -144,7 +136,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
     callback: (entry: Entry, content: Readable) => Promise<void>,
   ): Promise<void> {
     return new Promise((resolve, reject) => {
-      unzipper2.open(zip, { lazyEntries: true }, (err, zipfile) => {
+      yauzl.open(zip, { lazyEntries: true }, (err, zipfile) => {
         if (err) {
           reject(err);
           return;

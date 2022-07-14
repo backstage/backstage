@@ -18,36 +18,18 @@
 // containing any character except `/` one or more times, and ending with a `/`
 // e.g. Will match `dirA/` in `dirA/dirB/file.ext`
 const directoryNameRegex = /^[^\/]+\//;
-
+import { Readable } from 'stream';
 // Removes the first segment of a forward-slash-separated path
 export function stripFirstDirectoryFromPath(path: string): string {
   return path.replace(directoryNameRegex, '');
 }
 
-// Some corrupted ZIP files cause the zlib inflater to hang indefinitely.
-// This is a workaround to bail on stuck streams after 3 seconds.
-// Related: https://github.com/ZJONSSON/node-unzipper/issues/213
-export async function streamToTimeoutPromise<T>(
-  stream: NodeJS.ReadableStream,
-  options: {
-    timeoutMs: number;
-    eventName: string;
-    getError: (data: T) => Error;
-  },
-) {
-  let lastEntryTimeout: NodeJS.Timeout | undefined;
-  stream.on(options.eventName, (data: T) => {
-    clearTimeout(lastEntryTimeout);
-
-    lastEntryTimeout = setTimeout(() => {
-      stream.emit('error', options.getError(data));
-    }, options.timeoutMs);
-  });
-
-  await new Promise((resolve, reject) => {
-    stream.on('finish', resolve);
+// Concats the data into a buffer.
+export const streamToBuffer = async (stream: Readable): Promise<Buffer> => {
+  const buffers: Buffer[] = [];
+  return new Promise((resolve, reject) => {
+    stream.on('data', (data: Buffer) => buffers.push(data));
     stream.on('error', reject);
+    stream.on('end', () => resolve(Buffer.concat(buffers)));
   });
-
-  clearTimeout(lastEntryTimeout);
-}
+};
