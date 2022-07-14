@@ -169,12 +169,15 @@ export const apis = [
       oauthRequestApi: oauthRequestApiRef,
       configApi: configApiRef,
     },
-    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
-      OktaAuth.create({
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) => {
+      const environment = configApi.getOptionalString('auth.environment');
+      return OktaAuth.create({
         discoveryApi,
         oauthRequestApi,
-        environment: configApi.getOptionalString('auth.environment'),
-      }),
+        environment,
+        defaultScopes: configApi.getOptionalStringArray(`auth.providers.okta.${environment}.scopes`),
+      });
+    }
   }),
   createApiFactory({
     api: gitlabAuthApiRef,
