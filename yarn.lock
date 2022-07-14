@@ -1549,7 +1549,7 @@
     "@backstage/errors" "^1.0.0"
     cross-fetch "^3.1.5"
 
-"@backstage/catalog-model@^1.0.0", "@backstage/catalog-model@^1.0.3", "@backstage/catalog-model@^1.0.3-next.0":
+"@backstage/catalog-model@^1.0.0", "@backstage/catalog-model@^1.0.3":
   version "1.0.3"
   resolved "https://registry.npmjs.org/@backstage/catalog-model/-/catalog-model-1.0.3.tgz#0d7bd832add56650871b95894878540fc41a4ef9"
   integrity sha512-rbXdA/CI8EzpsthlSI4JonLd4RZoki7IN6tFvivjKDMlW8IVb63BJXWO4VnvHH+LLYzH4/OaL051YeoaicdqYw==
@@ -1562,7 +1562,7 @@
     lodash "^4.17.21"
     uuid "^8.0.0"
 
-"@backstage/core-components@^0.9.0", "@backstage/core-components@^0.9.5", "@backstage/core-components@^0.9.5-next.1":
+"@backstage/core-components@^0.9.0", "@backstage/core-components@^0.9.5":
   version "0.9.5"
   resolved "https://registry.npmjs.org/@backstage/core-components/-/core-components-0.9.5.tgz#5a0b34867aaee0549bfa67b39a69c09588fa3c7a"
   integrity sha512-kfAdN70idiEqHeH9ZQryn6C0RxJEKiRc/7srYIz0CVV88zJfc0nmZ5C/S10Gkht2xWfm95tTSw2P1vEYIBbfxg==
@@ -1607,7 +1607,7 @@
     zen-observable "^0.8.15"
     zod "^3.11.6"
 
-"@backstage/core-plugin-api@^1.0.0", "@backstage/core-plugin-api@^1.0.3", "@backstage/core-plugin-api@^1.0.3-next.0":
+"@backstage/core-plugin-api@^1.0.0", "@backstage/core-plugin-api@^1.0.3":
   version "1.0.3"
   resolved "https://registry.npmjs.org/@backstage/core-plugin-api/-/core-plugin-api-1.0.3.tgz#32ecfec2afe1a25d02d41f1813621843121c2d7a"
   integrity sha512-4/d9+c+AmqhY5KqsC8ikIcMsmXIcKP3+1/uT2H3/DxxJLx2sH7BvNVVqro5ZAhA7iNsuYdrfV0fHeNxGsdLuNA==
@@ -1763,24 +1763,6 @@
     cross-fetch "^3.1.5"
     lodash "^4.17.21"
     qs "^6.9.4"
-    react-use "^17.2.4"
-
-"@backstage/plugin-techdocs-react@1.0.1-next.1":
-  version "1.0.1-next.1"
-  resolved "https://registry.npmjs.org/@backstage/plugin-techdocs-react/-/plugin-techdocs-react-1.0.1-next.1.tgz#c30b19e5ab622d898873406431b66890efc7877e"
-  integrity sha512-4tz9etAWIM5waOaTVsYgTnjNQE/kIXK1gPl/BX5Ffv644CvQ1Ll/JKIrfdMlCgC4nZuH/9vxNOa7Brzdnapf+A==
-  dependencies:
-    "@backstage/catalog-model" "^1.0.3-next.0"
-    "@backstage/core-components" "^0.9.5-next.1"
-    "@backstage/core-plugin-api" "^1.0.3-next.0"
-    "@backstage/version-bridge" "^1.0.1"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/lab" "4.0.0-alpha.57"
-    "@material-ui/styles" "^4.11.0"
-    jss "~10.8.2"
-    lodash "^4.17.21"
-    react-helmet "6.1.0"
-    react-router-dom "6.0.0-beta.0"
     react-use "^17.2.4"
 
 "@backstage/theme@^0.2.15", "@backstage/theme@^0.2.6", "@backstage/theme@^0.2.7", "@backstage/theme@^0.2.9":

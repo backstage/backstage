@@ -17,7 +17,6 @@
 import {
   ANNOTATION_EDIT_URL,
   ANNOTATION_LOCATION,
-  DEFAULT_NAMESPACE,
   getCompoundEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
