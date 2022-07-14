@@ -7,6 +7,7 @@
 
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
+import { CacheClient } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
@@ -170,9 +171,12 @@ export class CatalogIdentityClient {
   resolveCatalogMembership(query: MemberClaimQuery): Promise<string[]>;
 }
 
+// Warning: (ae-missing-release-tag) "CloudflareAccessResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type CloudflareAccessResult = {
-  fullProfile: Profile;
+  claims: CloudflareAccessClaims;
+  cfIdentity: CloudflareAccessIdentityProfile;
   expiresInSeconds?: number;
 };
 
@@ -478,6 +482,18 @@ export const providers: Readonly<{
       userIdMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
     }>;
   }>;
+  cfAccess: Readonly<{
+    create: (options: {
+      authHandler?: AuthHandler<CloudflareAccessResult> | undefined;
+      signIn: {
+        resolver: SignInResolver<CloudflareAccessResult>;
+      };
+      cache?: CacheClient | undefined;
+    }) => AuthProviderFactory;
+    resolvers: Readonly<{
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
+    }>;
+  }>;
   gcpIap: Readonly<{
     create: (options: {
       authHandler?: AuthHandler<GcpIapResult> | undefined;
@@ -724,4 +740,9 @@ export type WebMessageResponse =
       type: 'authorization_response';
       error: Error;
     };
+
+// Warnings were encountered during analysis:
+//
+// src/providers/cloudflare-access/provider.d.ts:77:5 - (ae-forgotten-export) The symbol "CloudflareAccessClaims" needs to be exported by the entry point index.d.ts
+// src/providers/cloudflare-access/provider.d.ts:78:5 - (ae-forgotten-export) The symbol "CloudflareAccessIdentityProfile" needs to be exported by the entry point index.d.ts
 ```
