@@ -26,6 +26,7 @@ import {
   CatalogApi,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { ConfigApi, configApiRef } from '@backstage/core-plugin-api';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
@@ -378,6 +379,63 @@ describe('<AboutCard />', () => {
               }),
             ),
           ],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
+        <EntityProvider entity={entity}>
+          <AboutCard />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name': viewTechDocRouteRef,
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(getByText('View TechDocs').closest('a')).toHaveAttribute(
+      'href',
+      '/docs/default/component/software',
+    );
+  });
+
+  it('renders techdocs link if techdocs.legacyUseCaseSensitiveTripletPaths is true', async () => {
+    const configApi: ConfigApi = new ConfigReader({
+      integrations: {
+        github: [
+          {
+            host: 'github.com',
+            token: '...',
+          },
+        ],
+      },
+      techdocs: {
+        legacyUseCaseSensitiveTripletPaths: true,
+      },
+    });
+
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        annotations: {
+          'backstage.io/techdocs-ref': './',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+
+    const { getByText } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [scmIntegrationsApiRef, ScmIntegrationsApi.fromConfig(configApi)],
+          [configApiRef, configApi],
           [catalogApiRef, catalogApi],
         ]}
       >

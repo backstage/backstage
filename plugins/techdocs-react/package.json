@@ -38,6 +38,7 @@
     "@backstage/catalog-model": "^1.1.0-next.3",
     "@backstage/core-components": "^0.10.0-next.3",
     "@backstage/core-plugin-api": "^1.0.4-next.0",
+    "@backstage/config": "^1.0.1",
     "@backstage/version-bridge": "^1.0.1",
     "@material-ui/core": "^4.12.2",
     "@material-ui/lab": "4.0.0-alpha.57",

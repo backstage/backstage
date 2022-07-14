@@ -18,6 +18,7 @@ import {
   ANNOTATION_EDIT_URL,
   ANNOTATION_LOCATION,
   DEFAULT_NAMESPACE,
+  getCompoundEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
@@ -26,7 +27,12 @@ import {
   InfoCardVariants,
   Link,
 } from '@backstage/core-components';
-import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  alertApiRef,
+  configApiRef,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import {
   ScmIntegrationIcon,
   scmIntegrationsApiRef,
@@ -50,6 +56,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import React, { useCallback } from 'react';
 import { viewTechDocRouteRef } from '../../routes';
 import { AboutContent } from './AboutContent';
+import { toLowercaseEntityRefMaybe } from '@backstage/plugin-techdocs-react';
 
 const useStyles = makeStyles({
   gridItemCard: {
@@ -91,6 +98,8 @@ export function AboutCard(props: AboutCardProps) {
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
   const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
+  const config = useApi(configApiRef);
+  const entityRef = getCompoundEntityRef(entity);
 
   const entitySourceLocation = getEntitySourceLocation(
     entity,
@@ -113,11 +122,7 @@ export function AboutCard(props: AboutCardProps) {
     icon: <DocsIcon />,
     href:
       viewTechdocLink &&
-      viewTechdocLink({
-        namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
-        kind: entity.kind,
-        name: entity.metadata.name,
-      }),
+      viewTechdocLink(toLowercaseEntityRefMaybe(entityRef, config)),
   };
 
   let cardClass = '';
