@@ -43,6 +43,7 @@ auth:
         audience: ${AUTH_OKTA_DOMAIN}
         authServerId: ${AUTH_OKTA_AUTH_SERVER_ID} # Optional
         idp: ${AUTH_OKTA_IDP} # Optional
+        scopes: ['openid', 'email', 'profile', 'offline_access', 'groups'] # Optional
 ```
 
 The values referenced are found on the Application page on your Okta site.
@@ -54,6 +55,7 @@ The values referenced are found on the Application page on your Okta site.
   `https://company.okta.com`
 - `authServerId`: The authorization server ID for the Application
 - `idp`: The identity provider for the application, e.g. `0oaulob4BFVa4zQvt0g3`
+- `scopes`: List of Okta defined scopes. Must be a subset of the `OKTA_OIDC_SCOPES`.
 
 ## Adding the provider to the Backstage frontend
 
