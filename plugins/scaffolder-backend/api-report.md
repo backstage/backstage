@@ -401,7 +401,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   branchName: string;
   targetPath: string;
   token?: string | undefined;
-  commitAction?: 'update' | 'delete' | 'create' | undefined;
+  commitAction?: 'update' | 'create' | 'delete' | undefined;
   projectid?: string | undefined;
   removeSourceBranch?: boolean | undefined;
 }>;
