@@ -52,7 +52,7 @@ export const OwnerPicker = (
       ]) as string[],
       defaultKind: 'Group',
       allowArbitraryValues:
-        uiSchema['ui:options']?.allowArbitraryValues || true,
+        uiSchema['ui:options']?.allowArbitraryValues ?? true,
     },
   };
 
