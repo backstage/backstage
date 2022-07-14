@@ -25,14 +25,13 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 export function toLowercaseEntityRefMaybe(
   entityRef: CompoundEntityRef,
   config: Config,
-) {
-  return config.getOptionalBoolean(
-    'techdocs.legacyUseCaseSensitiveTripletPaths',
-  )
-    ? entityRef
-    : {
-        kind: entityRef.kind.toLocaleLowerCase('en-US'),
-        name: entityRef.name.toLocaleLowerCase('en-US'),
-        namespace: entityRef.namespace.toLocaleLowerCase('en-US'),
-      };
+): CompoundEntityRef {
+  if (config.getOptionalBoolean('techdocs.legacyUseCaseSensitiveTripletPaths'))
+    return entityRef;
+
+  entityRef.kind = entityRef.kind.toLocaleLowerCase();
+  entityRef.name = entityRef.name.toLocaleLowerCase();
+  entityRef.namespace = entityRef.namespace.toLocaleLowerCase();
+
+  return entityRef;
 }
