@@ -61,7 +61,7 @@ export default ({ theme, sidebar }: RuleOptions) => `
   scrollbar-width: thin;
 }
 .md-sidebar .md-sidebar__scrollwrap {
-  width: calc(16rem - 10px);
+  width: calc(12.1rem);
 }
 .md-sidebar--secondary {
   right: ${theme.spacing(3)}px;
@@ -169,7 +169,7 @@ export default ({ theme, sidebar }: RuleOptions) => `
     width: 12.1rem !important;
     z-index: 200;
     left: ${
-      sidebar.isPinned ? 'calc(-12.1rem + 242px)' : 'calc(-12.1rem + 72px)'
+      sidebar.isPinned ? 'calc(-12.1rem + 224px)' : 'calc(-12.1rem + 72px)'
     } !important;
   }
   .md-sidebar--secondary:not([hidden]) {
