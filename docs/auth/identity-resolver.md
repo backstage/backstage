@@ -275,7 +275,6 @@ that the user belongs to using the user access token in the provided result obje
 // File: packages/backend/src/plugins/auth.ts
 import {
   createRouter,
-  defaultAuthProviderFactories,
   providers,
 } from '@backstage/plugin-auth-backend';
 import { Router } from 'express';
@@ -288,15 +287,14 @@ import {
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  return createRouter({
+  return await createRouter({
     ...env,
     providerFactories: {
-      ...defaultAuthProviderFactories,
       google: providers.google.create({
         signIn: {
           resolver: async ({ profile }, ctx) => {
             if (!profile.email) {
-              throw new Error('Login Failed');
+              throw new Error('Login failed, user profile does not contain an email');
             }
             // Split the email into the local part and the domain.
             const [localPart, domain] = profile.email.split('@');
