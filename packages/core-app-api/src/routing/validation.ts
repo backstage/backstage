@@ -20,6 +20,7 @@ import {
   RouteRef,
   SubRouteRef,
 } from '@backstage/core-plugin-api';
+import { joinPaths } from './helpers';
 import { AnyRouteRef } from './types';
 
 // Validates that there is no duplication of route parameter names
@@ -43,7 +44,7 @@ export function validateRouteParameters(
       if (!path) {
         throw new Error(`No path for ${currentRouteRef}`);
       }
-      fullPath = `${path}${fullPath}`;
+      fullPath = joinPaths(path, fullPath);
       currentRouteRef = routeParents.get(currentRouteRef);
     }
 
