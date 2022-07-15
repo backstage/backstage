@@ -28,17 +28,37 @@ import { TabProps } from '@material-ui/core';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
 // @public
+export const AboutCardBuiltInFields: Readonly<{
+  Description(): JSX.Element;
+  Owner(): JSX.Element;
+  Domain(): JSX.Element;
+  System(): JSX.Element;
+  Parent(): JSX.Element;
+  Type(): JSX.Element;
+  Lifecycle(): JSX.Element;
+  Tags(): JSX.Element;
+  Targets(): JSX.Element;
+}>;
+
+// @public
+export const AboutCardDefaultFields: JSX.Element[];
+
+// @public
 export interface AboutCardProps {
+  // (undocumented)
+  children?: React_2.ReactNode;
   // (undocumented)
   variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
-export function AboutContent(props: AboutContentProps): JSX.Element;
+export const AboutContent: (props: AboutContentProps) => JSX.Element;
 
 // @public
 export interface AboutContentProps {
   // (undocumented)
+  children?: React_2.ReactNode;
+  // @deprecated
   entity: Entity;
 }
 

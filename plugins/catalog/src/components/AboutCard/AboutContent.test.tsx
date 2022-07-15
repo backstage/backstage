@@ -19,11 +19,19 @@ import {
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import {
+  EntityProvider,
+  entityRouteRef,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
+import { Typography } from '@material-ui/core';
 import React from 'react';
 import { AboutContent } from './AboutContent';
+import { AboutField } from './AboutField';
+import { AboutCardBuiltInFields, AboutCardDefaultFields } from './fields';
 
+// TODO: Remove the entity prop in AboutContent after the prop is fully deprecated.
 describe('<AboutContent />', () => {
   describe('An unknown entity', () => {
     let entity: Entity;
@@ -63,7 +71,9 @@ describe('<AboutContent />', () => {
 
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
+        <EntityProvider entity={entity}>
+          <AboutContent entity={entity} />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -96,7 +106,9 @@ describe('<AboutContent />', () => {
       entity.relations = [];
 
       const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
+        <EntityProvider entity={entity}>
+          <AboutContent entity={entity} />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -152,7 +164,9 @@ describe('<AboutContent />', () => {
 
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
+        <EntityProvider entity={entity}>
+          <AboutContent entity={entity} />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -188,7 +202,9 @@ describe('<AboutContent />', () => {
       entity.relations = [];
 
       const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
+        <EntityProvider entity={entity}>
+          <AboutContent entity={entity} />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -253,7 +269,9 @@ describe('<AboutContent />', () => {
 
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
+        <EntityProvider entity={entity}>
+          <AboutContent entity={entity} />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -292,7 +310,9 @@ describe('<AboutContent />', () => {
       entity.relations = [];
 
       const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
+        <EntityProvider entity={entity}>
+          <AboutContent entity={entity} />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -345,7 +365,9 @@ describe('<AboutContent />', () => {
 
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
+        <EntityProvider entity={entity}>
+          <AboutContent entity={entity} />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -373,7 +395,9 @@ describe('<AboutContent />', () => {
       entity.relations = [];
 
       const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
+        <EntityProvider entity={entity}>
+          <AboutContent entity={entity} />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -419,7 +443,9 @@ describe('<AboutContent />', () => {
 
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
+        <EntityProvider entity={entity}>
+          <AboutContent entity={entity} />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -452,7 +478,9 @@ describe('<AboutContent />', () => {
       delete entity.spec!.type;
 
       const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
+        <EntityProvider entity={entity}>
+          <AboutContent entity={entity} />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -509,7 +537,9 @@ describe('<AboutContent />', () => {
 
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
+        <EntityProvider entity={entity}>
+          <AboutContent entity={entity} />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -541,7 +571,9 @@ describe('<AboutContent />', () => {
       entity.relations = [];
 
       const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
+        <EntityProvider entity={entity}>
+          <AboutContent entity={entity} />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -598,7 +630,9 @@ describe('<AboutContent />', () => {
 
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
+        <EntityProvider entity={entity}>
+          <AboutContent entity={entity} />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -628,7 +662,9 @@ describe('<AboutContent />', () => {
       entity.relations = [];
 
       const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
+        <EntityProvider entity={entity}>
+          <AboutContent entity={entity} />
+        </EntityProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -650,6 +686,138 @@ describe('<AboutContent />', () => {
       expect(queryByText('Lifecycle')).not.toBeInTheDocument();
       expect(getByText('Tags')).toBeInTheDocument();
       expect(getByText('Tags').nextSibling).toHaveTextContent('No Tags');
+    });
+  });
+
+  describe('Customised fields', () => {
+    let entity: Entity;
+
+    beforeEach(() => {
+      entity = {
+        apiVersion: 'v1',
+        kind: 'Component',
+        metadata: {
+          name: 'software',
+          description: 'This is the description',
+          tags: ['tag-1'],
+        },
+        spec: {
+          owner: 'guest',
+          type: 'service',
+          lifecycle: 'production',
+          system: 'system',
+          subcomponentOf: ['parent-software'],
+        },
+        relations: [
+          {
+            type: RELATION_OWNED_BY,
+            targetRef: 'user:default/guest',
+          },
+          {
+            type: RELATION_PART_OF,
+            targetRef: 'system:default/system',
+          },
+          {
+            type: RELATION_PART_OF,
+            targetRef: 'component:default/parent-software',
+          },
+        ],
+      };
+    });
+
+    it('renders info when using default fields', async () => {
+      const { getByText, queryByText } = await renderInTestApp(
+        <EntityProvider entity={entity}>
+          <AboutContent entity={entity}>{AboutCardDefaultFields}</AboutContent>
+        </EntityProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
+      );
+
+      expect(getByText('Description')).toBeInTheDocument();
+      expect(getByText('Description').nextSibling).toHaveTextContent(
+        'This is the description',
+      );
+      expect(getByText('Owner')).toBeInTheDocument();
+      expect(getByText('Owner').nextSibling).toHaveTextContent('user:guest');
+      expect(queryByText('Domain')).not.toBeInTheDocument();
+      expect(getByText('System')).toBeInTheDocument();
+      expect(getByText('System').nextSibling).toHaveTextContent('system');
+      expect(getByText('Parent Component')).toBeInTheDocument();
+      expect(getByText('Parent Component').nextSibling).toHaveTextContent(
+        'parent-software',
+      );
+      expect(getByText('Type')).toBeInTheDocument();
+      expect(getByText('Type').nextSibling).toHaveTextContent('service');
+      expect(getByText('Lifecycle')).toBeInTheDocument();
+      expect(getByText('Lifecycle').nextSibling).toHaveTextContent(
+        'production',
+      );
+      expect(getByText('Tags')).toBeInTheDocument();
+      expect(getByText('Tags').nextSibling).toHaveTextContent('tag-1');
+    });
+
+    it('only renders selected field when specified', async () => {
+      const { getByText, queryByText } = await renderInTestApp(
+        <EntityProvider entity={entity}>
+          <AboutContent entity={entity}>
+            <AboutCardBuiltInFields.Description />
+          </AboutContent>
+        </EntityProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
+      );
+
+      expect(getByText('Description')).toBeInTheDocument();
+      expect(getByText('Description').nextSibling).toHaveTextContent(
+        'This is the description',
+      );
+      expect(queryByText('Owner')).not.toBeInTheDocument();
+      expect(queryByText('Domain')).not.toBeInTheDocument();
+      expect(queryByText('System')).not.toBeInTheDocument();
+      expect(queryByText('Parent Component')).not.toBeInTheDocument();
+      expect(queryByText('Type')).not.toBeInTheDocument();
+      expect(queryByText('Lifecycle')).not.toBeInTheDocument();
+      expect(queryByText('Tags')).not.toBeInTheDocument();
+    });
+
+    it('renders customised field', async () => {
+      const MyField = () => {
+        const { entity: e } = useEntity();
+        return (
+          <AboutField label="My Field" gridSizes={{ xs: 12 }}>
+            <Typography>`This is my entity {e.metadata.name}`</Typography>
+          </AboutField>
+        );
+      };
+      const { getByText } = await renderInTestApp(
+        <EntityProvider entity={entity}>
+          <AboutContent entity={entity}>
+            <AboutCardBuiltInFields.Description />
+            <MyField />
+          </AboutContent>
+        </EntityProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
+      );
+
+      expect(getByText('My Field')).toBeInTheDocument();
+      expect(getByText('My Field').nextSibling).toHaveTextContent(
+        `This is my entity ${entity.metadata.name}`,
+      );
+      expect(getByText('Description')).toBeInTheDocument();
+      expect(getByText('Description').nextSibling).toHaveTextContent(
+        'This is the description',
+      );
     });
   });
 });

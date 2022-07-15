@@ -78,13 +78,14 @@ const useStyles = makeStyles({
  */
 export interface AboutCardProps {
   variant?: InfoCardVariants;
+  children?: React.ReactNode;
 }
 
 /**
  * Exported publicly via the EntityAboutCard
  */
 export function AboutCard(props: AboutCardProps) {
-  const { variant } = props;
+  const { variant, children } = props;
   const classes = useStyles();
   const { entity } = useEntity();
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
@@ -173,7 +174,7 @@ export function AboutCard(props: AboutCardProps) {
       />
       <Divider />
       <CardContent className={cardContentClass}>
-        <AboutContent entity={entity} />
+        <AboutContent entity={entity}>{children}</AboutContent>
       </CardContent>
     </Card>
   );
