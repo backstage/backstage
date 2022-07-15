@@ -69,7 +69,7 @@ Alternatively you can use VSCode with the Azure extension if you install `@azure
 When these are set up, the plugin will authenticate with the Microsoft Graph API without you needing to configure any credentials, or granting any special permissions.
 If you can't do this, you'll have to create an App Registration.
 
-## App Registration
+### App Registration
 
 If none of the other authentication methods work, you can create an app registration in the azure portal.  
 By default the graph plugin requires the following Application permissions (not Delegated) for Microsoft Graph:
