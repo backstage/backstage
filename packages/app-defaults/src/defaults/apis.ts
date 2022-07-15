@@ -175,9 +175,11 @@ export const apis = [
         discoveryApi,
         oauthRequestApi,
         environment,
-        defaultScopes: configApi.getOptionalStringArray(`auth.providers.okta.${environment}.scopes`),
+        defaultScopes: configApi.getOptionalStringArray(
+          `auth.providers.okta.${environment}.scopes`,
+        ),
       });
-    }
+    },
   }),
   createApiFactory({
     api: gitlabAuthApiRef,
