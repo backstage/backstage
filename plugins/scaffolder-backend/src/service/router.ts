@@ -193,33 +193,11 @@ export async function createRouter(
         ? await catalogClient.getEntityByRef(userEntityRef, { token })
         : undefined;
 
-      const auditlogEnabled = config.getOptionalBoolean(
-        'scaffolder.auditlog.enabled',
-      );
-
-      if (auditlogEnabled) {
-        const identityAnnotations = config.getOptionalStringArray(
-          'scaffolder.auditlog.identityAnnotations',
-        );
-
-        const logMe: { [key: string]: string }[] = [];
-
-        identityAnnotations?.forEach((prop: string) =>
-          logMe.push({
-            [prop]: userEntity?.metadata.annotations?.[prop] as string,
-          }),
-        );
-
-        let userLog = '';
-        if (userEntity) {
-          userLog = ` created by ${userEntity.metadata.name}`;
-          if (logMe.length > 0) {
-            userLog += ` ${JSON.stringify(logMe)}`;
-          }
-        }
-
-        logger.info(`Scaffolding task for '${templateRef}'${userLog}`);
+      let auditLog = `Scaffolding task for ${templateRef}`;
+      if (userEntityRef) {
+        auditLog += ` created by ${userEntityRef}`;
       }
+      logger.info(auditLog);
 
       const values = req.body.values;
 
