@@ -83,9 +83,13 @@ export const CatalogTable = (props: CatalogTableProps) => {
         case 'system':
           return [columnFactories.createOwnerColumn()];
         case 'group':
-        case 'location':
         case 'template':
           return [columnFactories.createSpecTypeColumn()];
+        case 'location':
+          return [
+            columnFactories.createSpecTypeColumn(),
+            columnFactories.createSpecTargetsColumn(),
+          ];
         default:
           return [
             columnFactories.createSystemColumn(),
