@@ -20,7 +20,12 @@ export type {
   BitbucketOAuthResult,
   BitbucketPassportProfile,
 } from './bitbucket';
-export type { CloudflareAccessResult } from './cloudflare-access';
+export type {
+  CloudflareAccessClaims,
+  CloudflareAccessGroup,
+  CloudflareAccessResult,
+  CloudflareAccessIdentityProfile,
+} from './cloudflare-access';
 export type { GithubOAuthResult } from './github';
 export type { OAuth2ProxyResult } from './oauth2-proxy';
 export type { OidcAuthResult } from './oidc';

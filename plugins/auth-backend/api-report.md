@@ -171,8 +171,34 @@ export class CatalogIdentityClient {
   resolveCatalogMembership(query: MemberClaimQuery): Promise<string[]>;
 }
 
-// Warning: (ae-missing-release-tag) "CloudflareAccessResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public
+export type CloudflareAccessClaims = {
+  aud: string[];
+  email: string;
+  exp: number;
+  iat: number;
+  nonce: string;
+  identity_nonce: string;
+  sub: string;
+  iss: string;
+  custom: string;
+};
+
+// @public
+export type CloudflareAccessGroup = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+// @public
+export type CloudflareAccessIdentityProfile = {
+  id: string;
+  name: string;
+  email: string;
+  groups: CloudflareAccessGroup[];
+};
+
 // @public (undocumented)
 export type CloudflareAccessResult = {
   claims: CloudflareAccessClaims;
@@ -740,9 +766,4 @@ export type WebMessageResponse =
       type: 'authorization_response';
       error: Error;
     };
-
-// Warnings were encountered during analysis:
-//
-// src/providers/cloudflare-access/provider.d.ts:77:5 - (ae-forgotten-export) The symbol "CloudflareAccessClaims" needs to be exported by the entry point index.d.ts
-// src/providers/cloudflare-access/provider.d.ts:78:5 - (ae-forgotten-export) The symbol "CloudflareAccessIdentityProfile" needs to be exported by the entry point index.d.ts
 ```

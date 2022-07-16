@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 export { cfAccess } from './provider';
-export type { CloudflareAccessResult } from './provider';
+export type {
+  CloudflareAccessClaims,
+  CloudflareAccessGroup,
+  CloudflareAccessResult,
+  CloudflareAccessIdentityProfile,
+} from './provider';

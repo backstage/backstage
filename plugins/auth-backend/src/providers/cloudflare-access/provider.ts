@@ -64,7 +64,14 @@ export type Options = {
   cache?: CacheClient;
 };
 
-/** @public */
+/**
+ * CloudflareAccessClaims
+ *
+ * Can be used in externally provided auth handler or sign in resolver to
+ * enrich user profile for sign-in user entity
+ *
+ * @public
+ */
 export type CloudflareAccessClaims = {
   /**
    * `aud` identifies the application to which the JWT is issued.
@@ -103,19 +110,45 @@ export type CloudflareAccessClaims = {
   custom: string;
 };
 
-type CloudflareAccessGroup = {
+/**
+ * CloudflareAccessGroup
+ *
+ * @public
+ */
+export type CloudflareAccessGroup = {
+  /**
+   * Group id
+   */
   id: string;
+  /**
+   * Name of group as defined in Cloudflare zero trust dashboard
+   */
   name: string;
+  /**
+   * Access group email address
+   */
   email: string;
 };
 
-type CloudflareAccessIdentityProfile = {
+/**
+ * CloudflareAccessIdentityProfile
+ *
+ * Can be used in externally provided auth handler or sign in resolver to
+ * enrich user profile for sign-in user entity
+ *
+ * @public
+ */
+export type CloudflareAccessIdentityProfile = {
   id: string;
   name: string;
   email: string;
   groups: CloudflareAccessGroup[];
 };
 
+/**
+ *
+ * @public
+ */
 export type CloudflareAccessResult = {
   claims: CloudflareAccessClaims;
   cfIdentity: CloudflareAccessIdentityProfile;
