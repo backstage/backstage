@@ -8788,9 +8788,9 @@ better-path-resolve@1.0.0:
     is-windows "^1.0.0"
 
 better-sqlite3@^7.5.0:
-  version "7.6.1"
-  resolved "https://registry.npmjs.org/better-sqlite3/-/better-sqlite3-7.6.1.tgz#bffc5515552ab950668f5e9f6c6d77463ab9f5e5"
-  integrity sha512-kI2NV1qjKyO2I7iDKgrsbpYR7CxNVrObiGVxbrwYJRy6Sjn/4N6YwZmi0LP2kWZswSqeJlnnEThoYJ7eKCmqAg==
+  version "7.6.2"
+  resolved "https://registry.npmjs.org/better-sqlite3/-/better-sqlite3-7.6.2.tgz#47cd8cad5b9573cace535f950ac321166bc31384"
+  integrity sha512-S5zIU1Hink2AH4xPsN0W43T1/AJ5jrPh7Oy07ocuW/AKYYY02GWzz9NH0nbSMn/gw6fDZ5jZ1QsHt1BXAwJ6Lg==
   dependencies:
     bindings "^1.5.0"
     prebuild-install "^7.1.0"
