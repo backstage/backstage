@@ -47,6 +47,11 @@ export default ({ theme, sidebar }: RuleOptions) => `
   height: 20px !important;
 }
 
+.md-nav__item--active > .md-nav__link, a.md-nav__link--active {
+  text-decoration: underline;
+  color: var(--md-typeset-a-color);
+}
+
 .md-main__inner {
   margin-top: 0;
 }
