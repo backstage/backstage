@@ -13,4 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { ApolloExplorer } from './ApolloExplorer';
+export { ApolloExplorerPage } from './ApolloExplorerPage';

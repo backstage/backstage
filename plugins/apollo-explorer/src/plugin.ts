@@ -31,7 +31,7 @@ export const ApolloExplorerPage = apolloExplorerPlugin.provide(
   createRoutableExtension({
     name: 'ApolloExplorerPage',
     component: () =>
-      import('./components/ApolloExplorer').then(m => m.ApolloExplorer),
+      import('./components/ApolloExplorerPage').then(m => m.ApolloExplorerPage),
     mountPoint: rootRouteRef,
   }),
 );
