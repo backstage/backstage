@@ -16,15 +16,29 @@
 
 import React from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
-import {
-  ApolloEndpointProps,
-  ApolloExplorerBrowser,
-} from '../ApolloExplorerBrowser/ApolloExplorerBrowser';
+import { ApolloExplorerBrowser } from '../ApolloExplorerBrowser';
+import { JSONObject } from '@apollo/explorer/src/helpers/types';
+
+type EndpointProps = {
+  title: string;
+  graphRef: string;
+  persistExplorerState?: boolean;
+  initialState?: {
+    document?: string;
+    variables?: JSONObject;
+    headers?: Record<string, string>;
+    displayOptions: {
+      docsPanelState?: 'open' | 'closed';
+      showHeadersAndEnvVars?: boolean;
+      theme?: 'dark' | 'light';
+    };
+  };
+};
 
 type Props = {
   title?: string | undefined;
   subtitle?: string | undefined;
-  endpoints: ApolloEndpointProps[];
+  endpoints: EndpointProps[];
 };
 
 export const ApolloExplorerPage = ({ title, subtitle, endpoints }: Props) => {
