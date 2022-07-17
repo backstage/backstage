@@ -50,7 +50,7 @@ const readFile = jest.fn(async (path: string) => {
     {
       [resolvePath(root, 'my-secret')]: 'secret',
       [resolvePath(root, 'with-newline-at-the-end')]:
-        'value without newline at the end\n',
+        'value without newline at the end\n\n',
       [resolvePath(root, 'my-data.json')]: '{"a":{"b":{"c":42}}}',
       [resolvePath(root, 'my-data.yaml')]: 'some:\n yaml:\n  key: 7',
       [resolvePath(root, 'my-data.yml')]: 'different: { key: hello }',
@@ -94,12 +94,12 @@ describe('includeTransform', () => {
       includeTransform({ $file: 'no-secret' }, root),
     ).rejects.toThrow('File not found!');
   });
-  it('should trim new lines from end of file', async () => {
+  it('should trim newlines from end of file', async () => {
     await expect(
       includeTransform({ $file: 'with-newline-at-the-end' }, root),
     ).resolves.toEqual({
       applied: true,
-      value: 'value without new line at the end',
+      value: 'value without newline at the end',
     });
   });
 
