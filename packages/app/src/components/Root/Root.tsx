@@ -117,11 +117,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
             to="cost-insights"
             text="Cost Insights"
           />
-          <SidebarItem
-            icon={GraphiQLIcon}
-            to="apollo-explorer"
-            text="Apollo Explorer"
-          />
+          <SidebarItem icon={GraphiQLIcon} to="graphiql" text="GraphiQL" />
         </SidebarScrollWrapper>
         <SidebarDivider />
         <Shortcuts />
