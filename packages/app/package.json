@@ -17,7 +17,7 @@
     "@backstage/integration-react": "^1.1.2-next.3",
     "@backstage/plugin-airbrake": "^0.3.7-next.3",
     "@backstage/plugin-api-docs": "^0.8.7-next.3",
-    "@backstage/plugin-apollo-explorer": "^0.0.0",
+    "@backstage/plugin-apollo-explorer": "^0.1.0",
     "@backstage/plugin-azure-devops": "^0.1.23-next.3",
     "@backstage/plugin-apache-airflow": "^0.2.0-next.3",
     "@backstage/plugin-badges": "^0.2.31-next.3",
