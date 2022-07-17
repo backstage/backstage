@@ -20,8 +20,8 @@ import { apolloExplorerPlugin, ApolloExplorerPage } from '../src/plugin';
 createDevApp()
   .registerPlugin(apolloExplorerPlugin)
   .addPage({
-    element: <ApolloExplorerPage />,
+    element: <ApolloExplorerPage endpoints={[]} />,
     title: 'Root Page',
-    path: '/apollo-explorer'
+    path: '/apollo-explorer',
   })
   .render();
