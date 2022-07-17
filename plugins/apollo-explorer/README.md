@@ -13,7 +13,7 @@ First things first, you will need an Apollo account, and a graph imported into y
 this plugin, so if you are totally new to Apollo, please reference their official
 documentation [here](https://www.apollographql.com/docs).
 
-Once you have a graph set up in Apollo, we need to grab the graph reference.  First, go to your Apollo graphs home page and choose the graph you wish to embed.
+Once you have a graph set up in Apollo, we need to grab the graph reference. First, go to your Apollo graphs home page and choose the graph you wish to embed.
 
 ![Apollo Graph List](./docs/img/apollo-graph-list.png)
 
