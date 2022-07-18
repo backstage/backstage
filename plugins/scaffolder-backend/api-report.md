@@ -408,6 +408,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   token?: string | undefined;
   projectid?: string | undefined;
   removeSourceBranch?: boolean | undefined;
+  assignee?: string | undefined;
 }>;
 
 // @public
