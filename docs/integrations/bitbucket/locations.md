@@ -26,6 +26,16 @@ integrations:
       token: ${BITBUCKET_SERVER_TOKEN}
 ```
 
+or with Basic Auth
+
+```yaml
+integrations:
+  bitbucketServer:
+    - host: bitbucket.company.com
+      username: ${BITBUCKET_SERVER_USERNAME}
+      password: ${BITBUCKET_SERVER_PASSWORD}
+```
+
 Directly under the `bitbucketServer` key is a list of provider configurations, where
 you can list the Bitbucket Server providers you want to fetch data from. Each entry is
 a structure with the following elements:
@@ -34,5 +44,9 @@ a structure with the following elements:
 - `token` (optional):
   An [personal access token](https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html)
   as expected by Bitbucket Server.
+- `username` (optional):
+  use for [Basic Auth](https://developer.atlassian.com/server/bitbucket/how-tos/command-line-rest/#authentication) for Bitbucket Server.
+- `password` (optional):
+  use for [Basic Auth](https://developer.atlassian.com/server/bitbucket/how-tos/command-line-rest/#authentication) for Bitbucket Server.
 - `apiBaseUrl` (optional): The URL of the Bitbucket Server API. For self-hosted
   installations, it is commonly at `https://<host>/rest/api/1.0`.
