@@ -5857,9 +5857,9 @@
     "@types/react-dom" "<18.0.0"
 
 "@testing-library/user-event@^14.0.0":
-  version "14.2.5"
-  resolved "https://registry.npmjs.org/@testing-library/user-event/-/user-event-14.2.5.tgz#a27a16ee7f915c22c62b9c065d743248ee79dcb6"
-  integrity sha512-xcSw47H8JidxQPAqPlHp4l51EYJx+2TlHgYBW9i+noNlgUMMrhgtefnrWcpZ1k9ep6SMhJVyx3N7F4tIKTuJ9w==
+  version "14.2.6"
+  resolved "https://registry.npmjs.org/@testing-library/user-event/-/user-event-14.2.6.tgz#9ba313a212994eea66e018520e23542ac3eb6fbe"
+  integrity sha512-l/4W4x3Lm24wkWNkPasXqvEzG+a6n2X872XCUjhyfbNqcoOapaWyCxC5Fz+E4r7JPu8gysQKSSCrK0OO2x+D+A==
 
 "@tokenizer/token@^0.3.0":
   version "0.3.0"
