@@ -17,17 +17,17 @@
 import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
+  Entity,
   parseEntityRef,
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { Entity } from '@backstage/catalog-model';
 import { Config, JsonObject } from '@backstage/config';
 import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import {
-  TemplateEntityV1beta3,
   TaskSpec,
+  TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
 import { JsonValue } from '@backstage/types';
@@ -35,8 +35,8 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
 import { Logger } from 'winston';
-import { TemplateFilter } from '../lib';
 import { z } from 'zod';
+import { TemplateFilter } from '../lib';
 import {
   createBuiltinActions,
   DatabaseTaskStore,
@@ -47,7 +47,7 @@ import {
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-import { getEntityBaseUrl, getWorkingDirectory, findTemplate } from './helpers';
+import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
 
 /**
  * RouterOptions
@@ -192,6 +192,12 @@ export async function createRouter(
       const userEntity = userEntityRef
         ? await catalogClient.getEntityByRef(userEntityRef, { token })
         : undefined;
+
+      let auditLog = `Scaffolding task for ${templateRef}`;
+      if (userEntityRef) {
+        auditLog += ` created by ${userEntityRef}`;
+      }
+      logger.info(auditLog);
 
       const values = req.body.values;
 
