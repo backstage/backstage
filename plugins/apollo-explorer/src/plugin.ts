@@ -20,6 +20,10 @@ import {
 
 import { rootRouteRef } from './routes';
 
+/**
+ * Plugin that allows Apollo Explorer instances to be directly embedded into Backstage
+ * @public
+ */
 export const apolloExplorerPlugin = createPlugin({
   id: 'apollo-explorer',
   routes: {
@@ -27,6 +31,10 @@ export const apolloExplorerPlugin = createPlugin({
   },
 });
 
+/**
+ * Main component that wraps the embedded graph(s)
+ * @public
+ */
 export const ApolloExplorerPage = apolloExplorerPlugin.provide(
   createRoutableExtension({
     name: 'ApolloExplorerPage',
