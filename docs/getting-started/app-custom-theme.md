@@ -338,6 +338,57 @@ const app = createApp({
 [...]
 ```
 
+## Adding Icons
+
+You can add more icons, if the [default icons](https://github.com/backstage/backstage/blob/8d83f5cb4fa0544b0f9160ac22bd5f0f1fe285c6/packages/app-defaults/src/defaults/icons.tsx#L38) do not fit your needs, so that they can be used in other places like for Links in your entities. For this example we'll be using icons from[Material UI](https://v4.mui.com/components/material-icons/) and specifically the `AlarmIcon`. Here's how to do that:
+
+1. First you will want to open your `App.tsx` in `/packages/app/src`
+2. Then you want to import your icon, add this to the rest of your imports: `import AlarmIcon from '@material-ui/icons/Alarm';`
+3. Next you want to add the icon like this to your `createApp`:
+
+   ```diff
+     const app = createApp({
+       apis: ...,
+       plugins: ...,
+   +   icons: {
+   +     alert: AlarmIcon,
+   +   },
+       themes: ...,
+       components: ...,
+     });
+   ```
+
+4. Now we can reference `alert` for our icon in our entity links like this:
+
+   ```yaml
+   apiVersion: backstage.io/v1alpha1
+   kind: Component
+   metadata:
+     name: artist-lookup
+     description: Artist Lookup
+     links:
+       - url: https://example.com/alert
+         title: Alerts
+         icon: alert
+   ```
+
+   And this is the result:
+
+   ![Example Link with Alert icon](../assets/getting-started/add-icons-links-example.png)
+
+   Another way you can use these icons is from the `AppContext` like this:
+
+   ```ts
+   import { useApp } from '@backstage/core-plugin-api';
+
+   const app = useApp();
+   const alertIcon = app.getSystemIcon('alert');
+   ```
+
+   You might want to use this method if you have an icon you want to use in several locations.
+
+Note: If the icon is not available as one of the default icons or one you've added then it will fall back to Material UI's `LanguageIcon`
+
 ## Custom Homepage
 
 In addition to a custom theme, a custom logo, you can also customize the

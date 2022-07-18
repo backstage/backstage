@@ -71,6 +71,7 @@ import {
   AppComponents,
   AppConfigLoader,
   AppContext,
+  AppIcons,
   AppOptions,
   BackstageApp,
   SignInPageProps,
@@ -153,6 +154,10 @@ class AppContextImpl implements AppContext {
     return this.app.getSystemIcon(key);
   }
 
+  getSystemIcons(): AppIcons & { [key in string]: IconComponent } {
+    return this.app.getSystemIcons();
+  }
+
   getComponents(): AppComponents {
     return this.app.getComponents();
   }
@@ -192,6 +197,10 @@ export class AppManager implements BackstageApp {
 
   getSystemIcon(key: string): IconComponent | undefined {
     return this.icons[key];
+  }
+
+  getSystemIcons(): AppIcons & { [key in string]: IconComponent } {
+    return this.icons;
   }
 
   getComponents(): AppComponents {

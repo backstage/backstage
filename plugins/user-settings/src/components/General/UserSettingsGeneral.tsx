@@ -18,6 +18,7 @@ import React from 'react';
 import { UserSettingsProfileCard } from './UserSettingsProfileCard';
 import { UserSettingsAppearanceCard } from './UserSettingsAppearanceCard';
 import { UserSettingsIdentityCard } from './UserSettingsIdentityCard';
+import { UserSettingsAvailableIconsTable } from './UserSettingsAvailableIconsTable';
 
 export const UserSettingsGeneral = () => {
   return (
@@ -30,6 +31,9 @@ export const UserSettingsGeneral = () => {
       </Grid>
       <Grid item xs={12} md={6}>
         <UserSettingsIdentityCard />
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <UserSettingsAvailableIconsTable />
       </Grid>
     </Grid>
   );

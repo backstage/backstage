@@ -149,6 +149,9 @@ export type AppComponents = {
 export type AppContext = {
   getPlugins(): BackstagePlugin_2[];
   getSystemIcon(key: string): IconComponent_2 | undefined;
+  getSystemIcons(): AppIcons & {
+    [key in string]: IconComponent_2;
+  };
   getComponents(): AppComponents;
 };
 
@@ -780,4 +783,8 @@ export function withApis<T>(apis: TypesToApiRefs<T>): <P extends T>(
   (props: React_2.PropsWithChildren<Omit<P, keyof T>>): JSX.Element;
   displayName: string;
 };
+
+// Warnings were encountered during analysis:
+//
+// /backstage/dist-types/packages/core-app-api/src/app/types.d.ts:277:5 - (ae-forgotten-export) The symbol "AppIcons" needs to be exported by the entry point index.d.ts
 ```
