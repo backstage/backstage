@@ -48,6 +48,7 @@ export function createPublishGithubAction(options: {
     access?: string;
     defaultBranch?: string;
     protectDefaultBranch?: boolean;
+    protectEnforceAdmins?: boolean;
     deleteBranchOnMerge?: boolean;
     gitCommitMessage?: string;
     gitAuthorName?: string;
@@ -93,6 +94,7 @@ export function createPublishGithubAction(options: {
           repoVisibility: inputProps.repoVisibility,
           defaultBranch: inputProps.defaultBranch,
           protectDefaultBranch: inputProps.protectDefaultBranch,
+          protectEnforceAdmins: inputProps.protectEnforceAdmins,
           deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
           gitCommitMessage: inputProps.gitCommitMessage,
           gitAuthorName: inputProps.gitAuthorName,
@@ -124,6 +126,7 @@ export function createPublishGithubAction(options: {
         repoVisibility = 'private',
         defaultBranch = 'master',
         protectDefaultBranch = true,
+        protectEnforceAdmins = true,
         deleteBranchOnMerge = false,
         gitCommitMessage = 'initial commit',
         gitAuthorName,
@@ -176,6 +179,7 @@ export function createPublishGithubAction(options: {
         ctx.input.sourcePath,
         defaultBranch,
         protectDefaultBranch,
+        protectEnforceAdmins,
         owner,
         client,
         repo,
