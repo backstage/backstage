@@ -1,5 +1,16 @@
 # @backstage/cli
 
+## 0.18.0-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- e662b573cf: Updated dependency `@octokit/request` to `^6.0.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.3-next.1
+  - @backstage/release-manifests@0.0.5-next.0
+
 ## 0.18.0-next.2
 
 ### Patch Changes

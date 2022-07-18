@@ -909,10 +909,10 @@
   resolved "https://registry.npmjs.org/@sindresorhus/is/-/is-0.7.0.tgz#9a06f4f137ee84d7df0460c1fdb1135ffa6c50fd"
   integrity sha512-ONhaKPIufzzrlNbqtWFFd+jlnemX6lJAgq9ZeiZtS7I1PIf/la7CW4m83rTXRnVnsMbW2k56pGYu7AUFJD9Pow==
 
-"@spotify/prettier-config@^13.0.1":
-  version "13.0.1"
-  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-13.0.1.tgz#0fdceb3d4ab543259ce6adc0ec1d10e34898b812"
-  integrity sha512-oVd4hjx2+y0MeUdk1l+ItwVLwlrDlvTlGwXBWMMzPYc7DLyxuxFvDfoHGkAQkrikfAgtdnzxrW6u9a8ywUqdfw==
+"@spotify/prettier-config@^14.0.0":
+  version "14.0.1"
+  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-14.0.1.tgz#a3a2342ec07693647ab76a64a623fbb79d464fa7"
+  integrity sha512-NHT7IpIVOsAMhPfDVf1S/jfq59j7d2ru3XoU9An/Aqy9MDr/ZmAvQEAPFiz+qlm41xEGkNK34yEi71LC03G2oA==
 
 "@types/cheerio@^0.22.8":
   version "0.22.23"

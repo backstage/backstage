@@ -408,6 +408,9 @@ export async function createElasticSearchClientOptions(
     const AWSConnection = createAWSConnection(awsCredentials);
     return {
       provider: 'aws',
+      // todo(backstage/techdocs-core): Remove the following ts-ignore when
+      // aws-os-connection is updated to work with opensearch >= 2.0.0
+      // @ts-ignore
       node: config.getString('node'),
       ...AWSConnection,
       ...(sslConfig

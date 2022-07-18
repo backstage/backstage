@@ -6,13 +6,18 @@ This provider is useful if you want to import users and groups from Azure Active
 
 ## Getting Started
 
-1. Create or use an existing App registration in the [Microsoft Azure Portal](https://portal.azure.com/).
-   The App registration requires at least the API permissions `Group.Read.All`,
-   `GroupMember.Read.All`, `User.Read` and `User.Read.All` for Microsoft Graph
-   (if you still run into errors about insufficient privileges, add
-   `Team.ReadBasic.All` and `TeamMember.Read.All` too).
+1. Choose your authentication method - all methods supported by [DefaultAzureCredential](https://docs.microsoft.com/en-us/javascript/api/overview/azure/identity-readme?view=azure-node-latest#defaultazurecredential)
 
-2. Configure the entity provider:
+   - For local dev, use Azure CLI, Azure PowerShell or Visual Studio Code for authentication
+   - If your infrastructure supports Managed Identity, use that
+   - Otherwise use an App Registration
+
+1. If using Managed Identity or App Registration for authentication, grant the following application permissions (not delegated)
+
+   - `GroupMember.Read.All`
+   - `User.Read.All`
+
+1. Configure the entity provider:
 
 ```yaml
 # app-config.yaml
@@ -24,11 +29,13 @@ catalog:
         authority: https://login.microsoftonline.com
         # If you don't know you tenantId, you can use Microsoft Graph Explorer
         # to query it
-        tenantId: ${MICROSOFT_GRAPH_TENANT_ID}
+        tenantId: ${AZURE_TENANT_ID}
+        # Optional ClientId and ClientSecret if you don't want to use `DefaultAzureCredential`
+        # for authentication
         # Client Id and Secret can be created under Certificates & secrets in
         # the App registration in the Microsoft Azure Portal.
-        clientId: ${MICROSOFT_GRAPH_CLIENT_ID}
-        clientSecret: ${MICROSOFT_GRAPH_CLIENT_SECRET_TOKEN}
+        clientId: ${AZURE_CLIENT_ID}
+        clientSecret: ${AZURE_CLIENT_SECRET}
         # Optional mode for querying which defaults to "basic".
         # By default, the Microsoft Graph API only provides the basic feature set
         # for querying. Certain features are limited to advanced querying capabilities.
@@ -108,8 +115,9 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-msgraph
 +    MicrosoftGraphOrgEntityProvider.fromConfig(env.config, {
 +      logger: env.logger,
 +      schedule: env.scheduler.createScheduledTaskRunner({
-+        frequency: { minutes: 5 },
-+        timeout: { minutes: 3 },
++        frequency: { hours: 1 },
++        timeout: { minutes: 50 },
++        initialDelay: { seconds: 15}
 +      }),
 +    }),
 +  );

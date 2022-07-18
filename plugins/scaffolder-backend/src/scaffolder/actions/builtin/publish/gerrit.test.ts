@@ -16,6 +16,7 @@
 
 jest.mock('../helpers');
 
+import path from 'path';
 import { createPublishGerritAction } from './gerrit';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -62,13 +63,6 @@ describe('publish:gerrit', () => {
   });
 
   it('should throw an error when the repoUrl is not well formed', async () => {
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { repoUrl: 'gerrithost.org?workspace=w&repo=repo', description },
-      }),
-    ).rejects.toThrow(/missing owner/);
-
     await expect(
       action.handler({
         ...mockContext,
@@ -137,6 +131,107 @@ describe('publish:gerrit', () => {
       'https://gerrithost.org/repo/+/refs/heads/master',
     );
   });
+
+  it('can correctly create a new project with a specific sourcePath', async () => {
+    expect.assertions(5);
+    server.use(
+      rest.put('https://gerrithost.org/a/projects/repo', (req, res, ctx) => {
+        expect(req.headers.get('Authorization')).toBe(
+          'Basic Z2Vycml0dXNlcjp1c2VydG9rZW4=',
+        );
+        expect(req.body).toEqual({
+          create_empty_commit: false,
+          owners: ['owner'],
+          description,
+          parent: 'workspace',
+        });
+        return res(
+          ctx.status(201),
+          ctx.set('Content-Type', 'application/json'),
+          ctx.json({}),
+        );
+      }),
+    );
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        repoUrl: 'gerrithost.org?workspace=workspace&owner=owner&repo=repo',
+        sourcePath: 'repository/',
+      },
+    });
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: `${mockContext.workspacePath}${path.sep}repository${path.sep}`,
+      remoteUrl: 'https://gerrithost.org/a/repo',
+      defaultBranch: 'master',
+      auth: { username: 'gerrituser', password: 'usertoken' },
+      logger: mockContext.logger,
+      commitMessage: expect.stringContaining('initial commit\n\nChange-Id:'),
+      gitAuthorInfo: {},
+    });
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'remoteUrl',
+      'https://gerrithost.org/a/repo',
+    );
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'repoContentsUrl',
+      'https://gerrithost.org/repo/+/refs/heads/master',
+    );
+  });
+
+  it('can correctly create a new project without specifying owner', async () => {
+    expect.assertions(5);
+    server.use(
+      rest.put('https://gerrithost.org/a/projects/repo', (req, res, ctx) => {
+        expect(req.headers.get('Authorization')).toBe(
+          'Basic Z2Vycml0dXNlcjp1c2VydG9rZW4=',
+        );
+        expect(req.body).toEqual({
+          create_empty_commit: false,
+          owners: [],
+          description,
+          parent: 'workspace',
+        });
+        return res(
+          ctx.status(201),
+          ctx.set('Content-Type', 'application/json'),
+          ctx.json({}),
+        );
+      }),
+    );
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        repoUrl: 'gerrithost.org?workspace=workspace&repo=repo',
+        sourcePath: 'repository/',
+      },
+    });
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: `${mockContext.workspacePath}/repository/`,
+      remoteUrl: 'https://gerrithost.org/a/repo',
+      defaultBranch: 'master',
+      auth: { username: 'gerrituser', password: 'usertoken' },
+      logger: mockContext.logger,
+      commitMessage: expect.stringContaining('initial commit\n\nChange-Id:'),
+      gitAuthorInfo: {},
+    });
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'remoteUrl',
+      'https://gerrithost.org/a/repo',
+    );
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'repoContentsUrl',
+      'https://gerrithost.org/repo/+/refs/heads/master',
+    );
+  });
+
   afterEach(() => {
     jest.resetAllMocks();
   });

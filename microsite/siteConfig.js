@@ -40,6 +40,7 @@ const siteConfig = {
 
   // Google Analytics
   gaTrackingId: 'UA-163836834-5',
+  gaGtag: true,
 
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [

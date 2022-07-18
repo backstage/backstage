@@ -31,5 +31,6 @@ export * from './api';
 export * from './kubernetes-auth-provider';
 export * from './utils/clusterLinks';
 export * from './components';
+export * from './error-detection';
 export * from './hooks';
 export * from './types';

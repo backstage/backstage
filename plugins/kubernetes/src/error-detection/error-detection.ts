@@ -21,8 +21,12 @@ import { detectErrorsInPods } from './pods';
 import { detectErrorsInDeployments } from './deployments';
 import { detectErrorsInHpa } from './hpas';
 
-// For each cluster try to find errors in each of the object types provided
-// returning a map of cluster names to errors in that cluster
+/**
+ * For each cluster try to find errors in each of the object types provided
+ * returning a map of cluster names to errors in that cluster
+ *
+ * @alpha
+ */
 export const detectErrors = (
   objects: ObjectsByEntityResponse,
 ): DetectedErrorsByCluster => {

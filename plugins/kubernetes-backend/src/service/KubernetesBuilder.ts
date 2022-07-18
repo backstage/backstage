@@ -186,7 +186,11 @@ export class KubernetesBuilder {
     refreshInterval: Duration,
   ): KubernetesClustersSupplier {
     const config = this.env.config;
-    return getCombinedClusterSupplier(config, refreshInterval);
+    return getCombinedClusterSupplier(
+      config,
+      this.env.catalogApi,
+      refreshInterval,
+    );
   }
 
   protected buildObjectsProvider(

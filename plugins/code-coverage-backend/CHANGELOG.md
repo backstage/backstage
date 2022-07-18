@@ -1,5 +1,22 @@
 # @backstage/plugin-code-coverage-backend
 
+## 0.2.0-next.3
+
+### Minor Changes
+
+- d70aaa7622: Cleaned up API exports.
+
+  The `CodeCoverageApi` and `makeRouter` exports have been removed from the backend, since they were not meant to be exported in the first place.
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/catalog-client@1.0.4-next.2
+  - @backstage/integration@1.2.2-next.3
+  - @backstage/catalog-model@1.1.0-next.3
+
 ## 0.1.32-next.2
 
 ### Patch Changes

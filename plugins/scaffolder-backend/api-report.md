@@ -107,6 +107,7 @@ export function createFetchTemplateAction(options: {
   values: any;
   templateFileExtension?: string | boolean | undefined;
   copyWithoutRender?: string[] | undefined;
+  copyWithoutTemplating?: string[] | undefined;
   cookiecutterCompat?: boolean | undefined;
 }>;
 
@@ -317,6 +318,7 @@ export function createPublishGerritAction(options: {
   gitCommitMessage?: string | undefined;
   gitAuthorName?: string | undefined;
   gitAuthorEmail?: string | undefined;
+  sourcePath?: string | undefined;
 }>;
 
 // @public
