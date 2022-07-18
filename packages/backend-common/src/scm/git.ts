@@ -66,6 +66,13 @@ export class Git {
     return git.addRemote({ fs, dir, remote, url });
   }
 
+  async checkout(options: { dir: string; ref: string }): Promise<void> {
+    const { dir, ref } = options;
+    this.config.logger?.info(`Checking out branch {dir=${dir},ref=${ref}}`);
+
+    return git.checkout({ fs, dir, ref });
+  }
+
   async commit(options: {
     dir: string;
     message: string;
@@ -190,8 +197,8 @@ export class Git {
     });
   }
 
-  async push(options: { dir: string; remote: string }) {
-    const { dir, remote } = options;
+  async push(options: { dir: string; remote: string; remoteRef?: string }) {
+    const { dir, remote, remoteRef } = options;
     this.config.logger?.info(
       `Pushing directory to remote {dir=${dir},remote=${remote}}`,
     );
@@ -205,6 +212,7 @@ export class Git {
           'user-agent': 'git/@isomorphic-git',
         },
         remote: remote,
+        remoteRef: remoteRef,
         onAuth: this.onAuth,
       });
     } catch (ex) {

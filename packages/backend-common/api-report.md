@@ -339,6 +339,8 @@ export class Git {
     remote: string;
     url: string;
   }): Promise<void>;
+  // (undocumented)
+  checkout(options: { dir: string; ref: string }): Promise<void>;
   clone(options: {
     url: string;
     dir: string;
@@ -387,7 +389,11 @@ export class Git {
     };
   }): Promise<MergeResult>;
   // (undocumented)
-  push(options: { dir: string; remote: string }): Promise<PushResult>;
+  push(options: {
+    dir: string;
+    remote: string;
+    remoteRef?: string;
+  }): Promise<PushResult>;
   readCommit(options: { dir: string; sha: string }): Promise<ReadCommitResult>;
   resolveRef(options: { dir: string; ref: string }): Promise<string>;
 }
