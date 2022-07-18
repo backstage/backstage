@@ -125,8 +125,12 @@ export class GitlabUrlReader implements UrlReader {
     );
 
     // Considering self hosted gitlab with relative
+    // assuming '/gitlab' is the relative path
+    // from: /gitlab/repo/project
+    // to: repo/project
     if (relativePath) {
-      repoFullName = trimStart(full_name, relativePath);
+      const rectifiedRelativePath = `${trimStart(relativePath, '/')}/`;
+      repoFullName = full_name.replace(rectifiedRelativePath, '');
     }
 
     // Use GitLab API to get the default branch
