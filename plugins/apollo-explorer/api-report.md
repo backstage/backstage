@@ -9,9 +9,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { JSONObject } from '@apollo/explorer/src/helpers/types';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "ApolloExplorerPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const ApolloExplorerPage: ({
   title,
   subtitle,
@@ -38,9 +36,7 @@ export const ApolloExplorerPage: ({
   }[];
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "apolloExplorerPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const apolloExplorerPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
