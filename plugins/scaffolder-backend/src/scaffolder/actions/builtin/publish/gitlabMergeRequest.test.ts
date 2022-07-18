@@ -336,5 +336,45 @@ describe('createGitLabMergeRequest', () => {
         },
       );
     });
+
+    it('merge request is successfully created without an assignee when assignee is not found in Gitlab', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'This is an important change',
+        removeSourceBranch: false,
+        draft: true,
+        targetPath: 'Subdirectory',
+        assignee: 'Unknown',
+      };
+      mockFs({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+          irrelevant: { 'bar.txt': 'Nothing to see here' },
+        },
+      });
+
+      const ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'This is an important change',
+          removeSourceBranch: false,
+        },
+      );
+    });
   });
 });

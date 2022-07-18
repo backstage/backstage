@@ -161,8 +161,8 @@ export const createPublishGitlabMergeRequestAction = (options: {
           const assigneeUser = await api.Users.username(assignee);
           assigneeId = assigneeUser[0].id;
         } catch (e) {
-          throw new InputError(
-            `Failed to find gitlab user id for ${assignee}: ${e}`,
+          console.warn(
+            `Failed to find gitlab user id for ${assignee}: ${e}. Proceeding with MR creation without an assignee.`,
           );
         }
       }
