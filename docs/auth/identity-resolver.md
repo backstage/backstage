@@ -273,10 +273,7 @@ that the user belongs to using the user access token in the provided result obje
 
 ```ts
 // File: packages/backend/src/plugins/auth.ts
-import {
-  createRouter,
-  providers,
-} from '@backstage/plugin-auth-backend';
+import { createRouter, providers } from '@backstage/plugin-auth-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 import {
@@ -294,11 +291,13 @@ export default async function createPlugin(
         signIn: {
           resolver: async ({ profile }, ctx) => {
             if (!profile.email) {
-              throw new Error('Login failed, user profile does not contain an email');
+              throw new Error(
+                'Login failed, user profile does not contain an email',
+              );
             }
             // Split the email into the local part and the domain.
             const [localPart, domain] = profile.email.split('@');
-            
+
             // Next we verify the email domain. It is recommended to include this
             // kind of check if you don't look up the user in an external service.
             if (domain !== 'acme.org') {
@@ -306,7 +305,7 @@ export default async function createPlugin(
                 `Login failed, this email ${profile.email} does not belong to the expected domain`,
               );
             }
-            
+
             // By using `stringifyEntityRef` we ensure that the reference is formatted correctly
             const userEntity = stringifyEntityRef({
               kind: 'User',
