@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-backend': patch
+'@backstage/plugin-scaffolder-backend': minor
 ---
 
-Add enforceAdmins as scaffolder input to branch protection github config
+Add `protectEnforceAdmins` as an option to GitHub publish actions
