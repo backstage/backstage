@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-backend': patch
+'@backstage/plugin-scaffolder-backend': minor
 ---
 
-Updated publish:gitlab:merge-request action to allow commit updates and deletes
+Updated `publish:gitlab:merge-request` action to allow commit updates and deletes
