@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-kubernetes-backend",
   "description": "A Backstage backend plugin that integrates towards Kubernetes",
-  "version": "0.7.0-next.3",
+  "version": "0.7.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -36,13 +36,13 @@
   },
   "dependencies": {
     "@azure/identity": "^2.0.4",
-    "@backstage/backend-common": "^0.14.1-next.3",
-    "@backstage/catalog-client": "^1.0.4-next.2",
-    "@backstage/catalog-model": "^1.1.0-next.3",
+    "@backstage/backend-common": "^0.14.1",
+    "@backstage/catalog-client": "^1.0.4",
+    "@backstage/catalog-model": "^1.1.0",
     "@backstage/config": "^1.0.1",
-    "@backstage/errors": "^1.1.0-next.0",
-    "@backstage/plugin-auth-node": "^0.2.3-next.2",
-    "@backstage/plugin-kubernetes-common": "^0.4.0-next.2",
+    "@backstage/errors": "^1.1.0",
+    "@backstage/plugin-auth-node": "^0.2.3",
+    "@backstage/plugin-kubernetes-common": "^0.4.0",
     "@google-cloud/container": "^4.0.0",
     "@kubernetes/client-node": "^0.17.0",
     "@types/express": "^4.17.6",
@@ -63,7 +63,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.18.0-next.3",
+    "@backstage/cli": "^0.18.0",
     "@types/aws4": "^1.5.1",
     "aws-sdk-mock": "^5.2.1",
     "supertest": "^6.1.3"

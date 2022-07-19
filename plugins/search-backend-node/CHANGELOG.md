@@ -1,5 +1,21 @@
 # @backstage/plugin-search-backend-node
 
+## 1.0.0
+
+### Major Changes
+
+- 7bd7d336b2: This package has been promoted to 1.0. Read more about what it means in [New release: Backstage Search 1.0 blog](https://backstage.io/blog/2022/07/19/releasing-backstage-search-1.0)
+
+### Patch Changes
+
+- a21cd43467: Exports `MissingIndexError` that can be used by the search engines for better error handling when missing index.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/plugin-search-common@1.0.0
+  - @backstage/plugin-permission-common@0.6.3
+  - @backstage/backend-tasks@0.3.3
+  - @backstage/errors@1.1.0
+
 ## 0.6.3-next.2
 
 ### Patch Changes

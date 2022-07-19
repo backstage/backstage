@@ -1,5 +1,21 @@
 # @backstage/catalog-model
 
+## 1.1.0
+
+### Minor Changes
+
+- 4cc81372f8: Introduced `GroupDefaultParentEntityPolicy` to set a default group entity parent.
+- 1380b389dc: Adding an optional type field to entity links to group and categorize links
+
+### Patch Changes
+
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+- f9f1de8100: Add shared annotations for Kubernetes clusters
+- f1dcc6f3c6: Added type predicates for all entity types, e.g. isUserEntity
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.0
+
 ## 1.1.0-next.3
 
 ### Patch Changes

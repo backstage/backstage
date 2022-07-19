@@ -1,5 +1,42 @@
 # @backstage/plugin-home
 
+## 0.4.23
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- a46e317a75: Added support for customizing the time format used in the `HeaderWorldClock` component
+
+  Here's an example of how this can be used in the `HomePage.tsx` found in `\packages\app\src\components\home` to change the clock to be in the 24hr time format:
+
+  ```diff
+  +const timeFormat: Intl.DateTimeFormatOptions = {
+  +  hour: '2-digit',
+  +  minute: '2-digit',
+  +  hour12: false,
+  +};
+
+  export const homePage = (
+    <Page themeId="home">
+      <Header title={<WelcomeTitle />} pageTitleOverride="Home">
+  +      <HeaderWorldClock clockConfigs={clockConfigs} customTimeFormat={timeFormat} />
+      </Header>
+      <Content>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <HomePageSearchBar />
+          </Grid>
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/plugin-stack-overflow@0.1.3
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/theme@0.2.16
+
 ## 0.4.23-next.3
 
 ### Patch Changes

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-vault-backend",
   "description": "A Backstage backend plugin that integrates towards Vault",
-  "version": "0.2.0-next.3",
+  "version": "0.2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -34,11 +34,11 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.14.1-next.3",
-    "@backstage/backend-tasks": "^0.3.3-next.3",
-    "@backstage/backend-test-utils": "^0.1.26-next.3",
+    "@backstage/backend-common": "^0.14.1",
+    "@backstage/backend-tasks": "^0.3.3",
+    "@backstage/backend-test-utils": "^0.1.26",
     "@backstage/config": "^1.0.1",
-    "@backstage/errors": "^1.1.0-next.0",
+    "@backstage/errors": "^1.1.0",
     "@types/express": "*",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
@@ -51,7 +51,7 @@
     "yn": "^5.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.18.0-next.3",
+    "@backstage/cli": "^0.18.0",
     "@types/compression": "^1.7.2",
     "@types/supertest": "^2.0.8",
     "msw": "^0.44.0",

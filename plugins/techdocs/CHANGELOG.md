@@ -1,5 +1,49 @@
 # @backstage/plugin-techdocs
 
+## 1.3.0
+
+### Minor Changes
+
+- ebf3eb1641: Use the same initial filter `owned` for the `TechDocsIndexPage` as for the `CatalogPage`.
+
+  If you prefer to keep the previous behavior, you can change the default for the initial filter
+  to `all` (or `starred` if you rather prefer that).
+
+  ```
+  <TechDocsIndexPage initiallySelectedFilter="all" />
+  ```
+
+  In general, with this change you will be able to set props at `TechDocsIndexPage`.
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- 3cbebf710e: Reorder browser tab title in Techdocs pages to have the site name first.
+- 726577958f: Remove the 60% factor from the font size calculation of headers to use the exact size defined in BackstageTheme.
+- 7739141ab2: Fix: When docs are shown in an entity page under the docs tab the sidebars start overlapping with the header and tabs in the page when you scroll the documentation content.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-techdocs-react@1.0.2
+  - @backstage/plugin-search-react@1.0.0
+  - @backstage/plugin-search-common@1.0.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/integration@1.2.2
+  - @backstage/integration-react@1.1.2
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/theme@0.2.16
+  - @backstage/errors@1.1.0
+
 ## 1.2.1-next.3
 
 ### Patch Changes
