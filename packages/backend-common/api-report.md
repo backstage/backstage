@@ -569,6 +569,11 @@ export type ReadUrlResponseFactoryFromStreamOptions = {
 };
 
 // @public
+export function redactLogLine(
+  info: winston.Logform.TransformableInfo,
+): winston.Logform.TransformableInfo;
+
+// @public
 export function requestLoggingHandler(logger?: Logger): RequestHandler;
 
 // @public
