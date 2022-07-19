@@ -48,14 +48,32 @@ describe('Git', () => {
       const dir = 'mockdirectory';
       const remote = 'origin';
       const url = 'git@github.com/something/sads';
+      const force = true;
 
-      await git.addRemote({ dir, remote, url });
+      await git.addRemote({ dir, remote, url, force });
 
       expect(isomorphic.addRemote).toHaveBeenCalledWith({
         fs,
         dir,
         remote,
         url,
+        force,
+      });
+    });
+  });
+
+  describe('deleteRemote', () => {
+    it('should call isomorphic-git with the correct arguments', async () => {
+      const git = Git.fromAuth({});
+      const dir = 'mockdirectory';
+      const remote = 'origin';
+
+      await git.deleteRemote({ dir, remote });
+
+      expect(isomorphic.deleteRemote).toHaveBeenCalledWith({
+        fs,
+        dir,
+        remote,
       });
     });
   });
@@ -295,14 +313,18 @@ describe('Git', () => {
         password: 'hunter2',
       };
       const git = Git.fromAuth(auth);
+      const remoteRef = 'master';
+      const force = true;
 
-      await git.push({ dir, remote });
+      await git.push({ dir, remote, remoteRef, force });
 
       expect(isomorphic.push).toHaveBeenCalledWith({
         fs,
         http,
         remote,
         dir,
+        remoteRef,
+        force,
         onProgress: expect.any(Function),
         headers: {
           'user-agent': 'git/@isomorphic-git',
@@ -318,8 +340,10 @@ describe('Git', () => {
         password: 'hunter2',
       };
       const git = Git.fromAuth(auth);
+      const remoteRef = 'master';
+      const force = true;
 
-      await git.push({ remote, dir });
+      await git.push({ remote, dir, remoteRef, force });
 
       const { onAuth } = (
         isomorphic.push as unknown as jest.Mock<typeof isomorphic['push']>
@@ -336,6 +360,8 @@ describe('Git', () => {
         password: 'hunter2',
       };
       const git = Git.fromAuth(auth);
+      const remoteRef = 'master';
+      const force = true;
 
       (isomorphic.push as jest.Mock).mockImplementation(() => {
         const error: Error & { data?: unknown } = new Error('mock error');
@@ -344,7 +370,7 @@ describe('Git', () => {
         throw error;
       });
 
-      await expect(git.push({ remote, dir })).rejects.toThrow(
+      await expect(git.push({ remote, dir, remoteRef, force })).rejects.toThrow(
         'more information here',
       );
     });
