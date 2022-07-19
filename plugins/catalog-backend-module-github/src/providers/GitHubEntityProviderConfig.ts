@@ -24,9 +24,7 @@ export type GitHubEntityProviderConfig = {
 export function readProviderConfigs(
   config: Config,
 ): GitHubEntityProviderConfig[] {
-  const providersConfig = config.getOptionalConfig(
-    'catalog.providers.github',
-  );
+  const providersConfig = config.getOptionalConfig('catalog.providers.github');
   if (!providersConfig) {
     return [];
   }
@@ -42,9 +40,9 @@ function readProviderConfig(
   id: string,
   config: Config,
 ): GitHubEntityProviderConfig {
-  const target = config.getString('target')
+  const target = config.getString('target');
   return {
     id,
-    target
+    target,
   };
 }

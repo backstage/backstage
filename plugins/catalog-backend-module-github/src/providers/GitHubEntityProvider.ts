@@ -33,7 +33,10 @@ import {
 import { graphql } from '@octokit/graphql';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
-import { readProviderConfigs, GitHubEntityProviderConfig } from './GitHubEntityProviderConfig'
+import {
+  readProviderConfigs,
+  GitHubEntityProviderConfig,
+} from './GitHubEntityProviderConfig';
 import { getOrganizationRepositories } from '../lib/github';
 
 /**
@@ -41,7 +44,7 @@ import { getOrganizationRepositories } from '../lib/github';
  *
  * @public
  */
- export interface GitHubEntityProviderOptions {
+export interface GitHubEntityProviderOptions {
   // /**
   //  * A Scheduled Task Runner
   //  *
@@ -70,18 +73,21 @@ type CreateLocationSpec = {
  *
  * @public
  */
- export class GitHubEntityProvider implements EntityProvider {
-  private readonly config : GitHubEntityProviderConfig;
+export class GitHubEntityProvider implements EntityProvider {
+  private readonly config: GitHubEntityProviderConfig;
   private readonly logger: Logger;
-  private readonly integration : GitHubIntegrationConfig
+  private readonly integration: GitHubIntegrationConfig;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
   private readonly githubCredentialsProvider: GithubCredentialsProvider;
 
-  static fromConfig(config: Config, options: GitHubEntityProviderOptions) : GitHubEntityProvider[] {
+  static fromConfig(
+    config: Config,
+    options: GitHubEntityProviderOptions,
+  ): GitHubEntityProvider[] {
     const integrations = ScmIntegrations.fromConfig(config);
     const integration = integrations.github.byHost('github.com');
-    
+
     if (!integration) {
       throw new Error(
         `Missing GitHub Integration. Please add a configuration entry for it under integrations.github`,
@@ -105,8 +111,8 @@ type CreateLocationSpec = {
     logger: Logger,
     schedule: TaskRunner,
   ) {
-    this.config = config
-    this.integration = integration.config
+    this.config = config;
+    this.integration = integration.config;
     this.logger = logger.child({
       target: this.getProviderName(),
     });
@@ -119,7 +125,7 @@ type CreateLocationSpec = {
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
   getProviderName(): string {
     return `github-provider:${this.config.id}`;
-  } 
+  }
 
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection): Promise<void> {
@@ -195,7 +201,7 @@ type CreateLocationSpec = {
         catalogFile: catalogPath,
       });
     });
-    
+
     await this.connection.applyMutation({
       type: 'full',
       entities: locations.flat().map(location => ({
