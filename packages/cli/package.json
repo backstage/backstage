@@ -53,7 +53,7 @@
     "@svgr/plugin-jsx": "6.2.x",
     "@svgr/plugin-svgo": "6.2.x",
     "@svgr/rollup": "6.2.x",
-    "@svgr/webpack": "6.2.x",
+    "@svgr/webpack": "6.3.x",
     "@types/webpack-env": "^1.15.2",
     "@typescript-eslint/eslint-plugin": "^5.9.0",
     "@typescript-eslint/parser": "^5.9.0",
