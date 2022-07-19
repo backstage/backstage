@@ -66,14 +66,6 @@ export type Repository = {
   } | null;
 };
 
-export type RepositoryEntity = {
-  text: string;
-};
-
-export type RepositoryWithFiles = Repository & {
-  [key: string]: RepositoryEntity;
-};
-
 export type Connection<T> = {
   pageInfo: PageInfo;
   nodes: T[];

@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
-import { GitHubEntityProvider, GitHubEntityProviderOptions } from '../index';
+import { ConfigReader } from '@backstage/config';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { GitHubEntityProvider } from './GitHubEntityProvider';
+import * as helpers from '../lib/github';
 
 class PersistingTaskRunner implements TaskRunner {
   private tasks: TaskInvocationDefinition[] = [];
@@ -32,27 +34,150 @@ class PersistingTaskRunner implements TaskRunner {
   }
 }
 
+const logger = getVoidLogger();
+
 describe('GitHubEntityProvider', () => {
-  const backendConfig = {
-    integrations: {
-      github: [
-        {
-          host: 'github.com',
+  afterEach(() => jest.resetAllMocks());
+
+  it('no provider config', () => {
+    const schedule = new PersistingTaskRunner();
+    const config = new ConfigReader({});
+    const providers = GitHubEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    });
+
+    expect(providers).toHaveLength(0);
+  });
+
+  it('single simple provider config', () => {
+    const schedule = new PersistingTaskRunner();
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            myProvider: {
+              target: 'mock-target'
+            },
+          },
         },
-      ],
-    },
-  };
+      },
+    });
+    const providers = GitHubEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    });
 
-  const options: GitHubEntityProviderOptions = {
-    id: 'mockId',
-    target: 'http://github.com',
-    schedule: new PersistingTaskRunner(),
-    logger: getVoidLogger(),
-  };
+    expect(providers).toHaveLength(1);
+    expect(providers[0].getProviderName()).toEqual('github-provider:myProvider');
+  });
 
-  it('should return the instance providerName', () => {
-    const config = new ConfigReader(backendConfig);
-    const provider = GitHubEntityProvider.fromConfig(config, options);
-    expect(provider.getProviderName()).toBe('github-provider:mockId');
+  it('multiple provider configs', () => {
+    const schedule = new PersistingTaskRunner();
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            myProvider: {
+              target: 'mock-target-1',
+            },
+            anotherProvider: {
+              target: 'mock-target-2',
+            },
+          },
+        },
+      },
+    });
+    const providers = GitHubEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    });
+
+    expect(providers).toHaveLength(2);
+    expect(providers[0].getProviderName()).toEqual(
+      'github-provider:myProvider',
+    );
+    expect(providers[1].getProviderName()).toEqual(
+      'github-provider:anotherProvider',
+    );
+  });
+
+  it('apply full update on scheduled execution', async () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            myProvider: {
+              catalogPath: '/catalog-info.yaml',
+              target: 'http://github.com/backstage',
+            },
+          },
+        },
+      },
+    });
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+    };
+
+    const provider = GitHubEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    const mockGetOrganizationRepositories = jest.spyOn(
+      helpers,
+      'getOrganizationRepositories',
+    );
+
+    mockGetOrganizationRepositories.mockReturnValue(
+      Promise.resolve({
+        repositories: [
+          {
+            name: 'test',
+            url: 'https://github.com/test-ws/test-repo',
+            isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
+          },
+        ],
+      }),
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual('github-provider:myProvider:refresh');
+    await (taskDef.fn as () => Promise<void>)();
+
+    const url = `https://github.com/test-ws/test-repo/blob/main//catalog-info.yaml`;
+    const expectedEntities = [
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location': `url:${url}`,
+              'backstage.io/managed-by-origin-location': `url:${url}`,
+            },
+            name: 'generated-be46aefcb74b1a34404c6746f2e62eddf2fec42f',
+          },
+          spec: {
+            presence: 'optional',
+            target: `${url}`,
+            type: 'url',
+          },
+        },
+        locationKey: 'github-provider:myProvider',
+      },
+    ];
+
+    expect(entityProviderConnection.applyMutation).toBeCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toBeCalledWith({
+      type: 'full',
+      entities: expectedEntities,
+    });
   });
 });
