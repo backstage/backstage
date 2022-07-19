@@ -17,7 +17,7 @@ catalog. This is the prefered method for ingesting entities into the catalog.
 ## Installation
 
 You will have to add the provider in the catalog initialization code of your
-backend. They are not installed by default, therefore you have to add a 
+backend. They are not installed by default, therefore you have to add a
 dependency on `@backstage/plugin-catalog-backend-module-github` to your backend
 package
 
@@ -61,14 +61,14 @@ Then you can add a github config to the catalog providers configuration:
 catalog:
   providers:
     github:
-      # the provider ID can be any camelCase string 
+      # the provider ID can be any camelCase string
       providerId:
         target: https://github.com/myorg
       customProviderId:
         # Or use a custom pattern for a subset of all repositories with default repository
         target: https://github.com/otherorg/service-*/blob/-/catalog-info.yaml
       thirdProviderId:
-        # Or use a custom file format and location 
+        # Or use a custom file format and location
         target: https://github.com/*/blob/-/docs/your-own-format.yaml
       fourthProvider:
         # Or use a specific branch-name
@@ -98,7 +98,7 @@ seconds, which issues an API request for each discovered location.
 This means if you have more than ~140 catalog entities, you may get throttled by
 rate limiting. You can change the refresh frequency of the catalog in your `packages/backend/src/plugins/catalog.ts` file:
 
-```typescript       
+```typescript
 schedule: env.scheduler.createScheduledTaskRunner({
   frequency: { minutes: 35 },
   timeout: { minutes: 3 },

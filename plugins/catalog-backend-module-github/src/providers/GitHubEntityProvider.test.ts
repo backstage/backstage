@@ -57,7 +57,7 @@ describe('GitHubEntityProvider', () => {
         providers: {
           github: {
             myProvider: {
-              target: 'mock-target'
+              target: 'mock-target',
             },
           },
         },
@@ -69,7 +69,9 @@ describe('GitHubEntityProvider', () => {
     });
 
     expect(providers).toHaveLength(1);
-    expect(providers[0].getProviderName()).toEqual('github-provider:myProvider');
+    expect(providers[0].getProviderName()).toEqual(
+      'github-provider:myProvider',
+    );
   });
 
   it('multiple provider configs', () => {
