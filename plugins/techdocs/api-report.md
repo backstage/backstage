@@ -45,15 +45,11 @@ export type ContentStateTypes =
 
 // @public
 export const DefaultTechDocsHome: (
-  props: DefaultTechDocsHomeProps,
+  props: TechDocsIndexPageProps,
 ) => JSX.Element;
 
-// @public
-export type DefaultTechDocsHomeProps = {
-  initialFilter?: UserListFilterKind;
-  columns?: TableColumn<DocsTableRow>[];
-  actions?: TableProps<DocsTableRow>['actions'];
-};
+// @public @deprecated
+export type DefaultTechDocsHomeProps = TechDocsIndexPageProps;
 
 // @public
 export const DocsCardGrid: (props: DocsCardGridProps) => JSX.Element | null;
@@ -256,7 +252,14 @@ export type TechDocsCustomHomeProps = {
 export type TechDocsEntityMetadata = TechDocsEntityMetadata_2;
 
 // @public
-export const TechDocsIndexPage: () => JSX.Element;
+export const TechDocsIndexPage: (props: TechDocsIndexPageProps) => JSX.Element;
+
+// @public
+export type TechDocsIndexPageProps = {
+  initialFilter?: UserListFilterKind;
+  columns?: TableColumn<DocsTableRow>[];
+  actions?: TableProps<DocsTableRow>['actions'];
+};
 
 // @public @deprecated (undocumented)
 export type TechDocsMetadata = TechDocsMetadata_2;

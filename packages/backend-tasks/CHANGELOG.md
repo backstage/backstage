@@ -1,5 +1,15 @@
 # @backstage/backend-tasks
 
+## 0.3.3
+
+### Patch Changes
+
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/errors@1.1.0
+
 ## 0.3.3-next.3
 
 ### Patch Changes

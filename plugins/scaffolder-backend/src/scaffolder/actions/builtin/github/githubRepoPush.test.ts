@@ -283,6 +283,7 @@ describe('github:repo:push', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
+      enforceAdmins: true,
     });
 
     await action.handler({
@@ -301,6 +302,7 @@ describe('github:repo:push', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: true,
       requiredStatusCheckContexts: [],
+      enforceAdmins: true,
     });
 
     await action.handler({
@@ -319,6 +321,67 @@ describe('github:repo:push', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
+      enforceAdmins: true,
+    });
+  });
+
+  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of enforceAdmins', async () => {
+    mockOctokit.rest.repos.get.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    await action.handler(mockContext);
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      enforceAdmins: true,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        protectEnforceAdmins: true,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      enforceAdmins: true,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        protectEnforceAdmins: false,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      enforceAdmins: false,
     });
   });
 
@@ -340,6 +403,7 @@ describe('github:repo:push', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
+      enforceAdmins: true,
     });
 
     await action.handler({
@@ -358,6 +422,7 @@ describe('github:repo:push', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: ['statusCheck'],
+      enforceAdmins: true,
     });
 
     await action.handler({
@@ -376,6 +441,7 @@ describe('github:repo:push', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
+      enforceAdmins: true,
     });
   });
 

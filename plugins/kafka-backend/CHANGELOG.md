@@ -1,5 +1,15 @@
 # @backstage/plugin-kafka-backend
 
+## 0.2.27
+
+### Patch Changes
+
+- 8751667541: Updated dependency `kafkajs` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/errors@1.1.0
+
 ## 0.2.27-next.2
 
 ### Patch Changes

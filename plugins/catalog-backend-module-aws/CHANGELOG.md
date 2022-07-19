@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.1.7
+
+### Patch Changes
+
+- f9f1de8100: Add processor for ingesting EKS clusters into the catalog
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.3.0
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/integration@1.2.2
+  - @backstage/backend-tasks@0.3.3
+  - @backstage/errors@1.1.0
+
 ## 0.1.7-next.2
 
 ### Patch Changes

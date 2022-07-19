@@ -1,5 +1,29 @@
 # @backstage/integration
 
+## 1.2.2
+
+### Patch Changes
+
+- 9de15a41d7: Upgrade @octokit/rest to 19.0.3
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 1f29047bad: Updated dependency `@octokit/auth-app` to `^4.0.0`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- 8829e175f2: Allow frontend visibility for `integrations` itself.
+- 954a94f52f: Support self-hosted gitlab installations with relative URL.
+- 4df3390795: Avoid double encoding of the file path in `getBitbucketServerDownloadUrl`
+- Updated dependencies
+  - @backstage/errors@1.1.0
+
 ## 1.2.2-next.3
 
 ### Patch Changes

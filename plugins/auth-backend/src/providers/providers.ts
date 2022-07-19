@@ -18,6 +18,7 @@ import { atlassian } from './atlassian';
 import { auth0 } from './auth0';
 import { awsAlb } from './aws-alb';
 import { bitbucket } from './bitbucket';
+import { cfAccess } from './cloudflare-access';
 import { gcpIap } from './gcp-iap';
 import { github } from './github';
 import { gitlab } from './gitlab';
@@ -41,6 +42,7 @@ export const providers = Object.freeze({
   auth0,
   awsAlb,
   bitbucket,
+  cfAccess,
   gcpIap,
   github,
   gitlab,

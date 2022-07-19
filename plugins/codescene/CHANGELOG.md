@@ -1,5 +1,18 @@
 # @backstage/plugin-codescene
 
+## 0.1.2
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 15201b1032: Updated dependency `rc-progress` to `3.4.0`.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/theme@0.2.16
+  - @backstage/errors@1.1.0
+
 ## 0.1.2-next.3
 
 ### Patch Changes

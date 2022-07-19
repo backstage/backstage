@@ -190,6 +190,7 @@ export function CopyTextButton(props: CopyTextButtonProps): JSX.Element;
 
 // @public
 export interface CopyTextButtonProps {
+  'aria-label'?: string;
   text: string;
   tooltipDelay?: number;
   tooltipText?: string;

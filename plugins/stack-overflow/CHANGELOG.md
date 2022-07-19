@@ -1,5 +1,21 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.3
+
+### Patch Changes
+
+- 12ae3eed2f: - Publicly exports `StackOverflowIcon`.
+  - `HomePageStackOverflowQuestions` accepts optional icon property.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 52b4f796e3: app-config is now picked up properly.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/plugin-search-common@1.0.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/plugin-home@0.4.23
+  - @backstage/theme@0.2.16
+
 ## 0.1.3-next.3
 
 ### Patch Changes
