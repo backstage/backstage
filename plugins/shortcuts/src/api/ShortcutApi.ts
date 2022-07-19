@@ -31,7 +31,7 @@ export interface ShortcutApi {
   /**
    * Returns an immediate snapshot of shortcuts, sorted by title
    */
-  snapshot(): Shortcut[];
+  get(): Shortcut[];
 
   /**
    * Generates a unique id for the shortcut and then saves it.

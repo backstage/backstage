@@ -20,13 +20,13 @@ export class LocalStoredShortcuts implements ShortcutApi {
   // (undocumented)
   add(shortcut: Omit<Shortcut, 'id'>): Promise<void>;
   // (undocumented)
+  get(): Shortcut[];
+  // (undocumented)
   getColor(url: string): string;
   // (undocumented)
   remove(id: string): Promise<void>;
   // (undocumented)
   shortcut$(): Observable_2<Shortcut[]>;
-  // (undocumented)
-  snapshot(): Shortcut[];
   // (undocumented)
   update(shortcut: Shortcut): Promise<void>;
 }
@@ -45,10 +45,10 @@ export type Shortcut = {
 // @public (undocumented)
 export interface ShortcutApi {
   add(shortcut: Omit<Shortcut, 'id'>): Promise<void>;
+  get(): Shortcut[];
   getColor(url: string): string;
   remove(id: string): Promise<void>;
   shortcut$(): Observable<Shortcut[]>;
-  snapshot(): Shortcut[];
   update(shortcut: Shortcut): Promise<void>;
 }
 

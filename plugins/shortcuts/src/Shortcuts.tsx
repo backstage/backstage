@@ -39,10 +39,7 @@ export interface ShortcutsProps {
 
 export const Shortcuts = (props: ShortcutsProps) => {
   const shortcutApi = useApi(shortcutsApiRef);
-  const shortcuts = useObservable(
-    shortcutApi.shortcut$(),
-    shortcutApi.snapshot(),
-  );
+  const shortcuts = useObservable(shortcutApi.shortcut$(), shortcutApi.get());
   const [anchorEl, setAnchorEl] = React.useState<Element | undefined>();
   const loading = Boolean(!shortcuts);
 

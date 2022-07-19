@@ -33,27 +33,27 @@ export class LocalStoredShortcuts implements ShortcutApi {
     );
   }
 
-  snapshot() {
+  get() {
     return Array.from(
       this.storageApi.snapshot<Shortcut[]>('items').value ?? [],
     ).sort((a, b) => (a.title >= b.title ? 1 : -1));
   }
 
   async add(shortcut: Omit<Shortcut, 'id'>) {
-    const shortcuts = this.snapshot();
+    const shortcuts = this.get();
     shortcuts.push({ ...shortcut, id: uuid() });
 
     await this.storageApi.set('items', shortcuts);
   }
 
   async remove(id: string) {
-    const shortcuts = this.snapshot().filter(s => s.id !== id);
+    const shortcuts = this.get().filter(s => s.id !== id);
 
     await this.storageApi.set('items', shortcuts);
   }
 
   async update(shortcut: Shortcut) {
-    const shortcuts = this.snapshot().filter(s => s.id !== shortcut.id);
+    const shortcuts = this.get().filter(s => s.id !== shortcut.id);
     shortcuts.push(shortcut);
 
     await this.storageApi.set('items', shortcuts);

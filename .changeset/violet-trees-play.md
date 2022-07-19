@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-shortcuts': patch
+'@backstage/plugin-shortcuts': minor
 ---
 
-fixed shortcuts initialization when using firestore
+Fixed shortcuts initialization when using firestore
