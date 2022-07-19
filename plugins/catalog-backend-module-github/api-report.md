@@ -48,7 +48,7 @@ export class GitHubEntityProvider implements EntityProvider {
   static fromConfig(
     config: Config,
     options: GitHubEntityProviderOptions,
-  ): GitHubEntityProvider;
+  ): GitHubEntityProvider[];
   // (undocumented)
   getProviderName(): string;
   // (undocumented)
@@ -57,11 +57,9 @@ export class GitHubEntityProvider implements EntityProvider {
 
 // @public
 export interface GitHubEntityProviderOptions {
-  githubCredentialsProvider?: GithubCredentialsProvider;
-  id: string;
   logger: Logger;
+  // (undocumented)
   schedule: TaskRunner;
-  target: string;
 }
 
 // @public
