@@ -1,5 +1,37 @@
 # @backstage/plugin-auth-backend
 
+## 0.15.0
+
+### Minor Changes
+
+- 9d4040777e: **BREAKING**: Removed all directly exported auth provider factories, option types, and sign-in resolvers. For example: `AwsAlbProviderOptions`, `bitbucketUserIdSignInResolver`, `createGithubProvider`. These are all still accessible via the `providers` export. For example, use `providers.github.create()` rather than `createGithubProvider()`, and `providers.bitbucket.resolvers.userIdMatchingUserEntityAnnotation()` rather than `bitbucketUserIdSignInResolver`.
+
+  **BREAKING**: Removed the exported `AuthProviderFactoryOptions` type as well as the deprecated option fields of the `AuthProviderFactory` callback. This includes the `tokenManager`, `tokenIssuer`, `discovery`, and `catalogApi` fields. Existing usage of these should be replaced with the new utilities in the `resolverContext` field. The deprecated `TokenIssuer` type is now also removed, since it is no longer used.
+
+  **BREAKING**: Removed `getEntityClaims`, use `getDefaultOwnershipEntityRefs` instead.
+
+  **DEPRECATION**: Deprecated `AtlassianAuthProvider` as it was unintentionally exported.
+
+- fe8e025af5: Allowed post method on /refresh path
+
+### Patch Changes
+
+- 3cedfd8365: add Cloudflare Access auth provider to auth-backend
+- f2cf79d62e: Added an option for the auth backend router to select the algorithm for the JWT token signing keys
+- 8e03db907a: Auth provider now also export createAuthProviderIntegration
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- 859346bfbb: Updated dependency `google-auth-library` to `^8.0.0`.
+- 3a014730dc: Add new config option for okta auth server and IDP
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/catalog-client@1.0.4
+  - @backstage/plugin-auth-node@0.2.3
+  - @backstage/errors@1.1.0
+
 ## 0.15.0-next.3
 
 ### Minor Changes

@@ -1,5 +1,21 @@
 # @backstage/plugin-fossa
 
+## 0.2.39
+
+### Patch Changes
+
+- 322d1ceeba: Allow configuration of base URL for Fossa links
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/theme@0.2.16
+  - @backstage/errors@1.1.0
+
 ## 0.2.39-next.3
 
 ### Patch Changes

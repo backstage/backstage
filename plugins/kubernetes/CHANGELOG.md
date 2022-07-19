@@ -1,5 +1,33 @@
 # @backstage/plugin-kubernetes
 
+## 0.7.0
+
+### Minor Changes
+
+- f5c9730639: Add `localKubectlProxy` cluster locator method to make local development simpler to setup.
+
+  Consolidated no-op server side auth decorators.
+  The following Kubernetes auth decorators are now one class (`ServerSideKubernetesAuthProvider`):
+
+  - `AwsKubernetesAuthProvider`
+  - `AzureKubernetesAuthProvider`
+  - `ServiceAccountKubernetesAuthProvider`
+
+### Patch Changes
+
+- 3ec294a186: expose detectErrors function publicly
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- eadb3a8d2e: Updated dependency `@kubernetes/client-node` to `^0.17.0`.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-kubernetes-common@0.4.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/theme@0.2.16
+
 ## 0.7.0-next.3
 
 ### Minor Changes

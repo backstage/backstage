@@ -1,5 +1,35 @@
 # @backstage/plugin-search
 
+## 1.0.0
+
+### Major Changes
+
+- 7bd7d336b2: This package has been promoted to 1.0. Read more about what it means in [New release: Backstage Search 1.0 blog](https://backstage.io/blog/2022/07/19/releasing-backstage-search-1.0)
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 509c4092f0: To allow people to use a global search context in the search modal, the code for the search modal has been changed to only create a local search context if there is no parent context already defined.
+
+  If you want to continue using a local context even if you define a global one, you will have to wrap the modal in a new local context manually:
+
+  ```tsx
+  <SearchContextProvider>
+    <SearchModal toggleModal={toggleModal} />
+  </SearchContextProvider>
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-search-react@1.0.0
+  - @backstage/plugin-search-common@1.0.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/theme@0.2.16
+  - @backstage/errors@1.1.0
+
 ## 0.9.1-next.3
 
 ### Patch Changes

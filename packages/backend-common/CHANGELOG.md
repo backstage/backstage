@@ -1,5 +1,35 @@
 # @backstage/backend-common
 
+## 0.14.1
+
+### Patch Changes
+
+- b1edb5cfd9: Fix parsing of S3 URLs for the default region.
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+- e57180e45e: Added some more information to the error messages for `isomorphic-git` errors
+- 1f75dfac29: Fix edge case bug when gitlab relativePath is repeated in the target URL.
+- 90c87f28e8: Moving from Bitbucket Server endpoint from https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp222 to https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp224, to have the last commit in function of different branch, and not only the list of default branch
+- 9de15a41d7: Upgrade @octokit/rest to 19.0.3
+- 0fc57887e8: Improve plural handling in logging output for secrets
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- 954a94f52f: Support self-hosted gitlab installations with relative URL.
+- Updated dependencies
+  - @backstage/config-loader@1.1.3
+  - @backstage/integration@1.2.2
+  - @backstage/errors@1.1.0
+
 ## 0.14.1-next.3
 
 ### Patch Changes

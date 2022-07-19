@@ -1,5 +1,28 @@
 # @backstage/plugin-code-coverage
 
+## 0.2.0
+
+### Minor Changes
+
+- d70aaa7622: Cleaned up API exports.
+
+  The `Router` export has been removed; users are expected to use `EntityCodeCoverageContent` instead.
+
+  The `isPluginApplicableToEntity` helper has been deprecated, in favor of the `isCodeCoverageAvailable` helper.
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/theme@0.2.16
+  - @backstage/errors@1.1.0
+
 ## 0.2.0-next.3
 
 ### Minor Changes

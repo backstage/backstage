@@ -1,5 +1,16 @@
 # @backstage/backend-test-utils
 
+## 0.1.26
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/cli@0.18.0
+
 ## 0.1.26-next.3
 
 ### Patch Changes

@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog-import
 
+## 0.8.10
+
+### Patch Changes
+
+- 9de15a41d7: Upgrade @octokit/rest to 19.0.3
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- 272106fdad: Support use without `integrations` or only integrations without frontend visible properties (e.g., `bitbucketCloud`) being configured by checking `integrations.github` directly without attempting to load `integrations`.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/integration@1.2.2
+  - @backstage/catalog-client@1.0.4
+  - @backstage/integration-react@1.1.2
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/errors@1.1.0
+
 ## 0.8.10-next.3
 
 ### Patch Changes

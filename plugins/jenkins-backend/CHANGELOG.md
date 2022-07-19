@@ -1,5 +1,21 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.1.24
+
+### Patch Changes
+
+- 8747824221: feature: added support for multiple branches to the `JenkinsApi`
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/catalog-client@1.0.4
+  - @backstage/plugin-auth-node@0.2.3
+  - @backstage/plugin-permission-common@0.6.3
+  - @backstage/errors@1.1.0
+  - @backstage/plugin-jenkins-common@0.1.6
+
 ## 0.1.24-next.3
 
 ### Patch Changes

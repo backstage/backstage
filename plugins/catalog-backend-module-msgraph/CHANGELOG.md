@@ -1,5 +1,114 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.4.0
+
+### Minor Changes
+
+- a145672f0f: Align `msgraph` plugin's entity provider config with other providers. **Deprecated** entity processor as well as previous config.
+
+  You will see warning at the log output until you migrate to the new setup.
+  All deprecated parts will be removed eventually after giving some time to migrate.
+
+  Please find information on how to migrate your current setup to the new one below.
+
+  **Migration Guide:**
+
+  There were two different way on how to use the msgraph plugin: processor or provider.
+
+  Previous registration for the processor:
+
+  ```typescript
+  // packages/backend/src/plugins/catalog.ts
+  builder.addProcessor(
+    MicrosoftGraphOrgReaderProcessor.fromConfig(env.config, {
+      logger: env.logger,
+      // [...]
+    }),
+  );
+  ```
+
+  Previous registration when using the provider:
+
+  ```typescript
+  // packages/backend/src/plugins/catalog.ts
+  builder.addEntityProvider(
+    MicrosoftGraphOrgEntityProvider.fromConfig(env.config, {
+      id: 'https://graph.microsoft.com/v1.0',
+      target: 'https://graph.microsoft.com/v1.0',
+      logger: env.logger,
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 30 },
+        timeout: { minutes: 3 },
+      }),
+      // [...]
+    }),
+  );
+  ```
+
+  Previous configuration as used for both:
+
+  ```yaml
+  # app-config.yaml
+  catalog:
+    processors:
+      microsoftGraphOrg:
+        providers:
+          - target: https://graph.microsoft.com/v1.0
+            # [...]
+  ```
+
+  **Replacement:**
+
+  Please check https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-msgraph/README.md for the complete documentation of all configuration options (config as well as registration of the provider).
+
+  ```yaml
+  # app-config.yaml
+  catalog:
+    providers:
+      microsoftGraphOrg:
+        # In case you used the deprecated configuration with the entity provider
+        # using the value of `target` will keep the same location key for all
+        providerId: # some stable ID which will be used as part of the location key for all ingested data
+          target: https://graph.microsoft.com/v1.0
+          # [...]
+  ```
+
+  ```typescript
+  // packages/backend/src/plugins/catalog.ts
+  builder.addEntityProvider(
+    MicrosoftGraphOrgEntityProvider.fromConfig(env.config, {
+      logger: env.logger,
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 30 },
+        timeout: { minutes: 3 },
+      }),
+      // [...]
+    }),
+  );
+  ```
+
+  In case you've used multiple entity providers before
+  **and** you had different transformers for each of them
+  you can provide these directly at the one `fromConfig` call
+  by passing a Record with the provider ID as key.
+
+- b8ebecd100: Microsoft Graph plugin can supports many more options for authenticating with the Microsoft Graph API.
+  Previously only ClientId/ClientSecret was supported, but now all the authentication options of `DefaultAzureCredential` from `@azure/identity` are supported.
+  Including Managed Identity, Client Certificate, Azure CLI and VS Code.
+
+  If `clientId` and `clientSecret` are specified in configuration, the plugin behaves the same way as before.
+  If these fields are omitted, the plugin uses `DefaultAzureCredential` to automatically determine the best authentication method.
+  This is particularly useful for local development environments - the default configuration will try to use existing credentials from Visual Studio Code, Azure CLI and Azure PowerShell, without the user needing to configure any credentials in app-config.yaml
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.3.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/backend-tasks@0.3.3
+
 ## 0.4.0-next.2
 
 ### Patch Changes

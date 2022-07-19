@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-cicd-statistics-module-gitlab",
   "description": "CI/CD Statistics plugin module; Gitlab CICD",
-  "version": "0.1.3-next.1",
+  "version": "0.1.3",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -29,16 +29,16 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/plugin-cicd-statistics": "^0.1.9-next.1",
+    "@backstage/plugin-cicd-statistics": "^0.1.9",
     "@gitbeaker/browser": "^35.6.0",
     "@gitbeaker/core": "^35.6.0",
     "luxon": "^3.0.0",
     "p-limit": "^4.0.0",
-    "@backstage/core-plugin-api": "^1.0.4-next.0",
-    "@backstage/catalog-model": "^1.1.0-next.3"
+    "@backstage/core-plugin-api": "^1.0.4",
+    "@backstage/catalog-model": "^1.1.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.18.0-next.3"
+    "@backstage/cli": "^0.18.0"
   },
   "files": [
     "dist"

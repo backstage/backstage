@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.1.5
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 0f25116d28: Updated dependency `@octokit/graphql` to `^5.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.3.0
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/integration@1.2.2
+  - @backstage/backend-tasks@0.3.3
+  - @backstage/errors@1.1.0
+
 ## 0.1.5-next.2
 
 ### Patch Changes

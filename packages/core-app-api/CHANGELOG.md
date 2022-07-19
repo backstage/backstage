@@ -1,5 +1,16 @@
 # @backstage/core-app-api
 
+## 1.0.4
+
+### Patch Changes
+
+- 881fc75a75: Internal tweak removing usage of explicit type parameters for the `BackstagePlugin` type.
+- 8fe2357101: The `signOut` method of the `IdentityApi` will now navigate the user back to the base URL of the app as indicated by the `app.baseUrl` config.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4
+
 ## 1.0.4-next.1
 
 ### Patch Changes
