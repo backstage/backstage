@@ -128,6 +128,11 @@ const protectDefaultBranch = {
   type: 'boolean',
   description: `Protect the default branch after creating the repository. The default value is 'true'`,
 };
+const protectEnforceAdmins = {
+  title: 'Enforce Admins On Protected Branches',
+  type: 'boolean',
+  description: `Enforce admins to adhere to default branch protection. The default value is 'true'`,
+};
 const gitCommitMessage = {
   title: 'Git Commit Message',
   type: 'string',
@@ -152,6 +157,7 @@ export { gitAuthorEmail };
 export { gitAuthorName };
 export { gitCommitMessage };
 export { protectDefaultBranch };
+export { protectEnforceAdmins };
 export { repoUrl };
 export { repoVisibility };
 export { requireCodeOwnerReviews };

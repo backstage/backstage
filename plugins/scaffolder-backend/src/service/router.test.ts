@@ -37,24 +37,25 @@ import {
   UrlReaders,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ConfigReader } from '@backstage/config';
-import ObservableImpl from 'zen-observable';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import express from 'express';
 import request from 'supertest';
+import ObservableImpl from 'zen-observable';
+
 /**
  * TODO: The following should import directly from the router file.
  * Due to a circular dependency between this plugin and the
  * plugin-scaffolder-backend-module-cookiecutter plugin, it results in an error:
  * TypeError: _pluginscaffolderbackend.createTemplateAction is not a function
  */
-import { createRouter, DatabaseTaskStore, TaskBroker } from '../index';
-import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import {
   parseEntityRef,
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
+import { createRouter, DatabaseTaskStore, TaskBroker } from '../index';
+import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -76,6 +77,7 @@ const mockUrlReader = UrlReaders.default({
 
 describe('createRouter', () => {
   let app: express.Express;
+  let loggerSpy: jest.SpyInstance;
   let taskBroker: TaskBroker;
   const getIdentity = jest.fn();
   const rawPayload = Buffer.from(
@@ -146,6 +148,7 @@ describe('createRouter', () => {
     jest.spyOn(taskBroker, 'get');
     jest.spyOn(taskBroker, 'list');
     jest.spyOn(taskBroker, 'event$');
+    loggerSpy = jest.spyOn(logger, 'info');
 
     getIdentity.mockImplementation(
       async (_req): Promise<BackstageIdentityResponse | undefined> => {
@@ -160,7 +163,7 @@ describe('createRouter', () => {
       },
     );
     const router = await createRouter({
-      logger: getVoidLogger(),
+      logger: logger,
       config: new ConfigReader({}),
       database: createDatabase(),
       catalogClient,
@@ -335,6 +338,48 @@ describe('createRouter', () => {
           }),
         );
       });
+    });
+
+    it('should emit auditlog containing without user identifier when no backstage auth is passed', async () => {
+      await request(app)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            required: 'required-value',
+          },
+        });
+
+      expect(loggerSpy).toHaveBeenCalledTimes(1);
+      expect(loggerSpy).toHaveBeenCalledWith(
+        'Scaffolding task for template:default/create-react-app-template',
+      );
+    });
+
+    it('should emit auditlog containing user identifier when backstage auth is passed', async () => {
+      const mockToken =
+        'blob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvZ3Vlc3QiLCJuYW1lIjoiSm9obiBEb2UifQ.blob';
+
+      await request(app)
+        .post('/v2/tasks')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            required: 'required-value',
+          },
+        });
+
+      expect(loggerSpy).toHaveBeenCalledTimes(1);
+      expect(loggerSpy).toHaveBeenCalledWith(
+        'Scaffolding task for template:default/create-react-app-template created by user:default/guest',
+      );
     });
   });
 

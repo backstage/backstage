@@ -1,5 +1,58 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.4.0
+
+### Minor Changes
+
+- e1a08d872c: Added optional assignee parameter for Gitlab Merge Request action
+- dab9bcf2e7: Add `protectEnforceAdmins` as an option to GitHub publish actions
+- 4baf8a4ece: Update GitLab Merge Request Action to allow source branch to be deleted
+- 91c1d12123: Export experimental `scaffolderCatalogExtension` for the new backend system. This export is not considered stable and should not be used in production.
+- d10ccc2ed1: Introduced audit log message when a new scaffolder task is created
+- 2db07887cb: Added two new scaffolder actions: `github:repo:create` and `github:repo:push`
+
+### Patch Changes
+
+- ff316b86d8: Add `copyWithoutTemplating` to the fetch template action input. `copyWithoutTemplating` also accepts an array of glob patterns. Contents of matched files or directories are copied without being processed, but paths are subject to rendering.
+
+  Deprecate `copyWithoutRender` in favor of `copyWithoutTemplating`.
+
+- 801d606909: Improve error messaging when passing in malformed auth
+- 089d846962: Fix issues with optional directories and files
+- ea6dcb84a4: Don't resolve symlinks, treat them as binary files and copy them as-is
+- af02f54483: new setUserAsOwner flag for publish:gitlab action
+
+  The field default is `false`. When true it will use the token configured in the gitlab integration for the matching host, to try and set the user logged in via `repoUrlPicker` `requestUserCredentials` OAuth flow as owner of the repository created in GitLab.
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- 511f49ee43: Updated dependency `octokit` to `^2.0.0`.
+- 735853353b: Updated dependency `@octokit/webhooks` to `^10.0.0`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- 945a27fa6a: Add sourcePath option to publish:gerrit action
+- 1764296a68: Allow to create Gerrit project using default owner
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.0
+  - @backstage/plugin-catalog-backend@1.3.0
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-catalog-node@1.0.0
+  - @backstage/integration@1.2.2
+  - @backstage/catalog-client@1.0.4
+  - @backstage/errors@1.1.0
+  - @backstage/plugin-scaffolder-common@1.1.2
+
 ## 1.4.0-next.3
 
 ### Minor Changes

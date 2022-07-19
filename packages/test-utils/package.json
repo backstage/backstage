@@ -1,7 +1,7 @@
 {
   "name": "@backstage/test-utils",
   "description": "Utilities to test Backstage plugins and apps.",
-  "version": "1.1.2-next.2",
+  "version": "1.1.2",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -34,11 +34,11 @@
   },
   "dependencies": {
     "@backstage/config": "^1.0.1",
-    "@backstage/core-app-api": "^1.0.4-next.1",
-    "@backstage/core-plugin-api": "^1.0.4-next.0",
-    "@backstage/plugin-permission-common": "^0.6.3-next.1",
-    "@backstage/plugin-permission-react": "^0.4.3-next.1",
-    "@backstage/theme": "^0.2.16-next.0",
+    "@backstage/core-app-api": "^1.0.4",
+    "@backstage/core-plugin-api": "^1.0.4",
+    "@backstage/plugin-permission-common": "^0.6.3",
+    "@backstage/plugin-permission-react": "^0.4.3",
+    "@backstage/theme": "^0.2.16",
     "@backstage/types": "^1.0.0",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.11.2",
@@ -55,7 +55,7 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.18.0-next.3",
+    "@backstage/cli": "^0.18.0",
     "@types/jest": "^26.0.7",
     "@types/node": "^16.11.26",
     "msw": "^0.44.0"

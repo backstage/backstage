@@ -1,5 +1,31 @@
 # @backstage/plugin-techdocs-node
 
+## 1.2.0
+
+### Minor Changes
+
+- 860765ff45: Added local publishing target directory `config`: `techdocs.publisher.local.publishDirectory`
+
+### Patch Changes
+
+- a5d73da942: Fix the flag parsing for `legacyCopyReadmeMdToIndexMd` in `techdocs-cli generate` command, and decouple it's logic from the `techdocs-ref` flag.
+- d505b7b37d: Fixed issue with git feedback buttons not appearing automatically in docs pages. This was done by appending `repo_url` to the helper function `getRepoUrlFromLocationAnnotation`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-search-common@1.0.0
+  - @backstage/integration@1.2.2
+  - @backstage/errors@1.1.0
+
 ## 1.2.0-next.3
 
 ### Patch Changes

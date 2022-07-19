@@ -69,7 +69,7 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
     organizationTransformer?: OrganizationTransformer;
   }) {
     options.logger.warn(
-      'MicrosoftGraphOrgReaderProcessor is deprecated. Please use MicrosoftGraphOrgEntityProvider instead. More info at https://github.com/backstage/backstage/blob/master/.changeset/long-bananas-rescue.md',
+      'MicrosoftGraphOrgReaderProcessor is deprecated. Please use MicrosoftGraphOrgEntityProvider instead. More info at https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-msgraph/CHANGELOG.md#040-next1',
     );
     this.providers = options.providers;
     this.logger = options.logger;

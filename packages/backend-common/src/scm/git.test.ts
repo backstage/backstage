@@ -129,6 +129,27 @@ describe('Git', () => {
 
       expect(onAuth()).toEqual(auth);
     });
+
+    it('should propogate the data from the error handler', async () => {
+      const url = 'http://github.com/some/repo';
+      const dir = '/some/mock/dir';
+      const auth = {
+        username: 'blob',
+        password: 'hunter2',
+      };
+      const git = Git.fromAuth(auth);
+
+      (isomorphic.clone as jest.Mock).mockImplementation(() => {
+        const error: Error & { data?: unknown } = new Error('mock error');
+        error.data = { some: 'more information here' };
+
+        throw error;
+      });
+
+      await expect(git.clone({ url, dir })).rejects.toThrow(
+        'more information here',
+      );
+    });
   });
 
   describe('currentBranch', () => {
@@ -195,6 +216,27 @@ describe('Git', () => {
       ).mock.calls[0][0]!;
 
       expect(onAuth()).toEqual(auth);
+    });
+
+    it('should propogate the data from the error handler', async () => {
+      const remote = 'http://github.com/some/repo';
+      const dir = '/some/mock/dir';
+      const auth = {
+        username: 'blob',
+        password: 'hunter2',
+      };
+      const git = Git.fromAuth(auth);
+
+      (isomorphic.fetch as jest.Mock).mockImplementation(() => {
+        const error: Error & { data?: unknown } = new Error('mock error');
+        error.data = { some: 'more information here' };
+
+        throw error;
+      });
+
+      await expect(git.fetch({ remote, dir })).rejects.toThrow(
+        'more information here',
+      );
     });
   });
 
@@ -284,6 +326,27 @@ describe('Git', () => {
       ).mock.calls[0][0]!;
 
       expect(onAuth()).toEqual(auth);
+    });
+
+    it('should propogate the data from the error handler', async () => {
+      const remote = 'origin';
+      const dir = '/some/mock/dir';
+      const auth = {
+        username: 'blob',
+        password: 'hunter2',
+      };
+      const git = Git.fromAuth(auth);
+
+      (isomorphic.push as jest.Mock).mockImplementation(() => {
+        const error: Error & { data?: unknown } = new Error('mock error');
+        error.data = { some: 'more information here' };
+
+        throw error;
+      });
+
+      await expect(git.push({ remote, dir })).rejects.toThrow(
+        'more information here',
+      );
     });
   });
 

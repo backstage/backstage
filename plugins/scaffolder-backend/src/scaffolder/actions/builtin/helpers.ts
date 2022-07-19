@@ -135,6 +135,7 @@ type BranchProtectionOptions = {
   requireCodeOwnerReviews: boolean;
   requiredStatusCheckContexts?: string[];
   defaultBranch?: string;
+  enforceAdmins?: boolean;
 };
 
 export const enableBranchProtectionOnDefaultRepoBranch = async ({
@@ -145,6 +146,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
   requireCodeOwnerReviews,
   requiredStatusCheckContexts = [],
   defaultBranch = 'master',
+  enforceAdmins = true,
 }: BranchProtectionOptions): Promise<void> => {
   const tryOnce = async () => {
     try {
@@ -167,7 +169,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
           contexts: requiredStatusCheckContexts,
         },
         restrictions: null,
-        enforce_admins: true,
+        enforce_admins: enforceAdmins,
         required_pull_request_reviews: {
           required_approving_review_count: 1,
           require_code_owner_reviews: requireCodeOwnerReviews,

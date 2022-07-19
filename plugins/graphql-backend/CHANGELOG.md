@@ -1,5 +1,15 @@
 # @backstage/plugin-graphql-backend
 
+## 0.1.24
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/plugin-catalog-graphql@0.3.11
+
 ## 0.1.24-next.1
 
 ### Patch Changes

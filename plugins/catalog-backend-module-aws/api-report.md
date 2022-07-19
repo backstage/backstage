@@ -54,7 +54,7 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
-// @public
+// @public @deprecated
 export class AwsS3DiscoveryProcessor implements CatalogProcessor {
   constructor(reader: UrlReader);
   // (undocumented)

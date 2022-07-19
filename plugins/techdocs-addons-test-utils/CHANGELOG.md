@@ -1,5 +1,23 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.2
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/plugin-techdocs-react@1.0.2
+  - @backstage/plugin-search-react@1.0.0
+  - @backstage/plugin-catalog@1.4.0
+  - @backstage/core-app-api@1.0.4
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/integration-react@1.1.2
+  - @backstage/test-utils@1.1.2
+  - @backstage/plugin-techdocs@1.3.0
+  - @backstage/theme@0.2.16
+
 ## 1.0.2-next.3
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # @backstage/plugin-search-react
 
+## 1.0.0
+
+### Major Changes
+
+- 7bd7d336b2: This package has been promoted to 1.0. Read more about what it means in [New release: Backstage Search 1.0 blog](https://backstage.io/blog/2022/07/19/releasing-backstage-search-1.0)
+
+### Patch Changes
+
+- 60408ca9d4: Fix search pagination to reset page cursor also when a term is cleared.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/plugin-search-common@1.0.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/theme@0.2.16
+
 ## 0.2.2-next.3
 
 ### Patch Changes

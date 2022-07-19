@@ -1,5 +1,20 @@
 # @backstage/plugin-bazaar
 
+## 0.1.22
+
+### Patch Changes
+
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 77abf50acf: Fixed api warnings
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-catalog@1.4.0
+  - @backstage/cli@0.18.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/catalog-client@1.0.4
+  - @backstage/plugin-catalog-react@1.1.2
+
 ## 0.1.22-next.3
 
 ### Patch Changes

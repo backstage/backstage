@@ -1,5 +1,13 @@
 # @backstage/plugin-azure-devops-common
 
+## 0.2.4
+
+### Patch Changes
+
+- e67c4b7d5a: Adding getProjects endpoint to list out all projects associated with the Azure DevOps organization.
+
+  It can be accessed by using this endpoint `{backendUrl}/api/azure-devops/projects`
+
 ## 0.2.4-next.0
 
 ### Patch Changes

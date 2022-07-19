@@ -1,7 +1,7 @@
 {
   "name": "@backstage/release-manifests",
   "description": "Helper library for receiving release manifests",
-  "version": "0.0.5-next.0",
+  "version": "0.0.5",
   "private": false,
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -36,7 +36,7 @@
     "cross-fetch": "^3.1.5"
   },
   "devDependencies": {
-    "@backstage/test-utils": "^1.1.2-next.2",
+    "@backstage/test-utils": "^1.1.2",
     "msw": "^0.44.0",
     "@types/jest": "^26.0.7",
     "@types/node": "^16.0.0"

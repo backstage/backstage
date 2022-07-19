@@ -1,5 +1,51 @@
 # @backstage/plugin-scaffolder
 
+## 1.4.0
+
+### Minor Changes
+
+- d8eb82f447: Add `allowedRepos` `ui:option` to `RepoUrlPicker` component, and move `repoName` field to own component
+- 9a96199f86: Add support for `allowedOwners` to the `BitbucketRepoPicker` used for the workspace value.
+
+### Patch Changes
+
+- 37539e29d8: The template editor now shows the cause of request errors that happen during a dry-run.
+- b557e6c58d: Fixed that adding more than one `allowedOwner` or `allowedRepo` in the template config will now still set the first value as default in the initial form state of `RepoUrlPicker`.
+- 842282ecf9: Bumped `codemirror` dependencies to `v6.0.0`.
+- 11a5ca35f3: Add allowArbitraryValues for <OwnerPicker /> to provide input validation. This makes it a better experience of users, as they can now expect the values they enter to correspond to a valid owner. This is set to the default behavior by default.
+- d600cb2ab6: contextMenu prop passed through to <ScaffolderPageContents /> from the <ScaffolderPage /> component
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- 693990d4fe: Updated dependency `@react-hookz/web` to `^15.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- 464bb0e6c8: The max content size for dry-run files has been reduced from 256k to 64k.
+- 14146703e5: Add `allowArbitraryValues` to `ui:options` in `OwnedEntityPicker`, similar to `allowArbitraryValues` in `EntityPicker`
+- a7c0b34d70: Swap usage of `MaterialTable` with `Table` from `core-components`
+- 1764296a68: Allow to create Gerrit project using default owner
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/integration@1.2.2
+  - @backstage/catalog-client@1.0.4
+  - @backstage/integration-react@1.1.2
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/theme@0.2.16
+  - @backstage/errors@1.1.0
+  - @backstage/plugin-catalog-common@1.0.4
+  - @backstage/plugin-permission-react@0.4.3
+  - @backstage/plugin-scaffolder-common@1.1.2
+
 ## 1.4.0-next.3
 
 ### Patch Changes

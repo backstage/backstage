@@ -1,5 +1,15 @@
 # @backstage/plugin-techdocs-react
 
+## 1.0.2
+
+### Patch Changes
+
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/core-plugin-api@1.0.4
+
 ## 1.0.2-next.2
 
 ### Patch Changes

@@ -1,5 +1,44 @@
 # @backstage/cli
 
+## 0.18.0
+
+### Minor Changes
+
+- 96a82d9791: **BREAKING**: Removed the following deprecated package commands:
+
+  - `app:build` - Use `package build` instead
+  - `app:serve` - Use `package start` instead
+  - `backend:build` - Use `package build` instead
+  - `backend:bundle` - Use `package build` instead
+  - `backend:dev` - Use `package start` instead
+  - `plugin:build` - Use `package build` instead
+  - `plugin:serve` - Use `package start` instead
+  - `build` - Use `package build` instead
+  - `lint` - Use `package lint` instead
+  - `prepack` - Use `package prepack` instead
+  - `postpack` - Use `package postpack` instead
+
+  In order to replace these you need to have [migrated to using package roles](https://backstage.io/docs/tutorials/package-role-migration).
+
+### Patch Changes
+
+- 86640214f0: Upgrade `@rollup/plugin-node-resolve` to `^13.0.6`
+- d2256c0384: Fix `webpack-dev-server` deprecations.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- e661242844: Updated dependency `run-script-webpack-plugin` to `^0.1.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- e8ed804d4f: Updated dependency `@spotify/prettier-config` to `^14.0.0`.
+  Updated dependency `@spotify/eslint-config-base` to `^14.0.0`.
+  Updated dependency `@spotify/eslint-config-react` to `^14.0.0`.
+  Updated dependency `@spotify/eslint-config-typescript` to `^14.0.0`.
+- e662b573cf: Updated dependency `@octokit/request` to `^6.0.0`.
+- f6b6fb7165: The `test` command now ensures that all IO is flushed before exiting when printing `--help`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.3
+  - @backstage/release-manifests@0.0.5
+  - @backstage/errors@1.1.0
+
 ## 0.18.0-next.3
 
 ### Patch Changes

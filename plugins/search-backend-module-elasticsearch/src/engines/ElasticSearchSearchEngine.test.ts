@@ -79,12 +79,14 @@ describe('ElasticSearchSearchEngine', () => {
       'search',
       '',
       getVoidLogger(),
+      1000,
     );
     inspectableSearchEngine = new ElasticSearchSearchEngineForTranslatorTests(
       options,
       'search',
       '',
       getVoidLogger(),
+      1000,
     );
     // eslint-disable-next-line dot-notation
     clientWrapper = testSearchEngine['elasticSearchClientWrapper'];
