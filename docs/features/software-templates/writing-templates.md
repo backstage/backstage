@@ -93,8 +93,12 @@ spec:
 
   # some outputs which are saved along with the job for use in the frontend
   output:
-    remoteUrl: ${{ steps.publish.output.remoteUrl }}
-    entityRef: ${{ steps.register.output.entityRef }}
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
 ```
 
 Let's dive in and pick apart what each of these sections do and what they are.
@@ -495,8 +499,12 @@ The main two that are used are the following:
 
 ```yaml
 output:
-  remoteUrl: ${{ steps.publish.output.remoteUrl }} # link to the remote repository
-  entityRef: ${{ steps.register.output.entityRef }} # link to the entity that has been ingested to the catalog
+  links:
+    - title: Repository
+      url: ${{ steps.publish.output.remoteUrl }} # link to the remote repository
+    - title: Open in catalog
+      icon: catalog
+      entityRef: ${{ steps.register.output.entityRef }} # link to the entity that has been ingested to the catalog
 ```
 
 ## The templating syntax

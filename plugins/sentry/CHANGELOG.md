@@ -1,5 +1,40 @@
 # @backstage/plugin-sentry
 
+## 0.4.0
+
+### Minor Changes
+
+- 1b7c691a3b: Added the possibility to specify organization per component, now the annotation `sentry.io/project-slug` can have the format of `[organization]/[project-slug]` or just `[project-slug]`.
+
+  **BREAKING**: The method `fetchIssue` changed the signature:
+
+  ```diff
+  export interface SentryApi {
+    fetchIssues(
+  -     project: string,
+  -     statsFor: string,
+  -     query?: string,
+  +     entity: Entity,
+  +     options: {
+  +       statsFor: string;
+  +       query?: string;
+  +     },
+    ): Promise<SentryIssue[]>;
+  }
+  ```
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/theme@0.2.16
+
 ## 0.4.0-next.3
 
 ### Minor Changes

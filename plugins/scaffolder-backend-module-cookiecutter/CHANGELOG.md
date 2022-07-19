@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend-module-cookiecutter
 
+## 0.2.9
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/plugin-scaffolder-backend@1.4.0
+  - @backstage/integration@1.2.2
+  - @backstage/errors@1.1.0
+
 ## 0.2.9-next.2
 
 ### Patch Changes

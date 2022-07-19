@@ -8,13 +8,9 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "BazaarPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const BazaarPage: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "bazaarPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const bazaarPlugin: BackstagePlugin<
   {
@@ -23,13 +19,9 @@ export const bazaarPlugin: BackstagePlugin<
   {}
 >;
 
-// Warning: (ae-missing-release-tag) "EntityBazaarInfoCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EntityBazaarInfoCard: () => JSX.Element | null;
 
-// Warning: (ae-missing-release-tag) "SortView" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const SortView: () => JSX.Element;
 

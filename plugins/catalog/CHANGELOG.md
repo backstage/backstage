@@ -1,5 +1,93 @@
 # @backstage/plugin-catalog
 
+## 1.4.0
+
+### Minor Changes
+
+- 97c46f2359: Add `spec.targets` (or `spec.target`) for Location entities at the `CatalogTable`.
+- cf288221d1: Add `Location` target(s) to `AboutCard`.
+- a274fe38b9: Add hidden title column to catalog and API table to enable filtering by title.
+
+### Patch Changes
+
+- dcaf1cb418: Previously, the color of the Entity Context Menu (in the Entity Page Header) was hardcoded as `white`.
+
+  This was an issue for themes that use a header with a white background. By default, the color of the icon is now `theme.page.fontColor`.
+
+  It can now also be overridden in the theme, which is only necessary if the header title, subtitle and three-dots icon need to have different colors. For example:
+
+  ```typescript
+  export function createThemeOverrides(theme: BackstageTheme): Overrides {
+    return {
+      PluginCatalogEntityContextMenu: {
+        button: {
+          color: 'blue',
+        },
+      },
+      ...
+    },
+    ...
+    }
+  ```
+
+- f1dcc6f3c6: Use entity type predicates from catalog-model
+- 258057a4b9: Adding ability to customize the "unregister entity" menu item in the entity context menu on the entity page with options 'visible','hidden','disabled'.With this three new options, one can hide the "unregister entity" menu item from the list, disable or keep it enabled.
+
+  The boolean input for "unregister entity" will be deprecated later in favour of the above three options.
+
+- 385389d23c: Updated to remove usage of the `bursts` object in the theme palette
+- be26d95141: Added new `EntityProcessingStatusPicker` that will filter for entities with orphans and/or errors.
+
+  If you are using the default Catalog page this picker will be added automatically. For those who have customized their Catalog page you'll need to add this manually by doing something like this:
+
+  ```diff
+  ...
+  import {
+    CatalogFilterLayout,
+    EntityTypePicker,
+    UserListPicker,
+    EntityTagPicker
+  + EntityProcessingStatusPicker,
+  } from '@backstage/plugin-catalog-react';
+  ...
+  export const CustomCatalogPage = ({
+    columns,
+    actions,
+    initiallySelectedFilter = 'owned',
+  }: CatalogPageProps) => {
+    return (
+      ...
+          <EntityListProvider>
+            <CatalogFilterLayout>
+              <CatalogFilterLayout.Filters>
+                <EntityKindPicker initialFilter="component" hidden />
+                <EntityTypePicker />
+                <UserListPicker initialFilter={initiallySelectedFilter} />
+                <EntityTagPicker />
+  +             <EntityProcessingStatusPicker />
+              <CatalogFilterLayout.Filters>
+              <CatalogFilterLayout.Content>
+                <CatalogTable columns={columns} actions={actions} />
+              </CatalogFilterLayout.Content>
+            </CatalogFilterLayout>
+          </EntityListProvider>
+      ...
+  };
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-search-react@1.0.0
+  - @backstage/plugin-search-common@1.0.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/catalog-client@1.0.4
+  - @backstage/integration-react@1.1.2
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/theme@0.2.16
+  - @backstage/errors@1.1.0
+  - @backstage/plugin-catalog-common@1.0.4
+
 ## 1.4.0-next.3
 
 ### Patch Changes

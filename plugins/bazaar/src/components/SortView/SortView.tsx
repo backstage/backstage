@@ -66,6 +66,7 @@ const getUnlinkedCatalogEntities = (
   });
 };
 
+/** @public */
 export const SortView = () => {
   const bazaarApi = useApi(bazaarApiRef);
   const catalogApi = useApi(catalogApiRef);

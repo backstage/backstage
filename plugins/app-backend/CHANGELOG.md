@@ -1,5 +1,17 @@
 # @backstage/plugin-app-backend
 
+## 0.3.34
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/config-loader@1.1.3
+
 ## 0.3.34-next.3
 
 ### Patch Changes

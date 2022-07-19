@@ -39,6 +39,8 @@ export async function createStandaloneApplication(
 ): Promise<express.Application> {
   const { enableCors, logger } = options;
   const config = new ConfigReader({});
+  const discovery = SingleHostDiscovery.fromConfig(config);
+
   const app = express();
 
   const catalogApi = new CatalogClient({
@@ -52,7 +54,7 @@ export async function createStandaloneApplication(
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());
-  app.use('/', await createRouter({ logger, config, catalogApi }));
+  app.use('/', await createRouter({ logger, config, discovery, catalogApi }));
   app.use(notFoundHandler());
   app.use(errorHandler());
 

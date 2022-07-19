@@ -31,7 +31,7 @@ const createGerritProject = async (
   options: {
     projectName: string;
     parent: string;
-    owner: string;
+    owner?: string;
     description: string;
   },
 ): Promise<void> => {
@@ -42,7 +42,7 @@ const createGerritProject = async (
     body: JSON.stringify({
       parent,
       description,
-      owners: [owner],
+      owners: owner ? [owner] : [],
       create_empty_commit: false,
     }),
     headers: {
@@ -174,11 +174,6 @@ export function createPublishGerritAction(options: {
         );
       }
 
-      if (!owner) {
-        throw new InputError(
-          `Invalid URL provider was included in the repo URL to create ${ctx.input.repoUrl}, missing owner`,
-        );
-      }
       if (!workspace) {
         throw new InputError(
           `Invalid URL provider was included in the repo URL to create ${ctx.input.repoUrl}, missing workspace`,

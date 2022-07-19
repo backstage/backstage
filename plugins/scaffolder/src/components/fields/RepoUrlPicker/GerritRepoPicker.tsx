@@ -29,18 +29,14 @@ export const GerritRepoPicker = (props: {
   const { workspace, owner } = state;
   return (
     <>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !workspace}
-      >
+      <FormControl margin="normal" error={rawErrors?.length > 0 && !workspace}>
         <InputLabel htmlFor="ownerInput">Owner</InputLabel>
         <Input
           id="ownerInput"
           onChange={e => onChange({ owner: e.target.value })}
           value={owner}
         />
-        <FormHelperText>The owner of the project</FormHelperText>
+        <FormHelperText>The owner of the project (optional)</FormHelperText>
       </FormControl>
       <FormControl
         margin="normal"

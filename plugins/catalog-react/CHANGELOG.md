@@ -1,5 +1,61 @@
 # @backstage/plugin-catalog-react
 
+## 1.1.2
+
+### Patch Changes
+
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- be26d95141: Added new `EntityProcessingStatusPicker` that will filter for entities with orphans and/or errors.
+
+  If you are using the default Catalog page this picker will be added automatically. For those who have customized their Catalog page you'll need to add this manually by doing something like this:
+
+  ```diff
+  ...
+  import {
+    CatalogFilterLayout,
+    EntityTypePicker,
+    UserListPicker,
+    EntityTagPicker
+  + EntityProcessingStatusPicker,
+  } from '@backstage/plugin-catalog-react';
+  ...
+  export const CustomCatalogPage = ({
+    columns,
+    actions,
+    initiallySelectedFilter = 'owned',
+  }: CatalogPageProps) => {
+    return (
+      ...
+          <EntityListProvider>
+            <CatalogFilterLayout>
+              <CatalogFilterLayout.Filters>
+                <EntityKindPicker initialFilter="component" hidden />
+                <EntityTypePicker />
+                <UserListPicker initialFilter={initiallySelectedFilter} />
+                <EntityTagPicker />
+  +             <EntityProcessingStatusPicker />
+              <CatalogFilterLayout.Filters>
+              <CatalogFilterLayout.Content>
+                <CatalogTable columns={columns} actions={actions} />
+              </CatalogFilterLayout.Content>
+            </CatalogFilterLayout>
+          </EntityListProvider>
+      ...
+  };
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/integration@1.2.2
+  - @backstage/catalog-client@1.0.4
+  - @backstage/plugin-permission-common@0.6.3
+  - @backstage/theme@0.2.16
+  - @backstage/errors@1.1.0
+  - @backstage/plugin-catalog-common@1.0.4
+  - @backstage/plugin-permission-react@0.4.3
+
 ## 1.1.2-next.3
 
 ### Patch Changes

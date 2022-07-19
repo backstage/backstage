@@ -1,5 +1,23 @@
 # @backstage/create-app
 
+## 0.4.29
+
+### Patch Changes
+
+- f281ad17c0: Adds the ability to define the Backstage app name using a `BACKSTAGE_APP_NAME`
+  environment variable when running `create-app`.
+- c92deffe39: Bumped create-app version.
+- 0e967f188b: Bumped create-app version.
+- bc87604c26: Added an explicit `node-gyp` dependency to the root `package.json`. This is to work around a bug in older versions of `node-gyp` that causes Python execution to fail on macOS.
+
+  You can add this workaround to your existing project by adding `node-gyp` as a `devDependency` in your root `package.json` file:
+
+  ```diff
+     "devDependencies": {
+  +    "node-gyp": "^9.0.0"
+     },
+  ```
+
 ## 0.4.29-next.3
 
 ### Patch Changes

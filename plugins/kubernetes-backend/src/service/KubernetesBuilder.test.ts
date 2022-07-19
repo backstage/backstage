@@ -71,8 +71,6 @@ describe('KubernetesBuilder', () => {
       getKubernetesObjectsByEntity: jest.fn(),
     } as any;
 
-    catalogApi = {} as CatalogApi;
-
     const { router } = await KubernetesBuilder.createBuilder({
       config,
       logger,

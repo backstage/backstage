@@ -25,6 +25,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { bazaarApiRef, BazaarClient } from './api';
 
+/** @public */
 export const bazaarPlugin = createPlugin({
   id: 'bazaar',
   routes: {
@@ -44,6 +45,7 @@ export const bazaarPlugin = createPlugin({
   ],
 });
 
+/** @public */
 export const BazaarPage = bazaarPlugin.provide(
   createRoutableExtension({
     name: 'BazaarPage',

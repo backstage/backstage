@@ -164,6 +164,7 @@ nav:
       - Glossary: 'auth/glossary.md'
   - Deployment:
       - Deploying Backstage: 'deployment/index.md'
+      - Scaling: 'deployment/scaling.md'
       - Docker: 'deployment/docker.md'
       - Kubernetes: 'deployment/k8s.md'
       - Heroku: 'deployment/heroku.md'

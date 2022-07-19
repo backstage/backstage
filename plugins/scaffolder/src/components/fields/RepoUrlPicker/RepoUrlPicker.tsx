@@ -171,6 +171,7 @@ export const RepoUrlPicker = (
       )}
       {hostType === 'bitbucket' && (
         <BitbucketRepoPicker
+          allowedOwners={allowedOwners}
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
