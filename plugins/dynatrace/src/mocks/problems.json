@@ -1,0 +1,135 @@
+{
+  "totalCount": 0,
+  "pageSize": 0,
+  "nextPageKey": "AQAAABQBAAAABQ==",
+  "problems": [
+    {
+      "managementZones": [
+        {
+          "name": "string",
+          "id": "string"
+        }
+      ],
+      "severityLevel": "AVAILABILITY",
+      "entityTags": [
+        {
+          "stringRepresentation": "string",
+          "value": "string",
+          "key": "string",
+          "context": "string"
+        }
+      ],
+      "problemId": "string",
+      "displayId": "string",
+      "affectedEntities": [
+        {
+          "entityId": {
+            "id": "string",
+            "type": "string"
+          },
+          "name": "my-service"
+        },
+        {
+          "entityId": {
+            "id": "string",
+            "type": "string"
+          },
+          "name": "example-service-3"
+        }
+      ],
+      "rootCauseEntity": {
+        "entityId": {
+          "id": "string",
+          "type": "string"
+        },
+        "name": "example-service"
+      },
+      "impactedEntities": [
+        {
+          "entityId": {
+            "id": "string",
+            "type": "string"
+          },
+          "name": "HELP ME"
+        },
+        {
+          "entityId": {
+            "id": "string",
+            "type": "string"
+          },
+          "name": "HELP ME 2"
+        }
+      ],
+      "linkedProblemInfo": {
+        "problemId": "string",
+        "displayId": "string"
+      },
+      "problemFilters": [
+        {
+          "name": "string",
+          "id": "string"
+        }
+      ],
+      "evidenceDetails": {
+        "totalCount": 0,
+        "details": [
+          {
+            "evidenceType": "AVAILABILITY_EVIDENCE",
+            "displayName": "string",
+            "entity": {
+              "entityId": {
+                "id": "string",
+                "type": "string"
+              },
+              "name": "string"
+            },
+            "groupingEntity": {
+              "entityId": {
+                "id": "string",
+                "type": "string"
+              },
+              "name": "string"
+            },
+            "rootCauseRelevant": true,
+            "startTime": 0
+          }
+        ]
+      },
+      "recentComments": {
+        "comments": [
+          {
+            "createdAtTimestamp": 0,
+            "authorName": "string",
+            "context": "string",
+            "id": "string",
+            "content": "string"
+          }
+        ],
+        "totalCount": 0,
+        "pageSize": 0,
+        "nextPageKey": "AQAAABQBAAAABQ=="
+      },
+      "impactAnalysis": {
+        "impacts": [
+          {
+            "impactType": "APPLICATION",
+            "impactedEntity": {
+              "entityId": {
+                "id": "string",
+                "type": "string"
+              },
+              "name": "string"
+            },
+            "estimatedAffectedUsers": 0
+          }
+        ]
+      },
+      "impactLevel": "APPLICATION",
+      "status": "OPEN",
+      "startTime": 0,
+      "endTime": 0,
+      "title": "this IS a big problem"
+    }
+  ],
+  "warnings": ["string"]
+}

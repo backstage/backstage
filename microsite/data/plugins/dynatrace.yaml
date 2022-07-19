@@ -1,0 +1,12 @@
+---
+title: Dynatrace
+author: TELUS
+authorUrl: https://github.com/telus
+category: Monitoring
+description: View monitoring info from dynatrace for services in your software catalog.
+documentation: https://github.com/backstage/backstage/tree/master/plugins/dynatrace
+iconUrl: img/dynatrace.svg
+npmPackageName: '@backstage/plugin-dynatrace'
+tags:
+  - dynatrace
+  - monitoring

@@ -1,0 +1,13 @@
+---
+title: Prometheus
+author: Roadie
+authorUrl: https://roadie.io
+category: Monitoring
+description: Prometheus plugin provides visualization of Prometheus metrics and alerts
+documentation: https://roadie.io/backstage/plugins/prometheus/?utm_source=backstage.io&utm_medium=marketplace&utm_campaign=prometheus
+iconUrl: https://avatars.githubusercontent.com/u/3380462?s=200&v=4
+npmPackageName: '@roadiehq/backstage-plugin-prometheus'
+tags:
+  - monitoring
+  - graphs
+  - alerting

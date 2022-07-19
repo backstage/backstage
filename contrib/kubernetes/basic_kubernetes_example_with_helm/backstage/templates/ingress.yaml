@@ -1,0 +1,83 @@
+{{- if .Values.app.ingress.enabled -}}
+{{- $fullName := include "backstage.fullname" . -}}
+{{- $svcPort := .Values.app.service.port -}}
+{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-app
+  labels:
+{{ include "backstage.app.labels" . | indent 4 }}
+  {{- with .Values.app.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+{{- if .Values.app.ingress.tls }}
+  tls:
+  {{- range .Values.app.ingress.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . | quote }}
+      {{- end }}
+      secretName: {{ .secretName }}
+  {{- end }}
+{{- end }}
+  rules:
+  {{- range .Values.app.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+        {{- range .paths }}
+          - path: {{ . }}
+            backend:
+              serviceName: {{ $fullName }}-app
+              servicePort: {{ $svcPort }}
+        {{- end }}
+  {{- end }}
+{{ end }}
+{{- if .Values.backend.ingress.enabled }}
+---
+{{- $fullName := include "backstage.fullname" . -}}
+{{- $svcPort := .Values.backend.service.port -}}
+{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion }}
+apiVersion: networking.k8s.io/v1beta1
+{{- else }}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-backend
+  labels:
+{{ include "backstage.backend.labels" . | indent 4 }}
+  {{- with .Values.backend.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+{{- if .Values.backend.ingress.tls }}
+  tls:
+  {{- range .Values.backend.ingress.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . | quote }}
+      {{- end }}
+      secretName: {{ .secretName }}
+  {{- end }}
+{{- end }}
+  rules:
+  {{- range .Values.backend.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+        {{- range .paths }}
+          - path: {{ . }}
+            backend:
+              serviceName: {{ $fullName }}-backend
+              servicePort: {{ $svcPort }}
+        {{- end }}
+  {{- end }}
+{{ end }}

@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "annotations": {
+      "autoscaling.alpha.kubernetes.io/conditions": "[{\"type\":\"AbleToScale\",\"status\":\"True\",\"lastTransitionTime\":\"2020-09-28T13:28:15Z\",\"reason\":\"SucceededGetScale\",\"message\":\"the HPA controller was able to get the target's current scale\"},{\"type\":\"ScalingActive\",\"status\":\"False\",\"lastTransitionTime\":\"2020-09-28T13:28:15Z\",\"reason\":\"FailedGetResourceMetric\",\"message\":\"the HPA was unable to compute the replica count: unable to get metrics for resource cpu: unable to fetch metrics from resource metrics API: the server could not find the requested resource (get pods.metrics.k8s.io)\"}]",
+      "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"autoscaling/v1\",\"kind\":\"HorizontalPodAutoscaler\",\"metadata\":{\"annotations\":{},\"labels\":{\"backstage.io/kubernetes-id\":\"dice-roller\"},\"name\":\"dice-roller\",\"namespace\":\"default\"},\"spec\":{\"maxReplicas\":15,\"minReplicas\":10,\"scaleTargetRef\":{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"name\":\"dice-roller\"},\"targetCPUUtilizationPercentage\":50}}\n"
+    },
+    "creationTimestamp": "2020-09-28T13:28:00.000Z",
+    "labels": {
+      "backstage.io/kubernetes-id": "dice-roller"
+    },
+    "name": "dice-roller",
+    "namespace": "default",
+    "resourceVersion": "698957",
+    "selfLink": "/apis/autoscaling/v1/namespaces/default/horizontalpodautoscalers/dice-roller",
+    "uid": "a70c8a90-5605-4d7d-adea-05cfb8d9d446"
+  },
+  "spec": {
+    "maxReplicas": 10,
+    "minReplicas": 5,
+    "scaleTargetRef": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "name": "dice-roller"
+    },
+    "targetCPUUtilizationPercentage": 70
+  },
+  "status": {
+    "currentReplicas": 10,
+    "desiredReplicas": 10,
+    "currentCPUUtilizationPercentage": 100
+  }
+}

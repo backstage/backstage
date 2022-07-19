@@ -1,0 +1,14 @@
+.yarn
+dist
+microsite
+coverage
+*.hbs
+templates
+api-report.md
+cli-report.md
+plugins/scaffolder-backend/sample-templates
+.vscode
+dist-types
+
+# reduce the barrier for adopters to add themselves
+ADOPTERS.md

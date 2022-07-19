@@ -1,0 +1,9 @@
+---
+title: Cloudify
+author: Cloudify
+authorUrl: https://cloudify.co/
+category: Orchestration
+description: Cloudify provides a remote execution and environment management backend for Kubernetes, Terraform, Ansible, etc.
+documentation: https://github.com/cloudify-cosmo/backstage-cloudify-plugin#readme
+iconUrl: https://avatars.githubusercontent.com/u/6260555?s=200&v=4
+npmPackageName: 'plugin-cloudify'

@@ -1,0 +1,238 @@
+/*
+ * Copyright 2020 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import handlebars from 'handlebars';
+import ora from 'ora';
+import recursive from 'recursive-readdir';
+import {
+  basename,
+  dirname,
+  resolve as resolvePath,
+  relative as relativePath,
+} from 'path';
+import { exec as execCb } from 'child_process';
+import { packageVersions } from './versions';
+import { promisify } from 'util';
+
+const TASK_NAME_MAX_LENGTH = 14;
+const exec = promisify(execCb);
+
+export class Task {
+  static log(name: string = '') {
+    process.stdout.write(`${chalk.green(name)}\n`);
+  }
+
+  static error(message: string = '') {
+    process.stdout.write(`\n${chalk.red(message)}\n\n`);
+  }
+
+  static section(name: string) {
+    const title = chalk.green(`${name}:`);
+    process.stdout.write(`\n ${title}\n`);
+  }
+
+  static exit(code: number = 0) {
+    process.exit(code);
+  }
+
+  static async forItem(
+    task: string,
+    item: string,
+    taskFunc: () => Promise<void>,
+  ): Promise<void> {
+    const paddedTask = chalk.green(task.padEnd(TASK_NAME_MAX_LENGTH));
+
+    const spinner = ora({
+      prefixText: chalk.green(`  ${paddedTask}${chalk.cyan(item)}`),
+      spinner: 'arc',
+      color: 'green',
+    }).start();
+
+    try {
+      await taskFunc();
+      spinner.succeed();
+    } catch (error) {
+      spinner.fail();
+      throw error;
+    }
+  }
+}
+
+/**
+ * Generate a templated backstage project
+ *
+ * @param templateDir - location containing template files
+ * @param destinationDir - location to save templated project
+ * @param context - template parameters
+ */
+export async function templatingTask(
+  templateDir: string,
+  destinationDir: string,
+  context: any,
+) {
+  const files = await recursive(templateDir).catch(error => {
+    throw new Error(`Failed to read template directory: ${error.message}`);
+  });
+
+  for (const file of files) {
+    const destinationFile = resolvePath(
+      destinationDir,
+      relativePath(templateDir, file),
+    );
+    await fs.ensureDir(dirname(destinationFile));
+
+    if (file.endsWith('.hbs')) {
+      await Task.forItem('templating', basename(file), async () => {
+        const destination = destinationFile.replace(/\.hbs$/, '');
+
+        const template = await fs.readFile(file);
+        const compiled = handlebars.compile(template.toString());
+        const contents = compiled(
+          { name: basename(destination), ...context },
+          {
+            helpers: {
+              version(name: keyof typeof packageVersions) {
+                if (name in packageVersions) {
+                  return packageVersions[name];
+                }
+                throw new Error(`No version available for package ${name}`);
+              },
+            },
+          },
+        );
+
+        await fs.writeFile(destination, contents).catch(error => {
+          throw new Error(
+            `Failed to create file: ${destination}: ${error.message}`,
+          );
+        });
+      });
+    } else {
+      await Task.forItem('copying', basename(file), async () => {
+        await fs.copyFile(file, destinationFile).catch(error => {
+          const destination = destinationFile;
+          throw new Error(
+            `Failed to copy file to ${destination} : ${error.message}`,
+          );
+        });
+      });
+    }
+  }
+}
+
+/**
+ * Verify that application target does not already exist
+ *
+ * @param rootDir - The directory to create application folder `name`
+ * @param name - The specified name of the application
+ * @Throws Error - If directory with name of `destination` already exists
+ */
+export async function checkAppExistsTask(rootDir: string, name: string) {
+  await Task.forItem('checking', name, async () => {
+    const destination = resolvePath(rootDir, name);
+
+    if (await fs.pathExists(destination)) {
+      const existing = chalk.cyan(destination.replace(`${rootDir}/`, ''));
+      throw new Error(
+        `A directory with the same name already exists: ${existing}\nPlease try again with a different app name`,
+      );
+    }
+  });
+}
+
+/**
+ * Verify that application `path` exists, otherwise create the directory
+ *
+ * @param path - target to create directory
+ * @throws if `path` is a file, or `fs.mkdir` fails
+ */
+export async function checkPathExistsTask(path: string) {
+  await Task.forItem('checking', path, async () => {
+    try {
+      await fs.mkdirs(path);
+    } catch (error) {
+      // will fail if a file already exists at given `path`
+      throw new Error(`Failed to create app directory: ${error.message}`);
+    }
+  });
+}
+
+/**
+ * Create a folder to store templated files
+ *
+ * @param tempDir - target temporary directory
+ * @throws if `fs.mkdir` fails
+ */
+export async function createTemporaryAppFolderTask(tempDir: string) {
+  await Task.forItem('creating', 'temporary directory', async () => {
+    try {
+      await fs.mkdir(tempDir);
+    } catch (error) {
+      throw new Error(`Failed to create temporary app directory, ${error}`);
+    }
+  });
+}
+
+/**
+ * Run `yarn install` and `run tsc` in application directory
+ *
+ * @param appDir - location of application to build
+ */
+export async function buildAppTask(appDir: string) {
+  const runCmd = async (cmd: string) => {
+    await Task.forItem('executing', cmd, async () => {
+      process.chdir(appDir);
+      await exec(cmd).catch(error => {
+        process.stdout.write(error.stderr);
+        process.stdout.write(error.stdout);
+        throw new Error(`Could not execute command ${chalk.cyan(cmd)}`);
+      });
+    });
+  };
+
+  await runCmd('yarn install');
+  await runCmd('yarn tsc');
+}
+
+/**
+ * Move temporary directory to destination application folder
+ *
+ * @param tempDir - source path to copy files from
+ * @param destination - target path to copy files
+ * @param id - item ID
+ * @throws if `fs.move` fails
+ */
+export async function moveAppTask(
+  tempDir: string,
+  destination: string,
+  id: string,
+) {
+  await Task.forItem('moving', id, async () => {
+    await fs
+      .move(tempDir, destination)
+      .catch(error => {
+        throw new Error(
+          `Failed to move app from ${tempDir} to ${destination}: ${error.message}`,
+        );
+      })
+      .finally(() => {
+        // remove temporary files on both success and failure
+        fs.removeSync(tempDir);
+      });
+  });
+}

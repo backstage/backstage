@@ -1,0 +1,8 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{values.name | dump}}
+spec:
+  type: website
+  lifecycle: experimental
+  owner: ${{values.owner | dump}}

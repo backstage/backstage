@@ -1,0 +1,11 @@
+---
+title: Cost Insights
+author: Spotify
+authorUrl: https://github.com/spotify
+category: Discovery
+description: Visualize, understand and optimize your team's cloud costs.
+documentation: https://github.com/backstage/backstage/tree/master/plugins/cost-insights
+iconUrl: img/cost-insights.png
+npmPackageName: '@backstage/plugin-cost-insights'
+tags:
+  - web

@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "backstage.fullname" . }}-backend
+
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: backstage
+      component: backend
+
+  template:
+    metadata:
+      annotations:
+        ad.datadoghq.com/backstage.logs: '[{"source":"backstage","service":"backend"}]'
+      labels:
+        app: backstage
+        component: backend
+
+    spec:
+      {{- if .Values.dockerRegistrySecretName }}
+      imagePullSecrets:
+        - name: {{ .Values.dockerRegistrySecretName }}
+      {{- end}}
+      containers:
+        - name: {{ .Chart.Name }}-backend
+          command: ["node"]
+          args:
+            - "packages/backend"
+            - "--config"
+            - "app-config.yaml"
+            - "--config"
+            - {{ printf "/usr/src/app/%s" (include "backstage.appConfigFilename" .) | quote }}
+          image: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.backend.containerPort }}
+          resources:
+          {{- toYaml .Values.backend.resources | nindent 12 }}
+
+          envFrom:
+            - secretRef:
+                name: {{ include "backstage.fullname" . }}-backend
+            - configMapRef:
+                name: {{ include "backstage.fullname" . }}-app-env
+            - configMapRef:
+                name: {{ include "backstage.fullname" . }}-auth
+          env:
+            - name: NODE_ENV
+              value: {{ .Values.backend.nodeEnv | default "development" }}
+            - name: APP_CONFIG_backend_database_connection_password
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "backend.postgresql.passwordSecret" .}}
+                  key: postgresql-password
+          volumeMounts:
+            {{- if .Values.backend.postgresCertMountEnabled }}
+            - name: postgres-ca
+              mountPath: {{ include "backstage.backend.postgresCaDir" . }}
+            {{- end }}
+            - name: app-config
+              mountPath: {{ printf "/usr/src/app/%s" (include "backstage.appConfigFilename" .) }}
+              subPath: {{ include "backstage.appConfigFilename" . }}
+
+      volumes:
+        {{- if .Values.backend.postgresCertMountEnabled }}
+        - name: postgres-ca
+          configMap:
+            name: {{ include "backstage.fullname" . }}-postgres-ca
+        {{- end }}
+        - name: app-config
+          configMap:
+            name: {{ include "backstage.fullname" . }}-app-config
+
+      {{- if .Values.global.nodeSelector }}
+      nodeSelector: {{- toYaml .Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+
+{{- if .Values.backend.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "backend.serviceName" . }}
+
+spec:
+  ports:
+    - port: 80
+      targetPort: {{ .Values.backend.containerPort }}
+
+  selector:
+    app: backstage
+    component: backend
+
+  type: {{ .Values.backend.serviceType }}
+{{- end }}

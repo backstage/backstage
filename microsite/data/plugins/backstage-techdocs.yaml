@@ -1,0 +1,10 @@
+---
+title: Backstage TechDocs
+author: Spotify
+authorUrl: https://github.com/spotify
+category: Core Feature
+description: A docs-like-code solution to technical documentation. Write your docs right alongside your code.
+documentation: https://backstage.io/docs/features/techdocs/techdocs-overview
+iconUrl: img/backstage-techdocs.svg
+npmPackageName: '@backstage/plugin-techdocs'
+order: 3

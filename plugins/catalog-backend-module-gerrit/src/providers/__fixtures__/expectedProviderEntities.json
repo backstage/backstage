@@ -1,0 +1,43 @@
+{
+  "entities": [
+    {
+      "entity": {
+        "apiVersion": "backstage.io/v1alpha1",
+        "kind": "Location",
+        "metadata": {
+          "annotations": {
+            "backstage.io/managed-by-location": "url:https:/g.com/gitiles/training/gerrit/+/refs/heads/main/catalog-info.yaml",
+            "backstage.io/managed-by-origin-location": "url:https:/g.com/gitiles/training/gerrit/+/refs/heads/main/catalog-info.yaml"
+          },
+          "name": "generated-acbbddb9193be55b61de6a7c1d39b3dcaaf27525"
+        },
+        "spec": {
+          "presence": "optional",
+          "target": "https:/g.com/gitiles/training/gerrit/+/refs/heads/main/catalog-info.yaml",
+          "type": "url"
+        }
+      },
+      "locationKey": "gerrit-provider:active-training"
+    },
+    {
+      "entity": {
+        "apiVersion": "backstage.io/v1alpha1",
+        "kind": "Location",
+        "metadata": {
+          "annotations": {
+            "backstage.io/managed-by-location": "url:https:/g.com/gitiles/training/sample/+/refs/heads/main/catalog-info.yaml",
+            "backstage.io/managed-by-origin-location": "url:https:/g.com/gitiles/training/sample/+/refs/heads/main/catalog-info.yaml"
+          },
+          "name": "generated-4b8debb1c2ffa8d58c0bdf3d75abcf2252494e65"
+        },
+        "spec": {
+          "presence": "optional",
+          "target": "https:/g.com/gitiles/training/sample/+/refs/heads/main/catalog-info.yaml",
+          "type": "url"
+        }
+      },
+      "locationKey": "gerrit-provider:active-training"
+    }
+  ],
+  "type": "full"
+}

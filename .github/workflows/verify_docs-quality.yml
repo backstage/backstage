@@ -1,0 +1,29 @@
+name: Verify Docs Quality
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - '.github/workflows/verify_docs-quality.yml'
+      - '**.md'
+
+jobs:
+  check-all-files:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Vale does not support file excludes, so we use the script to generate a list of files instead
+      # The action also does not allow args or a local config file to be passed in, so the files array
+      # also contains an "--config=.github/vale/config.ini" option
+      - name: generate vale args
+        id: generate
+        run: echo "::set-output name=args::$(node scripts/check-docs-quality.js --ci-args)"
+
+      - name: documentation quality check
+        uses: errata-ai/vale-action@v2.0.1
+        with:
+          # This also contains --config=.github/vale/config.ini ... :/
+          files: '${{ steps.generate.outputs.args }}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

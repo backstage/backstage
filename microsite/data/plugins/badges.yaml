@@ -1,0 +1,9 @@
+---
+title: Badges
+author: Andreas Stenius
+authorUrl: https://github.com/backstage/community
+category: Discovery
+description: The badges plugin offers a set of badges that can be used outside of Backstage, showing information related to data from the catalog.
+documentation: https://github.com/backstage/backstage/blob/master/plugins/badges/README.md
+iconUrl: img/badges.svg
+npmPackageName: '@backstage/plugin-badges'

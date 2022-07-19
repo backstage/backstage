@@ -1,0 +1,44 @@
+name: Sync Snyk GitHub issues
+on:
+  schedule:
+    - cron: '0 */4 * * *'
+
+jobs:
+  sync:
+    if: github.repository == 'backstage/backstage' # prevent running on forks
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: use node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+      - name: yarn install
+        uses: backstage/actions/yarn-install@v0.5.3
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
+
+      - name: Create Snyk report
+        uses: snyk/actions/node@master
+        continue-on-error: true # Snyk CLI exits with error when vulnerabilities are found
+        with:
+          args: >
+            --yarn-workspaces
+            --org=backstage-dgh
+            --strict-out-of-sync=false
+            --json-file-output=snyk.json
+          json: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Update Github issues
+        run: yarn ts-node scripts/snyk-github-issue-sync.ts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

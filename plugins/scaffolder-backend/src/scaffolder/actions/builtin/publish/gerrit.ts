@@ -1,0 +1,218 @@
+/*
+ * Copyright 2022 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import crypto from 'crypto';
+import { InputError } from '@backstage/errors';
+import { Config } from '@backstage/config';
+import {
+  GerritIntegrationConfig,
+  getGerritRequestOptions,
+  ScmIntegrationRegistry,
+} from '@backstage/integration';
+import { createTemplateAction } from '../../createTemplateAction';
+import { getRepoSourceDirectory, parseRepoUrl } from './util';
+import fetch, { Response, RequestInit } from 'node-fetch';
+import { initRepoAndPush } from '../helpers';
+
+const createGerritProject = async (
+  config: GerritIntegrationConfig,
+  options: {
+    projectName: string;
+    parent: string;
+    owner?: string;
+    description: string;
+  },
+): Promise<void> => {
+  const { projectName, parent, owner, description } = options;
+
+  const fetchOptions: RequestInit = {
+    method: 'PUT',
+    body: JSON.stringify({
+      parent,
+      description,
+      owners: owner ? [owner] : [],
+      create_empty_commit: false,
+    }),
+    headers: {
+      ...getGerritRequestOptions(config).headers,
+      'Content-Type': 'application/json',
+    },
+  };
+  const response: Response = await fetch(
+    `${config.baseUrl}/a/projects/${encodeURIComponent(projectName)}`,
+    fetchOptions,
+  );
+  if (response.status !== 201) {
+    throw new Error(
+      `Unable to create repository, ${response.status} ${
+        response.statusText
+      }, ${await response.text()}`,
+    );
+  }
+};
+
+const generateCommitMessage = (
+  config: Config,
+  commitSubject?: string,
+): string => {
+  const changeId = crypto.randomBytes(20).toString('hex');
+  const msg = `${
+    config.getOptionalString('scaffolder.defaultCommitMessage') || commitSubject
+  }\n\nChange-Id: I${changeId}`;
+  return msg;
+};
+
+/**
+ * Creates a new action that initializes a git repository of the content in the workspace
+ * and publishes it to a Gerrit instance.
+ * @public
+ */
+export function createPublishGerritAction(options: {
+  integrations: ScmIntegrationRegistry;
+  config: Config;
+}) {
+  const { integrations, config } = options;
+
+  return createTemplateAction<{
+    repoUrl: string;
+    description: string;
+    defaultBranch?: string;
+    gitCommitMessage?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
+    sourcePath?: string;
+  }>({
+    id: 'publish:gerrit',
+    description:
+      'Initializes a git repository of the content in the workspace, and publishes it to Gerrit.',
+    schema: {
+      input: {
+        type: 'object',
+        required: ['repoUrl'],
+        properties: {
+          repoUrl: {
+            title: 'Repository Location',
+            type: 'string',
+          },
+          description: {
+            title: 'Repository Description',
+            type: 'string',
+          },
+          defaultBranch: {
+            title: 'Default Branch',
+            type: 'string',
+            description: `Sets the default branch on the repository. The default value is 'master'`,
+          },
+          gitCommitMessage: {
+            title: 'Git Commit Message',
+            type: 'string',
+            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
+          },
+          gitAuthorName: {
+            title: 'Default Author Name',
+            type: 'string',
+            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
+          },
+          gitAuthorEmail: {
+            title: 'Default Author Email',
+            type: 'string',
+            description: `Sets the default author email for the commit.`,
+          },
+          sourcePath: {
+            title: 'Source Path',
+            type: 'string',
+            description: `Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.`,
+          },
+        },
+      },
+      output: {
+        type: 'object',
+        properties: {
+          remoteUrl: {
+            title: 'A URL to the repository with the provider',
+            type: 'string',
+          },
+          repoContentsUrl: {
+            title: 'A URL to the root of the repository',
+            type: 'string',
+          },
+        },
+      },
+    },
+    async handler(ctx) {
+      const {
+        repoUrl,
+        description,
+        defaultBranch = 'master',
+        gitAuthorName,
+        gitAuthorEmail,
+        gitCommitMessage = 'initial commit',
+        sourcePath,
+      } = ctx.input;
+      const { repo, host, owner, workspace } = parseRepoUrl(
+        repoUrl,
+        integrations,
+      );
+
+      const integrationConfig = integrations.gerrit.byHost(host);
+
+      if (!integrationConfig) {
+        throw new InputError(
+          `No matching integration configuration for host ${host}, please check your integrations config`,
+        );
+      }
+
+      if (!workspace) {
+        throw new InputError(
+          `Invalid URL provider was included in the repo URL to create ${ctx.input.repoUrl}, missing workspace`,
+        );
+      }
+
+      await createGerritProject(integrationConfig.config, {
+        description,
+        owner: owner,
+        projectName: repo,
+        parent: workspace,
+      });
+      const auth = {
+        username: integrationConfig.config.username!,
+        password: integrationConfig.config.password!,
+      };
+      const gitAuthorInfo = {
+        name: gitAuthorName
+          ? gitAuthorName
+          : config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: gitAuthorEmail
+          ? gitAuthorEmail
+          : config.getOptionalString('scaffolder.defaultAuthor.email'),
+      };
+
+      const remoteUrl = `${integrationConfig.config.cloneUrl}/a/${repo}`;
+      await initRepoAndPush({
+        dir: getRepoSourceDirectory(ctx.workspacePath, sourcePath),
+        remoteUrl,
+        auth,
+        defaultBranch,
+        logger: ctx.logger,
+        commitMessage: generateCommitMessage(config, gitCommitMessage),
+        gitAuthorInfo,
+      });
+
+      const repoContentsUrl = `${integrationConfig.config.gitilesBaseUrl}/${repo}/+/refs/heads/${defaultBranch}`;
+      ctx.output('remoteUrl', remoteUrl);
+      ctx.output('repoContentsUrl', repoContentsUrl);
+    },
+  });
+}
