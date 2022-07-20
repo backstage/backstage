@@ -394,10 +394,10 @@ async function main() {
   if (isMainBranch) {
     console.log('Main release, updating package versions');
     await updatePackageVersions(repo);
+    await ensureCreateAppChangeset();
   }
 
   await updateBackstageReleaseVersion(repo, isMainBranch ? 'minor' : 'patch');
-  await ensureCreateAppChangeset();
 }
 
 main().catch(error => {

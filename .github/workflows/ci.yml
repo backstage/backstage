@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         node-version: [14.x, 16.x]
 
@@ -32,7 +33,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.2
+        uses: backstage/actions/yarn-install@v0.5.3
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -44,6 +45,7 @@ jobs:
     needs: install
 
     strategy:
+      fail-fast: false
       matrix:
         node-version: [14.x, 16.x]
 
@@ -61,7 +63,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.2
+        uses: backstage/actions/yarn-install@v0.5.3
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -120,6 +122,7 @@ jobs:
     needs: install
 
     strategy:
+      fail-fast: false
       matrix:
         node-version: [14.x, 16.x]
 
@@ -178,7 +181,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.2
+        uses: backstage/actions/yarn-install@v0.5.3
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 

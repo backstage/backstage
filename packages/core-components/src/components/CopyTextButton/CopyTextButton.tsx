@@ -47,6 +47,15 @@ export interface CopyTextButtonProps {
    * Default: "Text copied to clipboard"
    */
   tooltipText?: string;
+
+  /**
+   * Text to use as aria-label prop on the button
+   *
+   * @remarks
+   *
+   * Default: "Copy text"
+   */
+  'aria-label'?: string;
 }
 
 /**
@@ -62,13 +71,18 @@ export interface CopyTextButtonProps {
  *
  * @example
  *
- * `<CopyTextButton text="My text that I want to be copied to the clipboard" />`
+ * ```
+ * <CopyTextButton
+ *   text="My text that I want to be copied to the clipboard"
+ *   arial-label="Accessible label for this button" />
+ * ```
  */
 export function CopyTextButton(props: CopyTextButtonProps) {
   const {
     text,
     tooltipDelay = 1000,
     tooltipText = 'Text copied to clipboard',
+    'aria-label': ariaLabel = 'Copy text',
   } = props;
   const errorApi = useApi(errorApiRef);
   const [open, setOpen] = useState(false);
@@ -96,7 +110,7 @@ export function CopyTextButton(props: CopyTextButtonProps) {
         onClose={() => setOpen(false)}
         open={open}
       >
-        <IconButton onClick={handleCopyClick}>
+        <IconButton onClick={handleCopyClick} aria-label={ariaLabel}>
           <CopyIcon />
         </IconButton>
       </Tooltip>

@@ -290,6 +290,7 @@
     ],
     "Deployment": [
       "deployment/index",
+      "deployment/scaling",
       "deployment/docker",
       "deployment/k8s",
       "deployment/heroku"

@@ -49,6 +49,9 @@ export class KubernetesAuthTranslatorGenerator {
       case 'oidc': {
         return new OidcKubernetesAuthTranslator();
       }
+      case 'localKubectlProxy': {
+        return new NoopKubernetesAuthTranslator();
+      }
       default: {
         throw new Error(
           `authProvider "${authProvider}" has no KubernetesAuthTranslator associated with it`,

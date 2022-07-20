@@ -55,17 +55,15 @@ export type FactRetrieverRegistrationOptions = {
 // @public (undocumented)
 export interface FactRetrieverRegistry {
   // (undocumented)
-  get(retrieverReference: string): FactRetrieverRegistration;
+  get(retrieverReference: string): Promise<FactRetrieverRegistration>;
   // (undocumented)
-  getSchemas(): FactSchema[];
+  getSchemas(): Promise<FactSchema[]>;
   // (undocumented)
-  listRegistrations(): FactRetrieverRegistration[];
+  listRegistrations(): Promise<FactRetrieverRegistration[]>;
   // (undocumented)
-  listRetrievers(): FactRetriever[];
+  listRetrievers(): Promise<FactRetriever[]>;
   // (undocumented)
-  register(registration: FactRetrieverRegistration): void;
-  // (undocumented)
-  readonly retrievers: Map<string, FactRetrieverRegistration>;
+  register(registration: FactRetrieverRegistration): Promise<void>;
 }
 
 // @public

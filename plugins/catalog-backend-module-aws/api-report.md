@@ -7,12 +7,33 @@ import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorParser } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
+import { Credentials } from 'aws-sdk';
 import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import { TaskRunner } from '@backstage/backend-tasks';
 import { UrlReader } from '@backstage/backend-common';
+
+// @public
+export type AWSCredentialFactory = (
+  awsAccountId: string,
+) => Promise<Credentials>;
+
+// @public
+export class AwsEKSClusterProcessor implements CatalogProcessor {
+  constructor(options: { credentialsFactory?: AWSCredentialFactory });
+  // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
+  normalizeName(name: string): string;
+  // (undocumented)
+  readLocation(
+    location: LocationSpec,
+    _optional: boolean,
+    emit: CatalogProcessorEmit,
+  ): Promise<boolean>;
+}
 
 // @public
 export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {

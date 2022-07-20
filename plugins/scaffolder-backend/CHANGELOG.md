@@ -1,5 +1,32 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.4.0-next.3
+
+### Minor Changes
+
+- 91c1d12123: Export experimental `scaffolderCatalogExtension` for the new backend system. This export is not considered stable and should not be used in production.
+
+### Patch Changes
+
+- ea6dcb84a4: Don't resolve symlinks, treat them as binary files and copy them as-is
+- af02f54483: new setUserAsOwner flag for publish:gitlab action
+
+  The field default is `false`. When true it will use the token configured in the gitlab integration for the matching host, to try and set the user logged in via `repoUrlPicker` `requestUserCredentials` OAuth flow as owner of the repository created in GitLab.
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- 511f49ee43: Updated dependency `octokit` to `^2.0.0`.
+- 735853353b: Updated dependency `@octokit/webhooks` to `^10.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.0-next.0
+  - @backstage/plugin-catalog-backend@1.3.0-next.3
+  - @backstage/plugin-catalog-node@1.0.0-next.0
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/catalog-client@1.0.4-next.2
+  - @backstage/integration@1.2.2-next.3
+  - @backstage/catalog-model@1.1.0-next.3
+
 ## 1.4.0-next.2
 
 ### Minor Changes
@@ -39,10 +66,6 @@
   - @backstage/integration@1.2.2-next.1
 
 ## 1.4.0-next.0
-
-### Minor Changes
-
-- 3500c13a33: Added a new `/v2/dry-run` endpoint that allows for a synchronous dry run of a provided template. A `supportsDryRun` option has been added to `createTemplateAction`, which signals whether the action should be executed during dry runs. When enabled, the action context will have the new `isDryRun` property set to signal if the action is being executed during a dry run.
 
 ### Patch Changes
 
@@ -86,6 +109,7 @@
   - Added a route under `/v2/tasks` to list tasks by a `userEntityRef` using the `createdBy` query parameter
 - c042c5eaff: Add an option to not protect the default branch.
 - f93af969cd: Added the ability to support running of templates that are not in the `default` namespace
+- 3500c13a33: Added a new `/v2/dry-run` endpoint that allows for a synchronous dry run of a provided template. A `supportsDryRun` option has been added to `createTemplateAction`, which signals whether the action should be executed during dry runs. When enabled, the action context will have the new `isDryRun` property set to signal if the action is being executed during a dry run.
 
 ### Patch Changes
 

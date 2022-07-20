@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
+export { AwsEKSClusterProcessor } from './AwsEKSClusterProcessor';
 export { AwsOrganizationCloudAccountProcessor } from './AwsOrganizationCloudAccountProcessor';
 export { AwsS3DiscoveryProcessor } from './AwsS3DiscoveryProcessor';

@@ -168,6 +168,15 @@ export enum PolicyTypeId {
   Status = 'cbdc66da-9728-4af8-aada-9a5a32e4a226',
 }
 
+// Warning: (ae-missing-release-tag) "Project" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type Project = {
+  id?: string;
+  name?: string;
+  description?: string;
+};
+
 // Warning: (ae-missing-release-tag) "PullRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)

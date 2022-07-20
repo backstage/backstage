@@ -36,9 +36,15 @@ You can also use this process if you have an idea for a good plugin but you hope
 
 Since there is such a large landscape of possible development, build, and deployment environments, we welcome community contributions in these areas in the [`/contrib`](https://github.com/backstage/backstage/tree/master/contrib) folder of the project. This is an excellent place to put things that help out the community at large, but which may not fit within the scope of the core product to support natively. Here, you will find Helm charts, alternative Docker images, and much more.
 
-### Write Documentation
+### Write Documentation or improve the website
 
 The current documentation is very limited. Help us make the `/docs` folder come alive.
+
+Docs are published to [backstage.io/docs](https://backstage.io/docs). If you
+contribute to the documentation, you might want to preview your changes before
+submitting them. You'll find the website sources under [/microsite](/microsite)
+with instructions for building and locally serving the website in the
+[README](/microsite#readme).
 
 ### Contribute to Storybook
 

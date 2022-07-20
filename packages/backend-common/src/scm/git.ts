@@ -90,21 +90,30 @@ export class Git {
   }): Promise<void> {
     const { url, dir, ref, depth, noCheckout } = options;
     this.config.logger?.info(`Cloning repo {dir=${dir},url=${url}}`);
-    return git.clone({
-      fs,
-      http,
-      url,
-      dir,
-      ref,
-      singleBranch: true,
-      depth: depth ?? 1,
-      noCheckout,
-      onProgress: this.onProgressHandler(),
-      headers: {
-        'user-agent': 'git/@isomorphic-git',
-      },
-      onAuth: this.onAuth,
-    });
+
+    try {
+      return await git.clone({
+        fs,
+        http,
+        url,
+        dir,
+        ref,
+        singleBranch: true,
+        depth: depth ?? 1,
+        noCheckout,
+        onProgress: this.onProgressHandler(),
+        headers: {
+          'user-agent': 'git/@isomorphic-git',
+        },
+        onAuth: this.onAuth,
+      });
+    } catch (ex) {
+      this.config.logger?.error(`Failed to clone repo {dir=${dir},url=${url}}`);
+      if (ex.data) {
+        throw new Error(`${ex.message} {data=${JSON.stringify(ex.data)}}`);
+      }
+      throw ex;
+    }
   }
 
   /** https://isomorphic-git.org/docs/en/currentBranch */
@@ -124,15 +133,26 @@ export class Git {
     this.config.logger?.info(
       `Fetching remote=${remote} for repository {dir=${dir}}`,
     );
-    await git.fetch({
-      fs,
-      http,
-      dir,
-      remote,
-      onProgress: this.onProgressHandler(),
-      headers: { 'user-agent': 'git/@isomorphic-git' },
-      onAuth: this.onAuth,
-    });
+
+    try {
+      await git.fetch({
+        fs,
+        http,
+        dir,
+        remote,
+        onProgress: this.onProgressHandler(),
+        headers: { 'user-agent': 'git/@isomorphic-git' },
+        onAuth: this.onAuth,
+      });
+    } catch (ex) {
+      this.config.logger?.error(
+        `Failed to fetch repo {dir=${dir},origin=${origin}}`,
+      );
+      if (ex.data) {
+        throw new Error(`${ex.message} {data=${JSON.stringify(ex.data)}}`);
+      }
+      throw ex;
+    }
   }
 
   async init(options: { dir: string; defaultBranch?: string }): Promise<void> {
@@ -175,17 +195,27 @@ export class Git {
     this.config.logger?.info(
       `Pushing directory to remote {dir=${dir},remote=${remote}}`,
     );
-    return git.push({
-      fs,
-      dir,
-      http,
-      onProgress: this.onProgressHandler(),
-      headers: {
-        'user-agent': 'git/@isomorphic-git',
-      },
-      remote: remote,
-      onAuth: this.onAuth,
-    });
+    try {
+      return await git.push({
+        fs,
+        dir,
+        http,
+        onProgress: this.onProgressHandler(),
+        headers: {
+          'user-agent': 'git/@isomorphic-git',
+        },
+        remote: remote,
+        onAuth: this.onAuth,
+      });
+    } catch (ex) {
+      this.config.logger?.error(
+        `Failed to push to repo {dir=${dir}, remote=${remote}}`,
+      );
+      if (ex.data) {
+        throw new Error(`${ex.message} {data=${JSON.stringify(ex.data)}}`);
+      }
+      throw ex;
+    }
   }
 
   /** https://isomorphic-git.org/docs/en/readCommit */

@@ -1,5 +1,56 @@
 # @backstage/plugin-catalog-backend
 
+## 1.3.0-next.3
+
+### Minor Changes
+
+- 1dd6c22cc8: Added an option to be able to trigger refreshes on entities based on a prestored arbitrary key.
+
+  The UrlReaderProcessor, FileReaderProcessor got updated to store the absolute URL of the catalog file as a refresh key. In the format of `<type>:<target>`
+  The PlaceholderProcessor got updated to store the resolverValues as refreshKeys for the entities.
+
+  The custom resolvers will need to be updated to pass in a `CatalogProcessorEmit` function as parameter and they should be updated to emit their refresh processingResults. You can see the updated resolvers in the `PlaceholderProcessor.ts`
+
+  ```ts
+    // yamlPlaceholderResolver
+    ...
+    const { content, url } = await readTextLocation(params);
+
+    params.emit(processingResult.refresh(`url:${url}`));
+    ...
+  ```
+
+- 91c1d12123: Export experimental `catalogPlugin` for the new backend system. This export is not considered stable and should not be used in production.
+
+### Patch Changes
+
+- 1e02fe46d6: Fixed bug where catalog metrics weren't being tracked.
+- 5f6b847c15: Fix Error Code in Register Component DryRun
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- fa0533e604: CatalogBuilder supports now subscription to processing engine errors.
+
+  ```ts
+  subscribe(options: {
+    onProcessingError: (event: { unprocessedEntity: Entity, error: Error }) => Promise<void> | void;
+  });
+  ```
+
+  If you want to get notified on errors while processing the entities, you call CatalogBuilder.subscribe
+  to get notifications with the parameters defined as above.
+
+- 9a6aba1d85: Many symbol declarations have been moved to `@backstage/plugin-catalog-node`. This has no affect on users of this package as they are all re-exported. Modules that build on top of the catalog backend plugin should switch all of their imports to the `@backstage/plugin-catalog-node` package and remove the dependency on `@backstage/plugin-catalog-backend`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.0-next.0
+  - @backstage/plugin-catalog-node@1.0.0-next.0
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/catalog-client@1.0.4-next.2
+  - @backstage/integration@1.2.2-next.3
+  - @backstage/plugin-permission-common@0.6.3-next.1
+  - @backstage/plugin-permission-node@0.6.3-next.2
+  - @backstage/catalog-model@1.1.0-next.3
+
 ## 1.2.1-next.2
 
 ### Patch Changes

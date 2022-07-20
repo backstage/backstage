@@ -15,11 +15,7 @@
  */
 
 import { SearchClient } from './apis';
-import {
-  searchApiRef,
-  SearchResult as RealSearchResult,
-  DefaultResultListItem as RealDefaultResultListItem,
-} from '@backstage/plugin-search-react';
+import { searchApiRef } from '@backstage/plugin-search-react';
 import {
   createApiFactory,
   createPlugin,
@@ -66,12 +62,6 @@ export const SearchPage = searchPlugin.provide(
 
 /**
  * @public
- * @deprecated Import from `@backstage/plugin-search-react` instead.
- */
-export const SearchResult = RealSearchResult;
-
-/**
- * @public
  */
 export const SidebarSearchModal = searchPlugin.provide(
   createComponentExtension({
@@ -84,12 +74,6 @@ export const SidebarSearchModal = searchPlugin.provide(
     },
   }),
 );
-
-/**
- * @public
- * @deprecated Import from `@backstage/plugin-search-react` instead.
- */
-export const DefaultResultListItem = RealDefaultResultListItem;
 
 /**
  * @public

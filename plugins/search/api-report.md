@@ -6,142 +6,23 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { DefaultResultListItemProps } from '@backstage/plugin-search-react';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { InputBaseProps } from '@material-ui/core';
-import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
-import { SearchAutocompleteFilterProps as SearchAutocompleteFilterProps_2 } from '@backstage/plugin-search-react';
-import { SearchBarBaseProps as SearchBarBaseProps_2 } from '@backstage/plugin-search-react';
-import { SearchFilterComponentProps as SearchFilterComponentProps_2 } from '@backstage/plugin-search-react';
-import { SearchResultProps } from '@backstage/plugin-search-react';
-
-// @public @deprecated (undocumented)
-export const DefaultResultListItem: (
-  props: DefaultResultListItemProps,
-) => JSX.Element;
-
-// @public @deprecated (undocumented)
-export type FilterOptions = {
-  kind: Array<string>;
-  lifecycle: Array<string>;
-};
-
-// @public @deprecated (undocumented)
-export const Filters: ({
-  filters,
-  filterOptions,
-  resetFilters,
-  updateSelected,
-  updateChecked,
-}: FiltersProps) => JSX.Element;
-
-// @public @deprecated (undocumented)
-export const FiltersButton: ({
-  numberOfSelectedFilters,
-  handleToggleFilters,
-}: FiltersButtonProps) => JSX.Element;
-
-// @public @deprecated
-export type FiltersButtonProps = {
-  numberOfSelectedFilters: number;
-  handleToggleFilters: () => void;
-};
-
-// @public @deprecated
-export type FiltersProps = {
-  filters: FiltersState;
-  filterOptions: FilterOptions;
-  resetFilters: () => void;
-  updateSelected: (filter: string) => void;
-  updateChecked: (filter: string) => void;
-};
-
-// @public @deprecated (undocumented)
-export type FiltersState = {
-  selected: string;
-  checked: Array<string>;
-};
+import { SearchBarBaseProps } from '@backstage/plugin-search-react';
 
 // @public (undocumented)
 export const HomePageSearchBar: ({
   ...props
-}: Partial<Omit<SearchBarBaseProps_2, 'onChange' | 'onSubmit'>>) => JSX.Element;
+}: Partial<Omit<SearchBarBaseProps, 'onChange' | 'onSubmit'>>) => JSX.Element;
 
 // @public
 export type HomePageSearchBarProps = Partial<
-  Omit<SearchBarBaseProps_2, 'onChange' | 'onSubmit'>
+  Omit<SearchBarBaseProps, 'onChange' | 'onSubmit'>
 >;
 
 // @public (undocumented)
 export const Router: () => JSX.Element;
-
-// @public @deprecated (undocumented)
-export type SearchAutocompleteFilterProps = SearchFilterComponentProps_2 & {
-  filterSelectedOptions?: boolean;
-  limitTags?: number;
-  multiple?: boolean;
-};
-
-// @public @deprecated
-export const SearchBar: ({ onChange, ...props }: SearchBarProps) => JSX.Element;
-
-// @public @deprecated
-export const SearchBarBase: ({
-  onChange,
-  onKeyDown,
-  onSubmit,
-  debounceTime,
-  clearButton,
-  fullWidth,
-  value: defaultValue,
-  inputProps: defaultInputProps,
-  endAdornment: defaultEndAdornment,
-  ...props
-}: SearchBarBaseProps_2) => JSX.Element;
-
-// @public @deprecated
-export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
-  debounceTime?: number;
-  clearButton?: boolean;
-  onClear?: () => void;
-  onSubmit?: () => void;
-  onChange: (value: string) => void;
-};
-
-// @public @deprecated
-export type SearchBarProps = Partial<SearchBarBaseProps>;
-
-// @public @deprecated (undocumented)
-export const SearchFilter: {
-  ({ component: Element, ...props }: SearchFilterWrapperProps): JSX.Element;
-  Checkbox(
-    props: Omit<SearchFilterWrapperProps, 'component'> &
-      SearchFilterComponentProps,
-  ): JSX.Element;
-  Select(
-    props: Omit<SearchFilterWrapperProps, 'component'> &
-      SearchFilterComponentProps,
-  ): JSX.Element;
-  Autocomplete(props: SearchAutocompleteFilterProps_2): JSX.Element;
-};
-
-// @public @deprecated (undocumented)
-export type SearchFilterComponentProps = {
-  className?: string;
-  name: string;
-  label?: string;
-  values?: string[] | ((partial: string) => Promise<string[]>);
-  defaultValue?: string[] | string | null;
-  valuesDebounceMs?: number;
-};
-
-// @public @deprecated (undocumented)
-export type SearchFilterWrapperProps = SearchFilterComponentProps & {
-  component: (props: SearchFilterComponentProps) => ReactElement;
-  debug?: boolean;
-};
 
 // @public (undocumented)
 export const SearchModal: ({
@@ -198,12 +79,6 @@ const searchPlugin: BackstagePlugin<
 >;
 export { searchPlugin as plugin };
 export { searchPlugin };
-
-// @public @deprecated (undocumented)
-export const SearchResult: (props: SearchResultProps) => JSX.Element;
-
-// @public @deprecated (undocumented)
-export const SearchResultPager: () => JSX.Element;
 
 // @public (undocumented)
 export const SearchType: {

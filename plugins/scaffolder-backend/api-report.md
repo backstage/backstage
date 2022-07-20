@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="node" />
 
+import { BackendRegistrable } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
@@ -105,6 +106,7 @@ export function createFetchTemplateAction(options: {
   values: any;
   templateFileExtension?: string | boolean | undefined;
   copyWithoutRender?: string[] | undefined;
+  copyWithoutTemplating?: string[] | undefined;
   cookiecutterCompat?: boolean | undefined;
 }>;
 
@@ -215,6 +217,7 @@ export function createGithubRepoPushAction(options: {
   description?: string | undefined;
   defaultBranch?: string | undefined;
   protectDefaultBranch?: boolean | undefined;
+  protectEnforceAdmins?: boolean | undefined;
   gitCommitMessage?: string | undefined;
   gitAuthorName?: string | undefined;
   gitAuthorEmail?: string | undefined;
@@ -315,6 +318,7 @@ export function createPublishGerritAction(options: {
   gitCommitMessage?: string | undefined;
   gitAuthorName?: string | undefined;
   gitAuthorEmail?: string | undefined;
+  sourcePath?: string | undefined;
 }>;
 
 // @public
@@ -328,6 +332,7 @@ export function createPublishGithubAction(options: {
   access?: string | undefined;
   defaultBranch?: string | undefined;
   protectDefaultBranch?: boolean | undefined;
+  protectEnforceAdmins?: boolean | undefined;
   deleteBranchOnMerge?: boolean | undefined;
   gitCommitMessage?: string | undefined;
   gitAuthorName?: string | undefined;
@@ -404,6 +409,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   commitAction?: 'update' | 'create' | 'delete' | undefined;
   projectid?: string | undefined;
   removeSourceBranch?: boolean | undefined;
+  assignee?: string | undefined;
 }>;
 
 // @public
@@ -543,6 +549,9 @@ export type RunCommandOptions = {
   options?: SpawnOptionsWithoutStdio;
   logStream?: Writable;
 };
+
+// @alpha
+export const scaffolderCatalogModule: (option: unknown) => BackendRegistrable;
 
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {

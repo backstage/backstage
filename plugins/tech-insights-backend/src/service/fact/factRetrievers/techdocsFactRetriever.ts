@@ -34,6 +34,9 @@ const techdocsAnnotationFactName =
 export const techdocsFactRetriever: FactRetriever = {
   id: 'techdocsFactRetriever',
   version: '0.0.1',
+  title: 'Tech Docs',
+  description:
+    'Generates facts related to the completeness of techdocs configuration for entities',
   schema: {
     [techdocsAnnotationFactName]: {
       type: 'boolean',

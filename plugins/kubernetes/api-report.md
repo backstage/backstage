@@ -32,17 +32,6 @@ import { V1ReplicaSet } from '@kubernetes/client-node';
 import { V1Service } from '@kubernetes/client-node';
 import { V1StatefulSet } from '@kubernetes/client-node';
 
-// Warning: (ae-forgotten-export) The symbol "KubernetesAuthProvider" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "AwsKubernetesAuthProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export class AwsKubernetesAuthProvider implements KubernetesAuthProvider {
-  // (undocumented)
-  decorateRequestBodyForAuth(
-    requestBody: KubernetesRequestBody,
-  ): Promise<KubernetesRequestBody>;
-}
-
 // Warning: (ae-forgotten-export) The symbol "ClusterProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Cluster" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -109,6 +98,28 @@ export interface DeploymentResources {
   replicaSets: V1ReplicaSet[];
 }
 
+// @alpha
+export interface DetectedError {
+  // (undocumented)
+  cluster: string;
+  // (undocumented)
+  kind: ErrorDetectableKind;
+  // (undocumented)
+  message: string[];
+  // (undocumented)
+  names: string[];
+  // (undocumented)
+  severity: ErrorSeverity;
+}
+
+// @alpha
+export type DetectedErrorsByCluster = Map<string, DetectedError[]>;
+
+// @alpha
+export const detectErrors: (
+  objects: ObjectsByEntityResponse,
+) => DetectedErrorsByCluster;
+
 // Warning: (ae-missing-release-tag) "EntityKubernetesContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -120,6 +131,12 @@ export const EntityKubernetesContent: (
 export type EntityKubernetesContentProps = {
   refreshIntervalMs?: number;
 };
+
+// @alpha
+export type ErrorDetectableKind =
+  | 'Pod'
+  | 'Deployment'
+  | 'HorizontalPodAutoscaler';
 
 // Warning: (ae-forgotten-export) The symbol "ErrorPanelProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ErrorPanel" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -139,6 +156,9 @@ export const ErrorReporting: ({
   detectedErrors,
 }: ErrorReportingProps) => JSX.Element;
 
+// @alpha
+export type ErrorSeverity = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+
 // Warning: (ae-forgotten-export) The symbol "FormatClusterLinkOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "formatClusterLink" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -147,6 +167,7 @@ export function formatClusterLink(
   options: FormatClusterLinkOptions,
 ): string | undefined;
 
+// Warning: (ae-forgotten-export) The symbol "KubernetesAuthProvider" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "GoogleKubernetesAuthProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -154,18 +175,6 @@ export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
   constructor(authProvider: OAuthApi);
   // (undocumented)
   authProvider: OAuthApi;
-  // (undocumented)
-  decorateRequestBodyForAuth(
-    requestBody: KubernetesRequestBody,
-  ): Promise<KubernetesRequestBody>;
-}
-
-// Warning: (ae-missing-release-tag) "GoogleServiceAccountAuthProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export class GoogleServiceAccountAuthProvider
-  implements KubernetesAuthProvider
-{
   // (undocumented)
   decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
@@ -386,10 +395,8 @@ export const PodsTable: ({
 // @public (undocumented)
 export const Router: (props: { refreshIntervalMs?: number }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "ServiceAccountKubernetesAuthProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export class ServiceAccountKubernetesAuthProvider
+// @public
+export class ServerSideKubernetesAuthProvider
   implements KubernetesAuthProvider
 {
   // (undocumented)
