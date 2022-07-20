@@ -2,4 +2,5 @@
 '@backstage/backend-common': patch
 ---
 
-Add force push, force addRemote, and deleteRemote to git wrapper. **_All parameters added are optional_**
+- Added `force` and `remoteRef` option to `push` method in `git` actions
+- Added `addRemote` and `deleteRemote` methods to `git` actions
