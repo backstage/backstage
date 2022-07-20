@@ -46,7 +46,7 @@
     "@types/cors": "^2.8.6",
     "@types/dockerode": "^3.3.0",
     "@types/express": "^4.17.6",
-    "@types/luxon": "^2.0.4",
+    "@types/luxon": "^3.0.0",
     "@types/webpack-env": "^1.15.2",
     "archiver": "^5.0.2",
     "aws-sdk": "^2.840.0",

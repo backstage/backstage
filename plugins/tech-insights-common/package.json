@@ -33,7 +33,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@types/luxon": "^2.0.5",
+    "@types/luxon": "^3.0.0",
     "luxon": "^3.0.0",
     "@backstage/types": "^1.0.0"
   },
