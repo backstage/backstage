@@ -34,7 +34,7 @@
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",
-    "react": "^16.13.1 || ^17.0.0"
+    "react": "^18.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.18.0-next.1",
