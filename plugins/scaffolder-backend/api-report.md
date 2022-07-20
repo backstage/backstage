@@ -322,6 +322,19 @@ export function createPublishGerritAction(options: {
 }>;
 
 // @public
+export function createPublishGerritReviewAction(options: {
+  integrations: ScmIntegrationRegistry;
+  config: Config;
+}): TemplateAction<{
+  repoUrl: string;
+  branch?: string | undefined;
+  sourcePath?: string | undefined;
+  gitCommitMessage?: string | undefined;
+  gitAuthorName?: string | undefined;
+  gitAuthorEmail?: string | undefined;
+}>;
+
+// @public
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
