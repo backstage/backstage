@@ -75,7 +75,7 @@ export const circleCIBuildRouteRef: SubRouteRef<PathParams<'/:buildId'>>;
 // Warning: (ae-missing-release-tag) "circleCIPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-const circleCIPlugin: BackstagePlugin<{}, {}>;
+const circleCIPlugin: BackstagePlugin<{}, {}, {}>;
 export { circleCIPlugin };
 export { circleCIPlugin as plugin };
 

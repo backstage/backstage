@@ -141,6 +141,7 @@ const cloudbuildPlugin: BackstagePlugin<
   {
     entityContent: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export { cloudbuildPlugin };

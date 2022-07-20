@@ -170,7 +170,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
 // Warning: (ae-missing-release-tag) "azureDevOpsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const azureDevOpsPlugin: BackstagePlugin<{}, {}>;
+export const azureDevOpsPlugin: BackstagePlugin<{}, {}, {}>;
 
 // Warning: (ae-missing-release-tag) "AzurePullRequestsIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

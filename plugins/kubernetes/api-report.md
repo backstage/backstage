@@ -353,6 +353,7 @@ const kubernetesPlugin: BackstagePlugin<
   {
     entityContent: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export { kubernetesPlugin };
