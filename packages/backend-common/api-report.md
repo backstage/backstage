@@ -340,6 +340,8 @@ export class Git {
     url: string;
     force?: boolean;
   }): Promise<void>;
+  // (undocumented)
+  checkout(options: { dir: string; ref: string }): Promise<void>;
   clone(options: {
     url: string;
     dir: string;

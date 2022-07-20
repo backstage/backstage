@@ -10,8 +10,8 @@ import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
 export const ApacheAirflowDagTable: ({
-                                       dagIds,
-                                     }: {
+  dagIds,
+}: {
   dagIds?: string[] | undefined;
 }) => JSX.Element;
 
@@ -27,6 +27,7 @@ export const apacheAirflowPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 ```

@@ -73,6 +73,13 @@ export class Git {
     return git.deleteRemote({ fs, dir, remote });
   }
 
+  async checkout(options: { dir: string; ref: string }): Promise<void> {
+    const { dir, ref } = options;
+    this.config.logger?.info(`Checking out branch {dir=${dir},ref=${ref}}`);
+
+    return git.checkout({ fs, dir, ref });
+  }
+
   async commit(options: {
     dir: string;
     message: string;
@@ -219,6 +226,7 @@ export class Git {
           'user-agent': 'git/@isomorphic-git',
         },
         remote: remote,
+        remoteRef: remoteRef,
         onAuth: this.onAuth,
       });
     } catch (ex) {

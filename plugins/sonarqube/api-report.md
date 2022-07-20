@@ -44,7 +44,7 @@ export const SonarQubeCard: ({
 // Warning: (ae-missing-release-tag) "sonarQubePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-const sonarQubePlugin: BackstagePlugin<{}, {}>;
+const sonarQubePlugin: BackstagePlugin<{}, {}, {}>;
 export { sonarQubePlugin as plugin };
 export { sonarQubePlugin };
 

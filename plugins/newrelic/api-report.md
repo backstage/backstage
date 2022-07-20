@@ -20,6 +20,7 @@ const newRelicPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export { newRelicPlugin };

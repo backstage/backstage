@@ -62,7 +62,7 @@ export const shortcutsApiRef: ApiRef<ShortcutApi>;
 // Warning: (ae-missing-release-tag) "shortcutsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const shortcutsPlugin: BackstagePlugin<{}, {}>;
+export const shortcutsPlugin: BackstagePlugin<{}, {}, {}>;
 
 // @public
 export interface ShortcutsProps {

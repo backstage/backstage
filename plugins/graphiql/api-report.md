@@ -39,7 +39,7 @@ export const GraphiQLIcon: IconComponent;
 export const GraphiQLPage: () => JSX.Element;
 
 // @public (undocumented)
-const graphiqlPlugin: BackstagePlugin<{}, {}>;
+const graphiqlPlugin: BackstagePlugin<{}, {}, {}>;
 export { graphiqlPlugin };
 export { graphiqlPlugin as plugin };
 

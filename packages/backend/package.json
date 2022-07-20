@@ -80,7 +80,7 @@
     "@types/dockerode": "^3.3.0",
     "@types/express": "^4.17.6",
     "@types/express-serve-static-core": "^4.17.5",
-    "@types/luxon": "^2.0.4"
+    "@types/luxon": "^3.0.0"
   },
   "files": [
     "dist"

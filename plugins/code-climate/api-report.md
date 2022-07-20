@@ -48,6 +48,7 @@ export const codeClimatePlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 

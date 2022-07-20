@@ -214,6 +214,7 @@ export type BackstageIdentityResponse = {
 export type BackstagePlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
+  PluginInputOptions extends {} = {},
 > = {
   getId(): string;
   getApis(): Iterable<AnyApiFactory>;
@@ -221,6 +222,7 @@ export type BackstagePlugin<
   provide<T>(extension: Extension<T>): T;
   routes: Routes;
   externalRoutes: ExternalRoutes;
+  __experimentalReconfigure(options: PluginInputOptions): void;
 };
 
 // @public
@@ -303,9 +305,10 @@ export function createExternalRouteRef<
 export function createPlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
+  PluginInputOptions extends {} = {},
 >(
-  config: PluginConfig<Routes, ExternalRoutes>,
-): BackstagePlugin<Routes, ExternalRoutes>;
+  config: PluginConfig<Routes, ExternalRoutes, PluginInputOptions>,
+): BackstagePlugin<Routes, ExternalRoutes, PluginInputOptions>;
 
 // @public
 export function createReactExtension<
@@ -621,18 +624,34 @@ export type PendingOAuthRequest = {
 export type PluginConfig<
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
+  PluginInputOptions extends {},
 > = {
   id: string;
   apis?: Iterable<AnyApiFactory>;
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
+  __experimentalConfigure?(options?: PluginInputOptions): {};
 };
 
 // @public
 export type PluginFeatureFlagConfig = {
   name: string;
 };
+
+// @alpha
+export interface PluginOptionsProviderProps {
+  // (undocumented)
+  children: ReactNode;
+  // (undocumented)
+  plugin?: BackstagePlugin;
+}
+
+// @alpha
+export const PluginProvider: ({
+  children,
+  plugin,
+}: PluginOptionsProviderProps) => JSX.Element;
 
 // @public
 export type ProfileInfo = {
@@ -733,6 +752,11 @@ export function useElementFilter<T>(
   filterFn: (arg: ElementCollection) => T,
   dependencies?: any[],
 ): T;
+
+// @alpha
+export function usePluginOptions<
+  TPluginOptions extends {} = {},
+>(): TPluginOptions;
 
 // @public
 export function useRouteRef<Optional extends boolean, Params extends AnyParams>(

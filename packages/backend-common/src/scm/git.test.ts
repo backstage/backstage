@@ -78,6 +78,22 @@ describe('Git', () => {
     });
   });
 
+  describe('checkout', () => {
+    it('should call isomorphic-git with the correct arguments', async () => {
+      const git = Git.fromAuth({});
+      const dir = 'mockdirectory';
+      const ref = 'master';
+
+      await git.checkout({ dir, ref });
+
+      expect(isomorphic.checkout).toHaveBeenCalledWith({
+        fs,
+        dir,
+        ref,
+      });
+    });
+  });
+
   describe('commit', () => {
     it('should call isomorphic-git with the correct arguments', async () => {
       const git = Git.fromAuth({});
@@ -325,6 +341,31 @@ describe('Git', () => {
         dir,
         remoteRef,
         force,
+        onProgress: expect.any(Function),
+        headers: {
+          'user-agent': 'git/@isomorphic-git',
+        },
+        onAuth: expect.any(Function),
+      });
+    });
+    it('should call isomorphic-git with remoteRef parameter', async () => {
+      const remote = 'origin';
+      const remoteRef = 'refs/for/master';
+      const dir = '/some/mock/dir';
+      const auth = {
+        username: 'blob',
+        password: 'hunter2',
+      };
+      const git = Git.fromAuth(auth);
+
+      await git.push({ dir, remote, remoteRef });
+
+      expect(isomorphic.push).toHaveBeenCalledWith({
+        fs,
+        http,
+        remote,
+        remoteRef,
+        dir,
         onProgress: expect.any(Function),
         headers: {
           'user-agent': 'git/@isomorphic-git',
