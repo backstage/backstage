@@ -150,7 +150,7 @@
     "@types/tar": "^6.1.1",
     "@types/terser-webpack-plugin": "^5.0.4",
     "@types/yarnpkg__lockfile": "^1.1.4",
-    "del": "^6.0.0",
+    "del": "^7.0.0",
     "mock-fs": "^5.1.0",
     "msw": "^0.44.0",
     "nodemon": "^2.0.2",
