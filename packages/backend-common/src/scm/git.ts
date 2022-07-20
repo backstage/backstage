@@ -58,12 +58,19 @@ export class Git {
     dir: string;
     remote: string;
     url: string;
+    force?: boolean;
   }): Promise<void> {
-    const { dir, url, remote } = options;
+    const { dir, url, remote, force } = options;
     this.config.logger?.info(
       `Creating new remote {dir=${dir},remote=${remote},url=${url}}`,
     );
-    return git.addRemote({ fs, dir, remote, url });
+    return git.addRemote({ fs, dir, remote, url, force });
+  }
+
+  async deleteRemote(options: { dir: string; remote: string }): Promise<void> {
+    const { dir, remote } = options;
+    this.config.logger?.info(`Deleting remote {dir=${dir},remote=${remote}}`);
+    return git.deleteRemote({ fs, dir, remote });
   }
 
   async checkout(options: { dir: string; ref: string }): Promise<void> {
@@ -197,8 +204,13 @@ export class Git {
     });
   }
 
-  async push(options: { dir: string; remote: string; remoteRef?: string }) {
-    const { dir, remote, remoteRef } = options;
+  async push(options: {
+    dir: string;
+    remote: string;
+    remoteRef?: string;
+    force?: boolean;
+  }) {
+    const { dir, remote, remoteRef, force } = options;
     this.config.logger?.info(
       `Pushing directory to remote {dir=${dir},remote=${remote}}`,
     );
@@ -208,11 +220,12 @@ export class Git {
         dir,
         http,
         onProgress: this.onProgressHandler(),
+        remoteRef,
+        force,
         headers: {
           'user-agent': 'git/@isomorphic-git',
         },
-        remote: remote,
-        remoteRef: remoteRef,
+        remote,
         onAuth: this.onAuth,
       });
     } catch (ex) {
