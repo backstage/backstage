@@ -16,7 +16,7 @@
 
 import { ForwardedError } from '@backstage/errors';
 import ldap, { Client, SearchEntry, SearchOptions } from 'ldapjs';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, merge } from 'lodash';
 import { Logger } from 'winston';
 import { BindConfig, TLSConfig } from './config';
 import { errorString } from './util';
@@ -150,39 +150,54 @@ export class LdapClient {
     f: (entry: SearchEntry) => Promise<void> | void,
   ): Promise<void> {
     try {
-      const awaitList: Array<Promise<void> | void> = [];
+      let awaitList: Array<Promise<void> | void> = [];
       return await new Promise<void>((resolve, reject) => {
         // Note that we clone the (frozen) options, since ldapjs rudely tries to
         // overwrite parts of them
-        this.client.search(dn, cloneDeep(options), (err, res) => {
-          if (err) {
-            reject(new Error(errorString(err)));
-          }
-
-          res.on('searchReference', () => {
-            this.logger.warn('Received unsupported search referral');
-          });
-
-          res.on('searchEntry', entry => {
-            awaitList.push(f(entry));
-          });
-
-          res.on('error', e => {
-            reject(new Error(errorString(e)));
-          });
-
-          res.on('end', r => {
-            if (!r) {
-              throw new Error('Null response');
-            } else if (r.status !== 0) {
-              throw new Error(`Got status ${r.status}: ${r.errorMessage}`);
-            } else {
-              Promise.all(awaitList)
-                .then(() => resolve())
-                .catch(reject);
+        this.client.search(
+          dn,
+          merge(cloneDeep(options), { paged: { pagePause: true } }),
+          (err, res) => {
+            if (err) {
+              reject(new Error(errorString(err)));
             }
-          });
-        });
+
+            res.on('searchReference', () => {
+              this.logger.warn('Received unsupported search referral');
+            });
+
+            res.on('searchEntry', entry => {
+              awaitList.push(f(entry));
+            });
+
+            res.on('page', (_, cb) => {
+              // awaits completion before fetching next page
+              Promise.all(awaitList)
+                .then(() => {
+                  // flush list
+                  awaitList = [];
+                  if (cb) cb();
+                })
+                .catch(reject);
+            });
+
+            res.on('error', e => {
+              reject(new Error(errorString(e)));
+            });
+
+            res.on('end', r => {
+              if (!r) {
+                throw new Error('Null response');
+              } else if (r.status !== 0) {
+                throw new Error(`Got status ${r.status}: ${r.errorMessage}`);
+              } else {
+                Promise.all(awaitList)
+                  .then(() => resolve())
+                  .catch(reject);
+              }
+            });
+          },
+        );
       });
     } catch (e) {
       throw new ForwardedError(`LDAP search at DN "${dn}" failed`, e);
