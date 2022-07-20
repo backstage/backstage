@@ -1,5 +1,5 @@
 ---
-'@backstage/backend-common': patch
+'@backstage/backend-common': minor
 ---
 
 - Added `force` and `remoteRef` option to `push` method in `git` actions
