@@ -225,8 +225,7 @@ export class Git {
         headers: {
           'user-agent': 'git/@isomorphic-git',
         },
-        remote: remote,
-        remoteRef: remoteRef,
+        remote,
         onAuth: this.onAuth,
       });
     } catch (ex) {
