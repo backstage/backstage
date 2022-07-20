@@ -147,9 +147,10 @@ export class LdapClient {
   async searchStreaming(
     dn: string,
     options: SearchOptions,
-    f: (entry: SearchEntry) => void,
+    f: (entry: SearchEntry) => Promise<void> | void,
   ): Promise<void> {
     try {
+      const awaitList: Array<Promise<void> | void> = [];
       return await new Promise<void>((resolve, reject) => {
         // Note that we clone the (frozen) options, since ldapjs rudely tries to
         // overwrite parts of them
@@ -163,7 +164,7 @@ export class LdapClient {
           });
 
           res.on('searchEntry', entry => {
-            f(entry);
+            awaitList.push(f(entry));
           });
 
           res.on('error', e => {
@@ -176,7 +177,9 @@ export class LdapClient {
             } else if (r.status !== 0) {
               throw new Error(`Got status ${r.status}: ${r.errorMessage}`);
             } else {
-              resolve();
+              Promise.all(awaitList)
+                .then(() => resolve())
+                .catch(reject);
             }
           });
         });
