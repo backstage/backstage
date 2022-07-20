@@ -18,6 +18,8 @@
   BREAKING: Kubernetes backend plugin now depends on CatalogApi
 
   ```typescript
+  // Import CatalogClient
+  import { CatalogClient } from '@backstage/catalog-client';
   // Create new CatalogClient
   const catalogApi = new CatalogClient({ discoveryApi: env.discovery });
   const { router } = await KubernetesBuilder.createBuilder({
