@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",
-    "@types/luxon": "^2.0.5"
+    "@types/luxon": "^3.0.0"
   },
   "dependencies": {
     "@backstage/catalog-model": "^1.1.0",

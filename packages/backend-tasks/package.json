@@ -37,7 +37,7 @@
     "@backstage/config": "^1.0.1",
     "@backstage/errors": "^1.1.0",
     "@backstage/types": "^1.0.0",
-    "@types/luxon": "^2.0.4",
+    "@types/luxon": "^3.0.0",
     "cron": "^2.0.0",
     "knex": "^2.0.0",
     "lodash": "^4.17.21",
