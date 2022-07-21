@@ -37,6 +37,8 @@ import {
   KubernetesFanOutHandler,
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
+import { CatalogApi } from '@backstage/catalog-client';
 
 /**
  *
@@ -45,6 +47,7 @@ import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 export interface KubernetesEnvironment {
   logger: Logger;
   config: Config;
+  catalogApi: CatalogApi;
 }
 
 /**
@@ -119,7 +122,11 @@ export class KubernetesBuilder {
         objectTypesToFetch: this.getObjectTypesToFetch(),
       });
 
-    const router = this.buildRouter(objectsProvider, clusterSupplier);
+    const router = this.buildRouter(
+      objectsProvider,
+      clusterSupplier,
+      this.env.catalogApi,
+    );
 
     return {
       clusterSupplier,
@@ -179,7 +186,11 @@ export class KubernetesBuilder {
     refreshInterval: Duration,
   ): KubernetesClustersSupplier {
     const config = this.env.config;
-    return getCombinedClusterSupplier(config, refreshInterval);
+    return getCombinedClusterSupplier(
+      config,
+      this.env.catalogApi,
+      refreshInterval,
+    );
   }
 
   protected buildObjectsProvider(
@@ -226,11 +237,13 @@ export class KubernetesBuilder {
   protected buildRouter(
     objectsProvider: KubernetesObjectsProvider,
     clusterSupplier: KubernetesClustersSupplier,
+    catalogApi: CatalogApi,
   ): express.Router {
     const logger = this.env.logger;
     const router = Router();
     router.use(express.json());
 
+    // @deprecated
     router.post('/services/:serviceId', async (req, res) => {
       const serviceId = req.params.serviceId;
       const requestBody: ObjectsByEntityRequest = req.body;
@@ -259,6 +272,9 @@ export class KubernetesBuilder {
         })),
       });
     });
+
+    addResourceRoutesToRouter(router, catalogApi, objectsProvider);
+
     return router;
   }
 

@@ -35,6 +35,11 @@ import { Jacoco } from './converter/jacoco';
 import { Converter } from './converter';
 import { getEntitySourceLocation } from '@backstage/catalog-model';
 
+/**
+ * Options for {@link createRouter}.
+ *
+ * @public
+ */
 export interface RouterOptions {
   config: Config;
   discovery: PluginEndpointDiscovery;
@@ -211,6 +216,11 @@ export const makeRouter = async (
   return router;
 };
 
+/**
+ * Creates a code-coverage plugin backend router.
+ *
+ * @public
+ */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

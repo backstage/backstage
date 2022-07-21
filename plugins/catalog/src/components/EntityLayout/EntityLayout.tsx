@@ -142,15 +142,18 @@ interface ExtraContextMenuItem {
   onClick: () => void;
 }
 
+type VisibleType = 'visible' | 'hidden' | 'disable';
+
+// NOTE(blam): Intentionally not exported at this point, since it's part of
 // unstable context menu option, eg: disable the unregister entity menu
-interface contextMenuOptions {
-  disableUnregister: boolean;
+interface EntityContextMenuOptions {
+  disableUnregister: boolean | VisibleType;
 }
 
 /** @public */
 export interface EntityLayoutProps {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
-  UNSTABLE_contextMenuOptions?: contextMenuOptions;
+  UNSTABLE_contextMenuOptions?: EntityContextMenuOptions;
   children?: React.ReactNode;
   NotFoundComponent?: React.ReactNode;
 }

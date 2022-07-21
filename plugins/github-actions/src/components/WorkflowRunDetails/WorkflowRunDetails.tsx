@@ -73,7 +73,10 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-const getElapsedTime = (start: string, end: string) => {
+const getElapsedTime = (start: string | undefined, end: string | undefined) => {
+  if (!start || !end) {
+    return '';
+  }
   const startDate = DateTime.fromISO(start);
   const endDate = end ? DateTime.fromISO(end) : DateTime.now();
   const diff = endDate.diff(startDate);
@@ -127,7 +130,7 @@ const JobListItem = ({
       <AccordionDetails className={classes.accordionDetails}>
         <TableContainer>
           <Table>
-            {job.steps.map(step => (
+            {job.steps?.map(step => (
               <StepView key={step.number} step={step} />
             ))}
           </Table>

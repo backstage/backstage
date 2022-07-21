@@ -26,7 +26,7 @@ import {
   OAuthRefreshRequest,
   OAuthResult,
 } from '../../lib/oauth';
-import { Strategy as OktaStrategy } from 'passport-okta-oauth';
+import { Strategy as OktaStrategy } from '@davidzemon/passport-okta-oauth';
 import passport from 'passport';
 import {
   executeFrameHandlerStrategy,
@@ -55,6 +55,8 @@ type PrivateInfo = {
 
 export type OktaAuthProviderOptions = OAuthProviderOptions & {
   audience: string;
+  authServerId?: string;
+  idp?: string;
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
   resolverContext: AuthResolverContext;
@@ -94,6 +96,8 @@ export class OktaAuthProvider implements OAuthHandlers {
         clientSecret: options.clientSecret,
         callbackURL: options.callbackUrl,
         audience: options.audience,
+        authServerID: options.authServerId,
+        idp: options.idp,
         passReqToCallback: false,
         store: this.store,
         response_type: 'code',
@@ -220,6 +224,8 @@ export const okta = createAuthProviderIntegration({
         const clientId = envConfig.getString('clientId');
         const clientSecret = envConfig.getString('clientSecret');
         const audience = envConfig.getString('audience');
+        const authServerId = envConfig.getOptionalString('authServerId');
+        const idp = envConfig.getOptionalString('idp');
         const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
         const callbackUrl =
           customCallbackUrl ||
@@ -240,6 +246,8 @@ export const okta = createAuthProviderIntegration({
 
         const provider = new OktaAuthProvider({
           audience,
+          authServerId,
+          idp,
           clientId,
           clientSecret,
           callbackUrl,

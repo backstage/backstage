@@ -66,6 +66,7 @@ See [TechDocs Architecture](architecture.md) to get an overview of where the bel
 | GitHub Enterprise            | Yes ✅         |
 | Bitbucket                    | Yes ✅         |
 | Azure DevOps                 | Yes ✅         |
+| Gerrit                       | Yes ✅         |
 | GitLab                       | Yes ✅         |
 | GitLab Enterprise            | Yes ✅         |
 

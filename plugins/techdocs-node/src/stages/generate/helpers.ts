@@ -114,7 +114,10 @@ export const getRepoUrlFromLocationAnnotation = (
         url: `./${docsFolder}`,
         base: target,
       });
-      return { edit_uri: integration.resolveEditUrl(sourceFolder) };
+      return {
+        repo_url: target,
+        edit_uri: integration.resolveEditUrl(sourceFolder),
+      };
     }
   }
 

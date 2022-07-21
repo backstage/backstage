@@ -1,5 +1,48 @@
 # @backstage/plugin-api-docs
 
+## 0.8.7
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- b76eea25ed: Updated dependency `@asyncapi/react-component` to `1.0.0-next.39`.
+- a274fe38b9: Add hidden title column to catalog and API table to enable filtering by title.
+- 9432a05cf3: Set font colors correctly for descriptions containing HTML
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-catalog@1.4.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/theme@0.2.16
+
+## 0.8.7-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- b76eea25ed: Updated dependency `@asyncapi/react-component` to `1.0.0-next.39`.
+- 9432a05cf3: Set font colors correctly for descriptions containing HTML
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+  - @backstage/catalog-model@1.1.0-next.3
+  - @backstage/plugin-catalog-react@1.1.2-next.3
+  - @backstage/plugin-catalog@1.4.0-next.3
+
+## 0.8.7-next.2
+
+### Patch Changes
+
+- a274fe38b9: Add hidden title column to catalog and API table to enable filtering by title.
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/theme@0.2.16-next.1
+  - @backstage/plugin-catalog@1.4.0-next.2
+  - @backstage/plugin-catalog-react@1.1.2-next.2
+
 ## 0.8.7-next.1
 
 ### Patch Changes

@@ -170,6 +170,8 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent<
 // @public
 export interface OwnerPickerUiOptions {
   // (undocumented)
+  allowArbitraryValues?: boolean;
+  // (undocumented)
   allowedKinds?: string[];
 }
 
@@ -365,7 +367,8 @@ export const scaffolderPlugin: BackstagePlugin<
   },
   {
     registerComponent: ExternalRouteRef<undefined, true>;
-  }
+  },
+  {}
 >;
 
 // @public

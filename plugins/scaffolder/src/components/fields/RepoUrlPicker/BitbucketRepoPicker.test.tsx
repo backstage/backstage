@@ -19,6 +19,21 @@ import { BitbucketRepoPicker } from './BitbucketRepoPicker';
 import { render, fireEvent } from '@testing-library/react';
 
 describe('BitbucketRepoPicker', () => {
+  it('renders a select if there is a list of allowed owners', async () => {
+    const allowedOwners = ['owner1', 'owner2'];
+    const { findByText } = render(
+      <BitbucketRepoPicker
+        onChange={jest.fn()}
+        rawErrors={[]}
+        state={{ host: 'bitbucket.org', repoName: 'repo' }}
+        allowedOwners={allowedOwners}
+      />,
+    );
+
+    expect(await findByText('owner1')).toBeInTheDocument();
+    expect(await findByText('owner2')).toBeInTheDocument();
+  });
+
   it('renders workspace input when host is bitbucket.org', () => {
     const state = { host: 'bitbucket.org', workspace: 'lolsWorkspace' };
 

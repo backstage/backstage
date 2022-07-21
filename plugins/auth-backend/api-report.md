@@ -7,6 +7,7 @@
 
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
+import { CacheClient } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
@@ -171,6 +172,41 @@ export class CatalogIdentityClient {
 }
 
 // @public
+export type CloudflareAccessClaims = {
+  aud: string[];
+  email: string;
+  exp: number;
+  iat: number;
+  nonce: string;
+  identity_nonce: string;
+  sub: string;
+  iss: string;
+  custom: string;
+};
+
+// @public
+export type CloudflareAccessGroup = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+// @public
+export type CloudflareAccessIdentityProfile = {
+  id: string;
+  name: string;
+  email: string;
+  groups: CloudflareAccessGroup[];
+};
+
+// @public (undocumented)
+export type CloudflareAccessResult = {
+  claims: CloudflareAccessClaims;
+  cfIdentity: CloudflareAccessIdentityProfile;
+  expiresInSeconds?: number;
+};
+
+// @public
 export type CookieConfigurer = (ctx: {
   providerId: string;
   baseUrl: string;
@@ -180,6 +216,22 @@ export type CookieConfigurer = (ctx: {
   path: string;
   secure: boolean;
 };
+
+// Warning: (ae-missing-release-tag) "createAuthProviderIntegration" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function createAuthProviderIntegration<
+  TCreateOptions extends unknown[],
+  TResolvers extends {
+    [name in string]: (...args: any[]) => SignInResolver<any>;
+  },
+>(config: {
+  create: (...args: TCreateOptions) => AuthProviderFactory;
+  resolvers?: TResolvers;
+}): Readonly<{
+  create: (...args: TCreateOptions) => AuthProviderFactory;
+  resolvers: Readonly<string extends keyof TResolvers ? never : TResolvers>;
+}>;
 
 // Warning: (ae-missing-release-tag) "createOriginFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -454,6 +506,18 @@ export const providers: Readonly<{
     resolvers: Readonly<{
       usernameMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
       userIdMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
+    }>;
+  }>;
+  cfAccess: Readonly<{
+    create: (options: {
+      authHandler?: AuthHandler<CloudflareAccessResult> | undefined;
+      signIn: {
+        resolver: SignInResolver<CloudflareAccessResult>;
+      };
+      cache?: CacheClient | undefined;
+    }) => AuthProviderFactory;
+    resolvers: Readonly<{
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
     }>;
   }>;
   gcpIap: Readonly<{

@@ -18,15 +18,20 @@ import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
+import { Select, SelectItem } from '@backstage/core-components';
 import { RepoUrlPickerState } from './types';
 
 export const BitbucketRepoPicker = (props: {
+  allowedOwners?: string[];
   onChange: (state: RepoUrlPickerState) => void;
   state: RepoUrlPickerState;
   rawErrors: string[];
 }) => {
-  const { onChange, rawErrors, state } = props;
+  const { allowedOwners = [], onChange, rawErrors, state } = props;
   const { host, workspace, project } = state;
+  const ownerItems: SelectItem[] = allowedOwners
+    ? allowedOwners?.map(i => ({ label: i, value: i }))
+    : [];
   return (
     <>
       {host === 'bitbucket.org' && (
@@ -35,12 +40,27 @@ export const BitbucketRepoPicker = (props: {
           required
           error={rawErrors?.length > 0 && !workspace}
         >
-          <InputLabel htmlFor="workspaceInput">Workspace</InputLabel>
-          <Input
-            id="workspaceInput"
-            onChange={e => onChange({ workspace: e.target.value })}
-            value={workspace}
-          />
+          {allowedOwners?.length ? (
+            <Select
+              native
+              label="Allowed Workspaces"
+              onChange={s =>
+                onChange({ workspace: String(Array.isArray(s) ? s[0] : s) })
+              }
+              disabled={allowedOwners.length === 1}
+              selected={workspace}
+              items={ownerItems}
+            />
+          ) : (
+            <>
+              <InputLabel htmlFor="workspaceInput">Workspace</InputLabel>
+              <Input
+                id="workspaceInput"
+                onChange={e => onChange({ workspace: e.target.value })}
+                value={workspace}
+              />
+            </>
+          )}
           <FormHelperText>
             The Organization that this repo will belong to
           </FormHelperText>

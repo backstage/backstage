@@ -1,5 +1,13 @@
 # @backstage/plugin-stack-overflow-backend
 
+## 0.1.3
+
+### Patch Changes
+
+- 52b4f796e3: app-config is now picked up properly.
+- Updated dependencies
+  - @backstage/plugin-search-common@1.0.0
+
 ## 0.1.3-next.0
 
 ### Patch Changes

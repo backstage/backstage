@@ -34,12 +34,8 @@ export type {
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
 } from './types';
+export * from './errors';
 export * from './indexing';
 export * from './test-utils';
 
 export type { ScheduleTaskParameters } from './Scheduler';
-
-/**
- * @deprecated Import from @backstage/plugin-search-common instead
- */
-export type { SearchEngine } from '@backstage/plugin-search-common';

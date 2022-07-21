@@ -36,20 +36,24 @@ export class FossaClient implements FossaApi {
   discoveryApi: DiscoveryApi;
   identityApi: IdentityApi;
   organizationId?: string;
+  externalLinkBaseUrl: string;
   private readonly limit = pLimit(5);
 
   constructor({
     discoveryApi,
     identityApi,
     organizationId,
+    externalLinkBaseUrl = 'https://app.fossa.com',
   }: {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
     organizationId?: string;
+    externalLinkBaseUrl?: string;
   }) {
     this.discoveryApi = discoveryApi;
     this.identityApi = identityApi;
     this.organizationId = organizationId;
+    this.externalLinkBaseUrl = externalLinkBaseUrl;
   }
 
   private async callApi<T>(
@@ -104,9 +108,9 @@ export class FossaClient implements FossaApi {
                 revision.unresolved_issue_count,
               dependencyCount: revision.dependency_count,
               projectDefaultBranch: project.default_branch,
-              projectUrl: `https://app.fossa.com/projects/${encodeURIComponent(
-                project.locator,
-              )}`,
+              projectUrl: `${
+                this.externalLinkBaseUrl
+              }/projects/${encodeURIComponent(project.locator)}`,
             },
           };
         }

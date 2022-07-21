@@ -23,6 +23,7 @@ import { errorString } from './util';
 import {
   ActiveDirectoryVendor,
   DefaultLdapVendor,
+  FreeIpaVendor,
   LdapVendor,
 } from './vendors';
 
@@ -199,6 +200,8 @@ export class LdapClient {
       .then(root => {
         if (root && root.raw?.forestFunctionality) {
           return ActiveDirectoryVendor;
+        } else if (root && root.raw?.ipaDomainLevel) {
+          return FreeIpaVendor;
         }
         return DefaultLdapVendor;
       })

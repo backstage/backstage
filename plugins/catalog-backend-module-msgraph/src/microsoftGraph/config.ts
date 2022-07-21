@@ -17,12 +17,20 @@
 import { Config } from '@backstage/config';
 import { trimEnd } from 'lodash';
 
+const DEFAULT_PROVIDER_ID = 'default';
+const DEFAULT_TARGET = 'https://graph.microsoft.com/v1.0';
+
 /**
  * The configuration parameters for a single Microsoft Graph provider.
  *
  * @public
  */
 export type MicrosoftGraphProviderConfig = {
+  /**
+   * Identifier of the provider which will be used i.e. at the location key for ingested entities.
+   */
+  id: string;
+
   /**
    * The prefix of the target that this matches on, e.g.
    * "https://graph.microsoft.com/v1.0", with no trailing slash.
@@ -40,12 +48,14 @@ export type MicrosoftGraphProviderConfig = {
   tenantId: string;
   /**
    * The OAuth client ID to use for authenticating requests.
+   * If specified, ClientSecret must also be specified
    */
-  clientId: string;
+  clientId?: string;
   /**
    * The OAuth client secret to use for authenticating requests.
+   * If specified, ClientId must also be specified
    */
-  clientSecret: string;
+  clientSecret?: string;
   /**
    * The filter to apply to extract users.
    *
@@ -55,7 +65,7 @@ export type MicrosoftGraphProviderConfig = {
   /**
    * The "expand" argument to apply to users.
    *
-   * E.g. "manager"
+   * E.g. "manager".
    */
   userExpand?: string;
   /**
@@ -73,7 +83,7 @@ export type MicrosoftGraphProviderConfig = {
   /**
    * The "expand" argument to apply to groups.
    *
-   * E.g. "member"
+   * E.g. "member".
    */
   groupExpand?: string;
   /**
@@ -113,6 +123,7 @@ export type MicrosoftGraphProviderConfig = {
  * @param config - The root of the msgraph config hierarchy
  *
  * @public
+ * @deprecated Replaced by not exported `readProviderConfigs` and kept for backwards compatibility only.
  */
 export function readMicrosoftGraphConfig(
   config: Config,
@@ -121,14 +132,15 @@ export function readMicrosoftGraphConfig(
   const providerConfigs = config.getOptionalConfigArray('providers') ?? [];
 
   for (const providerConfig of providerConfigs) {
-    const target = trimEnd(providerConfig.getString('target'), '/');
+    const target = trimEnd(
+      providerConfig.getOptionalString('target') ?? DEFAULT_TARGET,
+      '/',
+    );
+    const authority = providerConfig.getOptionalString('authority');
 
-    const authority = providerConfig.getOptionalString('authority')
-      ? trimEnd(providerConfig.getOptionalString('authority'), '/')
-      : 'https://login.microsoftonline.com';
     const tenantId = providerConfig.getString('tenantId');
-    const clientId = providerConfig.getString('clientId');
-    const clientSecret = providerConfig.getString('clientSecret');
+    const clientId = providerConfig.getOptionalString('clientId');
+    const clientSecret = providerConfig.getOptionalString('clientSecret');
 
     const userExpand = providerConfig.getOptionalString('userExpand');
     const userFilter = providerConfig.getOptionalString('userFilter');
@@ -163,7 +175,20 @@ export function readMicrosoftGraphConfig(
       throw new Error(`queryMode must be one of: basic, advanced`);
     }
 
+    if (clientId && !clientSecret) {
+      throw new Error(
+        `clientSecret must be provided when clientId is defined.`,
+      );
+    }
+
+    if (clientSecret && !clientId) {
+      throw new Error(
+        `clientId must be provided when clientSecret is defined.`,
+      );
+    }
+
     providers.push({
+      id: target,
       target,
       authority,
       tenantId,
@@ -182,4 +207,92 @@ export function readMicrosoftGraphConfig(
   }
 
   return providers;
+}
+
+export function readProviderConfigs(
+  config: Config,
+): MicrosoftGraphProviderConfig[] {
+  const providersConfig = config.getOptionalConfig(
+    'catalog.providers.microsoftGraphOrg',
+  );
+  if (!providersConfig) {
+    return [];
+  }
+
+  if (providersConfig.has('clientId')) {
+    // simple/single config variant
+    return [readProviderConfig(DEFAULT_PROVIDER_ID, providersConfig)];
+  }
+
+  return providersConfig.keys().map(id => {
+    const providerConfig = providersConfig.getConfig(id);
+
+    return readProviderConfig(id, providerConfig);
+  });
+}
+
+export function readProviderConfig(
+  id: string,
+  config: Config,
+): MicrosoftGraphProviderConfig {
+  const target = trimEnd(
+    config.getOptionalString('target') ?? DEFAULT_TARGET,
+    '/',
+  );
+  const authority = config.getOptionalString('authority');
+
+  const tenantId = config.getString('tenantId');
+  const clientId = config.getOptionalString('clientId');
+  const clientSecret = config.getOptionalString('clientSecret');
+
+  const userExpand = config.getOptionalString('user.expand');
+  const userFilter = config.getOptionalString('user.filter');
+
+  const groupExpand = config.getOptionalString('group.expand');
+  const groupFilter = config.getOptionalString('group.filter');
+  const groupSearch = config.getOptionalString('group.search');
+  const groupSelect = config.getOptionalStringArray('group.select');
+
+  const userGroupMemberFilter = config.getOptionalString(
+    'userGroupMember.filter',
+  );
+  const userGroupMemberSearch = config.getOptionalString(
+    'userGroupMember.search',
+  );
+
+  if (userFilter && userGroupMemberFilter) {
+    throw new Error(
+      `userFilter and userGroupMemberFilter are mutually exclusive, only one can be specified.`,
+    );
+  }
+  if (userFilter && userGroupMemberSearch) {
+    throw new Error(
+      `userGroupMemberSearch cannot be specified when userFilter is defined.`,
+    );
+  }
+
+  if (clientId && !clientSecret) {
+    throw new Error(`clientSecret must be provided when clientId is defined.`);
+  }
+
+  if (clientSecret && !clientId) {
+    throw new Error(`clientId must be provided when clientSecret is defined.`);
+  }
+
+  return {
+    id,
+    target,
+    authority,
+    clientId,
+    clientSecret,
+    tenantId,
+    userExpand,
+    userFilter,
+    groupExpand,
+    groupFilter,
+    groupSearch,
+    groupSelect,
+    userGroupMemberFilter,
+    userGroupMemberSearch,
+  };
 }

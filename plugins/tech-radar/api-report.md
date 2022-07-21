@@ -126,6 +126,7 @@ const techRadarPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export { techRadarPlugin as plugin };

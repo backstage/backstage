@@ -1,5 +1,35 @@
 # @backstage/plugin-apache-airflow
 
+## 0.2.0
+
+### Minor Changes
+
+- 01f976ea72: Exposed DagTableComponent as standalone component + added a prop to get only select DAGs instead of the full list
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/core-plugin-api@1.0.4
+
+## 0.2.0-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+
+## 0.2.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+
 ## 0.2.0-next.1
 
 ### Minor Changes
