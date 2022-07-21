@@ -7990,9 +7990,9 @@
   integrity sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==
 
 "@yarnpkg/parsers@^3.0.0-rc.4":
-  version "3.0.0-rc.12"
-  resolved "https://registry.npmjs.org/@yarnpkg/parsers/-/parsers-3.0.0-rc.12.tgz#76890a00c4c14a5c38f6eef5e9ce9b9c2fb3c6da"
-  integrity sha512-LEijAfCE8dMhW+tRBz9EM3Ui53SX+E6Tsvzaf7opESDARK+2HAyX+M/w73oNTXCOgMRrfMVWP5wJTj9cG96uoQ==
+  version "3.0.0-rc.14"
+  resolved "https://registry.npmjs.org/@yarnpkg/parsers/-/parsers-3.0.0-rc.14.tgz#3ce7fb8f9b7ecdda0531d382909c29140b11d723"
+  integrity sha512-vLwjxSdmRNF/pPsubkmpkAgRHBbBylRDn13gv2fyTkHjeT2257NBNefjR7Dx5gSy8PM93VZitnmtWCnXEsSvkA==
   dependencies:
     js-yaml "^3.10.0"
     tslib "^1.13.0"
