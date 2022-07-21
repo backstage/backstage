@@ -28,7 +28,10 @@ describe('gitlab core', () => {
 
   beforeEach(() => {
     worker.use(
-      rest.get('*/api/v4/projects/:name', (_, res, ctx) =>
+      rest.get('*/api/v4/projects/group%2Fproject', (_, res, ctx) =>
+        res(ctx.status(200), ctx.json({ id: 12345 })),
+      ),
+      rest.get('*/api/v4/projects/group%2Fsubgroup%2Fproject', (_, res, ctx) =>
         res(ctx.status(200), ctx.json({ id: 12345 })),
       ),
     );
