@@ -190,8 +190,9 @@ export class ZipArchiveResponse implements ReadTreeResponse {
       }
       return new Promise(async (resolve, reject) => {
         const file = fs.createWriteStream(platformPath.join(dir, entryPath));
-        file.on('error', reject);
         file.on('finish', resolve);
+
+        content.on('error', reject);
         content.pipe(file);
       });
     });

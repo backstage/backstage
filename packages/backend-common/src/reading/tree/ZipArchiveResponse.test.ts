@@ -59,6 +59,7 @@ describe('ZipArchiveResponse', () => {
         content: expect.any(Function),
       },
     ]);
+
     const contents = await Promise.all(files.map(f => f.content()));
     expect(contents.map(c => c.toString('utf8').trim())).toEqual([
       'site_name: Test',
