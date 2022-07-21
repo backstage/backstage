@@ -150,10 +150,7 @@
       {
         "type": "subcategory",
         "label": "Bitbucket",
-        "ids": [
-          "integrations/bitbucket/locations",
-          "integrations/bitbucket/discovery"
-        ]
+        "ids": ["integrations/bitbucket/discovery"]
       },
       {
         "type": "subcategory",
@@ -161,6 +158,14 @@
         "ids": [
           "integrations/bitbucketCloud/locations",
           "integrations/bitbucketCloud/discovery"
+        ]
+      },
+      {
+        "type": "subcategory",
+        "label": "Bitbucket Server",
+        "ids": [
+          "integrations/bitbucketServer/locations",
+          "integrations/bitbucketServer/discovery"
         ]
       },
       {
