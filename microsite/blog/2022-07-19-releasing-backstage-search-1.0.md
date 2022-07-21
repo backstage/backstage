@@ -19,7 +19,7 @@ Backstage Search Platform makes it possible for you to search across your entire
 
 Since the first release of the Backstage Search Platform, we have seen a fantastic community grow around the search plugins. To mention just a few of these contributions:
 
-- More search engine modules: [Elasticsearch](https://www.npmjs.com/package/@backstage/plugin-search-backend-module-elasticsearch) originally [contributed](https://github.com/backstage/backstage/pull/6569) by Roadie and [Postgres](https://www.npmjs.com/package/@backstage/plugin-search-backend-module-pg) originally [contributed](https://github.com/backstage/backstage/pull/7316) by SDA SE
+- More search engine modules: [Elasticsearch](https://www.npmjs.com/package/@backstage/plugin-search-backend-module-elasticsearch) originally [contributed](https://github.com/backstage/backstage/pull/6569) by Roadie and [Postgres](https://www.npmjs.com/package/@backstage/plugin-search-backend-module-pg) originally [contributed](https://github.com/backstage/backstage/pull/6682) by SDA SE
 - More components: Quick search modal, originally [contributed](https://github.com/backstage/backstage/pull/7316) by Expedia Group
 - More plugin integrations: TechDocs also [contributed](https://github.com/backstage/backstage/pull/6375) by Roadie and [Software Catalog](https://github.com/backstage/backstage/pull/4515)
 
