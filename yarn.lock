@@ -2292,9 +2292,9 @@
     "@lezer/common" "^1.0.0"
 
 "@codemirror/language@^6.0.0":
-  version "6.2.0"
-  resolved "https://registry.npmjs.org/@codemirror/language/-/language-6.2.0.tgz#f8d103927bb61346e93781b1ca7d3f4ac3c9280b"
-  integrity sha512-tabB0Ef/BflwoEmTB4a//WZ9P90UQyne9qWB9YFsmeS4bnEqSys7UpGk/da1URMXhyfuzWCwp+AQNMhvu8SfnA==
+  version "6.2.1"
+  resolved "https://registry.npmjs.org/@codemirror/language/-/language-6.2.1.tgz#cb10cd785a76e50ecd2fe2dc59ff66af8a41b87a"
+  integrity sha512-MC3svxuvIj0MRpFlGHxLS6vPyIdbTr2KKPEW46kCoCXw2ktb4NTkpkPBI/lSP/FoNXLCBJ0mrnUi1OoZxtpW1Q==
   dependencies:
     "@codemirror/state" "^6.0.0"
     "@codemirror/view" "^6.0.0"
