@@ -80,7 +80,9 @@ export class ZipArchiveResponse implements ReadTreeResponse {
     return true;
   }
 
-  private async streamToTemporaryFile(stream: Readable): Promise<string> {
+  private async streamToTemporaryFile(
+    stream: Readable,
+  ): Promise<{ fileName: string; cleanup: () => Promise<void> }> {
     const tmpDir = await fs.mkdtemp(
       platformPath.join(this.workDir, 'backstage-tmp'),
     );
@@ -90,7 +92,9 @@ export class ZipArchiveResponse implements ReadTreeResponse {
 
     return new Promise((resolve, reject) => {
       writeStream.on('error', reject);
-      writeStream.on('finish', () => resolve(tmpFile));
+      writeStream.on('finish', () =>
+        resolve({ fileName: tmpFile, cleanup: () => fs.remove(tmpFile) }),
+      );
       stream.pipe(writeStream);
     });
   }
@@ -123,6 +127,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
           zipfile.readEntry();
         });
         zipfile.once('end', () => resolve());
+        zipfile.on('error', e => reject(e));
         zipfile.readEntry();
       });
     });
@@ -131,14 +136,16 @@ export class ZipArchiveResponse implements ReadTreeResponse {
   async files(): Promise<ReadTreeResponseFile[]> {
     this.onlyOnce();
     const files = Array<ReadTreeResponseFile>();
-    const tmpFile = await this.streamToTemporaryFile(this.stream);
+    const temporary = await this.streamToTemporaryFile(this.stream);
 
-    await this.forEveryZipEntry(tmpFile, async (entry, content) => {
+    await this.forEveryZipEntry(temporary.fileName, async (entry, content) => {
       files.push({
         path: this.getInnerPath(entry.fileName),
         content: async () => await streamToBuffer(content),
       });
     });
+
+    temporary.cleanup();
 
     return files;
   }
@@ -151,15 +158,17 @@ export class ZipArchiveResponse implements ReadTreeResponse {
     }
 
     const archive = archiver('zip');
-    const tmpFile = await this.streamToTemporaryFile(this.stream);
+    const temporary = await this.streamToTemporaryFile(this.stream);
 
-    await this.forEveryZipEntry(tmpFile, async (entry, content) => {
+    await this.forEveryZipEntry(temporary.fileName, async (entry, content) => {
       archive.append(await streamToBuffer(content), {
         name: this.getInnerPath(entry.fileName),
       });
     });
 
     archive.finalize();
+
+    temporary.cleanup();
 
     return archive;
   }
@@ -170,9 +179,9 @@ export class ZipArchiveResponse implements ReadTreeResponse {
       options?.targetDir ??
       (await fs.mkdtemp(platformPath.join(this.workDir, 'backstage-')));
 
-    const tmpFile = await this.streamToTemporaryFile(this.stream);
+    const temporary = await this.streamToTemporaryFile(this.stream);
 
-    await this.forEveryZipEntry(tmpFile, async (entry, content) => {
+    await this.forEveryZipEntry(temporary.fileName, async (entry, content) => {
       const entryPath = this.getInnerPath(entry.fileName);
       const dirname = platformPath.dirname(entryPath);
 
@@ -186,6 +195,8 @@ export class ZipArchiveResponse implements ReadTreeResponse {
         content.pipe(file);
       });
     });
+
+    temporary.cleanup();
 
     return dir;
   }
