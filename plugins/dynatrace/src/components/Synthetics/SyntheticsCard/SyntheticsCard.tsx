@@ -56,6 +56,7 @@ export const SyntheticsCard = (props: SyntheticsCardProps) => {
   const deepLinkPrefix = dynatraceMonitorPrefixes(
     `${syntheticsId.match(/(.+)-/)![1]}`,
   );
+
   const lastFailed = value?.locationsExecutionResults.map(l => {
     return {
       timestamp: l.requestResults[0].startTimestamp,
@@ -68,7 +69,7 @@ export const SyntheticsCard = (props: SyntheticsCardProps) => {
       title="Synthetics"
       subheader={`Recent Activity for Monitor ${syntheticsId}`}
       deepLink={{
-        title: 'View Synthetics in Dynatrace',
+        title: 'View this Synthetic in Dynatrace',
         link: `${dynatraceBaseUrl}/${deepLinkPrefix}/${syntheticsId}`,
       }}
     >

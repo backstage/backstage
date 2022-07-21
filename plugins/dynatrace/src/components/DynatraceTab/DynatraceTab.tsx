@@ -56,16 +56,19 @@ export const DynatraceTab = () => {
               dynatraceBaseUrl={dynatraceBaseUrl}
             />
           </Grid>
-          {syntheticsIds ? (
-            <Grid item xs={12} lg={12}>
-              <SyntheticsCard
-                syntheticsId={syntheticsIds}
-                dynatraceBaseUrl={dynatraceBaseUrl}
-              />
-            </Grid>
-          ) : (
-            <></>
-          )}
+          {syntheticsIds
+            .replace(' ', '')
+            .split(',')
+            .map(id => {
+              return (
+                <Grid item xs={12} lg={12}>
+                  <SyntheticsCard
+                    syntheticsId={id}
+                    dynatraceBaseUrl={dynatraceBaseUrl}
+                  />
+                </Grid>
+              );
+            })}
         </Grid>
       </Content>
     </Page>
