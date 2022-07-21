@@ -69,6 +69,16 @@ describe('gitlab core', () => {
         ).resolves.toBe(fetchUrl);
       });
 
+      it('supports folder named "blob"', async () => {
+        const target =
+          'https://gitlab.com/group/project/-/blob/branch/blob/file.yaml';
+        const fetchUrl =
+          'https://gitlab.com/api/v4/projects/12345/repository/files/blob%2Ffile.yaml/raw?ref=branch';
+        await expect(
+          getGitLabFileFetchUrl(target, configWithNoToken),
+        ).resolves.toBe(fetchUrl);
+      });
+
       it('locates projects in subgroups', async () => {
         const target =
           'https://gitlab.com/group/subgroup/project/-/blob/branch/folder/file.yaml';
