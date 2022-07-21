@@ -25,6 +25,7 @@ import {
   PreparerOptions,
   PreparerResponse,
 } from './types';
+import fs from 'fs-extra';
 
 /**
  * Preparer used to retrieve documentation files from a remote repository
@@ -69,6 +70,19 @@ export class UrlPreparer implements PreparerBase {
       }
 
       throw error;
+    }
+  }
+
+  async tidy(preparerResponse: PreparerResponse) {
+    this.logger.debug(
+      `Removing prepared directory ${preparerResponse.preparedDir} since the site has been generated`,
+    );
+    try {
+      // Not a blocker hence no need to await this.
+      fs.remove(preparerResponse.preparedDir);
+    } catch (error) {
+      assertError(error);
+      this.logger.debug(`Error removing prepared directory ${error.message}`);
     }
   }
 }

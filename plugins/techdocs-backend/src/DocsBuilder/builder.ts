@@ -27,8 +27,8 @@ import {
   getLocationForEntity,
   PreparerBase,
   PreparerBuilder,
+  PreparerResponse,
   PublisherBase,
-  UrlPreparer,
 } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
 import os from 'os';
@@ -126,8 +126,9 @@ export class DocsBuilder {
 
     let preparedDir: string;
     let newEtag: string;
+    let preparerResponse: PreparerResponse;
     try {
-      const preparerResponse = await this.preparer.prepare(this.entity, {
+      preparerResponse = await this.preparer.prepare(this.entity, {
         etag: storedEtag,
         logger: this.logger,
       });
@@ -188,16 +189,9 @@ export class DocsBuilder {
       logStream: this.logStream,
     });
 
-    // Remove Prepared directory since it is no longer needed.
-    // Caveat: Can not remove prepared directory in case of git preparer since the
-    // local git repository is used to get etag on subsequent requests.
-    if (this.preparer instanceof UrlPreparer) {
-      this.logger.debug(
-        `Removing prepared directory ${preparedDir} since the site has been generated`,
-      );
+    if (this.preparer.tidy) {
       try {
-        // Not a blocker hence no need to await this.
-        fs.remove(preparedDir);
+        this.preparer.tidy(preparerResponse);
       } catch (error) {
         assertError(error);
         this.logger.debug(`Error removing prepared directory ${error.message}`);

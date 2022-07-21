@@ -24,6 +24,8 @@ export class DirectoryPreparer implements PreparerBase {
     { logger, reader }: PreparerConfig,
   ): DirectoryPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
+  // (undocumented)
+  tidy(preparerResponse: PreparerResponse): Promise<void>;
 }
 
 // @public
@@ -106,6 +108,7 @@ export const parseReferenceAnnotation: (
 // @public
 export type PreparerBase = {
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
+  tidy?(preparerResponse: PreparerResponse): Promise<void>;
 };
 
 // @public
@@ -248,5 +251,7 @@ export const transformDirLocation: (
 export class UrlPreparer implements PreparerBase {
   static fromConfig({ reader, logger }: PreparerConfig): UrlPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
+  // (undocumented)
+  tidy(preparerResponse: PreparerResponse): Promise<void>;
 }
 ```

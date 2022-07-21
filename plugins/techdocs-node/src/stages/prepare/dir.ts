@@ -17,7 +17,7 @@
 import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { InputError } from '@backstage/errors';
+import { assertError, InputError } from '@backstage/errors';
 import {
   ScmIntegrationRegistry,
   ScmIntegrations,
@@ -30,6 +30,7 @@ import {
   PreparerOptions,
   PreparerResponse,
 } from './types';
+import fs from 'fs-extra';
 
 /**
  * Preparer used to retrieve documentation files from a local directory
@@ -38,6 +39,7 @@ import {
 export class DirectoryPreparer implements PreparerBase {
   private readonly scmIntegrations: ScmIntegrationRegistry;
   private readonly reader: UrlReader;
+  private readonly logger: Logger;
 
   /**
    * Returns a directory preparer instance
@@ -51,13 +53,10 @@ export class DirectoryPreparer implements PreparerBase {
     return new DirectoryPreparer(config, logger, reader);
   }
 
-  private constructor(
-    config: Config,
-    _logger: Logger | null,
-    reader: UrlReader,
-  ) {
+  private constructor(config: Config, logger: Logger, reader: UrlReader) {
     this.reader = reader;
     this.scmIntegrations = ScmIntegrations.fromConfig(config);
+    this.logger = logger;
   }
 
   /** {@inheritDoc PreparerBase.prepare} */
@@ -103,6 +102,19 @@ export class DirectoryPreparer implements PreparerBase {
 
       default:
         throw new InputError(`Unable to resolve location type ${type}`);
+    }
+  }
+
+  async tidy(preparerResponse: PreparerResponse) {
+    this.logger.debug(
+      `Removing prepared directory ${preparerResponse.preparedDir} since the site has been generated`,
+    );
+    try {
+      // Not a blocker hence no need to await this.
+      fs.remove(preparerResponse.preparedDir);
+    } catch (error) {
+      assertError(error);
+      this.logger.debug(`Error removing prepared directory ${error.message}`);
     }
   }
 }

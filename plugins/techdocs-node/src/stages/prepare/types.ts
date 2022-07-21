@@ -78,6 +78,12 @@ export type PreparerBase = {
    * @throws `NotModifiedError` when the prepared directory has not been changed since the last build.
    */
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
+
+  /**
+   * Given a Preparer response then tidy anything left over.
+   * @param preparerResponse - This allows the preparer what to tidy up.
+   **/
+  tidy?(preparerResponse: PreparerResponse): Promise<void>;
 };
 
 /**
