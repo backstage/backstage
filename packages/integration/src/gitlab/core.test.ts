@@ -155,11 +155,11 @@ describe('gitlab core', () => {
     });
 
     describe('when target has an unscoped route', () => {
-      it('returns a raw URL', async () => {
+      it('returns projects API URL', async () => {
         const target =
           'https://gitlab.com/group/project/blob/branch/folder/file.yaml';
         const fetchUrl =
-          'https://gitlab.com/group/project/raw/branch/folder/file.yaml';
+          'https://gitlab.com/api/v4/projects/12345/repository/files/folder%2Ffile.yaml/raw?ref=branch';
         await expect(
           getGitLabFileFetchUrl(target, configWithNoToken),
         ).resolves.toBe(fetchUrl);
@@ -169,17 +169,7 @@ describe('gitlab core', () => {
         const target =
           'https://gitlab.com/group/subgroup/project/blob/branch/folder/file.yaml';
         const fetchUrl =
-          'https://gitlab.com/group/subgroup/project/raw/branch/folder/file.yaml';
-        await expect(
-          getGitLabFileFetchUrl(target, configWithNoToken),
-        ).resolves.toBe(fetchUrl);
-      });
-
-      it('supports project named "blob"', async () => {
-        const target =
-          'https://gitlab.com/group/blob/blob/branch/folder/file.yaml';
-        const fetchUrl =
-          'https://gitlab.com/group/blob/raw/branch/folder/file.yaml';
+          'https://gitlab.com/api/v4/projects/12345/repository/files/folder%2Ffile.yaml/raw?ref=branch';
         await expect(
           getGitLabFileFetchUrl(target, configWithNoToken),
         ).resolves.toBe(fetchUrl);
@@ -189,15 +179,7 @@ describe('gitlab core', () => {
         const target =
           'https://gitlab.com/group/project/blob/blob/folder/file.yaml';
         const fetchUrl =
-          'https://gitlab.com/group/project/raw/blob/folder/file.yaml';
-        await expect(
-          getGitLabFileFetchUrl(target, configWithNoToken),
-        ).resolves.toBe(fetchUrl);
-      });
-
-      it('removes empty path segment', async () => {
-        const target = 'https://gitlab.example.com/group//blob/blob/file.yaml';
-        const fetchUrl = 'https://gitlab.example.com/group/blob/raw/file.yaml';
+          'https://gitlab.com/api/v4/projects/12345/repository/files/folder%2Ffile.yaml/raw?ref=blob';
         await expect(
           getGitLabFileFetchUrl(target, configWithNoToken),
         ).resolves.toBe(fetchUrl);
