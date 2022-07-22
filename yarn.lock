@@ -6097,6 +6097,15 @@
     deepmerge "^4.2.2"
     svgo "^2.8.0"
 
+"@svgr/plugin-svgo@^6.3.1":
+  version "6.3.1"
+  resolved "https://registry.npmjs.org/@svgr/plugin-svgo/-/plugin-svgo-6.3.1.tgz#3c1ff2efaed10e5c5d35a6cae7bacaedc18b5d4a"
+  integrity sha512-yJIjTDKPYqzFVjmsbH5EdIwEsmKxjxdXSGJVLeUgwZOZPAkNQmD1v7LDbOdOKbR44FG8465Du+zWPdbYGnbMbw==
+  dependencies:
+    cosmiconfig "^7.0.1"
+    deepmerge "^4.2.2"
+    svgo "^2.8.0"
+
 "@svgr/rollup@6.3.x":
   version "6.3.1"
   resolved "https://registry.npmjs.org/@svgr/rollup/-/rollup-6.3.1.tgz#cf59c39f1f145383dfdeea7068ec18149360668e"
@@ -6113,18 +6122,18 @@
     "@svgr/plugin-svgo" "^6.3.1"
 
 "@svgr/webpack@6.3.x":
-  version "6.3.0"
-  resolved "https://registry.npmjs.org/@svgr/webpack/-/webpack-6.3.0.tgz#62d3681e6999c170f67edf7f77dcb95c63bafe42"
-  integrity sha512-mtIQaV492zUu2Fq1BZRlrFf3PO1ONzfHZCki7h7ZDHWPuPi6hx32X4lNhN+tT4phPw/Sb8xPj7JNHn5Eobm/WQ==
+  version "6.3.1"
+  resolved "https://registry.npmjs.org/@svgr/webpack/-/webpack-6.3.1.tgz#001d03236ebb03bf47c0a4b92d5423e05095ebe6"
+  integrity sha512-eODxwIUShLxSMaRjzJtrj9wg89D75JLczvWg9SaB5W+OtVTkiC1vdGd8+t+pf5fTlBOy4RRXAq7x1E3DUl3D0A==
   dependencies:
     "@babel/core" "^7.18.5"
     "@babel/plugin-transform-react-constant-elements" "^7.17.12"
     "@babel/preset-env" "^7.18.2"
     "@babel/preset-react" "^7.17.12"
     "@babel/preset-typescript" "^7.17.12"
-    "@svgr/core" "^6.3.0"
-    "@svgr/plugin-jsx" "^6.3.0"
-    "@svgr/plugin-svgo" "^6.3.0"
+    "@svgr/core" "^6.3.1"
+    "@svgr/plugin-jsx" "^6.3.1"
+    "@svgr/plugin-svgo" "^6.3.1"
 
 "@szmarczak/http-timer@^4.0.5":
   version "4.0.5"
