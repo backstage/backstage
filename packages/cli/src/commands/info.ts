@@ -28,21 +28,21 @@ export default async () => {
     const isLocal = fs.existsSync(paths.resolveOwn('./src'));
 
     const backstageFile = paths.resolveTargetRoot('backstage.json');
-    let backstageJson = undefined;
+    let backstageVersion = 'N/A';
     if (fs.existsSync(backstageFile)) {
-      const buffer = await fs.readFile(backstageFile);
-      backstageJson = JSON.parse(buffer.toString());
+      try {
+        const backstageJson = await fs.readJSON(backstageFile);
+        backstageVersion = backstageJson.version ?? 'N/A';
+      } catch (error) {
+        backstageVersion = 'N/A';
+      }
     }
 
     console.log(`OS:   ${os.type} ${os.release} - ${os.platform}/${os.arch}`);
     console.log(`node: ${process.version}`);
     console.log(`yarn: ${yarnVersion}`);
     console.log(`cli:  ${cliVersion} (${isLocal ? 'local' : 'installed'})`);
-    console.log(
-      `backstage:  ${
-        backstageJson && backstageJson.version ? backstageJson.version : 'N/A'
-      }`,
-    );
+    console.log(`backstage:  ${backstageVersion}`);
     console.log();
     console.log('Dependencies:');
     const lockfilePath = paths.resolveTargetRoot('yarn.lock');
