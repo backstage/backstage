@@ -15,37 +15,87 @@
  */
 
 import { errorHandler } from '@backstage/backend-common';
-import express from 'express';
+import express, { RequestHandler } from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+import {
+  SonarqubeFindings,
+  SonarqubeInfoProvider,
+} from './sonarqubeInfoProvider';
+import { InputError } from '../../../../packages/errors';
 
+/**
+ * Dependencies needed by the router
+ * @public
+ */
 export interface RouterOptions {
+  /**
+   * Logger for logging purposes
+   */
   logger: Logger;
+  /**
+   * Info provider to be able to get all necessary information for the APIs
+   */
+  sonarqubeInfoProvider: SonarqubeInfoProvider;
 }
 
+/**
+ * @public
+ *
+ * Constructs a sonarqube router.
+ *
+ * Expose endpoint to get information on or for a sonarqube instance.
+ *
+ * @param options - Dependencies of the router
+ */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger } = options;
+  const { logger, sonarqubeInfoProvider } = options;
 
   const router = Router();
   router.use(express.json());
   // mock api for now
-  router.get('/findings', (request, response) => {
-    logger.info(request.params);
+  router.get('/findings', (async (request, response) => {
+    const componentKey = request.query.componentKey;
+    let instanceKey = request.query.instanceKey;
+
+    if (!componentKey)
+      throw new InputError('ComponentKey must be provided as a single string.');
+
+    if (!instanceKey) {
+      instanceKey = '';
+      logger.info(
+        `Retrieving findings for component ${componentKey} in default sonarqube instance`,
+      );
+    } else {
+      logger.info(
+        `Retrieving findings for component ${componentKey}  in sonarqube instance name ${instanceKey}`,
+      );
+    }
+
+    response.send(
+      await sonarqubeInfoProvider.getFindings(componentKey, instanceKey),
+    );
+  }) as RequestHandler<unknown, SonarqubeFindings | undefined, unknown, { componentKey: string; instanceKey: string }>);
+
+  router.get('/instanceUrl', ((request, response) => {
+    let requestedInstanceKey = request.query.instanceKey;
+    if (requestedInstanceKey) {
+      logger.info(
+        `Retrieving sonarqube instance URL for key ${requestedInstanceKey}`,
+      );
+    } else {
+      requestedInstanceKey = '';
+      logger.info(
+        `Retrieving default sonarqube instance URL as parameter is inexistant, empty or malformed`,
+      );
+    }
     response.send({
-      analysisDate: '2022-10-22T04:55:23Z',
-      measures: [{ metric: 'coverage', value: '50' }],
+      instanceUrl: sonarqubeInfoProvider.getBaseUrl(requestedInstanceKey),
     });
-  });
-  router.get('/instanceUrl', (request, response) => {
-    logger.info(request.params);
-    response.send({
-      instanceUrl: `https://instance.local?${encodeURI(
-        request.query.instanceKey as string,
-      )}`,
-    });
-  });
+  }) as RequestHandler<unknown, { instanceUrl: string }, unknown, { instanceKey: string }>);
+
   router.use(errorHandler());
   return router;
 }

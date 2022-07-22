@@ -19,13 +19,23 @@ import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
+import { SonarqubeFindings } from './sonarqubeInfoProvider';
 
 describe('createRouter', () => {
   let app: express.Express;
+  const getBaseUrlMock: jest.Mock<string, [string]> = jest.fn();
+  const getFindingsMock: jest.Mock<
+    Promise<SonarqubeFindings | undefined>,
+    [string, string]
+  > = jest.fn();
 
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
+      sonarqubeInfoProvider: {
+        getBaseUrl: getBaseUrlMock,
+        getFindings: getFindingsMock,
+      },
     });
     app = express().use(router);
   });
@@ -35,17 +45,76 @@ describe('createRouter', () => {
   });
 
   describe('GET /findings', () => {
+    const DUMMY_COMPONENT_KEY = 'my:component';
+    const DUMMY_INSTANCE_KEY = 'myInstance';
     it('returns ok', async () => {
+      const measures = {
+        analysisDate: '2022-01-01T00:00:00Z',
+        measures: [{ metric: 'vulnerabilities', value: '54' }],
+      };
+
+      getFindingsMock.mockReturnValue(Promise.resolve(measures));
       const response = await request(app)
         .get('/findings')
-        .set('componentKey', 'my:app')
+        .query({
+          componentKey: DUMMY_COMPONENT_KEY,
+          instanceKey: DUMMY_INSTANCE_KEY,
+        })
+        .send();
+      expect(getFindingsMock).toBeCalledTimes(1);
+      expect(getFindingsMock).toBeCalledWith(
+        DUMMY_COMPONENT_KEY,
+        DUMMY_INSTANCE_KEY,
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(measures);
+    });
+    it('returns an error when component key is not defined', async () => {
+      const response = await request(app)
+        .get('/findings')
+        .query({
+          instanceKey: DUMMY_INSTANCE_KEY,
+        })
         .send();
 
+      expect(response.status).toEqual(400);
+    });
+
+    it('use an empty string as instance name when instance key not provided', async () => {
+      const measures = {
+        analysisDate: '2021-04-08',
+        measures: [{ metric: 'vulnerabilities', value: '54' }],
+      };
+
+      getFindingsMock.mockReturnValue(Promise.resolve(measures));
+      const response = await request(app)
+        .get('/findings')
+        .query({
+          componentKey: DUMMY_COMPONENT_KEY,
+        })
+        .send();
+
+      expect(getFindingsMock).toBeCalledTimes(1);
+      expect(getFindingsMock).toBeCalledWith(DUMMY_COMPONENT_KEY, '');
       expect(response.status).toEqual(200);
-      expect(response.body).toEqual({
-        analysisDate: '2022-10-22T04:55:23Z',
-        measures: [{ metric: 'coverage', value: '50' }],
-      });
+      expect(response.body).toEqual(measures);
+    });
+  });
+  describe('GET /instanceUrl', () => {
+    const DUMMY_INSTANCE_KEY = 'myInstance';
+    const DUMMY_INSTANCE_URL = 'http://sonarqube.example.com';
+    it('returns ok', async () => {
+      getBaseUrlMock.mockReturnValue(DUMMY_INSTANCE_URL);
+      const response = await request(app)
+        .get('/instanceUrl')
+        .query({
+          instanceKey: DUMMY_INSTANCE_KEY,
+        })
+        .send();
+      expect(getBaseUrlMock).toBeCalledTimes(1);
+      expect(getBaseUrlMock).toBeCalledWith(DUMMY_INSTANCE_KEY);
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({ instanceUrl: DUMMY_INSTANCE_URL });
     });
   });
 });

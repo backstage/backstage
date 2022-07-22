@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import { createServiceBuilder } from '@backstage/backend-common';
+import {
+  createServiceBuilder,
+  loadBackendConfig,
+} from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
+import { DefaultSonarqubeInfoProvider } from './sonarqubeInfoProvider';
 
 export interface ServerOptions {
   port: number;
@@ -30,13 +34,15 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'sonarqube-backend-backend' });
   logger.debug('Starting application server...');
+  const config = await loadBackendConfig({ logger, argv: process.argv });
   const router = await createRouter({
     logger,
+    sonarqubeInfoProvider: DefaultSonarqubeInfoProvider.fromConfig(config),
   });
 
   let service = createServiceBuilder(module)
     .setPort(options.port)
-    .addRouter('/sonarqube-backend', router);
+    .addRouter('/sonarqube', router);
   if (options.enableCors) {
     service = service.enableCors({ origin: 'http://localhost:3000' });
   }
