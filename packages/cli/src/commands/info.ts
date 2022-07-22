@@ -19,17 +19,18 @@ import os from 'os';
 import { runPlain } from '../lib/run';
 import { paths } from '../lib/paths';
 import { Lockfile } from '../lib/versioning';
+import fs from 'fs-extra';
 
 export default async () => {
   await new Promise(async () => {
     const yarnVersion = await runPlain('yarn --version');
     // eslint-disable-next-line no-restricted-syntax
-    const isLocal = require('fs').existsSync(paths.resolveOwn('./src'));
+    const isLocal = fs.existsSync(paths.resolveOwn('./src'));
 
     const backstageFile = paths.resolveTargetRoot('backstage.json');
     let backstageJson = undefined;
-    if (require('fs').existsSync(backstageFile)) {
-      const buffer = await require('fs').readFile(backstageFile);
+    if (fs.existsSync(backstageFile)) {
+      const buffer = await fs.readFile(backstageFile);
       backstageJson = JSON.parse(buffer.toString());
     }
 
