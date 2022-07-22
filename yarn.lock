@@ -6071,9 +6071,9 @@
     svg-parser "^2.0.4"
 
 "@svgr/plugin-svgo@6.3.x", "@svgr/plugin-svgo@^6.3.0":
-  version "6.3.0"
-  resolved "https://registry.npmjs.org/@svgr/plugin-svgo/-/plugin-svgo-6.3.0.tgz#4d42573330407c2ec92854e172d569516052750b"
-  integrity sha512-HFbuewy6Gm8jZu1xqbdOB7zKipgf5DgcRG421uVfqgGredBIl1eLt2B0Qr3pFXQE8OTmRqJsZbjKpfrOu1BwkA==
+  version "6.3.1"
+  resolved "https://registry.npmjs.org/@svgr/plugin-svgo/-/plugin-svgo-6.3.1.tgz#3c1ff2efaed10e5c5d35a6cae7bacaedc18b5d4a"
+  integrity sha512-yJIjTDKPYqzFVjmsbH5EdIwEsmKxjxdXSGJVLeUgwZOZPAkNQmD1v7LDbOdOKbR44FG8465Du+zWPdbYGnbMbw==
   dependencies:
     cosmiconfig "^7.0.1"
     deepmerge "^4.2.2"
