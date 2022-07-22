@@ -357,7 +357,7 @@ describe('publish:bitbucketServer', () => {
       dir: mockContext.workspacePath,
       remoteUrl: 'https://bitbucket.mycompany.com/scm/project/repo',
       defaultBranch: 'master',
-      auth: { username: 'x-token-auth', password: 'thing' },
+      auth: { token: 'thing' },
       logger: mockContext.logger,
       gitAuthorInfo: {},
     });
@@ -455,7 +455,7 @@ describe('publish:bitbucketServer', () => {
       dir: mockContext.workspacePath,
       remoteUrl: 'https://bitbucket.mycompany.com/scm/project/repo',
       defaultBranch: 'main',
-      auth: { username: 'x-token-auth', password: 'thing' },
+      auth: { token: 'thing' },
       logger: mockContext.logger,
       gitAuthorInfo: {},
     });
@@ -524,7 +524,7 @@ describe('publish:bitbucketServer', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://bitbucket.mycompany.com/scm/project/repo',
-      auth: { username: 'x-token-auth', password: 'thing' },
+      auth: { token: 'thing' },
       logger: mockContext.logger,
       defaultBranch: 'master',
       gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
@@ -591,7 +591,7 @@ describe('publish:bitbucketServer', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://bitbucket.mycompany.com/scm/project/repo',
-      auth: { username: 'x-token-auth', password: 'thing' },
+      auth: { token: 'thing' },
       logger: mockContext.logger,
       defaultBranch: 'master',
       commitMessage: 'Test commit message',

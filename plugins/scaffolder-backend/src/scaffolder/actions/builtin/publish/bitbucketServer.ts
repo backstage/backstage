@@ -221,7 +221,7 @@ export function createPublishBitbucketServerAction(options: {
       const authorization = reqOpts.headers.Authorization;
       if (!authorization) {
         throw new Error(
-          `Authorization has not been provided for ${integrationConfig.config.host}. Please add either (a) a user login auth token, (b) a token or (c) username + password to the integration config.`,
+          `Authorization has not been provided for ${integrationConfig.config.host}. Please add either (a) a user login auth token, or (b) a token or (c) username + password to the integration config.`,
         );
       }
 
@@ -243,8 +243,7 @@ export function createPublishBitbucketServerAction(options: {
 
       const auth = authConfig.token
         ? {
-            username: 'x-token-auth',
-            password: token!,
+            token: token!,
           }
         : {
             username: authConfig.username!,
