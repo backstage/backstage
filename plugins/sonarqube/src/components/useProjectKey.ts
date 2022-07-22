@@ -30,7 +30,7 @@ export const isSonarQubeAvailable = (entity: Entity) =>
 /**
  * Try to parse sonarqube information from an entity.
  *
- * If part are all info are not found, they will default to an empty string
+ * If part or all info are not found, they will default to an empty string
  *
  * @param entity entity to find the sonarqube information from.
  * @return a ProjectInfo properly populated.
