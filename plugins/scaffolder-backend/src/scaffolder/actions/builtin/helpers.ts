@@ -83,15 +83,17 @@ export async function initRepoAndPush({
 }: {
   dir: string;
   remoteUrl: string;
-  auth: { username: string; password: string };
+  // For use cases where token has to be used with Basic Auth
+  // it has to be provided as password together with a username
+  // which may be a fixed value defined by the provider.
+  auth: { username: string; password: string } | { token: string };
   logger: Logger;
   defaultBranch?: string;
   commitMessage?: string;
   gitAuthorInfo?: { name?: string; email?: string };
 }): Promise<void> {
   const git = Git.fromAuth({
-    username: auth.username,
-    password: auth.password,
+    ...auth,
     logger,
   });
 
@@ -137,7 +139,10 @@ export async function commitAndPushRepo({
   remoteRef,
 }: {
   dir: string;
-  auth: { username: string; password: string };
+  // For use cases where token has to be used with Basic Auth
+  // it has to be provided as password together with a username
+  // which may be a fixed value defined by the provider.
+  auth: { username: string; password: string } | { token: string };
   logger: Logger;
   commitMessage: string;
   gitAuthorInfo?: { name?: string; email?: string };
@@ -145,8 +150,7 @@ export async function commitAndPushRepo({
   remoteRef?: string;
 }): Promise<void> {
   const git = Git.fromAuth({
-    username: auth.username,
-    password: auth.password,
+    ...auth,
     logger,
   });
 
