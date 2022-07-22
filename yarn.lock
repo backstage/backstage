@@ -6043,15 +6043,6 @@
     "@svgr/babel-plugin-transform-react-native-svg" "^6.3.1"
     "@svgr/babel-plugin-transform-svg-component" "^6.3.1"
 
-"@svgr/core@^6.3.0":
-  version "6.3.0"
-  resolved "https://registry.npmjs.org/@svgr/core/-/core-6.3.0.tgz#4d8f086c8e5121d490fe06523dad8305b159d20f"
-  integrity sha512-olON7KzAQR4oBbnRmSgJkQrpqPbHd6wURAfTR+HN+6GpcJxknEEDC+l+bpEE/jz2K4lcHex91A2cRUlsGMCazg==
-  dependencies:
-    "@svgr/plugin-jsx" "^6.3.0"
-    camelcase "^6.2.0"
-    cosmiconfig "^7.0.1"
-
 "@svgr/core@^6.3.1":
   version "6.3.1"
   resolved "https://registry.npmjs.org/@svgr/core/-/core-6.3.1.tgz#752adf49d8d5473b15d76ca741961de093f715bd"
@@ -6069,7 +6060,7 @@
     "@babel/types" "^7.18.4"
     entities "^4.3.0"
 
-"@svgr/plugin-jsx@6.3.x", "@svgr/plugin-jsx@^6.3.0", "@svgr/plugin-jsx@^6.3.1":
+"@svgr/plugin-jsx@6.3.x", "@svgr/plugin-jsx@^6.3.1":
   version "6.3.1"
   resolved "https://registry.npmjs.org/@svgr/plugin-jsx/-/plugin-jsx-6.3.1.tgz#de7b2de824296b836d6b874d498377896e367f50"
   integrity sha512-r9+0mYG3hD4nNtUgsTXWGYJomv/bNd7kC16zvsM70I/bGeoCi/3lhTmYqeN6ChWX317OtQCSZZbH4wq9WwoXbw==
@@ -6079,16 +6070,7 @@
     "@svgr/hast-util-to-babel-ast" "^6.3.1"
     svg-parser "^2.0.4"
 
-"@svgr/plugin-svgo@6.3.x", "@svgr/plugin-svgo@^6.3.0", "@svgr/plugin-svgo@^6.3.1":
-  version "6.3.1"
-  resolved "https://registry.npmjs.org/@svgr/plugin-svgo/-/plugin-svgo-6.3.1.tgz#3c1ff2efaed10e5c5d35a6cae7bacaedc18b5d4a"
-  integrity sha512-yJIjTDKPYqzFVjmsbH5EdIwEsmKxjxdXSGJVLeUgwZOZPAkNQmD1v7LDbOdOKbR44FG8465Du+zWPdbYGnbMbw==
-  dependencies:
-    cosmiconfig "^7.0.1"
-    deepmerge "^4.2.2"
-    svgo "^2.8.0"
-
-"@svgr/plugin-svgo@^6.3.1":
+"@svgr/plugin-svgo@6.3.x", "@svgr/plugin-svgo@^6.3.1":
   version "6.3.1"
   resolved "https://registry.npmjs.org/@svgr/plugin-svgo/-/plugin-svgo-6.3.1.tgz#3c1ff2efaed10e5c5d35a6cae7bacaedc18b5d4a"
   integrity sha512-yJIjTDKPYqzFVjmsbH5EdIwEsmKxjxdXSGJVLeUgwZOZPAkNQmD1v7LDbOdOKbR44FG8465Du+zWPdbYGnbMbw==
@@ -8777,9 +8759,9 @@ aws-sdk-mock@^5.2.1:
     traverse "^0.6.6"
 
 aws-sdk@^2.1122.0, aws-sdk@^2.814.0, aws-sdk@^2.840.0, aws-sdk@^2.948.0:
-  version "2.1180.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1180.0.tgz#01c5a5c845bea6676421cbb8fb162c4df8b719d5"
-  integrity sha512-QyQ+Zxb+AowFHb9N6qrmpA+LVZxUlBCfqEsRUAss+0y+QbEwfh4o+AxP6V0xz+m+UlBNxBkqJLx8UPoVk387LQ==
+  version "2.1181.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1181.0.tgz#6ec2997881ae3df76e56d7150fc2992f12ce43dc"
+  integrity sha512-AAHSknRFAIjXBA/XNAL7gS79agr1LbS0oGimOJqJauGSJfWNaOpDc7z6OLNUQqGa5Joc3maD5QJcSKp1Pm/deQ==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
