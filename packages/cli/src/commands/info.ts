@@ -26,10 +26,22 @@ export default async () => {
     // eslint-disable-next-line no-restricted-syntax
     const isLocal = require('fs').existsSync(paths.resolveOwn('./src'));
 
+    const backstageFile = paths.resolveTargetRoot('backstage.json');
+    let backstageJson = undefined;
+    if (require('fs').existsSync(backstageFile)) {
+      const buffer = await require('fs').readFile(backstageFile);
+      backstageJson = JSON.parse(buffer.toString());
+    }
+
     console.log(`OS:   ${os.type} ${os.release} - ${os.platform}/${os.arch}`);
     console.log(`node: ${process.version}`);
     console.log(`yarn: ${yarnVersion}`);
     console.log(`cli:  ${cliVersion} (${isLocal ? 'local' : 'installed'})`);
+    console.log(
+      `backstage:  ${
+        backstageJson && backstageJson.version ? backstageJson.version : 'N/A'
+      }`,
+    );
     console.log();
     console.log('Dependencies:');
     const lockfilePath = paths.resolveTargetRoot('yarn.lock');
