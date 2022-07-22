@@ -6079,16 +6079,7 @@
     "@svgr/hast-util-to-babel-ast" "^6.3.1"
     svg-parser "^2.0.4"
 
-"@svgr/plugin-svgo@6.3.x", "@svgr/plugin-svgo@^6.3.0":
-  version "6.3.1"
-  resolved "https://registry.npmjs.org/@svgr/plugin-svgo/-/plugin-svgo-6.3.1.tgz#3c1ff2efaed10e5c5d35a6cae7bacaedc18b5d4a"
-  integrity sha512-yJIjTDKPYqzFVjmsbH5EdIwEsmKxjxdXSGJVLeUgwZOZPAkNQmD1v7LDbOdOKbR44FG8465Du+zWPdbYGnbMbw==
-  dependencies:
-    cosmiconfig "^7.0.1"
-    deepmerge "^4.2.2"
-    svgo "^2.8.0"
-
-"@svgr/plugin-svgo@^6.3.1":
+"@svgr/plugin-svgo@6.3.x", "@svgr/plugin-svgo@^6.3.0", "@svgr/plugin-svgo@^6.3.1":
   version "6.3.1"
   resolved "https://registry.npmjs.org/@svgr/plugin-svgo/-/plugin-svgo-6.3.1.tgz#3c1ff2efaed10e5c5d35a6cae7bacaedc18b5d4a"
   integrity sha512-yJIjTDKPYqzFVjmsbH5EdIwEsmKxjxdXSGJVLeUgwZOZPAkNQmD1v7LDbOdOKbR44FG8465Du+zWPdbYGnbMbw==
@@ -16128,9 +16119,9 @@ isomorphic-form-data@^2.0.0:
     form-data "^2.3.2"
 
 isomorphic-git@^1.8.0:
-  version "1.18.3"
-  resolved "https://registry.npmjs.org/isomorphic-git/-/isomorphic-git-1.18.3.tgz#b2ef91688ac8f4315a8f3ce72f24a76c17bf61ad"
-  integrity sha512-CVTNt0uU5RQ4g626LxqUyShdoeD15uZppKA0tk7iY/PyikCbRG594a7BksU4JZcOC6RsqUkURdIlFyKhAfdbqg==
+  version "1.19.0"
+  resolved "https://registry.npmjs.org/isomorphic-git/-/isomorphic-git-1.19.0.tgz#1f109eb4e0383ca0553e712ffb5bd43d27118fc6"
+  integrity sha512-OL723KnfgCSMH0zRvCn3FV5eGIb9Xvs0tS2DbIVc6KuyyI2DOHcYe8S4yWiqQ09xuNXEmPiFgsX5KVpEyWNH8g==
   dependencies:
     async-lock "^1.1.0"
     clean-git-ref "^2.0.1"
