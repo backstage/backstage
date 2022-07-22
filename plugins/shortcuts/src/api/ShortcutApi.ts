@@ -29,6 +29,11 @@ export interface ShortcutApi {
   shortcut$(): Observable<Shortcut[]>;
 
   /**
+   * Returns an immediate snapshot of shortcuts, sorted by title
+   */
+  get(): Shortcut[];
+
+  /**
    * Generates a unique id for the shortcut and then saves it.
    */
   add(shortcut: Omit<Shortcut, 'id'>): Promise<void>;
