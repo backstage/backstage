@@ -67,7 +67,7 @@ index 1942c36ad1..7fdc48ba24 100644
 
 ```
 
-This plugin must be provided with a `SonarqubeInfoProvider`, this is a strategy object for finding sonarqube instances in configuration and retrieving data from an instance.
+This plugin must be provided with a `SonarqubeInfoProvider`, this is a strategy object for finding Sonarqube instances in configuration and retrieving data from an instance.
 
 There is a standard one provided (`DefaultSonarqubeInfoProvider`), but the Integrator is free to build their own.
 
@@ -124,7 +124,7 @@ metadata:
     sonarqube.org/project-key: specialProject/YOUR_PROJECT_KEY
 ```
 
-If the `specialProject/` part is omitted (or replaced with `default/`), the sonarqube instance of name `default` will be used.
+If the `specialProject/` part is omitted (or replaced with `default/`), the Sonarqube instance of name `default` will be used.
 
 The following config is an equivalent (but less clear) version of the above:
 

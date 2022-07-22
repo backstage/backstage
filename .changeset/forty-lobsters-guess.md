@@ -6,4 +6,4 @@
 
 The whole proxy's `'/sonarqube':` key can be removed from your configuration files.
 
-Then head to the sonarqube-backend plugin page to learn how to set-up the link to your sonarqube instances.
+Then head to the sonarqube-backend plugin page to learn how to set-up the link to your Sonarqube instances.
