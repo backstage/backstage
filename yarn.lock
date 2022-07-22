@@ -6052,6 +6052,15 @@
     camelcase "^6.2.0"
     cosmiconfig "^7.0.1"
 
+"@svgr/core@^6.3.1":
+  version "6.3.1"
+  resolved "https://registry.npmjs.org/@svgr/core/-/core-6.3.1.tgz#752adf49d8d5473b15d76ca741961de093f715bd"
+  integrity sha512-Sm3/7OdXbQreemf9aO25keerZSbnKMpGEfmH90EyYpj1e8wMD4TuwJIb3THDSgRMWk1kYJfSRulELBy4gVgZUA==
+  dependencies:
+    "@svgr/plugin-jsx" "^6.3.1"
+    camelcase "^6.2.0"
+    cosmiconfig "^7.0.1"
+
 "@svgr/hast-util-to-babel-ast@^6.3.1":
   version "6.3.1"
   resolved "https://registry.npmjs.org/@svgr/hast-util-to-babel-ast/-/hast-util-to-babel-ast-6.3.1.tgz#59614e24d2a4a28010e02089213b3448d905769d"
@@ -6060,7 +6069,7 @@
     "@babel/types" "^7.18.4"
     entities "^4.3.0"
 
-"@svgr/plugin-jsx@6.3.x", "@svgr/plugin-jsx@^6.3.0":
+"@svgr/plugin-jsx@6.3.x", "@svgr/plugin-jsx@^6.3.0", "@svgr/plugin-jsx@^6.3.1":
   version "6.3.1"
   resolved "https://registry.npmjs.org/@svgr/plugin-jsx/-/plugin-jsx-6.3.1.tgz#de7b2de824296b836d6b874d498377896e367f50"
   integrity sha512-r9+0mYG3hD4nNtUgsTXWGYJomv/bNd7kC16zvsM70I/bGeoCi/3lhTmYqeN6ChWX317OtQCSZZbH4wq9WwoXbw==
@@ -6079,10 +6088,19 @@
     deepmerge "^4.2.2"
     svgo "^2.8.0"
 
+"@svgr/plugin-svgo@^6.3.1":
+  version "6.3.1"
+  resolved "https://registry.npmjs.org/@svgr/plugin-svgo/-/plugin-svgo-6.3.1.tgz#3c1ff2efaed10e5c5d35a6cae7bacaedc18b5d4a"
+  integrity sha512-yJIjTDKPYqzFVjmsbH5EdIwEsmKxjxdXSGJVLeUgwZOZPAkNQmD1v7LDbOdOKbR44FG8465Du+zWPdbYGnbMbw==
+  dependencies:
+    cosmiconfig "^7.0.1"
+    deepmerge "^4.2.2"
+    svgo "^2.8.0"
+
 "@svgr/rollup@6.3.x":
-  version "6.3.0"
-  resolved "https://registry.npmjs.org/@svgr/rollup/-/rollup-6.3.0.tgz#a665783d32cd955ea7e1a9d1ba9c6c082a30a66f"
-  integrity sha512-BO0twaMOoRPddxeegQ8rbkDMds13Sb1+EqKxBuKA8s3M8p2CtpKLiLgnigx9s3+ZUO0WQGLpQKb5PFWZZmtQ7w==
+  version "6.3.1"
+  resolved "https://registry.npmjs.org/@svgr/rollup/-/rollup-6.3.1.tgz#cf59c39f1f145383dfdeea7068ec18149360668e"
+  integrity sha512-TXcRT7pwsNU30bXxgooGAZQIXmPy7fxUnN/v5cuCpLiondRtKiV321kh/S/qhcQ6gSs6DvJmNDpbiqPZF66usw==
   dependencies:
     "@babel/core" "^7.18.5"
     "@babel/plugin-transform-react-constant-elements" "^7.17.12"
@@ -6090,9 +6108,9 @@
     "@babel/preset-react" "^7.17.12"
     "@babel/preset-typescript" "^7.17.12"
     "@rollup/pluginutils" "^4.2.1"
-    "@svgr/core" "^6.3.0"
-    "@svgr/plugin-jsx" "^6.3.0"
-    "@svgr/plugin-svgo" "^6.3.0"
+    "@svgr/core" "^6.3.1"
+    "@svgr/plugin-jsx" "^6.3.1"
+    "@svgr/plugin-svgo" "^6.3.1"
 
 "@svgr/webpack@6.3.x":
   version "6.3.0"
