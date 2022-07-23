@@ -49,10 +49,7 @@ export const Content = (props: StackOverflowQuestionsContentProps) => {
   const { value, loading, error } = useAsync(async (): Promise<
     StackOverflowQuestion[]
   > => {
-    const params = qs.stringify(requestParams, {
-      arrayFormat: 'comma',
-      addQueryPrefix: true,
-    });
+    const params = qs.stringify(requestParams, { addQueryPrefix: true });
     const response = await fetch(`${baseUrl}/questions${params}`);
     const data = await response.json();
     return data.items;
