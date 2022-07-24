@@ -18,6 +18,8 @@ import {
   useShadowRoot,
   useShadowRootElements,
   useShadowRootSelection,
+  useTechDocsShadowRootElements,
+  useTechDocsShadowRootSelection,
 } from './hooks';
 import { renderHook } from '@testing-library/react-hooks';
 import { fireEvent, waitFor } from '@testing-library/react';
@@ -30,23 +32,6 @@ const fireSelectionChangeEvent = (window: Window) => {
 };
 
 const getSelection = jest.fn();
-
-const mockShadowRoot = () => {
-  const div = document.createElement('div');
-  const shadowRoot = div.attachShadow({ mode: 'open' });
-  shadowRoot.innerHTML = '<h1>Shadow DOM Mock</h1>';
-  (shadowRoot as ShadowRoot & Pick<Document, 'getSelection'>).getSelection =
-    getSelection;
-  return shadowRoot;
-};
-
-const shadowRoot = mockShadowRoot();
-
-jest.mock('../TechDocsReaderPageContext', () => {
-  return {
-    useTechDocsReaderPage: () => ({ shadowRoot }),
-  };
-});
 
 const selection = {
   type: 'Range',
@@ -70,6 +55,22 @@ const selection = {
 
 getSelection.mockReturnValue(selection);
 
+const mockShadowRoot = () => {
+  const div = document.createElement('div');
+  const shadowRoot = div.attachShadow({ mode: 'open' });
+  shadowRoot.innerHTML = '<h1>Shadow DOM Mock</h1>';
+  (shadowRoot as ShadowRoot & Pick<Document, 'getSelection'>).getSelection =
+    getSelection;
+  return shadowRoot;
+};
+
+const shadowRoot = mockShadowRoot();
+
+jest.mock('@backstage/plugin-techdocs-mkdocs-react', () => ({
+  ...jest.requireActual('@backstage/plugin-techdocs-mkdocs-react'),
+  useMkDocsReaderPage: () => ({ shadowRoot }),
+}));
+
 describe('hooks', () => {
   describe('useShadowRoot', () => {
     it('should return shadow root', async () => {
@@ -80,8 +81,18 @@ describe('hooks', () => {
   });
 
   describe('useShadowRootElements', () => {
-    it('should return shadow root elements based on selector', () => {
+    it('should return shadow root elements based on selector', async () => {
       const { result } = renderHook(() => useShadowRootElements(['h1']));
+
+      expect(result.current).toHaveLength(1);
+    });
+  });
+
+  describe('useTechDocsShadowRootElements', () => {
+    it('should return shadow root elements based on selector', () => {
+      const { result } = renderHook(() =>
+        useTechDocsShadowRootElements(['h1'], shadowRoot),
+      );
 
       expect(result.current).toHaveLength(1);
     });
@@ -90,6 +101,22 @@ describe('hooks', () => {
   describe('useShadowRootSelection', () => {
     it('should return shadow root selection', async () => {
       const { result } = renderHook(() => useShadowRootSelection(0));
+
+      expect(result.current).toBeNull();
+
+      fireSelectionChangeEvent(window);
+
+      await waitFor(() => {
+        expect(result.current?.toString()).toEqual('his ');
+      });
+    });
+  });
+
+  describe('useTechDocsShadowRootSelection', () => {
+    it('should return shadow root selection', async () => {
+      const { result } = renderHook(() =>
+        useTechDocsShadowRootSelection(0, shadowRoot),
+      );
 
       expect(result.current).toBeNull();
 

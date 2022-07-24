@@ -41,6 +41,7 @@
     "@backstage/core-plugin-api": "^1.0.5-next.0",
     "@backstage/errors": "^1.1.0",
     "@backstage/version-bridge": "^1.0.1",
+    "@backstage/plugin-techdocs-mkdocs-react": "^0.0.0",
     "@material-ui/core": "^4.12.2",
     "@material-ui/lab": "4.0.0-alpha.57",
     "@material-ui/styles": "^4.11.0",

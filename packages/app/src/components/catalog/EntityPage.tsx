@@ -149,6 +149,7 @@ import {
   TextSize,
   ReportIssue,
 } from '@backstage/plugin-techdocs-mkdocs-addons';
+import { entityDocsPage } from '../techdocs/TechDocsPage';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
@@ -185,6 +186,7 @@ const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
 
 const techdocsContent = (
   <EntityTechdocsContent>
+    {entityDocsPage}
     <TechDocsAddons>
       <TextSize />
       <ReportIssue />

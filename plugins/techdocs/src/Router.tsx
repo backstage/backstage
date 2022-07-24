@@ -14,26 +14,14 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
+import React, { Children, PropsWithChildren } from 'react';
 import { Route, Routes, useRoutes } from 'react-router-dom';
 
-import { Entity } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
+import { isTechDocsAddonExtension } from '@backstage/plugin-techdocs-react';
 
-import { EntityPageDocs } from './EntityPageDocs';
+import { DefaultEntityDocsPage } from './EntityPageDocs';
 import { TechDocsIndexPage } from './home/components/TechDocsIndexPage';
 import { TechDocsReaderPage } from './reader/components/TechDocsReaderPage';
-
-const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
-
-/**
- * Helper that takes in entity and returns true/false if TechDocs is available for the entity
- *
- * @public
- */
-export const isTechDocsAvailable = (entity: Entity) =>
-  Boolean(entity?.metadata?.annotations?.[TECHDOCS_ANNOTATION]);
 
 /**
  * Responsible for registering routes for TechDocs, TechDocs Homepage and separate TechDocs page
@@ -57,29 +45,25 @@ export const Router = () => {
  *
  * @public
  */
-export const EmbeddedDocsRouter = (props: PropsWithChildren<{}>) => {
-  const { children } = props;
-  const { entity } = useEntity();
+export const EmbeddedDocsRouter = ({ children }: PropsWithChildren<{}>) => {
+  const childrenList = Children.toArray(children);
+
+  const page = childrenList.find(child => !isTechDocsAddonExtension(child));
+  const addons = childrenList.find(child => isTechDocsAddonExtension(child));
 
   // Using objects instead of <Route> elements, otherwise "outlet" will be null on sub-pages and add-ons won't render
   const element = useRoutes([
     {
       path: '/*',
-      element: <EntityPageDocs entity={entity} />,
+      element: page || <DefaultEntityDocsPage />,
       children: [
         {
           path: '/*',
-          element: children,
+          element: addons,
         },
       ],
     },
   ]);
-
-  const projectId = entity.metadata.annotations?.[TECHDOCS_ANNOTATION];
-
-  if (!projectId) {
-    return <MissingAnnotationEmptyState annotation={TECHDOCS_ANNOTATION} />;
-  }
 
   return element;
 };

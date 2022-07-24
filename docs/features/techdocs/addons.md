@@ -176,16 +176,20 @@ provided by the Addon framework.
 // plugins/your-plugin/src/addons/MakeAllImagesCatGifs.tsx
 
 import React, { useEffect } from 'react';
-import { useShadowRootElements } from '@backstage/plugin-techdocs-react/alpha';
+import { useTechDocsShadowRootElements } from '@backstage/plugin-techdocs-react';
+import { useMkDocsReaderPage } from '@backstage/plugin-techdocs-mkdocs-react';
 
 // This is a normal react component; in order to make it an Addon, you would
 // still create and provide it via your plugin as described above. The only
 // difference is that you'd set `location` to `TechDocsAddonLocations.Content`.
 export const MakeAllImagesCatGifsAddon = () => {
-  // This hook can be used to get references to specific elements. If you need
-  // access to the whole shadow DOM, use the the underlying useShadowRoot()
-  // hook instead.
-  const images = useShadowRootElements<HTMLImageElement>(['img']);
+  // access to the whole shadow DOM,
+  const { shadowRoot } = useMkDocsReaderPage();
+  // This hook can be used to get references to specific elements.
+  const images = useTechDocsShadowRootElements<HTMLImageElement>(
+    ['img'],
+    shadowRoot,
+  );
 
   useEffect(() => {
     images.forEach(img => {

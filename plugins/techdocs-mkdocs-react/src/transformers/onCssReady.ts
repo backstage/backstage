@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SHADOW_DOM_STYLE_LOAD_EVENT } from '@backstage/plugin-techdocs-react';
+import { TECHDOCS_SHADOW_DOM_STYLE_LOAD_EVENT } from '@backstage/plugin-techdocs-react';
 import type { Transformer } from './transformer';
 
 type OnCssReadyOptions = {
@@ -29,11 +29,11 @@ export const onCssReady = ({
   return dom => {
     onLoading();
     dom.addEventListener(
-      SHADOW_DOM_STYLE_LOAD_EVENT,
+      TECHDOCS_SHADOW_DOM_STYLE_LOAD_EVENT,
       function handleShadowDomStyleLoad() {
         onLoaded();
         dom.removeEventListener(
-          SHADOW_DOM_STYLE_LOAD_EVENT,
+          TECHDOCS_SHADOW_DOM_STYLE_LOAD_EVENT,
           handleShadowDomStyleLoad,
         );
       },

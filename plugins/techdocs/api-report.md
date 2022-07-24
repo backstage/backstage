@@ -14,8 +14,10 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { JSXElementConstructor } from 'react';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
+import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -29,6 +31,7 @@ import { TechDocsReaderPageContentProviderProps } from '@backstage/plugin-techdo
 import { TechDocsReaderPageContentProviderRenderFunction } from '@backstage/plugin-techdocs-react';
 import { TechDocsReaderPageContentState } from '@backstage/plugin-techdocs-react';
 import { TechDocsReaderPageContentStateTypes } from '@backstage/plugin-techdocs-react';
+import { TechDocsReaderPageRendererProps } from '@backstage/plugin-techdocs-react';
 import { TechDocsStorageApi as TechDocsStorageApi_2 } from '@backstage/plugin-techdocs-react';
 import { ToolbarProps } from '@material-ui/core';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
@@ -100,9 +103,12 @@ export type DocsTableRow = {
 };
 
 // @public
-export const EmbeddedDocsRouter: (
-  props: PropsWithChildren<{}>,
-) => JSX.Element | null;
+export const EmbeddedDocsRouter: ({
+  children,
+}: PropsWithChildren<{}>) => React_2.ReactElement<
+  any,
+  string | React_2.JSXElementConstructor<any>
+> | null;
 
 // @public
 export const EntityListDocsGrid: () => JSX.Element;
@@ -142,12 +148,11 @@ export type EntityListDocsTableProps = {
 };
 
 // @public
-export const EntityTechdocsContent: (props: {
+export const EntityTechdocsContent: ({
+  children,
+}: {
   children?: ReactNode;
-}) => JSX.Element | null;
-
-// @public
-export const isTechDocsAvailable: (entity: Entity) => boolean;
+}) => ReactElement<any, string | JSXElementConstructor<any>> | null;
 
 // @public
 export interface PanelConfig {
@@ -228,6 +233,16 @@ export type TechDocsCustomHomeProps = {
 export type TechDocsEntityMetadata = TechDocsEntityMetadata_2;
 
 // @public
+export const TechDocsEntityPage: ({
+  children,
+}: TechDocsEntityPageProps) => JSX.Element;
+
+// @public
+export type TechDocsEntityPageProps = {
+  children: (value: { entityRef: CompoundEntityRef }) => JSX.Element;
+};
+
+// @public
 export const TechDocsIndexPage: (props: TechDocsIndexPageProps) => JSX.Element;
 
 // @public
@@ -274,9 +289,10 @@ export { techdocsPlugin as plugin };
 export { techdocsPlugin };
 
 // @public
-export const TechDocsReaderPage: (
-  props: TechDocsReaderPageProps,
-) => JSX.Element;
+export const TechDocsReaderPage: ({
+  entityRef,
+  children,
+}: Partial<TechDocsReaderPageRendererProps<{}>>) => JSX.Element;
 
 // @public
 export const TechDocsReaderPageContent: (
@@ -320,11 +336,8 @@ export type TechDocsReaderPageLayoutProps = PropsWithChildren<{
   withSearch?: boolean;
 }>;
 
-// @public (undocumented)
-export type TechDocsReaderPageProps = {
-  entityRef?: CompoundEntityRef;
-  children?: TechDocsReaderPageRenderFunction | ReactNode;
-};
+// @public
+export type TechDocsReaderPageProps = Partial<TechDocsReaderPageRendererProps>;
 
 // @public
 export type TechDocsReaderPageRenderFunction = ({

@@ -18,11 +18,13 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/mkdocs-addons"
+    "directory": "plugins/techdocs-mkdocs-addons"
   },
   "keywords": [
     "backstage",
-    "techdocs"
+    "techdocs",
+    "mkdocs",
+    "addons"
   ],
   "scripts": {
     "start": "backstage-cli package start",

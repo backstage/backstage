@@ -15,12 +15,19 @@
  */
 
 import React, {
+  ReactNode,
   Dispatch,
   SetStateAction,
   useState,
   createContext,
   useContext,
 } from 'react';
+
+import {
+  TechDocsReaderPageRenderer,
+  TechDocsReaderPageRendererProps,
+} from '@backstage/plugin-techdocs-react';
+
 import { MkDocsReaderContent } from '../MkDocsReaderContent';
 
 /**
@@ -52,23 +59,34 @@ export const useMkDocsReaderPage = () => useContext(MkDocsReaderPageContext);
  * Props for {@link MkDocsReaderPage}.
  * @public
  */
-export type MkDocsReaderPageProps = {
-  children: (content: JSX.Element) => JSX.Element;
-};
+export type MkDocsReaderPageProps = TechDocsReaderPageRendererProps<{
+  content: ReactNode;
+}>;
+
+const content = <MkDocsReaderContent />;
 
 /**
  * Renders TechDocs content using mkdocs.
  * @param props - See {@link MkDocsReaderPageProps}.
  * @public
  */
-export const MkDocsReaderPage = ({ children }: MkDocsReaderPageProps) => {
+export const MkDocsReaderPage = ({
+  entityRef,
+  children,
+}: MkDocsReaderPageProps) => {
   const [shadowRoot, setShadowRoot] = useState<ShadowRoot>();
 
   const value = { shadowRoot, setShadowRoot };
 
   return (
     <MkDocsReaderPageContext.Provider value={value}>
-      {children(<MkDocsReaderContent />)}
+      <TechDocsReaderPageRenderer entityRef={entityRef}>
+        {rest =>
+          children instanceof Function
+            ? children({ ...rest, content })
+            : children
+        }
+      </TechDocsReaderPageRenderer>
     </MkDocsReaderPageContext.Provider>
   );
 };

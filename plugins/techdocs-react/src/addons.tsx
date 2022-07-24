@@ -146,3 +146,12 @@ export const useTechDocsAddons = () => {
 
   return { renderComponentByName, renderComponentsByLocation };
 };
+
+/**
+ * Returns whether a child is the addon element or not.
+ * @param element - a react child.
+ * @public
+ */
+export const isTechDocsAddonExtension = ({ type }: any) => {
+  return !!type?.__backstage_data?.map?.get(TECHDOCS_ADDONS_WRAPPER_KEY);
+};

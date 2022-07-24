@@ -16,14 +16,17 @@
 
 export {
   TechDocsShadowDom,
+  useTechDocsShadowDomStylesLoading,
   useShadowDomStylesLoading,
+  TECHDOCS_SHADOW_DOM_STYLE_LOAD_EVENT,
   SHADOW_DOM_STYLE_LOAD_EVENT,
 } from './TechDocsReaderShadowDom';
 
 export type { TechDocsShadowDomProps } from './TechDocsReaderShadowDom';
 
 export {
-  useShadowRoot,
   useShadowRootElements,
   useShadowRootSelection,
+  useTechDocsShadowRootElements,
+  useTechDocsShadowRootSelection,
 } from './hooks';

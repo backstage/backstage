@@ -31,10 +31,13 @@ export {
   TechDocsIndexPage,
   TechdocsPage,
   TechDocsReaderPage,
+  TechDocsEntityPage,
   techdocsPlugin as plugin,
   techdocsPlugin,
 } from './plugin';
 export * from './Router';
+
+export type { EntityDocsPageProps as TechDocsEntityPageProps } from './EntityPageDocs';
 
 import {
   SyncResult,

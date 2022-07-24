@@ -1,13 +1,50 @@
 # techdocs-mkdocs-react
 
-Welcome to the techdocs-mkdocs-react plugin!
+A `web-library` that exports components for you to compose the `TechDocs` reader page with [mkdocs](https://www.mkdocs.org/).
 
-_This plugin was created through the Backstage CLI_
+## Usage
 
-## Getting started
+Create a custom reader page as follows:
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/techdocs-mkdocs-react](http://localhost:3000/techdocs-mkdocs-react).
+```tsx
+// packages/app/src/components/techdocs/TechDocsPage.tsx
+import { TechDocsReaderPageLayout } from '@backstage/plugin-techdocs';
+import { MkDocsReaderPage as TechDocsReaderPage } from '@backstage/plugin-techdocs-mkdocs-react';
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](./dev) directory.
+const TechDocsPage = () => (
+  <TechDocsReaderPage>
+    {({ content }) => (
+      <TechDocsReaderPageLayout>{content}</TechDocsReaderPageLayout>
+    )}
+  </TechDocsReaderPage>
+);
+
+export const techDocsPage = <TechDocsPage />; 👈
+```
+
+> **Important**: `MkDocsReaderPage` replaces the default reader page, so do not wrap it in a `TechDocsReaderPage`.
+
+Now, render the custom page as a child of reader route:
+
+```tsx
+// packages/app/src/App.tsx
+import { TechDocsReaderPage } from '@backstage/plugin-techdocs';
+import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+import {
+  ExpandableNavigation,
+  ReportIssue,
+  TextSize,
+} from '@backstage/plugin-techdocs-mkdocs-addons';
+import { techDocsPage } from './components/techdocs';
+
+<Route path="/docs/:namespace/:kind/:name/*" element={<TechDocsReaderPage />}>
+  {techDocsPage} 👈
+  <TechDocsAddons>
+    <ExpandableNavigation />
+    <ReportIssue />
+    <TextSize />
+  </TechDocsAddons>
+</Route>;
+```
+
+And that's it :tada:!

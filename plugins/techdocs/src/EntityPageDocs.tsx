@@ -16,21 +16,63 @@
 
 import React from 'react';
 
-import { Entity, getCompoundEntityRef } from '@backstage/catalog-model';
+import {
+  CompoundEntityRef,
+  Entity,
+  getCompoundEntityRef,
+} from '@backstage/catalog-model';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
 import { TechDocsReaderPage } from './plugin';
 import { TechDocsReaderPageSubheader } from './reader/components/TechDocsReaderPageSubheader';
 import { TechDocsReaderPageContent } from './reader/components/TechDocsReaderPageContent';
 
-type EntityPageDocsProps = { entity: Entity };
+const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 
-export const EntityPageDocs = ({ entity }: EntityPageDocsProps) => {
+/**
+ * Helper that takes in entity and returns true/false if TechDocs is available for the entity
+ * @public
+ */
+export const isTechDocsAvailable = (entity: Entity) =>
+  Boolean(entity?.metadata?.annotations?.[TECHDOCS_ANNOTATION]);
+
+/**
+ * props for EntityDocsPage.
+ * @public
+ */
+export type EntityDocsPageProps = {
+  children: (value: { entityRef: CompoundEntityRef }) => JSX.Element;
+};
+
+/**
+ * Component for rendering documentation on catalog entity page.
+ * @public
+ */
+export const EntityDocsPage = ({ children }: EntityDocsPageProps) => {
+  const { entity } = useEntity();
   const entityRef = getCompoundEntityRef(entity);
 
-  return (
-    <TechDocsReaderPage entityRef={entityRef}>
-      <TechDocsReaderPageSubheader />
-      <TechDocsReaderPageContent withSearch={false} />
-    </TechDocsReaderPage>
-  );
+  const projectId = entity.metadata.annotations?.[TECHDOCS_ANNOTATION];
+
+  if (!projectId) {
+    return <MissingAnnotationEmptyState annotation={TECHDOCS_ANNOTATION} />;
+  }
+
+  return children instanceof Function ? children({ entityRef }) : children;
 };
+
+/**
+ * The default entity docs page.
+ * @internal
+ */
+export const DefaultEntityDocsPage = () => (
+  <EntityDocsPage>
+    {({ entityRef }) => (
+      <TechDocsReaderPage entityRef={entityRef}>
+        <TechDocsReaderPageSubheader />
+        <TechDocsReaderPageContent withSearch={false} />
+      </TechDocsReaderPage>
+    )}
+  </EntityDocsPage>
+);

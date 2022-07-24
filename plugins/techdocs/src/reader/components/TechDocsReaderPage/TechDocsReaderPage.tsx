@@ -14,82 +14,53 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, ReactChild, Children } from 'react';
-import { useOutlet, useParams } from 'react-router-dom';
+import React, { Children } from 'react';
+import { useOutlet } from 'react-router-dom';
 
 import { Page } from '@backstage/core-components';
-import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
-  TECHDOCS_ADDONS_WRAPPER_KEY,
-  TechDocsReaderPageProvider,
+  isTechDocsAddonExtension,
+  TechDocsReaderPageRendererProps,
 } from '@backstage/plugin-techdocs-react';
-import { MkDocsReaderContent } from '@backstage/plugin-techdocs-mkdocs-react';
+import { MkDocsReaderPage } from '@backstage/plugin-techdocs-mkdocs-react';
 
 import { TechDocsReaderPageLayout } from '../TechDocsReaderPageLayout';
-import { TechDocsReaderPageRenderFunction } from '../../../types';
-
-const DefaultTechDocsReaderPage = () => (
-  <TechDocsReaderPageLayout>
-    <MkDocsReaderContent />
-  </TechDocsReaderPageLayout>
-);
-
-type Extension = ReactChild & {
-  type: {
-    __backstage_data: {
-      map: Map<string, boolean>;
-    };
-  };
-};
 
 /**
+ * Props for {@link TechDocsReaderPage}.
  * @public
  */
-export type TechDocsReaderPageProps = {
-  entityRef?: CompoundEntityRef;
-  children?: TechDocsReaderPageRenderFunction | ReactNode;
-};
+export type TechDocsReaderPageProps = Partial<TechDocsReaderPageRendererProps>;
 
 /**
  * An addon-aware implementation of the TechDocsReaderPage.
+ * props - see {@link TechDocsReaderPageProps}.
  * @public
  */
-export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
-  const { kind, name, namespace } = useParams();
-  const { children, entityRef = { kind, name, namespace } } = props;
-
+export const TechDocsReaderPage = ({
+  entityRef,
+  children,
+}: TechDocsReaderPageProps) => {
   const outlet = useOutlet();
 
   if (!children) {
     const childrenList = outlet ? Children.toArray(outlet.props.children) : [];
 
-    const page = childrenList.find(child => {
-      const { type } = child as Extension;
-      return !type?.__backstage_data?.map?.get(TECHDOCS_ADDONS_WRAPPER_KEY);
-    });
+    const defaultPage = (
+      <TechDocsReaderPage entityRef={entityRef}>
+        <TechDocsReaderPageLayout />
+      </TechDocsReaderPage>
+    );
+
+    const page = childrenList.find(child => !isTechDocsAddonExtension(child));
 
     return (
-      <TechDocsReaderPageProvider entityRef={entityRef}>
-        {(page as JSX.Element) || <DefaultTechDocsReaderPage />}
-      </TechDocsReaderPageProvider>
+      <div className="techdocs-reader-page">
+        <Page themeId="documentation">{page || defaultPage}</Page>
+      </div>
     );
   }
 
-  return (
-    <TechDocsReaderPageProvider entityRef={entityRef}>
-      {({ metadata, entityMetadata }) => (
-        <div className="techdocs-reader-page">
-          <Page themeId="documentation">
-            {children instanceof Function
-              ? children({
-                  entityRef,
-                  techdocsMetadataValue: metadata.value,
-                  entityMetadataValue: entityMetadata.value,
-                })
-              : children}
-          </Page>
-        </div>
-      )}
-    </TechDocsReaderPageProvider>
-  );
+  // mkdocs is the default renderer
+  return <MkDocsReaderPage entityRef={entityRef}>{children}</MkDocsReaderPage>;
 };
