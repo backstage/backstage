@@ -14,5 +14,9 @@
  * limitations under the License.
  */
 
-export * from './MkDocsReaderPage';
-export * from './MkDocsReaderContent';
+export { TechDocsReaderPageRenderer } from './TechDocsReaderPageRenderer';
+
+export type {
+  TechDocsReaderPageRendererProps,
+  TechDocsReaderPageRendererRenderFunction,
+} from './TechDocsReaderPageRenderer';

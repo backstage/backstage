@@ -6,20 +6,23 @@
 /// <reference types="react" />
 
 import { Dispatch } from 'react';
+import { ReactNode } from 'react';
 import { SetStateAction } from 'react';
+import { TechDocsReaderPageRendererProps } from '@backstage/plugin-techdocs-react';
 
 // @public
 export const MkDocsReaderContent: () => JSX.Element | null;
 
 // @public
 export const MkDocsReaderPage: ({
+  entityRef,
   children,
 }: MkDocsReaderPageProps) => JSX.Element;
 
 // @public
-export type MkDocsReaderPageProps = {
-  children: (content: JSX.Element) => JSX.Element;
-};
+export type MkDocsReaderPageProps = TechDocsReaderPageRendererProps<{
+  content: ReactNode;
+}>;
 
 // @public
 export type MkDocsReaderPageValue = {

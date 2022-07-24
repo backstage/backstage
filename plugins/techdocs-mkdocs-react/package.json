@@ -1,10 +1,11 @@
 {
   "name": "@backstage/plugin-techdocs-mkdocs-react",
+  "description": "",
   "version": "0.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
-  "private": true,
+  "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -13,6 +14,18 @@
   "backstage": {
     "role": "web-library"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/techdocs-mkdocs-react"
+  },
+  "keywords": [
+    "backstage",
+    "techdocs",
+    "mkdocs",
+    "react"
+  ],
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
@@ -56,6 +69,7 @@
     "@types/dompurify": "^2.2.2",
     "@types/jest": "^26.0.7",
     "@types/node": "^16.11.26",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "msw": "^0.44.0",
     "cross-fetch": "^3.1.5"
   },

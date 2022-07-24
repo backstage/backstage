@@ -20,7 +20,8 @@ import { Button, withStyles } from '@material-ui/core';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import { useShadowRootElements } from '@backstage/plugin-techdocs-react';
+import { useTechDocsShadowRootElements } from '@backstage/plugin-techdocs-react';
+import { useMkDocsReaderPage } from '@backstage/plugin-techdocs-mkdocs-react';
 
 const NESTED_LIST_TOGGLE = '.md-nav__item--nested .md-toggle';
 
@@ -68,9 +69,11 @@ export const ExpandableNavigationAddon = () => {
     );
   const [hasNavSubLevels, setHasNavSubLevels] = useState<boolean>(false);
 
-  const [...checkboxToggles] = useShadowRootElements<HTMLInputElement>([
-    NESTED_LIST_TOGGLE,
-  ]);
+  const { shadowRoot } = useMkDocsReaderPage();
+  const [...checkboxToggles] = useTechDocsShadowRootElements<HTMLInputElement>(
+    [NESTED_LIST_TOGGLE],
+    shadowRoot,
+  );
 
   const shouldToggle = useCallback(
     (item: HTMLInputElement) => {

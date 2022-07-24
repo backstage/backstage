@@ -34,6 +34,7 @@ import {
 } from '@backstage/version-bridge';
 
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { useMkDocsReaderPage } from '@backstage/plugin-techdocs-mkdocs-react';
 
 import { techdocsApiRef } from '../../api';
 import { TechDocsEntityMetadata, TechDocsMetadata } from '../../types';
@@ -56,7 +57,27 @@ export type TechDocsReaderPageValue = {
   metadata: AsyncState<TechDocsMetadata>;
   entityRef: CompoundEntityRef;
   entityMetadata: AsyncState<TechDocsEntityMetadata>;
+  /**
+   * @deprecated Was extracted to `@backstage/plugin-tecgdocs-mkdocs-react` package.
+   * @remarks
+   * Use `useMkDocsReaderPage` as in the example below to get `shadowRoot`.
+   * @example
+   * ```
+   * import { useMkDocsReaderPage } from '@backstage/plugin-techdocs-mkdocs-react';
+   * const { shadowRoot } = useMkDocsReaderPage();
+   * ```
+   */
   shadowRoot?: ShadowRoot;
+  /**
+   * @deprecated Was extracted to `@backstage/plugin-tecgdocs-mkdocs-react` package.
+   * @remarks
+   * Use `useMkDocsReaderPage` as in the example below to set `shadowRoot`.
+   * @example
+   * ```
+   * import { useMkDocsReaderPage } from '@backstage/plugin-techdocs-mkdocs-react';
+   * const { setShadowRoot } = useMkDocsReaderPage();
+   * ```
+   */
   setShadowRoot: Dispatch<SetStateAction<ShadowRoot | undefined>>;
   title: string;
   setTitle: Dispatch<SetStateAction<string>>;
@@ -123,6 +144,7 @@ export const TechDocsReaderPageProvider = memo(
       return techdocsApi.getEntityMetadata(entityRef);
     }, [entityRef]);
 
+    const { shadowRoot, setShadowRoot } = useMkDocsReaderPage();
     // Metadata is undefined when documentation has never been built before
     // So, this "ready" state exists to re-request metadata after first build.
     // Maybe it could be replaced by a useAsyncRetry function in the future...
@@ -131,22 +153,19 @@ export const TechDocsReaderPageProvider = memo(
     const [subtitle, setSubtitle] = useState(
       defaultTechDocsReaderPageValue.subtitle,
     );
-    const [shadowRoot, setShadowRoot] = useState<ShadowRoot | undefined>(
-      defaultTechDocsReaderPageValue.shadowRoot,
-    );
 
     const value = {
       metadata,
       entityRef: toLowercaseEntityRefMaybe(entityRef, config),
       entityMetadata,
-      shadowRoot,
-      setShadowRoot,
-      ready,
-      setReady,
       title,
       setTitle,
       subtitle,
       setSubtitle,
+      ready,
+      setReady,
+      shadowRoot,
+      setShadowRoot,
     };
     const versionedValue = createVersionedValueMap({ 1: value });
 

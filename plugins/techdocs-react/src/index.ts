@@ -22,6 +22,7 @@
 
 export {
   useTechDocsAddons,
+  isTechDocsAddonExtension,
   createTechDocsAddonExtension,
   TechDocsAddons,
   TECHDOCS_ADDONS_WRAPPER_KEY,
@@ -31,13 +32,17 @@ export { techdocsApiRef, techdocsStorageApiRef } from './api';
 export type { SyncResult, TechDocsApi, TechDocsStorageApi } from './api';
 
 export {
+  TechDocsReaderPageRenderer,
   TechDocsReaderPageProvider,
   useTechDocsReaderPage,
   TechDocsReaderPageContentProvider,
   useTechDocsReaderPageContent,
   withTechDocsReaderPageContentProvider,
   TechDocsShadowDom,
-  useShadowRoot,
+  useTechDocsShadowRootElements,
+  useTechDocsShadowRootSelection,
+  useTechDocsShadowDomStylesLoading,
+  TECHDOCS_SHADOW_DOM_STYLE_LOAD_EVENT,
   useShadowRootElements,
   useShadowRootSelection,
   useShadowDomStylesLoading,
@@ -45,6 +50,8 @@ export {
 } from './reader';
 
 export type {
+  TechDocsReaderPageRendererProps,
+  TechDocsReaderPageRendererRenderFunction,
   TechDocsReaderPageProviderProps,
   TechDocsReaderPageProviderRenderFunction,
   TechDocsReaderPageContentState,

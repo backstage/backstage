@@ -1,13 +1,48 @@
 # techdocs-mkdocs-react
 
-Welcome to the techdocs-mkdocs-react plugin!
+A `web-library` that exports components for you to compose the `TechDocs` reader page with [mkdocs](https://www.mkdocs.org/).
 
-_This plugin was created through the Backstage CLI_
+## Usage
 
-## Getting started
+Create a custom reader page as follows:
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/techdocs-mkdocs-react](http://localhost:3000/techdocs-mkdocs-react).
+```tsx
+// packages/app/src/components/techdocs/TechDocsPage.tsx
+import { TechDocsReaderPage, TechDocsReaderPageLayout } from '@backstage/plugin-techdocs';
+import { MkDocsReaderPage } from '@backstage/plugin-techdocs-mkdocs-react';
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](./dev) directory.
+const TechDocsPage = () => (
+  <TechDocsReaderPage component={MkDocsReaderPage}>
+    {({ content }) => (
+      <TechDocsReaderPageLayout>{content}</TechDocsReaderPageLayout>
+    )}
+  </TechDocsReaderPage>
+);
+
+export const techDocsPage = <TechDocsPage />; 👈
+```
+
+Now, render the custom page as a child of reader route:
+
+```tsx
+// packages/app/src/App.tsx
+import { TechDocsReaderPage } from '@backstage/plugin-techdocs';
+import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+import {
+  ExpandableNavigation,
+  ReportIssue,
+  TextSize,
+} from '@backstage/plugin-techdocs-mkdocs-addons';
+import { techDocsPage } from './components/techdocs';
+
+<Route path="/docs/:namespace/:kind/:name/*" element={<TechDocsReaderPage />}>
+  {techDocsPage} 👈
+  <TechDocsAddons>
+    <ExpandableNavigation />
+    <ReportIssue />
+    <TextSize />
+  </TechDocsAddons>
+</Route>;
+```
+
+And that's it :tada:!

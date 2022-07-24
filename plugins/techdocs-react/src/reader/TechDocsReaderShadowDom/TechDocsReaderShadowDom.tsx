@@ -30,7 +30,15 @@ import { Progress } from '@backstage/core-components';
  * Name for the event dispatched when ShadowRoot styles are loaded.
  * @public
  */
-export const SHADOW_DOM_STYLE_LOAD_EVENT = 'TECH_DOCS_SHADOW_DOM_STYLE_LOAD';
+export const TECHDOCS_SHADOW_DOM_STYLE_LOAD_EVENT =
+  'TECHDOCS_SHADOW_DOM_STYLE_LOAD';
+
+/**
+ * Name for the event dispatched when ShadowRoot styles are loaded.s
+ * @deprecated Use `TECHDOCS_SHADOW_DOM_STYLE_LOAD_EVENT` instead.
+ * @public
+ */
+export const SHADOW_DOM_STYLE_LOAD_EVENT = TECHDOCS_SHADOW_DOM_STYLE_LOAD_EVENT;
 
 /**
  * Dispatch style load event after all styles are loaded.
@@ -47,7 +55,7 @@ const useShadowDomStylesEvents = (element: Element | null) => {
     );
 
     let count = styles?.length ?? 0;
-    const event = new CustomEvent(SHADOW_DOM_STYLE_LOAD_EVENT);
+    const event = new CustomEvent(TECHDOCS_SHADOW_DOM_STYLE_LOAD_EVENT);
 
     if (!count) {
       element.dispatchEvent(event);
@@ -113,7 +121,7 @@ const useShadowDomStylesEvents = (element: Element | null) => {
  * @returns a boolean value, true if styles are being loaded.
  * @public
  */
-export const useShadowDomStylesLoading = (element: Element | null) => {
+export const useTechDocsShadowDomStylesLoading = (element: Element | null) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -130,15 +138,25 @@ export const useShadowDomStylesLoading = (element: Element | null) => {
       style.setProperty('opacity', '1');
     };
 
-    element.addEventListener(SHADOW_DOM_STYLE_LOAD_EVENT, handleLoad);
+    element.addEventListener(TECHDOCS_SHADOW_DOM_STYLE_LOAD_EVENT, handleLoad);
 
     return () => {
-      element.removeEventListener(SHADOW_DOM_STYLE_LOAD_EVENT, handleLoad);
+      element.removeEventListener(
+        TECHDOCS_SHADOW_DOM_STYLE_LOAD_EVENT,
+        handleLoad,
+      );
     };
   }, [element]);
 
   return loading;
 };
+
+/**
+ * Returns the style's loading state.
+ * @deprecated Use `useTechDocsShadowDomStylesLoading` instead.
+ * @public
+ */
+export const useShadowDomStylesLoading = useTechDocsShadowDomStylesLoading;
 
 /**
  * Props for {@link TechDocsShadowDom}.
@@ -173,7 +191,7 @@ export type TechDocsShadowDomProps = PropsWithChildren<{
  *```jsx
  * import {
  *   TechDocsShadowDom,
- *   SHADOW_DOM_STYLE_LOAD_EVENT,
+ *   TECHDOCS_SHADOW_DOM_STYLE_LOAD_EVENT,
  * } from '@backstage/plugin-techdocs-react';
  *
  * export const TechDocsReaderPageContent = ({ entity }: TechDocsReaderPageContentProps) => {
@@ -184,9 +202,9 @@ export type TechDocsShadowDomProps = PropsWithChildren<{
  *     const updateSidebarPosition = () => {
  *       // ...
  *     };
- *     dom?.addEventListener(SHADOW_DOM_STYLE_LOAD_EVENT, updateSidebarPosition);
+ *     dom?.addEventListener(TECHDOCS_SHADOW_DOM_STYLE_LOAD_EVENT, updateSidebarPosition);
  *     return () => {
- *       dom?.removeEventListener(SHADOW_DOM_STYLE_LOAD_EVENT, updateSidebarPosition);
+ *       dom?.removeEventListener(TECHDOCS_SHADOW_DOM_STYLE_LOAD_EVENT, updateSidebarPosition);
  *     };
  *   }, [dom]);
  *
@@ -217,7 +235,7 @@ export const TechDocsShadowDom = ({
   );
 
   useShadowDomStylesEvents(element);
-  const loading = useShadowDomStylesLoading(element);
+  const loading = useTechDocsShadowDomStylesLoading(element);
 
   const ref = useCallback(
     (shadowHost: HTMLDivElement | null) => {

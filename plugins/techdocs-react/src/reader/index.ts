@@ -16,6 +16,8 @@
 
 export * from './TechDocsReaderShadowDom';
 
+export * from './TechDocsReaderPageRenderer';
+
 export * from './TechDocsReaderPageContext';
 
 export * from './TechDocsReaderPageContentContext';

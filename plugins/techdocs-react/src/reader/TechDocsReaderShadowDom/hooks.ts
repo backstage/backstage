@@ -15,22 +15,22 @@
  */
 import { useState, useEffect, useMemo } from 'react';
 import debounce from 'lodash/debounce';
-import { useTechDocsReaderPage } from '../TechDocsReaderPageContext';
+import { useMkDocsReaderPage } from '@backstage/plugin-techdocs-mkdocs-react';
 
 /**
  * Hook for use within TechDocs addons that provides access to the underlying
  * shadow root of the current page, allowing the DOM within to be mutated.
- * @public
+ * @deprecated Use `@backstage/plugin-techdocs-mkdocs-react#useMkDocsReaderPage` instead to get the `shadowRoot`.
  */
 export const useShadowRoot = () => {
-  const { shadowRoot } = useTechDocsReaderPage();
+  const { shadowRoot } = useMkDocsReaderPage();
   return shadowRoot;
 };
 
 /**
  * Convenience hook for use within TechDocs addons that provides access to
  * elements that match a given selector within the shadow root.
- *
+ * @deprecated use `useTechDocsShadowRootElements` instead.
  * @public
  */
 export const useShadowRootElements = <
@@ -39,6 +39,25 @@ export const useShadowRootElements = <
   selectors: string[],
 ): TReturnedElement[] => {
   const shadowRoot = useShadowRoot();
+  if (!shadowRoot) return [];
+  return selectors
+    .map(selector => shadowRoot?.querySelectorAll<TReturnedElement>(selector))
+    .filter(nodeList => nodeList.length)
+    .map(nodeList => Array.from(nodeList))
+    .flat();
+};
+
+/**
+ * Convenience hook for use within TechDocs addons that provides access to
+ * elements that match a given selector within the shadow root.
+ * @public
+ */
+export const useTechDocsShadowRootElements = <
+  TReturnedElement extends HTMLElement = HTMLElement,
+>(
+  selectors: string[],
+  shadowRoot?: ShadowRoot,
+): TReturnedElement[] => {
   if (!shadowRoot) return [];
   return selectors
     .map(selector => shadowRoot?.querySelectorAll<TReturnedElement>(selector))
@@ -57,11 +76,52 @@ const isValidSelection = (newSelection: Selection) => {
 };
 
 /**
- * Hook for retreiving a selection within the ShadowRoot.
+ * Hook for retrieving a selection within the ShadowRoot.
+ * @deprecated Use `useTechDocsShadowRootSelection` instead.
  * @public
  */
 export const useShadowRootSelection = (wait: number = 0) => {
   const shadowRoot = useShadowRoot();
+  const [selection, setSelection] = useState<Selection | null>(null);
+  const handleSelectionChange = useMemo(
+    () =>
+      debounce(() => {
+        const shadowDocument = shadowRoot as ShadowRoot &
+          Pick<Document, 'getSelection'>;
+        // Firefox and Safari don't implement getSelection for Shadow DOM
+        const newSelection = shadowDocument.getSelection
+          ? shadowDocument.getSelection()
+          : document.getSelection();
+
+        if (newSelection && isValidSelection(newSelection)) {
+          setSelection(newSelection);
+        } else {
+          setSelection(null);
+        }
+      }, wait),
+    [shadowRoot, setSelection, wait],
+  );
+
+  useEffect(() => {
+    window.document.addEventListener('selectionchange', handleSelectionChange);
+    return () =>
+      window.document.removeEventListener(
+        'selectionchange',
+        handleSelectionChange,
+      );
+  }, [handleSelectionChange]);
+
+  return selection;
+};
+
+/**
+ * Hook for retrieving a selection within the ShadowRoot.
+ * @public
+ */
+export const useTechDocsShadowRootSelection = (
+  wait: number = 0,
+  shadowRoot?: ShadowRoot,
+) => {
   const [selection, setSelection] = useState<Selection | null>(null);
   const handleSelectionChange = useMemo(
     () =>

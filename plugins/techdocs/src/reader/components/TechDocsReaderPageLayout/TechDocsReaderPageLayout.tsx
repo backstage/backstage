@@ -16,8 +16,6 @@
 
 import React, { PropsWithChildren } from 'react';
 
-import { Page } from '@backstage/core-components';
-
 import { TechDocsReaderPageContent } from '../TechDocsReaderPageContent';
 import { TechDocsReaderPageHeader } from '../TechDocsReaderPageHeader';
 import { TechDocsReaderPageSubheader } from '../TechDocsReaderPageSubheader';
@@ -47,15 +45,13 @@ export const TechDocsReaderPageLayout = ({
   children,
 }: TechDocsReaderPageLayoutProps) => {
   return (
-    <div className="techdocs-reader-page">
-      <Page themeId="documentation">
-        {withHeader && <TechDocsReaderPageHeader />}
-        <TechDocsReaderPageSubheader />
-        <TechDocsReaderPageContent withSearch={withSearch}>
-          {children}
-        </TechDocsReaderPageContent>
-      </Page>
-    </div>
+    <>
+      {withHeader && <TechDocsReaderPageHeader />}
+      <TechDocsReaderPageSubheader />
+      <TechDocsReaderPageContent withSearch={withSearch}>
+        {children}
+      </TechDocsReaderPageContent>
+    </>
   );
 };
 

@@ -25,6 +25,8 @@ import {
   withTechDocsReaderPageContentProvider,
 } from '@backstage/plugin-techdocs-react';
 
+import { MkDocsReaderContent } from '@backstage/plugin-techdocs-mkdocs-react';
+
 import { TechDocsSearch } from '../../../search';
 import { TechDocsStateIndicator } from '../TechDocsStateIndicator';
 
@@ -64,11 +66,12 @@ export type TechDocsReaderPageContentProps = PropsWithChildren<{
 export const TechDocsReaderPageContent =
   withTechDocsReaderPageContentProvider<TechDocsReaderPageContentProps>(
     props => {
-      const { withSearch = true, children } = props;
+      const { withSearch = true, children = <MkDocsReaderContent /> } = props;
 
       const classes = useStyles();
 
       const {
+        ready,
         entityRef,
         entityMetadata: {
           value: entityMetadata,
@@ -87,7 +90,7 @@ export const TechDocsReaderPageContent =
             <Grid xs={12} item>
               <TechDocsStateIndicator />
             </Grid>
-            {withSearch && (
+            {ready && withSearch && (
               <Grid className={classes.search} xs="auto" item>
                 <TechDocsSearch
                   entityId={entityRef}

@@ -29,6 +29,7 @@ import {
   createApiFactory,
   createPlugin,
   createRoutableExtension,
+  createComponentExtension,
   discoveryApiRef,
   fetchApiRef,
   identityApiRef,
@@ -151,5 +152,19 @@ export const TechDocsReaderPage = techdocsPlugin.provide(
         m => m.TechDocsReaderPage,
       ),
     mountPoint: rootDocsRouteRef,
+  }),
+);
+
+/**
+ * Component extension used to customize docs on catalog entity page
+ *
+ * @public
+ */
+export const TechDocsEntityPage = techdocsPlugin.provide(
+  createComponentExtension({
+    name: 'TechDocsEntityPage',
+    component: {
+      lazy: () => import('./EntityPageDocs').then(m => m.EntityDocsPage),
+    },
   }),
 );

@@ -17,7 +17,7 @@
 import React, { useState, useEffect } from 'react';
 import { render, waitFor, screen } from '@testing-library/react';
 import {
-  SHADOW_DOM_STYLE_LOAD_EVENT,
+  TECHDOCS_SHADOW_DOM_STYLE_LOAD_EVENT,
   TechDocsShadowDom,
   TechDocsShadowDomProps,
 } from './TechDocsReaderShadowDom';
@@ -94,7 +94,10 @@ describe('TechDocsShadowDom', () => {
       listener = _listener;
     };
     const handleStylesLoad = jest.fn();
-    dom.addEventListener(SHADOW_DOM_STYLE_LOAD_EVENT, handleStylesLoad);
+    dom.addEventListener(
+      TECHDOCS_SHADOW_DOM_STYLE_LOAD_EVENT,
+      handleStylesLoad,
+    );
 
     render(<TechDocsShadowDom element={dom}>Children</TechDocsShadowDom>);
 

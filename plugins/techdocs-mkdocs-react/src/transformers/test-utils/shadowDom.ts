@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SHADOW_DOM_STYLE_LOAD_EVENT } from '@backstage/plugin-techdocs-react';
+import { TECHDOCS_SHADOW_DOM_STYLE_LOAD_EVENT } from '@backstage/plugin-techdocs-react';
 import type { Transformer } from '..';
 import { transform as transformer } from '..';
 
@@ -52,7 +52,7 @@ export const createTestShadowDom = async (
   }
 
   // Simulate event dispatched after all styles are loaded
-  dom.dispatchEvent(new CustomEvent(SHADOW_DOM_STYLE_LOAD_EVENT));
+  dom.dispatchEvent(new CustomEvent(TECHDOCS_SHADOW_DOM_STYLE_LOAD_EVENT));
 
   return divElement.shadowRoot!;
 };
