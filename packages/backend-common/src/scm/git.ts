@@ -24,13 +24,17 @@ import fs from 'fs-extra';
 import { Logger } from 'winston';
 
 /*
-provider    username         password
-GitHub      'x-access-token' token
-BitBucket   'x-token-auth'   token
-GitLab      'oauth2'         token
+provider          username         password
+Azure             'notempty'       token
+Bitbucket Cloud   'x-token-auth'   token
+Bitbucket Server  username         password or token
+GitHub            'x-access-token' token
+GitLab            'oauth2'         token
+
 From : https://isomorphic-git.org/docs/en/onAuth with fix for GitHub
 
-Azure       'notempty'      token
+Or token provided as `token` for Bearer auth header
+instead of Basic Auth (e.g., Bitbucket Server).
 */
 
 /**
@@ -39,13 +43,23 @@ Azure       'notempty'      token
  * @public
  */
 export class Git {
+  private readonly headers: {
+    [x: string]: string;
+  };
+
   private constructor(
     private readonly config: {
       username?: string;
       password?: string;
+      token?: string;
       logger?: Logger;
     },
-  ) {}
+  ) {
+    this.headers = {
+      'user-agent': 'git/@isomorphic-git',
+      ...(config.token ? { Authorization: `Bearer ${config.token}` } : {}),
+    };
+  }
 
   async add(options: { dir: string; filepath: string }): Promise<void> {
     const { dir, filepath } = options;
@@ -116,9 +130,7 @@ export class Git {
         depth: depth ?? 1,
         noCheckout,
         onProgress: this.onProgressHandler(),
-        headers: {
-          'user-agent': 'git/@isomorphic-git',
-        },
+        headers: this.headers,
         onAuth: this.onAuth,
       });
     } catch (ex) {
@@ -155,7 +167,7 @@ export class Git {
         dir,
         remote,
         onProgress: this.onProgressHandler(),
-        headers: { 'user-agent': 'git/@isomorphic-git' },
+        headers: this.headers,
         onAuth: this.onAuth,
       });
     } catch (ex) {
@@ -222,9 +234,7 @@ export class Git {
         onProgress: this.onProgressHandler(),
         remoteRef,
         force,
-        headers: {
-          'user-agent': 'git/@isomorphic-git',
-        },
+        headers: this.headers,
         remote,
         onAuth: this.onAuth,
       });
@@ -290,9 +300,10 @@ export class Git {
   static fromAuth = (options: {
     username?: string;
     password?: string;
+    token?: string;
     logger?: Logger;
   }) => {
-    const { username, password, logger } = options;
-    return new Git({ username, password, logger });
+    const { username, password, token, logger } = options;
+    return new Git({ username, password, token, logger });
   };
 }
