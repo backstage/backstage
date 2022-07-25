@@ -37,7 +37,7 @@ import {
   readProviderConfigs,
   GitHubEntityProviderConfig,
 } from './GitHubEntityProviderConfig';
-import { getOrganizationRepositories } from '../lib/github';
+import { getOrganizationRepositories, Repository } from '../lib/github';
 
 /**
  * Options for {@link GitHubEntityProvider}.
@@ -45,12 +45,12 @@ import { getOrganizationRepositories } from '../lib/github';
  * @public
  */
 export interface GitHubEntityProviderOptions {
-  // /**
-  //  * A Scheduled Task Runner
-  //  *
-  //  * {@link @backstage/backend-tasks#PluginTaskScheduler.createScheduledTaskRunner}
-  //  * to enable automatic scheduling of tasks.
-  //  */
+  /**
+   * A Scheduled Task Runner
+   *
+   * {@link @backstage/backend-tasks#PluginTaskScheduler.createScheduledTaskRunner}
+   * to enable automatic scheduling of tasks.
+   */
   schedule: TaskRunner;
 
   /**
@@ -58,12 +58,6 @@ export interface GitHubEntityProviderOptions {
    */
   logger: Logger;
 }
-
-type CreateLocationSpec = {
-  url: string;
-  branchName: string | undefined;
-  catalogFile: string;
-};
 
 /**
  * Discovers catalog files located in [GitHub](https://github.com).
@@ -90,7 +84,7 @@ export class GitHubEntityProvider implements EntityProvider {
 
     if (!integration) {
       throw new Error(
-        `Missing GitHub Integration. Please add a configuration entry for it under integrations.github`,
+        `There is no GitHub config that matches github. Please add a configuration entry for it under integrations.github`,
       );
     }
 
@@ -144,7 +138,7 @@ export class GitHubEntityProvider implements EntityProvider {
             taskInstanceId: uuid.v4(),
           });
           try {
-            await this.refresh(logger);
+            await this.refresh();
           } catch (error) {
             logger.error(error);
           }
@@ -153,18 +147,38 @@ export class GitHubEntityProvider implements EntityProvider {
     };
   }
 
-  async refresh(logger: Logger) {
+  async refresh() {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
 
-    const { org, repoSearchPath, catalogPath, branch, host } = parseUrl(
-      this.config.target,
-    );
+    const targets = await this.findCatalogFiles();
+    const matchingTargets = this.matchesFilters(targets);
+    const entities = matchingTargets
+      .map(repository => this.createLocationUrl(repository))
+      .map(GitHubEntityProvider.toLocationSpec)
+      .map(location => {
+        return {
+          locationKey: this.getProviderName(),
+          entity: locationSpecToLocationEntity({ location }),
+        };
+      });
 
-    // Building the org url here so that the github creds provider doesn't need to know
-    // about how to handle the wild card
-    const orgUrl = `https://${host}/${org}`;
+    await this.connection.applyMutation({
+      type: 'full',
+      entities,
+    });
+
+    this.logger.info(
+      `Read ${targets.length} GitHub repositories (${entities.length} matching the pattern)`,
+    );
+  }
+
+  // go to the server and get all of the repositories
+  private async findCatalogFiles(): Promise<Repository[]> {
+    const organization = this.config.organization;
+    const host = this.integration.host;
+    const orgUrl = `https://${host}/${organization}`;
 
     const { headers } = await this.githubCredentialsProvider.getCredentials({
       url: orgUrl,
@@ -175,50 +189,40 @@ export class GitHubEntityProvider implements EntityProvider {
       headers,
     });
 
-    // Read out all of the raw data
-    const startTimestamp = Date.now();
-    logger.info(`Reading GitHub repositories from ${orgUrl}`);
-
-    const { repositories } = await getOrganizationRepositories(client, org);
-    const matching = repositories.filter(
-      r =>
-        !r.isArchived &&
-        repoSearchPath.test(r.name) &&
-        r.defaultBranchRef?.name,
+    const { repositories } = await getOrganizationRepositories(
+      client,
+      organization,
     );
 
-    const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
-    logger.debug(
-      `Read ${repositories.length} GitHub repositories (${matching.length} matching the pattern) in ${duration} seconds`,
-    );
-
-    const locations = matching.map(repository => {
-      const branchName =
-        branch === '-' ? repository.defaultBranchRef?.name : branch;
-      return this.createLocationSpec({
-        url: repository.url,
-        branchName,
-        catalogFile: catalogPath,
-      });
-    });
-
-    await this.connection.applyMutation({
-      type: 'full',
-      entities: locations.flat().map(location => ({
-        locationKey: this.getProviderName(),
-        entity: locationSpecToLocationEntity({ location }),
-      })),
-    });
+    return repositories;
   }
 
-  private createLocationSpec({
-    url,
-    branchName,
-    catalogFile,
-  }: CreateLocationSpec): LocationSpec {
+  private matchesFilters(repositories: Repository[]) {
+    const repositoryFilter = this.config.filters?.repository;
+
+    const matchingRepositories = repositories.filter(r => {
+      return (
+        !r.isArchived &&
+        repositoryFilter?.test(r.name) &&
+        r.defaultBranchRef?.name
+      );
+    });
+    return matchingRepositories;
+  }
+
+  private createLocationUrl(repository: Repository): string {
+    const branch =
+      this.config.filters?.branch || repository.defaultBranchRef?.name || '-';
+    const catalogFile = this.config.catalogPath.substring(
+      this.config.catalogPath.lastIndexOf('/') + 1,
+    );
+    return `${repository.url}/blob/${branch}/${catalogFile}`;
+  }
+
+  private static toLocationSpec(target: string): LocationSpec {
     return {
       type: 'url',
-      target: `${url}/blob/${branchName}/${catalogFile}`,
+      target: target,
       presence: 'optional',
     };
   }

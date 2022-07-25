@@ -56,9 +56,7 @@ describe('GitHubEntityProvider', () => {
       catalog: {
         providers: {
           github: {
-            myProvider: {
-              target: 'mock-target',
-            },
+            organization: 'test-org',
           },
         },
       },
@@ -69,9 +67,7 @@ describe('GitHubEntityProvider', () => {
     });
 
     expect(providers).toHaveLength(1);
-    expect(providers[0].getProviderName()).toEqual(
-      'github-provider:myProvider',
-    );
+    expect(providers[0].getProviderName()).toEqual('github-provider:default');
   });
 
   it('multiple provider configs', () => {
@@ -81,10 +77,10 @@ describe('GitHubEntityProvider', () => {
         providers: {
           github: {
             myProvider: {
-              target: 'mock-target-1',
+              organization: 'test-org1',
             },
             anotherProvider: {
-              target: 'mock-target-2',
+              organization: 'test-org2',
             },
           },
         },
@@ -104,14 +100,18 @@ describe('GitHubEntityProvider', () => {
     );
   });
 
-  it('apply full update on scheduled execution', async () => {
+  it.only('apply full update on scheduled execution', async () => {
     const config = new ConfigReader({
       catalog: {
         providers: {
           github: {
             myProvider: {
-              catalogPath: '/catalog-info.yaml',
-              target: 'http://github.com/backstage',
+              organization: 'test-org',
+              catalogPath: 'custom/path/catalog-custom.yaml',
+              filters: {
+                branch: 'main',
+                repository: 'test-.*',
+              },
             },
           },
         },
@@ -136,8 +136,8 @@ describe('GitHubEntityProvider', () => {
       Promise.resolve({
         repositories: [
           {
-            name: 'test',
-            url: 'https://github.com/test-ws/test-repo',
+            name: 'test-repo',
+            url: 'https://github.com/test-org/test-repo',
             isArchived: false,
             defaultBranchRef: {
               name: 'main',
@@ -153,7 +153,7 @@ describe('GitHubEntityProvider', () => {
     expect(taskDef.id).toEqual('github-provider:myProvider:refresh');
     await (taskDef.fn as () => Promise<void>)();
 
-    const url = `https://github.com/test-ws/test-repo/blob/main//catalog-info.yaml`;
+    const url = `https://github.com/test-org/test-repo/blob/main/catalog-custom.yaml`;
     const expectedEntities = [
       {
         entity: {
@@ -164,7 +164,7 @@ describe('GitHubEntityProvider', () => {
               'backstage.io/managed-by-location': `url:${url}`,
               'backstage.io/managed-by-origin-location': `url:${url}`,
             },
-            name: 'generated-be46aefcb74b1a34404c6746f2e62eddf2fec42f',
+            name: 'generated-21936a3d1e926b8bb3b00ac4398dc9a8dbb90b45',
           },
           spec: {
             presence: 'optional',

@@ -32,9 +32,7 @@ describe('readProviderConfigs', () => {
       catalog: {
         providers: {
           github: {
-            providerId: {
-              target: 'mock-target',
-            },
+            organization: 'test-org',
           },
         },
       },
@@ -42,8 +40,8 @@ describe('readProviderConfigs', () => {
     const providerConfigs = readProviderConfigs(config);
 
     expect(providerConfigs).toHaveLength(1);
-    expect(providerConfigs[0].id).toEqual('providerId');
-    expect(providerConfigs[0].target).toEqual('mock-target');
+    expect(providerConfigs[0].id).toEqual('default');
+    expect(providerConfigs[0].organization).toEqual('test-org');
   });
 
   it('multiple provider configs', () => {
@@ -51,11 +49,24 @@ describe('readProviderConfigs', () => {
       catalog: {
         providers: {
           github: {
-            providerTarget: {
-              target: 'mock-target',
+            providerOrganizationOnly: {
+              organization: 'test-org1',
             },
-            secondProviderTarget: {
-              target: 'mock-target-2',
+            providerCustomCatalogPath: {
+              organization: 'test-org2',
+              catalogPath: 'custom/path/catalog-info.yaml',
+            },
+            providerWithRepositoryFilter: {
+              organization: 'test-org3',
+              filters: {
+                repository: 'repository.*filter',
+              },
+            },
+            providerWithBranchFilter: {
+              organization: 'test-org4',
+              filters: {
+                branch: 'branch-name',
+              },
             },
           },
         },
@@ -63,14 +74,42 @@ describe('readProviderConfigs', () => {
     });
     const providerConfigs = readProviderConfigs(config);
 
-    expect(providerConfigs).toHaveLength(2);
+    expect(providerConfigs).toHaveLength(4);
     expect(providerConfigs[0]).toEqual({
-      id: 'providerTarget',
-      target: 'mock-target',
+      id: 'providerOrganizationOnly',
+      organization: 'test-org1',
+      catalogPath: '/catalog-info.yaml',
+      filters: {
+        repository: undefined,
+        branch: undefined,
+      },
     });
     expect(providerConfigs[1]).toEqual({
-      id: 'secondProviderTarget',
-      target: 'mock-target-2',
+      id: 'providerCustomCatalogPath',
+      organization: 'test-org2',
+      catalogPath: 'custom/path/catalog-info.yaml',
+      filters: {
+        repository: undefined,
+        branch: undefined,
+      },
+    });
+    expect(providerConfigs[2]).toEqual({
+      id: 'providerWithRepositoryFilter',
+      organization: 'test-org3', // organization
+      catalogPath: '/catalog-info.yaml', // file
+      filters: {
+        repository: /^repository.*filter$/, // repo
+        branch: undefined, // branch
+      },
+    });
+    expect(providerConfigs[3]).toEqual({
+      id: 'providerWithBranchFilter',
+      organization: 'test-org4',
+      catalogPath: '/catalog-info.yaml',
+      filters: {
+        repository: undefined,
+        branch: 'branch-name',
+      },
     });
   });
 });

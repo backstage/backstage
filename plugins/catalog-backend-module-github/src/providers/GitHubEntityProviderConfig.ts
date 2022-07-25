@@ -16,9 +16,17 @@
 
 import { Config } from '@backstage/config';
 
+const DEFAULT_CATALOG_PATH = '/catalog-info.yaml';
+const DEFAULT_PROVIDER_ID = 'default';
+
 export type GitHubEntityProviderConfig = {
   id: string;
-  target: string;
+  catalogPath: string;
+  organization: string;
+  filters?: {
+    repository?: RegExp;
+    branch?: string;
+  };
 };
 
 export function readProviderConfigs(
@@ -27,6 +35,11 @@ export function readProviderConfigs(
   const providersConfig = config.getOptionalConfig('catalog.providers.github');
   if (!providersConfig) {
     return [];
+  }
+
+  if (providersConfig.has('organization')) {
+    // simple/single config variant
+    return [readProviderConfig(DEFAULT_PROVIDER_ID, providersConfig)];
   }
 
   return providersConfig.keys().map(id => {
@@ -40,9 +53,38 @@ function readProviderConfig(
   id: string,
   config: Config,
 ): GitHubEntityProviderConfig {
-  const target = config.getString('target');
+  const organization = config.getString('organization');
+  const catalogPath =
+    config.getOptionalString('catalogPath') ?? DEFAULT_CATALOG_PATH;
+  const repositoryPattern = config.getOptionalString('filters.repository');
+  const branchPattern = config.getOptionalString('filters.branch');
+
   return {
     id,
-    target,
+    catalogPath,
+    organization,
+    filters: {
+      repository: repositoryPattern
+        ? compileRegExp(repositoryPattern)
+        : undefined,
+      branch: branchPattern || undefined,
+    },
   };
+}
+/**
+ * Compiles a RegExp while enforcing the pattern to contain
+ * the start-of-line and end-of-line anchors.
+ *
+ * @param pattern
+ */
+function compileRegExp(pattern: string): RegExp {
+  let fullLinePattern = pattern;
+  if (!fullLinePattern.startsWith('^')) {
+    fullLinePattern = `^${fullLinePattern}`;
+  }
+  if (!fullLinePattern.endsWith('$')) {
+    fullLinePattern = `${fullLinePattern}$`;
+  }
+
+  return new RegExp(fullLinePattern);
 }
