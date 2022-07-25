@@ -24,7 +24,6 @@ import fs from 'fs-extra';
 export default async () => {
   await new Promise(async () => {
     const yarnVersion = await runPlain('yarn --version');
-    // eslint-disable-next-line no-restricted-syntax
     const isLocal = fs.existsSync(paths.resolveOwn('./src'));
 
     const backstageFile = paths.resolveTargetRoot('backstage.json');
@@ -34,7 +33,8 @@ export default async () => {
         const backstageJson = await fs.readJSON(backstageFile);
         backstageVersion = backstageJson.version ?? 'N/A';
       } catch (error) {
-        backstageVersion = 'N/A';
+        console.warn('The "backstage.json" file is not in the expected format');
+        console.log();
       }
     }
 
