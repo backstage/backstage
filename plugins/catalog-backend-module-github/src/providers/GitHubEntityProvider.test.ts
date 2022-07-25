@@ -100,7 +100,7 @@ describe('GitHubEntityProvider', () => {
     );
   });
 
-  it.only('apply full update on scheduled execution', async () => {
+  it('apply full update on scheduled execution', async () => {
     const config = new ConfigReader({
       catalog: {
         providers: {
