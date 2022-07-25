@@ -311,6 +311,7 @@ export async function createRouter(
           logger.error(
             `Received error from event stream when observing taskId '${taskId}', ${error}`,
           );
+          res.end();
         },
         next: ({ events }) => {
           let shouldUnsubscribe = false;
@@ -324,7 +325,10 @@ export async function createRouter(
           }
           // res.flush() is only available with the compression middleware
           res.flush?.();
-          if (shouldUnsubscribe) subscription.unsubscribe();
+          if (shouldUnsubscribe) {
+            subscription.unsubscribe();
+            res.end();
+          }
         },
       });
 
