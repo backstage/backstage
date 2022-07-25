@@ -63,31 +63,36 @@ catalog:
     github:
       # the provider ID can be any camelCase string
       providerId:
-        target: https://github.com/myorg
+        organization: 'backstage' # string
+        catalogPath: '/catalog-info.yaml' # string
+        filters:
+          branch: 'main' # string
+          repository: '.*' # Regex
       customProviderId:
-        # Or use a custom pattern for a subset of all repositories with default repository
-        target: https://github.com/otherorg/service-*/blob/-/catalog-info.yaml
-      thirdProviderId:
-        # Or use a custom file format and location
-        target: https://github.com/*/blob/-/docs/your-own-format.yaml
-      fourthProvider:
-        # Or use a specific branch-name
-        target: https://github.com/*/blob/backstage-docs/catalog-info.yaml
+        organization: 'new-org' # string
+        catalogPath: '/custom/path/catalog-info.yaml' # string
+        filters: # optional filters
+          branch: 'develop' # optional string
+          repository: '.*' # optional Regex
 ```
 
 This provider supports multiple organizations via unique provider IDs
 
-When using a custom pattern, the target is composed of three parts:
+> **Note:** It is possible but certainly not recommended to skip the provider ID level.
+> If you do so, `default` will be used as provider ID.
 
-- The base organization URL, `https://github.com/myorg` in this case
-- The repository blob to scan, which accepts \* wildcard tokens. This can simply
-  be `*` to scan all repositories in the organization. This example only looks
-  for repositories prefixed with `service-`.
-- The path within each repository to find the catalog YAML file. This will
-  usually be `/blob/main/catalog-info.yaml`, `/blob/master/catalog-info.yaml` or
-  a similar variation for catalog files stored in the root directory of each
-  repository. You could also use a dash (`-`) for referring to the default
-  branch.
+- **catalogPath** _(optional)_:
+  Default: `/catalog-info.yaml`.
+  Path where to look for `catalog-info.yaml` files.
+  When started with `/`, it is an absolute path from the repo root.
+- **filters** _(optional)_:
+  - **branch** _(optional)_:
+    String used to filter results based on the branch name.
+  - **repository** _(optional)_:
+    Regular expression used to filter results based on the repository name.
+- **organization**:
+  Name of your organization account/workspace.
+  If you want to add multiple organizations, you need to add one provider config each.
 
 ## GitHub API Rate Limits
 
