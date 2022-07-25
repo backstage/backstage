@@ -1,0 +1,28 @@
+# This workflow is used to trigger the "PR Review Comment" workflow. This chaining is needed
+# because workflows triggered by pull_request_review_comment do not have access to secrets.
+
+name: PR Review Comment Trigger
+on:
+  pull_request_review_comment:
+    types:
+      - created
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+
+    # The "PR Review Comment" workflow will check the success status of this workflow and only mark
+    # the PR for re-review if this workflow was successful, which is when the author leaves a review comment.
+    if: github.repository == 'backstage/backstage' && github.event.comment.user.id == github.event.pull_request.user.id
+
+    steps:
+      - name: Save PR number
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          mkdir -p ./pr
+          echo $PR_NUMBER > ./pr/pr_number
+      - uses: actions/upload-artifact@v3
+        with:
+          name: pr_number-${{ github.event.pull_request.number }}
+          path: pr/

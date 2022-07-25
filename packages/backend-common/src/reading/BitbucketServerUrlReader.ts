@@ -186,24 +186,31 @@ export class BitbucketServerUrlReader implements UrlReader {
   }
 
   private async getLastCommitShortHash(url: string): Promise<string> {
-    const { name: repoName, owner: project } = parseGitUrl(url);
+    const { name: repoName, owner: project, ref: branch } = parseGitUrl(url);
 
-    // Bitbucket Server https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp222
-    const commitsApiUrl = `${this.integration.config.apiBaseUrl}/projects/${project}/repos/${repoName}/commits`;
+    // Bitbucket Server https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp224
+    const commitApiUrl = `${this.integration.config.apiBaseUrl}/projects/${project}/repos/${repoName}/commits/${branch}`;
 
-    const commitsResponse = await fetch(
-      commitsApiUrl,
+    const commitResponse = await fetch(
+      commitApiUrl,
       getBitbucketServerRequestOptions(this.integration.config),
     );
-    if (!commitsResponse.ok) {
-      const message = `Failed to retrieve commits from ${commitsApiUrl}, ${commitsResponse.status} ${commitsResponse.statusText}`;
-      if (commitsResponse.status === 404) {
+    if (!commitResponse.ok) {
+      const message = `Failed to retrieve commits from ${commitApiUrl}, ${commitResponse.status} ${commitResponse.statusText}`;
+      if (commitResponse.status === 404) {
         throw new NotFoundError(message);
       }
       throw new Error(message);
     }
 
-    const commits = await commitsResponse.json();
+    const commits = await commitResponse.json();
+
+    // Handles case when a branch is provided in the URL
+    if (commits && commits.id) {
+      return commits.id.substring(0, 12);
+    }
+
+    // Handles case when no branch is provided in the URL
     if (
       commits &&
       commits.values &&
@@ -213,6 +220,6 @@ export class BitbucketServerUrlReader implements UrlReader {
       return commits.values[0].id.substring(0, 12);
     }
 
-    throw new Error(`Failed to read response from ${commitsApiUrl}`);
+    throw new Error(`Failed to read response from ${commitApiUrl}`);
   }
 }

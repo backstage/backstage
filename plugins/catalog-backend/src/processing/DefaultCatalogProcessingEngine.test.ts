@@ -30,6 +30,7 @@ describe('DefaultCatalogProcessingEngine', () => {
     updateProcessedEntity: jest.fn(),
     updateEntityCache: jest.fn(),
     listParents: jest.fn(),
+    setRefreshKeys: jest.fn(),
   } as unknown as jest.Mocked<DefaultProcessingDatabase>;
   const orchestrator: jest.Mocked<CatalogProcessingOrchestrator> = {
     process: jest.fn(),
@@ -58,6 +59,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       errors: [],
       deferredEntities: [],
       state: {},
+      refreshKeys: [],
     });
     const engine = new DefaultCatalogProcessingEngine(
       getVoidLogger(),
@@ -123,6 +125,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       errors: [],
       deferredEntities: [],
       state: {},
+      refreshKeys: [],
     });
     const engine = new DefaultCatalogProcessingEngine(
       getVoidLogger(),
@@ -203,6 +206,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       errors: [],
       deferredEntities: [],
       state: {},
+      refreshKeys: [],
     });
 
     const engine = new DefaultCatalogProcessingEngine(
@@ -413,6 +417,7 @@ describe('DefaultCatalogProcessingEngine', () => {
         errors: [],
         deferredEntities: [],
         state: {},
+        refreshKeys: [],
       })
       .mockResolvedValueOnce({
         ok: true,
@@ -432,6 +437,7 @@ describe('DefaultCatalogProcessingEngine', () => {
         errors: [],
         deferredEntities: [],
         state: {},
+        refreshKeys: [],
       });
 
     await engine.start();

@@ -16,6 +16,7 @@
 
 import {
   getGitLabFileFetchUrl,
+  getGitLabIntegrationRelativePath,
   getGitLabRequestOptions,
   GitLabIntegration,
   ScmIntegrations,
@@ -37,7 +38,7 @@ import {
   ReadUrlResponse,
   ReadUrlOptions,
 } from './types';
-import { trimEnd } from 'lodash';
+import { trimEnd, trimStart } from 'lodash';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 /**
@@ -117,13 +118,28 @@ export class GitlabUrlReader implements UrlReader {
     const { etag, signal } = options ?? {};
     const { ref, full_name, filepath } = parseGitUrl(url);
 
+    let repoFullName = full_name;
+
+    const relativePath = getGitLabIntegrationRelativePath(
+      this.integration.config,
+    );
+
+    // Considering self hosted gitlab with relative
+    // assuming '/gitlab' is the relative path
+    // from: /gitlab/repo/project
+    // to: repo/project
+    if (relativePath) {
+      const rectifiedRelativePath = `${trimStart(relativePath, '/')}/`;
+      repoFullName = full_name.replace(rectifiedRelativePath, '');
+    }
+
     // Use GitLab API to get the default branch
     // encodeURIComponent is required for GitLab API
     // https://docs.gitlab.com/ee/api/README.html#namespaced-path-encoding
     const projectGitlabResponse = await fetch(
       new URL(
         `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
-          full_name,
+          repoFullName,
         )}`,
       ).toString(),
       getGitLabRequestOptions(this.integration.config),
@@ -150,7 +166,7 @@ export class GitlabUrlReader implements UrlReader {
     const commitsGitlabResponse = await fetch(
       new URL(
         `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
-          full_name,
+          repoFullName,
         )}/repository/commits?${commitsReqParams.toString()}`,
       ).toString(),
       {
@@ -181,7 +197,7 @@ export class GitlabUrlReader implements UrlReader {
     // https://docs.gitlab.com/ee/api/repositories.html#get-file-archive
     const archiveGitLabResponse = await fetch(
       `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
-        full_name,
+        repoFullName,
       )}/repository/archive?sha=${branch}`,
       {
         ...getGitLabRequestOptions(this.integration.config),

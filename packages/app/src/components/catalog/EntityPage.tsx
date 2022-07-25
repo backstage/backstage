@@ -59,7 +59,7 @@ import {
   isComponentType,
   isKind,
   isOrphan,
-} from '@backstage/plugin-catalog';
+} from '@internal/plugin-catalog-customized';
 import {
   Direction,
   EntityCatalogGraphCard,
@@ -167,7 +167,12 @@ const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
 
   return (
     <>
-      <EntityLayout UNSTABLE_extraContextMenuItems={extraMenuItems}>
+      <EntityLayout
+        UNSTABLE_extraContextMenuItems={extraMenuItems}
+        UNSTABLE_contextMenuOptions={{
+          disableUnregister: 'visible',
+        }}
+      >
         {props.children}
       </EntityLayout>
       <EntityBadgesDialog

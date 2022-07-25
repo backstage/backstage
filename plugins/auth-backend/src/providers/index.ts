@@ -20,6 +20,12 @@ export type {
   BitbucketOAuthResult,
   BitbucketPassportProfile,
 } from './bitbucket';
+export type {
+  CloudflareAccessClaims,
+  CloudflareAccessGroup,
+  CloudflareAccessResult,
+  CloudflareAccessIdentityProfile,
+} from './cloudflare-access';
 export type { GithubOAuthResult } from './github';
 export type { OAuth2ProxyResult } from './oauth2-proxy';
 export type { OidcAuthResult } from './oidc';
@@ -27,6 +33,8 @@ export type { SamlAuthResult } from './saml';
 export type { GcpIapResult, GcpIapTokenInfo } from './gcp-iap';
 
 export { providers, defaultAuthProviderFactories } from './providers';
+
+export { createAuthProviderIntegration } from './createAuthProviderIntegration';
 
 export type {
   AuthProviderConfig,

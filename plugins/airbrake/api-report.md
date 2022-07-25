@@ -13,6 +13,7 @@ export const airbrakePlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 

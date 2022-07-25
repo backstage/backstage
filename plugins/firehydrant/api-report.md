@@ -20,6 +20,7 @@ export const firehydrantPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 ```

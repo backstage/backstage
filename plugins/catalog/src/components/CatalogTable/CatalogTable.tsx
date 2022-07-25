@@ -68,6 +68,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
 
   const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(() => {
     return [
+      columnFactories.createTitleColumn({ hidden: true }),
       columnFactories.createNameColumn({ defaultKind: filters.kind?.value }),
       ...createEntitySpecificColumns(),
       columnFactories.createMetadataDescriptionColumn(),
@@ -82,9 +83,13 @@ export const CatalogTable = (props: CatalogTableProps) => {
         case 'system':
           return [columnFactories.createOwnerColumn()];
         case 'group':
-        case 'location':
         case 'template':
           return [columnFactories.createSpecTypeColumn()];
+        case 'location':
+          return [
+            columnFactories.createSpecTypeColumn(),
+            columnFactories.createSpecTargetsColumn(),
+          ];
         default:
           return [
             columnFactories.createSystemColumn(),

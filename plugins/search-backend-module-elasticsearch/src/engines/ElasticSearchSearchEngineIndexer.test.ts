@@ -44,6 +44,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       alias: 'some-type-index__search',
       logger: getVoidLogger(),
       elasticSearchClientWrapper: clientWrapper,
+      batchSize: 1000,
     });
 
     // Set up all requisite Elastic mocks.

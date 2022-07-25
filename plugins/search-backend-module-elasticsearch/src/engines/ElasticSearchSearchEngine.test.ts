@@ -79,12 +79,14 @@ describe('ElasticSearchSearchEngine', () => {
       'search',
       '',
       getVoidLogger(),
+      1000,
     );
     inspectableSearchEngine = new ElasticSearchSearchEngineForTranslatorTests(
       options,
       'search',
       '',
       getVoidLogger(),
+      1000,
     );
     // eslint-disable-next-line dot-notation
     clientWrapper = testSearchEngine['elasticSearchClientWrapper'];
@@ -792,6 +794,29 @@ describe('ElasticSearchSearchEngine', () => {
       });
 
       elasticSearchQuerySpy.mockClear();
+    });
+
+    it('should throws missing index error', async () => {
+      jest.spyOn(clientWrapper, 'search').mockRejectedValue({
+        meta: {
+          body: {
+            error: {
+              type: 'index_not_found_exception',
+            },
+          },
+        },
+      });
+
+      await expect(
+        async () =>
+          await testSearchEngine.query({
+            term: 'testTerm',
+            types: ['unknown'],
+            filters: {},
+          }),
+      ).rejects.toThrow(
+        'Missing index for unknown__search. This means there are no documents to search through.',
+      );
     });
   });
 

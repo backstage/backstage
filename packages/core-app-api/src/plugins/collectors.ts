@@ -18,12 +18,9 @@ import { BackstagePlugin, getComponentData } from '@backstage/core-plugin-api';
 import { createCollector } from '../extensions/traversal';
 
 export const pluginCollector = createCollector(
-  () => new Set<BackstagePlugin<any, any>>(),
+  () => new Set<BackstagePlugin>(),
   (acc, node) => {
-    const plugin = getComponentData<BackstagePlugin<any, any>>(
-      node,
-      'core.plugin',
-    );
+    const plugin = getComponentData<BackstagePlugin>(node, 'core.plugin');
     if (plugin) {
       acc.add(plugin);
     }

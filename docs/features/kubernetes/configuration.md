@@ -57,9 +57,21 @@ This is an array used to determine where to retrieve cluster configuration from.
 
 Valid cluster locator methods are:
 
+- [`catalog`](#catalog)
+- [`localKubectlProxy`](#localKubectlProxy)
 - [`config`](#config)
 - [`gke`](#gke)
 - [custom `KubernetesClustersSupplier`](#custom-kubernetesclusterssupplier)
+
+#### `catalog`
+
+This cluster locator method will read cluster information from the catalog.
+
+#### `localKubectlProxy`
+
+This cluster locator method will assume a locally running [`kubectl proxy`](https://kubernetes.io/docs/tasks/extend-kubernetes/http-proxy-access-api/#using-kubectl-to-start-a-proxy-server) process using the default port (8001).
+
+NOTE: This cluster locator method is for local development only and should not be used in production.
 
 #### `config`
 
@@ -361,23 +373,42 @@ view the Kubernetes API docs for your Kubernetes version (e.g.
 
 ### Role Based Access Control
 
-The current RBAC permissions required are read-only cluster wide, for the
-following objects:
+The current RBAC permissions required are read-only cluster wide, the below
+Kubernetes manifest describes which objects are required and will ensure
+the plugin functions correctly:
 
-- pods
-- services
-- configmaps
-- deployments
-- replicasets
-- horizontalpodautoscalers
-- ingresses
-- statefulsets
-
-The following RBAC permissions are required on the batch API group for the
-following objects:
-
-- jobs
-- cronjobs
+```yaml
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: backstage-read-only
+rules:
+  - apiGroups:
+      - '*'
+    resources:
+      - pods
+      - configmaps
+      - services
+      - deployments
+      - replicasets
+      - horizontalpodautoscalers
+      - ingresses
+      - statefulsets
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - batch
+    resources:
+      - jobs
+      - cronjobs
+    verbs:
+      - get
+      - list
+      - watch
+```
 
 ## Surfacing your Kubernetes components as part of an entity
 

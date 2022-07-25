@@ -85,7 +85,7 @@ export const parseRepoUrl = (
       );
     }
   } else {
-    if (!owner) {
+    if (!owner && type !== 'gerrit') {
       throw new InputError(
         `Invalid repo URL passed to publisher: ${repoUrl}, missing owner`,
       );

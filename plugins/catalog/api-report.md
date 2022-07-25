@@ -79,6 +79,8 @@ export interface CatalogKindHeaderProps {
   initialFilter?: string;
 }
 
+// Warning: (ae-forgotten-export) The symbol "CatalogInputPluginOptions" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
 export const catalogPlugin: BackstagePlugin<
   {
@@ -99,7 +101,8 @@ export const catalogPlugin: BackstagePlugin<
       },
       true
     >;
-  }
+  },
+  CatalogInputPluginOptions
 >;
 
 // @public (undocumented)
@@ -132,10 +135,18 @@ export const CatalogTable: {
     ): TableColumn<CatalogTableRow>;
     createSystemColumn(): TableColumn<CatalogTableRow>;
     createOwnerColumn(): TableColumn<CatalogTableRow>;
+    createSpecTargetsColumn(): TableColumn<CatalogTableRow>;
     createSpecTypeColumn(): TableColumn<CatalogTableRow>;
     createSpecLifecycleColumn(): TableColumn<CatalogTableRow>;
     createMetadataDescriptionColumn(): TableColumn<CatalogTableRow>;
     createTagsColumn(): TableColumn<CatalogTableRow>;
+    createTitleColumn(
+      options?:
+        | {
+            hidden?: boolean | undefined;
+          }
+        | undefined,
+    ): TableColumn<CatalogTableRow>;
   }>;
 };
 
@@ -259,10 +270,10 @@ export interface EntityLayoutProps {
   children?: React_2.ReactNode;
   // (undocumented)
   NotFoundComponent?: React_2.ReactNode;
-  // Warning: (ae-forgotten-export) The symbol "contextMenuOptions" needs to be exported by the entry point index.d.ts
+  // Warning: (ae-forgotten-export) The symbol "EntityContextMenuOptions" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
-  UNSTABLE_contextMenuOptions?: contextMenuOptions;
+  UNSTABLE_contextMenuOptions?: EntityContextMenuOptions;
   // Warning: (ae-forgotten-export) The symbol "ExtraContextMenuItem" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)

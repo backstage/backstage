@@ -114,6 +114,12 @@ export class LunrSearchEngineIndexer extends BatchSearchEngineIndexer {
 }
 
 // @public
+export class MissingIndexError extends Error {
+  constructor(message?: string, cause?: Error | unknown);
+  readonly cause?: Error | undefined;
+}
+
+// @public
 export class NewlineDelimitedJsonCollatorFactory
   implements DocumentCollatorFactory
 {
@@ -163,8 +169,6 @@ export type ScheduleTaskParameters = {
   task: TaskFunction;
   scheduledRunner: TaskRunner;
 };
-
-export { SearchEngine };
 
 // @public
 export class TestPipeline {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CatalogProcessor } from '../api';
+import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { ProcessorCacheManager } from './ProcessorCacheManager';
 
 class MyProcessor implements CatalogProcessor {

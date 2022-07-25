@@ -59,9 +59,37 @@ configured and make the following changes to your backend:
 
 // Initialize a connection to a search engine.
 const searchEngine = (await PgSearchEngine.supported(env.database))
-  ? await PgSearchEngine.from({ database: env.database })
+  ? await PgSearchEngine.fromConfig(env.config, { database: env.database })
   : new LunrSearchEngine({ logger: env.logger });
 ```
+
+## Optional Configuration
+
+The following is an example of the optional configuration that can be applied when using Postgres as the search backend. Currently this is mostly for just the highlight feature:
+
+```yaml
+search:
+  pg:
+    highlightOptions:
+      useHighlight: true # Used to enable to disable the highlight feature. The default value is true
+      maxWord: 35 # Used to set the longest headlines to output. The default value is 35.
+      minWord: 15 # Used to set the shortest headlines to output. The default value is 15.
+      shortWord: 3 # Words of this length or less will be dropped at the start and end of a headline, unless they are query terms. The default value of three (3) eliminates common English articles.
+      highlightAll: false # If true the whole document will be used as the headline, ignoring the preceding three parameters. The default is false.
+      maxFragments: 0 # Maximum number of text fragments to display. The default value of zero selects a non-fragment-based headline generation method. A value greater than zero selects fragment-based headline generation (see the linked documentation above for more details).
+      fragmentDelimiter: ' ... ' # Delimiter string used to concatenate fragments. Defaults to " ... ".
+```
+
+**Note:** the highlight search term feature uses `ts_headline` which has been known to potentially impact performance. You only need this minimal config to disable it should you have issues:
+
+```yaml
+search:
+  pg:
+    highlightOptions:
+      useHighlight: false
+```
+
+The Postgres documentation on [Highlighting Results](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-HEADLINE) has more details.
 
 ## ElasticSearch
 
@@ -204,3 +232,23 @@ search:
     auth:
       apiKey: base64EncodedKey
 ```
+
+### Elastic search batch size
+
+Default batch size of the elastic search engine is set to 1000. If you are using a lower spec computing resources (like AWS small instance),
+you may get an error caused by limited `thread_pool` configuration. ( `429 Too Many Requests /_bulk` )
+
+In this case you need to decrease the batch size to index the resources to prevent this kind of error. You can easily decrease
+or increase the batch size in your `app-config.yaml` using the `batchSize` option provided for elasticsearch configuration.
+
+#### Configuration example
+
+**Set batch size to 100**
+
+```yaml
+search:
+  elasticsearch:
+    batchSize: 100
+```
+
+> You can also increase the batch size if you are using a large ES instance.

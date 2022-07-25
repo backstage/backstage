@@ -350,6 +350,7 @@ router.get('/auth/providerA/handler/frame');
 router.post('/auth/providerA/handler/frame');
 router.post('/auth/providerA/logout');
 router.get('/auth/providerA/refresh'); // if supported
+router.post('/auth/providerA/refresh'); // if supported
 ```
 
 As you can see each endpoint is prefixed with both `/auth` and its provider

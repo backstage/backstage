@@ -27,8 +27,8 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import React, { ComponentType } from 'react';
 import { rootRouteRef } from '../../plugin';
-import { SearchBar } from '../SearchBar';
 import {
+  SearchBar,
   DefaultResultListItem,
   searchApiRef,
   MockSearchApi,
