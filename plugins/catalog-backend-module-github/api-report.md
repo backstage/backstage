@@ -52,13 +52,12 @@ export class GitHubEntityProvider implements EntityProvider {
   // (undocumented)
   getProviderName(): string;
   // (undocumented)
-  refresh(logger: Logger): Promise<void>;
+  refresh(): Promise<void>;
 }
 
 // @public
 export interface GitHubEntityProviderOptions {
   logger: Logger;
-  // (undocumented)
   schedule: TaskRunner;
 }
 
