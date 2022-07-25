@@ -246,17 +246,16 @@ export class LocalPublish implements PublisherBase {
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     const namespace = entity.metadata.namespace ?? 'default';
 
+    const metadataPath = this.staticEntityPathJoin(
+      namespace,
+      entity.kind,
+      entity.metadata.name,
+      'techdocs_metadata.json',
+    );
+
     // Check if the file exists
     try {
-      const indexHtmlPath = this.staticEntityPathJoin(
-        namespace,
-        entity.kind,
-        entity.metadata.name,
-        'index.html',
-      );
-
-      await fs.access(indexHtmlPath, fs.constants.F_OK);
-
+      await fs.access(metadataPath, fs.constants.F_OK);
       return true;
     } catch (err) {
       if (err.name === 'NotAllowedError') {

@@ -72,12 +72,6 @@ import {
   TechDocsReaderPage,
   techdocsPlugin,
 } from '@backstage/plugin-techdocs';
-import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
-import {
-  ExpandableNavigation,
-  ReportIssue,
-  TextSize,
-} from '@backstage/plugin-techdocs-mkdocs-addons';
 import {
   UserSettingsPage,
   UserSettingsTab,
@@ -188,11 +182,6 @@ const routes = (
       element={<TechDocsReaderPage />}
     >
       {techDocsPage}
-      <TechDocsAddons>
-        <ExpandableNavigation />
-        <ReportIssue />
-        <TextSize />
-      </TechDocsAddons>
     </Route>
     <Route
       path="/create"

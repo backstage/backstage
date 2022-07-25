@@ -18,6 +18,13 @@ import { ComponentType } from 'react';
 import { Entity } from '@backstage/catalog-model';
 
 /**
+ * TechDocs metadata navigation tree
+ *
+ * @public
+ */
+export type TechDocsNav = Array<Record<string, string | TechDocsNav>>;
+
+/**
  * Metadata for TechDocs page
  *
  * @public
@@ -25,6 +32,7 @@ import { Entity } from '@backstage/catalog-model';
 export type TechDocsMetadata = {
   site_name: string;
   site_description: string;
+  nav?: TechDocsNav;
 };
 
 /**

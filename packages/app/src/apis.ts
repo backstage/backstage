@@ -33,7 +33,12 @@ import {
   createApiFactory,
   errorApiRef,
   githubAuthApiRef,
+  discoveryApiRef,
+  fetchApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
+import { techdocsStorageApiRef } from '@backstage/plugin-techdocs';
+import { TechDocsStorageApiImpl } from '@backstage/plugin-techdocs-mdx-react';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
@@ -64,4 +69,21 @@ export const apis: AnyApiFactory[] = [
   }),
 
   createApiFactory(costInsightsApiRef, new ExampleCostInsightsClient()),
+
+  createApiFactory({
+    api: techdocsStorageApiRef,
+    deps: {
+      configApi: configApiRef,
+      discoveryApi: discoveryApiRef,
+      identityApi: identityApiRef,
+      fetchApi: fetchApiRef,
+    },
+    factory: ({ configApi, discoveryApi, identityApi, fetchApi }) =>
+      new TechDocsStorageApiImpl({
+        configApi,
+        discoveryApi,
+        identityApi,
+        fetchApi,
+      }),
+  }),
 ];

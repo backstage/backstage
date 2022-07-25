@@ -130,7 +130,7 @@ organization:
 techdocs:
   builder: 'local' # Alternatives - 'external'
   generator:
-    runIn: 'docker'
+    runIn: 'local'
     # dockerImage: my-org/techdocs # use a custom docker image
     # pullImage: true # or false to disable automatic pulling of image (e.g. if custom docker login is required)
   publisher:

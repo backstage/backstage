@@ -9,4 +9,4 @@ becomes part of the auto-generated site navigation.
 
 ## MkDocs
 
-Visit https://www.mkdocs.org for more information about the MkDocs tool.
+Visit [mkdocs](https://www.mkdocs.org) for more information about the MkDocs tool.

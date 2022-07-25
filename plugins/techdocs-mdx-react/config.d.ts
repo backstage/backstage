@@ -13,14 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { TechdocsGenerator } from './techdocs';
-export { Generators } from './generators';
-export type {
-  GeneratorBase,
-  GeneratorOptions,
-  GeneratorBuilder,
-  GeneratorRunOptions,
-  SupportedGeneratorKey,
-} from './types';
 
-export * from './helpers';
+export interface Config {}

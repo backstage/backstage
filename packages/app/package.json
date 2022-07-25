@@ -59,6 +59,7 @@
     "@backstage/plugin-techdocs-react": "^1.0.3-next.1",
     "@backstage/plugin-techdocs-mkdocs-react": "^0.0.0",
     "@backstage/plugin-techdocs-mkdocs-addons": "^0.0.0",
+    "@backstage/plugin-techdocs-mdx-react": "^0.0.1",
     "@backstage/plugin-todo": "^0.2.10-next.0",
     "@backstage/plugin-user-settings": "^0.4.7-next.0",
     "@backstage/theme": "^0.2.16",

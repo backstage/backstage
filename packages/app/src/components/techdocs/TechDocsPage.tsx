@@ -21,9 +21,9 @@ import {
   TechDocsReaderPageLayoutProps,
 } from '@backstage/plugin-techdocs';
 import {
-  MkDocsReaderPage as TechDocsReaderPage,
-  MkDocsReaderPageProps as TechDocsReaderPageProps,
-} from '@backstage/plugin-techdocs-mkdocs-react';
+  MdxReaderPage as TechDocsReaderPage,
+  MdxReaderPageProps as TechDocsReaderPageProps,
+} from '@backstage/plugin-techdocs-mdx-react';
 
 type TechDocsPageProps = Partial<Pick<TechDocsReaderPageProps, 'entityRef'>> &
   Omit<TechDocsReaderPageLayoutProps, 'children'>;

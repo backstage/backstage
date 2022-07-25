@@ -144,11 +144,6 @@ import { EntityGoCdContent, isGoCdAvailable } from '@backstage/plugin-gocd';
 
 import React, { ReactNode, useMemo, useState } from 'react';
 
-import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
-import {
-  TextSize,
-  ReportIssue,
-} from '@backstage/plugin-techdocs-mkdocs-addons';
 import { entityDocsPage } from '../techdocs/TechDocsPage';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
@@ -185,13 +180,7 @@ const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
 };
 
 const techdocsContent = (
-  <EntityTechdocsContent>
-    {entityDocsPage}
-    <TechDocsAddons>
-      <TextSize />
-      <ReportIssue />
-    </TechDocsAddons>
-  </EntityTechdocsContent>
+  <EntityTechdocsContent>{entityDocsPage}</EntityTechdocsContent>
 );
 
 /**

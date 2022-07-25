@@ -14,29 +14,29 @@ Admonitions are call outs that help catch a users attention.
 
 To define an admonition simply put the following Markdown into your content:
 
-```
-!!! warn
-    Defining admonitions can be addicting.
+```markdown
+:::note{severity="error"}
+Defining admonitions can be addicting.
+:::
 ```
 
 And they end up looking like this:
 
-<!-- prettier-ignore -->
-!!! warn
-    Defining admonitions can be addicting.
+:::note{severity="error"}
+This is an error alert — check it out!
+:::
 
-<!-- prettier-ignore -->
-!!! note
-    You can learn a lot about TechDocs by just visiting the Backstage web site at
-    https://backstage.io/docs.
+:::note{severity="warning"}
+This is a warning alert — check it out!
+:::
 
-<!-- prettier-ignore -->
-!!! info
-    TechDocs is the core feature that supports documentation as code in Backstage.
+:::note{severity="info"}
+This is an info alert — check it out!
+:::
 
-<!-- prettier-ignore -->
-!!! tip
-    Don't forget to spell check your documentation.
+:::note{severity="success"}
+This is a success alert — check it out!
+:::
 
 ## PlantUML
 
@@ -51,26 +51,7 @@ TechDocs -> CloudStorage: publishes
 CloudStorage -> Backstage: displays
 ```
 
-## Pymdownx Extensions
-
-Pymdownx (Python Markdown extensions) are a variety of smaller additions.
-
-### Details
-
-<!-- prettier-ignore -->
-??? note "What is the answer to life, the universe, and everything? (click me for the answer)"
-    The answer is 42.
-
-<!-- prettier-ignore -->
-??? note "What is 4 plus 4?"
-    The answer is 8.
-
-<!-- prettier-ignore -->
-???+ note "How do I get support?"
-    You can get support by opening an issue in this repository. This detail is open by default
-    so it's more easily visible without requiring the user to click to open it.
-
-### Task Lists
+## Task Lists
 
 Automatic rendering of Markdown task lists.
 
@@ -78,7 +59,16 @@ Automatic rendering of Markdown task lists.
 - [x] Phase 2
 - [ ] Phase 3
 
-### Emojis
+## Math
+
+Lift($L$) can be determined by Lift Coefficient ($C_L$) like the following
+equation.
+
+$$
+L = \frac{1}{2} \rho v^2 S C_L
+$$
+
+## Emojis
 
 Very nice job on documentation! :thumbsup:
 
@@ -88,13 +78,7 @@ Weather: :sunny: :umbrella: :cloud: :snowflake:
 
 Animals: :tiger: :horse: :turtle: :wolf: :frog:
 
-### Attributes
-
-[A Download Link](./images/backstage-logo-cncf.svg){: download }
-
-![A Scaled Image](./images/backstage-logo-cncf.svg){: style="width: 100px" }
-
-### MDX truly sane lists
+## MDX truly sane lists
 
 - attributes
 
