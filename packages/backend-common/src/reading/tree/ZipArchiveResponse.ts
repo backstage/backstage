@@ -111,7 +111,8 @@ export class ZipArchiveResponse implements ReadTreeResponse {
         }
 
         zipfile.on('entry', async (entry: Entry) => {
-          if (!/\/$/.test(entry.fileName) && this.shouldBeIncluded(entry)) {
+          // Check that the file is not a directory, and that is matches the filter.
+          if (!entry.fileName.endsWith('/') && this.shouldBeIncluded(entry)) {
             zipfile.openReadStream(entry, async (openErr, readStream) => {
               if (openErr || !readStream) {
                 reject(
