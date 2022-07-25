@@ -2351,9 +2351,9 @@
     "@lezer/highlight" "^1.0.0"
 
 "@codemirror/view@^6.0.0":
-  version "6.1.0"
-  resolved "https://registry.npmjs.org/@codemirror/view/-/view-6.1.0.tgz#a8b83545f6572323ee09fbf0891a647ecb8edab6"
-  integrity sha512-T5QTuzwxbQ+KnZzz1ef3e3QCNH2qMdTmQhA4tbsK62lJGyCMZHSaSAJpFAr67c6Wl34IBgx2M7ue6WxJpWPOPg==
+  version "6.1.1"
+  resolved "https://registry.npmjs.org/@codemirror/view/-/view-6.1.1.tgz#a9d085128263998b389682b11e75eb157a11011c"
+  integrity sha512-ZBLsphk+Tbqxv7Z1vZ+rky7QbHV/ILoCN4rtdcboBmSbkDmVwsU0wmfqTGZyrOw5ulBPu2aE8esQf6cIUZbWqQ==
   dependencies:
     "@codemirror/state" "^6.0.0"
     style-mod "^4.0.0"
