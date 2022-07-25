@@ -19,7 +19,7 @@ catalog. This is the prefered method for ingesting entities into the catalog.
 You will have to add the provider in the catalog initialization code of your
 backend. They are not installed by default, therefore you have to add a
 dependency on `@backstage/plugin-catalog-backend-module-github` to your backend
-package
+package.
 
 ```bash
 # From your Backstage root directory
@@ -76,31 +76,34 @@ catalog:
           repository: '.*' # optional Regex
 ```
 
-This provider supports multiple organizations via unique provider IDs
+This provider supports multiple organizations via unique provider IDs.
 
 > **Note:** It is possible but certainly not recommended to skip the provider ID level.
 > If you do so, `default` will be used as provider ID.
 
-- **catalogPath** _(optional)_:
+```
+catalogPath (optional):
   Default: `/catalog-info.yaml`.
   Path where to look for `catalog-info.yaml` files.
   When started with `/`, it is an absolute path from the repo root.
-- **filters** _(optional)_:
-  - **branch** _(optional)_:
+
+filters (optional):
+  - branch (optional):
     String used to filter results based on the branch name.
-  - **repository** _(optional)_:
+  - repository (optional):
     Regular expression used to filter results based on the repository name.
-- **organization**:
+
+organization:
   Name of your organization account/workspace.
   If you want to add multiple organizations, you need to add one provider config each.
+```
 
 ## GitHub API Rate Limits
 
 GitHub [rate limits](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting) API requests to 5,000 per hour (or more for Enterprise
-accounts). The default Backstage catalog backend refreshes data every 100
-seconds, which issues an API request for each discovered location.
+accounts). The snippet below refreshes the Backstage catalog data every 35 minutes, which issues an API request for each discovered location.
 
-This means if you have more than ~140 catalog entities, you may get throttled by
+If your requests are too frequent then you may get throttled by
 rate limiting. You can change the refresh frequency of the catalog in your `packages/backend/src/plugins/catalog.ts` file:
 
 ```typescript
