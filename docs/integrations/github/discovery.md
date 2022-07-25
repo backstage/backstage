@@ -106,7 +106,7 @@ rate limiting. You can change the refresh frequency of the catalog in your `pack
 ```typescript
 schedule: env.scheduler.createScheduledTaskRunner({
   frequency: { minutes: 35 },
-  timeout: { minutes: 3 },
+  timeout: { minutes: 30 },
 }),
 ```
 
