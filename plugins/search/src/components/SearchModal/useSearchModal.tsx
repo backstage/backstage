@@ -120,7 +120,7 @@ export function useSearchModal(initialState = false) {
   const toggleModal = useCallback(
     () =>
       setState(prevState => ({
-        open: true,
+        open: !prevState.open,
         hidden: !prevState.hidden,
       })),
     [],
@@ -128,8 +128,8 @@ export function useSearchModal(initialState = false) {
 
   const setOpen = useCallback(
     (open: boolean) =>
-      setState(prevState => ({
-        open: prevState.open || open,
+      setState(() => ({
+        open: open,
         hidden: !open,
       })),
     [],
