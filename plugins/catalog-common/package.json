@@ -38,7 +38,7 @@
     "@backstage/plugin-search-common": "^1.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.18.0"
+    "@backstage/cli": "^0.18.1-next.0"
   },
   "files": [
     "dist",

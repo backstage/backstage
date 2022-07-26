@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs
 
+## 1.3.1-next.0
+
+### Patch Changes
+
+- 7a98c73dc8: Fixed techdocs sidebar layout bug for medium devices.
+- Updated dependencies
+  - @backstage/integration@1.3.0-next.0
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/integration-react@1.1.3-next.0
+  - @backstage/plugin-catalog-react@1.1.3-next.0
+  - @backstage/core-components@0.10.1-next.0
+  - @backstage/plugin-search-react@1.0.1-next.0
+  - @backstage/plugin-techdocs-react@1.0.3-next.0
+
 ## 1.3.0
 
 ### Minor Changes

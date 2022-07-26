@@ -1,5 +1,15 @@
 # @backstage/plugin-gocd
 
+## 0.1.14-next.0
+
+### Patch Changes
+
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/plugin-catalog-react@1.1.3-next.0
+  - @backstage/core-components@0.10.1-next.0
+
 ## 0.1.13
 
 ### Patch Changes

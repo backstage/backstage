@@ -1,5 +1,25 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.5.0-next.0
+
+### Minor Changes
+
+- 593dea6710: Add support for Basic Auth for Bitbucket Server.
+- 3b7930b3e5: Add support for Bearer Authorization header / token-based auth at Git commands.
+- 3f1316f1c5: User Bearer Authorization header at Git commands with token-based auth at Bitbucket Server.
+- eeff5046ae: Updated `publish:gitlab:merge-request` action to allow commit updates and deletes
+
+### Patch Changes
+
+- fc8a5f797b: Add a `publish:gerrit:review` scaffolder action
+- 014b3b7776: Add missing `res.end()` in scaffolder backend `EventStream` usage
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/integration@1.3.0-next.0
+  - @backstage/backend-plugin-api@0.1.1-next.0
+  - @backstage/plugin-catalog-backend@1.3.1-next.0
+  - @backstage/plugin-catalog-node@1.0.1-next.0
+
 ## 1.4.0
 
 ### Minor Changes
