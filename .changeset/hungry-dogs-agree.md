@@ -1,6 +1,6 @@
 ---
 '@backstage/core-app-api': patch
-'@backstage/plugin-user-settings': patch
+'@backstage/core-plugin-api': patch
 ---
 
-Added Table with List of Available Icons and Documentation on Usage
+Added `getSystemIcons()` function to the `AppManager` that will pull a list of all the icons that have been registered in the App.
