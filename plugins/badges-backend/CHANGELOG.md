@@ -1,5 +1,23 @@
 # @backstage/plugin-badges-backend
 
+## 0.1.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+
+## 0.1.28
+
+### Patch Changes
+
+- 58fd5ee9d5: Add missing installation instructions
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/catalog-client@1.0.4
+  - @backstage/errors@1.1.0
+
 ## 0.1.28-next.2
 
 ### Patch Changes

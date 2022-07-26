@@ -232,3 +232,23 @@ search:
     auth:
       apiKey: base64EncodedKey
 ```
+
+### Elastic search batch size
+
+Default batch size of the elastic search engine is set to 1000. If you are using a lower spec computing resources (like AWS small instance),
+you may get an error caused by limited `thread_pool` configuration. ( `429 Too Many Requests /_bulk` )
+
+In this case you need to decrease the batch size to index the resources to prevent this kind of error. You can easily decrease
+or increase the batch size in your `app-config.yaml` using the `batchSize` option provided for elasticsearch configuration.
+
+#### Configuration example
+
+**Set batch size to 100**
+
+```yaml
+search:
+  elasticsearch:
+    batchSize: 100
+```
+
+> You can also increase the batch size if you are using a large ES instance.

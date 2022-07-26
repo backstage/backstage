@@ -198,6 +198,7 @@ const githubActionsPlugin: BackstagePlugin<
   {
     entityContent: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export { githubActionsPlugin };

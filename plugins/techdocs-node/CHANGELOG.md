@@ -1,5 +1,43 @@
 # @backstage/plugin-techdocs-node
 
+## 1.2.1-next.0
+
+### Patch Changes
+
+- c8196bd37d: Fix AWS S3 404 NotFound error
+
+  When reading an object from the S3 bucket through a stream, the aws-sdk getObject() API may throw a 404 NotFound Error with no error message or, in fact, any sort of HTTP-layer error responses. These fail the @backstage/error's assertError() checks, so they must be wrapped. The test for this case was also updated to match the wrapped error message.
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/integration@1.3.0-next.0
+
+## 1.2.0
+
+### Minor Changes
+
+- 860765ff45: Added local publishing target directory `config`: `techdocs.publisher.local.publishDirectory`
+
+### Patch Changes
+
+- a5d73da942: Fix the flag parsing for `legacyCopyReadmeMdToIndexMd` in `techdocs-cli generate` command, and decouple it's logic from the `techdocs-ref` flag.
+- d505b7b37d: Fixed issue with git feedback buttons not appearing automatically in docs pages. This was done by appending `repo_url` to the helper function `getRepoUrlFromLocationAnnotation`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-search-common@1.0.0
+  - @backstage/integration@1.2.2
+  - @backstage/errors@1.1.0
+
 ## 1.2.0-next.3
 
 ### Patch Changes

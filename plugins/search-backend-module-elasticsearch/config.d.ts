@@ -22,6 +22,10 @@ export interface Config {
      */
     elasticsearch?: {
       /**
+       * Batch size for elastic search indexing tasks. Defaults to 1000.
+       */
+      batchSize?: number;
+      /**
        * Options for configuring highlight settings
        * See https://www.elastic.co/guide/en/elasticsearch/reference/7.17/highlighting.html
        */

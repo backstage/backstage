@@ -236,6 +236,7 @@ export async function initRepoPushAndProtect(
   sourcePath: string | undefined,
   defaultBranch: string,
   protectDefaultBranch: boolean,
+  protectEnforceAdmins: boolean,
   owner: string,
   client: Octokit,
   repo: string,
@@ -283,6 +284,7 @@ export async function initRepoPushAndProtect(
         defaultBranch,
         requireCodeOwnerReviews,
         requiredStatusCheckContexts,
+        enforceAdmins: protectEnforceAdmins,
       });
     } catch (e) {
       assertError(e);

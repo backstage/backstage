@@ -209,8 +209,6 @@ const ALLOW_WARNINGS = [
   'plugins/azure-devops-common',
   'plugins/badges',
   'plugins/badges-backend',
-  'plugins/bazaar',
-  'plugins/bazaar-backend',
   'plugins/bitrise',
   'plugins/catalog',
   'plugins/catalog-graphql',

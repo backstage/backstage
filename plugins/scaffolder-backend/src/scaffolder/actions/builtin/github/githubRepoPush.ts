@@ -44,6 +44,7 @@ export function createGithubRepoPushAction(options: {
     description?: string;
     defaultBranch?: string;
     protectDefaultBranch?: boolean;
+    protectEnforceAdmins?: boolean;
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
@@ -65,6 +66,7 @@ export function createGithubRepoPushAction(options: {
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
           defaultBranch: inputProps.defaultBranch,
           protectDefaultBranch: inputProps.protectDefaultBranch,
+          protectEnforceAdmins: inputProps.protectEnforceAdmins,
           gitCommitMessage: inputProps.gitCommitMessage,
           gitAuthorName: inputProps.gitAuthorName,
           gitAuthorEmail: inputProps.gitAuthorEmail,
@@ -85,6 +87,7 @@ export function createGithubRepoPushAction(options: {
         repoUrl,
         defaultBranch = 'master',
         protectDefaultBranch = true,
+        protectEnforceAdmins = true,
         gitCommitMessage = 'initial commit',
         gitAuthorName,
         gitAuthorEmail,
@@ -120,6 +123,7 @@ export function createGithubRepoPushAction(options: {
         ctx.input.sourcePath,
         defaultBranch,
         protectDefaultBranch,
+        protectEnforceAdmins,
         owner,
         client,
         repo,

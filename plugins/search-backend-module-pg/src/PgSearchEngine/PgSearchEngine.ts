@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { PluginDatabaseManager } from '@backstage/backend-common';
-import { SearchEngine } from '@backstage/plugin-search-backend-node';
+import { SearchEngine } from '@backstage/plugin-search-common';
 import {
   SearchQuery,
   IndexableResultSet,

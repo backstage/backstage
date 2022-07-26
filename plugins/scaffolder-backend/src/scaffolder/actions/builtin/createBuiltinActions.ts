@@ -49,6 +49,7 @@ import {
   createPublishBitbucketCloudAction,
   createPublishBitbucketServerAction,
   createPublishGerritAction,
+  createPublishGerritReviewAction,
   createPublishGithubAction,
   createPublishGithubPullRequestAction,
   createPublishGitlabAction,
@@ -115,6 +116,10 @@ export const createBuiltinActions = (
       additionalTemplateFilters,
     }),
     createPublishGerritAction({
+      integrations,
+      config,
+    }),
+    createPublishGerritReviewAction({
       integrations,
       config,
     }),

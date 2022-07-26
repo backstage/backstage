@@ -20,6 +20,7 @@ export const xcmetricsPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 ```

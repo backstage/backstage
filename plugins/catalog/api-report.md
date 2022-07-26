@@ -79,6 +79,8 @@ export interface CatalogKindHeaderProps {
   initialFilter?: string;
 }
 
+// Warning: (ae-forgotten-export) The symbol "CatalogInputPluginOptions" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
 export const catalogPlugin: BackstagePlugin<
   {
@@ -99,7 +101,8 @@ export const catalogPlugin: BackstagePlugin<
       },
       true
     >;
-  }
+  },
+  CatalogInputPluginOptions
 >;
 
 // @public (undocumented)
@@ -132,6 +135,7 @@ export const CatalogTable: {
     ): TableColumn<CatalogTableRow>;
     createSystemColumn(): TableColumn<CatalogTableRow>;
     createOwnerColumn(): TableColumn<CatalogTableRow>;
+    createSpecTargetsColumn(): TableColumn<CatalogTableRow>;
     createSpecTypeColumn(): TableColumn<CatalogTableRow>;
     createSpecLifecycleColumn(): TableColumn<CatalogTableRow>;
     createMetadataDescriptionColumn(): TableColumn<CatalogTableRow>;

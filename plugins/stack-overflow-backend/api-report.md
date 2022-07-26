@@ -41,6 +41,7 @@ export class StackOverflowQuestionsCollatorFactory
 // @public
 export type StackOverflowQuestionsCollatorFactoryOptions = {
   baseUrl?: string;
+  apiKey?: string;
   requestParams: StackOverflowQuestionsRequestParams;
   logger: Logger;
 };

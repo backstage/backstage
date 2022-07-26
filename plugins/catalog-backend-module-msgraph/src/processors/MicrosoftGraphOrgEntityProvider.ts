@@ -211,7 +211,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
     options: MicrosoftGraphOrgEntityProviderLegacyOptions,
   ): MicrosoftGraphOrgEntityProvider {
     options.logger.warn(
-      'Deprecated msgraph config "catalog.processors.microsoftGraphOrg" used. Use "catalog.providers.microsoftGraphOrg" instead. More info at https://github.com/backstage/backstage/blob/master/.changeset/long-bananas-rescue.md',
+      'Deprecated msgraph config "catalog.processors.microsoftGraphOrg" used. Use "catalog.providers.microsoftGraphOrg" instead. More info at https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-msgraph/CHANGELOG.md#040-next1',
     );
     const config = configRoot.getOptionalConfig(
       'catalog.processors.microsoftGraphOrg',

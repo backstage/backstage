@@ -106,6 +106,7 @@ export function createFetchTemplateAction(options: {
   values: any;
   templateFileExtension?: string | boolean | undefined;
   copyWithoutRender?: string[] | undefined;
+  copyWithoutTemplating?: string[] | undefined;
   cookiecutterCompat?: boolean | undefined;
 }>;
 
@@ -216,6 +217,7 @@ export function createGithubRepoPushAction(options: {
   description?: string | undefined;
   defaultBranch?: string | undefined;
   protectDefaultBranch?: boolean | undefined;
+  protectEnforceAdmins?: boolean | undefined;
   gitCommitMessage?: string | undefined;
   gitAuthorName?: string | undefined;
   gitAuthorEmail?: string | undefined;
@@ -320,6 +322,19 @@ export function createPublishGerritAction(options: {
 }>;
 
 // @public
+export function createPublishGerritReviewAction(options: {
+  integrations: ScmIntegrationRegistry;
+  config: Config;
+}): TemplateAction<{
+  repoUrl: string;
+  branch?: string | undefined;
+  sourcePath?: string | undefined;
+  gitCommitMessage?: string | undefined;
+  gitAuthorName?: string | undefined;
+  gitAuthorEmail?: string | undefined;
+}>;
+
+// @public
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
@@ -330,6 +345,7 @@ export function createPublishGithubAction(options: {
   access?: string | undefined;
   defaultBranch?: string | undefined;
   protectDefaultBranch?: boolean | undefined;
+  protectEnforceAdmins?: boolean | undefined;
   deleteBranchOnMerge?: boolean | undefined;
   gitCommitMessage?: string | undefined;
   gitAuthorName?: string | undefined;
@@ -403,8 +419,10 @@ export const createPublishGitlabMergeRequestAction: (options: {
   branchName: string;
   targetPath: string;
   token?: string | undefined;
+  commitAction?: 'update' | 'create' | 'delete' | undefined;
   projectid?: string | undefined;
   removeSourceBranch?: boolean | undefined;
+  assignee?: string | undefined;
 }>;
 
 // @public

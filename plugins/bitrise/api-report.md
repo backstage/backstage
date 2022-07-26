@@ -11,7 +11,7 @@ import { Entity } from '@backstage/catalog-model';
 // Warning: (ae-missing-release-tag) "bitrisePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const bitrisePlugin: BackstagePlugin<{}, {}>;
+export const bitrisePlugin: BackstagePlugin<{}, {}, {}>;
 
 // Warning: (ae-missing-release-tag) "EntityBitriseContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

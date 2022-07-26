@@ -139,6 +139,20 @@ describe('bitbucket core', () => {
       );
     });
 
+    it('does not double encode the filepath', async () => {
+      const config: BitbucketIntegrationConfig = {
+        host: 'bitbucket.mycompany.net',
+        apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+      };
+      const result = await getBitbucketDownloadUrl(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/%2Fdocs?at=some-branch',
+        config,
+      );
+      expect(result).toEqual(
+        'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=tgz&at=some-branch&prefix=backstage-mock&path=%2Fdocs',
+      );
+    });
+
     it('do not add path param if no path is specified for Bitbucket Server', async () => {
       const defaultBranchResponse = {
         displayId: 'main',

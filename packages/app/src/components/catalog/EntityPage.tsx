@@ -59,7 +59,7 @@ import {
   isComponentType,
   isKind,
   isOrphan,
-} from '@backstage/plugin-catalog';
+} from '@internal/plugin-catalog-customized';
 import {
   Direction,
   EntityCatalogGraphCard,

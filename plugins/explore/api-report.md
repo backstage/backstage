@@ -68,7 +68,8 @@ const explorePlugin: BackstagePlugin<
       },
       true
     >;
-  }
+  },
+  {}
 >;
 export { explorePlugin };
 export { explorePlugin as plugin };

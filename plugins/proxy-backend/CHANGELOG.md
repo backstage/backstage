@@ -1,5 +1,22 @@
 # @backstage/plugin-proxy-backend
 
+## 0.2.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+
+## 0.2.28
+
+### Patch Changes
+
+- a4fa1ce090: The proxy-backend now automatically reloads configuration when app-config.yaml is updated.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+
 ## 0.2.28-next.1
 
 ### Patch Changes

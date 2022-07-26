@@ -207,7 +207,7 @@ of lower-level calls:
 
 ```ts
 // File: packages/backend/src/plugins/auth.ts
-import { getDefaultOwnershipRefs } from '@backstage/plugin-auth-backend';
+import { getDefaultOwnershipEntityRefs } from '@backstage/plugin-auth-backend';
 
 export default async function createPlugin(
   // ...
@@ -236,7 +236,7 @@ export default async function createPlugin(
         // an entity you will need to replace this step as well.
         //
         // You might also replace it if you for example want to filter out certain groups.
-        const ownershipRefs = getDefaultOwnershipRefs(entity);
+        const ownershipRefs = getDefaultOwnershipEntityRefs(entity);
 
         // The last step is to issue the token, where we might provide more options in the future.
         return ctx.issueToken({
@@ -273,46 +273,57 @@ that the user belongs to using the user access token in the provided result obje
 
 ```ts
 // File: packages/backend/src/plugins/auth.ts
-import { DEFAULT_NAMESPACE, stringifyEntityRef, } from '@backstage/catalog-model';
+import { createRouter, providers } from '@backstage/plugin-auth-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
+import {
+  stringifyEntityRef,
+  DEFAULT_NAMESPACE,
+} from '@backstage/catalog-model';
 
 export default async function createPlugin(
-  // ...
+  env: PluginEnvironment,
+): Promise<Router> {
   return await createRouter({
-    // ...
+    ...env,
     providerFactories: {
-      // ...
-      google: async ({ profile }, ctx) => {
-        if (!profile.email) {
-          throw new Error(
-            'Login failed, user profile does not contain an email',
-          );
-        }
-        // Split the email into the local part and the domain.
-        const [localPart, domain] = profile.email.split('@');
+      google: providers.google.create({
+        signIn: {
+          resolver: async ({ profile }, ctx) => {
+            if (!profile.email) {
+              throw new Error(
+                'Login failed, user profile does not contain an email',
+              );
+            }
+            // Split the email into the local part and the domain.
+            const [localPart, domain] = profile.email.split('@');
 
-        // Next we verify the email domain. It is recommended to include this
-        // kind of check if you don't look up the user in an external service.
-        if (domain !== 'acme.org') {
-          throw new Error('Login failed, user email domain check failed');
-        }
+            // Next we verify the email domain. It is recommended to include this
+            // kind of check if you don't look up the user in an external service.
+            if (domain !== 'acme.org') {
+              throw new Error(
+                `Login failed, this email ${profile.email} does not belong to the expected domain`,
+              );
+            }
 
-        // By using `stringifyEntityRef` we ensure that the reference is formatted correctly
-        const userEntityRef = stringifyEntityRef({
-          kind: 'User',
-          name: localPart,
-          namespace: DEFAULT_NAMESPACE,
-        });
-
-        return ctx.issueToken({
-          claims: {
-            sub: userEntityRef,
-            ent: [userEntityRef],
+            // By using `stringifyEntityRef` we ensure that the reference is formatted correctly
+            const userEntity = stringifyEntityRef({
+              kind: 'User',
+              name: localPart,
+              namespace: DEFAULT_NAMESPACE,
+            });
+            return ctx.issueToken({
+              claims: {
+                sub: userEntity,
+                ent: [userEntity],
+              },
+            });
           },
-        });
-      },
-    }
-  })
-)
+        },
+      }),
+    },
+  });
+}
 ```
 
 ## AuthHandler

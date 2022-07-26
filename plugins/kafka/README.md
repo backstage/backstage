@@ -73,6 +73,8 @@ kafka:
 
 5. Add the `kafka.apache.org/consumer-groups` annotation to your services:
 
+Can be a comma separated list.
+
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: Component
@@ -82,6 +84,34 @@ metadata:
     kafka.apache.org/consumer-groups: cluster-name/consumer-group-name
 spec:
   type: service
+```
+
+6. Configure dashboard urls:
+
+You have two options.  
+Either configure it with an annotation called `kafka.apache.org/dashboard-urls`
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  # ...
+  annotations:
+    kafka.apache.org/dashboard-urls: cluster-name/consumer-group-name/dashboard-url
+spec:
+  type: service
+```
+
+> The consumer-group-name is optional.
+
+or with configs in `app-config.yaml`
+
+```yaml
+kafka:
+  # ...
+  clusters:
+    - name: cluster-name
+      dashboardUrl: https://dashboard.com
 ```
 
 ## Features
