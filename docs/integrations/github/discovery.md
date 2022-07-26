@@ -81,22 +81,18 @@ This provider supports multiple organizations via unique provider IDs.
 > **Note:** It is possible but certainly not recommended to skip the provider ID level.
 > If you do so, `default` will be used as provider ID.
 
-```
-catalogPath (optional):
+- **`catalogPath`** _(optional)_:
   Default: `/catalog-info.yaml`.
   Path where to look for `catalog-info.yaml` files.
   When started with `/`, it is an absolute path from the repo root.
-
-filters (optional):
-  - branch (optional):
+- **filters** _(optional)_:
+  - **branch** _(optional)_:
     String used to filter results based on the branch name.
-  - repository (optional):
+  - **repository** _(optional)_:
     Regular expression used to filter results based on the repository name.
-
-organization:
+- **organization**:
   Name of your organization account/workspace.
   If you want to add multiple organizations, you need to add one provider config each.
-```
 
 ## GitHub API Rate Limits
 
