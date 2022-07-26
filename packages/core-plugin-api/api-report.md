@@ -156,6 +156,31 @@ export type AppContext = {
 };
 
 // @public
+export type AppIcons = {
+  'kind:api': IconComponent_2;
+  'kind:component': IconComponent_2;
+  'kind:domain': IconComponent_2;
+  'kind:group': IconComponent_2;
+  'kind:location': IconComponent_2;
+  'kind:system': IconComponent_2;
+  'kind:user': IconComponent_2;
+  brokenImage: IconComponent_2;
+  catalog: IconComponent_2;
+  chat: IconComponent_2;
+  dashboard: IconComponent_2;
+  docs: IconComponent_2;
+  email: IconComponent_2;
+  github: IconComponent_2;
+  group: IconComponent_2;
+  help: IconComponent_2;
+  scaffolder: IconComponent_2;
+  search: IconComponent_2;
+  techdocs: IconComponent_2;
+  user: IconComponent_2;
+  warning: IconComponent_2;
+};
+
+// @public
 export type AppTheme = {
   id: string;
   title: string;
@@ -783,8 +808,4 @@ export function withApis<T>(apis: TypesToApiRefs<T>): <P extends T>(
   (props: React_2.PropsWithChildren<Omit<P, keyof T>>): JSX.Element;
   displayName: string;
 };
-
-// Warnings were encountered during analysis:
-//
-// /backstage/dist-types/packages/core-app-api/src/app/types.d.ts:277:5 - (ae-forgotten-export) The symbol "AppIcons" needs to be exported by the entry point index.d.ts
 ```

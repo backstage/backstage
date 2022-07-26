@@ -157,6 +157,9 @@ export type AppConfigLoader = () => Promise<AppConfig[]>;
 export type AppContext = {
   getPlugins(): BackstagePlugin[];
   getSystemIcon(key: string): IconComponent | undefined;
+  getSystemIcons(): AppIcons & {
+    [key in string]: IconComponent;
+  };
   getComponents(): AppComponents;
 };
 

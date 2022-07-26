@@ -24,4 +24,5 @@ export type {
   ErrorBoundaryFallbackProps,
   AppComponents,
   AppContext,
+  AppIcons,
 } from '../../../core-app-api/src/app/types';
