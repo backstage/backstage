@@ -395,6 +395,7 @@ rules:
       - horizontalpodautoscalers
       - ingresses
       - statefulsets
+      - limitranges
     verbs:
       - get
       - list
