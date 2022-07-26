@@ -1,5 +1,12 @@
 # @backstage/cli
 
+## 0.18.1-next.0
+
+### Patch Changes
+
+- a539564c0d: Added Backstage version to output of `yarn backstage-cli info` command
+- 94155a41e0: Updated dependencies `@svgr/*` to `6.3.x`.
+
 ## 0.18.0
 
 ### Minor Changes
