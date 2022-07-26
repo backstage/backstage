@@ -56,137 +56,105 @@ const techdocsApiMock = {
   getTechDocsMetadata: jest.fn().mockResolvedValue(mockTechDocsMetadata),
 };
 
-describe('useTechDocsReaderPage', () => {
-  describe('when legacyUseCaseSensitiveTripletPaths is false', () => {
-    const configApiMock = {
-      getOptionalBoolean: jest.fn().mockReturnValue(undefined),
-    };
+const configApiMock = {
+  getOptionalBoolean: jest.fn().mockReturnValue(undefined),
+};
 
-    const wrapper = ({
-      entityRef = {
-        kind: mockEntityMetadata.kind,
-        name: mockEntityMetadata.metadata.name,
-        namespace: mockEntityMetadata.metadata.namespace!!,
-      },
-      children,
-    }: {
-      entityRef?: CompoundEntityRef;
-      children: React.ReactNode;
-    }) => (
-      <ThemeProvider theme={lightTheme}>
-        <TestApiProvider
-          apis={[
-            [techdocsApiRef, techdocsApiMock],
-            [configApiRef, configApiMock],
-          ]}
-        >
-          <TechDocsReaderPageProvider entityRef={entityRef}>
-            {children}
-          </TechDocsReaderPageProvider>
-        </TestApiProvider>
-      </ThemeProvider>
+const wrapper = ({
+  entityRef = {
+    kind: mockEntityMetadata.kind,
+    name: mockEntityMetadata.metadata.name,
+    namespace: mockEntityMetadata.metadata.namespace!!,
+  },
+  children,
+}: {
+  entityRef?: CompoundEntityRef;
+  children: React.ReactNode;
+}) => (
+  <ThemeProvider theme={lightTheme}>
+    <TestApiProvider
+      apis={[
+        [configApiRef, configApiMock],
+        [techdocsApiRef, techdocsApiMock],
+      ]}
+    >
+      <TechDocsReaderPageProvider entityRef={entityRef}>
+        {children}
+      </TechDocsReaderPageProvider>
+    </TestApiProvider>
+  </ThemeProvider>
+);
+
+describe('useTechDocsReaderPage', () => {
+  it('should set title', async () => {
+    const { result, waitForNextUpdate } = renderHook(
+      () => useTechDocsReaderPage(),
+      { wrapper },
     );
 
-    it('should set title', async () => {
-      const { result, waitForNextUpdate } = renderHook(
-        () => useTechDocsReaderPage(),
-        { wrapper },
-      );
+    expect(result.current.title).toBe('');
 
-      expect(result.current.title).toBe('');
+    act(() => result.current.setTitle('test site title'));
 
-      act(() => result.current.setTitle('test site title'));
+    await waitForNextUpdate();
 
-      await waitForNextUpdate();
-
-      expect(result.current.title).toBe('test site title');
-    });
-
-    it('should set subtitle', async () => {
-      const { result, waitForNextUpdate } = renderHook(
-        () => useTechDocsReaderPage(),
-        { wrapper },
-      );
-
-      expect(result.current.subtitle).toBe('');
-
-      act(() => result.current.setSubtitle('test site subtitle'));
-
-      await waitForNextUpdate();
-
-      expect(result.current.subtitle).toBe('test site subtitle');
-    });
-
-    it('should set shadow root', async () => {
-      const { result, waitForNextUpdate } = renderHook(
-        () => useTechDocsReaderPage(),
-        { wrapper },
-      );
-
-      // mock shadowroot
-      const shadowRoot = mockShadowRoot();
-
-      act(() => result.current.setShadowRoot(shadowRoot));
-
-      await waitForNextUpdate();
-
-      expect(result.current.shadowRoot?.innerHTML).toBe(
-        '<h1>Shadow DOM Mock</h1>',
-      );
-    });
-
-    it('should set entityRef as lowercase', async () => {
-      const lowercaseEntityRef = {
-        kind: mockEntityMetadata.kind.toLocaleLowerCase(),
-        name: mockEntityMetadata.metadata.name.toLocaleLowerCase(),
-        namespace: mockEntityMetadata.metadata.namespace?.toLocaleLowerCase(),
-      };
-      const { result } = renderHook(() => useTechDocsReaderPage(), { wrapper });
-
-      expect(result.current.entityRef).toStrictEqual(lowercaseEntityRef);
-    });
+    expect(result.current.title).toBe('test site title');
   });
 
-  describe('when legacyUseCaseSensitiveTripletPaths is true', () => {
-    const configApiMock = {
-      getOptionalBoolean: jest.fn().mockReturnValue(true),
-    };
-
-    const wrapper = ({
-      entityRef = {
-        kind: mockEntityMetadata.kind,
-        name: mockEntityMetadata.metadata.name,
-        namespace: mockEntityMetadata.metadata.namespace!!,
-      },
-      children,
-    }: {
-      entityRef?: CompoundEntityRef;
-      children: React.ReactNode;
-    }) => (
-      <ThemeProvider theme={lightTheme}>
-        <TestApiProvider
-          apis={[
-            [techdocsApiRef, techdocsApiMock],
-            [configApiRef, configApiMock],
-          ]}
-        >
-          <TechDocsReaderPageProvider entityRef={entityRef}>
-            {children}
-          </TechDocsReaderPageProvider>
-        </TestApiProvider>
-      </ThemeProvider>
+  it('should set subtitle', async () => {
+    const { result, waitForNextUpdate } = renderHook(
+      () => useTechDocsReaderPage(),
+      { wrapper },
     );
 
-    it('entityRef is not modified', async () => {
-      const caseSensitiveEntityRef = {
-        kind: mockEntityMetadata.kind,
-        name: mockEntityMetadata.metadata.name,
-        namespace: mockEntityMetadata.metadata.namespace!!,
-      };
+    expect(result.current.subtitle).toBe('');
 
-      const { result } = renderHook(() => useTechDocsReaderPage(), { wrapper });
+    act(() => result.current.setSubtitle('test site subtitle'));
 
-      expect(result.current.entityRef).toStrictEqual(caseSensitiveEntityRef);
-    });
+    await waitForNextUpdate();
+
+    expect(result.current.subtitle).toBe('test site subtitle');
+  });
+
+  it('should set shadow root', async () => {
+    const { result, waitForNextUpdate } = renderHook(
+      () => useTechDocsReaderPage(),
+      { wrapper },
+    );
+
+    // mock shadowroot
+    const shadowRoot = mockShadowRoot();
+
+    act(() => result.current.setShadowRoot(shadowRoot));
+
+    await waitForNextUpdate();
+
+    expect(result.current.shadowRoot?.innerHTML).toBe(
+      '<h1>Shadow DOM Mock</h1>',
+    );
+  });
+
+  it('should set entityRef as lowercase when legacyUseCaseSensitiveTripletPaths is false', async () => {
+    const lowercaseEntityRef = {
+      kind: mockEntityMetadata.kind.toLocaleLowerCase(),
+      name: mockEntityMetadata.metadata.name.toLocaleLowerCase(),
+      namespace: mockEntityMetadata.metadata.namespace?.toLocaleLowerCase(),
+    };
+    const { result } = renderHook(() => useTechDocsReaderPage(), { wrapper });
+
+    expect(result.current.entityRef).toStrictEqual(lowercaseEntityRef);
+  });
+
+  it('entityRef is not modified when legacyUseCaseSensitiveTripletPaths is true', async () => {
+    configApiMock.getOptionalBoolean.mockReturnValueOnce(true);
+    const caseSensitiveEntityRef = {
+      kind: mockEntityMetadata.kind,
+      name: mockEntityMetadata.metadata.name,
+      namespace: mockEntityMetadata.metadata.namespace!!,
+    };
+
+    const { result } = renderHook(() => useTechDocsReaderPage(), { wrapper });
+
+    expect(result.current.entityRef).toStrictEqual(caseSensitiveEntityRef);
   });
 });
