@@ -161,6 +161,7 @@ kafka:
   clientId: backstage
   clusters:
     - name: cluster
+      dashboardUrl: https://akhq.io/
       brokers:
         - localhost:9092
 

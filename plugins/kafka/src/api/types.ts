@@ -15,9 +15,14 @@
  */
 
 import { createApiRef } from '@backstage/core-plugin-api';
+import { Entity } from '@backstage/catalog-model';
 
 export const kafkaApiRef = createApiRef<KafkaApi>({
   id: 'plugin.kafka.service',
+});
+
+export const kafkaDashboardApiRef = createApiRef<KafkaDashboardApi>({
+  id: 'plugin.kafka.dashboard',
 });
 
 export type ConsumerGroupOffsetsResponse = {
@@ -35,4 +40,12 @@ export interface KafkaApi {
     clusterId: string,
     consumerGroup: string,
   ): Promise<ConsumerGroupOffsetsResponse>;
+}
+
+export interface KafkaDashboardApi {
+  getDashboardUrl(
+    clusterId: string,
+    consumerGroup: string,
+    entity: Entity,
+  ): { url?: string };
 }
