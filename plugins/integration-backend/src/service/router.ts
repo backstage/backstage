@@ -17,8 +17,8 @@
 import { errorHandler } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import {
-  DefaultGithubCredentialsProvider,
   ScmIntegrations,
+  GithubAppCredentialsMux,
 } from '@backstage/integration';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -33,9 +33,6 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger } = options;
-  const githubCredentialsProvider =
-    DefaultGithubCredentialsProvider.fromIntegrations(options.integrations);
   const router = Router();
   router.use(express.json());
 
@@ -44,20 +41,40 @@ export async function createRouter(
       throw new InputError('Missing or invalid host parameter');
     }
 
-    const { token, type } = request.headers['repo-token']
-      ? { token: request.headers['repo-token'] as string, type: 'token' }
-      : await githubCredentialsProvider.getCredentials({
-          url: `https://${request.query.host}/blamdemo`,
-        });
+    const integrationConfig = options.integrations.github.byHost(
+      request.query.host,
+    );
 
-    console.log(token, type);
-    // with the token and type of token, get the organisations available for the user or the app
-    const octokit = new Octokit({ auth: token });
+    if (!integrationConfig && !request.headers['integration-token']) {
+      throw new InputError(
+        `Missing integration config or no integration-token header passed for host=${request.query.host}`,
+      );
+    }
 
-    // need to get all app installations here, and then get the orgs for each installation
+    const token = request.headers['integration-token'];
+
+    if (token) {
+      const octokit = new Octokit({ auth: token });
+      const { data } = await octokit.rest.orgs.listForAuthenticatedUser();
+
+      response.json({
+        orgs: data,
+      });
+
+      return;
+    }
+
+    if (!integrationConfig?.config.apps?.length) {
+      throw new InputError(
+        'No apps configured for integration, please add one or more apps to the integration config, or use integration-token header',
+      );
+    }
+
+    const mux = new GithubAppCredentialsMux(integrationConfig.config);
+    const installations = await mux.getAllInstallations();
 
     response.json({
-      repos: await octokit.rest.orgs.listForAuthenticatedUser(),
+      orgs: installations.map(i => i.account),
     });
   });
   router.use(errorHandler());

@@ -57,6 +57,7 @@ import app from './plugins/app';
 import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
 import permission from './plugins/permission';
+import integration from './plugins/integration';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
@@ -129,6 +130,7 @@ async function main() {
   const appEnv = useHotMemoize(module, () => createEnv('app'));
   const badgesEnv = useHotMemoize(module, () => createEnv('badges'));
   const jenkinsEnv = useHotMemoize(module, () => createEnv('jenkins'));
+  const integrationEnv = useHotMemoize(module, () => createEnv('integration'));
   const techInsightsEnv = useHotMemoize(module, () =>
     createEnv('tech-insights'),
   );
@@ -152,6 +154,8 @@ async function main() {
   apiRouter.use('/badges', await badges(badgesEnv));
   apiRouter.use('/jenkins', await jenkins(jenkinsEnv));
   apiRouter.use('/permission', await permission(permissionEnv));
+  apiRouter.use('/integration', await integration(integrationEnv));
+
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)
