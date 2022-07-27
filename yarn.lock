@@ -2827,12 +2827,12 @@
     meros "^1.1.4"
 
 "@graphql-codegen/cli@^2.3.1":
-  version "2.10.0"
-  resolved "https://registry.npmjs.org/@graphql-codegen/cli/-/cli-2.10.0.tgz#82f716590333bcb7965cd4ae373972068b2d0787"
-  integrity sha512-v87yzrQ4Q/PpGPC59O0xusQknWWKtUdITqahpUBDddT8ZWHNhadx2BjvPkinFoPZmCkG8yVoAHx7FJ2uLzqjww==
+  version "2.11.0"
+  resolved "https://registry.npmjs.org/@graphql-codegen/cli/-/cli-2.11.0.tgz#a3b981e1471e3c696058a0eb87fcd82f49ad2bc4"
+  integrity sha512-5twZs3PVSPg9mfaptoNFm1x0YQQsF4WPmgu0zbB4XSuIZ/gaAKA4LT1WEiuFSQNcgvbBbD9cpFdauyD4GS+Wwg==
   dependencies:
     "@graphql-codegen/core" "2.6.0"
-    "@graphql-codegen/plugin-helpers" "^2.6.0"
+    "@graphql-codegen/plugin-helpers" "^2.6.1"
     "@graphql-tools/apollo-engine-loader" "^7.3.1"
     "@graphql-tools/code-file-loader" "^7.3.0"
     "@graphql-tools/git-loader" "^7.2.0"
@@ -2901,6 +2901,18 @@
   version "2.6.0"
   resolved "https://registry.npmjs.org/@graphql-codegen/plugin-helpers/-/plugin-helpers-2.6.0.tgz#ae7005e6a2dcb0095ae350970c41606906048a27"
   integrity sha512-z8uw6GdUvtKyt5YSijtj1yRqI0A2lBWdGIgTjgXaAKqSC+InlVBy+89859LlKNMrO7somdt44cbMys8r4Hbqeg==
+  dependencies:
+    "@graphql-tools/utils" "^8.8.0"
+    change-case-all "1.0.14"
+    common-tags "1.8.2"
+    import-from "4.0.0"
+    lodash "~4.17.0"
+    tslib "~2.4.0"
+
+"@graphql-codegen/plugin-helpers@^2.6.1":
+  version "2.6.1"
+  resolved "https://registry.npmjs.org/@graphql-codegen/plugin-helpers/-/plugin-helpers-2.6.1.tgz#0e3abf1a13843abecd1d795fe85a61b7459a7e3a"
+  integrity sha512-RbkCPu8rZo+d3tWPUzqnZhgGutp15GVcs9UhaOcenKpCDDQxNxqGGTn76LuAAymT9y7BSnXdY20k1CW59z4nTw==
   dependencies:
     "@graphql-tools/utils" "^8.8.0"
     change-case-all "1.0.14"
