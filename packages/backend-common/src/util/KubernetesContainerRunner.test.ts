@@ -32,20 +32,6 @@ describe('KubernetesContainerRunner', () => {
   const kubeConfig = new KubeConfig();
   kubeConfig.loadFromDefault();
   const name = 'kube-runner';
-  const api = kubeConfig.makeApiClient(CoreV1Api);
-  const authApi = kubeConfig.makeApiClient(RbacAuthorizationV1Api);
-
-  beforeAll(async () => {
-    await api.createNamespace({
-      metadata: {
-        name: 'test',
-      },
-    });
-  });
-
-  afterAll(async () => {
-    await api.deleteNamespace('test');
-  });
 
   it('should throw error when no namespace is configured', () => {
     const testConfig = new KubeConfig();
@@ -196,13 +182,58 @@ describe('KubernetesContainerRunner', () => {
     );
   });
 
-  it('should fail when watch fails', async () => {
-    await api.createNamespacedServiceAccount('test', {
+  describe('with namespace test', () => {
+    const api = kubeConfig.makeApiClient(CoreV1Api);
+    const authApi = kubeConfig.makeApiClient(RbacAuthorizationV1Api);
+
+    beforeAll(async () => {
+      await api.createNamespace({
+        metadata: {
+          name: 'test',
+        },
+      });
+    });
+    afterAll(async () => {
+      await api.deleteNamespace('test');
+    });
+
+    it('should fail when watch fails', async () => {
+      const testConfig = await givenAServiceAccountThatCannotWatchPods(
+        api,
+        authApi,
+        kubeConfig,
+      );
+      const options: KubernetesContainerRunnerOptions = {
+        kubeConfig: testConfig,
+        name,
+        namespace: 'test',
+      };
+      const containerRunner = new KubernetesContainerRunner(options);
+      const runOptions: RunContainerOptions = {
+        imageName: 'golang:1.17',
+        args: ['echo', 'hello world'],
+      };
+      await expect(
+        containerRunner.runContainer(runOptions),
+      ).rejects.toThrowError(
+        'Kubernetes watch request failed with the following error message: Error: Forbidden',
+      );
+    });
+  });
+});
+
+async function givenAServiceAccountThatCannotWatchPods(
+  api: CoreV1Api,
+  authApi: RbacAuthorizationV1Api,
+  kubeConfig: KubeConfig,
+) {
+  await Promise.all([
+    api.createNamespacedServiceAccount('test', {
       metadata: {
         name: 'test',
       },
-    });
-    await authApi.createNamespacedRole('test', {
+    }),
+    authApi.createNamespacedRole('test', {
       metadata: {
         name: 'test',
       },
@@ -213,8 +244,8 @@ describe('KubernetesContainerRunner', () => {
           resources: ['jobs'],
         },
       ],
-    });
-    await authApi.createNamespacedRoleBinding('test', {
+    }),
+    authApi.createNamespacedRoleBinding('test', {
       metadata: {
         name: 'test',
       },
@@ -229,38 +260,26 @@ describe('KubernetesContainerRunner', () => {
         kind: 'Role',
         name: 'test',
       },
-    });
-    const token = (
-      await api.createNamespacedServiceAccountToken('test', 'test', {
-        spec: {
-          audiences: [],
-        },
-      })
-    ).body.status?.token;
-    const testConfig = new KubeConfig();
-    testConfig.loadFromDefault();
-    testConfig.addUser({
-      name: 'test',
-      token,
-    });
-    testConfig.addContext({
-      name: 'test',
-      cluster: kubeConfig.getCurrentCluster()!.name,
-      user: 'test',
-    });
-    testConfig.setCurrentContext('test');
-    const options: KubernetesContainerRunnerOptions = {
-      kubeConfig: testConfig,
-      name,
-      namespace: 'test',
-    };
-    const containerRunner = new KubernetesContainerRunner(options);
-    const runOptions: RunContainerOptions = {
-      imageName: 'golang:1.17',
-      args: ['echo', 'hello world'],
-    };
-    await expect(containerRunner.runContainer(runOptions)).rejects.toThrowError(
-      'Kubernetes watch request failed with the following error message: Error: Forbidden',
-    );
+    }),
+  ]);
+  const token = (
+    await api.createNamespacedServiceAccountToken('test', 'test', {
+      spec: {
+        audiences: [],
+      },
+    })
+  ).body.status?.token;
+  const testConfig = new KubeConfig();
+  testConfig.loadFromDefault();
+  testConfig.addUser({
+    name: 'test',
+    token,
   });
-});
+  testConfig.addContext({
+    name: 'test',
+    cluster: kubeConfig.getCurrentCluster()!.name,
+    user: 'test',
+  });
+  testConfig.setCurrentContext('test');
+  return testConfig;
+}

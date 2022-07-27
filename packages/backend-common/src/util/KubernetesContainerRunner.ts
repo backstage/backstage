@@ -150,6 +150,7 @@ export class KubernetesContainerRunner implements ContainerRunner {
 
     const taskId = uuid();
 
+    // TODO find a way to merge recursively
     const mergedPodTemplate: V1PodTemplateSpec = {
       metadata: {
         ...{
