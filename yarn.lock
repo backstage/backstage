@@ -2827,9 +2827,9 @@
     meros "^1.1.4"
 
 "@graphql-codegen/cli@^2.3.1":
-  version "2.9.1"
-  resolved "https://registry.npmjs.org/@graphql-codegen/cli/-/cli-2.9.1.tgz#f3a0edd462cbefb69f9db7789b142a696a2930b4"
-  integrity sha512-RyGrJTKySi5irJjdgg/9GTnFSCJtKh1YGD9idh2CIsEbkbUx3M7aBk4A+W7Q1afLmC16l59KSXodG8Bqi2eJmg==
+  version "2.10.0"
+  resolved "https://registry.npmjs.org/@graphql-codegen/cli/-/cli-2.10.0.tgz#82f716590333bcb7965cd4ae373972068b2d0787"
+  integrity sha512-v87yzrQ4Q/PpGPC59O0xusQknWWKtUdITqahpUBDddT8ZWHNhadx2BjvPkinFoPZmCkG8yVoAHx7FJ2uLzqjww==
   dependencies:
     "@graphql-codegen/core" "2.6.0"
     "@graphql-codegen/plugin-helpers" "^2.6.0"
@@ -2843,11 +2843,11 @@
     "@graphql-tools/prisma-loader" "^7.2.2"
     "@graphql-tools/url-loader" "^7.12.1"
     "@graphql-tools/utils" "^8.8.0"
+    "@whatwg-node/fetch" "^0.0.2"
     ansi-escapes "^4.3.1"
     chalk "^4.1.0"
     chokidar "^3.5.2"
     cosmiconfig "^7.0.0"
-    cross-undici-fetch "^0.4.11"
     debounce "^1.2.0"
     detect-indent "^6.0.0"
     graphql-config "^4.3.1"
@@ -8137,6 +8137,19 @@
   dependencies:
     "@webassemblyjs/ast" "1.11.1"
     "@xtuc/long" "4.2.2"
+
+"@whatwg-node/fetch@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.npmjs.org/@whatwg-node/fetch/-/fetch-0.0.2.tgz#4242c4e36714b5018ccac0ab76f4ab5a208fbc1c"
+  integrity sha512-qiZn8dYRg0POzUvmHBs7blLxl6DPL+b+Z0JUsGaj7/8PFe2BJG9onrUVX6OWh6Z9YhcYw8yu+wtCAme5ZMiCKQ==
+  dependencies:
+    abort-controller "^3.0.0"
+    busboy "^1.6.0"
+    form-data-encoder "^1.7.1"
+    formdata-node "^4.3.1"
+    node-fetch "^2.6.7"
+    undici "5.5.1"
+    web-streams-polyfill "^3.2.0"
 
 "@xmldom/xmldom@^0.7.0", "@xmldom/xmldom@^0.7.5":
   version "0.7.5"
