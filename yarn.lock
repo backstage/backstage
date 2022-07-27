@@ -11943,10 +11943,10 @@ detect-port-alt@^1.1.6:
     address "^1.0.1"
     debug "^2.6.0"
 
-devtools-protocol@0.0.1011705:
-  version "0.0.1011705"
-  resolved "https://registry.npmjs.org/devtools-protocol/-/devtools-protocol-0.0.1011705.tgz#2582ed29f84848df83fba488122015540a744539"
-  integrity sha512-OKvTvu9n3swmgYshvsyVHYX0+aPzCoYUnyXUacfQMmFtBtBKewV/gT4I9jkAbpTqtTi2E4S9MXLlvzBDUlqg0Q==
+devtools-protocol@0.0.1019158:
+  version "0.0.1019158"
+  resolved "https://registry.npmjs.org/devtools-protocol/-/devtools-protocol-0.0.1019158.tgz#4b08d06108a784a2134313149626ba55f030a86f"
+  integrity sha512-wvq+KscQ7/6spEV7czhnZc9RM/woz1AY+/Vpd8/h2HFMwJSdTliu7f/yr1A6vDdJfKICZsShqsYpEQbdhg8AFQ==
 
 dezalgo@1.0.3, dezalgo@^1.0.0:
   version "1.0.3"
@@ -21734,13 +21734,13 @@ punycode@^2.1.0, punycode@^2.1.1:
   integrity sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==
 
 puppeteer@^15.0.0:
-  version "15.4.2"
-  resolved "https://registry.npmjs.org/puppeteer/-/puppeteer-15.4.2.tgz#d61756844a9eea91e672ea6d9994aa939a23bdcb"
-  integrity sha512-RIxzCIU8aJWh3ruc63xcByRYHPYJsXn4VbrrPtVQfMFcfYOnBqUeJ0CstDVv/NEZGpwozIPZBNU6zqY4zIn7vg==
+  version "15.5.0"
+  resolved "https://registry.npmjs.org/puppeteer/-/puppeteer-15.5.0.tgz#446e01547ba0f47c37ac2148e5333433b4ecb371"
+  integrity sha512-+vZPU8iBSdCx1Kn5hHas80fyo0TiVyMeqLGv/1dygX2HKhAZjO9YThadbRTCoTYq0yWw+w/CysldPsEekDtjDQ==
   dependencies:
     cross-fetch "3.1.5"
     debug "4.3.4"
-    devtools-protocol "0.0.1011705"
+    devtools-protocol "0.0.1019158"
     extract-zip "2.0.1"
     https-proxy-agent "5.0.1"
     pkg-dir "4.2.0"
