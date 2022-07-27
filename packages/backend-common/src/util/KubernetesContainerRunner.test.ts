@@ -25,10 +25,13 @@ import {
 } from './KubernetesContainerRunner';
 import { RunContainerOptions } from './ContainerRunner';
 import { PassThrough } from 'stream';
+import { isDockerDisabledForTests } from '@backstage/backend-test-utils';
+
+const describeIfDocker = isDockerDisabledForTests() ? describe.skip : describe;
 
 jest.setTimeout(10 * 1000);
 
-describe('KubernetesContainerRunner', () => {
+describeIfDocker('KubernetesContainerRunner', () => {
   const kubeConfig = new KubeConfig();
   kubeConfig.loadFromDefault();
   const name = 'kube-runner';
@@ -183,10 +186,12 @@ describe('KubernetesContainerRunner', () => {
   });
 
   describe('with namespace test', () => {
-    const api = kubeConfig.makeApiClient(CoreV1Api);
-    const authApi = kubeConfig.makeApiClient(RbacAuthorizationV1Api);
+    let api: CoreV1Api;
+    let authApi: RbacAuthorizationV1Api;
 
     beforeAll(async () => {
+      api = kubeConfig.makeApiClient(CoreV1Api);
+      authApi = kubeConfig.makeApiClient(RbacAuthorizationV1Api);
       await api.createNamespace({
         metadata: {
           name: 'test',

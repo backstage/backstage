@@ -195,6 +195,12 @@ jobs:
 
       - name: lint
         run: yarn backstage-cli repo lint --since origin/master
+      
+      - name: bootstrap kind
+        run: |
+          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.14.0/kind-linux-amd64
+          chmod +x ./kind
+          ./kind create cluster
 
       - name: test changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}
