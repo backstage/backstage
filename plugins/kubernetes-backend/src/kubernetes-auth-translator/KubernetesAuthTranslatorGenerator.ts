@@ -22,6 +22,7 @@ import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator
 import { GoogleServiceAccountAuthTranslator } from './GoogleServiceAccountAuthProvider';
 import { AzureIdentityKubernetesAuthTranslator } from './AzureIdentityKubernetesAuthTranslator';
 import { OidcKubernetesAuthTranslator } from './OidcKubernetesAuthTranslator';
+import { TokenKubernetesAuthTranslator } from './TokenKubernetesAuthTranslator';
 
 export class KubernetesAuthTranslatorGenerator {
   static getKubernetesAuthTranslatorInstance(
@@ -51,6 +52,9 @@ export class KubernetesAuthTranslatorGenerator {
       }
       case 'localKubectlProxy': {
         return new NoopKubernetesAuthTranslator();
+      }
+      case 'token': {
+        return new TokenKubernetesAuthTranslator();
       }
       default: {
         throw new Error(

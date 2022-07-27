@@ -31,6 +31,7 @@ import {
 import { Entity } from '@backstage/catalog-model';
 
 export interface KubernetesRequestAuth {
+  token?: string;
   google?: string;
   oidc?: {
     [key: string]: string;
@@ -196,4 +197,8 @@ export interface ClientPodStatus {
   cpu: ClientCurrentResourceUsage;
   memory: ClientCurrentResourceUsage;
   containers: ClientContainerStatus[];
+}
+
+export interface KubernetesProxyClusters {
+  [key: string]: string;
 }

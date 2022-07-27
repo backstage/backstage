@@ -57,6 +57,7 @@
     "helmet": "^5.0.2",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
+    "node-fetch": "^2.6.0",
     "morgan": "^1.10.0",
     "stream-buffers": "^3.0.2",
     "winston": "^3.2.1",
