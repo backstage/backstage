@@ -25,13 +25,12 @@ import {
 } from './KubernetesContainerRunner';
 import { RunContainerOptions } from './ContainerRunner';
 import { PassThrough } from 'stream';
-import { isDockerDisabledForTests } from '@backstage/backend-test-utils';
 
-const describeIfDocker = isDockerDisabledForTests() ? describe.skip : describe;
+const describeIfCI = Boolean(process.env.CI) ? describe : describe.skip;
 
 jest.setTimeout(10 * 1000);
 
-describeIfDocker('KubernetesContainerRunner', () => {
+describeIfCI('KubernetesContainerRunner', () => {
   const kubeConfig = new KubeConfig();
   kubeConfig.loadFromDefault();
   const name = 'kube-runner';
