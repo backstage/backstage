@@ -2828,9 +2828,9 @@
     meros "^1.1.4"
 
 "@graphql-codegen/cli@^2.3.1":
-  version "2.11.0"
-  resolved "https://registry.npmjs.org/@graphql-codegen/cli/-/cli-2.11.0.tgz#a3b981e1471e3c696058a0eb87fcd82f49ad2bc4"
-  integrity sha512-5twZs3PVSPg9mfaptoNFm1x0YQQsF4WPmgu0zbB4XSuIZ/gaAKA4LT1WEiuFSQNcgvbBbD9cpFdauyD4GS+Wwg==
+  version "2.11.1"
+  resolved "https://registry.npmjs.org/@graphql-codegen/cli/-/cli-2.11.1.tgz#89e7e6e58f6171f5aa4ddd87f411c2a4aae8ef19"
+  integrity sha512-WPVzIQnNSa35R7/i3kg4tEDWVesqzpYFEq2HbJoL2YGmTcoE3oedqiXYJ0YMjG4tJF6o8EL+UwHfA7zV38XLxg==
   dependencies:
     "@graphql-codegen/core" "2.6.0"
     "@graphql-codegen/plugin-helpers" "^2.6.1"
@@ -2838,7 +2838,7 @@
     "@graphql-tools/code-file-loader" "^7.3.0"
     "@graphql-tools/git-loader" "^7.2.0"
     "@graphql-tools/github-loader" "^7.3.1"
-    "@graphql-tools/graphql-file-loader" "^7.4.0"
+    "@graphql-tools/graphql-file-loader" "^7.5.0"
     "@graphql-tools/json-file-loader" "^7.4.0"
     "@graphql-tools/load" "^7.7.0"
     "@graphql-tools/prisma-loader" "^7.2.2"
@@ -3059,13 +3059,24 @@
     sync-fetch "0.4.1"
     tslib "^2.4.0"
 
-"@graphql-tools/graphql-file-loader@^7.3.7", "@graphql-tools/graphql-file-loader@^7.4.0":
+"@graphql-tools/graphql-file-loader@^7.3.7":
   version "7.4.0"
   resolved "https://registry.npmjs.org/@graphql-tools/graphql-file-loader/-/graphql-file-loader-7.4.0.tgz#c06e36248dd6a2025de65a1cfce03222ad0e74c2"
   integrity sha512-r1lslE5GlWO/nbDX82enHjvva7qQiZEIPm+LC9JSgKaYuVoYHuIuIAVYkpBHeaRK1Kbh/86pEhL7PuBZ/cIWSA==
   dependencies:
     "@graphql-tools/import" "6.7.0"
     "@graphql-tools/utils" "8.8.0"
+    globby "^11.0.3"
+    tslib "^2.4.0"
+    unixify "^1.0.0"
+
+"@graphql-tools/graphql-file-loader@^7.5.0":
+  version "7.5.0"
+  resolved "https://registry.npmjs.org/@graphql-tools/graphql-file-loader/-/graphql-file-loader-7.5.0.tgz#b08e2a7c64a1fecb5fc01d557a07116a3151ee14"
+  integrity sha512-X3wcC+ZljbXTwdTTSp3oUHJd66mFLDKI750uhB0HidBxE6+wyw7fhmJVJiYROXPswaGliuabpo0JEyLj7hhWKA==
+  dependencies:
+    "@graphql-tools/import" "6.7.1"
+    "@graphql-tools/utils" "8.9.0"
     globby "^11.0.3"
     tslib "^2.4.0"
     unixify "^1.0.0"
@@ -3087,6 +3098,15 @@
   integrity sha512-u9JL4fClKKyBTQpgb4QFacYUwgBCs4lW1NaHX0hD2zBdahIYidokBY0QkOqOCEAnWeFqpEmAjB62ulLiAJWc2g==
   dependencies:
     "@graphql-tools/utils" "8.8.0"
+    resolve-from "5.0.0"
+    tslib "^2.4.0"
+
+"@graphql-tools/import@6.7.1":
+  version "6.7.1"
+  resolved "https://registry.npmjs.org/@graphql-tools/import/-/import-6.7.1.tgz#bb62a109503266f25e6dd8799763eddaeba8da3a"
+  integrity sha512-StLosFVhdw+eZkL+v9dBabszxCAZtEYW4Oy1+750fDkH39GrmzOB8mWiYna7rm9+GMisC9atJtXuAfMF02Aoag==
+  dependencies:
+    "@graphql-tools/utils" "8.9.0"
     resolve-from "5.0.0"
     tslib "^2.4.0"
 
@@ -3230,6 +3250,13 @@
   version "8.8.0"
   resolved "https://registry.npmjs.org/@graphql-tools/utils/-/utils-8.8.0.tgz#8332ff80a1da9204ccf514750dd6f5c5cccf17dc"
   integrity sha512-KJrtx05uSM/cPYFdTnGAS1doL5bftJLAiFCDMZ8Vkifztz3BFn3gpFiy/o4wDtM8s39G46mxmt2Km/RmeltfGw==
+  dependencies:
+    tslib "^2.4.0"
+
+"@graphql-tools/utils@8.9.0":
+  version "8.9.0"
+  resolved "https://registry.npmjs.org/@graphql-tools/utils/-/utils-8.9.0.tgz#c6aa5f651c9c99e1aca55510af21b56ec296cdb7"
+  integrity sha512-pjJIWH0XOVnYGXCqej8g/u/tsfV4LvLlj0eATKQu5zwnxd/TiTHq7Cg313qUPTFFHZ3PP5wJ15chYVtLDwaymg==
   dependencies:
     tslib "^2.4.0"
 
