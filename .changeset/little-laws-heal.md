@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog': minor
 ---
 
-Allow changing the subtitle of the CatalogTable component
+Allow changing the subtitle of the `CatalogTable` component
