@@ -1,0 +1,25 @@
+name: Build Images and Handle Uffizzi Previews.
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [closed]
+
+jobs:
+  delete-uffizzi-preview:
+    name: Use Remote Workflow to Delete an Existing Preview
+    uses: UffizziCloud/preview-action/.github/workflows/reusable.yaml@v2.1.0
+    if: ${{ github.event_name == 'pull_request' && github.event.action == 'closed' }}
+    with:
+      compose-file-cache-key: ''
+      compose-file-cache-path: docker-compose.rendered.yml
+      username: vibhav.bobade+backstage@uffizzi.com #"${{ secrets.UFFIZZI_USERNAME }}"
+      server: https://app.uffizzi.com
+      project: backstage-zhix
+    secrets:
+      password: ${{ secrets.UFFIZZI_PASSWORD }}
+    permissions:
+      contents: read
+      pull-requests: write 

@@ -1,0 +1,171 @@
+name: Build Image and Deploy Uffizzi Preview
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened,synchronize,reopened]
+
+jobs:
+  build-backstage:
+    name: Build and push `backstage`
+    runs-on: ubuntu-latest
+    outputs:
+      tags: ${{ steps.meta.outputs.tags }}
+    steps:
+      - name: Set Build Variables
+        run: |
+          if [[ "$GITHUB_REF" =~ ^refs/tags/v* ]]; then
+            echo "Using TAG mode: $GITHUB_REF_NAME"
+            echo "REL_VERSION=$GITHUB_REF_NAME" >> $GITHUB_ENV
+            echo "REL_VERSION_STRICT=${GITHUB_REF_NAME#?}" >> $GITHUB_ENV
+          else
+            echo "Using BRANCH mode: v$BASE_DEV_VERSION-dev.$GITHUB_RUN_NUMBER"
+            echo "REL_VERSION=v$BASE_DEV_VERSION-dev.$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
+            echo "REL_VERSION_STRICT=$BASE_DEV_VERSION-dev.$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
+          fi
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          path: backstage
+          ref: ${{ github.event.client_payload.version }}
+
+      - name: setup-node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+          registry-url: https://registry.npmjs.org/
+
+      # Beginning of yarn setup, keep in sync between all workflows.
+      # TODO(Rugvip): move this to composite action once all features we use are supported
+      - name: use node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+
+      # Cache every node_modules folder inside the monorepo
+      - name: cache all node_modules
+        id: cache-modules
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          # We use both yarn.lock and package.json as cache keys to ensure that
+          # changes to local monorepo packages bust the cache.
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
+
+      # If we get a cache hit for node_modules, there's no need to bring in the global
+      # yarn cache or run yarn install, as all dependencies will be installed already.
+
+      - name: find location of global yarn cache
+        id: yarn-cache
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: cache global yarn cache
+        uses: actions/cache@v2
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: yarn install
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+      # End of yarn setup
+
+      - name: backstage create-app | delete if already exists 
+        run: | 
+          rm -rf ./uffizzi-app
+          npx @backstage/create-app
+        env:
+          BACKSTAGE_APP_NAME: uffizzi-app
+
+
+      - name: Use Uffizzi's backstage app config 
+        run: |
+          ls ./uffizzi-app/
+          echo "------------------------ OLD PRODUCTION APP CONFIG"
+          cat ./uffizzi-app/app-config.production.yaml;
+          echo "------------------------ COPY UFFIZZI PRODUCTION APP CONFIG"
+          cp ./backstage/contrib/uffizzi/uffizzi.production.app-config.yaml ./uffizzi-app/app-config.production.yaml;
+          echo "------------------------ NEW PRODUCTION APP CONFIG"
+          cat ./uffizzi-app/app-config.production.yaml;
+          echo "------------------------ COPY UFFIZZI Dockerfile and docker-entrypoint.sh"
+          cp ./backstage/contrib/uffizzi/Dockerfile ./uffizzi-app/packages/backend/Dockerfile
+          cp ./backstage/contrib/uffizzi/docker-entrypoint.sh ./uffizzi-app/packages/backend/docker-entrypoint.sh
+          echo "------------------------ Check files in ./uffizzi-app"
+          ls ./uffizzi-app
+
+      - name: yarn build
+        run: yarn build
+        working-directory: ./uffizzi-app
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/backstage-${{ env.REL_VERSION_STRICT }}
+
+      - name: Build and Push Image to GHCR
+        uses: docker/build-push-action@v3
+        with:
+          context: './uffizzi-app'
+          file: ./uffizzi-app/packages/backend/Dockerfile
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          push: true
+
+  render-compose-file:
+    name: Render Docker Compose File
+    runs-on: ubuntu-latest
+    needs: 
+      - build-backstage
+    outputs:
+      compose-file-cache-key: ${{ steps.hash.outputs.hash }}
+    steps:
+      - name: Checkout git repo
+        uses: actions/checkout@v3
+      - name: Render Compose File
+        run: |
+          BACKSTAGE_IMAGE=$(echo ${{ needs.build-backstage.outputs.tags }})
+          export BACKSTAGE_IMAGE
+          # Render simple template from environment variables.
+          envsubst < contrib/uffizzi/docker-compose.template.yml > docker-compose.rendered.yml
+          cat docker-compose.rendered.yml
+      - name: Hash Rendered Compose File
+        id: hash
+        run: echo "::set-output name=hash::$(md5sum docker-compose.rendered.yml | awk '{ print $1 }')"
+      - name: Cache Rendered Compose File
+        uses: actions/cache@v3
+        with:
+          path: docker-compose.rendered.yml
+          key: ${{ steps.hash.outputs.hash }}
+
+  deploy-uffizzi-preview:
+    name: Use Remote Workflow to Preview on Uffizzi
+    needs: render-compose-file
+    uses: UffizziCloud/preview-action/.github/workflows/reusable.yaml@add_credentials
+    if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
+    with:
+      compose-file-cache-key: ${{ needs.render-compose-file.outputs.compose-file-cache-key }}
+      compose-file-cache-path: docker-compose.rendered.yml
+      username: vibhav.bobade+backstage@uffizzi.com #"${{ secrets.UFFIZZI_USERNAME }}"
+      server: https://app.uffizzi.com
+      project: backstage-zhix
+    secrets:
+      password: ${{ secrets.UFFIZZI_PASSWORD }}
+    permissions:
+      contents: read
+      pull-requests: write
