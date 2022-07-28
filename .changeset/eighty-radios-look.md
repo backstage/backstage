@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-sonarqube-backend': patch
+'@backstage/plugin-sonarqube-backend': minor
 ---
 
 Initial creation of the plugin
