@@ -28,6 +28,11 @@ import { Octokit } from 'octokit';
 export interface RouterOptions {
   logger: Logger;
   integrations: ScmIntegrations;
+  orgs: {
+    github: {
+      disableAppCredentials?: boolean;
+    };
+  };
 }
 
 export async function createRouter(
@@ -62,6 +67,10 @@ export async function createRouter(
       });
 
       return;
+    }
+
+    if (options.orgs.github.disableAppCredentials) {
+      throw new InputError('App credentials are disabled for this integration');
     }
 
     if (!integrationConfig?.config.apps?.length) {
