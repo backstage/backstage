@@ -58,18 +58,18 @@ export interface SonarqubeFindings {
   /**
    * All measures pertaining to the findings
    */
-  measures: Measure[];
+  measures: SonarqubeMeasure[];
 }
 
 interface MeasuresWrapper {
-  component: { measures: Measure[] };
+  component: { measures: SonarqubeMeasure[] };
 }
 
 /**
  * A specific measure on a project in Sonarqube
  * @public
  */
-export interface Measure {
+export interface SonarqubeMeasure {
   /**
    * Name of the measure
    */
