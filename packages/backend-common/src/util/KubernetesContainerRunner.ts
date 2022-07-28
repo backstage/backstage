@@ -220,7 +220,9 @@ export class KubernetesContainerRunner implements ContainerRunner {
         callback(pod);
       },
       err => {
-        this.handleError(err, errorCallback);
+        if (err) {
+          this.handleError(err, errorCallback);
+        }
       },
     );
   }
