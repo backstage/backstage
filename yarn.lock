@@ -2064,7 +2064,7 @@
     zen-observable "^0.8.15"
     zod "^3.11.6"
 
-"@backstage/core-components@^0.9.0", "@backstage/core-components@^0.9.5":
+"@backstage/core-components@^0.9.0":
   version "0.9.5"
   resolved "https://registry.npmjs.org/@backstage/core-components/-/core-components-0.9.5.tgz#5a0b34867aaee0549bfa67b39a69c09588fa3c7a"
   integrity sha512-kfAdN70idiEqHeH9ZQryn6C0RxJEKiRc/7srYIz0CVV88zJfc0nmZ5C/S10Gkht2xWfm95tTSw2P1vEYIBbfxg==
@@ -2137,7 +2137,7 @@
     "@material-ui/lab" "4.0.0-alpha.57"
     react-use "^17.2.4"
 
-"@backstage/integration@^1.2.1", "@backstage/integration@^1.2.2":
+"@backstage/integration@^1.2.2":
   version "1.2.2"
   resolved "https://registry.npmjs.org/@backstage/integration/-/integration-1.2.2.tgz#f0a9cb6ae31444832505d9f57dfa3f921fb0c6c0"
   integrity sha512-MIttnW6xEIun94muo0nmJ3hK9ks9IgUvBsYGNwfxsKpWBv3g3zZ4cU0pXpUdtvzhWOHw7w3HQrSPEVmm6MSqbA==
@@ -2151,7 +2151,7 @@
     lodash "^4.17.21"
     luxon "^3.0.0"
 
-"@backstage/plugin-catalog-react@^1.0.0", "@backstage/plugin-catalog-react@^1.1.1", "@backstage/plugin-catalog-react@^1.1.2":
+"@backstage/plugin-catalog-react@^1.0.0", "@backstage/plugin-catalog-react@^1.1.2":
   version "1.1.2"
   resolved "https://registry.npmjs.org/@backstage/plugin-catalog-react/-/plugin-catalog-react-1.1.2.tgz#253a99d9ced5d751f9d1fb3d278511d754aaed4e"
   integrity sha512-4O9TotC4aWuLA8gFcgvq/HeKXA80LUZ98WTdIqSA6iFjzh1BZbD/nvaG7Hw7X8m5C/Z7Ck4PM+ocB4XxxlVAZw==
