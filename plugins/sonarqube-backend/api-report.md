@@ -13,17 +13,13 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 // @public
 export class DefaultSonarqubeInfoProvider implements SonarqubeInfoProvider {
   static fromConfig(config: Config): DefaultSonarqubeInfoProvider;
-  getBaseUrl(instanceName: string): string;
+  getBaseUrl({ instanceName }: { instanceName: string }): {
+    baseUrl: string;
+  };
   getFindings(
     componentKey: string,
     instanceName: string,
   ): Promise<SonarqubeFindings | undefined>;
-}
-
-// @public
-export interface Measure {
-  metric: string;
-  value: string;
 }
 
 // @public
@@ -44,12 +40,14 @@ export class SonarqubeConfig {
 // @public
 export interface SonarqubeFindings {
   analysisDate: string;
-  measures: Measure[];
+  measures: SonarqubeMeasure[];
 }
 
 // @public
 export interface SonarqubeInfoProvider {
-  getBaseUrl(instanceName: string): string;
+  getBaseUrl({ instanceName }: { instanceName: string }): {
+    baseUrl: string;
+  };
   getFindings(
     componentKey: string,
     instanceName: string,
@@ -61,6 +59,12 @@ export interface SonarqubeInstanceConfig {
   apiKey: string;
   baseUrl: string;
   name: string;
+}
+
+// @public
+export interface SonarqubeMeasure {
+  metric: string;
+  value: string;
 }
 
 // (No @packageDocumentation comment for this package)
