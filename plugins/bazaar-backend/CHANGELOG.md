@@ -1,5 +1,13 @@
 # @backstage/plugin-bazaar-backend
 
+## 0.1.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/backend-test-utils@0.1.27-next.0
+
 ## 0.1.18
 
 ### Patch Changes

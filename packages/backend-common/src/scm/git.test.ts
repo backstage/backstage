@@ -26,6 +26,7 @@ describe('Git', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
+
   describe('add', () => {
     it('should call isomorphic-git add with the correct arguments', async () => {
       const git = Git.fromAuth({});
@@ -48,14 +49,48 @@ describe('Git', () => {
       const dir = 'mockdirectory';
       const remote = 'origin';
       const url = 'git@github.com/something/sads';
+      const force = true;
 
-      await git.addRemote({ dir, remote, url });
+      await git.addRemote({ dir, remote, url, force });
 
       expect(isomorphic.addRemote).toHaveBeenCalledWith({
         fs,
         dir,
         remote,
         url,
+        force,
+      });
+    });
+  });
+
+  describe('deleteRemote', () => {
+    it('should call isomorphic-git with the correct arguments', async () => {
+      const git = Git.fromAuth({});
+      const dir = 'mockdirectory';
+      const remote = 'origin';
+
+      await git.deleteRemote({ dir, remote });
+
+      expect(isomorphic.deleteRemote).toHaveBeenCalledWith({
+        fs,
+        dir,
+        remote,
+      });
+    });
+  });
+
+  describe('checkout', () => {
+    it('should call isomorphic-git with the correct arguments', async () => {
+      const git = Git.fromAuth({});
+      const dir = 'mockdirectory';
+      const ref = 'master';
+
+      await git.checkout({ dir, ref });
+
+      expect(isomorphic.checkout).toHaveBeenCalledWith({
+        fs,
+        dir,
+        ref,
       });
     });
   });
@@ -112,6 +147,33 @@ describe('Git', () => {
         onAuth: expect.any(Function),
       });
     });
+
+    it('should call isomorphic-git with the correct arguments (Bearer)', async () => {
+      const url = 'http://github.com/some/repo';
+      const dir = '/some/mock/dir';
+      const auth = {
+        token: 'test',
+      };
+      const git = Git.fromAuth(auth);
+
+      await git.clone({ url, dir });
+
+      expect(isomorphic.clone).toHaveBeenCalledWith({
+        fs,
+        http,
+        url,
+        dir,
+        singleBranch: true,
+        depth: 1,
+        onProgress: expect.any(Function),
+        headers: {
+          Authorization: 'Bearer test',
+          'user-agent': 'git/@isomorphic-git',
+        },
+        onAuth: expect.any(Function),
+      });
+    });
+
     it('should pass a function that returns the authorization as the onAuth handler', async () => {
       const url = 'http://github.com/some/repo';
       const dir = '/some/mock/dir';
@@ -130,7 +192,7 @@ describe('Git', () => {
       expect(onAuth()).toEqual(auth);
     });
 
-    it('should propogate the data from the error handler', async () => {
+    it('should propagate the data from the error handler', async () => {
       const url = 'http://github.com/some/repo';
       const dir = '/some/mock/dir';
       const auth = {
@@ -200,6 +262,31 @@ describe('Git', () => {
         onAuth: expect.any(Function),
       });
     });
+
+    it('should call isomorphic-git with the correct arguments (Bearer)', async () => {
+      const remote = 'http://github.com/some/repo';
+      const dir = '/some/mock/dir';
+      const auth = {
+        token: 'test',
+      };
+      const git = Git.fromAuth(auth);
+
+      await git.fetch({ remote, dir });
+
+      expect(isomorphic.fetch).toHaveBeenCalledWith({
+        fs,
+        http,
+        remote,
+        dir,
+        onProgress: expect.any(Function),
+        headers: {
+          Authorization: 'Bearer test',
+          'user-agent': 'git/@isomorphic-git',
+        },
+        onAuth: expect.any(Function),
+      });
+    });
+
     it('should pass a function that returns the authorization as the onAuth handler', async () => {
       const remote = 'http://github.com/some/repo';
       const dir = '/some/mock/dir';
@@ -218,7 +305,7 @@ describe('Git', () => {
       expect(onAuth()).toEqual(auth);
     });
 
-    it('should propogate the data from the error handler', async () => {
+    it('should propagate the data from the error handler', async () => {
       const remote = 'http://github.com/some/repo';
       const dir = '/some/mock/dir';
       const auth = {
@@ -295,13 +382,71 @@ describe('Git', () => {
         password: 'hunter2',
       };
       const git = Git.fromAuth(auth);
+      const remoteRef = 'master';
+      const force = true;
 
-      await git.push({ dir, remote });
+      await git.push({ dir, remote, remoteRef, force });
 
       expect(isomorphic.push).toHaveBeenCalledWith({
         fs,
         http,
         remote,
+        dir,
+        remoteRef,
+        force,
+        onProgress: expect.any(Function),
+        headers: {
+          'user-agent': 'git/@isomorphic-git',
+        },
+        onAuth: expect.any(Function),
+      });
+    });
+
+    it('should call isomorphic-git with the correct arguments (Bearer)', async () => {
+      const remote = 'origin';
+      const dir = '/some/mock/dir';
+      const auth = {
+        token: 'test',
+      };
+      const git = Git.fromAuth(auth);
+      const remoteRef = 'master';
+      const force = true;
+
+      await git.push({ dir, remote, remoteRef, force });
+
+      expect(isomorphic.push).toHaveBeenCalledWith({
+        fs,
+        http,
+        remote,
+        dir,
+        remoteRef,
+        force,
+        onProgress: expect.any(Function),
+        headers: {
+          Authorization: 'Bearer test',
+          'user-agent': 'git/@isomorphic-git',
+        },
+        onAuth: expect.any(Function),
+      });
+    });
+
+    it('should call isomorphic-git with remoteRef parameter', async () => {
+      const remote = 'origin';
+      const remoteRef = 'refs/for/master';
+      const dir = '/some/mock/dir';
+      const auth = {
+        username: 'blob',
+        password: 'hunter2',
+      };
+      const git = Git.fromAuth(auth);
+
+      await git.push({ dir, remote, remoteRef });
+
+      expect(isomorphic.push).toHaveBeenCalledWith({
+        fs,
+        http,
+        remote,
+        remoteRef,
         dir,
         onProgress: expect.any(Function),
         headers: {
@@ -310,6 +455,7 @@ describe('Git', () => {
         onAuth: expect.any(Function),
       });
     });
+
     it('should pass a function that returns the authorization as the onAuth handler', async () => {
       const remote = 'origin';
       const dir = '/some/mock/dir';
@@ -318,8 +464,10 @@ describe('Git', () => {
         password: 'hunter2',
       };
       const git = Git.fromAuth(auth);
+      const remoteRef = 'master';
+      const force = true;
 
-      await git.push({ remote, dir });
+      await git.push({ remote, dir, remoteRef, force });
 
       const { onAuth } = (
         isomorphic.push as unknown as jest.Mock<typeof isomorphic['push']>
@@ -328,7 +476,7 @@ describe('Git', () => {
       expect(onAuth()).toEqual(auth);
     });
 
-    it('should propogate the data from the error handler', async () => {
+    it('should propagate the data from the error handler', async () => {
       const remote = 'origin';
       const dir = '/some/mock/dir';
       const auth = {
@@ -336,6 +484,8 @@ describe('Git', () => {
         password: 'hunter2',
       };
       const git = Git.fromAuth(auth);
+      const remoteRef = 'master';
+      const force = true;
 
       (isomorphic.push as jest.Mock).mockImplementation(() => {
         const error: Error & { data?: unknown } = new Error('mock error');
@@ -344,7 +494,7 @@ describe('Git', () => {
         throw error;
       });
 
-      await expect(git.push({ remote, dir })).rejects.toThrow(
+      await expect(git.push({ remote, dir, remoteRef, force })).rejects.toThrow(
         'more information here',
       );
     });

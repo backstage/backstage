@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.1.8-next.0
+
+### Patch Changes
+
+- 17d45dbf10: Deprecate `AwsS3DiscoveryProcessor` in favor of `AwsS3EntityProvider` (since v0.1.4).
+
+  You can find a migration guide at
+  [the release notes for v0.1.4](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-aws/CHANGELOG.md#014).
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/integration@1.3.0-next.0
+  - @backstage/backend-tasks@0.3.4-next.0
+  - @backstage/plugin-catalog-backend@1.3.1-next.0
+
 ## 0.1.7
 
 ### Patch Changes

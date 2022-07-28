@@ -83,15 +83,17 @@ export async function initRepoAndPush({
 }: {
   dir: string;
   remoteUrl: string;
-  auth: { username: string; password: string };
+  // For use cases where token has to be used with Basic Auth
+  // it has to be provided as password together with a username
+  // which may be a fixed value defined by the provider.
+  auth: { username: string; password: string } | { token: string };
   logger: Logger;
   defaultBranch?: string;
   commitMessage?: string;
   gitAuthorInfo?: { name?: string; email?: string };
 }): Promise<void> {
   const git = Git.fromAuth({
-    username: auth.username,
-    password: auth.password,
+    ...auth,
     logger,
   });
 
@@ -124,6 +126,55 @@ export async function initRepoAndPush({
   await git.push({
     dir,
     remote: 'origin',
+  });
+}
+
+export async function commitAndPushRepo({
+  dir,
+  auth,
+  logger,
+  commitMessage,
+  gitAuthorInfo,
+  branch = 'master',
+  remoteRef,
+}: {
+  dir: string;
+  // For use cases where token has to be used with Basic Auth
+  // it has to be provided as password together with a username
+  // which may be a fixed value defined by the provider.
+  auth: { username: string; password: string } | { token: string };
+  logger: Logger;
+  commitMessage: string;
+  gitAuthorInfo?: { name?: string; email?: string };
+  branch?: string;
+  remoteRef?: string;
+}): Promise<void> {
+  const git = Git.fromAuth({
+    ...auth,
+    logger,
+  });
+
+  await git.fetch({ dir });
+  await git.checkout({ dir, ref: branch });
+  await git.add({ dir, filepath: '.' });
+
+  // use provided info if possible, otherwise use fallbacks
+  const authorInfo = {
+    name: gitAuthorInfo?.name ?? 'Scaffolder',
+    email: gitAuthorInfo?.email ?? 'scaffolder@backstage.io',
+  };
+
+  await git.commit({
+    dir,
+    message: commitMessage,
+    author: authorInfo,
+    committer: authorInfo,
+  });
+
+  await git.push({
+    dir,
+    remote: 'origin',
+    remoteRef: remoteRef ?? `refs/heads/${branch}`,
   });
 }
 

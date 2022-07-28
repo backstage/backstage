@@ -40,6 +40,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
     branchName: string;
     targetPath: string;
     token?: string;
+    commitAction?: 'create' | 'delete' | 'update';
     /** @deprecated Use projectPath instead */
     projectid?: string;
     removeSourceBranch?: boolean;
@@ -86,6 +87,13 @@ export const createPublishGitlabMergeRequestAction = (options: {
             title: 'Authentication Token',
             type: 'string',
             description: 'The token to use for authorization to GitLab',
+          },
+          commitAction: {
+            title: 'Commit action',
+            type: 'string',
+            enum: ['create', 'update', 'delete'],
+            description:
+              'The action to be used for git commit. Defaults to create.',
           },
           removeSourceBranch: {
             title: 'Delete source branch',
@@ -176,7 +184,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
       });
 
       const actions: Types.CommitAction[] = fileContents.map(file => ({
-        action: 'create',
+        action: ctx.input.commitAction ?? 'create',
         filePath: path.posix.join(ctx.input.targetPath, file.path),
         encoding: 'base64',
         content: file.content.toString('base64'),

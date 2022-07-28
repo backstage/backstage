@@ -150,6 +150,8 @@ export type BitbucketServerIntegrationConfig = {
   host: string;
   apiBaseUrl: string;
   token?: string;
+  username?: string;
+  password?: string;
 };
 
 // @public

@@ -207,7 +207,7 @@ of lower-level calls:
 
 ```ts
 // File: packages/backend/src/plugins/auth.ts
-import { getDefaultOwnershipRefs } from '@backstage/plugin-auth-backend';
+import { getDefaultOwnershipEntityRefs } from '@backstage/plugin-auth-backend';
 
 export default async function createPlugin(
   // ...
@@ -236,7 +236,7 @@ export default async function createPlugin(
         // an entity you will need to replace this step as well.
         //
         // You might also replace it if you for example want to filter out certain groups.
-        const ownershipRefs = getDefaultOwnershipRefs(entity);
+        const ownershipRefs = getDefaultOwnershipEntityRefs(entity);
 
         // The last step is to issue the token, where we might provide more options in the future.
         return ctx.issueToken({

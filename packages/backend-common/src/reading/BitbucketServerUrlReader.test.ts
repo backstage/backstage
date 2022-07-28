@@ -109,6 +109,55 @@ describe('BitbucketServerUrlReader', () => {
     });
   });
 
+  describe('readTree without branch', () => {
+    const repoBuffer = fs.readFileSync(
+      path.resolve(__dirname, '__fixtures__/bitbucket-server-repo.tar.gz'),
+    );
+
+    beforeEach(() => {
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/zip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename=backstage-mock.tgz',
+              ),
+              ctx.body(repoBuffer),
+            ),
+        ),
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits/*',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                values: [{ id: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }],
+              }),
+            ),
+        ),
+      );
+    });
+
+    it('uses private bitbucket host', async () => {
+      const response = await reader.readTree(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs?at=some-branch',
+      );
+
+      expect(response.etag).toBe('12ab34cd56ef');
+
+      const files = await response.files();
+
+      expect(files.length).toBe(1);
+      const indexMarkdownFile = await files[0].content();
+
+      expect(indexMarkdownFile.toString()).toBe('# Test\n');
+    });
+  });
+
   describe('search private', () => {
     const repoBuffer = fs.readFileSync(
       path.resolve(__dirname, '__fixtures__/bitbucket-server-repo.tar.gz'),

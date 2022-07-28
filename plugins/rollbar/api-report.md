@@ -91,6 +91,7 @@ const rollbarPlugin: BackstagePlugin<
   {
     entityContent: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export { rollbarPlugin as plugin };

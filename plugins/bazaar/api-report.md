@@ -16,6 +16,7 @@ export const bazaarPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 

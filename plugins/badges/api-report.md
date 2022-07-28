@@ -10,7 +10,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 // Warning: (ae-missing-release-tag) "badgesPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const badgesPlugin: BackstagePlugin<{}, {}>;
+export const badgesPlugin: BackstagePlugin<{}, {}, {}>;
 
 // Warning: (ae-missing-release-tag) "EntityBadgesDialog" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

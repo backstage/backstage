@@ -377,4 +377,178 @@ describe('createGitLabMergeRequest', () => {
       );
     });
   });
+
+  describe('createGitLabMergeRequestWithoutCommitAction', () => {
+    it('default commitAction is create', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'This MR is really good',
+        draft: true,
+        targetPath: 'source',
+      };
+      mockFs({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+          irrelevant: { 'bar.txt': 'Nothing to see here' },
+        },
+      });
+      const ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'Create my new MR',
+        [
+          {
+            action: 'create',
+            filePath: 'source/foo.txt',
+            content: 'SGVsbG8gdGhlcmUh',
+            encoding: 'base64',
+            execute_filemode: false,
+          },
+        ],
+      );
+    });
+  });
+
+  describe('createGitLabMergeRequestWithCommitAction', () => {
+    it('commitAction is create when create is passed in options', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'MR description',
+        commitAction: 'create',
+        draft: true,
+        targetPath: 'source',
+      };
+      mockFs({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+          irrelevant: { 'bar.txt': 'Nothing to see here' },
+        },
+      });
+
+      const ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'Create my new MR',
+        [
+          {
+            action: 'create',
+            filePath: 'source/foo.txt',
+            content: 'SGVsbG8gdGhlcmUh',
+            encoding: 'base64',
+            execute_filemode: false,
+          },
+        ],
+      );
+    });
+
+    it('commitAction is update when update is passed in options', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'MR description',
+        commitAction: 'update',
+        draft: true,
+        targetPath: 'source',
+      };
+      mockFs({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+          irrelevant: { 'bar.txt': 'Nothing to see here' },
+        },
+      });
+
+      const ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'Create my new MR',
+        [
+          {
+            action: 'update',
+            filePath: 'source/foo.txt',
+            content: 'SGVsbG8gdGhlcmUh',
+            encoding: 'base64',
+            execute_filemode: false,
+          },
+        ],
+      );
+    });
+
+    it('commitAction is delete when delete is passed in options', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'other MR description',
+        commitAction: 'delete',
+        draft: true,
+        targetPath: 'source',
+      };
+      mockFs({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+          irrelevant: { 'bar.txt': 'Nothing to see here' },
+        },
+      });
+
+      const ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'Create my new MR',
+        [
+          {
+            action: 'delete',
+            filePath: 'source/foo.txt',
+            content: 'SGVsbG8gdGhlcmUh',
+            encoding: 'base64',
+            execute_filemode: false,
+          },
+        ],
+      );
+    });
+  });
 });

@@ -22,6 +22,7 @@
 
 export * from './analytics';
 export * from './apis';
+export * from './plugin-options';
 export * from './app';
 export * from './extensions';
 export * from './icons';

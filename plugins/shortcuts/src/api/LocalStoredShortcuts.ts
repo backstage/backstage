@@ -15,11 +15,11 @@
  */
 
 import { pageTheme } from '@backstage/theme';
-import ObservableImpl from 'zen-observable';
 import { v4 as uuid } from 'uuid';
 import { ShortcutApi } from './ShortcutApi';
 import { Shortcut } from '../types';
 import { StorageApi } from '@backstage/core-plugin-api';
+import Observable from 'zen-observable';
 
 /**
  * Implementation of the ShortcutApi that uses the StorageApi to store shortcuts.
@@ -28,7 +28,15 @@ export class LocalStoredShortcuts implements ShortcutApi {
   constructor(private readonly storageApi: StorageApi) {}
 
   shortcut$() {
-    return this.observable;
+    return Observable.from(this.storageApi.observe$<Shortcut[]>('items')).map(
+      snapshot => snapshot.value ?? [],
+    );
+  }
+
+  get() {
+    return Array.from(
+      this.storageApi.snapshot<Shortcut[]>('items').value ?? [],
+    ).sort((a, b) => (a.title >= b.title ? 1 : -1));
   }
 
   async add(shortcut: Omit<Shortcut, 'id'>) {
@@ -36,14 +44,12 @@ export class LocalStoredShortcuts implements ShortcutApi {
     shortcuts.push({ ...shortcut, id: uuid() });
 
     await this.storageApi.set('items', shortcuts);
-    this.notify();
   }
 
   async remove(id: string) {
     const shortcuts = this.get().filter(s => s.id !== id);
 
     await this.storageApi.set('items', shortcuts);
-    this.notify();
   }
 
   async update(shortcut: Shortcut) {
@@ -51,7 +57,6 @@ export class LocalStoredShortcuts implements ShortcutApi {
     shortcuts.push(shortcut);
 
     await this.storageApi.set('items', shortcuts);
-    this.notify();
   }
 
   getColor(url: string) {
@@ -63,33 +68,8 @@ export class LocalStoredShortcuts implements ShortcutApi {
     return pageTheme[theme].colors[0];
   }
 
-  private subscribers = new Set<
-    ZenObservable.SubscriptionObserver<Shortcut[]>
-  >();
-
-  private readonly observable = new ObservableImpl<Shortcut[]>(subscriber => {
-    subscriber.next(this.get());
-    this.subscribers.add(subscriber);
-
-    return () => {
-      this.subscribers.delete(subscriber);
-    };
-  });
-
   private readonly THEME_MAP: Record<string, keyof typeof pageTheme> = {
     catalog: 'home',
     docs: 'documentation',
   };
-
-  private get() {
-    return Array.from(
-      this.storageApi.snapshot<Shortcut[]>('items').value ?? [],
-    ).sort((a, b) => (a.title >= b.title ? 1 : -1));
-  }
-
-  private notify() {
-    for (const subscription of this.subscribers) {
-      subscription.next(this.get());
-    }
-  }
 }

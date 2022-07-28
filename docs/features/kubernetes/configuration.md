@@ -373,23 +373,43 @@ view the Kubernetes API docs for your Kubernetes version (e.g.
 
 ### Role Based Access Control
 
-The current RBAC permissions required are read-only cluster wide, for the
-following objects:
+The current RBAC permissions required are read-only cluster wide, the below
+Kubernetes manifest describes which objects are required and will ensure
+the plugin functions correctly:
 
-- pods
-- services
-- configmaps
-- deployments
-- replicasets
-- horizontalpodautoscalers
-- ingresses
-- statefulsets
-
-The following RBAC permissions are required on the batch API group for the
-following objects:
-
-- jobs
-- cronjobs
+```yaml
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: backstage-read-only
+rules:
+  - apiGroups:
+      - '*'
+    resources:
+      - pods
+      - configmaps
+      - services
+      - deployments
+      - replicasets
+      - horizontalpodautoscalers
+      - ingresses
+      - statefulsets
+      - limitranges
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - batch
+    resources:
+      - jobs
+      - cronjobs
+    verbs:
+      - get
+      - list
+      - watch
+```
 
 ## Surfacing your Kubernetes components as part of an entity
 

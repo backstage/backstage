@@ -9,7 +9,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 
 // @public
-export const dynatracePlugin: BackstagePlugin<{}, {}>;
+export const dynatracePlugin: BackstagePlugin<{}, {}, {}>;
 
 // @public
 export const DynatraceTab: () => JSX.Element;
