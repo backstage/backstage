@@ -117,6 +117,7 @@ export class GitHubEntityProvider implements EntityProvider {
         id: taskId,
         fn: async () => {
           const logger = this.logger.child({
+            class: GitHubEntityProvider.prototype.constructor.name,
             taskId,
             taskInstanceId: uuid.v4(),
           });
