@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const mockGraphQLQuery = jest.fn(() => 'ti ri ri ri ra!');
+const mockGraphQLQuery = jest.fn(() => ({}));
 jest.mock('./useOctokitGraphQL', () => ({
   useOctokitGraphQL: jest.fn(() => mockGraphQLQuery),
 }));
@@ -22,84 +22,77 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { useGetIssuesByRepoFromGitHub } from './useGetIssuesByRepoFromGitHub';
 
-// fragment issues on Repository {
-//   issues(
-//     states: OPEN
-//     first: 40
-//     orderBy: { field: UPDATED_AT, direction: DESC }
-//   ) {
-//     totalCount
-//     edges {
-//       cursor
-//       node {
-//         assignees(first: 10) {
-//           edges {
-//             node {
-//               avatarUrl
-//               login
-//             }
-//           }
-//         }
-//         author {
-//           login
-//           avatarUrl
-//           url
-//         }
-//         repository {
-//           nameWithOwner
-//         }
-//         body
-//         title
-//         url
-//         participants {
-//           totalCount
-//         }
-//         updatedAt
-//         createdAt
-//         comments(last: 1) {
-//           totalCount
-//         }
-//       }
-//     }
-//   }
-// }
-
-// query {
-//   rateLimit {
-//     cost
-//     remaining
-//   }
-
-//     yomovie: repository(name: "yo-movie", owner: "mrwolny") {
-//       ...issues
-//     }
-//   ,
-//     yoanchor: repository(name: "yo-anchor", owner: "mrwolny") {
-//       ...issues
-//     }
-//   ,
-//     yomoviex: repository(name: "yo-movie", owner: "mrwolny") {
-//       ...issues
-//     }
-//   ,
-//     yoanchorx: repository(name: "yo-anchor", owner: "mrwolny") {
-//       ...issues
-//     }
-
-// }
-
 describe('useGetIssuesBeRepoFromGitHub', () => {
-  it('should rock!', async () => {
+  it('should call GitHub API with correct query with fragment for each repo', async () => {
     const Helper = () => {
       const getIssues = useGetIssuesByRepoFromGitHub();
 
       getIssues(['mrwolny/yo-yo', 'mrwolny/yoyo'], 10);
 
-      return <></>;
+      return <div />;
     };
 
     render(<Helper />);
 
     expect(mockGraphQLQuery).toHaveBeenCalled();
+    expect(mockGraphQLQuery).toHaveBeenCalledWith(
+      '\n' +
+        '    \n' +
+        '    fragment issues on Repository {\n' +
+        '      issues(\n' +
+        '        states: OPEN\n' +
+        '        first: 10\n' +
+        '        orderBy: { field: UPDATED_AT, direction: DESC }\n' +
+        '      ) {\n' +
+        '        totalCount\n' +
+        '        edges {\n' +
+        '          cursor\n' +
+        '          node {\n' +
+        '            assignees(first: 10) {\n' +
+        '              edges {\n' +
+        '                node {\n' +
+        '                  avatarUrl\n' +
+        '                  login\n' +
+        '                }\n' +
+        '              }\n' +
+        '            }\n' +
+        '            author {\n' +
+        '              login\n' +
+        '              avatarUrl\n' +
+        '              url\n' +
+        '            }\n' +
+        '            repository {\n' +
+        '              nameWithOwner\n' +
+        '            }\n' +
+        '            body\n' +
+        '            title\n' +
+        '            url\n' +
+        '            participants {\n' +
+        '              totalCount\n' +
+        '            }\n' +
+        '            updatedAt\n' +
+        '            createdAt\n' +
+        '            comments(last: 1) {\n' +
+        '              totalCount\n' +
+        '            }\n' +
+        '          }\n' +
+        '        }\n' +
+        '      }\n' +
+        '    }\n' +
+        '  \n' +
+        '\n' +
+        '    query {\n' +
+        '      \n' +
+        '        yoyo: repository(name: "yo-yo", owner: "mrwolny") {\n' +
+        '          ...issues\n' +
+        '        }\n' +
+        '      ,\n' +
+        '        yoyox: repository(name: "yoyo", owner: "mrwolny") {\n' +
+        '          ...issues\n' +
+        '        }\n' +
+        '      \n' +
+        '    }    \n' +
+        '  ',
+    );
   });
 });
