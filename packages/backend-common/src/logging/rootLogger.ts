@@ -72,7 +72,7 @@ export function setRootLoggerRedactionList(redactionList: string[]) {
  *
  * @public
  */
-export function redactLogLine(info: winston.Logform.TransformableInfo) {
+export function redactWinstonLogLine(info: winston.Logform.TransformableInfo) {
   // TODO(hhogg): The logger is created before the config is loaded, because the
   // logger is needed in the config loader. There is a risk of a secret being
   // logged out during the config loading stage.
@@ -106,7 +106,7 @@ export function createRootLogger(
       {
         level: env.LOG_LEVEL || 'info',
         format: winston.format.combine(
-          winston.format(redactLogLine)(),
+          winston.format(redactWinstonLogLine)(),
           env.NODE_ENV === 'production' ? winston.format.json() : coloredFormat,
         ),
         defaultMeta: {

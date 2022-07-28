@@ -569,7 +569,7 @@ export type ReadUrlResponseFactoryFromStreamOptions = {
 };
 
 // @public
-export function redactLogLine(
+export function redactWinstonLogLine(
   info: winston.Logform.TransformableInfo,
 ): winston.Logform.TransformableInfo;
 

@@ -19,6 +19,6 @@ export {
   createRootLogger,
   getRootLogger,
   setRootLogger,
-  redactLogLine,
+  redactWinstonLogLine,
 } from './rootLogger';
 export * from './voidLogger';
