@@ -26,6 +26,13 @@ export const createPropertyRule = (propertyType: 'metadata' | 'spec') =>
     resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
     apply: (resource: Entity, key: string, value?: string) => {
       const foundValue = get(resource[propertyType], key);
+
+      if (Array.isArray(foundValue)) {
+        if (value !== undefined) {
+          return foundValue.includes(value);
+        }
+        return foundValue.length > 0;
+      }
       if (value !== undefined) {
         return value === foundValue;
       }
