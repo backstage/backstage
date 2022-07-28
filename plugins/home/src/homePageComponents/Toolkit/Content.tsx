@@ -35,8 +35,10 @@ const useStyles = makeStyles(theme => ({
   },
   label: {
     marginTop: theme.spacing(1),
+    width: '72px',
     fontSize: '0.9em',
     lineHeight: '1.25',
+    overflowWrap: 'break-word',
     color: theme.palette.text.secondary,
   },
   icon: {
