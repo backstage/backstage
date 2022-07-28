@@ -150,6 +150,11 @@ import {
   ReportIssue,
 } from '@backstage/plugin-techdocs-module-addons-contrib';
 
+import {
+  GitHubIssuesCard,
+  GitHubIssuesPage,
+} from '@backstage/plugin-github-issues';
+
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
@@ -323,6 +328,10 @@ const overviewContent = (
     {entityWarningContent}
     <Grid item md={6} xs={12}>
       <EntityAboutCard variant="gridItem" />
+    </Grid>
+
+    <Grid item xs={12}>
+      <GitHubIssuesCard />
     </Grid>
 
     <Grid item md={6} xs={12}>
@@ -624,6 +633,9 @@ const userPage = (
             entityFilterKind={customEntityFilterKind}
           />
         </Grid>
+        <Grid item xs={12}>
+          <GitHubIssuesCard />
+        </Grid>
       </Grid>
     </EntityLayout.Route>
   </EntityLayoutWrapper>
@@ -646,7 +658,13 @@ const groupPage = (
         <Grid item xs={12}>
           <EntityMembersListCard />
         </Grid>
+        <Grid item xs={12}>
+          <GitHubIssuesCard />
+        </Grid>
       </Grid>
+    </EntityLayout.Route>
+    <EntityLayout.Route path="github-issues" title="GitHub Issues">
+      <GitHubIssuesPage />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
