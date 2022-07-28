@@ -55,7 +55,6 @@ export async function createRouter(
 
   const router = Router();
   router.use(express.json());
-  // mock api for now
   router.get('/findings', (async (request, response) => {
     const componentKey = request.query.componentKey;
     let instanceKey = request.query.instanceKey;
