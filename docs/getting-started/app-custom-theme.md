@@ -136,15 +136,27 @@ const myTheme = createTheme({
   fontFamily: 'Comic Sans MS',
   /* below drives the header colors */
   pageTheme: {
-    home: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
-    documentation: genPageTheme(['#8c4351', '#343b58'], shapes.wave2),
-    tool: genPageTheme(['#8c4351', '#343b58'], shapes.round),
-    service: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
-    website: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
-    library: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
-    other: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
-    app: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
-    apis: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
+    home: genPageTheme({ colors: ['#8c4351', '#343b58'], shape: shapes.wave }),
+    documentation: genPageTheme({
+      colors: ['#8c4351', '#343b58'],
+      shape: shapes.wave2,
+    }),
+    tool: genPageTheme({ colors: ['#8c4351', '#343b58'], shape: shapes.round }),
+    service: genPageTheme({
+      colors: ['#8c4351', '#343b58'],
+      shape: shapes.wave,
+    }),
+    website: genPageTheme({
+      colors: ['#8c4351', '#343b58'],
+      shape: shapes.wave,
+    }),
+    library: genPageTheme({
+      colors: ['#8c4351', '#343b58'],
+      shape: shapes.wave,
+    }),
+    other: genPageTheme({ colors: ['#8c4351', '#343b58'], shape: shapes.wave }),
+    app: genPageTheme({ colors: ['#8c4351', '#343b58'], shape: shapes.wave }),
+    apis: genPageTheme({ colors: ['#8c4351', '#343b58'], shape: shapes.wave }),
   },
 });
 ```
