@@ -92,7 +92,9 @@ export async function createRouter(
       );
     }
     response.send({
-      instanceUrl: sonarqubeInfoProvider.getBaseUrl(requestedInstanceKey),
+      instanceUrl: sonarqubeInfoProvider.getBaseUrl({
+        instanceName: requestedInstanceKey,
+      }).baseUrl,
     });
   }) as RequestHandler<unknown, { instanceUrl: string }, unknown, { instanceKey: string }>);
 

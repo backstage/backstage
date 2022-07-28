@@ -30,7 +30,7 @@ export interface SonarqubeInfoProvider {
    * @param instanceName - Name of the sonarqube instance to get the info from
    * @returns the url of the instance
    */
-  getBaseUrl(instanceName: string): string;
+  getBaseUrl({ instanceName }: { instanceName: string }): { baseUrl: string };
 
   /**
    * Query the sonarqube instance corresponding to the instanceName to get all
@@ -295,9 +295,9 @@ export class DefaultSonarqubeInfoProvider implements SonarqubeInfoProvider {
    * {@inheritDoc SonarqubeInfoProvider.getBaseUrl}
    * @throws Error If configuration can't be retrieved.
    */
-  getBaseUrl(instanceName: string): string {
+  getBaseUrl({ instanceName }: { instanceName: string }): { baseUrl: string } {
     const instanceConfig = this.config.getInstanceConfig(instanceName ?? '');
-    return instanceConfig.baseUrl;
+    return { baseUrl: instanceConfig.baseUrl };
   }
 
   /**
