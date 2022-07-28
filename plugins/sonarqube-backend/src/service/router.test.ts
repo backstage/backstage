@@ -23,7 +23,10 @@ import { SonarqubeFindings } from './sonarqubeInfoProvider';
 
 describe('createRouter', () => {
   let app: express.Express;
-  const getBaseUrlMock: jest.Mock<string, [string]> = jest.fn();
+  const getBaseUrlMock: jest.Mock<
+    { baseUrl: string },
+    [{ instanceName: string }]
+  > = jest.fn();
   const getFindingsMock: jest.Mock<
     Promise<SonarqubeFindings | undefined>,
     [string, string]
@@ -104,7 +107,7 @@ describe('createRouter', () => {
     const DUMMY_INSTANCE_KEY = 'myInstance';
     const DUMMY_INSTANCE_URL = 'http://sonarqube.example.com';
     it('returns ok', async () => {
-      getBaseUrlMock.mockReturnValue(DUMMY_INSTANCE_URL);
+      getBaseUrlMock.mockReturnValue({ baseUrl: DUMMY_INSTANCE_URL });
       const response = await request(app)
         .get('/instanceUrl')
         .query({
@@ -112,7 +115,9 @@ describe('createRouter', () => {
         })
         .send();
       expect(getBaseUrlMock).toBeCalledTimes(1);
-      expect(getBaseUrlMock).toBeCalledWith(DUMMY_INSTANCE_KEY);
+      expect(getBaseUrlMock).toBeCalledWith({
+        instanceName: DUMMY_INSTANCE_KEY,
+      });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ instanceUrl: DUMMY_INSTANCE_URL });
     });

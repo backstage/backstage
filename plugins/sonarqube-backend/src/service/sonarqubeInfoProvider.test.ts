@@ -237,7 +237,9 @@ describe('DefaultSonarqubeInfoProvider', () => {
         },
       });
 
-      expect(provider.getBaseUrl('')).toEqual('https://sonarqube.example.com');
+      expect(provider.getBaseUrl({ instanceName: '' })).toEqual({
+        baseUrl: 'https://sonarqube.example.com',
+      });
     });
 
     it('Provide base url for named default config and "default" string', async () => {
@@ -253,9 +255,9 @@ describe('DefaultSonarqubeInfoProvider', () => {
         },
       });
 
-      expect(provider.getBaseUrl('default')).toEqual(
-        'https://sonarqube.example.com',
-      );
+      expect(provider.getBaseUrl({ instanceName: 'default' })).toEqual({
+        baseUrl: 'https://sonarqube.example.com',
+      });
     });
 
     it('Provide base url for named config', async () => {
@@ -276,9 +278,9 @@ describe('DefaultSonarqubeInfoProvider', () => {
         },
       });
 
-      expect(provider.getBaseUrl('other')).toEqual(
-        'https://sonarqube-other.example.com',
-      );
+      expect(provider.getBaseUrl({ instanceName: 'other' })).toEqual({
+        baseUrl: 'https://sonarqube-other.example.com',
+      });
     });
   });
 
