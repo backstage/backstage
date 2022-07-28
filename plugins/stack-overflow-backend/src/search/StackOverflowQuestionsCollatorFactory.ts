@@ -50,6 +50,7 @@ export type StackOverflowQuestionsRequestParams = {
  */
 export type StackOverflowQuestionsCollatorFactoryOptions = {
   baseUrl?: string;
+  apiKey?: string;
   requestParams: StackOverflowQuestionsRequestParams;
   logger: Logger;
 };
@@ -64,11 +65,13 @@ export class StackOverflowQuestionsCollatorFactory
 {
   protected requestParams: StackOverflowQuestionsRequestParams;
   private readonly baseUrl: string | undefined;
+  private readonly apiKey: string | undefined;
   private readonly logger: Logger;
   public readonly type: string = 'stack-overflow';
 
   private constructor(options: StackOverflowQuestionsCollatorFactoryOptions) {
     this.baseUrl = options.baseUrl;
+    this.apiKey = options.apiKey;
     this.requestParams = options.requestParams;
     this.logger = options.logger;
   }
@@ -77,10 +80,15 @@ export class StackOverflowQuestionsCollatorFactory
     config: Config,
     options: StackOverflowQuestionsCollatorFactoryOptions,
   ) {
+    const apiKey = config.getOptionalString('stackoverflow.apiKey');
     const baseUrl =
       config.getOptionalString('stackoverflow.baseUrl') ||
       'https://api.stackexchange.com/2.2';
-    return new StackOverflowQuestionsCollatorFactory({ ...options, baseUrl });
+    return new StackOverflowQuestionsCollatorFactory({
+      ...options,
+      baseUrl,
+      apiKey,
+    });
   }
 
   async getCollator() {
@@ -93,12 +101,28 @@ export class StackOverflowQuestionsCollatorFactory
         `No stackoverflow.baseUrl configured in your app-config.yaml`,
       );
     }
+
+    try {
+      if (Object.keys(this.requestParams).indexOf('key') >= 0) {
+        this.logger.warn(
+          'The API Key should be passed as a seperate param to bypass encoding',
+        );
+        delete this.requestParams.key;
+      }
+    } catch (e) {
+      this.logger.error(`Caught ${e}`);
+    }
+
     const params = qs.stringify(this.requestParams, {
       arrayFormat: 'comma',
       addQueryPrefix: true,
     });
 
-    const res = await fetch(`${this.baseUrl}/questions${params}`);
+    const apiKeyParam = this.apiKey
+      ? `${params ? '&' : '?'}key=${this.apiKey}`
+      : '';
+
+    const res = await fetch(`${this.baseUrl}/questions${params}${apiKeyParam}`);
     const data = await res.json();
 
     for (const question of data.items) {

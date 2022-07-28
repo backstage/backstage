@@ -29,7 +29,7 @@ import { CronJobDrawer } from './CronJobsDrawer';
 import { getOwnedResources } from '../../utils/owner';
 import { GroupedResponsesContext } from '../../hooks';
 import { StatusError, StatusOK } from '@backstage/core-components';
-import cronstrue from 'cronstrue';
+import { humanizeCron } from '../../utils/crons';
 
 type CronJobsAccordionsProps = {
   children?: React.ReactNode;
@@ -79,7 +79,7 @@ const CronJobSummary = ({ cronJob }: CronJobSummaryProps) => {
           <Typography variant="body1">
             Schedule:{' '}
             {cronJob.spec?.schedule
-              ? `${cronJob.spec.schedule} (${cronstrue.toString(
+              ? `${cronJob.spec.schedule} (${humanizeCron(
                   cronJob.spec.schedule,
                 )})`
               : 'N/A'}

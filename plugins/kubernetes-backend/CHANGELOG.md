@@ -1,5 +1,14 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.7.1-next.0
+
+### Patch Changes
+
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/plugin-auth-node@0.2.4-next.0
+
 ## 0.7.0
 
 ### Minor Changes

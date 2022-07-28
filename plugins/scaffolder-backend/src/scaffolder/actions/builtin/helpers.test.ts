@@ -33,8 +33,6 @@ jest.mock('@backstage/backend-common', () => ({
 }));
 
 const mockedGit = Git.fromAuth({
-  username: 'test-user',
-  password: 'test-password',
   logger: getVoidLogger(),
 });
 
@@ -98,6 +96,22 @@ describe('initRepoAndPush', () => {
         dir: '/test/repo/dir/',
         remote: 'origin',
       });
+    });
+  });
+
+  it('with token', async () => {
+    await initRepoAndPush({
+      dir: '/test/repo/dir/',
+      remoteUrl: 'git@github.com:test/repo.git',
+      auth: {
+        token: 'test-token',
+      },
+      logger: getVoidLogger(),
+    });
+
+    expect(mockedGit.init).toHaveBeenCalledWith({
+      dir: '/test/repo/dir/',
+      defaultBranch: 'master',
     });
   });
 

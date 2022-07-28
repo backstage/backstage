@@ -1,5 +1,13 @@
 # @backstage/backend-tasks
 
+## 0.3.4-next.0
+
+### Patch Changes
+
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+
 ## 0.3.3
 
 ### Patch Changes

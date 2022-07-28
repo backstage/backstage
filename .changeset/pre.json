@@ -164,7 +164,36 @@
     "@backstage/plugin-user-settings": "0.4.6",
     "@backstage/plugin-vault": "0.1.1",
     "@backstage/plugin-vault-backend": "0.2.0",
-    "@backstage/plugin-xcmetrics": "0.2.27"
+    "@backstage/plugin-xcmetrics": "0.2.27",
+    "@internal/plugin-catalog-customized": "0.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "calm-clocks-drum",
+    "create-app-1658824524",
+    "dull-pumas-hope",
+    "dull-starfishes-chew",
+    "famous-bikes-brush",
+    "fast-panthers-fold",
+    "few-berries-deny",
+    "fresh-hounds-argue",
+    "friendly-sheep-flash",
+    "khaki-meals-hammer",
+    "loud-panthers-arrive",
+    "metal-points-itch",
+    "mighty-penguins-tap",
+    "modern-shrimps-wave",
+    "nine-mails-crash",
+    "odd-adults-smash",
+    "olive-tips-camp",
+    "pretty-gifts-do",
+    "purple-apricots-build",
+    "renovate-15030f1",
+    "renovate-5b7b62b",
+    "short-trains-roll",
+    "silver-poets-push",
+    "strange-crabs-confess",
+    "thick-readers-invite",
+    "violet-mayflies-mix",
+    "violet-trees-play"
+  ]
 }

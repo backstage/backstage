@@ -1,5 +1,26 @@
 # @backstage/plugin-shortcuts
 
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 5b769fddb5: Internal observable replaced with a mapping from the storage API. This fixes shortcuts initialization when using firestore.
+
+  `ShortcutApi.get` method, that returns an immediate snapshot of shortcuts, made public.
+
+  Example of how to get and observe `shortcuts`:
+
+  ```typescript
+  const shortcutApi = useApi(shortcutsApiRef);
+  const shortcuts = useObservable(shortcutApi.shortcut$(), shortcutApi.get());
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/core-components@0.10.1-next.0
+
 ## 0.2.8
 
 ### Patch Changes

@@ -119,7 +119,10 @@ class GithubAppManager {
         const repos = await installationClient.paginate(
           installationClient.apps.listReposAccessibleToInstallation,
         );
-        const hasRepo = repos.repositories.some(repository => {
+        // The return type of the paginate method is incorrect.
+        const repositories: RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']['data']['repositories'] =
+          repos.repositories ?? repos;
+        const hasRepo = repositories.some(repository => {
           return repository.name === repo;
         });
         if (!hasRepo) {

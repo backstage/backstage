@@ -373,6 +373,7 @@ export class Git {
   static fromAuth: (options: {
     username?: string;
     password?: string;
+    token?: string;
     logger?: Logger;
   }) => Git;
   // (undocumented)
@@ -577,6 +578,11 @@ export class ReadUrlResponseFactory {
 export type ReadUrlResponseFactoryFromStreamOptions = {
   etag?: string;
 };
+
+// @public
+export function redactWinstonLogLine(
+  info: winston.Logform.TransformableInfo,
+): winston.Logform.TransformableInfo;
 
 // @public
 export function requestLoggingHandler(logger?: Logger): RequestHandler;

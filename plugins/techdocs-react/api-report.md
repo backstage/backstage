@@ -7,6 +7,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { ComponentType } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
 import { Dispatch } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Extension } from '@backstage/core-plugin-api';
@@ -151,6 +152,12 @@ export interface TechDocsStorageApi {
 
 // @public
 export const techdocsStorageApiRef: ApiRef<TechDocsStorageApi>;
+
+// @public
+export function toLowercaseEntityRefMaybe(
+  entityRef: CompoundEntityRef,
+  config: Config,
+): CompoundEntityRef;
 
 // @public
 export const useShadowDomStylesLoading: (element: Element | null) => boolean;

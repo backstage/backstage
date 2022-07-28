@@ -1,5 +1,30 @@
 # @backstage/plugin-catalog
 
+## 1.5.0-next.0
+
+### Minor Changes
+
+- 80da5162c7: Plugin catalog has been modified to use an experimental feature where you can customize the title of the create button.
+
+  You can modify it by doing:
+
+  ```typescript jsx
+  import { catalogPlugin } from '@backstage/plugin-catalog';
+
+  catalogPlugin.__experimentalReconfigure({
+    createButtonTitle: 'New',
+  });
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/integration-react@1.1.3-next.0
+  - @backstage/plugin-catalog-react@1.1.3-next.0
+  - @backstage/core-components@0.10.1-next.0
+  - @backstage/plugin-search-react@1.0.1-next.0
+
 ## 1.4.0
 
 ### Minor Changes
