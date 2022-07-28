@@ -201,10 +201,10 @@
     node-fetch "^2.6.0"
     tiny-merge-patch "^0.1.2"
 
-"@asyncapi/react-component@1.0.0-next.39":
-  version "1.0.0-next.39"
-  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-1.0.0-next.39.tgz#2aa236b1783f36249752b3c30e0c7e0125af8c1f"
-  integrity sha512-UQYmzbvKwDm3HVGjLL1znK35bOKlWNiTUw29oSe6Xdil/Y7RODLctGQrbwKSCeP0VwtsokhwivQ3QHuL3byjVw==
+"@asyncapi/react-component@1.0.0-next.40":
+  version "1.0.0-next.40"
+  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-1.0.0-next.40.tgz#91cb16008f18b6614f00095029f37380a1ad557b"
+  integrity sha512-C46TXu1agGWEKE6gAdJ+Nf+agdXPeoUUFhpfR03IaCU108kOw05HarHm6VX4y3/nDuNv36p4UmbU4dY6n2t0aA==
   dependencies:
     "@asyncapi/avro-schema-parser" "^0.3.0"
     "@asyncapi/openapi-schema-parser" "^2.0.0"
@@ -213,6 +213,7 @@
     isomorphic-dompurify "^0.13.0"
     marked "^4.0.14"
     openapi-sampler "^1.2.1"
+    react-icons "^4.4.0"
     use-resize-observer "^8.0.0"
 
 "@asyncapi/specs@^2.14.0":
@@ -22096,6 +22097,11 @@ react-hot-loader@^4.13.0:
     react-lifecycles-compat "^3.0.4"
     shallowequal "^1.1.0"
     source-map "^0.7.3"
+
+react-icons@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.npmjs.org/react-icons/-/react-icons-4.4.0.tgz#a13a8a20c254854e1ec9aecef28a95cdf24ef703"
+  integrity sha512-fSbvHeVYo/B5/L4VhB7sBA1i2tS8MkT0Hb9t2H1AVPkwGfVHLJCqyr2Py9dKMxsyM63Eng1GkdZfbWj+Fmv8Rg==
 
 react-immutable-proptypes@2.2.0:
   version "2.2.0"

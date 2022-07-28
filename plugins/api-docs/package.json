@@ -33,7 +33,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@asyncapi/react-component": "1.0.0-next.39",
+    "@asyncapi/react-component": "1.0.0-next.40",
     "@backstage/catalog-model": "^1.1.0",
     "@backstage/core-components": "^0.10.1-next.0",
     "@backstage/core-plugin-api": "^1.0.5-next.0",
