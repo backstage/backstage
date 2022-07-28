@@ -157,6 +157,8 @@ export interface CatalogTableProps {
   // (undocumented)
   columns?: TableColumn<CatalogTableRow>[];
   // (undocumented)
+  subtitle?: string;
+  // (undocumented)
   tableOptions?: TableProps<CatalogTableRow>['options'];
 }
 
