@@ -40,26 +40,6 @@ import {
 import { getOrganizationRepositories, Repository } from '../lib/github';
 
 /**
- * Options for {@link GitHubEntityProvider}.
- *
- * @public
- */
-export interface GitHubEntityProviderOptions {
-  /**
-   * A Scheduled Task Runner
-   *
-   * {@link @backstage/backend-tasks#PluginTaskScheduler.createScheduledTaskRunner}
-   * to enable automatic scheduling of tasks.
-   */
-  schedule: TaskRunner;
-
-  /**
-   * The logger to use.
-   */
-  logger: Logger;
-}
-
-/**
  * Discovers catalog files located in [GitHub](https://github.com).
  * The provider will search your GitHub account and register catalog files matching the configured path
  * as Location entity and via following processing steps add all contained catalog entities.
@@ -77,7 +57,10 @@ export class GitHubEntityProvider implements EntityProvider {
 
   static fromConfig(
     config: Config,
-    options: GitHubEntityProviderOptions,
+    options: {
+      logger: Logger;
+      schedule: TaskRunner;
+    },
   ): GitHubEntityProvider[] {
     const integrations = ScmIntegrations.fromConfig(config);
     const integration = integrations.github.byHost('github.com');
@@ -138,7 +121,7 @@ export class GitHubEntityProvider implements EntityProvider {
             taskInstanceId: uuid.v4(),
           });
           try {
-            await this.refresh();
+            await this.refresh(logger);
           } catch (error) {
             logger.error(error);
           }
@@ -147,7 +130,7 @@ export class GitHubEntityProvider implements EntityProvider {
     };
   }
 
-  async refresh() {
+  async refresh(logger: Logger) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -169,7 +152,7 @@ export class GitHubEntityProvider implements EntityProvider {
       entities,
     });
 
-    this.logger.info(
+    logger.info(
       `Read ${targets.length} GitHub repositories (${entities.length} matching the pattern)`,
     );
   }

@@ -47,18 +47,15 @@ export class GitHubEntityProvider implements EntityProvider {
   // (undocumented)
   static fromConfig(
     config: Config,
-    options: GitHubEntityProviderOptions,
+    options: {
+      logger: Logger;
+      schedule: TaskRunner;
+    },
   ): GitHubEntityProvider[];
   // (undocumented)
   getProviderName(): string;
   // (undocumented)
-  refresh(): Promise<void>;
-}
-
-// @public
-export interface GitHubEntityProviderOptions {
-  logger: Logger;
-  schedule: TaskRunner;
+  refresh(logger: Logger): Promise<void>;
 }
 
 // @public
