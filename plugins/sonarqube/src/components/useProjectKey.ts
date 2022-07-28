@@ -16,11 +16,6 @@
 
 import { Entity } from '@backstage/catalog-model';
 
-export interface ProjectInfo {
-  projectInstance: string;
-  projectKey: string;
-}
-
 export const SONARQUBE_PROJECT_KEY_ANNOTATION = 'sonarqube.org/project-key';
 export const SONARQUBE_PROJECT_INSTANCE_SEPARATOR = '/';
 
@@ -35,7 +30,12 @@ export const isSonarQubeAvailable = (entity: Entity) =>
  * @param entity entity to find the sonarqube information from.
  * @return a ProjectInfo properly populated.
  */
-export const useProjectInfo = (entity: Entity): ProjectInfo => {
+export const useProjectInfo = (
+  entity: Entity,
+): {
+  projectInstance: string;
+  projectKey: string;
+} => {
   let projectInstance = '';
   let projectKey = '';
   const annotation =
