@@ -2072,52 +2072,7 @@
     zen-observable "^0.8.15"
     zod "^3.11.6"
 
-"@backstage/core-components@^0.9.0":
-  version "0.9.5"
-  resolved "https://registry.npmjs.org/@backstage/core-components/-/core-components-0.9.5.tgz#5a0b34867aaee0549bfa67b39a69c09588fa3c7a"
-  integrity sha512-kfAdN70idiEqHeH9ZQryn6C0RxJEKiRc/7srYIz0CVV88zJfc0nmZ5C/S10Gkht2xWfm95tTSw2P1vEYIBbfxg==
-  dependencies:
-    "@backstage/config" "^1.0.1"
-    "@backstage/core-plugin-api" "^1.0.3"
-    "@backstage/errors" "^1.0.0"
-    "@backstage/theme" "^0.2.15"
-    "@backstage/version-bridge" "^1.0.1"
-    "@material-table/core" "^3.1.0"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.57"
-    "@react-hookz/web" "^14.0.0"
-    "@types/react-sparklines" "^1.7.0"
-    "@types/react-text-truncate" "^0.14.0"
-    ansi-regex "^6.0.1"
-    classnames "^2.2.6"
-    d3-selection "^3.0.0"
-    d3-shape "^3.0.0"
-    d3-zoom "^3.0.0"
-    dagre "^0.8.5"
-    history "^5.0.0"
-    immer "^9.0.1"
-    lodash "^4.17.21"
-    pluralize "^8.0.0"
-    prop-types "^15.7.2"
-    qs "^6.9.4"
-    rc-progress "3.3.3"
-    react-helmet "6.1.0"
-    react-hook-form "^7.12.2"
-    react-markdown "^8.0.0"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    react-sparklines "^1.7.0"
-    react-syntax-highlighter "^15.4.5"
-    react-text-truncate "^0.19.0"
-    react-use "^17.3.2"
-    react-virtualized-auto-sizer "^1.0.6"
-    react-window "^1.8.6"
-    remark-gfm "^3.0.1"
-    zen-observable "^0.8.15"
-    zod "^3.11.6"
-
-"@backstage/core-plugin-api@^1.0.0", "@backstage/core-plugin-api@^1.0.3", "@backstage/core-plugin-api@^1.0.4":
+"@backstage/core-plugin-api@^1.0.0", "@backstage/core-plugin-api@^1.0.4":
   version "1.0.4"
   resolved "https://registry.npmjs.org/@backstage/core-plugin-api/-/core-plugin-api-1.0.4.tgz#0dbe80be1d298273df0299ef69baa18522d9a808"
   integrity sha512-fMMpjqW2RjwclnHUJsSyPCTguplflQYEWv7wsk7IoanEkWx39pensi8OsdIBawXrOixXEnI47dgxtVMOQUxOKA==
@@ -5999,13 +5954,6 @@
   version "1.0.2"
   resolved "https://registry.npmjs.org/@react-hookz/deep-equal/-/deep-equal-1.0.2.tgz#4e8bdeda027379dcf8b62a42e5f75f0351b11b35"
   integrity sha512-cM5kPFb6EFH5q52WzRxfRX9+8g5kq78McWOYs6e1seo+nK6NpfLupT5uOCIJp37jU8ayd4Su8ni3HRFTN2C2kg==
-
-"@react-hookz/web@^14.0.0":
-  version "14.7.1"
-  resolved "https://registry.npmjs.org/@react-hookz/web/-/web-14.7.1.tgz#5e39e6fc21331cc4ae95f36e8135ad763e6c29fb"
-  integrity sha512-kU1CccZDXvQ9G4vcCCpX3mDQqYKkuLXGFOtPMgmbZ9KrvkEduMRH4JqSVXp1nI/bGI1GJ0KAWm4UEb1x5eDGAg==
-  dependencies:
-    "@react-hookz/deep-equal" "^1.0.2"
 
 "@react-hookz/web@^15.0.0":
   version "15.0.1"
@@ -22097,15 +22045,6 @@ raw-body@2.5.1, raw-body@^2.4.1:
     http-errors "2.0.0"
     iconv-lite "0.4.24"
     unpipe "1.0.0"
-
-rc-progress@3.3.3:
-  version "3.3.3"
-  resolved "https://registry.npmjs.org/rc-progress/-/rc-progress-3.3.3.tgz#eb9bffbacab1534f2542f9f6861ce772254362b1"
-  integrity sha512-MDVNVHzGanYtRy2KKraEaWeZLri2ZHWIRyaE1a9MQ2MuJ09m+Wxj5cfcaoaR6z5iRpHpA59YeUxAlpML8N4PJw==
-  dependencies:
-    "@babel/runtime" "^7.10.1"
-    classnames "^2.2.6"
-    rc-util "^5.16.1"
 
 rc-progress@3.4.0:
   version "3.4.0"
