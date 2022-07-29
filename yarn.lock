@@ -16305,6 +16305,11 @@ isarray@2.0.1:
   resolved "https://registry.npmjs.org/isarray/-/isarray-2.0.1.tgz#a37d94ed9cda2d59865c9f76fe596ee1f338741e"
   integrity sha1-o32U7ZzaLVmGXJ92/llu4fM4dB4=
 
+isbinaryfile@^4.0.10:
+  version "4.0.10"
+  resolved "https://registry.npmjs.org/isbinaryfile/-/isbinaryfile-4.0.10.tgz#0c5b5e30c2557a2f06febd37b7322946aaee42b3"
+  integrity sha512-iHrqe5shvBUcFbmZq9zOQHBoeOhZJu6RQGrDpBgenUm/Am+F3JM2MgQj+rK3Z601fzrL5gLZWtAPH2OBaSVcyw==
+
 isbinaryfile@^4.0.8:
   version "4.0.8"
   resolved "https://registry.npmjs.org/isbinaryfile/-/isbinaryfile-4.0.8.tgz#5d34b94865bd4946633ecc78a026fc76c5b11fcf"
@@ -27051,9 +27056,9 @@ yeast@0.1.2:
   integrity sha1-AI4G2AlDIMNy28L47XagymyKxBk=
 
 yeoman-environment@^3.9.1:
-  version "3.9.1"
-  resolved "https://registry.npmjs.org/yeoman-environment/-/yeoman-environment-3.9.1.tgz#21912bdee4b1d302a5c25a7d31338fa092ea7116"
-  integrity sha512-IdRnbQt/DSOSnao0oD9c+or1X2UrL+fx9eC0O7Lq/MGZV68nhv9k77MqG+hEAySPSlyCpocVlhfQwV62hczk5Q==
+  version "3.10.0"
+  resolved "https://registry.npmjs.org/yeoman-environment/-/yeoman-environment-3.10.0.tgz#d8c56571b68d16b4af8abfb950f83acc503eed77"
+  integrity sha512-sYtSxBK9daq21QjoskJTHKLQ1xEsRPURkmFV/aM8HS8ZlQVzwx57Rz1zCs8EGPhK4vqsmTE8H92Gp1jg1fT3EA==
   dependencies:
     "@npmcli/arborist" "^4.0.4"
     are-we-there-yet "^2.0.0"
@@ -27073,6 +27078,7 @@ yeoman-environment@^3.9.1:
     grouped-queue "^2.0.0"
     inquirer "^8.0.0"
     is-scoped "^2.1.0"
+    isbinaryfile "^4.0.10"
     lodash "^4.17.10"
     log-symbols "^4.0.0"
     mem-fs "^1.2.0 || ^2.0.0"
