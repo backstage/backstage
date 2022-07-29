@@ -21,6 +21,7 @@ import {
 
 import { rootRouteRef } from './routes';
 
+/** @public */
 export const gitHubIssuesPlugin = createPlugin({
   id: 'github-issues',
   routes: {
@@ -28,6 +29,7 @@ export const gitHubIssuesPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const GitHubIssuesCard = gitHubIssuesPlugin.provide(
   createComponentExtension({
     name: 'GitHubIssuesCard',
@@ -38,6 +40,7 @@ export const GitHubIssuesCard = gitHubIssuesPlugin.provide(
   }),
 );
 
+/** @public */
 export const GitHubIssuesPage = gitHubIssuesPlugin.provide(
   createRoutableExtension({
     name: 'GitHubIssuesPage',
