@@ -236,10 +236,12 @@ kubernetes:
 
 ##### `clusters.\*.caData` (optional)
 
-PEM-encoded certificate authority certificates.
+Base64-encoded certificate authority bundle in PEM format. The Kubernetes client
+will verify that TLS certificate presented by the API server is signed by this
+CA.
 
-This values could be obtained via inspecting the Kubernetes config file (usually
-at `~/.kube/config`) under `clusters.cluster.certificate-authority-data`. For
+This value could be obtained via inspecting the kubeconfig file (usually
+at `~/.kube/config`) under `clusters[*].cluster.certificate-authority-data`. For
 GKE, execute the following command to obtain the value
 
 ```
