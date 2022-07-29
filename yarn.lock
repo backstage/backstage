@@ -6054,12 +6054,12 @@
     react-use "^17.2.4"
 
 "@roadiehq/backstage-plugin-github-insights@^2.0.0":
-  version "2.0.1"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-2.0.1.tgz#b0cccdd5cfe1c94055ad372087a1daba9ec72bb4"
-  integrity sha512-Kq3JdzSIpLV0Ka6GqX7Ok2QW/s6w18l0Kyec+OtQ+/1dz8AeG7UoYwUtBI/+sTd+gveTHAonwi9xINYbcIvQhQ==
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-2.0.2.tgz#d6a953123f8a60be5df5b32583c5c2b22d18f8bb"
+  integrity sha512-3f+iTuAqINdolxrOjAS2XR2JDv7v2BALfAnr/EuCXfIS5qbJqn6IpktC1FcS0HHV1hmI/y+fyI3V5/69RjNBnQ==
   dependencies:
     "@backstage/catalog-model" "^1.0.0"
-    "@backstage/core-components" "^0.9.0"
+    "@backstage/core-components" "^0.10.0"
     "@backstage/core-plugin-api" "^1.0.0"
     "@backstage/integration-react" "^1.0.0"
     "@backstage/plugin-catalog-react" "^1.0.0"
@@ -6068,7 +6068,6 @@
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
-    "@octokit/request-error" "^2.1.0"
     "@octokit/rest" "^18.5.3"
     "@octokit/types" "^6.14.2"
     history "^5.0.0"
