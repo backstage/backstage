@@ -15,13 +15,10 @@
  */
 
 import { errorHandler } from '@backstage/backend-common';
-import express, { RequestHandler } from 'express';
+import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import {
-  SonarqubeFindings,
-  SonarqubeInfoProvider,
-} from './sonarqubeInfoProvider';
+import { SonarqubeInfoProvider } from './sonarqubeInfoProvider';
 import { InputError } from '../../../../packages/errors';
 
 /**
@@ -55,9 +52,9 @@ export async function createRouter(
 
   const router = Router();
   router.use(express.json());
-  router.get('/findings', (async (request, response) => {
-    const componentKey = request.query.componentKey;
-    let instanceKey = request.query.instanceKey;
+  router.get('/findings', async (request, response) => {
+    const componentKey = request.query.componentKey as string;
+    let instanceKey = request.query.instanceKey as string;
 
     if (!componentKey)
       throw new InputError('ComponentKey must be provided as a single string.');
@@ -73,13 +70,13 @@ export async function createRouter(
       );
     }
 
-    response.send(
+    response.json(
       await sonarqubeInfoProvider.getFindings(componentKey, instanceKey),
     );
-  }) as RequestHandler<unknown, SonarqubeFindings | undefined, unknown, { componentKey: string; instanceKey: string }>);
+  });
 
-  router.get('/instanceUrl', ((request, response) => {
-    let requestedInstanceKey = request.query.instanceKey;
+  router.get('/instanceUrl', (request, response) => {
+    let requestedInstanceKey = request.query.instanceKey as string;
     if (requestedInstanceKey) {
       logger.info(
         `Retrieving sonarqube instance URL for key ${requestedInstanceKey}`,
@@ -90,12 +87,13 @@ export async function createRouter(
         `Retrieving default sonarqube instance URL as parameter is inexistant, empty or malformed`,
       );
     }
-    response.send({
-      instanceUrl: sonarqubeInfoProvider.getBaseUrl({
-        instanceName: requestedInstanceKey,
-      }).baseUrl,
+    const { baseUrl } = sonarqubeInfoProvider.getBaseUrl({
+      instanceName: requestedInstanceKey,
     });
-  }) as RequestHandler<unknown, { instanceUrl: string }, unknown, { instanceKey: string }>);
+    response.json({
+      instanceUrl: baseUrl,
+    });
+  });
 
   router.use(errorHandler());
   return router;
