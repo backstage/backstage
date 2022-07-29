@@ -4044,9 +4044,9 @@
   integrity sha512-zMM9Ds+SawiUkakS7y94Ymqx+S0ORzpG3frZirN3l+UlXUmSUR7hF4wxCVqW+ei94JzV5kt0uXBcoOEAuiydrw==
 
 "@keyv/redis@^2.2.3":
-  version "2.3.8"
-  resolved "https://registry.npmjs.org/@keyv/redis/-/redis-2.3.8.tgz#8939a91e5b5d49da43005cf363a63fe475e1a19d"
-  integrity sha512-zzk/6TiuxqBcQd8vJDJaxTJDrbLDNaiRlLKDgpSB+xYBjd4NJK5Fl8YIPV9A+oteroJtwGgwdML9VJRXmaus3A==
+  version "2.3.9"
+  resolved "https://registry.npmjs.org/@keyv/redis/-/redis-2.3.9.tgz#f7173cc4c60b4fb69f007667206dfae2d0f496af"
+  integrity sha512-sdUL+bPim47tO9sa3Cjr3jvfUkFLbeQ/6Fx1fuSnVWKs3zwIHIIxRMj/21Fg4+yPbd3E3bnmMUmTwWOTMzkJuQ==
   dependencies:
     ioredis "^5.1.0"
 
