@@ -22,9 +22,9 @@ import {
 } from '@backstage/integration';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { GithubDiscoveryProcessor, parseUrl } from './GithubDiscoveryProcessor';
-import { getOrganizationRepositories } from './lib';
+import { getOrganizationRepositories } from '../lib';
 
-jest.mock('./lib');
+jest.mock('../lib');
 const mockGetOrganizationRepositories =
   getOrganizationRepositories as jest.MockedFunction<
     typeof getOrganizationRepositories
