@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Select } from '@backstage/core-components';
-import { SelectedItems } from '@backstage/core-components';
-import { makeStyles, Box } from '@material-ui/core';
+import { Select, SelectedItems } from '@backstage/core-components';
+import { makeStyles, Box, Typography } from '@material-ui/core';
 
 export type FilterItem = {
   label: string;
@@ -26,6 +25,7 @@ export type FilterItem = {
 type Props = {
   items: Array<FilterItem>;
   totalIssuesInGitHub: number;
+  placeholder: string;
   onChange: (active: Array<string>) => void;
 };
 
@@ -33,9 +33,9 @@ const useStyles = makeStyles(theme => ({
   filters: {
     margin: theme.spacing(0, 0, 2, 0),
     '& > div': {
-      width: '600px',
+      maxWidth: '800px',
       '& > div': {
-        maxWidth: '600px',
+        maxWidth: '800px',
       },
     },
   },
@@ -47,18 +47,22 @@ const checkSelectedItems: (
   return onChange(active as Array<string>);
 };
 
-export const Filters = ({ items, totalIssuesInGitHub, onChange }: Props) => {
+export const Filters = ({ items, onChange, placeholder }: Props) => {
   const css = useStyles();
 
   return (
     <Box className={css.filters}>
       <Select
-        placeholder={`All repositories (${totalIssuesInGitHub})`}
+        placeholder={placeholder}
         label=""
         items={items}
         multiple
         onChange={checkSelectedItems(onChange)}
       />
+      <Typography variant="caption">
+        *Repositories with more Issues in GitHub than available to view in
+        Backstage. To view them go to GitHub.
+      </Typography>
     </Box>
   );
 };

@@ -36,13 +36,11 @@ type IssueAuthor = {
 };
 
 export type Issue = {
-  cursor: string;
   assignees: EdgesWithNodes<Assignee>;
   author: IssueAuthor;
   repository: {
     nameWithOwner: string;
   };
-  body: string;
   title: string;
   url: string;
   participants: {
@@ -80,7 +78,6 @@ const createQuery = (
       ) {
         totalCount
         edges {
-          cursor
           node {
             assignees(first: 10) {
               edges {
@@ -98,7 +95,6 @@ const createQuery = (
             repository {
               nameWithOwner
             }
-            body
             title
             url
             participants {

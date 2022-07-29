@@ -19,29 +19,86 @@ import { Box } from '@material-ui/core';
 import { Pagination } from '@material-ui/lab';
 
 import { IssueCard } from '../IssueCard';
-import { Issue } from '../../../hooks/useGetIssuesByRepoFromGitHub';
-import { Filters, FilterItem } from './Filters';
+import { RepoIssues } from '../../../hooks/useGetIssuesByRepoFromGitHub';
+import { Filters } from './Filters';
 
 export type PluginMode = 'page' | 'card';
 
 export type Props = {
   itemsPerPage?: number;
-  issues: Array<{
-    node: Issue;
-  }>;
-  filters: Array<FilterItem>;
-  totalIssuesInGitHub: number;
-  setActiveFilter: (active: Array<string>) => void;
+  issuesByRepository?: Record<string, RepoIssues>;
 };
 
-export const IssueList = ({
-  itemsPerPage = 10,
-  issues,
-  filters,
-  setActiveFilter,
-  totalIssuesInGitHub,
-}: Props) => {
+const getIssuesCountForFilterLabel = (
+  totalIssues: number,
+  issuesAvailable: number,
+) =>
+  `(${totalIssues} ${totalIssues === 1 ? 'Issue' : `Issues`})${
+    issuesAvailable < totalIssues ? '*' : ''
+  }`;
+
+export const IssueList = ({ itemsPerPage = 10, issuesByRepository }: Props) => {
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [activeFilter, setActiveFilter] = React.useState<Array<string>>([]);
+
+  const filters = React.useMemo(
+    () =>
+      issuesByRepository
+        ? Object.keys(issuesByRepository)
+            .filter(repo => issuesByRepository[repo].issues.totalCount > 0)
+            .map(repo => ({
+              label: `${repo} ${getIssuesCountForFilterLabel(
+                issuesByRepository[repo].issues.totalCount,
+                issuesByRepository[repo].issues.edges.length,
+              )}`,
+              value: repo,
+            }))
+        : [],
+    [issuesByRepository],
+  );
+
+  const totalIssuesInGitHub = React.useMemo(
+    () =>
+      issuesByRepository
+        ? Object.values(issuesByRepository).reduce(
+            (acc, { issues: { totalCount } }) => acc + totalCount,
+            0,
+          )
+        : 0,
+    [issuesByRepository],
+  );
+
+  const filteredRepos = React.useMemo(
+    () =>
+      issuesByRepository && activeFilter.length
+        ? activeFilter.reduce(
+            (acc, val) => ({
+              [val]: issuesByRepository[val],
+              ...acc,
+            }),
+            {},
+          )
+        : issuesByRepository,
+    [issuesByRepository, activeFilter],
+  );
+
+  const issues = React.useMemo(
+    () =>
+      filteredRepos
+        ? Object.values(filteredRepos)
+            .map(({ issues: { edges } }) => edges)
+            .flat()
+            .sort((a, b) => {
+              if (a.node.updatedAt > b.node.updatedAt) {
+                return -1;
+              } else if (b.node.updatedAt > a.node.updatedAt) {
+                return 1;
+              }
+              return 0;
+            })
+        : [],
+    [filteredRepos],
+  );
 
   const displayIssues = issues.slice(
     (currentPage - 1) * itemsPerPage,
@@ -50,11 +107,17 @@ export const IssueList = ({
 
   return (
     <Box>
-      <Filters
-        items={filters}
-        onChange={setActiveFilter}
-        totalIssuesInGitHub={totalIssuesInGitHub}
-      />
+      {issues.length > 0 && (
+        <Filters
+          placeholder={`All repositories ${getIssuesCountForFilterLabel(
+            totalIssuesInGitHub,
+            issues.length,
+          )}`}
+          items={filters}
+          onChange={setActiveFilter}
+          totalIssuesInGitHub={totalIssuesInGitHub}
+        />
+      )}
 
       {displayIssues.length > 0 ? (
         displayIssues.map(
@@ -88,7 +151,7 @@ export const IssueList = ({
           ),
         )
       ) : (
-        <h1>No issues 🚀</h1>
+        <h1>Hurray! No Issues 🚀</h1>
       )}
       {issues.length / itemsPerPage > 1 ? (
         <Pagination

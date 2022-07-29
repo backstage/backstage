@@ -41,69 +41,12 @@ export const GitHubIssues = ({
   itemsPerRepo = 40,
 }: Props) => {
   const [isLoading, setIsLoading] = React.useState(true);
-  const [activeFilter, setActiveFilter] = React.useState<Array<string>>([]);
 
   const [issuesByRepository, setIssuesByRepository] =
     React.useState<Record<string, RepoIssues>>();
 
   const { repositories } = useEntityGitHubRepositories();
   const getIssues = useGetIssuesByRepoFromGitHub();
-
-  const filters = React.useMemo(
-    () =>
-      issuesByRepository
-        ? Object.keys(issuesByRepository)
-            .filter(repo => issuesByRepository[repo].issues.totalCount > 0)
-            .map(repo => ({
-              label: `${repo} (${issuesByRepository[repo].issues.totalCount})`,
-              value: repo,
-            }))
-        : [],
-    [issuesByRepository],
-  );
-
-  const totalIssuesInGitHub = React.useMemo(
-    () =>
-      issuesByRepository
-        ? Object.values(issuesByRepository).reduce(
-            (acc, { issues: { totalCount } }) => acc + totalCount,
-            0,
-          )
-        : 0,
-    [issuesByRepository],
-  );
-
-  const filteredRepos = React.useMemo(
-    () =>
-      issuesByRepository && activeFilter.length
-        ? activeFilter.reduce(
-            (acc, val) => ({
-              [val]: issuesByRepository[val],
-              ...acc,
-            }),
-            {},
-          )
-        : issuesByRepository,
-    [issuesByRepository, activeFilter],
-  );
-
-  const issues = React.useMemo(
-    () =>
-      filteredRepos
-        ? Object.values(filteredRepos)
-            .map(({ issues: { edges } }) => edges)
-            .flat()
-            .sort((a, b) => {
-              if (a.node.updatedAt > b.node.updatedAt) {
-                return -1;
-              } else if (b.node.updatedAt > a.node.updatedAt) {
-                return 1;
-              }
-              return 0;
-            })
-        : [],
-    [filteredRepos],
-  );
 
   const fetchGitHubIssues = React.useCallback(async () => {
     setIsLoading(true);
@@ -139,11 +82,8 @@ export const GitHubIssues = ({
       {isLoading && <Progress />}
 
       <IssueList
+        issuesByRepository={issuesByRepository}
         itemsPerPage={itemsPerPage}
-        issues={issues}
-        totalIssuesInGitHub={totalIssuesInGitHub}
-        setActiveFilter={setActiveFilter}
-        filters={filters}
       />
     </InfoCard>
   );

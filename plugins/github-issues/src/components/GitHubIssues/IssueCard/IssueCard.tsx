@@ -16,7 +16,13 @@
 import React, { FunctionComponent } from 'react';
 import { DateTime } from 'luxon';
 
-import { Box, Paper, Typography, CardActionArea } from '@material-ui/core';
+import {
+  Box,
+  Paper,
+  Typography,
+  CardActionArea,
+  Link,
+} from '@material-ui/core';
 import Assignees from './Assignees';
 import { CommentsCount } from './CommentsCount';
 
@@ -58,9 +64,12 @@ export const IssueCard: FunctionComponent<Props> = (props: Props) => {
         <CardActionArea href={url} target="_blank">
           <Box padding={1}>
             <Box display="flex" justifyContent="space-between">
-              <Typography color="primary" variant="body2" component="h2">
+              <Link
+                href={`https://github.com/${repositoryName}/issues`}
+                target="_blank"
+              >
                 {repositoryName}
-              </Typography>
+              </Link>
               <Assignees name={assigneeName} avatar={assigneeAvatar} />
             </Box>
             <Box>

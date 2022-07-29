@@ -27,14 +27,14 @@ describe('useGetIssuesBeRepoFromGitHub', () => {
     const Helper = () => {
       const getIssues = useGetIssuesByRepoFromGitHub();
 
-      getIssues(['mrwolny/yo-yo', 'mrwolny/yoyo'], 10);
+      getIssues(['mrwolny/yo-yo', 'mrwolny/yoyo', 'mrwolny/yo.yo'], 10);
 
       return <div />;
     };
 
     render(<Helper />);
 
-    expect(mockGraphQLQuery).toHaveBeenCalled();
+    expect(mockGraphQLQuery).toHaveBeenCalledTimes(1);
     expect(mockGraphQLQuery).toHaveBeenCalledWith(
       '\n' +
         '    \n' +
@@ -46,7 +46,6 @@ describe('useGetIssuesBeRepoFromGitHub', () => {
         '      ) {\n' +
         '        totalCount\n' +
         '        edges {\n' +
-        '          cursor\n' +
         '          node {\n' +
         '            assignees(first: 10) {\n' +
         '              edges {\n' +
@@ -64,7 +63,6 @@ describe('useGetIssuesBeRepoFromGitHub', () => {
         '            repository {\n' +
         '              nameWithOwner\n' +
         '            }\n' +
-        '            body\n' +
         '            title\n' +
         '            url\n' +
         '            participants {\n' +
@@ -88,6 +86,10 @@ describe('useGetIssuesBeRepoFromGitHub', () => {
         '        }\n' +
         '      ,\n' +
         '        yoyox: repository(name: "yoyo", owner: "mrwolny") {\n' +
+        '          ...issues\n' +
+        '        }\n' +
+        '      ,\n' +
+        '        yoyoxx: repository(name: "yo.yo", owner: "mrwolny") {\n' +
         '          ...issues\n' +
         '        }\n' +
         '      \n' +
