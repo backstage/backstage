@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useApiHolder } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import {
   Stepper as MuiStepper,
@@ -21,11 +22,12 @@ import {
   Button,
   makeStyles,
 } from '@material-ui/core';
-import { withTheme } from '@rjsf/core';
+import { FieldValidation, FormValidation, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useMemo, useState } from 'react';
 import { FieldExtensionOptions } from '../../../extensions';
 import { TemplateParameterSchema } from '../../../types';
+import { createAsyncValidator } from './createAsyncValidators';
 import { useTemplateSchema } from './useTemplateSchema';
 
 const useStyles = makeStyles(theme => ({
@@ -51,6 +53,7 @@ const Form = withTheme(MuiTheme);
 
 export const Stepper = (props: StepperProps) => {
   const { steps } = useTemplateSchema(props.manifest);
+  const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [formState, setFormState] = useState({});
   const styles = useStyles();
@@ -61,11 +64,31 @@ export const Stepper = (props: StepperProps) => {
     );
   }, [props.extensions]);
 
+  const validators = useMemo(() => {
+    return Object.fromEntries(
+      props.extensions.map(({ name, validation }) => [name, validation]),
+    );
+  }, [props.extensions]);
+
+  const validator = useMemo(() => {
+    return createAsyncValidator(steps[activeStep].originalSchema, validators, {
+      apiHolder,
+    });
+  }, [steps, activeStep, validators, apiHolder]);
+
   const handleBack = () => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
 
-  const handleNext = ({ formData }: { formData: JsonObject }) => {
+  const handleNext = async ({ formData }: { formData: JsonObject }) => {
+    console.log('running validation');
+
+    const errors = await validator(formData, {
+      addError: () => {},
+      __errors: [],
+    } as any);
+
+    console.log('errors');
     setActiveStep(prevActiveStep => prevActiveStep + 1);
     setFormState(current => ({ ...current, ...formData }));
   };
