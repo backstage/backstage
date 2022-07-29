@@ -84,19 +84,6 @@ Now the backend is ready to serve auth requests on the
 frontend sign-in mechanism to poll that endpoint through Cloudflare Access, on
 the user's behalf.
 
-## Frontend Changes
-
-It is recommended to use the `ProxiedSignInPage` for this provider, which is
-installed in `packages/app/src/App.tsx` like this:
-
-```diff
-+import { ProxiedSignInPage } from '@backstage/core-components';
-
- const app = createApp({
-   components: {
-+    SignInPage: props => <ProxiedSignInPage {...props} provider="cfaccess" />,
-```
-
 ## Adding the provider to the Backstage frontend
 
 It is recommended to use the `ProxiedSignInPage` for this provider, which is
