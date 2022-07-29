@@ -60,7 +60,7 @@ export const Filters = ({ items, onChange, placeholder }: Props) => {
         onChange={checkSelectedItems(onChange)}
       />
       <Typography variant="caption">
-        *Repositories with more Issues in GitHub than available to view in
+        *Repositories with more Issues on GitHub than available to view in
         Backstage. To view them go to GitHub.
       </Typography>
     </Box>
