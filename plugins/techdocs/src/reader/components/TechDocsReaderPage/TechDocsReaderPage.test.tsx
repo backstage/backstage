@@ -22,11 +22,15 @@ import { lightTheme } from '@backstage/theme';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
-import { techdocsApiRef, techdocsStorageApiRef } from '../../../api';
+import {
+  techdocsApiRef,
+  techdocsStorageApiRef,
+} from '@backstage/plugin-techdocs-react';
 
 import { rootRouteRef, rootDocsRouteRef } from '../../../routes';
 
 import { TechDocsReaderPage } from './TechDocsReaderPage';
+import { searchApiRef } from '@backstage/plugin-search-react';
 
 const mockEntityMetadata = {
   locationMetadata: {
@@ -66,12 +70,17 @@ const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
   syncEntityDocs: jest.fn(),
 };
 
+const searchApiMock = {
+  query: jest.fn().mockResolvedValue({ results: [] }),
+};
+
 const Wrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <ThemeProvider theme={lightTheme}>
       <TestApiProvider
         apis={[
           [scmIntegrationsApiRef, {}],
+          [searchApiRef, searchApiMock],
           [techdocsApiRef, techdocsApiMock],
           [techdocsStorageApiRef, techdocsStorageApiMock],
         ]}

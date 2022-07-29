@@ -14,20 +14,36 @@
  * limitations under the License.
  */
 
-/**
- * A plugin for contributed TechDocs Addons.
- *
- * @packageDocumentation
- */
-
 export {
-  techdocsModuleAddonsContribPlugin,
+  /**
+   * @deprecated Use directly from @backstage/plugin-techdocs-mkdocs-addons
+   */
+  mkdocsAddonsPlugin as techdocsModuleAddonsContribPlugin,
+  /**
+   * @deprecated Use directly from @backstage/plugin-techdocs-mkdocs-addons
+   */
   ExpandableNavigation,
+  /**
+   * @deprecated Use directly from @backstage/plugin-techdocs-mkdocs-addons
+   */
   ReportIssue,
+  /**
+   * @deprecated Use directly from @backstage/plugin-techdocs-mkdocs-addons
+   */
   TextSize,
-} from './plugin';
+} from '@backstage/plugin-techdocs-mkdocs-addons';
+
 export type {
+  /**
+   * @deprecated Use directly from @backstage/plugin-techdocs-mkdocs-addons
+   */
   ReportIssueProps,
+  /**
+   * @deprecated Use directly from @backstage/plugin-techdocs-mkdocs-addons
+   */
   ReportIssueTemplate,
+  /**
+   * @deprecated Use directly from @backstage/plugin-techdocs-mkdocs-addons
+   */
   ReportIssueTemplateBuilder,
-} from './ReportIssue';
+} from '@backstage/plugin-techdocs-mkdocs-addons';

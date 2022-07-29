@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-import { createDevApp } from '@backstage/dev-utils';
-import { NotFoundError } from '@backstage/errors';
 import React from 'react';
-import { CompoundEntityRef } from '@backstage/catalog-model';
-import {
-  TechDocsReaderPageContent,
-  SyncResult,
-  TechDocsStorageApi,
-  techdocsStorageApiRef,
-} from '../src';
 
+import { NotFoundError } from '@backstage/errors';
+import { createDevApp } from '@backstage/dev-utils';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
   configApiRef,
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { TechDocsReaderPageProvider } from '@backstage/plugin-techdocs-react';
 import { Header, Page, TabbedLayout } from '@backstage/core-components';
+import {
+  SyncResult,
+  TechDocsStorageApi,
+  techdocsStorageApiRef,
+  TechDocsReaderPageProvider,
+} from '@backstage/plugin-techdocs-react';
+
+import { TechDocsReaderPageContent } from '../src';
 
 // used so each route can provide it's own implementation in the constructor of the react component
 let apiHolder: TechDocsStorageApi | undefined = undefined;

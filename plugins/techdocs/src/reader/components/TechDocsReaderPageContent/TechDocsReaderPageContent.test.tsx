@@ -23,19 +23,10 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
   techdocsApiRef,
   TechDocsReaderPageProvider,
+  techdocsStorageApiRef,
 } from '@backstage/plugin-techdocs-react';
+import { searchApiRef } from '@backstage/plugin-search-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-
-const useTechDocsReaderDom = jest.fn();
-jest.mock('./dom', () => ({
-  ...jest.requireActual('./dom'),
-  useTechDocsReaderDom,
-}));
-const useReaderState = jest.fn();
-jest.mock('../useReaderState', () => ({
-  ...jest.requireActual('../useReaderState'),
-  useReaderState,
-}));
 
 import { TechDocsReaderPageContent } from './TechDocsReaderPageContent';
 
@@ -68,6 +59,21 @@ const techdocsApiMock = {
   getTechDocsMetadata,
 };
 
+const mockEntityDocs = '<html/>';
+const mockSyncDocs = 'cached';
+
+const getEntityDocs = jest.fn();
+const syncEntityDocs = jest.fn();
+
+const techdocsStorageApiMock = {
+  getEntityDocs,
+  syncEntityDocs,
+};
+
+const searchApiMock = {
+  query: jest.fn().mockResolvedValue({ results: [] }),
+};
+
 const Wrapper = ({
   entityRef = {
     kind: mockEntityMetadata.kind,
@@ -80,7 +86,13 @@ const Wrapper = ({
   children: React.ReactNode;
 }) => (
   <ThemeProvider theme={lightTheme}>
-    <TestApiProvider apis={[[techdocsApiRef, techdocsApiMock]]}>
+    <TestApiProvider
+      apis={[
+        [techdocsApiRef, techdocsApiMock],
+        [techdocsStorageApiRef, techdocsStorageApiMock],
+        [searchApiRef, searchApiMock],
+      ]}
+    >
       <TechDocsReaderPageProvider entityRef={entityRef}>
         {children}
       </TechDocsReaderPageProvider>
@@ -90,68 +102,40 @@ const Wrapper = ({
 
 describe('<TechDocsReaderPageContent />', () => {
   it('should render techdocs page content', async () => {
+    getEntityDocs.mockReturnValue(mockEntityDocs);
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
-    useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
-    useReaderState.mockReturnValue({ state: 'cached' });
+    syncEntityDocs.mockResolvedValue(mockSyncDocs);
 
     await act(async () => {
       const rendered = await renderInTestApp(
         <Wrapper>
-          <TechDocsReaderPageContent withSearch={false} />
+          <TechDocsReaderPageContent>Children</TechDocsReaderPageContent>
         </Wrapper>,
       );
 
       await waitFor(() => {
-        expect(
-          rendered.getByTestId('techdocs-native-shadowroot'),
-        ).toBeInTheDocument();
+        expect(rendered.getByText('Children')).toBeInTheDocument();
       });
     });
   });
 
   it('should not render techdocs content if entity metadata is missing', async () => {
+    getEntityDocs.mockReturnValue(mockEntityDocs);
     getEntityMetadata.mockResolvedValue(undefined);
-    useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
-    useReaderState.mockReturnValue({ state: 'cached' });
+    syncEntityDocs.mockResolvedValue(mockSyncDocs);
 
     await act(async () => {
       const rendered = await renderInTestApp(
         <Wrapper>
-          <TechDocsReaderPageContent withSearch={false} />
+          <TechDocsReaderPageContent>Children</TechDocsReaderPageContent>
         </Wrapper>,
       );
 
       await waitFor(() => {
-        expect(
-          rendered.queryByTestId('techdocs-native-shadowroot'),
-        ).not.toBeInTheDocument();
+        expect(rendered.queryByText('Children')).not.toBeInTheDocument();
         expect(
           rendered.getByText('ERROR 404: PAGE NOT FOUND'),
-        ).toBeInTheDocument();
-      });
-    });
-  });
-
-  it('should render 404 if there is no dom and reader state is not found', async () => {
-    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
-    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
-    useTechDocsReaderDom.mockReturnValue(undefined);
-    useReaderState.mockReturnValue({ state: 'CONTENT_NOT_FOUND' });
-
-    await act(async () => {
-      const rendered = await renderInTestApp(
-        <Wrapper>
-          <TechDocsReaderPageContent withSearch={false} />
-        </Wrapper>,
-      );
-
-      await waitFor(() => {
-        expect(
-          rendered.queryByTestId('techdocs-native-shadowroot'),
-        ).not.toBeInTheDocument();
-        expect(
-          rendered.getByText('ERROR 404: Documentation not found'),
         ).toBeInTheDocument();
       });
     });

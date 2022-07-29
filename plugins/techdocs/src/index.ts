@@ -20,13 +20,7 @@
  * @packageDocumentation
  */
 
-import {
-  TechDocsEntityMetadata,
-  TechDocsMetadata,
-} from '@backstage/plugin-techdocs-react';
-
 export * from './types';
-export * from './api';
 export * from './client';
 export * from './reader';
 export * from './search';
@@ -42,21 +36,121 @@ export {
 } from './plugin';
 export * from './Router';
 
+import {
+  SyncResult,
+  TechDocsApi,
+  TechDocsMetadata,
+  TechDocsStorageApi,
+  TechDocsEntityMetadata,
+  TechDocsReaderPageContentProvider,
+  TechDocsReaderPageContentProviderProps,
+  TechDocsReaderPageContentProviderRenderFunction,
+  TechDocsReaderPageContentState,
+  TechDocsReaderPageContentStateTypes,
+  techdocsApiRef,
+  techdocsStorageApiRef,
+} from '@backstage/plugin-techdocs-react';
+
 /**
- * @deprecated Import from `@backstage/plugin-techdocs-react` instead
- *
+ * {@inheritDoc @backstage/plugin-techdocs-react#techdocsApiRef}
+ * @deprecated Use {@link @backstage/plugin-techdocs-react#techdocsApiRef} instead.
+ * @public
+ */
+const deprecatedTechdocsApiRef = techdocsApiRef;
+
+/**
+ * {@inheritDoc @backstage/plugin-techdocs-react#techdocsStorageApiRef}
+ * @deprecated Use {@link @backstage/plugin-techdocs-react#techdocsStorageApiRef} instead.
+ * @public
+ */
+const deprecatedTechdocsStorageApiRef = techdocsStorageApiRef;
+/**
+ * {@inheritDoc @backstage/plugin-techdocs-react#TechDocsReaderPageContentProvider}
+ * @deprecated Use {@link @backstage/plugin-techdocs-react#TechDocsReaderPageContentProvider} instead.
+ * @public
+ */
+const DeprecatedTechDocsReaderPageContentProvider =
+  TechDocsReaderPageContentProvider;
+
+export {
+  deprecatedTechdocsApiRef as techdocsApiRef,
+  deprecatedTechdocsStorageApiRef as techdocsStorageApiRef,
+  DeprecatedTechDocsReaderPageContentProvider as TechDocsReaderPageContentProvider,
+};
+
+/**
+ * {@inheritDoc @backstage/plugin-techdocs-react#TechDocsMetadata}
+ * @deprecated Use {@link @backstage/plugin-techdocs-react#TechDocsMetadata} instead.
  * @public
  */
 type DeprecatedTechDocsMetadata = TechDocsMetadata;
 
 /**
- * @deprecated Import from `@backstage/plugin-techdocs-react` instead
- *
+ * {@inheritDoc @backstage/plugin-techdocs-react#TechDocsEntityMetadata}
+ * @deprecated Use {@link @backstage/plugin-techdocs-react#TechDocsEntityMetadata} instead.
  * @public
  */
 type DeprecatedTechDocsEntityMetadata = TechDocsEntityMetadata;
 
+/**
+ * {@inheritDoc @backstage/plugin-techdocs-react#TechDocsReaderPageContentState}
+ * @deprecated Use {@link @backstage/plugin-techdocs-react#TechDocsReaderPageContentState} instead.
+ * @public
+ */
+type DeprecatedReaderState = TechDocsReaderPageContentState;
+
+/**
+ * {@inheritDoc @backstage/plugin-techdocs-react#TechDocsReaderPageContentStateTypes}
+ * @deprecated Use {@link @backstage/plugin-techdocs-react#TechDocsReaderPageContentStateTypes} instead.
+ * @public
+ */
+type DeprecatedContentStateTypes = TechDocsReaderPageContentStateTypes;
+
+/**
+ * {@inheritDoc @backstage/plugin-techdocs-react#SyncResult}
+ * @deprecated Use {@link @backstage/plugin-techdocs-react#SyncResult} instead.
+ * @public
+ */
+type DeprecatedSyncResult = SyncResult;
+
+/**
+ * {@inheritDoc @backstage/plugin-techdocs-react#TechDocsApi}
+ * @deprecated Use {@link @backstage/plugin-techdocs-react#TechDocsApi} instead.
+ * @public
+ */
+type DeprecatedTechDocsApi = TechDocsApi;
+
+/**
+ * {@inheritDoc @backstage/plugin-techdocs-react#TechDocsStorageApi}
+ * @deprecated Use {@link @backstage/plugin-techdocs-react#TechDocsStorageApi} instead.
+ * @public
+ */
+type DeprecatedTechDocsStorageApi = TechDocsStorageApi;
+
+/**
+ * {@inheritDoc @backstage/plugin-techdocs-react#TechDocsReaderPageContentProviderProps}
+ * @deprecated Use {@link @backstage/plugin-techdocs-react#TechDocsReaderPageContentProviderProps} instead.
+ * @public
+ */
+type DeprecatedTechDocsReaderProviderProps =
+  TechDocsReaderPageContentProviderProps;
+
+/**
+ * {@inheritDoc @backstage/plugin-techdocs-react#TechDocsReaderPageContentProviderRenderFunction}
+ * @deprecated Use {@link @backstage/plugin-techdocs-react#TechDocsReaderPageContentProviderRenderFunction} instead.
+ * @public
+ */
+type DeprecatedTechDocsReaderProviderRenderFunction =
+  TechDocsReaderPageContentProviderRenderFunction;
+
 export type {
   DeprecatedTechDocsEntityMetadata as TechDocsEntityMetadata,
   DeprecatedTechDocsMetadata as TechDocsMetadata,
+  DeprecatedSyncResult as SyncResult,
+  DeprecatedReaderState as ReaderState,
+  DeprecatedContentStateTypes as ContentStateTypes,
+  DeprecatedTechDocsApi as TechDocsApi,
+  DeprecatedTechDocsStorageApi as TechDocsStorageApi,
+  DeprecatedTechDocsReaderProviderProps as TechDocsReaderProviderProps,
+  DeprecatedTechDocsReaderProviderRenderFunction as TechDocsReaderProviderRenderFunction,
 };

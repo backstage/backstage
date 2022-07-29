@@ -148,7 +148,7 @@ import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import {
   TextSize,
   ReportIssue,
-} from '@backstage/plugin-techdocs-module-addons-contrib';
+} from '@backstage/plugin-techdocs-mkdocs-addons';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 

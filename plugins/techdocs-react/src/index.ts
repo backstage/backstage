@@ -26,29 +26,41 @@ export {
   TechDocsAddons,
   TECHDOCS_ADDONS_WRAPPER_KEY,
 } from './addons';
+
 export { techdocsApiRef, techdocsStorageApiRef } from './api';
 export type { SyncResult, TechDocsApi, TechDocsStorageApi } from './api';
-export { TechDocsReaderPageProvider, useTechDocsReaderPage } from './context';
+
+export {
+  TechDocsReaderPageProvider,
+  useTechDocsReaderPage,
+  TechDocsReaderPageContentProvider,
+  useTechDocsReaderPageContent,
+  withTechDocsReaderPageContentProvider,
+  TechDocsShadowDom,
+  useShadowRoot,
+  useShadowRootElements,
+  useShadowRootSelection,
+  useShadowDomStylesLoading,
+  SHADOW_DOM_STYLE_LOAD_EVENT,
+} from './reader';
+
 export type {
   TechDocsReaderPageProviderProps,
   TechDocsReaderPageProviderRenderFunction,
+  TechDocsReaderPageContentState,
+  TechDocsReaderPageContentStateTypes,
+  TechDocsReaderPageContentProviderProps,
+  TechDocsReaderPageContentProviderRenderFunction,
   TechDocsReaderPageValue,
-} from './context';
+  TechDocsShadowDomProps,
+} from './reader';
+
 export { TechDocsAddonLocations } from './types';
+
 export type {
   TechDocsEntityMetadata,
   TechDocsMetadata,
   TechDocsAddonOptions,
 } from './types';
-export type { TechDocsShadowDomProps } from './component';
-export {
-  TechDocsShadowDom,
-  useShadowDomStylesLoading,
-  SHADOW_DOM_STYLE_LOAD_EVENT,
-} from './component';
-export {
-  useShadowRoot,
-  useShadowRootElements,
-  useShadowRootSelection,
-} from './hooks';
+
 export { toLowercaseEntityRefMaybe } from './helpers';

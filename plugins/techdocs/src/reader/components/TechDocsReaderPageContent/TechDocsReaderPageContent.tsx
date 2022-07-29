@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from 'react';
+import React, { PropsWithChildren } from 'react';
 
 import { makeStyles, Grid } from '@material-ui/core';
 
-import {
-  TechDocsShadowDom,
-  useTechDocsReaderPage,
-} from '@backstage/plugin-techdocs-react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Content, ErrorPage } from '@backstage/core-components';
+import {
+  useTechDocsReaderPage,
+  withTechDocsReaderPageContentProvider,
+} from '@backstage/plugin-techdocs-react';
 
 import { TechDocsSearch } from '../../../search';
 import { TechDocsStateIndicator } from '../TechDocsStateIndicator';
-
-import { useTechDocsReaderDom } from './dom';
-import { withTechDocsReaderProvider } from '../TechDocsReaderProvider';
-import { TechDocsReaderPageContentAddons } from './TechDocsReaderPageContentAddons';
 
 const useStyles = makeStyles({
   search: {
@@ -46,7 +42,7 @@ const useStyles = makeStyles({
  * Props for {@link TechDocsReaderPageContent}
  * @public
  */
-export type TechDocsReaderPageContentProps = {
+export type TechDocsReaderPageContentProps = PropsWithChildren<{
   /**
    * @deprecated No need to pass down entityRef as property anymore. Consumes the entityName from `TechDocsReaderPageContext`. Use the {@link @backstage/plugin-techdocs-react#useTechDocsReaderPage} hook for custom reader page content.
    */
@@ -56,81 +52,57 @@ export type TechDocsReaderPageContentProps = {
    */
   withSearch?: boolean;
   /**
-   * Callback called when the content is rendered.
+   * @deprecated No need to pass down onReady as property anymore. Consumes the setReady from `TechDocsReaderPageContext`.
    */
   onReady?: () => void;
-};
+}>;
 
 /**
  * Renders the reader page content
  * @public
  */
-export const TechDocsReaderPageContent = withTechDocsReaderProvider(
-  (props: TechDocsReaderPageContentProps) => {
-    const { withSearch = true, onReady } = props;
-    const classes = useStyles();
+export const TechDocsReaderPageContent =
+  withTechDocsReaderPageContentProvider<TechDocsReaderPageContentProps>(
+    props => {
+      const { withSearch = true, children } = props;
 
-    const {
-      entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
-      entityRef,
-      setShadowRoot,
-    } = useTechDocsReaderPage();
+      const classes = useStyles();
 
-    const dom = useTechDocsReaderDom(entityRef);
+      const {
+        entityRef,
+        entityMetadata: {
+          value: entityMetadata,
+          loading: entityMetadataLoading,
+        },
+      } = useTechDocsReaderPage();
 
-    const handleAppend = useCallback(
-      (newShadowRoot: ShadowRoot) => {
-        setShadowRoot(newShadowRoot);
-        if (onReady instanceof Function) {
-          onReady();
-        }
-      },
-      [setShadowRoot, onReady],
-    );
+      // No entity metadata = 404. Don't render content at all.
+      if (entityMetadataLoading === false && !entityMetadata) {
+        return <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />;
+      }
 
-    // No entity metadata = 404. Don't render content at all.
-    if (entityMetadataLoading === false && !entityMetadata)
-      return <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />;
-
-    // Do not return content until dom is ready; instead, render a state
-    // indicator, which handles progress and content errors on our behalf.
-    if (!dom) {
       return (
         <Content>
           <Grid container>
             <Grid xs={12} item>
               <TechDocsStateIndicator />
             </Grid>
+            {withSearch && (
+              <Grid className={classes.search} xs="auto" item>
+                <TechDocsSearch
+                  entityId={entityRef}
+                  entityTitle={entityMetadata?.metadata?.title}
+                />
+              </Grid>
+            )}
+            <Grid xs={12} item>
+              {children}
+            </Grid>
           </Grid>
         </Content>
       );
-    }
-
-    return (
-      <Content>
-        <Grid container>
-          <Grid xs={12} item>
-            <TechDocsStateIndicator />
-          </Grid>
-          {withSearch && (
-            <Grid className={classes.search} xs="auto" item>
-              <TechDocsSearch
-                entityId={entityRef}
-                entityTitle={entityMetadata?.metadata?.title}
-              />
-            </Grid>
-          )}
-          <Grid xs={12} item>
-            {/* Centers the styles loaded event to avoid having multiple locations setting the opacity style in Shadow Dom causing the screen to flash multiple times */}
-            <TechDocsShadowDom element={dom} onAppend={handleAppend}>
-              <TechDocsReaderPageContentAddons />
-            </TechDocsShadowDom>
-          </Grid>
-        </Grid>
-      </Content>
-    );
-  },
-);
+    },
+  );
 
 /**
  * Props for {@link Reader}

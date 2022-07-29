@@ -85,6 +85,49 @@ export type TechDocsMetadata = {
 };
 
 // @public
+export const TechDocsReaderPageContentProvider: ({
+  children,
+}: TechDocsReaderPageContentProviderProps) => JSX.Element;
+
+// @public
+export type TechDocsReaderPageContentProviderProps = {
+  children: TechDocsReaderPageContentProviderRenderFunction | ReactNode;
+};
+
+// @public
+export type TechDocsReaderPageContentProviderRenderFunction = (
+  value: TechDocsReaderPageContentState,
+) => JSX.Element;
+
+// @public
+export type TechDocsReaderPageContentState = {
+  state: TechDocsReaderPageContentStateTypes;
+  path: string;
+  contentReload: () => void;
+  content?: string;
+  contentErrorMessage?: string;
+  syncErrorMessage?: string;
+  buildLog: string[];
+};
+
+// @public
+export type TechDocsReaderPageContentStateTypes =
+  /** There is nothing to display but a loading indicator */
+  | 'CHECKING'
+  /** There is no content yet -> present a full screen loading page */
+  | 'INITIAL_BUILD'
+  /** There is content, but the backend is about to update it */
+  | 'CONTENT_STALE_REFRESHING'
+  /** There is content, but after a reload, the content will be different */
+  | 'CONTENT_STALE_READY'
+  /** There is content, the backend tried to update it, but failed */
+  | 'CONTENT_STALE_ERROR'
+  /** There is nothing to see but a "not found" page. Is also shown on page load errors */
+  | 'CONTENT_NOT_FOUND'
+  /** There is only the latest and greatest content */
+  | 'CONTENT_FRESH';
+
+// @public
 export const TechDocsReaderPageProvider: React_2.MemoExoticComponent<
   ({ entityRef, children }: TechDocsReaderPageProviderProps) => JSX.Element
 >;
@@ -111,6 +154,8 @@ export type TechDocsReaderPageValue = {
   setTitle: Dispatch<SetStateAction<string>>;
   subtitle: string;
   setSubtitle: Dispatch<SetStateAction<string>>;
+  ready: boolean;
+  setReady: Dispatch<SetStateAction<boolean>>;
   onReady?: () => void;
 };
 
@@ -185,4 +230,12 @@ export const useTechDocsAddons: () => {
 
 // @public
 export const useTechDocsReaderPage: () => TechDocsReaderPageValue;
+
+// @public
+export const useTechDocsReaderPageContent: () => TechDocsReaderPageContentState;
+
+// @public
+export const withTechDocsReaderPageContentProvider: <T extends {}>(
+  Component: React_2.ComponentType<T>,
+) => (props: T) => JSX.Element;
 ```

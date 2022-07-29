@@ -23,12 +23,16 @@ import {
   TECHDOCS_ADDONS_WRAPPER_KEY,
   TechDocsReaderPageProvider,
 } from '@backstage/plugin-techdocs-react';
+import { MkDocsReaderContent } from '@backstage/plugin-techdocs-mkdocs-react';
 
+import { TechDocsReaderPageLayout } from '../TechDocsReaderPageLayout';
 import { TechDocsReaderPageRenderFunction } from '../../../types';
 
-import { TechDocsReaderPageContent } from '../TechDocsReaderPageContent';
-import { TechDocsReaderPageHeader } from '../TechDocsReaderPageHeader';
-import { TechDocsReaderPageSubheader } from '../TechDocsReaderPageSubheader';
+const DefaultTechDocsReaderPage = () => (
+  <TechDocsReaderPageLayout>
+    <MkDocsReaderContent />
+  </TechDocsReaderPageLayout>
+);
 
 type Extension = ReactChild & {
   type: {
@@ -36,38 +40,6 @@ type Extension = ReactChild & {
       map: Map<string, boolean>;
     };
   };
-};
-
-/**
- * Props for {@link TechDocsReaderLayout}
- * @public
- */
-export type TechDocsReaderLayoutProps = {
-  /**
-   * Show or hide the header, defaults to true.
-   */
-  withHeader?: boolean;
-  /**
-   * Show or hide the content search bar, defaults to true.
-   */
-  withSearch?: boolean;
-};
-
-/**
- * Default TechDocs reader page structure composed with a header and content
- * @public
- */
-export const TechDocsReaderLayout = ({
-  withSearch,
-  withHeader = true,
-}: TechDocsReaderLayoutProps) => {
-  return (
-    <Page themeId="documentation">
-      {withHeader && <TechDocsReaderPageHeader />}
-      <TechDocsReaderPageSubheader />
-      <TechDocsReaderPageContent withSearch={withSearch} />
-    </Page>
-  );
 };
 
 /**
@@ -98,14 +70,14 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
 
     return (
       <TechDocsReaderPageProvider entityRef={entityRef}>
-        {(page as JSX.Element) || <TechDocsReaderLayout />}
+        {(page as JSX.Element) || <DefaultTechDocsReaderPage />}
       </TechDocsReaderPageProvider>
     );
   }
 
   return (
     <TechDocsReaderPageProvider entityRef={entityRef}>
-      {({ metadata, entityMetadata, onReady }) => (
+      {({ metadata, entityMetadata }) => (
         <div className="techdocs-reader-page">
           <Page themeId="documentation">
             {children instanceof Function
@@ -113,7 +85,6 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
                   entityRef,
                   techdocsMetadataValue: metadata.value,
                   entityMetadataValue: entityMetadata.value,
-                  onReady,
                 })
               : children}
           </Page>

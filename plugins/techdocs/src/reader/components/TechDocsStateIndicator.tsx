@@ -20,7 +20,7 @@ import { Alert } from '@material-ui/lab';
 
 import { TechDocsBuildLogs } from './TechDocsBuildLogs';
 import { TechDocsNotFound } from './TechDocsNotFound';
-import { useTechDocsReader } from './TechDocsReaderProvider';
+import { useTechDocsReaderPageContent } from '@backstage/plugin-techdocs-react';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -44,7 +44,7 @@ export const TechDocsStateIndicator = () => {
     contentErrorMessage,
     syncErrorMessage,
     buildLog,
-  } = useTechDocsReader();
+  } = useTechDocsReaderPageContent();
 
   if (state === 'INITIAL_BUILD') {
     StateAlert = (

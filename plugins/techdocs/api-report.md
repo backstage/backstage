@@ -19,29 +19,22 @@ import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { SyncResult as SyncResult_2 } from '@backstage/plugin-techdocs-react';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
+import { TechDocsApi as TechDocsApi_2 } from '@backstage/plugin-techdocs-react';
 import { TechDocsEntityMetadata as TechDocsEntityMetadata_2 } from '@backstage/plugin-techdocs-react';
 import { TechDocsMetadata as TechDocsMetadata_2 } from '@backstage/plugin-techdocs-react';
+import { TechDocsReaderPageContentProviderProps } from '@backstage/plugin-techdocs-react';
+import { TechDocsReaderPageContentProviderRenderFunction } from '@backstage/plugin-techdocs-react';
+import { TechDocsReaderPageContentState } from '@backstage/plugin-techdocs-react';
+import { TechDocsReaderPageContentStateTypes } from '@backstage/plugin-techdocs-react';
+import { TechDocsStorageApi as TechDocsStorageApi_2 } from '@backstage/plugin-techdocs-react';
 import { ToolbarProps } from '@material-ui/core';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
-// @public
-export type ContentStateTypes =
-  /** There is nothing to display but a loading indicator */
-  | 'CHECKING'
-  /** There is no content yet -> present a full screen loading page */
-  | 'INITIAL_BUILD'
-  /** There is content, but the backend is about to update it */
-  | 'CONTENT_STALE_REFRESHING'
-  /** There is content, but after a reload, the content will be different */
-  | 'CONTENT_STALE_READY'
-  /** There is content, the backend tried to update it, but failed */
-  | 'CONTENT_STALE_ERROR'
-  /** There is nothing to see but a "not found" page. Is also shown on page load errors */
-  | 'CONTENT_NOT_FOUND'
-  /** There is only the latest and greatest content */
-  | 'CONTENT_FRESH';
+// @public @deprecated (undocumented)
+export type ContentStateTypes = TechDocsReaderPageContentStateTypes;
 
 // @public
 export const DefaultTechDocsHome: (
@@ -176,22 +169,14 @@ export type PanelType = 'DocsCardGrid' | 'DocsTable';
 // @public @deprecated
 export const Reader: (props: TechDocsReaderPageContentProps) => JSX.Element;
 
-// @public
-export type ReaderState = {
-  state: ContentStateTypes;
-  path: string;
-  contentReload: () => void;
-  content?: string;
-  contentErrorMessage?: string;
-  syncErrorMessage?: string;
-  buildLog: string[];
-};
+// @public @deprecated (undocumented)
+export type ReaderState = TechDocsReaderPageContentState;
 
 // @public
 export const Router: () => JSX.Element;
 
-// @public @deprecated
-export type SyncResult = 'cached' | 'updated';
+// @public @deprecated (undocumented)
+export type SyncResult = SyncResult_2;
 
 // @public
 export interface TabConfig {
@@ -204,23 +189,14 @@ export interface TabConfig {
 // @public
 export type TabsConfig = TabConfig[];
 
-// @public @deprecated
-export interface TechDocsApi {
-  // (undocumented)
-  getApiOrigin(): Promise<string>;
-  // (undocumented)
-  getEntityMetadata(
-    entityId: CompoundEntityRef,
-  ): Promise<TechDocsEntityMetadata_2>;
-  // (undocumented)
-  getTechDocsMetadata(entityId: CompoundEntityRef): Promise<TechDocsMetadata_2>;
-}
+// @public @deprecated (undocumented)
+export type TechDocsApi = TechDocsApi_2;
 
-// @public @deprecated
-export const techdocsApiRef: ApiRef<TechDocsApi>;
+// @public @deprecated (undocumented)
+export const techdocsApiRef: ApiRef<TechDocsApi_2>;
 
 // @public
-export class TechDocsClient implements TechDocsApi {
+export class TechDocsClient implements TechDocsApi_2 {
   constructor(options: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
@@ -298,18 +274,6 @@ export { techdocsPlugin as plugin };
 export { techdocsPlugin };
 
 // @public
-export const TechDocsReaderLayout: ({
-  withSearch,
-  withHeader,
-}: TechDocsReaderLayoutProps) => JSX.Element;
-
-// @public
-export type TechDocsReaderLayoutProps = {
-  withHeader?: boolean;
-  withSearch?: boolean;
-};
-
-// @public
 export const TechDocsReaderPage: (
   props: TechDocsReaderPageProps,
 ) => JSX.Element;
@@ -320,11 +284,16 @@ export const TechDocsReaderPageContent: (
 ) => JSX.Element;
 
 // @public
-export type TechDocsReaderPageContentProps = {
+export type TechDocsReaderPageContentProps = PropsWithChildren<{
   entityRef?: CompoundEntityRef;
   withSearch?: boolean;
   onReady?: () => void;
-};
+}>;
+
+// @public @deprecated (undocumented)
+export const TechDocsReaderPageContentProvider: ({
+  children,
+}: TechDocsReaderPageContentProviderProps) => JSX.Element;
 
 // @public
 export const TechDocsReaderPageHeader: (
@@ -336,6 +305,19 @@ export type TechDocsReaderPageHeaderProps = PropsWithChildren<{
   entityRef?: CompoundEntityRef;
   entityMetadata?: TechDocsEntityMetadata_2;
   techDocsMetadata?: TechDocsMetadata_2;
+}>;
+
+// @public
+export const TechDocsReaderPageLayout: ({
+  withSearch,
+  withHeader,
+  children,
+}: TechDocsReaderPageLayoutProps) => JSX.Element;
+
+// @public
+export type TechDocsReaderPageLayoutProps = PropsWithChildren<{
+  withHeader?: boolean;
+  withSearch?: boolean;
 }>;
 
 // @public (undocumented)
@@ -363,20 +345,13 @@ export const TechDocsReaderPageSubheader: ({
   toolbarProps?: ToolbarProps<'div', {}> | undefined;
 }) => JSX.Element | null;
 
-// @public
-export const TechDocsReaderProvider: ({
-  children,
-}: TechDocsReaderProviderProps) => JSX.Element;
+// @public @deprecated (undocumented)
+export type TechDocsReaderProviderProps =
+  TechDocsReaderPageContentProviderProps;
 
-// @public
-export type TechDocsReaderProviderProps = {
-  children: TechDocsReaderProviderRenderFunction | ReactNode;
-};
-
-// @public
-export type TechDocsReaderProviderRenderFunction = (
-  value: ReaderState,
-) => JSX.Element;
+// @public @deprecated (undocumented)
+export type TechDocsReaderProviderRenderFunction =
+  TechDocsReaderPageContentProviderRenderFunction;
 
 // @public
 export const TechDocsSearch: (props: TechDocsSearchProps) => JSX.Element;
@@ -405,34 +380,14 @@ export type TechDocsSearchResultListItemProps = {
   title?: string;
 };
 
-// @public @deprecated
-export interface TechDocsStorageApi {
-  // (undocumented)
-  getApiOrigin(): Promise<string>;
-  // (undocumented)
-  getBaseUrl(
-    oldBaseUrl: string,
-    entityId: CompoundEntityRef,
-    path: string,
-  ): Promise<string>;
-  // (undocumented)
-  getBuilder(): Promise<string>;
-  // (undocumented)
-  getEntityDocs(entityId: CompoundEntityRef, path: string): Promise<string>;
-  // (undocumented)
-  getStorageUrl(): Promise<string>;
-  // (undocumented)
-  syncEntityDocs(
-    entityId: CompoundEntityRef,
-    logHandler?: (line: string) => void,
-  ): Promise<SyncResult>;
-}
+// @public @deprecated (undocumented)
+export type TechDocsStorageApi = TechDocsStorageApi_2;
 
-// @public @deprecated
-export const techdocsStorageApiRef: ApiRef<TechDocsStorageApi>;
+// @public @deprecated (undocumented)
+export const techdocsStorageApiRef: ApiRef<TechDocsStorageApi_2>;
 
 // @public
-export class TechDocsStorageClient implements TechDocsStorageApi {
+export class TechDocsStorageClient implements TechDocsStorageApi_2 {
   constructor(options: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
@@ -461,6 +416,6 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
   syncEntityDocs(
     entityId: CompoundEntityRef,
     logHandler?: (line: string) => void,
-  ): Promise<SyncResult>;
+  ): Promise<SyncResult_2>;
 }
 ```
