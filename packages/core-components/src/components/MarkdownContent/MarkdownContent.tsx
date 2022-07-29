@@ -70,6 +70,7 @@ type Props = {
   linkTarget?: Options['linkTarget'];
   transformLinkUri?: (href: string) => string;
   transformImageUri?: (href: string) => string;
+  className?: string;
 };
 
 const components: Options['components'] = {
@@ -99,12 +100,13 @@ export function MarkdownContent(props: Props) {
     linkTarget,
     transformLinkUri,
     transformImageUri,
+    className,
   } = props;
   const classes = useStyles();
   return (
     <ReactMarkdown
       remarkPlugins={dialect === 'gfm' ? [gfm] : []}
-      className={classes.markdown}
+      className={`${classes.markdown} ${className}`}
       children={content}
       components={components}
       linkTarget={linkTarget}

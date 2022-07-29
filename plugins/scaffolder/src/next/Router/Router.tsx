@@ -16,7 +16,6 @@
 import React, { PropsWithChildren } from 'react';
 import { Routes, Route, useOutlet } from 'react-router';
 import { TemplateListPage } from '../TemplateListPage';
-import { SecretsContextProvider } from '../TemplateWizardPage/SecretsContext';
 import { TemplateWizardPage } from '../TemplateWizardPage';
 import {
   FieldExtensionOptions,
@@ -28,7 +27,8 @@ import {
 import { useElementFilter } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
-import { selectedTemplateRouteRef } from '../../routes';
+import { nextSelectedTemplateRouteRef } from '../../routes';
+import { SecretsContextProvider } from '../../components/secrets/SecretsContext';
 
 /**
  * The Props for the Scaffolder Router
@@ -87,7 +87,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
       />
 
       <Route
-        path={selectedTemplateRouteRef.path}
+        path={nextSelectedTemplateRouteRef.path}
         element={
           <SecretsContextProvider>
             <TemplateWizardPage customFieldExtensions={fieldExtensions} />
