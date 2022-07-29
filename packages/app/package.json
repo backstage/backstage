@@ -33,7 +33,6 @@
     "@backstage/plugin-gcalendar": "^0.3.4-next.0",
     "@backstage/plugin-gcp-projects": "^0.3.27-next.0",
     "@backstage/plugin-github-actions": "^0.5.8-next.0",
-    "@backstage/plugin-github-issues": "^0.0.0",
     "@backstage/plugin-gocd": "^0.1.14-next.0",
     "@backstage/plugin-graphiql": "^0.2.40-next.0",
     "@backstage/plugin-home": "^0.4.24-next.0",
