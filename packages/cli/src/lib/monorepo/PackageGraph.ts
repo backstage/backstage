@@ -30,6 +30,23 @@ export interface ExtendedPackageJSON extends PackageJSON {
   // that the package bundles all of its dependencies in its build output.
   bundled?: boolean;
 
+  main?: string;
+  module?: string;
+  browser?: string;
+  types?: string;
+  exports?: {
+    [name: string]:
+      | string
+      | {
+          import?: string;
+          require?: string;
+          types?: string;
+          default?: string;
+          node?: string;
+          'node-addons'?: string;
+        };
+  };
+
   backstage?: {
     role?: PackageRole;
   };

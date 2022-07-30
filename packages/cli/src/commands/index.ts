@@ -161,6 +161,16 @@ export function registerMigrateCommand(program: Command) {
     .description('Migration utilities');
 
   command
+    .command('package-exports')
+    .option('--keep-main', 'Skip the removal of "main" and related fields.')
+    .description(
+      `Switch to using the "exports" field for packages that don't have it`,
+    )
+    .action(
+      lazy(() => import('./migrate/packageExports.js').then(m => m.command)),
+    );
+
+  command
     .command('package-roles')
     .description(`Add package role field to packages that don't have it`)
     .action(
