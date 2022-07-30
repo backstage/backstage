@@ -56,7 +56,7 @@ type PkgVersionInfo = {
   location: string;
 };
 
-export default async (opts: OptionValues) => {
+export async function command(opts: OptionValues) {
   const lockfilePath = paths.resolveTargetRoot('yarn.lock');
   const lockfile = await Lockfile.load(lockfilePath);
   let pattern = opts.pattern;
@@ -324,7 +324,7 @@ export default async (opts: OptionValues) => {
         .join(', ')}`,
     );
   }
-};
+}
 
 export function createStrictVersionFinder(options: {
   releaseManifest: ReleaseManifest;

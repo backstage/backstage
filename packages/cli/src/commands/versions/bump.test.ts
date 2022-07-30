@@ -20,7 +20,11 @@ import { Command } from 'commander';
 import { resolve as resolvePath } from 'path';
 import { paths } from '../../lib/paths';
 import * as runObj from '../../lib/run';
-import bump, { bumpBackstageJsonVersion, createVersionFinder } from './bump';
+import {
+  bumpBackstageJsonVersion,
+  createVersionFinder,
+  command as bump,
+} from './bump';
 import {
   setupRequestMockHandlers,
   withLogCollector,

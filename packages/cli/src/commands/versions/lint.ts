@@ -47,7 +47,7 @@ export const forbiddenDuplicatesFilter = (name: string) =>
   FORBID_DUPLICATES.some(pattern => pattern.test(name)) &&
   !ALLOW_DUPLICATES.some(pattern => pattern.test(name));
 
-export default async (cmd: OptionValues) => {
+export async function command(cmd: OptionValues) {
   const fix = Boolean(cmd.fix);
 
   let success = true;
@@ -111,7 +111,7 @@ export default async (cmd: OptionValues) => {
   if (!success) {
     throw new Error('Failed versioning check');
   }
-};
+}
 
 function logArray<T>(arr: T[], header: string, each: (item: T) => string) {
   if (arr.length === 0) {

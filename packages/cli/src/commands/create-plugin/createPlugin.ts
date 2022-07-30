@@ -161,16 +161,16 @@ async function buildPlugin(pluginFolder: string) {
     'yarn tsc',
     'yarn build',
   ];
-  for (const command of commands) {
+  for (const cmd of commands) {
     try {
-      await Task.forItem('executing', command, async () => {
+      await Task.forItem('executing', cmd, async () => {
         process.chdir(pluginFolder);
-        await exec(command);
+        await exec(cmd);
       }).catch(error => {
         process.stdout.write(error.stderr);
         process.stdout.write(error.stdout);
         throw new Error(
-          `Warning: Could not execute command ${chalk.cyan(command)}`,
+          `Warning: Could not execute command ${chalk.cyan(cmd)}`,
         );
       });
     } catch (error) {
@@ -195,7 +195,7 @@ export async function movePlugin(
   });
 }
 
-export default async (opts: OptionValues) => {
+export async function command(opts: OptionValues) {
   const codeownersPath = await getCodeownersFilePath(paths.targetRoot);
 
   const questions: Question[] = [
@@ -337,4 +337,4 @@ export default async (opts: OptionValues) => {
     Task.error('🔥  Failed to create plugin!');
     Task.exit(1);
   }
-};
+}

@@ -18,7 +18,7 @@ import { OptionValues } from 'commander';
 import { paths } from '../lib/paths';
 import { ESLint } from 'eslint';
 
-export default async (directories: string[], opts: OptionValues) => {
+export async function command(directories: string[], opts: OptionValues) {
   const eslint = new ESLint({
     cwd: paths.targetDir,
     fix: opts.fix,
@@ -47,4 +47,4 @@ export default async (directories: string[], opts: OptionValues) => {
     console.log(resultText);
     process.exit(1);
   }
-};
+}

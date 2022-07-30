@@ -40,7 +40,7 @@ function parseOptions(optionStrings: string[]): Record<string, string> {
   return options;
 }
 
-export default async (opts: OptionValues) => {
+export async function command(opts: OptionValues) {
   const factory = await FactoryRegistry.interactiveSelect(opts.select);
 
   const providedOptions = parseOptions(opts.option);
@@ -130,4 +130,4 @@ export default async (opts: OptionValues) => {
       }
     }
   }
-};
+}

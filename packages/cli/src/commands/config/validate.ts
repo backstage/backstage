@@ -17,7 +17,7 @@
 import { OptionValues } from 'commander';
 import { loadCliConfig } from '../../lib/config';
 
-export default async (opts: OptionValues) => {
+export async function command(opts: OptionValues) {
   await loadCliConfig({
     args: opts.config,
     fromPackage: opts.package,
@@ -25,4 +25,4 @@ export default async (opts: OptionValues) => {
     fullVisibility: !opts.frontend,
     withDeprecatedKeys: opts.deprecated,
   });
-};
+}

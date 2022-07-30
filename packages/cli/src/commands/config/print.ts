@@ -20,7 +20,7 @@ import { AppConfig, ConfigReader } from '@backstage/config';
 import { loadCliConfig } from '../../lib/config';
 import { ConfigSchema, ConfigVisibility } from '@backstage/config-loader';
 
-export default async (opts: OptionValues) => {
+export async function command(opts: OptionValues) {
   const { schema, appConfigs } = await loadCliConfig({
     args: opts.config,
     fromPackage: opts.package,
@@ -35,7 +35,7 @@ export default async (opts: OptionValues) => {
   } else {
     process.stdout.write(`${stringifyYaml(data)}\n`);
   }
-};
+}
 
 function getVisibilityOption(opts: OptionValues): ConfigVisibility {
   if (opts.frontend && opts.withSecrets) {

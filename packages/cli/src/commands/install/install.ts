@@ -154,7 +154,7 @@ async function loadPeerPluginDeps(
   }
 }
 
-export default async (pluginId?: string, cmd?: OptionValues) => {
+export async function command(pluginId?: string, cmd?: OptionValues) {
   const from = pluginId || cmd?.from;
   // TODO(himanshu): If no plugin id is provided, it should list all plugins available. Maybe in some other command?
   if (!from) {
@@ -164,4 +164,4 @@ export default async (pluginId?: string, cmd?: OptionValues) => {
   }
   const pkg = await loadPackageJson(from);
   await installPluginAndPeerPlugins(pkg);
-};
+}

@@ -20,7 +20,7 @@ import { getPackages } from '@manypkg/get-packages';
 import { paths } from '../../lib/paths';
 import { getRoleFromPackage, detectRoleFromPackage } from '../../lib/role';
 
-export default async () => {
+export async function command() {
   const { packages } = await getPackages(paths.targetDir);
 
   await Promise.all(
@@ -66,4 +66,4 @@ export default async () => {
       });
     }),
   );
-};
+}

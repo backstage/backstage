@@ -21,7 +21,7 @@ import { loadCliConfig } from '../../lib/config';
 import { JsonObject } from '@backstage/types';
 import { mergeConfigSchemas } from '@backstage/config-loader';
 
-export default async (opts: OptionValues) => {
+export async function command(opts: OptionValues) {
   const { schema } = await loadCliConfig({
     args: [],
     fromPackage: opts.package,
@@ -43,4 +43,4 @@ export default async (opts: OptionValues) => {
   } else {
     process.stdout.write(`${stringifyYaml(merged)}\n`);
   }
-};
+}

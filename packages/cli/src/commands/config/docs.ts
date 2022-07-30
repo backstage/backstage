@@ -23,7 +23,7 @@ import { loadCliConfig } from '../../lib/config';
 
 const DOCS_URL = 'https://config.backstage.io';
 
-export default async (opts: OptionValues) => {
+export async function command(opts: OptionValues) {
   const { schema: appSchemas } = await loadCliConfig({
     args: [],
     fromPackage: opts.package,
@@ -37,4 +37,4 @@ export default async (opts: OptionValues) => {
   );
 
   openBrowser(`${DOCS_URL}#schema=${JSON.stringify(schema)}`);
-};
+}
