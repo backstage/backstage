@@ -13,7 +13,7 @@
     "jsx": "react",
     "lib": ["DOM", "DOM.Iterable", "ScriptHost", "ES2020"],
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "Node16",
     "noEmit": false,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
