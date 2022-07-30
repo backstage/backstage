@@ -60,7 +60,6 @@ function createConfig(dir, extraConfig = {}) {
       '@spotify/eslint-config-typescript',
       'prettier',
       'plugin:jest/recommended',
-      'plugin:monorepo/recommended',
       ...(extraExtends ?? []),
     ],
     parser: '@typescript-eslint/parser',
