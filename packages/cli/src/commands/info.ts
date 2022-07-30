@@ -21,7 +21,7 @@ import { paths } from '../lib/paths';
 import { Lockfile } from '../lib/versioning';
 import fs from 'fs-extra';
 
-export default async () => {
+export async function command() {
   await new Promise(async () => {
     const yarnVersion = await runPlain('yarn --version');
     const isLocal = fs.existsSync(paths.resolveOwn('./src'));
@@ -56,4 +56,4 @@ export default async () => {
       console.log(`  ${dep.padEnd(maxLength)} ${[...versions].join(', ')}`);
     }
   });
-};
+}

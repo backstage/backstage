@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { paths } from '../../lib/paths';
 
-export default async function clean() {
+export async function command() {
   await fs.remove(paths.resolveTarget('dist'));
   await fs.remove(paths.resolveTarget('dist-types'));
   await fs.remove(paths.resolveTarget('coverage'));

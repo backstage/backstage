@@ -25,7 +25,7 @@ import openBrowser from 'react-dev-utils/openBrowser';
 // This is an experimental command that at this point does not support GitHub Enterprise
 // due to lacking support for creating apps from manifests.
 // https://docs.github.com/en/free-pro-team@latest/developers/apps/creating-a-github-app-from-a-manifest
-export default async (org: string) => {
+export async function command(org: string) {
   const answers: Answers = await inquirer.prompt({
     name: 'appType',
     type: 'checkbox',
@@ -80,7 +80,7 @@ integrations:
       apps:
         - $include: ${fileName}`),
   );
-};
+}
 
 async function verifyGithubOrg(org: string): Promise<void> {
   let response;

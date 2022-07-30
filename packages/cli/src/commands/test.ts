@@ -27,7 +27,7 @@ function includesAnyOf(hayStack: string[], ...needles: string[]) {
   return false;
 }
 
-export default async (_opts: OptionValues, cmd: Command) => {
+export async function command(_opts: OptionValues, cmd: Command) {
   // all args are forwarded to jest
   let parent = cmd;
   while (parent.parent) {
@@ -84,4 +84,4 @@ export default async (_opts: OptionValues, cmd: Command) => {
 
   // eslint-disable-next-line jest/no-jest-import
   await require('jest').run(args);
-};
+}

@@ -50,7 +50,7 @@ const fileHandlers = [
   },
 ];
 
-export default async (opts: OptionValues) => {
+export async function command(opts: OptionValues) {
   let promptFunc = inquirerPromptFunc;
   let finalize = () => {};
 
@@ -64,7 +64,7 @@ export default async (opts: OptionValues) => {
   const templateFiles = await diffTemplateFiles('default-plugin', data);
   await handleAllFiles(fileHandlers, templateFiles, promptFunc);
   finalize();
-};
+}
 
 // Reads templating data from the existing plugin
 async function readPluginData(): Promise<PluginData> {
