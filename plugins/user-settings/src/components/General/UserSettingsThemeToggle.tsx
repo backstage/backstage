@@ -156,7 +156,7 @@ export const UserSettingsThemeToggle = () => {
           })}
           <Tooltip placement="top" arrow title="Select auto theme">
             <ToggleButton value="auto" selected={themeId === undefined}>
-              Auto&nbsp;
+              kkkikk&nbsp;
               <AutoIcon color={themeId === undefined ? 'primary' : undefined} />
             </ToggleButton>
           </Tooltip>

@@ -65,21 +65,20 @@ export const colorVariants: Record<string, string[]> = {
  * page as a css background-image instead of an html element of its own.
  */
 export function genPageTheme(props: {
-  colors: string[];
-  shape: string;
+  colors?: string[];
+  shape?: string;
   options?: {
     fontColor?: string;
   };
 }): PageTheme {
   const { colors, shape, options } = props;
-  const gradientColors = colors.length === 1 ? [colors[0], colors[0]] : colors;
-  const gradient = `linear-gradient(90deg, ${gradientColors.join(', ')})`;
-  const backgroundImage = `${shape},  ${gradient}`;
-  const fontColor = options?.fontColor ?? '#FFFFFF';
+  // const gradientColors = colors.length === 1 ? [colors[0], colors[0]] : colors;
+  // const gradient = `linear-gradient(90deg, ${gradientColors.join(', ')})`;
+  const backgroundImage = `#FFFFFF`;
+  const fontColor = '#000000';
 
   return {
-    colors: colors,
-    shape: shape,
+    colors: '#98002B',
     backgroundImage: backgroundImage,
     fontColor: fontColor,
   };
@@ -91,17 +90,11 @@ export function genPageTheme(props: {
  * @public
  */
 export const pageTheme: Record<string, PageTheme> = {
-  home: genPageTheme({ colors: colorVariants.teal, shape: shapes.wave }),
-  documentation: genPageTheme({
-    colors: colorVariants.pinkSea,
-    shape: shapes.wave2,
-  }),
-  tool: genPageTheme({ colors: colorVariants.purpleSky, shape: shapes.round }),
-  service: genPageTheme({
-    colors: colorVariants.marineBlue,
-    shape: shapes.wave,
-  }),
-  website: genPageTheme({ colors: colorVariants.veryBlue, shape: shapes.wave }),
+  home: genPageTheme({}),
+  documentation: genPageTheme({}),
+  tool: genPageTheme({}),
+  service: genPageTheme({}),
+  website: genPageTheme({}),
   library: genPageTheme({ colors: colorVariants.rubyRed, shape: shapes.wave }),
   other: genPageTheme({ colors: colorVariants.darkGrey, shape: shapes.wave }),
   app: genPageTheme({ colors: colorVariants.toastyOrange, shape: shapes.wave }),

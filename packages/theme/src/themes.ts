@@ -72,7 +72,7 @@ export const lightTheme = createTheme({
     link: '#0A6EBE',
     gold: yellow.A700,
     navigation: {
-      background: '#171717',
+      background: 'red',
       indicator: '#9BF0E1',
       color: '#b5b5b5',
       selectedColor: '#FFF',
@@ -85,14 +85,14 @@ export const lightTheme = createTheme({
     },
     pinSidebarButton: {
       icon: '#181818',
-      background: '#BDBDBD',
+      background: 'red',
     },
     tabbar: {
       indicator: '#9BF0E1',
     },
   },
   defaultPageTheme: 'home',
-  pageTheme,
+  pageTheme,// home:{color:'',backgroundImage:,FontColor:}
 });
 
 /**

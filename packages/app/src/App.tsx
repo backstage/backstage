@@ -35,7 +35,8 @@ import {
 } from '@backstage/core-components';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import { AzurePullRequestsPage } from '@backstage/plugin-azure-devops';
-
+import { ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import {
   CatalogEntityPage,
   CatalogIndexPage,
@@ -101,7 +102,10 @@ import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { PermissionedRoute } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
-// commenting Here for Checking How to Remove the already commited file Check No 3 Here 
+import { lightTheme } from '@backstage/theme';
+import { BackstageTheme } from '../../theme/src/types';
+
+// console.log('Theme Here ', BackstageTheme);
 const app = createApp({
   apis,
   plugins: Object.values(plugins),
@@ -109,6 +113,18 @@ const app = createApp({
     // Custom icon example
     alert: AlarmIcon,
   },
+  themes: [
+    {
+      id: 'my-theme',
+      title: 'l',
+      variant: 'light',
+      Provider: ({ children }) => (
+        <ThemeProvider theme={lightTheme}>
+          <CssBaseline>{children}</CssBaseline>
+        </ThemeProvider>
+      ),
+    },
+  ],
   components: {
     SignInPage: props => {
       return (
