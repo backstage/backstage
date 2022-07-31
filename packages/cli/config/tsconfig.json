@@ -12,7 +12,7 @@
     "isolatedModules": true,
     "jsx": "react",
     "lib": ["DOM", "DOM.Iterable", "ScriptHost", "ES2020"],
-    "module": "ESNext",
+    "module": "Node16",
     "moduleResolution": "Node16",
     "noEmit": false,
     "noFallthroughCasesInSwitch": true,
