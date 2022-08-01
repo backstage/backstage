@@ -229,6 +229,19 @@ describe('DefaultSonarqubeInfoProvider', () => {
   }
 
   describe('getBaseUrl', () => {
+    it('Provide base url for default from simple config and non provided instanceName', async () => {
+      const provider = configureProvider({
+        sonarqube: {
+          baseUrl: 'https://sonarqube.example.com',
+          apiKey: '123456789abcdef0123456789abcedf012',
+        },
+      });
+
+      expect(provider.getBaseUrl()).toEqual({
+        baseUrl: 'https://sonarqube.example.com',
+      });
+    });
+
     it('Provide base url for default from simple config and empty string', async () => {
       const provider = configureProvider({
         sonarqube: {

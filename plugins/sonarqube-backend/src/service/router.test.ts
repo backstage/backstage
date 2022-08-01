@@ -83,7 +83,7 @@ describe('createRouter', () => {
       expect(response.status).toEqual(400);
     });
 
-    it('use an empty string as instance name when instance key not provided', async () => {
+    it('use the value as instance name when instance key not provided', async () => {
       const measures = {
         analysisDate: '2021-04-08',
         measures: [{ metric: 'vulnerabilities', value: '54' }],
@@ -94,11 +94,12 @@ describe('createRouter', () => {
         .get('/findings')
         .query({
           componentKey: DUMMY_COMPONENT_KEY,
+          instanceKey: undefined,
         })
         .send();
 
       expect(getFindingsMock).toBeCalledTimes(1);
-      expect(getFindingsMock).toBeCalledWith(DUMMY_COMPONENT_KEY, '');
+      expect(getFindingsMock).toBeCalledWith(DUMMY_COMPONENT_KEY, undefined);
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(measures);
     });
@@ -117,6 +118,17 @@ describe('createRouter', () => {
       expect(getBaseUrlMock).toBeCalledTimes(1);
       expect(getBaseUrlMock).toBeCalledWith({
         instanceName: DUMMY_INSTANCE_KEY,
+      });
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({ instanceUrl: DUMMY_INSTANCE_URL });
+    });
+
+    it('query default instance when instanceKey not provided', async () => {
+      getBaseUrlMock.mockReturnValue({ baseUrl: DUMMY_INSTANCE_URL });
+      const response = await request(app).get('/instanceUrl').send();
+      expect(getBaseUrlMock).toBeCalledTimes(1);
+      expect(getBaseUrlMock).toBeCalledWith({
+        instanceName: undefined,
       });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ instanceUrl: DUMMY_INSTANCE_URL });

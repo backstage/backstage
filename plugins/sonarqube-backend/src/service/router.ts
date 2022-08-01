@@ -54,21 +54,16 @@ export async function createRouter(
   router.use(express.json());
   router.get('/findings', async (request, response) => {
     const componentKey = request.query.componentKey as string;
-    let instanceKey = request.query.instanceKey as string;
+    const instanceKey = request.query.instanceKey as string;
 
     if (!componentKey)
       throw new InputError('ComponentKey must be provided as a single string.');
 
-    if (!instanceKey) {
-      instanceKey = '';
-      logger.info(
-        `Retrieving findings for component ${componentKey} in default sonarqube instance`,
-      );
-    } else {
-      logger.info(
-        `Retrieving findings for component ${componentKey}  in sonarqube instance name ${instanceKey}`,
-      );
-    }
+    logger.info(
+      instanceKey
+        ? `Retrieving findings for component ${componentKey}  in sonarqube instance name ${instanceKey}`
+        : `Retrieving findings for component ${componentKey} in default sonarqube instance`,
+    );
 
     response.json(
       await sonarqubeInfoProvider.getFindings(componentKey, instanceKey),
@@ -76,19 +71,15 @@ export async function createRouter(
   });
 
   router.get('/instanceUrl', (request, response) => {
-    let requestedInstanceKey = request.query.instanceKey as string;
-    if (requestedInstanceKey) {
-      logger.info(
-        `Retrieving sonarqube instance URL for key ${requestedInstanceKey}`,
-      );
-    } else {
-      requestedInstanceKey = '';
-      logger.info(
-        `Retrieving default sonarqube instance URL as parameter is inexistant, empty or malformed`,
-      );
-    }
+    const instanceKey = request.query.instanceKey as string;
+
+    logger.info(
+      instanceKey
+        ? `Retrieving sonarqube instance URL for key ${instanceKey}`
+        : `Retrieving default sonarqube instance URL as instanceKey is not provided`,
+    );
     const { baseUrl } = sonarqubeInfoProvider.getBaseUrl({
-      instanceName: requestedInstanceKey,
+      instanceName: instanceKey,
     });
     response.json({
       instanceUrl: baseUrl,

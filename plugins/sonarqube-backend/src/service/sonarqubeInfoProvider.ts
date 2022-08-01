@@ -23,18 +23,21 @@ import fetch from 'node-fetch';
  */
 export interface SonarqubeInfoProvider {
   /**
-   * Get the sonarqube URL in configuration from a provided name.
+   * Get the sonarqube URL in configuration from a provided instanceName.
    *
-   * If name is omitted, default sonarqube instance is queried in config
+   * If instanceName is omitted, default sonarqube instance is queried in config
    *
    * @param instanceName - Name of the sonarqube instance to get the info from
    * @returns the url of the instance
    */
-  getBaseUrl({ instanceName }: { instanceName: string }): { baseUrl: string };
+  getBaseUrl({ instanceName }?: { instanceName?: string }): { baseUrl: string };
 
   /**
    * Query the sonarqube instance corresponding to the instanceName to get all
    * measures for the component of key componentKey.
+   *
+   * If instanceName is omitted, default sonarqube instance is queried in config
+   *
    * @param componentKey - component key of the project we want to get measure from.
    * @param instanceName - name of the instance (in config) where the project is hosted.
    * @returns All measures with the analysis date. Will return undefined if we
@@ -42,7 +45,7 @@ export interface SonarqubeInfoProvider {
    */
   getFindings(
     componentKey: string,
-    instanceName: string,
+    instanceName?: string,
   ): Promise<SonarqubeFindings | undefined>;
 }
 
@@ -295,8 +298,10 @@ export class DefaultSonarqubeInfoProvider implements SonarqubeInfoProvider {
    * {@inheritDoc SonarqubeInfoProvider.getBaseUrl}
    * @throws Error If configuration can't be retrieved.
    */
-  getBaseUrl({ instanceName }: { instanceName: string }): { baseUrl: string } {
-    const instanceConfig = this.config.getInstanceConfig(instanceName ?? '');
+  getBaseUrl({ instanceName }: { instanceName?: string } = {}): {
+    baseUrl: string;
+  } {
+    const instanceConfig = this.config.getInstanceConfig(instanceName);
     return { baseUrl: instanceConfig.baseUrl };
   }
 
@@ -306,11 +311,9 @@ export class DefaultSonarqubeInfoProvider implements SonarqubeInfoProvider {
    */
   async getFindings(
     componentKey: string,
-    instanceName: string,
+    instanceName?: string,
   ): Promise<SonarqubeFindings | undefined> {
-    const { baseUrl, apiKey } = this.config.getInstanceConfig(
-      instanceName ?? '',
-    );
+    const { baseUrl, apiKey } = this.config.getInstanceConfig(instanceName);
 
     // get component info to retrieve analysis date
     const component =
