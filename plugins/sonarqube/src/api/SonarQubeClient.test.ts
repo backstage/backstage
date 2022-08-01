@@ -124,7 +124,9 @@ describe('SonarQubeClient', () => {
       identityApi: identityApiAuthenticated,
     });
 
-    const summary = await client.getFindingSummary('our:service');
+    const summary = await client.getFindingSummary({
+      componentKey: 'our:service',
+    });
     expect(summary).toEqual(
       expect.objectContaining({
         lastAnalysis: '2020-01-01T00:00:00Z',
@@ -199,7 +201,10 @@ describe('SonarQubeClient', () => {
       identityApi: identityApiAuthenticated,
     });
 
-    const summary = await client.getFindingSummary('our:service', 'custom');
+    const summary = await client.getFindingSummary({
+      componentKey: 'our:service',
+      projectInstance: 'custom',
+    });
 
     expect(summary).toEqual(
       expect.objectContaining({
@@ -241,7 +246,9 @@ describe('SonarQubeClient', () => {
       discoveryApi,
       identityApi: identityApiAuthenticated,
     });
-    const summary = await client.getFindingSummary('our:service');
+    const summary = await client.getFindingSummary({
+      componentKey: 'our:service',
+    });
 
     expect(summary?.lastAnalysis).toBe('2020-01-01T00:00:00Z');
   });
@@ -267,7 +274,9 @@ describe('SonarQubeClient', () => {
       discoveryApi,
       identityApi: identityApiGuest,
     });
-    const summary = await client.getFindingSummary('our:service');
+    const summary = await client.getFindingSummary({
+      componentKey: 'our:service',
+    });
 
     expect(summary?.lastAnalysis).toBe('2020-01-01T00:00:00Z');
   });

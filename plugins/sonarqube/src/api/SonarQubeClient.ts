@@ -56,10 +56,13 @@ export class SonarQubeClient implements SonarQubeApi {
     return undefined;
   }
 
-  async getFindingSummary(
-    componentKey?: string,
-    projectInstance?: string,
-  ): Promise<FindingSummary | undefined> {
+  async getFindingSummary({
+    componentKey,
+    projectInstance,
+  }: {
+    componentKey?: string;
+    projectInstance?: string;
+  } = {}): Promise<FindingSummary | undefined> {
     if (!componentKey) {
       return undefined;
     }
