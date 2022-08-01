@@ -2790,9 +2790,9 @@
     meros "^1.1.4"
 
 "@graphql-codegen/cli@^2.3.1":
-  version "2.11.2"
-  resolved "https://registry.npmjs.org/@graphql-codegen/cli/-/cli-2.11.2.tgz#f502d0e9e19305acffca5f07789dde8d4e0fa656"
-  integrity sha512-dt70+et0QFmhL3krrlYWcsp7T6pvChEQ1vEGoNn46Rn53velGDwP546DtSPpHJmajY/eJ11CueoI0J/3o0/BTA==
+  version "2.11.3"
+  resolved "https://registry.npmjs.org/@graphql-codegen/cli/-/cli-2.11.3.tgz#6cb0fd6da0773957b531cccf7459303a23ee1c05"
+  integrity sha512-C1d88Kx0a0PF1tOR00UIZjHq5aWNNcw5fM2k08rOY9O5b4sU7kEb+YbGKP6EExTtJnYb49fePLKVvrIv1ejDFg==
   dependencies:
     "@graphql-codegen/core" "2.6.0"
     "@graphql-codegen/plugin-helpers" "^2.6.1"
