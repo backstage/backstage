@@ -173,7 +173,7 @@ describe('SonarqubeConfig', () => {
         },
       ]);
 
-      expect(config.getInstanceConfig('default')).toEqual({
+      expect(config.getInstanceConfig({ sonarqubeName: 'default' })).toEqual({
         name: 'default',
         baseUrl: 'https://sonarqube.example.com',
         apiKey: '123456789abcdef0123456789abcedf012',
@@ -190,7 +190,7 @@ describe('SonarqubeConfig', () => {
         },
       ]);
 
-      expect(config.getInstanceConfig('other')).toEqual({
+      expect(config.getInstanceConfig({ sonarqubeName: 'other' })).toEqual({
         name: 'other',
         baseUrl: 'https://sonarqube-other.example.com',
         apiKey: '123456789abcdef0123456789abcedf012',
@@ -206,7 +206,9 @@ describe('SonarqubeConfig', () => {
         },
       ]);
 
-      expect(() => config.getInstanceConfig('default')).toThrowError(Error);
+      expect(() =>
+        config.getInstanceConfig({ sonarqubeName: 'default' }),
+      ).toThrowError(Error);
     });
 
     it('Throw an error if named instance could not be found', async () => {
@@ -214,7 +216,9 @@ describe('SonarqubeConfig', () => {
         DUMMY_SIMPLE_OBJECT_FOR_DEFAULT_SONARQUBE_CONFIG,
       ]);
 
-      expect(() => config.getInstanceConfig('other')).toThrowError(Error);
+      expect(() =>
+        config.getInstanceConfig({ sonarqubeName: 'other' }),
+      ).toThrowError(Error);
     });
   });
 });
@@ -385,7 +389,10 @@ describe('DefaultSonarqubeInfoProvider', () => {
       setupHandlers();
       const provider = configureProvider(DUMMY_SIMPLE_CONFIG_FOR_PROVIDER);
       expect(
-        await provider.getFindings(DUMMY_COMPONENT_KEY, 'default'),
+        await provider.getFindings({
+          componentKey: DUMMY_COMPONENT_KEY,
+          instanceName: 'default',
+        }),
       ).toEqual({
         analysisDate: DUMMY_ANALYSIS_DATE,
         measures: [
@@ -414,7 +421,10 @@ describe('DefaultSonarqubeInfoProvider', () => {
         },
       });
       expect(
-        await provider.getFindings(DUMMY_COMPONENT_KEY, 'default'),
+        await provider.getFindings({
+          componentKey: DUMMY_COMPONENT_KEY,
+          instanceName: 'default',
+        }),
       ).toBeUndefined();
     });
     it('Provide undefined as finding if component API answer incorrectly', async () => {
@@ -434,7 +444,10 @@ describe('DefaultSonarqubeInfoProvider', () => {
 
       const provider = configureProvider(DUMMY_SIMPLE_CONFIG_FOR_PROVIDER);
       expect(
-        await provider.getFindings(DUMMY_COMPONENT_KEY, 'default'),
+        await provider.getFindings({
+          componentKey: DUMMY_COMPONENT_KEY,
+          instanceName: 'default',
+        }),
       ).toBeUndefined();
     });
     it('Provide findings when metrics API uses pages', async () => {
@@ -462,7 +475,10 @@ describe('DefaultSonarqubeInfoProvider', () => {
 
       const provider = configureProvider(DUMMY_SIMPLE_CONFIG_FOR_PROVIDER);
       expect(
-        await provider.getFindings(DUMMY_COMPONENT_KEY, 'default'),
+        await provider.getFindings({
+          componentKey: DUMMY_COMPONENT_KEY,
+          instanceName: 'default',
+        }),
       ).toEqual({
         analysisDate: DUMMY_ANALYSIS_DATE,
         measures: [
@@ -489,7 +505,10 @@ describe('DefaultSonarqubeInfoProvider', () => {
 
       const provider = configureProvider(DUMMY_SIMPLE_CONFIG_FOR_PROVIDER);
       expect(
-        await provider.getFindings(DUMMY_COMPONENT_KEY, 'default'),
+        await provider.getFindings({
+          componentKey: DUMMY_COMPONENT_KEY,
+          instanceName: 'default',
+        }),
       ).toBeUndefined();
     });
 
@@ -509,7 +528,10 @@ describe('DefaultSonarqubeInfoProvider', () => {
 
       const provider = configureProvider(DUMMY_SIMPLE_CONFIG_FOR_PROVIDER);
       expect(
-        await provider.getFindings(DUMMY_COMPONENT_KEY, 'default'),
+        await provider.getFindings({
+          componentKey: DUMMY_COMPONENT_KEY,
+          instanceName: 'default',
+        }),
       ).toEqual({
         analysisDate: DUMMY_ANALYSIS_DATE,
         measures: [],

@@ -43,10 +43,13 @@ export interface SonarqubeInfoProvider {
    * @returns All measures with the analysis date. Will return undefined if we
    * can't provide the full response
    */
-  getFindings(
-    componentKey: string,
-    instanceName?: string,
-  ): Promise<SonarqubeFindings | undefined>;
+  getFindings({
+    componentKey,
+    instanceName,
+  }: {
+    componentKey: string;
+    instanceName?: string;
+  }): Promise<SonarqubeFindings | undefined>;
 }
 
 /**
@@ -182,7 +185,9 @@ export class SonarqubeConfig {
    * @returns The requested Sonarqube instance.
    * @throws Error when no default config could be found or the requested name couldn't be found in config.
    */
-  getInstanceConfig(sonarqubeName?: string): SonarqubeInstanceConfig {
+  getInstanceConfig({
+    sonarqubeName,
+  }: { sonarqubeName?: string } = {}): SonarqubeInstanceConfig {
     const DEFAULT_SONARQUBE_NAME = 'default';
 
     if (!sonarqubeName || sonarqubeName === DEFAULT_SONARQUBE_NAME) {
@@ -301,7 +306,9 @@ export class DefaultSonarqubeInfoProvider implements SonarqubeInfoProvider {
   getBaseUrl({ instanceName }: { instanceName?: string } = {}): {
     baseUrl: string;
   } {
-    const instanceConfig = this.config.getInstanceConfig(instanceName);
+    const instanceConfig = this.config.getInstanceConfig({
+      sonarqubeName: instanceName,
+    });
     return { baseUrl: instanceConfig.baseUrl };
   }
 
@@ -309,11 +316,16 @@ export class DefaultSonarqubeInfoProvider implements SonarqubeInfoProvider {
    * {@inheritDoc SonarqubeInfoProvider.getFindings}
    * @throws Error If configuration can't be retrieved.
    */
-  async getFindings(
-    componentKey: string,
-    instanceName?: string,
-  ): Promise<SonarqubeFindings | undefined> {
-    const { baseUrl, apiKey } = this.config.getInstanceConfig(instanceName);
+  async getFindings({
+    componentKey,
+    instanceName,
+  }: {
+    componentKey: string;
+    instanceName?: string;
+  }): Promise<SonarqubeFindings | undefined> {
+    const { baseUrl, apiKey } = this.config.getInstanceConfig({
+      sonarqubeName: instanceName,
+    });
 
     // get component info to retrieve analysis date
     const component =
