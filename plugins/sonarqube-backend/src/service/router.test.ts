@@ -70,10 +70,10 @@ describe('createRouter', () => {
         })
         .send();
       expect(getFindingsMock).toBeCalledTimes(1);
-      expect(getFindingsMock).toBeCalledWith(
-        DUMMY_COMPONENT_KEY,
-        DUMMY_INSTANCE_KEY,
-      );
+      expect(getFindingsMock).toBeCalledWith({
+        componentKey: DUMMY_COMPONENT_KEY,
+        instanceName: DUMMY_INSTANCE_KEY,
+      });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(measures);
     });
@@ -104,7 +104,10 @@ describe('createRouter', () => {
         .send();
 
       expect(getFindingsMock).toBeCalledTimes(1);
-      expect(getFindingsMock).toBeCalledWith(DUMMY_COMPONENT_KEY, undefined);
+      expect(getFindingsMock).toBeCalledWith({
+        componentKey: DUMMY_COMPONENT_KEY,
+        instanceName: undefined,
+      });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(measures);
     });
