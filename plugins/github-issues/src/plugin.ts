@@ -34,8 +34,7 @@ export const GitHubIssuesCard = gitHubIssuesPlugin.provide(
   createComponentExtension({
     name: 'GitHubIssuesCard',
     component: {
-      lazy: () =>
-        import('./components/GitHubIssuesCard').then(m => m.GitHubIssuesCard),
+      lazy: () => import('./components/GitHubIssues').then(m => m.GitHubIssues),
     },
   }),
 );
@@ -45,7 +44,7 @@ export const GitHubIssuesPage = gitHubIssuesPlugin.provide(
   createRoutableExtension({
     name: 'GitHubIssuesPage',
     component: () =>
-      import('./components/GitHubIssuesPage').then(m => m.GitHubIssuesPage),
+      import('./components/GitHubIssues').then(m => m.GitHubIssues),
     mountPoint: rootRouteRef,
   }),
 );
