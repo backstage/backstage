@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import { DateTime } from 'luxon';
 
 import {
@@ -23,12 +23,12 @@ import {
   CardActionArea,
   Link,
 } from '@material-ui/core';
-import Assignees from './Assignees';
+import { Assignees } from './Assignees';
 import { CommentsCount } from './CommentsCount';
 
 import Divider from '@material-ui/core/Divider';
 
-type Props = {
+type IssueCardProps = {
   title: string;
   createdAt: string;
   updatedAt?: string;
@@ -45,7 +45,7 @@ type Props = {
 const getElapsedTime = (isoDate: string) =>
   DateTime.fromISO(isoDate).toRelative();
 
-export const IssueCard: FunctionComponent<Props> = (props: Props) => {
+export const IssueCard = (props: IssueCardProps) => {
   const {
     title,
     createdAt,

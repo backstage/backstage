@@ -28,10 +28,7 @@ import {
 import { IssueList } from './IssuesList';
 import { NoRepositoriesInfo } from './NoRepositoriesInfo';
 
-export type PluginMode = 'page' | 'card';
-
-export type Props = {
-  mode: PluginMode;
+export type GitHubIssuesProps = {
   itemsPerPage?: number;
   itemsPerRepo?: number;
 };
@@ -39,7 +36,7 @@ export type Props = {
 export const GitHubIssues = ({
   itemsPerPage = 10,
   itemsPerRepo = 40,
-}: Props) => {
+}: GitHubIssuesProps) => {
   const [isLoading, setIsLoading] = React.useState(true);
 
   const [issuesByRepository, setIssuesByRepository] =

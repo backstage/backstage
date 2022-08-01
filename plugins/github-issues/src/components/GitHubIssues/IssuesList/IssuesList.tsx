@@ -20,11 +20,11 @@ import { Pagination } from '@material-ui/lab';
 
 import { IssueCard } from '../IssueCard';
 import { RepoIssues } from '../../../hooks/useGetIssuesByRepoFromGitHub';
-import { Filters } from './Filters';
+import { RepositoryFilters } from './Filters';
 
 export type PluginMode = 'page' | 'card';
 
-export type Props = {
+export type IssueListProps = {
   itemsPerPage?: number;
   issuesByRepository?: Record<string, RepoIssues>;
 };
@@ -37,7 +37,10 @@ const getIssuesCountForFilterLabel = (
     issuesAvailable < totalIssues ? '*' : ''
   }`;
 
-export const IssueList = ({ itemsPerPage = 10, issuesByRepository }: Props) => {
+export const IssueList = ({
+  itemsPerPage = 10,
+  issuesByRepository,
+}: IssueListProps) => {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [activeFilter, setActiveFilter] = React.useState<Array<string>>([]);
 
@@ -108,7 +111,7 @@ export const IssueList = ({ itemsPerPage = 10, issuesByRepository }: Props) => {
   return (
     <Box>
       {issues.length > 0 && (
-        <Filters
+        <RepositoryFilters
           placeholder={`All repositories ${getIssuesCountForFilterLabel(
             totalIssuesInGitHub,
             issues.length,

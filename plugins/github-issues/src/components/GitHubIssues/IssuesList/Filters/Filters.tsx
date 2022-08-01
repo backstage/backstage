@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Select, SelectedItems } from '@backstage/core-components';
+import { Select, SelectedItems, SelectItem } from '@backstage/core-components';
 import { makeStyles, Box, Typography } from '@material-ui/core';
 
-export type FilterItem = {
-  label: string;
-  value: string;
-};
-
-type Props = {
-  items: Array<FilterItem>;
+type RepositoryFiltersProps = {
+  items: Array<SelectItem>;
   totalIssuesInGitHub: number;
   placeholder: string;
   onChange: (active: Array<string>) => void;
@@ -47,7 +42,11 @@ const checkSelectedItems: (
   return onChange(active as Array<string>);
 };
 
-export const Filters = ({ items, onChange, placeholder }: Props) => {
+export const RepositoryFilters = ({
+  items,
+  onChange,
+  placeholder,
+}: RepositoryFiltersProps) => {
   const css = useStyles();
 
   return (
