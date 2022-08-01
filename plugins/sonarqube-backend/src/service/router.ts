@@ -66,7 +66,10 @@ export async function createRouter(
     );
 
     response.json(
-      await sonarqubeInfoProvider.getFindings(componentKey, instanceKey),
+      await sonarqubeInfoProvider.getFindings({
+        componentKey,
+        instanceName: instanceKey,
+      }),
     );
   });
 

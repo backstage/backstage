@@ -29,7 +29,12 @@ describe('createRouter', () => {
   > = jest.fn();
   const getFindingsMock: jest.Mock<
     Promise<SonarqubeFindings | undefined>,
-    [string, string]
+    [
+      {
+        componentKey: string;
+        instanceName: string;
+      },
+    ]
   > = jest.fn();
 
   beforeAll(async () => {
