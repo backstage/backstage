@@ -23,9 +23,9 @@ export const scrollIntoNavigation = (): Transformer => {
       if (activeNavItems.length !== 0) {
         // expand all navigation items that are active
         activeNavItems.forEach(activeNavItem => {
-          const input = activeNavItem?.querySelector('input');
-          if (input && !input?.checked) {
-            input.click();
+          const checkbox = activeNavItem?.querySelector('input');
+          if (!checkbox?.checked) {
+            checkbox?.click();
           }
         });
 
