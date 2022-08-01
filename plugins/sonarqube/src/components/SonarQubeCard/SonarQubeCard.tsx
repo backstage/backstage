@@ -98,7 +98,11 @@ export const SonarQubeCard = ({
   const { projectKey: projectTitle, projectInstance } = useProjectInfo(entity);
 
   const { value, loading } = useAsync(
-    async () => sonarQubeApi.getFindingSummary(projectTitle, projectInstance),
+    async () =>
+      sonarQubeApi.getFindingSummary({
+        componentKey: projectTitle,
+        projectInstance: projectInstance,
+      }),
     [sonarQubeApi, projectTitle],
   );
 

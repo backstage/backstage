@@ -25,7 +25,7 @@ export const isSonarQubeAvailable = (entity: Entity) =>
 /**
  * Try to parse sonarqube information from an entity.
  *
- * If part or all info are not found, they will default to an empty string
+ * If part or all info are not found, they will default to undefined
  *
  * @param entity entity to find the sonarqube information from.
  * @return a ProjectInfo properly populated.
@@ -33,11 +33,11 @@ export const isSonarQubeAvailable = (entity: Entity) =>
 export const useProjectInfo = (
   entity: Entity,
 ): {
-  projectInstance: string;
-  projectKey: string;
+  projectInstance: string | undefined;
+  projectKey: string | undefined;
 } => {
-  let projectInstance = '';
-  let projectKey = '';
+  let projectInstance = undefined;
+  let projectKey = undefined;
   const annotation =
     entity?.metadata.annotations?.[SONARQUBE_PROJECT_KEY_ANNOTATION];
   if (annotation) {
