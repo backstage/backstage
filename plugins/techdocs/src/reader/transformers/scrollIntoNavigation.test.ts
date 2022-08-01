@@ -15,66 +15,70 @@
  */
 
 import { scrollIntoNavigation } from '.';
+import { createTestShadowDom, FIXTURES } from '../../test-utils';
 
 jest.useFakeTimers();
 
 describe('scrollIntoNavigation', () => {
-  const transformer = scrollIntoNavigation();
-  const dom = { querySelectorAll: jest.fn().mockReturnValue([]) };
-
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('scroll to active navigation item', async () => {
-    const scrollNavIntoView1 = jest.fn();
-    const scrollNavIntoView2 = jest.fn();
+    await createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
+      preTransformers: [],
+      postTransformers: [scrollIntoNavigation()],
+    });
 
-    dom.querySelectorAll.mockReturnValue([
-      {
-        scrollIntoView: scrollNavIntoView1,
-        querySelector: jest.fn(),
-        click: jest.fn(),
-      },
-      {
-        scrollIntoView: scrollNavIntoView2,
-        querySelector: jest.fn(),
-        click: jest.fn(),
-      },
-    ]);
+    // jsdom does not implement scrollIntoView so we attach a function to the
+    // prototype to be able to test the expected behaviour.
+    const scrollNavIntoView = jest.fn();
+    window.HTMLElement.prototype.scrollIntoView = scrollNavIntoView;
 
-    transformer(dom as unknown as Element);
     jest.advanceTimersByTime(200);
 
-    expect(dom.querySelectorAll).toHaveBeenCalledWith(
-      expect.stringMatching('li.md-nav__item--active'),
-    );
-    expect(scrollNavIntoView1).not.toHaveBeenCalled();
-    expect(scrollNavIntoView2).toHaveBeenCalledWith();
+    expect(scrollNavIntoView).toHaveBeenCalledWith();
   });
 
   it('expand active navigation items', async () => {
-    const navItemClick1 = jest.fn();
-    const navItemClick2 = jest.fn();
-
-    dom.querySelectorAll.mockReturnValue([
+    const shadowDom = await createTestShadowDom(
+      FIXTURES.FIXTURE_STANDARD_PAGE,
       {
-        scrollIntoView: jest.fn(),
-        querySelector: jest.fn().mockReturnValue({ click: navItemClick1 }),
+        preTransformers: [],
+        postTransformers: [scrollIntoNavigation()],
       },
-      {
-        scrollIntoView: jest.fn(),
-        querySelector: jest.fn().mockReturnValue({ click: navItemClick2 }),
-      },
-    ]);
+    );
 
-    transformer(dom as unknown as Element);
+    // jsdom does not implement scrollIntoView so we attach an empty function to
+    // support the behaviour.
+    window.HTMLElement.prototype.scrollIntoView = () => {};
+
+    const click = jest.fn();
+    shadowDom.addEventListener('click', click);
+
     jest.advanceTimersByTime(200);
 
-    expect(dom.querySelectorAll).toHaveBeenCalledWith(
-      expect.stringMatching('li.md-nav__item--active'),
+    expect(click).toHaveBeenCalled();
+  });
+
+  it('does not expand already expanded active navigation items', async () => {
+    const shadowDom = await createTestShadowDom(
+      FIXTURES.FIXTURE_STANDARD_PAGE_EXPANDED_NAVIGATION,
+      {
+        preTransformers: [],
+        postTransformers: [scrollIntoNavigation()],
+      },
     );
-    expect(navItemClick1).toHaveBeenCalledWith();
-    expect(navItemClick2).toHaveBeenCalledWith();
+
+    // jsdom does not implement scrollIntoView so we attach an empty function to
+    // support the behaviour.
+    window.HTMLElement.prototype.scrollIntoView = () => {};
+
+    const click = jest.fn();
+    shadowDom.addEventListener('click', click);
+
+    jest.advanceTimersByTime(200);
+
+    expect(click).not.toHaveBeenCalled();
   });
 });

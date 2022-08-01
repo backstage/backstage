@@ -23,10 +23,14 @@ export const scrollIntoNavigation = (): Transformer => {
       if (activeNavItems.length !== 0) {
         // expand all navigation items that are active
         activeNavItems.forEach(activeNavItem => {
-          activeNavItem?.querySelector('input')?.click();
+          const input = activeNavItem?.querySelector('input');
+          if (input && !input?.checked) {
+            input.click();
+          }
         });
-        // scroll to the last active navigation item
-        activeNavItems[activeNavItems.length - 1].scrollIntoView();
+
+        const lastItem = activeNavItems[activeNavItems.length - 1];
+        lastItem.scrollIntoView();
       }
     }, 200);
     return dom;
