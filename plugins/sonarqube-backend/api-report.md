@@ -16,10 +16,13 @@ export class DefaultSonarqubeInfoProvider implements SonarqubeInfoProvider {
   getBaseUrl({ instanceName }?: { instanceName?: string }): {
     baseUrl: string;
   };
-  getFindings(
-    componentKey: string,
-    instanceName?: string,
-  ): Promise<SonarqubeFindings | undefined>;
+  getFindings({
+    componentKey,
+    instanceName,
+  }: {
+    componentKey: string;
+    instanceName?: string;
+  }): Promise<SonarqubeFindings | undefined>;
 }
 
 // @public
@@ -32,7 +35,11 @@ export interface RouterOptions {
 export class SonarqubeConfig {
   constructor(instances: SonarqubeInstanceConfig[]);
   static fromConfig(config: Config): SonarqubeConfig;
-  getInstanceConfig(sonarqubeName?: string): SonarqubeInstanceConfig;
+  getInstanceConfig({
+    sonarqubeName,
+  }?: {
+    sonarqubeName?: string;
+  }): SonarqubeInstanceConfig;
   // (undocumented)
   readonly instances: SonarqubeInstanceConfig[];
 }
@@ -48,10 +55,13 @@ export interface SonarqubeInfoProvider {
   getBaseUrl({ instanceName }?: { instanceName?: string }): {
     baseUrl: string;
   };
-  getFindings(
-    componentKey: string,
-    instanceName?: string,
-  ): Promise<SonarqubeFindings | undefined>;
+  getFindings({
+    componentKey,
+    instanceName,
+  }: {
+    componentKey: string;
+    instanceName?: string;
+  }): Promise<SonarqubeFindings | undefined>;
 }
 
 // @public
