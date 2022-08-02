@@ -9,16 +9,10 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
-export const GitHubIssuesCard: ({
-  itemsPerPage,
-  itemsPerRepo,
-}: GitHubIssuesProps) => JSX.Element;
+export const GitHubIssuesCard: (props: GitHubIssuesProps) => JSX.Element;
 
 // @public (undocumented)
-export const GitHubIssuesPage: ({
-  itemsPerPage,
-  itemsPerRepo,
-}: GitHubIssuesProps) => JSX.Element;
+export const GitHubIssuesPage: (props: GitHubIssuesProps) => JSX.Element;
 
 // @public (undocumented)
 export const gitHubIssuesPlugin: BackstagePlugin<
