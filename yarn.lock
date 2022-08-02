@@ -6270,11 +6270,6 @@
   resolved "https://registry.npmjs.org/@spotify/eslint-config-typescript/-/eslint-config-typescript-14.0.1.tgz#850a435b0defebbb3de591d83e3fc369bbc51753"
   integrity sha512-y/8on49Wtg3HvKd9A32Q7iJaOgngcSJR8hjGx/POFhJFcPRcZuTJSlhd31CF8fg78bMuzdvYH8au7FhNKjnEVw==
 
-"@spotify/prettier-config@^13.0.1":
-  version "13.0.1"
-  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-13.0.1.tgz#0fdceb3d4ab543259ce6adc0ec1d10e34898b812"
-  integrity sha512-oVd4hjx2+y0MeUdk1l+ItwVLwlrDlvTlGwXBWMMzPYc7DLyxuxFvDfoHGkAQkrikfAgtdnzxrW6u9a8ywUqdfw==
-
 "@spotify/prettier-config@^14.0.0":
   version "14.0.1"
   resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-14.0.1.tgz#a3a2342ec07693647ab76a64a623fbb79d464fa7"
