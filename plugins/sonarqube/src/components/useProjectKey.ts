@@ -17,10 +17,38 @@
 import { Entity } from '@backstage/catalog-model';
 
 export const SONARQUBE_PROJECT_KEY_ANNOTATION = 'sonarqube.org/project-key';
+export const SONARQUBE_PROJECT_INSTANCE_SEPARATOR = '/';
 
 export const isSonarQubeAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[SONARQUBE_PROJECT_KEY_ANNOTATION]);
 
-export const useProjectKey = (entity: Entity) => {
-  return entity?.metadata.annotations?.[SONARQUBE_PROJECT_KEY_ANNOTATION] ?? '';
+/**
+ * Try to parse sonarqube information from an entity.
+ *
+ * If part or all info are not found, they will default to undefined
+ *
+ * @param entity entity to find the sonarqube information from.
+ * @return a ProjectInfo properly populated.
+ */
+export const useProjectInfo = (
+  entity: Entity,
+): {
+  projectInstance: string | undefined;
+  projectKey: string | undefined;
+} => {
+  let projectInstance = undefined;
+  let projectKey = undefined;
+  const annotation =
+    entity?.metadata.annotations?.[SONARQUBE_PROJECT_KEY_ANNOTATION];
+  if (annotation) {
+    if (annotation.indexOf(SONARQUBE_PROJECT_INSTANCE_SEPARATOR) > -1) {
+      [projectInstance, projectKey] = annotation.split(
+        SONARQUBE_PROJECT_INSTANCE_SEPARATOR,
+        2,
+      );
+    } else {
+      projectKey = annotation;
+    }
+  }
+  return { projectInstance, projectKey };
 };
