@@ -7781,12 +7781,12 @@
     "@types/node" "*"
 
 "@types/tar@^6.1.1":
-  version "6.1.1"
-  resolved "https://registry.npmjs.org/@types/tar/-/tar-6.1.1.tgz#ab341ec1f149d7eb2a4f4ded56ff85f0d4fe7cb5"
-  integrity sha512-8mto3YZfVpqB1CHMaYz1TUYIQfZFbh/QbEq5Hsn6D0ilCfqRVCdalmc89B7vi3jhl9UYIk+dWDABShNfOkv5HA==
+  version "6.1.2"
+  resolved "https://registry.npmjs.org/@types/tar/-/tar-6.1.2.tgz#e60108a7d1b08cc91bf2faf1286cc08fdad48bbe"
+  integrity sha512-bnX3RRm70/n1WMwmevdOAeDU4YP7f5JSubgnuU+yrO+xQQjwDboJj3u2NTJI5ngCQhXihqVVAH5h5J8YpdpEvg==
   dependencies:
-    "@types/minipass" "*"
     "@types/node" "*"
+    minipass "^3.3.5"
 
 "@types/tern@*":
   version "0.23.4"
@@ -19258,6 +19258,13 @@ minipass@^3.0.0, minipass@^3.1.0, minipass@^3.1.1, minipass@^3.1.3, minipass@^3.
   version "3.1.6"
   resolved "https://registry.npmjs.org/minipass/-/minipass-3.1.6.tgz#3b8150aa688a711a1521af5e8779c1d3bb4f45ee"
   integrity sha512-rty5kpw9/z8SX9dmxblFA6edItUmwJgMeYDZRrwlIVN27i8gysGbznJwUggw2V/FVqFSDdWy040ZPS811DYAqQ==
+  dependencies:
+    yallist "^4.0.0"
+
+minipass@^3.3.5:
+  version "3.3.5"
+  resolved "https://registry.npmjs.org/minipass/-/minipass-3.3.5.tgz#6da7e53a48db8a856eeb9153d85b230a2119e819"
+  integrity sha512-rQ/p+KfKBkeNwo04U15i+hOwoVBVmekmm/HcfTkTN2t9pbQKCMm4eN5gFeqgrrSp/kH/7BYYhTIHOxGqzbBPaA==
   dependencies:
     yallist "^4.0.0"
 
