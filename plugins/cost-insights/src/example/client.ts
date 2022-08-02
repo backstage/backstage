@@ -52,7 +52,8 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
 
   async getUserGroups(userId: string): Promise<Group[]> {
     const groups: Group[] = await this.request({ userId }, [
-      { id: 'pied-piper' },
+      { id: 'group-a', name: 'Group A' },
+      { id: 'group-b', name: 'Group B' },
     ]);
 
     return groups;

@@ -100,7 +100,7 @@ export const CostInsightsTabs = ({ groups }: CostInsightsTabsProps) => {
             data-testid={g.id}
             onClick={updateGroupFilterAndCloseMenu(g)}
           >
-            {g.id}
+            {g.name ?? g.id}
           </MenuItem>
         ))}
       </Menu>
