@@ -22,7 +22,7 @@ import {
   Button,
   makeStyles,
 } from '@material-ui/core';
-import { FieldValidation, FormValidation, withTheme } from '@rjsf/core';
+import { FormValidation, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useMemo, useState } from 'react';
 import { FieldExtensionOptions } from '../../../extensions';
@@ -56,6 +56,7 @@ export const Stepper = (props: StepperProps) => {
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [formState, setFormState] = useState({});
+  const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
 
   const extensions = useMemo(() => {
@@ -81,15 +82,37 @@ export const Stepper = (props: StepperProps) => {
   };
 
   const handleNext = async ({ formData }: { formData: JsonObject }) => {
-    console.log('running validation');
+    setErrors(undefined);
 
-    const errors = await validator(formData, {
-      addError: () => {},
-      __errors: [],
-    } as any);
+    const errorContext: any = {};
+    for (const [key] of Object.entries(formData)) {
+      const localFieldContext = {
+        __errors: [] as string[],
+        addError: (message: string) => {
+          localFieldContext.__errors.push(message);
+        },
+      };
+      errorContext[key] = localFieldContext;
+    }
 
-    console.log('errors');
-    setActiveStep(prevActiveStep => prevActiveStep + 1);
+    const returnedValidation = await validator(
+      formData,
+      errorContext as FormValidation,
+    );
+
+    const hasErrors = Object.values(returnedValidation).some(i => {
+      if ('__errors' in i) {
+        return i.__errors.length > 0;
+      }
+      return false;
+    });
+
+    if (hasErrors) {
+      setErrors(returnedValidation);
+    } else {
+      setErrors(undefined);
+      setActiveStep(prevActiveStep => prevActiveStep + 1);
+    }
     setFormState(current => ({ ...current, ...formData }));
   };
 
@@ -104,6 +127,7 @@ export const Stepper = (props: StepperProps) => {
       </MuiStepper>
       <div className={styles.formWrapper}>
         <Form
+          extraErrors={errors}
           formData={formState}
           schema={steps[activeStep].schema}
           uiSchema={steps[activeStep].uiSchema}
