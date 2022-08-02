@@ -109,6 +109,8 @@ export interface DetectedError {
   // (undocumented)
   names: string[];
   // (undocumented)
+  namespace: string;
+  // (undocumented)
   severity: ErrorSeverity;
 }
 
