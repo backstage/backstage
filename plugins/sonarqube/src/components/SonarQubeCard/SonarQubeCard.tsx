@@ -26,7 +26,7 @@ import useAsync from 'react-use/lib/useAsync';
 import { sonarQubeApiRef } from '../../api';
 import {
   SONARQUBE_PROJECT_KEY_ANNOTATION,
-  useProjectKey,
+  useProjectInfo,
 } from '../useProjectKey';
 import { Percentage } from './Percentage';
 import { Rating } from './Rating';
@@ -95,10 +95,14 @@ export const SonarQubeCard = ({
   const { entity } = useEntity();
   const sonarQubeApi = useApi(sonarQubeApiRef);
 
-  const projectTitle = useProjectKey(entity);
+  const { projectKey: projectTitle, projectInstance } = useProjectInfo(entity);
 
   const { value, loading } = useAsync(
-    async () => sonarQubeApi.getFindingSummary(projectTitle),
+    async () =>
+      sonarQubeApi.getFindingSummary({
+        componentKey: projectTitle,
+        projectInstance: projectInstance,
+      }),
     [sonarQubeApi, projectTitle],
   );
 

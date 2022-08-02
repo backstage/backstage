@@ -1,5 +1,14 @@
 # @backstage/plugin-techdocs-react
 
+## 1.0.3-next.1
+
+### Patch Changes
+
+- 29d6cf0147: Add `toLowerEntityRefMaybe()` helper function for handling `techdocs.legacyUseCaseSensitiveTripletPaths` flag.
+  Pass modified `entityRef` to `TechDocsReaderPageContext` to handle the `techdocs.legacyUseCaseSensitiveTripletPaths` flag.
+- Updated dependencies
+  - @backstage/core-components@0.10.1-next.1
+
 ## 1.0.3-next.0
 
 ### Patch Changes

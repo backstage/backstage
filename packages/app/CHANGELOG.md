@@ -1,5 +1,22 @@
 # example-app
 
+## 0.2.74-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes@0.7.1-next.1
+  - @backstage/plugin-home@0.4.24-next.1
+  - @backstage/core-components@0.10.1-next.1
+  - @backstage/plugin-scaffolder@1.5.0-next.1
+  - @backstage/plugin-techdocs@1.3.1-next.1
+  - @backstage/plugin-catalog-common@1.0.5-next.0
+  - @backstage/plugin-techdocs-module-addons-contrib@1.0.3-next.1
+  - @backstage/plugin-api-docs@0.8.8-next.1
+  - @backstage/plugin-techdocs-react@1.0.3-next.1
+  - @backstage/plugin-catalog-react@1.1.3-next.1
+  - @backstage/plugin-jenkins@0.7.7-next.1
+
 ## 0.2.74-next.0
 
 ### Patch Changes

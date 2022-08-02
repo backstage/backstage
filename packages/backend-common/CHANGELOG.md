@@ -1,5 +1,13 @@
 # @backstage/backend-common
 
+## 0.15.0-next.1
+
+### Patch Changes
+
+- 1732a18a7a: Exported `redactLogLine` function to be able to use it in custom loggers and renamed it to `redactWinstonLogLine`.
+- Updated dependencies
+  - @backstage/integration@1.3.0-next.1
+
 ## 0.15.0-next.0
 
 ### Minor Changes

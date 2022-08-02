@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend
 
+## 1.3.1-next.1
+
+### Patch Changes
+
+- e3d3018531: Fix issue for conditional decisions based on properties stored as arrays, like tags.
+
+  Before this change, having a permission policy returning conditional decisions based on metadata like tags, such like `createCatalogConditionalDecision(permission, catalogConditions.hasMetadata('tags', 'java'),)`, was producing wrong results. The issue occurred when authorizing entities already loaded from the database, for example when authorizing `catalogEntityDeletePermission`.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.0.5-next.0
+  - @backstage/backend-common@0.15.0-next.1
+  - @backstage/integration@1.3.0-next.1
+
 ## 1.3.1-next.0
 
 ### Patch Changes

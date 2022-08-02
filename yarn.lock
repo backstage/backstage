@@ -2114,6 +2114,14 @@
     lodash "^4.17.21"
     luxon "^3.0.0"
 
+"@backstage/plugin-catalog-common@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/@backstage/plugin-catalog-common/-/plugin-catalog-common-1.0.4.tgz#94389cb6555eeaea2814d286744d951578ae9132"
+  integrity sha512-6+3pQMFOjvsswzaGZ1qqgkc2dnuQOFILDk4zmmc/bq35R4ICk48Pbw41gH0/YR7yupXPi3OwN4la50ECUELCqw==
+  dependencies:
+    "@backstage/plugin-permission-common" "^0.6.3"
+    "@backstage/plugin-search-common" "^1.0.0"
+
 "@backstage/plugin-catalog-react@^1.0.0", "@backstage/plugin-catalog-react@^1.1.2":
   version "1.1.2"
   resolved "https://registry.npmjs.org/@backstage/plugin-catalog-react/-/plugin-catalog-react-1.1.2.tgz#253a99d9ced5d751f9d1fb3d278511d754aaed4e"
@@ -7751,7 +7759,7 @@
     "@types/cookiejar" "*"
     "@types/node" "*"
 
-"@types/supertest@^2.0.8":
+"@types/supertest@^2.0.12", "@types/supertest@^2.0.8":
   version "2.0.12"
   resolved "https://registry.npmjs.org/@types/supertest/-/supertest-2.0.12.tgz#ddb4a0568597c9aadff8dbec5b2e8fddbe8692fc"
   integrity sha512-X3HPWTwXRerBZS7Mo1k6vMVR1Z6zmJcDVn5O/31whe0tnjE4te6ZJSJGq1RiqHPjzPdMTfjCFogDJmwng9xHaQ==
@@ -7781,12 +7789,12 @@
     "@types/node" "*"
 
 "@types/tar@^6.1.1":
-  version "6.1.1"
-  resolved "https://registry.npmjs.org/@types/tar/-/tar-6.1.1.tgz#ab341ec1f149d7eb2a4f4ded56ff85f0d4fe7cb5"
-  integrity sha512-8mto3YZfVpqB1CHMaYz1TUYIQfZFbh/QbEq5Hsn6D0ilCfqRVCdalmc89B7vi3jhl9UYIk+dWDABShNfOkv5HA==
+  version "6.1.2"
+  resolved "https://registry.npmjs.org/@types/tar/-/tar-6.1.2.tgz#e60108a7d1b08cc91bf2faf1286cc08fdad48bbe"
+  integrity sha512-bnX3RRm70/n1WMwmevdOAeDU4YP7f5JSubgnuU+yrO+xQQjwDboJj3u2NTJI5ngCQhXihqVVAH5h5J8YpdpEvg==
   dependencies:
-    "@types/minipass" "*"
     "@types/node" "*"
+    minipass "^3.3.5"
 
 "@types/tern@*":
   version "0.23.4"
@@ -13216,25 +13224,25 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     safe-buffer "^5.1.1"
 
 "example-app@link:packages/app":
-  version "0.2.74-next.0"
+  version "0.2.74-next.1"
   dependencies:
     "@backstage/app-defaults" "^1.0.5-next.0"
     "@backstage/catalog-model" "^1.1.0"
     "@backstage/cli" "^0.18.1-next.0"
     "@backstage/config" "^1.0.1"
     "@backstage/core-app-api" "^1.0.5-next.0"
-    "@backstage/core-components" "^0.10.1-next.0"
+    "@backstage/core-components" "^0.10.1-next.1"
     "@backstage/core-plugin-api" "^1.0.5-next.0"
     "@backstage/integration-react" "^1.1.3-next.0"
     "@backstage/plugin-airbrake" "^0.3.8-next.0"
     "@backstage/plugin-apache-airflow" "^0.2.1-next.0"
-    "@backstage/plugin-api-docs" "^0.8.8-next.0"
+    "@backstage/plugin-api-docs" "^0.8.8-next.1"
     "@backstage/plugin-azure-devops" "^0.1.24-next.0"
     "@backstage/plugin-badges" "^0.2.32-next.0"
-    "@backstage/plugin-catalog-common" "^1.0.4"
+    "@backstage/plugin-catalog-common" "^1.0.5-next.0"
     "@backstage/plugin-catalog-graph" "^0.2.20-next.0"
     "@backstage/plugin-catalog-import" "^0.8.11-next.0"
-    "@backstage/plugin-catalog-react" "^1.1.3-next.0"
+    "@backstage/plugin-catalog-react" "^1.1.3-next.1"
     "@backstage/plugin-circleci" "^0.3.8-next.0"
     "@backstage/plugin-cloudbuild" "^0.3.8-next.0"
     "@backstage/plugin-code-coverage" "^0.2.1-next.0"
@@ -13246,10 +13254,10 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@backstage/plugin-github-actions" "^0.5.8-next.0"
     "@backstage/plugin-gocd" "^0.1.14-next.0"
     "@backstage/plugin-graphiql" "^0.2.40-next.0"
-    "@backstage/plugin-home" "^0.4.24-next.0"
-    "@backstage/plugin-jenkins" "^0.7.7-next.0"
+    "@backstage/plugin-home" "^0.4.24-next.1"
+    "@backstage/plugin-jenkins" "^0.7.7-next.1"
     "@backstage/plugin-kafka" "^0.3.8-next.0"
-    "@backstage/plugin-kubernetes" "^0.7.1-next.0"
+    "@backstage/plugin-kubernetes" "^0.7.1-next.1"
     "@backstage/plugin-lighthouse" "^0.3.8-next.0"
     "@backstage/plugin-newrelic" "^0.3.26-next.0"
     "@backstage/plugin-newrelic-dashboard" "^0.2.1-next.0"
@@ -13257,7 +13265,7 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@backstage/plugin-pagerduty" "0.5.1-next.0"
     "@backstage/plugin-permission-react" "^0.4.4-next.0"
     "@backstage/plugin-rollbar" "^0.4.8-next.0"
-    "@backstage/plugin-scaffolder" "^1.4.1-next.0"
+    "@backstage/plugin-scaffolder" "^1.5.0-next.1"
     "@backstage/plugin-search" "^1.0.1-next.0"
     "@backstage/plugin-search-common" "^1.0.0"
     "@backstage/plugin-search-react" "^1.0.1-next.0"
@@ -13266,9 +13274,9 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@backstage/plugin-stack-overflow" "^0.1.4-next.0"
     "@backstage/plugin-tech-insights" "^0.2.4-next.0"
     "@backstage/plugin-tech-radar" "^0.5.15-next.0"
-    "@backstage/plugin-techdocs" "^1.3.1-next.0"
-    "@backstage/plugin-techdocs-module-addons-contrib" "^1.0.3-next.0"
-    "@backstage/plugin-techdocs-react" "^1.0.3-next.0"
+    "@backstage/plugin-techdocs" "^1.3.1-next.1"
+    "@backstage/plugin-techdocs-module-addons-contrib" "^1.0.3-next.1"
+    "@backstage/plugin-techdocs-react" "^1.0.3-next.1"
     "@backstage/plugin-todo" "^0.2.10-next.0"
     "@backstage/plugin-user-settings" "^0.4.7-next.0"
     "@backstage/theme" "^0.2.16"
@@ -19261,6 +19269,13 @@ minipass@^3.0.0, minipass@^3.1.0, minipass@^3.1.1, minipass@^3.1.3, minipass@^3.
   dependencies:
     yallist "^4.0.0"
 
+minipass@^3.3.5:
+  version "3.3.5"
+  resolved "https://registry.npmjs.org/minipass/-/minipass-3.3.5.tgz#6da7e53a48db8a856eeb9153d85b230a2119e819"
+  integrity sha512-rQ/p+KfKBkeNwo04U15i+hOwoVBVmekmm/HcfTkTN2t9pbQKCMm4eN5gFeqgrrSp/kH/7BYYhTIHOxGqzbBPaA==
+  dependencies:
+    yallist "^4.0.0"
+
 minizlib@^2.0.0, minizlib@^2.1.1, minizlib@^2.1.2:
   version "2.1.2"
   resolved "https://registry.npmjs.org/minizlib/-/minizlib-2.1.2.tgz#e90d3466ba209b932451508a11ce3d3632145931"
@@ -19420,7 +19435,7 @@ msw@^0.43.0:
     type-fest "^1.2.2"
     yargs "^17.3.1"
 
-msw@^0.44.0:
+msw@^0.44.0, msw@^0.44.2:
   version "0.44.2"
   resolved "https://registry.npmjs.org/msw/-/msw-0.44.2.tgz#00a901b6cc9d119fb30f794330d96dca6944afc2"
   integrity sha512-u8wjzzcMWouoZtuIShCwx4M3wFF5sBAV1f8K4a0WX8kiihFjzl89IKE1VYmTclLyMIwpOq8qQ1HTpuh2BFX/3A==
@@ -24761,9 +24776,9 @@ subscriptions-transport-ws@^0.11.0:
     ws "^5.2.0 || ^6.0.0 || ^7.0.0"
 
 sucrase@^3.18.0, sucrase@^3.20.2:
-  version "3.24.0"
-  resolved "https://registry.npmjs.org/sucrase/-/sucrase-3.24.0.tgz#66a8f2cc845bc441706ce5f3056de283289067b6"
-  integrity sha512-SevqflhW356TKEyWjFHg2e5f3eH+5rzmsMJxrVMDvZIEHh/goYrpzDGA6APEj4ME9MdGm8oNgIzi1eF3c3dDQA==
+  version "3.25.0"
+  resolved "https://registry.npmjs.org/sucrase/-/sucrase-3.25.0.tgz#6dffa34e614b3347877507a4380cc4f022b7b7aa"
+  integrity sha512-WxTtwEYXSmZArPGStGBicyRsg5TBEFhT5b7N+tF+zauImP0Acy+CoUK0/byJ8JNPK/5lbpWIVuFagI4+0l85QQ==
   dependencies:
     commander "^4.0.0"
     glob "7.1.6"
@@ -24789,7 +24804,7 @@ superagent@^8.0.0:
     readable-stream "^3.6.0"
     semver "^7.3.7"
 
-supertest@^6.1.3, supertest@^6.1.6:
+supertest@^6.1.3, supertest@^6.1.6, supertest@^6.2.4:
   version "6.2.4"
   resolved "https://registry.npmjs.org/supertest/-/supertest-6.2.4.tgz#3dcebe42f7fd6f28dd7ac74c6cba881f7101b2f0"
   integrity sha512-M8xVnCNv+q2T2WXVzxDECvL2695Uv2uUj2O0utxsld/HRyJvOU8W9f1gvsYxSNU4wmIe0/L/ItnpU4iKq0emDA==
@@ -26644,7 +26659,7 @@ winston-transport@^4.5.0:
     readable-stream "^3.6.0"
     triple-beam "^1.3.0"
 
-winston@^3.2.1, winston@^3.7.2:
+winston@^3.2.1, winston@^3.7.2, winston@^3.8.1:
   version "3.8.1"
   resolved "https://registry.npmjs.org/winston/-/winston-3.8.1.tgz#76f15b3478cde170b780234e0c4cf805c5a7fb57"
   integrity sha512-r+6YAiCR4uI3N8eQNOg8k3P3PqwAm20cLKlzVD9E66Ch39+LZC+VH1UKf9JemQj2B3QoUHfKD7Poewn0Pr3Y1w==

@@ -283,6 +283,7 @@ shoutout
 siloed
 Sinon
 Snyk
+Sonarqube
 sourcemaps
 sparklines
 Splunk

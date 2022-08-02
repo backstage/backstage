@@ -1,5 +1,18 @@
 # @backstage/plugin-techdocs-node
 
+## 1.3.0-next.1
+
+### Minor Changes
+
+- ad35364e97: feat(techdocs): add edit button support for bitbucketServer
+
+### Patch Changes
+
+- f833344611: Bump default `TechDocs` image to `v1.1.0`, see the release [here](https://github.com/backstage/techdocs-container/releases/tag/v1.1.0).
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.1
+  - @backstage/integration@1.3.0-next.1
+
 ## 1.2.1-next.0
 
 ### Patch Changes

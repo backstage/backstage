@@ -1,5 +1,16 @@
 # @backstage/plugin-techdocs
 
+## 1.3.1-next.1
+
+### Patch Changes
+
+- b86ed4d990: Add highlight to active navigation item and navigation parents.
+- Updated dependencies
+  - @backstage/core-components@0.10.1-next.1
+  - @backstage/integration@1.3.0-next.1
+  - @backstage/plugin-techdocs-react@1.0.3-next.1
+  - @backstage/plugin-catalog-react@1.1.3-next.1
+
 ## 1.3.1-next.0
 
 ### Patch Changes
