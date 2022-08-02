@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-backend-module-gitlab': minor
+'@backstage/plugin-catalog-backend-module-gitlab': patch
 ---
 
 Enhancing GitLab provider with filtering projects by pattern RegExp
