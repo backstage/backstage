@@ -32,7 +32,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const catalogFile =
     config.getOptionalString('entityFilename') ?? 'catalog-info.yaml';
   const projectPattern = new RegExp(
-    config.getString('projectPattern') ?? /[\s\S]*/,
+    config.getOptionalString('projectPattern') ?? /[\s\S]*/,
   );
 
   return {
