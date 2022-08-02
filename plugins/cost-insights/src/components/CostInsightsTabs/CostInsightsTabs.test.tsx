@@ -32,6 +32,7 @@ const mockGroups: Group[] = [
   },
   {
     id: 'test-group-3',
+    name: 'Test Group 3',
   },
 ];
 
@@ -76,7 +77,7 @@ describe('<CostInsightsTabs />', () => {
     );
     await userEvent.click(rendered.getByTestId('cost-insights-groups-tab'));
     mockGroups.forEach(group =>
-      expect(rendered.getByText(group.id)).toBeInTheDocument(),
+      expect(rendered.getByText(group.name ?? group.id)).toBeInTheDocument(),
     );
   });
 });

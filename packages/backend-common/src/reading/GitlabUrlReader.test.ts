@@ -106,7 +106,7 @@ describe('GitlabUrlReader', () => {
       );
 
     it.each([
-      // Project URLs
+      // Scoped routes
       {
         url: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
         config: createConfig(),
@@ -135,12 +135,12 @@ describe('GitlabUrlReader', () => {
         }),
       },
 
-      // Raw URLs
+      // Unscoped route
       {
         url: 'https://gitlab.example.com/a/b/blob/master/c.yaml',
         config: createConfig(),
         response: expect.objectContaining({
-          url: 'https://gitlab.example.com/a/b/raw/master/c.yaml',
+          url: 'https://gitlab.example.com/api/v4/projects/12345/repository/files/c.yaml/raw?ref=master',
         }),
       },
     ])('should handle happy path %#', async ({ url, config, response }) => {

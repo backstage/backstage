@@ -55,6 +55,7 @@ export type DetectedErrorsByCluster = Map<string, DetectedError[]>;
 export interface DetectedError {
   severity: ErrorSeverity;
   cluster: string;
+  namespace: string;
   kind: ErrorDetectableKind;
   names: string[];
   message: string[];

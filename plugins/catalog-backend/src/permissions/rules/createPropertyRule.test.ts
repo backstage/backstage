@@ -46,6 +46,22 @@ describe('createPropertyRule', () => {
         ).toBe(false);
       });
 
+      it('returns false when specified key is an empty array', () => {
+        expect(
+          apply(
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Component',
+              metadata: {
+                name: 'test-component',
+                tags: [],
+              },
+            },
+            'tags',
+          ),
+        ).toBe(false);
+      });
+
       it('returns true when specified key is present', () => {
         expect(
           apply(
@@ -60,6 +76,22 @@ describe('createPropertyRule', () => {
               },
             },
             'org.name',
+          ),
+        ).toBe(true);
+      });
+
+      it('returns true when specified key is an array containing more than an element', () => {
+        expect(
+          apply(
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Component',
+              metadata: {
+                name: 'test-component',
+                tags: ['java'],
+              },
+            },
+            'tags',
           ),
         ).toBe(true);
       });
@@ -101,6 +133,23 @@ describe('createPropertyRule', () => {
         ).toBe(false);
       });
 
+      it(`returns false when key is an array and doesn't contain the specified value`, () => {
+        expect(
+          apply(
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Component',
+              metadata: {
+                name: 'test-component',
+                tags: ['java'],
+              },
+            },
+            'tags',
+            'python',
+          ),
+        ).toBe(false);
+      });
+
       it('returns true when specified key and value is present', () => {
         expect(
           apply(
@@ -116,6 +165,23 @@ describe('createPropertyRule', () => {
             },
             'org.name',
             'test-org',
+          ),
+        ).toBe(true);
+      });
+
+      it(`returns true when key is an array and contains the specified value`, () => {
+        expect(
+          apply(
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Component',
+              metadata: {
+                name: 'test-component',
+                tags: ['java', 'java11'],
+              },
+            },
+            'tags',
+            'java',
           ),
         ).toBe(true);
       });

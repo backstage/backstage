@@ -23,7 +23,11 @@ import { OwnerPicker } from './components/fields/OwnerPicker/OwnerPicker';
 import { repoPickerValidation } from './components/fields/RepoUrlPicker';
 import { RepoUrlPicker } from './components/fields/RepoUrlPicker/RepoUrlPicker';
 import { createScaffolderFieldExtension } from './extensions';
-import { registerComponentRouteRef, rootRouteRef } from './routes';
+import {
+  nextRouteRef,
+  registerComponentRouteRef,
+  rootRouteRef,
+} from './routes';
 import {
   createApiFactory,
   createPlugin,
@@ -162,6 +166,6 @@ export const NextScaffolderPage = scaffolderPlugin.provide(
   createRoutableExtension({
     name: 'NextScaffolderPage',
     component: () => import('./next/Router').then(m => m.Router),
-    mountPoint: rootRouteRef,
+    mountPoint: nextRouteRef,
   }),
 );

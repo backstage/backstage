@@ -6,6 +6,119 @@ sidebar_label: Discovery
 description: Automatically discovering catalog entities from repositories in a GitHub organization
 ---
 
+## GitHub Provider
+
+The GitHub integration has a discovery provider for discovering catalog
+entities within a GitHub organization. The provider will crawl the GitHub
+organization and register entities matching the configured path. This can be
+useful as an alternative to static locations or manually adding things to the
+catalog. This is the prefered method for ingesting entities into the catalog.
+
+## Installation
+
+You will have to add the provider in the catalog initialization code of your
+backend. They are not installed by default, therefore you have to add a
+dependency on `@backstage/plugin-catalog-backend-module-github` to your backend
+package.
+
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-github
+```
+
+And then add the entity provider to your catalog builder:
+
+```diff
+  // In packages/backend/src/plugins/catalog.ts
++ import { GitHubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
+
+  export default async function createPlugin(
+    env: PluginEnvironment,
+  ): Promise<Router> {
+    const builder = await CatalogBuilder.create(env);
++   builder.addEntityProvider(
++     GitHubEntityProvider.fromConfig(env.config, {
++       logger: env.logger,
++       schedule: env.scheduler.createScheduledTaskRunner({
++         frequency: { minutes: 30 },
++         timeout: { minutes: 3 },
++       }),
++     }),
++   );
+
+    // [...]
+  }
+```
+
+## Configuration
+
+To use the discovery provider, you'll need a GitHub integration
+[set up](locations.md) with either a [Personal Access Token](../../getting-started/configuration.md#setting-up-a-github-integration) or [GitHub Apps](./github-apps.md).
+
+Then you can add a github config to the catalog providers configuration:
+
+```yaml
+catalog:
+  providers:
+    github:
+      # the provider ID can be any camelCase string
+      providerId:
+        organization: 'backstage' # string
+        catalogPath: '/catalog-info.yaml' # string
+        filters:
+          branch: 'main' # string
+          repository: '.*' # Regex
+      customProviderId:
+        organization: 'new-org' # string
+        catalogPath: '/custom/path/catalog-info.yaml' # string
+        filters: # optional filters
+          branch: 'develop' # optional string
+          repository: '.*' # optional Regex
+```
+
+This provider supports multiple organizations via unique provider IDs.
+
+> **Note:** It is possible but certainly not recommended to skip the provider ID level.
+> If you do so, `default` will be used as provider ID.
+
+- **`catalogPath`** _(optional)_:
+  Default: `/catalog-info.yaml`.
+  Path where to look for `catalog-info.yaml` files.
+  When started with `/`, it is an absolute path from the repo root.
+- **filters** _(optional)_:
+  - **branch** _(optional)_:
+    String used to filter results based on the branch name.
+  - **repository** _(optional)_:
+    Regular expression used to filter results based on the repository name.
+- **organization**:
+  Name of your organization account/workspace.
+  If you want to add multiple organizations, you need to add one provider config each.
+
+## GitHub API Rate Limits
+
+GitHub [rate limits](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting) API requests to 5,000 per hour (or more for Enterprise
+accounts). The snippet below refreshes the Backstage catalog data every 35 minutes, which issues an API request for each discovered location.
+
+If your requests are too frequent then you may get throttled by
+rate limiting. You can change the refresh frequency of the catalog in your `packages/backend/src/plugins/catalog.ts` file:
+
+```typescript
+schedule: env.scheduler.createScheduledTaskRunner({
+  frequency: { minutes: 35 },
+  timeout: { minutes: 30 },
+}),
+```
+
+More information about scheduling can be found on the [TaskScheduleDefinition](https://backstage.io/docs/reference/backend-tasks.taskscheduledefinition) page.
+
+Alternatively, or additionally, you can configure [github-apps](github-apps.md) authentication
+which carries a much higher rate limit at GitHub.
+
+This is true for any method of adding GitHub entities to the catalog, but
+especially easy to hit with automatic discovery.
+
+## GitHub Processor (To Be Deprecated)
+
 The GitHub integration has a special discovery processor for discovering catalog
 entities within a GitHub organization. The processor will crawl the GitHub
 organization and register entities matching the configured path. This can be

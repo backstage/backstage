@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import parseGitUrl from 'git-url-parse';
 import { basicIntegrations, defaultScmResolveUrl } from '../helpers';
 import { ScmIntegration, ScmIntegrationsFactory } from '../types';
 import {
@@ -63,12 +62,11 @@ export class BitbucketServerIntegration implements ScmIntegration {
   }): string {
     const resolved = defaultScmResolveUrl(options);
 
-    // Bitbucket Server line numbers use the syntax #example.txt-42, rather than #L42
+    // Bitbucket Server line numbers use the syntax #42, rather than #L42
     if (options.lineNumber) {
       const url = new URL(resolved);
 
-      const filename = url.pathname.split('/').slice(-1)[0];
-      url.hash = `${filename}-${options.lineNumber}`;
+      url.hash = options.lineNumber.toString();
       return url.toString();
     }
 
@@ -76,14 +74,11 @@ export class BitbucketServerIntegration implements ScmIntegration {
   }
 
   resolveEditUrl(url: string): string {
-    const urlData = parseGitUrl(url);
-    const editUrl = new URL(url);
-
-    editUrl.searchParams.set('mode', 'edit');
-    // TODO: Not sure what spa=0 does, at least bitbucket.org doesn't support it
-    // but this is taken over from the initial implementation.
-    editUrl.searchParams.set('spa', '0');
-    editUrl.searchParams.set('at', urlData.ref);
-    return editUrl.toString();
+    // Bitbucket Server doesn't support deep linking to edit mode, therefore there's nothing to do here.
+    // We just remove query parameters since they cause issues with TechDocs edit button.
+    if (url.includes('?')) {
+      return url.substring(0, url.indexOf('?'));
+    }
+    return url;
   }
 }

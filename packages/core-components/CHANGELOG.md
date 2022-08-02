@@ -1,5 +1,11 @@
 # @backstage/core-components
 
+## 0.10.1-next.1
+
+### Patch Changes
+
+- a22af3edc8: Adding a `className` prop to the `MarkdownContent` component
+
 ## 0.10.1-next.0
 
 ### Patch Changes
