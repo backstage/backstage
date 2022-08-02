@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-components",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.10.1-next.0",
+  "version": "0.10.1-next.1",
   "private": false,
   "publishConfig": {
     "access": "public",

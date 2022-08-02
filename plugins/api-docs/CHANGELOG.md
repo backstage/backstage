@@ -1,5 +1,15 @@
 # @backstage/plugin-api-docs
 
+## 0.8.8-next.1
+
+### Patch Changes
+
+- dae12c71cf: Updated dependency `@asyncapi/react-component` to `1.0.0-next.40`.
+- Updated dependencies
+  - @backstage/core-components@0.10.1-next.1
+  - @backstage/plugin-catalog@1.5.0-next.1
+  - @backstage/plugin-catalog-react@1.1.3-next.1
+
 ## 0.8.8-next.0
 
 ### Patch Changes

@@ -24,7 +24,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/core-components": "^0.10.1-next.0",
+    "@backstage/core-components": "^0.10.1-next.1",
     "@backstage/core-plugin-api": "^1.0.5-next.0",
     "@backstage/theme": "^0.2.16",
     "@backstage/types": "^1.0.0",

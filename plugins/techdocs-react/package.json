@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-techdocs-react",
   "description": "Shared frontend utilities for TechDocs and Addons",
-  "version": "1.0.3-next.0",
+  "version": "1.0.3-next.1",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -37,7 +37,7 @@
   "dependencies": {
     "@backstage/catalog-model": "^1.1.0",
     "@backstage/config": "^1.0.1",
-    "@backstage/core-components": "^0.10.1-next.0",
+    "@backstage/core-components": "^0.10.1-next.1",
     "@backstage/core-plugin-api": "^1.0.5-next.0",
     "@backstage/version-bridge": "^1.0.1",
     "@material-ui/core": "^4.12.2",
