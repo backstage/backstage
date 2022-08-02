@@ -1,0 +1,17 @@
+---
+'@backstage/plugin-catalog-backend-module-gitlab': minor
+---
+
+Enhancing GitLab provider with filtering projects by pattern RegExp
+
+```yaml
+providers:
+  gitlab:
+    stg:
+      host: gitlab.stg.company.io
+      branch: main
+      projectPattern: johndoe/ <== new option
+      entityFilename: template.yaml
+```
+
+With the abovementioned parameter you can filter projects, and keep only who belongs to the namespace "johndoe".
