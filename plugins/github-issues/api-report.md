@@ -8,8 +8,6 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-forgotten-export) The symbol "GitHubIssuesProps" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export const GitHubIssuesCard: ({
   itemsPerPage,
@@ -30,6 +28,12 @@ export const gitHubIssuesPlugin: BackstagePlugin<
   {},
   {}
 >;
+
+// @public (undocumented)
+export type GitHubIssuesProps = {
+  itemsPerPage?: number;
+  itemsPerRepo?: number;
+};
 
 // (No @packageDocumentation comment for this package)
 ```

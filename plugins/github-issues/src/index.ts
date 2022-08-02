@@ -18,3 +18,5 @@ export {
   GitHubIssuesPage,
   GitHubIssuesCard,
 } from './plugin';
+
+export type { GitHubIssuesProps } from './components/GitHubIssues';

@@ -28,15 +28,17 @@ import {
 import { IssueList } from './IssuesList';
 import { NoRepositoriesInfo } from './NoRepositoriesInfo';
 
+/**
+ * @public
+ */
 export type GitHubIssuesProps = {
   itemsPerPage?: number;
   itemsPerRepo?: number;
 };
 
-export const GitHubIssues = ({
-  itemsPerPage = 10,
-  itemsPerRepo = 40,
-}: GitHubIssuesProps) => {
+export const GitHubIssues = (props: GitHubIssuesProps) => {
+  const { itemsPerPage = 10, itemsPerRepo = 40 } = props;
+
   const [isLoading, setIsLoading] = React.useState(true);
 
   const [issuesByRepository, setIssuesByRepository] =
