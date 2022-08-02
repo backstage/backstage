@@ -10,7 +10,7 @@ providers:
     stg:
       host: gitlab.stg.company.io
       branch: main
-      projectPattern: john/ <== new option
+      projectPattern: 'john/' # new option
       entityFilename: template.yaml
 ```
 
