@@ -31,6 +31,10 @@ kubernetes:
           dashboardUrl: http://127.0.0.1:64713 # url copied from running the command: minikube service kubernetes-dashboard -n kubernetes-dashboard
           dashboardApp: standard
           caData: ${K8S_CONFIG_CA_DATA}
+          customResources:
+            - group: 'argoproj.io'
+              apiVersion: 'v1alpha1'
+              plural: 'rollouts'
         - url: http://127.0.0.2:9999
           name: aws-cluster-1
           authProvider: 'aws'
@@ -254,6 +258,11 @@ See also
 https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication#environments-without-gcloud
 for complete docs about GKE without `gcloud`.
 
+##### `clusters.\*.customResources` (optional)
+
+Configures which [custom resources][3] to look for when returning an entity's
+Kubernetes resources belonging to the cluster. Same specification as [`customResources`](#customresources-optional)
+
 #### `gke`
 
 This cluster locator is designed to work with Kubernetes clusters running in
@@ -327,8 +336,12 @@ it is also possible to implement a
 
 ### `customResources` (optional)
 
-Configures which [custom resources][3] to look for when returning an entity's
+Configures which [custom resources][3] to look for by default when returning an entity's
 Kubernetes resources.
+
+**Notes:**
+
+- The optional `kubernetes.customResources` property is overrode by `customResources` at the [clusters level](#clusterscustomresources-optional).
 
 Defaults to empty array. Example:
 
