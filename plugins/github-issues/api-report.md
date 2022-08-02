@@ -6,20 +6,21 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { FunctionComponent } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-forgotten-export) The symbol "GitHubIssuesProps" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export const GitHubIssuesCard: FunctionComponent<{
-  itemsPerPage?: number | undefined;
-  itemsPerRepo?: number | undefined;
-}>;
+export const GitHubIssuesCard: ({
+  itemsPerPage,
+  itemsPerRepo,
+}: GitHubIssuesProps) => JSX.Element;
 
 // @public (undocumented)
-export const GitHubIssuesPage: FunctionComponent<{
-  itemsPerPage?: number | undefined;
-  itemsPerRepo?: number | undefined;
-}>;
+export const GitHubIssuesPage: ({
+  itemsPerPage,
+  itemsPerRepo,
+}: GitHubIssuesProps) => JSX.Element;
 
 // @public (undocumented)
 export const gitHubIssuesPlugin: BackstagePlugin<
