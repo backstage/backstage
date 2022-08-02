@@ -31,8 +31,9 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const branch = config.getOptionalString('branch') ?? 'master';
   const catalogFile =
     config.getOptionalString('entityFilename') ?? 'catalog-info.yaml';
-  const projectPattern =
-    new RegExp(config.getString('projectPattern')) ?? /[\s\S]*/;
+  const projectPattern = new RegExp(
+    config.getString('projectPattern') ?? /[\s\S]*/,
+  );
 
   return {
     id,
