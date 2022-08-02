@@ -10,8 +10,8 @@ providers:
     stg:
       host: gitlab.stg.company.io
       branch: main
-      projectPattern: johndoe/ <== new option
+      projectPattern: john/ <== new option
       entityFilename: template.yaml
 ```
 
-With the abovementioned parameter you can filter projects, and keep only who belongs to the namespace "johndoe".
+With the aforementioned parameter you can filter projects, and keep only who belongs to the namespace "john".
