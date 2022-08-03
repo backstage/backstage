@@ -30,12 +30,86 @@ export const createValidator = (
     apiHolder: ApiHolder;
   },
 ) => {
+  function extractDependencies(schema: JsonObject, schemaProps: JsonObject) {
+    if (!isObject(schema)) {
+      return;
+    }
+
+    const { properties, anyOf, oneOf, allOf } = schema;
+
+    for (const propName in schema) {
+      if (!schema.hasOwnProperty(propName)) {
+        continue;
+      }
+      const schemaNode = schema[propName];
+      if (isObject(schemaNode)) {
+        extractDependencies(schemaNode, schemaProps);
+      }
+    }
+
+    if (isObject(properties)) {
+      for (const propName in properties) {
+        if (!properties.hasOwnProperty(propName)) {
+          continue;
+        }
+
+        const schemaNode = properties[propName];
+        if (!isObject(schemaNode)) {
+          continue;
+        }
+        if (schemaNode.type && schemaNode.title) {
+          schemaProps[propName] = schemaNode;
+        }
+      }
+    }
+
+    if (Array.isArray(anyOf)) {
+      for (const schemaNode of anyOf) {
+        if (!isObject(schemaNode)) {
+          continue;
+        }
+        extractDependencies(schemaNode, schemaProps);
+      }
+    }
+
+    if (Array.isArray(oneOf)) {
+      for (const schemaNode of oneOf) {
+        if (!isObject(schemaNode)) {
+          continue;
+        }
+        extractDependencies(schemaNode, schemaProps);
+      }
+    }
+
+    if (Array.isArray(allOf)) {
+      for (const schemaNode of allOf) {
+        if (!isObject(schemaNode)) {
+          continue;
+        }
+        extractDependencies(schemaNode, schemaProps);
+      }
+    }
+  }
+
+  function getProperties(schema: JsonObject) {
+    if (schema?.dependencies) {
+      const dependencies = JSON.parse(JSON.stringify(schema?.dependencies));
+      const schemaDependencies = {};
+      extractDependencies(dependencies, schemaDependencies);
+      return {
+        ...JSON.parse(JSON.stringify(schema.properties)),
+        ...schemaDependencies,
+      };
+    }
+    return schema.properties;
+  }
+
   function validate(
     schema: JsonObject,
     formData: JsonObject,
     errors: FormValidation,
   ) {
-    const schemaProps = schema.properties;
+    const schemaProps = getProperties(schema);
     const customObject = schema.type === 'object' && schemaProps === undefined;
 
     if (!isObject(schemaProps) && !customObject) {
