@@ -35,7 +35,6 @@ export enum DefaultLoadingAction {
 export const INITIAL_LOADING_ACTIONS = [
   DefaultLoadingAction.UserGroups,
   DefaultLoadingAction.CostInsightsInitial,
-  DefaultLoadingAction.CostInsightsProducts,
 ];
 
 export const getDefaultState = (loadingActions: string[]): Loading => {
