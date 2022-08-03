@@ -12254,6 +12254,11 @@ easy-table@1.1.0:
   optionalDependencies:
     wcwidth ">=1.0.1"
 
+ebnf@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.npmjs.org/ebnf/-/ebnf-1.9.0.tgz#9c2dd6052f3ed43a69c1f0b07b15bd03cefda764"
+  integrity sha512-LKK899+j758AgPq00ms+y90mo+2P86fMKUWD28sH0zLKUj7aL6iIH2wy4jejAMM9I2BawJ+2kp6C3mMXj+Ii5g==
+
 ecc-jsbn@~0.1.1:
   version "0.1.2"
   resolved "https://registry.npmjs.org/ecc-jsbn/-/ecc-jsbn-0.1.2.tgz#3a83a904e54353287874c564b7549386849a98c9"
@@ -14651,6 +14656,25 @@ grpc-docs@^1.0.6, grpc-docs@^1.1.2:
     rollup-plugin-smart-asset "^2.1.2"
     styled-components "^5.3.3"
 
+gson-conform@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/gson-conform/-/gson-conform-1.0.3.tgz#6f982f98ea84199280bd48b6bfbcd0ae7447f1e2"
+  integrity sha512-gaZQN/5ZbohkLBOs4JKHkg/IdOB9kuuEr5SVLAjHUs+Q+Nl746DRe18GgQy4oxxVXStO//Zga2wg4eWL9Mfshw==
+
+gson-pointer@4.1.1, gson-pointer@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.npmjs.org/gson-pointer/-/gson-pointer-4.1.1.tgz#088d6aa38d52753530288d13b5a75b6a43170e9b"
+  integrity sha512-rOS/zCLUI8BT0+/U+p5nzI0RfhIyRmzkpwzyCj8gcLoRl3rHuysk6ci1IQ955AQQZDSNN3mVec26Sx9wRZ0EjA==
+
+gson-query@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.npmjs.org/gson-query/-/gson-query-5.1.0.tgz#8f34a062849f8c08be0c35eddaa2ad18a4326a49"
+  integrity sha512-xKb/90XfmLLKGgX8Y7LRF4yKnMR/ckV5WOQ/Ip0pRXuDh7jUhdY1UYjPvQnF7/UMbNsAo0168j2j0yt9+4QdaA==
+  dependencies:
+    ebnf "^1.9.0"
+    gson-conform "^1.0.3"
+    gson-pointer "4.1.1"
+
 gtoken@^6.0.0:
   version "6.0.1"
   resolved "https://registry.npmjs.org/gtoken/-/gtoken-6.0.1.tgz#1276371d51e93c4eface76e3f30f9e8f1cad3f1a"
@@ -16988,6 +17012,17 @@ json-schema-compare@^0.2.2:
   integrity sha512-c4WYmDKyJXhs7WWvAWm3uIYnfyWFoIp+JEoX34rctVvEkMYCPGhXtvmFFXiffBbxfZsvQ0RNnV5H7GvDF5HCqQ==
   dependencies:
     lodash "^4.17.4"
+
+json-schema-library@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.npmjs.org/json-schema-library/-/json-schema-library-6.0.0.tgz#2a823d850031842c6917f41a8c576af3b603ab48"
+  integrity sha512-1nTpSmyfmgJpaNPIBO1SnHpXiMUh76hZnqSuCrJr7Lcu2N2SB55UPgf5F790r4dy4i4o/Moaw7OdqDhEmxP/Rw==
+  dependencies:
+    deepmerge "^4.2.2"
+    fast-deep-equal "^3.1.3"
+    gson-pointer "^4.1.1"
+    gson-query "^5.1.0"
+    valid-url "^1.0.9"
 
 json-schema-merge-allof@^0.6.0:
   version "0.6.0"
@@ -25925,6 +25960,11 @@ v8-to-istanbul@^8.1.0:
     "@types/istanbul-lib-coverage" "^2.0.1"
     convert-source-map "^1.6.0"
     source-map "^0.7.3"
+
+valid-url@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.npmjs.org/valid-url/-/valid-url-1.0.9.tgz#1c14479b40f1397a75782f115e4086447433a200"
+  integrity sha512-QQDsV8OnSf5Uc30CKSwG9lnhMPe6exHtTXLRYX8uMwKENy640pU+2BgBL0LRbDh/eYRahNCS7aewCx0wf3NYVA==
 
 validate-npm-package-license@^3.0.1, validate-npm-package-license@^3.0.4:
   version "3.0.4"
