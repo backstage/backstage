@@ -20,6 +20,16 @@
   ],
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
+  "exports": {
+    ".": "./dist/index.cjs.js",
+    "./asset-types": {
+      "types": "./asset-types/asset-types.d.ts",
+      "default": "./asset-types/asset-types.js"
+    },
+    "./config/tsconfig.json": "./config/tsconfig.json",
+    "./config/*": "./config/*.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
