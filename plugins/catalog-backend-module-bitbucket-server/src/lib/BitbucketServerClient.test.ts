@@ -26,6 +26,18 @@ import { BitbucketServerProject, BitbucketServerRepository } from './types';
 
 const server = setupServer();
 
+const catalogInfoFile = `
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "backstage"
+  description: "A Backstage service"
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "backstage"
+`;
+
 describe('BitbucketServerClient', () => {
   const config: BitbucketServerIntegrationConfig = {
     host: 'bitbucket.mycompany.com',
@@ -136,6 +148,31 @@ describe('BitbucketServerClient', () => {
     expect(results[0].links.self[0].href).toEqual(
       'https://bitbucket.mycompany.com/projects/test-project',
     );
+  });
+
+  it('getFile', async () => {
+    server.use(
+      rest.get(
+        `https://${config.host}/projects/test-project/repos/test-repo/raw/catalog-info.yaml`,
+        (req, res, ctx) => {
+          if (
+            req.headers.get('authorization') !==
+            'Basic dGVzdC11c2VyOnRlc3QtcHc='
+          ) {
+            return res(ctx.status(400));
+          }
+
+          return res(ctx.text(catalogInfoFile));
+        },
+      ),
+    );
+
+    const response = await client.getFile({
+      projectKey: 'test-project',
+      repo: 'test-repo',
+      path: 'catalog-info.yaml',
+    });
+    expect(await response.text()).toEqual(catalogInfoFile);
   });
 
   it('getRepository', async () => {

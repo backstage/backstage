@@ -20,6 +20,12 @@ export class BitbucketServerClient {
     config: BitbucketServerIntegrationConfig;
   }): BitbucketServerClient;
   // (undocumented)
+  getFile(options: {
+    projectKey: string;
+    repo: string;
+    path: string;
+  }): Promise<Response>;
+  // (undocumented)
   getRepository(options: {
     projectKey: string;
     repo: string;

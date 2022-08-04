@@ -60,6 +60,18 @@ export class BitbucketServerClient {
     );
   }
 
+  async getFile(options: {
+    projectKey: string;
+    repo: string;
+    path: string;
+  }): Promise<Response> {
+    const base = new URL(this.config.apiBaseUrl);
+    return fetch(
+      `${base.protocol}//${base.host}/projects/${options.projectKey}/repos/${options.repo}/raw/${options.path}`,
+      getBitbucketServerRequestOptions(this.config),
+    );
+  }
+
   async getRepository(options: {
     projectKey: string;
     repo: string;
