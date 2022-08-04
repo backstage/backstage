@@ -24,14 +24,23 @@ const isLocal = require('fs').existsSync(path.resolve(__dirname, '../src'));
 if (!isLocal || process.env.BACKSTAGE_E2E_CLI_TEST) {
   require('..');
 } else {
-  require('ts-node').register({
-    transpileOnly: true,
-    /* eslint-disable-next-line no-restricted-syntax */
-    project: path.resolve(__dirname, '../../../tsconfig.json'),
-    compilerOptions: {
-      module: 'CommonJS',
-    },
-  });
-
-  require('../src');
+  try {
+    require('child_process').execFileSync(
+      'ts-node',
+      [
+        '--esm',
+        '--transpile-only',
+        '--project',
+        path.resolve(__dirname, '../../../tsconfig.json'),
+        path.resolve(__dirname, '../src/index.ts'),
+        ...process.argv.slice(2),
+      ],
+      {
+        stdio: 'inherit',
+      },
+    );
+  } catch (error) {
+    process.exit(error?.status || 1);
+  }
+  process.exit(0);
 }
