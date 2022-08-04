@@ -174,7 +174,7 @@ describe('<CatalogGraphPage/>', () => {
 
   test('should capture analytics event when selecting other entity', async () => {
     const analyticsSpy = new MockAnalyticsApi();
-    const { getByText, findAllByTestId } = await renderInTestApp(
+    const { findAllByTestId, findByText } = await renderInTestApp(
       <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
         {wrapper}
       </TestApiProvider>,
@@ -184,13 +184,10 @@ describe('<CatalogGraphPage/>', () => {
         },
       },
     );
+    const user = userEvent.setup();
+    await user.click(await findByText('b:d/e'));
 
     expect(await findAllByTestId('node')).toHaveLength(2);
-
-    // We wait a bit here to reliably reproduce an issue where that requires the `baseVal` and `view` mocks
-    await new Promise(r => setTimeout(r, 100));
-
-    await userEvent.click(getByText('b:d/e'));
 
     expect(analyticsSpy.getEvents()[0]).toMatchObject({
       action: 'click',
