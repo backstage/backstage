@@ -25,6 +25,7 @@ import {
   InstanceVersion,
   ListDagsParams,
 } from './types';
+import { DagRun } from './types/Dags';
 
 export class ApacheAirflowClient implements ApacheAirflowApi {
   discoveryApi: DiscoveryApi;
@@ -100,6 +101,36 @@ export class ApacheAirflowClient implements ApacheAirflowApi {
       body: JSON.stringify({ is_paused: isPaused }),
     };
     return await this.fetch<Dag>(`/dags/${dagId}`, init);
+  }
+
+  async getDagRuns(
+    dagId: string,
+    options = { objectsPerRequest: 100, limit: 5 },
+  ): Promise<DagRun[]> {
+    const dagRuns: DagRun[] = [];
+    const searchParams: ListDagsParams = {
+      limit: Math.min(options.objectsPerRequest, options.limit),
+      offset: 0,
+    };
+
+    for (;;) {
+      const response = await this.fetch<{
+        dag_runs: DagRun[];
+        total_entries: number;
+      }>(`/dags/${dagId}/dagRuns?${qs.stringify(searchParams)}`);
+      dagRuns.push(...response.dag_runs);
+
+      if (
+        dagRuns.length >= response.total_entries ||
+        dagRuns.length >= options.limit
+      ) {
+        break;
+      }
+      if (typeof searchParams.offset !== 'undefined') {
+        searchParams.offset += options.objectsPerRequest;
+      }
+    }
+    return dagRuns;
   }
 
   async getInstanceStatus(): Promise<InstanceStatus> {

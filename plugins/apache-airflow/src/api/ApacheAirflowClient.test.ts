@@ -20,6 +20,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ApacheAirflowClient } from './index';
 import { Dag } from './types';
+import { DagRun } from './types/Dags';
 
 const server = setupServer();
 
@@ -63,6 +64,39 @@ const dags: Dag[] = [
     owners: ['admin'],
     schedule_interval: { __type: 'CronExpression', value: '* * 0 0 0' },
     tags: [{ name: 'exmaple' }],
+  },
+];
+
+const dagRuns: DagRun[] = [
+  {
+    dag_run_id: 'mock dag run 1',
+    dag_id: 'mock_dag_1',
+    logical_date: '2022-05-27T11:25:23.251274+00:00',
+    start_date: '2022-05-27T11:25:23.251274+00:00',
+    end_date: '2022-05-27T11:25:23.251274+00:00',
+    state: 'success',
+    external_trigger: true,
+    conf: {},
+  },
+  {
+    dag_run_id: 'mock dag run 2',
+    dag_id: 'mock_dag_2',
+    logical_date: '2022-05-27T11:25:23.251274+00:00',
+    start_date: '2022-05-27T11:25:23.251274+00:00',
+    end_date: '2022-05-27T11:25:23.251274+00:00',
+    state: 'running',
+    external_trigger: true,
+    conf: {},
+  },
+  {
+    dag_run_id: 'mock dag run 3',
+    dag_id: 'mock_dag_1',
+    logical_date: '2022-05-27T11:25:23.251274+00:00',
+    start_date: '2022-05-27T11:25:23.251274+00:00',
+    end_date: '2022-05-27T11:25:23.251274+00:00',
+    state: 'failed',
+    external_trigger: true,
+    conf: {},
   },
 ];
 
@@ -115,6 +149,21 @@ describe('ApacheAirflowClient', () => {
         }
         return res(ctx.status(404));
       }),
+
+      rest.get(
+        `${mockBaseUrl}/airflow/dags/:dag_id/dagRuns`,
+        (req, res, ctx) => {
+          const { dag_id } = req.params;
+          const runs = dagRuns.filter(run => run.dag_id === dag_id);
+          // event if the dag_id is invalid, airflow returns a valid response (with 0 dag runs)
+          return res(
+            ctx.json({
+              dag_runs: runs,
+              total_entries: runs.length,
+            }),
+          );
+        },
+      ),
 
       rest.patch(`${mockBaseUrl}/airflow/dags/:dag_id`, (req, res, ctx) => {
         const { dag_id } = req.params;
@@ -197,5 +246,17 @@ describe('ApacheAirflowClient', () => {
     expect(response.dags[0].dag_id).toEqual('mock_dag_1');
     expect(response.dagsNotFound.length).toEqual(1);
     expect(response.dagsNotFound[0]).toEqual('a-random-DAG-id');
+  });
+
+  it('should get dag runs', async () => {
+    setupHandlers();
+    const client = new ApacheAirflowClient({
+      discoveryApi: discoveryApi,
+      baseUrl: 'localhost:8080/',
+    });
+    const dagId = 'mock_dag_1';
+    const response = await client.getDagRuns(dagId);
+    expect(response.length).toEqual(2);
+    response.forEach(run => expect(run.dag_id).toEqual(dagId));
   });
 });
