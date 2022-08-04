@@ -7081,12 +7081,11 @@
   integrity sha512-K3e+NZlpCKd6Bd/EIdqjFJRFHbrq5TzPPLwREk5Iv/YoIjQrs6ljdAUCo+Lb2xFlGNOjGSE0dqsVD19cZL137w==
 
 "@types/inquirer@^8.1.3":
-  version "8.2.1"
-  resolved "https://registry.npmjs.org/@types/inquirer/-/inquirer-8.2.1.tgz#28a139be3105a1175e205537e8ac10830e38dbf4"
-  integrity sha512-wKW3SKIUMmltbykg4I5JzCVzUhkuD9trD6efAmYgN2MrSntY0SMRQzEnD3mkyJ/rv9NLbTC7g3hKKE86YwEDLw==
+  version "8.2.2"
+  resolved "https://registry.npmjs.org/@types/inquirer/-/inquirer-8.2.2.tgz#7ec5f166026b55b10df011521c8a63920cb84a7a"
+  integrity sha512-HXoFOl+KS4yvmUjisi83VpuSBOeeXIzdJfoT/v2pUruqybpHy0Dz1DyXy3E2jNH0cSVKJZV92VOnFBwJR6k83A==
   dependencies:
     "@types/through" "*"
-    rxjs "^7.2.0"
 
 "@types/is-ci@^3.0.0":
   version "3.0.0"
@@ -23373,7 +23372,7 @@ run-script-webpack-plugin@^0.1.0:
   resolved "https://registry.npmjs.org/run-script-webpack-plugin/-/run-script-webpack-plugin-0.1.1.tgz#dad3114be32eb864d2160306e4d9c52a2c1cfd59"
   integrity sha512-PrxBRLv1K9itDKMlootSCyGhdTU+KbKGJ2wF6/k0eyo6M0YGPC58HYbS/J/QsDiwM0t7G99WcuCqto0J7omOXA==
 
-rxjs@7.5.5, rxjs@^7.1.0, rxjs@^7.2.0, rxjs@^7.5.1, rxjs@^7.5.5:
+rxjs@7.5.5, rxjs@^7.1.0, rxjs@^7.5.1, rxjs@^7.5.5:
   version "7.5.5"
   resolved "https://registry.npmjs.org/rxjs/-/rxjs-7.5.5.tgz#2ebad89af0f560f460ad5cc4213219e1f7dd4e9f"
   integrity sha512-sy+H0pQofO95VDmFLzyaw9xNJU4KTRSwQIGM6+iG3SypAtCiLDzpeG8sJrNCWn2Up9km+KhkvTdbkrdy+yzZdw==
