@@ -30,7 +30,7 @@ export type ApacheAirflowApi = {
   updateDag(dagId: string, isPaused: boolean): Promise<any>;
   getDagRuns(
     dagId: string,
-    options?: { objectsPerRequest: number; limit: number },
+    options?: { objectsPerRequest?: number; limit?: number },
   ): Promise<DagRun[]>;
   getInstanceStatus(): Promise<InstanceStatus>;
   getInstanceVersion(): Promise<InstanceVersion>;
