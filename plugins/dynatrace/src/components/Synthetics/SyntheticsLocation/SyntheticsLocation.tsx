@@ -28,26 +28,20 @@ type SyntheticsLocationProps = {
   key: string;
 };
 
-const failedInLast24Hours = (timestamp: Date): Boolean => {
-  return timestamp > new Date(new Date().getTime() - 1000 * 60 * 60 * 24);
-};
-
-const failedInLast6Hours = (timestamp: Date): Boolean => {
-  return timestamp > new Date(new Date().getTime() - 1000 * 60 * 60 * 6);
-};
-
-const failedinLastHour = (timestamp: Date): Boolean => {
-  return timestamp > new Date(new Date().getTime() - 1000 * 60 * 60);
+const failedInLastXHours = (timestamp: Date, offset: number): Boolean => {
+  if (offset < 0 || offset > 24)
+    throw new Error('offset must be between 0 and 24');
+  return timestamp > new Date(new Date().getTime() - 1000 * 60 * 60 * offset);
 };
 
 const chipColor = (timestamp: Date): string => {
-  if (failedinLastHour(timestamp)) {
+  if (failedInLastXHours(timestamp, 1)) {
     return 'salmon';
   }
-  if (failedInLast6Hours(timestamp)) {
+  if (failedInLastXHours(timestamp, 6)) {
     return 'sandybrown';
   }
-  if (failedInLast24Hours(timestamp)) {
+  if (failedInLastXHours(timestamp, 24)) {
     return 'palegoldenrod';
   }
   return 'lightgreen';
@@ -71,8 +65,8 @@ export const SyntheticsLocation = (props: SyntheticsLocationProps) => {
   return (
     <Chip
       label={`${value?.name}${
-        failedInLast24Hours(new Date(lastFailedTimestamp))
-          ? `: failed @ ${lastFailedTimestamp.toLocaleTimeString('en-CA')}`
+        failedInLastXHours(new Date(lastFailedTimestamp), 24)
+          ? `: failed @ ${lastFailedTimestamp.toLocaleTimeString()}`
           : ''
       }`}
       size="medium"

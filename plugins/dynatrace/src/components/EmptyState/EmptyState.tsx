@@ -17,7 +17,12 @@ import React from 'react';
 import { Grid, Typography } from '@material-ui/core';
 import EmptyStateImage from '../../assets/emptystate.svg';
 
-export const EmptyState = ({ message }) => {
+type EmptyStateProps = {
+  message: string;
+};
+
+export const EmptyState = (props: EmptyStateProps) => {
+  const { message } = props;
   return (
     <Grid
       container

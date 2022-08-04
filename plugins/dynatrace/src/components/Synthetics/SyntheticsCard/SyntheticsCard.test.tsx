@@ -14,5 +14,43 @@
  * limitations under the License.
  */
 import React from 'react';
+import { SyntheticsCard } from './SyntheticsCard';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import { dynatraceApiRef } from '../../../api';
+import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
+import { configApiRef } from '@backstage/core-plugin-api';
 
-describe('SyntheticsCard', () => {});
+const mockDynatraceApi = {
+  getDynatraceSyntheticFailures: jest.fn(),
+};
+const apis = TestApiRegistry.from(
+  [dynatraceApiRef, mockDynatraceApi],
+  [configApiRef, new ConfigReader({ dynatrace: { baseUrl: '__dynatrace__' } })],
+);
+
+describe('SyntheticsCard', () => {
+  it('renders the card with Synthetics data', async () => {
+    mockDynatraceApi.getDynatraceSyntheticFailures = jest
+      .fn()
+      .mockResolvedValue({
+        locationsExecutionResults: [
+          {
+            locationId: '__location__',
+            requestResults: [{ startTimestamp: 0 }],
+          },
+        ],
+      });
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <SyntheticsCard
+          syntheticsId="HTTP_CHECK-1234"
+          dynatraceBaseUrl="__dynatrace__"
+        />
+        ,
+      </ApiProvider>,
+    );
+    expect(
+      await rendered.findByText('View this Synthetic in Dynatrace'),
+    ).toBeInTheDocument();
+  });
+});

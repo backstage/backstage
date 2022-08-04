@@ -14,5 +14,52 @@
  * limitations under the License.
  */
 import React from 'react';
+import { SyntheticsLocation } from './SyntheticsLocation';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import { dynatraceApiRef } from '../../../api';
+import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
+import { configApiRef } from '@backstage/core-plugin-api';
 
-describe('SyntheticsLocation', () => {});
+const mockDynatraceApi = {
+  getDynatraceSyntheticLocationInfo: jest.fn(),
+};
+const apis = TestApiRegistry.from(
+  [dynatraceApiRef, mockDynatraceApi],
+  [configApiRef, new ConfigReader({ dynatrace: { baseUrl: '__dynatrace__' } })],
+);
+
+describe('SyntheticsLocation', () => {
+  it('renders the SyntheticsLocation chip - recent failure', async () => {
+    mockDynatraceApi.getDynatraceSyntheticLocationInfo = jest
+      .fn()
+      .mockResolvedValue({ name: '__location__' });
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <SyntheticsLocation
+          lastFailedTimestamp={new Date()}
+          locationId="__location_id__"
+          key="__key__"
+        />
+        ,
+      </ApiProvider>,
+    );
+    expect(await rendered.findByText(/failed/)).toBeInTheDocument();
+  });
+  it('renders the SyntheticsLocation chip - no failures', async () => {
+    mockDynatraceApi.getDynatraceSyntheticLocationInfo = jest
+      .fn()
+      .mockResolvedValue({ name: '__location__' });
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <SyntheticsLocation
+          lastFailedTimestamp={new Date(0)}
+          locationId="__location_id__"
+          key="__key__"
+        />
+        ,
+      </ApiProvider>,
+    );
+    expect(await rendered.findByText(/__location__/)).toBeInTheDocument();
+    expect(await rendered.queryByText(/failed/)).not.toBeInTheDocument();
+  });
+});

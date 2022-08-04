@@ -28,6 +28,17 @@ type ProblemsListProps = {
   dynatraceBaseUrl: string;
 };
 
+const cardContents = (problems: Array<any>, dynatraceBaseUrl: string) => {
+  return problems?.length ? (
+    <ProblemsTable
+      problems={problems || []}
+      dynatraceBaseUrl={dynatraceBaseUrl}
+    />
+  ) : (
+    <EmptyState message="No Problems to Report!" />
+  );
+};
+
 export const ProblemsList = (props: ProblemsListProps) => {
   const { dynatraceEntityId, dynatraceBaseUrl } = props;
   const dynatraceApi = useApi(dynatraceApiRef);
@@ -50,14 +61,7 @@ export const ProblemsList = (props: ProblemsListProps) => {
         link: `${dynatraceBaseUrl}/#serviceOverview;id=${dynatraceEntityId}`,
       }}
     >
-      {value?.totalCount ? (
-        <ProblemsTable
-          problems={problems || []}
-          dynatraceBaseUrl={dynatraceBaseUrl}
-        />
-      ) : (
-        <EmptyState message="No Problems to Report!" />
-      )}
+      {cardContents(problems, dynatraceBaseUrl)}
     </InfoCard>
   );
 };
