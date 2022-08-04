@@ -4,7 +4,6 @@
 
 Add `PATCH` and `HEAD` to the `Access-Control-Allow-Methods`.
 
-
 To apply this change to your Backstage installation make the following change to your `app-config.yaml`
 
 ```diff
