@@ -109,8 +109,9 @@ export class ApacheAirflowClient implements ApacheAirflowApi {
   ): Promise<DagRun[]> {
     const dagRuns: DagRun[] = [];
     const searchParams: ListDagsParams = {
-      limit: Math.min(options.objectsPerRequest, options.limit),
+      limit: Math.min(options.objectsPerRequest || 100, options.limit || 5),
       offset: 0,
+      order_by: '-start_date',
     };
 
     for (;;) {
@@ -127,7 +128,7 @@ export class ApacheAirflowClient implements ApacheAirflowApi {
         break;
       }
       if (typeof searchParams.offset !== 'undefined') {
-        searchParams.offset += options.objectsPerRequest;
+        searchParams.offset += response.dag_runs.length;
       }
     }
     return dagRuns;
