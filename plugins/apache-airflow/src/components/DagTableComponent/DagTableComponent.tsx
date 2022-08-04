@@ -36,6 +36,7 @@ import useAsync from 'react-use/lib/useAsync';
 import { apacheAirflowApiRef } from '../../api';
 import { Dag } from '../../api/types';
 import { ScheduleIntervalLabel } from '../ScheduleIntervalLabel';
+import { LatestDagRunsStatus } from '../LatestDagRunsStatus';
 
 type DagTableRow = Dag & {
   id: string;
@@ -68,7 +69,14 @@ const columns: TableColumn[] = [
         </Box>
       </div>
     ),
-    width: '60%',
+    width: '50%',
+  },
+  {
+    title: 'Runs',
+    render: (row: Partial<DagTableRow>) => (
+      <LatestDagRunsStatus dagId={row.dag_id || ''} />
+    ),
+    width: '10%',
   },
   {
     title: 'Owner',
