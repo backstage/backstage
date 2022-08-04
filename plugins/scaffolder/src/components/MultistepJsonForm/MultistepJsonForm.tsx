@@ -36,6 +36,7 @@ import { transformSchemaToProps } from './schema';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
+import isObject from 'lodash/isObject';
 
 const Form = withTheme(MuiTheme);
 type Step = {
@@ -57,6 +58,23 @@ type Props = {
   finishButtonLabel?: string;
 };
 
+function mergeRenderPropertiesSteps(
+  renderPropertiesSteps: Record<string, any>,
+): string[] {
+  const mergeProperties: string[] = [];
+  for (const stepName in renderPropertiesSteps) {
+    if (renderPropertiesSteps.hasOwnProperty(stepName)) {
+      const stepNode = renderPropertiesSteps[stepName];
+      for (const propName in stepNode) {
+        if (stepNode.hasOwnProperty(propName) && propName !== '$id') {
+          mergeProperties.push(propName);
+        }
+      }
+    }
+  }
+  return mergeProperties;
+}
+
 export function getUiSchemasFromSteps(steps: Step[]): UiSchema[] {
   const uiSchemas: Array<UiSchema> = [];
   steps.forEach(step => {
@@ -72,39 +90,39 @@ export function getUiSchemasFromSteps(steps: Step[]): UiSchema[] {
   return uiSchemas;
 }
 
-export function getReviewData(formData: Record<string, any>, steps: Step[]) {
+export function getReviewData(
+  formData: Record<string, any>,
+  steps: Step[],
+  renderPropertiesSteps: Record<string, any>,
+) {
   const uiSchemas = getUiSchemasFromSteps(steps);
+  const renderProperties = mergeRenderPropertiesSteps(renderPropertiesSteps);
   const reviewData: Record<string, any> = {};
-  for (const key in formData) {
-    if (formData.hasOwnProperty(key)) {
-      const uiSchema = uiSchemas.find(us => us.name === key);
+  for (const propName of renderProperties) {
+    const uiSchema = uiSchemas.find(us => us.name === propName);
 
-      if (!uiSchema) {
-        reviewData[key] = formData[key];
-        continue;
-      }
-
-      if (uiSchema['ui:widget'] === 'password') {
-        reviewData[key] = '******';
+    if (uiSchema) {
+      if (uiSchema['ui:widget'] && uiSchema['ui:widget'] === 'password') {
+        reviewData[propName] = '******';
         continue;
       }
 
       if (!uiSchema['ui:backstage'] || !uiSchema['ui:backstage'].review) {
-        reviewData[key] = formData[key];
+        reviewData[propName] = formData[propName];
         continue;
       }
 
       const review = uiSchema['ui:backstage'].review as JsonObject;
       if (review.mask) {
-        reviewData[key] = review.mask;
+        reviewData[propName] = review.mask;
         continue;
       }
 
       if (!review.show) {
         continue;
       }
-      reviewData[key] = formData[key];
     }
+    reviewData[propName] = formData[propName];
   }
 
   return reviewData;
@@ -122,6 +140,7 @@ export const MultistepJsonForm = (props: Props) => {
   } = props;
   const [activeStep, setActiveStep] = useState(0);
   const [disableButtons, setDisableButtons] = useState(false);
+  const [renderPropertiesSteps, setRenderPropertiesSteps] = useState({});
   const errorApi = useApi(errorApiRef);
   const featureFlagApi = useApi(featureFlagsApiRef);
   const featureFlagKey = 'backstage:featureFlag';
@@ -167,7 +186,14 @@ export const MultistepJsonForm = (props: Props) => {
     setActiveStep(0);
     onReset();
   };
-  const handleNext = () => {
+  const handleNext = (e: IChangeEvent) => {
+    const idSchema = cloneDeep(e.idSchema);
+    if (isObject(idSchema)) {
+      setRenderPropertiesSteps({
+        ...renderPropertiesSteps,
+        [`step${activeStep}`]: idSchema,
+      });
+    }
     setActiveStep(Math.min(activeStep + 1, steps.length));
   };
   const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
@@ -211,7 +237,7 @@ export const MultistepJsonForm = (props: Props) => {
                   formContext={{ formData }}
                   onChange={onChange}
                   onSubmit={e => {
-                    if (e.errors.length === 0) handleNext();
+                    if (e.errors.length === 0) handleNext(e);
                   }}
                   {...formProps}
                   {...transformSchemaToProps(schema)}
@@ -234,7 +260,7 @@ export const MultistepJsonForm = (props: Props) => {
             <Typography variant="h6">Review and create</Typography>
             <StructuredMetadataTable
               dense
-              metadata={getReviewData(formData, steps)}
+              metadata={getReviewData(formData, steps, renderPropertiesSteps)}
             />
             <Box mb={4} />
             <Button onClick={handleBack} disabled={disableButtons}>

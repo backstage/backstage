@@ -25,6 +25,17 @@ describe('MultistepJsonForm', () => {
     'other-open': 'Other open info',
   };
 
+  const formDataHideNameMock = {
+    ...formDataMock,
+    generation: 'Option 1',
+  };
+
+  const formDataDisplayNameMock = {
+    ...formDataMock,
+    generation: 'Option 2',
+    name: 'Name info',
+  };
+
   const stepsMock = [
     {
       title: 'The test template',
@@ -75,13 +86,105 @@ describe('MultistepJsonForm', () => {
     },
   ];
 
+  const stepsDependenciesMock = [
+    ...stepsMock,
+    {
+      title: 'OneOf Fields',
+      schema: {
+        title: 'OneOf fields',
+        properties: {
+          generation: {
+            title: 'Generation Method',
+            type: 'string',
+            enum: ['Option 1', 'Option 2'],
+            default: 'Option 1',
+          },
+        },
+        dependencies: {
+          generation: {
+            oneOf: [
+              {
+                properties: {
+                  generation: {
+                    const: 'Option 1',
+                  },
+                },
+              },
+              {
+                required: ['name'],
+                properties: {
+                  generation: {
+                    const: 'Option 2',
+                  },
+                  name: {
+                    title: 'Name',
+                    type: 'string',
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    },
+  ];
+
+  const renderPropertiesStepsMock = {
+    step1: {
+      password: { $id: 'root_password' },
+      masked: { $id: 'root_masked' },
+      open: { $id: 'root_open' },
+    },
+    step2: {
+      hidden: { $id: 'root_hidden' },
+      'other-open': { $id: 'root_other-open' },
+    },
+    step3: {
+      generation: { $id: 'root_generation' },
+    },
+  };
+
+  const renderPropertiesStepsHasNameMock = {
+    ...renderPropertiesStepsMock,
+    step3: {
+      generation: { $id: 'root_generation' },
+      name: { $id: 'root_name' },
+    },
+  };
+
   test('Fields are defined to be hidden or masked', () => {
-    const reviewData = getReviewData(formDataMock, stepsMock);
+    const reviewData = getReviewData(
+      formDataMock,
+      stepsMock,
+      renderPropertiesStepsMock,
+    );
 
     expect(reviewData.password).toBe('******');
     expect(reviewData.masked).toBe('******');
     expect(reviewData.open).toBe('Some open info');
     expect(reviewData.hidden).toBeUndefined();
     expect(reviewData['other-open']).toBe('Other open info');
+  });
+
+  test('Name field hide in review', () => {
+    const reviewData = getReviewData(
+      formDataHideNameMock,
+      stepsDependenciesMock,
+      renderPropertiesStepsMock,
+    );
+
+    expect(reviewData.generation).toBe('Option 1');
+    expect(reviewData.name).toBeUndefined();
+  });
+
+  test('Name field display in review', () => {
+    const reviewData = getReviewData(
+      formDataDisplayNameMock,
+      stepsDependenciesMock,
+      renderPropertiesStepsHasNameMock,
+    );
+
+    expect(reviewData.generation).toBe('Option 2');
+    expect(reviewData.name).toBe('Name info');
   });
 });
