@@ -19,7 +19,7 @@ import { Progress } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import { useApi } from '@backstage/core-plugin-api';
 import { ProblemsTable } from '../ProblemsTable';
-import { dynatraceApiRef } from '../../../api';
+import { dynatraceApiRef, DynatraceProblem } from '../../../api';
 import { EmptyState } from '../../EmptyState';
 import { InfoCard } from '@backstage/core-components';
 
@@ -28,8 +28,11 @@ type ProblemsListProps = {
   dynatraceBaseUrl: string;
 };
 
-const cardContents = (problems: Array<any>, dynatraceBaseUrl: string) => {
-  return problems?.length ? (
+const cardContents = (
+  problems: DynatraceProblem[],
+  dynatraceBaseUrl: string,
+) => {
+  return problems.length ? (
     <ProblemsTable
       problems={problems || []}
       dynatraceBaseUrl={dynatraceBaseUrl}
@@ -61,7 +64,7 @@ export const ProblemsList = (props: ProblemsListProps) => {
         link: `${dynatraceBaseUrl}/#serviceOverview;id=${dynatraceEntityId}`,
       }}
     >
-      {cardContents(problems, dynatraceBaseUrl)}
+      {cardContents(problems || [], dynatraceBaseUrl)}
     </InfoCard>
   );
 };
