@@ -273,6 +273,115 @@ const LogoFull = () => {
 };
 ```
 
+## Custom Icons
+
+You can also customize the Project's _default_ icons.
+
+We can change the following icons:
+
+<div align="center">
+   <table>
+        <tr>
+            <th style="text-align:center" colspan="2">Icons</th>
+        </tr>
+        <tr>
+            <td align="center">brokenImage</td>
+            <td align="center">chat</td>
+        </tr>
+            <td align="center">dashboard</td>
+             <td align="center">docs</td>
+        </tr>
+        <tr>
+            <td align="center">email</td>
+            <td align="center">github</td>
+        </tr>
+        <tr>
+            <td align="center">group</td>
+            <td align="center">help</td>
+        </tr>
+        <tr>
+            <td align="center">"kind:api"</td>
+            <td align="center">"kind:component"</td>
+        </tr>
+        <tr>
+            <td align="center">"kind:domain"</td>
+            <td align="center">"kind:group"</td>
+        </tr>
+        <tr>
+            <td align="center">"kind:location"</td>
+            <td align="center">"kind:system"</td>
+        </tr>
+        <tr>
+            <td align="center">"kind:user"</td>
+            <td align="center">scaffolder</td>
+        </tr>
+        <tr>
+            <td align="center">search</td>
+            <td align="center">techdocs</td>
+        </tr>
+        <tr>
+            <td align="center">user</td>
+            <td align="center">warning</td>
+        </tr>
+   </table>
+</div>
+
+### Requirements
+
+- Files in `.svg` format;
+- React components created for the icons
+
+### Create React Component
+
+In your front-end application, locate the `src` folder. We suggest creating the `assets/icons` directory.
+
+In the `icons` directory, upload the files in `.svg` format.
+
+In the `assets` directory, you can create the `customIcons.tsx` file.
+
+```tsx
+// customIcons.tsx
+import React from 'react';
+import ExampleSVG from './icons/example.svg';
+
+export const ExampleIcon = () => {
+  return <img alt="" src={ExampleSVG} />;
+};
+```
+
+### Using the custom icon
+
+In your front-end application, locate the `src/components` folder.
+
+You will find the `App.tsx` file.
+
+The `app` constant, instantiates the `createApp` function, in this constant we will use the "icons" parameter that receives an object.
+
+```diff
+
++ import { ExampleIcon } from './assets/customIcons'
+
+[...]
+
+const app = createApp({
+  apis,
+  components: {
+    [...]
+  },
+  themes: [
+    [...]
+  ],
++  icons: {
++    github: ExampleIcon,
++  },
+  bindRoutes({ bind }) {
+    [...]
+  }
+})
+
+[...]
+```
+
 ## Custom Homepage
 
 In addition to a custom theme, a custom logo, you can also customize the
