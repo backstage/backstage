@@ -14,41 +14,115 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
-import { Alert } from '@material-ui/lab';
-import { useEntityList } from '../../hooks';
+import { useApi } from '@backstage/core-plugin-api';
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  makeStyles,
+  TextField,
+  Typography,
+} from '@material-ui/core';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { Autocomplete } from '@material-ui/lab';
+import React, { useEffect, useMemo, useState } from 'react';
+import useAsync from 'react-use/lib/useAsync';
+import { catalogApiRef } from '../../api';
 import { EntityKindFilter } from '../../filters';
+import { useEntityList } from '../../hooks';
 
-/**
- * Props for {@link EntityKindPicker}.
- *
- * @public
- */
-export interface EntityKindPickerProps {
-  initialFilter?: string;
-  hidden: boolean;
-}
+const useStyles = makeStyles(
+  {
+    input: {},
+  },
+  {
+    name: 'CatalogReactEntityKindPicker',
+  },
+);
+
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 /** @public */
-export const EntityKindPicker = (props: EntityKindPickerProps) => {
-  const { initialFilter, hidden } = props;
-
+export const EntityKindPicker = () => {
+  const classes = useStyles();
   const {
     updateFilters,
-    queryParameters: { kind: kindParameter },
+    filters,
+    queryParameters: { kind: kindsParameter },
   } = useEntityList();
-  const [selectedKind] = useState([kindParameter].flat()[0] ?? initialFilter);
+
+  const catalogApi = useApi(catalogApiRef);
+  const { value: availableKinds } = useAsync(async () => {
+    const facet = 'kind';
+    const { facets } = await catalogApi.getEntityFacets({
+      facets: [facet],
+    });
+
+    return facets[facet].map(({ value }) => value);
+  }, [filters.kind]);
+
+  const queryParamKinds = useMemo(
+    () => [kindsParameter].flat().filter(Boolean) as string[],
+    [kindsParameter],
+  );
+
+  const [selectedKinds, setSelectedKinds] = useState(
+    queryParamKinds.length ? queryParamKinds : filters.kind?.getKinds() ?? [],
+  );
+
+  // Set selected kinds on query parameter updates; this happens at initial page load and from
+  // external updates to the page location.
+  useEffect(() => {
+    if (queryParamKinds.length) {
+      setSelectedKinds(queryParamKinds);
+    }
+  }, [queryParamKinds]);
 
   useEffect(() => {
     updateFilters({
-      kind: selectedKind ? new EntityKindFilter(selectedKind) : undefined,
+      kind: selectedKinds.length
+        ? new EntityKindFilter(selectedKinds)
+        : undefined,
     });
-  }, [selectedKind, updateFilters]);
+  }, [selectedKinds, updateFilters]);
 
-  if (hidden) return null;
+  if (!availableKinds?.length) return null;
 
-  // TODO(timbonicus): This should load available kinds from the catalog-backend, similar to
-  // EntityTypePicker.
-
-  return <Alert severity="warning">Kind filter not yet available</Alert>;
+  return (
+    <Box pb={1} pt={1}>
+      <Typography variant="button" component="label">
+        Kinds
+        <Autocomplete
+          multiple
+          options={availableKinds}
+          value={selectedKinds}
+          onChange={(_: object, value: string[]) => setSelectedKinds(value)}
+          renderOption={(option, { selected }) => (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  icon={icon}
+                  checkedIcon={checkedIcon}
+                  checked={selected}
+                />
+              }
+              label={option}
+            />
+          )}
+          size="small"
+          popupIcon={<ExpandMoreIcon data-testid="kind-picker-expand" />}
+          renderInput={params => (
+            <TextField
+              {...params}
+              className={classes.input}
+              variant="outlined"
+            />
+          )}
+        />
+      </Typography>
+    </Box>
+  );
 };
