@@ -97,7 +97,21 @@ export async function makeRollupConfigs(
       external: (source, importer, isResolved) =>
         Boolean(importer && !isResolved && !isFileImport(source)),
       plugins: [
-        resolve({ mainFields }),
+        resolve({
+          mainFields,
+          extensions: [
+            '.mjs',
+            '.cjs',
+            '.js',
+            '.json',
+            '.node',
+            '.mts',
+            '.cts',
+            '.ts',
+            '.jsx',
+            '.tsx',
+          ],
+        }),
         commonjs({
           include: /node_modules/,
           exclude: [/\/[^/]+\.(?:stories|test)\.[^/]+$/],
