@@ -34,6 +34,23 @@ describe('humanizeEntityRef', () => {
     expect(title).toEqual('component:software');
   });
 
+  it('formats entity in default namespace without skipping default namespace', () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+    const title = humanizeEntityRef(entity, {skipDefaultNamespace: false});
+    expect(title).toEqual('component:default/software');
+  });
+
   it('formats entity in other namespace', () => {
     const entity = {
       apiVersion: 'v1',
@@ -102,5 +119,16 @@ describe('humanizeEntityRef', () => {
       defaultKind: 'component',
     });
     expect(title).toEqual('test/software');
+  });
+
+  it('formats entity name in default namespace without skip of default namespace', () => {
+    const entityName = {
+      kind: 'Component',
+      namespace: 'default',
+      name: 'software',
+    };
+
+    const title = humanizeEntityRef(entityName, {skipDefaultNamespace: false});
+    expect(title).toEqual('component:default/software');
   });
 });
