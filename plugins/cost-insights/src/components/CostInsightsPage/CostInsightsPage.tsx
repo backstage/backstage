@@ -84,6 +84,7 @@ export const CostInsightsPage = () => {
   const accepted = useMemo(() => alerts.filter(isAlertAccepted), [alerts]);
   const dismissed = useMemo(() => alerts.filter(isAlertDismissed), [alerts]);
 
+  const isProductsDisplayed = !!config.products?.length;
   const isActionItemsDisplayed = !!active.length;
   const isAlertInsightsDisplayed = !!alerts.length;
 
@@ -247,14 +248,16 @@ export const CostInsightsPage = () => {
   return (
     <CostInsightsLayout groups={groups}>
       <Grid container wrap="nowrap">
-        <Grid item>
-          <Box position="sticky" top={20}>
-            <CostInsightsNavigation
-              products={products}
-              alerts={active.length}
-            />
-          </Box>
-        </Grid>
+        {(isProductsDisplayed || isActionItemsDisplayed) && (
+          <Grid item>
+            <Box position="sticky" top={20}>
+              <CostInsightsNavigation
+                products={products}
+                alerts={active.length}
+              />
+            </Box>
+          </Grid>
+        )}
         <Grid item xs>
           <Box
             display="flex"
@@ -316,17 +319,19 @@ export const CostInsightsPage = () => {
                   </Box>
                 </Grid>
               </Collapse>
-              {!isAlertInsightsDisplayed && <Divider />}
-              <Grid item xs>
-                <Box px={3} py={6}>
-                  <ProductInsights
-                    group={pageFilters.group}
-                    project={pageFilters.project}
-                    products={config.products}
-                    onLoaded={setProducts}
-                  />
-                </Box>
-              </Grid>
+              {!isAlertInsightsDisplayed && isProductsDisplayed && <Divider />}
+              {isProductsDisplayed && (
+                <Grid item xs>
+                  <Box px={3} py={6}>
+                    <ProductInsights
+                      group={pageFilters.group}
+                      project={pageFilters.project}
+                      products={config.products}
+                      onLoaded={setProducts}
+                    />
+                  </Box>
+                </Grid>
+              )}
             </Grid>
           </Container>
         </Grid>
