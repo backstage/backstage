@@ -23,9 +23,13 @@ import {
 /** @public */
 export function humanizeEntityRef(
   entityRef: Entity | CompoundEntityRef,
-  opts?: { defaultKind?: string },
+  opts?: {
+    defaultKind?: string
+    skipDefaultNamespace?: boolean
+  },
 ) {
   const defaultKind = opts?.defaultKind;
+  const skipDefaultNamespace = opts?.skipDefaultNamespace ?? true;
   let kind;
   let namespace;
   let name;
@@ -40,7 +44,7 @@ export function humanizeEntityRef(
     name = entityRef.name;
   }
 
-  if (namespace === DEFAULT_NAMESPACE) {
+  if (skipDefaultNamespace === true && namespace === DEFAULT_NAMESPACE) {
     namespace = undefined;
   }
 
