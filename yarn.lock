@@ -2230,13 +2230,13 @@
   resolved "https://registry.npmjs.org/@braintree/sanitize-url/-/sanitize-url-6.0.0.tgz#fe364f025ba74f6de6c837a84ef44bdb1d61e68f"
   integrity sha512-mgmE7XBYY/21erpzhexk4Cj1cyTQ9LzvnTxtzM17BJ7ERMNE6W72mQRo0I1Ud8eFJ+RVVIcBNhLFZ3GX4XFz5w==
 
-"@changesets/apply-release-plan@^6.0.3":
-  version "6.0.3"
-  resolved "https://registry.npmjs.org/@changesets/apply-release-plan/-/apply-release-plan-6.0.3.tgz#cd1113e57ac58d98ea9a52f2d39304c2d398a9dd"
-  integrity sha512-/3JKqtDefs2YSEQI6JQo43/MKTLfhPdrW/BFmqnRpW8UmPB+YXjjQgfjR/2KOaObLOkoixcL3WCK4wNkn/Krmw==
+"@changesets/apply-release-plan@^6.0.4":
+  version "6.0.4"
+  resolved "https://registry.npmjs.org/@changesets/apply-release-plan/-/apply-release-plan-6.0.4.tgz#c08628cf5381be1aad3de69e255c68f658b4ca1a"
+  integrity sha512-PutV/ymf8cZMqvaLe/Lh5cP3kBQ9FZl6oGQ3qRDxWD1ML+/uH3jrCE7S7Zw7IVSXkD0lnMD+1dAX7fsOJ6ZvgA==
   dependencies:
     "@babel/runtime" "^7.10.4"
-    "@changesets/config" "^2.1.0"
+    "@changesets/config" "^2.1.1"
     "@changesets/get-version-range-type" "^0.3.2"
     "@changesets/git" "^1.4.1"
     "@changesets/types" "^5.1.0"
@@ -2269,18 +2269,18 @@
     "@changesets/types" "^5.1.0"
 
 "@changesets/cli@^2.14.0":
-  version "2.24.1"
-  resolved "https://registry.npmjs.org/@changesets/cli/-/cli-2.24.1.tgz#cb4c13c7712a3cb62fa9199cdda04567faf3d3b2"
-  integrity sha512-7Lz1inqGQjBrXgnXlENtzQ7EmO/9c+09d9oi8XoK4ARqlJe8GpafjqKRobcjcA/TTI7Fn2+cke4CrXFZfVF8Rw==
+  version "2.24.2"
+  resolved "https://registry.npmjs.org/@changesets/cli/-/cli-2.24.2.tgz#333ad412c821b582680fbc7f0d0596ebba442c2d"
+  integrity sha512-Bya7bnxF8Sz+O25M6kseAludVsCy5nXSW9u2Lbje/XbJTyU5q/xwIiXF9aTUzVi/4jyKoKoOasx7B1/z+NJLzg==
   dependencies:
     "@babel/runtime" "^7.10.4"
-    "@changesets/apply-release-plan" "^6.0.3"
+    "@changesets/apply-release-plan" "^6.0.4"
     "@changesets/assemble-release-plan" "^5.2.0"
     "@changesets/changelog-git" "^0.1.12"
-    "@changesets/config" "^2.1.0"
+    "@changesets/config" "^2.1.1"
     "@changesets/errors" "^0.1.4"
     "@changesets/get-dependents-graph" "^1.3.3"
-    "@changesets/get-release-plan" "^3.0.12"
+    "@changesets/get-release-plan" "^3.0.13"
     "@changesets/git" "^1.4.1"
     "@changesets/logger" "^0.0.5"
     "@changesets/pre" "^1.0.12"
@@ -2307,10 +2307,10 @@
     term-size "^2.1.0"
     tty-table "^4.1.5"
 
-"@changesets/config@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.npmjs.org/@changesets/config/-/config-2.1.0.tgz#bfb663a338fc86e9ea2cb471089aa6dd8dfd7c3d"
-  integrity sha512-43potf+DwYHmH7EY19vxtCq6fqj7UUIrZ4DTwM3pVBqCKxFIytm7GPy7wNAsH06UvMw7NRuOu4QK5HN02GsIrw==
+"@changesets/config@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.npmjs.org/@changesets/config/-/config-2.1.1.tgz#96c1fec5dcccb4f6d37b56bba64e5c4f3285cca6"
+  integrity sha512-nSRINMqHpdtBpNVT9Eh9HtmLhOwOTAeSbaqKM5pRmGfsvyaROTBXV84ujF9UsWNlV71YxFbxTbeZnwXSGQlyTw==
   dependencies:
     "@changesets/errors" "^0.1.4"
     "@changesets/get-dependents-graph" "^1.3.3"
@@ -2338,14 +2338,14 @@
     fs-extra "^7.0.1"
     semver "^5.4.1"
 
-"@changesets/get-release-plan@^3.0.12":
-  version "3.0.12"
-  resolved "https://registry.npmjs.org/@changesets/get-release-plan/-/get-release-plan-3.0.12.tgz#15038a553c7ba9aa764f69cef4705bcfb1be2fdc"
-  integrity sha512-TlpEdpxV5ZQmNeHoD6KNKAc01wjRrcu9/CQqzmO4qAlX7ARA4pIuAxd8QZ1AQXv/l4qhHox7SUYH3VLHfarv5w==
+"@changesets/get-release-plan@^3.0.13":
+  version "3.0.13"
+  resolved "https://registry.npmjs.org/@changesets/get-release-plan/-/get-release-plan-3.0.13.tgz#f5f7b67b798d1bf2d6e8e546a60c199dd09bfeaf"
+  integrity sha512-Zl/UN4FUzb5LwmzhO2STRijJT5nQCN4syPEs0p1HSIR+O2iVOzes+2yTLF2zGiOx8qPOsFx/GRSAvuhSzm+9ig==
   dependencies:
     "@babel/runtime" "^7.10.4"
     "@changesets/assemble-release-plan" "^5.2.0"
-    "@changesets/config" "^2.1.0"
+    "@changesets/config" "^2.1.1"
     "@changesets/pre" "^1.0.12"
     "@changesets/read" "^0.5.7"
     "@changesets/types" "^5.1.0"
@@ -15811,10 +15811,17 @@ is-core-module@^2.1.0, is-core-module@^2.2.0:
   dependencies:
     has "^1.0.3"
 
-is-core-module@^2.8.0, is-core-module@^2.8.1, is-core-module@^2.9.0:
+is-core-module@^2.8.0, is-core-module@^2.8.1:
   version "2.9.0"
   resolved "https://registry.npmjs.org/is-core-module/-/is-core-module-2.9.0.tgz#e1c34429cd51c6dd9e09e0799e396e27b19a9c69"
   integrity sha512-+5FPy5PnwmO3lvfMb0AsoPaBG+5KHUI0wYFXOtYPnVVVspTFUuMZNfNaNVRt3FZadstu2c8x23vykRW/NBoU6A==
+  dependencies:
+    has "^1.0.3"
+
+is-core-module@^2.9.0:
+  version "2.10.0"
+  resolved "https://registry.npmjs.org/is-core-module/-/is-core-module-2.10.0.tgz#9012ede0a91c69587e647514e1d5277019e728ed"
+  integrity sha512-Erxj2n/LDAZ7H8WNJXd9tw38GYM3dv8rk8Zcs+jJuxYTW7sozH+SS8NtrSjVL1/vpLvWi1hxy96IzjJ3EHTJJg==
   dependencies:
     has "^1.0.3"
 
@@ -26929,9 +26936,9 @@ yargs-parser@^20.2.2:
   integrity sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==
 
 yargs-parser@^21.0.0:
-  version "21.0.1"
-  resolved "https://registry.npmjs.org/yargs-parser/-/yargs-parser-21.0.1.tgz#0267f286c877a4f0f728fceb6f8a3e4cb95c6e35"
-  integrity sha512-9BK1jFpLzJROCI5TzwZL/TU4gqjK5xiHV/RfWLOahrjAko/e4DJkRDZQXfvqAsiZzzYhgAzbgz6lg48jcm4GLg==
+  version "21.1.1"
+  resolved "https://registry.npmjs.org/yargs-parser/-/yargs-parser-21.1.1.tgz#9096bceebf990d21bb31fa9516e0ede294a77d35"
+  integrity sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==
 
 yargs-parser@^3.2.0:
   version "3.2.0"
