@@ -33,14 +33,14 @@ export type Encoding = 'utf-8' | 'base64';
 class GithubResponseError extends CustomErrorBase {}
 
 /** @public */
-export interface OctokitWithPullRequestPluginClient {
+export type OctokitWithPullRequestPluginClient = Octokit & {
   createPullRequest(options: createPullRequest.Options): Promise<{
     data: {
       html_url: string;
       number: number;
     };
   } | null>;
-}
+};
 
 /**
  * The options passed to the client factory function.
@@ -117,6 +117,8 @@ export const createPublishGithubPullRequestAction = ({
     targetPath?: string;
     sourcePath?: string;
     token?: string;
+    reviewers?: string[];
+    teamReviewers?: string[];
   }>({
     id: 'publish:github:pull-request',
     schema: {
@@ -165,6 +167,22 @@ export const createPublishGithubPullRequestAction = ({
             type: 'string',
             description: 'The token to use for authorization to GitHub',
           },
+          reviewers: {
+            title: 'Pull Request Reviewers',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            description: 'Pull Request Reviewers',
+          },
+          teamReviewers: {
+            title: 'Pull Request Team Reviewers',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            description: 'Pull Request Team Reviewers',
+          },
         },
       },
       output: {
@@ -194,6 +212,8 @@ export const createPublishGithubPullRequestAction = ({
         targetPath,
         sourcePath,
         token: providedToken,
+        reviewers,
+        teamReviewers,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -259,8 +279,33 @@ export const createPublishGithubPullRequestAction = ({
           throw new GithubResponseError('null response from Github');
         }
 
+        const pullRequestNumber = response.data.number;
+        if (reviewers !== null || teamReviewers !== null) {
+          try {
+            const result = await client.rest.pulls.requestReviewers({
+              owner,
+              repo,
+              pull_number: pullRequestNumber,
+              reviewers: reviewers,
+              team_reviewers: teamReviewers,
+            });
+            const addedUsers = result.data.requested_reviewers ?? [];
+            const addedTeams = result.data.requested_teams ?? [];
+            ctx.logger.info(
+              `Added users [${addedUsers.join(
+                ',',
+              )}] and teams [${addedTeams.join(',')}] as reviewers`,
+            );
+          } catch (e) {
+            ctx.logger.error(
+              `Failure when adding reviewers to Pull request ${pullRequestNumber}`,
+              e,
+            );
+          }
+        }
+
         ctx.output('remoteUrl', response.data.html_url);
-        ctx.output('pullRequestNumber', response.data.number);
+        ctx.output('pullRequestNumber', pullRequestNumber);
       } catch (e) {
         throw new GithubResponseError('Pull request creation failed', e);
       }
