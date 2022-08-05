@@ -280,7 +280,7 @@ export const createPublishGithubPullRequestAction = ({
         }
 
         const pullRequestNumber = response.data.number;
-        if (reviewers !== null || teamReviewers !== null) {
+        if (reviewers || teamReviewers) {
           try {
             const result = await client.rest.pulls.requestReviewers({
               owner,

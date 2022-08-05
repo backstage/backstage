@@ -62,6 +62,11 @@ describe('createPublishGithubPullRequestAction', () => {
           },
         };
       }),
+      rest: {
+        pulls: {
+          requestReviewers: jest.fn(async (_: any) => ({ data: {} }))
+        }
+      }
     };
     clientFactory = jest.fn(async () => fakeClient);
     const githubCredentialsProvider: GithubCredentialsProvider = {
@@ -272,6 +277,96 @@ describe('createPublishGithubPullRequestAction', () => {
       jest.resetAllMocks();
     });
   });
+
+  describe('with reviewers and teamReviewers', () => {
+    let input: GithubPullRequestActionInput;
+    let ctx: ActionContext<GithubPullRequestActionInput>;
+
+    beforeEach(() => {
+      input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+        reviewers: ['foobar'],
+        teamReviewers: ['team-foo']
+      };
+
+      ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+    });
+
+    it('creates a pull request and requests a review from the given reviewers', async () => {
+      await instance.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toBeCalled();
+      expect(fakeClient.rest.pulls.requestReviewers).toBeCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        pull_number: 123,
+        reviewers: ['foobar'],
+        team_reviewers: ['team-foo'],
+      })
+    });
+
+    it('creates outputs for the pull request url and number even if requesting reviewers fails', async () => {
+      fakeClient.rest.pulls.requestReviewers.mockImplementation(() => { throw new Error('a random error') })
+      
+      await instance.handler(ctx);
+
+      expect(ctx.output).toHaveBeenCalledWith(
+        'remoteUrl',
+        'https://github.com/myorg/myrepo/pull/123',
+      );
+      expect(ctx.output).toHaveBeenCalledWith('pullRequestNumber', 123);
+    });
+
+    afterEach(() => {
+      mockFs.restore();
+      jest.resetAllMocks();
+    });
+  })
+
+  describe('with no reviewers and teamReviewers', () => {
+    let input: GithubPullRequestActionInput;
+    let ctx: ActionContext<GithubPullRequestActionInput>;
+
+    beforeEach(() => {
+      input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+      };
+
+      ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+    });
+
+    it('does not call the API endpoint for requesting reviewers', async () => {
+      await instance.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toBeCalled();
+      expect(fakeClient.rest.pulls.requestReviewers).not.toBeCalled();
+    });
+
+    afterEach(() => {
+      mockFs.restore();
+      jest.resetAllMocks();
+    });
+  })
 
   describe('with executable file mode 755', () => {
     let input: GithubPullRequestActionInput;
