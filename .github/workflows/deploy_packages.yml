@@ -17,7 +17,7 @@ jobs:
 
     services:
       postgres13:
-        image: postgres:13
+        image: postgres:14
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -28,7 +28,7 @@ jobs:
         ports:
           - 5432/tcp
       postgres9:
-        image: postgres:9
+        image: postgres:14
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
