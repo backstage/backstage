@@ -96,7 +96,7 @@ To authenticate with a certificate rather than a client secret, you can set the 
 If deploying to resources that supports Managed Identity, and has identities configured (e.g. Azure App Services, Azure Container Apps), Managed Identity should be picked up without any additional configuration.
 If your app has multiple managed identities, you may need to set the `AZURE_CLIENT_ID` environment variable to tell Azure Identity which identity to use.
 
-You will need to grant the same permissions to your identity as described for App Registrations above.
+To grant the managed identity the same permissions as mentioned in _App Registration_ above, [please follow this guide](https://docs.microsoft.com/en-us/azure/app-service/tutorial-connect-app-access-microsoft-graph-as-app-javascript?tabs=azure-powershell)
 
 ## Filtering imported Users and Groups
 
