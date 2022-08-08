@@ -27,6 +27,7 @@ import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 import { getOctokitOptions } from '../github/helpers';
 import { serializeDirectoryContents } from '../../../../lib/files';
+import { Logger } from 'winston';
 
 export type Encoding = 'utf-8' | 'base64';
 
@@ -98,6 +99,12 @@ export interface CreateGithubPullRequestActionOptions {
     input: CreateGithubPullRequestClientFactoryInput,
   ) => Promise<OctokitWithPullRequestPluginClient>;
 }
+
+type GithubPullRequest = {
+  owner: string;
+  repo: string;
+  number: number;
+};
 
 /**
  * Creates a Github Pull Request action.
@@ -281,27 +288,14 @@ export const createPublishGithubPullRequestAction = ({
 
         const pullRequestNumber = response.data.number;
         if (reviewers || teamReviewers) {
-          try {
-            const result = await client.rest.pulls.requestReviewers({
-              owner,
-              repo,
-              pull_number: pullRequestNumber,
-              reviewers: reviewers,
-              team_reviewers: teamReviewers,
-            });
-            const addedUsers = result.data.requested_reviewers ?? [];
-            const addedTeams = result.data.requested_teams ?? [];
-            ctx.logger.info(
-              `Added users [${addedUsers.join(
-                ',',
-              )}] and teams [${addedTeams.join(',')}] as reviewers`,
-            );
-          } catch (e) {
-            ctx.logger.error(
-              `Failure when adding reviewers to Pull request ${pullRequestNumber}`,
-              e,
-            );
-          }
+          const pullRequest = { owner, repo, number: pullRequestNumber };
+          await requestReviewersOnPullRequest(
+            pullRequest,
+            reviewers,
+            teamReviewers,
+            client,
+            ctx.logger,
+          );
         }
 
         ctx.output('remoteUrl', response.data.html_url);
@@ -311,4 +305,32 @@ export const createPublishGithubPullRequestAction = ({
       }
     },
   });
+
+  async function requestReviewersOnPullRequest(
+    pr: GithubPullRequest,
+    reviewers: string[] | undefined,
+    teamReviewers: string[] | undefined,
+    client: Octokit,
+    logger: Logger,
+  ) {
+    try {
+      const result = await client.rest.pulls.requestReviewers({
+        owner: pr.owner,
+        repo: pr.repo,
+        pull_number: pr.number,
+        reviewers,
+        team_reviewers: teamReviewers,
+      });
+      const addedUsers = result.data.requested_reviewers?.join(', ') ?? '';
+      const addedTeams = result.data.requested_teams?.join(', ') ?? '';
+      logger.info(
+        `Added users [${addedUsers}] and teams [${addedTeams}] as reviewers to Pull request ${pr.number}`,
+      );
+    } catch (e) {
+      logger.error(
+        `Failure when adding reviewers to Pull request ${pr.number}`,
+        e,
+      );
+    }
+  }
 };
