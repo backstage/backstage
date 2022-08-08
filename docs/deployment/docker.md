@@ -17,7 +17,7 @@ connect to an external PostgreSQL instance where the backend plugins can store
 their state, rather than using SQLite.
 
 > NOTE: If you do choose to use SQLite over the recommendation of using Postgres
-> then you will need to to move `better-sqlite3` from the `devDependencies`
+> then you will need to move `better-sqlite3` from the `devDependencies`
 > section to the `dependencies` section in the `\packages\backend\packages.json` file.
 > This needs to be done for either the host build or multi-stage build.
 
