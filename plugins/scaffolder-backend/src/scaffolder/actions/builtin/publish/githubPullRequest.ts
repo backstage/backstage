@@ -180,7 +180,8 @@ export const createPublishGithubPullRequestAction = ({
             items: {
               type: 'string',
             },
-            description: 'Pull Request Reviewers',
+            description:
+              'The users that will be added as reviewers to the pull request',
           },
           teamReviewers: {
             title: 'Pull Request Team Reviewers',
@@ -188,7 +189,8 @@ export const createPublishGithubPullRequestAction = ({
             items: {
               type: 'string',
             },
-            description: 'Pull Request Team Reviewers',
+            description:
+              'The teams that will be added as reviewers to the pull request',
           },
         },
       },
