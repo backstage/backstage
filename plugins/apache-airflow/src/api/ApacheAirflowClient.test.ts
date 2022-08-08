@@ -105,7 +105,7 @@ describe('ApacheAirflowClient', () => {
 
   const mockBaseUrl = 'http://backstage:9191/api/proxy';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
-
+  let client: ApacheAirflowClient;
   const setupHandlers = () => {
     server.use(
       rest.get(`${mockBaseUrl}/airflow/dags`, (req, res, ctx) => {
@@ -193,13 +193,15 @@ describe('ApacheAirflowClient', () => {
     );
   };
 
-  it('list dags should return all dags with emulated pagination', async () => {
+  beforeEach(() => {
     setupHandlers();
-    const client = new ApacheAirflowClient({
+    client = new ApacheAirflowClient({
       discoveryApi: discoveryApi,
       baseUrl: 'localhost:8080/',
     });
+  });
 
+  it('list dags should return all dags with emulated pagination', async () => {
     // call with limit of 2, to force two paginations in requesting all dags
     // as our mocked response has 4 total entries
     const responseDags = await client.listDags({ objectsPerRequest: 2 });
@@ -208,11 +210,6 @@ describe('ApacheAirflowClient', () => {
   });
 
   it('update dag should return dag information with updated paused attribute', async () => {
-    setupHandlers();
-    const client = new ApacheAirflowClient({
-      discoveryApi: discoveryApi,
-      baseUrl: 'localhost:8080/',
-    });
     const dagId = 'mock_dag_1';
     const response: Dag = await client.updateDag(dagId, true);
     expect(response.dag_id).toEqual(dagId);
@@ -220,11 +217,6 @@ describe('ApacheAirflowClient', () => {
   });
 
   it('get only some dags', async () => {
-    setupHandlers();
-    const client = new ApacheAirflowClient({
-      discoveryApi: discoveryApi,
-      baseUrl: 'localhost:8080/',
-    });
     const dagIds = ['mock_dag_1', 'mock_dag_3'];
     const response = await client.getDags(dagIds);
     expect(response.dags.length).toEqual(dagIds.length);
@@ -235,11 +227,6 @@ describe('ApacheAirflowClient', () => {
   });
 
   it('get dags but ignore NOT FOUND errors', async () => {
-    setupHandlers();
-    const client = new ApacheAirflowClient({
-      discoveryApi: discoveryApi,
-      baseUrl: 'localhost:8080/',
-    });
     const dagIds = ['mock_dag_1', 'a-random-DAG-id'];
     const response = await client.getDags(dagIds);
     expect(response.dags.length).toEqual(1);
@@ -249,11 +236,6 @@ describe('ApacheAirflowClient', () => {
   });
 
   it('should get dag runs', async () => {
-    setupHandlers();
-    const client = new ApacheAirflowClient({
-      discoveryApi: discoveryApi,
-      baseUrl: 'localhost:8080/',
-    });
     const dagId = 'mock_dag_1';
     const response = await client.getDagRuns(dagId);
     expect(response.length).toEqual(2);
