@@ -59,7 +59,7 @@ export const CostOverviewLegend = ({
       {dailyCostData.change && (
         <Box mr={2}>
           <LegendItem title="Cost Trend" markerColor={theme.palette.blue}>
-            {formatChange(dailyCostData.change)}
+            {formatChange(dailyCostData.change, false)}
           </LegendItem>
         </Box>
       )}
@@ -70,7 +70,7 @@ export const CostOverviewLegend = ({
               title={`${metric.name} Trend`}
               markerColor={theme.palette.magenta}
             >
-              {formatChange(metricData.change)}
+              {formatChange(metricData.change, false)}
             </LegendItem>
           </Box>
           <LegendItem

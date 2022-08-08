@@ -81,9 +81,17 @@ export function formatCurrency(amount: number, currency?: string): string {
   return currency ? `${numString} ${pluralize(currency, n)}` : numString;
 }
 
-export function formatChange(change: ChangeStatistic): string {
+export function formatChange(
+  change: ChangeStatistic,
+  returnAbsoluteValue: boolean,
+): string {
   if (notEmpty(change.ratio)) {
-    return formatPercent(Math.abs(change.ratio));
+    return formatPercent(
+      returnAbsoluteValue ? Math.abs(change.ratio) : change.ratio,
+    );
+  }
+  if (returnAbsoluteValue) {
+    return '∞';
   }
   return change.amount >= 0 ? '∞' : '-∞';
 }
