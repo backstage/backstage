@@ -32,6 +32,7 @@ import {
 } from '@backstage/plugin-scaffolder-common';
 import { JsonValue } from '@backstage/types';
 import express from 'express';
+import bodyParser from 'body-parser';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
 import { Logger } from 'winston';
@@ -78,7 +79,7 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
-  router.use(express.json());
+  router.use(bodyParser.json());
 
   const {
     logger: parentLogger,
