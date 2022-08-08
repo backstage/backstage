@@ -162,7 +162,7 @@ export async function createConfig(
     context: paths.targetPath,
     entry: [require.resolve('react-hot-loader/patch'), paths.targetEntry],
     resolve: {
-      extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
+      extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json', '.wasm'],
       mainFields: ['browser', 'module', 'main'],
       fallback: {
         ...pickBy(require('node-libs-browser')),
@@ -272,7 +272,7 @@ export async function createBackendConfig(
       paths.targetRunFile ? paths.targetRunFile : paths.targetEntry,
     ],
     resolve: {
-      extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
+      extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json'],
       mainFields: ['main'],
       modules: [paths.rootNodeModules, ...moduleDirs],
       plugins: [
