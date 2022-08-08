@@ -55,6 +55,23 @@ export interface Config {
     readonly?: boolean;
 
     /**
+     * Allow unknown type when create location.
+     *
+     * Setting 'locationService.create.allowUnknownType=false' forbids to create
+     * location with unknown type through location service.
+     * This is the default value.
+     *
+     * Setting 'locationService.create.allowUnknownType=true' allows to create
+     * location with unknown type through location service.
+     *
+     */
+    locationService?: {
+      create?: {
+        allowUnknownType: boolean;
+      };
+    };
+
+    /**
      * A set of static locations that the catalog shall always keep itself
      * up-to-date with. This is commonly used for large, permanent integrations
      * that are defined by the Backstage operators at an organization, rather

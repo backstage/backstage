@@ -18,6 +18,7 @@ import { DefaultLocationService } from './DefaultLocationService';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { LocationStore } from './types';
 import { InputError } from '@backstage/errors';
+import { ConfigReader } from '@backstage/config';
 
 describe('DefaultLocationServiceTest', () => {
   const orchestrator: jest.Mocked<CatalogProcessingOrchestrator> = {
@@ -29,7 +30,17 @@ describe('DefaultLocationServiceTest', () => {
     listLocations: jest.fn(),
     getLocation: jest.fn(),
   };
-  const locationService = new DefaultLocationService(store, orchestrator);
+
+  const mockConfig = (allowUnknownType: boolean) =>
+    new ConfigReader({
+      catalog: {
+        locationService: {
+          create: {
+            allowUnknownType,
+          },
+        },
+      },
+    });
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -81,6 +92,11 @@ describe('DefaultLocationServiceTest', () => {
         errors: [],
       });
 
+      const locationService = new DefaultLocationService(
+        store,
+        orchestrator,
+        mockConfig(false),
+      );
       await locationService.createLocation(
         { type: 'url', target: 'https://backstage.io/catalog-info.yaml' },
         true,
@@ -144,6 +160,12 @@ describe('DefaultLocationServiceTest', () => {
       store.listLocations.mockResolvedValueOnce([
         { id: '137', ...locationSpec },
       ]);
+
+      const locationService = new DefaultLocationService(
+        store,
+        orchestrator,
+        mockConfig(false),
+      );
       const result = await locationService.createLocation(
         { type: 'url', target: 'https://backstage.io/catalog-info.yaml' },
         true,
@@ -197,6 +219,11 @@ describe('DefaultLocationServiceTest', () => {
         errors: [],
       });
 
+      const locationService = new DefaultLocationService(
+        store,
+        orchestrator,
+        mockConfig(false),
+      );
       await expect(
         locationService.createLocation(
           { type: 'url', target: 'https://backstage.io/catalog-info.yaml' },
@@ -225,6 +252,12 @@ describe('DefaultLocationServiceTest', () => {
       store.listLocations.mockResolvedValueOnce([
         { id: '987', type: 'url', target: 'https://example.com' },
       ]);
+
+      const locationService = new DefaultLocationService(
+        store,
+        orchestrator,
+        mockConfig(false),
+      );
       const result = await locationService.createLocation(
         { type: 'url', target: 'https://backstage.io/catalog-info.yaml' },
         true,
@@ -243,6 +276,11 @@ describe('DefaultLocationServiceTest', () => {
         id: '123',
       });
 
+      const locationService = new DefaultLocationService(
+        store,
+        orchestrator,
+        mockConfig(false),
+      );
       await expect(
         locationService.createLocation(locationSpec, false),
       ).resolves.toEqual({
@@ -259,7 +297,61 @@ describe('DefaultLocationServiceTest', () => {
       });
     });
 
-    it('should not allow locations of unknown types', async () => {
+    it('should create location with unknown type if configuration allows it', async () => {
+      const locationSpec = {
+        type: 'unknown',
+        target: 'https://backstage.io/catalog-info.yaml',
+      };
+
+      store.createLocation.mockResolvedValue({
+        ...locationSpec,
+        id: '123',
+      });
+
+      const locationService = new DefaultLocationService(
+        store,
+        orchestrator,
+        mockConfig(true),
+      );
+      await expect(
+        locationService.createLocation(locationSpec, false),
+      ).resolves.toEqual({
+        entities: [],
+        location: {
+          id: '123',
+          target: 'https://backstage.io/catalog-info.yaml',
+          type: 'unknown',
+        },
+      });
+      expect(store.createLocation).toBeCalledWith({
+        target: 'https://backstage.io/catalog-info.yaml',
+        type: 'unknown',
+      });
+    });
+
+    it('should not allow locations of unknown types by default', async () => {
+      const locationService = new DefaultLocationService(
+        store,
+        orchestrator,
+        new ConfigReader({}),
+      );
+      await expect(
+        locationService.createLocation(
+          {
+            type: 'unknown',
+            target: 'https://backstage.io/catalog-info.yaml',
+          },
+          false,
+        ),
+      ).rejects.toThrow(InputError);
+    });
+
+    it('should not allow locations of unknown types if configuration forbids it', async () => {
+      const locationService = new DefaultLocationService(
+        store,
+        orchestrator,
+        mockConfig(false),
+      );
       await expect(
         locationService.createLocation(
           {
@@ -279,6 +371,11 @@ describe('DefaultLocationServiceTest', () => {
         errors: [new Error('Error: Unable to read url')],
       });
 
+      const locationService = new DefaultLocationService(
+        store,
+        orchestrator,
+        mockConfig(false),
+      );
       await expect(
         locationService.createLocation(
           {
@@ -293,6 +390,11 @@ describe('DefaultLocationServiceTest', () => {
 
   describe('listLocations', () => {
     it('should call locationStore.deleteLocation', async () => {
+      const locationService = new DefaultLocationService(
+        store,
+        orchestrator,
+        mockConfig(false),
+      );
       await locationService.listLocations();
       expect(store.listLocations).toBeCalled();
     });
@@ -300,6 +402,11 @@ describe('DefaultLocationServiceTest', () => {
 
   describe('deleteLocation', () => {
     it('should call locationStore.deleteLocation', async () => {
+      const locationService = new DefaultLocationService(
+        store,
+        orchestrator,
+        mockConfig(false),
+      );
       await locationService.deleteLocation('123');
       expect(store.deleteLocation).toBeCalledWith('123');
     });
@@ -307,6 +414,11 @@ describe('DefaultLocationServiceTest', () => {
 
   describe('getLocation', () => {
     it('should call locationStore.getLocation', async () => {
+      const locationService = new DefaultLocationService(
+        store,
+        orchestrator,
+        mockConfig(false),
+      );
       await locationService.getLocation('123');
       expect(store.getLocation).toBeCalledWith('123');
     });

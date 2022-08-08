@@ -465,7 +465,7 @@ export class CatalogBuilder {
     const locationAnalyzer =
       this.locationAnalyzer ?? new RepoLocationAnalyzer(logger, integrations);
     const locationService = new AuthorizedLocationService(
-      new DefaultLocationService(locationStore, orchestrator),
+      new DefaultLocationService(locationStore, orchestrator, config),
       permissionEvaluator,
     );
     const refreshService = new AuthorizedRefreshService(
