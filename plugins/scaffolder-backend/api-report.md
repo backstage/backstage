@@ -20,6 +20,7 @@ import { Knex } from 'knex';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import { Observable } from '@backstage/types';
+import { Octokit } from 'octokit';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -391,6 +392,8 @@ export const createPublishGithubPullRequestAction: ({
   targetPath?: string | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
+  reviewers?: string[] | undefined;
+  teamReviewers?: string[] | undefined;
 }>;
 
 // @public
@@ -523,15 +526,14 @@ export function fetchContents({
 }): Promise<void>;
 
 // @public (undocumented)
-export interface OctokitWithPullRequestPluginClient {
-  // (undocumented)
+export type OctokitWithPullRequestPluginClient = Octokit & {
   createPullRequest(options: createPullRequest.Options): Promise<{
     data: {
       html_url: string;
       number: number;
     };
   } | null>;
-}
+};
 
 // @public
 export interface RouterOptions {
