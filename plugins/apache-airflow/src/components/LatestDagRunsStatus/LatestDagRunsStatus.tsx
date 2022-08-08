@@ -49,6 +49,33 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+const DagRunTooltip = ({ dagRun }: { dagRun: DagRun }) => {
+  return (
+    <List>
+      <ListItem>
+        <ListItemIcon aria-label="DAG Run ID">
+          <DirectionsRun />
+        </ListItemIcon>
+        <Typography>{dagRun.dag_run_id}</Typography>
+      </ListItem>
+      <ListItem>
+        <ListItemIcon aria-label="DAG Start Date">
+          <CalendarToday />
+        </ListItemIcon>
+        <Typography>{new Date(dagRun.start_date).toLocaleString()}</Typography>
+      </ListItem>
+      <ListItem>
+        <ListItemIcon aria-label="DAG End Date">
+          <Check />
+        </ListItemIcon>
+        <Typography>
+          {dagRun.end_date ? new Date(dagRun.end_date).toLocaleString() : '-'}
+        </Typography>
+      </ListItem>
+    </List>
+  );
+};
+
 export const LatestDagRunsStatus = ({
   dagId,
   limit = 5,
@@ -89,35 +116,9 @@ export const LatestDagRunsStatus = ({
 
     const key = dagRun.dag_id + dagRun.dag_run_id;
 
-    const tooltip = (
-      <List>
-        <ListItem>
-          <ListItemIcon aria-label="DAG Run ID">
-            <DirectionsRun />
-          </ListItemIcon>
-          <Typography>{dagRun.dag_run_id}</Typography>
-        </ListItem>
-        <ListItem>
-          <ListItemIcon aria-label="DAG Start Date">
-            <CalendarToday />
-          </ListItemIcon>
-          <Typography>
-            {new Date(dagRun.start_date).toLocaleString()}
-          </Typography>
-        </ListItem>
-        <ListItem>
-          <ListItemIcon aria-label="DAG End Date">
-            <Check />
-          </ListItemIcon>
-          <Typography>
-            {dagRun.end_date ? new Date(dagRun.end_date).toLocaleString() : '-'}
-          </Typography>
-        </ListItem>
-      </List>
-    );
     return (
       <Tooltip
-        title={tooltip}
+        title={<DagRunTooltip dagRun={dagRun} />}
         key={key}
         classes={{ tooltip: classes.noMaxWidth }}
       >
