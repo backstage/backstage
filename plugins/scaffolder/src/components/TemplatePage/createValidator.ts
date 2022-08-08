@@ -16,12 +16,9 @@
 
 import { CustomFieldValidator } from '../../extensions';
 import { FormValidation } from '@rjsf/core';
-import { JsonObject, JsonValue } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
-
-function isObject(obj: unknown): obj is JsonObject {
-  return typeof obj === 'object' && obj !== null && !Array.isArray(obj);
-}
+import { Draft07 as JSONSchema } from 'json-schema-library';
 
 export const createValidator = (
   rootSchema: JsonObject,
@@ -30,54 +27,21 @@ export const createValidator = (
     apiHolder: ApiHolder;
   },
 ) => {
-  function validate(
-    schema: JsonObject,
-    formData: JsonObject,
-    errors: FormValidation,
-  ) {
-    const schemaProps = schema.properties;
-    const customObject = schema.type === 'object' && schemaProps === undefined;
-
-    if (!isObject(schemaProps) && !customObject) {
-      return;
-    }
-
-    if (schemaProps) {
-      for (const [key, propData] of Object.entries(formData)) {
-        const propValidation = errors[key];
-
-        if (isObject(propData)) {
-          const propSchemaProps = schemaProps[key];
-          if (isObject(propSchemaProps)) {
-            validate(
-              propSchemaProps,
-              propData as JsonObject,
-              propValidation as FormValidation,
-            );
-          }
-        } else {
-          const propSchema = schemaProps[key];
-          const fieldName =
-            isObject(propSchema) && (propSchema['ui:field'] as string);
-          if (fieldName && typeof validators[fieldName] === 'function') {
-            validators[fieldName]!(
-              propData as JsonValue,
-              propValidation,
-              context,
-            );
-          }
+  function validate(formData: JsonObject, errors: FormValidation) {
+    const parsedSchema = new JSONSchema(rootSchema);
+    for (const [key, value] of Object.entries(formData)) {
+      const definitionInSchema = parsedSchema.getSchema(`#/${key}`, formData);
+      if (definitionInSchema && 'ui:field' in definitionInSchema) {
+        const validator = validators[definitionInSchema['ui:field']];
+        if (validator) {
+          validator(value, errors[key] ?? errors, context);
         }
-      }
-    } else if (customObject) {
-      const fieldName = schema['ui:field'] as string;
-      if (fieldName && typeof validators[fieldName] === 'function') {
-        validators[fieldName]!(formData, errors, context);
       }
     }
   }
 
   return (formData: JsonObject, errors: FormValidation) => {
-    validate(rootSchema, formData, errors);
+    validate(formData, errors);
     return errors;
   };
 };
