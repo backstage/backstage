@@ -22,7 +22,7 @@ const path = require('path');
 const isLocal = require('fs').existsSync(path.resolve(__dirname, '../src'));
 
 if (!isLocal || process.env.BACKSTAGE_E2E_CLI_TEST) {
-  require('..');
+  require('../dist/index.cjs.js');
 } else {
   try {
     require('child_process').execFileSync(

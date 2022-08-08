@@ -43,7 +43,7 @@ export function registerRepoCommand(program: Command) {
       '--since <ref>',
       'Only build packages and their dev dependents that changed since the specified ref',
     )
-    .action(lazy(() => import('./repo/build.js').then(m => m.command)));
+    .action(lazy(() => import('./repo/build.js').then(m => m.default.command)));
 
   command
     .command('lint')
@@ -58,14 +58,16 @@ export function registerRepoCommand(program: Command) {
       'Only lint packages that changed since the specified ref',
     )
     .option('--fix', 'Attempt to automatically fix violations')
-    .action(lazy(() => import('./repo/lint.js').then(m => m.command)));
+    .action(lazy(() => import('./repo/lint.js').then(m => m.default.command)));
 
   command
     .command('list-deprecations', { hidden: true })
     .description('List deprecations. [EXPERIMENTAL]')
     .option('--json', 'Output as JSON')
     .action(
-      lazy(() => import('./repo/list-deprecations.js').then(m => m.command)),
+      lazy(() =>
+        import('./repo/list-deprecations.js').then(m => m.default.command),
+      ),
     );
 }
 
@@ -85,7 +87,9 @@ export function registerScriptCommand(program: Command) {
       '--inspect-brk',
       'Enable debugger in Node.js environments, breaking before code starts',
     )
-    .action(lazy(() => import('./start/index.js').then(m => m.command)));
+    .action(
+      lazy(() => import('./start/index.js').then(m => m.default.command)),
+    );
 
   command
     .command('build')
@@ -113,7 +117,9 @@ export function registerScriptCommand(program: Command) {
       (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
       Array<string>(),
     )
-    .action(lazy(() => import('./build/index.js').then(m => m.command)));
+    .action(
+      lazy(() => import('./build/index.js').then(m => m.default.command)),
+    );
 
   command
     .command('lint [directories...]')
@@ -124,35 +130,37 @@ export function registerScriptCommand(program: Command) {
     )
     .option('--fix', 'Attempt to automatically fix violations')
     .description('Lint a package')
-    .action(lazy(() => import('./lint.js').then(m => m.command)));
+    .action(lazy(() => import('./lint.js').then(m => m.default.command)));
 
   command
     .command('test')
     .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
     .helpOption(', --backstage-cli-help') // Let Jest handle help
     .description('Run tests, forwarding args to Jest, defaulting to watch mode')
-    .action(lazy(() => import('./test.js').then(m => m.command)));
+    .action(lazy(() => import('./test.js').then(m => m.default.command)));
 
   command
     .command('fix', { hidden: true })
     .description('Applies automated fixes to the package. [EXPERIMENTAL]')
     .option('--deps', 'Only fix monorepo dependencies in package.json')
-    .action(lazy(() => import('./fix.js').then(m => m.command)));
+    .action(lazy(() => import('./fix.js').then(m => m.default.command)));
 
   command
     .command('clean')
     .description('Delete cache directories')
-    .action(lazy(() => import('./clean/clean.js').then(m => m.command)));
+    .action(
+      lazy(() => import('./clean/clean.js').then(m => m.default.command)),
+    );
 
   command
     .command('prepack')
     .description('Prepares a package for packaging before publishing')
-    .action(lazy(() => import('./pack.js').then(m => m.pre)));
+    .action(lazy(() => import('./pack.js').then(m => m.default.pre)));
 
   command
     .command('postpack')
     .description('Restores the changes made by the prepack command')
-    .action(lazy(() => import('./pack.js').then(m => m.post)));
+    .action(lazy(() => import('./pack.js').then(m => m.default.post)));
 }
 
 export function registerMigrateCommand(program: Command) {
@@ -167,21 +175,27 @@ export function registerMigrateCommand(program: Command) {
       `Switch to using the "exports" field for packages that don't have it`,
     )
     .action(
-      lazy(() => import('./migrate/packageExports.js').then(m => m.command)),
+      lazy(() =>
+        import('./migrate/packageExports.js').then(m => m.default.command),
+      ),
     );
 
   command
     .command('package-roles')
     .description(`Add package role field to packages that don't have it`)
     .action(
-      lazy(() => import('./migrate/packageRole.js').then(m => m.command)),
+      lazy(() =>
+        import('./migrate/packageRole.js').then(m => m.default.command),
+      ),
     );
 
   command
     .command('package-scripts')
     .description('Set package scripts according to each package role')
     .action(
-      lazy(() => import('./migrate/packageScripts.js').then(m => m.command)),
+      lazy(() =>
+        import('./migrate/packageScripts.js').then(m => m.default.command),
+      ),
     );
 
   command
@@ -191,7 +205,7 @@ export function registerMigrateCommand(program: Command) {
     )
     .action(
       lazy(() =>
-        import('./migrate/packageLintConfigs.js').then(m => m.command),
+        import('./migrate/packageLintConfigs.js').then(m => m.default.command),
       ),
     );
 }
@@ -219,7 +233,9 @@ export function registerCommands(program: Command) {
       'The package registry to use for new packages',
     )
     .option('--no-private', 'Do not mark new packages as private')
-    .action(lazy(() => import('./create/create.js').then(m => m.command)));
+    .action(
+      lazy(() => import('./create/create.js').then(m => m.default.command)),
+    );
 
   program
     .command('create-plugin')
@@ -233,7 +249,7 @@ export function registerCommands(program: Command) {
     .option('--no-private', 'Public npm package')
     .action(
       lazy(() =>
-        import('./create-plugin/createPlugin.js').then(m => m.command),
+        import('./create-plugin/createPlugin.js').then(m => m.default.command),
       ),
     );
 
@@ -242,7 +258,9 @@ export function registerCommands(program: Command) {
     .option('--check', 'Fail if changes are required')
     .option('--yes', 'Apply all changes')
     .description('Diff an existing plugin with the creation template')
-    .action(lazy(() => import('./plugin/diff.js').then(m => m.command)));
+    .action(
+      lazy(() => import('./plugin/diff.js').then(m => m.default.command)),
+    );
 
   // TODO(Rugvip): Deprecate in favor of package variant
   program
@@ -252,7 +270,7 @@ export function registerCommands(program: Command) {
     .description(
       'Run tests, forwarding args to Jest, defaulting to watch mode [DEPRECATED]',
     )
-    .action(lazy(() => import('./test.js').then(m => m.command)));
+    .action(lazy(() => import('./test.js').then(m => m.default.command)));
 
   program
     .command('config:docs')
@@ -261,7 +279,9 @@ export function registerCommands(program: Command) {
       'Only include the schema that applies to the given package',
     )
     .description('Browse the configuration reference documentation')
-    .action(lazy(() => import('./config/docs.js').then(m => m.command)));
+    .action(
+      lazy(() => import('./config/docs.js').then(m => m.default.command)),
+    );
 
   program
     .command('config:print')
@@ -278,7 +298,9 @@ export function registerCommands(program: Command) {
     )
     .option(...configOption)
     .description('Print the app configuration for the current package')
-    .action(lazy(() => import('./config/print.js').then(m => m.command)));
+    .action(
+      lazy(() => import('./config/print.js').then(m => m.default.command)),
+    );
 
   program
     .command('config:check')
@@ -293,7 +315,9 @@ export function registerCommands(program: Command) {
     .description(
       'Validate that the given configuration loads and matches schema',
     )
-    .action(lazy(() => import('./config/validate.js').then(m => m.command)));
+    .action(
+      lazy(() => import('./config/validate.js').then(m => m.default.command)),
+    );
 
   program
     .command('config:schema')
@@ -306,7 +330,9 @@ export function registerCommands(program: Command) {
       'Format to print the schema in, either json or yaml [yaml]',
     )
     .description('Print configuration schema')
-    .action(lazy(() => import('./config/schema.js').then(m => m.command)));
+    .action(
+      lazy(() => import('./config/schema.js').then(m => m.default.command)),
+    );
 
   registerRepoCommand(program);
   registerScriptCommand(program);
@@ -324,36 +350,46 @@ export function registerCommands(program: Command) {
       'main',
     )
     .description('Bump Backstage packages to the latest versions')
-    .action(lazy(() => import('./versions/bump.js').then(m => m.command)));
+    .action(
+      lazy(() => import('./versions/bump.js').then(m => m.default.command)),
+    );
 
   program
     .command('versions:check')
     .option('--fix', 'Fix any auto-fixable versioning problems')
     .description('Check Backstage package versioning')
-    .action(lazy(() => import('./versions/lint.js').then(m => m.command)));
+    .action(
+      lazy(() => import('./versions/lint.js').then(m => m.default.command)),
+    );
 
   // TODO(Rugvip): Deprecate in favor of package variant
   program
     .command('clean')
     .description('Delete cache directories [DEPRECATED]')
-    .action(lazy(() => import('./clean/clean.js').then(m => m.command)));
+    .action(
+      lazy(() => import('./clean/clean.js').then(m => m.default.command)),
+    );
 
   program
     .command('build-workspace <workspace-dir> [packages...]')
     .description('Builds a temporary dist workspace from the provided packages')
-    .action(lazy(() => import('./buildWorkspace.js').then(m => m.command)));
+    .action(
+      lazy(() => import('./buildWorkspace.js').then(m => m.default.command)),
+    );
 
   program
     .command('create-github-app <github-org>')
     .description('Create new GitHub App in your organization.')
     .action(
-      lazy(() => import('./create-github-app/index.js').then(m => m.command)),
+      lazy(() =>
+        import('./create-github-app/index.js').then(m => m.default.command),
+      ),
     );
 
   program
     .command('info')
     .description('Show helpful information for debugging and reporting bugs')
-    .action(lazy(() => import('./info.js').then(m => m.command)));
+    .action(lazy(() => import('./info.js').then(m => m.default.command)));
 
   program
     .command('install [plugin-id]', { hidden: true })
@@ -362,7 +398,9 @@ export function registerCommands(program: Command) {
       'Install from a local package.json containing the installation recipe',
     )
     .description('Install a Backstage plugin [EXPERIMENTAL]')
-    .action(lazy(() => import('./install/install.js').then(m => m.command)));
+    .action(
+      lazy(() => import('./install/install.js').then(m => m.default.command)),
+    );
 }
 
 // Wraps an action function so that it always exits and handles errors
@@ -376,6 +414,7 @@ function lazy(
 
       process.exit(0);
     } catch (error) {
+      console.log('DEBUG: error =', error.stack);
       assertError(error);
       exitWithError(error);
     }
