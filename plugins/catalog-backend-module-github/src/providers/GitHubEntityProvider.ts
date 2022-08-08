@@ -195,9 +195,9 @@ export class GitHubEntityProvider implements EntityProvider {
   private createLocationUrl(repository: Repository): string {
     const branch =
       this.config.filters?.branch || repository.defaultBranchRef?.name || '-';
-    const catalogFile = this.config.catalogPath.substring(
-      this.config.catalogPath.lastIndexOf('/') + 1,
-    );
+    const catalogFile = this.config.catalogPath.startsWith('/')
+      ? this.config.catalogPath.substring(1)
+      : this.config.catalogPath;
     return `${repository.url}/blob/${branch}/${catalogFile}`;
   }
 
