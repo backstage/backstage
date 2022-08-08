@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { ForwardedError } from '@backstage/errors';
+import { ForwardedError, stringifyError } from '@backstage/errors';
 import ldap, { Client, SearchEntry, SearchOptions } from 'ldapjs';
-import { cloneDeep, merge } from 'lodash';
+import { cloneDeep } from 'lodash';
 import { Logger } from 'winston';
 import { BindConfig, TLSConfig } from './config';
-import { errorString } from './util';
+import { createOptions, errorString } from './util';
 import {
   ActiveDirectoryVendor,
   DefaultLdapVendor,
@@ -150,54 +150,60 @@ export class LdapClient {
     f: (entry: SearchEntry) => Promise<void> | void,
   ): Promise<void> {
     try {
-      let awaitList: Array<Promise<void> | void> = [];
       return await new Promise<void>((resolve, reject) => {
         // Note that we clone the (frozen) options, since ldapjs rudely tries to
         // overwrite parts of them
-        this.client.search(
-          dn,
-          merge(cloneDeep(options), { paged: { pagePause: true } }),
-          (err, res) => {
-            if (err) {
-              reject(new Error(errorString(err)));
-            }
+        this.client.search(dn, createOptions(options), (err, res) => {
+          if (err) {
+            reject(new Error(errorString(err)));
+          }
+          let awaitList: Array<Promise<void> | void> = [];
+          let transformError = false;
 
-            res.on('searchReference', () => {
-              this.logger.warn('Received unsupported search referral');
-            });
+          const transformReject = (e: Error) => {
+            transformError = true;
+            reject(
+              new Error(
+                `Transform function threw an exception, ${stringifyError(e)}`,
+              ),
+            );
+          };
 
-            res.on('searchEntry', entry => {
-              awaitList.push(f(entry));
-            });
+          res.on('searchReference', () => {
+            this.logger.warn('Received unsupported search referral');
+          });
 
-            res.on('page', (_, cb) => {
-              // awaits completion before fetching next page
+          res.on('searchEntry', entry => {
+            if (!transformError) awaitList.push(f(entry));
+          });
+
+          res.on('page', (_, cb) => {
+            // awaits completion before fetching next page
+            Promise.all(awaitList)
+              .then(() => {
+                // flush list
+                awaitList = [];
+                if (cb) cb();
+              })
+              .catch(transformReject);
+          });
+
+          res.on('error', e => {
+            reject(new Error(errorString(e)));
+          });
+
+          res.on('end', r => {
+            if (!r) {
+              throw new Error('Null response');
+            } else if (r.status !== 0) {
+              throw new Error(`Got status ${r.status}: ${r.errorMessage}`);
+            } else {
               Promise.all(awaitList)
-                .then(() => {
-                  // flush list
-                  awaitList = [];
-                  if (cb) cb();
-                })
-                .catch(reject);
-            });
-
-            res.on('error', e => {
-              reject(new Error(errorString(e)));
-            });
-
-            res.on('end', r => {
-              if (!r) {
-                throw new Error('Null response');
-              } else if (r.status !== 0) {
-                throw new Error(`Got status ${r.status}: ${r.errorMessage}`);
-              } else {
-                Promise.all(awaitList)
-                  .then(() => resolve())
-                  .catch(reject);
-              }
-            });
-          },
-        );
+                .then(() => resolve())
+                .catch(transformReject);
+            }
+          });
+        });
       });
     } catch (e) {
       throw new ForwardedError(`LDAP search at DN "${dn}" failed`, e);
