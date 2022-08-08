@@ -103,6 +103,16 @@ export class ApacheAirflowClient implements ApacheAirflowApi {
     return await this.fetch<Dag>(`/dags/${dagId}`, init);
   }
 
+  /**
+   * Get the latest DAG Runs of a specific DAG.
+   * The DAG runs are ordered by start date
+   *
+   * @remarks
+   *
+   * The "limit" option means the maximum number of DAG runs to return
+   * "objectsPerRequest" means the maximum number of DAG runs to be taken per fetch request.
+   * This is just to make sure the response payloads are not too big
+   */
   async getDagRuns(
     dagId: string,
     options = { objectsPerRequest: 100, limit: 5 },
