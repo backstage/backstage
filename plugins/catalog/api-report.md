@@ -59,7 +59,7 @@ export interface AboutContentProps {
   // (undocumented)
   children?: React_2.ReactNode;
   // @deprecated
-  entity: Entity;
+  entity?: Entity;
 }
 
 // @public (undocumented)

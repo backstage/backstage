@@ -174,7 +174,7 @@ export function AboutCard(props: AboutCardProps) {
       />
       <Divider />
       <CardContent className={cardContentClass}>
-        <AboutContent entity={entity}>{children}</AboutContent>
+        <AboutContent>{children}</AboutContent>
       </CardContent>
     </Card>
   );

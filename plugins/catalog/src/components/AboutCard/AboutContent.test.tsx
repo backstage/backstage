@@ -31,7 +31,6 @@ import { AboutContent } from './AboutContent';
 import { AboutField } from './AboutField';
 import { AboutCardBuiltInFields, AboutCardDefaultFields } from './fields';
 
-// TODO: Remove the entity prop in AboutContent after the prop is fully deprecated.
 describe('<AboutContent />', () => {
   describe('An unknown entity', () => {
     let entity: Entity;
@@ -72,7 +71,7 @@ describe('<AboutContent />', () => {
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
         <EntityProvider entity={entity}>
-          <AboutContent entity={entity} />
+          <AboutContent />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -107,7 +106,7 @@ describe('<AboutContent />', () => {
 
       const { getByText, queryByText } = await renderInTestApp(
         <EntityProvider entity={entity}>
-          <AboutContent entity={entity} />
+          <AboutContent />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -165,7 +164,7 @@ describe('<AboutContent />', () => {
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
         <EntityProvider entity={entity}>
-          <AboutContent entity={entity} />
+          <AboutContent />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -203,7 +202,7 @@ describe('<AboutContent />', () => {
 
       const { getByText, queryByText } = await renderInTestApp(
         <EntityProvider entity={entity}>
-          <AboutContent entity={entity} />
+          <AboutContent />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -270,7 +269,7 @@ describe('<AboutContent />', () => {
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
         <EntityProvider entity={entity}>
-          <AboutContent entity={entity} />
+          <AboutContent />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -311,7 +310,7 @@ describe('<AboutContent />', () => {
 
       const { getByText, queryByText } = await renderInTestApp(
         <EntityProvider entity={entity}>
-          <AboutContent entity={entity} />
+          <AboutContent />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -366,7 +365,7 @@ describe('<AboutContent />', () => {
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
         <EntityProvider entity={entity}>
-          <AboutContent entity={entity} />
+          <AboutContent />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -396,7 +395,7 @@ describe('<AboutContent />', () => {
 
       const { getByText, queryByText } = await renderInTestApp(
         <EntityProvider entity={entity}>
-          <AboutContent entity={entity} />
+          <AboutContent />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -444,7 +443,7 @@ describe('<AboutContent />', () => {
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
         <EntityProvider entity={entity}>
-          <AboutContent entity={entity} />
+          <AboutContent />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -479,7 +478,7 @@ describe('<AboutContent />', () => {
 
       const { getByText, queryByText } = await renderInTestApp(
         <EntityProvider entity={entity}>
-          <AboutContent entity={entity} />
+          <AboutContent />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -538,7 +537,7 @@ describe('<AboutContent />', () => {
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
         <EntityProvider entity={entity}>
-          <AboutContent entity={entity} />
+          <AboutContent />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -572,7 +571,7 @@ describe('<AboutContent />', () => {
 
       const { getByText, queryByText } = await renderInTestApp(
         <EntityProvider entity={entity}>
-          <AboutContent entity={entity} />
+          <AboutContent />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -631,7 +630,7 @@ describe('<AboutContent />', () => {
     it('renders info', async () => {
       const { getByText, queryByText } = await renderInTestApp(
         <EntityProvider entity={entity}>
-          <AboutContent entity={entity} />
+          <AboutContent />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -663,7 +662,7 @@ describe('<AboutContent />', () => {
 
       const { getByText, queryByText } = await renderInTestApp(
         <EntityProvider entity={entity}>
-          <AboutContent entity={entity} />
+          <AboutContent />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -728,7 +727,7 @@ describe('<AboutContent />', () => {
     it('renders info when using default fields', async () => {
       const { getByText, queryByText } = await renderInTestApp(
         <EntityProvider entity={entity}>
-          <AboutContent entity={entity}>{AboutCardDefaultFields}</AboutContent>
+          <AboutContent>{AboutCardDefaultFields}</AboutContent>
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -763,7 +762,7 @@ describe('<AboutContent />', () => {
     it('only renders selected field when specified', async () => {
       const { getByText, queryByText } = await renderInTestApp(
         <EntityProvider entity={entity}>
-          <AboutContent entity={entity}>
+          <AboutContent>
             <AboutCardBuiltInFields.Description />
           </AboutContent>
         </EntityProvider>,
@@ -798,7 +797,7 @@ describe('<AboutContent />', () => {
       };
       const { getByText } = await renderInTestApp(
         <EntityProvider entity={entity}>
-          <AboutContent entity={entity}>
+          <AboutContent>
             <AboutCardBuiltInFields.Description />
             <MyField />
           </AboutContent>

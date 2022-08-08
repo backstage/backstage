@@ -34,9 +34,9 @@ export interface AboutContentProps {
    * within EntityLayout, and the entity prop will be removed
    * in future releases.
    *
-   * @deprecated use useEntity hook in the children.
+   * @deprecated use useEntity hook in children.
    */
-  entity: Entity;
+  entity?: Entity;
   children?: React.ReactNode;
 }
 
@@ -44,6 +44,12 @@ export interface AboutContentProps {
 // consider deprecating and removing it.
 /** @public */
 export const AboutContent = (props: AboutContentProps) => {
-  const { children } = props;
+  const { entity, children } = props;
+  if (entity !== undefined) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'Make sure to use this component in an EntityLayout or inside an EntityProvider',
+    );
+  }
   return <Grid container>{children ? children : AboutCardDefaultFields}</Grid>;
 };
