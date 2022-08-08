@@ -613,8 +613,9 @@ export const Link: (props: LinkProps) => JSX.Element;
 // Warning: (ae-missing-release-tag) "LinkProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type LinkProps = LinkProps_2 &
-  LinkProps_3 & {
+export type LinkProps = Omit<LinkProps_2, 'to'> &
+  Omit<LinkProps_3, 'to'> & {
+    to: string;
     component?: ElementType<any>;
     noTrack?: boolean;
   };
