@@ -429,6 +429,7 @@ describe('Default Processing Database', () => {
             if (step.expectConflict) {
               // eslint-disable-next-line jest/no-conditional-expect
               expect(mockLogger.warn).toHaveBeenCalledWith(
+                // eslint-disable-next-line jest/no-conditional-expect
                 expect.stringMatching(/^Detected conflicting entityRef/),
               );
             } else {
