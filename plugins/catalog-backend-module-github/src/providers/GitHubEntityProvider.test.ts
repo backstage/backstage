@@ -153,7 +153,7 @@ describe('GitHubEntityProvider', () => {
     expect(taskDef.id).toEqual('github-provider:myProvider:refresh');
     await (taskDef.fn as () => Promise<void>)();
 
-    const url = `https://github.com/test-org/test-repo/blob/main/catalog-custom.yaml`;
+    const url = `https://github.com/test-org/test-repo/blob/main/custom/path/catalog-custom.yaml`;
     const expectedEntities = [
       {
         entity: {
@@ -164,7 +164,7 @@ describe('GitHubEntityProvider', () => {
               'backstage.io/managed-by-location': `url:${url}`,
               'backstage.io/managed-by-origin-location': `url:${url}`,
             },
-            name: 'generated-21936a3d1e926b8bb3b00ac4398dc9a8dbb90b45',
+            name: 'generated-5e4b9498097f15434e88c477cfba6c079aa8ca7f',
           },
           spec: {
             presence: 'optional',
