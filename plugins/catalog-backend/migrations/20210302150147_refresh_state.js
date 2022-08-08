@@ -65,7 +65,9 @@ exports.up = async function up(knex) {
       .dateTime('last_discovery_at') // TODO: timezone or change to epoch-millis or similar
       .notNullable()
       .comment('The last timestamp of which this entity was discovered');
-    table.unique(['entity_ref'], 'refresh_state_entity_ref_uniq');
+    table.unique(['entity_ref'], {
+      indexName: 'refresh_state_entity_ref_uniq',
+    });
     table.index('entity_id', 'refresh_state_entity_id_idx');
     table.index('entity_ref', 'refresh_state_entity_ref_idx');
     table.index('next_update_at', 'refresh_state_next_update_at_idx');
