@@ -16,6 +16,11 @@ are stateless, so for a production deployment you will want to set up and
 connect to an external PostgreSQL instance where the backend plugins can store
 their state, rather than using SQLite.
 
+> NOTE: If you do choose to use SQLite over the recommendation of using Postgres
+> then you will need to to move `better-sqlite3` from the `devDependencies`
+> section to the `dependencies` section in the `\packages\backend\packages.json` file.
+> This needs to be done for either the host build or multi-stage build.
+
 By default, in an app created with `@backstage/create-app`, the frontend is
 bundled and served from the backend. This is done using the
 `@backstage/plugin-app-backend` plugin, which also injects the frontend
