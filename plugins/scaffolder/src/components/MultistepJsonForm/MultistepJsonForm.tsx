@@ -36,6 +36,7 @@ import { transformSchemaToProps } from './schema';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
+import { Draft07 as JSONSchema } from 'json-schema-library';
 
 const Form = withTheme(MuiTheme);
 type Step = {
@@ -57,54 +58,41 @@ type Props = {
   finishButtonLabel?: string;
 };
 
-export function getUiSchemasFromSteps(steps: Step[]): UiSchema[] {
-  const uiSchemas: Array<UiSchema> = [];
-  steps.forEach(step => {
-    const schemaProps = step.schema.properties as JsonObject;
-    for (const key in schemaProps) {
-      if (schemaProps.hasOwnProperty(key)) {
-        const uiSchema = schemaProps[key] as UiSchema;
-        uiSchema.name = key;
-        uiSchemas.push(uiSchema);
-      }
-    }
-  });
-  return uiSchemas;
-}
-
 export function getReviewData(formData: Record<string, any>, steps: Step[]) {
-  const uiSchemas = getUiSchemasFromSteps(steps);
   const reviewData: Record<string, any> = {};
-  for (const key in formData) {
-    if (formData.hasOwnProperty(key)) {
-      const uiSchema = uiSchemas.find(us => us.name === key);
+  const schemas = steps.map(step => new JSONSchema(step.schema));
 
-      if (!uiSchema) {
-        reviewData[key] = formData[key];
-        continue;
-      }
+  for (const [key] of Object.entries(formData)) {
+    const uiSchema = schemas
+      .map(schema => schema.getSchema(`#/${key}`, formData))
+      .filter(schema => schema.type !== 'error')[0];
 
-      if (uiSchema['ui:widget'] === 'password') {
-        reviewData[key] = '******';
-        continue;
-      }
-
-      if (!uiSchema['ui:backstage'] || !uiSchema['ui:backstage'].review) {
-        reviewData[key] = formData[key];
-        continue;
-      }
-
-      const review = uiSchema['ui:backstage'].review as JsonObject;
-      if (review.mask) {
-        reviewData[key] = review.mask;
-        continue;
-      }
-
-      if (!review.show) {
-        continue;
-      }
+    if (!uiSchema) {
       reviewData[key] = formData[key];
+      continue;
     }
+
+    if (uiSchema['ui:widget'] === 'password') {
+      reviewData[key] = '******';
+      continue;
+    }
+
+    if (!uiSchema['ui:backstage'] || !uiSchema['ui:backstage'].review) {
+      reviewData[key] = formData[key];
+      continue;
+    }
+
+    const review = uiSchema['ui:backstage'].review as JsonObject;
+    if (review.mask) {
+      reviewData[key] = review.mask;
+      continue;
+    }
+
+    if (!review.show) {
+      continue;
+    }
+
+    reviewData[key] = formData[key];
   }
 
   return reviewData;
@@ -203,6 +191,7 @@ export const MultistepJsonForm = (props: Props) => {
               </StepLabel>
               <StepContent key={title}>
                 <Form
+                  liveOmit
                   showErrorList={false}
                   fields={{ ...fieldOverrides, ...fields }}
                   widgets={widgets}
