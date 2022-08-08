@@ -287,6 +287,8 @@ describe('createPublishGithubPullRequestAction', () => {
         teamReviewers: ['team-foo'],
       };
 
+      mockFs({ [workspacePath]: {} });
+
       ctx = {
         createTemporaryDirectory: jest.fn(),
         output: jest.fn(),
@@ -336,6 +338,8 @@ describe('createPublishGithubPullRequestAction', () => {
         branchName: 'new-app',
         description: 'This PR is really good',
       };
+
+      mockFs({ [workspacePath]: {} });
 
       ctx = {
         createTemporaryDirectory: jest.fn(),
