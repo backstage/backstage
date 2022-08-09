@@ -38,6 +38,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { utils } from '@rjsf/core';
+import { useMap } from '@react-hookz/web';
 
 const Form = withTheme(MuiTheme);
 type Step = {
@@ -50,13 +51,12 @@ type Props = {
    * Steps for the form, each contains title and form schema
    */
   steps: Step[];
-  formData: Record<string, any>;
-  onChange: (e: IChangeEvent) => void;
-  onReset: () => void;
-  onFinish?: () => Promise<void>;
+  intialFormData: Record<string, any>;
   widgets?: FormProps<any>['widgets'];
   fields?: FormProps<any>['fields'];
   finishButtonLabel?: string;
+
+  onFinish?: () => Promise<void>;
 };
 
 export function getReviewData(formData: Record<string, any>, steps: Step[]) {
@@ -102,16 +102,11 @@ export function getReviewData(formData: Record<string, any>, steps: Step[]) {
 }
 
 export const MultistepJsonForm = (props: Props) => {
-  const {
-    formData,
-    onChange,
-    onReset,
-    onFinish,
-    fields,
-    widgets,
-    finishButtonLabel,
-  } = props;
+  const { intialFormData, onFinish, fields, widgets, finishButtonLabel } =
+    props;
   const [activeStep, setActiveStep] = useState(0);
+  const [formChangeData, setFormChangeData] = useState(intialFormData);
+  const stepsState = useMap();
   const [disableButtons, setDisableButtons] = useState(false);
   const errorApi = useApi(errorApiRef);
   const featureFlagApi = useApi(featureFlagsApiRef);
@@ -156,12 +151,20 @@ export const MultistepJsonForm = (props: Props) => {
 
   const handleReset = () => {
     setActiveStep(0);
-    onReset();
+    stepsState.clear();
   };
-  const handleNext = () => {
+
+  const handleNext = (e: IChangeEvent) => {
+    stepsState.set(activeStep, e.formData);
     setActiveStep(Math.min(activeStep + 1, steps.length));
   };
+
+  const onChange = (e: IChangeEvent) => {
+    setFormChangeData(old => ({ ...old, ...e.formData }));
+  };
+
   const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
+
   const handleCreate = async () => {
     if (!onFinish) {
       return;
@@ -194,15 +197,16 @@ export const MultistepJsonForm = (props: Props) => {
               </StepLabel>
               <StepContent key={title}>
                 <Form
+                  omitExtraData
                   showErrorList={false}
                   fields={{ ...fieldOverrides, ...fields }}
                   widgets={widgets}
                   noHtml5Validate
-                  formData={formData}
-                  formContext={{ formData }}
+                  formData={formChangeData}
+                  formContext={{ formData: formChangeData }}
                   onChange={onChange}
                   onSubmit={e => {
-                    if (e.errors.length === 0) handleNext();
+                    if (e.errors.length === 0) handleNext(e);
                   }}
                   {...formProps}
                   {...transformSchemaToProps(schema)}
@@ -225,7 +229,13 @@ export const MultistepJsonForm = (props: Props) => {
             <Typography variant="h6">Review and create</Typography>
             <StructuredMetadataTable
               dense
-              metadata={getReviewData(formData, steps)}
+              metadata={getReviewData(
+                Array.from(stepsState.values()).reduce((curr, next) => ({
+                  ...curr,
+                  ...next,
+                })),
+                steps,
+              )}
             />
             <Box mb={4} />
             <Button onClick={handleBack} disabled={disableButtons}>

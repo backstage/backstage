@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { LinearProgress } from '@material-ui/core';
-import { IChangeEvent } from '@rjsf/core';
 import qs from 'qs';
 import React, { useCallback, useContext, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router';
@@ -35,6 +34,7 @@ import {
   useRouteRef,
 } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
+import { JsonValue } from '@backstage/types';
 
 const useTemplateParameterSchema = (templateRef: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -64,7 +64,7 @@ export const TemplatePage = ({
   const scaffolderTaskRoute = useRouteRef(scaffolderTaskRouteRef);
   const rootRoute = useRouteRef(rootRouteRef);
   const { schema, loading, error } = useTemplateParameterSchema(templateRef);
-  const [formState, setFormState] = useState<Record<string, any>>(() => {
+  const [initialFormData] = useState<Record<string, any>>(() => {
     const query = qs.parse(window.location.search, {
       ignoreQueryPrefix: true,
     });
@@ -75,13 +75,8 @@ export const TemplatePage = ({
       return query.formData ?? {};
     }
   });
-  const handleFormReset = () => setFormState({});
-  const handleChange = useCallback(
-    (e: IChangeEvent) => setFormState(e.formData),
-    [setFormState],
-  );
 
-  const handleCreate = async () => {
+  const handleCreate = async (formState: Record<string, JsonValue>) => {
     const { taskId } = await scaffolderApi.scaffold({
       templateRef,
       values: formState,
@@ -135,10 +130,8 @@ export const TemplatePage = ({
             titleTypographyProps={{ component: 'h2' }}
           >
             <MultistepJsonForm
-              formData={formState}
+              initialFormData={initialFormData}
               fields={customFieldComponents}
-              onChange={handleChange}
-              onReset={handleFormReset}
               onFinish={handleCreate}
               steps={schema.steps.map(step => {
                 return {
