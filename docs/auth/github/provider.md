@@ -66,15 +66,15 @@ auth:
   providers:
     github:
       development:
-        appId: 
+        appId:
           $include: example-backstage-app-credentials.yaml#appId
-        webhookUrl: 
+        webhookUrl:
           $include: example-backstage-app-credentials.yaml#webhookUrl
-        clientId: 
+        clientId:
           $include: example-backstage-app-credentials.yaml#clientId
-        clientSecret: 
+        clientSecret:
           $include: example-backstage-app-credentials.yaml#clientSecret
-        webhookSecret: 
+        webhookSecret:
           $include: example-backstage-app-credentials.yaml#webhookSecret
         privateKey:
           $include: example-backstage-app-credentials.yaml#privateKey
