@@ -57,7 +57,7 @@ The GitHub provider is a structure with three configuration keys:
 
 ### Using a GitHub App integrations config file
 
-When using a GitHub App with an integration configuration file, as described in the [GitHub integration documentation](docs/auth/github/provider.md), you cannot use a generic include as you [can use](docs/auth/github/provider.md) with the generic GitHub integration.
+When using a GitHub App with an integration configuration file, as described in the [GitHub integration documentation](../../integrations/github/github-apps.md#github-enterprise), you cannot use a generic include as you [can use](../../integrations/github/github-apps.md#github-enterprise) with the generic GitHub integration.
 
 You can re-use the integration file by including each individual field in the file as the GitHub auth provider configuration:
 
