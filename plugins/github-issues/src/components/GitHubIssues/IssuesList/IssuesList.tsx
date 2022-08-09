@@ -19,14 +19,14 @@ import { Box } from '@material-ui/core';
 import { Pagination } from '@material-ui/lab';
 
 import { IssueCard } from '../IssueCard';
-import { RepoIssues } from '../../../hooks/useGetIssuesByRepoFromGitHub';
+import { IssuesByRepo } from '../../../api';
 import { RepositoryFilters } from './Filters';
 
 export type PluginMode = 'page' | 'card';
 
 export type IssueListProps = {
   itemsPerPage?: number;
-  issuesByRepository?: Record<string, RepoIssues>;
+  issuesByRepository?: IssuesByRepo;
 };
 
 const getIssuesCountForFilterLabel = (
@@ -37,7 +37,7 @@ const getIssuesCountForFilterLabel = (
     issuesAvailable < totalIssues ? '*' : ''
   }`;
 
-export const IssueList = ({
+export const IssuesList = ({
   itemsPerPage = 10,
   issuesByRepository,
 }: IssueListProps) => {
@@ -140,6 +140,7 @@ export const IssueList = ({
             index,
           ) => (
             <IssueCard
+              key={url}
               even={Boolean(index % 2)}
               title={title}
               createdAt={createdAt}
@@ -154,7 +155,7 @@ export const IssueList = ({
           ),
         )
       ) : (
-        <h1>Hurray! No Issues 🚀</h1>
+        <h1 data-testid="no-issues-msg">Hurray! No Issues 🚀</h1>
       )}
       {issues.length / itemsPerPage > 1 ? (
         <Pagination
