@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonObject } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 import {
   Box,
   Button,
@@ -110,12 +110,7 @@ export const MultistepJsonForm = (props: Props) => {
 
   const [formState, setFormState] = useState({});
   useEffect(() => {
-    setFormState(
-      Array.from(stepsState.values()).reduce((curr, next) => ({
-        ...curr,
-        ...next,
-      })),
-    );
+    setFormState(Object.assign({}, ...stepsState.values()));
   }, [stepsState]);
 
   const [disableButtons, setDisableButtons] = useState(false);
@@ -214,7 +209,7 @@ export const MultistepJsonForm = (props: Props) => {
                   widgets={widgets}
                   noHtml5Validate
                   formData={formChangeData}
-                  formContext={{ formData: formChangeData }}
+                  formContext={{ formData: formState }}
                   onChange={onChange}
                   onSubmit={e => {
                     if (e.errors.length === 0) handleNext(e);
