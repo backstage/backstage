@@ -45,6 +45,12 @@ import {
   selectedTemplateRouteRef,
 } from '../routes';
 import { ListTasksPage } from './ListTasksPage';
+import {
+  DEFAULT_SCAFFOLDER_LAYOUT,
+  LayoutOptions,
+  LAYOUTS_KEY,
+  LAYOUTS_WRAPPER_KEY,
+} from '../layouts';
 
 /**
  * The props for the entrypoint `ScaffolderPage` component the plugin.
@@ -105,6 +111,19 @@ export const Router = (props: RouterProps) => {
         ),
     ),
   ];
+
+  const customLayouts = useElementFilter(outlet, elements =>
+    elements
+      .selectByComponentData({
+        key: LAYOUTS_WRAPPER_KEY,
+      })
+      .findComponentData<LayoutOptions>({
+        key: LAYOUTS_KEY,
+      }),
+  );
+
+  const layout = customLayouts?.[0] ?? DEFAULT_SCAFFOLDER_LAYOUT;
+
   /**
    * This component can be deleted once the older routes have been deprecated.
    */
@@ -142,7 +161,10 @@ export const Router = (props: RouterProps) => {
         path={selectedTemplateRouteRef.path}
         element={
           <SecretsContextProvider>
-            <TemplatePage customFieldExtensions={fieldExtensions} />
+            <TemplatePage
+              customFieldExtensions={fieldExtensions}
+              layout={layout}
+            />
           </SecretsContextProvider>
         }
       />
@@ -159,6 +181,7 @@ export const Router = (props: RouterProps) => {
             <TemplateEditorPage
               defaultPreviewTemplate={defaultPreviewTemplate}
               customFieldExtensions={fieldExtensions}
+              layout={layout}
             />
           </SecretsContextProvider>
         }
