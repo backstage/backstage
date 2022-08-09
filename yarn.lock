@@ -17613,7 +17613,7 @@ leasot@^12.0.0:
     strip-ansi "^6.0.0"
     text-table "^0.2.0"
 
-lerna@^5.0.0:
+lerna@~5.0.0:
   version "5.0.0"
   resolved "https://registry.npmjs.org/lerna/-/lerna-5.0.0.tgz#077e35d41fcead5ea223af1862dc25475e1aaf2a"
   integrity sha512-dUYmJ7H9k/xHtwKpQWLTNUa1jnFUiW4o4K2LFkRchlIijoIUT4yK/RprIxNvYCrLrEaOdZryvY5UZvSHI2tBxA==
