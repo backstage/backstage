@@ -15,15 +15,32 @@
  */
 import {
   createPlugin,
+  createApiFactory,
   createComponentExtension,
   createRoutableExtension,
+  configApiRef,
+  errorApiRef,
+  githubAuthApiRef,
 } from '@backstage/core-plugin-api';
+import { gitHubIssuesApi, gitHubIssuesApiRef } from './api';
 
 import { rootRouteRef } from './routes';
 
 /** @public */
 export const gitHubIssuesPlugin = createPlugin({
   id: 'github-issues',
+  apis: [
+    createApiFactory({
+      api: gitHubIssuesApiRef,
+      deps: {
+        configApi: configApiRef,
+        githubAuthApi: githubAuthApiRef,
+        errorApi: errorApiRef,
+      },
+      factory: ({ configApi, githubAuthApi, errorApi }) =>
+        gitHubIssuesApi(githubAuthApi, configApi, errorApi),
+    }),
+  ],
   routes: {
     root: rootRouteRef,
   },
