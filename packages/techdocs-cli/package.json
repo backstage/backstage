@@ -1,7 +1,7 @@
 {
   "name": "@techdocs/cli",
   "description": "Utility CLI for managing TechDocs sites in Backstage.",
-  "version": "1.1.4-next.1",
+  "version": "1.2.0-next.2",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -37,7 +37,7 @@
     "techdocs-cli": "bin/techdocs-cli"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.18.1-next.0",
+    "@backstage/cli": "^0.18.1-next.1",
     "@types/commander": "^2.12.2",
     "@types/fs-extra": "^9.0.6",
     "@types/http-proxy": "^1.17.4",

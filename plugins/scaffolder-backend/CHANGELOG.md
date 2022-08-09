@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.5.0-next.2
+
+### Minor Changes
+
+- 692d5d3405: Added `reviewers` and `teamReviewers` parameters to `publish:github:pull-request` action to add reviewers on the pull request created by the action
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.3.1-next.2
+
 ## 1.5.0-next.1
 
 ### Minor Changes

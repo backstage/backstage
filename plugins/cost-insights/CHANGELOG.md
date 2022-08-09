@@ -1,5 +1,15 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.30-next.1
+
+### Patch Changes
+
+- b746eca638: Make `products` field optional in the config
+- daf4b33e34: Add name property to Group
+- Updated dependencies
+  - @backstage/plugin-cost-insights-common@0.1.1-next.0
+  - @backstage/core-components@0.11.0-next.2
+
 ## 0.11.30-next.0
 
 ### Patch Changes

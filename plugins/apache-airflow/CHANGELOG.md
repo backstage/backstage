@@ -1,5 +1,12 @@
 # @backstage/plugin-apache-airflow
 
+## 0.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.0-next.2
+
 ## 0.2.1-next.0
 
 ### Patch Changes
