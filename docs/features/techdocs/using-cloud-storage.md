@@ -38,7 +38,9 @@ files from here to serve documentation in Backstage. Note that the bucket names
 are globally unique.
 
 Set the config `techdocs.publisher.googleGcs.bucketName` in your
-`app-config.yaml` to the name of the bucket you just created.
+`app-config.yaml` to the name of the bucket you just created. Set
+`techdocs.publisher.googleGcs.projectId` to the ID of the Google Cloud project
+that contains your bucket.
 
 ```yaml
 techdocs:
@@ -46,6 +48,7 @@ techdocs:
     type: 'googleGcs'
     googleGcs:
       bucketName: 'name-of-techdocs-storage-bucket'
+      projectId: 'name-of-project'
 ```
 
 **3a. (Recommended) Authentication using environment variable**
@@ -96,6 +99,20 @@ techdocs:
     googleGcs:
       bucketName: 'name-of-techdocs-storage-bucket'
       credentials: ${GOOGLE_APPLICATION_CREDENTIALS}
+```
+
+Assuming the service account you are using was created in the same project as
+the bucket, you do not need to set the `projectId` field. If not, you will
+have to override it as with default credentials:
+
+```yaml
+techdocs:
+  publisher:
+    type: 'googleGcs'
+    googleGcs:
+      bucketName: 'name-of-techdocs-storage-bucket'
+      credentials: ${GOOGLE_APPLICATION_CREDENTIALS}
+      projectId: 'name-of-project'
 ```
 
 **4. That's it!**
