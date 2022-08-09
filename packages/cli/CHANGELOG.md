@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.18.1-next.1
+
+### Patch Changes
+
+- fd68d6f138: Added resolution of `.json` and `.wasm` files to the Webpack configuration in order to match defaults.
+
 ## 0.18.1-next.0
 
 ### Patch Changes

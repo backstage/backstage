@@ -1,5 +1,20 @@
 # @backstage/create-app
 
+## 0.4.30-next.2
+
+### Patch Changes
+
+- 0174a0a022: Add `PATCH` and `HEAD` to the `Access-Control-Allow-Methods`.
+
+  To apply this change to your Backstage installation make the following change to your `app-config.yaml`
+
+  ```diff
+     cors:
+       origin: http://localhost:3000
+  -    methods: [GET, POST, PUT, DELETE]
+  +    methods: [GET, POST, PUT, DELETE, PATCH, HEAD]
+  ```
+
 ## 0.4.30-next.1
 
 ### Patch Changes

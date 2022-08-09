@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs
 
+## 1.3.1-next.2
+
+### Patch Changes
+
+- 8acb22205c: Scroll techdocs navigation into focus and expand any nested navigation items.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.3-next.2
+  - @backstage/core-components@0.11.0-next.2
+  - @backstage/integration-react@1.1.3-next.1
+  - @backstage/plugin-search-react@1.0.1-next.1
+  - @backstage/plugin-techdocs-react@1.0.3-next.2
+
 ## 1.3.1-next.1
 
 ### Patch Changes

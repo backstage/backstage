@@ -1,5 +1,11 @@
 # @backstage/plugin-auth-backend
 
+## 0.15.1-next.1
+
+### Patch Changes
+
+- 2d7d6028e1: Updated dependency `@google-cloud/firestore` to `^6.0.0`.
+
 ## 0.15.1-next.0
 
 ### Patch Changes
