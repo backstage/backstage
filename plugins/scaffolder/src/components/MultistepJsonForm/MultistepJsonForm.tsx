@@ -55,6 +55,7 @@ type Props = {
   widgets?: FormProps<any>['widgets'];
   fields?: FormProps<any>['fields'];
   finishButtonLabel?: string;
+  layout?: FormProps<any>['ObjectFieldTemplate'];
 };
 
 export function getUiSchemasFromSteps(steps: Step[]): UiSchema[] {
@@ -119,6 +120,7 @@ export const MultistepJsonForm = (props: Props) => {
     fields,
     widgets,
     finishButtonLabel,
+    layout,
   } = props;
   const [activeStep, setActiveStep] = useState(0);
   const [disableButtons, setDisableButtons] = useState(false);
@@ -203,6 +205,7 @@ export const MultistepJsonForm = (props: Props) => {
               </StepLabel>
               <StepContent key={title}>
                 <Form
+                  ObjectFieldTemplate={layout}
                   showErrorList={false}
                   fields={{ ...fieldOverrides, ...fields }}
                   widgets={widgets}

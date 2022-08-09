@@ -41,6 +41,7 @@ describe('useTemplateSchema', () => {
           description: 'Step 2 Description',
           schema: {
             type: 'object',
+            'ui:ObjectFieldTemplate': 'MyLayout',
             properties: {
               field2: { type: 'string', 'ui:field': 'MyCoolerComponent' },
             },
@@ -74,6 +75,7 @@ describe('useTemplateSchema', () => {
 
     expect(second.uiSchema).toEqual({
       field2: { 'ui:field': 'MyCoolerComponent' },
+      'ui:ObjectFieldTemplate': 'MyLayout',
     });
 
     expect(second.schema).toEqual({

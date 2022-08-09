@@ -26,6 +26,7 @@ import { FieldValidation, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useMemo, useState } from 'react';
 import { FieldExtensionOptions } from '../../../extensions';
+import type { LayoutOptions } from '../../../layouts';
 import { TemplateParameterSchema } from '../../../types';
 import { createAsyncValidators } from './createAsyncValidators';
 import { useTemplateSchema } from './useTemplateSchema';
@@ -49,6 +50,7 @@ const useStyles = makeStyles(theme => ({
 export interface StepperProps {
   manifest: TemplateParameterSchema;
   extensions: FieldExtensionOptions<any, any>[];
+  layout?: LayoutOptions;
 }
 
 const Form = withTheme(MuiTheme);

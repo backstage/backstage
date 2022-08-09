@@ -37,9 +37,11 @@ import { makeStyles } from '@material-ui/core';
 import { Stepper } from './Stepper';
 import { BackstageTheme } from '@backstage/theme';
 import { nextRouteRef, selectedTemplateRouteRef } from '../../routes';
+import type { LayoutOptions } from '../../layouts';
 
 export interface TemplateWizardPageProps {
   customFieldExtensions: FieldExtensionOptions<any, any>[];
+  layout?: LayoutOptions;
 }
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
@@ -113,6 +115,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
             <Stepper
               manifest={manifest}
               extensions={props.customFieldExtensions}
+              layout={props.layout}
             />
           </InfoCard>
         )}
