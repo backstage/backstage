@@ -55,6 +55,31 @@ The GitHub provider is a structure with three configuration keys:
   `https://your-intermediate-service.com/handler`. Only needed if Backstage is
   not the immediate receiver (e.g. one OAuth app for many backstage instances).
 
+### Using a GitHub App integrations config file
+
+When using a GitHub App with an integration configuration file, as described in the [GitHub integration documentation](docs/auth/github/provider.md), you cannot use a generic include as you [can use](docs/auth/github/provider.md) with the generic GitHub integration.
+
+You can re-use the integration file by including each individual field in the file as the GitHub auth provider configuration:
+
+```yaml
+auth:
+  providers:
+    github:
+      development:
+        appId: 
+          $include: example-backstage-app-credentials.yaml#appId
+        webhookUrl: 
+          $include: example-backstage-app-credentials.yaml#webhookUrl
+        clientId: 
+          $include: example-backstage-app-credentials.yaml#clientId
+        clientSecret: 
+          $include: example-backstage-app-credentials.yaml#clientSecret
+        webhookSecret: 
+          $include: example-backstage-app-credentials.yaml#webhookSecret
+        privateKey:
+          $include: example-backstage-app-credentials.yaml#privateKey
+```
+
 ## Adding the provider to the Backstage frontend
 
 To add the provider to the frontend, add the `githubAuthApi` reference and
