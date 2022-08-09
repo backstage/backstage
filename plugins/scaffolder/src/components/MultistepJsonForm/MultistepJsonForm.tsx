@@ -107,11 +107,7 @@ export const MultistepJsonForm = (props: Props) => {
   const [activeStep, setActiveStep] = useState(0);
   const [formChangeData, setFormChangeData] = useState(intialFormData);
   const stepsState = useMap();
-
   const [formState, setFormState] = useState({});
-  useEffect(() => {
-    setFormState(Object.assign({}, ...stepsState.values()));
-  }, [stepsState]);
 
   const [disableButtons, setDisableButtons] = useState(false);
   const errorApi = useApi(errorApiRef);
@@ -163,6 +159,15 @@ export const MultistepJsonForm = (props: Props) => {
   const handleNext = (e: IChangeEvent) => {
     stepsState.set(activeStep, e.formData);
     setActiveStep(Math.min(activeStep + 1, steps.length));
+    setFormState(
+      Array.from(stepsState.values()).reduce(
+        (curr, next) => ({
+          ...curr,
+          ...next,
+        }),
+        {},
+      ),
+    );
   };
 
   const onChange = (e: IChangeEvent) => {
