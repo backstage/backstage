@@ -19,6 +19,7 @@ import { FormValidation } from '@rjsf/core';
 import { JsonObject } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { Draft07 as JSONSchema } from 'json-schema-library';
+import { utils } from '@rjsf/core';
 
 export const createValidator = (
   rootSchema: JsonObject,
@@ -28,7 +29,9 @@ export const createValidator = (
   },
 ) => {
   function validate(formData: JsonObject, errors: FormValidation) {
-    const parsedSchema = new JSONSchema(rootSchema);
+    const parsedSchema = new JSONSchema(
+      utils.retrieveSchema(rootSchema, {}, formData),
+    );
     for (const [key, value] of Object.entries(formData)) {
       const definitionInSchema = parsedSchema.getSchema(`#/${key}`, formData);
       if (definitionInSchema && 'ui:field' in definitionInSchema) {

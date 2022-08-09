@@ -37,6 +37,7 @@ import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
 import { Draft07 as JSONSchema } from 'json-schema-library';
+import { utils } from '@rjsf/core';
 
 const Form = withTheme(MuiTheme);
 type Step = {
@@ -60,7 +61,9 @@ type Props = {
 
 export function getReviewData(formData: Record<string, any>, steps: Step[]) {
   const reviewData: Record<string, any> = {};
-  const schemas = steps.map(step => new JSONSchema(step.schema));
+  const schemas = steps.map(
+    step => new JSONSchema(utils.retrieveSchema(step.schema, {}, formData)),
+  );
 
   for (const [key] of Object.entries(formData)) {
     const uiSchema = schemas
@@ -191,7 +194,6 @@ export const MultistepJsonForm = (props: Props) => {
               </StepLabel>
               <StepContent key={title}>
                 <Form
-                  liveOmit
                   showErrorList={false}
                   fields={{ ...fieldOverrides, ...fields }}
                   widgets={widgets}
