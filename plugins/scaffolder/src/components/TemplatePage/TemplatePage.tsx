@@ -130,7 +130,7 @@ export const TemplatePage = ({
             titleTypographyProps={{ component: 'h2' }}
           >
             <MultistepJsonForm
-              initialFormData={initialFormData}
+              intialFormData={initialFormData}
               fields={customFieldComponents}
               onFinish={handleCreate}
               steps={schema.steps.map(step => {

@@ -31,7 +31,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { transformSchemaToProps } from './schema';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import cloneDeep from 'lodash/cloneDeep';
@@ -56,7 +56,7 @@ type Props = {
   fields?: FormProps<any>['fields'];
   finishButtonLabel?: string;
 
-  onFinish?: () => Promise<void>;
+  onFinish?: (formState: Record<string, JsonValue>) => Promise<void>;
 };
 
 export function getReviewData(formData: Record<string, any>, steps: Step[]) {
@@ -107,6 +107,17 @@ export const MultistepJsonForm = (props: Props) => {
   const [activeStep, setActiveStep] = useState(0);
   const [formChangeData, setFormChangeData] = useState(intialFormData);
   const stepsState = useMap();
+
+  const [formState, setFormState] = useState({});
+  useEffect(() => {
+    setFormState(
+      Array.from(stepsState.values()).reduce((curr, next) => ({
+        ...curr,
+        ...next,
+      })),
+    );
+  }, [stepsState]);
+
   const [disableButtons, setDisableButtons] = useState(false);
   const errorApi = useApi(errorApiRef);
   const featureFlagApi = useApi(featureFlagsApiRef);
@@ -172,7 +183,7 @@ export const MultistepJsonForm = (props: Props) => {
 
     setDisableButtons(true);
     try {
-      await onFinish();
+      await onFinish(formState);
     } catch (err) {
       errorApi.post(err);
     } finally {
@@ -229,13 +240,7 @@ export const MultistepJsonForm = (props: Props) => {
             <Typography variant="h6">Review and create</Typography>
             <StructuredMetadataTable
               dense
-              metadata={getReviewData(
-                Array.from(stepsState.values()).reduce((curr, next) => ({
-                  ...curr,
-                  ...next,
-                })),
-                steps,
-              )}
+              metadata={getReviewData(formState, steps)}
             />
             <Box mb={4} />
             <Button onClick={handleBack} disabled={disableButtons}>
