@@ -303,7 +303,7 @@ export function createPublishBitbucketServerAction(options: {
   token?: string | undefined;
 }>;
 
-// @public
+// @public @deprecated
 export function createPublishFileAction(): TemplateAction<{
   path: string;
 }>;
