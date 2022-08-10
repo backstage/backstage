@@ -83,14 +83,14 @@ export function formatCurrency(amount: number, currency?: string): string {
 
 export function formatChange(
   change: ChangeStatistic,
-  returnAbsoluteValue: boolean,
+  options?: { absolute: boolean },
 ): string {
   if (notEmpty(change.ratio)) {
     return formatPercent(
-      returnAbsoluteValue ? Math.abs(change.ratio) : change.ratio,
+      options?.absolute ? Math.abs(change.ratio) : change.ratio,
     );
   }
-  if (returnAbsoluteValue) {
+  if (options?.absolute) {
     return '∞';
   }
   return change.amount >= 0 ? '∞' : '-∞';
@@ -103,7 +103,7 @@ export function formatPercent(n: number): string {
   }
 
   if (Math.abs(n) > 10) {
-    return `>1000%`;
+    return `>${n < 0 ? '-' : ''}1000%`;
   }
 
   return `${(n * 100).toFixed(0)}%`;

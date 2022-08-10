@@ -322,7 +322,9 @@ export type CostGrowthIndicatorProps = TypographyProps & {
   change: ChangeStatistic;
   formatter?: (
     change: ChangeStatistic,
-    returnAbsoluteValue: boolean,
+    options?: {
+      absolute: boolean;
+    },
   ) => Maybe<string>;
 };
 

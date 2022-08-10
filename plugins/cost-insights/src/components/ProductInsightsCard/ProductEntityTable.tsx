@@ -76,15 +76,9 @@ function createSorter(field?: keyof Omit<RowData, 'id'>) {
     if (b.id === 'total') return 1;
     if (field === 'label') return a.label.localeCompare(b.label);
     if (field === 'change') {
-      if (
-        formatChange(a[field], false) === '∞' ||
-        formatChange(b[field], false) === '-∞'
-      )
+      if (formatChange(a[field]) === '∞' || formatChange(b[field]) === '-∞')
         return 1;
-      if (
-        formatChange(a[field], false) === '-∞' ||
-        formatChange(b[field], false) === '∞'
-      )
+      if (formatChange(a[field]) === '-∞' || formatChange(b[field]) === '∞')
         return -1;
       return a[field].ratio! - b[field].ratio!;
     }
