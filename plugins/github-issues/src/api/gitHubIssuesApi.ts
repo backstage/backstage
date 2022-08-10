@@ -23,25 +23,25 @@ import {
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import { ForwardedError } from '@backstage/errors';
 
-/** @public */
+/** @internal */
 export type Assignee = {
   avatarUrl: string;
   login: string;
 };
 
-/** @public */
+/** @internal */
 export type EdgesWithNodes<T> = {
   edges: Array<{
     node: T;
   }>;
 };
 
-/** @public */
+/** @internal */
 export type IssueAuthor = {
   login: string;
 };
 
-/** @public */
+/** @internal */
 export type Issue = {
   assignees: EdgesWithNodes<Assignee>;
   author: IssueAuthor;
@@ -60,25 +60,25 @@ export type Issue = {
   };
 };
 
-/** @public */
+/** @internal */
 export type RepoIssues = {
   issues: {
     totalCount: number;
   } & EdgesWithNodes<Issue>;
 };
 
-/** @public */
+/** @internal */
 export type IssuesByRepo = Record<string, RepoIssues>;
 
-/** @public */
+/** @internal */
 export type GitHubIssuesApi = ReturnType<typeof gitHubIssuesApi>;
 
-/** @public */
+/** @internal */
 export const gitHubIssuesApiRef = createApiRef<GitHubIssuesApi>({
   id: 'plugin.githubissues.service',
 });
 
-/** @public */
+/** @internal */
 export const gitHubIssuesApi = (
   githubAuthApi: OAuthApi,
   configApi: ConfigApi,

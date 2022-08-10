@@ -5,48 +5,8 @@
 ```ts
 /// <reference types="react" />
 
-import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { ConfigApi } from '@backstage/core-plugin-api';
-import { ErrorApi } from '@backstage/core-plugin-api';
-import { OAuthApi } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
-
-// @public (undocumented)
-export type Assignee = {
-  avatarUrl: string;
-  login: string;
-};
-
-// @public (undocumented)
-export type EdgesWithNodes<T> = {
-  edges: Array<{
-    node: T;
-  }>;
-};
-
-// @public (undocumented)
-export type GitHubIssuesApi = ReturnType<typeof gitHubIssuesApi>;
-
-// @public (undocumented)
-export const gitHubIssuesApi: (
-  githubAuthApi: OAuthApi,
-  configApi: ConfigApi,
-  errorApi: ErrorApi,
-) => {
-  fetchIssuesByRepoFromGitHub: (
-    repos: Array<string>,
-    itemsPerRepo: number,
-  ) => Promise<IssuesByRepo>;
-};
-
-// @public (undocumented)
-export const gitHubIssuesApiRef: ApiRef<{
-  fetchIssuesByRepoFromGitHub: (
-    repos: Array<string>,
-    itemsPerRepo: number,
-  ) => Promise<IssuesByRepo>;
-}>;
 
 // @public (undocumented)
 export const GitHubIssuesCard: (props: GitHubIssuesProps) => JSX.Element;
@@ -67,40 +27,6 @@ export const gitHubIssuesPlugin: BackstagePlugin<
 export type GitHubIssuesProps = {
   itemsPerPage?: number;
   itemsPerRepo?: number;
-};
-
-// @public (undocumented)
-export type Issue = {
-  assignees: EdgesWithNodes<Assignee>;
-  author: IssueAuthor;
-  repository: {
-    nameWithOwner: string;
-  };
-  title: string;
-  url: string;
-  participants: {
-    totalCount: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-  comments: {
-    totalCount: number;
-  };
-};
-
-// @public (undocumented)
-export type IssueAuthor = {
-  login: string;
-};
-
-// @public (undocumented)
-export type IssuesByRepo = Record<string, RepoIssues>;
-
-// @public (undocumented)
-export type RepoIssues = {
-  issues: {
-    totalCount: number;
-  } & EdgesWithNodes<Issue>;
 };
 
 // (No @packageDocumentation comment for this package)
