@@ -77,8 +77,6 @@ interface TemplateEditorFormProps {
   content?: string;
   /** Setting this to true will cause the content to be parsed as if it is the template entity spec */
   contentIsSpec?: boolean;
-  data: JsonObject;
-  onUpdate: (data: JsonObject) => void;
   setErrorText: (errorText?: string) => void;
 
   onDryRun?: (data: JsonObject) => Promise<void>;
@@ -94,8 +92,6 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
   const {
     content,
     contentIsSpec,
-    data,
-    onUpdate,
     onDryRun,
     setErrorText,
     fieldExtensions = [],
@@ -183,11 +179,9 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
           <MultistepJsonForm
             steps={steps}
             fields={fields}
-            formData={data}
-            onChange={e => onUpdate(e.formData)}
-            onReset={() => onUpdate({})}
+            intialFormData={{}}
             finishButtonLabel={onDryRun && 'Try It'}
-            onFinish={onDryRun && (() => onDryRun(data))}
+            onFinish={onDryRun && (formState => onDryRun(formState))}
           />
         </ErrorBoundary>
       </div>
@@ -205,9 +199,7 @@ export function TemplateEditorFormDirectoryEditorDryRun(
   const directoryEditor = useDirectoryEditor();
   const { selectedFile } = directoryEditor;
 
-  const [data, setData] = useState<JsonObject>({});
-
-  const handleDryRun = async () => {
+  const handleDryRun = async (formState: JsonObject) => {
     if (!selectedFile) {
       return;
     }
@@ -215,7 +207,7 @@ export function TemplateEditorFormDirectoryEditorDryRun(
     try {
       await dryRun.execute({
         templateContent: selectedFile.content,
-        values: data,
+        values: formState,
         files: directoryEditor.files,
       });
       setErrorText();
@@ -236,8 +228,6 @@ export function TemplateEditorFormDirectoryEditorDryRun(
       fieldExtensions={fieldExtensions}
       setErrorText={setErrorText}
       content={content}
-      data={data}
-      onUpdate={setData}
     />
   );
 }

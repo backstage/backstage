@@ -31,7 +31,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { transformSchemaToProps } from './schema';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import cloneDeep from 'lodash/cloneDeep';
@@ -51,7 +51,7 @@ type Props = {
    * Steps for the form, each contains title and form schema
    */
   steps: Step[];
-  intialFormData: Record<string, any>;
+  intialFormData?: Record<string, any>;
   widgets?: FormProps<any>['widgets'];
   fields?: FormProps<any>['fields'];
   finishButtonLabel?: string;

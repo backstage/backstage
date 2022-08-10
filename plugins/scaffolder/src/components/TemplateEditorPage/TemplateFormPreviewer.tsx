@@ -122,7 +122,6 @@ export const TemplateFormPreviewer = ({
   const [errorText, setErrorText] = useState<string>();
   const [templateOptions, setTemplateOptions] = useState<TemplateOption[]>([]);
   const [templateYaml, setTemplateYaml] = useState(defaultPreviewTemplate);
-  const [formState, setFormState] = useState({});
 
   const { loading } = useAsync(
     () =>
@@ -205,8 +204,6 @@ export const TemplateFormPreviewer = ({
             content={templateYaml}
             contentIsSpec
             fieldExtensions={customFieldExtensions}
-            data={formState}
-            onUpdate={setFormState}
             setErrorText={setErrorText}
           />
         </div>

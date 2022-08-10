@@ -15,7 +15,7 @@
  */
 import { LinearProgress } from '@material-ui/core';
 import qs from 'qs';
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
