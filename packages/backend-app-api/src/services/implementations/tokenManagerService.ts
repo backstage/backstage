@@ -23,6 +23,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ServerTokenManager } from '@backstage/backend-common';
 
+/** @public */
 export const tokenManagerFactory = createServiceFactory({
   service: tokenManagerServiceRef,
   deps: {

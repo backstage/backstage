@@ -23,6 +23,7 @@ import Router from 'express-promise-router';
 import { Handler } from 'express';
 import { createServiceBuilder } from '@backstage/backend-common';
 
+/** @public */
 export const httpRouterFactory = createServiceFactory({
   service: httpRouterServiceRef,
   deps: {

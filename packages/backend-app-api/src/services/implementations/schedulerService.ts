@@ -21,6 +21,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { TaskScheduler } from '@backstage/backend-tasks';
 
+/** @public */
 export const schedulerFactory = createServiceFactory({
   service: schedulerServiceRef,
   deps: {
