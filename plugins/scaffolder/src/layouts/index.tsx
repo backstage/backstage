@@ -15,16 +15,19 @@
  */
 
 import { attachComponentData, Extension } from '@backstage/core-plugin-api';
-import type { ObjectFieldTemplateProps } from '@rjsf/core';
 import type { LayoutOptions } from './types';
-import type { FunctionComponent } from 'react';
 
 export const LAYOUTS_KEY = 'scaffolder.layout.v1';
 export const LAYOUTS_WRAPPER_KEY = 'scaffolder.layouts.wrapper.v1';
 
-export function createScaffolderLayout(
+export type LayoutComponent<_TReturnValue, _TInputProps> = () => null;
+
+export function createScaffolderLayout<
+  TFieldReturnValue = unknown,
+  TInputProps = unknown,
+>(
   options: LayoutOptions,
-): Extension<FunctionComponent<ObjectFieldTemplateProps>> {
+): Extension<LayoutComponent<TFieldReturnValue, TInputProps>> {
   return {
     expose() {
       const LayoutDataHolder: any = () => null;
@@ -41,6 +44,6 @@ export const ScaffolderLayouts: React.ComponentType = (): JSX.Element | null =>
 
 attachComponentData(ScaffolderLayouts, LAYOUTS_WRAPPER_KEY, true);
 
-export type { LayoutOptions } from './types';
+export type { LayoutOptions, ObjectFieldTemplate } from './types';
 
 export { DEFAULT_SCAFFOLDER_LAYOUT } from './default';

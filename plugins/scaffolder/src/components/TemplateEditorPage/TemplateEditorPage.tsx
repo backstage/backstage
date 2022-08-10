@@ -23,7 +23,7 @@ import { TemplateEditorIntro } from './TemplateEditorIntro';
 import { TemplateEditor } from './TemplateEditor';
 import { TemplateFormPreviewer } from './TemplateFormPreviewer';
 import { FieldExtensionOptions } from '../../extensions';
-import { LayoutOptions } from '../../layouts';
+import type { LayoutOptions } from '../../layouts';
 
 type Selection =
   | {
@@ -37,7 +37,7 @@ type Selection =
 interface TemplateEditorPageProps {
   defaultPreviewTemplate?: string;
   customFieldExtensions?: FieldExtensionOptions<any, any>[];
-  layout?: LayoutOptions;
+  layouts?: LayoutOptions[];
 }
 
 export function TemplateEditorPage(props: TemplateEditorPageProps) {
@@ -50,7 +50,7 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
         directory={selection.directory}
         fieldExtensions={props.customFieldExtensions}
         onClose={() => setSelection(undefined)}
-        layout={props.layout}
+        layouts={props.layouts}
       />
     );
   } else if (selection?.type === 'form') {
@@ -59,7 +59,7 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
         defaultPreviewTemplate={props.defaultPreviewTemplate}
         customFieldExtensions={props.customFieldExtensions}
         onClose={() => setSelection(undefined)}
-        layout={props.layout}
+        layouts={props.layouts}
       />
     );
   } else {

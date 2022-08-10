@@ -91,7 +91,13 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
       }),
   );
 
-  const layout = customLayouts?.[0] ?? DEFAULT_SCAFFOLDER_LAYOUT;
+  if (
+    !customLayouts.find(
+      layout => layout.name === DEFAULT_SCAFFOLDER_LAYOUT.name,
+    )
+  ) {
+    customLayouts.push(DEFAULT_SCAFFOLDER_LAYOUT);
+  }
 
   return (
     <Routes>
@@ -111,7 +117,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
           <SecretsContextProvider>
             <TemplateWizardPage
               customFieldExtensions={fieldExtensions}
-              layout={layout}
+              layouts={customLayouts}
             />
           </SecretsContextProvider>
         }

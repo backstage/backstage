@@ -84,7 +84,7 @@ interface TemplateEditorFormProps {
 
   onDryRun?: (data: JsonObject) => Promise<void>;
   fieldExtensions?: FieldExtensionOptions<any, any>[];
-  layout?: LayoutOptions;
+  layouts?: LayoutOptions[];
 }
 
 function isJsonObject(value: JsonValue | undefined): value is JsonObject {
@@ -101,7 +101,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
     onDryRun,
     setErrorText,
     fieldExtensions = [],
-    layout = DEFAULT_SCAFFOLDER_LAYOUT,
+    layouts = [DEFAULT_SCAFFOLDER_LAYOUT],
   } = props;
   const classes = useStyles();
   const apiHolder = useApiHolder();
@@ -141,6 +141,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
         }
 
         const { parameters } = rootObj;
+
         if (!Array.isArray(parameters)) {
           setErrorText('Template parameters must be an array');
           setSteps(undefined);
@@ -191,7 +192,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
             onReset={() => onUpdate({})}
             finishButtonLabel={onDryRun && 'Try It'}
             onFinish={onDryRun && (() => onDryRun(data))}
-            layout={layout.component}
+            layouts={layouts}
           />
         </ErrorBoundary>
       </div>
@@ -203,7 +204,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
 export function TemplateEditorFormDirectoryEditorDryRun(
   props: Pick<
     TemplateEditorFormProps,
-    'setErrorText' | 'fieldExtensions' | 'layout'
+    'setErrorText' | 'fieldExtensions' | 'layouts'
   >,
 ) {
   const { setErrorText, fieldExtensions = [] } = props;

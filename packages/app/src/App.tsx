@@ -64,6 +64,7 @@ import {
   ScaffolderPage,
   NextScaffolderPage,
   scaffolderPlugin,
+  ScaffolderLayouts,
 } from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
@@ -104,6 +105,7 @@ import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
 import { PlaylistIndexPage } from '@backstage/plugin-playlist';
+import { Customlayout } from './components/scaffolder/customScaffolderLayouts';
 
 const app = createApp({
   apis,
@@ -215,9 +217,14 @@ const routes = (
         />
       }
     >
-      <ScaffolderFieldExtensions>
-        <LowerCaseValuePickerFieldExtension />
-      </ScaffolderFieldExtensions>
+      <>
+        <ScaffolderFieldExtensions>
+          <LowerCaseValuePickerFieldExtension />
+        </ScaffolderFieldExtensions>
+        <ScaffolderLayouts>
+          <Customlayout />
+        </ScaffolderLayouts>
+      </>
     </Route>
     <Route
       path="/create/next"

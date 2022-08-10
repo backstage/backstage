@@ -102,19 +102,17 @@ describe('Router', () => {
 
     it('should extract the custom layout and pass it through', async () => {
       const mockLayout = () => null;
-      const CustomLayout = scaffolderPlugin.provide(
+      const Customlayout = scaffolderPlugin.provide(
         createScaffolderLayout({
-          name: 'customLayout',
+          name: 'CustomLayout',
           component: mockLayout,
         }),
       );
 
-      const props = {} as ObjectFieldTemplateProps;
-
       await renderInTestApp(
         <Router>
           <ScaffolderLayouts>
-            <CustomLayout {...props} />
+            <Customlayout />
           </ScaffolderLayouts>
         </Router>,
         { routeEntries: ['/templates/default/foo'] },
@@ -124,7 +122,7 @@ describe('Router', () => {
       // eslint-disable-next-line no-console
       const [{ layout }] = mock.mock.calls[0];
 
-      expect(layout).toEqual({ name: 'customLayout', component: mockLayout });
+      expect(layout).toEqual({ name: 'CustomLayout', component: mockLayout });
     });
   });
 });

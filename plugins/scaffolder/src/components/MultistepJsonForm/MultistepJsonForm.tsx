@@ -36,6 +36,7 @@ import { transformSchemaToProps } from './schema';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
+import { DEFAULT_SCAFFOLDER_LAYOUT, LayoutOptions } from '../../layouts';
 
 const Form = withTheme(MuiTheme);
 type Step = {
@@ -55,7 +56,7 @@ type Props = {
   widgets?: FormProps<any>['widgets'];
   fields?: FormProps<any>['fields'];
   finishButtonLabel?: string;
-  layout?: FormProps<any>['ObjectFieldTemplate'];
+  layouts: LayoutOptions[];
 };
 
 export function getUiSchemasFromSteps(steps: Step[]): UiSchema[] {
@@ -120,7 +121,7 @@ export const MultistepJsonForm = (props: Props) => {
     fields,
     widgets,
     finishButtonLabel,
-    layout,
+    layouts,
   } = props;
   const [activeStep, setActiveStep] = useState(0);
   const [disableButtons, setDisableButtons] = useState(false);
@@ -153,6 +154,21 @@ export const MultistepJsonForm = (props: Props) => {
           )
         : filteredStep.schema.required;
     }
+
+    const layoutName =
+      filteredStep.schema['ui:ObjectFieldTemplate'] ??
+      DEFAULT_SCAFFOLDER_LAYOUT.name;
+
+    const LayoutComponent = layouts.find(
+      layout => layout.name === layoutName,
+    )?.component;
+
+    if (!LayoutComponent) {
+      throw new Error(`no step layout found for ${layoutName}`);
+    }
+
+    filteredStep.schema['ui:ObjectFieldTemplate'] = LayoutComponent as any;
+
     return filteredStep;
   };
 
@@ -205,7 +221,6 @@ export const MultistepJsonForm = (props: Props) => {
               </StepLabel>
               <StepContent key={title}>
                 <Form
-                  ObjectFieldTemplate={layout}
                   showErrorList={false}
                   fields={{ ...fieldOverrides, ...fields }}
                   widgets={widgets}
