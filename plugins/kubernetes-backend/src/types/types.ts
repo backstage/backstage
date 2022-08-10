@@ -193,6 +193,11 @@ export interface ClusterDetails {
    * @see dashboardApp
    */
   dashboardParameters?: JsonObject;
+  /**
+   * Specifies which custom resources to look for when returning an entity's
+   * Kubernetes resources.
+   */
+  customResources?: CustomResourceMatcher[];
 }
 
 /**

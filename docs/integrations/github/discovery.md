@@ -74,6 +74,12 @@ catalog:
         filters: # optional filters
           branch: 'develop' # optional string
           repository: '.*' # optional Regex
+      wildcardProviderId:
+        organization: 'new-org' # string
+        catalogPath: '/groups/**/*.yaml' # this will search all folders for files that end in .yaml
+        filters: # optional filters
+          branch: 'develop' # optional string
+          repository: '.*' # optional Regex
 ```
 
 This provider supports multiple organizations via unique provider IDs.
@@ -84,7 +90,7 @@ This provider supports multiple organizations via unique provider IDs.
 - **`catalogPath`** _(optional)_:
   Default: `/catalog-info.yaml`.
   Path where to look for `catalog-info.yaml` files.
-  When started with `/`, it is an absolute path from the repo root.
+  You can use wildcards - `*` or `**` - to search the path and/or the filename
 - **filters** _(optional)_:
   - **branch** _(optional)_:
     String used to filter results based on the branch name.

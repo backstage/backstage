@@ -1,0 +1,19 @@
+# @backstage/backend-defaults
+
+**This package is HIGHLY EXPERIMENTAL, do not use this for production**
+
+This package provides the core API used by Backstage backend apps.
+
+## Installation
+
+Add the library to your backend app package:
+
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/backend @backstage/backend-defaults
+```
+
+## Documentation
+
+- [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
+- [Backstage Documentation](https://github.com/backstage/backstage/blob/master/docs/README.md)

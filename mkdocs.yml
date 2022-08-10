@@ -95,11 +95,13 @@ nav:
           - Discovery: 'integrations/azure/discovery.md'
           - Org Data: 'integrations/azure/org.md'
       - Bitbucket:
-          - Locations: 'integrations/bitbucket/locations.md'
           - Discovery: 'integrations/bitbucket/discovery.md'
       - Bitbucket Cloud:
           - Locations: 'integrations/bitbucketCloud/locations.md'
           - Discovery: 'integrations/bitbucketCloud/discovery.md'
+      - Bitbucket Server:
+          - Locations: 'integrations/bitbucketServer/locations.md'
+          - Discovery: 'integrations/bitbucketServer/discovery.md'
       - Datadog:
           - Installation: 'integrations/datadog-rum/installation.md'
       - Gerrit:

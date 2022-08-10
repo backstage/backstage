@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.1.6-next.2
+
+### Patch Changes
+
+- 97f0a37378: Improved support for wildcards in `catalogPath`
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.3.1-next.2
+
 ## 0.1.6-next.1
 
 ### Patch Changes

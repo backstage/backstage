@@ -39,7 +39,7 @@ exports.up = async function up(knex) {
 
   await knex.schema.alterTable('entities', table => {
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#objectmeta-v1-meta
-    table.unique(['full_name'], 'entities_unique_full_name');
+    table.unique(['full_name'], { indexName: 'entities_unique_full_name' });
     table.dropUnique([], 'entities_unique_name');
   });
 };
@@ -51,7 +51,9 @@ exports.down = async function down(knex) {
   await knex.schema.alterTable('entities', table => {
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#objectmeta-v1-meta
     table.dropUnique([], 'entities_unique_full_name');
-    table.unique(['kind', 'namespace', 'name'], 'entities_unique_name');
+    table.unique(['kind', 'namespace', 'name'], {
+      indexName: 'entities_unique_name',
+    });
   });
 
   await knex.schema.alterTable('entities_search', table => {

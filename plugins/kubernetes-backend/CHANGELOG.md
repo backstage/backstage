@@ -1,5 +1,11 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.7.1-next.1
+
+### Patch Changes
+
+- 0cd87cf30d: Added a new `customResources` field to the ClusterDetails interface, in order to specify (override) custom resources per cluster
+
 ## 0.7.1-next.0
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend
 
+## 1.3.1-next.2
+
+### Patch Changes
+
+- 059ae348b4: Use the non-deprecated form of table.unique in knex
+
 ## 1.3.1-next.1
 
 ### Patch Changes
