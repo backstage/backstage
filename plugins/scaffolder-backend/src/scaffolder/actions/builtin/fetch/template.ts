@@ -28,7 +28,6 @@ import {
   SecureTemplater,
 } from '../../../../lib/templating/SecureTemplater';
 import path from 'path';
-import { parseRepoUrl } from '../publish/util';
 
 /**
  * Downloads a skeleton, templates variables into file and directory names and content.
