@@ -15,6 +15,8 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
 import express from 'express';
 import request from 'supertest';
 
@@ -26,6 +28,8 @@ describe('createRouter', () => {
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
+      integrations: ScmIntegrations.fromConfig({}),
+      orgs: {},
     });
     app = express().use(router);
   });
@@ -40,6 +44,17 @@ describe('createRouter', () => {
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ status: 'ok' });
+    });
+  });
+
+  describe('GitHub Orgs', () => {
+    describe('GET /v1/github/orgs', () => {
+      beforeEach(() => {
+        const router = createRouter({
+          logger: getVoidLogger(),
+          integrations: ScmIntegrations.fromConfig(new ConfigReader({})),
+        });
+      });
     });
   });
 });
