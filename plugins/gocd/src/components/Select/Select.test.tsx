@@ -65,8 +65,9 @@ describe('Select', () => {
           onChange={() => undefined}
         />,
       );
-      user.tab();
-      userEvent.keyboard('{enter}');
+
+      await user.tab();
+      await user.keyboard('{enter}');
 
       expect(rendered.getAllByText(testItems[0].label)).toHaveLength(2);
       expect(rendered.getByText(testItems[1].label)).toBeInTheDocument();
