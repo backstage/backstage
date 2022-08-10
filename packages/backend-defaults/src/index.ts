@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,10 @@
  */
 
 /**
- * Core API used by Backstage backend apps.
+ * Backend defaults used by Backstage backend apps
  *
  * @packageDocumentation
  */
 
-export * from './wiring';
-export * from './services/implementations';
+export type { CreateBackendOptions } from './CreateBackend';
+export { createBackend } from './CreateBackend';

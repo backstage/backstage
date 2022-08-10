@@ -20,7 +20,6 @@ import {
   FactoryFunc,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
-import { defaultServiceFactories } from '../services/implementations';
 import { BackstageBackend } from './BackstageBackend';
 
 /**
@@ -42,8 +41,8 @@ export interface BackendRegisterInit {
 /**
  * @public
  */
-export interface CreateBackendOptions {
-  apis: AnyServiceFactory[];
+export interface CreateSpecializedBackendOptions {
+  services: AnyServiceFactory[];
 }
 
 export type ServiceHolder = {
@@ -53,10 +52,8 @@ export type ServiceHolder = {
 /**
  * @public
  */
-export function createBackend(options?: CreateBackendOptions): Backend {
-  // TODO: merge with provided APIs
-  return new BackstageBackend([
-    ...defaultServiceFactories,
-    ...(options?.apis ?? []),
-  ]);
+export function createSpecializedBackend(
+  options: CreateSpecializedBackendOptions,
+): Backend {
+  return new BackstageBackend(options.services);
 }

@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { createBackend } from '@backstage/backend-app-api';
 import { catalogPlugin } from '@backstage/plugin-catalog-backend';
 import { scaffolderCatalogModule } from '@backstage/plugin-scaffolder-backend';
+import { createBackend } from '@backstage/backend-defaults';
 
-const backend = createBackend({
-  apis: [],
-});
+const backend = createBackend();
 
 backend.add(catalogPlugin({}));
 backend.add(scaffolderCatalogModule({}));
