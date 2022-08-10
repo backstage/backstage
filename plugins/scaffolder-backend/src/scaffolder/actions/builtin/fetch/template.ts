@@ -220,13 +220,6 @@ export function createFetchTemplateAction(options: {
       const renderTemplate = await SecureTemplater.loadRenderer({
         cookiecutterCompat: ctx.input.cookiecutterCompat,
         additionalTemplateFilters,
-        // TODO(blam): let's work out how we can deprecate this.
-        // We shouldn't really need to be exposing these now we can deal with
-        // objects in the params block.
-        // Maybe we can expose a new RepoUrlPicker with secrets for V3 that provides an object already.
-        parseRepoUrl(url: string) {
-          return parseRepoUrl(url, integrations);
-        },
       });
 
       for (const location of allEntriesInTemplate) {
