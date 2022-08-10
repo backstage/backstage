@@ -296,7 +296,7 @@ import { SvgIcon, SvgIconProps } from '@material-ui/core';
 
 import React from 'react';
 
-export const HeaderIcon = (props: SvgIconProps) => (
+export const ExampleIcon = (props: SvgIconProps) => (
   <SvgIcon {...props} viewBox="0 0 24 24">
     <path
       fill="currentColor"
