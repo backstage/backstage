@@ -44,7 +44,7 @@ export function createSpecializedBackend(
 // @public (undocumented)
 export interface CreateSpecializedBackendOptions {
   // (undocumented)
-  serviceFactories: AnyServiceFactory[];
+  services: AnyServiceFactory[];
 }
 
 // @public (undocumented)

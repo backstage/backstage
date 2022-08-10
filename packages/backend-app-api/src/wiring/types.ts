@@ -42,7 +42,7 @@ export interface BackendRegisterInit {
  * @public
  */
 export interface CreateSpecializedBackendOptions {
-  serviceFactories: AnyServiceFactory[];
+  services: AnyServiceFactory[];
 }
 
 export type ServiceHolder = {
@@ -55,5 +55,5 @@ export type ServiceHolder = {
 export function createSpecializedBackend(
   options: CreateSpecializedBackendOptions,
 ): Backend {
-  return new BackstageBackend(options.serviceFactories);
+  return new BackstageBackend(options.services);
 }

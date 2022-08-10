@@ -12,8 +12,6 @@ export function createBackend(options?: CreateBackendOptions): Backend;
 // @public (undocumented)
 export interface CreateBackendOptions {
   // (undocumented)
-  serviceFactories?: AnyServiceFactory[];
+  services?: AnyServiceFactory[];
 }
-
-// (No @packageDocumentation comment for this package)
 ```

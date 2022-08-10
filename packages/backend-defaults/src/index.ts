@@ -14,5 +14,11 @@
  * limitations under the License.
  */
 
-export type { CreateBackendOptions } from './types';
+/**
+ * Backend defaults used by Backstage backend apps
+ *
+ * @packageDocumentation
+ */
+
+export type { CreateBackendOptions } from './CreateBackend';
 export { createBackend } from './CreateBackend';
