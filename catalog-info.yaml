@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: backstage
   description: |
-    Backstage is an open-source developer portal that puts the developer experience first.
+    testchanges
   links:
     - title: Website
       url: http://backstage.io
