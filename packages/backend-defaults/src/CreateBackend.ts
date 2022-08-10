@@ -28,6 +28,7 @@ import {
   tokenManagerFactory,
   urlReaderFactory,
 } from '@backstage/backend-app-api';
+import { AnyServiceFactory } from '@backstage/backend-plugin-api';
 
 export const defaultServiceFactories = [
   cacheFactory,
@@ -42,8 +43,6 @@ export const defaultServiceFactories = [
   httpRouterFactory,
 ];
 
-import { AnyServiceFactory } from '@backstage/backend-plugin-api';
-
 /**
  * @public
  */
@@ -55,8 +54,17 @@ export interface CreateBackendOptions {
  * @public
  */
 export function createBackend(options?: CreateBackendOptions): Backend {
-  // TODO: merge with provided APIs
+  const services = new Map<string, AnyServiceFactory>(
+    defaultServiceFactories.map(sf => [sf.service.id, sf]),
+  );
+
+  if (options?.services) {
+    for (const sf of options.services) {
+      services.set(sf.service.id, sf);
+    }
+  }
+
   return createSpecializedBackend({
-    services: [...defaultServiceFactories, ...(options?.services || [])],
+    services: Array.from(services.values()),
   });
 }
