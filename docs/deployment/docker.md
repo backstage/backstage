@@ -69,6 +69,9 @@ RUN apt-get update && \
 USER node
 WORKDIR /app
 
+# This switches many Node.js dependencies to production mode.
+ENV NODE_ENV production
+
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
 # and along with yarn.lock and the root package.json, that's enough to run yarn install.
@@ -189,6 +192,9 @@ RUN apt-get update && \
 # From here on we use the least-privileged `node` user to run the backend.
 USER node
 WORKDIR /app
+
+# This switches many Node.js dependencies to production mode.
+ENV NODE_ENV production
 
 # Copy the install dependencies from the build stage and context
 COPY --from=build --chown=node:node /app/yarn.lock /app/package.json /app/packages/backend/dist/skeleton.tar.gz ./
