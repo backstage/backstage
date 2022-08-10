@@ -34,6 +34,7 @@ parameters:
           allowedKinds:
             - Group
   - title: Choose a location
+    ui:ObjectFieldTemplate: 'AnotherCustomLayout'
     required:
       - repoUrl
     properties:

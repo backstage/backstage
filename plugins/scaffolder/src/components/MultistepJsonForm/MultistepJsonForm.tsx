@@ -155,20 +155,6 @@ export const MultistepJsonForm = (props: Props) => {
         : filteredStep.schema.required;
     }
 
-    const layoutName =
-      filteredStep.schema['ui:ObjectFieldTemplate'] ??
-      DEFAULT_SCAFFOLDER_LAYOUT.name;
-
-    const LayoutComponent = layouts.find(
-      layout => layout.name === layoutName,
-    )?.component;
-
-    if (!LayoutComponent) {
-      throw new Error(`no step layout found for ${layoutName}`);
-    }
-
-    filteredStep.schema['ui:ObjectFieldTemplate'] = LayoutComponent as any;
-
     return filteredStep;
   };
 
@@ -208,6 +194,22 @@ export const MultistepJsonForm = (props: Props) => {
     <>
       <Stepper activeStep={activeStep} orientation="vertical">
         {steps.map(({ title, schema, ...formProps }, index) => {
+          const schemaProps = transformSchemaToProps(schema);
+
+          const layoutName =
+            schemaProps.uiSchema?.['ui:ObjectFieldTemplate'] ??
+            DEFAULT_SCAFFOLDER_LAYOUT.name;
+
+          delete schemaProps.uiSchema?.['ui:ObjectFieldTemplate'];
+
+          const LayoutComponent = layouts.find(
+            layout => layout.name === layoutName,
+          )?.component;
+
+          if (!LayoutComponent) {
+            throw new Error(`no step layout found for ${layoutName}`);
+          }
+
           return (
             <StepUI key={title}>
               <StepLabel
@@ -221,6 +223,7 @@ export const MultistepJsonForm = (props: Props) => {
               </StepLabel>
               <StepContent key={title}>
                 <Form
+                  ObjectFieldTemplate={LayoutComponent}
                   showErrorList={false}
                   fields={{ ...fieldOverrides, ...fields }}
                   widgets={widgets}
@@ -232,7 +235,7 @@ export const MultistepJsonForm = (props: Props) => {
                     if (e.errors.length === 0) handleNext();
                   }}
                   {...formProps}
-                  {...transformSchemaToProps(schema)}
+                  {...schemaProps}
                 >
                   <Button disabled={activeStep === 0} onClick={handleBack}>
                     Back

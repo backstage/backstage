@@ -93,5 +93,8 @@
       "node ./scripts/check-docs-quality"
     ]
   },
-  "packageManager": "yarn@3.2.3"
+  "packageManager": "yarn@3.2.3",
+  "volta": {
+    "node": "14.19.3"
+  }
 }
