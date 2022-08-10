@@ -179,7 +179,6 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
           <MultistepJsonForm
             steps={steps}
             fields={fields}
-            intialFormData={{}}
             finishButtonLabel={onDryRun && 'Try It'}
             onFinish={onDryRun && (formState => onDryRun(formState))}
           />
