@@ -331,7 +331,7 @@ export type AppContext = {
   /**
    * Get a list of common and custom icons for this app.
    */
-  getSystemIcons(): AppIcons & { [key in string]: IconComponent };
+  getSystemIcons(): Record<string, IconComponent>;
 
   /**
    * Get the components registered for various purposes in the app.

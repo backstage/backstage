@@ -149,35 +149,8 @@ export type AppComponents = {
 export type AppContext = {
   getPlugins(): BackstagePlugin_2[];
   getSystemIcon(key: string): IconComponent_2 | undefined;
-  getSystemIcons(): AppIcons & {
-    [key in string]: IconComponent_2;
-  };
+  getSystemIcons(): Record<string, IconComponent_2>;
   getComponents(): AppComponents;
-};
-
-// @public
-export type AppIcons = {
-  'kind:api': IconComponent_2;
-  'kind:component': IconComponent_2;
-  'kind:domain': IconComponent_2;
-  'kind:group': IconComponent_2;
-  'kind:location': IconComponent_2;
-  'kind:system': IconComponent_2;
-  'kind:user': IconComponent_2;
-  brokenImage: IconComponent_2;
-  catalog: IconComponent_2;
-  chat: IconComponent_2;
-  dashboard: IconComponent_2;
-  docs: IconComponent_2;
-  email: IconComponent_2;
-  github: IconComponent_2;
-  group: IconComponent_2;
-  help: IconComponent_2;
-  scaffolder: IconComponent_2;
-  search: IconComponent_2;
-  techdocs: IconComponent_2;
-  user: IconComponent_2;
-  warning: IconComponent_2;
 };
 
 // @public
