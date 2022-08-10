@@ -16,6 +16,9 @@ import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
+export const booleanCheckResultRenderer: CheckResultRenderer;
+
+// @public
 export type Check = {
   id: string;
   type: string;
@@ -27,21 +30,27 @@ export type Check = {
 // @public
 export type CheckResultRenderer = {
   type: string;
-  title: string;
-  description: string;
-  component: React_2.ReactElement;
+  component: (check: CheckResult) => React_2.ReactElement;
 };
 
 // @public (undocumented)
-export const EntityTechInsightsScorecardCard: (props: {
-  title?: string | undefined;
+export const EntityTechInsightsScorecardCard: ({
+  title,
+  description,
+  checksId,
+}: {
+  title: string;
   description?: string | undefined;
   checksId?: string[] | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
-export const EntityTechInsightsScorecardContent: (props: {
-  title?: string | undefined;
+export const EntityTechInsightsScorecardContent: ({
+  title,
+  description,
+  checksId,
+}: {
+  title: string;
   description?: string | undefined;
   checksId?: string[] | undefined;
 }) => JSX.Element;
@@ -51,12 +60,7 @@ export interface TechInsightsApi {
   // (undocumented)
   getAllChecks(): Promise<Check[]>;
   // (undocumented)
-  getScorecardsDefinition: (
-    type: string,
-    value: CheckResult[],
-    title?: string,
-    description?: string,
-  ) => CheckResultRenderer | undefined;
+  getCheckResultRenderers: (types: string[]) => CheckResultRenderer[];
   // (undocumented)
   runBulkChecks(
     entities: CompoundEntityRef[],
@@ -77,16 +81,12 @@ export class TechInsightsClient implements TechInsightsApi {
   constructor(options: {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
+    renderers?: CheckResultRenderer[];
   });
   // (undocumented)
   getAllChecks(): Promise<Check[]>;
   // (undocumented)
-  getScorecardsDefinition(
-    type: string,
-    value: CheckResult[],
-    title?: string,
-    description?: string,
-  ): CheckResultRenderer | undefined;
+  getCheckResultRenderers(types: string[]): CheckResultRenderer[];
   // (undocumented)
   runBulkChecks(
     entities: CompoundEntityRef[],

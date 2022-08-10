@@ -23,7 +23,7 @@ import {
 createDevApp()
   .registerPlugin(techInsightsPlugin)
   .addPage({
-    element: <EntityTechInsightsScorecardContent />,
+    element: <EntityTechInsightsScorecardContent title="Test scorecard" />,
     title: 'Root Page',
     path: '/tech-insight-scorecard',
   })

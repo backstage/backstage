@@ -7,6 +7,9 @@ import { DateTime } from 'luxon';
 import { JsonValue } from '@backstage/types';
 
 // @public
+export const BOOLEAN_CHECK_RESPONSE_TYPE = 'boolean';
+
+// @public
 export interface BooleanCheckResult extends CheckResult {
   // (undocumented)
   result: boolean;

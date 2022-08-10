@@ -28,9 +28,8 @@ export interface CheckResponse {
    */
   id: string;
   /**
-   * Type identifier for the check.
-   * Can be used to determine storage options, logical routing to correct FactChecker implementation
-   * or to help frontend render correct component types based on this
+   * Type identifier for the check response.
+   * Used in frontend to render correct component.
    */
   type: string;
   /**
@@ -106,7 +105,7 @@ export type FactResponse = {
  *
  * Contains information about the facts used to calculate the check result
  * and information about the check itself. Both may include metadata to be able to display additional information.
- * A collection of these should be parseable by the frontend to display scorecards
+ * A collection of these should be parsable by the frontend to display scorecards
  *
  * @public
  */
@@ -115,6 +114,13 @@ export type CheckResult = {
   check: CheckResponse;
   result: JsonValue;
 };
+
+/**
+ * CheckResponse Boolean type identifier.
+ *
+ * @public
+ */
+export const BOOLEAN_CHECK_RESPONSE_TYPE = 'boolean';
 
 /**
  * CheckResult of type Boolean.
@@ -126,7 +132,7 @@ export interface BooleanCheckResult extends CheckResult {
 }
 
 /**
- * Response type for bulk check opretation. Contains a list of entities and their respective check results.
+ * Response type for bulk check operation. Contains a list of entities and their respective check results.
  *
  * @public
  */

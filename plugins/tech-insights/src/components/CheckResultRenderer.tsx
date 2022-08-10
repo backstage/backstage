@@ -14,35 +14,31 @@
  * limitations under the License.
  */
 
-import { CheckResult } from '@backstage/plugin-tech-insights-common';
+import {
+  BOOLEAN_CHECK_RESPONSE_TYPE,
+  CheckResult,
+} from '@backstage/plugin-tech-insights-common';
 import React from 'react';
 import { BooleanCheck } from './BooleanCheck';
 
 /**
- * Defines a react component that is responsible for rendering a results of a given type.
+ * Defines a react component that is responsible for rendering a result of a given type.
  *
  * @public
  */
 export type CheckResultRenderer = {
   type: string;
-  title: string;
-  description: string;
-  component: React.ReactElement;
+  component: (check: CheckResult) => React.ReactElement;
 };
 
-export function defaultCheckResultRenderers(
-  value: CheckResult[],
-  title?: string,
-  description?: string,
-): CheckResultRenderer[] {
-  return [
-    {
-      type: 'json-rules-engine',
-      title: title || 'Boolean scorecard',
-      description:
-        description ||
-        'This card represents an overview of default boolean Backstage checks:',
-      component: <BooleanCheck checkResult={value} />,
-    },
-  ];
-}
+/**
+ * Default renderer for boolean check results.
+ *
+ * @public
+ */
+export const booleanCheckResultRenderer: CheckResultRenderer = {
+  type: BOOLEAN_CHECK_RESPONSE_TYPE,
+  component: (checkResult: CheckResult) => (
+    <BooleanCheck checkResult={checkResult} />
+  ),
+};
