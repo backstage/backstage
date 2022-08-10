@@ -52,10 +52,10 @@ const useTemplateParameterSchema = (templateRef: string) => {
 
 export const TemplatePage = ({
   customFieldExtensions = [],
-  layout = DEFAULT_SCAFFOLDER_LAYOUT,
+  layouts = [DEFAULT_SCAFFOLDER_LAYOUT],
 }: {
   customFieldExtensions?: FieldExtensionOptions<any, any>[];
-  layout?: LayoutOptions;
+  layouts?: LayoutOptions[];
 }) => {
   const apiHolder = useApiHolder();
   const secretsContext = useContext(SecretsContext);
@@ -149,7 +149,7 @@ export const TemplatePage = ({
               onChange={handleChange}
               onReset={handleFormReset}
               onFinish={handleCreate}
-              layout={layout.component}
+              layouts={layouts}
               steps={schema.steps.map(step => {
                 return {
                   ...step,

@@ -122,7 +122,13 @@ export const Router = (props: RouterProps) => {
       }),
   );
 
-  const layout = customLayouts?.[0] ?? DEFAULT_SCAFFOLDER_LAYOUT;
+  if (
+    !customLayouts.find(
+      layout => layout.name === DEFAULT_SCAFFOLDER_LAYOUT.name,
+    )
+  ) {
+    customLayouts.push(DEFAULT_SCAFFOLDER_LAYOUT);
+  }
 
   /**
    * This component can be deleted once the older routes have been deprecated.
@@ -163,7 +169,7 @@ export const Router = (props: RouterProps) => {
           <SecretsContextProvider>
             <TemplatePage
               customFieldExtensions={fieldExtensions}
-              layout={layout}
+              layouts={customLayouts}
             />
           </SecretsContextProvider>
         }
@@ -181,7 +187,7 @@ export const Router = (props: RouterProps) => {
             <TemplateEditorPage
               defaultPreviewTemplate={defaultPreviewTemplate}
               customFieldExtensions={fieldExtensions}
-              layout={layout}
+              layouts={customLayouts}
             />
           </SecretsContextProvider>
         }

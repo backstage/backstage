@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ObjectFieldTemplateProps } from '@rjsf/core';
-import type { FunctionComponent } from 'react';
+import type { FormProps } from '@rjsf/core';
 
-export type LayoutOptions = {
+export type ObjectFieldTemplate = Required<
+  FormProps<any>
+>['ObjectFieldTemplate'];
+
+export interface LayoutOptions {
   name: string;
-  component: FunctionComponent<ObjectFieldTemplateProps>;
-};
+  component: ObjectFieldTemplate;
+}

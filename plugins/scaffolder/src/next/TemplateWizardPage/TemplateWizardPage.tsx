@@ -41,7 +41,7 @@ import type { LayoutOptions } from '../../layouts';
 
 export interface TemplateWizardPageProps {
   customFieldExtensions: FieldExtensionOptions<any, any>[];
-  layout?: LayoutOptions;
+  layouts: LayoutOptions[];
 }
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
@@ -115,7 +115,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
             <Stepper
               manifest={manifest}
               extensions={props.customFieldExtensions}
-              layout={props.layout}
+              layouts={props.layouts}
             />
           </InfoCard>
         )}

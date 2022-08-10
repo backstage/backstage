@@ -111,12 +111,12 @@ export const TemplateFormPreviewer = ({
   defaultPreviewTemplate = EXAMPLE_TEMPLATE_PARAMS_YAML,
   customFieldExtensions = [],
   onClose,
-  layout = DEFAULT_SCAFFOLDER_LAYOUT,
+  layouts = [DEFAULT_SCAFFOLDER_LAYOUT],
 }: {
   defaultPreviewTemplate?: string;
   customFieldExtensions?: FieldExtensionOptions<any, any>[];
   onClose?: () => void;
-  layout?: LayoutOptions;
+  layouts?: LayoutOptions[];
 }) => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
@@ -211,7 +211,7 @@ export const TemplateFormPreviewer = ({
             data={formState}
             onUpdate={setFormState}
             setErrorText={setErrorText}
-            layout={layout}
+            layouts={layouts}
           />
         </div>
       </main>

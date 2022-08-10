@@ -36,7 +36,6 @@ export const DefaultStepFormLayout = ({
 }: ObjectFieldTemplateProps) => {
   return (
     <>
-      <h1>THIS IS OUR OBJECTFIELDTEMPLATE!!!!!!</h1>
       {(uiSchema['ui:title'] || title) && (
         <TitleField
           id={`${idSchema.$id}-title`}
