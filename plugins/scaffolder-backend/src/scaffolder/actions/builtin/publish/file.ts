@@ -29,6 +29,7 @@ import { createTemplateAction } from '../../createTemplateAction';
  * production, as it writes the files to the local filesystem of the scaffolder.
  *
  * @public
+ * @deprecated This action will be removed, prefer testing templates using the template editor instead.
  */
 export function createPublishFileAction() {
   return createTemplateAction<{ path: string }>({
@@ -47,6 +48,10 @@ export function createPublishFileAction() {
       },
     },
     async handler(ctx) {
+      ctx.logger.warn(
+        '[DEPRECATED] This action will be removed, prefer testing templates using the template editor instead.',
+      );
+
       const { path } = ctx.input;
 
       const exists = await fs.pathExists(path);
