@@ -22,7 +22,10 @@ import {
   TechInsightsStore,
   CheckValidationResponse,
 } from '@backstage/plugin-tech-insights-node';
-import { FactResponse } from '@backstage/plugin-tech-insights-common';
+import {
+  BOOLEAN_CHECK_RESPONSE_TYPE,
+  FactResponse,
+} from '@backstage/plugin-tech-insights-common';
 import {
   Engine,
   EngineResult,
@@ -272,7 +275,7 @@ export class JsonRulesEngineFactChecker
   ) {
     const returnable = {
       id: techInsightCheck.id,
-      type: techInsightCheck.type,
+      type: BOOLEAN_CHECK_RESPONSE_TYPE,
       name: techInsightCheck.name,
       description: techInsightCheck.description,
       factIds: techInsightCheck.factIds,
