@@ -7444,9 +7444,9 @@
     "@types/passport" "*"
 
 "@types/passport@*", "@types/passport@^1.0.3":
-  version "1.0.9"
-  resolved "https://registry.npmjs.org/@types/passport/-/passport-1.0.9.tgz#b32fa8f7485dace77a9b58e82d0c92908f6e8387"
-  integrity sha512-9+ilzUhmZQR4JP49GdC2O4UdDE3POPLwpmaTC/iLkW7l0TZCXOo1zsTnnlXPq6rP1UsUZPfbAV4IUdiwiXyC7g==
+  version "1.0.10"
+  resolved "https://registry.npmjs.org/@types/passport/-/passport-1.0.10.tgz#c518f2bae8b1538b7be71ee7f9220fbd3f569f05"
+  integrity sha512-IZamnXuN7mY+2/v8bAW6nuTcKiay7gXBBcMBZ8n7YHB4u5DwsWoJaNrHdAQ8PZEODRjCv3oHOg76CYJ40j9RqA==
   dependencies:
     "@types/express" "*"
 
