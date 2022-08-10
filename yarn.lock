@@ -2768,9 +2768,9 @@
   integrity sha512-91ArYvRgXWb73YvEOBMmOcJc0bDRs5yiVHnqkwoG0f3nm7nZuipllz6e7BvFESBvjkDTBC0zMD8QxedUwNLc1A==
 
 "@google-cloud/storage@^6.0.0":
-  version "6.3.0"
-  resolved "https://registry.npmjs.org/@google-cloud/storage/-/storage-6.3.0.tgz#0a9765416b659f54477da6611d9c12b914c04a61"
-  integrity sha512-Ah4wl9cWUEW+2lAqHsKauaLlPmbtdOdQkvJE6BFwmTSZhywYVtVHLcEpf5F+/GmmNTnirFGNdE7UjgbyOxcnRg==
+  version "6.4.0"
+  resolved "https://registry.npmjs.org/@google-cloud/storage/-/storage-6.4.0.tgz#36413d549859ea325b71328e61dff7a669bc1f2e"
+  integrity sha512-ogNKY8Mv8JmNvSlJv12E6lB2DtcG7pVEI8k9vmH879ja5qqK8WPw0ys5/FG2Dh5AOwxrbDKbnzMVChNQuXtGpg==
   dependencies:
     "@google-cloud/paginator" "^3.0.7"
     "@google-cloud/projectify" "^3.0.0"
@@ -2789,7 +2789,6 @@
     p-limit "^3.0.1"
     pumpify "^2.0.0"
     retry-request "^5.0.0"
-    stream-events "^1.0.4"
     teeny-request "^8.0.0"
     uuid "^8.0.0"
 
@@ -24383,7 +24382,7 @@ stream-combiner@~0.0.4:
   dependencies:
     duplexer "~0.1.1"
 
-stream-events@^1.0.4, stream-events@^1.0.5:
+stream-events@^1.0.5:
   version "1.0.5"
   resolved "https://registry.npmjs.org/stream-events/-/stream-events-1.0.5.tgz#bbc898ec4df33a4902d892333d47da9bf1c406d5"
   integrity sha512-E1GUzBSgvct8Jsb3v2X15pjzN1tYebtbLaMg+eBOUOAxgbLoSbT2NS91ckc5lJD1KfLjId+jXJRgo0qnV5Nerg==
