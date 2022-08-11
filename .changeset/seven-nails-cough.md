@@ -2,4 +2,4 @@
 '@backstage/backend-test-utils': patch
 ---
 
-Added alpha test helpers for the new experimental backen system.
+Added alpha test helpers for the new experimental backend system.
