@@ -14,5 +14,14 @@
  * limitations under the License.
  */
 
-export type { BackendRegistrable } from './types';
-export * from './types';
+export type { BackendModuleConfig, BackendPluginConfig } from './factories';
+export {
+  createBackendModule,
+  createBackendPlugin,
+  createExtensionPoint,
+} from './factories';
+export type {
+  BackendInitRegistry,
+  BackendRegistrable,
+  ExtensionPoint,
+} from './types';
