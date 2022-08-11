@@ -320,7 +320,12 @@ export const CostGrowthIndicator: ({
 // @public (undocumented)
 export type CostGrowthIndicatorProps = TypographyProps & {
   change: ChangeStatistic;
-  formatter?: (change: ChangeStatistic) => Maybe<string>;
+  formatter?: (
+    change: ChangeStatistic,
+    options?: {
+      absolute: boolean;
+    },
+  ) => Maybe<string>;
 };
 
 // Warning: (ae-missing-release-tag) "CostGrowthProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
