@@ -227,7 +227,8 @@ export type KubernetesObjectTypes =
   | 'cronjobs'
   | 'ingresses'
   | 'customresources'
-  | 'statefulsets';
+  | 'statefulsets'
+  | 'daemonsets';
 
 // @alpha
 export interface KubernetesServiceLocator {

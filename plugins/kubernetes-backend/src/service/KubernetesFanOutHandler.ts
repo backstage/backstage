@@ -118,6 +118,12 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
     plural: 'statefulsets',
     objectType: 'statefulsets',
   },
+  {
+    group: 'apps',
+    apiVersion: 'v1',
+    plural: 'daemonsets',
+    objectType: 'daemonsets',
+  },
 ];
 
 export interface KubernetesFanOutHandlerOptions
