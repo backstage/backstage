@@ -36,7 +36,6 @@ import { transformSchemaToProps } from './schema';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
-import { DEFAULT_SCAFFOLDER_LAYOUT, LayoutOptions } from '../../layouts';
 
 const Form = withTheme(MuiTheme);
 type Step = {
@@ -196,19 +195,7 @@ export const MultistepJsonForm = (props: Props) => {
         {steps.map(({ title, schema, ...formProps }, index) => {
           const schemaProps = transformSchemaToProps(schema);
 
-          const layoutName =
-            schemaProps.uiSchema?.['ui:ObjectFieldTemplate'] ??
-            DEFAULT_SCAFFOLDER_LAYOUT.name;
-
-          delete schemaProps.uiSchema?.['ui:ObjectFieldTemplate'];
-
-          const LayoutComponent = layouts.find(
-            layout => layout.name === layoutName,
-          )?.component;
-
-          if (!LayoutComponent) {
-            throw new Error(`no step layout found for ${layoutName}`);
-          }
+          const Layout = resolveStepLayout(schemaProps.uiSchema, layouts);
 
           return (
             <StepUI key={title}>
@@ -223,7 +210,7 @@ export const MultistepJsonForm = (props: Props) => {
               </StepLabel>
               <StepContent key={title}>
                 <Form
-                  ObjectFieldTemplate={LayoutComponent}
+                  ObjectFieldTemplate={Layout}
                   showErrorList={false}
                   fields={{ ...fieldOverrides, ...fields }}
                   widgets={widgets}
