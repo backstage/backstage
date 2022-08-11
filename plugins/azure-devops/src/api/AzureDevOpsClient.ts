@@ -21,6 +21,8 @@ import {
   GitTag,
   PullRequest,
   PullRequestOptions,
+  Readme,
+  ReadmeConfig,
   RepoBuild,
   RepoBuildOptions,
   Team,
@@ -29,6 +31,10 @@ import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 import { AzureDevOpsApi } from './AzureDevOpsApi';
 import { ResponseError } from '@backstage/errors';
+
+function isNotFoundError(error: any): error is ResponseError {
+  return error.response.status === 404;
+}
 
 export class AzureDevOpsClient implements AzureDevOpsApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -129,6 +135,23 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     const items = await this.get<BuildRun[]>(urlSegment);
     return { items };
   }
+
+  public getReadme = async (
+    opts: ReadmeConfig,
+  ): Promise<Readme | undefined> => {
+    try {
+      return await this.get(
+        `readme/${encodeURIComponent(opts.project)}/${encodeURIComponent(
+          opts.repo,
+        )}`,
+      );
+    } catch (e) {
+      if (isNotFoundError(e)) {
+        return undefined;
+      }
+      return e;
+    }
+  };
 
   private async get<T>(path: string): Promise<T> {
     const baseUrl = `${await this.discoveryApi.getBaseUrl('azure-devops')}/`;

@@ -192,6 +192,16 @@ export interface Team {
   members?: string[];
 }
 
+export interface ReadmeConfig {
+  project: string;
+  repo: string;
+}
+
+export interface Readme {
+  url: string;
+  content: string;
+}
+
 export interface TeamMember {
   id?: string;
   displayName?: string;

@@ -26,7 +26,7 @@ import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import { PullRequestsDashboardProvider } from '../api/PullRequestsDashboardProvider';
 import Router from 'express-promise-router';
-import { errorHandler } from '@backstage/backend-common';
+import { errorHandler, UrlReaders } from '@backstage/backend-common';
 import express from 'express';
 
 const DEFAULT_TOP = 10;
@@ -46,12 +46,13 @@ export async function createRouter(
   const token = config.getString('token');
   const host = config.getString('host');
   const organization = config.getString('organization');
+  const reader = UrlReaders.default(options);
 
   const authHandler = getPersonalAccessTokenHandler(token);
   const webApi = new WebApi(`https://${host}/${organization}`, authHandler);
 
   const azureDevOpsApi =
-    options.azureDevOpsApi || new AzureDevOpsApi(logger, webApi);
+    options.azureDevOpsApi || new AzureDevOpsApi(logger, webApi, reader);
 
   const pullRequestsDashboardProvider =
     await PullRequestsDashboardProvider.create(logger, azureDevOpsApi);
@@ -189,6 +190,20 @@ export async function createRouter(
     const { userId } = req.params;
     const teamIds = await pullRequestsDashboardProvider.getUserTeamIds(userId);
     res.status(200).json(teamIds);
+  });
+
+  router.get('/readme/:projectName/:repoName', async (req, res) => {
+    const { projectName, repoName } = req.params;
+    const content = await azureDevOpsApi.getReadme(
+      host,
+      organization,
+      projectName,
+      repoName,
+    );
+    res.status(200).json({
+      content,
+      url: `https://${host}/${organization}/${projectName}/_git/${repoName}?path=README.md`,
+    });
   });
 
   router.use(errorHandler());

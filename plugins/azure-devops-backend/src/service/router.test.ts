@@ -53,6 +53,7 @@ describe('createRouter', () => {
       getBuildRuns: jest.fn(),
       getAllTeams: jest.fn(),
       getTeamMembers: jest.fn(),
+      getReadme: jest.fn(),
     } as any;
     const router = await createRouter({
       azureDevOpsApi,
@@ -455,4 +456,61 @@ describe('createRouter', () => {
       expect(response.status).toEqual(200);
     });
   });
+
+  describe('GET /readme/:projectName/:repoName', () => {
+    it('fetches readme file', async () => {
+      const readmeMock = getReadmeMock();
+      azureDevOpsApi.getReadme.mockResolvedValueOnce(readmeMock);
+      const response = await request(app).get(
+        '/readme/myProject/myRepo?path=README.md',
+      );
+      expect(azureDevOpsApi.getReadme).toHaveBeenCalledWith(
+        'host.com',
+        'myOrg',
+        'myProject',
+        'myRepo',
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        content: readmeMock,
+        url: `https://host.com/myOrg/myProject/_git/myRepo?path=README.md`,
+      });
+    });
+  });
 });
+
+function getReadmeMock() {
+  return `
+    # Introduction 
+    TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+
+    # Getting Started
+    TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
+    1.	Installation process
+    2.	Software dependencies
+    3.	Latest releases
+    4.	API references
+
+    # Build and Test
+    TODO: Describe and show how to build your code and run the tests. 
+
+    # Contribute
+    TODO: Explain how other users and developers can contribute to make your code better. 
+
+    If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
+    - [ASP.NET Core](https://github.com/aspnet/Home)
+    - [Visual Studio Code](https://github.com/Microsoft/vscode)
+    - [Chakra Core](https://github.com/Microsoft/ChakraCore)
+
+
+    - ![Imagem 1](./images/image1.jpg)
+    - ![Imagem 2](./images/image2.png)
+    - ![Imagem 3](./images/image3.jpg)
+    - ![Imagem 4](./images/image4.webp)
+    - ![Imagem 5](./images/image5.png)
+    - ![Imagem 6](/images/image6.png)
+    - ![Imagem 7](/images/image-7.jpg)
+    - ![Imagem 8](./images/image-8.gif)
+    - ![Imagem 9](/images/image9.png)
+  `;
+}

@@ -21,6 +21,8 @@ import {
   GitTag,
   PullRequest,
   PullRequestOptions,
+  Readme,
+  ReadmeConfig,
   RepoBuild,
   RepoBuildOptions,
   Team,
@@ -64,4 +66,6 @@ export interface AzureDevOpsApi {
     definitionName?: string,
     options?: BuildRunOptions,
   ): Promise<{ items: BuildRun[] }>;
+
+  getReadme(opts: ReadmeConfig): Promise<Readme | undefined>;
 }

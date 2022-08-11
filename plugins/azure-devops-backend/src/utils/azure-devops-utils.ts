@@ -33,6 +33,7 @@ import {
 
 import { IdentityRef } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import { PolicyEvaluationRecord } from 'azure-devops-node-api/interfaces/PolicyInterfaces';
+import PathUtils from 'path';
 
 export function convertDashboardPullRequest(
   pullRequest: GitPullRequest,
@@ -205,6 +206,29 @@ export function convertPolicy(
   };
 }
 
+export async function replaceReadme(
+  content: string,
+  getContentFile: (path: string, encoding?: BufferEncoding) => Promise<string>,
+) {
+  const regExp =
+    /\[([^\[\]]*)\]\((?!https?:\/\/)(.*?)(\.png|\.jpg|\.jpeg|\.gif|\.webp)(.*)\)/gim;
+  const filesPath = content.match(regExp) || [];
+
+  if (filesPath.length === 0) return content;
+
+  let replacedContent = content;
+  for (const filePath of filesPath) {
+    const { label, path, ext } = getPartsFromFilePath(filePath);
+    const mime = getMimeByExtension(ext);
+    const base64 = await getContentFile(path, 'base64');
+    replacedContent = replacedContent.replace(
+      filePath,
+      `[${label}](data:${mime};base64,${base64})`,
+    );
+  }
+  return replacedContent;
+}
+
 function convertReviewer(
   identityRef?: IdentityRefWithVote,
 ): Reviewer | undefined {
@@ -262,4 +286,30 @@ function convertCreatedBy(identityRef?: IdentityRef): CreatedBy | undefined {
 
 function hasAutoComplete(pullRequest: GitPullRequest): boolean {
   return pullRequest.isDraft !== true && !!pullRequest.completionOptions;
+}
+
+function getPartsFromFilePath(content: string): {
+  label: string;
+  path: string;
+  ext: string;
+} {
+  const regExp = /\[(.*?)\]\(([^)]+)\)/;
+  const [_, label, path] = regExp.exec(content) || [];
+  return {
+    label,
+    path: path.startsWith('.') ? path.substring(1, path.length) : path,
+    ext: PathUtils.extname(path),
+  };
+}
+
+function getMimeByExtension(ext: string): string {
+  return (
+    {
+      '.png': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.gif': 'image/gif',
+      '.webp': 'image/webp',
+    }[ext] || ''
+  );
 }
