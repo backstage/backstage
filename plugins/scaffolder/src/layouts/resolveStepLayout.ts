@@ -22,10 +22,9 @@ export function resolveStepLayout(
   uiSchema: UiSchema = {},
   layouts: LayoutOptions[],
 ): ObjectFieldTemplate {
-  const layoutName =
-    uiSchema?.['ui:ObjectFieldTemplate'] ?? DEFAULT_SCAFFOLDER_LAYOUT.name;
+  const layoutName = uiSchema?.['ui:layout'] ?? DEFAULT_SCAFFOLDER_LAYOUT.name;
 
-  delete uiSchema?.['ui:ObjectFieldTemplate'];
+  delete uiSchema?.['ui:layout'];
 
   const LayoutComponent = layouts.find(
     layout => layout.name === layoutName,
