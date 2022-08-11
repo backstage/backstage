@@ -9106,9 +9106,9 @@ aws-sdk-mock@^5.2.1:
     traverse "^0.6.6"
 
 aws-sdk@^2.1122.0, aws-sdk@^2.814.0, aws-sdk@^2.840.0, aws-sdk@^2.948.0:
-  version "2.1191.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1191.0.tgz#2748567252c68ef37a8ce29f48aa063681083918"
-  integrity sha512-G8hWvuc+3rxTfHqsnUwGx/fy8zlnVPtlNesXMHlwU/l4oBx3+Weg0Nhng6HvLGzUJifzlnSKDXrOsWVkHtuZ1w==
+  version "2.1192.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1192.0.tgz#13fe38ec8dae3232f17d52b370e69daa9c7a0e9c"
+  integrity sha512-6uzrlG1Ow3qcOnL0+et+DBTGhYgJzgNydVvos1Eg01vPc/ZhxR7roZ3epZQcPmOR0thQuzzckTq7FBO6wzZA2w==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
