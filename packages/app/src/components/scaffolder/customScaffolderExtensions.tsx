@@ -62,3 +62,45 @@ export const LowerCaseValuePickerFieldExtension = scaffolderPlugin.provide(
     },
   }),
 );
+
+const CustomFieldComponent = (props: FieldExtensionComponentProps<string>) => {
+  const {
+    idSchema,
+    schema: { title, description },
+    formData,
+    onChange,
+    required,
+    rawErrors,
+  } = props;
+
+  return (
+    <TextField
+      id={idSchema?.$id}
+      label={title}
+      value={formData || ''}
+      fullWidth
+      onChange={({ target: { value } }) => onChange(value)}
+      required={required}
+      error={rawErrors?.length > 0 && !formData}
+      helperText={description}
+    />
+  );
+};
+
+export const CustomFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    name: 'CustomField',
+    component: CustomFieldComponent,
+    validation: (value: string, validation: FieldValidation) => {
+      try {
+        if (!value) {
+          validation.addError('Properties is required');
+        } else {
+          // TODO
+        }
+      } catch (error) {
+        validation.addError('Ops! Something wrong');
+      }
+    },
+  }),
+);

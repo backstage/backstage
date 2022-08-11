@@ -84,14 +84,17 @@ import {
 } from '@backstage/plugin-user-settings';
 import { AdvancedSettings } from './components/advancedSettings';
 import AlarmIcon from '@material-ui/icons/Alarm';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { hot } from 'react-hot-loader/root';
 import { Navigate, Route } from 'react-router';
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
 import { homePage } from './components/home/HomePage';
 import { Root } from './components/Root';
-import { LowerCaseValuePickerFieldExtension } from './components/scaffolder/customScaffolderExtensions';
+import {
+  CustomFieldExtension,
+  LowerCaseValuePickerFieldExtension,
+} from './components/scaffolder/customScaffolderExtensions';
 import { defaultPreviewTemplate } from './components/scaffolder/defaultPreviewTemplate';
 import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
@@ -101,6 +104,7 @@ import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { PermissionedRoute } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+import useMountedState from 'react-use/lib/useMountedState';
 
 const app = createApp({
   apis,
@@ -210,6 +214,7 @@ const routes = (
       }
     >
       <ScaffolderFieldExtensions>
+        <CustomFieldExtension />
         <LowerCaseValuePickerFieldExtension />
       </ScaffolderFieldExtensions>
     </Route>

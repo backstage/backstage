@@ -208,13 +208,12 @@ export const MultistepJsonForm = (props: Props) => {
               </StepLabel>
               <StepContent key={title}>
                 <Form
-                  omitExtraData
                   showErrorList={false}
                   fields={{ ...fieldOverrides, ...fields }}
                   widgets={widgets}
-                  noHtml5Validate
                   formData={formChangeData}
                   formContext={{ formData: formState }}
+                  key={activeStep}
                   onChange={onChange}
                   onSubmit={e => {
                     if (e.errors.length === 0) handleNext(e);

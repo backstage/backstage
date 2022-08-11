@@ -195,28 +195,43 @@ describe('TemplatePage', () => {
         {
           title: 'Fill in some steps',
           schema: {
-            oneOf: [
-              {
-                title: 'First',
-                properties: {
-                  name: {
-                    title: 'Name',
-                    type: 'string',
-                  },
-                },
-                required: ['name'],
+            properties: {
+              option: {
+                type: 'string',
+                enum: ['first', 'second'],
+                default: 'first',
               },
-              {
-                title: 'Second',
-                properties: {
-                  something: {
-                    title: 'Something',
-                    type: 'string',
+            },
+            dependences: {
+              option: {
+                oneOf: [
+                  {
+                    properties: {
+                      option: {
+                        const: 'first',
+                      },
+                      name: {
+                        title: 'Name',
+                        type: 'string',
+                      },
+                    },
+                    required: ['name'],
                   },
-                },
-                required: ['something'],
+                  {
+                    properties: {
+                      option: {
+                        const: 'second',
+                      },
+                      something: {
+                        title: 'Something',
+                        type: 'string',
+                      },
+                    },
+                    required: ['something'],
+                  },
+                ],
               },
-            ],
+            },
           },
         },
       ],
@@ -247,11 +262,13 @@ describe('TemplatePage', () => {
     fireEvent.click(listbox.getByText(/Second/i));
 
     // Fill the second option
-    fireEvent.change(await findByLabelText('Something', { exact: false }), {
-      target: { value: 'my-something' },
-    });
+    await fireEvent.change(
+      await findByLabelText('Something', { exact: false }),
+      {
+        target: { value: 'my-something' },
+      },
+    );
 
-    // Go to the final page
     fireEvent.click(await findByText('Next step'));
     expect(await findByText('Reset')).toBeInTheDocument();
   });
