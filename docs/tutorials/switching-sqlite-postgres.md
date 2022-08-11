@@ -89,7 +89,7 @@ backend:
 
 ### Using a single database
 
-By default, each plugin will get it's own database ensure that there's no conflict in table names throughout the plugins that you install, and to keep these separate for other use cases further down the line. If you are limited in that you can only create one database, you can use a special option `pluginDivisionMode` with `client: pg` in the config to create separate [PostgreSQL Schemas](https://www.postgresql.org/docs/current/ddl-schemas.html) instead of creating separate databases.
+By default, each plugin will get its own logical database, to ensure that there's no conflict in table names throughout the plugins that you install and to keep their concerns separate for other use cases further down the line. If you are limited in that you can only make use of a single database, you can use a special option `pluginDivisionMode` with `client: pg` in the config to create separate [PostgreSQL Schemas](https://www.postgresql.org/docs/current/ddl-schemas.html) instead of creating separate databases.
 
 You can enable this using the following config:
 
