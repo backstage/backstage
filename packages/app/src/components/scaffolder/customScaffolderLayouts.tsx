@@ -19,24 +19,40 @@ import {
   ObjectFieldTemplate,
   scaffolderPlugin,
 } from '@backstage/plugin-scaffolder';
+import { Grid } from '@material-ui/core';
 
-const ALayout: ObjectFieldTemplate = ({ properties, description }) => {
+const TwoColumLayout: ObjectFieldTemplate = ({
+  properties,
+  description,
+  title,
+}) => {
+  const mid = Math.ceil(properties.length / 2);
+  const left = properties.slice(0, mid);
+  const right = properties.slice(mid);
   return (
-    <div>
-      <h1>CUSTOM LAYOUT!!!!!</h1>
-      <div>
-        {properties.map(prop => (
-          <div key={prop.content.key}>{prop.content}</div>
+    <>
+      <h1>{title}</h1>
+      <h2>In two column layout!!</h2>
+      <Grid container justifyContent="flex-end">
+        {left.map(prop => (
+          <Grid item xs={6} key={prop.content.key}>
+            {prop.content}
+          </Grid>
         ))}
-      </div>
+        {right.map(prop => (
+          <Grid item xs={6} key={prop.content.key}>
+            {prop.content}
+          </Grid>
+        ))}
+      </Grid>
       {description}
-    </div>
+    </>
   );
 };
 
 export const CustomLayout = scaffolderPlugin.provide(
   createScaffolderLayout({
     name: 'CustomLayout',
-    component: ALayout,
+    component: TwoColumLayout,
   }),
 );
