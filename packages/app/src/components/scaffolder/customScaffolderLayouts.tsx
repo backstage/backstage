@@ -21,11 +21,7 @@ import {
 } from '@backstage/plugin-scaffolder';
 import { Grid } from '@material-ui/core';
 
-const TwoColumLayout: ObjectFieldTemplate = ({
-  properties,
-  description,
-  title,
-}) => {
+const TwoColum: ObjectFieldTemplate = ({ properties, description, title }) => {
   const mid = Math.ceil(properties.length / 2);
   const left = properties.slice(0, mid);
   const right = properties.slice(mid);
@@ -50,9 +46,9 @@ const TwoColumLayout: ObjectFieldTemplate = ({
   );
 };
 
-export const CustomLayout = scaffolderPlugin.provide(
+export const TwoColumnLayout = scaffolderPlugin.provide(
   createScaffolderLayout({
-    name: 'CustomLayout',
-    component: TwoColumLayout,
+    name: 'TwoColumn',
+    component: TwoColum,
   }),
 );
