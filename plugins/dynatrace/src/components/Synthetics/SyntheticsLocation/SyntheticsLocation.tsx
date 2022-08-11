@@ -16,8 +16,7 @@
 
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { Progress } from '@backstage/core-components';
-import Alert from '@material-ui/lab/Alert';
+import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { Chip } from '@material-ui/core';
 import { dynatraceApiRef } from '../../../api';
@@ -28,7 +27,7 @@ type SyntheticsLocationProps = {
   key: string;
 };
 
-const failedInLastXHours = (timestamp: Date, offset: number): Boolean => {
+const failedInLastXHours = (timestamp: Date, offset: number): boolean => {
   if (offset < 0 || offset > 24)
     throw new Error('offset must be between 0 and 24');
   return timestamp > new Date(new Date().getTime() - 1000 * 60 * 60 * offset);
@@ -59,7 +58,7 @@ export const SyntheticsLocation = (props: SyntheticsLocationProps) => {
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ResponseErrorPanel error={error} />;
   }
 
   return (

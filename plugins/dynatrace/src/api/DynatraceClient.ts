@@ -64,7 +64,10 @@ export class DynatraceClient implements DynatraceApi {
       throw new Error('Dynatrace syntheticId is required');
     }
 
-    return this.callApi(`synthetic/execution/${syntheticsId}/FAILED`, {});
+    return this.callApi(
+      `synthetic/execution/${encodeURIComponent(syntheticsId)}/FAILED`,
+      {},
+    );
   }
 
   async getDynatraceSyntheticLocationInfo(
@@ -74,14 +77,17 @@ export class DynatraceClient implements DynatraceApi {
       throw new Error('Dynatrace syntheticLocationId is required');
     }
 
-    return this.callApi(`synthetic/locations/${syntheticLocationId}`, {});
+    return this.callApi(
+      `synthetic/locations/${encodeURIComponent(syntheticLocationId)}`,
+      {},
+    );
   }
 
   async getDynatraceProblems(
     dynatraceEntityId: string,
   ): Promise<DynatraceProblems | undefined> {
     if (!dynatraceEntityId) {
-      throw new Error('Dynatrace entity Id is required');
+      throw new Error('Dynatrace entity id is required');
     }
 
     return this.callApi('problems', {

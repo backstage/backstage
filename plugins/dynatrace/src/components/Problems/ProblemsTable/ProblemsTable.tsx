@@ -24,6 +24,10 @@ type ProblemsTableProps = {
   dynatraceBaseUrl: string;
 };
 
+const parseTimestamp = (timestamp: number | undefined) => {
+  return timestamp ? new Date(timestamp).toLocaleString() : 'N/A';
+};
+
 export const ProblemsTable = (props: ProblemsTableProps) => {
   const { problems, dynatraceBaseUrl } = props;
   const columns: TableColumn[] = [
@@ -60,16 +64,13 @@ export const ProblemsTable = (props: ProblemsTableProps) => {
     {
       title: 'Start Time',
       field: 'startTime',
-      render: (row: Partial<DynatraceProblem>) =>
-        new Date(row.startTime || 0).toLocaleString(),
+      render: (row: Partial<DynatraceProblem>) => parseTimestamp(row.startTime),
     },
     {
       title: 'End Time',
       field: 'endTime',
       render: (row: Partial<DynatraceProblem>) =>
-        row.endTime === -1
-          ? 'ongoing'
-          : new Date(row.endTime || 0).toLocaleString(),
+        row.endTime === -1 ? 'ongoing' : parseTimestamp(row.endTime),
     },
   ];
 

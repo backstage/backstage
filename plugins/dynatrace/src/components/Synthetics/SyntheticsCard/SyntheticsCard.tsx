@@ -15,8 +15,7 @@
  */
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { Progress } from '@backstage/core-components';
-import Alert from '@material-ui/lab/Alert';
+import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import { InfoCard } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { dynatraceApiRef } from '../../../api';
@@ -50,11 +49,11 @@ export const SyntheticsCard = (props: SyntheticsCardProps) => {
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ResponseErrorPanel error={error} />;
   }
 
   const deepLinkPrefix = dynatraceMonitorPrefixes(
-    `${syntheticsId.match(/(.+)-/)![1]}`,
+    `${syntheticsId.split('-')[0]}`,
   );
 
   const lastFailed = value?.locationsExecutionResults.map(l => {

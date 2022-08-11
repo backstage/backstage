@@ -15,12 +15,14 @@
  */
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { Progress } from '@backstage/core-components';
-import Alert from '@material-ui/lab/Alert';
+import {
+  Progress,
+  ResponseErrorPanel,
+  EmptyState,
+} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { ProblemsTable } from '../ProblemsTable';
 import { dynatraceApiRef, DynatraceProblem } from '../../../api';
-import { EmptyState } from '../../EmptyState';
 import { InfoCard } from '@backstage/core-components';
 
 type ProblemsListProps = {
@@ -38,7 +40,7 @@ const cardContents = (
       dynatraceBaseUrl={dynatraceBaseUrl}
     />
   ) : (
-    <EmptyState message="No Problems to Report!" />
+    <EmptyState title="No Problems to Report!" missing="data" />
   );
 };
 
@@ -53,7 +55,7 @@ export const ProblemsList = (props: ProblemsListProps) => {
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ResponseErrorPanel error={error} />;
   }
   return (
     <InfoCard

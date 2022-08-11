@@ -50,14 +50,18 @@ export const DynatraceTab = () => {
     <Page themeId="tool">
       <Content>
         <Grid container spacing={2}>
-          <Grid item xs={12} lg={12}>
-            <ProblemsList
-              dynatraceEntityId={dynatraceEntityId}
-              dynatraceBaseUrl={dynatraceBaseUrl}
-            />
-          </Grid>
+          {dynatraceEntityId ? (
+            <Grid item xs={12} lg={12}>
+              <ProblemsList
+                dynatraceEntityId={dynatraceEntityId}
+                dynatraceBaseUrl={dynatraceBaseUrl}
+              />
+            </Grid>
+          ) : (
+            ''
+          )}
           {syntheticsIds
-            .replace(' ', '')
+            ?.replace(' ', '')
             .split(',')
             .map(id => {
               return (
