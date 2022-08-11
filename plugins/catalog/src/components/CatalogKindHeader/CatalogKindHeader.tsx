@@ -69,6 +69,7 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
       .then(response => response.facets.kind?.map(f => f.value).sort() || []);
   });
   const {
+    filters,
     updateFilters,
     queryParameters: { kind: kindParameter },
   } = useEntityList();
@@ -80,6 +81,14 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
   const [selectedKind, setSelectedKind] = useState(
     queryParamKind ?? initialFilter,
   );
+
+  // Set selected kind from filters; this happens when the kind filter is
+  // updated from another component
+  useEffect(() => {
+    if (filters.kind?.value) {
+      setSelectedKind(filters.kind?.value);
+    }
+  }, [filters.kind]);
 
   useEffect(() => {
     updateFilters({

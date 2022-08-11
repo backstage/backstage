@@ -70,12 +70,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(() => {
     return [
       columnFactories.createTitleColumn({ hidden: true }),
-      columnFactories.createNameColumn({
-        defaultKind:
-          filters.kind?.getKinds()?.length === 1
-            ? filters.kind?.getKinds()[0]
-            : undefined,
-      }),
+      columnFactories.createNameColumn({ defaultKind: filters.kind?.value }),
       ...createEntitySpecificColumns(),
       columnFactories.createMetadataDescriptionColumn(),
       columnFactories.createTagsColumn(),
@@ -105,7 +100,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
           ];
       }
     }
-  }, [filters.kind]);
+  }, [filters.kind?.value]);
 
   const showTypeColumn = filters.type === undefined;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar

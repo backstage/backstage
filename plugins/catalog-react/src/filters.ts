@@ -28,19 +28,14 @@ import { getEntityRelations } from './utils';
  * @public
  */
 export class EntityKindFilter implements EntityFilter {
-  constructor(readonly value: string | string[]) {}
+  constructor(readonly value: string) {}
 
-  // Simplify `string | string[]` for consumers, always returns an array
-  getKinds(): string[] {
-    return Array.isArray(this.value) ? this.value : [this.value];
+  getCatalogFilters(): Record<string, string> {
+    return { kind: this.value };
   }
 
-  getCatalogFilters(): Record<string, string | string[]> {
-    return { kind: this.getKinds() };
-  }
-
-  toQueryValue(): string[] {
-    return this.getKinds();
+  toQueryValue(): string {
+    return this.value;
   }
 }
 
