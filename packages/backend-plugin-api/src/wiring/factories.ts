@@ -42,15 +42,16 @@ export interface BackendPluginConfig<TOptions> {
   register(reg: BackendInitRegistry, options: TOptions): void;
 }
 
-// TODO: Make option optional in the returned factory if they are indeed optional
 /** @public */
 export function createBackendPlugin<TOptions>(
   config: BackendPluginConfig<TOptions>,
-): (option: TOptions) => BackendRegistrable {
-  return options => ({
+): undefined extends TOptions
+  ? (options?: TOptions) => BackendRegistrable
+  : (options: TOptions) => BackendRegistrable {
+  return (options?: TOptions) => ({
     id: config.id,
-    register(register) {
-      return config.register(register, options);
+    register(register: BackendInitRegistry) {
+      return config.register(register, options!);
     },
   });
 }
@@ -65,16 +66,17 @@ export interface BackendModuleConfig<TOptions> {
   ): void;
 }
 
-// TODO: Make option optional in the returned factory if they are indeed optional
 /** @public */
 export function createBackendModule<TOptions>(
   config: BackendModuleConfig<TOptions>,
-): (option: TOptions) => BackendRegistrable {
-  return options => ({
+): undefined extends TOptions
+  ? (options?: TOptions) => BackendRegistrable
+  : (options: TOptions) => BackendRegistrable {
+  return (options?: TOptions) => ({
     id: `${config.pluginId}.${config.moduleId}`,
-    register(register) {
+    register(register: BackendInitRegistry) {
       // TODO: Hide registerExtensionPoint
-      return config.register(register, options);
+      return config.register(register, options!);
     },
   });
 }
