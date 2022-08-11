@@ -15,21 +15,23 @@
  */
 
 import { attachComponentData, Extension } from '@backstage/core-plugin-api';
-import { UiSchema } from '@rjsf/core';
-import { DEFAULT_SCAFFOLDER_LAYOUT } from './default';
+import { ObjectFieldTemplateProps } from '@rjsf/core';
 import type { LayoutOptions, ObjectFieldTemplate } from './types';
 
 export const LAYOUTS_KEY = 'scaffolder.layout.v1';
 export const LAYOUTS_WRAPPER_KEY = 'scaffolder.layouts.wrapper.v1';
 
-export type LayoutComponent<_TReturnValue, _TInputProps> = () => null;
+type LayoutComponent<_TInputProps> = () => null;
 
-export function createScaffolderLayout<
-  TFieldReturnValue = unknown,
-  TInputProps = unknown,
->(
+type GetProps<T> = T extends LayoutOptions
+  ? T['component'] extends ObjectFieldTemplate<infer P>
+    ? LayoutComponent<ObjectFieldTemplateProps<P>>
+    : never
+  : never;
+
+export function createScaffolderLayout(
   options: LayoutOptions,
-): Extension<LayoutComponent<TFieldReturnValue, TInputProps>> {
+): Extension<GetProps<typeof options>> {
   return {
     expose() {
       const LayoutDataHolder: any = () => null;
@@ -50,22 +52,4 @@ export type { LayoutOptions, ObjectFieldTemplate } from './types';
 
 export { DEFAULT_SCAFFOLDER_LAYOUT } from './default';
 
-export function resolveStepLayout(
-  uiSchema: UiSchema = {},
-  layouts: LayoutOptions[],
-): ObjectFieldTemplate {
-  const layoutName =
-    uiSchema?.['ui:ObjectFieldTemplate'] ?? DEFAULT_SCAFFOLDER_LAYOUT.name;
-
-  delete uiSchema?.['ui:ObjectFieldTemplate'];
-
-  const LayoutComponent = layouts.find(
-    layout => layout.name === layoutName,
-  )?.component;
-
-  if (!LayoutComponent) {
-    throw new Error(`no step layout found for ${layoutName}`);
-  }
-
-  return LayoutComponent;
-}
+export { resolveStepLayout } from './resolveStepLayout';

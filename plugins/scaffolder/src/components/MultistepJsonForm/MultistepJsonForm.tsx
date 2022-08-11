@@ -36,6 +36,7 @@ import { transformSchemaToProps } from './schema';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
+import { LayoutOptions, resolveStepLayout } from '../../layouts';
 
 const Form = withTheme(MuiTheme);
 type Step = {
