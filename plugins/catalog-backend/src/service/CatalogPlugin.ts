@@ -27,7 +27,7 @@ import { CatalogBuilder } from './CatalogBuilder';
 import {
   CatalogProcessor,
   CatalogProcessingExtensionPoint,
-  catalogProcessingExtentionPoint,
+  catalogProcessingExtensionPoint,
   EntityProvider,
 } from '@backstage/plugin-catalog-node';
 
@@ -62,7 +62,7 @@ export const catalogPlugin = createBackendPlugin({
     const processingExtensions = new CatalogExtensionPointImpl();
     // plugins depending on this API will be initialized before this plugins init method is executed.
     env.registerExtensionPoint(
-      catalogProcessingExtentionPoint,
+      catalogProcessingExtensionPoint,
       processingExtensions,
     );
 

@@ -14,13 +14,5 @@
  * limitations under the License.
  */
 
-/**
- * The catalog-backend-node module for `@backstage/plugin-catalog-backend`.
- *
- * @packageDocumentation
- */
-
-export type { CatalogProcessingExtensionPoint } from './extensions';
-export { catalogProcessingExtensionPoint } from './extensions';
-export * from './api';
-export * from './processing';
+export { createTestBackend, startTestBackend } from './TestBackend';
+export type { TestBackendOptions } from './TestBackend';

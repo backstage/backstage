@@ -14,27 +14,19 @@
  * limitations under the License.
  */
 
-import { BackendInitRegistry } from '@backstage/backend-plugin-api';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { ScaffolderEntitiesProcessor } from '../processor';
 import { scaffolderCatalogModule } from './ScaffolderCatalogModule';
+import { startTestBackend } from '@backstage/backend-test-utils';
 
 describe('ScaffolderCatalogModule', () => {
-  it('should register the extension point', () => {
-    // TODO(jhaals): clean this up and add test helpers for backend system.
-    const ext = scaffolderCatalogModule({});
-    expect(ext.id).toBe('catalog.scaffolder.module');
-    const registry: jest.Mocked<BackendInitRegistry> = {
-      registerInit: jest.fn(),
-    } as any;
-    ext.register(registry);
-
-    const extensionPoint = {
-      addProcessor: jest.fn(),
-    };
-
-    registry.registerInit.mock.calls[0][0].init({
-      catalogProcessingExtensionPoint: extensionPoint,
+  it('should register the extension point', async () => {
+    const extensionPoint = { addProcessor: jest.fn() };
+    await startTestBackend({
+      services: [[catalogProcessingExtensionPoint, extensionPoint]],
+      registrables: [scaffolderCatalogModule({})],
     });
+
     expect(extensionPoint.addProcessor).toHaveBeenCalledWith(
       new ScaffolderEntitiesProcessor(),
     );
