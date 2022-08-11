@@ -19,7 +19,7 @@ export interface CatalogProcessingExtensionPoint {
 }
 
 // @alpha (undocumented)
-export const catalogProcessingExtentionPoint: ServiceRef<CatalogProcessingExtensionPoint>;
+export const catalogProcessingExtensionPoint: ServiceRef<CatalogProcessingExtensionPoint>;
 
 // @public (undocumented)
 export type CatalogProcessor = {
