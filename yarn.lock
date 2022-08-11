@@ -5837,19 +5837,19 @@
   resolved "https://registry.npmjs.org/@octokit/webhooks-methods/-/webhooks-methods-3.0.0.tgz#4f4443605233f46abc5f85a857ba105095aa1181"
   integrity sha512-FAIyAchH9JUKXugKMC17ERAXM/56vVJekwXOON46pmUDYfU7uXB4cFY8yc8nYr5ABqVI7KjRKfFt3mZF7OcyUA==
 
-"@octokit/webhooks-types@6.3.2":
-  version "6.3.2"
-  resolved "https://registry.npmjs.org/@octokit/webhooks-types/-/webhooks-types-6.3.2.tgz#752497434e735874ba985ea0d53d63e2568e838d"
-  integrity sha512-6DSvdzg7AIVgLjIjqf5BDrloMs7zUfpF0EJhLiOjXtuLr38W5pWSC7aHr7V59LCEDueJRfKZ6c9ZyuLLqVgx8g==
+"@octokit/webhooks-types@6.3.4":
+  version "6.3.4"
+  resolved "https://registry.npmjs.org/@octokit/webhooks-types/-/webhooks-types-6.3.4.tgz#b553da7479edfb04218160c85f16dbbc68251533"
+  integrity sha512-9E0HNgHqc5v22+9IzCSEZ9iXnBJ/n+GM9gZye0kp7XmzcOfrnAKZzd4km269n6/vVOkmXwT11DbbQFukWOvbdw==
 
 "@octokit/webhooks@^10.0.0":
-  version "10.1.2"
-  resolved "https://registry.npmjs.org/@octokit/webhooks/-/webhooks-10.1.2.tgz#78396b6d32c60789f6031d2551a2cd598c157627"
-  integrity sha512-jxISKMLiYebQ/EByLXDEWQMcHASKUVl1T0EuCnpHTYjELsDXg7BEw0FCInlc8RpWmmPp4sMsh3Dd86spXAIp1A==
+  version "10.1.3"
+  resolved "https://registry.npmjs.org/@octokit/webhooks/-/webhooks-10.1.3.tgz#415bb4f826167b15da4dede81c14cb7a8978ac9a"
+  integrity sha512-c5uQW0HJbI5mcQpUFcM7LVs1gbdEiHD6OLXZcwxLJeNUmI8Cy9uzfCib6HguARKgnz3tSavYX/teHq7brm05iQ==
   dependencies:
     "@octokit/request-error" "^3.0.0"
     "@octokit/webhooks-methods" "^3.0.0"
-    "@octokit/webhooks-types" "6.3.2"
+    "@octokit/webhooks-types" "6.3.4"
     aggregate-error "^3.1.0"
 
 "@open-draft/until@^1.0.3":
