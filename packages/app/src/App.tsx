@@ -105,10 +105,7 @@ import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
 import { PlaylistIndexPage } from '@backstage/plugin-playlist';
-import {
-  AnotherCustomlayout,
-  CustomLayout,
-} from './components/scaffolder/customScaffolderLayouts';
+import { TwoColumnLayout } from './components/scaffolder/customScaffolderLayouts';
 
 const app = createApp({
   apis,
@@ -225,7 +222,7 @@ const routes = (
           <LowerCaseValuePickerFieldExtension />
         </ScaffolderFieldExtensions>
         <ScaffolderLayouts>
-          <CustomLayout />
+          <TwoColumnLayout />
         </ScaffolderLayouts>
       </>
     </Route>
