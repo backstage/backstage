@@ -39,7 +39,8 @@ export const codeClimatePlugin = createPlugin({
         discoveryApi: discoveryApiRef,
         identityApi: identityApiRef,
       },
-      factory: ({ discoveryApi }) => new ProductionCodeClimateApi(discoveryApi),
+      factory: ({ discoveryApi, identityApi }) =>
+        new ProductionCodeClimateApi({ discoveryApi, identityApi }),
     }),
   ],
   routes: {
