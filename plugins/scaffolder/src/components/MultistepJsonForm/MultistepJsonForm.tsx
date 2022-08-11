@@ -154,7 +154,6 @@ export const MultistepJsonForm = (props: Props) => {
           )
         : filteredStep.schema.required;
     }
-
     return filteredStep;
   };
 

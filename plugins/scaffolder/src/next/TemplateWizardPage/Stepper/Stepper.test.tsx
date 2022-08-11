@@ -18,7 +18,6 @@ import { TemplateParameterSchema } from '../../../types';
 import { Stepper } from './Stepper';
 import { renderInTestApp } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
-import { DEFAULT_SCAFFOLDER_LAYOUT } from '../../../layouts';
 
 describe('Stepper', () => {
   it('should render the step titles for each step of the manifest', async () => {
@@ -31,11 +30,7 @@ describe('Stepper', () => {
     };
 
     const { getByText } = await renderInTestApp(
-      <Stepper
-        manifest={manifest}
-        extensions={[]}
-        layout={DEFAULT_SCAFFOLDER_LAYOUT}
-      />,
+      <Stepper manifest={manifest} extensions={[]} />,
     );
 
     for (const step of manifest.steps) {
@@ -139,7 +134,6 @@ describe('Stepper', () => {
       <Stepper
         manifest={manifest}
         extensions={[{ name: 'Mock', component: MockComponent }]}
-        layout={DEFAULT_SCAFFOLDER_LAYOUT}
       />,
     );
 

@@ -21,28 +21,9 @@ import {
 } from '@backstage/plugin-scaffolder';
 
 const ALayout: ObjectFieldTemplate = ({ properties, description }) => {
-  // eslint-disable-next-line no-console
   return (
     <div>
       <h1>CUSTOM LAYOUT!!!!!</h1>
-      <div>
-        {properties.map(prop => (
-          <div key={prop.content.key}>{prop.content}</div>
-        ))}
-      </div>
-      {description}
-    </div>
-  );
-};
-
-const AnotherCustomLayout: ObjectFieldTemplate = ({
-  properties,
-  description,
-}) => {
-  // eslint-disable-next-line no-console
-  return (
-    <div>
-      <h1>ANOTHER CUSTOM LAYOUT!!!!!</h1>
       <div>
         {properties.map(prop => (
           <div key={prop.content.key}>{prop.content}</div>
@@ -57,12 +38,5 @@ export const CustomLayout = scaffolderPlugin.provide(
   createScaffolderLayout({
     name: 'CustomLayout',
     component: ALayout,
-  }),
-);
-
-export const AnotherCustomlayout = scaffolderPlugin.provide(
-  createScaffolderLayout({
-    name: 'AnotherCustomLayout',
-    component: AnotherCustomLayout,
   }),
 );

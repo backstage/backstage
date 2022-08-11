@@ -226,7 +226,6 @@ const routes = (
         </ScaffolderFieldExtensions>
         <ScaffolderLayouts>
           <CustomLayout />
-          <AnotherCustomlayout />
         </ScaffolderLayouts>
       </>
     </Route>
