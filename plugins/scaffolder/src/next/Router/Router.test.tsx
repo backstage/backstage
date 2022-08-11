@@ -22,13 +22,7 @@ import {
   createScaffolderFieldExtension,
   ScaffolderFieldExtensions,
 } from '../../extensions';
-import {
-  createScaffolderLayout,
-  DEFAULT_SCAFFOLDER_LAYOUT,
-  ScaffolderLayouts,
-} from '../../layouts';
 import { scaffolderPlugin } from '../../plugin';
-import { ObjectFieldTemplateProps } from '@rjsf/core';
 
 jest.mock('../TemplateListPage', () => ({
   TemplateListPage: jest.fn(() => null),
@@ -86,43 +80,6 @@ describe('Router', () => {
           expect.objectContaining({ name: 'custom', component: mockComponent }),
         ]),
       );
-    });
-
-    it('should use the default layout', async () => {
-      await renderInTestApp(<Router />, {
-        routeEntries: ['/templates/default/foo'],
-      });
-
-      const mock = TemplateWizardPage as jest.Mock;
-
-      const [{ layout }] = mock.mock.calls[0];
-
-      expect(layout).toEqual(DEFAULT_SCAFFOLDER_LAYOUT);
-    });
-
-    it('should extract the custom layout and pass it through', async () => {
-      const mockLayout = () => null;
-      const Customlayout = scaffolderPlugin.provide(
-        createScaffolderLayout({
-          name: 'CustomLayout',
-          component: mockLayout,
-        }),
-      );
-
-      await renderInTestApp(
-        <Router>
-          <ScaffolderLayouts>
-            <Customlayout />
-          </ScaffolderLayouts>
-        </Router>,
-        { routeEntries: ['/templates/default/foo'] },
-      );
-
-      const mock = TemplateWizardPage as jest.Mock;
-      // eslint-disable-next-line no-console
-      const [{ layout }] = mock.mock.calls[0];
-
-      expect(layout).toEqual({ name: 'CustomLayout', component: mockLayout });
     });
   });
 });
