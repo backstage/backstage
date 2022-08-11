@@ -15,7 +15,9 @@
  */
 
 import { attachComponentData, Extension } from '@backstage/core-plugin-api';
-import type { LayoutOptions } from './types';
+import { UiSchema } from '@rjsf/core';
+import { DEFAULT_SCAFFOLDER_LAYOUT } from './default';
+import type { LayoutOptions, ObjectFieldTemplate } from './types';
 
 export const LAYOUTS_KEY = 'scaffolder.layout.v1';
 export const LAYOUTS_WRAPPER_KEY = 'scaffolder.layouts.wrapper.v1';
@@ -47,3 +49,23 @@ attachComponentData(ScaffolderLayouts, LAYOUTS_WRAPPER_KEY, true);
 export type { LayoutOptions, ObjectFieldTemplate } from './types';
 
 export { DEFAULT_SCAFFOLDER_LAYOUT } from './default';
+
+export function resolveStepLayout(
+  uiSchema: UiSchema = {},
+  layouts: LayoutOptions[],
+): ObjectFieldTemplate {
+  const layoutName =
+    uiSchema?.['ui:ObjectFieldTemplate'] ?? DEFAULT_SCAFFOLDER_LAYOUT.name;
+
+  delete uiSchema?.['ui:ObjectFieldTemplate'];
+
+  const LayoutComponent = layouts.find(
+    layout => layout.name === layoutName,
+  )?.component;
+
+  if (!LayoutComponent) {
+    throw new Error(`no step layout found for ${layoutName}`);
+  }
+
+  return LayoutComponent;
+}
