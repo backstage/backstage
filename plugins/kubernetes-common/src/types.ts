@@ -18,6 +18,7 @@ import type { JsonObject } from '@backstage/types';
 import {
   V1ConfigMap,
   V1CronJob,
+  V1DaemonSet,
   V1Deployment,
   V1HorizontalPodAutoscaler,
   V1Ingress,
@@ -105,7 +106,8 @@ export type FetchResponse =
   | CronJobsFetchResponse
   | IngressesFetchResponse
   | CustomResourceFetchResponse
-  | StatefulSetsFetchResponse;
+  | StatefulSetsFetchResponse
+  | DaemonSetsFetchResponse;
 
 export interface PodFetchResponse {
   type: 'pods';
@@ -165,6 +167,11 @@ export interface CustomResourceFetchResponse {
 export interface StatefulSetsFetchResponse {
   type: 'statefulsets';
   resources: Array<V1StatefulSet>;
+}
+
+export interface DaemonSetsFetchResponse {
+  type: 'daemonsets';
+  resources: Array<V1DaemonSet>;
 }
 
 export interface KubernetesFetchError {
