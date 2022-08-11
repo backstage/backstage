@@ -258,3 +258,7 @@ export interface ClientPodStatus {
   memory: ClientCurrentResourceUsage;
   containers: ClientContainerStatus[];
 }
+
+export interface KubernetesProxyClusters {
+  [key: string]: string;
+}

@@ -209,7 +209,14 @@ export class KubernetesBuilder {
   // (undocumented)
   protected getObjectTypesToFetch(): ObjectToFetch[] | undefined;
   // (undocumented)
+  protected getProxyServices(): KubernetesProxyServices;
+  // (undocumented)
   protected getServiceLocatorMethod(): ServiceLocatorMethod;
+  // (undocumented)
+  protected makeProxyRequest(
+    req: express.Request,
+    res: express.Response,
+  ): Promise<void>;
   // (undocumented)
   setClusterSupplier(clusterSupplier?: KubernetesClustersSupplier): this;
   // (undocumented)
@@ -321,6 +328,12 @@ export type KubernetesObjectTypes =
   | 'customresources'
   | 'statefulsets'
   | 'daemonsets';
+
+// @alpha (undocumented)
+export interface KubernetesProxyServices {
+  // (undocumented)
+  kcs: KubernetesClustersSupplier;
+}
 
 // @alpha
 export interface KubernetesServiceLocator {

@@ -280,3 +280,11 @@ export interface KubernetesObjectsProvider {
     customResourcesByEntity: CustomResourcesByEntity,
   ): Promise<ObjectsByEntityResponse>;
 }
+
+/**
+ *
+ * @alpha
+ */
+export interface KubernetesProxyServices {
+  kcs: KubernetesClustersSupplier;
+}

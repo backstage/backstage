@@ -193,6 +193,16 @@ export interface KubernetesFetchError {
   statusCode?: number;
 }
 
+// Warning: (ae-missing-release-tag) "KubernetesProxyClusters" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface KubernetesProxyClusters {
+  // (undocumented)
+  [key: string]: string;
+}
+
+// Warning: (ae-missing-release-tag) "KubernetesRequestAuth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export interface KubernetesRequestAuth {
   // (undocumented)

@@ -30,8 +30,12 @@ import {
   KubernetesFetcher,
   KubernetesServiceLocator,
   KubernetesObjectsProviderOptions,
+  KubernetesProxyServices,
 } from '../types/types';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
+
+import { KubernetesProxy, KubernetesProxyResponse } from './KubernetesProxy';
+
 import {
   DEFAULT_OBJECTS,
   KubernetesFanOutHandler,
@@ -76,12 +80,15 @@ export class KubernetesBuilder {
   private objectsProvider?: KubernetesObjectsProvider;
   private fetcher?: KubernetesFetcher;
   private serviceLocator?: KubernetesServiceLocator;
+  private proxy: KubernetesProxy;
 
   static createBuilder(env: KubernetesEnvironment) {
     return new KubernetesBuilder(env);
   }
 
-  constructor(protected readonly env: KubernetesEnvironment) {}
+  constructor(protected readonly env: KubernetesEnvironment) {
+    this.proxy = new KubernetesProxy(env.logger);
+  }
 
   public async build(): KubernetesBuilderReturn {
     const logger = this.env.logger;
@@ -273,6 +280,12 @@ export class KubernetesBuilder {
       });
     });
 
+    router.get('/proxy/:encodedQuery', this.makeProxyRequest.bind(this));
+    router.post('/proxy/:encodedQuery', this.makeProxyRequest.bind(this));
+    router.put('/proxy/:encodedQuery', this.makeProxyRequest.bind(this));
+    router.patch('/proxy/:encodedQuery', this.makeProxyRequest.bind(this));
+    router.delete('/proxy/:encodedQuery', this.makeProxyRequest.bind(this));
+
     addResourceRoutesToRouter(router, catalogApi, objectsProvider);
 
     return router;
@@ -324,5 +337,29 @@ export class KubernetesBuilder {
     }
 
     return objectTypesToFetch;
+  }
+
+  protected async makeProxyRequest(
+    req: express.Request,
+    res: express.Response,
+  ) {
+    const services = this.getProxyServices();
+    const proxyResponse: KubernetesProxyResponse =
+      await this.proxy.handleProxyRequest(services, req);
+    res.status(proxyResponse.code).json(proxyResponse.data);
+  }
+
+  protected getProxyServices(): KubernetesProxyServices {
+    const kcs =
+      this.clusterSupplier ??
+      this.buildClusterSupplier(this.defaultClusterRefreshInterval);
+
+    if (!kcs) {
+      this.env.logger.error('could not find cluster supplier!');
+    }
+
+    return {
+      kcs,
+    };
   }
 }
