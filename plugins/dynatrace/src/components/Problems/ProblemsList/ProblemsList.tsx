@@ -20,14 +20,13 @@ import {
   ResponseErrorPanel,
   EmptyState,
 } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { ProblemsTable } from '../ProblemsTable';
 import { dynatraceApiRef, DynatraceProblem } from '../../../api';
 import { InfoCard } from '@backstage/core-components';
 
 type ProblemsListProps = {
   dynatraceEntityId: string;
-  dynatraceBaseUrl: string;
 };
 
 const cardContents = (
@@ -45,8 +44,11 @@ const cardContents = (
 };
 
 export const ProblemsList = (props: ProblemsListProps) => {
-  const { dynatraceEntityId, dynatraceBaseUrl } = props;
+  const { dynatraceEntityId } = props;
+  const configApi = useApi(configApiRef);
   const dynatraceApi = useApi(dynatraceApiRef);
+  const dynatraceBaseUrl = configApi.getString('dynatrace.baseUrl');
+
   const { value, loading, error } = useAsync(async () => {
     return dynatraceApi.getDynatraceProblems(dynatraceEntityId);
   }, [dynatraceApi, dynatraceEntityId]);

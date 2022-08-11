@@ -21,7 +21,6 @@ import {
   MissingAnnotationEmptyState,
 } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { ProblemsList } from '../Problems/ProblemsList';
 import { SyntheticsCard } from '../Synthetics/SyntheticsCard';
 import { isDynatraceAvailable } from '../../plugin';
@@ -32,9 +31,6 @@ import {
 
 export const DynatraceTab = () => {
   const { entity } = useEntity();
-
-  const configApi = useApi(configApiRef);
-  const dynatraceBaseUrl = configApi.getString('dynatrace.baseUrl');
 
   if (!isDynatraceAvailable(entity)) {
     return <MissingAnnotationEmptyState annotation={DYNATRACE_ID_ANNOTATION} />;
@@ -52,24 +48,18 @@ export const DynatraceTab = () => {
         <Grid container spacing={2}>
           {dynatraceEntityId ? (
             <Grid item xs={12} lg={12}>
-              <ProblemsList
-                dynatraceEntityId={dynatraceEntityId}
-                dynatraceBaseUrl={dynatraceBaseUrl}
-              />
+              <ProblemsList dynatraceEntityId={dynatraceEntityId} />
             </Grid>
           ) : (
             ''
           )}
           {syntheticsIds
-            ?.replace(' ', '')
-            .split(',')
+            ?.split(/[ ,]/)
+            .filter(Boolean)
             .map(id => {
               return (
                 <Grid item xs={12} lg={12}>
-                  <SyntheticsCard
-                    syntheticsId={id}
-                    dynatraceBaseUrl={dynatraceBaseUrl}
-                  />
+                  <SyntheticsCard syntheticsId={id} />
                 </Grid>
               );
             })}

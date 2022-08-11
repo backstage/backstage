@@ -17,13 +17,12 @@ import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import { InfoCard } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { dynatraceApiRef } from '../../../api';
 import { SyntheticsLocation } from '../SyntheticsLocation';
 
 type SyntheticsCardProps = {
   syntheticsId: string;
-  dynatraceBaseUrl: string;
 };
 
 const dynatraceMonitorPrefixes = (idPrefix: string): string => {
@@ -40,8 +39,11 @@ const dynatraceMonitorPrefixes = (idPrefix: string): string => {
 };
 
 export const SyntheticsCard = (props: SyntheticsCardProps) => {
-  const { syntheticsId, dynatraceBaseUrl } = props;
+  const { syntheticsId } = props;
+  const configApi = useApi(configApiRef);
   const dynatraceApi = useApi(dynatraceApiRef);
+  const dynatraceBaseUrl = configApi.getString('dynatrace.baseUrl');
+
   const { value, loading, error } = useAsync(async () => {
     return dynatraceApi.getDynatraceSyntheticFailures(syntheticsId);
   }, [dynatraceApi, syntheticsId]);
