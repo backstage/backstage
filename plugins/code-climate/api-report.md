@@ -8,6 +8,7 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // Warning: (ae-missing-release-tag) "CodeClimateApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -74,7 +75,8 @@ export const mockData: CodeClimateData;
 //
 // @public (undocumented)
 export class ProductionCodeClimateApi implements CodeClimateApi {
-  constructor(discoveryApi: DiscoveryApi);
+  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
+  constructor(options: Options);
   // (undocumented)
   fetchAllData(options: {
     apiUrl: string;
