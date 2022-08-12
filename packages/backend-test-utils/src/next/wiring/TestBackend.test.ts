@@ -19,12 +19,12 @@ import {
   createServiceFactory,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
-import { createTestBackend, startTestBackend } from './TestBackend';
+import { startTestBackend } from './TestBackend';
 
 describe('TestBackend', () => {
   it('should get a type error if service implementation does not match', () => {
     const serviceRef = createServiceRef<{ a: string; b: string }>({ id: 'a' });
-    const backend = createTestBackend({
+    const backend = startTestBackend({
       services: [
         [serviceRef, { a: 'a' }],
         [serviceRef, { a: 'a', b: 'b' }],
@@ -68,7 +68,7 @@ describe('TestBackend', () => {
 
     await startTestBackend({
       services: [sf],
-      registrables: [testModule({})],
+      features: [testModule({})],
     });
 
     expect(testFn).toBeCalledWith('winning');

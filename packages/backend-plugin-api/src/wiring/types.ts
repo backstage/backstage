@@ -38,12 +38,14 @@ export type ExtensionPoint<T> = {
 /** @public */
 export interface BackendRegistrationPoints {
   registerExtensionPoint<TExtensionPoint>(
-    ref: ServiceRef<TExtensionPoint>,
+    ref: ExtensionPoint<TExtensionPoint>,
     impl: TExtensionPoint,
   ): void;
   registerInit<Deps extends { [name in string]: unknown }>(options: {
-    deps: { [name in keyof Deps]: ServiceRef<Deps[name]> };
-    init: (deps: Deps) => Promise<void>;
+    deps: {
+      [name in keyof Deps]: ServiceRef<Deps[name]> | ExtensionPoint<Deps[name]>;
+    };
+    init(deps: Deps): Promise<void>;
   }): void;
 }
 

@@ -17,6 +17,7 @@
 import {
   AnyServiceFactory,
   BackendFeature,
+  ExtensionPoint,
   FactoryFunc,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
@@ -32,9 +33,9 @@ export interface Backend {
 
 export interface BackendRegisterInit {
   id: string;
-  consumes: Set<ServiceRef<unknown>>;
-  provides: Set<ServiceRef<unknown>>;
-  deps: { [name: string]: ServiceRef<unknown> };
+  consumes: Set<ServiceOrExtensionPoint>;
+  provides: Set<ServiceOrExtensionPoint>;
+  deps: { [name: string]: ServiceOrExtensionPoint };
   init: (deps: { [name: string]: unknown }) => Promise<void>;
 }
 
@@ -57,3 +58,10 @@ export function createSpecializedBackend(
 ): Backend {
   return new BackstageBackend(options.services);
 }
+
+/**
+ * @public
+ */
+export type ServiceOrExtensionPoint<T = unknown> =
+  | ExtensionPoint<T>
+  | ServiceRef<T>;

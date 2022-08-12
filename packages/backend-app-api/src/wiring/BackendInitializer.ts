@@ -19,15 +19,17 @@ import {
   ExtensionPoint,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
-import { BackendRegisterInit, ServiceHolder } from './types';
-
-type ServiceOrExtensionPoint = ExtensionPoint<unknown> | ServiceRef<unknown>;
+import {
+  BackendRegisterInit,
+  ServiceHolder,
+  ServiceOrExtensionPoint,
+} from './types';
 
 export class BackendInitializer {
   #started = false;
   #features = new Map<BackendFeature, unknown>();
   #registerInits = new Array<BackendRegisterInit>();
-  #extensionPoints = new Map<ServiceOrExtensionPoint, unknown>();
+  #extensionPoints = new Map<ExtensionPoint<unknown>, unknown>();
   #serviceHolder: ServiceHolder;
 
   constructor(serviceHolder: ServiceHolder) {
@@ -42,7 +44,7 @@ export class BackendInitializer {
       await Promise.all(
         Object.entries(deps).map(async ([name, ref]) => [
           name,
-          this.#extensionPoints.get(ref) ||
+          this.#extensionPoints.get(ref as ExtensionPoint<unknown>) ||
             (await this.#serviceHolder.get(ref as ServiceRef<unknown>)!(
               pluginId,
             )),
@@ -66,7 +68,7 @@ export class BackendInitializer {
     this.#started = true;
 
     for (const [feature] of this.#features) {
-      const provides = new Set<ServiceRef<unknown>>();
+      const provides = new Set<ExtensionPoint<unknown>>();
 
       let registerInit: BackendRegisterInit | undefined = undefined;
 
@@ -129,13 +131,13 @@ export class BackendInitializer {
       for (const registerInit of registerInitsToOrder) {
         const unInitializedDependents = [];
 
-        for (const serviceRef of registerInit.provides) {
+        for (const provided of registerInit.provides) {
           if (
             registerInitsToOrder.some(
-              init => init !== registerInit && init.consumes.has(serviceRef),
+              init => init !== registerInit && init.consumes.has(provided),
             )
           ) {
-            unInitializedDependents.push(serviceRef);
+            unInitializedDependents.push(provided);
           }
         }
 
@@ -148,6 +150,7 @@ export class BackendInitializer {
 
       registerInitsToOrder = registerInitsToOrder.filter(r => !toRemove.has(r));
     }
+
     return orderedRegisterInits;
   }
 }

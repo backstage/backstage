@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { createTestBackend, startTestBackend } from './TestBackend';
+export { startTestBackend } from './TestBackend';
 export type { TestBackendOptions } from './TestBackend';
