@@ -53,13 +53,13 @@ export function createTestBackend<TServices extends any[]>(
 /** @alpha */
 export async function startTestBackend<TServices extends any[]>(
   options: TestBackendOptions<TServices> & {
-    registrables?: BackendFeature[];
+    features?: BackendFeature[];
   },
 ): Promise<void> {
-  const { registrables = [], ...otherOptions } = options;
+  const { features = [], ...otherOptions } = options;
   const backend = createTestBackend(otherOptions);
-  for (const reg of registrables) {
-    backend.add(reg);
+  for (const feature of features) {
+    backend.add(feature);
   }
   await backend.start();
 }
