@@ -459,8 +459,14 @@ describe('createRouter', () => {
 
   describe('GET /readme/:projectName/:repoName', () => {
     it('fetches readme file', async () => {
-      const readmeMock = getReadmeMock();
-      azureDevOpsApi.getReadme.mockResolvedValueOnce(readmeMock);
+      const content = getReadmeMock();
+      const url = `https://host.com/myOrg/myProject/_git/myRepo?path=README.md`;
+
+      azureDevOpsApi.getReadme.mockResolvedValueOnce({
+        content,
+        url,
+      });
+
       const response = await request(app).get(
         '/readme/myProject/myRepo?path=README.md',
       );
@@ -472,8 +478,8 @@ describe('createRouter', () => {
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
-        content: readmeMock,
-        url: `https://host.com/myOrg/myProject/_git/myRepo?path=README.md`,
+        content,
+        url,
       });
     });
   });
