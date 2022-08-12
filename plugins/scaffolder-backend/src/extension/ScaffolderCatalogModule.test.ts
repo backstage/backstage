@@ -23,7 +23,6 @@ describe('ScaffolderCatalogModule', () => {
   it('should register the extension point', async () => {
     const extensionPoint = { addProcessor: jest.fn() };
     await startTestBackend({
-      services: [],
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       features: [scaffolderCatalogModule({})],
     });
