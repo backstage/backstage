@@ -63,7 +63,7 @@ type Props = {
   maxHeight?: number;
 };
 
-export const ReadMeCard = (props: Props) => {
+export const ReadmeCard = (props: Props) => {
   const classes = useStyles();
   const api = useApi(azureDevOpsApiRef);
   const { entity } = useEntity();

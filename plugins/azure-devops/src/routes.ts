@@ -32,6 +32,6 @@ export const azurePullRequestsEntityContentRouteRef = createRouteRef({
   id: 'azure-pull-requests-entity-content',
 });
 
-export const azureReadMeEntityContentRouteRef = createRouteRef({
-  id: 'azure-readme-entity-content',
+export const azureReadmeEntityCardRouteRef = createRouteRef({
+  id: 'azure-readme-entity-card',
 });

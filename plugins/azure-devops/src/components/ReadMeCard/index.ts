@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { ReadMeCard } from './ReadMeCard';
+export { ReadmeCard } from './ReadmeCard';
