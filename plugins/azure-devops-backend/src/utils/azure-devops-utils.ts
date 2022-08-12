@@ -33,7 +33,6 @@ import {
 
 import { IdentityRef } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import { PolicyEvaluationRecord } from 'azure-devops-node-api/interfaces/PolicyInterfaces';
-import PathUtils from 'path';
 
 export function convertDashboardPullRequest(
   pullRequest: GitPullRequest,
@@ -220,7 +219,7 @@ export async function replaceReadme(
   for (const filePath of filesPath) {
     const { label, path, ext } = getPartsFromFilePath(filePath);
     const mime = getMimeByExtension(ext);
-    const base64 = await getContentFile(path, 'base64');
+    const base64 = await getContentFile(path + ext, 'base64');
     replacedContent = replacedContent.replace(
       filePath,
       `[${label}](data:${mime};base64,${base64})`,
@@ -293,12 +292,13 @@ function getPartsFromFilePath(content: string): {
   path: string;
   ext: string;
 } {
-  const regExp = /\[(.*?)\]\(([^)]+)\)/;
-  const [_, label, path] = regExp.exec(content) || [];
+  const regExp =
+    /\[(.*?)\]\((?!https?:\/\/)(.*?)(\.png|\.jpg|\.jpeg|\.gif|\.webp)(.*)\)/;
+  const [_, label, path, ext] = regExp.exec(content) || [];
   return {
+    ext,
     label,
     path: path.startsWith('.') ? path.substring(1, path.length) : path,
-    ext: PathUtils.extname(path),
   };
 }
 
