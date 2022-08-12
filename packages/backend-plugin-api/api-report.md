@@ -26,23 +26,11 @@ export type AnyServiceFactory = ServiceFactory<
 >;
 
 // @public (undocumented)
-export interface BackendInitRegistry {
+export interface BackendFeature {
   // (undocumented)
-  registerExtensionPoint<TExtensionPoint>(
-    ref: ServiceRef<TExtensionPoint>,
-    impl: TExtensionPoint,
-  ): void;
+  id: string;
   // (undocumented)
-  registerInit<
-    Deps extends {
-      [name in string]: unknown;
-    },
-  >(options: {
-    deps: {
-      [name in keyof Deps]: ServiceRef<Deps[name]>;
-    };
-    init: (deps: Deps) => Promise<void>;
-  }): void;
+  register(reg: BackendRegistrationPoints): void;
 }
 
 // @public (undocumented)
@@ -53,7 +41,7 @@ export interface BackendModuleConfig<TOptions> {
   pluginId: string;
   // (undocumented)
   register(
-    reg: Omit<BackendInitRegistry, 'registerExtensionPoint'>,
+    reg: Omit<BackendRegistrationPoints, 'registerExtensionPoint'>,
     options: TOptions,
   ): void;
 }
@@ -63,15 +51,27 @@ export interface BackendPluginConfig<TOptions> {
   // (undocumented)
   id: string;
   // (undocumented)
-  register(reg: BackendInitRegistry, options: TOptions): void;
+  register(reg: BackendRegistrationPoints, options: TOptions): void;
 }
 
 // @public (undocumented)
-export interface BackendRegistrable {
+export interface BackendRegistrationPoints {
   // (undocumented)
-  id: string;
+  registerExtensionPoint<TExtensionPoint>(
+    ref: ExtensionPoint<TExtensionPoint>,
+    impl: TExtensionPoint,
+  ): void;
   // (undocumented)
-  register(reg: BackendInitRegistry): void;
+  registerInit<
+    Deps extends {
+      [name in string]: unknown;
+    },
+  >(options: {
+    deps: {
+      [name in keyof Deps]: ServiceRef<Deps[name]> | ExtensionPoint<Deps[name]>;
+    };
+    init(deps: Deps): Promise<void>;
+  }): void;
 }
 
 // @public (undocumented)
@@ -84,15 +84,15 @@ export const configServiceRef: ServiceRef<Config>;
 export function createBackendModule<TOptions>(
   config: BackendModuleConfig<TOptions>,
 ): undefined extends TOptions
-  ? (options?: TOptions) => BackendRegistrable
-  : (options: TOptions) => BackendRegistrable;
+  ? (options?: TOptions) => BackendFeature
+  : (options: TOptions) => BackendFeature;
 
 // @public (undocumented)
 export function createBackendPlugin<TOptions>(
   config: BackendPluginConfig<TOptions>,
 ): undefined extends TOptions
-  ? (options?: TOptions) => BackendRegistrable
-  : (options: TOptions) => BackendRegistrable;
+  ? (options?: TOptions) => BackendFeature
+  : (options: TOptions) => BackendFeature;
 
 // @public (undocumented)
 export function createExtensionPoint<T>(options: {
