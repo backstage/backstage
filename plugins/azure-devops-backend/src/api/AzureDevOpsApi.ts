@@ -402,17 +402,29 @@ export class AzureDevOpsApi {
     organization: string,
     projectName: string,
     repoName: string,
-  ): Promise<string> {
-    const getContentFile = async (
+  ): Promise<{
+    url: string;
+    content: string;
+  }> {
+    const getFileContent = async (
       path: string,
       encoding?: BufferEncoding,
-    ): Promise<string> => {
+    ): Promise<{
+      url: string;
+      content: string;
+    }> => {
       const url = `https://${host}/${organization}/${projectName}/_git/${repoName}?path=${path}`;
       const response = await this.urlReader.read(url);
-      return Buffer.from(response).toString(encoding);
+      return {
+        url,
+        content: Buffer.from(response).toString(encoding),
+      };
     };
-    const readmeContent = await getContentFile('README.md');
-    return await replaceReadme(readmeContent, getContentFile);
+    const { url, content } = await getFileContent('README.md');
+    return {
+      url,
+      content: await replaceReadme(content, getFileContent),
+    };
   }
 }
 

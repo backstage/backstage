@@ -33,5 +33,5 @@ export const azurePullRequestsEntityContentRouteRef = createRouteRef({
 });
 
 export const azureReadMeEntityContentRouteRef = createRouteRef({
-  id: 'azure-read-me-entity-content',
+  id: 'azure-readme-entity-content',
 });

@@ -206,26 +206,27 @@ export function convertPolicy(
 }
 
 export async function replaceReadme(
-  content: string,
-  getContentFile: (path: string, encoding?: BufferEncoding) => Promise<string>,
+  readme: string,
+  getFileContent: (
+    path: string,
+    encoding?: BufferEncoding,
+  ) => Promise<{
+    url: string;
+    content: string;
+  }>,
 ) {
-  const regExp =
-    /\[([^\[\]]*)\]\((?!https?:\/\/)(.*?)(\.png|\.jpg|\.jpeg|\.gif|\.webp)(.*)\)/gim;
-  const filesPath = content.match(regExp) || [];
-
-  if (filesPath.length === 0) return content;
-
-  let replacedContent = content;
+  const filesPath = extractAssets(readme);
+  let content = readme;
   for (const filePath of filesPath) {
-    const { label, path, ext } = getPartsFromFilePath(filePath);
+    const { label, path, ext } = extractPartsFromAsset(filePath);
     const mime = getMimeByExtension(ext);
-    const base64 = await getContentFile(path + ext, 'base64');
-    replacedContent = replacedContent.replace(
+    const { content: base64 } = await getFileContent(path + ext, 'base64');
+    content = content.replace(
       filePath,
       `[${label}](data:${mime};base64,${base64})`,
     );
   }
-  return replacedContent;
+  return content;
 }
 
 function convertReviewer(
@@ -287,7 +288,13 @@ function hasAutoComplete(pullRequest: GitPullRequest): boolean {
   return pullRequest.isDraft !== true && !!pullRequest.completionOptions;
 }
 
-function getPartsFromFilePath(content: string): {
+function extractAssets(content: string) {
+  const regExp =
+    /\[([^\[\]]*)\]\((?!https?:\/\/)(.*?)(\.png|\.jpg|\.jpeg|\.gif|\.webp)(.*)\)/gim;
+  return content.match(regExp) || [];
+}
+
+function extractPartsFromAsset(content: string): {
   label: string;
   path: string;
   ext: string;

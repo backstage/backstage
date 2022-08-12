@@ -194,16 +194,13 @@ export async function createRouter(
 
   router.get('/readme/:projectName/:repoName', async (req, res) => {
     const { projectName, repoName } = req.params;
-    const content = await azureDevOpsApi.getReadme(
+    const readme = await azureDevOpsApi.getReadme(
       host,
       organization,
       projectName,
       repoName,
     );
-    res.status(200).json({
-      content,
-      url: `https://${host}/${organization}/${projectName}/_git/${repoName}?path=README.md`,
-    });
+    res.status(200).json(readme);
   });
 
   router.use(errorHandler());
