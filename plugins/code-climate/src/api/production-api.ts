@@ -22,7 +22,7 @@ import {
   CodeClimateIssuesData,
 } from './code-climate-data';
 import { CodeClimateApi } from './code-climate-api';
-import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { Duration } from 'luxon';
 import humanizeDuration from 'humanize-duration';
 
@@ -36,16 +36,16 @@ const otherIssuesQuery = `${basicIssuesOptions}&${categoriesFilter}=Bug%20Risk`;
 
 type Options = {
   discoveryApi: DiscoveryApi;
-  identityApi: IdentityApi;
+  fetchApi: FetchApi;
 };
 
 export class ProductionCodeClimateApi implements CodeClimateApi {
   private readonly discoveryApi: DiscoveryApi;
-  private readonly identityApi: IdentityApi;
+  private readonly fetchApi: FetchApi;
 
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
-    this.identityApi = options.identityApi;
+    this.fetchApi = options.fetchApi;
   }
 
   async fetchAllData(options: {
@@ -55,11 +55,6 @@ export class ProductionCodeClimateApi implements CodeClimateApi {
     testReportID: string;
   }): Promise<any> {
     const { apiUrl, repoID, snapshotID, testReportID } = options;
-
-    const { token } = await this.identityApi.getCredentials();
-    const headersWithAuth = {
-      headers: { Authorization: `Bearer ${token}` },
-    };
     const [
       maintainabilityResponse,
       testCoverageResponse,
@@ -67,25 +62,20 @@ export class ProductionCodeClimateApi implements CodeClimateApi {
       duplicationResponse,
       otherIssuesResponse,
     ] = await Promise.all([
-      await fetch(
+      await this.fetchApi.fetch(
         `${apiUrl}/repos/${repoID}/snapshots/${snapshotID}`,
-        headersWithAuth,
       ),
-      await fetch(
+      await this.fetchApi.fetch(
         `${apiUrl}/repos/${repoID}/test_reports/${testReportID}`,
-        headersWithAuth,
       ),
-      await fetch(
+      await this.fetchApi.fetch(
         `${apiUrl}/repos/${repoID}/snapshots/${snapshotID}/issues?${codeSmellsQuery}`,
-        headersWithAuth,
       ),
-      await fetch(
+      await this.fetchApi.fetch(
         `${apiUrl}/repos/${repoID}/snapshots/${snapshotID}/issues?${duplicationQuery}`,
-        headersWithAuth,
       ),
-      await fetch(
+      await this.fetchApi.fetch(
         `${apiUrl}/repos/${repoID}/snapshots/${snapshotID}/issues?${otherIssuesQuery}`,
-        headersWithAuth,
       ),
     ]);
 
@@ -132,11 +122,8 @@ export class ProductionCodeClimateApi implements CodeClimateApi {
     const apiUrl = `${await this.discoveryApi.getBaseUrl(
       'proxy',
     )}/codeclimate/api`;
-    const { token } = await this.identityApi.getCredentials();
 
-    const repoResponse = await fetch(`${apiUrl}/repos/${repoID}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const repoResponse = await this.fetchApi.fetch(`${apiUrl}/repos/${repoID}`);
 
     if (!repoResponse.ok) {
       throw new Error('Failed fetching Code Climate info');
