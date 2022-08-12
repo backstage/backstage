@@ -16,6 +16,7 @@
 
 import {
   BackendFeature,
+  BackendRegistrationPoints,
   ExtensionPoint,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
@@ -24,6 +25,66 @@ import {
   ServiceHolder,
   ServiceOrExtensionPoint,
 } from './types';
+
+/**
+ * Helper class to receive registrations from features.
+ */
+class RegistrationPoints implements BackendRegistrationPoints {
+  #feature: BackendFeature;
+  #extensionPoints = new Map<ExtensionPoint<unknown>, unknown>();
+  #registerInit: BackendRegisterInit | undefined = undefined;
+  #provides = new Set<ExtensionPoint<unknown>>();
+
+  constructor(feature: BackendFeature) {
+    this.#feature = feature;
+  }
+
+  registerExtensionPoint<TExtensionPoint>(
+    ref: ExtensionPoint<TExtensionPoint>,
+    impl: TExtensionPoint,
+  ) {
+    if (this.#registerInit) {
+      throw new Error('registerExtensionPoint called after registerInit');
+    } else if (this.#extensionPoints.has(ref)) {
+      throw new Error(`API ${ref.id} already registered`);
+    }
+
+    this.#extensionPoints.set(ref, impl);
+    this.#provides.add(ref);
+  }
+
+  registerInit<Deps extends { [name in string]: unknown }>(options: {
+    deps: {
+      [name in keyof Deps]: ServiceRef<Deps[name]> | ExtensionPoint<Deps[name]>;
+    };
+    init(deps: Deps): Promise<void>;
+  }) {
+    if (this.#registerInit) {
+      throw new Error('registerInit must only be called once');
+    }
+
+    this.#registerInit = {
+      id: this.#feature.id,
+      provides: this.#provides,
+      consumes: new Set(Object.values(options.deps)),
+      deps: options.deps,
+      init: options.init as BackendRegisterInit['init'],
+    };
+  }
+
+  build() {
+    if (!this.#registerInit) {
+      throw new Error(
+        `registerInit was not called by register in ${this.#feature.id}`,
+      );
+    }
+
+    return {
+      extensionPoints: this.#extensionPoints,
+      registerInit: this.#registerInit,
+    };
+  }
+}
 
 export class BackendInitializer {
   #started = false;
@@ -85,42 +146,11 @@ export class BackendInitializer {
     this.#started = true;
 
     for (const [feature] of this.#features) {
-      const provides = new Set<ExtensionPoint<unknown>>();
-
-      let registerInit: BackendRegisterInit | undefined = undefined;
-
-      feature.register({
-        registerExtensionPoint: (extensionPointRef, impl) => {
-          if (registerInit) {
-            throw new Error('registerExtensionPoint called after registerInit');
-          }
-          if (this.#extensionPoints.has(extensionPointRef)) {
-            throw new Error(`API ${extensionPointRef.id} already registered`);
-          }
-          this.#extensionPoints.set(extensionPointRef, impl);
-          provides.add(extensionPointRef);
-        },
-        registerInit: registerOptions => {
-          if (registerInit) {
-            throw new Error('registerInit must only be called once');
-          }
-          registerInit = {
-            id: feature.id,
-            provides,
-            consumes: new Set(Object.values(registerOptions.deps)),
-            deps: registerOptions.deps,
-            init: registerOptions.init as BackendRegisterInit['init'],
-          };
-        },
-      });
-
-      if (!registerInit) {
-        throw new Error(
-          `registerInit was not called by register in ${feature.id}`,
-        );
-      }
-
+      const registrationPoints = new RegistrationPoints(feature);
+      feature.register(registrationPoints);
+      const { registerInit, extensionPoints } = registrationPoints.build();
       this.#registerInits.push(registerInit);
+      this.#extensionPoints.push(...extensionPoints);
     }
 
     const orderedRegisterResults = this.#resolveInitOrder(this.#registerInits);
