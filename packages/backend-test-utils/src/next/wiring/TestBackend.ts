@@ -37,18 +37,17 @@ export interface TestBackendOptions<TServices extends any[]> {
 export function createTestBackend<TServices extends any[]>(
   options: TestBackendOptions<TServices>,
 ): Backend {
-  const factories =
-    options.services?.map(serviceDef => {
-      if (Array.isArray(serviceDef)) {
-        return createServiceFactory({
-          service: serviceDef[0],
-          deps: {},
-          factory: async () => async () => serviceDef[1],
-        });
-      }
-      return serviceDef as AnyServiceFactory;
-    }) ?? [];
-  return createSpecializedBackend({ services: factories });
+  const factories = options.services?.map(serviceDef => {
+    if (Array.isArray(serviceDef)) {
+      return createServiceFactory({
+        service: serviceDef[0],
+        deps: {},
+        factory: async () => async () => serviceDef[1],
+      });
+    }
+    return serviceDef as AnyServiceFactory;
+  });
+  return createSpecializedBackend({ services: factories ?? [] });
 }
 
 /** @alpha */
@@ -62,5 +61,5 @@ export async function startTestBackend<TServices extends any[]>(
   for (const reg of registrables) {
     backend.add(reg);
   }
-  return backend.start();
+  await backend.start();
 }
