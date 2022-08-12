@@ -28,7 +28,7 @@ export interface CatalogProcessingExtensionPoint {
 /**
  * @alpha
  */
-export const catalogProcessingExtentionPoint =
+export const catalogProcessingExtensionPoint =
   createServiceRef<CatalogProcessingExtensionPoint>({
     id: 'catalog.processing',
   });
