@@ -40,17 +40,35 @@ export class BackendInitializer {
     deps: { [name: string]: ServiceOrExtensionPoint },
     pluginId: string,
   ) {
-    return Object.fromEntries(
-      await Promise.all(
-        Object.entries(deps).map(async ([name, ref]) => [
-          name,
-          this.#extensionPoints.get(ref as ExtensionPoint<unknown>) ||
-            (await this.#serviceHolder.get(ref as ServiceRef<unknown>)!(
-              pluginId,
-            )),
-        ]),
-      ),
-    );
+    const result = new Map<string, unknown>();
+    const missingRefs = new Set<ServiceOrExtensionPoint>();
+
+    for (const [name, ref] of Object.entries(deps)) {
+      const extensionPoint = this.#extensionPoints.get(
+        ref as ExtensionPoint<unknown>,
+      );
+      if (extensionPoint) {
+        result.set(name, extensionPoint);
+      } else {
+        const factory = await this.#serviceHolder.get(
+          ref as ServiceRef<unknown>,
+        );
+        if (factory) {
+          result.set(name, await factory(pluginId));
+        } else {
+          missingRefs.add(ref);
+        }
+      }
+    }
+
+    if (missingRefs.size > 0) {
+      const missing = Array.from(missingRefs).join(', ');
+      throw new Error(
+        `No extension point or service available for the following ref(s): ${missing}`,
+      );
+    }
+
+    return Object.fromEntries(result);
   }
 
   add<TOptions>(feature: BackendFeature, options?: TOptions) {
@@ -61,7 +79,6 @@ export class BackendInitializer {
   }
 
   async start(): Promise<void> {
-    console.log(`Starting backend`);
     if (this.#started) {
       throw new Error('Backend has already started');
     }
@@ -72,7 +89,6 @@ export class BackendInitializer {
 
       let registerInit: BackendRegisterInit | undefined = undefined;
 
-      console.log('Registering', feature.id);
       feature.register({
         registerExtensionPoint: (extensionPointRef, impl) => {
           if (registerInit) {
@@ -107,8 +123,6 @@ export class BackendInitializer {
       this.#registerInits.push(registerInit);
     }
 
-    this.validateSetup();
-
     const orderedRegisterResults = this.#resolveInitOrder(this.#registerInits);
 
     for (const registerInit of orderedRegisterResults) {
@@ -116,8 +130,6 @@ export class BackendInitializer {
       await registerInit.init(deps);
     }
   }
-
-  private validateSetup() {}
 
   #resolveInitOrder(registerInits: Array<BackendRegisterInit>) {
     let registerInitsToOrder = registerInits.slice();
@@ -142,7 +154,6 @@ export class BackendInitializer {
         }
 
         if (unInitializedDependents.length === 0) {
-          console.log(`DEBUG: pushed ${registerInit.id} to results`);
           orderedRegisterInits.push(registerInit);
           toRemove.add(registerInit);
         }
