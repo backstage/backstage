@@ -21,9 +21,13 @@ import {
 } from '@backstage/plugin-azure-devops-common';
 import {
   convertDashboardPullRequest,
+  extractAssets,
+  extractPartsFromAsset,
   getArtifactId,
   getAvatarUrl,
+  getMimeByExtension,
   getPullRequestLink,
+  replaceReadme,
 } from './azure-devops-utils';
 
 import { GitPullRequest } from 'azure-devops-node-api/interfaces/GitInterfaces';
@@ -157,5 +161,129 @@ describe('getArtifactId', () => {
   it('should return artifact id', () => {
     const result = getArtifactId('project1', 1);
     expect(result).toBe('vstfs:///CodeReview/CodeReviewId/project1/1');
+  });
+});
+
+describe('extractAssets', () => {
+  it('should return assets', () => {
+    const readme = `  
+    ## Images
+    ![Image 1](./images/sample-4(2).png)
+    ![Image 2](./images/cdCSj+-012340.jpg)             
+    ![Image 3](/images/test-4(2)))).jpeg)       
+    ![Image 4](./images/test-2211jd.webp)    
+    ![Image 5](/images/sa)mple.gif)
+  `;
+    const result = extractAssets(readme);
+    expect(result).toEqual([
+      '[Image 1](./images/sample-4(2).png)',
+      '[Image 2](./images/cdCSj+-012340.jpg)',
+      '[Image 3](/images/test-4(2)))).jpeg)',
+      '[Image 4](./images/test-2211jd.webp)',
+      '[Image 5](/images/sa)mple.gif)',
+    ]);
+  });
+});
+
+describe('extractPartsFromAsset', () => {
+  it('should return parts from asset - PNG', () => {
+    const result = extractPartsFromAsset('[Image 1](./images/sample-4(2).png)');
+    expect(result).toEqual({
+      label: 'Image 1',
+      path: '/images/sample-4(2)',
+      ext: '.png',
+    });
+  });
+
+  it('should return parts from asset - JPG', () => {
+    const result = extractPartsFromAsset(
+      '[Image 2](./images/cdCSj+-012340.jpg)',
+    );
+    expect(result).toEqual({
+      label: 'Image 2',
+      path: '/images/cdCSj+-012340',
+      ext: '.jpg',
+    });
+  });
+
+  it('should return parts from asset - JPEG', () => {
+    const result = extractPartsFromAsset(
+      '[Image 2](/images/test-4(2)))).jpeg)',
+    );
+    expect(result).toEqual({
+      label: 'Image 2',
+      path: '/images/test-4(2))))',
+      ext: '.jpeg',
+    });
+  });
+
+  it('should return parts from asset - WEBP', () => {
+    const result = extractPartsFromAsset('[Image 2](/images/test-2211jd.webp)');
+    expect(result).toEqual({
+      label: 'Image 2',
+      path: '/images/test-2211jd',
+      ext: '.webp',
+    });
+  });
+
+  it('should return parts from asset - GIF', () => {
+    const result = extractPartsFromAsset('[Image 2](/images/test-4(2)))).gif)');
+    expect(result).toEqual({
+      label: 'Image 2',
+      path: '/images/test-4(2))))',
+      ext: '.gif',
+    });
+  });
+});
+
+describe('getMimeByExtension', () => {
+  it('should return mime type', () => {
+    expect(getMimeByExtension('.png')).toBe('image/png');
+    expect(getMimeByExtension('.jpg')).toBe('image/jpeg');
+    expect(getMimeByExtension('.jpeg')).toBe('image/jpeg');
+    expect(getMimeByExtension('.webp')).toBe('image/webp');
+    expect(getMimeByExtension('.gif')).toBe('image/gif');
+  });
+});
+
+describe('replaceReadme', () => {
+  it('should return mime type', async () => {
+    const readme = `  
+      ## Images
+        ![Image 1](./images/sample-4(2).png)
+        ![Image 2](./images/cdCSj+-012340.jpg)
+        ![Image 3](/images/test-4(2)))).jpeg)
+        ![Image 4](./images/test-2211jd.webp)
+        ![Image 5](/images/sa)mple.gif)
+    `;
+
+    async function mockFileContent(
+      path: string,
+      encoding?: BufferEncoding,
+    ): Promise<{
+      url: string;
+      content: string;
+    }> {
+      expect(encoding).toBe('base64');
+      return new Promise(resolve =>
+        resolve({
+          url: '',
+          content: Buffer.from(path).toString(encoding),
+        }),
+      );
+    }
+
+    const result = await replaceReadme(readme, mockFileContent);
+
+    const expected = `  
+      ## Images
+        ![Image 1](data:image/png;base64,L2ltYWdlcy9zYW1wbGUtNCgyKS5wbmc=)
+        ![Image 2](data:image/jpeg;base64,L2ltYWdlcy9jZENTaistMDEyMzQwLmpwZw==)
+        ![Image 3](data:image/jpeg;base64,L2ltYWdlcy90ZXN0LTQoMikpKSkuanBlZw==)
+        ![Image 4](data:image/webp;base64,L2ltYWdlcy90ZXN0LTIyMTFqZC53ZWJw)
+        ![Image 5](data:image/gif;base64,L2ltYWdlcy9zYSltcGxlLmdpZg==)
+    `;
+
+    expect(expected).toBe(result);
   });
 });

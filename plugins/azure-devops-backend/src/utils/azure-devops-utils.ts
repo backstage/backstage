@@ -216,17 +216,19 @@ export async function replaceReadme(
   }>,
 ) {
   const filesPath = extractAssets(readme);
-  let content = readme;
-  for (const filePath of filesPath) {
-    const { label, path, ext } = extractPartsFromAsset(filePath);
-    const mime = getMimeByExtension(ext);
-    const { content: base64 } = await getFileContent(path + ext, 'base64');
-    content = content.replace(
-      filePath,
-      `[${label}](data:${mime};base64,${base64})`,
-    );
-  }
-  return content;
+  return await filesPath.reduce(
+    async (promise: Promise<string>, filePath: string) =>
+      promise.then(async content => {
+        const { label, path, ext } = extractPartsFromAsset(filePath);
+        const mime = getMimeByExtension(ext);
+        const file = await getFileContent(path + ext, 'base64');
+        return content.replace(
+          filePath,
+          `[${label}](data:${mime};base64,${file.content})`,
+        );
+      }),
+    Promise.resolve(readme),
+  );
 }
 
 function convertReviewer(
@@ -288,13 +290,13 @@ function hasAutoComplete(pullRequest: GitPullRequest): boolean {
   return pullRequest.isDraft !== true && !!pullRequest.completionOptions;
 }
 
-function extractAssets(content: string) {
+export function extractAssets(content: string) {
   const regExp =
     /\[([^\[\]]*)\]\((?!https?:\/\/)(.*?)(\.png|\.jpg|\.jpeg|\.gif|\.webp)(.*)\)/gim;
   return content.match(regExp) || [];
 }
 
-function extractPartsFromAsset(content: string): {
+export function extractPartsFromAsset(content: string): {
   label: string;
   path: string;
   ext: string;
@@ -309,7 +311,7 @@ function extractPartsFromAsset(content: string): {
   };
 }
 
-function getMimeByExtension(ext: string): string {
+export function getMimeByExtension(ext: string): string {
   return (
     {
       '.png': 'image/png',
