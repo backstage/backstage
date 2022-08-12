@@ -21,13 +21,9 @@ import {
   EntityProvider,
 } from '@backstage/plugin-catalog-react';
 
-import {
-  gitHubIssuesPlugin,
-  GitHubIssuesPage,
-  GitHubIssuesApi,
-  gitHubIssuesApiRef,
-  IssuesByRepo,
-} from '../src';
+import { gitHubIssuesPlugin, GitHubIssuesPage } from '../src';
+import { GitHubIssuesApi, gitHubIssuesApiRef, IssuesByRepo } from '../src/api';
+
 import { generateTestIssue } from '../src/utils';
 
 const response: IssuesByRepo = {
