@@ -36,22 +36,6 @@ export type ExtensionPoint<T> = {
 };
 
 /** @public */
-export function createExtensionPoint<T>(options: {
-  id: string;
-}): ExtensionPoint<T> {
-  return {
-    id: options.id,
-    get T(): T {
-      throw new Error(`tried to read ExtensionPoint.T of ${this}`);
-    },
-    toString() {
-      return `extensionPoint{${options.id}}`;
-    },
-    $$ref: 'extension-point', // TODO: declare
-  };
-}
-
-/** @public */
 export interface BackendInitRegistry {
   registerExtensionPoint<TExtensionPoint>(
     ref: ServiceRef<TExtensionPoint>,
@@ -67,47 +51,4 @@ export interface BackendInitRegistry {
 export interface BackendRegistrable {
   id: string;
   register(reg: BackendInitRegistry): void;
-}
-
-/** @public */
-export interface BackendPluginConfig<TOptions> {
-  id: string;
-  register(reg: BackendInitRegistry, options: TOptions): void;
-}
-
-// TODO: Make option optional in the returned factory if they are indeed optional
-/** @public */
-export function createBackendPlugin<TOptions>(
-  config: BackendPluginConfig<TOptions>,
-): (option: TOptions) => BackendRegistrable {
-  return options => ({
-    id: config.id,
-    register(register) {
-      return config.register(register, options);
-    },
-  });
-}
-
-/** @public */
-export interface BackendModuleConfig<TOptions> {
-  pluginId: string;
-  moduleId: string;
-  register(
-    reg: Omit<BackendInitRegistry, 'registerExtensionPoint'>,
-    options: TOptions,
-  ): void;
-}
-
-// TODO: Make option optional in the returned factory if they are indeed optional
-/** @public */
-export function createBackendModule<TOptions>(
-  config: BackendModuleConfig<TOptions>,
-): (option: TOptions) => BackendRegistrable {
-  return options => ({
-    id: `${config.pluginId}.${config.moduleId}`,
-    register(register) {
-      // TODO: Hide registerExtensionPoint
-      return config.register(register, options);
-    },
-  });
 }

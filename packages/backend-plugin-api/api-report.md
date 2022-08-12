@@ -83,12 +83,16 @@ export const configServiceRef: ServiceRef<Config>;
 // @public (undocumented)
 export function createBackendModule<TOptions>(
   config: BackendModuleConfig<TOptions>,
-): (option: TOptions) => BackendRegistrable;
+): undefined extends TOptions
+  ? (options?: TOptions) => BackendRegistrable
+  : (options: TOptions) => BackendRegistrable;
 
 // @public (undocumented)
 export function createBackendPlugin<TOptions>(
   config: BackendPluginConfig<TOptions>,
-): (option: TOptions) => BackendRegistrable;
+): undefined extends TOptions
+  ? (options?: TOptions) => BackendRegistrable
+  : (options: TOptions) => BackendRegistrable;
 
 // @public (undocumented)
 export function createExtensionPoint<T>(options: {
