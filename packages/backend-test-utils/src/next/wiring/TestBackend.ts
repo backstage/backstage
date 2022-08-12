@@ -19,7 +19,7 @@ import {
   AnyServiceFactory,
   ServiceRef,
   createServiceFactory,
-  BackendRegistrable,
+  BackendFeature,
 } from '@backstage/backend-plugin-api';
 
 /** @alpha */
@@ -53,7 +53,7 @@ export function createTestBackend<TServices extends any[]>(
 /** @alpha */
 export async function startTestBackend<TServices extends any[]>(
   options: TestBackendOptions<TServices> & {
-    registrables?: BackendRegistrable[];
+    registrables?: BackendFeature[];
   },
 ): Promise<void> {
   const { registrables = [], ...otherOptions } = options;

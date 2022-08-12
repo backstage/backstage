@@ -16,7 +16,7 @@
 
 import {
   AnyServiceFactory,
-  BackendRegistrable,
+  BackendFeature,
   FactoryFunc,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
@@ -26,7 +26,7 @@ import { BackstageBackend } from './BackstageBackend';
  * @public
  */
 export interface Backend {
-  add(extension: BackendRegistrable): void;
+  add(feature: BackendFeature): void;
   start(): Promise<void>;
 }
 

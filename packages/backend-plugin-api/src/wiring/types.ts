@@ -48,7 +48,7 @@ export interface BackendInitRegistry {
 }
 
 /** @public */
-export interface BackendRegistrable {
+export interface BackendFeature {
   id: string;
   register(reg: BackendInitRegistry): void;
 }

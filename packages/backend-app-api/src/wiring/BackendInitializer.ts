@@ -15,7 +15,7 @@
  */
 
 import {
-  BackendRegistrable,
+  BackendFeature,
   ExtensionPoint,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
@@ -25,7 +25,7 @@ type ServiceOrExtensionPoint = ExtensionPoint<unknown> | ServiceRef<unknown>;
 
 export class BackendInitializer {
   #started = false;
-  #extensions = new Map<BackendRegistrable, unknown>();
+  #features = new Map<BackendFeature, unknown>();
   #registerInits = new Array<BackendRegisterInit>();
   #extensionPoints = new Map<ServiceOrExtensionPoint, unknown>();
   #serviceHolder: ServiceHolder;
@@ -51,13 +51,11 @@ export class BackendInitializer {
     );
   }
 
-  add<TOptions>(extension: BackendRegistrable, options?: TOptions) {
+  add<TOptions>(feature: BackendFeature, options?: TOptions) {
     if (this.#started) {
-      throw new Error(
-        'extension can not be added after the backend has started',
-      );
+      throw new Error('feature can not be added after the backend has started');
     }
-    this.#extensions.set(extension, options);
+    this.#features.set(feature, options);
   }
 
   async start(): Promise<void> {
@@ -67,13 +65,13 @@ export class BackendInitializer {
     }
     this.#started = true;
 
-    for (const [extension] of this.#extensions) {
+    for (const [feature] of this.#features) {
       const provides = new Set<ServiceRef<unknown>>();
 
       let registerInit: BackendRegisterInit | undefined = undefined;
 
-      console.log('Registering', extension.id);
-      extension.register({
+      console.log('Registering', feature.id);
+      feature.register({
         registerExtensionPoint: (extensionPointRef, impl) => {
           if (registerInit) {
             throw new Error('registerExtensionPoint called after registerInit');
@@ -89,7 +87,7 @@ export class BackendInitializer {
             throw new Error('registerInit must only be called once');
           }
           registerInit = {
-            id: extension.id,
+            id: feature.id,
             provides,
             consumes: new Set(Object.values(registerOptions.deps)),
             deps: registerOptions.deps,
@@ -100,7 +98,7 @@ export class BackendInitializer {
 
       if (!registerInit) {
         throw new Error(
-          `registerInit was not called by register in ${extension.id}`,
+          `registerInit was not called by register in ${feature.id}`,
         );
       }
 

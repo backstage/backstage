@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  BackendInitRegistry,
-  BackendRegistrable,
-  ExtensionPoint,
-} from './types';
+import { BackendInitRegistry, BackendFeature, ExtensionPoint } from './types';
 
 /** @public */
 export function createExtensionPoint<T>(options: {
@@ -46,8 +42,8 @@ export interface BackendPluginConfig<TOptions> {
 export function createBackendPlugin<TOptions>(
   config: BackendPluginConfig<TOptions>,
 ): undefined extends TOptions
-  ? (options?: TOptions) => BackendRegistrable
-  : (options: TOptions) => BackendRegistrable {
+  ? (options?: TOptions) => BackendFeature
+  : (options: TOptions) => BackendFeature {
   return (options?: TOptions) => ({
     id: config.id,
     register(register: BackendInitRegistry) {
@@ -70,8 +66,8 @@ export interface BackendModuleConfig<TOptions> {
 export function createBackendModule<TOptions>(
   config: BackendModuleConfig<TOptions>,
 ): undefined extends TOptions
-  ? (options?: TOptions) => BackendRegistrable
-  : (options: TOptions) => BackendRegistrable {
+  ? (options?: TOptions) => BackendFeature
+  : (options: TOptions) => BackendFeature {
   return (options?: TOptions) => ({
     id: `${config.pluginId}.${config.moduleId}`,
     register(register: BackendInitRegistry) {
