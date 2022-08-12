@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { BackendInitRegistry, BackendFeature, ExtensionPoint } from './types';
+import {
+  BackendRegistrationPoints,
+  BackendFeature,
+  ExtensionPoint,
+} from './types';
 
 /** @public */
 export function createExtensionPoint<T>(options: {
@@ -35,7 +39,7 @@ export function createExtensionPoint<T>(options: {
 /** @public */
 export interface BackendPluginConfig<TOptions> {
   id: string;
-  register(reg: BackendInitRegistry, options: TOptions): void;
+  register(reg: BackendRegistrationPoints, options: TOptions): void;
 }
 
 /** @public */
@@ -46,7 +50,7 @@ export function createBackendPlugin<TOptions>(
   : (options: TOptions) => BackendFeature {
   return (options?: TOptions) => ({
     id: config.id,
-    register(register: BackendInitRegistry) {
+    register(register: BackendRegistrationPoints) {
       return config.register(register, options!);
     },
   });
@@ -57,7 +61,7 @@ export interface BackendModuleConfig<TOptions> {
   pluginId: string;
   moduleId: string;
   register(
-    reg: Omit<BackendInitRegistry, 'registerExtensionPoint'>,
+    reg: Omit<BackendRegistrationPoints, 'registerExtensionPoint'>,
     options: TOptions,
   ): void;
 }
@@ -70,7 +74,7 @@ export function createBackendModule<TOptions>(
   : (options: TOptions) => BackendFeature {
   return (options?: TOptions) => ({
     id: `${config.pluginId}.${config.moduleId}`,
-    register(register: BackendInitRegistry) {
+    register(register: BackendRegistrationPoints) {
       // TODO: Hide registerExtensionPoint
       return config.register(register, options!);
     },

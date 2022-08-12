@@ -36,7 +36,7 @@ export type ExtensionPoint<T> = {
 };
 
 /** @public */
-export interface BackendInitRegistry {
+export interface BackendRegistrationPoints {
   registerExtensionPoint<TExtensionPoint>(
     ref: ServiceRef<TExtensionPoint>,
     impl: TExtensionPoint,
@@ -49,6 +49,7 @@ export interface BackendInitRegistry {
 
 /** @public */
 export interface BackendFeature {
+  // TODO(Rugvip): Try to get rid of the ID at this level, allowing for a feature to register multiple features as a bundle
   id: string;
-  register(reg: BackendInitRegistry): void;
+  register(reg: BackendRegistrationPoints): void;
 }
