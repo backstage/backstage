@@ -2249,10 +2249,10 @@
     resolve-from "^5.0.0"
     semver "^5.4.1"
 
-"@changesets/assemble-release-plan@^5.2.0":
-  version "5.2.0"
-  resolved "https://registry.npmjs.org/@changesets/assemble-release-plan/-/assemble-release-plan-5.2.0.tgz#35158dc9b496a4c108936ae8ad776ef855795ff6"
-  integrity sha512-ewY24PEbSec2eKX0+KM7eyENA2hUUp6s4LF9p/iBxTtc+TX2Xbx5rZnlLKZkc8tpuQ3PZbyjLFXWhd1PP6SjCg==
+"@changesets/assemble-release-plan@^5.2.1":
+  version "5.2.1"
+  resolved "https://registry.npmjs.org/@changesets/assemble-release-plan/-/assemble-release-plan-5.2.1.tgz#b66df8d4a5615d4d904b75f7b60faeb64eb1d506"
+  integrity sha512-d6ckasOWlKF9Mzs82jhl6TKSCgVvfLoUK1ERySrTg2TQJdrVUteZue6uEIYUTA7SgMu67UOSwol6R9yj1nTdjw==
   dependencies:
     "@babel/runtime" "^7.10.4"
     "@changesets/errors" "^0.1.4"
@@ -2269,18 +2269,18 @@
     "@changesets/types" "^5.1.0"
 
 "@changesets/cli@^2.14.0":
-  version "2.24.2"
-  resolved "https://registry.npmjs.org/@changesets/cli/-/cli-2.24.2.tgz#333ad412c821b582680fbc7f0d0596ebba442c2d"
-  integrity sha512-Bya7bnxF8Sz+O25M6kseAludVsCy5nXSW9u2Lbje/XbJTyU5q/xwIiXF9aTUzVi/4jyKoKoOasx7B1/z+NJLzg==
+  version "2.24.3"
+  resolved "https://registry.npmjs.org/@changesets/cli/-/cli-2.24.3.tgz#e6d8ab5d831d2249ca482955232a9a1c9ff02c21"
+  integrity sha512-okhRV+0WCQJa2Kmil/WvN5TK1o3+1JYSjrsGHqhjv+PYcDgDDgQ6I9J9OMBO9lfmNIpN7xSO80/BzxgvReO4Wg==
   dependencies:
     "@babel/runtime" "^7.10.4"
     "@changesets/apply-release-plan" "^6.0.4"
-    "@changesets/assemble-release-plan" "^5.2.0"
+    "@changesets/assemble-release-plan" "^5.2.1"
     "@changesets/changelog-git" "^0.1.12"
     "@changesets/config" "^2.1.1"
     "@changesets/errors" "^0.1.4"
     "@changesets/get-dependents-graph" "^1.3.3"
-    "@changesets/get-release-plan" "^3.0.13"
+    "@changesets/get-release-plan" "^3.0.14"
     "@changesets/git" "^1.4.1"
     "@changesets/logger" "^0.0.5"
     "@changesets/pre" "^1.0.12"
@@ -2338,13 +2338,13 @@
     fs-extra "^7.0.1"
     semver "^5.4.1"
 
-"@changesets/get-release-plan@^3.0.13":
-  version "3.0.13"
-  resolved "https://registry.npmjs.org/@changesets/get-release-plan/-/get-release-plan-3.0.13.tgz#f5f7b67b798d1bf2d6e8e546a60c199dd09bfeaf"
-  integrity sha512-Zl/UN4FUzb5LwmzhO2STRijJT5nQCN4syPEs0p1HSIR+O2iVOzes+2yTLF2zGiOx8qPOsFx/GRSAvuhSzm+9ig==
+"@changesets/get-release-plan@^3.0.14":
+  version "3.0.14"
+  resolved "https://registry.npmjs.org/@changesets/get-release-plan/-/get-release-plan-3.0.14.tgz#b4423028a90c63feec12e22c48078f106f8d01f4"
+  integrity sha512-xzSfeyIOvUnbqMuQXVKTYUizreWQfICwoQpvEHoePVbERLocc1tPo5lzR7dmVCFcaA/DcnbP6mxyioeq+JuzSg==
   dependencies:
     "@babel/runtime" "^7.10.4"
-    "@changesets/assemble-release-plan" "^5.2.0"
+    "@changesets/assemble-release-plan" "^5.2.1"
     "@changesets/config" "^2.1.1"
     "@changesets/pre" "^1.0.12"
     "@changesets/read" "^0.5.7"
@@ -20065,7 +20065,7 @@ object-visit@^1.0.0:
   dependencies:
     isobject "^3.0.0"
 
-object.assign@^4.1.0, object.assign@^4.1.2:
+object.assign@^4.1.0:
   version "4.1.2"
   resolved "https://registry.npmjs.org/object.assign/-/object.assign-4.1.2.tgz#0ed54a342eceb37b38ff76eb831a0e788cb63940"
   integrity sha512-ixT2L5THXsApyiUPYKmW+2EHpXXe5Ii3M+f4e+aJFAHao5amFRW6J0OO6c/LU8Be47utCx2GL89hxGB6XSmKuQ==
@@ -20073,6 +20073,16 @@ object.assign@^4.1.0, object.assign@^4.1.2:
     call-bind "^1.0.0"
     define-properties "^1.1.3"
     has-symbols "^1.0.1"
+    object-keys "^1.1.1"
+
+object.assign@^4.1.2:
+  version "4.1.3"
+  resolved "https://registry.npmjs.org/object.assign/-/object.assign-4.1.3.tgz#d36b7700ddf0019abb6b1df1bb13f6445f79051f"
+  integrity sha512-ZFJnX3zltyjcYJL0RoCJuzb+11zWGyaDbjgxZbdV7rFEcHQuYxrZqhow67aA7xpes6LhojyFDaBKAFfogQrikA==
+  dependencies:
+    call-bind "^1.0.2"
+    define-properties "^1.1.4"
+    has-symbols "^1.0.3"
     object-keys "^1.1.1"
 
 object.entries@^1.1.5:
