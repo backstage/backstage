@@ -127,7 +127,7 @@ describe('createRouter', () => {
   beforeEach(async () => {
     const logger = getVoidLogger();
     const databaseTaskStore = await DatabaseTaskStore.create({
-      database: await createDatabase().getClient(),
+      database: createDatabase(),
     });
     taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
 
