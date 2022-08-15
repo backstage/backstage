@@ -56,16 +56,6 @@ import { DeferredEntity } from '@backstage/plugin-catalog-node';
 const BATCH_SIZE = 50;
 const MAX_ANCESTOR_DEPTH = 32;
 
-function nowPlusSeconds(tx: Knex.Transaction, seconds: number) {
-  const client = tx.client.config.client;
-  if (client.includes('sqlite3')) {
-    return tx.raw(`datetime('now', ?)`, [`${seconds} seconds`]);
-  } else if (client === 'pg') {
-    return tx.raw(`now() + interval '${seconds} seconds'`);
-  }
-  return tx.raw(`date_add(now(), interval ${seconds} second)`);
-}
-
 export class DefaultProcessingDatabase implements ProcessingDatabase {
   constructor(
     private readonly options: {
@@ -453,13 +443,26 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .orderBy('next_update_at', 'asc');
 
     const interval = this.options.refreshInterval();
+
+    const nextUpdateAt = (refreshInterval: number) => {
+      if (tx.client.config.client.includes('sqlite3')) {
+        return tx.raw(`datetime('now', ?)`, [`${refreshInterval} seconds`]);
+      }
+
+      if (tx.client.config.client.includes('mysql')) {
+        return tx.raw(`now() + interval ${refreshInterval} second`);
+      }
+
+      return tx.raw(`now() + interval '${refreshInterval} seconds'`);
+    };
+
     await tx<DbRefreshStateRow>('refresh_state')
       .whereIn(
         'entity_ref',
         items.map(i => i.entity_ref),
       )
       .update({
-        next_update_at: nowPlusSeconds(tx, interval),
+        next_update_at: nextUpdateAt(interval),
       });
 
     return {
