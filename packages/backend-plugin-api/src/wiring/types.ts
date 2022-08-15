@@ -36,19 +36,22 @@ export type ExtensionPoint<T> = {
 };
 
 /** @public */
-export interface BackendInitRegistry {
+export interface BackendRegistrationPoints {
   registerExtensionPoint<TExtensionPoint>(
-    ref: ServiceRef<TExtensionPoint>,
+    ref: ExtensionPoint<TExtensionPoint>,
     impl: TExtensionPoint,
   ): void;
   registerInit<Deps extends { [name in string]: unknown }>(options: {
-    deps: { [name in keyof Deps]: ServiceRef<Deps[name]> };
-    init: (deps: Deps) => Promise<void>;
+    deps: {
+      [name in keyof Deps]: ServiceRef<Deps[name]> | ExtensionPoint<Deps[name]>;
+    };
+    init(deps: Deps): Promise<void>;
   }): void;
 }
 
 /** @public */
-export interface BackendRegistrable {
+export interface BackendFeature {
+  // TODO(Rugvip): Try to get rid of the ID at this level, allowing for a feature to register multiple features as a bundle
   id: string;
-  register(reg: BackendInitRegistry): void;
+  register(reg: BackendRegistrationPoints): void;
 }

@@ -16,7 +16,7 @@
 
 import {
   AnyServiceFactory,
-  BackendRegistrable,
+  BackendFeature,
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
 import { ServiceRegistry } from './ServiceRegistry';
@@ -31,8 +31,8 @@ export class BackstageBackend implements Backend {
     this.#initializer = new BackendInitializer(this.#services);
   }
 
-  add(extension: BackendRegistrable): void {
-    this.#initializer.add(extension);
+  add(feature: BackendFeature): void {
+    this.#initializer.add(feature);
   }
 
   async start(): Promise<void> {

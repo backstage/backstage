@@ -15,19 +15,21 @@
  */
 
 import {
-  BackendRegistrable,
+  BackendFeature,
   ExtensionPoint,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
-import { BackendRegisterInit, ServiceHolder } from './types';
-
-type ServiceOrExtensionPoint = ExtensionPoint<unknown> | ServiceRef<unknown>;
+import {
+  BackendRegisterInit,
+  ServiceHolder,
+  ServiceOrExtensionPoint,
+} from './types';
 
 export class BackendInitializer {
   #started = false;
-  #extensions = new Map<BackendRegistrable, unknown>();
+  #features = new Map<BackendFeature, unknown>();
   #registerInits = new Array<BackendRegisterInit>();
-  #extensionPoints = new Map<ServiceOrExtensionPoint, unknown>();
+  #extensionPoints = new Map<ExtensionPoint<unknown>, unknown>();
   #serviceHolder: ServiceHolder;
 
   constructor(serviceHolder: ServiceHolder) {
@@ -38,42 +40,56 @@ export class BackendInitializer {
     deps: { [name: string]: ServiceOrExtensionPoint },
     pluginId: string,
   ) {
-    return Object.fromEntries(
-      await Promise.all(
-        Object.entries(deps).map(async ([name, ref]) => [
-          name,
-          this.#extensionPoints.get(ref) ||
-            (await this.#serviceHolder.get(ref as ServiceRef<unknown>)!(
-              pluginId,
-            )),
-        ]),
-      ),
-    );
-  }
+    const result = new Map<string, unknown>();
+    const missingRefs = new Set<ServiceOrExtensionPoint>();
 
-  add<TOptions>(extension: BackendRegistrable, options?: TOptions) {
-    if (this.#started) {
+    for (const [name, ref] of Object.entries(deps)) {
+      const extensionPoint = this.#extensionPoints.get(
+        ref as ExtensionPoint<unknown>,
+      );
+      if (extensionPoint) {
+        result.set(name, extensionPoint);
+      } else {
+        const factory = await this.#serviceHolder.get(
+          ref as ServiceRef<unknown>,
+        );
+        if (factory) {
+          result.set(name, await factory(pluginId));
+        } else {
+          missingRefs.add(ref);
+        }
+      }
+    }
+
+    if (missingRefs.size > 0) {
+      const missing = Array.from(missingRefs).join(', ');
       throw new Error(
-        'extension can not be added after the backend has started',
+        `No extension point or service available for the following ref(s): ${missing}`,
       );
     }
-    this.#extensions.set(extension, options);
+
+    return Object.fromEntries(result);
+  }
+
+  add<TOptions>(feature: BackendFeature, options?: TOptions) {
+    if (this.#started) {
+      throw new Error('feature can not be added after the backend has started');
+    }
+    this.#features.set(feature, options);
   }
 
   async start(): Promise<void> {
-    console.log(`Starting backend`);
     if (this.#started) {
       throw new Error('Backend has already started');
     }
     this.#started = true;
 
-    for (const [extension] of this.#extensions) {
-      const provides = new Set<ServiceRef<unknown>>();
+    for (const [feature] of this.#features) {
+      const provides = new Set<ExtensionPoint<unknown>>();
 
       let registerInit: BackendRegisterInit | undefined = undefined;
 
-      console.log('Registering', extension.id);
-      extension.register({
+      feature.register({
         registerExtensionPoint: (extensionPointRef, impl) => {
           if (registerInit) {
             throw new Error('registerExtensionPoint called after registerInit');
@@ -89,7 +105,7 @@ export class BackendInitializer {
             throw new Error('registerInit must only be called once');
           }
           registerInit = {
-            id: extension.id,
+            id: feature.id,
             provides,
             consumes: new Set(Object.values(registerOptions.deps)),
             deps: registerOptions.deps,
@@ -100,14 +116,12 @@ export class BackendInitializer {
 
       if (!registerInit) {
         throw new Error(
-          `registerInit was not called by register in ${extension.id}`,
+          `registerInit was not called by register in ${feature.id}`,
         );
       }
 
       this.#registerInits.push(registerInit);
     }
-
-    this.validateSetup();
 
     const orderedRegisterResults = this.#resolveInitOrder(this.#registerInits);
 
@@ -116,8 +130,6 @@ export class BackendInitializer {
       await registerInit.init(deps);
     }
   }
-
-  private validateSetup() {}
 
   #resolveInitOrder(registerInits: Array<BackendRegisterInit>) {
     let registerInitsToOrder = registerInits.slice();
@@ -131,18 +143,17 @@ export class BackendInitializer {
       for (const registerInit of registerInitsToOrder) {
         const unInitializedDependents = [];
 
-        for (const serviceRef of registerInit.provides) {
+        for (const provided of registerInit.provides) {
           if (
             registerInitsToOrder.some(
-              init => init !== registerInit && init.consumes.has(serviceRef),
+              init => init !== registerInit && init.consumes.has(provided),
             )
           ) {
-            unInitializedDependents.push(serviceRef);
+            unInitializedDependents.push(provided);
           }
         }
 
         if (unInitializedDependents.length === 0) {
-          console.log(`DEBUG: pushed ${registerInit.id} to results`);
           orderedRegisterInits.push(registerInit);
           toRemove.add(registerInit);
         }
@@ -150,6 +161,7 @@ export class BackendInitializer {
 
       registerInitsToOrder = registerInitsToOrder.filter(r => !toRemove.has(r));
     }
+
     return orderedRegisterInits;
   }
 }

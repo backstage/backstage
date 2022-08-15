@@ -14,31 +14,54 @@
  * limitations under the License.
  */
 
-import { Backend, createSpecializedBackend } from '@backstage/backend-app-api';
+import { createSpecializedBackend } from '@backstage/backend-app-api';
 import {
   AnyServiceFactory,
   ServiceRef,
   createServiceFactory,
-  BackendRegistrable,
+  BackendFeature,
+  ExtensionPoint,
 } from '@backstage/backend-plugin-api';
 
 /** @alpha */
-export interface TestBackendOptions<TServices extends any[]> {
-  services: readonly [
+export interface TestBackendOptions<
+  TServices extends any[],
+  TExtensionPoints extends any[],
+> {
+  services?: readonly [
     ...{
       [index in keyof TServices]:
         | AnyServiceFactory
         | [ServiceRef<TServices[index]>, Partial<TServices[index]>];
     },
   ];
+  extensionPoints?: readonly [
+    ...{
+      [index in keyof TExtensionPoints]: [
+        ExtensionPoint<TExtensionPoints[index]>,
+        Partial<TExtensionPoints[index]>,
+      ];
+    },
+  ];
+  features?: BackendFeature[];
 }
 
 /** @alpha */
-export function createTestBackend<TServices extends any[]>(
-  options: TestBackendOptions<TServices>,
-): Backend {
-  const factories = options.services?.map(serviceDef => {
+export async function startTestBackend<
+  TServices extends any[],
+  TExtensionPoints extends any[],
+>(options: TestBackendOptions<TServices, TExtensionPoints>): Promise<void> {
+  const {
+    services = [],
+    extensionPoints = [],
+    features = [],
+    ...otherOptions
+  } = options;
+
+  const factories = services.map(serviceDef => {
     if (Array.isArray(serviceDef)) {
+      // if type is ExtensionPoint?
+      // do something differently?
       return createServiceFactory({
         service: serviceDef[0],
         deps: {},
@@ -47,19 +70,26 @@ export function createTestBackend<TServices extends any[]>(
     }
     return serviceDef as AnyServiceFactory;
   });
-  return createSpecializedBackend({ services: factories ?? [] });
-}
 
-/** @alpha */
-export async function startTestBackend<TServices extends any[]>(
-  options: TestBackendOptions<TServices> & {
-    registrables?: BackendRegistrable[];
-  },
-): Promise<void> {
-  const { registrables = [], ...otherOptions } = options;
-  const backend = createTestBackend(otherOptions);
-  for (const reg of registrables) {
-    backend.add(reg);
+  const backend = createSpecializedBackend({
+    ...otherOptions,
+    services: factories,
+  });
+
+  backend.add({
+    id: `---test-extension-point-registrar`,
+    register(reg) {
+      for (const [ref, impl] of extensionPoints) {
+        reg.registerExtensionPoint(ref, impl);
+      }
+
+      reg.registerInit({ deps: {}, async init() {} });
+    },
+  });
+
+  for (const feature of features) {
+    backend.add(feature);
   }
+
   await backend.start();
 }

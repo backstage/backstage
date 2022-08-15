@@ -4,15 +4,10 @@
 
 ```ts
 import { AnyServiceFactory } from '@backstage/backend-plugin-api';
-import { Backend } from '@backstage/backend-app-api';
-import { BackendRegistrable } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-
-// @alpha (undocumented)
-export function createTestBackend<TServices extends any[]>(
-  options: TestBackendOptions<TServices>,
-): Backend;
 
 // @public (undocumented)
 export function isDockerDisabledForTests(): boolean;
@@ -25,16 +20,29 @@ export function setupRequestMockHandlers(worker: {
 }): void;
 
 // @alpha (undocumented)
-export function startTestBackend<TServices extends any[]>(
-  options: TestBackendOptions<TServices> & {
-    registrables?: BackendRegistrable[];
-  },
-): Promise<void>;
+export function startTestBackend<
+  TServices extends any[],
+  TExtensionPoints extends any[],
+>(options: TestBackendOptions<TServices, TExtensionPoints>): Promise<void>;
 
 // @alpha (undocumented)
-export interface TestBackendOptions<TServices extends any[]> {
+export interface TestBackendOptions<
+  TServices extends any[],
+  TExtensionPoints extends any[],
+> {
   // (undocumented)
-  services: readonly [
+  extensionPoints?: readonly [
+    ...{
+      [index in keyof TExtensionPoints]: [
+        ExtensionPoint<TExtensionPoints[index]>,
+        Partial<TExtensionPoints[index]>,
+      ];
+    },
+  ];
+  // (undocumented)
+  features?: BackendFeature[];
+  // (undocumented)
+  services?: readonly [
     ...{
       [index in keyof TServices]:
         | AnyServiceFactory
