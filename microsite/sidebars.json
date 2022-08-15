@@ -219,6 +219,7 @@
       "plugins/integrating-plugin-into-software-catalog",
       "plugins/integrating-search-into-plugins",
       "plugins/composability",
+      "plugins/customization",
       "plugins/analytics",
       {
         "type": "subcategory",

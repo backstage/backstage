@@ -4,8 +4,9 @@
 
 ```ts
 import { AnyServiceFactory } from '@backstage/backend-plugin-api';
-import { BackendRegistrable } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { Logger } from '@backstage/backend-plugin-api';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
@@ -15,13 +16,14 @@ import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 
 // @public (undocumented)
 export interface Backend {
   // (undocumented)
-  add(extension: BackendRegistrable): void;
+  add(feature: BackendFeature): void;
   // (undocumented)
   start(): Promise<void>;
 }
@@ -84,6 +86,11 @@ export const schedulerFactory: ServiceFactory<
   PluginTaskScheduler,
   {}
 >;
+
+// @public (undocumented)
+export type ServiceOrExtensionPoint<T = unknown> =
+  | ExtensionPoint<T>
+  | ServiceRef<T>;
 
 // @public (undocumented)
 export const tokenManagerFactory: ServiceFactory<

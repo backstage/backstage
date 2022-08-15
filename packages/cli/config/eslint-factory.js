@@ -76,7 +76,7 @@ function createConfig(dir, extraConfig = {}) {
       ...parserOptions,
     },
     ignorePatterns: [
-      '.eslintrc.js',
+      '.eslintrc.*',
       '**/dist/**',
       '**/dist-types/**',
       ...(ignorePatterns ?? []),
