@@ -20,12 +20,48 @@ import {
   catalogApiRef,
   CatalogApi,
 } from '@backstage/plugin-catalog-react';
+import { faker } from '@faker-js/faker';
+import { Entity } from '@backstage/catalog-model';
 
-import { generateTestIssue } from '../../utils';
-import { GitHubIssuesApi, gitHubIssuesApiRef } from '../../api';
+import { GitHubIssuesApi, gitHubIssuesApiRef, Issue } from '../../api';
 
 import { GitHubIssues } from './GitHubIssues';
-import { Entity } from '@backstage/catalog-model';
+
+const generateTestIssue = (
+  overwrites: Partial<Issue> = {},
+): { node: Issue } => ({
+  node: {
+    ...{
+      assignees: {
+        edges: [
+          {
+            node: {
+              avatarUrl: faker.internet.avatar(),
+              login: `${faker.word.adjective()}-${faker.animal.type()}`,
+            },
+          },
+        ],
+      },
+      author: {
+        login: `${faker.word.adjective()}-${faker.animal.type()}`,
+      },
+      repository: {
+        nameWithOwner: `${faker.animal.type()}/${faker.animal.type()}`,
+      },
+      title: faker.lorem.words(3),
+      url: faker.internet.url(),
+      participants: {
+        totalCount: +faker.random.numeric(),
+      },
+      updatedAt: faker.date.past().toISOString(),
+      createdAt: faker.date.past().toISOString(),
+      comments: {
+        totalCount: +faker.random.numeric(),
+      },
+    },
+    ...overwrites,
+  },
+});
 
 jest
   .useFakeTimers()
