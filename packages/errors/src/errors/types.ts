@@ -27,12 +27,7 @@ export type ConsumedResponse = {
     get(name: string): string | null;
     has(name: string): boolean;
     set(name: string, value: string): void;
-    forEach(callback: (value: string, name: string) => void): void;
-
-    entries(): IterableIterator<[string, string]>;
-    keys(): IterableIterator<string>;
-    values(): IterableIterator<string>;
-    [Symbol.iterator](): Iterator<[string, string]>;
+    forEach(callbackfn: (value: string, key: string, parent: Headers) => void, thisArg?: any): void;
   };
   readonly ok: boolean;
   readonly redirected: boolean;
