@@ -38,9 +38,16 @@ export function nowPlus(duration: Duration | undefined, knex: Knex) {
   if (!seconds) {
     return knex.fn.now();
   }
-  return knex.client.config.client.includes('sqlite3')
-    ? knex.raw(`datetime('now', ?)`, [`${seconds} seconds`])
-    : knex.raw(`now() + interval '${seconds} seconds'`);
+
+  if (knex.client.config.client.includes('sqlite3')) {
+    return knex.raw(`datetime('now', ?)`, [`${seconds} seconds`]);
+  }
+
+  if (knex.client.config.client.includes('mysql')) {
+    return knex.raw(`now() + interval ${seconds} second`);
+  }
+
+  return knex.raw(`now() + interval '${seconds} seconds'`);
 }
 
 /**
