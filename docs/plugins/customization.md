@@ -1,6 +1,6 @@
 ---
 id: customization
-title: Customization
+title: Customization (Experimental)
 description: Documentation on adding a customization logic to the plugin
 ---
 
