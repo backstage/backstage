@@ -192,7 +192,12 @@ export async function createRouter(
       );
 
       const userEntity = userEntityRef
-        ? await catalogClient.getEntityByRef(userEntityRef, { token })
+        ? await catalogClient
+            .getEntityByRef(userEntityRef, { token })
+            .catch(e => {
+              logger.error(`Failed to get user entity: ${stringifyError(e)}`);
+              return undefined;
+            })
         : undefined;
 
       let auditLog = `Scaffolding task for ${templateRef}`;
