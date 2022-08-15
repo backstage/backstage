@@ -8549,9 +8549,9 @@ alphanum-sort@^1.0.2:
   integrity sha1-l6ERlkmyEa0zaR2fn0hqjsn74KM=
 
 already@^3.2.0:
-  version "3.3.0"
-  resolved "https://registry.npmjs.org/already/-/already-3.3.0.tgz#a5e5becd167cf537b45f8f1c23d331488ed77003"
-  integrity sha512-ADGyKddqEp8t/Wu4ITc0y9GGsgZDgyMeMk38AM5qrPK7VEjNAYD87QGTGGgNhSQahmjw76V3mi+3fJRwPJXcTw==
+  version "3.4.0"
+  resolved "https://registry.npmjs.org/already/-/already-3.4.0.tgz#d32aab4be75ae2352a16f26d688393fc79675c18"
+  integrity sha512-l2neHYJryLga4BiKsVdO3c3E5dCl1OgkKS4pr3nDyxQRABywIyI3MuNaUypj2tLQKy7PFJ5CUrQ7Waa+eVn4Fg==
 
 anafanafo@2.0.0:
   version "2.0.0"
