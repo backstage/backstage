@@ -229,6 +229,26 @@ export enum PullRequestVoteStatus {
   WaitingForAuthor = -5,
 }
 
+// Warning: (ae-missing-release-tag) "Readme" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface Readme {
+  // (undocumented)
+  content: string;
+  // (undocumented)
+  url: string;
+}
+
+// Warning: (ae-missing-release-tag) "ReadmeConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ReadmeConfig {
+  // (undocumented)
+  project: string;
+  // (undocumented)
+  repo: string;
+}
+
 // Warning: (ae-missing-release-tag) "RepoBuild" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)

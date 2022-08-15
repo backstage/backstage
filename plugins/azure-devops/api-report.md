@@ -16,6 +16,8 @@ import { GitTag } from '@backstage/plugin-azure-devops-common';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { PullRequest } from '@backstage/plugin-azure-devops-common';
 import { PullRequestOptions } from '@backstage/plugin-azure-devops-common';
+import { Readme } from '@backstage/plugin-azure-devops-common';
+import { ReadmeConfig } from '@backstage/plugin-azure-devops-common';
 import { RepoBuild } from '@backstage/plugin-azure-devops-common';
 import { RepoBuildOptions } from '@backstage/plugin-azure-devops-common';
 import { SvgIconProps } from '@material-ui/core';
@@ -101,6 +103,8 @@ export interface AzureDevOpsApi {
     items: PullRequest[];
   }>;
   // (undocumented)
+  getReadme(opts: ReadmeConfig): Promise<Readme | undefined>;
+  // (undocumented)
   getRepoBuilds(
     projectName: string,
     repoName: string,
@@ -155,6 +159,8 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   ): Promise<{
     items: PullRequest[];
   }>;
+  // (undocumented)
+  getReadme: (opts: ReadmeConfig) => Promise<Readme | undefined>;
   // (undocumented)
   getRepoBuilds(
     projectName: string,
@@ -269,6 +275,13 @@ export const EntityAzurePullRequestsContent: ({
   defaultLimit,
 }: {
   defaultLimit?: number | undefined;
+}) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "EntityAzureReadmeCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const EntityAzureReadmeCard: (props: {
+  maxHeight?: number | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "Filter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
