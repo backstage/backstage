@@ -1,5 +1,4 @@
 ---
-'@internal/plugin-todo-list-backend': patch
 '@backstage/plugin-permission-backend': patch
 '@backstage/plugin-scaffolder-backend': patch
 ---

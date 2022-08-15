@@ -27,7 +27,6 @@ import { GetKeyFunction } from 'jose/dist/types/types';
 
 import { BackstageIdentityResponse } from './types';
 import { getBearerTokenFromAuthorizationHeader, IdentityApi } from '.';
-import { Request } from 'express';
 
 const CLOCK_MARGIN_S = 10;
 
@@ -78,7 +77,7 @@ export class DefaultIdentityClient implements IdentityApi {
   async getIdentity(req: Request) {
     try {
       return await this.authenticate(
-        getBearerTokenFromAuthorizationHeader(req.headers.authorization),
+        getBearerTokenFromAuthorizationHeader(req.headers.get('authorization')),
       );
     } catch (e) {
       return undefined;

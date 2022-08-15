@@ -60,6 +60,7 @@ export interface RouterOptions {
   reader: UrlReader;
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
+
   actions?: TemplateAction<any>[];
   taskWorkers?: number;
   taskBroker?: TaskBroker;

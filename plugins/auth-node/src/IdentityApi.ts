@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Request } from 'express';
 import { BackstageIdentityResponse } from './types';
 
 /**
@@ -29,7 +28,5 @@ export interface IdentityApi {
    * Returns a BackstageIdentity (user) matching the token.
    * The method throws an error if verification fails.
    */
-  getIdentity(
-    req: Request<any>,
-  ): Promise<BackstageIdentityResponse | undefined>;
+  getIdentity(req: Request): Promise<BackstageIdentityResponse | undefined>;
 }
