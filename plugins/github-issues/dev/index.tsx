@@ -22,22 +22,9 @@ import {
 } from '@backstage/plugin-catalog-react';
 
 import { gitHubIssuesPlugin, GitHubIssuesPage } from '../src';
-import { GitHubIssuesApi, gitHubIssuesApiRef, IssuesByRepo } from '../src/api';
+import { GitHubIssuesApi, gitHubIssuesApiRef } from '../src/api';
 
-import { generateTestIssue } from '../src/utils';
-
-const response: IssuesByRepo = {
-  backstage: {
-    issues: {
-      totalCount: 464,
-      edges: Array.from(Array(40)).map(() =>
-        generateTestIssue({
-          repository: { nameWithOwner: 'backstage/backstage' },
-        }),
-      ),
-    },
-  },
-};
+import testData from './__fixtures__/component-issues-data.json';
 
 createDevApp()
   .registerPlugin(gitHubIssuesPlugin)
@@ -46,7 +33,7 @@ createDevApp()
     deps: {},
     factory: () =>
       ({
-        fetchIssuesByRepoFromGitHub: async () => response,
+        fetchIssuesByRepoFromGitHub: async () => testData,
       } as GitHubIssuesApi),
   })
   .registerApi({
