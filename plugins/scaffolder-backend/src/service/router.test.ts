@@ -267,6 +267,57 @@ describe('createRouter', () => {
       );
     });
 
+    it('should not throw when an invalid authorization header is passed', async () => {
+      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+      const mockToken = 'blob.eyJzdWIiOiIiLCJuYW1lIjoiSm9obiBEb2UifQ.blob';
+
+      await request(app)
+        .post('/v2/tasks')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            required: 'required-value',
+          },
+        });
+      expect(broker).toHaveBeenCalledWith(
+        expect.objectContaining({
+          createdBy: undefined,
+          secrets: {
+            backstageToken: undefined,
+          },
+
+          spec: {
+            apiVersion: mockTemplate.apiVersion,
+            steps: mockTemplate.spec.steps.map((step, index) => ({
+              ...step,
+              id: step.id ?? `step-${index + 1}`,
+              name: step.name ?? step.action,
+            })),
+            output: mockTemplate.spec.output ?? {},
+            parameters: {
+              required: 'required-value',
+            },
+            user: {
+              entity: undefined,
+              ref: undefined,
+            },
+            templateInfo: {
+              entityRef: stringifyEntityRef({
+                kind: 'Template',
+                namespace: 'Default',
+                name: mockTemplate.metadata?.name,
+              }),
+              baseUrl: 'https://dev.azure.com',
+            },
+          },
+        }),
+      );
+    });
+
     it('should not decorate a user when no backstage auth is passed', async () => {
       const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
 
