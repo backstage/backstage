@@ -241,10 +241,12 @@ export async function createRouter(
         })),
         output: template.spec.output ?? {},
         parameters: values,
-        user: {
-          entity: userEntity as UserEntity,
-          ref: userEntityRef,
-        },
+        user: userEntity
+          ? {
+              entity: userEntity as UserEntity,
+              ref: userEntityRef,
+            }
+          : undefined,
         templateInfo: {
           entityRef: stringifyEntityRef({
             kind,
