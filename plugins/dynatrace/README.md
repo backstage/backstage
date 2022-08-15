@@ -62,11 +62,11 @@ To show recent results from a Synthetic Monitor, add the following annotation to
 # [...]
 metadata:
   annotations:
-    dynatrace.com/dynatrace-synthetics-ids: SYNTHETIC_ID, SYNTHETIC_ID_2, ...
+    dynatrace.com/synthetics-ids: SYNTHETIC_ID, SYNTHETIC_ID_2, ...
 # [...]
 ```
 
-The annotation can also contain a comma separated list of Synthetic Ids to surface details for multiple monitors!
+The annotation can also contain a comma or space separated list of Synthetic Ids to surface details for multiple monitors!
 
 The `SYNTHETIC_ID` can be found in Dynatrace by browsing to the Synthetic monitor. It will be located in the browser address bar in the resource path - `https://example.dynatrace.com/ui/http-monitor/HTTP_CHECK-1234` for an Http check, or `https://example.dynatrace.com/ui/browser-monitor/SYNTHETIC_TEST-1234` for a browser clickpath.
 
