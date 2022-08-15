@@ -7113,9 +7113,9 @@
   integrity sha512-K3e+NZlpCKd6Bd/EIdqjFJRFHbrq5TzPPLwREk5Iv/YoIjQrs6ljdAUCo+Lb2xFlGNOjGSE0dqsVD19cZL137w==
 
 "@types/inquirer@^8.1.3":
-  version "8.2.2"
-  resolved "https://registry.npmjs.org/@types/inquirer/-/inquirer-8.2.2.tgz#7ec5f166026b55b10df011521c8a63920cb84a7a"
-  integrity sha512-HXoFOl+KS4yvmUjisi83VpuSBOeeXIzdJfoT/v2pUruqybpHy0Dz1DyXy3E2jNH0cSVKJZV92VOnFBwJR6k83A==
+  version "8.2.3"
+  resolved "https://registry.npmjs.org/@types/inquirer/-/inquirer-8.2.3.tgz#985515d04879a0d0c1f5f49ec375767410ba9dab"
+  integrity sha512-ZlBqD+8WIVNy3KIVkl+Qne6bGLW2erwN0GJXY9Ri/9EMbyupee3xw3H0Mmv5kJoLyNpfd/oHlwKxO0DUDH7yWA==
   dependencies:
     "@types/through" "*"
 
