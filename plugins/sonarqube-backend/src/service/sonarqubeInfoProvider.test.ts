@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '../../../../packages/config';
+import { ConfigReader } from '@backstage/config';
 import {
   DefaultSonarqubeInfoProvider,
   SonarqubeConfig,
 } from './sonarqubeInfoProvider';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '../../../../packages/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { rest, RestRequest } from 'msw';
 
 describe('SonarqubeConfig', () => {

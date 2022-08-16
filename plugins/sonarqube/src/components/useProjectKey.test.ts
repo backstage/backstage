@@ -19,7 +19,7 @@ import {
   SONARQUBE_PROJECT_KEY_ANNOTATION,
   useProjectInfo,
 } from './useProjectKey';
-import { Entity } from '../../../../packages/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 
 const createDummyEntity = (sonarqubeAnnotationValue: string): Entity => {
   return {
