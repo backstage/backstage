@@ -41,6 +41,7 @@ describe('deserializeDirectoryContents', () => {
         path: 'a.txt',
         content: Buffer.from('a', 'utf8'),
         executable: false,
+        symlink: false,
       },
     ]);
   });
@@ -65,16 +66,19 @@ describe('deserializeDirectoryContents', () => {
         path: 'a.txt',
         content: Buffer.from('a', 'utf8'),
         executable: false,
+        symlink: false,
       },
       {
         path: 'a/b.txt',
         content: Buffer.from('b', 'utf8'),
         executable: false,
+        symlink: false,
       },
       {
         path: 'a/b/c.txt',
         content: Buffer.from('c', 'utf8'),
         executable: false,
+        symlink: false,
       },
     ]);
   });

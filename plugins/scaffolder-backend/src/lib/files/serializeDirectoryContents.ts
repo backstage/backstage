@@ -44,6 +44,9 @@ export async function serializeDirectoryContents(
     dot: true,
     gitignore: options?.gitignore,
     followSymbolicLinks: false,
+    // In order to pick up 'broken' symlinks, we oxymoronically request files AND folders yet we filter out folders
+    // This is because broken symlinks aren't classed as files so we need to glob everything
+    onlyFiles: false,
     objectMode: true,
     stats: true,
   });
@@ -51,12 +54,26 @@ export async function serializeDirectoryContents(
   const limiter = limiterFactory(10);
 
   return Promise.all(
-    paths.map(async ({ path, stats }) => ({
+    paths
+      .filter(({ dirent }) => !dirent.isDirectory())
+      .filter(({ dirent, path }) => {
+        if (!dirent.isSymbolicLink()) return true
+        if (!fs.existsSync(joinPath(sourcePath, path))) return true  // We only want symlinks that DO NOT exist
+        return false
+      })
+      .map(async ({ dirent, path, stats }) => ({
       path,
-      content: await limiter(async () =>
-        fs.readFile(joinPath(sourcePath, path)),
-      ),
+      content: await limiter(async () => {
+        const absFilePath = joinPath(sourcePath, path)
+        // Treat readlink as an explicit Buffer instead of implict utf-8 for consistency between types
+        const readLinkConf = { options: { encoding: null }}
+        if (dirent.isSymbolicLink()) {
+          return fs.readlink(absFilePath, readLinkConf)
+        }
+        return fs.readFile(absFilePath)
+      }),
       executable: isExecutable(stats?.mode),
+      symlink: dirent.isSymbolicLink(),
     })),
   );
 }

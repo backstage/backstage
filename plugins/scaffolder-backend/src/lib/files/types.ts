@@ -18,4 +18,5 @@ export interface SerializedFile {
   path: string;
   content: Buffer;
   executable?: boolean;
+  symlink?: boolean;
 }

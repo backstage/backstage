@@ -255,15 +255,17 @@ export const createPublishGithubPullRequestAction = ({
           {
             // See the properties of tree items
             // in https://docs.github.com/en/rest/reference/git#trees
-            mode: file.executable ? '100755' : '100644',
+            mode: file.symlink ? '120000' : (file.executable ? '100755' : '100644'),
             // Always use base64 encoding to avoid doubling a binary file in size
             // due to interpreting a binary file as utf-8 and sending github
             // the utf-8 encoded content.
             //
             // For example, the original gradle-wrapper.jar is 57.8k in https://github.com/kennethzfeng/pull-request-test/pull/5/files.
             // Its size could be doubled to 98.3K (See https://github.com/kennethzfeng/pull-request-test/pull/4/files)
-            encoding: 'base64' as const,
-            content: file.content.toString('base64'),
+            encoding: file.symlink ? 'utf-8' : 'base64',
+            content: file.content.toString(
+              (file.symlink ? 'utf-8' : 'base64')
+            ),
           },
         ]),
       );
