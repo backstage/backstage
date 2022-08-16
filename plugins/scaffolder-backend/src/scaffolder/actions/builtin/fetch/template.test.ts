@@ -28,6 +28,7 @@ import { PassThrough } from 'stream';
 import { fetchContents } from './helpers';
 import { ActionContext, TemplateAction } from '../../types';
 import { createFetchTemplateAction } from './template';
+import path from 'path';
 
 jest.mock('./helpers', () => ({
   fetchContents: jest.fn(),
@@ -225,26 +226,33 @@ describe('fetch:template', () => {
 
       it('skips empty filename', async () => {
         await expect(
-          fs.pathExists(`${workspacePath}/target/dummy-file.txt`),
+          fs.pathExists(path.join(workspacePath, 'target', 'dummy-file.txt')),
         ).resolves.toEqual(false);
       });
 
       it('skips empty filename syntax #2', async () => {
         await expect(
-          fs.pathExists(`${workspacePath}/target/dummy-file2.txt`),
+          fs.pathExists(path.join(workspacePath, 'target', 'dummy-file2.txt')),
         ).resolves.toEqual(false);
       });
 
       it('skips empty directory', async () => {
         await expect(
-          fs.pathExists(`${workspacePath}/target/dummy-dir/dummy-file3.txt`),
+          fs.pathExists(
+            path.join(workspacePath, 'target', 'dummy-dir', 'dummy-file3.txt'),
+          ),
         ).resolves.toEqual(false);
       });
 
       it('skips empty filename inside directory', async () => {
         await expect(
           fs.pathExists(
-            `${workspacePath}/target/subdir3/fileSkippedInsideDirectory.txt`,
+            path.join(
+              workspacePath,
+              'target',
+              'subdir3',
+              'fileSkippedInsideDirectory.txt',
+            ),
           ),
         ).resolves.toEqual(false);
       });
@@ -252,13 +260,25 @@ describe('fetch:template', () => {
       it('skips content of empty subdirectory', async () => {
         await expect(
           fs.pathExists(
-            `${workspacePath}/target/subdir2/multipleDirectorySkippedFile.txt`,
+            path.join(
+              workspacePath,
+              'target',
+              'subdir2',
+              'multipleDirectorySkippedFile.txt',
+            ),
           ),
         ).resolves.toEqual(false);
 
         await expect(
           fs.pathExists(
-            `${workspacePath}/target/subdir2/dummy-subdir/dummy-subdir/multipleDirectorySkippedFile.txt`,
+            path.join(
+              workspacePath,
+              'target',
+              'subdir2',
+              'dummy-subdir',
+              'dummy-subdir',
+              'multipleDirectorySkippedFile.txt',
+            ),
           ),
         ).resolves.toEqual(false);
       });
@@ -317,20 +337,31 @@ describe('fetch:template', () => {
 
       it('copies files with no templating in names or content successfully', async () => {
         await expect(
-          fs.readFile(`${workspacePath}/target/static.txt`, 'utf-8'),
+          fs.readFile(
+            path.join(workspacePath, 'target', 'static.txt'),
+            'utf-8',
+          ),
         ).resolves.toEqual('static content');
       });
 
       it('copies files with templated names successfully', async () => {
         await expect(
-          fs.readFile(`${workspacePath}/target/test-project.txt`, 'utf-8'),
+          fs.readFile(
+            path.join(workspacePath, 'target', 'test-project.txt'),
+            'utf-8',
+          ),
         ).resolves.toEqual('static content');
       });
 
       it('copies files with templated content successfully', async () => {
         await expect(
           fs.readFile(
-            `${workspacePath}/target/subdir/templated-content.txt`,
+            path.join(
+              workspacePath,
+              'target',
+              'subdir',
+              'templated-content.txt',
+            ),
             'utf-8',
           ),
         ).resolves.toEqual('test-project: 1234');
@@ -338,37 +369,43 @@ describe('fetch:template', () => {
 
       it('processes dotfiles', async () => {
         await expect(
-          fs.readFile(`${workspacePath}/target/.test-project`, 'utf-8'),
+          fs.readFile(
+            path.join(workspacePath, 'target', '.test-project'),
+            'utf-8',
+          ),
         ).resolves.toEqual('["first","second","third"]');
       });
 
       it('copies empty directories', async () => {
         await expect(
-          fs.readdir(`${workspacePath}/target/empty-dir-1234`, 'utf-8'),
+          fs.readdir(
+            path.join(workspacePath, 'target', 'empty-dir-1234'),
+            'utf-8',
+          ),
         ).resolves.toEqual([]);
       });
 
       it('copies binary files as-is without processing them', async () => {
         await expect(
-          fs.readFile(`${workspacePath}/target/a-binary-file.png`),
+          fs.readFile(path.join(workspacePath, 'target', 'a-binary-file.png')),
         ).resolves.toEqual(aBinaryFile);
       });
       it('copies files and maintains the original file permissions', async () => {
         await expect(
           fs
-            .stat(`${workspacePath}/target/an-executable.sh`)
+            .stat(path.join(workspacePath, 'target', 'an-executable.sh'))
             .then(fObj => fObj.mode),
         ).resolves.toEqual(parseInt('100755', 8));
       });
       it('copies file symlinks as-is without processing them', async () => {
         await expect(
           fs
-            .lstat(`${workspacePath}/target/symlink`)
+            .lstat(path.join(workspacePath, 'target', 'symlink'))
             .then(i => i.isSymbolicLink()),
         ).resolves.toBe(true);
 
         await expect(
-          fs.realpath(`${workspacePath}/target/symlink`),
+          fs.realpath(path.join(workspacePath, 'target', 'symlink')),
         ).resolves.toBe(joinPath(workspacePath, 'target', 'a-binary-file.png'));
       });
     });
@@ -408,7 +445,12 @@ describe('fetch:template', () => {
     it('ignores template syntax in files matched in copyWithoutRender', async () => {
       await expect(
         fs.readFile(
-          `${workspacePath}/target/.unprocessed/templated-content-\${{ values.name }}.txt`,
+          path.join(
+            workspacePath,
+            'target',
+            '.unprocessed',
+            'templated-content-${{ values.name }}.txt',
+          ),
           'utf-8',
         ),
       ).resolves.toEqual('${{ values.count }}');
@@ -417,7 +459,12 @@ describe('fetch:template', () => {
     it('processes files not matched in copyWithoutRender', async () => {
       await expect(
         fs.readFile(
-          `${workspacePath}/target/processed/templated-content-test-project.txt`,
+          path.join(
+            workspacePath,
+            'target',
+            'processed',
+            'templated-content-test-project.txt',
+          ),
           'utf-8',
         ),
       ).resolves.toEqual('1234');
@@ -458,7 +505,12 @@ describe('fetch:template', () => {
     it('renders path template and ignores content template in files matched in copyWithoutTemplating', async () => {
       await expect(
         fs.readFile(
-          `${workspacePath}/target/.unprocessed/templated-content-test-project.txt`,
+          path.join(
+            workspacePath,
+            'target',
+            '.unprocessed',
+            'templated-content-test-project.txt',
+          ),
           'utf-8',
         ),
       ).resolves.toEqual('${{ values.count }}');
@@ -467,7 +519,12 @@ describe('fetch:template', () => {
     it('processes files not matched in copyWithoutTemplating', async () => {
       await expect(
         fs.readFile(
-          `${workspacePath}/target/processed/templated-content-test-project.txt`,
+          path.join(
+            workspacePath,
+            'target',
+            'processed',
+            'templated-content-test-project.txt',
+          ),
           'utf-8',
         ),
       ).resolves.toEqual('1234');
@@ -509,14 +566,17 @@ describe('fetch:template', () => {
 
     it('copies files with cookiecutter-style templated names successfully', async () => {
       await expect(
-        fs.readFile(`${workspacePath}/target/test-project.txt`, 'utf-8'),
+        fs.readFile(
+          path.join(workspacePath, 'target', 'test-project.txt'),
+          'utf-8',
+        ),
       ).resolves.toEqual('static content');
     });
 
     it('copies files with cookiecutter-style templated content successfully', async () => {
       await expect(
         fs.readFile(
-          `${workspacePath}/target/subdir/templated-content.txt`,
+          path.join(workspacePath, 'target', 'subdir', 'templated-content.txt'),
           'utf-8',
         ),
       ).resolves.toEqual('test-project: 1234');
@@ -524,7 +584,10 @@ describe('fetch:template', () => {
 
     it('includes the jsonify filter', async () => {
       await expect(
-        fs.readFile(`${workspacePath}/target/test-project.json`, 'utf-8'),
+        fs.readFile(
+          path.join(workspacePath, 'target', 'test-project.json'),
+          'utf-8',
+        ),
       ).resolves.toEqual('["first","second","third"]');
     });
   });
@@ -568,26 +631,32 @@ describe('fetch:template', () => {
 
     it('copies files with no templating in names or content successfully', async () => {
       await expect(
-        fs.readFile(`${workspacePath}/target/static.txt`, 'utf-8'),
+        fs.readFile(path.join(workspacePath, 'target', 'static.txt'), 'utf-8'),
       ).resolves.toEqual('static content');
     });
 
     it('copies files with templated names successfully', async () => {
       await expect(
-        fs.readFile(`${workspacePath}/target/test-project.txt`, 'utf-8'),
+        fs.readFile(
+          path.join(workspacePath, 'target', 'test-project.txt'),
+          'utf-8',
+        ),
       ).resolves.toEqual('static content');
     });
 
     it('copies jinja2 files with templated names successfully', async () => {
       await expect(
-        fs.readFile(`${workspacePath}/target/test-project.txt.jinja2`, 'utf-8'),
+        fs.readFile(
+          path.join(workspacePath, 'target', 'test-project.txt.jinja2'),
+          'utf-8',
+        ),
       ).resolves.toEqual('${{ values.name }}: ${{ values.count }}');
     });
 
     it('copies files with templated content successfully', async () => {
       await expect(
         fs.readFile(
-          `${workspacePath}/target/subdir/templated-content.txt`,
+          path.join(workspacePath, 'target', 'subdir', 'templated-content.txt'),
           'utf-8',
         ),
       ).resolves.toEqual('test-project: 1234');
@@ -595,19 +664,25 @@ describe('fetch:template', () => {
 
     it('processes dotfiles', async () => {
       await expect(
-        fs.readFile(`${workspacePath}/target/.test-project`, 'utf-8'),
+        fs.readFile(
+          path.join(workspacePath, 'target', '.test-project'),
+          'utf-8',
+        ),
       ).resolves.toEqual('["first","second","third"]');
     });
 
     it('copies empty directories', async () => {
       await expect(
-        fs.readdir(`${workspacePath}/target/empty-dir-1234`, 'utf-8'),
+        fs.readdir(
+          path.join(workspacePath, 'target', 'empty-dir-1234'),
+          'utf-8',
+        ),
       ).resolves.toEqual([]);
     });
 
     it('copies binary files as-is without processing them', async () => {
       await expect(
-        fs.readFile(`${workspacePath}/target/a-binary-file.png`),
+        fs.readFile(path.join(workspacePath, 'target', 'a-binary-file.png')),
       ).resolves.toEqual(aBinaryFile);
     });
   });
@@ -642,13 +717,19 @@ describe('fetch:template', () => {
 
     it('does not process .njk files', async () => {
       await expect(
-        fs.readFile(`${workspacePath}/target/test-project.njk`, 'utf-8'),
+        fs.readFile(
+          path.join(workspacePath, 'target', 'test-project.njk'),
+          'utf-8',
+        ),
       ).resolves.toEqual('${{ values.name }}: ${{ values.count }}');
     });
 
     it('does process .jinja2 files', async () => {
       await expect(
-        fs.readFile(`${workspacePath}/target/test-project.txt`, 'utf-8'),
+        fs.readFile(
+          path.join(workspacePath, 'target', 'test-project.txt'),
+          'utf-8',
+        ),
       ).resolves.toEqual('test-project: 1234');
     });
   });

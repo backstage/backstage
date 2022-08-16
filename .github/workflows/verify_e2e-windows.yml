@@ -10,6 +10,7 @@ on:
       - 'packages/cli/**'
       - 'packages/e2e-test/**'
       - 'packages/create-app/**'
+      - 'plugins/scaffolder-backend/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
