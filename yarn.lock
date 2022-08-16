@@ -7784,9 +7784,9 @@
     "@types/node" "*"
 
 "@types/webpack-env@^1.15.2", "@types/webpack-env@^1.15.3":
-  version "1.17.0"
-  resolved "https://registry.npmjs.org/@types/webpack-env/-/webpack-env-1.17.0.tgz#f99ce359f1bfd87da90cc4a57cab0a18f34a48d0"
-  integrity sha512-eHSaNYEyxRA5IAG0Ym/yCyf86niZUIF/TpWKofQI/CVfh5HsMEUyfE2kwFxha4ow0s5g0LfISQxpDKjbRDrizw==
+  version "1.18.0"
+  resolved "https://registry.npmjs.org/@types/webpack-env/-/webpack-env-1.18.0.tgz#ed6ecaa8e5ed5dfe8b2b3d00181702c9925f13fb"
+  integrity sha512-56/MAlX5WMsPVbOg7tAxnYvNYMMWr/QJiIp6BxVSW3JJXUVzzOn64qW8TzQyMSqSUFM2+PVI4aUHcHOzIz/1tg==
 
 "@types/webpack@^5.28.0":
   version "5.28.0"
