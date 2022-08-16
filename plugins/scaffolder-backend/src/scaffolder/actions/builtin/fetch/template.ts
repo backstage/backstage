@@ -274,7 +274,7 @@ export function createFetchTemplateAction(options: {
           );
         }
 
-        if (location.endsWith(path.sep)) {
+        if (location.endsWith('/')) {
           ctx.logger.info(
             `Writing directory ${location} to template output path.`,
           );
@@ -282,7 +282,7 @@ export function createFetchTemplateAction(options: {
         } else {
           const inputFilePath = resolveSafeChildPath(templateDir, location);
           const stats = await fs.promises.lstat(inputFilePath);
-
+          console.log(JSON.stringify({ inputFilePath }));
           if (stats.isSymbolicLink() || (await isBinaryFile(inputFilePath))) {
             ctx.logger.info(
               `Copying file binary or symbolic link at ${location}, to template output path.`,
@@ -311,12 +311,12 @@ export function createFetchTemplateAction(options: {
 }
 
 function containsSkippedContent(localOutputPath: string): boolean {
-  // if the path is absolute means that the root directory has been skipped
   // if the path is empty means that there is a file skipped in the root
+  // if the path is starts with a separator it means that the root directory has been skipped
   // if the path includes // means that there is a subdirectory skipped
   return (
     localOutputPath === '' ||
-    path.isAbsolute(localOutputPath) ||
+    localOutputPath.startsWith(path.sep) ||
     localOutputPath.includes(`${path.sep}${path.sep}`)
   );
 }
