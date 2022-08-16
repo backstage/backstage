@@ -257,7 +257,8 @@ describe('fetch:template', () => {
         ).resolves.toEqual(false);
       });
 
-      it('skips content of empty subdirectory', async () => {
+      // eslint-disable-next-line jest/no-focused-tests
+      it.only('skips content of empty subdirectory', async () => {
         await expect(
           fs.pathExists(
             path.join(

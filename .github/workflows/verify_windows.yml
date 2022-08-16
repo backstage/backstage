@@ -34,30 +34,35 @@ jobs:
 
       # Windows file operation slowness means there's no point caching this
       - name: yarn install
+        working-directory: plugins\scaffolder-backend
         run: yarn install --frozen-lockfile
 
-      - name: lint
-        run: yarn backstage-cli repo lint
+      - name: tes
+        working-directory: plugins\scaffolder-backend
+        run: yarn test
 
-      - name: type checking and declarations
-        run: yarn tsc:full
+      # - name: lint
+      #   run: yarn backstage-cli repo lint
 
-      - name: verify type dependencies
-        run: yarn lint:type-deps
+      # - name: type checking and declarations
+      #   run: yarn tsc:full
 
-      - name: test
-        run: yarn lerna -- run test
-        env:
-          BACKSTAGE_NEXT_TESTS: 1
-          BACKSTAGE_TEST_DISABLE_DOCKER: 1
+      # - name: verify type dependencies
+      #   run: yarn lint:type-deps
 
-      # credit: https://github.com/appleboy/discord-action/issues/3#issuecomment-731426861
-      - name: Discord notification
-        if: ${{ failure() }}
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        run: |
-          $MESSAGE=@"
-          {\"content\": \"Windows master build failed https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}\"}
-          "@
-          C:\msys64\usr\bin\curl.exe -i -H "Accept: application/json" -H "Content-Type:application/json" -X POST $env:DISCORD_WEBHOOK --data $MESSAGE
+      # - name: test
+      #   run: yarn lerna -- run test
+      #   env:
+      #     BACKSTAGE_NEXT_TESTS: 1
+      #     BACKSTAGE_TEST_DISABLE_DOCKER: 1
+
+      # # credit: https://github.com/appleboy/discord-action/issues/3#issuecomment-731426861
+      # - name: Discord notification
+      #   if: ${{ failure() }}
+      #   env:
+      #     DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      #   run: |
+      #     $MESSAGE=@"
+      #     {\"content\": \"Windows master build failed https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}\"}
+      #     "@
+      #     C:\msys64\usr\bin\curl.exe -i -H "Accept: application/json" -H "Content-Type:application/json" -X POST $env:DISCORD_WEBHOOK --data $MESSAGE
