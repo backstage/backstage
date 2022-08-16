@@ -1,21 +1,26 @@
 import React from 'react';
 
-export function Typeform() {
-  return (
-    <>
-      <div
-        data-tf-sidetab="zcOaKikB"
-        data-tf-width="320"
-        data-tf-height="400"
-        data-tf-custom-icon="https://images.typeform.com/images/769rUZbqPrvq"
-        data-tf-button-color="#5CD6C8"
-        data-tf-button-text="New Adopters"
-        data-tf-iframe-props="title=Public Adopter: Hand Raiser Form"
-        data-tf-medium="snippet"
-        data-tf-hidden="utm_source=.iobanner"
-        style={{ all: 'unset' }}
-      />
-      <script src="//embed.typeform.com/next/embed.js" />
-    </>
-  );
+export class Typeform extends React.Component {
+  componentDidMount() {
+    console.log('ere');
+  }
+  render() {
+    return (
+      <div>
+        <div id="hubspotForm"></div>
+        
+        <script src="https://js.hsforms.net/forms/v2.js" />
+        <script type="text/javascript" dangerouslySetInnerHTML={{ __html: `function setupForm() {
+            if (typeof window !== undefined) {
+                window.hbspt.forms.create({
+                portalId: '21894833',
+                formId: '9a5aa2af-87f3-4a44-819f-88ee243bb61e',
+                target: '#hubspotForm',
+                pageId: '79735607665',
+              })
+            }}` }}>
+        </script>
+      </div>
+    );
+  }
 }

@@ -18,7 +18,6 @@ class Index extends React.Component {
   render() {
     const { config: siteConfig } = this.props;
     const { baseUrl } = siteConfig;
-
     return (
       <main className="MainContent MainContent--gradient">
         <Typeform />
