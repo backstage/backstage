@@ -145,13 +145,14 @@ describe('publish:github', () => {
     expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalledWith({
       description: 'description',
       name: 'repo',
+      homepage: 'https://example.com',
       org: 'owner',
-      private: false,
+      private: true,
       delete_branch_on_merge: false,
       allow_squash_merge: true,
       allow_merge_commit: true,
       allow_rebase_merge: true,
-      visibility: 'public',
+      visibility: 'private',
     });
   });
 
@@ -207,8 +208,9 @@ describe('publish:github', () => {
       mockOctokit.rest.repos.createForAuthenticatedUser,
     ).toHaveBeenCalledWith({
       description: 'description',
+      homepage: 'https://example.com',
       name: 'repo',
-      private: false,
+      private: true,
       delete_branch_on_merge: false,
       allow_squash_merge: true,
       allow_merge_commit: true,
