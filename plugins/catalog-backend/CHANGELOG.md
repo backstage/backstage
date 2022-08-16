@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-backend
 
+## 1.3.1
+
+### Patch Changes
+
+- 56e1b4b89c: Fixed typos in alpha types.
+- e3d3018531: Fix issue for conditional decisions based on properties stored as arrays, like tags.
+
+  Before this change, having a permission policy returning conditional decisions based on metadata like tags, such like `createCatalogConditionalDecision(permission, catalogConditions.hasMetadata('tags', 'java'),)`, was producing wrong results. The issue occurred when authorizing entities already loaded from the database, for example when authorizing `catalogEntityDeletePermission`.
+
+- 059ae348b4: Use the non-deprecated form of table.unique in knex
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/backend-plugin-api@0.1.1
+  - @backstage/plugin-catalog-node@1.0.1
+  - @backstage/integration@1.3.0
+  - @backstage/plugin-catalog-common@1.0.5
+  - @backstage/plugin-permission-node@0.6.4
+
 ## 1.3.1-next.2
 
 ### Patch Changes

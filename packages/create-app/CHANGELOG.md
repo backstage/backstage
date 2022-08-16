@@ -1,5 +1,35 @@
 # @backstage/create-app
 
+## 0.4.30
+
+### Patch Changes
+
+- 73cee58fc2: Bumped create-app version.
+- f762386d48: Bumped create-app version.
+- b162bbf464: Bumped create-app version.
+- db76fc6255: The `better-sqlite3` dependency has been moved back to production `"dependencies"` in `packages/backend/package.json`, with instructions in the Dockerfile to move it to `"devDependencies"` if desired. There is no need to apply this change to existing apps, unless you want your production image to have SQLite available as a database option.
+- ab9edd8b58: Updated backend to write stack trace when the backend fails to start up.
+
+  To apply this change to your Backstage installation, make the following change to `packages/backend/src/index.ts`
+
+  ```diff
+      cors:
+      origin: http://localhost:3000
+  -    console.error(`Backend failed to start up, ${error}`);
+  +    console.error('Backend failed to start up', error);
+  ```
+
+- 0174a0a022: Add `PATCH` and `HEAD` to the `Access-Control-Allow-Methods`.
+
+  To apply this change to your Backstage installation make the following change to your `app-config.yaml`
+
+  ```diff
+     cors:
+       origin: http://localhost:3000
+  -    methods: [GET, POST, PUT, DELETE]
+  +    methods: [GET, POST, PUT, DELETE, PATCH, HEAD]
+  ```
+
 ## 0.4.30-next.3
 
 ### Patch Changes
