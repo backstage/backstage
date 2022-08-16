@@ -2673,11 +2673,6 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@faker-js/faker@^7.4.0":
-  version "7.4.0"
-  resolved "https://registry.npmjs.org/@faker-js/faker/-/faker-7.4.0.tgz#cac720d860a89d487b47e55e66a4fd114f1d3fe5"
-  integrity sha512-xDd3Tvkt2jgkx1LkuwwxpNBy/Oe+LkZBTwkgEFTiWpVSZgQ5sc/LenbHKRHbFl0dq/KFeeq/szyyPtpJRKY0fg==
-
 "@fmvilas/pseudo-yaml-ast@^0.3.1":
   version "0.3.1"
   resolved "https://registry.npmjs.org/@fmvilas/pseudo-yaml-ast/-/pseudo-yaml-ast-0.3.1.tgz#66c5df2c2d76ba8571dc5bd98fda4d7dce6121de"

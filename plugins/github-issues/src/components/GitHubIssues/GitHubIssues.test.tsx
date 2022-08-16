@@ -20,43 +20,41 @@ import {
   catalogApiRef,
   CatalogApi,
 } from '@backstage/plugin-catalog-react';
-import { faker } from '@faker-js/faker';
 import { Entity } from '@backstage/catalog-model';
 
 import { GitHubIssuesApi, gitHubIssuesApiRef, Issue } from '../../api';
 
 import { GitHubIssues } from './GitHubIssues';
 
-const generateTestIssue = (
-  overwrites: Partial<Issue> = {},
-): { node: Issue } => ({
+const getTestIssue = (overwrites: Partial<Issue> = {}): { node: Issue } => ({
   node: {
     ...{
       assignees: {
         edges: [
           {
             node: {
-              avatarUrl: faker.internet.avatar(),
-              login: `${faker.word.adjective()}-${faker.animal.type()}`,
+              avatarUrl:
+                'https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1112.jpg',
+              login: 'worthless-horse',
             },
           },
         ],
       },
       author: {
-        login: `${faker.word.adjective()}-${faker.animal.type()}`,
+        login: 'next-dog',
       },
       repository: {
-        nameWithOwner: `${faker.animal.type()}/${faker.animal.type()}`,
+        nameWithOwner: 'backstage/backstage',
       },
-      title: faker.lorem.words(3),
-      url: faker.internet.url(),
+      title: 'quasi labore qui',
+      url: 'http://flowery-muscatel.net',
       participants: {
-        totalCount: +faker.random.numeric(),
+        totalCount: 3,
       },
-      updatedAt: faker.date.past().toISOString(),
-      createdAt: faker.date.past().toISOString(),
+      updatedAt: '2022-05-02T09:46:35.885Z',
+      createdAt: '2022-06-03T07:11:22.320Z',
       comments: {
-        totalCount: +faker.random.numeric(),
+        totalCount: 6,
       },
     },
     ...overwrites,
@@ -114,7 +112,7 @@ describe('GitHubIssues', () => {
   });
 
   it('should render correctly', async () => {
-    const testIssue = generateTestIssue({
+    const testIssue = getTestIssue({
       createdAt: '2020-04-19T10:15:47.614Z',
       updatedAt: '2020-04-20T00:15:47.614Z',
     });
