@@ -20,12 +20,9 @@ import { InfoCard, Progress } from '@backstage/core-components';
 import RefreshIcon from '@material-ui/icons/Refresh';
 
 import { useEntityGitHubRepositories } from '../../hooks/useEntityGitHubRepositories';
-import {
-  RepoIssues,
-  useGetIssuesByRepoFromGitHub,
-} from '../../hooks/useGetIssuesByRepoFromGitHub';
+import { useGetIssuesByRepoFromGitHub } from '../../hooks/useGetIssuesByRepoFromGitHub';
 
-import { IssueList } from './IssuesList';
+import { IssuesList } from './IssuesList';
 import { NoRepositoriesInfo } from './NoRepositoriesInfo';
 
 /**
@@ -39,29 +36,12 @@ export type GitHubIssuesProps = {
 export const GitHubIssues = (props: GitHubIssuesProps) => {
   const { itemsPerPage = 10, itemsPerRepo = 40 } = props;
 
-  const [isLoading, setIsLoading] = React.useState(true);
-
-  const [issuesByRepository, setIssuesByRepository] =
-    React.useState<Record<string, RepoIssues>>();
-
   const { repositories } = useEntityGitHubRepositories();
-  const getIssues = useGetIssuesByRepoFromGitHub();
-
-  const fetchGitHubIssues = React.useCallback(async () => {
-    setIsLoading(true);
-    const issuesByRepo = await getIssues(repositories, itemsPerRepo);
-
-    setIssuesByRepository(issuesByRepo);
-    setIsLoading(false);
-  }, [itemsPerRepo, getIssues, repositories]);
-
-  React.useEffect(() => {
-    if (repositories.length) {
-      fetchGitHubIssues();
-    } else {
-      setIsLoading(false);
-    }
-  }, [repositories.length, fetchGitHubIssues]);
+  const {
+    isLoading,
+    gitHubIssuesByRepo: issuesByRepository,
+    retry,
+  } = useGetIssuesByRepoFromGitHub(repositories, itemsPerRepo);
 
   if (!repositories.length) {
     return <NoRepositoriesInfo />;
@@ -72,7 +52,7 @@ export const GitHubIssues = (props: GitHubIssuesProps) => {
       title={
         <Box display="flex" justifyContent="flex-start" alignItems="center">
           <Typography variant="h5">Open GitHub Issues</Typography>
-          <IconButton color="secondary" onClick={fetchGitHubIssues}>
+          <IconButton color="secondary" onClick={retry}>
             <RefreshIcon />
           </IconButton>
         </Box>
@@ -80,7 +60,7 @@ export const GitHubIssues = (props: GitHubIssuesProps) => {
     >
       {isLoading && <Progress />}
 
-      <IssueList
+      <IssuesList
         issuesByRepository={issuesByRepository}
         itemsPerPage={itemsPerPage}
       />

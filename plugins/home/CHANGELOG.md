@@ -1,5 +1,16 @@
 # @backstage/plugin-home
 
+## 0.4.24
+
+### Patch Changes
+
+- df7b9158b8: Add wrap-around for the listing of tools to prevent increasing width with name length.
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-react@1.1.3
+  - @backstage/plugin-stack-overflow@0.1.4
+
 ## 0.4.24-next.2
 
 ### Patch Changes

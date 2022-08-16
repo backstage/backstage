@@ -1,5 +1,16 @@
 # @backstage/core-plugin-api
 
+## 1.0.5
+
+### Patch Changes
+
+- 80da5162c7: Introduced a new experimental feature that allows you to declare plugin-wide options for your plugin by defining
+  `__experimentalConfigure` in your `createPlugin` options. See https://backstage.io/docs/plugins/customization.md for more information.
+
+  This is an experimental feature and it will have breaking changes in the future.
+
+- 87649a06bf: Add a note that the `fetchApi` utility should not be used on sign-in page implementations and similar.
+
 ## 1.0.5-next.0
 
 ### Patch Changes

@@ -19,7 +19,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { SonarqubeInfoProvider } from './sonarqubeInfoProvider';
-import { InputError } from '../../../../packages/errors';
+import { InputError } from '@backstage/errors';
 
 /**
  * Dependencies needed by the router
