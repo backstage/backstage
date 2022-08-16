@@ -264,7 +264,7 @@ export function createFetchTemplateAction(options: {
           );
         }
 
-        if (location.endsWith('/')) {
+        if (location.endsWith(path.sep)) {
           ctx.logger.info(
             `Writing directory ${location} to template output path.`,
           );
