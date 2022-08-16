@@ -1,5 +1,62 @@
 # example-app
 
+## 0.2.74
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes@0.7.1
+  - @backstage/cli@0.18.1
+  - @backstage/plugin-techdocs@1.3.1
+  - @backstage/plugin-home@0.4.24
+  - @backstage/core-components@0.11.0
+  - @backstage/plugin-scaffolder@1.5.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-react@1.1.3
+  - @backstage/plugin-cost-insights@0.11.30
+  - @backstage/plugin-graphiql@0.2.40
+  - @backstage/plugin-catalog-common@1.0.5
+  - @backstage/plugin-kafka@0.3.8
+  - @backstage/plugin-techdocs-module-addons-contrib@1.0.3
+  - @backstage/plugin-gocd@0.1.14
+  - @backstage/plugin-sentry@0.4.1
+  - @backstage/plugin-api-docs@0.8.8
+  - @backstage/plugin-techdocs-react@1.0.3
+  - @backstage/plugin-shortcuts@0.3.0
+  - @backstage/plugin-tech-radar@0.5.15
+  - @backstage/app-defaults@1.0.5
+  - @backstage/core-app-api@1.0.5
+  - @backstage/integration-react@1.1.3
+  - @backstage/plugin-airbrake@0.3.8
+  - @backstage/plugin-apache-airflow@0.2.1
+  - @backstage/plugin-azure-devops@0.1.24
+  - @backstage/plugin-badges@0.2.32
+  - @internal/plugin-catalog-customized@0.0.1
+  - @backstage/plugin-catalog-graph@0.2.20
+  - @backstage/plugin-catalog-import@0.8.11
+  - @backstage/plugin-circleci@0.3.8
+  - @backstage/plugin-cloudbuild@0.3.8
+  - @backstage/plugin-code-coverage@0.2.1
+  - @backstage/plugin-dynatrace@0.1.2
+  - @backstage/plugin-explore@0.3.39
+  - @backstage/plugin-gcalendar@0.3.4
+  - @backstage/plugin-gcp-projects@0.3.27
+  - @backstage/plugin-github-actions@0.5.8
+  - @backstage/plugin-jenkins@0.7.7
+  - @backstage/plugin-lighthouse@0.3.8
+  - @backstage/plugin-newrelic@0.3.26
+  - @backstage/plugin-newrelic-dashboard@0.2.1
+  - @backstage/plugin-org@0.5.8
+  - @backstage/plugin-pagerduty@0.5.1
+  - @backstage/plugin-permission-react@0.4.4
+  - @backstage/plugin-rollbar@0.4.8
+  - @backstage/plugin-search@1.0.1
+  - @backstage/plugin-search-react@1.0.1
+  - @backstage/plugin-stack-overflow@0.1.4
+  - @backstage/plugin-tech-insights@0.2.4
+  - @backstage/plugin-todo@0.2.10
+  - @backstage/plugin-user-settings@0.4.7
+
 ## 0.2.74-next.2
 
 ### Patch Changes

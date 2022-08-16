@@ -1,5 +1,34 @@
 # @backstage/backend-common
 
+## 0.15.0
+
+### Minor Changes
+
+- 12e9b54f0e: Added back support for when no branch is provided to the `UrlReader` for Bitbucket Server
+- 30012e7d8c: - Added `force` and `remoteRef` option to `push` method in `git` actions
+  - Added `addRemote` and `deleteRemote` methods to `git` actions
+
+### Patch Changes
+
+- fc8a5f797b: Improve `scm/git` wrapper around `isomorphic-git` library :
+
+  - Add `checkout` function,
+  - Add optional `remoteRef` parameter in the `push` function.
+
+- 5e4dc173f7: Added a second validation to the `dir()` method of ZIP archive responses returned from `readTree()` that ensures that extracted files do not fall outside the target directory.
+- 1732a18a7a: Exported `redactLogLine` function to be able to use it in custom loggers and renamed it to `redactWinstonLogLine`.
+- 3b7930b3e5: Add support for Bearer Authorization header / token-based auth at Git commands.
+- cfa078e255: The `ZipArchiveResponse` now correctly handles corrupt ZIP archives.
+
+  Before this change, certain corrupt ZIP archives either cause the inflater to throw (as expected), or will hang the parser indefinitely.
+
+  By switching out the `zip` parsing library, we now write to a temporary directory, and load from disk which should ensure that the parsing of the `.zip` files are done correctly because `streaming` of `zip` paths is technically impossible without being able to parse the headers at the end of the file.
+
+- 770d3f92c4: The config prop `ensureExists` now applies to schema creation when `pluginDivisionMode` is set to `schema`. This means schemas will no longer accidentally be automatically created when `ensureExists` is set to `false`.
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.3.0
+
 ## 0.15.0-next.2
 
 ### Patch Changes

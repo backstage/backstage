@@ -1,5 +1,21 @@
 # @backstage/integration
 
+## 1.3.0
+
+### Minor Changes
+
+- 593dea6710: Add support for Basic Auth for Bitbucket Server.
+- ad35364e97: feat(techdocs): add edit button support for bitbucketServer
+
+### Patch Changes
+
+- 163243a4d1: Handle incorrect return type from Octokit paginate plugin to resolve reading URLs from GitHub
+- c4b460a47d: Avoid double encoding of the file path in `getBitbucketDownloadUrl`
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- 1f27d83933: Fixed bug in getGitLabFileFetchUrl where a target whose path did not contain the
+  `/-/` scope would result in a fetch URL that did not support
+  private-token-based authentication.
+
 ## 1.3.0-next.1
 
 ### Minor Changes
