@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-backend': patch
 ---
 
-Fix issue with absolute paths on windows hosts
+Fix issue on Windows where templated files where not properly skipped as intended.
