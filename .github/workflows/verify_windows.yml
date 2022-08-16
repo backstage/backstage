@@ -6,7 +6,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/verify_windows.yml'
-
+      - 'plugins/scaffolder-backend/**'
 jobs:
   build:
     runs-on: windows-2019
