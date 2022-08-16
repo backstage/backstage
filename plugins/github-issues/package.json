@@ -25,6 +25,7 @@
     "@backstage/catalog-model": "^1.0.3",
     "@backstage/core-components": "^0.11.0-next.2",
     "@backstage/core-plugin-api": "^1.0.5-next.0",
+    "@backstage/errors": "^1.1.0",
     "@backstage/integration": "^1.3.0-next.0",
     "@backstage/plugin-catalog-react": "^1.1.3-next.2",
     "@backstage/theme": "^0.2.15",
@@ -33,7 +34,7 @@
     "@material-ui/lab": "^4.0.0-alpha.61",
     "luxon": "^2.4.0",
     "octokit": "^2.0.4",
-    "react-use": "^17.2.4"
+    "react-use": "^17.4.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0"
@@ -43,6 +44,7 @@
     "@backstage/core-app-api": "^1.0.5-next.0",
     "@backstage/dev-utils": "^1.0.5-next.1",
     "@backstage/test-utils": "^1.1.3-next.0",
+    "@spotify/prettier-config": "^14.0.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
     "@testing-library/user-event": "^14.0.0",
