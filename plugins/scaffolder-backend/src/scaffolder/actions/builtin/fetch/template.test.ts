@@ -19,6 +19,7 @@ import { join as joinPath } from 'path';
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import {
+  getRootLogger,
   getVoidLogger,
   resolvePackagePath,
   UrlReader,
@@ -73,8 +74,6 @@ describe('fetch:template', () => {
     ),
   );
 
-  const logger = getVoidLogger();
-
   const mockContext = (inputPatch: Partial<FetchTemplateInput> = {}) => ({
     templateInfo: {
       baseUrl: 'base-url',
@@ -90,7 +89,7 @@ describe('fetch:template', () => {
     },
     output: jest.fn(),
     logStream: new PassThrough(),
-    logger,
+    logger: console as any,
     workspacePath,
     createTemporaryDirectory,
   });

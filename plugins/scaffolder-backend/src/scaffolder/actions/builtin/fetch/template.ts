@@ -249,11 +249,21 @@ export function createFetchTemplateAction(options: {
           }
         }
 
+        console.log(
+          JSON.stringify(
+            { location, renderContents, localOutputPath, extension },
+            null,
+            2,
+          ),
+        );
+
         if (containsSkippedContent(localOutputPath)) {
           continue;
         }
 
         const outputPath = resolveSafeChildPath(outputDir, localOutputPath);
+
+        console.log(JSON.stringify({ outputPath }));
         if (fs.existsSync(outputPath)) {
           continue;
         }
@@ -264,7 +274,7 @@ export function createFetchTemplateAction(options: {
           );
         }
 
-        if (location.endsWith('/')) {
+        if (location.endsWith(path.sep)) {
           ctx.logger.info(
             `Writing directory ${location} to template output path.`,
           );
