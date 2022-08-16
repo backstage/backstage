@@ -27,7 +27,6 @@ import {
   TemplateFilter,
   SecureTemplater,
 } from '../../../../lib/templating/SecureTemplater';
-import path from 'path';
 
 /**
  * Downloads a skeleton, templates variables into file and directory names and content.
@@ -301,12 +300,13 @@ export function createFetchTemplateAction(options: {
 }
 
 function containsSkippedContent(localOutputPath: string): boolean {
-  // if the path is absolute means that the root directory has been skipped
   // if the path is empty means that there is a file skipped in the root
+  // if the path starts with a separator it means that the root directory has been skipped
   // if the path includes // means that there is a subdirectory skipped
+  // All paths returned are considered with / seperator because of globby returning the linux seperator for all os'.
   return (
     localOutputPath === '' ||
-    path.isAbsolute(localOutputPath) ||
-    localOutputPath.includes(`${path.sep}${path.sep}`)
+    localOutputPath.startsWith('/') ||
+    localOutputPath.includes('//')
   );
 }
