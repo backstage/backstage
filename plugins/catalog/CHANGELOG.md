@@ -1,5 +1,28 @@
 # @backstage/plugin-catalog
 
+## 1.5.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.3-next.2
+  - @backstage/core-components@0.11.0-next.2
+  - @backstage/integration-react@1.1.3-next.1
+  - @backstage/plugin-search-react@1.0.1-next.1
+
+## 1.5.0-next.1
+
+### Minor Changes
+
+- fe94398418: Allow changing the subtitle of the `CatalogTable` component
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.10.1-next.1
+  - @backstage/plugin-catalog-common@1.0.5-next.0
+  - @backstage/plugin-catalog-react@1.1.3-next.1
+
 ## 1.5.0-next.0
 
 ### Minor Changes

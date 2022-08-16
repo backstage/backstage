@@ -1,5 +1,24 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.0.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.0-next.2
+  - @backstage/integration-react@1.1.3-next.1
+  - @backstage/plugin-techdocs-react@1.0.3-next.2
+
+## 1.0.3-next.1
+
+### Patch Changes
+
+- ad35364e97: feat(techdocs): add edit button support for bitbucketServer
+- Updated dependencies
+  - @backstage/core-components@0.10.1-next.1
+  - @backstage/integration@1.3.0-next.1
+  - @backstage/plugin-techdocs-react@1.0.3-next.1
+
 ## 1.0.3-next.0
 
 ### Patch Changes

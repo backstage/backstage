@@ -101,9 +101,12 @@ export const getRepoUrlFromLocationAnnotation = (
   if (locationType === 'url') {
     const integration = scmIntegrations.byUrl(target);
 
-    // We only support it for github and gitlab for now as the edit_uri
+    // We only support it for github, gitlab and bitbucketServer for now as the edit_uri
     // is not properly supported for others yet.
-    if (integration && ['github', 'gitlab'].includes(integration.type)) {
+    if (
+      integration &&
+      ['github', 'gitlab', 'bitbucketServer'].includes(integration.type)
+    ) {
       // handle the case where a user manually writes url:https://github.com/backstage/backstage i.e. without /blob/...
       const { filepathtype } = gitUrlParse(target);
       if (filepathtype === '') {

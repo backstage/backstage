@@ -5,7 +5,7 @@
 ```ts
 /// <reference types="node" />
 
-import { BackendRegistrable } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
@@ -21,6 +21,7 @@ import { Knex } from 'knex';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import { Observable } from '@backstage/types';
+import { Octokit } from 'octokit';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -303,7 +304,7 @@ export function createPublishBitbucketServerAction(options: {
   token?: string | undefined;
 }>;
 
-// @public
+// @public @deprecated
 export function createPublishFileAction(): TemplateAction<{
   path: string;
 }>;
@@ -392,6 +393,8 @@ export const createPublishGithubPullRequestAction: ({
   targetPath?: string | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
+  reviewers?: string[] | undefined;
+  teamReviewers?: string[] | undefined;
 }>;
 
 // @public
@@ -524,15 +527,14 @@ export function fetchContents({
 }): Promise<void>;
 
 // @public (undocumented)
-export interface OctokitWithPullRequestPluginClient {
-  // (undocumented)
+export type OctokitWithPullRequestPluginClient = Octokit & {
   createPullRequest(options: createPullRequest.Options): Promise<{
     data: {
       html_url: string;
       number: number;
     };
   } | null>;
-}
+};
 
 // @public
 export interface RouterOptions {
@@ -567,7 +569,7 @@ export type RunCommandOptions = {
 };
 
 // @alpha
-export const scaffolderCatalogModule: (option: unknown) => BackendRegistrable;
+export const scaffolderCatalogModule: (options?: unknown) => BackendFeature;
 
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {

@@ -1,5 +1,23 @@
 # @backstage/plugin-kubernetes
 
+## 0.7.1-next.2
+
+### Patch Changes
+
+- f563b86a5b: Adds namespace column to Kubernetes error reporting table
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.3-next.2
+  - @backstage/core-components@0.11.0-next.2
+
+## 0.7.1-next.1
+
+### Patch Changes
+
+- 860ed68343: Fixed bug in CronJobsAccordions component that causes an error when cronjobs use a kubernetes alias, such as `@hourly` or `@daily` instead of standard cron syntax.
+- Updated dependencies
+  - @backstage/core-components@0.10.1-next.1
+  - @backstage/plugin-catalog-react@1.1.3-next.1
+
 ## 0.7.1-next.0
 
 ### Patch Changes

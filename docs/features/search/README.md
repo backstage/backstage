@@ -21,6 +21,10 @@ Backstage Search lets you find the right information you are looking for in the 
 
 See the more detailed [architecture](./architecture.md) and [tech stack](./architecture.md#tech-stack).
 
+## Project roadmap
+
+No current plans.
+
 ## Supported
 
 The following sections show the plugins and search engines currently supported by Backstage Search.

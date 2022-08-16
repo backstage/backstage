@@ -62,6 +62,7 @@ import { NewRelicPage } from '@backstage/plugin-newrelic';
 import {
   ScaffolderFieldExtensions,
   ScaffolderPage,
+  NextScaffolderPage,
   scaffolderPlugin,
 } from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
@@ -198,6 +199,24 @@ const routes = (
       element={
         <ScaffolderPage
           defaultPreviewTemplate={defaultPreviewTemplate}
+          groups={[
+            {
+              title: 'Recommended',
+              filter: entity =>
+                entity?.metadata?.tags?.includes('recommended') ?? false,
+            },
+          ]}
+        />
+      }
+    >
+      <ScaffolderFieldExtensions>
+        <LowerCaseValuePickerFieldExtension />
+      </ScaffolderFieldExtensions>
+    </Route>
+    <Route
+      path="/create/next"
+      element={
+        <NextScaffolderPage
           groups={[
             {
               title: 'Recommended',

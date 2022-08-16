@@ -41,7 +41,7 @@ And then add the processor to your catalog builder:
 ## Self-hosted Bitbucket Server
 
 To use the discovery processor with a self-hosted Bitbucket Server, you'll need
-a Bitbucket integration [set up](locations.md) with a `BITBUCKET_TOKEN` and a
+a Bitbucket integration [set up](../bitbucketServer/locations.md) with a `BITBUCKET_TOKEN` and a
 `BITBUCKET_API_BASE_URL`. Then you can add a location target to the catalog
 configuration:
 
@@ -74,7 +74,7 @@ The target is composed of four parts:
 ## Bitbucket Cloud
 
 To use the discovery processor with Bitbucket Cloud, you'll need a Bitbucket
-integration [set up](locations.md) with a `username` and an `appPassword`. Then
+integration [set up](../bitbucketCloud/locations.md) with a `username` and an `appPassword`. Then
 you can add a location target to the catalog configuration:
 
 ```yaml

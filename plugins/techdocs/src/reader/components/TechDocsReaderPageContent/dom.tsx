@@ -41,6 +41,7 @@ import {
   rewriteDocLinks,
   simplifyMkdocsFooter,
   scrollIntoAnchor,
+  scrollIntoNavigation,
   transform as transformer,
   copyToClipboard,
   useSanitizerTransformer,
@@ -166,6 +167,7 @@ export const useTechDocsReaderDom = (
     async (transformedElement: Element) =>
       transformer(transformedElement, [
         scrollIntoAnchor(),
+        scrollIntoNavigation(),
         copyToClipboard(theme),
         addLinkClickListener({
           baseUrl: window.location.origin,

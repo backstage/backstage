@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { OpenApiRefProcessor } from './OpenApiRefProcessor';
+export { openApiPlaceholderResolver } from './openApiPlaceholderResolver';

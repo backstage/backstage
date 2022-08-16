@@ -1,5 +1,19 @@
 # @backstage/backend-common
 
+## 0.15.0-next.2
+
+### Patch Changes
+
+- 5e4dc173f7: Added a second validation to the `dir()` method of ZIP archive responses returned from `readTree()` that ensures that extracted files do not fall outside the target directory.
+
+## 0.15.0-next.1
+
+### Patch Changes
+
+- 1732a18a7a: Exported `redactLogLine` function to be able to use it in custom loggers and renamed it to `redactWinstonLogLine`.
+- Updated dependencies
+  - @backstage/integration@1.3.0-next.1
+
 ## 0.15.0-next.0
 
 ### Minor Changes

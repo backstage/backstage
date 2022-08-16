@@ -50,5 +50,11 @@ export const catalogLocationDeletePermission: BasicPermission;
 export const catalogLocationReadPermission: BasicPermission;
 
 // @alpha
+export const catalogPermissions: (
+  | BasicPermission
+  | ResourcePermission<'catalog-entity'>
+)[];
+
+// @alpha
 export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';
 ```

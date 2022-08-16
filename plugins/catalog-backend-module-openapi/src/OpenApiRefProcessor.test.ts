@@ -86,7 +86,7 @@ describe('OpenApiRefProcessor', () => {
 
     it('should ignore other specification types', async () => {
       const { entity, processor } = setupTest({
-        kind: 'Group',
+        kind: 'API',
         spec: { type: 'asyncapi' },
       });
 

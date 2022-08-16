@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { catalogProcessingExtentionPoint } from '@backstage/plugin-catalog-node';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { ScaffolderEntitiesProcessor } from '../processor';
 
 /**
@@ -27,12 +27,10 @@ export const scaffolderCatalogModule = createBackendModule({
   register(env) {
     env.registerInit({
       deps: {
-        catalogProcessingExtensionPoint: catalogProcessingExtentionPoint,
+        catalog: catalogProcessingExtensionPoint,
       },
-      async init({ catalogProcessingExtensionPoint }) {
-        catalogProcessingExtensionPoint.addProcessor(
-          new ScaffolderEntitiesProcessor(),
-        );
+      async init({ catalog }) {
+        catalog.addProcessor(new ScaffolderEntitiesProcessor());
       },
     });
   },

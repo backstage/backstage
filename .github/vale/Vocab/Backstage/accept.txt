@@ -281,8 +281,11 @@ serializable
 Serverless
 shoutout
 siloed
+SIG
+SIGs
 Sinon
 Snyk
+Sonarqube
 sourcemaps
 sparklines
 Splunk

@@ -147,7 +147,6 @@ export const columnFactories = Object.freeze({
           line={2}
         />
       ),
-      width: 'auto',
     };
   },
   createSpecLifecycleColumn<T extends Entity>(): TableColumn<T> {

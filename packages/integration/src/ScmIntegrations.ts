@@ -113,9 +113,21 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
   }
 
   byUrl(url: string | URL): ScmIntegration | undefined {
-    return Object.values(this.byType)
+    let candidates = Object.values(this.byType)
       .map(i => i.byUrl(url))
-      .find(Boolean);
+      .filter(Boolean);
+
+    // Do not return deprecated integrations if there are other options
+    if (candidates.length > 1) {
+      const filteredCandidates = candidates.filter(
+        x => !(x instanceof BitbucketIntegration),
+      );
+      if (filteredCandidates.length !== 0) {
+        candidates = filteredCandidates;
+      }
+    }
+
+    return candidates[0];
   }
 
   byHost(host: string): ScmIntegration | undefined {

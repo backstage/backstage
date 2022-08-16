@@ -1,5 +1,11 @@
 # @backstage/plugin-cost-insights-common
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- daf4b33e34: Add name property to Group
+
 ## 0.1.0
 
 ### Minor Changes

@@ -111,6 +111,6 @@ async function main() {
 
 module.hot?.accept();
 main().catch(error => {
-  console.error(`Backend failed to start up, ${error}`);
+  console.error('Backend failed to start up', error);
   process.exit(1);
 });

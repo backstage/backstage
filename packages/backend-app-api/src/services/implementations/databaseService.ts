@@ -21,6 +21,7 @@ import {
   databaseServiceRef,
 } from '@backstage/backend-plugin-api';
 
+/** @public */
 export const databaseFactory = createServiceFactory({
   service: databaseServiceRef,
   deps: {

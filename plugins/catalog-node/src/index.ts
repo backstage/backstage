@@ -21,6 +21,6 @@
  */
 
 export type { CatalogProcessingExtensionPoint } from './extensions';
-export { catalogProcessingExtentionPoint } from './extensions';
+export { catalogProcessingExtensionPoint } from './extensions';
 export * from './api';
 export * from './processing';

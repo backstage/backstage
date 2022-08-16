@@ -118,7 +118,12 @@ export const ReportIssueAddon = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selection, mainContent, feedbackContainer]);
 
-  if (!selection || !repository) return null;
+  if (
+    !selection ||
+    !repository ||
+    !['github', 'gitlab'].includes(repository.type)
+  )
+    return null;
 
   if (!feedbackContainer) {
     feedbackContainer = document.createElement('div');

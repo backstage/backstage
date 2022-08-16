@@ -23,9 +23,11 @@ import {
   ListItemText,
   makeStyles,
 } from '@material-ui/core';
+import { parseEntityRef } from '@backstage/catalog-model';
 import { Link } from '@backstage/core-components';
 import { useAnalytics } from '@backstage/core-plugin-api';
 import { AdrDocument } from '@backstage/plugin-adr-common';
+import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
@@ -104,6 +106,13 @@ export const AdrSearchResultListItem = ({
           }
         />
         <Box>
+          <Chip
+            label={`Entity: ${
+              result.entityTitle ??
+              humanizeEntityRef(parseEntityRef(result.entityRef))
+            }`}
+            size="small"
+          />
           {result.status && (
             <Chip label={`Status: ${result.status}`} size="small" />
           )}

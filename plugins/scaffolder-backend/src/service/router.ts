@@ -149,8 +149,10 @@ export async function createRouter(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
       async (req, res) => {
         const { namespace, kind, name } = req.params;
+
         const userIdentity = await identity.getIdentity(req);
         const token = userIdentity?.token;
+
         const template = await findTemplate({
           catalogApi: catalogClient,
           entityRef: { kind, namespace, name },
@@ -160,8 +162,10 @@ export async function createRouter(
           const parameters = [template.spec.parameters ?? []].flat();
           res.json({
             title: template.metadata.title ?? template.metadata.name,
+            description: template.metadata.description,
             steps: parameters.map(schema => ({
-              title: schema.title ?? 'Fill in template parameters',
+              title: schema.title ?? 'Please enter the following information',
+              description: schema.description,
               schema,
             })),
           });
@@ -189,6 +193,7 @@ export async function createRouter(
       const { kind, namespace, name } = parseEntityRef(templateRef, {
         defaultKind: 'template',
       });
+
       const callerIdentity = await identity.getIdentity(req);
       const token = callerIdentity?.token;
       const userEntityRef = callerIdentity?.identity.userEntityRef;
