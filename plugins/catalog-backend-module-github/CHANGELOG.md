@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.1.6
+
+### Patch Changes
+
+- f48950e34b: Github Entity Provider functionality for adding entities to the catalog.
+
+  This provider replaces the GithubDiscoveryProcessor functionality as providers offer more flexibility with scheduling ingestion, removing and preventing orphaned entities.
+
+  More information can be found on the [GitHub Discovery](https://backstage.io/docs/integrations/github/discovery) page.
+
+- c59d1ce487: Fixed bug where repository filter was including all archived repositories
+- 97f0a37378: Improved support for wildcards in `catalogPath`
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/integration@1.3.0
+  - @backstage/backend-tasks@0.3.4
+  - @backstage/plugin-catalog-backend@1.3.1
+
 ## 0.1.6-next.2
 
 ### Patch Changes

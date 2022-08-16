@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog-backend-module-openapi
 
+## 0.1.1
+
+### Patch Changes
+
+- b50e8e533b: Add an `$openapi` placeholder resolver that supports more use cases for resolving `$ref` instances. This means that the quite recently added `OpenApiRefProcessor` has been deprecated in favor of the `openApiPlaceholderResolver`.
+
+  An example of how to use it can be seen below.
+
+  ```yaml
+  apiVersion: backstage.io/v1alpha1
+  kind: API
+  metadata:
+    name: example
+    description: Example API
+  spec:
+    type: openapi
+    lifecycle: production
+    owner: team
+    definition:
+      $openapi: ./spec/openapi.yaml # by using $openapi Backstage will now resolve all $ref instances
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/plugin-catalog-node@1.0.1
+  - @backstage/integration@1.3.0
+  - @backstage/plugin-catalog-backend@1.3.1
+
 ## 0.1.1-next.0
 
 ### Patch Changes

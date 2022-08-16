@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-common
 
+## 1.0.5
+
+### Patch Changes
+
+- 92103db537: Export aggregated list of all catalog permissions
+
 ## 1.0.5-next.0
 
 ### Patch Changes

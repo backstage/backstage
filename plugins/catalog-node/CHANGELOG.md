@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-node
 
+## 1.0.1
+
+### Patch Changes
+
+- 0599732ec0: Refactored experimental backend system with new type names.
+- 56e1b4b89c: Fixed typos in alpha types.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.1
+
 ## 1.0.1-next.0
 
 ### Patch Changes

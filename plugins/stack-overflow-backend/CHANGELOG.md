@@ -1,5 +1,11 @@
 # @backstage/plugin-stack-overflow-backend
 
+## 0.1.4
+
+### Patch Changes
+
+- ea5631a8b2: Added API key as separate configuration
+
 ## 0.1.4-next.0
 
 ### Patch Changes
