@@ -24,6 +24,7 @@ import {
   jwtVerify,
 } from 'jose';
 import { GetKeyFunction } from 'jose/dist/types/types';
+import { Request } from 'express';
 
 import { BackstageIdentityResponse } from './types';
 import { getBearerTokenFromAuthorizationHeader, IdentityApi } from '.';
@@ -77,7 +78,7 @@ export class DefaultIdentityClient implements IdentityApi {
   async getIdentity(req: Request) {
     try {
       return await this.authenticate(
-        getBearerTokenFromAuthorizationHeader(req.headers.get('authorization')),
+        getBearerTokenFromAuthorizationHeader(req.headers.authorization),
       );
     } catch (e) {
       return undefined;

@@ -4,6 +4,7 @@
 
 ```ts
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { Request as Request_2 } from 'express';
 
 // @public
 export interface BackstageIdentityResponse extends BackstageSignInResult {
@@ -28,7 +29,7 @@ export class DefaultIdentityClient implements IdentityApi {
   authenticate(token: string | undefined): Promise<BackstageIdentityResponse>;
   static create(options: IdentityClientOptions): DefaultIdentityClient;
   // (undocumented)
-  getIdentity(req: Request): Promise<BackstageIdentityResponse | undefined>;
+  getIdentity(req: Request_2): Promise<BackstageIdentityResponse | undefined>;
 }
 
 // @public
@@ -38,7 +39,9 @@ export function getBearerTokenFromAuthorizationHeader(
 
 // @public
 export interface IdentityApi {
-  getIdentity(req: Request): Promise<BackstageIdentityResponse | undefined>;
+  getIdentity(
+    req: Request_2<any>,
+  ): Promise<BackstageIdentityResponse | undefined>;
 }
 
 // @public @deprecated
