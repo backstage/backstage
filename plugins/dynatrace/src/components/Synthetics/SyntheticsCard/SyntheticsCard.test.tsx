@@ -42,11 +42,7 @@ describe('SyntheticsCard', () => {
       });
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <SyntheticsCard
-          syntheticsId="HTTP_CHECK-1234"
-          dynatraceBaseUrl="__dynatrace__"
-        />
-        ,
+        <SyntheticsCard syntheticsId="HTTP_CHECK-1234" />,
       </ApiProvider>,
     );
     expect(

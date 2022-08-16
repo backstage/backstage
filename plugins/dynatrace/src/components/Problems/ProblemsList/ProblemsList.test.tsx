@@ -36,10 +36,7 @@ describe('ProblemStatus', () => {
       .mockResolvedValue({ problems });
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <ProblemsList
-          dynatraceEntityId="__service_id__"
-          dynatraceBaseUrl="__dynatrace__"
-        />
+        <ProblemsList dynatraceEntityId="__service_id__" />
       </ApiProvider>,
     );
     expect(await rendered.findByText('example-service')).toBeInTheDocument();
@@ -48,10 +45,7 @@ describe('ProblemStatus', () => {
     mockDynatraceApi.getDynatraceProblems = jest.fn().mockResolvedValue({});
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <ProblemsList
-          dynatraceEntityId="example-service-3"
-          dynatraceBaseUrl="__dynatrace__"
-        />
+        <ProblemsList dynatraceEntityId="example-service-3" />
       </ApiProvider>,
     );
     expect(
