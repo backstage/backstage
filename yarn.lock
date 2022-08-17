@@ -16187,9 +16187,9 @@ isomorphic-form-data@^2.0.0:
     form-data "^2.3.2"
 
 isomorphic-git@^1.8.0:
-  version "1.19.1"
-  resolved "https://registry.npmjs.org/isomorphic-git/-/isomorphic-git-1.19.1.tgz#99e18db18826b07c40a4c4b32484e917a4c4fd31"
-  integrity sha512-enp69F9dIWtAAB+aEMV83AVDiOoi7zHTMr1kTP2Bzka/PlX0W6C74W2y9b9UToX65oXvipPzhY5An2+F5BXVQw==
+  version "1.19.2"
+  resolved "https://registry.npmjs.org/isomorphic-git/-/isomorphic-git-1.19.2.tgz#e8f57443c63a58054f65f42e5cb189a2df31bd0d"
+  integrity sha512-14Tbf3GRFNoXw+fy6ssK7gpDZQxF+NytHmg7p+5L38IAVUafHnfjzJ0ZnEmLz3SAG20wYYyB+HufkRAFRttYxQ==
   dependencies:
     async-lock "^1.1.0"
     clean-git-ref "^2.0.1"
