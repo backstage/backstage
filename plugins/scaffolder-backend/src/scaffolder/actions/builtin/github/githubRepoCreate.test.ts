@@ -129,6 +129,26 @@ describe('github:repo:create', () => {
       allow_rebase_merge: true,
       visibility: 'public',
     });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        homepage: 'https://example.com',
+      },
+    });
+    expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalledWith({
+      description: 'description',
+      homepage: 'https://example.com',
+      name: 'repo',
+      org: 'owner',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      visibility: 'private',
+    });
   });
 
   it('should call the githubApis with the correct values for createForAuthenticatedUser', async () => {
@@ -166,6 +186,26 @@ describe('github:repo:create', () => {
       description: 'description',
       name: 'repo',
       private: false,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        homepage: 'https://example.com',
+      },
+    });
+    expect(
+      mockOctokit.rest.repos.createForAuthenticatedUser,
+    ).toHaveBeenCalledWith({
+      description: 'description',
+      homepage: 'https://example.com',
+      name: 'repo',
+      private: true,
       delete_branch_on_merge: false,
       allow_squash_merge: true,
       allow_merge_commit: true,
