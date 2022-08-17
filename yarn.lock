@@ -5533,11 +5533,6 @@
   resolved "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-12.11.0.tgz#da5638d64f2b919bca89ce6602d059f1b52d3ef0"
   integrity sha512-VsXyi8peyRq9PqIz/tpqiL2w3w80OgVMwBHltTml3LmVvXiphgeqmY9mvBw9Wu7e0QWk/fqD37ux8yP5uVekyQ==
 
-"@octokit/openapi-types@^12.4.0":
-  version "12.4.0"
-  resolved "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-12.4.0.tgz#fd8bf5db72bd566c5ba2cb76754512a9ebe66e71"
-  integrity sha512-Npcb7Pv30b33U04jvcD7l75yLU0mxhuX2Xqrn51YyZ5WTkF04bpbxLaZ6GcaTqu03WZQHoO/Gbfp95NGRueDUA==
-
 "@octokit/openapi-types@^13.0.0":
   version "13.0.1"
   resolved "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-13.0.1.tgz#f655810f0dc0547b771526fea171acffbc7bd4a8"
@@ -5705,13 +5700,6 @@
   integrity sha512-s1zLBjWhdEI2zwaoSgyOFoKSl109CUcVBCc7biPJ3aAf6LGLU6szDvi31JPU7bxfla2lqfhjbbg/5DdFNxOwHw==
   dependencies:
     "@octokit/openapi-types" "^11.2.0"
-
-"@octokit/types@^6.35.0":
-  version "6.37.0"
-  resolved "https://registry.npmjs.org/@octokit/types/-/types-6.37.0.tgz#32eb78edb34cf5cea4ba5753ab8db75b776d617a"
-  integrity sha512-BXWQhFKRkjX4dVW5L2oYa0hzWOAqsEsujXsQLSdepPoDZfYdubrD1KDGpyNldGXtR8QM/WezDcxcIN1UKJMGPA==
-  dependencies:
-    "@octokit/openapi-types" "^12.4.0"
 
 "@octokit/types@^7.0.0":
   version "7.0.0"
@@ -19973,18 +19961,18 @@ octokit-plugin-create-pull-request@^3.10.0:
     "@octokit/types" "^6.8.2"
 
 octokit@^2.0.0, octokit@^2.0.4:
-  version "2.0.5"
-  resolved "https://registry.npmjs.org/octokit/-/octokit-2.0.5.tgz#4091813187f363eff787b89b66aafc273ba3318d"
-  integrity sha512-Znv9zxhKxl9C11QsAK/RRoIutAsHawVrYplZNf7IqpB+mi3Zu0zBfZ5sFUqMRwemucff+MDHh1RtlpF5946UDA==
+  version "2.0.7"
+  resolved "https://registry.npmjs.org/octokit/-/octokit-2.0.7.tgz#7e6658ddcca234d8cc6ca9344403b516d3b2d136"
+  integrity sha512-Rf+pY3fCphmS4jjLqQ+D0xS1U+Ry/pAZHLJNvsQksuj4aopl7qFLlV4Id2KIlaUpKZrUCPzOkLiZOaoEb47RZQ==
   dependencies:
     "@octokit/app" "^13.0.5"
     "@octokit/core" "^4.0.4"
     "@octokit/oauth-app" "^4.0.6"
-    "@octokit/plugin-paginate-rest" "^3.0.0"
+    "@octokit/plugin-paginate-rest" "^4.0.0"
     "@octokit/plugin-rest-endpoint-methods" "^6.0.0"
     "@octokit/plugin-retry" "^3.0.9"
     "@octokit/plugin-throttling" "^4.0.1"
-    "@octokit/types" "^6.35.0"
+    "@octokit/types" "^7.0.0"
 
 oidc-token-hash@^5.0.1:
   version "5.0.1"
