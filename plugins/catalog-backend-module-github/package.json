@@ -9,7 +9,8 @@
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "types": "dist/index.d.ts",
+    "alphaTypes": "dist/index.alpha.d.ts"
   },
   "backstage": {
     "role": "backend-plugin-module"
@@ -24,7 +25,7 @@
     "backstage"
   ],
   "scripts": {
-    "build": "backstage-cli package build",
+    "build": "backstage-cli package build --experimental-type-build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
@@ -57,6 +58,7 @@
   },
   "files": [
     "dist",
+    "alpha",
     "config.d.ts"
   ],
   "configSchema": "config.d.ts"
