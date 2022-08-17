@@ -188,7 +188,7 @@ export function createGithubRepoCreateAction(options: {
   allowMergeCommit?: boolean | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
-  repoVisibility?: 'public' | 'private' | 'internal' | undefined;
+  repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   collaborators?:
     | (
         | {
@@ -268,7 +268,7 @@ export function createPublishBitbucketAction(options: {
   repoUrl: string;
   description?: string | undefined;
   defaultBranch?: string | undefined;
-  repoVisibility?: 'public' | 'private' | undefined;
+  repoVisibility?: 'private' | 'public' | undefined;
   sourcePath?: string | undefined;
   enableLFS?: boolean | undefined;
   token?: string | undefined;
@@ -285,7 +285,7 @@ export function createPublishBitbucketCloudAction(options: {
   repoUrl: string;
   description?: string | undefined;
   defaultBranch?: string | undefined;
-  repoVisibility?: 'public' | 'private' | undefined;
+  repoVisibility?: 'private' | 'public' | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
 }>;
@@ -298,7 +298,7 @@ export function createPublishBitbucketServerAction(options: {
   repoUrl: string;
   description?: string | undefined;
   defaultBranch?: string | undefined;
-  repoVisibility?: 'public' | 'private' | undefined;
+  repoVisibility?: 'private' | 'public' | undefined;
   sourcePath?: string | undefined;
   enableLFS?: boolean | undefined;
   token?: string | undefined;
@@ -354,7 +354,7 @@ export function createPublishGithubAction(options: {
   sourcePath?: string | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
-  repoVisibility?: 'public' | 'private' | 'internal' | undefined;
+  repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   collaborators?:
     | (
         | {
@@ -400,7 +400,7 @@ export function createPublishGitlabAction(options: {
 }): TemplateAction<{
   repoUrl: string;
   defaultBranch?: string | undefined;
-  repoVisibility?: 'public' | 'private' | 'internal' | undefined;
+  repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
   gitCommitMessage?: string | undefined;
@@ -419,7 +419,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   branchName: string;
   targetPath: string;
   token?: string | undefined;
-  commitAction?: 'create' | 'update' | 'delete' | undefined;
+  commitAction?: 'update' | 'delete' | 'create' | undefined;
   projectid?: string | undefined;
   removeSourceBranch?: boolean | undefined;
   assignee?: string | undefined;
