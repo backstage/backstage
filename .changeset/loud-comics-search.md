@@ -1,8 +1,5 @@
 ---
 '@backstage/plugin-tech-insights': minor
-'@backstage/plugin-tech-insights-backend-module-jsonfc': minor
-'@backstage/plugin-tech-insights-backend': patch
-'@backstage/plugin-tech-insights-common': patch
 ---
 
 Added the possibility to display check results of different types on a single scorecard.
@@ -12,7 +9,6 @@ Added the possibility to display check results of different types on a single sc
 - The `TechInsightsClient` constructor accepts now the optional `renderers` parameter that can be used to inject a custom renderer.
 - **BREAKING** The `title` parameter in the `EntityTechInsightsScorecardContent` and `EntityTechInsightsScorecardCard` components is now mandatory.
 - The `booleanCheckResultRenderer` used to render boolean check results is exported.
-- **BREAKING** The `JsonRulesEngineFactChecker` class now returns checks results with the `type` value equals to `boolean`.
 
 If you were overriding the `getScorecardsDefinition` method to adjust the rendering of check results, you should now provide a custom renderer using `renderers` parameter in the `TechInsightsClient` class.
 
