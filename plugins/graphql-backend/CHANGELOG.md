@@ -1,5 +1,14 @@
 # @backstage/plugin-graphql-backend
 
+## 0.1.25
+
+### Patch Changes
+
+- fa3eeee92d: Updated dependency `@graphql-tools/schema` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/plugin-catalog-graphql@0.3.12
+
 ## 0.1.25-next.0
 
 ### Patch Changes

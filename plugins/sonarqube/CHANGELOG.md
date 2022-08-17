@@ -1,5 +1,23 @@
 # @backstage/plugin-sonarqube
 
+## 0.4.0
+
+### Minor Changes
+
+- 619b515172: **BREAKING** This plugin now call the `sonarqube-backend` plugin instead of relying on the proxy plugin
+
+  The whole proxy's `'/sonarqube':` key can be removed from your configuration files.
+
+  Then head to the [README in sonarqube-backend plugin page](https://github.com/backstage/backstage/tree/master/plugins/sonarqube-backend/README.md) to learn how to set-up the link to your Sonarqube instances.
+
+### Patch Changes
+
+- f9c310a439: Add ability to provide an optional Sonarqube instance into the annotation in the `catalog-info.yaml` file
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-react@1.1.3
+
 ## 0.4.0-next.2
 
 ### Patch Changes

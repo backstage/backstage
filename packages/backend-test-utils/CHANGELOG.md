@@ -1,5 +1,17 @@
 # @backstage/backend-test-utils
 
+## 0.1.27
+
+### Patch Changes
+
+- 0599732ec0: Refactored experimental backend system with new type names.
+- 56e1b4b89c: Added alpha test helpers for the new experimental backend system.
+- Updated dependencies
+  - @backstage/cli@0.18.1
+  - @backstage/backend-common@0.15.0
+  - @backstage/backend-app-api@0.2.0
+  - @backstage/backend-plugin-api@0.1.1
+
 ## 0.1.27-next.0
 
 ### Patch Changes
