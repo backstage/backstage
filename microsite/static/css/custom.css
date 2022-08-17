@@ -1233,7 +1233,7 @@ h3.collapsible span.arrow {
   right: 0;
   position: fixed;
   color: rgb(0, 0, 0);
-  transition: transform 250ms ease-in-out;
+  transition: transform 250ms ease-in-out, height 250ms ease-in-out;
   display: flex;
   align-items: center;
   transform: translateY(-50%) translateX(500px);
