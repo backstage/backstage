@@ -303,11 +303,6 @@ export function createPublishBitbucketServerAction(options: {
   token?: string | undefined;
 }>;
 
-// @public @deprecated
-export function createPublishFileAction(): TemplateAction<{
-  path: string;
-}>;
-
 // @public
 export function createPublishGerritAction(options: {
   integrations: ScmIntegrationRegistry;
