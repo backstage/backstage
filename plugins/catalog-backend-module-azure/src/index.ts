@@ -20,4 +20,5 @@
  * @packageDocumentation
  */
 
-export { AzureDevOpsDiscoveryProcessor } from './AzureDevOpsDiscoveryProcessor';
+export { AzureDevOpsDiscoveryProcessor } from './processors';
+export { AzureDevOpsEntityProvider } from './providers';

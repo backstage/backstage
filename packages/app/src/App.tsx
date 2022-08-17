@@ -35,11 +35,13 @@ import {
 } from '@backstage/core-components';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import { AzurePullRequestsPage } from '@backstage/plugin-azure-devops';
+
 import {
   CatalogEntityPage,
   CatalogIndexPage,
   catalogPlugin,
-} from '@backstage/plugin-catalog';
+} from '@internal/plugin-catalog-customized';
+
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import {
   CatalogImportPage,
@@ -60,6 +62,7 @@ import { NewRelicPage } from '@backstage/plugin-newrelic';
 import {
   ScaffolderFieldExtensions,
   ScaffolderPage,
+  NextScaffolderPage,
   scaffolderPlugin,
 } from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
@@ -196,6 +199,24 @@ const routes = (
       element={
         <ScaffolderPage
           defaultPreviewTemplate={defaultPreviewTemplate}
+          groups={[
+            {
+              title: 'Recommended',
+              filter: entity =>
+                entity?.metadata?.tags?.includes('recommended') ?? false,
+            },
+          ]}
+        />
+      }
+    >
+      <ScaffolderFieldExtensions>
+        <LowerCaseValuePickerFieldExtension />
+      </ScaffolderFieldExtensions>
+    </Route>
+    <Route
+      path="/create/next"
+      element={
+        <NextScaffolderPage
           groups={[
             {
               title: 'Recommended',

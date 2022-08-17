@@ -1,5 +1,152 @@
 # @backstage/cli
 
+## 0.18.1
+
+### Patch Changes
+
+- d45bbfeb69: Linting is now ignored for any `.eslintrc.*` files, not just `.eslintrc.js`.
+- 72c228fdb8: Fixed a bug where `NODE_ENV` was not set in the environment when starting the backend in development mode. It has always been the case that Webpack transformed `NODE_ENV` when running in development mode, but this did not affect dependencies in `node_modules` as they are treated as external.
+- a539564c0d: Added Backstage version to output of `yarn backstage-cli info` command
+- fd68d6f138: Added resolution of `.json` and `.wasm` files to the Webpack configuration in order to match defaults.
+- 94155a41e0: Updated dependencies `@svgr/*` to `6.3.x`.
+
+## 0.18.1-next.1
+
+### Patch Changes
+
+- fd68d6f138: Added resolution of `.json` and `.wasm` files to the Webpack configuration in order to match defaults.
+
+## 0.18.1-next.0
+
+### Patch Changes
+
+- a539564c0d: Added Backstage version to output of `yarn backstage-cli info` command
+- 94155a41e0: Updated dependencies `@svgr/*` to `6.3.x`.
+
+## 0.18.0
+
+### Minor Changes
+
+- 96a82d9791: **BREAKING**: Removed the following deprecated package commands:
+
+  - `app:build` - Use `package build` instead
+  - `app:serve` - Use `package start` instead
+  - `backend:build` - Use `package build` instead
+  - `backend:bundle` - Use `package build` instead
+  - `backend:dev` - Use `package start` instead
+  - `plugin:build` - Use `package build` instead
+  - `plugin:serve` - Use `package start` instead
+  - `build` - Use `package build` instead
+  - `lint` - Use `package lint` instead
+  - `prepack` - Use `package prepack` instead
+  - `postpack` - Use `package postpack` instead
+
+  In order to replace these you need to have [migrated to using package roles](https://backstage.io/docs/tutorials/package-role-migration).
+
+### Patch Changes
+
+- 86640214f0: Upgrade `@rollup/plugin-node-resolve` to `^13.0.6`
+- d2256c0384: Fix `webpack-dev-server` deprecations.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- e661242844: Updated dependency `run-script-webpack-plugin` to `^0.1.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- e8ed804d4f: Updated dependency `@spotify/prettier-config` to `^14.0.0`.
+  Updated dependency `@spotify/eslint-config-base` to `^14.0.0`.
+  Updated dependency `@spotify/eslint-config-react` to `^14.0.0`.
+  Updated dependency `@spotify/eslint-config-typescript` to `^14.0.0`.
+- e662b573cf: Updated dependency `@octokit/request` to `^6.0.0`.
+- f6b6fb7165: The `test` command now ensures that all IO is flushed before exiting when printing `--help`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.3
+  - @backstage/release-manifests@0.0.5
+  - @backstage/errors@1.1.0
+
+## 0.18.0-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- e662b573cf: Updated dependency `@octokit/request` to `^6.0.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.3-next.1
+  - @backstage/release-manifests@0.0.5-next.0
+
+## 0.18.0-next.2
+
+### Patch Changes
+
+- f6b6fb7165: The `test` command now ensures that all IO is flushed before exiting when printing `--help`.
+
+## 0.18.0-next.1
+
+### Minor Changes
+
+- 96a82d9791: **BREAKING**: Removed the following deprecated package commands:
+
+  - `app:build` - Use `package build` instead
+  - `app:serve` - Use `package start` instead
+  - `backend:build` - Use `package build` instead
+  - `backend:bundle` - Use `package build` instead
+  - `backend:dev` - Use `package start` instead
+  - `plugin:build` - Use `package build` instead
+  - `plugin:serve` - Use `package start` instead
+  - `build` - Use `package build` instead
+  - `lint` - Use `package lint` instead
+  - `prepack` - Use `package prepack` instead
+  - `postpack` - Use `package postpack` instead
+
+  In order to replace these you need to have [migrated to using package roles](https://backstage.io/docs/tutorials/package-role-migration).
+
+### Patch Changes
+
+- 86640214f0: Upgrade `@rollup/plugin-node-resolve` to `^13.0.6`
+- e661242844: Updated dependency `run-script-webpack-plugin` to `^0.1.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/config-loader@1.1.3-next.0
+
+## 0.17.3-next.0
+
+### Patch Changes
+
+- d2256c0384: Fix `webpack-dev-server` deprecations.
+
+## 0.17.2
+
+### Patch Changes
+
+- 026cfe525a: Fix the public path configuration of the frontend app build so that a trailing `/` is always appended when needed.
+- 4f73352608: Updated Lockfile to support new versions of yarn as well as the legacy 1 version
+- b8970b8941: Improved the `create-github-app` permissions selection prompt by converting it into a multi-select with clearer descriptions. The `members` permission is now also included in the list which is required for ingesting user data into the catalog.
+- bd58365d09: Updated dependency `run-script-webpack-plugin` to `^0.0.14`.
+- 9002ebd76b: Updated dependency `@rollup/plugin-commonjs` to `^22.0.0`.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 1a33e8b287: Updated dependency `minimatch` to `5.1.0`.
+- 6de866ea74: Added console warning to frontend start when the `app.baseUrl` and `backend.baseUrl` are identical
+- Updated dependencies
+  - @backstage/config-loader@1.1.2
+  - @backstage/release-manifests@0.0.4
+
+## 0.17.2-next.2
+
+### Patch Changes
+
+- 026cfe525a: Fix the public path configuration of the frontend app build so that a trailing `/` is always appended when needed.
+- 9002ebd76b: Updated dependency `@rollup/plugin-commonjs` to `^22.0.0`.
+- 1a33e8b287: Updated dependency `minimatch` to `5.1.0`.
+
+## 0.17.2-next.1
+
+### Patch Changes
+
+- bd58365d09: Updated dependency `run-script-webpack-plugin` to `^0.0.14`.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.2-next.0
+  - @backstage/release-manifests@0.0.4-next.0
+
 ## 0.17.2-next.0
 
 ### Patch Changes

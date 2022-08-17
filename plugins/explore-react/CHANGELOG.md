@@ -1,5 +1,52 @@
 # @backstage/plugin-explore-react
 
+## 0.0.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5
+
+## 0.0.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+
+## 0.0.19
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4
+
+## 0.0.19-next.0
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+
+## 0.0.18
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.3
+
+## 0.0.18-next.0
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.3-next.0
+
 ## 0.0.17
 
 ### Patch Changes

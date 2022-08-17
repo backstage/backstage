@@ -1,5 +1,94 @@
 # @backstage/plugin-search-react
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+
+## 1.0.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.0-next.2
+
+## 1.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/core-components@0.10.1-next.0
+
+## 1.0.0
+
+### Major Changes
+
+- 7bd7d336b2: This package has been promoted to 1.0. Read more about what it means in [New release: Backstage Search 1.0 blog](https://backstage.io/blog/2022/07/19/releasing-backstage-search-1.0)
+
+### Patch Changes
+
+- 60408ca9d4: Fix search pagination to reset page cursor also when a term is cleared.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/plugin-search-common@1.0.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/theme@0.2.16
+
+## 0.2.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+
+## 0.2.2-next.2
+
+### Patch Changes
+
+- 60408ca9d4: Fix search pagination to reset page cursor also when a term is cleared.
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/theme@0.2.16-next.1
+
+## 0.2.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.1
+  - @backstage/theme@0.2.16-next.0
+  - @backstage/plugin-search-common@0.3.6-next.0
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.0
+
+## 0.2.1
+
+### Patch Changes
+
+- 8809159148: Components `<DefaultResultListItem>`, `<SearchBar>` (including `<SearchBarBase>`), `<SearchFilter>` (including `.Checkbox`, `.Select`, and `.Autocomplete` static prop components), `<SearchResult>`, and `<SearchResultPager>` are now exported from `@backstage/plugin-search-react`. They are now deprecated in `@backstage/plugin-search` and will be removed in a future release.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.3-next.0
+  - @backstage/plugin-search-common@0.3.5-next.0
+
 ## 0.2.0
 
 ### Minor Changes

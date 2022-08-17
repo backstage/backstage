@@ -1,5 +1,45 @@
 # @backstage/plugin-search-common
 
+## 1.0.0
+
+### Major Changes
+
+- 7bd7d336b2: This package has been promoted to 1.0. Read more about what it means in [New release: Backstage Search 1.0 blog](https://backstage.io/blog/2022/07/19/releasing-backstage-search-1.0)
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.3
+
+## 0.3.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.3-next.0
+
+## 0.3.5
+
+### Patch Changes
+
+- 7d8acfc32e: `@beta` exports now replaced with `@public` exports
+- 484afdf1dc: Added an optional `rank` attribute to the `Result` type. This represents the result rank (starting at 1) for a given result in a result set for a given search.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.2
+
+## 0.3.5-next.1
+
+### Patch Changes
+
+- 7d8acfc32e: `@beta` exports now replaced with `@public` exports
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.2-next.0
+
 ## 0.3.4
 
 ### Patch Changes

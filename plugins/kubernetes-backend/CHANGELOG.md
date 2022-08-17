@@ -1,5 +1,180 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.7.1
+
+### Patch Changes
+
+- 0297da83c0: Added `DaemonSets` to the default kubernetes resources.
+- 0cd87cf30d: Added a new `customResources` field to the ClusterDetails interface, in order to specify (override) custom resources per cluster
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/plugin-kubernetes-common@0.4.1
+  - @backstage/plugin-auth-node@0.2.4
+
+## 0.7.1-next.1
+
+### Patch Changes
+
+- 0cd87cf30d: Added a new `customResources` field to the ClusterDetails interface, in order to specify (override) custom resources per cluster
+
+## 0.7.1-next.0
+
+### Patch Changes
+
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/plugin-auth-node@0.2.4-next.0
+
+## 0.7.0
+
+### Minor Changes
+
+- f5c9730639: Add `localKubectlProxy` cluster locator method to make local development simpler to setup.
+
+  Consolidated no-op server side auth decorators.
+  The following Kubernetes auth decorators are now one class (`ServerSideKubernetesAuthProvider`):
+
+  - `AwsKubernetesAuthProvider`
+  - `AzureKubernetesAuthProvider`
+  - `ServiceAccountKubernetesAuthProvider`
+
+- 1454bf98e7: Add new endpoints to Kubernetes backend plugin
+
+  BREAKING: Kubernetes backend plugin now depends on CatalogApi
+
+  ```typescript
+  // Import CatalogClient
+  import { CatalogClient } from '@backstage/catalog-client';
+  // Create new CatalogClient
+  const catalogApi = new CatalogClient({ discoveryApi: env.discovery });
+  const { router } = await KubernetesBuilder.createBuilder({
+    logger: env.logger,
+    config: env.config,
+    // Inject it into createBuilder params
+    catalogApi,
+  }).build();
+  ```
+
+- 0791af993f: Refactor `KubernetesObjectsProvider` with new methods, `KubernetesServiceLocator` now takes an `Entity` instead of `serviceId`
+
+### Patch Changes
+
+- 60e5f9fe68: Fixed the lack of `limitranges` as part of the Default Objects to fetch from the kubernetes api
+- 746ec700ea: Add support for Kubernetes clusters in the catalog.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- eadb3a8d2e: Updated dependency `@kubernetes/client-node` to `^0.17.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-kubernetes-common@0.4.0
+  - @backstage/catalog-client@1.0.4
+  - @backstage/plugin-auth-node@0.2.3
+  - @backstage/errors@1.1.0
+
+## 0.7.0-next.3
+
+### Minor Changes
+
+- f5c9730639: Add `localKubectlProxy` cluster locator method to make local development simpler to setup.
+
+  Consolidated no-op server side auth decorators.
+  The following Kubernetes auth decorators are now one class (`ServerSideKubernetesAuthProvider`):
+
+  - `AwsKubernetesAuthProvider`
+  - `AzureKubernetesAuthProvider`
+  - `ServiceAccountKubernetesAuthProvider`
+
+- 1454bf98e7: Add new endpoints to Kubernetes backend plugin
+
+  BREAKING: Kubernetes backend plugin now depends on CatalogApi
+
+  ```typescript
+  // Create new CatalogClient
+  const catalogApi = new CatalogClient({ discoveryApi: env.discovery });
+  const { router } = await KubernetesBuilder.createBuilder({
+    logger: env.logger,
+    config: env.config,
+    // Inject it into createBuilder params
+    catalogApi,
+  }).build();
+  ```
+
+### Patch Changes
+
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- eadb3a8d2e: Updated dependency `@kubernetes/client-node` to `^0.17.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/catalog-client@1.0.4-next.2
+  - @backstage/plugin-auth-node@0.2.3-next.2
+  - @backstage/catalog-model@1.1.0-next.3
+  - @backstage/plugin-kubernetes-common@0.4.0-next.2
+
+## 0.7.0-next.2
+
+### Patch Changes
+
+- 60e5f9fe68: Fixed the lack of `limitranges` as part of the Default Objects to fetch from the kubernetes api
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.4.0-next.1
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/backend-common@0.14.1-next.2
+
+## 0.7.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+
+## 0.7.0-next.0
+
+### Minor Changes
+
+- 0791af993f: Refactor `KubernetesObjectsProvider` with new methods, `KubernetesServiceLocator` now takes an `Entity` instead of `serviceId`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/plugin-kubernetes-common@0.4.0-next.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 4328737af6: Add support to fetch data for Stateful Sets from Kubernetes
+
+### Patch Changes
+
+- 0c70cd8e1d: cache and refresh Azure tokens to avoid excessive calls to Azure Identity
+- 2aedf64ad3: Updated dependency `@google-cloud/container` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+  - @backstage/plugin-kubernetes-common@0.3.0
+  - @backstage/catalog-model@1.0.3
+
+## 0.6.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+
+## 0.6.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/catalog-model@1.0.3-next.0
+  - @backstage/plugin-kubernetes-common@0.3.0-next.1
+
 ## 0.6.0-next.0
 
 ### Minor Changes

@@ -1,5 +1,166 @@
 # @backstage/plugin-kubernetes
 
+## 0.7.1
+
+### Patch Changes
+
+- 860ed68343: Fixed bug in CronJobsAccordions component that causes an error when cronjobs use a kubernetes alias, such as `@hourly` or `@daily` instead of standard cron syntax.
+- f563b86a5b: Adds namespace column to Kubernetes error reporting table
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.4.1
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-react@1.1.3
+
+## 0.7.1-next.2
+
+### Patch Changes
+
+- f563b86a5b: Adds namespace column to Kubernetes error reporting table
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.3-next.2
+  - @backstage/core-components@0.11.0-next.2
+
+## 0.7.1-next.1
+
+### Patch Changes
+
+- 860ed68343: Fixed bug in CronJobsAccordions component that causes an error when cronjobs use a kubernetes alias, such as `@hourly` or `@daily` instead of standard cron syntax.
+- Updated dependencies
+  - @backstage/core-components@0.10.1-next.1
+  - @backstage/plugin-catalog-react@1.1.3-next.1
+
+## 0.7.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/plugin-catalog-react@1.1.3-next.0
+  - @backstage/core-components@0.10.1-next.0
+
+## 0.7.0
+
+### Minor Changes
+
+- f5c9730639: Add `localKubectlProxy` cluster locator method to make local development simpler to setup.
+
+  Consolidated no-op server side auth decorators.
+  The following Kubernetes auth decorators are now one class (`ServerSideKubernetesAuthProvider`):
+
+  - `AwsKubernetesAuthProvider`
+  - `AzureKubernetesAuthProvider`
+  - `ServiceAccountKubernetesAuthProvider`
+
+### Patch Changes
+
+- 3ec294a186: expose detectErrors function publicly
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- eadb3a8d2e: Updated dependency `@kubernetes/client-node` to `^0.17.0`.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-kubernetes-common@0.4.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/theme@0.2.16
+
+## 0.7.0-next.3
+
+### Minor Changes
+
+- f5c9730639: Add `localKubectlProxy` cluster locator method to make local development simpler to setup.
+
+  Consolidated no-op server side auth decorators.
+  The following Kubernetes auth decorators are now one class (`ServerSideKubernetesAuthProvider`):
+
+  - `AwsKubernetesAuthProvider`
+  - `AzureKubernetesAuthProvider`
+  - `ServiceAccountKubernetesAuthProvider`
+
+### Patch Changes
+
+- 3ec294a186: expose detectErrors function publicly
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- eadb3a8d2e: Updated dependency `@kubernetes/client-node` to `^0.17.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+  - @backstage/catalog-model@1.1.0-next.3
+  - @backstage/plugin-catalog-react@1.1.2-next.3
+  - @backstage/plugin-kubernetes-common@0.4.0-next.2
+
+## 0.6.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/plugin-kubernetes-common@0.4.0-next.1
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/theme@0.2.16-next.1
+  - @backstage/plugin-catalog-react@1.1.2-next.2
+
+## 0.6.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.1
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/theme@0.2.16-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.1
+
+## 0.6.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/plugin-kubernetes-common@0.4.0-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.0
+
+## 0.6.6
+
+### Patch Changes
+
+- 4328737af6: Add support to fetch data for Stateful Sets and display an accordion in the same way as with Deployments
+- b9b8bbc7d9: show request/limit CPU and Memory on the UI
+- 5553f09e80: ability to configure refresh interval on Kubernetes tab
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 81304e3e91: Fix for HPA matching when deploying same HPA in multiple namespaces
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/core-components@0.9.5
+  - @backstage/plugin-kubernetes-common@0.3.0
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/catalog-model@1.0.3
+
+## 0.6.6-next.2
+
+### Patch Changes
+
+- 5553f09e80: ability to configure refresh interval on Kubernetes tab
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.2
+
+## 0.6.6-next.1
+
+### Patch Changes
+
+- b9b8bbc7d9: show request/limit CPU and Memory on the UI
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.1
+  - @backstage/core-plugin-api@1.0.3-next.0
+  - @backstage/catalog-model@1.0.3-next.0
+  - @backstage/plugin-catalog-react@1.1.1-next.1
+  - @backstage/plugin-kubernetes-common@0.3.0-next.1
+
 ## 0.6.6-next.0
 
 ### Patch Changes

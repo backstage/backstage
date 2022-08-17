@@ -23,8 +23,11 @@ import {
   ListItemText,
   makeStyles,
 } from '@material-ui/core';
+import { parseEntityRef } from '@backstage/catalog-model';
 import { Link } from '@backstage/core-components';
+import { useAnalytics } from '@backstage/core-plugin-api';
 import { AdrDocument } from '@backstage/plugin-adr-common';
+import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
@@ -46,16 +49,26 @@ const useStyles = makeStyles({
 export const AdrSearchResultListItem = ({
   lineClamp = 5,
   highlight,
+  rank,
   result,
 }: {
   lineClamp?: number;
   highlight?: ResultHighlight;
+  rank?: number;
   result: AdrDocument;
 }) => {
   const classes = useStyles();
+  const analytics = useAnalytics();
+
+  const handleClick = () => {
+    analytics.captureEvent('discover', result.title, {
+      attributes: { to: result.location },
+      value: rank,
+    });
+  };
 
   return (
-    <Link to={result.location}>
+    <Link noTrack to={result.location} onClick={handleClick}>
       <ListItem alignItems="flex-start" className={classes.flexContainer}>
         <ListItemText
           className={classes.itemText}
@@ -93,6 +106,13 @@ export const AdrSearchResultListItem = ({
           }
         />
         <Box>
+          <Chip
+            label={`Entity: ${
+              result.entityTitle ??
+              humanizeEntityRef(parseEntityRef(result.entityRef))
+            }`}
+            size="small"
+          />
           {result.status && (
             <Chip label={`Status: ${result.status}`} size="small" />
           )}

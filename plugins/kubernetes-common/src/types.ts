@@ -18,10 +18,12 @@ import type { JsonObject } from '@backstage/types';
 import {
   V1ConfigMap,
   V1CronJob,
+  V1DaemonSet,
   V1Deployment,
   V1HorizontalPodAutoscaler,
   V1Ingress,
   V1Job,
+  V1LimitRange,
   V1Pod,
   V1ReplicaSet,
   V1Service,
@@ -29,13 +31,15 @@ import {
 } from '@kubernetes/client-node';
 import { Entity } from '@backstage/catalog-model';
 
-export interface KubernetesRequestBody {
-  auth?: {
-    google?: string;
-    oidc?: {
-      [key: string]: string;
-    };
+export interface KubernetesRequestAuth {
+  google?: string;
+  oidc?: {
+    [key: string]: string;
   };
+}
+
+export interface KubernetesRequestBody {
+  auth?: KubernetesRequestAuth;
   entity: Entity;
 }
 
@@ -95,13 +99,15 @@ export type FetchResponse =
   | ServiceFetchResponse
   | ConfigMapFetchResponse
   | DeploymentFetchResponse
+  | LimitRangeFetchReponse
   | ReplicaSetsFetchResponse
   | HorizontalPodAutoscalersFetchResponse
   | JobsFetchResponse
   | CronJobsFetchResponse
   | IngressesFetchResponse
   | CustomResourceFetchResponse
-  | StatefulSetsFetchResponse;
+  | StatefulSetsFetchResponse
+  | DaemonSetsFetchResponse;
 
 export interface PodFetchResponse {
   type: 'pods';
@@ -126,6 +132,11 @@ export interface DeploymentFetchResponse {
 export interface ReplicaSetsFetchResponse {
   type: 'replicasets';
   resources: Array<V1ReplicaSet>;
+}
+
+export interface LimitRangeFetchReponse {
+  type: 'limitranges';
+  resources: Array<V1LimitRange>;
 }
 
 export interface HorizontalPodAutoscalersFetchResponse {
@@ -156,6 +167,11 @@ export interface CustomResourceFetchResponse {
 export interface StatefulSetsFetchResponse {
   type: 'statefulsets';
   resources: Array<V1StatefulSet>;
+}
+
+export interface DaemonSetsFetchResponse {
+  type: 'daemonsets';
+  resources: Array<V1DaemonSet>;
 }
 
 export interface KubernetesFetchError {

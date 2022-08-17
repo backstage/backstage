@@ -25,6 +25,7 @@ export const adrPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 
@@ -47,10 +48,12 @@ export const AdrReader: {
 export const AdrSearchResultListItem: ({
   lineClamp,
   highlight,
+  rank,
   result,
 }: {
   lineClamp?: number | undefined;
   highlight?: ResultHighlight | undefined;
+  rank?: number | undefined;
   result: AdrDocument;
 }) => JSX.Element;
 

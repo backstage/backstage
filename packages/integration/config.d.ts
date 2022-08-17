@@ -15,7 +15,10 @@
  */
 
 export interface Config {
-  /** Configuration for integrations towards various external repository provider systems */
+  /**
+   * Configuration for integrations towards various external repository provider systems
+   * @visibility frontend
+   */
   integrations?: {
     /** Integration configuration for Azure */
     azure?: Array<{
@@ -89,6 +92,16 @@ export interface Config {
        * @visibility secret
        */
       token?: string;
+      /**
+       * Username used to authenticate requests with Basic Auth.
+       * @visibility secret
+       */
+      username?: string;
+      /**
+       * Password (or token as password) used to authenticate requests with Basic Auth.
+       * @visibility secret
+       */
+      password?: string;
       /**
        * The base url for the Bitbucket Server API, for example https://<host>/rest/api/1.0
        * @visibility frontend

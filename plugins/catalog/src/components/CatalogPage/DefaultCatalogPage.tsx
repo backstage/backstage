@@ -28,6 +28,7 @@ import {
   CatalogFilterLayout,
   EntityLifecyclePicker,
   EntityListProvider,
+  EntityProcessingStatusPicker,
   EntityOwnerPicker,
   EntityTagPicker,
   EntityTypePicker,
@@ -38,6 +39,7 @@ import React from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
 import { CatalogKindHeader } from '../CatalogKindHeader';
+import { useCatalogPluginOptions } from '../../options';
 
 /**
  * Props for root catalog pages.
@@ -64,6 +66,8 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
 
+  const { createButtonTitle } = useCatalogPluginOptions();
+
   return (
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
       <EntityListProvider>
@@ -72,7 +76,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
             titleComponent={<CatalogKindHeader initialFilter={initialKind} />}
           >
             <CreateButton
-              title="Create Component"
+              title={createButtonTitle}
               to={createComponentLink && createComponentLink()}
             />
             <SupportButton>All your software catalog entities</SupportButton>
@@ -84,6 +88,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
               <EntityOwnerPicker />
               <EntityLifecyclePicker />
               <EntityTagPicker />
+              <EntityProcessingStatusPicker />
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
               <CatalogTable

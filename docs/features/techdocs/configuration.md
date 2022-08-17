@@ -74,6 +74,12 @@ techdocs:
 
     type: 'local'
 
+    # Optional when techdocs.publisher.type is set to 'local'.
+
+    local:
+      # (Optional). Set this to specify where the generated documentation is stored.
+      publishDirectory: '/path/to/local/directory'
+
     # Required when techdocs.publisher.type is set to 'googleGcs'. Skip otherwise.
 
     googleGcs:
@@ -154,7 +160,8 @@ techdocs:
 
   # techdocs.cache is optional, and is only recommended when you've configured
   # an external techdocs.publisher.type above. Also requires backend.cache to
-  # be configured with a valid cache store.
+  # be configured with a valid cache store. Configure techdocs.cache.ttl to
+  # enable caching of techdocs assets.
   cache:
     # Represents the number of milliseconds a statically built asset should
     # stay cached. Cache invalidation is handled automatically by the frontend,

@@ -1,5 +1,154 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.3.1
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog@1.5.0
+  - @backstage/plugin-techdocs-react@1.0.3
+  - @backstage/core-app-api@1.0.5
+  - @backstage/integration-react@1.1.3
+  - @backstage/test-utils@1.1.3
+  - @backstage/plugin-search-react@1.0.1
+
+## 1.0.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.3.1-next.2
+  - @backstage/core-components@0.11.0-next.2
+  - @backstage/integration-react@1.1.3-next.1
+  - @backstage/plugin-catalog@1.5.0-next.2
+  - @backstage/plugin-search-react@1.0.1-next.1
+  - @backstage/plugin-techdocs-react@1.0.3-next.2
+
+## 1.0.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/plugin-catalog@1.5.0-next.0
+  - @backstage/plugin-techdocs@1.3.1-next.0
+  - @backstage/integration-react@1.1.3-next.0
+  - @backstage/core-app-api@1.0.5-next.0
+  - @backstage/core-components@0.10.1-next.0
+  - @backstage/test-utils@1.1.3-next.0
+  - @backstage/plugin-search-react@1.0.1-next.0
+  - @backstage/plugin-techdocs-react@1.0.3-next.0
+
+## 1.0.2
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/plugin-techdocs-react@1.0.2
+  - @backstage/plugin-search-react@1.0.0
+  - @backstage/plugin-catalog@1.4.0
+  - @backstage/core-app-api@1.0.4
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/integration-react@1.1.2
+  - @backstage/test-utils@1.1.2
+  - @backstage/plugin-techdocs@1.3.0
+  - @backstage/theme@0.2.16
+
+## 1.0.2-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/core-app-api@1.0.4-next.1
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+  - @backstage/integration-react@1.1.2-next.3
+  - @backstage/test-utils@1.1.2-next.2
+  - @backstage/plugin-techdocs@1.2.1-next.3
+  - @backstage/plugin-catalog@1.4.0-next.3
+  - @backstage/plugin-search-react@0.2.2-next.3
+  - @backstage/plugin-techdocs-react@1.0.2-next.2
+
+## 1.0.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/plugin-search-react@0.2.2-next.2
+  - @backstage/theme@0.2.16-next.1
+  - @backstage/plugin-techdocs@1.2.1-next.2
+  - @backstage/plugin-catalog@1.4.0-next.2
+  - @backstage/integration-react@1.1.2-next.2
+  - @backstage/plugin-techdocs-react@1.0.2-next.1
+
+## 1.0.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.1
+  - @backstage/plugin-catalog@1.3.1-next.1
+  - @backstage/theme@0.2.16-next.0
+  - @backstage/plugin-techdocs@1.2.1-next.1
+  - @backstage/integration-react@1.1.2-next.1
+  - @backstage/test-utils@1.1.2-next.1
+  - @backstage/plugin-search-react@0.2.2-next.1
+
+## 1.0.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/plugin-techdocs-react@1.0.2-next.0
+  - @backstage/plugin-catalog@1.3.1-next.0
+  - @backstage/core-app-api@1.0.4-next.0
+  - @backstage/plugin-techdocs@1.2.1-next.0
+  - @backstage/integration-react@1.1.2-next.0
+  - @backstage/plugin-search-react@0.2.2-next.0
+  - @backstage/test-utils@1.1.2-next.0
+
+## 1.0.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- d047d81295: Update default mock
+- Updated dependencies
+  - @backstage/plugin-catalog@1.3.0
+  - @backstage/plugin-techdocs@1.2.0
+  - @backstage/plugin-search-react@0.2.1
+  - @backstage/core-components@0.9.5
+  - @backstage/core-app-api@1.0.3
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/integration-react@1.1.1
+  - @backstage/test-utils@1.1.1
+  - @backstage/plugin-techdocs-react@1.0.1
+
+## 1.0.1-next.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.1
+  - @backstage/core-app-api@1.0.3-next.0
+  - @backstage/core-plugin-api@1.0.3-next.0
+  - @backstage/integration-react@1.1.1-next.1
+  - @backstage/test-utils@1.1.1-next.0
+  - @backstage/plugin-techdocs@1.1.2-next.1
+  - @backstage/plugin-catalog@1.2.1-next.1
+  - @backstage/plugin-search-react@0.2.1-next.0
+  - @backstage/plugin-techdocs-react@1.0.1-next.1
+
 ## 1.0.1-next.0
 
 ### Patch Changes

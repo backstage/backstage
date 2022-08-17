@@ -1,5 +1,95 @@
 # @backstage/plugin-xcmetrics
 
+## 0.2.28
+
+### Patch Changes
+
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+
+## 0.2.28-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.0-next.2
+
+## 0.2.28-next.0
+
+### Patch Changes
+
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/core-components@0.10.1-next.0
+
+## 0.2.27
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/theme@0.2.16
+  - @backstage/errors@1.1.0
+
+## 0.2.27-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+
+## 0.2.27-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/theme@0.2.16-next.1
+
+## 0.2.27-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/theme@0.2.16-next.0
+
+## 0.2.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.0
+
+## 0.2.26
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+
+## 0.2.26-next.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.1
+  - @backstage/core-plugin-api@1.0.3-next.0
+
 ## 0.2.26-next.0
 
 ### Patch Changes

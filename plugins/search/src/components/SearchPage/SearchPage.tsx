@@ -23,7 +23,6 @@ import {
   useSearch,
 } from '@backstage/plugin-search-react';
 import { JsonObject } from '@backstage/types';
-import { LegacySearchPage } from '../LegacySearchPage';
 
 export const UrlUpdater = () => {
   const location = useLocation();
@@ -87,13 +86,16 @@ export const UrlUpdater = () => {
   return null;
 };
 
+/**
+ * @public
+ */
 export const SearchPage = () => {
   const outlet = useOutlet();
 
   return (
     <SearchContextProvider>
       <UrlUpdater />
-      {outlet || <LegacySearchPage />}
+      {outlet}
     </SearchContextProvider>
   );
 };

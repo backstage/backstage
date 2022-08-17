@@ -49,6 +49,8 @@ const readFile = jest.fn(async (path: string) => {
   const content = (
     {
       [resolvePath(root, 'my-secret')]: 'secret',
+      [resolvePath(root, 'with-newline-at-the-end')]:
+        'value without newline at the end\n\n',
       [resolvePath(root, 'my-data.json')]: '{"a":{"b":{"c":42}}}',
       [resolvePath(root, 'my-data.yaml')]: 'some:\n yaml:\n  key: 7',
       [resolvePath(root, 'my-data.yml')]: 'different: { key: hello }',
@@ -91,6 +93,14 @@ describe('includeTransform', () => {
     await expect(
       includeTransform({ $file: 'no-secret' }, root),
     ).rejects.toThrow('File not found!');
+  });
+  it('should trim newlines from end of file', async () => {
+    await expect(
+      includeTransform({ $file: 'with-newline-at-the-end' }, root),
+    ).resolves.toEqual({
+      applied: true,
+      value: 'value without newline at the end',
+    });
   });
 
   it('should include env vars', async () => {
@@ -155,7 +165,7 @@ describe('includeTransform', () => {
     await expect(
       includeTransform({ $include: 'invalid.yaml' }, root),
     ).rejects.toThrow(
-      'failed to parse included file invalid.yaml, YAMLSyntaxError: Flow sequence contains an unexpected }',
+      /failed to parse included file invalid.yaml, YAMLParseError: Flow sequence in block collection must be sufficiently indented and end with a \] at line 1, column 7:\s+foo: \[\}/,
     );
   });
 

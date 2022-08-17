@@ -16,6 +16,7 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
+import { Models } from '@backstage/plugin-bitbucket-cloud-common';
 import {
   LocationSpec,
   processingResult,
@@ -23,7 +24,7 @@ import {
 import { RequestHandler, rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { BitbucketDiscoveryProcessor } from './BitbucketDiscoveryProcessor';
-import { BitbucketRepository20, PagedResponse, PagedResponse20 } from './lib';
+import { PagedResponse } from './lib';
 
 const server = setupServer();
 
@@ -84,14 +85,14 @@ function setupStubs(
 
 function setupBitbucketCloudStubs(
   workspace: string,
-  repositories: Pick<BitbucketRepository20, 'slug' | 'project'>[],
+  repositories: Pick<Models.Repository, 'slug' | 'project'>[],
 ) {
   const stubCallerFn = jest.fn();
-  function pagedResponse(values: any): PagedResponse20<any> {
+  function pagedResponse(values: any): Models.PaginatedRepositories {
     return {
       values: values,
       page: 1,
-    } as PagedResponse20<any>;
+    } as Models.PaginatedRepositories;
   }
 
   server.use(
@@ -121,15 +122,15 @@ function setupBitbucketCloudStubs(
 
 function setupBitbucketCloudSearchStubs(
   workspace: string,
-  repositories: Pick<BitbucketRepository20, 'slug' | 'project'>[],
+  repositories: Pick<Models.Repository, 'slug' | 'project'>[],
   catalogPath: string,
 ) {
   const stubCallerFn = jest.fn();
-  function pagedResponse(values: any): PagedResponse20<any> {
+  function pagedResponse(values: any): Models.PaginatedRepositories {
     return {
       values: values,
       page: 1,
-    } as PagedResponse20<any>;
+    } as Models.PaginatedRepositories;
   }
 
   server.use(
@@ -555,8 +556,14 @@ describe('BitbucketDiscoveryProcessor', () => {
 
     it('output all repositories by default', async () => {
       setupBitbucketCloudStubs('myworkspace', [
-        { project: { key: 'prj-one' }, slug: 'repository-one' },
-        { project: { key: 'prj-two' }, slug: 'repository-two' },
+        {
+          project: { type: 'project', key: 'prj-one' },
+          slug: 'repository-one',
+        },
+        {
+          project: { type: 'project', key: 'prj-two' },
+          slug: 'repository-two',
+        },
       ]);
       const location: LocationSpec = {
         type: 'bitbucket-discovery',
@@ -590,8 +597,14 @@ describe('BitbucketDiscoveryProcessor', () => {
 
     it('uses provided catalog path', async () => {
       setupBitbucketCloudStubs('myworkspace', [
-        { project: { key: 'prj-one' }, slug: 'repository-one' },
-        { project: { key: 'prj-two' }, slug: 'repository-two' },
+        {
+          project: { type: 'project', key: 'prj-one' },
+          slug: 'repository-one',
+        },
+        {
+          project: { type: 'project', key: 'prj-two' },
+          slug: 'repository-two',
+        },
       ]);
       const location: LocationSpec = {
         type: 'bitbucket-discovery',
@@ -626,8 +639,14 @@ describe('BitbucketDiscoveryProcessor', () => {
 
     it('output all repositories', async () => {
       setupBitbucketCloudStubs('myworkspace', [
-        { project: { key: 'prj-one' }, slug: 'repository-one' },
-        { project: { key: 'prj-two' }, slug: 'repository-two' },
+        {
+          project: { type: 'project', key: 'prj-one' },
+          slug: 'repository-one',
+        },
+        {
+          project: { type: 'project', key: 'prj-two' },
+          slug: 'repository-two',
+        },
       ]);
       const location: LocationSpec = {
         type: 'bitbucket-discovery',
@@ -662,8 +681,14 @@ describe('BitbucketDiscoveryProcessor', () => {
 
     it('output repositories with wildcards', async () => {
       setupBitbucketCloudStubs('myworkspace', [
-        { project: { key: 'prj-one' }, slug: 'repository-one' },
-        { project: { key: 'prj-two' }, slug: 'repository-two' },
+        {
+          project: { type: 'project', key: 'prj-one' },
+          slug: 'repository-one',
+        },
+        {
+          project: { type: 'project', key: 'prj-two' },
+          slug: 'repository-two',
+        },
       ]);
       const location: LocationSpec = {
         type: 'bitbucket-discovery',
@@ -688,9 +713,18 @@ describe('BitbucketDiscoveryProcessor', () => {
 
     it('filter unrelated repositories', async () => {
       setupBitbucketCloudStubs('myworkspace', [
-        { project: { key: 'prj-one' }, slug: 'repository-one' },
-        { project: { key: 'prj-one' }, slug: 'repository-two' },
-        { project: { key: 'prj-one' }, slug: 'repository-three' },
+        {
+          project: { type: 'project', key: 'prj-one' },
+          slug: 'repository-one',
+        },
+        {
+          project: { type: 'project', key: 'prj-one' },
+          slug: 'repository-two',
+        },
+        {
+          project: { type: 'project', key: 'prj-one' },
+          slug: 'repository-three',
+        },
       ]);
       const location: LocationSpec = {
         type: 'bitbucket-discovery',
@@ -715,7 +749,10 @@ describe('BitbucketDiscoveryProcessor', () => {
 
     it('submits query', async () => {
       const mockCall = setupBitbucketCloudStubs('myworkspace', [
-        { project: { key: 'prj-one' }, slug: 'repository-one' },
+        {
+          project: { type: 'project', key: 'prj-one' },
+          slug: 'repository-one',
+        },
       ]);
       const location: LocationSpec = {
         type: 'bitbucket-discovery',
@@ -750,7 +787,10 @@ describe('BitbucketDiscoveryProcessor', () => {
       ${'https://bitbucket.org/workspaces/myworkspace/projects/prj-one/repos/repository-*/'}
     `("target '$target' adds default path to catalog", async ({ target }) => {
       setupBitbucketCloudStubs('myworkspace', [
-        { project: { key: 'prj-one' }, slug: 'repository-one' },
+        {
+          project: { type: 'project', key: 'prj-one' },
+          slug: 'repository-one',
+        },
       ]);
 
       const location: LocationSpec = {
@@ -778,7 +818,10 @@ describe('BitbucketDiscoveryProcessor', () => {
       ${'https://bitbucket.org/test'}
     `("target '$target' is rejected", async ({ target }) => {
       setupBitbucketCloudStubs('myworkspace', [
-        { project: { key: 'prj-one' }, slug: 'repository-one' },
+        {
+          project: { type: 'project', key: 'prj-one' },
+          slug: 'repository-one',
+        },
       ]);
 
       const location: LocationSpec = {
@@ -813,8 +856,14 @@ describe('BitbucketDiscoveryProcessor', () => {
       setupBitbucketCloudSearchStubs(
         'myworkspace',
         [
-          { project: { key: 'prj-one' }, slug: 'repository-one' },
-          { project: { key: 'prj-two' }, slug: 'repository-two' },
+          {
+            project: { type: 'project', key: 'prj-one' },
+            slug: 'repository-one',
+          },
+          {
+            project: { type: 'project', key: 'prj-two' },
+            slug: 'repository-two',
+          },
         ],
         'catalog-info.yaml',
       );
@@ -852,8 +901,14 @@ describe('BitbucketDiscoveryProcessor', () => {
       setupBitbucketCloudSearchStubs(
         'myworkspace',
         [
-          { project: { key: 'prj-one' }, slug: 'repository-one' },
-          { project: { key: 'prj-two' }, slug: 'repository-two' },
+          {
+            project: { type: 'project', key: 'prj-one' },
+            slug: 'repository-one',
+          },
+          {
+            project: { type: 'project', key: 'prj-two' },
+            slug: 'repository-two',
+          },
         ],
         'my/nested/path/catalog.yaml',
       );
@@ -892,8 +947,14 @@ describe('BitbucketDiscoveryProcessor', () => {
       setupBitbucketCloudSearchStubs(
         'myworkspace',
         [
-          { project: { key: 'prj-one' }, slug: 'repository-one' },
-          { project: { key: 'prj-two' }, slug: 'repository-two' },
+          {
+            project: { type: 'project', key: 'prj-one' },
+            slug: 'repository-one',
+          },
+          {
+            project: { type: 'project', key: 'prj-two' },
+            slug: 'repository-two',
+          },
         ],
         'catalog.yaml',
       );
@@ -932,8 +993,14 @@ describe('BitbucketDiscoveryProcessor', () => {
       setupBitbucketCloudSearchStubs(
         'myworkspace',
         [
-          { project: { key: 'prj-one' }, slug: 'repository-one' },
-          { project: { key: 'prj-two' }, slug: 'repository-two' },
+          {
+            project: { type: 'project', key: 'prj-one' },
+            slug: 'repository-one',
+          },
+          {
+            project: { type: 'project', key: 'prj-two' },
+            slug: 'repository-two',
+          },
         ],
         'catalog.yaml',
       );
@@ -962,9 +1029,18 @@ describe('BitbucketDiscoveryProcessor', () => {
       setupBitbucketCloudSearchStubs(
         'myworkspace',
         [
-          { project: { key: 'prj-one' }, slug: 'repository-one' },
-          { project: { key: 'prj-one' }, slug: 'repository-two' },
-          { project: { key: 'prj-one' }, slug: 'repository-three' },
+          {
+            project: { type: 'project', key: 'prj-one' },
+            slug: 'repository-one',
+          },
+          {
+            project: { type: 'project', key: 'prj-one' },
+            slug: 'repository-two',
+          },
+          {
+            project: { type: 'project', key: 'prj-one' },
+            slug: 'repository-three',
+          },
         ],
         'catalog.yaml',
       );
@@ -997,7 +1073,12 @@ describe('BitbucketDiscoveryProcessor', () => {
     `("target '$target' adds default path to catalog", async ({ target }) => {
       setupBitbucketCloudSearchStubs(
         'myworkspace',
-        [{ project: { key: 'prj-one' }, slug: 'repository-one' }],
+        [
+          {
+            project: { type: 'project', key: 'prj-one' },
+            slug: 'repository-one',
+          },
+        ],
         'catalog-info.yaml',
       );
 
@@ -1027,7 +1108,12 @@ describe('BitbucketDiscoveryProcessor', () => {
     `("target '$target' is rejected", async ({ target }) => {
       setupBitbucketCloudSearchStubs(
         'myworkspace',
-        [{ project: { key: 'prj-one' }, slug: 'repository-one' }],
+        [
+          {
+            project: { type: 'project', key: 'prj-one' },
+            slug: 'repository-one',
+          },
+        ],
         'catalog-info.yaml',
       );
 

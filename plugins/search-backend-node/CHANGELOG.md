@@ -1,5 +1,109 @@
 # @backstage/plugin-search-backend-node
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/backend-tasks@0.3.4
+
+## 1.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/backend-tasks@0.3.4-next.0
+
+## 1.0.0
+
+### Major Changes
+
+- 7bd7d336b2: This package has been promoted to 1.0. Read more about what it means in [New release: Backstage Search 1.0 blog](https://backstage.io/blog/2022/07/19/releasing-backstage-search-1.0)
+
+### Patch Changes
+
+- a21cd43467: Exports `MissingIndexError` that can be used by the search engines for better error handling when missing index.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/plugin-search-common@1.0.0
+  - @backstage/plugin-permission-common@0.6.3
+  - @backstage/backend-tasks@0.3.3
+  - @backstage/errors@1.1.0
+
+## 0.6.3-next.2
+
+### Patch Changes
+
+- a21cd43467: Exports `MissingIndexError` that can be used by the search engines for better error handling when missing index.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/plugin-permission-common@0.6.3-next.1
+  - @backstage/backend-tasks@0.3.3-next.3
+
+## 0.6.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/backend-tasks@0.3.3-next.1
+  - @backstage/plugin-permission-common@0.6.3-next.0
+  - @backstage/plugin-search-common@0.3.6-next.0
+
+## 0.6.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/backend-tasks@0.3.3-next.0
+
+## 0.6.2
+
+### Patch Changes
+
+- e7794a0aaa: propagate indexing errors so they don't appear successful to the task scheduler
+- 3bb25a9acc: Introducing a `NewlineDelimitedJsonCollatorFactory`, which can be used to create search indices from newline delimited JSON files stored in external storage readable via a configured `UrlReader` instance.
+
+  This is useful if you have an independent process periodically generating `*.ndjson` files consisting of `IndexableDocument` objects and want to be able to generate a fresh index based on the latest version of such a file.
+
+- 3bb25a9acc: Fixed a bug that prevented `TestPipeline.withSubject` from identifying valid `Readable` subjects that were technically transform streams.
+- 915700f64f: The provided search engine now adds a pagination-aware `rank` value to all results.
+- 7d8acfc32e: Replaced all `@beta` exports with `@public` exports
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/backend-tasks@0.3.2
+  - @backstage/backend-common@0.14.0
+  - @backstage/plugin-permission-common@0.6.2
+
+## 0.6.2-next.2
+
+### Patch Changes
+
+- 7d8acfc32e: Replaced all `@beta` exports with `@public` exports
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5-next.1
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/backend-tasks@0.3.2-next.2
+
+## 0.6.2-next.1
+
+### Patch Changes
+
+- 3bb25a9acc: Introducing a `NewlineDelimitedJsonCollatorFactory`, which can be used to create search indices from newline delimited JSON files stored in external storage readable via a configured `UrlReader` instance.
+
+  This is useful if you have an independent process periodically generating `*.ndjson` files consisting of `IndexableDocument` objects and want to be able to generate a fresh index based on the latest version of such a file.
+
+- 3bb25a9acc: Fixed a bug that prevented `TestPipeline.withSubject` from identifying valid `Readable` subjects that were technically transform streams.
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.2-next.1
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/plugin-permission-common@0.6.2-next.0
+  - @backstage/plugin-search-common@0.3.5-next.0
+
 ## 0.6.2-next.0
 
 ### Patch Changes

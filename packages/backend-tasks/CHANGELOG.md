@@ -1,5 +1,90 @@
 # @backstage/backend-tasks
 
+## 0.3.4
+
+### Patch Changes
+
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+
+## 0.3.4-next.0
+
+### Patch Changes
+
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+
+## 0.3.3
+
+### Patch Changes
+
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/errors@1.1.0
+
+## 0.3.3-next.3
+
+### Patch Changes
+
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+
+## 0.3.3-next.2
+
+### Patch Changes
+
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.2
+
+## 0.3.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+
+## 0.3.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+
+## 0.3.2
+
+### Patch Changes
+
+- fde10d24f6: Allow tasks that fail to retry on a loop emitting a warning log every time it fails with the amount of attempts it has
+- f7146b516f: Updated dependency `cron` to `^2.0.0`.
+  Updated dependency `@types/cron` to `^2.0.0`.
+- 7f108513b8: Add error logging when a background task throws an error rather than silently swallowing it.
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+
+## 0.3.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+
+## 0.3.2-next.1
+
+### Patch Changes
+
+- f7146b516f: Updated dependency `cron` to `^2.0.0`.
+  Updated dependency `@types/cron` to `^2.0.0`.
+- 7f108513b8: Add error logging when a background task throws an error rather than silently swallowing it.
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+
 ## 0.3.2-next.0
 
 ### Patch Changes

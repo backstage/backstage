@@ -31,6 +31,10 @@ kubernetes:
           dashboardUrl: http://127.0.0.1:64713 # url copied from running the command: minikube service kubernetes-dashboard -n kubernetes-dashboard
           dashboardApp: standard
           caData: ${K8S_CONFIG_CA_DATA}
+          customResources:
+            - group: 'argoproj.io'
+              apiVersion: 'v1alpha1'
+              plural: 'rollouts'
         - url: http://127.0.0.2:9999
           name: aws-cluster-1
           authProvider: 'aws'
@@ -57,9 +61,21 @@ This is an array used to determine where to retrieve cluster configuration from.
 
 Valid cluster locator methods are:
 
+- [`catalog`](#catalog)
+- [`localKubectlProxy`](#localKubectlProxy)
 - [`config`](#config)
 - [`gke`](#gke)
 - [custom `KubernetesClustersSupplier`](#custom-kubernetesclusterssupplier)
+
+#### `catalog`
+
+This cluster locator method will read cluster information from the catalog.
+
+#### `localKubectlProxy`
+
+This cluster locator method will assume a locally running [`kubectl proxy`](https://kubernetes.io/docs/tasks/extend-kubernetes/http-proxy-access-api/#using-kubectl-to-start-a-proxy-server) process using the default port (8001).
+
+NOTE: This cluster locator method is for local development only and should not be used in production.
 
 #### `config`
 
@@ -224,10 +240,12 @@ kubernetes:
 
 ##### `clusters.\*.caData` (optional)
 
-PEM-encoded certificate authority certificates.
+Base64-encoded certificate authority bundle in PEM format. The Kubernetes client
+will verify that TLS certificate presented by the API server is signed by this
+CA.
 
-This values could be obtained via inspecting the Kubernetes config file (usually
-at `~/.kube/config`) under `clusters.cluster.certificate-authority-data`. For
+This value could be obtained via inspecting the kubeconfig file (usually
+at `~/.kube/config`) under `clusters[*].cluster.certificate-authority-data`. For
 GKE, execute the following command to obtain the value
 
 ```
@@ -239,6 +257,11 @@ gcloud container clusters describe <YOUR_CLUSTER_NAME> \
 See also
 https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication#environments-without-gcloud
 for complete docs about GKE without `gcloud`.
+
+##### `clusters.\*.customResources` (optional)
+
+Configures which [custom resources][3] to look for when returning an entity's
+Kubernetes resources belonging to the cluster. Same specification as [`customResources`](#customresources-optional)
 
 #### `gke`
 
@@ -313,8 +336,12 @@ it is also possible to implement a
 
 ### `customResources` (optional)
 
-Configures which [custom resources][3] to look for when returning an entity's
+Configures which [custom resources][3] to look for by default when returning an entity's
 Kubernetes resources.
+
+**Notes:**
+
+- The optional `kubernetes.customResources` property is overrode by `customResources` at the [clusters level](#clusterscustomresources-optional).
 
 Defaults to empty array. Example:
 
@@ -361,23 +388,43 @@ view the Kubernetes API docs for your Kubernetes version (e.g.
 
 ### Role Based Access Control
 
-The current RBAC permissions required are read-only cluster wide, for the
-following objects:
+The current RBAC permissions required are read-only cluster wide, the below
+Kubernetes manifest describes which objects are required and will ensure
+the plugin functions correctly:
 
-- pods
-- services
-- configmaps
-- deployments
-- replicasets
-- horizontalpodautoscalers
-- ingresses
-- statefulsets
-
-The following RBAC permissions are required on the batch API group for the
-following objects:
-
-- jobs
-- cronjobs
+```yaml
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: backstage-read-only
+rules:
+  - apiGroups:
+      - '*'
+    resources:
+      - pods
+      - configmaps
+      - services
+      - deployments
+      - replicasets
+      - horizontalpodautoscalers
+      - ingresses
+      - statefulsets
+      - limitranges
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - batch
+    resources:
+      - jobs
+      - cronjobs
+    verbs:
+      - get
+      - list
+      - watch
+```
 
 ## Surfacing your Kubernetes components as part of an entity
 

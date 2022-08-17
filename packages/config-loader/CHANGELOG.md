@@ -1,5 +1,44 @@
 # @backstage/config-loader
 
+## 1.1.3
+
+### Patch Changes
+
+- bcada7cd9f: From now on the `$file` placeholder will trim the whitespaces and newline characters from the end of the file it reads.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- a3acec8819: Updated dependency `typescript-json-schema` to `^0.54.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.0
+
+## 1.1.3-next.1
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- a3acec8819: Updated dependency `typescript-json-schema` to `^0.54.0`.
+
+## 1.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.1.0-next.0
+
+## 1.1.2
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+
+## 1.1.2-next.0
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+
 ## 1.1.1
 
 ### Patch Changes

@@ -68,6 +68,9 @@ type Props = {
   content: string;
   dialect?: 'gfm' | 'common-mark';
   linkTarget?: Options['linkTarget'];
+  transformLinkUri?: (href: string) => string;
+  transformImageUri?: (href: string) => string;
+  className?: string;
 };
 
 const components: Options['components'] = {
@@ -91,15 +94,24 @@ const components: Options['components'] = {
  * If you just want to render to plain [CommonMark](https://commonmark.org/), set the dialect to `'common-mark'`
  */
 export function MarkdownContent(props: Props) {
-  const { content, dialect = 'gfm', linkTarget } = props;
+  const {
+    content,
+    dialect = 'gfm',
+    linkTarget,
+    transformLinkUri,
+    transformImageUri,
+    className,
+  } = props;
   const classes = useStyles();
   return (
     <ReactMarkdown
       remarkPlugins={dialect === 'gfm' ? [gfm] : []}
-      className={classes.markdown}
+      className={`${classes.markdown} ${className}`}
       children={content}
       components={components}
       linkTarget={linkTarget}
+      transformLinkUri={transformLinkUri}
+      transformImageUri={transformImageUri}
     />
   );
 }

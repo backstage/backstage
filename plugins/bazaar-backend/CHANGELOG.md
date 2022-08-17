@@ -1,5 +1,64 @@
 # @backstage/plugin-bazaar-backend
 
+## 0.1.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/backend-test-utils@0.1.27
+
+## 0.1.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/backend-test-utils@0.1.27-next.0
+
+## 0.1.18
+
+### Patch Changes
+
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- 77abf50acf: Fixed api warnings
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/backend-test-utils@0.1.26
+
+## 0.1.18-next.1
+
+### Patch Changes
+
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.2
+  - @backstage/backend-test-utils@0.1.26-next.2
+
+## 0.1.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/backend-test-utils@0.1.26-next.0
+
+## 0.1.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+  - @backstage/backend-test-utils@0.1.25
+
+## 0.1.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/backend-test-utils@0.1.25-next.2
+
 ## 0.1.17-next.0
 
 ### Patch Changes

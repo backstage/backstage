@@ -19,6 +19,21 @@ import { BitbucketRepoPicker } from './BitbucketRepoPicker';
 import { render, fireEvent } from '@testing-library/react';
 
 describe('BitbucketRepoPicker', () => {
+  it('renders a select if there is a list of allowed owners', async () => {
+    const allowedOwners = ['owner1', 'owner2'];
+    const { findByText } = render(
+      <BitbucketRepoPicker
+        onChange={jest.fn()}
+        rawErrors={[]}
+        state={{ host: 'bitbucket.org', repoName: 'repo' }}
+        allowedOwners={allowedOwners}
+      />,
+    );
+
+    expect(await findByText('owner1')).toBeInTheDocument();
+    expect(await findByText('owner2')).toBeInTheDocument();
+  });
+
   it('renders workspace input when host is bitbucket.org', () => {
     const state = { host: 'bitbucket.org', workspace: 'lolsWorkspace' };
 
@@ -26,7 +41,7 @@ describe('BitbucketRepoPicker', () => {
       <BitbucketRepoPicker onChange={jest.fn()} rawErrors={[]} state={state} />,
     );
 
-    expect(getAllByRole('textbox')).toHaveLength(3);
+    expect(getAllByRole('textbox')).toHaveLength(2);
     expect(getAllByRole('textbox')[0]).toHaveValue('lolsWorkspace');
   });
 
@@ -39,7 +54,7 @@ describe('BitbucketRepoPicker', () => {
       <BitbucketRepoPicker onChange={jest.fn()} rawErrors={[]} state={state} />,
     );
 
-    expect(getAllByRole('textbox')).toHaveLength(2);
+    expect(getAllByRole('textbox')).toHaveLength(1);
   });
   describe('workspace field', () => {
     it('calls onChange when the workspace changes', () => {
@@ -76,25 +91,6 @@ describe('BitbucketRepoPicker', () => {
       fireEvent.change(projectInput, { target: { value: 'test-project' } });
 
       expect(onChange).toHaveBeenCalledWith({ project: 'test-project' });
-    });
-  });
-
-  describe('repoName field', () => {
-    it('calls onChange when the repoName changes', () => {
-      const onChange = jest.fn();
-      const { getAllByRole } = render(
-        <BitbucketRepoPicker
-          onChange={onChange}
-          rawErrors={[]}
-          state={{ host: 'bitbucket.org' }}
-        />,
-      );
-
-      const repoNameInput = getAllByRole('textbox')[2];
-
-      fireEvent.change(repoNameInput, { target: { value: 'test-repo' } });
-
-      expect(onChange).toHaveBeenCalledWith({ repoName: 'test-repo' });
     });
   });
 });

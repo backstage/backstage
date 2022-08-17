@@ -7,10 +7,12 @@ import { Entity } from '@backstage/catalog-model';
 import type { JsonObject } from '@backstage/types';
 import { V1ConfigMap } from '@kubernetes/client-node';
 import { V1CronJob } from '@kubernetes/client-node';
+import { V1DaemonSet } from '@kubernetes/client-node';
 import { V1Deployment } from '@kubernetes/client-node';
 import { V1HorizontalPodAutoscaler } from '@kubernetes/client-node';
 import { V1Ingress } from '@kubernetes/client-node';
 import { V1Job } from '@kubernetes/client-node';
+import { V1LimitRange } from '@kubernetes/client-node';
 import { V1Pod } from '@kubernetes/client-node';
 import { V1ReplicaSet } from '@kubernetes/client-node';
 import { V1Service } from '@kubernetes/client-node';
@@ -113,6 +115,16 @@ export interface CustomResourceFetchResponse {
   type: 'customresources';
 }
 
+// Warning: (ae-missing-release-tag) "DaemonSetsFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface DaemonSetsFetchResponse {
+  // (undocumented)
+  resources: Array<V1DaemonSet>;
+  // (undocumented)
+  type: 'daemonsets';
+}
+
 // Warning: (ae-missing-release-tag) "DeploymentFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -131,13 +143,15 @@ export type FetchResponse =
   | ServiceFetchResponse
   | ConfigMapFetchResponse
   | DeploymentFetchResponse
+  | LimitRangeFetchReponse
   | ReplicaSetsFetchResponse
   | HorizontalPodAutoscalersFetchResponse
   | JobsFetchResponse
   | CronJobsFetchResponse
   | IngressesFetchResponse
   | CustomResourceFetchResponse
-  | StatefulSetsFetchResponse;
+  | StatefulSetsFetchResponse
+  | DaemonSetsFetchResponse;
 
 // Warning: (ae-missing-release-tag) "HorizontalPodAutoscalersFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -190,19 +204,36 @@ export interface KubernetesFetchError {
   statusCode?: number;
 }
 
+// Warning: (ae-missing-release-tag) "KubernetesRequestAuth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface KubernetesRequestAuth {
+  // (undocumented)
+  google?: string;
+  // (undocumented)
+  oidc?: {
+    [key: string]: string;
+  };
+}
+
 // Warning: (ae-missing-release-tag) "KubernetesRequestBody" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export interface KubernetesRequestBody {
   // (undocumented)
-  auth?: {
-    google?: string;
-    oidc?: {
-      [key: string]: string;
-    };
-  };
+  auth?: KubernetesRequestAuth;
   // (undocumented)
   entity: Entity;
+}
+
+// Warning: (ae-missing-release-tag) "LimitRangeFetchReponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface LimitRangeFetchReponse {
+  // (undocumented)
+  resources: Array<V1LimitRange>;
+  // (undocumented)
+  type: 'limitranges';
 }
 
 // Warning: (ae-missing-release-tag) "ObjectsByEntityResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

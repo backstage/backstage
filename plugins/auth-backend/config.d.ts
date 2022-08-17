@@ -116,6 +116,9 @@ export interface Config {
         issuer?: string;
         region: string;
       };
+      cfaccess?: {
+        teamName: string;
+      };
     };
   };
 }

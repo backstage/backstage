@@ -1,5 +1,222 @@
 # @backstage/plugin-catalog-react
 
+## 1.1.3
+
+### Patch Changes
+
+- 44e691a7f9: Modify description column to not use auto width.
+- Updated dependencies
+  - @backstage/integration@1.3.0
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-common@1.0.5
+  - @backstage/plugin-permission-react@0.4.4
+
+## 1.1.3-next.2
+
+### Patch Changes
+
+- 44e691a7f9: Modify description column to not use auto width.
+- Updated dependencies
+  - @backstage/core-components@0.11.0-next.2
+
+## 1.1.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.10.1-next.1
+  - @backstage/plugin-catalog-common@1.0.5-next.0
+  - @backstage/integration@1.3.0-next.1
+
+## 1.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.3.0-next.0
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/core-components@0.10.1-next.0
+  - @backstage/plugin-permission-react@0.4.4-next.0
+
+## 1.1.2
+
+### Patch Changes
+
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- be26d95141: Added new `EntityProcessingStatusPicker` that will filter for entities with orphans and/or errors.
+
+  If you are using the default Catalog page this picker will be added automatically. For those who have customized their Catalog page you'll need to add this manually by doing something like this:
+
+  ```diff
+  ...
+  import {
+    CatalogFilterLayout,
+    EntityTypePicker,
+    UserListPicker,
+    EntityTagPicker
+  + EntityProcessingStatusPicker,
+  } from '@backstage/plugin-catalog-react';
+  ...
+  export const CustomCatalogPage = ({
+    columns,
+    actions,
+    initiallySelectedFilter = 'owned',
+  }: CatalogPageProps) => {
+    return (
+      ...
+          <EntityListProvider>
+            <CatalogFilterLayout>
+              <CatalogFilterLayout.Filters>
+                <EntityKindPicker initialFilter="component" hidden />
+                <EntityTypePicker />
+                <UserListPicker initialFilter={initiallySelectedFilter} />
+                <EntityTagPicker />
+  +             <EntityProcessingStatusPicker />
+              <CatalogFilterLayout.Filters>
+              <CatalogFilterLayout.Content>
+                <CatalogTable columns={columns} actions={actions} />
+              </CatalogFilterLayout.Content>
+            </CatalogFilterLayout>
+          </EntityListProvider>
+      ...
+  };
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/integration@1.2.2
+  - @backstage/catalog-client@1.0.4
+  - @backstage/plugin-permission-common@0.6.3
+  - @backstage/theme@0.2.16
+  - @backstage/errors@1.1.0
+  - @backstage/plugin-catalog-common@1.0.4
+  - @backstage/plugin-permission-react@0.4.3
+
+## 1.1.2-next.3
+
+### Patch Changes
+
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+  - @backstage/catalog-client@1.0.4-next.2
+  - @backstage/integration@1.2.2-next.3
+  - @backstage/plugin-permission-common@0.6.3-next.1
+  - @backstage/catalog-model@1.1.0-next.3
+  - @backstage/plugin-permission-react@0.4.3-next.1
+
+## 1.1.2-next.2
+
+### Patch Changes
+
+- be26d95141: Added new `EntityProcessingStatusPicker` that will filter for entities with orphans and/or errors.
+
+  If you are using the default Catalog page this picker will be added automatically. For those who have customized their Catalog page you'll need to add this manually by doing something like this:
+
+  ```diff
+  ...
+  import {
+    CatalogFilterLayout,
+    EntityTypePicker,
+    UserListPicker,
+    EntityTagPicker
+  + EntityProcessingStatusPicker,
+  } from '@backstage/plugin-catalog-react';
+  ...
+  export const CustomCatalogPage = ({
+    columns,
+    actions,
+    initiallySelectedFilter = 'owned',
+  }: CatalogPageProps) => {
+    return (
+      ...
+          <EntityListProvider>
+            <CatalogFilterLayout>
+              <CatalogFilterLayout.Filters>
+                <EntityKindPicker initialFilter="component" hidden />
+                <EntityTypePicker />
+                <UserListPicker initialFilter={initiallySelectedFilter} />
+                <EntityTagPicker />
+  +             <EntityProcessingStatusPicker />
+              <CatalogFilterLayout.Filters>
+              <CatalogFilterLayout.Content>
+                <CatalogTable columns={columns} actions={actions} />
+              </CatalogFilterLayout.Content>
+            </CatalogFilterLayout>
+          </EntityListProvider>
+      ...
+  };
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/theme@0.2.16-next.1
+  - @backstage/integration@1.2.2-next.2
+
+## 1.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.1
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/theme@0.2.16-next.0
+  - @backstage/catalog-client@1.0.4-next.1
+  - @backstage/integration@1.2.2-next.1
+  - @backstage/plugin-catalog-common@1.0.4-next.0
+  - @backstage/plugin-permission-common@0.6.3-next.0
+  - @backstage/plugin-permission-react@0.4.3-next.0
+
+## 1.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/integration@1.2.2-next.0
+  - @backstage/catalog-client@1.0.4-next.0
+
+## 1.1.1
+
+### Patch Changes
+
+- 1f70704580: Accessibility updates:
+
+  - Wrapped the `EntityLifecyclePicker`, `EntityOwnerPicker`, `EntityTagPicker`, in `label` elements
+  - Changed group name `Typography` component to `span` (from default `h6`), added `aria-label` to the `List` component, and `role` of `menuitem` to the container of the `MenuItem` component
+
+- 568f2d1e75: Table component no longer has drag and drop columns by default
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.0.3
+  - @backstage/core-components@0.9.5
+  - @backstage/integration@1.2.1
+  - @backstage/catalog-client@1.0.3
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/plugin-permission-common@0.6.2
+  - @backstage/catalog-model@1.0.3
+  - @backstage/plugin-permission-react@0.4.2
+
+## 1.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.1
+  - @backstage/catalog-client@1.0.3-next.0
+  - @backstage/core-plugin-api@1.0.3-next.0
+  - @backstage/integration@1.2.1-next.1
+  - @backstage/plugin-permission-common@0.6.2-next.0
+  - @backstage/catalog-model@1.0.3-next.0
+  - @backstage/plugin-permission-react@0.4.2-next.0
+  - @backstage/plugin-catalog-common@1.0.3-next.0
+
 ## 1.1.1-next.0
 
 ### Patch Changes

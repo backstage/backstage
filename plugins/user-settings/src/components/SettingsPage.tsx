@@ -17,10 +17,10 @@
 import {
   Header,
   Page,
-  SidebarPinStateContext,
   TabbedLayout,
+  useSidebarPinState,
 } from '@backstage/core-components';
-import React, { useContext } from 'react';
+import React from 'react';
 import { useOutlet } from 'react-router';
 import { useElementFilter } from '@backstage/core-plugin-api';
 import { UserSettingsAuthProviders } from './AuthProviders';
@@ -33,7 +33,7 @@ type Props = {
 };
 
 export const SettingsPage = ({ providerSettings }: Props) => {
-  const { isMobile } = useContext(SidebarPinStateContext);
+  const { isMobile } = useSidebarPinState();
   const outlet = useOutlet();
 
   const tabs = useElementFilter(outlet, elements =>

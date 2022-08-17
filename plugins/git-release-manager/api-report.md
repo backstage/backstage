@@ -203,6 +203,7 @@ export const gitReleaseManagerPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 

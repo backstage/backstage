@@ -111,6 +111,7 @@ export interface TaskContext {
   secrets?: TaskSecrets;
   createdBy?: string;
   done: boolean;
+  isDryRun?: boolean;
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   getWorkspaceName(): Promise<string>;
@@ -132,6 +133,7 @@ export interface TaskBroker {
     after: number | undefined;
   }): Observable<{ events: SerializedTaskEvent[] }>;
   get(taskId: string): Promise<SerializedTask>;
+  list?(options?: { createdBy?: string }): Promise<{ tasks: SerializedTask[] }>;
 }
 
 /**
@@ -192,6 +194,7 @@ export interface TaskStore {
   listStaleTasks(options: { timeoutS: number }): Promise<{
     tasks: { taskId: string }[];
   }>;
+  list?(options: { createdBy?: string }): Promise<{ tasks: SerializedTask[] }>;
 
   emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void>;
   listEvents({

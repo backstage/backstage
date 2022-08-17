@@ -142,6 +142,30 @@ describe('AzureUrl', () => {
     );
   });
 
+  it('should work with the old tfs long URL', () => {
+    const url = AzureUrl.fromRepoUrl(
+      'http://my-host/tfs/projects/my-project/_git/my-repo',
+    );
+
+    expect(url.getOwner()).toBe('tfs/projects');
+    expect(url.getProject()).toBe('my-project');
+    expect(url.getRepo()).toBe('my-repo');
+    expect(url.getRef()).toBeUndefined();
+    expect(url.getPath()).toBeUndefined();
+  });
+
+  it('should work with the old tfs long URL form with a path and ref', () => {
+    const url = AzureUrl.fromRepoUrl(
+      'http://my-host/tfs/projects/my-project/_git/my-repo?path=%2Ffolder&version=GBtest-branch',
+    );
+
+    expect(url.getOwner()).toBe('tfs/projects');
+    expect(url.getProject()).toBe('my-project');
+    expect(url.getRepo()).toBe('my-repo');
+    expect(url.getRef()).toBe('test-branch');
+    expect(url.getPath()).toBe('/folder');
+  });
+
   it('should reject non-branch refs', () => {
     expect(() =>
       AzureUrl.fromRepoUrl(

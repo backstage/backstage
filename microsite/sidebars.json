@@ -1,6 +1,12 @@
 {
   "releases": {
-    "Release Notes": ["releases/v1.2.0", "releases/v1.1.0", "releases/v1.0.0"]
+    "Release Notes": [
+      "releases/v1.4.0",
+      "releases/v1.3.0",
+      "releases/v1.2.0",
+      "releases/v1.1.0",
+      "releases/v1.0.0"
+    ]
   },
   "docs": {
     "Overview": [
@@ -144,9 +150,22 @@
       {
         "type": "subcategory",
         "label": "Bitbucket",
+        "ids": ["integrations/bitbucket/discovery"]
+      },
+      {
+        "type": "subcategory",
+        "label": "Bitbucket Cloud",
         "ids": [
-          "integrations/bitbucket/locations",
-          "integrations/bitbucket/discovery"
+          "integrations/bitbucketCloud/locations",
+          "integrations/bitbucketCloud/discovery"
+        ]
+      },
+      {
+        "type": "subcategory",
+        "label": "Bitbucket Server",
+        "ids": [
+          "integrations/bitbucketServer/locations",
+          "integrations/bitbucketServer/discovery"
         ]
       },
       {
@@ -198,7 +217,9 @@
       "plugins/plugin-development",
       "plugins/structure-of-a-plugin",
       "plugins/integrating-plugin-into-software-catalog",
+      "plugins/integrating-search-into-plugins",
       "plugins/composability",
+      "plugins/customization",
       "plugins/analytics",
       {
         "type": "subcategory",
@@ -250,11 +271,10 @@
           "auth/oauth2-proxy/provider"
         ]
       },
-      "auth/add-auth-provider",
       "auth/identity-resolver",
       "auth/auth-backend",
       "auth/oauth",
-      "auth/auth-backend-classes",
+      "auth/add-auth-provider",
       "auth/troubleshooting",
       "auth/glossary"
     ],
@@ -277,9 +297,9 @@
     ],
     "Deployment": [
       "deployment/index",
+      "deployment/scaling",
       "deployment/docker",
       "deployment/k8s",
-      "deployment/helm",
       "deployment/heroku"
     ],
     "Designing for Backstage": [

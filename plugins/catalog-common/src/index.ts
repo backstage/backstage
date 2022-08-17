@@ -30,6 +30,7 @@ export {
   catalogLocationReadPermission,
   catalogLocationCreatePermission,
   catalogLocationDeletePermission,
+  catalogPermissions,
 } from './permissions';
 export type { CatalogEntityPermission } from './permissions';
 

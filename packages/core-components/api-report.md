@@ -16,7 +16,6 @@ import { CardHeaderProps } from '@material-ui/core/CardHeader';
 import { Column } from '@material-table/core';
 import { ComponentClass } from 'react';
 import { ComponentProps } from 'react';
-import { Context } from 'react';
 import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
 import { ElementType } from 'react';
@@ -191,6 +190,7 @@ export function CopyTextButton(props: CopyTextButtonProps): JSX.Element;
 
 // @public
 export interface CopyTextButtonProps {
+  'aria-label'?: string;
   text: string;
   tooltipDelay?: number;
   tooltipText?: string;
@@ -613,8 +613,9 @@ export const Link: (props: LinkProps) => JSX.Element;
 // Warning: (ae-missing-release-tag) "LinkProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type LinkProps = LinkProps_2 &
-  LinkProps_3 & {
+export type LinkProps = Omit<LinkProps_2, 'to'> &
+  Omit<LinkProps_3, 'to'> & {
+    to: string;
     component?: ElementType<any>;
     noTrack?: boolean;
   };
@@ -903,14 +904,10 @@ export const sidebarConfig: {
   mobileSidebarHeight: number;
 };
 
-// Warning: (ae-missing-release-tag) "SidebarContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export const SidebarContext: Context<SidebarContextType>;
+// @public @deprecated
+export const SidebarContext: React_2.Context<SidebarContextType>;
 
-// Warning: (ae-missing-release-tag) "SidebarContextType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
+// @public @deprecated
 export type SidebarContextType = {
   isOpen: boolean;
   setOpen: (open: boolean) => void;
@@ -983,6 +980,21 @@ export type SidebarItemClassKey =
   | 'arrows'
   | 'selected';
 
+// @public
+export type SidebarOpenState = {
+  isOpen: boolean;
+  setOpen: (open: boolean) => void;
+};
+
+// @public
+export const SidebarOpenStateProvider: ({
+  children,
+  value,
+}: {
+  children: ReactNode;
+  value: SidebarOpenState;
+}) => JSX.Element;
+
 // @public (undocumented)
 export type SidebarOptions = {
   drawerWidthClosed?: number;
@@ -1005,14 +1017,30 @@ export type SidebarPageProps = {
 };
 
 // @public
+export type SidebarPinState = {
+  isPinned: boolean;
+  toggleSidebarPinState: () => any;
+  isMobile?: boolean;
+};
+
+// @public @deprecated
 export const SidebarPinStateContext: React_2.Context<SidebarPinStateContextType>;
 
-// @public
+// @public @deprecated
 export type SidebarPinStateContextType = {
   isPinned: boolean;
   toggleSidebarPinState: () => any;
   isMobile?: boolean;
 };
+
+// @public
+export const SidebarPinStateProvider: ({
+  children,
+  value,
+}: {
+  children: ReactNode;
+  value: SidebarPinStateContextType;
+}) => JSX.Element;
 
 // @public (undocumented)
 export type SidebarProps = {
@@ -1084,6 +1112,7 @@ export type SidebarSubmenuItemDropdownItem = {
 // @public
 export type SidebarSubmenuItemProps = {
   title: string;
+  subtitle?: string;
   to?: string;
   icon?: IconComponent;
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
@@ -1446,6 +1475,12 @@ export class UserIdentity implements IdentityApi {
   // (undocumented)
   signOut(): Promise<void>;
 }
+
+// @public
+export const useSidebarOpenState: () => SidebarOpenState;
+
+// @public
+export const useSidebarPinState: () => SidebarPinState;
 
 // Warning: (ae-missing-release-tag) "useSupportConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

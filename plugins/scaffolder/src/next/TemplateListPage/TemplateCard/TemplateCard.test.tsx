@@ -25,7 +25,7 @@ import {
 } from '@backstage/test-utils';
 import { TemplateCard } from './TemplateCard';
 import React from 'react';
-import { rootRouteRef } from '../../../routes';
+import { nextRouteRef } from '../../../routes';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 
@@ -54,7 +54,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
-      { mountedRoutes: { '/': rootRouteRef } },
+      { mountedRoutes: { '/': nextRouteRef } },
     );
 
     expect(getByText('bob')).toBeInTheDocument();
@@ -84,7 +84,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
-      { mountedRoutes: { '/': rootRouteRef } },
+      { mountedRoutes: { '/': nextRouteRef } },
     );
 
     const description = getByText('hello');
@@ -115,7 +115,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
-      { mountedRoutes: { '/': rootRouteRef } },
+      { mountedRoutes: { '/': nextRouteRef } },
     );
 
     expect(getByText('No description')).toBeInTheDocument();
@@ -145,7 +145,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
-      { mountedRoutes: { '/': rootRouteRef } },
+      { mountedRoutes: { '/': nextRouteRef } },
     );
 
     for (const tag of mockTemplate.metadata.tags!) {
@@ -185,7 +185,7 @@ describe('TemplateCard', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/': rootRouteRef,
+          '/': nextRouteRef,
           '/catalog/:kind/:namespace/:name': entityRouteRef,
         },
       },
@@ -224,7 +224,7 @@ describe('TemplateCard', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/': rootRouteRef,
+          '/': nextRouteRef,
           '/catalog/:kind/:namespace/:name': entityRouteRef,
         },
       },
@@ -233,7 +233,7 @@ describe('TemplateCard', () => {
     expect(getByRole('button', { name: 'Choose' })).toBeInTheDocument();
     expect(getByRole('button', { name: 'Choose' })).toHaveAttribute(
       'href',
-      '/templates/bob',
+      '/templates/default/bob',
     );
   });
 });

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
-import { Routes, Route, useOutlet, Navigate } from 'react-router';
+import React, { ComponentType, useEffect } from 'react';
+import { Routes, Route, useOutlet, Navigate, useParams } from 'react-router';
 import { Entity } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ScaffolderPage } from './ScaffolderPage';
@@ -31,13 +31,16 @@ import {
   FIELD_EXTENSION_KEY,
   DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
 } from '../extensions';
-import { useElementFilter } from '@backstage/core-plugin-api';
+import { useElementFilter, useRouteRef } from '@backstage/core-plugin-api';
 import {
   actionsRouteRef,
   editRouteRef,
+  legacySelectedTemplateRouteRef,
+  scaffolderListTaskRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../routes';
+import { ListTasksPage } from './ListTasksPage';
 
 /**
  * The props for the entrypoint `ScaffolderPage` component the plugin.
@@ -98,6 +101,22 @@ export const Router = (props: RouterProps) => {
         ),
     ),
   ];
+  /**
+   * This component can be deleted once the older routes have been deprecated.
+   */
+  const RedirectingComponent = () => {
+    const { templateName } = useParams();
+    const newLink = useRouteRef(selectedTemplateRouteRef);
+    useEffect(
+      () =>
+        // eslint-disable-next-line no-console
+        console.warn(
+          'The route /template/:templateName is deprecated, please use the new /template/:namespace/:templateName route instead',
+        ),
+      [],
+    );
+    return <Navigate to={newLink({ namespace: 'default', templateName })} />;
+  };
 
   return (
     <Routes>
@@ -110,6 +129,9 @@ export const Router = (props: RouterProps) => {
           />
         }
       />
+      <Route path={legacySelectedTemplateRouteRef.path}>
+        <RedirectingComponent />
+      </Route>
       <Route
         path={selectedTemplateRouteRef.path}
         element={
@@ -117,6 +139,10 @@ export const Router = (props: RouterProps) => {
             <TemplatePage customFieldExtensions={fieldExtensions} />
           </SecretsContextProvider>
         }
+      />
+      <Route
+        path={scaffolderListTaskRouteRef.path}
+        element={<ListTasksPage />}
       />
       <Route path={scaffolderTaskRouteRef.path} element={<TaskPageElement />} />
       <Route path={actionsRouteRef.path} element={<ActionsPage />} />

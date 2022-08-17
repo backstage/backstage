@@ -150,6 +150,18 @@ export class StorageTaskBroker implements TaskBroker {
     private readonly storage: TaskStore,
     private readonly logger: Logger,
   ) {}
+
+  async list(options?: {
+    createdBy?: string;
+  }): Promise<{ tasks: SerializedTask[] }> {
+    if (!this.storage.list) {
+      throw new Error(
+        'TaskStore does not implement the list method. Please implement the list method to be able to list tasks',
+      );
+    }
+    return await this.storage.list({ createdBy: options?.createdBy });
+  }
+
   private deferredDispatch = defer();
 
   /**

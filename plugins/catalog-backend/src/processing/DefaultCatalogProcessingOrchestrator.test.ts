@@ -30,7 +30,7 @@ import {
   CatalogProcessorParser,
   LocationSpec,
   processingResult,
-} from '../api';
+} from '@backstage/plugin-catalog-node';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
 import { defaultEntityDataParser } from '../modules/util/parse';
@@ -102,6 +102,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         ok: true,
         completedEntity: entity,
         deferredEntities: [],
+        refreshKeys: [],
         errors: [],
         relations: [],
         state: {
@@ -119,6 +120,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
       ).resolves.toEqual({
         ok: true,
         completedEntity: entity,
+        refreshKeys: [],
         deferredEntities: [
           {
             locationKey: 'url:./new-place',

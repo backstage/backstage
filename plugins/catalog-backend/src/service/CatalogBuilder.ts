@@ -17,6 +17,7 @@
 import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import {
   DefaultNamespaceEntityPolicy,
+  Entity,
   EntityPolicies,
   EntityPolicy,
   FieldFormatEntityPolicy,
@@ -36,7 +37,7 @@ import {
   CatalogProcessor,
   CatalogProcessorParser,
   EntityProvider,
-} from '../api';
+} from '@backstage/plugin-catalog-node';
 import {
   AnnotateLocationEntityProcessor,
   BuiltinKindsEntityProcessor,
@@ -56,7 +57,7 @@ import {
 } from '../modules/core/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../modules/util/parse';
 import { LocationAnalyzer } from '../ingestion/types';
-import { CatalogProcessingEngine } from '../processing/types';
+import { CatalogProcessingEngine } from '../processing';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
@@ -90,7 +91,10 @@ import {
 } from '@backstage/plugin-permission-node';
 import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
 import { basicEntityFilter } from './request/basicEntityFilter';
-import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
+import {
+  catalogPermissions,
+  RESOURCE_TYPE_CATALOG_ENTITY,
+} from '@backstage/plugin-catalog-common';
 import { AuthorizedLocationService } from './AuthorizedLocationService';
 
 /** @public */
@@ -133,6 +137,10 @@ export class CatalogBuilder {
   private processors: CatalogProcessor[];
   private processorsReplace: boolean;
   private parser: CatalogProcessorParser | undefined;
+  private onProcessingError?: (event: {
+    unprocessedEntity: Entity;
+    errors: Error[];
+  }) => Promise<void> | void;
   private processingInterval: ProcessingIntervalFunction =
     createRandomProcessingInterval({
       minSeconds: 100,
@@ -430,6 +438,7 @@ export class CatalogBuilder {
             entitiesByRef[stringifyEntityRef(parseEntityRef(resourceRef))],
         );
       },
+      permissions: catalogPermissions,
       rules: this.permissionRules,
     });
     const stitcher = new Stitcher(dbClient, logger);
@@ -447,6 +456,10 @@ export class CatalogBuilder {
       orchestrator,
       stitcher,
       () => createHash('sha1'),
+      1000,
+      event => {
+        this.onProcessingError?.(event);
+      },
     );
 
     const locationAnalyzer =
@@ -476,6 +489,15 @@ export class CatalogBuilder {
       processingEngine,
       router,
     };
+  }
+
+  subscribe(options: {
+    onProcessingError: (event: {
+      unprocessedEntity: Entity;
+      errors: Error[];
+    }) => Promise<void> | void;
+  }) {
+    this.onProcessingError = options.onProcessingError;
   }
 
   private buildEntityPolicy(): EntityPolicy {

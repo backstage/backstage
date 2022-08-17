@@ -35,24 +35,25 @@ import {
   UrlReaders,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ConfigReader } from '@backstage/config';
-import ObservableImpl from 'zen-observable';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import express from 'express';
 import request from 'supertest';
+import ObservableImpl from 'zen-observable';
+
 /**
  * TODO: The following should import directly from the router file.
  * Due to a circular dependency between this plugin and the
  * plugin-scaffolder-backend-module-cookiecutter plugin, it results in an error:
  * TypeError: _pluginscaffolderbackend.createTemplateAction is not a function
  */
-import { createRouter, DatabaseTaskStore, TaskBroker } from '../index';
-import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import {
   parseEntityRef,
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
+import { createRouter, DatabaseTaskStore, TaskBroker } from '../index';
+import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -74,6 +75,7 @@ const mockUrlReader = UrlReaders.default({
 
 describe('createRouter', () => {
   let app: express.Express;
+  let loggerSpy: jest.SpyInstance;
   let taskBroker: TaskBroker;
   const catalogClient = { getEntityByRef: jest.fn() } as unknown as CatalogApi;
 
@@ -131,10 +133,12 @@ describe('createRouter', () => {
 
     jest.spyOn(taskBroker, 'dispatch');
     jest.spyOn(taskBroker, 'get');
+    jest.spyOn(taskBroker, 'list');
     jest.spyOn(taskBroker, 'event$');
+    loggerSpy = jest.spyOn(logger, 'info');
 
     const router = await createRouter({
-      logger: getVoidLogger(),
+      logger: logger,
       config: new ConfigReader({}),
       database: createDatabase(),
       catalogClient,
@@ -216,23 +220,18 @@ describe('createRouter', () => {
       const mockToken =
         'blob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvZ3Vlc3QiLCJuYW1lIjoiSm9obiBEb2UifQ.blob';
 
-      console.log(
-        JSON.stringify(
-          await request(app)
-            .post('/v2/tasks')
-            .set('Authorization', `Bearer ${mockToken}`)
-            .send({
-              templateRef: stringifyEntityRef({
-                kind: 'template',
-                name: 'create-react-app-template',
-              }),
-              values: {
-                required: 'required-value',
-              },
-            }),
-        ),
-      );
-
+      await request(app)
+        .post('/v2/tasks')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            required: 'required-value',
+          },
+        });
       expect(broker).toHaveBeenCalledWith(
         expect.objectContaining({
           createdBy: 'user:default/guest',
@@ -254,6 +253,57 @@ describe('createRouter', () => {
             user: {
               entity: mockUser,
               ref: 'user:default/guest',
+            },
+            templateInfo: {
+              entityRef: stringifyEntityRef({
+                kind: 'Template',
+                namespace: 'Default',
+                name: mockTemplate.metadata?.name,
+              }),
+              baseUrl: 'https://dev.azure.com',
+            },
+          },
+        }),
+      );
+    });
+
+    it('should not throw when an invalid authorization header is passed', async () => {
+      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+      const mockToken = 'blob.eyJzdWIiOiIiLCJuYW1lIjoiSm9obiBEb2UifQ.blob';
+
+      await request(app)
+        .post('/v2/tasks')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            required: 'required-value',
+          },
+        });
+      expect(broker).toHaveBeenCalledWith(
+        expect.objectContaining({
+          createdBy: undefined,
+          secrets: {
+            backstageToken: undefined,
+          },
+
+          spec: {
+            apiVersion: mockTemplate.apiVersion,
+            steps: mockTemplate.spec.steps.map((step, index) => ({
+              ...step,
+              id: step.id ?? `step-${index + 1}`,
+              name: step.name ?? step.action,
+            })),
+            output: mockTemplate.spec.output ?? {},
+            parameters: {
+              required: 'required-value',
+            },
+            user: {
+              entity: undefined,
+              ref: undefined,
             },
             templateInfo: {
               entityRef: stringifyEntityRef({
@@ -292,6 +342,119 @@ describe('createRouter', () => {
         }),
       );
     });
+
+    it('should emit auditlog containing without user identifier when no backstage auth is passed', async () => {
+      await request(app)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            required: 'required-value',
+          },
+        });
+
+      expect(loggerSpy).toHaveBeenCalledTimes(1);
+      expect(loggerSpy).toHaveBeenCalledWith(
+        'Scaffolding task for template:default/create-react-app-template',
+      );
+    });
+
+    it('should emit auditlog containing user identifier when backstage auth is passed', async () => {
+      const mockToken =
+        'blob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvZ3Vlc3QiLCJuYW1lIjoiSm9obiBEb2UifQ.blob';
+
+      await request(app)
+        .post('/v2/tasks')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            required: 'required-value',
+          },
+        });
+
+      expect(loggerSpy).toHaveBeenCalledTimes(1);
+      expect(loggerSpy).toHaveBeenCalledWith(
+        'Scaffolding task for template:default/create-react-app-template created by user:default/guest',
+      );
+    });
+  });
+
+  describe('GET /v2/tasks', () => {
+    it('return all tasks', async () => {
+      (
+        taskBroker.list as jest.Mocked<Required<TaskBroker>>['list']
+      ).mockResolvedValue({
+        tasks: [
+          {
+            id: 'a-random-id',
+            spec: {} as any,
+            status: 'completed',
+            createdAt: '',
+            createdBy: '',
+          },
+        ],
+      });
+
+      const response = await request(app).get(`/v2/tasks`);
+      expect(taskBroker.list).toBeCalledWith({
+        createdBy: undefined,
+      });
+      expect(response.status).toEqual(200);
+      expect(response.body).toStrictEqual({
+        tasks: [
+          {
+            id: 'a-random-id',
+            spec: {} as any,
+            status: 'completed',
+            createdAt: '',
+            createdBy: '',
+          },
+        ],
+      });
+    });
+
+    it('return filtered tasks', async () => {
+      (
+        taskBroker.list as jest.Mocked<Required<TaskBroker>>['list']
+      ).mockResolvedValue({
+        tasks: [
+          {
+            id: 'a-random-id',
+            spec: {} as any,
+            status: 'completed',
+            createdAt: '',
+            createdBy: 'user:default/foo',
+          },
+        ],
+      });
+
+      const response = await request(app).get(
+        `/v2/tasks?createdBy=user:default/foo`,
+      );
+      expect(taskBroker.list).toBeCalledWith({
+        createdBy: 'user:default/foo',
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toStrictEqual({
+        tasks: [
+          {
+            id: 'a-random-id',
+            spec: {} as any,
+            status: 'completed',
+            createdAt: '',
+            createdBy: 'user:default/foo',
+          },
+        ],
+      });
+    });
   });
 
   describe('GET /v2/tasks/:taskId', () => {
@@ -302,6 +465,7 @@ describe('createRouter', () => {
         status: 'completed',
         createdAt: '',
         secrets: { backstageToken: 'secret' },
+        createdBy: '',
       });
 
       const response = await request(app).get(`/v2/tasks/a-random-id`);

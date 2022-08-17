@@ -1,5 +1,98 @@
 # @backstage/plugin-techdocs-react
 
+## 1.0.3
+
+### Patch Changes
+
+- 29d6cf0147: Add `toLowerEntityRefMaybe()` helper function for handling `techdocs.legacyUseCaseSensitiveTripletPaths` flag.
+  Pass modified `entityRef` to `TechDocsReaderPageContext` to handle the `techdocs.legacyUseCaseSensitiveTripletPaths` flag.
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+
+## 1.0.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.0-next.2
+
+## 1.0.3-next.1
+
+### Patch Changes
+
+- 29d6cf0147: Add `toLowerEntityRefMaybe()` helper function for handling `techdocs.legacyUseCaseSensitiveTripletPaths` flag.
+  Pass modified `entityRef` to `TechDocsReaderPageContext` to handle the `techdocs.legacyUseCaseSensitiveTripletPaths` flag.
+- Updated dependencies
+  - @backstage/core-components@0.10.1-next.1
+
+## 1.0.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/core-components@0.10.1-next.0
+
+## 1.0.2
+
+### Patch Changes
+
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/core-plugin-api@1.0.4
+
+## 1.0.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+  - @backstage/catalog-model@1.1.0-next.3
+
+## 1.0.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/catalog-model@1.1.0-next.2
+
+## 1.0.2-next.0
+
+### Patch Changes
+
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+
+## 1.0.1
+
+### Patch Changes
+
+- 3b45ad701f: Creates a `TechDocsShadowDom` component that takes a tree of elements and an `onAppend` handler:
+
+  - Calls the `onAppend` handler when appending the element tree to the shadow root;
+  - Also dispatches an event when styles are loaded to let transformers know that the computed styles are ready to be consumed.
+
+- Updated dependencies
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/catalog-model@1.0.3
+
+## 1.0.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.1
+  - @backstage/core-plugin-api@1.0.3-next.0
+  - @backstage/catalog-model@1.0.3-next.0
+
 ## 1.0.1-next.0
 
 ### Patch Changes

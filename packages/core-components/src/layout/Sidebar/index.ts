@@ -27,16 +27,8 @@ export type {
   SidebarSubmenuItemDropdownItem,
 } from './SidebarSubmenuItem';
 export type { SidebarClassKey, SidebarProps } from './Bar';
-export {
-  SidebarPage,
-  SidebarPinStateContext as SidebarPinStateContext,
-  useContent,
-} from './Page';
-export type {
-  SidebarPinStateContextType as SidebarPinStateContextType,
-  SidebarPageClassKey,
-  SidebarPageProps,
-} from './Page';
+export { SidebarPage, useContent } from './Page';
+export type { SidebarPageClassKey, SidebarPageProps } from './Page';
 export {
   SidebarDivider,
   SidebarItem,
@@ -54,13 +46,23 @@ export type {
 } from './Items';
 export { IntroCard, SidebarIntro } from './Intro';
 export type { SidebarIntroClassKey } from './Intro';
+export { SIDEBAR_INTRO_LOCAL_STORAGE, sidebarConfig } from './config';
+export type { SidebarOptions, SubmenuOptions } from './config';
 export {
-  SIDEBAR_INTRO_LOCAL_STORAGE,
-  SidebarContext,
-  sidebarConfig,
-} from './config';
+  LegacySidebarContext as SidebarContext,
+  SidebarOpenStateProvider,
+  useSidebarOpenState,
+} from './SidebarOpenStateContext';
 export type {
   SidebarContextType,
-  SidebarOptions,
-  SubmenuOptions,
-} from './config';
+  SidebarOpenState,
+} from './SidebarOpenStateContext';
+export {
+  LegacySidebarPinStateContext as SidebarPinStateContext,
+  SidebarPinStateProvider,
+  useSidebarPinState,
+} from './SidebarPinStateContext';
+export type {
+  SidebarPinStateContextType,
+  SidebarPinState,
+} from './SidebarPinStateContext';

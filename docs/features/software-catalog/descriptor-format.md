@@ -55,6 +55,7 @@ metadata:
     - url: https://admin.example-org.com
       title: Admin Dashboard
       icon: dashboard
+      type: admin-dashboard
 spec:
   type: website
   lifecycle: production
@@ -83,7 +84,8 @@ This is the same entity as returned in JSON from the software catalog API:
       {
         "url": "https://admin.example-org.com",
         "title": "Admin Dashboard",
-        "icon": "dashboard"
+        "icon": "dashboard",
+        "type": "admin-dashboard"
       }
     ],
     "tags": ["java"],
@@ -353,6 +355,7 @@ Fields of a link are:
 | `url`   | String | [Required] A `url` in a standard `uri` format (e.g. `https://example.com/some/page`) |
 | `title` | String | [Optional] A user friendly display name for the link.                                |
 | `icon`  | String | [Optional] A key representing a visual icon to be displayed in the UI.               |
+| `type`  | String | [Optional] An optional value to categorize links into specific groups.               |
 
 _NOTE_: The `icon` field value is meant to be a semantic key that will map to a
 specific icon that may be provided by an icon library (e.g. `material-ui`
@@ -361,6 +364,8 @@ one of `[-_.]`. Backstage may support some basic icons out of the box, but the
 Backstage integrator will ultimately be left to provide the appropriate icon
 component mappings. A generic fallback icon would be provided if a mapping
 cannot be resolved.
+
+The semantics of the `type` field are undefined. The adopter is free to define their own set of types and utilize them as they wish. Some potential use cases can be to utilize the type field to validate certain links exist on entities or to create customized UI components for specific link types.
 
 ## Common to All Kinds: Relations
 

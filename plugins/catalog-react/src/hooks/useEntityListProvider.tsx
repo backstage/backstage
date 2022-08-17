@@ -31,8 +31,10 @@ import useDebounce from 'react-use/lib/useDebounce';
 import useMountedState from 'react-use/lib/useMountedState';
 import { catalogApiRef } from '../api';
 import {
+  EntityErrorFilter,
   EntityKindFilter,
   EntityLifecycleFilter,
+  EntityOrphanFilter,
   EntityOwnerFilter,
   EntityTagFilter,
   EntityTextFilter,
@@ -52,6 +54,8 @@ export type DefaultEntityFilters = {
   lifecycles?: EntityLifecycleFilter;
   tags?: EntityTagFilter;
   text?: EntityTextFilter;
+  orphan?: EntityOrphanFilter;
+  error?: EntityErrorFilter;
 };
 
 /** @public */

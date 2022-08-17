@@ -1,5 +1,68 @@
 # @backstage/plugin-tech-insights-node
 
+## 0.3.3
+
+### Patch Changes
+
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/plugin-tech-insights-common@0.2.6
+
+## 0.3.3-next.0
+
+### Patch Changes
+
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/plugin-tech-insights-common@0.2.6-next.0
+
+## 0.3.2
+
+### Patch Changes
+
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- bcc122c46d: The `FactRetriever` model has been extended by adding optional title and description fields, allowing you to display them in the UI.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/plugin-tech-insights-common@0.2.5
+
+## 0.3.2-next.1
+
+### Patch Changes
+
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- bcc122c46d: The `FactRetriever` model has been extended by adding optional title and description fields, allowing you to display them in the UI.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/plugin-tech-insights-common@0.2.5-next.0
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+
+## 0.3.1
+
+### Patch Changes
+
+- aa15229ec3: Introduce additional JsonValue types to be storable as facts. This enables the possibility to store more complex objects for fact checking purposes. The rules engine supports walking keyed object values directly to create rules and checks
+
+  Modify facts database table to have a more restricted timestamp precision for cases where the postgres server isn't configured to contain such value. This fixes the issue where in some cases `maxItems` lifecycle condition didn't work as expected.
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+
+## 0.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+
 ## 0.3.1-next.0
 
 ### Patch Changes

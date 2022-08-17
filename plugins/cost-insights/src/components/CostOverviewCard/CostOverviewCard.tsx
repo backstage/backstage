@@ -106,7 +106,7 @@ export const CostOverviewCard = ({
   const showMetricSelect = config.metrics.length && safeTabIndex === 0;
 
   return (
-    <Card style={{ position: 'relative' }}>
+    <Card style={{ position: 'relative', overflow: 'visible' }}>
       <ScrollAnchor id={DefaultNavigation.CostOverviewCard} />
       <CardContent>
         {dailyCostData.groupedCosts && <OverviewTabs />}

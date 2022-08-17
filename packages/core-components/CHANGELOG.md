@@ -1,5 +1,145 @@
 # @backstage/core-components
 
+## 0.11.0
+
+### Minor Changes
+
+- d0eefc499a: Made the `to` prop of `Button` and `Link` more strict, only supporting plain strings. It used to be the case that this prop was unexpectedly too liberal, making it look like we supported the complex `react-router-dom` object form of the parameter as well, which led to unexpected results at runtime.
+
+### Patch Changes
+
+- a22af3edc8: Adding a `className` prop to the `MarkdownContent` component
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5
+
+## 0.11.0-next.2
+
+### Minor Changes
+
+- d0eefc499a: Made the `to` prop of `Button` and `Link` more strict, only supporting plain strings. It used to be the case that this prop was unexpectedly too liberal, making it look like we supported the complex `react-router-dom` object form of the parameter as well, which led to unexpected results at runtime.
+
+## 0.10.1-next.1
+
+### Patch Changes
+
+- a22af3edc8: Adding a `className` prop to the `MarkdownContent` component
+
+## 0.10.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+
+## 0.10.0
+
+### Minor Changes
+
+- 32204fa794: Add `transformLinkUri` and `transformImageUri` to `MarkdownContent`
+
+### Patch Changes
+
+- 3c440ea77e: Change BackstageIconLinkVertical style to use pallette instead of explicit color
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+- b4b711bcc2: Fix the EntityLayout header style so that EntityContextMenu button can display in correct shape when user hover on it
+- 944af7f2a8: Work around a bug calling `onChange` twice in `mui` for `RoutedTab` so you don't have to press back twice to navigate through tabs
+- 7f5e79961d: Fix relative `sub-paths` by concatenating the app's base path with them.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 693990d4fe: Updated dependency `@react-hookz/web` to `^15.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 15201b1032: Updated dependency `rc-progress` to `3.4.0`.
+- 7e115d42f9: Support displaying subtitle text in `SidebarSubmenuItem`
+- ae746946f7: Improve accessibility for CopyTextButton
+- 385389d23c: Updated to remove usage of the `bursts` object in the theme palette
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/theme@0.2.16
+  - @backstage/errors@1.1.0
+
+## 0.10.0-next.3
+
+### Patch Changes
+
+- 7f5e79961d: Fix relative `sub-paths` by concatenating the app's base path with them.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 693990d4fe: Updated dependency `@react-hookz/web` to `^15.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+
+## 0.10.0-next.2
+
+### Minor Changes
+
+- 32204fa794: Add `transformLinkUri` and `transformImageUri` to `MarkdownContent`
+
+### Patch Changes
+
+- b4b711bcc2: Fix the EntityLayout header style so that EntityContextMenu button can display in correct shape when user hover on it
+- 15201b1032: Updated dependency `rc-progress` to `3.4.0`.
+- 385389d23c: Updated to remove usage of the `bursts` object in the theme palette
+- Updated dependencies
+  - @backstage/theme@0.2.16-next.1
+
+## 0.9.6-next.1
+
+### Patch Changes
+
+- 3c440ea77e: Change BackstageIconLinkVertical style to use pallette instead of explicit color
+- 7e115d42f9: Support displaying subtitle text in `SidebarSubmenuItem`
+- Updated dependencies
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/theme@0.2.16-next.0
+
+## 0.9.6-next.0
+
+### Patch Changes
+
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+
+## 0.9.5
+
+### Patch Changes
+
+- feb4e8de07: Fix EntityPage tab scrolling overflow bug on Firefox
+- 65840b17be: Fix issue where right arrow icon was incorrectly added to side bar items without a sub-menu
+- de593ec78f: Updated dependency `react-text-truncate` to `^0.19.0`.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 6968b65ba1: Updated dependency `@react-hookz/web` to `^14.0.0`.
+- ee2cd642c5: Updated dependency `rc-progress` to `3.3.3`.
+- 96d1e01641: Accessibility updates:
+
+  - Added `aria-label` to the `Select` component
+  - Changed heading level used in the header of `Table` component
+
+- 7d355c4b3f: Fix the missing filter in the toolbar when passing a custom component in the core-components Table
+- 1cf9caecd6: fix Sidebar Contexts deprecation message
+- bff65e6958: The `SidebarPinStateContext` and `SidebarContext` have been deprecated and will be removed in a future release. Instead, use `<SidebarPinStateProvider>` + `useSidebarPinState()` and/or `<SidebarOpenStateProvider>` + `useSidebarOpenState()`.
+
+  This was done to ensure that sidebar state can be shared successfully across components exported by different packages, regardless of what version of this package is resolved and installed for each individual package.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.3
+
+## 0.9.5-next.2
+
+### Patch Changes
+
+- ee2cd642c5: Updated dependency `rc-progress` to `3.3.3`.
+- 1cf9caecd6: fix Sidebar Contexts deprecation message
+
+## 0.9.5-next.1
+
+### Patch Changes
+
+- feb4e8de07: Fix EntityPage tab scrolling overflow bug on Firefox
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- bff65e6958: The `SidebarPinStateContext` and `SidebarContext` have been deprecated and will be removed in a future release. Instead, use `<SidebarPinStateProvider>` + `useSidebarPinState()` and/or `<SidebarOpenStateProvider>` + `useSidebarOpenState()`.
+
+  This was done to ensure that sidebar state can be shared successfully across components exported by different packages, regardless of what version of this package is resolved and installed for each individual package.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.3-next.0
+
 ## 0.9.5-next.0
 
 ### Patch Changes

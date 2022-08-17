@@ -16,7 +16,6 @@
 
 import { sonarQubeApiRef, SonarQubeClient } from './api';
 import {
-  configApiRef,
   createApiFactory,
   createComponentExtension,
   createPlugin,
@@ -30,14 +29,12 @@ export const sonarQubePlugin = createPlugin({
     createApiFactory({
       api: sonarQubeApiRef,
       deps: {
-        configApi: configApiRef,
         discoveryApi: discoveryApiRef,
         identityApi: identityApiRef,
       },
-      factory: ({ configApi, discoveryApi, identityApi }) =>
+      factory: ({ discoveryApi, identityApi }) =>
         new SonarQubeClient({
           discoveryApi,
-          baseUrl: configApi.getOptionalString('sonarQube.baseUrl'),
           identityApi,
         }),
     }),

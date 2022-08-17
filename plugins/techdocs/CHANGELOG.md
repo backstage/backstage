@@ -1,5 +1,228 @@
 # @backstage/plugin-techdocs
 
+## 1.3.1
+
+### Patch Changes
+
+- e924d2d013: Added back reduction in size, this fixes the extremely large TeachDocs headings
+- b86ed4d990: Add highlight to active navigation item and navigation parents.
+- 7a98c73dc8: Fixed techdocs sidebar layout bug for medium devices.
+- 8acb22205c: Scroll techdocs navigation into focus and expand any nested navigation items.
+- Updated dependencies
+  - @backstage/integration@1.3.0
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-react@1.1.3
+  - @backstage/plugin-techdocs-react@1.0.3
+  - @backstage/integration-react@1.1.3
+  - @backstage/plugin-search-react@1.0.1
+
+## 1.3.1-next.2
+
+### Patch Changes
+
+- 8acb22205c: Scroll techdocs navigation into focus and expand any nested navigation items.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.3-next.2
+  - @backstage/core-components@0.11.0-next.2
+  - @backstage/integration-react@1.1.3-next.1
+  - @backstage/plugin-search-react@1.0.1-next.1
+  - @backstage/plugin-techdocs-react@1.0.3-next.2
+
+## 1.3.1-next.1
+
+### Patch Changes
+
+- b86ed4d990: Add highlight to active navigation item and navigation parents.
+- Updated dependencies
+  - @backstage/core-components@0.10.1-next.1
+  - @backstage/integration@1.3.0-next.1
+  - @backstage/plugin-techdocs-react@1.0.3-next.1
+  - @backstage/plugin-catalog-react@1.1.3-next.1
+
+## 1.3.1-next.0
+
+### Patch Changes
+
+- 7a98c73dc8: Fixed techdocs sidebar layout bug for medium devices.
+- Updated dependencies
+  - @backstage/integration@1.3.0-next.0
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/integration-react@1.1.3-next.0
+  - @backstage/plugin-catalog-react@1.1.3-next.0
+  - @backstage/core-components@0.10.1-next.0
+  - @backstage/plugin-search-react@1.0.1-next.0
+  - @backstage/plugin-techdocs-react@1.0.3-next.0
+
+## 1.3.0
+
+### Minor Changes
+
+- ebf3eb1641: Use the same initial filter `owned` for the `TechDocsIndexPage` as for the `CatalogPage`.
+
+  If you prefer to keep the previous behavior, you can change the default for the initial filter
+  to `all` (or `starred` if you rather prefer that).
+
+  ```
+  <TechDocsIndexPage initiallySelectedFilter="all" />
+  ```
+
+  In general, with this change you will be able to set props at `TechDocsIndexPage`.
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- 3cbebf710e: Reorder browser tab title in Techdocs pages to have the site name first.
+- 726577958f: Remove the 60% factor from the font size calculation of headers to use the exact size defined in BackstageTheme.
+- 7739141ab2: Fix: When docs are shown in an entity page under the docs tab the sidebars start overlapping with the header and tabs in the page when you scroll the documentation content.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-techdocs-react@1.0.2
+  - @backstage/plugin-search-react@1.0.0
+  - @backstage/plugin-search-common@1.0.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/integration@1.2.2
+  - @backstage/integration-react@1.1.2
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/theme@0.2.16
+  - @backstage/errors@1.1.0
+
+## 1.2.1-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+  - @backstage/integration-react@1.1.2-next.3
+  - @backstage/integration@1.2.2-next.3
+  - @backstage/catalog-model@1.1.0-next.3
+  - @backstage/plugin-catalog-react@1.1.2-next.3
+  - @backstage/plugin-search-react@0.2.2-next.3
+  - @backstage/plugin-techdocs-react@1.0.2-next.2
+
+## 1.2.1-next.2
+
+### Patch Changes
+
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- 7739141ab2: Fix: When docs are shown in an entity page under the docs tab the sidebars start overlapping with the header and tabs in the page when you scroll the documentation content.
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/plugin-search-react@0.2.2-next.2
+  - @backstage/theme@0.2.16-next.1
+  - @backstage/integration@1.2.2-next.2
+  - @backstage/plugin-catalog-react@1.1.2-next.2
+  - @backstage/integration-react@1.1.2-next.2
+  - @backstage/plugin-techdocs-react@1.0.2-next.1
+
+## 1.2.1-next.1
+
+### Patch Changes
+
+- 726577958f: Remove the 60% factor from the font size calculation of headers to use the exact size defined in BackstageTheme.
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.1
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/theme@0.2.16-next.0
+  - @backstage/integration@1.2.2-next.1
+  - @backstage/integration-react@1.1.2-next.1
+  - @backstage/plugin-catalog-react@1.1.2-next.1
+  - @backstage/plugin-search-common@0.3.6-next.0
+  - @backstage/plugin-search-react@0.2.2-next.1
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- 3cbebf710e: Reorder browser tab title in Techdocs pages to have the site name first.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/plugin-techdocs-react@1.0.2-next.0
+  - @backstage/integration@1.2.2-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.0
+  - @backstage/integration-react@1.1.2-next.0
+  - @backstage/plugin-search-react@0.2.2-next.0
+
+## 1.2.0
+
+### Minor Changes
+
+- fe7614ea54: Add an optional icon to the Catalog and TechDocs search results
+
+### Patch Changes
+
+- d047d81295: Use entity title as label in `TechDocsReaderPageHeader` if available
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- bff65e6958: Updated sidebar-related logic to use `<SidebarPinStateProvider>` + `useSidebarPinState()` and/or `<SidebarOpenStateProvider>` + `useSidebarOpenState()` from `@backstage/core-components`.
+- 915700f64f: In order to simplify analytics on top of the search experience in Backstage, the provided `<*ResultListItem />` component now captures a `discover` analytics event instead of a `click` event. This event includes the result rank as its `value` and, like a click, the URL/path clicked to as its `to` attribute.
+- 881fbd7e8d: Fix `EntityTechdocsContent` component to use objects instead of `<Route>` elements, otherwise "outlet" will be null on sub-pages and add-ons won't render.
+- 17c059dfd0: Restructures reader style transformations to improve code readability:
+
+  - Extracts the style rules to separate files;
+  - Creates a hook that processes each rule;
+  - And creates another hook that returns a transformer responsible for injecting them into the head tag of a given element.
+
+- 3b45ad701f: Packages a set of tweaks to the TechDocs addons rendering process:
+
+  - Prevents displaying sidebars until page styles are loaded and the sidebar position is updated;
+  - Prevents new sidebar locations from being created every time the reader page is rendered if these locations already exist;
+  - Centers the styles loaded event to avoid having multiple locations setting the opacity style in Shadow Dom causing the screen to flash multiple times.
+
+- 9b94ade898: Use entity title in `TechDocsSearch` placeholder if available.
+- 816f7475ec: Convert `sanitizeDOM` transformer to hook as part of code readability improvements in dom file.
+- 50ff56a80f: Change the `EntityDocsPage` path to be more specific and also add integration tests for `sub-routes` on this page.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/plugin-search-react@0.2.1
+  - @backstage/core-components@0.9.5
+  - @backstage/integration@1.2.1
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/integration-react@1.1.1
+  - @backstage/catalog-model@1.0.3
+  - @backstage/plugin-techdocs-react@1.0.1
+
+## 1.1.2-next.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- bff65e6958: Updated sidebar-related logic to use `<SidebarPinStateProvider>` + `useSidebarPinState()` and/or `<SidebarOpenStateProvider>` + `useSidebarOpenState()` from `@backstage/core-components`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.1
+  - @backstage/core-plugin-api@1.0.3-next.0
+  - @backstage/integration-react@1.1.1-next.1
+  - @backstage/integration@1.2.1-next.1
+  - @backstage/catalog-model@1.0.3-next.0
+  - @backstage/plugin-catalog-react@1.1.1-next.1
+  - @backstage/plugin-search-react@0.2.1-next.0
+  - @backstage/plugin-techdocs-react@1.0.1-next.1
+  - @backstage/plugin-search-common@0.3.5-next.0
+
 ## 1.1.2-next.0
 
 ### Patch Changes

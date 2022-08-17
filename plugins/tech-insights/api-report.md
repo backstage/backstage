@@ -10,6 +10,8 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { BulkCheckResponse } from '@backstage/plugin-tech-insights-common';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
@@ -79,10 +81,38 @@ export interface TechInsightsApi {
 export const techInsightsApiRef: ApiRef<TechInsightsApi>;
 
 // @public (undocumented)
+export class TechInsightsClient implements TechInsightsApi {
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+  });
+  // (undocumented)
+  getAllChecks(): Promise<Check[]>;
+  // (undocumented)
+  getScorecardsDefinition(
+    type: string,
+    value: CheckResult[],
+    title?: string,
+    description?: string,
+  ): CheckResultRenderer | undefined;
+  // (undocumented)
+  runBulkChecks(
+    entities: CompoundEntityRef[],
+    checks?: Check[],
+  ): Promise<BulkCheckResponse>;
+  // (undocumented)
+  runChecks(
+    entityParams: CompoundEntityRef,
+    checks?: string[],
+  ): Promise<CheckResult[]>;
+}
+
+// @public (undocumented)
 export const techInsightsPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 

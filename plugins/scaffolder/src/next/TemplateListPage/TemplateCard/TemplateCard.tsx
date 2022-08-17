@@ -26,13 +26,17 @@ import {
 } from '@material-ui/core';
 import { CardHeader } from './CardHeader';
 import { MarkdownContent, UserIcon, Button } from '@backstage/core-components';
-import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import {
+  parseEntityRef,
+  RELATION_OWNED_BY,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import {
   EntityRefLinks,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { selectedTemplateRouteRef } from '../../../routes';
+import { nextSelectedTemplateRouteRef } from '../../../routes';
 import { BackstageTheme } from '@backstage/theme';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
@@ -42,10 +46,11 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     display: '-webkit-box',
     '-webkit-line-clamp': 10,
     '-webkit-box-orient': 'vertical',
+  },
+  markdown: {
     /** to make the styles for React Markdown not leak into the description */
-    '& p:first-child': {
+    '& :first-child': {
       marginTop: 0,
-      marginBottom: theme.spacing(2),
     },
   },
   label: {
@@ -90,8 +95,14 @@ export const TemplateCard = (props: TemplateCardProps) => {
   const { template } = props;
   const styles = useStyles();
   const ownedByRelations = getEntityRelations(template, RELATION_OWNED_BY);
-  const templateRoute = useRouteRef(selectedTemplateRouteRef);
-  const href = templateRoute({ templateName: template.metadata.name });
+  const templateRoute = useRouteRef(nextSelectedTemplateRouteRef);
+  const { name, namespace } = parseEntityRef(
+    stringifyEntityRef(props.template),
+  );
+  const href = templateRoute({
+    templateName: name,
+    namespace: namespace,
+  });
 
   return (
     <Card>
@@ -99,6 +110,7 @@ export const TemplateCard = (props: TemplateCardProps) => {
       <CardContent>
         <Box className={styles.box}>
           <MarkdownContent
+            className={styles.markdown}
             content={template.metadata.description ?? 'No description'}
           />
         </Box>

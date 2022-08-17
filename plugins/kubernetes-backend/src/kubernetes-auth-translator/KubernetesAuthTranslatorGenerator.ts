@@ -17,7 +17,7 @@
 import { Logger } from 'winston';
 import { KubernetesAuthTranslator } from './types';
 import { GoogleKubernetesAuthTranslator } from './GoogleKubernetesAuthTranslator';
-import { ServiceAccountKubernetesAuthTranslator } from './ServiceAccountKubernetesAuthTranslator';
+import { NoopKubernetesAuthTranslator } from './NoopKubernetesAuthTranslator';
 import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator';
 import { GoogleServiceAccountAuthTranslator } from './GoogleServiceAccountAuthProvider';
 import { AzureIdentityKubernetesAuthTranslator } from './AzureIdentityKubernetesAuthTranslator';
@@ -41,13 +41,16 @@ export class KubernetesAuthTranslatorGenerator {
         return new AzureIdentityKubernetesAuthTranslator(options.logger);
       }
       case 'serviceAccount': {
-        return new ServiceAccountKubernetesAuthTranslator();
+        return new NoopKubernetesAuthTranslator();
       }
       case 'googleServiceAccount': {
         return new GoogleServiceAccountAuthTranslator();
       }
       case 'oidc': {
         return new OidcKubernetesAuthTranslator();
+      }
+      case 'localKubectlProxy': {
+        return new NoopKubernetesAuthTranslator();
       }
       default: {
         throw new Error(

@@ -1,5 +1,94 @@
 # @backstage/plugin-tech-radar
 
+## 0.5.15
+
+### Patch Changes
+
+- a641f79dcb: Move CSS overflow property to quadrant block element (i.e. to a div element) in RadarLegend component.
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+
+## 0.5.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.0-next.2
+
+## 0.5.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/core-components@0.10.1-next.0
+
+## 0.5.14
+
+### Patch Changes
+
+- b8f608f1ec: Update tech-radar documentation on how to use an external json data source with dates.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/theme@0.2.16
+
+## 0.5.14-next.3
+
+### Patch Changes
+
+- b8f608f1ec: Update tech-radar documentation on how to use an external json data source with dates.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+
+## 0.5.14-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/theme@0.2.16-next.1
+
+## 0.5.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.1
+  - @backstage/theme@0.2.16-next.0
+
+## 0.5.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.0
+
+## 0.5.13
+
+### Patch Changes
+
+- bb31e5489c: Updated dependency `d3-force` to `^3.0.0`.
+  Updated dependency `@types/d3-force` to `^3.0.0`.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+
+## 0.5.13-next.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.1
+  - @backstage/core-plugin-api@1.0.3-next.0
+
 ## 0.5.13-next.0
 
 ### Patch Changes

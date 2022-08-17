@@ -129,3 +129,17 @@ export const catalogLocationDeletePermission = createPermission({
     action: 'delete',
   },
 });
+
+/**
+ * List of all catalog permissions.
+ * @alpha
+ */
+export const catalogPermissions = [
+  catalogEntityReadPermission,
+  catalogEntityCreatePermission,
+  catalogEntityDeletePermission,
+  catalogEntityRefreshPermission,
+  catalogLocationReadPermission,
+  catalogLocationCreatePermission,
+  catalogLocationDeletePermission,
+];

@@ -51,6 +51,7 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   getTask: jest.fn(),
   streamLogs: jest.fn(),
   listActions: jest.fn(),
+  listTasks: jest.fn(),
 };
 
 const featureFlagsApiMock: jest.Mocked<FeatureFlagsApi> = {

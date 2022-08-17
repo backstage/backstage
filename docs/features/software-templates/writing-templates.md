@@ -93,8 +93,12 @@ spec:
 
   # some outputs which are saved along with the job for use in the frontend
   output:
-    remoteUrl: ${{ steps.publish.output.remoteUrl }}
-    entityRef: ${{ steps.register.output.entityRef }}
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
 ```
 
 Let's dive in and pick apart what each of these sections do and what they are.
@@ -320,6 +324,30 @@ The `allowedHosts` part should be set to where you wish to enable this template
 to publish to. And it can be any host that is listed in your `integrations`
 config in `app-config.yaml`.
 
+Besides specifying `allowedHosts` you can also restrict the template to publish to
+repositories owned by specific users/groups/namespaces by setting the `allowedOwners`
+option. With the `allowedRepos` option you are able to narrow it down further to a
+specific set of repository names. A full example could look like this:
+
+```yaml
+- title: Choose a location
+  required:
+    - repoUrl
+  properties:
+    repoUrl:
+      title: Repository Location
+      type: string
+      ui:field: RepoUrlPicker
+      ui:options:
+        allowedHosts:
+          - github.com
+        allowedOwners:
+          - backstage
+          - someGithubUser
+        allowedRepos:
+          - backstage
+```
+
 The `RepoUrlPicker` is a custom field that we provide part of the
 `plugin-scaffolder`. You can provide your own custom fields by
 [writing your own Custom Field Extensions](./writing-custom-field-extensions.md)
@@ -397,6 +425,29 @@ There's also the ability to pass additional scopes when requesting the `oauth`
 token from the user, which you can do on a per-provider basis, in case your
 template can be published to multiple providers.
 
+Note, that you will need to configure an [authentication provider](../../auth/index.md#configuring-authentication-providers), alongside the
+[`ScmAuthApi`](../../auth/index.md#scaffolder-configuration-software-templates) for your source code management (SCM) service to make this feature work.
+
+### Accessing the signed-in users details
+
+Sometimes when authoring templates, you'll want to access the user that is running the template, and get details from the profile or the users `Entity` in the Catalog.
+
+If you have enabled a sign in provider and have a [sign in resolver](../../auth/identity-resolver.md) that points to a user in the Catalog, then you can use the `${{ user.entity }}` templating expression to access the raw entity from the Catalog.
+
+This can be particularly useful if you have processors setup in the Catalog to write `spec.profile.email` of the `User Entities` to reference them and pass them into actions like below:
+
+```yaml
+  steps:
+    action: publish:github
+    ...
+    input:
+        ...
+        gitAuthorName: ${{ user.entity.metadata.name }}
+        gitAuthorEmail: ${{ user.entity.spec.profile.email }}
+```
+
+You also have access to `user.entity.metadata.annotations` too, so if you have some other additional information stored in there, you reference those too.
+
 ### The Owner Picker
 
 When the scaffolder needs to add new components to the catalog, it needs to have
@@ -448,8 +499,12 @@ The main two that are used are the following:
 
 ```yaml
 output:
-  remoteUrl: ${{ steps.publish.output.remoteUrl }} # link to the remote repository
-  entityRef: ${{ steps.register.output.entityRef }} # link to the entity that has been ingested to the catalog
+  links:
+    - title: Repository
+      url: ${{ steps.publish.output.remoteUrl }} # link to the remote repository
+    - title: Open in catalog
+      icon: catalog
+      entityRef: ${{ steps.register.output.entityRef }} # link to the entity that has been ingested to the catalog
 ```
 
 ## The templating syntax
@@ -461,6 +516,64 @@ using this template syntax (for example, `${{ parameters.firstName }}` inserts
 the value of `firstName` from the parameters). This is great for passing the
 values from the form into different steps and reusing these input variables.
 These template strings preserve the type of the parameter.
+
+The `${{ parameters.firstName }}` pattern will work only in the template file.
+If you want to start using values provided from the UI in your code, you will have to use
+the `${{ values.firstName }}` pattern. Additionally, you have to pass
+the parameters from the UI to the input of the `fetch:template` step.
+
+```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: v1beta3-demo
+  title: Test Action
+  description: scaffolder v1beta3 template demo
+spec:
+  owner: backstage/techdocs-core
+  type: service
+  parameters:
+    - title: Fill in some steps
+      required:
+        - name
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of your project
+        urlParameter:
+          title: URL endpoint
+          type: string
+          description: URL endpoint at which the component can be reached
+          default: 'https://www.example.com'
+        enabledDB:
+          title: Enable Database
+          type: boolean
+          default: false
+  ...
+  steps:
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:template
+      input:
+        url: ./template
+        values:
+          name: ${{ parameters.name }}
+          url: ${{ parameters.urlParameter }}
+          enabledDB: ${{ parameters.enabledDB }}
+```
+
+Afterwards, if you are using the builtin templating action, you can start using
+the variables in your code. You can use also any other templating functions from
+[Nunjucks](https://mozilla.github.io/nunjucks/templating.html#tags) as well.
+
+```bash
+#!/bin/bash
+echo "Hi my name is ${{ values.name }}, and you can fine me at ${{ values.url }}!"
+{% if values.enabledDB %}
+echo "You have enabled your database!"
+{% endif %}
+```
 
 As you can see above in the `Outputs` section, `actions` and `steps` can also
 output things. You can grab that output using `steps.$stepId.output.$property`.

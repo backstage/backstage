@@ -1,5 +1,85 @@
 # @backstage/test-utils
 
+## 1.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/core-app-api@1.0.5
+  - @backstage/plugin-permission-react@0.4.4
+
+## 1.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/core-app-api@1.0.5-next.0
+  - @backstage/plugin-permission-react@0.4.4-next.0
+
+## 1.1.2
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/core-app-api@1.0.4
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/plugin-permission-common@0.6.3
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-permission-react@0.4.3
+
+## 1.1.2-next.2
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/core-app-api@1.0.4-next.1
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/plugin-permission-common@0.6.3-next.1
+  - @backstage/plugin-permission-react@0.4.3-next.1
+
+## 1.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.2.16-next.0
+  - @backstage/plugin-permission-common@0.6.3-next.0
+  - @backstage/plugin-permission-react@0.4.3-next.0
+
+## 1.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.0.4-next.0
+
+## 1.1.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-app-api@1.0.3
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/plugin-permission-common@0.6.2
+  - @backstage/plugin-permission-react@0.4.2
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-app-api@1.0.3-next.0
+  - @backstage/core-plugin-api@1.0.3-next.0
+  - @backstage/plugin-permission-common@0.6.2-next.0
+  - @backstage/plugin-permission-react@0.4.2-next.0
+
 ## 1.1.0
 
 ### Minor Changes

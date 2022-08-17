@@ -341,7 +341,8 @@ separate Docker images.
 The backend container can be built by running the following command:
 
 ```bash
-yarn run docker-build
+yarn run build
+yarn run build-image
 ```
 
 This will create a container called `example-backend`.

@@ -22,6 +22,7 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
+  ListItemIcon,
 } from '@material-ui/core';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import useAsync from 'react-use/lib/useAsync';
@@ -68,8 +69,9 @@ export const Content = (props: StackOverflowQuestionsContentProps) => {
   return (
     <List>
       {value.map(question => (
-        <ListItem key={question.link}>
-          <Link to={question.link}>
+        <Link to={question.link}>
+          <ListItem key={question.link}>
+            {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
             <ListItemText
               primary={question.title}
               secondary={getSecondaryText(question.answer_count)}
@@ -79,8 +81,8 @@ export const Content = (props: StackOverflowQuestionsContentProps) => {
                 <OpenInNewIcon />
               </IconButton>
             </ListItemSecondaryAction>
-          </Link>
-        </ListItem>
+          </ListItem>
+        </Link>
       ))}
     </List>
   );

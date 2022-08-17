@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import {
   Dialog,
   DialogActions,
@@ -28,14 +28,15 @@ import {
 } from '@material-ui/core';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { makeStyles } from '@material-ui/core/styles';
-import { SearchBar } from '../SearchBar';
-import { DefaultResultListItem } from '../DefaultResultListItem';
-import { SearchResult } from '../SearchResult';
 import {
+  DefaultResultListItem,
   SearchContextProvider,
+  SearchBar,
+  SearchResult,
+  SearchResultPager,
   useSearch,
+  useSearchContextCheck,
 } from '@backstage/plugin-search-react';
-import { SearchResultPager } from '../SearchResultPager';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Link, useContent } from '@backstage/core-components';
 import { rootRouteRef } from '../../plugin';
@@ -50,6 +51,9 @@ export interface SearchModalChildrenProps {
   toggleModal: () => void;
 }
 
+/**
+ * @public
+ **/
 export interface SearchModalProps {
   /**
    * If true, it renders the modal.
@@ -167,6 +171,18 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
   );
 };
 
+const Context = ({ children }: PropsWithChildren<{}>) => {
+  // Checks if there is a parent context already defined and, if not, creates a new local context.
+  const hasParentContext = useSearchContextCheck();
+  if (hasParentContext) {
+    return <>{children}</>;
+  }
+  return <SearchContextProvider>{children}</SearchContextProvider>;
+};
+
+/**
+ * @public
+ */
 export const SearchModal = ({
   open = true,
   hidden,
@@ -188,11 +204,11 @@ export const SearchModal = ({
       hidden={hidden}
     >
       {open && (
-        <SearchContextProvider>
+        <Context>
           {(children && children({ toggleModal })) ?? (
             <Modal toggleModal={toggleModal} />
           )}
-        </SearchContextProvider>
+        </Context>
       )}
     </Dialog>
   );

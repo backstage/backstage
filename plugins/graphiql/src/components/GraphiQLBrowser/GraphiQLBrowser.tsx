@@ -22,7 +22,9 @@ import { GraphQLEndpoint } from '../../lib/api';
 import { BackstageTheme } from '@backstage/theme';
 import { Progress } from '@backstage/core-components';
 
-const GraphiQL = React.lazy(() => import('graphiql'));
+const GraphiQL = React.lazy(() =>
+  import('graphiql').then(m => ({ default: m.GraphiQL })),
+);
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {

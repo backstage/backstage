@@ -1,5 +1,77 @@
 # @backstage/plugin-auth-node
 
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+
+## 0.2.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+
+## 0.2.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/errors@1.1.0
+
+## 0.2.3-next.2
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+
+## 0.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+
+## 0.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+
+## 0.2.2
+
+### Patch Changes
+
+- 5ca0b86b88: Address corner cases where the key store was not being created at startup
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 9079a78078: Added configurable algorithms array for IdentityClient
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+
+## 0.2.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+
+## 0.2.2-next.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+
 ## 0.2.2-next.0
 
 ### Patch Changes

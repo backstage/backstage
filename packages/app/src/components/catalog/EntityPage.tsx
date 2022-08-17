@@ -59,7 +59,7 @@ import {
   isComponentType,
   isKind,
   isOrphan,
-} from '@backstage/plugin-catalog';
+} from '@internal/plugin-catalog-customized';
 import {
   Direction,
   EntityCatalogGraphCard,
@@ -73,6 +73,10 @@ import {
   isCloudbuildAvailable,
 } from '@backstage/plugin-cloudbuild';
 import { EntityCodeCoverageContent } from '@backstage/plugin-code-coverage';
+import {
+  DynatraceTab,
+  isDynatraceAvailable,
+} from '@backstage/plugin-dynatrace';
 import {
   EntityGithubActionsContent,
   EntityRecentGithubActionsRunsCard,
@@ -163,7 +167,12 @@ const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
 
   return (
     <>
-      <EntityLayout UNSTABLE_extraContextMenuItems={extraMenuItems}>
+      <EntityLayout
+        UNSTABLE_extraContextMenuItems={extraMenuItems}
+        UNSTABLE_contextMenuOptions={{
+          disableUnregister: 'visible',
+        }}
+      >
         {props.children}
       </EntityLayout>
       <EntityBadgesDialog
@@ -447,6 +456,14 @@ const serviceEntityPage = (
     <EntityLayout.Route path="/todos" title="TODOs">
       <EntityTodoContent />
     </EntityLayout.Route>
+
+    <EntityLayout.Route
+      path="/dynatrace"
+      title="Dynatrace"
+      if={isDynatraceAvailable}
+    >
+      <DynatraceTab />
+    </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
 
@@ -493,6 +510,14 @@ const websiteEntityPage = (
 
     <EntityLayout.Route path="/kubernetes" title="Kubernetes">
       <EntityKubernetesContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route
+      path="/dynatrace"
+      title="Dynatrace"
+      if={isDynatraceAvailable}
+    >
+      <DynatraceTab />
     </EntityLayout.Route>
 
     <EntityLayout.Route

@@ -131,14 +131,16 @@ export class TechInsightsDatabase implements TechInsightsStore {
       .and.whereIn('id', ids)
       .join(
         this.db('facts')
-          .max('timestamp')
+          .max('timestamp as maxTimestamp')
           .column('id as subId')
           .where({ entity: entityTriplet })
           .and.whereIn('id', ids)
           .groupBy('id')
           .as('subQ'),
-        'facts.id',
-        'subQ.subId',
+        {
+          'facts.id': 'subQ.subId',
+          'facts.timestamp': 'subQ.maxTimestamp',
+        },
       );
     return this.dbFactRowsToTechInsightFacts(results);
   }

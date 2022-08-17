@@ -89,6 +89,7 @@ export async function createConfig(
 
   const baseUrl = frontendConfig.getString('app.baseUrl');
   const validBaseUrl = new URL(baseUrl);
+  const publicPath = validBaseUrl.pathname.replace(/\/$/, '');
   if (checksEnabled) {
     plugins.push(
       new ForkTsCheckerWebpackPlugin({
@@ -121,7 +122,7 @@ export async function createConfig(
     new HtmlWebpackPlugin({
       template: paths.targetHtml,
       templateParameters: {
-        publicPath: validBaseUrl.pathname.replace(/\/$/, ''),
+        publicPath,
         config: frontendConfig,
       },
     }),
@@ -161,7 +162,7 @@ export async function createConfig(
     context: paths.targetPath,
     entry: [require.resolve('react-hot-loader/patch'), paths.targetEntry],
     resolve: {
-      extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
+      extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json', '.wasm'],
       mainFields: ['browser', 'module', 'main'],
       fallback: {
         ...pickBy(require('node-libs-browser')),
@@ -194,7 +195,7 @@ export async function createConfig(
     },
     output: {
       path: paths.targetDist,
-      publicPath: validBaseUrl.pathname,
+      publicPath: `${publicPath}/`,
       filename: isDev ? '[name].js' : 'static/[name].[fullhash:8].js',
       chunkFilename: isDev
         ? '[name].chunk.js'
@@ -271,7 +272,7 @@ export async function createBackendConfig(
       paths.targetRunFile ? paths.targetRunFile : paths.targetEntry,
     ],
     resolve: {
-      extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
+      extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json'],
       mainFields: ['main'],
       modules: [paths.rootNodeModules, ...moduleDirs],
       plugins: [

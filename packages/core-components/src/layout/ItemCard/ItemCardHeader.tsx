@@ -27,7 +27,7 @@ const styles = (theme: BackstageTheme) =>
     root: {
       color: theme.palette.common.white,
       padding: theme.spacing(2, 2, 3),
-      backgroundImage: theme.palette.bursts.gradient.linear,
+      backgroundImage: theme.getPageTheme({ themeId: 'card' }).backgroundImage,
       backgroundPosition: 0,
       backgroundSize: 'inherit',
     },
@@ -64,7 +64,7 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
  * A simple card header, rendering a default look for "item cards" - cards that
  * are arranged in a grid for users to select among several options.
  *
- * This component expects to be placed within a MUI <CardMedia>.
+ * This component expects to be placed within a MUI `<CardMedia>`.
  *
  * Styles for the header can be overridden using the `classes` prop, e.g.:
  *

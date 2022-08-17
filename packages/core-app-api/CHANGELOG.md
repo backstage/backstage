@@ -1,5 +1,62 @@
 # @backstage/core-app-api
 
+## 1.0.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5
+
+## 1.0.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+
+## 1.0.4
+
+### Patch Changes
+
+- 881fc75a75: Internal tweak removing usage of explicit type parameters for the `BackstagePlugin` type.
+- 8fe2357101: The `signOut` method of the `IdentityApi` will now navigate the user back to the base URL of the app as indicated by the `app.baseUrl` config.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4
+
+## 1.0.4-next.1
+
+### Patch Changes
+
+- 881fc75a75: Internal tweak removing usage of explicit type parameters for the `BackstagePlugin` type.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+
+## 1.0.4-next.0
+
+### Patch Changes
+
+- 8fe2357101: The `signOut` method of the `IdentityApi` will now navigate the user back to the base URL of the app as indicated by the `app.baseUrl` config.
+
+## 1.0.3
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 19781483a2: Handle URLs as the first argument to `fetchApi`, when using the `plugin:` protocol
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.3
+
+## 1.0.3-next.0
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.3-next.0
+
 ## 1.0.2
 
 ### Patch Changes

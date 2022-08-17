@@ -1,5 +1,135 @@
 # @backstage/plugin-api-docs
 
+## 0.8.8
+
+### Patch Changes
+
+- dae12c71cf: Updated dependency `@asyncapi/react-component` to `1.0.0-next.40`.
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog@1.5.0
+  - @backstage/plugin-catalog-react@1.1.3
+
+## 0.8.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.3-next.2
+  - @backstage/core-components@0.11.0-next.2
+  - @backstage/plugin-catalog@1.5.0-next.2
+
+## 0.8.8-next.1
+
+### Patch Changes
+
+- dae12c71cf: Updated dependency `@asyncapi/react-component` to `1.0.0-next.40`.
+- Updated dependencies
+  - @backstage/core-components@0.10.1-next.1
+  - @backstage/plugin-catalog@1.5.0-next.1
+  - @backstage/plugin-catalog-react@1.1.3-next.1
+
+## 0.8.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/plugin-catalog@1.5.0-next.0
+  - @backstage/plugin-catalog-react@1.1.3-next.0
+  - @backstage/core-components@0.10.1-next.0
+
+## 0.8.7
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- b76eea25ed: Updated dependency `@asyncapi/react-component` to `1.0.0-next.39`.
+- a274fe38b9: Add hidden title column to catalog and API table to enable filtering by title.
+- 9432a05cf3: Set font colors correctly for descriptions containing HTML
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-catalog@1.4.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/theme@0.2.16
+
+## 0.8.7-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- b76eea25ed: Updated dependency `@asyncapi/react-component` to `1.0.0-next.39`.
+- 9432a05cf3: Set font colors correctly for descriptions containing HTML
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+  - @backstage/catalog-model@1.1.0-next.3
+  - @backstage/plugin-catalog-react@1.1.2-next.3
+  - @backstage/plugin-catalog@1.4.0-next.3
+
+## 0.8.7-next.2
+
+### Patch Changes
+
+- a274fe38b9: Add hidden title column to catalog and API table to enable filtering by title.
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/theme@0.2.16-next.1
+  - @backstage/plugin-catalog@1.4.0-next.2
+  - @backstage/plugin-catalog-react@1.1.2-next.2
+
+## 0.8.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.1
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/plugin-catalog@1.3.1-next.1
+  - @backstage/theme@0.2.16-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.1
+
+## 0.8.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+  - @backstage/plugin-catalog@1.3.1-next.0
+  - @backstage/plugin-catalog-react@1.1.2-next.0
+
+## 0.8.6
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 811ff4bcf4: Updated `swagger-ui-react` to 4.11.1 in order to address a [XSS
+  vulnerability](https://github.com/advisories/GHSA-hqq7-2q2v-82xq) in `@braintree/sanitize-url`
+- Updated dependencies
+  - @backstage/plugin-catalog@1.3.0
+  - @backstage/plugin-catalog-react@1.1.1
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/catalog-model@1.0.3
+
+## 0.8.6-next.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.1
+  - @backstage/core-plugin-api@1.0.3-next.0
+  - @backstage/catalog-model@1.0.3-next.0
+  - @backstage/plugin-catalog@1.2.1-next.1
+  - @backstage/plugin-catalog-react@1.1.1-next.1
+
 ## 0.8.6-next.0
 
 ### Patch Changes

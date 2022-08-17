@@ -18,7 +18,7 @@ import React from 'react';
 import { GerritRepoPicker } from './GerritRepoPicker';
 import { render, fireEvent } from '@testing-library/react';
 
-describe('BitbucketRepoPicker', () => {
+describe('GerritRepoPicker', () => {
   describe('owner input field', () => {
     it('calls onChange when the owner input changes', () => {
       const onChange = jest.fn();
@@ -54,25 +54,6 @@ describe('BitbucketRepoPicker', () => {
       fireEvent.change(parentInput, { target: { value: 'test-parent' } });
 
       expect(onChange).toHaveBeenCalledWith({ workspace: 'test-parent' });
-    });
-  });
-
-  describe('repoName field', () => {
-    it('calls onChange when the repoName changes', () => {
-      const onChange = jest.fn();
-      const { getAllByRole } = render(
-        <GerritRepoPicker
-          onChange={onChange}
-          rawErrors={[]}
-          state={{ host: 'gerrithost.org' }}
-        />,
-      );
-
-      const repoNameInput = getAllByRole('textbox')[2];
-
-      fireEvent.change(repoNameInput, { target: { value: 'test-repo' } });
-
-      expect(onChange).toHaveBeenCalledWith({ repoName: 'test-repo' });
     });
   });
 });

@@ -28,16 +28,41 @@ export const rootRouteRef = createRouteRef({
   id: 'scaffolder',
 });
 
+/**
+ * @deprecated This is the old template route, can be deleted before next major release
+ */
+export const legacySelectedTemplateRouteRef = createSubRouteRef({
+  id: 'scaffolder/legacy/selected-template',
+  parent: rootRouteRef,
+  path: '/templates/:templateName',
+});
+
+export const nextRouteRef = createRouteRef({
+  id: 'scaffolder/next',
+});
+
 export const selectedTemplateRouteRef = createSubRouteRef({
   id: 'scaffolder/selected-template',
   parent: rootRouteRef,
-  path: '/templates/:templateName',
+  path: '/templates/:namespace/:templateName',
+});
+
+export const nextSelectedTemplateRouteRef = createSubRouteRef({
+  id: 'scaffolder/next/selected-template',
+  parent: nextRouteRef,
+  path: '/templates/:namespace/:templateName',
 });
 
 export const scaffolderTaskRouteRef = createSubRouteRef({
   id: 'scaffolder/task',
   parent: rootRouteRef,
   path: '/tasks/:taskId',
+});
+
+export const scaffolderListTaskRouteRef = createSubRouteRef({
+  id: 'scaffolder/list-tasks',
+  parent: rootRouteRef,
+  path: '/tasks',
 });
 
 export const actionsRouteRef = createSubRouteRef({

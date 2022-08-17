@@ -16,8 +16,11 @@
 
 import { Config, ConfigReader } from '@backstage/config';
 import { getCombinedClusterSupplier } from './index';
+import { CatalogApi } from '@backstage/catalog-client';
 
 describe('getCombinedClusterSupplier', () => {
+  let catalogApi: CatalogApi;
+
   it('should retrieve cluster details from config', async () => {
     const config: Config = new ConfigReader(
       {
@@ -45,7 +48,7 @@ describe('getCombinedClusterSupplier', () => {
       'ctx',
     );
 
-    const clusterSupplier = getCombinedClusterSupplier(config);
+    const clusterSupplier = getCombinedClusterSupplier(config, catalogApi);
     const result = await clusterSupplier.getClusters();
 
     expect(result).toStrictEqual([
@@ -100,7 +103,7 @@ describe('getCombinedClusterSupplier', () => {
       'ctx',
     );
 
-    expect(() => getCombinedClusterSupplier(config)).toThrowError(
+    expect(() => getCombinedClusterSupplier(config, catalogApi)).toThrowError(
       new Error('Unsupported kubernetes.clusterLocatorMethods: "magic"'),
     );
   });

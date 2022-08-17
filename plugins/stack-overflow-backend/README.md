@@ -15,6 +15,16 @@ stackoverflow:
   baseUrl: https://api.stackexchange.com/2.2 # alternative: your internal stack overflow instance
 ```
 
+### Stack Overflow for Teams (private stack overflow instance)
+
+If you have a private stack overflow instance you will need to supply an API key as well. You can read more about how to set this up by going to [Stack Overflows Help Page](https://stackoverflow.help/en/articles/4385859-stack-overflow-for-teams-api)
+
+```yaml
+stackoverflow:
+  baseUrl: https://api.stackexchange.com/2.2 # alternative: your internal stack overflow instance
+  apiKey: $STACK_OVERFLOW_API_KEY
+```
+
 ## Areas of Responsibility
 
 This stack overflow backend plugin is primarily responsible for the following:

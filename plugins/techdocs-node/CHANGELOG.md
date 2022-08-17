@@ -1,5 +1,157 @@
 # @backstage/plugin-techdocs-node
 
+## 1.3.0
+
+### Minor Changes
+
+- ad35364e97: feat(techdocs): add edit button support for bitbucketServer
+
+### Patch Changes
+
+- c8196bd37d: Fix AWS S3 404 NotFound error
+
+  When reading an object from the S3 bucket through a stream, the aws-sdk getObject() API may throw a 404 NotFound Error with no error message or, in fact, any sort of HTTP-layer error responses. These fail the @backstage/error's assertError() checks, so they must be wrapped. The test for this case was also updated to match the wrapped error message.
+
+- f833344611: Bump default `TechDocs` image to `v1.1.0`, see the release [here](https://github.com/backstage/techdocs-container/releases/tag/v1.1.0).
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/integration@1.3.0
+
+## 1.3.0-next.1
+
+### Minor Changes
+
+- ad35364e97: feat(techdocs): add edit button support for bitbucketServer
+
+### Patch Changes
+
+- f833344611: Bump default `TechDocs` image to `v1.1.0`, see the release [here](https://github.com/backstage/techdocs-container/releases/tag/v1.1.0).
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.1
+  - @backstage/integration@1.3.0-next.1
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- c8196bd37d: Fix AWS S3 404 NotFound error
+
+  When reading an object from the S3 bucket through a stream, the aws-sdk getObject() API may throw a 404 NotFound Error with no error message or, in fact, any sort of HTTP-layer error responses. These fail the @backstage/error's assertError() checks, so they must be wrapped. The test for this case was also updated to match the wrapped error message.
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/integration@1.3.0-next.0
+
+## 1.2.0
+
+### Minor Changes
+
+- 860765ff45: Added local publishing target directory `config`: `techdocs.publisher.local.publishDirectory`
+
+### Patch Changes
+
+- a5d73da942: Fix the flag parsing for `legacyCopyReadmeMdToIndexMd` in `techdocs-cli generate` command, and decouple it's logic from the `techdocs-ref` flag.
+- d505b7b37d: Fixed issue with git feedback buttons not appearing automatically in docs pages. This was done by appending `repo_url` to the helper function `getRepoUrlFromLocationAnnotation`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-search-common@1.0.0
+  - @backstage/integration@1.2.2
+  - @backstage/errors@1.1.0
+
+## 1.2.0-next.3
+
+### Patch Changes
+
+- d505b7b37d: Fixed issue with git feedback buttons not appearing automatically in docs pages. This was done by appending repo_url to the helper function getRepoUrlFromLocationAnnotation.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/integration@1.2.2-next.3
+  - @backstage/catalog-model@1.1.0-next.3
+
+## 1.2.0-next.2
+
+### Patch Changes
+
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/backend-common@0.14.1-next.2
+  - @backstage/integration@1.2.2-next.2
+
+## 1.2.0-next.1
+
+### Minor Changes
+
+- 860765ff45: Added local publishing target directory `config`: `techdocs.publisher.local.publishDirectory`
+
+### Patch Changes
+
+- a5d73da942: Fix the flag parsing for `legacyCopyReadmeMdToIndexMd` in `techdocs-cli generate` command, and decouple it's logic from the `techdocs-ref` flag.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/integration@1.2.2-next.1
+  - @backstage/plugin-search-common@0.3.6-next.0
+
+## 1.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/integration@1.2.2-next.0
+
+## 1.1.2
+
+### Patch Changes
+
+- f5283a42e2: Updated dependency `@google-cloud/storage` to `^6.0.0`.
+- 2c048f8b90: Updated deprecated use of `express`' `res.redirect()` method when handling legacy path casing.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/backend-common@0.14.0
+  - @backstage/integration@1.2.1
+  - @backstage/catalog-model@1.0.3
+
+## 1.1.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5-next.1
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/integration@1.2.1-next.2
+
+## 1.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/integration@1.2.1-next.1
+  - @backstage/catalog-model@1.0.3-next.0
+  - @backstage/plugin-search-common@0.3.5-next.0
+
 ## 1.1.2-next.0
 
 ### Patch Changes

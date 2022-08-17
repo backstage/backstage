@@ -33,9 +33,13 @@ const serviceEntityPage = (
   <EntityLayout>
     {/* other tabs... */}
     <EntityLayout.Route path="/kubernetes" title="Kubernetes">
-      <EntityKubernetesContent />
+      <EntityKubernetesContent refreshIntervalMs={30000} />
     </EntityLayout.Route>
 ```
+
+**Notes:**
+
+- The optional `refreshIntervalMs` property on the `EntityKubernetesContent` defines the interval in which the content automatically refreshes, if not set this will default to 10 seconds.
 
 That's it! But now, we need the Kubernetes Backend plugin for the frontend to
 work.
@@ -58,13 +62,16 @@ add the following:
 import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
+import { CatalogClient } from '@backstage/catalog-client';
 
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
+  const catalogApi = new CatalogClient({ discoveryApi: env.discovery });
   const { router } = await KubernetesBuilder.createBuilder({
     logger: env.logger,
     config: env.config,
+    catalogApi,
   }).build();
   return router;
 }

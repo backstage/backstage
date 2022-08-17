@@ -4,7 +4,7 @@
 
 ```ts
 import { BasicPermission } from '@backstage/plugin-permission-common';
-import { IndexableDocument } from '@backstage/search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 
 // @alpha
@@ -48,6 +48,12 @@ export const catalogLocationDeletePermission: BasicPermission;
 
 // @alpha
 export const catalogLocationReadPermission: BasicPermission;
+
+// @alpha
+export const catalogPermissions: (
+  | BasicPermission
+  | ResourcePermission<'catalog-entity'>
+)[];
 
 // @alpha
 export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';

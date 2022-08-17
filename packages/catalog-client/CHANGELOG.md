@@ -1,5 +1,55 @@
 # @backstage/catalog-client
 
+## 1.0.4
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0
+  - @backstage/errors@1.1.0
+
+## 1.0.4-next.2
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.3
+
+## 1.0.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/errors@1.1.0-next.0
+
+## 1.0.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+
+## 1.0.3
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 35bc0a7c27: Update README to point to catalog-react for frontend usage
+- Updated dependencies
+  - @backstage/catalog-model@1.0.3
+
+## 1.0.3-next.0
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.0.3-next.0
+
 ## 1.0.2
 
 ### Patch Changes

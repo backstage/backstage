@@ -17,6 +17,7 @@
 import { DefaultLocationService } from './DefaultLocationService';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { LocationStore } from './types';
+import { InputError } from '@backstage/errors';
 
 describe('DefaultLocationServiceTest', () => {
   const orchestrator: jest.Mocked<CatalogProcessingOrchestrator> = {
@@ -47,6 +48,7 @@ describe('DefaultLocationServiceTest', () => {
             name: 'foo',
           },
         },
+        refreshKeys: [],
         deferredEntities: [
           {
             entity: {
@@ -74,6 +76,7 @@ describe('DefaultLocationServiceTest', () => {
           },
         },
         deferredEntities: [],
+        refreshKeys: [],
         relations: [],
         errors: [],
       });
@@ -133,6 +136,7 @@ describe('DefaultLocationServiceTest', () => {
           },
         },
         deferredEntities: [],
+        refreshKeys: [],
         relations: [],
         errors: [],
       });
@@ -160,6 +164,7 @@ describe('DefaultLocationServiceTest', () => {
             name: 'foo',
           },
         },
+        refreshKeys: [],
         deferredEntities: [
           {
             entity: {
@@ -187,6 +192,7 @@ describe('DefaultLocationServiceTest', () => {
           },
         },
         deferredEntities: [],
+        refreshKeys: [],
         relations: [],
         errors: [],
       });
@@ -196,7 +202,7 @@ describe('DefaultLocationServiceTest', () => {
           { type: 'url', target: 'https://backstage.io/catalog-info.yaml' },
           true,
         ),
-      ).rejects.toThrowError('Duplicate nested entity: location:default/foo');
+      ).rejects.toThrow('Duplicate nested entity: location:default/foo');
     });
 
     it('should return exists false when the location does not exist beforehand', async () => {
@@ -210,6 +216,7 @@ describe('DefaultLocationServiceTest', () => {
             name: 'bar',
           },
         },
+        refreshKeys: [],
         deferredEntities: [],
         relations: [],
         errors: [],
@@ -250,6 +257,37 @@ describe('DefaultLocationServiceTest', () => {
         target: 'https://backstage.io/catalog-info.yaml',
         type: 'url',
       });
+    });
+
+    it('should not allow locations of unknown types', async () => {
+      await expect(
+        locationService.createLocation(
+          {
+            type: 'unknown',
+            target: 'https://backstage.io/catalog-info.yaml',
+          },
+          false,
+        ),
+      ).rejects.toThrow(InputError);
+    });
+
+    it('should return default InputError for failed processed entities in dryRun mode', async () => {
+      store.listLocations.mockResolvedValueOnce([]);
+
+      orchestrator.process.mockResolvedValueOnce({
+        ok: false,
+        errors: [new Error('Error: Unable to read url')],
+      });
+
+      await expect(
+        locationService.createLocation(
+          {
+            type: 'url',
+            target: 'https://backstage.io/wrong-url/catalog-info.yaml',
+          },
+          true,
+        ),
+      ).rejects.toThrow(InputError);
     });
   });
 

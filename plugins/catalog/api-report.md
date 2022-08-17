@@ -79,6 +79,8 @@ export interface CatalogKindHeaderProps {
   initialFilter?: string;
 }
 
+// Warning: (ae-forgotten-export) The symbol "CatalogInputPluginOptions" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
 export const catalogPlugin: BackstagePlugin<
   {
@@ -99,7 +101,8 @@ export const catalogPlugin: BackstagePlugin<
       },
       true
     >;
-  }
+  },
+  CatalogInputPluginOptions
 >;
 
 // @public (undocumented)
@@ -111,6 +114,10 @@ export function CatalogSearchResultListItem(
 export interface CatalogSearchResultListItemProps {
   // (undocumented)
   highlight?: ResultHighlight;
+  // (undocumented)
+  icon?: ReactNode;
+  // (undocumented)
+  rank?: number;
   // (undocumented)
   result: IndexableDocument;
 }
@@ -128,10 +135,18 @@ export const CatalogTable: {
     ): TableColumn<CatalogTableRow>;
     createSystemColumn(): TableColumn<CatalogTableRow>;
     createOwnerColumn(): TableColumn<CatalogTableRow>;
+    createSpecTargetsColumn(): TableColumn<CatalogTableRow>;
     createSpecTypeColumn(): TableColumn<CatalogTableRow>;
     createSpecLifecycleColumn(): TableColumn<CatalogTableRow>;
     createMetadataDescriptionColumn(): TableColumn<CatalogTableRow>;
     createTagsColumn(): TableColumn<CatalogTableRow>;
+    createTitleColumn(
+      options?:
+        | {
+            hidden?: boolean | undefined;
+          }
+        | undefined,
+    ): TableColumn<CatalogTableRow>;
   }>;
 };
 
@@ -141,6 +156,8 @@ export interface CatalogTableProps {
   actions?: TableProps<CatalogTableRow>['actions'];
   // (undocumented)
   columns?: TableColumn<CatalogTableRow>[];
+  // (undocumented)
+  subtitle?: string;
   // (undocumented)
   tableOptions?: TableProps<CatalogTableRow>['options'];
 }
@@ -208,6 +225,9 @@ export interface DependsOnResourcesCardProps {
 export const EntityAboutCard: (props: AboutCardProps) => JSX.Element;
 
 // @public (undocumented)
+export type EntityContextMenuClassKey = 'button';
+
+// @public (undocumented)
 export const EntityDependencyOfComponentsCard: (
   props: DependencyOfComponentsCardProps,
 ) => JSX.Element;
@@ -252,10 +272,10 @@ export interface EntityLayoutProps {
   children?: React_2.ReactNode;
   // (undocumented)
   NotFoundComponent?: React_2.ReactNode;
-  // Warning: (ae-forgotten-export) The symbol "contextMenuOptions" needs to be exported by the entry point index.d.ts
+  // Warning: (ae-forgotten-export) The symbol "EntityContextMenuOptions" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
-  UNSTABLE_contextMenuOptions?: contextMenuOptions;
+  UNSTABLE_contextMenuOptions?: EntityContextMenuOptions;
   // Warning: (ae-forgotten-export) The symbol "ExtraContextMenuItem" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
@@ -390,6 +410,7 @@ export function isOrphan(entity: Entity): boolean;
 export type PluginCatalogComponentsNameToClassKey = {
   PluginCatalogEntityLinksEmptyState: EntityLinksEmptyStateClassKey;
   PluginCatalogSystemDiagramCard: SystemDiagramCardClassKey;
+  PluginCatalogEntityContextMenu: EntityContextMenuClassKey;
 };
 
 // @public (undocumented)

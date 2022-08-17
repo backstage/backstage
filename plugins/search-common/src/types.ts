@@ -19,7 +19,7 @@ import { JsonObject } from '@backstage/types';
 import { Readable, Transform, Writable } from 'stream';
 
 /**
- * @beta
+ * @public
  */
 export interface SearchQuery {
   term: string;
@@ -29,10 +29,10 @@ export interface SearchQuery {
 }
 
 /**
- * @beta
  * Metadata for result relevant document fields with matched terms highlighted
  * via wrapping in associated pre/post tags. The UI is expected to parse these
  * field excerpts by replacing wrapping tags with applicable UI elements for rendering.
+ * @public
  */
 export interface ResultHighlight {
   /**
@@ -53,16 +53,34 @@ export interface ResultHighlight {
 }
 
 /**
- * @beta
+ * @public
  */
 export interface Result<TDocument extends SearchDocument> {
+  /**
+   * The "type" of the given document. See: {@link DocumentCollatorFactory."type"}
+   */
   type: string;
+
+  /**
+   * The raw value of the document, as indexed.
+   */
   document: TDocument;
+
+  /**
+   * Optional result highlight. Useful for improving the search result
+   * display/experience.
+   */
   highlight?: ResultHighlight;
+
+  /**
+   * Optional result rank, where 1 is the first/top result returned. Useful for
+   * understanding search effectiveness in analytics.
+   */
+  rank?: number;
 }
 
 /**
- * @beta
+ * @public
  */
 export interface ResultSet<TDocument extends SearchDocument> {
   results: Result<TDocument>[];
@@ -71,28 +89,28 @@ export interface ResultSet<TDocument extends SearchDocument> {
 }
 
 /**
- * @beta
+ * @public
  */
 export type SearchResult = Result<SearchDocument>;
 
 /**
- * @beta
+ * @public
  */
 export type SearchResultSet = ResultSet<SearchDocument>;
 
 /**
- * @beta
+ * @public
  */
 export type IndexableResult = Result<IndexableDocument>;
 
 /**
- * @beta
+ * @public
  */
 export type IndexableResultSet = ResultSet<IndexableDocument>;
 
 /**
  * Base properties that all search documents must include.
- * @beta
+ * @public
  */
 export interface SearchDocument {
   /**
@@ -117,7 +135,7 @@ export interface SearchDocument {
  * backends working directly with documents being inserted or retrieved from
  * search indexes. When dealing with documents in the frontend, use
  * {@link SearchDocument}.
- * @beta
+ * @public
  */
 export type IndexableDocument = SearchDocument & {
   /**
@@ -136,7 +154,7 @@ export type IndexableDocument = SearchDocument & {
  * Information about a specific document type. Intended to be used in the
  * {@link @backstage/plugin-search-backend-node#IndexBuilder} to collect information
  * about the types stored in the index.
- * @beta
+ * @public
  */
 export type DocumentTypeInfo = {
   /**
@@ -148,7 +166,7 @@ export type DocumentTypeInfo = {
 
 /**
  * Factory class for instantiating collators.
- * @beta
+ * @public
  */
 export interface DocumentCollatorFactory {
   /**
@@ -171,7 +189,7 @@ export interface DocumentCollatorFactory {
 
 /**
  * Factory class for instantiating decorators.
- * @beta
+ * @public
  */
 export interface DocumentDecoratorFactory {
   /**
@@ -190,13 +208,13 @@ export interface DocumentDecoratorFactory {
 /**
  * A type of function responsible for translating an abstract search query into
  * a concrete query relevant to a particular search engine.
- * @beta
+ * @public
  */
 export type QueryTranslator = (query: SearchQuery) => unknown;
 
 /**
  * Options when querying a search engine.
- * @beta
+ * @public
  */
 export type QueryRequestOptions = {
   token?: string;
@@ -206,7 +224,7 @@ export type QueryRequestOptions = {
  * Interface that must be implemented by specific search engines, responsible
  * for performing indexing and querying and translating abstract queries into
  * concrete, search engine-specific queries.
- * @beta
+ * @public
  */
 export interface SearchEngine {
   /**

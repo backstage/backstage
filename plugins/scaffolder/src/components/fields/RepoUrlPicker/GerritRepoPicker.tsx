@@ -26,21 +26,17 @@ export const GerritRepoPicker = (props: {
   rawErrors: string[];
 }) => {
   const { onChange, rawErrors, state } = props;
-  const { workspace, repoName, owner } = state;
+  const { workspace, owner } = state;
   return (
     <>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !workspace}
-      >
+      <FormControl margin="normal" error={rawErrors?.length > 0 && !workspace}>
         <InputLabel htmlFor="ownerInput">Owner</InputLabel>
         <Input
           id="ownerInput"
           onChange={e => onChange({ owner: e.target.value })}
           value={owner}
         />
-        <FormHelperText>The owner of the project</FormHelperText>
+        <FormHelperText>The owner of the project (optional)</FormHelperText>
       </FormControl>
       <FormControl
         margin="normal"
@@ -56,19 +52,6 @@ export const GerritRepoPicker = (props: {
         <FormHelperText>
           The project parent that the repo will belong to
         </FormHelperText>
-      </FormControl>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !repoName}
-      >
-        <InputLabel htmlFor="repoNameInput">Repository</InputLabel>
-        <Input
-          id="repoNameInput"
-          onChange={e => onChange({ repoName: e.target.value })}
-          value={repoName}
-        />
-        <FormHelperText>The name of the repository</FormHelperText>
       </FormControl>
     </>
   );

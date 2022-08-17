@@ -23,13 +23,18 @@ import { OwnerPicker } from './components/fields/OwnerPicker/OwnerPicker';
 import { repoPickerValidation } from './components/fields/RepoUrlPicker';
 import { RepoUrlPicker } from './components/fields/RepoUrlPicker/RepoUrlPicker';
 import { createScaffolderFieldExtension } from './extensions';
-import { registerComponentRouteRef, rootRouteRef } from './routes';
+import {
+  nextRouteRef,
+  registerComponentRouteRef,
+  rootRouteRef,
+} from './routes';
 import {
   createApiFactory,
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
   fetchApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 import { OwnedEntityPicker } from './components/fields/OwnedEntityPicker/OwnedEntityPicker';
 import { EntityTagsPicker } from './components/fields/EntityTagsPicker/EntityTagsPicker';
@@ -47,12 +52,14 @@ export const scaffolderPlugin = createPlugin({
         discoveryApi: discoveryApiRef,
         scmIntegrationsApi: scmIntegrationsApiRef,
         fetchApi: fetchApiRef,
+        identityApi: identityApiRef,
       },
-      factory: ({ discoveryApi, scmIntegrationsApi, fetchApi }) =>
+      factory: ({ discoveryApi, scmIntegrationsApi, fetchApi, identityApi }) =>
         new ScaffolderClient({
           discoveryApi,
           scmIntegrationsApi,
           fetchApi,
+          identityApi,
         }),
     }),
   ],
@@ -159,6 +166,6 @@ export const NextScaffolderPage = scaffolderPlugin.provide(
   createRoutableExtension({
     name: 'NextScaffolderPage',
     component: () => import('./next/Router').then(m => m.Router),
-    mountPoint: rootRouteRef,
+    mountPoint: nextRouteRef,
   }),
 );

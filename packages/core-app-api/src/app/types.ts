@@ -206,7 +206,7 @@ export type AppOptions = {
    * A list of all plugins to include in the app.
    */
   plugins?: Array<
-    BackstagePlugin<any, any> & {
+    BackstagePlugin & {
       output?(): Array<
         { type: 'feature-flag'; name: string } | { type: string }
       >; // support for old plugins
@@ -291,7 +291,7 @@ export type BackstageApp = {
   /**
    * Returns all plugins registered for the app.
    */
-  getPlugins(): BackstagePlugin<any, any>[];
+  getPlugins(): BackstagePlugin[];
 
   /**
    * Get a common or custom icon for this app.
@@ -321,12 +321,17 @@ export type AppContext = {
   /**
    * Get a list of all plugins that are installed in the app.
    */
-  getPlugins(): BackstagePlugin<any, any>[];
+  getPlugins(): BackstagePlugin[];
 
   /**
    * Get a common or custom icon for this app.
    */
   getSystemIcon(key: string): IconComponent | undefined;
+
+  /**
+   * Get a list of common and custom icons for this app.
+   */
+  getSystemIcons(): Record<string, IconComponent>;
 
   /**
    * Get the components registered for various purposes in the app.

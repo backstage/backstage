@@ -49,7 +49,9 @@ const streamToBuffer = (stream: Readable): Promise<Buffer> => {
     try {
       const chunks: any[] = [];
       stream.on('data', chunk => chunks.push(chunk));
-      stream.on('error', reject);
+      stream.on('error', (e: Error) =>
+        reject(new ForwardedError('Unable to read stream', e)),
+      );
       stream.on('end', () => resolve(Buffer.concat(chunks)));
     } catch (e) {
       throw new ForwardedError('Unable to parse the response data', e);

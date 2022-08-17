@@ -52,11 +52,12 @@ learn how to contribute the integration yourself!
 The following table summarizes events that, depending on the plugins you have
 installed, may be captured.
 
-| Action     | Provided By    | Subject                                             |
-| ---------- | -------------- | --------------------------------------------------- |
-| `navigate` | Backstage Core | The URL of the page that was navigated to           |
-| `click`    | Backstage Core | The text of the link that was clicked on            |
-| `search`   | Backstage Core | The search term entered in any search bar component |
+| Action     | Subject                                             | Other Notes                                                       |
+| ---------- | --------------------------------------------------- | ----------------------------------------------------------------- |
+| `navigate` | The URL of the page that was navigated to           |                                                                   |
+| `click`    | The text of the link that was clicked on            | The `to` attribute represents the URL clicked to                  |
+| `search`   | The search term entered in any search bar component | The `searchTypes` attribute holds `types` constraining the search |
+| `discover` | The title of the search result that was clicked on  | The `value` is the result rank. A `to` attribute is also provided |
 
 If there is an event you'd like to see captured, please [open an
 issue][add-event] describing the event you want to see and the questions it

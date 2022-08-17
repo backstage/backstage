@@ -1,5 +1,70 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.4.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/integration@1.3.0
+  - @backstage/plugin-scaffolder-backend@1.5.0
+
+## 0.4.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/integration@1.3.0-next.0
+  - @backstage/plugin-scaffolder-backend@1.5.0-next.0
+
+## 0.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/plugin-scaffolder-backend@1.4.0
+  - @backstage/integration@1.2.2
+  - @backstage/errors@1.1.0
+
+## 0.4.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.4.0-next.1
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/integration@1.2.2-next.1
+
+## 0.4.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/plugin-scaffolder-backend@1.4.0-next.0
+  - @backstage/integration@1.2.2-next.0
+
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.3.0
+  - @backstage/backend-common@0.14.0
+  - @backstage/integration@1.2.1
+
+## 0.4.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.3.0-next.2
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/integration@1.2.1-next.2
+
 ## 0.4.1-next.0
 
 ### Patch Changes

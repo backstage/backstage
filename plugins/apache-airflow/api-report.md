@@ -8,6 +8,13 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// @public
+export const ApacheAirflowDagTable: ({
+  dagIds,
+}: {
+  dagIds?: string[] | undefined;
+}) => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "ApacheAirflowPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -20,6 +27,7 @@ export const apacheAirflowPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 ```

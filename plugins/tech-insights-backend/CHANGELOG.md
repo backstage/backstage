@@ -1,5 +1,142 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/backend-tasks@0.3.4
+  - @backstage/plugin-tech-insights-common@0.2.6
+  - @backstage/plugin-tech-insights-node@0.3.3
+
+## 0.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/backend-tasks@0.3.4-next.0
+  - @backstage/plugin-tech-insights-common@0.2.6-next.0
+  - @backstage/plugin-tech-insights-node@0.3.3-next.0
+
+## 0.5.0
+
+### Minor Changes
+
+- 818fa28d71: Allow FactRetrieverRegistry to be injected into buildTechInsightsContext so that we can override default registry implementation.
+- 46cfda58aa: **BREAKING**: Update FactRetrieverRegistry interface to be async so that db backed implementations can be passed through to the FactRetrieverEngine.
+
+  If you have existing custom `FactRetrieverRegistry` implementations, you'll need to remove the `retrievers` member and make all the methods async.
+
+### Patch Changes
+
+- 2ef58ab539: TechInsightsBackend: Added missing 'scheduler' to code examples
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- bcc122c46d: The `FactRetriever` model has been extended by adding optional title and description fields, allowing you to display them in the UI.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/catalog-client@1.0.4
+  - @backstage/backend-tasks@0.3.3
+  - @backstage/plugin-tech-insights-common@0.2.5
+  - @backstage/plugin-tech-insights-node@0.3.2
+  - @backstage/errors@1.1.0
+
+## 0.5.0-next.3
+
+### Minor Changes
+
+- 46cfda58aa: **BREAKING**: Update FactRetrieverRegistry interface to be async so that db backed implementations can be passed through to the FactRetrieverEngine.
+
+  If you have existing custom `FactRetrieverRegistry` implementations, you'll need to remove the `retrievers` member and make all the methods async.
+
+### Patch Changes
+
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- bcc122c46d: The `FactRetriever` model has been extended by adding optional title and description fields, allowing you to display them in the UI.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/catalog-client@1.0.4-next.2
+  - @backstage/backend-tasks@0.3.3-next.3
+  - @backstage/plugin-tech-insights-common@0.2.5-next.0
+  - @backstage/plugin-tech-insights-node@0.3.2-next.1
+  - @backstage/catalog-model@1.1.0-next.3
+
+## 0.5.0-next.2
+
+### Minor Changes
+
+- 818fa28d71: Allow FactRetrieverRegistry to be injected into buildTechInsightsContext so that we can override default registry implementation.
+
+### Patch Changes
+
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/backend-common@0.14.1-next.2
+  - @backstage/backend-tasks@0.3.3-next.2
+
+## 0.4.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/backend-tasks@0.3.3-next.1
+  - @backstage/catalog-client@1.0.4-next.1
+
+## 0.4.2-next.0
+
+### Patch Changes
+
+- 2ef58ab539: TechInsightsBackend: Added missing 'scheduler' to code examples
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/backend-tasks@0.3.3-next.0
+  - @backstage/plugin-tech-insights-node@0.3.2-next.0
+  - @backstage/catalog-client@1.0.4-next.0
+
+## 0.4.1
+
+### Patch Changes
+
+- 4fee8f59e3: Updated tech-insights fetch/latest endpoint to return the actual latest row based on the timestamp
+- aa15229ec3: Introduce additional JsonValue types to be storable as facts. This enables the possibility to store more complex objects for fact checking purposes. The rules engine supports walking keyed object values directly to create rules and checks
+
+  Modify facts database table to have a more restricted timestamp precision for cases where the postgres server isn't configured to contain such value. This fixes the issue where in some cases `maxItems` lifecycle condition didn't work as expected.
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.2
+  - @backstage/backend-common@0.14.0
+  - @backstage/catalog-client@1.0.3
+  - @backstage/catalog-model@1.0.3
+  - @backstage/plugin-tech-insights-node@0.3.1
+
+## 0.4.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/backend-tasks@0.3.2-next.2
+  - @backstage/plugin-tech-insights-node@0.3.1-next.1
+
+## 0.4.1-next.1
+
+### Patch Changes
+
+- 4fee8f59e3: Updated tech-insights fetch/latest endpoint to return the actual latest row based on the timestamp
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.2-next.1
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/catalog-client@1.0.3-next.0
+  - @backstage/catalog-model@1.0.3-next.0
+
 ## 0.4.1-next.0
 
 ### Patch Changes

@@ -21,13 +21,15 @@ import {
   QueryTranslator,
   SearchEngine,
 } from '@backstage/plugin-search-common';
+import { MissingIndexError } from '../errors';
 import lunr from 'lunr';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { LunrSearchEngineIndexer } from './LunrSearchEngineIndexer';
 
 /**
- * @beta
+ * Type of translated query for the Lunr Search Engine.
+ * @public
  */
 export type ConcreteLunrQuery = {
   lunrQueryBuilder: lunr.Index.QueryBuilder;
@@ -41,12 +43,14 @@ type LunrResultEnvelope = {
 };
 
 /**
- * @beta
+ * Translator repsonsible for translating search term and filters to a query that the Lunr Search Engine understands.
+ * @public
  */
 export type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
 
 /**
- * @beta
+ * Lunr specific search engine implementation.
+ * @public
  */
 export class LunrSearchEngine implements SearchEngine {
   protected lunrIndices: Record<string, lunr.Index> = {};
@@ -160,30 +164,38 @@ export class LunrSearchEngine implements SearchEngine {
 
     const results: LunrResultEnvelope[] = [];
 
+    const indexKeys = Object.keys(this.lunrIndices).filter(
+      type => !documentTypes || documentTypes.includes(type),
+    );
+
+    if (documentTypes?.length && !indexKeys.length) {
+      throw new MissingIndexError(
+        `Missing index for ${documentTypes?.toString()}. This could be because the index hasn't been created yet or there was a problem during index creation.`,
+      );
+    }
+
     // Iterate over the filtered list of this.lunrIndex keys.
-    Object.keys(this.lunrIndices)
-      .filter(type => !documentTypes || documentTypes.includes(type))
-      .forEach(type => {
-        try {
-          results.push(
-            ...this.lunrIndices[type].query(lunrQueryBuilder).map(result => {
-              return {
-                result: result,
-                type: type,
-              };
-            }),
-          );
-        } catch (err) {
-          // if a field does not exist on a index, we can see that as a no-match
-          if (
-            err instanceof Error &&
-            err.message.startsWith('unrecognised field')
-          ) {
-            return;
-          }
-          throw err;
+    indexKeys.forEach(type => {
+      try {
+        results.push(
+          ...this.lunrIndices[type].query(lunrQueryBuilder).map(result => {
+            return {
+              result: result,
+              type: type,
+            };
+          }),
+        );
+      } catch (err) {
+        // if a field does not exist on a index, we can see that as a no-match
+        if (
+          err instanceof Error &&
+          err.message.startsWith('unrecognised field')
+        ) {
+          return;
         }
-      });
+        throw err;
+      }
+    });
 
     // Sort results.
     results.sort((doc1, doc2) => {
@@ -204,9 +216,10 @@ export class LunrSearchEngine implements SearchEngine {
 
     // Translate results into IndexableResultSet
     const realResultSet: IndexableResultSet = {
-      results: results.slice(offset, offset + pageSize).map(d => ({
+      results: results.slice(offset, offset + pageSize).map((d, index) => ({
         type: d.type,
         document: this.docStore[d.result.ref],
+        rank: page * pageSize + index + 1,
         highlight: {
           preTag: this.highlightPreTag,
           postTag: this.highlightPostTag,

@@ -75,6 +75,25 @@ export class ApacheAirflowClient implements ApacheAirflowApi {
     return dags;
   }
 
+  async getDags(
+    dagIds: string[],
+  ): Promise<{ dags: Dag[]; dagsNotFound: string[] }> {
+    const dagsNotFound: string[] = [];
+    const response = await Promise.all(
+      dagIds.map(id => {
+        return this.fetch<Dag>(`/dags/${id}`).catch(e => {
+          if (e.message.toUpperCase('en-US') === 'NOT FOUND') {
+            dagsNotFound.push(id);
+          } else {
+            throw e;
+          }
+        });
+      }),
+    );
+    const dags = response.filter(Boolean) as Dag[];
+    return { dags, dagsNotFound };
+  }
+
   async updateDag(dagId: string, isPaused: boolean): Promise<Dag> {
     const init = {
       method: 'PATCH',

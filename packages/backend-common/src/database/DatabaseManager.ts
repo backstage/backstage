@@ -251,7 +251,7 @@ export class DatabaseManager {
       // include base connection if client type has not been overridden
       ...(overridden ? {} : baseConnection),
       ...connection,
-    };
+    } as Partial<Knex.StaticConnectionConfig>;
   }
 
   /**
@@ -321,13 +321,15 @@ export class DatabaseManager {
 
     let schemaOverrides;
     if (this.getPluginDivisionModeConfig() === 'schema') {
-      try {
-        schemaOverrides = this.getSchemaOverrides(pluginId);
-        await ensureSchemaExists(pluginConfig, pluginId);
-      } catch (error) {
-        throw new Error(
-          `Failed to connect to the database to make sure that schema for plugin '${pluginId}' exists, ${error}`,
-        );
+      schemaOverrides = this.getSchemaOverrides(pluginId);
+      if (this.getEnsureExistsConfig(pluginId)) {
+        try {
+          await ensureSchemaExists(pluginConfig, pluginId);
+        } catch (error) {
+          throw new Error(
+            `Failed to connect to the database to make sure that schema for plugin '${pluginId}' exists, ${error}`,
+          );
+        }
       }
     }
 

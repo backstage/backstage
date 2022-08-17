@@ -21,7 +21,7 @@ import {
 } from '@backstage/integration';
 import path from 'path';
 import { toAbsoluteUrl } from './LocationEntityProcessor';
-import { LocationSpec } from '../../api';
+import { LocationSpec } from '@backstage/plugin-catalog-node';
 
 describe('LocationEntityProcessor', () => {
   describe('toAbsoluteUrl', () => {

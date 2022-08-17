@@ -1,5 +1,303 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.5.0
+
+### Minor Changes
+
+- c4b452e16a: Starting the implementation of the Wizard page for the `next` scaffolder plugin
+- 593dea6710: Add support for Basic Auth for Bitbucket Server.
+- 3b7930b3e5: Add support for Bearer Authorization header / token-based auth at Git commands.
+- 3f1316f1c5: User Bearer Authorization header at Git commands with token-based auth at Bitbucket Server.
+- eeff5046ae: Updated `publish:gitlab:merge-request` action to allow commit updates and deletes
+- 692d5d3405: Added `reviewers` and `teamReviewers` parameters to `publish:github:pull-request` action to add reviewers on the pull request created by the action
+
+### Patch Changes
+
+- fc8a5f797b: Add a `publish:gerrit:review` scaffolder action
+- c971afbf21: The `publish:file` action has been deprecated in favor of testing templates using the template editor instead. Note that this action is not and was never been installed by default.
+- b10b6c4aa4: Fix issue on Windows where templated files where not properly skipped as intended.
+- 56e1b4b89c: Fixed typos in alpha types.
+- dad0f65494: Fail gracefully if an invalid `Authorization` header is passed to `POST /v2/tasks`
+- 014b3b7776: Add missing `res.end()` in scaffolder backend `EventStream` usage
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/backend-plugin-api@0.1.1
+  - @backstage/plugin-catalog-node@1.0.1
+  - @backstage/integration@1.3.0
+  - @backstage/plugin-catalog-backend@1.3.1
+
+## 1.5.0-next.2
+
+### Minor Changes
+
+- 692d5d3405: Added `reviewers` and `teamReviewers` parameters to `publish:github:pull-request` action to add reviewers on the pull request created by the action
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.3.1-next.2
+
+## 1.5.0-next.1
+
+### Minor Changes
+
+- c4b452e16a: Starting the implementation of the Wizard page for the `next` scaffolder plugin
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.1
+  - @backstage/integration@1.3.0-next.1
+  - @backstage/plugin-catalog-backend@1.3.1-next.1
+
+## 1.5.0-next.0
+
+### Minor Changes
+
+- 593dea6710: Add support for Basic Auth for Bitbucket Server.
+- 3b7930b3e5: Add support for Bearer Authorization header / token-based auth at Git commands.
+- 3f1316f1c5: User Bearer Authorization header at Git commands with token-based auth at Bitbucket Server.
+- eeff5046ae: Updated `publish:gitlab:merge-request` action to allow commit updates and deletes
+
+### Patch Changes
+
+- fc8a5f797b: Add a `publish:gerrit:review` scaffolder action
+- 014b3b7776: Add missing `res.end()` in scaffolder backend `EventStream` usage
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/integration@1.3.0-next.0
+  - @backstage/backend-plugin-api@0.1.1-next.0
+  - @backstage/plugin-catalog-backend@1.3.1-next.0
+  - @backstage/plugin-catalog-node@1.0.1-next.0
+
+## 1.4.0
+
+### Minor Changes
+
+- e1a08d872c: Added optional assignee parameter for Gitlab Merge Request action
+- dab9bcf2e7: Add `protectEnforceAdmins` as an option to GitHub publish actions
+- 4baf8a4ece: Update GitLab Merge Request Action to allow source branch to be deleted
+- 91c1d12123: Export experimental `scaffolderCatalogExtension` for the new backend system. This export is not considered stable and should not be used in production.
+- d10ccc2ed1: Introduced audit log message when a new scaffolder task is created
+- 2db07887cb: Added two new scaffolder actions: `github:repo:create` and `github:repo:push`
+
+### Patch Changes
+
+- ff316b86d8: Add `copyWithoutTemplating` to the fetch template action input. `copyWithoutTemplating` also accepts an array of glob patterns. Contents of matched files or directories are copied without being processed, but paths are subject to rendering.
+
+  Deprecate `copyWithoutRender` in favor of `copyWithoutTemplating`.
+
+- 801d606909: Improve error messaging when passing in malformed auth
+- 089d846962: Fix issues with optional directories and files
+- ea6dcb84a4: Don't resolve symlinks, treat them as binary files and copy them as-is
+- af02f54483: new setUserAsOwner flag for publish:gitlab action
+
+  The field default is `false`. When true it will use the token configured in the gitlab integration for the matching host, to try and set the user logged in via `repoUrlPicker` `requestUserCredentials` OAuth flow as owner of the repository created in GitLab.
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- 511f49ee43: Updated dependency `octokit` to `^2.0.0`.
+- 735853353b: Updated dependency `@octokit/webhooks` to `^10.0.0`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- 945a27fa6a: Add sourcePath option to publish:gerrit action
+- 1764296a68: Allow to create Gerrit project using default owner
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.0
+  - @backstage/plugin-catalog-backend@1.3.0
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-catalog-node@1.0.0
+  - @backstage/integration@1.2.2
+  - @backstage/catalog-client@1.0.4
+  - @backstage/errors@1.1.0
+  - @backstage/plugin-scaffolder-common@1.1.2
+
+## 1.4.0-next.3
+
+### Minor Changes
+
+- 91c1d12123: Export experimental `scaffolderCatalogExtension` for the new backend system. This export is not considered stable and should not be used in production.
+
+### Patch Changes
+
+- ea6dcb84a4: Don't resolve symlinks, treat them as binary files and copy them as-is
+- af02f54483: new setUserAsOwner flag for publish:gitlab action
+
+  The field default is `false`. When true it will use the token configured in the gitlab integration for the matching host, to try and set the user logged in via `repoUrlPicker` `requestUserCredentials` OAuth flow as owner of the repository created in GitLab.
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- 511f49ee43: Updated dependency `octokit` to `^2.0.0`.
+- 735853353b: Updated dependency `@octokit/webhooks` to `^10.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.0-next.0
+  - @backstage/plugin-catalog-backend@1.3.0-next.3
+  - @backstage/plugin-catalog-node@1.0.0-next.0
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/catalog-client@1.0.4-next.2
+  - @backstage/integration@1.2.2-next.3
+  - @backstage/catalog-model@1.1.0-next.3
+
+## 1.4.0-next.2
+
+### Minor Changes
+
+- 4baf8a4ece: Update GitLab Merge Request Action to allow source branch to be deleted
+- 2db07887cb: Added two new scaffolder actions: `github:repo:create` and `github:repo:push`
+
+### Patch Changes
+
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/backend-common@0.14.1-next.2
+  - @backstage/plugin-catalog-backend@1.2.1-next.2
+  - @backstage/integration@1.2.2-next.2
+
+## 1.4.0-next.1
+
+### Patch Changes
+
+- 801d606909: Improve error messaging when passing in malformed auth
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/plugin-catalog-backend@1.2.1-next.1
+  - @backstage/catalog-client@1.0.4-next.1
+  - @backstage/integration@1.2.2-next.1
+
+## 1.4.0-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/integration@1.2.2-next.0
+  - @backstage/plugin-catalog-backend@1.2.1-next.0
+  - @backstage/catalog-client@1.0.4-next.0
+  - @backstage/plugin-scaffolder-common@1.1.2-next.0
+
+## 1.3.0
+
+### Minor Changes
+
+- 35a26131b3: **DEPRECATION**: The `projectid` input parameters to the `publish:gitlab:merge-request`, it's no longer required as it can be decoded from the `repoUrl` input parameter.
+  **DEPRECATION**: The `projectid` output of the action in favour of `projectPath`
+- 72dfcbc8bf: A new scaffolder action has been added: `gerrit:publish`
+- ce0d8d7eb1: Fixed a bug in `publish:github` action that didn't permit to add users as collaborators.
+  This fix required changing the way parameters are passed to the action.
+  In order to add a team as collaborator, now you must use the `team` field instead of `username`.
+  In order to add a user as collaborator, you must use the `user` field.
+
+  It's still possible to use the field `username` but is deprecated in favor of `team`.
+
+  ```yaml
+  - id: publish
+    name: Publish
+    action: publish:github
+    input:
+      repoUrl: ...
+      collaborators:
+        - access: ...
+          team: my_team
+        - access: ...
+          user: my_username
+  ```
+
+- 582003a059: - Added an optional `list` method on the `TaskBroker` and `TaskStore` interface to list tasks by an optional `userEntityRef`
+  - Implemented a `list` method on the `DatabaseTaskStore` class to list tasks by an optional `userEntityRef`
+  - Added a route under `/v2/tasks` to list tasks by a `userEntityRef` using the `createdBy` query parameter
+- c042c5eaff: Add an option to not protect the default branch.
+- f93af969cd: Added the ability to support running of templates that are not in the `default` namespace
+- 3500c13a33: Added a new `/v2/dry-run` endpoint that allows for a synchronous dry run of a provided template. A `supportsDryRun` option has been added to `createTemplateAction`, which signals whether the action should be executed during dry runs. When enabled, the action context will have the new `isDryRun` property set to signal if the action is being executed during a dry run.
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 6901f6be4a: Adds more of an explanation when the `publish:github` scaffolder action fails to create a repository.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.2.0
+  - @backstage/backend-common@0.14.0
+  - @backstage/integration@1.2.1
+  - @backstage/catalog-client@1.0.3
+  - @backstage/catalog-model@1.0.3
+  - @backstage/plugin-scaffolder-common@1.1.1
+
+## 1.3.0-next.2
+
+### Minor Changes
+
+- ce0d8d7eb1: Fixed a bug in `publish:github` action that didn't permit to add users as collaborators.
+  This fix required changing the way parameters are passed to the action.
+  In order to add a team as collaborator, now you must use the `team` field instead of `username`.
+  In order to add a user as collaborator, you must use the `user` field.
+
+  It's still possible to use the field `username` but is deprecated in favor of `team`.
+
+  ```yaml
+  - id: publish
+    name: Publish
+    action: publish:github
+    input:
+      repoUrl: ...
+      collaborators:
+        - access: ...
+          team: my_team
+        - access: ...
+          user: my_username
+  ```
+
+- 582003a059: - Added an optional `list` method on the `TaskBroker` and `TaskStore` interface to list tasks by an optional `userEntityRef`
+  - Implemented a `list` method on the `DatabaseTaskStore` class to list tasks by an optional `userEntityRef`
+  - Added a route under `/v2/tasks` to list tasks by a `userEntityRef` using the `createdBy` query parameter
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/integration@1.2.1-next.2
+  - @backstage/plugin-catalog-backend@1.2.0-next.2
+
+## 1.3.0-next.1
+
+### Minor Changes
+
+- c042c5eaff: Add an option to not protect the default branch.
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/catalog-client@1.0.3-next.0
+  - @backstage/integration@1.2.1-next.1
+  - @backstage/plugin-catalog-backend@1.2.0-next.1
+  - @backstage/catalog-model@1.0.3-next.0
+  - @backstage/plugin-scaffolder-common@1.1.1-next.0
+
 ## 1.3.0-next.0
 
 ### Minor Changes
