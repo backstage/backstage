@@ -75,27 +75,25 @@ export const UserProfileCard = (props: { variant?: InfoCardVariants }) => {
     kind: 'Group',
   });
 
-  const infoCardAction = entityMetadataEditUrl ? (
-    <IconButton
-      aria-label="Edit"
-      title="Edit Metadata"
-      component={Link}
-      to={entityMetadataEditUrl}
-    >
-      <EditIcon />
-    </IconButton>
-  ) : (
-    <IconButton aria-label="Edit" disabled title="Edit Metadata">
-      <EditIcon />
-    </IconButton>
-  );
-
   return (
     <InfoCard
       title={<CardTitle title={displayName} />}
       subheader={description}
       variant={props.variant}
-      action={infoCardAction}
+      action={
+        <>
+          {entityMetadataEditUrl && (
+            <IconButton
+              aria-label="Edit"
+              title="Edit Metadata"
+              component={Link}
+              to={entityMetadataEditUrl}
+            >
+              <EditIcon />
+            </IconButton>
+          )}
+        </>
+      }
     >
       <Grid container spacing={3} alignItems="flex-start">
         <Grid item xs={12} sm={2} xl={1}>

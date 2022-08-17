@@ -75,7 +75,7 @@ describe('UserSummary Test', () => {
 });
 
 describe('Edit Button', () => {
-  it('Should default to disabled', async () => {
+  it('Should not be present by default', async () => {
     const userEntity: UserEntity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'User',
@@ -111,10 +111,10 @@ describe('Edit Button', () => {
       ),
     );
 
-    expect(rendered.getByRole('button')).toBeDisabled();
+    expect(rendered.queryByTitle('Edit Metadata')).not.toBeInTheDocument();
   });
 
-  it('Should be enabled when edit URL annotation is present', async () => {
+  it('Should be visible when edit URL annotation is present', async () => {
     const annotations: Record<string, string> = {
       'backstage.io/edit-url': 'https://example.com/user.yaml',
     };
@@ -153,6 +153,6 @@ describe('Edit Button', () => {
         },
       ),
     );
-    expect(rendered.getByRole('button')).toBeEnabled();
+    expect(rendered.getByRole('button')).toBeInTheDocument();
   });
 });
