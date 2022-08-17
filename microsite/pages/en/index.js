@@ -25,7 +25,7 @@ class Index extends React.Component {
             <Banner.Dismissable storageKey="2022-03-16-newsletter-cta">
               <div>
                 🗞️ Want to stay up to date with Backstage? Sign up for our{' '}
-                <a href="https://mailchi.mp/spotify/backstage-community">
+                <a href="https://info.backstage.spotify.com/newsletter_subscribe">
                   Newsletter
                 </a>
                 !
