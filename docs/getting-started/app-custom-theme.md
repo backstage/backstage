@@ -273,18 +273,22 @@ const LogoFull = () => {
 };
 ```
 
-## Custom Icons
+## Icons
+
+So far you've seen how to create your own theme and add your own logo, in the following sections you'll be shown how to override the existing icons and how to add more icons
+
+### Custom Icons
 
 You can also customize the Project's _default_ icons.
 
 You can change the following [icons](https://github.com/backstage/backstage/blob/master/packages/app-defaults/src/defaults/icons.tsx).
 
-### Requirements
+#### Requirements
 
 - Files in `.svg` format
 - React components created for the icons
 
-### Create React Component
+#### Create React Component
 
 In your front-end application, locate the `src` folder. We suggest creating the `assets/icons` directory and `CustomIcons.tsx` file.
 
@@ -309,7 +313,7 @@ export const ExampleIcon = (props: SvgIconProps) => (
 );
 ```
 
-### Using the custom icon
+#### Using the custom icon
 
 Supply your custom icon in `packages/app/src/App.tsx`
 
@@ -338,9 +342,9 @@ const app = createApp({
 [...]
 ```
 
-## Adding Icons
+### Adding Icons
 
-You can add more icons, if the [default icons](https://github.com/backstage/backstage/blob/8d83f5cb4fa0544b0f9160ac22bd5f0f1fe285c6/packages/app-defaults/src/defaults/icons.tsx#L38) do not fit your needs, so that they can be used in other places like for Links in your entities. For this example we'll be using icons from[Material UI](https://v4.mui.com/components/material-icons/) and specifically the `AlarmIcon`. Here's how to do that:
+You can add more icons, if the [default icons](https://github.com/backstage/backstage/blob/master/packages/app-defaults/src/defaults/icons.tsx) do not fit your needs, so that they can be used in other places like for Links in your entities. For this example we'll be using icons from[Material UI](https://v4.mui.com/components/material-icons/) and specifically the `AlarmIcon`. Here's how to do that:
 
 1. First you will want to open your `App.tsx` in `/packages/app/src`
 2. Then you want to import your icon, add this to the rest of your imports: `import AlarmIcon from '@material-ui/icons/Alarm';`
