@@ -41,15 +41,15 @@ export default async function createPlugin(
     tokenManager: env.tokenManager,
     factRetrievers: [
       createFactRetrieverRegistration({
-        cadence: '1 1 1 * *', // Example cron, at 01:01 on day-of-month 1.
+        cadence: '1 1 1 * *', // Example cron, At 01:01 on day-of-month 1.
         factRetriever: entityOwnershipFactRetriever,
       }),
       createFactRetrieverRegistration({
-        cadence: '* * * * *', // Example cron, every minute.
+        cadence: '1 1 1 * *',
         factRetriever: entityMetadataFactRetriever,
       }),
       createFactRetrieverRegistration({
-        cadence: '* * * * *', // Example cron, every minute.
+        cadence: '1 1 1 * *',
         factRetriever: techdocsFactRetriever,
       }),
     ],
