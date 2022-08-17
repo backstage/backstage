@@ -28,7 +28,7 @@ import {
   tokenManagerFactory,
   urlReaderFactory,
 } from '@backstage/backend-app-api';
-import { AnyServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 export const defaultServiceFactories = [
   cacheFactory,
@@ -47,15 +47,15 @@ export const defaultServiceFactories = [
  * @public
  */
 export interface CreateBackendOptions {
-  services?: AnyServiceFactory[];
+  services?: ServiceFactory[];
 }
 
 /**
  * @public
  */
 export function createBackend(options?: CreateBackendOptions): Backend {
-  const services = new Map<string, AnyServiceFactory>(
-    defaultServiceFactories.map(sf => [sf.service.id, sf]),
+  const services = new Map<string, ServiceFactory>(
+    defaultServiceFactories.map(sf => [sf.service.id, sf as ServiceFactory]),
   );
 
   if (options?.services) {

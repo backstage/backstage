@@ -17,15 +17,6 @@ import { TransportStreamOptions } from 'winston-transport';
 import { UrlReader } from '@backstage/backend-common';
 
 // @public (undocumented)
-export type AnyServiceFactory = ServiceFactory<
-  unknown,
-  unknown,
-  {
-    [key in string]: unknown;
-  }
->;
-
-// @public (undocumented)
 export interface BackendFeature {
   // (undocumented)
   id: string;
@@ -101,15 +92,22 @@ export function createExtensionPoint<T>(options: {
 
 // @public (undocumented)
 export function createServiceFactory<
-  Api,
-  Impl extends Api,
-  Deps extends {
+  TService,
+  TImpl extends TService,
+  TDeps extends {
     [name in string]: unknown;
   },
->(factory: ServiceFactory<Api, Impl, Deps>): ServiceFactory<Api, Api, {}>;
+>(factory: {
+  service: ServiceRef<TService>;
+  deps: TypesToServiceRef<TDeps>;
+  factory(deps: DepsToDepFactories<TDeps>): Promise<FactoryFunc<TImpl>>;
+}): ServiceFactory<TService>;
 
 // @public (undocumented)
-export function createServiceRef<T>(options: { id: string }): ServiceRef<T>;
+export function createServiceRef<T>(options: {
+  id: string;
+  defaultFactory?: (service: ServiceRef<T>) => Promise<ServiceFactory<T>>;
+}): ServiceRef<T>;
 
 // @public (undocumented)
 export const databaseServiceRef: ServiceRef<PluginDatabaseManager>;
@@ -168,22 +166,21 @@ export const permissionsServiceRef: ServiceRef<
 export const schedulerServiceRef: ServiceRef<PluginTaskScheduler>;
 
 // @public (undocumented)
-export type ServiceFactory<
-  TApi,
-  TImpl extends TApi,
-  TDeps extends {
-    [name in string]: unknown;
-  },
-> = {
-  service: ServiceRef<TApi>;
-  deps: TypesToServiceRef<TDeps>;
-  factory(deps: DepsToDepFactories<TDeps>): Promise<FactoryFunc<TImpl>>;
+export type ServiceFactory<TService = unknown> = {
+  service: ServiceRef<TService>;
+  deps: {
+    [key in string]: ServiceRef<unknown>;
+  };
+  factory(deps: {
+    [key in string]: unknown;
+  }): Promise<FactoryFunc<TService>>;
 };
 
 // @public
 export type ServiceRef<T> = {
   id: string;
   T: T;
+  defaultFactory?: (service: ServiceRef<T>) => Promise<ServiceFactory<T>>;
   toString(): string;
   $$ref: 'service';
 };
