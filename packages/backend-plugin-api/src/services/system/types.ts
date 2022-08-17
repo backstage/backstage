@@ -28,6 +28,14 @@ export type ServiceRef<T> = {
    */
   T: T;
 
+  /**
+   * The default factory that will be used to create service
+   * instances if not other factory is provided.
+   */
+  defaultFactory?: (
+    service: ServiceRef<T>,
+  ) => Promise<ServiceFactory<T, T, {}>>;
+
   toString(): string;
 
   $$ref: 'service';
@@ -65,12 +73,19 @@ export type AnyServiceFactory = ServiceFactory<
 /**
  * @public
  */
-export function createServiceRef<T>(options: { id: string }): ServiceRef<T> {
+export function createServiceRef<T>(options: {
+  id: string;
+  defaultFactory?: (
+    service: ServiceRef<T>,
+  ) => Promise<ServiceFactory<T, T, {}>>;
+}): ServiceRef<T> {
+  const { id, defaultFactory } = options;
   return {
-    id: options.id,
+    id,
     get T(): T {
       throw new Error(`tried to read ServiceRef.T of ${this}`);
     },
+    defaultFactory,
     toString() {
       return `serviceRef{${options.id}}`;
     },
