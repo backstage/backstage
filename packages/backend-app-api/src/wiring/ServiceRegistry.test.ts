@@ -26,7 +26,7 @@ const ref1 = createServiceRef<{ x: number; pluginId: string }>({
 const sf1 = createServiceFactory({
   service: ref1,
   deps: {},
-  factory: async ({}) => {
+  factory: async () => {
     return async pluginId => {
       return { x: 1, pluginId };
     };
@@ -39,7 +39,7 @@ const ref2 = createServiceRef<{ x: number; pluginId: string }>({
 const sf2 = createServiceFactory({
   service: ref2,
   deps: {},
-  factory: async ({}) => {
+  factory: async () => {
     return async pluginId => {
       return { x: 2, pluginId };
     };
@@ -48,11 +48,41 @@ const sf2 = createServiceFactory({
 const sf2b = createServiceFactory({
   service: ref2,
   deps: {},
-  factory: async ({}) => {
+  factory: async () => {
     return async pluginId => {
       return { x: 22, pluginId };
     };
   },
+});
+
+const refDefault1 = createServiceRef<{ x: number; pluginId: string }>({
+  id: '1',
+  defaultFactory: async service =>
+    createServiceFactory({
+      service,
+      deps: {},
+      factory: async () => async pluginId => ({ x: 10, pluginId }),
+    }),
+});
+
+const refDefault2a = createServiceRef<{ x: number; pluginId: string }>({
+  id: '2a',
+  defaultFactory: async service =>
+    createServiceFactory({
+      service,
+      deps: {},
+      factory: async () => async pluginId => ({ x: 20, pluginId }),
+    }),
+});
+
+const refDefault2b = createServiceRef<{ x: number; pluginId: string }>({
+  id: '2b',
+  defaultFactory: async service =>
+    createServiceFactory({
+      service,
+      deps: {},
+      factory: async () => async pluginId => ({ x: 220, pluginId }),
+    }),
 });
 
 describe('ServiceRegistry', () => {
@@ -100,5 +130,44 @@ describe('ServiceRegistry', () => {
       x: 22,
       pluginId: 'catalog',
     });
+  });
+
+  it('should return the defaultFactory from the ref if not provided to the registry', async () => {
+    const registry = new ServiceRegistry([]);
+    const factory = registry.get(refDefault1)!;
+    expect(factory).toEqual(expect.any(Function));
+    await expect(factory('catalog')).resolves.toEqual({
+      x: 10,
+      pluginId: 'catalog',
+    });
+  });
+
+  it('should not return the defaultFactory from the ref if provided to the registry', async () => {
+    const registry = new ServiceRegistry([sf1]);
+    const factory = registry.get(refDefault1)!;
+    expect(factory).toEqual(expect.any(Function));
+    await expect(factory('catalog')).resolves.toEqual({
+      x: 1,
+      pluginId: 'catalog',
+    });
+  });
+
+  it('should handle duplicate defaultFactories by duplicating the implementations', async () => {
+    const registry = new ServiceRegistry([]);
+    const factoryA = registry.get(refDefault2a)!;
+    const factoryB = registry.get(refDefault2b)!;
+    expect(factoryA).toEqual(expect.any(Function));
+    expect(factoryB).toEqual(expect.any(Function));
+    await expect(factoryA('catalog')).resolves.toEqual({
+      x: 20,
+      pluginId: 'catalog',
+    });
+    await expect(factoryB('catalog')).resolves.toEqual({
+      x: 220,
+      pluginId: 'catalog',
+    });
+    expect(await factoryA('catalog')).toBe(await factoryA('catalog'));
+    expect(await factoryB('catalog')).toBe(await factoryB('catalog'));
+    expect(await factoryA('catalog')).not.toBe(await factoryB('catalog'));
   });
 });
