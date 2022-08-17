@@ -7144,9 +7144,9 @@
   integrity sha512-Lx+EZoJxUKw4dp8uei9XiUVNlgkYmax5+ovqt6Xf3LzJOnWhlfJw/jLBmqfGVwOP/pDr4HT8bI1WtxK0IChMLw==
 
 "@types/marked@^4.0.0":
-  version "4.0.4"
-  resolved "https://registry.npmjs.org/@types/marked/-/marked-4.0.4.tgz#70ca970a59b7b29be47198161dee695dc515dbb2"
-  integrity sha512-5Yns/jBU+kxoWtTYsSqO0uWw5DGEVuIW10TdnChjzfbOsb4kjku95WB7oJr+ZbWh7dkrNDObFUfbX4KMlBeCGw==
+  version "4.0.5"
+  resolved "https://registry.npmjs.org/@types/marked/-/marked-4.0.5.tgz#3e900fa331a9b1a98f7a8a50f0f39b4bf2b6469f"
+  integrity sha512-jMN2moJ+lSf1VZXQo3VXeMCjoXuciVONig8+U0YNBop5aBvQw4qkolx1Nzn1i0T8L2l9IZ3jju6bS1pPwlaY1w==
 
 "@types/mdast@^3.0.0", "@types/mdast@^3.0.3":
   version "3.0.10"
