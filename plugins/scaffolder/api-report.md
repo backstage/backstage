@@ -20,6 +20,7 @@ import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
+import { ObjectFieldTemplateProps } from '@rjsf/core';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
@@ -36,6 +37,14 @@ export function createScaffolderFieldExtension<
 >(
   options: FieldExtensionOptions<TReturnValue, TInputProps>,
 ): Extension<FieldExtensionComponent<TReturnValue, TInputProps>>;
+
+// Warning: (ae-forgotten-export) The symbol "GetProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "createScaffolderLayout" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function createScaffolderLayout(
+  options: LayoutOptions,
+): Extension<GetProps<typeof options>>;
 
 // @public
 export type CustomFieldValidator<TFieldReturnValue> = (
@@ -110,6 +119,16 @@ export type FieldExtensionOptions<
   validation?: CustomFieldValidator<TFieldReturnValue>;
 };
 
+// Warning: (ae-missing-release-tag) "LayoutOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface LayoutOptions<P = any> {
+  // (undocumented)
+  component: ObjectFieldTemplate<P>;
+  // (undocumented)
+  name: string;
+}
+
 // @public
 export type ListActionsResponse = Array<{
   id: string;
@@ -147,6 +166,13 @@ export type NextRouterProps = {
 // @alpha
 export const NextScaffolderPage: (
   props: PropsWithChildren<NextRouterProps>,
+) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "ObjectFieldTemplate" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ObjectFieldTemplate<P = any> = (
+  c: ObjectFieldTemplateProps<P>,
 ) => JSX.Element;
 
 // @public
@@ -348,6 +374,11 @@ export interface ScaffolderGetIntegrationsListResponse {
     host: string;
   }[];
 }
+
+// Warning: (ae-missing-release-tag) "ScaffolderLayouts" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const ScaffolderLayouts: React.ComponentType;
 
 // @public (undocumented)
 export type ScaffolderOutputLink = {
