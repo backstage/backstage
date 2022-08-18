@@ -153,6 +153,7 @@ export type CloudflareAccessResult = {
   claims: CloudflareAccessClaims;
   cfIdentity: CloudflareAccessIdentityProfile;
   expiresInSeconds?: number;
+  jwt: string;
 };
 
 /**
@@ -277,6 +278,7 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
         claims,
         cfIdentity,
         expiresInSeconds: claims.exp - claims.iat,
+        jwt,
       };
       this.cache?.set(`${CACHE_PREFIX}/${sub}`, JSON.stringify(cfAccessResult));
       return cfAccessResult;
