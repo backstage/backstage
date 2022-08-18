@@ -88,11 +88,6 @@ export const Stepper = (props: StepperProps) => {
   const handleNext = async ({ formData }: { formData: JsonObject }) => {
     setErrors(undefined);
 
-    const errorContext: any = {};
-    for (const [key] of Object.entries(formData)) {
-      errorContext[key] = createFieldValidation();
-    }
-
     const returnedValidation = await validator(formData);
 
     const hasErrors = Object.values(returnedValidation).some(i => {
