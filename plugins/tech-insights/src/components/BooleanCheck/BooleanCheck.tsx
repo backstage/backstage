@@ -19,11 +19,10 @@ import CheckCircleOutline from '@material-ui/icons/CheckCircleOutline';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 
-type Prop = {
-  checkResult: CheckResult;
-};
-
-export const BooleanCheck = ({ checkResult }: Prop) => {
+/**
+ * @public
+ */
+export const BooleanCheck = ({ checkResult }: { checkResult: CheckResult }) => {
   return !!checkResult.result ? (
     <CheckCircleOutline color="primary" />
   ) : (

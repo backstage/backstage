@@ -29,14 +29,8 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
   },
 }));
 
-type Checks = {
-  checkResults: CheckResult[];
-  title: string;
-  description?: string;
-};
-
 const infoCard = (
-  title: string | undefined,
+  title: string,
   description: string | undefined,
   className: string,
   element: JSX.Element,
@@ -55,7 +49,12 @@ const infoCard = (
   </Grid>
 );
 
-export const ScorecardInfo = ({ checkResults, title, description }: Checks) => {
+export const ScorecardInfo = (props: {
+  checkResults: CheckResult[];
+  title: string;
+  description?: string;
+}) => {
+  const { checkResults, title, description } = props;
   const classes = useStyles();
 
   if (!checkResults.length) {

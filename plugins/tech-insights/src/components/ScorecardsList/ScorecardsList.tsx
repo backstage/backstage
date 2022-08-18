@@ -28,11 +28,8 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
   },
 }));
 
-type Prop = {
-  checkResults: CheckResult[];
-};
-
-export const ScorecardsList = ({ checkResults }: Prop) => {
+export const ScorecardsList = (props: { checkResults: CheckResult[] }) => {
+  const { checkResults } = props;
   const classes = useStyles();
   const api = useApi(techInsightsApiRef);
 

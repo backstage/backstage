@@ -26,7 +26,7 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 
 import {
   CheckResultRenderer,
-  booleanCheckResultRenderer,
+  jsonRulesEngineCheckResultRenderer,
 } from '../components/CheckResultRenderer';
 
 /** @public */
@@ -46,7 +46,7 @@ export class TechInsightsClient implements TechInsightsApi {
   }
 
   getCheckResultRenderers(types: string[]): CheckResultRenderer[] {
-    const renderers = this.renderers ?? [booleanCheckResultRenderer];
+    const renderers = this.renderers ?? [jsonRulesEngineCheckResultRenderer];
     return renderers.filter(d => types.includes(d.type));
   }
 

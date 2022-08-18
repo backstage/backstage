@@ -31,11 +31,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const ScorecardsContent = ({
-  title,
-  description,
-  checksId,
-}: {
+export const ScorecardsContent = (props: {
   title: string;
   description?: string;
   checksId?: string[];

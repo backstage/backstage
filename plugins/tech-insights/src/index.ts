@@ -21,5 +21,6 @@ export {
 
 export { techInsightsApiRef, TechInsightsClient } from './api';
 export type { TechInsightsApi, Check } from './api';
-export { booleanCheckResultRenderer } from './components/CheckResultRenderer';
+export { BooleanCheck } from './components/BooleanCheck';
+export { jsonRulesEngineCheckResultRenderer } from './components/CheckResultRenderer';
 export type { CheckResultRenderer } from './components/CheckResultRenderer';

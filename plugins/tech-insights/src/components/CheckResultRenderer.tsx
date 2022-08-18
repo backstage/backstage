@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  BOOLEAN_CHECK_RESPONSE_TYPE,
-  CheckResult,
-} from '@backstage/plugin-tech-insights-common';
+import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import React from 'react';
 import { BooleanCheck } from './BooleanCheck';
 
@@ -32,12 +29,12 @@ export type CheckResultRenderer = {
 };
 
 /**
- * Default renderer for boolean check results.
+ * Default renderer for json-rules-engine check results.
  *
  * @public
  */
-export const booleanCheckResultRenderer: CheckResultRenderer = {
-  type: BOOLEAN_CHECK_RESPONSE_TYPE,
+export const jsonRulesEngineCheckResultRenderer: CheckResultRenderer = {
+  type: 'json-rules-engine',
   component: (checkResult: CheckResult) => (
     <BooleanCheck checkResult={checkResult} />
   ),

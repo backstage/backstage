@@ -23,11 +23,7 @@ import { ScorecardInfo } from '../ScorecardsInfo';
 import Alert from '@material-ui/lab/Alert';
 import { techInsightsApiRef } from '../../api/TechInsightsApi';
 
-export const ScorecardsCard = ({
-  title,
-  description,
-  checksId,
-}: {
+export const ScorecardsCard = (props: {
   title: string;
   description?: string;
   checksId?: string[];

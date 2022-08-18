@@ -15,8 +15,12 @@ import { IdentityApi } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// @public
-export const booleanCheckResultRenderer: CheckResultRenderer;
+// @public (undocumented)
+export const BooleanCheck: ({
+  checkResult,
+}: {
+  checkResult: CheckResult;
+}) => JSX.Element;
 
 // @public
 export type Check = {
@@ -34,26 +38,21 @@ export type CheckResultRenderer = {
 };
 
 // @public (undocumented)
-export const EntityTechInsightsScorecardCard: ({
-  title,
-  description,
-  checksId,
-}: {
+export const EntityTechInsightsScorecardCard: (props: {
   title: string;
   description?: string | undefined;
   checksId?: string[] | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
-export const EntityTechInsightsScorecardContent: ({
-  title,
-  description,
-  checksId,
-}: {
+export const EntityTechInsightsScorecardContent: (props: {
   title: string;
   description?: string | undefined;
   checksId?: string[] | undefined;
 }) => JSX.Element;
+
+// @public
+export const jsonRulesEngineCheckResultRenderer: CheckResultRenderer;
 
 // @public
 export interface TechInsightsApi {

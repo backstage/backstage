@@ -8,7 +8,8 @@ Added the possibility to display check results of different types on a single sc
 - **BREAKING** The `CheckResultRenderer` type now exposes the `component` factory method that creates a React component used to display a result of a provided check result.
 - The `TechInsightsClient` constructor accepts now the optional `renderers` parameter that can be used to inject a custom renderer.
 - **BREAKING** The `title` parameter in the `EntityTechInsightsScorecardContent` and `EntityTechInsightsScorecardCard` components is now mandatory.
-- The `booleanCheckResultRenderer` used to render boolean check results is exported.
+- The `jsonRulesEngineCheckResultRenderer` used to render `json-rules-engine` check results is exported.
+- The `BooleanCheck` component that can be used to render other check results types is also exported.
 
 If you were overriding the `getScorecardsDefinition` method to adjust the rendering of check results, you should now provide a custom renderer using `renderers` parameter in the `TechInsightsClient` class.
 

@@ -93,7 +93,7 @@ If you follow the [Backend Example](https://github.com/backstage/backstage/tree/
 
 ## Adding custom rendering components
 
-Default scorecard implementation displays only boolean check results. If you would like to support different types, you need to inject custom rendering components to the `TechInsightsClient` constructor.
+Default scorecard implementation displays only `json-rules-engine` check results. If you would like to support different types, you need to inject custom rendering components to the `TechInsightsClient` constructor.
 
 ```ts
 // packages/app/src/apis.ts
@@ -108,8 +108,8 @@ export const apis: AnyApiFactory[] = [
         discoveryApi,
         identityApi,
         renderers: [
-          booleanCheckResultRenderer, // default boolean renderer
-          myCustomNumberRenderer, // custom renderer
+          jsonRulesEngineCheckResultRenderer, // default json-rules-engine renderer
+          myCustomBooleanRenderer, // custom renderer
         ],
       }),
   }),
@@ -118,12 +118,12 @@ export const apis: AnyApiFactory[] = [
 ```
 
 ```tsx
-// packages/app/src/components/myCustomNumberRenderer.tsx
+// packages/app/src/components/myCustomBooleanRenderer.tsx
 
-export const myCustomNumberRenderer: CheckResultRenderer = {
-  type: 'number',
+export const myCustomBooleanRenderer: CheckResultRenderer = {
+  type: 'boolean',
   component: (checkResult: CheckResult) => (
-    <Typography>{checkResult.result}</Typography>
+    <BooleanCheck checkResult={checkResult} />
   ),
 };
 ```
