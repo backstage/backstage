@@ -24,7 +24,7 @@ export const useTemplateSchema = (
 ): {
   steps: {
     uiSchema: UiSchema;
-    originalSchema: JsonObject;
+    mergedSchema: JsonObject;
     schema: JsonObject;
     title: string;
     description?: string;
@@ -34,7 +34,7 @@ export const useTemplateSchema = (
   const steps = manifest.steps.map(({ title, description, schema }) => ({
     title,
     description,
-    originalSchema: schema,
+    mergedSchema: schema,
     ...extractSchemaFromStep(schema),
   }));
 

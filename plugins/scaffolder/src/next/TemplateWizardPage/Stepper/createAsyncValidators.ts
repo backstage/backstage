@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import { FieldValidation, FormValidation } from '@rjsf/core';
+import { FieldValidation } from '@rjsf/core';
 import { JsonObject } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { CustomFieldValidator } from '../../../extensions';
 import { Draft07 as JSONSchema } from 'json-schema-library';
-
-function isObject(obj: unknown): obj is JsonObject {
-  return typeof obj === 'object' && obj !== null && !Array.isArray(obj);
-}
+import { createFieldValidation } from './schema';
 
 export const createAsyncValidator = (
   rootSchema: JsonObject,
@@ -43,12 +40,7 @@ export const createAsyncValidator = (
       if (definitionInSchema && 'ui:field' in definitionInSchema) {
         const validator = validators[definitionInSchema['ui:field']];
         if (validator) {
-          const fieldValidation = {
-            __errors: [] as string[],
-            addError: (message: string) => {
-              fieldValidation.__errors.push(message);
-            },
-          };
+          const fieldValidation = createFieldValidation();
           await validator(value, fieldValidation, context);
           formValidation[key] = fieldValidation;
         }

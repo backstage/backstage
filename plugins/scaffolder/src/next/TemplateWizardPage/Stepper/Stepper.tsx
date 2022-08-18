@@ -22,12 +22,13 @@ import {
   Button,
   makeStyles,
 } from '@material-ui/core';
-import { FormValidation, withTheme } from '@rjsf/core';
+import { FieldValidation, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useMemo, useState } from 'react';
 import { FieldExtensionOptions } from '../../../extensions';
 import { TemplateParameterSchema } from '../../../types';
 import { createAsyncValidator } from './createAsyncValidators';
+import { createFieldValidation } from './schema';
 import { useTemplateSchema } from './useTemplateSchema';
 
 const useStyles = makeStyles(theme => ({
@@ -56,7 +57,9 @@ export const Stepper = (props: StepperProps) => {
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [formState, setFormState] = useState({});
-  const [errors, setErrors] = useState<undefined | FormValidation>();
+  const [errors, setErrors] = useState<
+    undefined | Record<string, FieldValidation>
+  >();
   const styles = useStyles();
 
   const extensions = useMemo(() => {
@@ -72,7 +75,8 @@ export const Stepper = (props: StepperProps) => {
   }, [props.extensions]);
 
   const validator = useMemo(() => {
-    return createAsyncValidator(steps[activeStep].originalSchema, validators, {
+    const { mergedSchema } = steps[activeStep];
+    return createAsyncValidator(mergedSchema, validators, {
       apiHolder,
     });
   }, [steps, activeStep, validators, apiHolder]);
@@ -86,25 +90,13 @@ export const Stepper = (props: StepperProps) => {
 
     const errorContext: any = {};
     for (const [key] of Object.entries(formData)) {
-      const localFieldContext = {
-        __errors: [] as string[],
-        addError: (message: string) => {
-          localFieldContext.__errors.push(message);
-        },
-      };
-      errorContext[key] = localFieldContext;
+      errorContext[key] = createFieldValidation();
     }
 
-    const returnedValidation = await validator(
-      formData,
-      errorContext as FormValidation,
-    );
+    const returnedValidation = await validator(formData);
 
     const hasErrors = Object.values(returnedValidation).some(i => {
-      if ('__errors' in i) {
-        return i.__errors.length > 0;
-      }
-      return false;
+      return i.__errors.length > 0;
     });
 
     if (hasErrors) {
