@@ -44,7 +44,7 @@ export type CustomFieldValidator<TFieldReturnValue> = (
   context: {
     apiHolder: ApiHolder;
   },
-) => void;
+) => void | Promise<void>;
 
 // @public
 export const EntityNamePickerFieldExtension: FieldExtensionComponent<
