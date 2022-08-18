@@ -22,6 +22,6 @@ exports.up = async function up(knex) {
 
 exports.down = async function down(knex) {
   return knex.schema.table('members', table => {
-    t.dropColumn('user_ref');
+    table.dropColumn('user_ref');
   });
 };
