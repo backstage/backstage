@@ -30,7 +30,7 @@ export type ServiceRef<T> = {
 
   /**
    * The default factory that will be used to create service
-   * instances if not other factory is provided.
+   * instances if no other factory is provided.
    */
   defaultFactory?: (service: ServiceRef<T>) => Promise<ServiceFactory<T>>;
 
