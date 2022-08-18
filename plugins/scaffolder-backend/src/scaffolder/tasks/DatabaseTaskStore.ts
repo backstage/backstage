@@ -15,7 +15,10 @@
  */
 
 import { JsonObject } from '@backstage/types';
-import { resolvePackagePath } from '@backstage/backend-common';
+import {
+  PluginDatabaseManager,
+  resolvePackagePath,
+} from '@backstage/backend-common';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
@@ -61,8 +64,19 @@ export type RawDbTaskEventRow = {
  * @public
  */
 export type DatabaseTaskStoreOptions = {
-  database: Knex;
+  database: PluginDatabaseManager | Knex;
 };
+
+/**
+ * Typeguard to help DatabaseTaskStore understand when database is PluginDatabaseManager vs. when database is a Knex instance.
+ *
+ * * @public
+ */
+function isPluginDatabaseManager(
+  opt: PluginDatabaseManager | Knex,
+): opt is PluginDatabaseManager {
+  return (opt as PluginDatabaseManager).getClient !== undefined;
+}
 
 const parseSqlDateToIsoString = <T>(input: T): T | string => {
   if (typeof input === 'string') {
@@ -83,14 +97,45 @@ export class DatabaseTaskStore implements TaskStore {
   static async create(
     options: DatabaseTaskStoreOptions,
   ): Promise<DatabaseTaskStore> {
-    await options.database.migrate.latest({
-      directory: migrationsDir,
-    });
-    return new DatabaseTaskStore(options);
+    const { database } = options;
+    const client = await this.getClient(database);
+
+    await this.runMigrations(database, client);
+
+    return new DatabaseTaskStore(client);
   }
 
-  private constructor(options: DatabaseTaskStoreOptions) {
-    this.db = options.database;
+  private static async getClient(
+    database: PluginDatabaseManager | Knex,
+  ): Promise<Knex> {
+    if (isPluginDatabaseManager(database)) {
+      return database.getClient();
+    }
+
+    return database;
+  }
+
+  private static async runMigrations(
+    database: PluginDatabaseManager | Knex,
+    client: Knex,
+  ): Promise<void> {
+    if (!isPluginDatabaseManager(database)) {
+      await client.migrate.latest({
+        directory: migrationsDir,
+      });
+
+      return;
+    }
+
+    if (!database.migrations?.skip) {
+      await client.migrate.latest({
+        directory: migrationsDir,
+      });
+    }
+  }
+
+  private constructor(client: Knex) {
+    this.db = client;
   }
 
   async list(options: {
