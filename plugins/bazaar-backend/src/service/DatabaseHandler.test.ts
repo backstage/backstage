@@ -92,7 +92,9 @@ describe('DatabaseHandler', () => {
       expect(res[0].end_date).toEqual(null);
       expect(res[0].size).toEqual('small');
       expect(res[0].responsible).toEqual('r');
-      expect(res[0].members_count).toEqual(1);
+      expect(
+        res[0].members_count === '1' || res[0].members_count === 1,
+      ).toBeTruthy();
     },
     60_000,
   );
