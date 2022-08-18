@@ -43,20 +43,16 @@ const useStyles = makeStyles({
 });
 
 /**
- * A component to display a ADR search result
+ * A component to display an ADR search result.
  * @public
  */
-export const AdrSearchResultListItem = ({
-  lineClamp = 5,
-  highlight,
-  rank,
-  result,
-}: {
+export function AdrSearchResultListItem(props: {
   lineClamp?: number;
   highlight?: ResultHighlight;
   rank?: number;
   result: AdrDocument;
-}) => {
+}) {
+  const { lineClamp = 5, highlight, rank, result } = props;
   const classes = useStyles();
   const analytics = useAnalytics();
 
@@ -122,4 +118,4 @@ export const AdrSearchResultListItem = ({
       <Divider component="li" />
     </Link>
   );
-};
+}
