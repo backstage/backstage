@@ -17,11 +17,13 @@
 import React from 'react';
 import { CodeSnippet } from '@backstage/core-components';
 
+/** @public */
 export type PlainApiDefinitionWidgetProps = {
   definition: any;
   language: string;
 };
 
+/** @public */
 export const PlainApiDefinitionWidget = (
   props: PlainApiDefinitionWidgetProps,
 ) => {

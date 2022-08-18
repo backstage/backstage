@@ -34,6 +34,7 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 
+/** @public */
 export const ProvidingComponentsCard = (props: {
   variant?: InfoCardVariants;
 }) => {

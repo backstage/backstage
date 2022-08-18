@@ -353,10 +353,8 @@ export type TechDocsReaderPageRenderFunction = (options: {
 }) => JSX.Element;
 
 // @public
-export const TechDocsReaderPageSubheader: ({
-  toolbarProps,
-}: {
-  toolbarProps?: ToolbarProps<'div', {}> | undefined;
+export const TechDocsReaderPageSubheader: (props: {
+  toolbarProps?: ToolbarProps;
 }) => JSX.Element | null;
 
 // @public
