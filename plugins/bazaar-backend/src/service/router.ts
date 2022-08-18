@@ -51,12 +51,20 @@ export async function createRouter(
     }
   });
 
-  router.put('/projects/:id/member/:userId', async (request, response) => {
-    const { id, userId } = request.params;
-    await dbHandler.addMember(parseInt(id, 10), userId, request.body?.picture);
+  router.put(
+    '/projects/:id/member/:userId/:userRef?',
+    async (request, response) => {
+      const { id, userId, userRef } = request.params;
+      await dbHandler.addMember(
+        parseInt(id, 10),
+        userId,
+        userRef,
+        request.body?.picture,
+      );
 
-    response.json({ status: 'ok' });
-  });
+      response.json({ status: 'ok' });
+    },
+  );
 
   router.delete('/projects/:id/member/:userId', async (request, response) => {
     const { id, userId } = request.params;

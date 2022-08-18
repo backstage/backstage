@@ -67,11 +67,17 @@ export class DatabaseHandler {
     return await this.client.select('*').from('members').where({ item_id: id });
   }
 
-  async addMember(id: number, userId: string, picture?: string) {
+  async addMember(
+    id: number,
+    userId: string,
+    userRef?: string,
+    picture?: string,
+  ) {
     await this.client
       .insert({
         item_id: id,
         user_id: userId,
+        user_ref: userRef,
         picture: picture,
       })
       .into('members');
