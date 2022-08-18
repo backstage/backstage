@@ -49,7 +49,12 @@ export type {
   FieldExtensionComponent,
 } from './extensions';
 export { createScaffolderLayout, ScaffolderLayouts } from './layouts';
-export type { LayoutOptions, ObjectFieldTemplate } from './layouts';
+export type {
+  LayoutOptions,
+  LayoutTemplate,
+  GetProps,
+  LayoutComponent,
+} from './layouts';
 export {
   EntityPickerFieldExtension,
   EntityNamePickerFieldExtension,

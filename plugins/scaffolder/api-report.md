@@ -16,6 +16,7 @@ import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { FieldProps } from '@rjsf/core';
 import { FieldValidation } from '@rjsf/core';
+import type { FormProps } from '@rjsf/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
@@ -38,10 +39,7 @@ export function createScaffolderFieldExtension<
   options: FieldExtensionOptions<TReturnValue, TInputProps>,
 ): Extension<FieldExtensionComponent<TReturnValue, TInputProps>>;
 
-// Warning: (ae-forgotten-export) The symbol "GetProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "createScaffolderLayout" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createScaffolderLayout(
   options: LayoutOptions,
 ): Extension<GetProps<typeof options>>;
@@ -119,15 +117,26 @@ export type FieldExtensionOptions<
   validation?: CustomFieldValidator<TFieldReturnValue>;
 };
 
-// Warning: (ae-missing-release-tag) "LayoutOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export type GetProps<T> = T extends LayoutOptions
+  ? T['component'] extends LayoutTemplate<infer P>
+    ? LayoutComponent<ObjectFieldTemplateProps<P>>
+    : never
+  : never;
+
+// @public
+export type LayoutComponent<_TInputProps> = () => null;
+
+// @public
 export interface LayoutOptions<P = any> {
   // (undocumented)
-  component: ObjectFieldTemplate<P>;
+  component: LayoutTemplate<P>;
   // (undocumented)
   name: string;
 }
+
+// @public
+export type LayoutTemplate<T = any> = FormProps<T>['ObjectFieldTemplate'];
 
 // @public
 export type ListActionsResponse = Array<{
@@ -166,13 +175,6 @@ export type NextRouterProps = {
 // @alpha
 export const NextScaffolderPage: (
   props: PropsWithChildren<NextRouterProps>,
-) => JSX.Element;
-
-// Warning: (ae-missing-release-tag) "ObjectFieldTemplate" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type ObjectFieldTemplate<P = any> = (
-  c: ObjectFieldTemplateProps<P>,
 ) => JSX.Element;
 
 // @public
@@ -375,9 +377,7 @@ export interface ScaffolderGetIntegrationsListResponse {
   }[];
 }
 
-// Warning: (ae-missing-release-tag) "ScaffolderLayouts" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const ScaffolderLayouts: React.ComponentType;
 
 // @public (undocumented)

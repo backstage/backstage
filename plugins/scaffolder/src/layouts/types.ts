@@ -13,13 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ObjectFieldTemplateProps } from '@rjsf/core';
+import type { FormProps } from '@rjsf/core';
 
-export type ObjectFieldTemplate<P = any> = (
-  c: ObjectFieldTemplateProps<P>,
-) => JSX.Element;
+/**
+ * The field template from \@rjsf/core which is a react component that gets passed \@rjsf/core field related props.
+ *
+ * @public
+ */
+export type LayoutTemplate<T = any> = FormProps<T>['ObjectFieldTemplate'];
 
+/**
+ * The type of layouts that is passed to the TemplateForms
+ *
+ * @public
+ */
 export interface LayoutOptions<P = any> {
   name: string;
-  component: ObjectFieldTemplate<P>;
+  component: LayoutTemplate<P>;
 }
