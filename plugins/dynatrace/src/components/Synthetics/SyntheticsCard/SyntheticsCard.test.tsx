@@ -14,42 +14,39 @@
  * limitations under the License.
  */
 import React from 'react';
-import { ProblemsList } from './ProblemsList';
+import { SyntheticsCard } from './SyntheticsCard';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { dynatraceApiRef } from '../../../api';
-import { problems } from '../../../mocks/problems.json';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { configApiRef } from '@backstage/core-plugin-api';
 
 const mockDynatraceApi = {
-  getDynatraceProblems: jest.fn(),
+  getDynatraceSyntheticFailures: jest.fn(),
 };
 const apis = TestApiRegistry.from(
   [dynatraceApiRef, mockDynatraceApi],
   [configApiRef, new ConfigReader({ dynatrace: { baseUrl: '__dynatrace__' } })],
 );
 
-describe('ProblemStatus', () => {
-  it('renders a table with problem data', async () => {
-    mockDynatraceApi.getDynatraceProblems = jest
+describe('SyntheticsCard', () => {
+  it('renders the card with Synthetics data', async () => {
+    mockDynatraceApi.getDynatraceSyntheticFailures = jest
       .fn()
-      .mockResolvedValue({ problems });
+      .mockResolvedValue({
+        locationsExecutionResults: [
+          {
+            locationId: '__location__',
+            requestResults: [{ startTimestamp: 0 }],
+          },
+        ],
+      });
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <ProblemsList dynatraceEntityId="__service_id__" />
-      </ApiProvider>,
-    );
-    expect(await rendered.findByText('example-service')).toBeInTheDocument();
-  });
-  it('returns "No Problems to Report!" if no problems are found', async () => {
-    mockDynatraceApi.getDynatraceProblems = jest.fn().mockResolvedValue({});
-    const rendered = await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <ProblemsList dynatraceEntityId="example-service-3" />
+        <SyntheticsCard syntheticsId="HTTP_CHECK-1234" />,
       </ApiProvider>,
     );
     expect(
-      await rendered.findByText('No Problems to Report!'),
+      await rendered.findByText('View this Synthetic in Dynatrace'),
     ).toBeInTheDocument();
   });
 });

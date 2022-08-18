@@ -14,42 +14,52 @@
  * limitations under the License.
  */
 import React from 'react';
-import { ProblemsList } from './ProblemsList';
+import { SyntheticsLocation } from './SyntheticsLocation';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { dynatraceApiRef } from '../../../api';
-import { problems } from '../../../mocks/problems.json';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { configApiRef } from '@backstage/core-plugin-api';
 
 const mockDynatraceApi = {
-  getDynatraceProblems: jest.fn(),
+  getDynatraceSyntheticLocationInfo: jest.fn(),
 };
 const apis = TestApiRegistry.from(
   [dynatraceApiRef, mockDynatraceApi],
   [configApiRef, new ConfigReader({ dynatrace: { baseUrl: '__dynatrace__' } })],
 );
 
-describe('ProblemStatus', () => {
-  it('renders a table with problem data', async () => {
-    mockDynatraceApi.getDynatraceProblems = jest
+describe('SyntheticsLocation', () => {
+  it('renders the SyntheticsLocation chip - recent failure', async () => {
+    mockDynatraceApi.getDynatraceSyntheticLocationInfo = jest
       .fn()
-      .mockResolvedValue({ problems });
+      .mockResolvedValue({ name: '__location__' });
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <ProblemsList dynatraceEntityId="__service_id__" />
+        <SyntheticsLocation
+          lastFailedTimestamp={new Date()}
+          locationId="__location_id__"
+          key="__key__"
+        />
+        ,
       </ApiProvider>,
     );
-    expect(await rendered.findByText('example-service')).toBeInTheDocument();
+    expect(await rendered.findByText(/failed/)).toBeInTheDocument();
   });
-  it('returns "No Problems to Report!" if no problems are found', async () => {
-    mockDynatraceApi.getDynatraceProblems = jest.fn().mockResolvedValue({});
+  it('renders the SyntheticsLocation chip - no failures', async () => {
+    mockDynatraceApi.getDynatraceSyntheticLocationInfo = jest
+      .fn()
+      .mockResolvedValue({ name: '__location__' });
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <ProblemsList dynatraceEntityId="example-service-3" />
+        <SyntheticsLocation
+          lastFailedTimestamp={new Date(0)}
+          locationId="__location_id__"
+          key="__key__"
+        />
+        ,
       </ApiProvider>,
     );
-    expect(
-      await rendered.findByText('No Problems to Report!'),
-    ).toBeInTheDocument();
+    expect(await rendered.findByText(/__location__/)).toBeInTheDocument();
+    expect(await rendered.queryByText(/failed/)).not.toBeInTheDocument();
   });
 });
