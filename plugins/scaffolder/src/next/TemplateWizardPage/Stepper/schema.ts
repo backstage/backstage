@@ -114,7 +114,6 @@ export const extractSchemaFromStep = (
 /**
  * @alpha
  * Creates a field validation object for use in react jsonschema form
- * @returns {FieldValidation} A field validation object that can be used to validate a field
  */
 export const createFieldValidation = (): FieldValidation => {
   const fieldValidation: FieldValidation = {

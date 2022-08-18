@@ -15,7 +15,7 @@
  */
 import { JsonObject } from '@backstage/types';
 import { CustomFieldValidator } from '../../../extensions';
-import { createAsyncValidator } from './createAsyncValidators';
+import { createAsyncValidators } from './createAsyncValidators';
 
 describe('createAsyncValidators', () => {
   it('should call the correct functions for validation', async () => {
@@ -43,7 +43,7 @@ describe('createAsyncValidators', () => {
 
     const validators = { NameField: jest.fn(), AddressField: jest.fn() };
 
-    const validate = createAsyncValidator(schema, validators, {
+    const validate = createAsyncValidators(schema, validators, {
       apiHolder: { get: jest.fn() },
     });
 
@@ -98,7 +98,7 @@ describe('createAsyncValidators', () => {
       }
     };
 
-    const validate = createAsyncValidator(
+    const validate = createAsyncValidators(
       schema,
       {
         NameField: NameField as CustomFieldValidator<unknown>,

@@ -21,7 +21,7 @@ import { CustomFieldValidator } from '../../../extensions';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { createFieldValidation } from './schema';
 
-export const createAsyncValidator = (
+export const createAsyncValidators = (
   rootSchema: JsonObject,
   validators: Record<string, undefined | CustomFieldValidator<unknown>>,
   context: {
@@ -41,7 +41,11 @@ export const createAsyncValidator = (
         const validator = validators[definitionInSchema['ui:field']];
         if (validator) {
           const fieldValidation = createFieldValidation();
-          await validator(value, fieldValidation, context);
+          try {
+            await validator(value, fieldValidation, context);
+          } catch (ex) {
+            fieldValidation.addError(ex.message);
+          }
           formValidation[key] = fieldValidation;
         }
       }

@@ -27,8 +27,7 @@ import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useMemo, useState } from 'react';
 import { FieldExtensionOptions } from '../../../extensions';
 import { TemplateParameterSchema } from '../../../types';
-import { createAsyncValidator } from './createAsyncValidators';
-import { createFieldValidation } from './schema';
+import { createAsyncValidators } from './createAsyncValidators';
 import { useTemplateSchema } from './useTemplateSchema';
 
 const useStyles = makeStyles(theme => ({
@@ -74,9 +73,9 @@ export const Stepper = (props: StepperProps) => {
     );
   }, [props.extensions]);
 
-  const validator = useMemo(() => {
+  const validation = useMemo(() => {
     const { mergedSchema } = steps[activeStep];
-    return createAsyncValidator(mergedSchema, validators, {
+    return createAsyncValidators(mergedSchema, validators, {
       apiHolder,
     });
   }, [steps, activeStep, validators, apiHolder]);
@@ -86,9 +85,11 @@ export const Stepper = (props: StepperProps) => {
   };
 
   const handleNext = async ({ formData }: { formData: JsonObject }) => {
+    // TODO(blam): What do we do about loading states, does each field extension get a chance
+    // to display it's own loading? Or should we grey out the entire form.
     setErrors(undefined);
 
-    const returnedValidation = await validator(formData);
+    const returnedValidation = await validation(formData);
 
     const hasErrors = Object.values(returnedValidation).some(i => {
       return i.__errors.length > 0;
