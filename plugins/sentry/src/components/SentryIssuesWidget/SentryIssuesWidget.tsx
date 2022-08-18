@@ -32,19 +32,21 @@ import {
 import { ErrorApi, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { Options } from '@material-table/core';
 
-export const SentryIssuesWidget = ({
-  entity,
-  statsFor,
-  tableOptions,
-  variant = 'gridItem',
-  query = '',
-}: {
+/** @public */
+export const SentryIssuesWidget = (props: {
   entity: Entity;
   statsFor: '24h' | '14d' | '';
   tableOptions: Options<never>;
   variant?: InfoCardVariants;
   query?: string;
 }) => {
+  const {
+    entity,
+    statsFor,
+    tableOptions,
+    variant = 'gridItem',
+    query = '',
+  } = props;
   const errorApi = useApi<ErrorApi>(errorApiRef);
   const sentryApi = useApi(sentryApiRef);
 

@@ -20,8 +20,6 @@ import { Team } from '@backstage/plugin-azure-devops-common';
 import { TeamMember } from '@backstage/plugin-azure-devops-common';
 import { WebApi } from 'azure-devops-node-api';
 
-// Warning: (ae-missing-release-tag) "AzureDevOpsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class AzureDevOpsApi {
   constructor(logger: Logger, webApi: WebApi);
@@ -88,13 +86,9 @@ export class AzureDevOpsApi {
   }): Promise<TeamMember[] | undefined>;
 }
 
-// Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface RouterOptions {
   // (undocumented)

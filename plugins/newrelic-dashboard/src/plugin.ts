@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   createPlugin,
   configApiRef,
@@ -24,6 +25,7 @@ import {
 import { newRelicDashboardApiRef, NewRelicDashboardClient } from './api';
 import { rootRouteRef } from './routes';
 
+/** @public */
 export const newRelicDashboardPlugin = createPlugin({
   id: 'new-relic-dashboard',
   routes: {
@@ -46,6 +48,8 @@ export const newRelicDashboardPlugin = createPlugin({
     }),
   ],
 });
+
+/** @public */
 export const EntityNewRelicDashboardContent = newRelicDashboardPlugin.provide(
   createComponentExtension({
     name: 'EntityNewRelicDashboardPage',
@@ -55,6 +59,7 @@ export const EntityNewRelicDashboardContent = newRelicDashboardPlugin.provide(
   }),
 );
 
+/** @public */
 export const EntityNewRelicDashboardCard = newRelicDashboardPlugin.provide(
   createComponentExtension({
     name: 'EntityNewRelicDashboardListComponent',
@@ -66,6 +71,7 @@ export const EntityNewRelicDashboardCard = newRelicDashboardPlugin.provide(
     },
   }),
 );
+
 /**
  * Render dashboard snapshots from Newrelic in backstage. Use dashboards which have the tag `isDashboardPage: true`
  *

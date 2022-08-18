@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
@@ -27,7 +28,6 @@ import { GITHUB_ACTIONS_ANNOTATION } from '../getProjectNameFromEntity';
 import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
 import { WorkflowRunsTable } from '../WorkflowRunsTable';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
-
 import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   InfoCard,
@@ -43,20 +43,18 @@ const useStyles = makeStyles<Theme>({
   },
 });
 
-const WidgetContent = ({
-  error,
-  loading,
-  lastRun,
-  branch,
-}: {
+const WidgetContent = (props: {
   error?: Error;
   loading?: boolean;
   lastRun: WorkflowRun;
   branch: string;
 }) => {
+  const { error, loading, lastRun, branch } = props;
   const classes = useStyles();
+
   if (error) return <Typography>Couldn't fetch latest {branch} run</Typography>;
   if (loading) return <LinearProgress />;
+
   return (
     <StructuredMetadataTable
       metadata={{
@@ -80,11 +78,11 @@ const WidgetContent = ({
   );
 };
 
-export const LatestWorkflowRunCard = ({
-  branch = 'master',
-  // Display the card full height suitable for
-  variant,
-}: Props) => {
+export const LatestWorkflowRunCard = (props: {
+  branch: string;
+  variant?: InfoCardVariants;
+}) => {
+  const { branch = 'master', variant } = props;
   const { entity } = useEntity();
   const config = useApi(configApiRef);
   const errorApi = useApi(errorApiRef);
@@ -120,15 +118,11 @@ export const LatestWorkflowRunCard = ({
   );
 };
 
-type Props = {
+export const LatestWorkflowsForBranchCard = (props: {
   branch: string;
   variant?: InfoCardVariants;
-};
-
-export const LatestWorkflowsForBranchCard = ({
-  branch = 'master',
-  variant,
-}: Props) => {
+}) => {
+  const { branch = 'master', variant } = props;
   const { entity } = useEntity();
 
   return (
