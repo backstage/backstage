@@ -30,6 +30,7 @@ import { TemplateParameterSchema } from '../../../types';
 import { createAsyncValidators } from './createAsyncValidators';
 import { useTemplateSchema } from './useTemplateSchema';
 import { ReviewState } from './ReviewState';
+import validator from '@rjsf/validator-ajv6';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -124,6 +125,7 @@ export const Stepper = (props: StepperProps) => {
       <div className={styles.formWrapper}>
         {activeStep < steps.length ? (
           <Form
+            validator={validator}
             extraErrors={errors}
             formData={formState}
             schema={steps[activeStep].schema}
