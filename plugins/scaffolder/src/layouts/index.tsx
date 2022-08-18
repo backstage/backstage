@@ -16,19 +16,34 @@
 
 import { attachComponentData, Extension } from '@backstage/core-plugin-api';
 import { ObjectFieldTemplateProps } from '@rjsf/core';
-import type { LayoutOptions, ObjectFieldTemplate } from './types';
+import type { LayoutOptions, LayoutTemplate } from './types';
 
 export const LAYOUTS_KEY = 'scaffolder.layout.v1';
 export const LAYOUTS_WRAPPER_KEY = 'scaffolder.layouts.wrapper.v1';
 
-type LayoutComponent<_TInputProps> = () => null;
+/**
+ * The type used to wrap up the Layout and embed the input props
+ *
+ * @public
+ */
+export type LayoutComponent<_TInputProps> = () => null;
 
-type GetProps<T> = T extends LayoutOptions
-  ? T['component'] extends ObjectFieldTemplate<infer P>
+/**
+ * utility type to extract the component props from the LayoutOptions
+ *
+ * @public
+ */
+export type GetProps<T> = T extends LayoutOptions
+  ? T['component'] extends LayoutTemplate<infer P>
     ? LayoutComponent<ObjectFieldTemplateProps<P>>
     : never
   : never;
 
+/**
+ * Method for creating custom Layouts that can be used in the scaffolder frontend form
+ *
+ * @public
+ */
 export function createScaffolderLayout(
   options: LayoutOptions,
 ): Extension<GetProps<typeof options>> {
@@ -43,12 +58,17 @@ export function createScaffolderLayout(
   };
 }
 
+/**
+ * The wrapping component for defining scaffolder layouts as children
+ *
+ * @public
+ */
 export const ScaffolderLayouts: React.ComponentType = (): JSX.Element | null =>
   null;
 
 attachComponentData(ScaffolderLayouts, LAYOUTS_WRAPPER_KEY, true);
 
-export type { LayoutOptions, ObjectFieldTemplate } from './types';
+export type { LayoutOptions, LayoutTemplate } from './types';
 
 export { DEFAULT_SCAFFOLDER_LAYOUT } from './default';
 

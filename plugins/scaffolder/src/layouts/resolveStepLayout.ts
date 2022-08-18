@@ -16,12 +16,12 @@
 
 import { UiSchema } from '@rjsf/core';
 import { DEFAULT_SCAFFOLDER_LAYOUT } from './default';
-import { LayoutOptions, ObjectFieldTemplate } from './types';
+import { LayoutOptions, LayoutTemplate } from './types';
 
 export function resolveStepLayout(
   uiSchema: UiSchema = {},
   layouts: LayoutOptions[],
-): ObjectFieldTemplate {
+): LayoutTemplate {
   const layoutName = uiSchema?.['ui:layout'] ?? DEFAULT_SCAFFOLDER_LAYOUT.name;
 
   delete uiSchema?.['ui:layout'];
