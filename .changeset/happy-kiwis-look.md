@@ -2,4 +2,4 @@
 '@backstage/create-app': patch
 ---
 
-Fix typo
+Fix typo in the documentation
