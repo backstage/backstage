@@ -6,7 +6,7 @@ description: A document describing the threat model for Backstage.
 
 The threat model outlines key security considerations of Backstage for operators, developers and security researchers. This is a living document and will evolve and be expanded alongside the Backstage project as relevant.
 
-See [Security Policy and Advisories](https://github.com/backstage/backstage/security) in the Backstage Github repository for details on reporting security vulnerabilities and advisories on fixed security flaws.
+See [Security Policy and Advisories](https://github.com/backstage/backstage/security) in the Backstage GitHub repository for details on reporting security vulnerabilities and advisories on fixed security flaws.
 
 ## Trust Model
 
