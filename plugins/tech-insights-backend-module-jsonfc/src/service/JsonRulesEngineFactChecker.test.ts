@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { BOOLEAN_CHECK_RESPONSE_TYPE } from '@backstage/plugin-tech-insights-common';
 import {
   TechInsightCheckRegistry,
   TechInsightsStore,
@@ -260,7 +259,7 @@ describe('JsonRulesEngineFactChecker', () => {
         result: true,
         check: {
           id: 'simpleTestCheck',
-          type: BOOLEAN_CHECK_RESPONSE_TYPE,
+          type: JSON_RULE_ENGINE_CHECK_TYPE,
           name: 'simpleTestCheck',
           description: 'Simple Check For Testing',
           factIds: ['test-factretriever'],
@@ -296,7 +295,7 @@ describe('JsonRulesEngineFactChecker', () => {
         result: false,
         check: {
           id: 'customOperatorTestCheck',
-          type: BOOLEAN_CHECK_RESPONSE_TYPE,
+          type: JSON_RULE_ENGINE_CHECK_TYPE,
           name: 'customOperatorTestCheck',
           description: 'Check For Testing using Custom Operator',
           factIds: ['test-factretriever'],
@@ -335,7 +334,7 @@ describe('JsonRulesEngineFactChecker', () => {
           result: true,
           check: {
             id: 'simpleTestCheck',
-            type: BOOLEAN_CHECK_RESPONSE_TYPE,
+            type: JSON_RULE_ENGINE_CHECK_TYPE,
             name: 'simpleTestCheck',
             description: 'Simple Check For Testing',
             factIds: ['test-factretriever'],
@@ -366,7 +365,7 @@ describe('JsonRulesEngineFactChecker', () => {
           result: true,
           check: {
             id: 'simpleTestCheck2',
-            type: BOOLEAN_CHECK_RESPONSE_TYPE,
+            type: JSON_RULE_ENGINE_CHECK_TYPE,
             name: 'simpleTestCheck2',
             description: 'Second Simple Check For Testing',
             factIds: ['test-factretriever'],
