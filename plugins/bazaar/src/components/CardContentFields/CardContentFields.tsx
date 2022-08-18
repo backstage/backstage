@@ -23,6 +23,8 @@ import {
   Typography,
   GridSize,
 } from '@material-ui/core';
+import { generatePath } from 'react-router-dom';
+import { parseEntityRef } from '@backstage/catalog-model';
 import { Avatar, Link } from '@backstage/core-components';
 import { AboutField } from '@backstage/plugin-catalog';
 import { StatusTag } from '../StatusTag';
@@ -111,7 +113,14 @@ export const CardContentFields = ({
                         />
                         <Link
                           className={classes.break}
-                          to={`http://github.com/${member.userId}`}
+                          to={
+                            member.userRef
+                              ? generatePath(
+                                  '/catalog/:namespace/:kind/:name',
+                                  parseEntityRef(member.userRef),
+                                )
+                              : `http://github.com/${member.userId}`
+                          }
                           target="_blank"
                         >
                           {member?.userId}

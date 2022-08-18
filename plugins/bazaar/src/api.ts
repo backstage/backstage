@@ -121,11 +121,14 @@ export class BazaarClient implements BazaarApi {
   async addMember(id: number, userId: string): Promise<void> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
     const { picture } = await this.identityApi.getProfileInfo();
+    const { userEntityRef } = await this.identityApi.getBackstageIdentity();
 
     await this.fetchApi.fetch(
       `${baseUrl}/projects/${encodeURIComponent(
         id,
-      )}/member/${encodeURIComponent(userId)}`,
+      )}/member/${encodeURIComponent(userId)}/${encodeURIComponent(
+        userEntityRef,
+      )}`,
       {
         method: 'PUT',
         headers: {
