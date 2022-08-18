@@ -53,6 +53,7 @@ import {
   WebApiTeam,
 } from 'azure-devops-node-api/interfaces/CoreInterfaces';
 
+/** @public */
 export class AzureDevOpsApi {
   public constructor(
     private readonly logger: Logger,
@@ -73,6 +74,7 @@ export class AzureDevOpsApi {
       a.name && b.name ? a.name.localeCompare(b.name) : 0,
     );
   }
+
   public async getGitRepository(
     projectName: string,
     repoName: string,

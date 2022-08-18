@@ -28,10 +28,12 @@ import {
 
 import { createApiRef } from '@backstage/core-plugin-api';
 
+/** @public */
 export const azureDevOpsApiRef = createApiRef<AzureDevOpsApi>({
   id: 'plugin.azure-devops.service',
 });
 
+/** @public */
 export interface AzureDevOpsApi {
   getRepoBuilds(
     projectName: string,

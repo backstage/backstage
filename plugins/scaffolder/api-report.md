@@ -248,11 +248,7 @@ export interface ScaffolderApi {
   ): Promise<TemplateParameterSchema>;
   listActions(): Promise<ListActionsResponse>;
   // (undocumented)
-  listTasks?({
-    filterByOwnership,
-  }: {
-    filterByOwnership: 'owned' | 'all';
-  }): Promise<{
+  listTasks?(options: { filterByOwnership: 'owned' | 'all' }): Promise<{
     tasks: ScaffolderTask[];
   }>;
   scaffold(

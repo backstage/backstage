@@ -82,7 +82,7 @@ export class PagerDutyClient implements PagerDutyApi {
   // (undocumented)
   static fromConfig(
     configApi: ConfigApi,
-    { discoveryApi, fetchApi }: PagerDutyClientApiDependencies,
+    dependencies: PagerDutyClientApiDependencies,
   ): PagerDutyClient;
   // (undocumented)
   getChangeEventsByServiceId(

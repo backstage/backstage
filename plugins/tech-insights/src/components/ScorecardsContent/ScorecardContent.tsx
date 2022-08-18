@@ -31,15 +31,12 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const ScorecardsContent = ({
-  title,
-  description,
-  checksId,
-}: {
+export const ScorecardsContent = (props: {
   title?: string;
   description?: string;
   checksId?: string[];
 }) => {
+  const { title, description, checksId } = props;
   const classes = useStyles();
   const api = useApi(techInsightsApiRef);
   const { namespace, kind, name } = useParams();

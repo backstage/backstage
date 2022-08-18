@@ -43,8 +43,10 @@ const commonGetServiceParams =
 export class PagerDutyClient implements PagerDutyApi {
   static fromConfig(
     configApi: ConfigApi,
-    { discoveryApi, fetchApi }: PagerDutyClientApiDependencies,
+    dependencies: PagerDutyClientApiDependencies,
   ) {
+    const { discoveryApi, fetchApi } = dependencies;
+
     const eventsBaseUrl: string =
       configApi.getOptionalString('pagerDuty.eventsBaseUrl') ??
       'https://events.pagerduty.com/v2';
@@ -55,6 +57,7 @@ export class PagerDutyClient implements PagerDutyApi {
       fetchApi,
     });
   }
+
   constructor(private readonly config: PagerDutyClientApiConfig) {}
 
   async getServiceByEntity(entity: Entity): Promise<PagerDutyServiceResponse> {
