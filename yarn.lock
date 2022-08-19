@@ -12085,10 +12085,11 @@ docker-modem@^3.0.0:
     ssh2 "^1.4.0"
 
 dockerode@^3.3.1:
-  version "3.3.3"
-  resolved "https://registry.npmjs.org/dockerode/-/dockerode-3.3.3.tgz#7504db10d23866c6f267e7b0b7b4a75fc2203e8d"
-  integrity sha512-lvKV6/NGf2/CYLt5V4c0fd6Fl9XZSCo1Z2HBT9ioKrKLMB2o+gA62Uza8RROpzGvYv57KJx2dKu+ZwSpB//OIA==
+  version "3.3.4"
+  resolved "https://registry.npmjs.org/dockerode/-/dockerode-3.3.4.tgz#875de614a1be797279caa9fe27e5637cf0e40548"
+  integrity sha512-3EUwuXnCU+RUlQEheDjmBE0B7q66PV9Rw5NiH1sXwINq0M9c5ERP9fxgkw36ZHOtzf4AGEEYySnkx/sACC9EgQ==
   dependencies:
+    "@balena/dockerignore" "^1.0.2"
     docker-modem "^3.0.0"
     tar-fs "~2.0.1"
 
