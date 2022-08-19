@@ -13,13 +13,9 @@ export const ApacheAirflowDagTable: (props: {
   dagIds?: string[] | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "ApacheAirflowPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const ApacheAirflowPage: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "apacheAirflowPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const apacheAirflowPlugin: BackstagePlugin<
   {

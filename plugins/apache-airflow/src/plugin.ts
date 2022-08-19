@@ -25,6 +25,7 @@ import {
   discoveryApiRef,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const apacheAirflowPlugin = createPlugin({
   id: 'apache-airflow',
   routes: {
@@ -43,6 +44,7 @@ export const apacheAirflowPlugin = createPlugin({
   ],
 });
 
+/** @public */
 export const ApacheAirflowPage = apacheAirflowPlugin.provide(
   createRoutableExtension({
     name: 'ApacheAirflowPage',

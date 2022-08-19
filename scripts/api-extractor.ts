@@ -199,7 +199,6 @@ const PACKAGE_ROOTS = ['packages', 'plugins'];
 
 const ALLOW_WARNINGS = [
   'packages/core-components',
-  'plugins/apache-airflow',
   'plugins/auth-backend',
   'plugins/catalog',
   'plugins/catalog-graphql',
