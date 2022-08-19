@@ -45,6 +45,13 @@ export const entityMetadataFactRetriever: FactRetriever;
 // @public
 export const entityOwnershipFactRetriever: FactRetriever;
 
+// @public
+export interface FactRetrieverEngine {
+  getJobRegistration(ref: string): Promise<FactRetrieverRegistration>;
+  schedule(): Promise<void>;
+  triggerJob(ref: string): Promise<void>;
+}
+
 // @public (undocumented)
 export type FactRetrieverRegistrationOptions = {
   cadence: string;
@@ -92,6 +99,7 @@ export type TechInsightsContext<
 > = {
   factChecker?: FactChecker<CheckType, CheckResultType>;
   persistenceContext: PersistenceContext;
+  factRetrieverEngine: FactRetrieverEngine;
 };
 
 // @public (undocumented)
