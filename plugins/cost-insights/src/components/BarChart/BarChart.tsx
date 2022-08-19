@@ -61,6 +61,7 @@ export const defaultTooltip: ContentRenderer<RechartsTooltipProps> = ({
   );
 };
 
+/** @public */
 export type BarChartProps = {
   resources: ResourceData[];
   responsive?: boolean;
@@ -71,15 +72,18 @@ export type BarChartProps = {
   onMouseMove?: RechartsFunction;
 };
 
-export const BarChart = ({
-  resources,
-  responsive = true,
-  displayAmount = 6,
-  options = {},
-  tooltip = defaultTooltip,
-  onClick,
-  onMouseMove,
-}: BarChartProps) => {
+/** @public */
+export const BarChart = (props: BarChartProps) => {
+  const {
+    resources,
+    responsive = true,
+    displayAmount = 6,
+    options = {},
+    tooltip = defaultTooltip,
+    onClick,
+    onMouseMove,
+  } = props;
+
   const theme = useTheme<CostInsightsTheme>();
   const styles = useBarChartStyles(theme);
   const [activeChart, setActiveChart] = useState(false);
