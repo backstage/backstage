@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder': major
+'@backstage/plugin-scaffolder': minor
 ---
 
-Implementing review step for scaffolder/next
+Implementing review step for the scaffolder under `create/next`
