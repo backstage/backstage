@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import mockAws from 'aws-sdk-mock';
-import aws from 'aws-sdk';
-import path from 'path';
+
 import { getVoidLogger, UrlReaders } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { AwsS3DiscoveryProcessor } from './AwsS3DiscoveryProcessor';
@@ -24,8 +22,12 @@ import {
   CatalogProcessorResult,
   processingResult,
 } from '@backstage/plugin-catalog-backend';
+import AWSMock from 'aws-sdk-mock';
+import aws from 'aws-sdk';
+import path from 'path';
 import YAML from 'yaml';
 
+AWSMock.setSDKInstance(aws);
 const object: aws.S3.Types.Object = {
   Key: 'awsS3-mock-object.txt',
 };
@@ -33,11 +35,8 @@ const objectList: aws.S3.ObjectList = [object];
 const output: aws.S3.Types.ListObjectsV2Output = {
   Contents: objectList,
 };
-
-mockAws.setSDKInstance(require('aws-sdk'));
-
-mockAws.mock('S3', 'listObjectsV2', output);
-mockAws.mock(
+AWSMock.mock('S3', 'listObjectsV2', output);
+AWSMock.mock(
   'S3',
   'getObject',
   Buffer.from(
@@ -76,7 +75,6 @@ describe('readLocation', () => {
         },
       ),
     )) as CatalogProcessorEntityResult;
-    console.log(generated);
     expect(generated.type).toBe('entity');
     expect(generated.location).toEqual({
       target: 'awsS3-mock-object.txt',

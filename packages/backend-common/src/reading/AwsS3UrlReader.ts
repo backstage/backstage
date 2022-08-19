@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// note: We do the import like this so that we don't get issues destructuring
+// and it not being mocked by the aws-sdk-mock package which is unfortunate.
 import aws from 'aws-sdk';
 import { CredentialsOptions } from 'aws-sdk/lib/credentials';
 import {
