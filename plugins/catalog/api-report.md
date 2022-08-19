@@ -74,11 +74,6 @@ export const CatalogEntityPage: () => JSX.Element;
 export const CatalogIndexPage: (props: DefaultCatalogPageProps) => JSX.Element;
 
 // @public (undocumented)
-export type CatalogInputPluginOptions = {
-  createButtonTitle: string;
-};
-
-// @public (undocumented)
 export function CatalogKindHeader(props: CatalogKindHeaderProps): JSX.Element;
 
 // @public

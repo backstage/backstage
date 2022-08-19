@@ -37,7 +37,6 @@ export * from './components/EntityProcessingErrorsPanel';
 export * from './components/EntitySwitch';
 export * from './components/FilteredEntityLayout';
 export * from './overridableComponents';
-export type { CatalogInputPluginOptions } from './options';
 export {
   CatalogEntityPage,
   CatalogIndexPage,
