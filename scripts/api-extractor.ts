@@ -210,7 +210,6 @@ const ALLOW_WARNINGS = [
   'plugins/cicd-statistics',
   'plugins/circleci',
   'plugins/cloudbuild',
-  'plugins/code-climate',
   'plugins/config-schema',
   'plugins/cost-insights',
   'plugins/dynatrace',

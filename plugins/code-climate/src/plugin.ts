@@ -30,6 +30,7 @@ export const rootRouteRef = createRouteRef({
   id: 'code-climate',
 });
 
+/** @public */
 export const codeClimatePlugin = createPlugin({
   id: 'code-climate',
   apis: [
@@ -48,6 +49,7 @@ export const codeClimatePlugin = createPlugin({
   },
 });
 
+/** @public */
 export const EntityCodeClimateCard = codeClimatePlugin.provide(
   createComponentExtension({
     name: 'EntityCodeClimateCard',
