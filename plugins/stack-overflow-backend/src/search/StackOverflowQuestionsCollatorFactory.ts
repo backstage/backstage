@@ -50,6 +50,7 @@ export type StackOverflowQuestionsRequestParams = {
  */
 export type StackOverflowQuestionsCollatorFactoryOptions = {
   baseUrl?: string;
+  maxPage?: number;
   apiKey?: string;
   requestParams: StackOverflowQuestionsRequestParams;
   logger: Logger;
@@ -66,12 +67,14 @@ export class StackOverflowQuestionsCollatorFactory
   protected requestParams: StackOverflowQuestionsRequestParams;
   private readonly baseUrl: string | undefined;
   private readonly apiKey: string | undefined;
+  private readonly maxPage: number | undefined;
   private readonly logger: Logger;
   public readonly type: string = 'stack-overflow';
 
   private constructor(options: StackOverflowQuestionsCollatorFactoryOptions) {
     this.baseUrl = options.baseUrl;
     this.apiKey = options.apiKey;
+    this.maxPage = options.maxPage;
     this.requestParams = options.requestParams;
     this.logger = options.logger;
   }
@@ -84,9 +87,11 @@ export class StackOverflowQuestionsCollatorFactory
     const baseUrl =
       config.getOptionalString('stackoverflow.baseUrl') ||
       'https://api.stackexchange.com/2.2';
+    const maxPage = options.maxPage || 100;
     return new StackOverflowQuestionsCollatorFactory({
       ...options,
       baseUrl,
+      maxPage,
       apiKey,
     });
   }
@@ -125,6 +130,12 @@ export class StackOverflowQuestionsCollatorFactory
     let hasMorePages = true;
     let page = 1;
     while (hasMorePages) {
+      if (page === this.maxPage) {
+        this.logger.warn(
+          'You have made over 100 requests to the Stack Overflow API, we recommend you to specify requestParams to limit your search to not reach your API limit or configure your own maxPage.',
+        );
+        break;
+      }
       const res = await fetch(
         `${this.baseUrl}/questions${params}${apiKeyParam}&page=${page}`,
       );
