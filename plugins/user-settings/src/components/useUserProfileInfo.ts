@@ -23,6 +23,7 @@ import {
 import { useEffect } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 
+/** @public */
 export const useUserProfile = () => {
   const identityApi = useApi(identityApiRef);
   const alertApi = useApi(alertApiRef);

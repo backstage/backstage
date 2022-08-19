@@ -233,7 +233,6 @@ const ALLOW_WARNINGS = [
   'plugins/pagerduty',
   'plugins/search-backend-module-pg',
   'plugins/splunk-on-call',
-  'plugins/user-settings',
 ];
 
 async function resolvePackagePath(
