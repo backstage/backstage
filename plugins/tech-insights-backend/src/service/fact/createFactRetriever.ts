@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { HumanDuration } from '@backstage/backend-tasks';
 import {
   FactLifecycle,
   FactRetriever,
   FactRetrieverRegistration,
 } from '@backstage/plugin-tech-insights-node';
+import { Duration } from 'luxon';
 
 /**
  * @public
@@ -31,6 +33,7 @@ export type FactRetrieverRegistrationOptions = {
   cadence: string;
   factRetriever: FactRetriever;
   lifecycle?: FactLifecycle;
+  timeout: Duration | HumanDuration;
 };
 
 /**
@@ -64,10 +67,11 @@ export type FactRetrieverRegistrationOptions = {
 export function createFactRetrieverRegistration(
   options: FactRetrieverRegistrationOptions,
 ): FactRetrieverRegistration {
-  const { cadence, factRetriever, lifecycle } = options;
+  const { cadence, factRetriever, lifecycle, timeout } = options;
   return {
     cadence,
     factRetriever,
     lifecycle,
+    timeout,
   };
 }
