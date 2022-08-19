@@ -54,6 +54,7 @@ type Options = OAuthProviderOptions & {
   resolverContext: AuthResolverContext;
 };
 
+/** @public */
 export type BitbucketOAuthResult = {
   fullProfile: BitbucketPassportProfile;
   params: {
@@ -65,6 +66,7 @@ export type BitbucketOAuthResult = {
   refreshToken?: string;
 };
 
+/** @public */
 export type BitbucketPassportProfile = PassportProfile & {
   id?: string;
   displayName?: string;

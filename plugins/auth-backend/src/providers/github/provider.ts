@@ -52,6 +52,7 @@ type PrivateInfo = {
   refreshToken?: string;
 };
 
+/** @public */
 export type GithubOAuthResult = {
   fullProfile: PassportProfile;
   params: {

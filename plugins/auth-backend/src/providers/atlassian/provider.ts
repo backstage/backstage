@@ -44,6 +44,7 @@ import {
 import express from 'express';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
+/** @public */
 export type AtlassianAuthProviderOptions = OAuthProviderOptions & {
   scopes: string;
   signInResolver?: SignInResolver<OAuthResult>;
@@ -58,10 +59,6 @@ export const atlassianDefaultAuthHandler: AuthHandler<OAuthResult> = async ({
   profile: makeProfileInfo(fullProfile, params.id_token),
 });
 
-/**
- * @public
- * @deprecated This export is deprecated and will be removed in the future.
- */
 export class AtlassianAuthProvider implements OAuthHandlers {
   private readonly _strategy: AtlassianStrategy;
   private readonly signInResolver?: SignInResolver<OAuthResult>;

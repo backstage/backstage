@@ -21,6 +21,8 @@ import { RedirectInfo, ProfileInfo } from '../../providers/types';
 
 /**
  * Common options for passport.js-based OAuth providers
+ *
+ * @public
  */
 export type OAuthProviderOptions = {
   /**
@@ -37,6 +39,7 @@ export type OAuthProviderOptions = {
   callbackUrl: string;
 };
 
+/** @public */
 export type OAuthResult = {
   fullProfile: PassportProfile;
   params: {
@@ -59,6 +62,7 @@ export type OAuthResponse = {
   backstageIdentity?: BackstageSignInResult;
 };
 
+/** @public */
 export type OAuthProviderInfo = {
   /**
    * An access token issued for the signed in user.
@@ -78,6 +82,7 @@ export type OAuthProviderInfo = {
   scope: string;
 };
 
+/** @public */
 export type OAuthState = {
   /* A type for the serialized value in the `state` parameter of the OAuth authorization flow
    */
@@ -87,11 +92,13 @@ export type OAuthState = {
   scope?: string;
 };
 
+/** @public */
 export type OAuthStartRequest = express.Request<{}> & {
   scope: string;
   state: OAuthState;
 };
 
+/** @public */
 export type OAuthRefreshRequest = express.Request<{}> & {
   scope: string;
   refreshToken: string;
