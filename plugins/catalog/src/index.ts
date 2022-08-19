@@ -37,6 +37,7 @@ export * from './components/EntityProcessingErrorsPanel';
 export * from './components/EntitySwitch';
 export * from './components/FilteredEntityLayout';
 export * from './overridableComponents';
+export type { CatalogInputPluginOptions } from './options';
 export {
   CatalogEntityPage,
   CatalogIndexPage,
@@ -59,6 +60,8 @@ export type { DependsOnResourcesCardProps } from './components/DependsOnResource
 export type {
   EntityLinksEmptyStateClassKey,
   EntityLinksCardProps,
+  Breakpoint,
+  ColumnBreakpoints,
 } from './components/EntityLinksCard';
 export type { SystemDiagramCardClassKey } from './components/SystemDiagramCard';
 export type { DefaultCatalogPageProps } from './components/CatalogPage';

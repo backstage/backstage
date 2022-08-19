@@ -20,6 +20,7 @@ export type CatalogPluginOptions = {
   createButtonTitle: string;
 };
 
+/** @public */
 export type CatalogInputPluginOptions = {
   createButtonTitle: string;
 };
