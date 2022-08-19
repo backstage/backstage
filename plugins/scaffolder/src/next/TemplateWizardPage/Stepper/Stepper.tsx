@@ -35,6 +35,7 @@ const useStyles = makeStyles(theme => ({
   backButton: {
     marginRight: theme.spacing(1),
   },
+
   footer: {
     display: 'flex',
     flexDirection: 'row',
@@ -75,7 +76,7 @@ export const Stepper = (props: StepperProps) => {
   }, [props.extensions]);
 
   const validation = useMemo(() => {
-    return createAsyncValidators(steps[activeStep].mergedSchema, validators, {
+    return createAsyncValidators(steps[activeStep]?.mergedSchema, validators, {
       apiHolder,
     });
   }, [steps, activeStep, validators, apiHolder]);
@@ -102,6 +103,10 @@ export const Stepper = (props: StepperProps) => {
       setActiveStep(prevActiveStep => prevActiveStep + 1);
     }
     setFormState(current => ({ ...current, ...formData }));
+  };
+
+  const handleCreate = () => {
+    // TODO(blam): Create the template in a modal with the ability to view the logs etc.
   };
 
   return (
@@ -141,7 +146,21 @@ export const Stepper = (props: StepperProps) => {
             </div>
           </Form>
         ) : (
-          <ReviewState formState={formState} schemas={steps} />
+          <>
+            <ReviewState formState={formState} schemas={steps} />
+            <div className={styles.footer}>
+              <Button
+                onClick={handleBack}
+                className={styles.backButton}
+                disabled={activeStep < 1}
+              >
+                Back
+              </Button>
+              <Button variant="contained" onClick={handleCreate}>
+                Create
+              </Button>
+            </div>
+          </>
         )}
       </div>
     </>
