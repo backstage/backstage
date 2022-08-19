@@ -27,6 +27,7 @@ const useStyles = makeStyles({
   },
 });
 
+/** @public */
 export const TemplateBackstageLogoIcon = () => {
   const classes = useStyles();
 
