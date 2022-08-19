@@ -26,27 +26,30 @@ import { LocationInput, LocationService, LocationStore } from './types';
 import { locationSpecToMetadataName } from '../util/conversion';
 import { InputError } from '@backstage/errors';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
-import { Config } from '@backstage/config';
+
+export type DefaultLocationServiceOptions = {
+  allowedLocationTypes: string[];
+};
 
 export class DefaultLocationService implements LocationService {
   constructor(
     private readonly store: LocationStore,
     private readonly orchestrator: CatalogProcessingOrchestrator,
-    private readonly config: Config,
+    private readonly options: DefaultLocationServiceOptions = {
+      allowedLocationTypes: ['url'],
+    },
   ) {}
 
   async createLocation(
     input: LocationInput,
     dryRun: boolean,
   ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }> {
-    const allowUnknownTypeConfigName =
-      'catalog.locationService.create.allowUnknownType';
-    const allowUnknownType =
-      this.config.has(allowUnknownTypeConfigName) &&
-      this.config.getBoolean(allowUnknownTypeConfigName);
-
-    if (!allowUnknownType && input.type !== 'url') {
-      throw new InputError(`Registered locations must be of type 'url'`);
+    if (!this.options.allowedLocationTypes.includes(input.type)) {
+      throw new InputError(
+        `Registered locations must be of an allowed type ${JSON.stringify(
+          this.options.allowedLocationTypes,
+        )}`,
+      );
     }
     if (dryRun) {
       return this.dryRunCreateLocation(input);
