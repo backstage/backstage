@@ -74,9 +74,9 @@ export class AzureDevOpsApi {
   // (undocumented)
   getReadme(
     host: string,
-    organization: string,
-    projectName: string,
-    repoName: string,
+    org: string,
+    project: string,
+    repo: string,
   ): Promise<{
     url: string;
     content: string;
@@ -105,6 +105,8 @@ export interface RouterOptions {
   config: Config;
   // (undocumented)
   logger: Logger;
+  // (undocumented)
+  reader: UrlReader;
 }
 
 // (No @packageDocumentation comment for this package)

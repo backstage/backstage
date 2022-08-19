@@ -93,7 +93,7 @@ export interface AzureDevOpsApi {
     items: PullRequest[];
   }>;
   // (undocumented)
-  getReadme(opts: ReadmeConfig): Promise<Readme | undefined>;
+  getReadme(opts: ReadmeConfig): Promise<Readme>;
   // (undocumented)
   getRepoBuilds(
     projectName: string,
@@ -146,7 +146,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     items: PullRequest[];
   }>;
   // (undocumented)
-  getReadme: (opts: ReadmeConfig) => Promise<Readme | undefined>;
+  getReadme(opts: ReadmeConfig): Promise<Readme>;
   // (undocumented)
   getRepoBuilds(
     projectName: string,
@@ -242,8 +242,6 @@ export const EntityAzureReadmeCard: (props: {
   maxHeight?: number | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "Filter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type Filter =
   | AssignedToUserFilter
