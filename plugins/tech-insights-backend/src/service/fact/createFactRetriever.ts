@@ -34,7 +34,7 @@ export type FactRetrieverRegistrationOptions = {
   cadence: string;
   factRetriever: FactRetriever;
   lifecycle?: FactLifecycle;
-  timeout: Duration | HumanDuration;
+  timeout?: Duration | HumanDuration;
 };
 
 /**
