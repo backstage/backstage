@@ -229,7 +229,6 @@ const ALLOW_WARNINGS = [
   'plugins/kubernetes-common',
   'plugins/newrelic',
   'plugins/newrelic-dashboard',
-  'plugins/pagerduty',
 ];
 
 async function resolvePackagePath(
