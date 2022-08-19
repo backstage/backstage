@@ -43,6 +43,7 @@ import {
   convertPolicy,
   getArtifactId,
   replaceReadme,
+  buildEncodedUrl,
 } from '../utils';
 
 import { TeamMember as AdoTeamMember } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
@@ -399,32 +400,24 @@ export class AzureDevOpsApi {
 
   public async getReadme(
     host: string,
-    organization: string,
-    projectName: string,
-    repoName: string,
+    org: string,
+    project: string,
+    repo: string,
   ): Promise<{
     url: string;
     content: string;
   }> {
-    const getFileContent = async (
-      path: string,
-      encoding?: BufferEncoding,
-    ): Promise<{
-      url: string;
-      content: string;
-    }> => {
-      const url = `https://${host}/${organization}/${projectName}/_git/${repoName}?path=${path}`;
-      const response = await this.urlReader.read(url);
-      return {
-        url,
-        content: Buffer.from(response).toString(encoding),
-      };
-    };
-    const { url, content } = await getFileContent('README.md');
-    return {
-      url,
-      content: await replaceReadme(content, getFileContent),
-    };
+    const url = buildEncodedUrl(host, org, project, repo, 'README.md');
+    const response = await this.urlReader.read(url);
+    const content = await replaceReadme(
+      this.urlReader,
+      host,
+      org,
+      project,
+      repo,
+      response.toString(),
+    );
+    return { url, content };
   }
 }
 

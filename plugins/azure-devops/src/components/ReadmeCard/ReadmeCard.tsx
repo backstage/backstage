@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Button, makeStyles } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import { Box, Button, makeStyles } from '@material-ui/core';
 import {
   InfoCard,
   Progress,
   MarkdownContent,
   EmptyState,
+  ErrorPanel,
 } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useProjectRepoFromEntity } from '../../hooks';
@@ -30,15 +30,6 @@ import { azureDevOpsApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
 
 const useStyles = makeStyles(theme => ({
-  infoCard: {
-    marginBottom: theme.spacing(3),
-    '& + .MuiAlert-root': {
-      marginTop: theme.spacing(3),
-    },
-    '& .MuiCardContent-root': {
-      padding: theme.spacing(2, 1, 2, 2),
-    },
-  },
   readMe: {
     overflowY: 'auto',
     paddingRight: theme.spacing(1),
@@ -63,6 +54,35 @@ type Props = {
   maxHeight?: number;
 };
 
+type ErrorProps = {
+  error: Error;
+};
+
+function isNotFoundError(error: any): boolean {
+  return error?.response?.status === 404;
+}
+
+const ReadmeCardError = ({ error }: ErrorProps) => {
+  if (isNotFoundError(error))
+    return (
+      <EmptyState
+        title="No README available for this entity"
+        missing="field"
+        description="You can add a README to your entity by following the Azure DevOps documentation."
+        action={
+          <Button
+            variant="contained"
+            color="primary"
+            href="https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops"
+          >
+            Read more
+          </Button>
+        }
+      />
+    );
+  return <ErrorPanel title={error.message} error={error} />;
+};
+
 export const ReadmeCard = (props: Props) => {
   const classes = useStyles();
   const api = useApi(azureDevOpsApiRef);
@@ -81,52 +101,20 @@ export const ReadmeCard = (props: Props) => {
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return (
-      <Alert severity="error" className={classes.infoCard}>
-        {error.message}
-      </Alert>
-    );
+    return <ReadmeCardError error={error} />;
   }
-
-  if (!value)
-    return (
-      <EmptyState
-        title="No README available for this entity"
-        missing="field"
-        description="You can add a README to your entity by following the Azure DevOps documentation."
-        action={
-          <Button
-            variant="contained"
-            color="primary"
-            href="https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops"
-          >
-            Read more
-          </Button>
-        }
-      />
-    );
 
   return (
     <InfoCard
       title="Readme"
-      className={classes.infoCard}
       deepLink={{
         link: value!.url,
         title: 'Readme',
-        onClick: e => {
-          e.preventDefault();
-          window.open(value?.url);
-        },
       }}
     >
-      <div
-        className={classes.readMe}
-        style={{
-          maxHeight: `${props.maxHeight}px`,
-        }}
-      >
+      <Box className={classes.readMe} sx={{ maxHeight: props.maxHeight }}>
         <MarkdownContent content={value?.content ?? ''} />
-      </div>
+      </Box>
     </InfoCard>
   );
 };

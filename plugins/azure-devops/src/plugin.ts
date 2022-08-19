@@ -24,12 +24,12 @@ import {
   azurePullRequestDashboardRouteRef,
   azureGitTagsEntityContentRouteRef,
   azurePullRequestsEntityContentRouteRef,
-  azureReadmeEntityCardRouteRef,
 } from './routes';
 import {
   createApiFactory,
   createPlugin,
   createRoutableExtension,
+  createComponentExtension,
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
@@ -103,9 +103,10 @@ export const EntityAzurePullRequestsContent = azureDevOpsPlugin.provide(
 );
 
 export const EntityAzureReadmeCard = azureDevOpsPlugin.provide(
-  createRoutableExtension({
+  createComponentExtension({
     name: 'EntityAzureReadmeCard',
-    component: () => import('./components/ReadmeCard').then(m => m.ReadmeCard),
-    mountPoint: azureReadmeEntityCardRouteRef,
+    component: {
+      lazy: () => import('./components/ReadmeCard').then(m => m.ReadmeCard),
+    },
   }),
 );

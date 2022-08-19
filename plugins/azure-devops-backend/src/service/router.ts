@@ -26,7 +26,7 @@ import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import { PullRequestsDashboardProvider } from '../api/PullRequestsDashboardProvider';
 import Router from 'express-promise-router';
-import { errorHandler, UrlReaders } from '@backstage/backend-common';
+import { errorHandler, UrlReader } from '@backstage/backend-common';
 import express from 'express';
 
 const DEFAULT_TOP = 10;
@@ -35,18 +35,18 @@ export interface RouterOptions {
   azureDevOpsApi?: AzureDevOpsApi;
   logger: Logger;
   config: Config;
+  reader: UrlReader;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger } = options;
+  const { logger, reader } = options;
   const config = options.config.getConfig('azureDevOps');
 
   const token = config.getString('token');
   const host = config.getString('host');
   const organization = config.getString('organization');
-  const reader = UrlReaders.default(options);
 
   const authHandler = getPersonalAccessTokenHandler(token);
   const webApi = new WebApi(`https://${host}/${organization}`, authHandler);

@@ -31,7 +31,3 @@ export const azureGitTagsEntityContentRouteRef = createRouteRef({
 export const azurePullRequestsEntityContentRouteRef = createRouteRef({
   id: 'azure-pull-requests-entity-content',
 });
-
-export const azureReadmeEntityCardRouteRef = createRouteRef({
-  id: 'azure-readme-entity-card',
-});

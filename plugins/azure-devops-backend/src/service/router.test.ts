@@ -33,7 +33,7 @@ import { ConfigReader } from '@backstage/config';
 import { GitRepository } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { createRouter } from './router';
 import express from 'express';
-import { getVoidLogger } from '@backstage/backend-common';
+import { getVoidLogger, UrlReaders } from '@backstage/backend-common';
 import request from 'supertest';
 
 describe('createRouter', () => {
@@ -55,18 +55,28 @@ describe('createRouter', () => {
       getTeamMembers: jest.fn(),
       getReadme: jest.fn(),
     } as any;
+
+    const config = new ConfigReader({
+      azureDevOps: {
+        token: 'foo',
+        host: 'host.com',
+        organization: 'myOrg',
+        top: 5,
+      },
+    });
+
+    const logger = getVoidLogger();
+
     const router = await createRouter({
+      config,
+      logger,
       azureDevOpsApi,
-      logger: getVoidLogger(),
-      config: new ConfigReader({
-        azureDevOps: {
-          token: 'foo',
-          host: 'host.com',
-          organization: 'myOrg',
-          top: 5,
-        },
+      reader: UrlReaders.default({
+        config,
+        logger,
       }),
     });
+
     app = express().use(router);
   });
 

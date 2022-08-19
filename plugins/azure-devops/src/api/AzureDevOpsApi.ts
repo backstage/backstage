@@ -67,5 +67,5 @@ export interface AzureDevOpsApi {
     options?: BuildRunOptions,
   ): Promise<{ items: BuildRun[] }>;
 
-  getReadme(opts: ReadmeConfig): Promise<Readme | undefined>;
+  getReadme(opts: ReadmeConfig): Promise<Readme>;
 }

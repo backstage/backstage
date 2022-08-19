@@ -25,12 +25,11 @@ import {
   extractPartsFromAsset,
   getArtifactId,
   getAvatarUrl,
-  getMimeByExtension,
   getPullRequestLink,
   replaceReadme,
 } from './azure-devops-utils';
-
 import { GitPullRequest } from 'azure-devops-node-api/interfaces/GitInterfaces';
+import { UrlReader } from '@backstage/backend-common';
 
 describe('convertDashboardPullRequest', () => {
   it('should return DashboardPullRequest', () => {
@@ -236,16 +235,6 @@ describe('extractPartsFromAsset', () => {
   });
 });
 
-describe('getMimeByExtension', () => {
-  it('should return mime type', () => {
-    expect(getMimeByExtension('.png')).toBe('image/png');
-    expect(getMimeByExtension('.jpg')).toBe('image/jpeg');
-    expect(getMimeByExtension('.jpeg')).toBe('image/jpeg');
-    expect(getMimeByExtension('.webp')).toBe('image/webp');
-    expect(getMimeByExtension('.gif')).toBe('image/gif');
-  });
-});
-
 describe('replaceReadme', () => {
   it('should return mime type', async () => {
     const readme = `  
@@ -257,31 +246,29 @@ describe('replaceReadme', () => {
         ![Image 5](/images/sa)mple.gif)
     `;
 
-    async function mockFileContent(
-      path: string,
-      encoding?: BufferEncoding,
-    ): Promise<{
-      url: string;
-      content: string;
-    }> {
-      expect(encoding).toBe('base64');
-      return new Promise(resolve =>
-        resolve({
-          url: '',
-          content: Buffer.from(path).toString(encoding),
-        }),
-      );
-    }
+    const reader: UrlReader = {
+      read: url => new Promise<Buffer>(resolve => resolve(Buffer.from(url))),
+      readTree: jest.fn(),
+      search: jest.fn(),
+      readUrl: jest.fn(),
+    };
 
-    const result = await replaceReadme(readme, mockFileContent);
+    const result = await replaceReadme(
+      reader,
+      'host',
+      'org',
+      'project',
+      'repo',
+      readme,
+    );
 
     const expected = `  
       ## Images
-        ![Image 1](data:image/png;base64,L2ltYWdlcy9zYW1wbGUtNCgyKS5wbmc=)
-        ![Image 2](data:image/jpeg;base64,L2ltYWdlcy9jZENTaistMDEyMzQwLmpwZw==)
-        ![Image 3](data:image/jpeg;base64,L2ltYWdlcy90ZXN0LTQoMikpKSkuanBlZw==)
-        ![Image 4](data:image/webp;base64,L2ltYWdlcy90ZXN0LTIyMTFqZC53ZWJw)
-        ![Image 5](data:image/gif;base64,L2ltYWdlcy9zYSltcGxlLmdpZg==)
+        ![Image 1](data:image/png;base64,aHR0cHM6Ly9ob3N0L29yZy9wcm9qZWN0L19naXQvcmVwbz9wYXRoPSUyRmltYWdlcyUyRnNhbXBsZS00KDIpLnBuZw==)
+        ![Image 2](data:image/jpeg;base64,aHR0cHM6Ly9ob3N0L29yZy9wcm9qZWN0L19naXQvcmVwbz9wYXRoPSUyRmltYWdlcyUyRmNkQ1NqJTJCLTAxMjM0MC5qcGc=)
+        ![Image 3](data:image/jpeg;base64,aHR0cHM6Ly9ob3N0L29yZy9wcm9qZWN0L19naXQvcmVwbz9wYXRoPSUyRmltYWdlcyUyRnRlc3QtNCgyKSkpKS5qcGVn)
+        ![Image 4](data:image/webp;base64,aHR0cHM6Ly9ob3N0L29yZy9wcm9qZWN0L19naXQvcmVwbz9wYXRoPSUyRmltYWdlcyUyRnRlc3QtMjIxMWpkLndlYnA=)
+        ![Image 5](data:image/gif;base64,aHR0cHM6Ly9ob3N0L29yZy9wcm9qZWN0L19naXQvcmVwbz9wYXRoPSUyRmltYWdlcyUyRnNhKW1wbGUuZ2lm)
     `;
 
     expect(expected).toBe(result);

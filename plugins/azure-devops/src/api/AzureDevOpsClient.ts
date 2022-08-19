@@ -32,10 +32,6 @@ import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { AzureDevOpsApi } from './AzureDevOpsApi';
 import { ResponseError } from '@backstage/errors';
 
-function isNotFoundError(error: any): error is ResponseError {
-  return error.response.status === 404;
-}
-
 export class AzureDevOpsClient implements AzureDevOpsApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
@@ -136,22 +132,13 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     return { items };
   }
 
-  public getReadme = async (
-    opts: ReadmeConfig,
-  ): Promise<Readme | undefined> => {
-    try {
-      return await this.get(
-        `readme/${encodeURIComponent(opts.project)}/${encodeURIComponent(
-          opts.repo,
-        )}`,
-      );
-    } catch (e) {
-      if (isNotFoundError(e)) {
-        return undefined;
-      }
-      return e;
-    }
-  };
+  public async getReadme(opts: ReadmeConfig): Promise<Readme> {
+    return await this.get(
+      `readme/${encodeURIComponent(opts.project)}/${encodeURIComponent(
+        opts.repo,
+      )}`,
+    );
+  }
 
   private async get<T>(path: string): Promise<T> {
     const baseUrl = `${await this.discoveryApi.getBaseUrl('azure-devops')}/`;

@@ -30,9 +30,11 @@ import {
   GitRepository,
   IdentityRefWithVote,
 } from 'azure-devops-node-api/interfaces/GitInterfaces';
+import mime from 'mime-types';
 
 import { IdentityRef } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import { PolicyEvaluationRecord } from 'azure-devops-node-api/interfaces/PolicyInterfaces';
+import { UrlReader } from '@backstage/backend-common';
 
 export function convertDashboardPullRequest(
   pullRequest: GitPullRequest,
@@ -206,29 +208,45 @@ export function convertPolicy(
 }
 
 export async function replaceReadme(
-  readme: string,
-  getFileContent: (
-    path: string,
-    encoding?: BufferEncoding,
-  ) => Promise<{
-    url: string;
-    content: string;
-  }>,
+  urlReader: UrlReader,
+  host: string,
+  org: string,
+  project: string,
+  repo: string,
+  readmeContent: string,
 ) {
-  const filesPath = extractAssets(readme);
+  const filesPath = extractAssets(readmeContent);
+  if (!filesPath) return readmeContent;
   return await filesPath.reduce(
     async (promise: Promise<string>, filePath: string) =>
       promise.then(async content => {
         const { label, path, ext } = extractPartsFromAsset(filePath);
-        const mime = getMimeByExtension(ext);
-        const file = await getFileContent(path + ext, 'base64');
+        const data = mime.lookup(ext);
+        const url = buildEncodedUrl(host, org, project, repo, path + ext);
+        const buffer = await urlReader.read(url);
+        const file = await buffer.toString('base64');
         return content.replace(
           filePath,
-          `[${label}](data:${mime};base64,${file.content})`,
+          `[${label}](data:${data};base64,${file})`,
         );
       }),
-    Promise.resolve(readme),
+    Promise.resolve(readmeContent),
   );
+}
+
+export function buildEncodedUrl(
+  host: string,
+  org: string,
+  project: string,
+  repo: string,
+  path: string,
+): string {
+  const encodedHost = encodeURIComponent(host);
+  const encodedOrg = encodeURIComponent(org);
+  const encodedProject = encodeURIComponent(project);
+  const encodedRepo = encodeURIComponent(repo);
+  const encodedPath = encodeURIComponent(path);
+  return `https://${encodedHost}/${encodedOrg}/${encodedProject}/_git/${encodedRepo}?path=${encodedPath}`;
 }
 
 function convertReviewer(
@@ -293,7 +311,7 @@ function hasAutoComplete(pullRequest: GitPullRequest): boolean {
 export function extractAssets(content: string) {
   const regExp =
     /\[([^\[\]]*)\]\((?!https?:\/\/)(.*?)(\.png|\.jpg|\.jpeg|\.gif|\.webp)(.*)\)/gim;
-  return content.match(regExp) || [];
+  return content.match(regExp);
 }
 
 export function extractPartsFromAsset(content: string): {
@@ -309,16 +327,4 @@ export function extractPartsFromAsset(content: string): {
     label,
     path: path.startsWith('.') ? path.substring(1, path.length) : path,
   };
-}
-
-export function getMimeByExtension(ext: string): string {
-  return (
-    {
-      '.png': 'image/png',
-      '.jpg': 'image/jpeg',
-      '.jpeg': 'image/jpeg',
-      '.gif': 'image/gif',
-      '.webp': 'image/webp',
-    }[ext] || ''
-  );
 }
