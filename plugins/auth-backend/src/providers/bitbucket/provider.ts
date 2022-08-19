@@ -39,7 +39,7 @@ import {
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import {
   AuthHandler,
-  RedirectInfo,
+  OAuthStartResponse,
   SignInResolver,
   AuthResolverContext,
 } from '../types';
@@ -121,7 +121,7 @@ export class BitbucketAuthProvider implements OAuthHandlers {
     );
   }
 
-  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     return await executeRedirectStrategy(req, this._strategy, {
       accessType: 'offline',
       prompt: 'consent',

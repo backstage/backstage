@@ -17,7 +17,7 @@
 import express from 'express';
 import { Profile as PassportProfile } from 'passport';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
-import { RedirectInfo, ProfileInfo } from '../../providers/types';
+import { OAuthStartResponse, ProfileInfo } from '../../providers/types';
 
 /**
  * Common options for passport.js-based OAuth providers
@@ -115,7 +115,7 @@ export interface OAuthHandlers {
   /**
    * Initiate a sign in request with an auth provider.
    */
-  start(req: OAuthStartRequest): Promise<RedirectInfo>;
+  start(req: OAuthStartRequest): Promise<OAuthStartResponse>;
 
   /**
    * Handle the redirect from the auth provider when the user has signed in.

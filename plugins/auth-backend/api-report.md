@@ -317,7 +317,7 @@ export interface OAuthHandlers {
     response: OAuthResponse;
     refreshToken?: string;
   }>;
-  start(req: OAuthStartRequest): Promise<RedirectInfo>;
+  start(req: OAuthStartRequest): Promise<OAuthStartResponse>;
 }
 
 // @public (undocumented)
@@ -364,6 +364,12 @@ export type OAuthResult = {
 export type OAuthStartRequest = express.Request<{}> & {
   scope: string;
   state: OAuthState;
+};
+
+// @public (undocumented)
+export type OAuthStartResponse = {
+  url: string;
+  status?: number;
 };
 
 // @public (undocumented)
@@ -653,12 +659,6 @@ export const providers: Readonly<{
 
 // @public (undocumented)
 export const readState: (stateString: string) => OAuthState;
-
-// @public (undocumented)
-export type RedirectInfo = {
-  url: string;
-  status?: number;
-};
 
 // @public (undocumented)
 export interface RouterOptions {

@@ -127,7 +127,7 @@ export type AuthProviderConfig = {
 };
 
 /** @public */
-export type RedirectInfo = {
+export type OAuthStartResponse = {
   /**
    * URL to redirect to
    */

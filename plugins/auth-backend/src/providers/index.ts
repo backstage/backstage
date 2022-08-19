@@ -49,7 +49,7 @@ export type {
   StateEncoder,
   AuthResponse,
   ProfileInfo,
-  RedirectInfo,
+  OAuthStartResponse,
 } from './types';
 
 export { prepareBackstageIdentityResponse } from './prepareBackstageIdentityResponse';

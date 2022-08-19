@@ -38,7 +38,7 @@ import {
 import {
   AuthHandler,
   AuthResolverContext,
-  RedirectInfo,
+  OAuthStartResponse,
   SignInResolver,
 } from '../types';
 import express from 'express';
@@ -94,7 +94,7 @@ export class AtlassianAuthProvider implements OAuthHandlers {
     );
   }
 
-  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     return await executeRedirectStrategy(req, this._strategy, {
       state: encodeState(req.state),
     });
