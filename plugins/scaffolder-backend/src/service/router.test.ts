@@ -43,10 +43,10 @@ import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 
 const mockAccess = jest.fn();
 
-jest.doMock('fs-extra', () => ({
-  access: mockAccess,
+jest.mock('fs-extra', () => ({
+  access: (...args: any[]) => mockAccess(...args),
   promises: {
-    access: mockAccess,
+    access: (...args: any[]) => mockAccess(...args),
   },
   constants: {
     F_OK: 0,

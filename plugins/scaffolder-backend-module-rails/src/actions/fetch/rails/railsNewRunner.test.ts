@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
+const executeShellCommand = jest.fn();
+const commandExists = jest.fn();
+
 jest.mock('@backstage/plugin-scaffolder-backend', () => ({
-  executeShellCommand: jest.fn(),
+  executeShellCommand: (...args: any[]) => executeShellCommand(...args),
 }));
-jest.mock('command-exists', () => jest.fn());
+jest.mock(
+  'command-exists',
+  () =>
+    (...args: any[]) =>
+      commandExists(...args),
+);
 jest.mock('fs-extra');
 
 import { ContainerRunner } from '@backstage/backend-common';
 import fs from 'fs-extra';
-
 import path from 'path';
 import { PassThrough } from 'stream';
-
 import { RailsNewRunner } from './railsNewRunner';
 
-import { executeShellCommand as executeShellCommandMock } from '@backstage/plugin-scaffolder-backend';
-import commandExistsMock from 'command-exists';
-
 describe('Rails Templater', () => {
-  const executeShellCommand = executeShellCommandMock as jest.Mock;
-  const commandExists = commandExistsMock as unknown as jest.Mock;
-
   const containerRunner: jest.Mocked<ContainerRunner> = {
     runContainer: jest.fn(),
   };

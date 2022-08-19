@@ -13,16 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-jest.mock('./dom', () => ({
-  ...jest.requireActual('./dom'),
-  useTechDocsReaderDom: jest.fn(),
-}));
-
-jest.mock('../useReaderState', () => ({
-  ...jest.requireActual('../useReaderState'),
-  useReaderState: jest.fn(),
-}));
-
 import React from 'react';
 import { act, waitFor } from '@testing-library/react';
 
@@ -35,8 +25,18 @@ import {
   TechDocsReaderPageProvider,
 } from '@backstage/plugin-techdocs-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { useTechDocsReaderDom } from './dom';
-import { useReaderState } from '../useReaderState';
+
+const useTechDocsReaderDom = jest.fn();
+jest.mock('./dom', () => ({
+  ...jest.requireActual('./dom'),
+  useTechDocsReaderDom: (...args: any[]) => useTechDocsReaderDom(...args),
+}));
+const useReaderState = jest.fn();
+jest.mock('../useReaderState', () => ({
+  ...jest.requireActual('../useReaderState'),
+  useReaderState: (...args: any[]) => useReaderState(...args),
+}));
+
 import { TechDocsReaderPageContent } from './TechDocsReaderPageContent';
 
 const mockEntityMetadata = {
@@ -92,10 +92,8 @@ describe('<TechDocsReaderPageContent />', () => {
   it('should render techdocs page content', async () => {
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
-    (useTechDocsReaderDom as jest.Mock).mockReturnValue(
-      document.createElement('html'),
-    );
-    (useReaderState as jest.Mock).mockReturnValue({ state: 'cached' });
+    useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
+    useReaderState.mockReturnValue({ state: 'cached' });
 
     await act(async () => {
       const rendered = await renderInTestApp(
@@ -114,10 +112,8 @@ describe('<TechDocsReaderPageContent />', () => {
 
   it('should not render techdocs content if entity metadata is missing', async () => {
     getEntityMetadata.mockResolvedValue(undefined);
-    (useTechDocsReaderDom as jest.Mock).mockReturnValue(
-      document.createElement('html'),
-    );
-    (useReaderState as jest.Mock).mockReturnValue({ state: 'cached' });
+    useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
+    useReaderState.mockReturnValue({ state: 'cached' });
 
     await act(async () => {
       const rendered = await renderInTestApp(
@@ -140,10 +136,8 @@ describe('<TechDocsReaderPageContent />', () => {
   it('should render 404 if there is no dom and reader state is not found', async () => {
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
-    (useTechDocsReaderDom as jest.Mock).mockReturnValue(undefined);
-    (useReaderState as jest.Mock).mockReturnValue({
-      state: 'CONTENT_NOT_FOUND',
-    });
+    useTechDocsReaderDom.mockReturnValue(undefined);
+    useReaderState.mockReturnValue({ state: 'CONTENT_NOT_FOUND' });
 
     await act(async () => {
       const rendered = await renderInTestApp(
