@@ -208,7 +208,6 @@ const ALLOW_WARNINGS = [
   'plugins/github-actions',
   'plugins/github-deployments',
   'plugins/github-pull-requests-board',
-  'plugins/gitops-profiles',
   'plugins/jenkins',
   'plugins/jenkins-backend',
   'plugins/kubernetes',
