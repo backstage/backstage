@@ -6,6 +6,7 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { CoreV1Api } from '@kubernetes/client-node';
+import { Credentials } from 'aws-sdk';
 import { CustomObjectsApi } from '@kubernetes/client-node';
 import { Duration } from 'luxon';
 import { Entity } from '@backstage/catalog-model';
@@ -14,13 +15,14 @@ import type { FetchResponse } from '@backstage/plugin-kubernetes-common';
 import type { JsonObject } from '@backstage/types';
 import { KubeConfig } from '@kubernetes/client-node';
 import type { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
-import type { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
+import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { Logger } from 'winston';
 import { Metrics } from '@kubernetes/client-node';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PodStatus } from '@kubernetes/client-node/dist/top';
+import { TokenCredential } from '@azure/identity';
 
 // @alpha (undocumented)
 export interface AWSClusterDetails extends ClusterDetails {
@@ -30,8 +32,55 @@ export interface AWSClusterDetails extends ClusterDetails {
   externalId?: string;
 }
 
+// Warning: (ae-forgotten-export) The symbol "KubernetesAuthTranslator" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "AwsIamKubernetesAuthTranslator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class AwsIamKubernetesAuthTranslator
+  implements KubernetesAuthTranslator
+{
+  // (undocumented)
+  awsGetCredentials: () => Promise<Credentials>;
+  // Warning: (ae-incompatible-release-tags) The symbol "decorateClusterDetailsWithAuth" is marked as @public, but its signature references "AWSClusterDetails" which is marked as @alpha
+  //
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: AWSClusterDetails,
+  ): Promise<AWSClusterDetails>;
+  // (undocumented)
+  getBearerToken(
+    clusterName: string,
+    assumeRole?: string,
+    externalId?: string,
+  ): Promise<string>;
+  // (undocumented)
+  getCredentials(
+    assumeRole?: string,
+    externalId?: string,
+  ): Promise<SigningCreds>;
+  // Warning: (ae-forgotten-export) The symbol "SigningCreds" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  validCredentials(creds: SigningCreds): boolean;
+}
+
 // @alpha (undocumented)
 export interface AzureClusterDetails extends ClusterDetails {}
+
+// Warning: (ae-missing-release-tag) "AzureIdentityKubernetesAuthTranslator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class AzureIdentityKubernetesAuthTranslator
+  implements KubernetesAuthTranslator
+{
+  constructor(logger: Logger, tokenCredential?: TokenCredential);
+  // Warning: (ae-incompatible-release-tags) The symbol "decorateClusterDetailsWithAuth" is marked as @public, but its signature references "AzureClusterDetails" which is marked as @alpha
+  //
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: AzureClusterDetails,
+  ): Promise<AzureClusterDetails>;
+}
 
 // @alpha (undocumented)
 export interface ClusterDetails {
@@ -85,6 +134,48 @@ export interface FetchResponseWrapper {
 
 // @alpha (undocumented)
 export interface GKEClusterDetails extends ClusterDetails {}
+
+// Warning: (ae-missing-release-tag) "GoogleKubernetesAuthTranslator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class GoogleKubernetesAuthTranslator
+  implements KubernetesAuthTranslator
+{
+  // Warning: (ae-incompatible-release-tags) The symbol "decorateClusterDetailsWithAuth" is marked as @public, but its signature references "GKEClusterDetails" which is marked as @alpha
+  //
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: GKEClusterDetails,
+    authConfig: KubernetesRequestAuth,
+  ): Promise<GKEClusterDetails>;
+}
+
+// Warning: (ae-missing-release-tag) "GoogleServiceAccountAuthTranslator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class GoogleServiceAccountAuthTranslator
+  implements KubernetesAuthTranslator
+{
+  // Warning: (ae-incompatible-release-tags) The symbol "decorateClusterDetailsWithAuth" is marked as @public, but its signature references "GKEClusterDetails" which is marked as @alpha
+  //
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: GKEClusterDetails,
+  ): Promise<GKEClusterDetails>;
+}
+
+// Warning: (ae-missing-release-tag) "KubernetesAuthTranslatorGenerator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class KubernetesAuthTranslatorGenerator {
+  // (undocumented)
+  static getKubernetesAuthTranslatorInstance(
+    authProvider: string,
+    options: {
+      logger: Logger;
+    },
+  ): KubernetesAuthTranslator;
+}
 
 // @alpha (undocumented)
 export class KubernetesBuilder {
@@ -264,6 +355,18 @@ export interface KubernetesServiceLocator {
   }>;
 }
 
+// Warning: (ae-missing-release-tag) "NoopKubernetesAuthTranslator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class NoopKubernetesAuthTranslator implements KubernetesAuthTranslator {
+  // Warning: (ae-incompatible-release-tags) The symbol "decorateClusterDetailsWithAuth" is marked as @public, but its signature references "ServiceAccountClusterDetails" which is marked as @alpha
+  //
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: ServiceAccountClusterDetails,
+  ): Promise<ServiceAccountClusterDetails>;
+}
+
 // @alpha (undocumented)
 export interface ObjectFetchParams {
   // (undocumented)
@@ -297,6 +400,19 @@ export interface ObjectToFetch {
   objectType: KubernetesObjectTypes;
   // (undocumented)
   plural: string;
+}
+
+// Warning: (ae-missing-release-tag) "OidcKubernetesAuthTranslator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class OidcKubernetesAuthTranslator implements KubernetesAuthTranslator {
+  // Warning: (ae-incompatible-release-tags) The symbol "decorateClusterDetailsWithAuth" is marked as @public, but its signature references "ClusterDetails" which is marked as @alpha
+  //
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: ClusterDetails,
+    authConfig: KubernetesRequestAuth,
+  ): Promise<ClusterDetails>;
 }
 
 // @alpha (undocumented)
