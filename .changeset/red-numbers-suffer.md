@@ -6,7 +6,6 @@
 '@backstage/plugin-bitrise': patch
 '@backstage/plugin-catalog': patch
 '@backstage/plugin-catalog-graphql': patch
-'@backstage/plugin-catalog-import': patch
 '@backstage/plugin-cicd-statistics': patch
 '@backstage/plugin-circleci': patch
 '@backstage/plugin-cloudbuild': patch
