@@ -204,7 +204,6 @@ const ALLOW_WARNINGS = [
   'plugins/git-release-manager',
   'plugins/jenkins',
   'plugins/kubernetes',
-  'plugins/kubernetes-common',
 ];
 
 async function resolvePackagePath(
