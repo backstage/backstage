@@ -203,7 +203,6 @@ const ALLOW_WARNINGS = [
   'plugins/catalog-import',
   'plugins/cost-insights',
   'plugins/git-release-manager',
-  'plugins/github-actions',
   'plugins/github-deployments',
   'plugins/github-pull-requests-board',
   'plugins/jenkins',
