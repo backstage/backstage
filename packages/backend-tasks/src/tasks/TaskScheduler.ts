@@ -58,9 +58,12 @@ export class TaskScheduler {
    */
   forPlugin(pluginId: string): PluginTaskScheduler {
     const databaseFactory = once(async () => {
-      const knex = await this.databaseManager.forPlugin(pluginId).getClient();
+      const databaseManager = this.databaseManager.forPlugin(pluginId);
+      const knex = await databaseManager.getClient();
 
-      await migrateBackendTasks(knex);
+      if (!databaseManager.migrations?.skip) {
+        await migrateBackendTasks(knex);
+      }
 
       const janitor = new PluginTaskSchedulerJanitor({
         knex,

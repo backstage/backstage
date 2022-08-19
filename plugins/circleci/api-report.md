@@ -44,10 +44,7 @@ export class CircleCIApi {
   ): Promise<BuildWithSteps>;
   // (undocumented)
   getBuilds(
-    {
-      limit,
-      offset,
-    }: {
+    pagination: {
       limit: number;
       offset: number;
     },

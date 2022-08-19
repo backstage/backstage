@@ -135,10 +135,9 @@ export const buildTechInsightsContext = async <
 
   const factRetrieverRegistry = buildFactRetrieverRegistry();
 
-  const persistenceContext = await initializePersistenceContext(
-    await database.getClient(),
-    { logger },
-  );
+  const persistenceContext = await initializePersistenceContext(database, {
+    logger,
+  });
 
   const factRetrieverEngine = await FactRetrieverEngine.create({
     scheduler,

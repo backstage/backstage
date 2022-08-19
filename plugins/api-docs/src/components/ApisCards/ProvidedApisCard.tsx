@@ -32,11 +32,11 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 
-type Props = {
-  variant?: InfoCardVariants;
-};
-
-export const ProvidedApisCard = ({ variant = 'gridItem' }: Props) => {
+/**
+ * @public
+ */
+export const ProvidedApisCard = (props: { variant?: InfoCardVariants }) => {
+  const { variant = 'gridItem' } = props;
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: RELATION_PROVIDES_API,

@@ -149,6 +149,7 @@ export type AppComponents = {
 export type AppContext = {
   getPlugins(): BackstagePlugin_2[];
   getSystemIcon(key: string): IconComponent_2 | undefined;
+  getSystemIcons(): Record<string, IconComponent_2>;
   getComponents(): AppComponents;
 };
 
@@ -648,10 +649,7 @@ export interface PluginOptionsProviderProps {
 }
 
 // @alpha
-export const PluginProvider: ({
-  children,
-  plugin,
-}: PluginOptionsProviderProps) => JSX.Element;
+export const PluginProvider: (props: PluginOptionsProviderProps) => JSX.Element;
 
 // @public
 export type ProfileInfo = {

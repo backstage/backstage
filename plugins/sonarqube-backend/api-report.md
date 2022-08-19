@@ -13,13 +13,10 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 // @public
 export class DefaultSonarqubeInfoProvider implements SonarqubeInfoProvider {
   static fromConfig(config: Config): DefaultSonarqubeInfoProvider;
-  getBaseUrl({ instanceName }?: { instanceName?: string }): {
+  getBaseUrl(options?: { instanceName?: string }): {
     baseUrl: string;
   };
-  getFindings({
-    componentKey,
-    instanceName,
-  }: {
+  getFindings(options: {
     componentKey: string;
     instanceName?: string;
   }): Promise<SonarqubeFindings | undefined>;
@@ -35,9 +32,7 @@ export interface RouterOptions {
 export class SonarqubeConfig {
   constructor(instances: SonarqubeInstanceConfig[]);
   static fromConfig(config: Config): SonarqubeConfig;
-  getInstanceConfig({
-    sonarqubeName,
-  }?: {
+  getInstanceConfig(options?: {
     sonarqubeName?: string;
   }): SonarqubeInstanceConfig;
   // (undocumented)
@@ -52,13 +47,10 @@ export interface SonarqubeFindings {
 
 // @public
 export interface SonarqubeInfoProvider {
-  getBaseUrl({ instanceName }?: { instanceName?: string }): {
+  getBaseUrl(options?: { instanceName?: string }): {
     baseUrl: string;
   };
-  getFindings({
-    componentKey,
-    instanceName,
-  }: {
+  getFindings(options: {
     componentKey: string;
     instanceName?: string;
   }): Promise<SonarqubeFindings | undefined>;

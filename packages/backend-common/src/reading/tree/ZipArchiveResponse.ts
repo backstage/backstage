@@ -25,6 +25,7 @@ import {
   ReadTreeResponseFile,
 } from '../types';
 import { streamToBuffer } from './util';
+import { resolveSafeChildPath } from '../../paths';
 
 /**
  * Wraps a zip archive stream into a tree response reader.
@@ -187,10 +188,10 @@ export class ZipArchiveResponse implements ReadTreeResponse {
       const dirname = platformPath.dirname(entryPath);
 
       if (dirname) {
-        await fs.mkdirp(platformPath.join(dir, dirname));
+        await fs.mkdirp(resolveSafeChildPath(dir, dirname));
       }
       return new Promise(async (resolve, reject) => {
-        const file = fs.createWriteStream(platformPath.join(dir, entryPath));
+        const file = fs.createWriteStream(resolveSafeChildPath(dir, entryPath));
         file.on('finish', resolve);
 
         content.on('error', reject);

@@ -20,7 +20,7 @@ import { SessionApi } from '@backstage/core-plugin-api';
 // @public (undocumented)
 export const DefaultProviderSettings: ({
   configuredProviders,
-}: Props_3) => JSX.Element;
+}: Props_2) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ProviderSettingsItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -31,13 +31,10 @@ export const ProviderSettingsItem: ({
   description,
   icon: Icon,
   apiRef,
-}: Props_4) => JSX.Element;
+}: Props_3) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "SettingsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const Router: ({ providerSettings }: Props) => JSX.Element;
+export const Router: (props: { providerSettings?: JSX.Element }) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "SettingsProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Settings" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -59,7 +56,7 @@ export const UserSettingsAppearanceCard: () => JSX.Element;
 // @public (undocumented)
 export const UserSettingsAuthProviders: ({
   providerSettings,
-}: Props_2) => JSX.Element;
+}: Props) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "UserSettingsFeatureFlags" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -84,9 +81,7 @@ export const UserSettingsMenu: () => JSX.Element;
 // Warning: (ae-missing-release-tag) "UserSettingsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const UserSettingsPage: ({
-  providerSettings,
-}: {
+export const UserSettingsPage: (props: {
   providerSettings?: JSX.Element | undefined;
 }) => JSX.Element;
 
@@ -117,7 +112,7 @@ export const UserSettingsProfileCard: () => JSX.Element;
 // Warning: (ae-missing-release-tag) "UserSettingsSignInAvatar" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const UserSettingsSignInAvatar: ({ size }: Props_5) => JSX.Element;
+export const UserSettingsSignInAvatar: ({ size }: Props_4) => JSX.Element;
 
 // @public
 export const UserSettingsTab: (props: UserSettingsTabProps) => JSX.Element;

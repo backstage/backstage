@@ -1,5 +1,14 @@
 # @backstage/plugin-tech-insights-node
 
+## 0.3.3
+
+### Patch Changes
+
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/plugin-tech-insights-common@0.2.6
+
 ## 0.3.3-next.0
 
 ### Patch Changes

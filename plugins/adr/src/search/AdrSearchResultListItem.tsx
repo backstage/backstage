@@ -23,9 +23,11 @@ import {
   ListItemText,
   makeStyles,
 } from '@material-ui/core';
+import { parseEntityRef } from '@backstage/catalog-model';
 import { Link } from '@backstage/core-components';
 import { useAnalytics } from '@backstage/core-plugin-api';
 import { AdrDocument } from '@backstage/plugin-adr-common';
+import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
@@ -41,20 +43,16 @@ const useStyles = makeStyles({
 });
 
 /**
- * A component to display a ADR search result
+ * A component to display an ADR search result.
  * @public
  */
-export const AdrSearchResultListItem = ({
-  lineClamp = 5,
-  highlight,
-  rank,
-  result,
-}: {
+export function AdrSearchResultListItem(props: {
   lineClamp?: number;
   highlight?: ResultHighlight;
   rank?: number;
   result: AdrDocument;
-}) => {
+}) {
+  const { lineClamp = 5, highlight, rank, result } = props;
   const classes = useStyles();
   const analytics = useAnalytics();
 
@@ -104,6 +102,13 @@ export const AdrSearchResultListItem = ({
           }
         />
         <Box>
+          <Chip
+            label={`Entity: ${
+              result.entityTitle ??
+              humanizeEntityRef(parseEntityRef(result.entityRef))
+            }`}
+            size="small"
+          />
           {result.status && (
             <Chip label={`Status: ${result.status}`} size="small" />
           )}
@@ -113,4 +118,4 @@ export const AdrSearchResultListItem = ({
       <Divider component="li" />
     </Link>
   );
-};
+}

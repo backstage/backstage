@@ -32,7 +32,6 @@ import { Percentage } from './Percentage';
 import { Rating } from './Rating';
 import { RatingCard } from './RatingCard';
 import { Value } from './Value';
-
 import {
   EmptyState,
   InfoCard,
@@ -40,7 +39,6 @@ import {
   MissingAnnotationEmptyState,
   Progress,
 } from '@backstage/core-components';
-
 import { useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
@@ -72,7 +70,8 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-type DuplicationRating = {
+/** @public */
+export type DuplicationRating = {
   greaterThan: number;
   rating: '1.0' | '2.0' | '3.0' | '4.0' | '5.0';
 };
@@ -85,13 +84,15 @@ const defaultDuplicationRatings: DuplicationRating[] = [
   { greaterThan: 20, rating: '5.0' },
 ];
 
-export const SonarQubeCard = ({
-  variant = 'gridItem',
-  duplicationRatings = defaultDuplicationRatings,
-}: {
+/** @public */
+export const SonarQubeCard = (props: {
   variant?: InfoCardVariants;
   duplicationRatings?: DuplicationRating[];
 }) => {
+  const {
+    variant = 'gridItem',
+    duplicationRatings = defaultDuplicationRatings,
+  } = props;
   const { entity } = useEntity();
   const sonarQubeApi = useApi(sonarQubeApiRef);
 

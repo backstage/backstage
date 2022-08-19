@@ -31,6 +31,7 @@ import express from 'express';
 
 const DEFAULT_TOP = 10;
 
+/** @public */
 export interface RouterOptions {
   azureDevOpsApi?: AzureDevOpsApi;
   logger: Logger;
@@ -38,6 +39,7 @@ export interface RouterOptions {
   reader: UrlReader;
 }
 
+/** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

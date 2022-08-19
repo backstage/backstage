@@ -59,7 +59,7 @@ export const IssueCard = (props: IssueCardProps) => {
   } = props;
 
   return (
-    <Box marginBottom={1}>
+    <Box marginBottom={1} data-testid={`issue-${url}`}>
       <Paper variant="outlined">
         <CardActionArea href={url} target="_blank">
           <Box padding={1}>

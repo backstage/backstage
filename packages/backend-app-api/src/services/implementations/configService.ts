@@ -22,6 +22,7 @@ import {
   loggerServiceRef,
 } from '@backstage/backend-plugin-api';
 
+/** @public */
 export const configFactory = createServiceFactory({
   service: configServiceRef,
   deps: {

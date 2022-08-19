@@ -38,10 +38,7 @@ export const sonarQubeApiRef = createApiRef<SonarQubeApi>({
 });
 
 export type SonarQubeApi = {
-  getFindingSummary({
-    componentKey,
-    projectInstance,
-  }: {
+  getFindingSummary(options: {
     componentKey?: string;
     projectInstance?: string;
   }): Promise<FindingSummary | undefined>;

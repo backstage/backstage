@@ -25,7 +25,10 @@ import { useCostGrowthStyles as useStyles } from '../../utils/styles';
 
 export type CostGrowthIndicatorProps = TypographyProps & {
   change: ChangeStatistic;
-  formatter?: (change: ChangeStatistic) => Maybe<string>;
+  formatter?: (
+    change: ChangeStatistic,
+    options?: { absolute: boolean },
+  ) => Maybe<string>;
 };
 
 export const CostGrowthIndicator = ({
@@ -44,7 +47,7 @@ export const CostGrowthIndicator = ({
 
   return (
     <Typography className={classNames} component="span" {...props}>
-      {formatter ? formatter(change) : change.ratio}
+      {formatter ? formatter(change, { absolute: true }) : change.ratio}
       {growth === GrowthType.Excess && <ArrowDropUp aria-label="excess" />}
       {growth === GrowthType.Savings && <ArrowDropDown aria-label="savings" />}
     </Typography>

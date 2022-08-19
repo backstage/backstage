@@ -21,7 +21,7 @@ import {
   cacheServiceRef,
 } from '@backstage/backend-plugin-api';
 
-// TODO: Work out some naming and implementation patterns for these
+/** @public */
 export const cacheFactory = createServiceFactory({
   service: cacheServiceRef,
   deps: {

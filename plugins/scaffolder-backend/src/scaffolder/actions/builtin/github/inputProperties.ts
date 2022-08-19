@@ -23,6 +23,10 @@ const description = {
   title: 'Repository Description',
   type: 'string',
 };
+const homepage = {
+  title: 'Repository Homepage',
+  type: 'string',
+};
 const access = {
   title: 'Repository Access',
   description: `Sets an admin collaborator on the repository. Can either be a user reference different from 'owner' in 'repoUrl' or team reference, eg. 'org/team-name'`,
@@ -156,6 +160,7 @@ export { description };
 export { gitAuthorEmail };
 export { gitAuthorName };
 export { gitCommitMessage };
+export { homepage };
 export { protectDefaultBranch };
 export { protectEnforceAdmins };
 export { repoUrl };

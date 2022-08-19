@@ -108,7 +108,8 @@ export type KubernetesObjectTypes =
   | 'cronjobs'
   | 'ingresses'
   | 'customresources'
-  | 'statefulsets';
+  | 'statefulsets'
+  | 'daemonsets';
 
 /**
  * Used to load cluster details from different sources

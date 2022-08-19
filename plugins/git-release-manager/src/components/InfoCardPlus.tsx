@@ -17,7 +17,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
 import { TEST_IDS } from '../test-helpers/test-ids';
-
 import { InfoCard } from '@backstage/core-components';
 
 const useStyles = makeStyles(() => ({
@@ -26,7 +25,8 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const InfoCardPlus = ({ children }: { children?: React.ReactNode }) => {
+/** @public */
+export const InfoCardPlus = (props: { children?: React.ReactNode }) => {
   const classes = useStyles();
 
   return (
@@ -34,7 +34,7 @@ export const InfoCardPlus = ({ children }: { children?: React.ReactNode }) => {
       style={{ position: 'relative' }}
       data-testid={TEST_IDS.info.infoFeaturePlus}
     >
-      <InfoCard className={classes.feature}>{children}</InfoCard>
+      <InfoCard className={classes.feature}>{props.children}</InfoCard>
     </div>
   );
 };

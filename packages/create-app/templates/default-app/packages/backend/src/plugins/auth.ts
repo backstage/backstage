@@ -25,7 +25,7 @@ export default async function createPlugin(
       // This particular resolver makes all users share a single "guest" identity.
       // It should only be used for testing and trying out Backstage.
       //
-      // If you want to use a production ready resolver you can switch to the
+      // If you want to use a production ready resolver you can switch to
       // the one that is commented out below, it looks up a user entity in the
       // catalog using the GitHub username of the authenticated user.
       // That resolver requires you to have user entities populated in the catalog,

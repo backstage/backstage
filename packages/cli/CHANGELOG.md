@@ -1,5 +1,15 @@
 # @backstage/cli
 
+## 0.18.1
+
+### Patch Changes
+
+- d45bbfeb69: Linting is now ignored for any `.eslintrc.*` files, not just `.eslintrc.js`.
+- 72c228fdb8: Fixed a bug where `NODE_ENV` was not set in the environment when starting the backend in development mode. It has always been the case that Webpack transformed `NODE_ENV` when running in development mode, but this did not affect dependencies in `node_modules` as they are treated as external.
+- a539564c0d: Added Backstage version to output of `yarn backstage-cli info` command
+- fd68d6f138: Added resolution of `.json` and `.wasm` files to the Webpack configuration in order to match defaults.
+- 94155a41e0: Updated dependencies `@svgr/*` to `6.3.x`.
+
 ## 0.18.1-next.1
 
 ### Patch Changes

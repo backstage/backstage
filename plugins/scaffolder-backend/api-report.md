@@ -5,7 +5,7 @@
 ```ts
 /// <reference types="node" />
 
-import { BackendRegistrable } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
@@ -178,6 +178,7 @@ export function createGithubRepoCreateAction(options: {
 }): TemplateAction<{
   repoUrl: string;
   description?: string | undefined;
+  homepage?: string | undefined;
   access?: string | undefined;
   deleteBranchOnMerge?: boolean | undefined;
   gitAuthorName?: string | undefined;
@@ -304,11 +305,6 @@ export function createPublishBitbucketServerAction(options: {
 }>;
 
 // @public
-export function createPublishFileAction(): TemplateAction<{
-  path: string;
-}>;
-
-// @public
 export function createPublishGerritAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
@@ -343,6 +339,7 @@ export function createPublishGithubAction(options: {
 }): TemplateAction<{
   repoUrl: string;
   description?: string | undefined;
+  homepage?: string | undefined;
   access?: string | undefined;
   defaultBranch?: string | undefined;
   protectDefaultBranch?: boolean | undefined;
@@ -459,11 +456,7 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   claimTask(): Promise<SerializedTask | undefined>;
   // (undocumented)
-  completeTask({
-    taskId,
-    status,
-    eventBody,
-  }: {
+  completeTask(options: {
     taskId: string;
     status: TaskStatus;
     eventBody: JsonObject;
@@ -491,11 +484,11 @@ export class DatabaseTaskStore implements TaskStore {
     tasks: SerializedTask[];
   }>;
   // (undocumented)
-  listEvents({ taskId, after }: TaskStoreListEventsOptions): Promise<{
+  listEvents(options: TaskStoreListEventsOptions): Promise<{
     events: SerializedTaskEvent[];
   }>;
   // (undocumented)
-  listStaleTasks({ timeoutS }: { timeoutS: number }): Promise<{
+  listStaleTasks(options: { timeoutS: number }): Promise<{
     tasks: {
       taskId: string;
     }[];
@@ -504,20 +497,14 @@ export class DatabaseTaskStore implements TaskStore {
 
 // @public
 export type DatabaseTaskStoreOptions = {
-  database: Knex;
+  database: PluginDatabaseManager | Knex;
 };
 
 // @public
 export const executeShellCommand: (options: RunCommandOptions) => Promise<void>;
 
 // @public
-export function fetchContents({
-  reader,
-  integrations,
-  baseUrl,
-  fetchUrl,
-  outputPath,
-}: {
+export function fetchContents(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   baseUrl?: string;
@@ -566,7 +553,7 @@ export type RunCommandOptions = {
 };
 
 // @alpha
-export const scaffolderCatalogModule: (option: unknown) => BackendRegistrable;
+export const scaffolderCatalogModule: (options?: unknown) => BackendFeature;
 
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
