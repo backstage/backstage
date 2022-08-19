@@ -215,7 +215,6 @@ const ALLOW_WARNINGS = [
   'plugins/explore',
   'plugins/explore-react',
   'plugins/firehydrant',
-  'plugins/gcalendar',
   'plugins/gcp-projects',
   'plugins/git-release-manager',
   'plugins/github-actions',
