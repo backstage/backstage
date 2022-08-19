@@ -233,7 +233,6 @@ const ALLOW_WARNINGS = [
   'plugins/pagerduty',
   'plugins/search-backend-module-pg',
   'plugins/splunk-on-call',
-  'plugins/tech-radar',
   'plugins/user-settings',
 ];
 
