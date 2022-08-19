@@ -8,7 +8,7 @@ Added README card for Azure Devops
 
 **Before:**
 
-Remember to check if you have already provided these settings previously, as we will need them for the reame card to work.
+Remember to check if you have already provided these settings previously, as we will need them for the reamde card to work.
 
 #### [Azure DevOps](https://github.com/backstage/backstage/blob/master/app-config.yaml#L48L51:~:text=azureDevOps%3A,%3A%20my%2Dcompany)
 
