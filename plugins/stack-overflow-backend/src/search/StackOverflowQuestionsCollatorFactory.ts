@@ -95,35 +95,6 @@ export class StackOverflowQuestionsCollatorFactory
     return Readable.from(this.execute());
   }
 
-  async getQuestions() {
-    let hasMorePages = true;
-    let page = 1;
-    const items = [];
-
-    const params = qs.stringify(this.requestParams, {
-      arrayFormat: 'comma',
-      addQueryPrefix: true,
-    });
-
-    const apiKeyParam = this.apiKey
-      ? `${params ? '&' : '?'}key=${this.apiKey}`
-      : '';
-
-    while (hasMorePages) {
-      const res = await fetch(
-        `${this.baseUrl}/questions${params}${apiKeyParam}&page=${page}`,
-      );
-
-      const data = await res.json();
-      items.push(...data.items);
-      hasMorePages = data.has_more;
-      page = page + 1;
-    }
-    return {
-      items,
-    };
-  }
-
   async *execute(): AsyncGenerator<StackOverflowDocument> {
     if (!this.baseUrl) {
       this.logger.debug(
@@ -142,16 +113,34 @@ export class StackOverflowQuestionsCollatorFactory
       this.logger.error(`Caught ${e}`);
     }
 
-    const data = await this.getQuestions();
+    const params = qs.stringify(this.requestParams, {
+      arrayFormat: 'comma',
+      addQueryPrefix: true,
+    });
 
-    for (const question of data.items) {
-      yield {
-        title: question.title,
-        location: question.link,
-        text: question.owner.display_name,
-        tags: question.tags,
-        answers: question.answer_count,
-      };
+    const apiKeyParam = this.apiKey
+      ? `${params ? '&' : '?'}key=${this.apiKey}`
+      : '';
+
+    let hasMorePages = true;
+    let page = 1;
+    while (hasMorePages) {
+      const res = await fetch(
+        `${this.baseUrl}/questions${params}${apiKeyParam}&page=${page}`,
+      );
+
+      const data = await res.json();
+      for (const question of data.items) {
+        yield {
+          title: question.title,
+          location: question.link,
+          text: question.owner.display_name,
+          tags: question.tags,
+          answers: question.answer_count,
+        };
+      }
+      hasMorePages = data.has_more;
+      page = page + 1;
     }
   }
 }
