@@ -200,7 +200,6 @@ const PACKAGE_ROOTS = ['packages', 'plugins'];
 const ALLOW_WARNINGS = [
   'packages/core-components',
   'plugins/catalog',
-  'plugins/catalog-graphql',
   'plugins/catalog-import',
   'plugins/cicd-statistics',
   'plugins/circleci',
