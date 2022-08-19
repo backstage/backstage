@@ -210,7 +210,6 @@ const ALLOW_WARNINGS = [
   'plugins/circleci',
   'plugins/cost-insights',
   'plugins/dynatrace',
-  'plugins/explore',
   'plugins/explore-react',
   'plugins/git-release-manager',
   'plugins/github-actions',
