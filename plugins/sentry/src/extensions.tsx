@@ -23,11 +23,13 @@ import {
 } from '@backstage/core-plugin-api';
 import { Options } from '@material-table/core';
 
-type SentryPageProps = {
+/** @public */
+export type SentryPageProps = {
   statsFor?: '24h' | '14d' | '';
   tableOptions?: Options<never>;
 };
 
+/** @public */
 export const EntitySentryContent = sentryPlugin.provide(
   createRoutableExtension({
     name: 'EntitySentryContent',
@@ -35,7 +37,7 @@ export const EntitySentryContent = sentryPlugin.provide(
     component: () =>
       import('./components/SentryIssuesWidget').then(
         ({ SentryIssuesWidget }) => {
-          const SentryPage = ({ statsFor, tableOptions }: SentryPageProps) => {
+          const SentryPage = (props: SentryPageProps) => {
             const { entity } = useEntity();
             const defaultOptions: Options<never> = {
               padding: 'dense',
@@ -46,8 +48,8 @@ export const EntitySentryContent = sentryPlugin.provide(
             return (
               <SentryIssuesWidget
                 entity={entity}
-                statsFor={statsFor || '24h'}
-                tableOptions={{ ...defaultOptions, ...tableOptions }}
+                statsFor={props.statsFor || '24h'}
+                tableOptions={{ ...defaultOptions, ...props.tableOptions }}
               />
             );
           };
@@ -57,6 +59,7 @@ export const EntitySentryContent = sentryPlugin.provide(
   }),
 );
 
+/** @public */
 export const EntitySentryCard = sentryPlugin.provide(
   createComponentExtension({
     name: 'EntitySentryCard',
@@ -64,17 +67,14 @@ export const EntitySentryCard = sentryPlugin.provide(
       lazy: () =>
         import('./components/SentryIssuesWidget').then(
           ({ SentryIssuesWidget }) => {
-            const SentryCard = ({
-              statsFor,
-              tableOptions,
-            }: SentryPageProps) => {
+            const SentryCard = (props: SentryPageProps) => {
               const { entity } = useEntity();
               return (
                 <SentryIssuesWidget
                   entity={entity}
-                  statsFor={statsFor || '24h'}
+                  statsFor={props.statsFor || '24h'}
                   tableOptions={
-                    tableOptions || {
+                    props.tableOptions || {
                       padding: 'dense',
                       paging: true,
                       search: false,

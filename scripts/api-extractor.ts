@@ -234,7 +234,6 @@ const ALLOW_WARNINGS = [
   'plugins/newrelic-dashboard',
   'plugins/pagerduty',
   'plugins/search-backend-module-pg',
-  'plugins/sentry',
   'plugins/shortcuts',
   'plugins/splunk-on-call',
   'plugins/tech-radar',
