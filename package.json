@@ -41,6 +41,7 @@
     ]
   },
   "resolutions": {
+    "openid-client": "npm:openid-client-any-engine@^5.1.3",
     "@types/react": "^17",
     "@types/react-dom": "^17"
   },
