@@ -75,8 +75,7 @@ export const Stepper = (props: StepperProps) => {
   }, [props.extensions]);
 
   const validation = useMemo(() => {
-    const { mergedSchema } = steps[activeStep] ?? {};
-    return createAsyncValidators(mergedSchema, validators, {
+    return createAsyncValidators(steps[activeStep].mergedSchema, validators, {
       apiHolder,
     });
   }, [steps, activeStep, validators, apiHolder]);

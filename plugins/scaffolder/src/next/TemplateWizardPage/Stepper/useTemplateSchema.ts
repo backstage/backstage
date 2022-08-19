@@ -28,7 +28,7 @@ export interface ParsedTemplateSchema {
 }
 export const useTemplateSchema = (
   manifest: TemplateParameterSchema,
-): { steps: ParsedTemplateSchema } => {
+): { steps: ParsedTemplateSchema[] } => {
   const featureFlags = useApi(featureFlagsApiRef);
   const steps = manifest.steps.map(({ title, description, schema }) => ({
     title,

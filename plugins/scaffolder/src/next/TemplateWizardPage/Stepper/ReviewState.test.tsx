@@ -16,6 +16,7 @@
 import React from 'react';
 import { ReviewState } from './ReviewState';
 import { render } from '@testing-library/react';
+import { ParsedTemplateSchema } from './useTemplateSchema';
 
 describe('ReviewState', () => {
   it('should render the text as normal with no options', () => {
@@ -38,7 +39,7 @@ describe('ReviewState', () => {
       test: 'bob',
     };
 
-    const schemas = [
+    const schemas: ParsedTemplateSchema[] = [
       {
         mergedSchema: {
           type: 'object',
@@ -49,6 +50,10 @@ describe('ReviewState', () => {
             },
           },
         },
+        schema: {},
+        title: 'test',
+        uiSchema: {},
+        description: 'asd',
       },
     ];
 
