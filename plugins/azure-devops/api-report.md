@@ -235,8 +235,6 @@ export const EntityAzurePullRequestsContent: (props: {
   defaultLimit?: number | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "EntityAzureReadmeCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EntityAzureReadmeCard: (props: {
   maxHeight?: number | undefined;

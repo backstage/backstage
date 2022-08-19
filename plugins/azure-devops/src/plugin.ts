@@ -109,6 +109,7 @@ export const EntityAzurePullRequestsContent = azureDevOpsPlugin.provide(
   }),
 );
 
+/** @public */
 export const EntityAzureReadmeCard = azureDevOpsPlugin.provide(
   createComponentExtension({
     name: 'EntityAzureReadmeCard',
