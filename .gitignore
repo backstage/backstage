@@ -64,6 +64,7 @@ typings/
 # Yarn 3 with modules linker
 .yarn/*
 !.yarn/releases
+!.yarn/plugins
 
 # Node version directives
 .nvmrc
