@@ -199,10 +199,8 @@ const PACKAGE_ROOTS = ['packages', 'plugins'];
 
 const ALLOW_WARNINGS = [
   'packages/core-components',
-  'plugins/allure',
   'plugins/apache-airflow',
   'plugins/auth-backend',
-  'plugins/bitrise',
   'plugins/catalog',
   'plugins/catalog-graphql',
   'plugins/catalog-import',
