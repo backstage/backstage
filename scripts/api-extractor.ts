@@ -201,7 +201,6 @@ const ALLOW_WARNINGS = [
   'packages/core-components',
   'plugins/catalog',
   'plugins/catalog-import',
-  'plugins/cicd-statistics',
   'plugins/circleci',
   'plugins/cost-insights',
   'plugins/dynatrace',

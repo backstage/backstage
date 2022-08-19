@@ -46,6 +46,7 @@ import { cleanupBuildTree } from './utils/stage-names';
 import { renderFallbacks, useAsyncChain } from './components/progress';
 import { sortFilterStatusType } from './utils/api';
 
+/** @public */
 export function EntityPageCicdCharts() {
   const state = useCicdConfiguration();
 
