@@ -17,7 +17,7 @@ import React from 'react';
 import { TemplateParameterSchema } from '../../../types';
 import { Stepper } from './Stepper';
 import { renderInTestApp } from '@backstage/test-utils';
-import { fireEvent } from '@testing-library/react';
+import { act, fireEvent } from '@testing-library/react';
 
 describe('Stepper', () => {
   it('should render the step titles for each step of the manifest', async () => {
@@ -53,7 +53,9 @@ describe('Stepper', () => {
 
     expect(getByText('Next')).toBeInTheDocument();
 
-    await fireEvent.click(getByText('Next'));
+    await act(async () => {
+      await fireEvent.click(getByText('Next'));
+    });
 
     expect(getByText('Review')).toBeInTheDocument();
   });
@@ -93,9 +95,13 @@ describe('Stepper', () => {
       target: { value: 'im a test value' },
     });
 
-    await fireEvent.click(getByText('Next'));
+    await act(async () => {
+      await fireEvent.click(getByText('Next'));
+    });
 
-    await fireEvent.click(getByText('Back'));
+    await act(async () => {
+      await fireEvent.click(getByText('Back'));
+    });
 
     expect(getByRole('textbox', { name: 'name' })).toHaveValue(
       'im a test value',

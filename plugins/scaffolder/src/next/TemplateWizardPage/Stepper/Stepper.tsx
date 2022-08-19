@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useApiHolder } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import {
   Stepper as MuiStepper,
@@ -21,11 +22,12 @@ import {
   Button,
   makeStyles,
 } from '@material-ui/core';
-import { withTheme } from '@rjsf/core';
+import { FieldValidation, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useMemo, useState } from 'react';
 import { FieldExtensionOptions } from '../../../extensions';
 import { TemplateParameterSchema } from '../../../types';
+import { createAsyncValidators } from './createAsyncValidators';
 import { useTemplateSchema } from './useTemplateSchema';
 
 const useStyles = makeStyles(theme => ({
@@ -51,8 +53,12 @@ const Form = withTheme(MuiTheme);
 
 export const Stepper = (props: StepperProps) => {
   const { steps } = useTemplateSchema(props.manifest);
+  const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [formState, setFormState] = useState({});
+  const [errors, setErrors] = useState<
+    undefined | Record<string, FieldValidation>
+  >();
   const styles = useStyles();
 
   const extensions = useMemo(() => {
@@ -61,12 +67,40 @@ export const Stepper = (props: StepperProps) => {
     );
   }, [props.extensions]);
 
+  const validators = useMemo(() => {
+    return Object.fromEntries(
+      props.extensions.map(({ name, validation }) => [name, validation]),
+    );
+  }, [props.extensions]);
+
+  const validation = useMemo(() => {
+    const { mergedSchema } = steps[activeStep];
+    return createAsyncValidators(mergedSchema, validators, {
+      apiHolder,
+    });
+  }, [steps, activeStep, validators, apiHolder]);
+
   const handleBack = () => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
 
-  const handleNext = ({ formData }: { formData: JsonObject }) => {
-    setActiveStep(prevActiveStep => prevActiveStep + 1);
+  const handleNext = async ({ formData }: { formData: JsonObject }) => {
+    // TODO(blam): What do we do about loading states, does each field extension get a chance
+    // to display it's own loading? Or should we grey out the entire form.
+    setErrors(undefined);
+
+    const returnedValidation = await validation(formData);
+
+    const hasErrors = Object.values(returnedValidation).some(i => {
+      return i.__errors.length > 0;
+    });
+
+    if (hasErrors) {
+      setErrors(returnedValidation);
+    } else {
+      setErrors(undefined);
+      setActiveStep(prevActiveStep => prevActiveStep + 1);
+    }
     setFormState(current => ({ ...current, ...formData }));
   };
 
@@ -81,6 +115,7 @@ export const Stepper = (props: StepperProps) => {
       </MuiStepper>
       <div className={styles.formWrapper}>
         <Form
+          extraErrors={errors}
           formData={formState}
           schema={steps[activeStep].schema}
           uiSchema={steps[activeStep].uiSchema}
