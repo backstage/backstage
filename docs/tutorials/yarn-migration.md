@@ -21,10 +21,14 @@ First off, be sure to have the updated ignore entries in your app. These are inc
 Add the following to `.gitignore`:
 
 ```gitignore
-# Yarn 3 with modules linker
+# Yarn 3 files
+.pnp.*
 .yarn/*
-!.yarn/releases
+!.yarn/patches
 !.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 ```
 
 And this to `.dockerignore`:
