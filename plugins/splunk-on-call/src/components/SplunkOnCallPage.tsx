@@ -31,6 +31,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+/** @public */
 export type SplunkOnCallPageProps = {
   title?: string;
   subtitle?: string;

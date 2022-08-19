@@ -231,7 +231,6 @@ const ALLOW_WARNINGS = [
   'plugins/newrelic-dashboard',
   'plugins/pagerduty',
   'plugins/search-backend-module-pg',
-  'plugins/splunk-on-call',
 ];
 
 async function resolvePackagePath(

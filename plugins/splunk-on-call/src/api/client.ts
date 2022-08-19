@@ -39,12 +39,15 @@ import {
   ConfigApi,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export class UnauthorizedError extends Error {}
 
+/** @public */
 export const splunkOnCallApiRef = createApiRef<SplunkOnCallApi>({
   id: 'plugin.splunk-on-call.api',
 });
 
+/** @public */
 export class SplunkOnCallClient implements SplunkOnCallApi {
   static fromConfig(configApi: ConfigApi, discoveryApi: DiscoveryApi) {
     const eventsRestEndpoint: string | null =

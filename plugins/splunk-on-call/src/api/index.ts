@@ -19,4 +19,4 @@ export {
   splunkOnCallApiRef,
   UnauthorizedError,
 } from './client';
-export type { SplunkOnCallApi } from './types';
+export * from './types';
