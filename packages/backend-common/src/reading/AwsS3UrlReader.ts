@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import aws from 'aws-sdk';
+import aws, { Credentials, S3 } from 'aws-sdk';
 import { CredentialsOptions } from 'aws-sdk/lib/credentials';
 import {
   ReaderFactory,
@@ -126,7 +126,7 @@ export class AwsS3UrlReader implements UrlReader {
     return integrations.awsS3.list().map(integration => {
       const credentials = AwsS3UrlReader.buildCredentials(integration);
 
-      const s3 = new aws.S3({
+      const s3 = new S3({
         apiVersion: '2006-03-01',
         credentials,
         endpoint: integration.config.endpoint,
@@ -145,7 +145,7 @@ export class AwsS3UrlReader implements UrlReader {
   constructor(
     private readonly integration: AwsS3Integration,
     private readonly deps: {
-      s3: aws.S3;
+      s3: S3;
       treeResponseFactory: ReadTreeResponseFactory;
     },
   ) {}
@@ -156,17 +156,17 @@ export class AwsS3UrlReader implements UrlReader {
    */
   private static buildCredentials(
     integration?: AwsS3Integration,
-  ): aws.Credentials | CredentialsOptions | undefined {
+  ): Credentials | CredentialsOptions | undefined {
     if (!integration) {
       return undefined;
     }
 
     const accessKeyId = integration.config.accessKeyId;
     const secretAccessKey = integration.config.secretAccessKey;
-    let explicitCredentials: aws.Credentials | undefined;
+    let explicitCredentials: Credentials | undefined;
 
     if (accessKeyId && secretAccessKey) {
-      explicitCredentials = new aws.Credentials({
+      explicitCredentials = new Credentials({
         accessKeyId,
         secretAccessKey,
       });
