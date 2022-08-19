@@ -29,6 +29,7 @@ import { FieldExtensionOptions } from '../../../extensions';
 import { TemplateParameterSchema } from '../../../types';
 import { createAsyncValidators } from './createAsyncValidators';
 import { useTemplateSchema } from './useTemplateSchema';
+import { ReviewState } from './ReviewState';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -74,7 +75,7 @@ export const Stepper = (props: StepperProps) => {
   }, [props.extensions]);
 
   const validation = useMemo(() => {
-    const { mergedSchema } = steps[activeStep];
+    const { mergedSchema } = steps[activeStep] ?? {};
     return createAsyncValidators(mergedSchema, validators, {
       apiHolder,
     });
@@ -112,30 +113,37 @@ export const Stepper = (props: StepperProps) => {
             <MuiStepLabel>{step.title}</MuiStepLabel>
           </MuiStep>
         ))}
+        <MuiStep>
+          <MuiStepLabel>Review</MuiStepLabel>
+        </MuiStep>
       </MuiStepper>
       <div className={styles.formWrapper}>
-        <Form
-          extraErrors={errors}
-          formData={formState}
-          schema={steps[activeStep].schema}
-          uiSchema={steps[activeStep].uiSchema}
-          onSubmit={handleNext}
-          fields={extensions}
-          showErrorList={false}
-        >
-          <div className={styles.footer}>
-            <Button
-              onClick={handleBack}
-              className={styles.backButton}
-              disabled={activeStep < 1}
-            >
-              Back
-            </Button>
-            <Button variant="contained" color="primary" type="submit">
-              {activeStep === steps.length - 1 ? 'Review' : 'Next'}
-            </Button>
-          </div>
-        </Form>
+        {activeStep < steps.length ? (
+          <Form
+            extraErrors={errors}
+            formData={formState}
+            schema={steps[activeStep].schema}
+            uiSchema={steps[activeStep].uiSchema}
+            onSubmit={handleNext}
+            fields={extensions}
+            showErrorList={false}
+          >
+            <div className={styles.footer}>
+              <Button
+                onClick={handleBack}
+                className={styles.backButton}
+                disabled={activeStep < 1}
+              >
+                Back
+              </Button>
+              <Button variant="contained" color="primary" type="submit">
+                {activeStep === steps.length - 1 ? 'Review' : 'Next'}
+              </Button>
+            </div>
+          </Form>
+        ) : (
+          <ReviewState formState={formState} schemas={steps} />
+        )}
       </div>
     </>
   );
