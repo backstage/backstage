@@ -63,4 +63,78 @@ describe('ReviewState', () => {
 
     expect(getByRole('row', { name: 'Name ******' })).toBeInTheDocument();
   });
+
+  it('should hide from review if show is not set', async () => {
+    const formState = {
+      name: 'John Doe',
+      test: 'bob',
+    };
+
+    const schemas: ParsedTemplateSchema[] = [
+      {
+        mergedSchema: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              'ui:widget': 'password',
+              'ui:backstage': {
+                review: {
+                  show: false,
+                },
+              },
+            },
+          },
+        },
+        schema: {},
+        title: 'test',
+        uiSchema: {},
+        description: 'asd',
+      },
+    ];
+
+    const { queryByRole } = render(
+      <ReviewState formState={formState} schemas={schemas} />,
+    );
+
+    expect(
+      await queryByRole('row', { name: 'Name ******' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should allow for masking an option with a set text', () => {
+    const formState = {
+      name: 'John Doe',
+      test: 'bob',
+    };
+
+    const schemas: ParsedTemplateSchema[] = [
+      {
+        mergedSchema: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              'ui:widget': 'password',
+              'ui:backstage': {
+                review: {
+                  mask: 'lols',
+                },
+              },
+            },
+          },
+        },
+        schema: {},
+        title: 'test',
+        uiSchema: {},
+        description: 'asd',
+      },
+    ];
+
+    const { getByRole } = render(
+      <ReviewState formState={formState} schemas={schemas} />,
+    );
+
+    expect(getByRole('row', { name: 'Name lols' })).toBeInTheDocument();
+  });
 });

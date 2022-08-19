@@ -34,10 +34,6 @@ export const ReviewState = (props: ReviewStateProps) => {
           props.formState,
         );
         if (definitionInSchema) {
-          if (definitionInSchema['ui:widget'] === 'password') {
-            return [key, '******'];
-          }
-
           const backstageReviewOptions =
             definitionInSchema['ui:backstage']?.review;
 
@@ -45,9 +41,13 @@ export const ReviewState = (props: ReviewStateProps) => {
             if (backstageReviewOptions.mask) {
               return [key, backstageReviewOptions.mask];
             }
-            if (!backstageReviewOptions.show) {
+            if (backstageReviewOptions.show === false) {
               return [];
             }
+          }
+
+          if (definitionInSchema['ui:widget'] === 'password') {
+            return [key, '******'];
           }
         }
       }
