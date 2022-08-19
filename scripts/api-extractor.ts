@@ -238,7 +238,6 @@ const ALLOW_WARNINGS = [
   'plugins/splunk-on-call',
   'plugins/tech-radar',
   'plugins/user-settings',
-  'plugins/xcmetrics',
 ];
 
 async function resolvePackagePath(
