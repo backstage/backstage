@@ -90,5 +90,6 @@
     "*.md": [
       "node ./scripts/check-docs-quality"
     ]
-  }
+  },
+  "packageManager": "yarn@3.2.2"
 }

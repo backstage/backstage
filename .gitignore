@@ -61,6 +61,10 @@ typings/
 # Optional npm cache directory
 .npm
 
+# Yarn 3 with modules linker
+.yarn/*
+!.yarn/releases
+
 # Node version directives
 .nvmrc
 
