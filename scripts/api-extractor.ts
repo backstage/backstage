@@ -212,8 +212,6 @@ const ALLOW_WARNINGS = [
   'plugins/jenkins-backend',
   'plugins/kubernetes',
   'plugins/kubernetes-common',
-  'plugins/newrelic',
-  'plugins/newrelic-dashboard',
 ];
 
 async function resolvePackagePath(
