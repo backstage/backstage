@@ -2,7 +2,6 @@
   "name": "@backstage/dev-utils",
   "description": "Utilities for developing Backstage plugins.",
   "version": "1.0.6-next.1",
-  "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -34,10 +33,10 @@
   },
   "dependencies": {
     "@backstage/app-defaults": "^1.0.6-next.1",
+    "@backstage/catalog-model": "^1.1.0",
     "@backstage/core-app-api": "^1.1.0-next.1",
     "@backstage/core-components": "^0.11.1-next.1",
     "@backstage/core-plugin-api": "^1.0.6-next.1",
-    "@backstage/catalog-model": "^1.1.0",
     "@backstage/integration-react": "^1.1.4-next.0",
     "@backstage/plugin-catalog-react": "^1.1.4-next.1",
     "@backstage/test-utils": "^1.2.0-next.1",

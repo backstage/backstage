@@ -2,7 +2,6 @@
   "name": "@backstage/create-app",
   "description": "A CLI that helps you create your own Backstage app",
   "version": "0.4.31-next.1",
-  "private": false,
   "publishConfig": {
     "access": "public"
   },

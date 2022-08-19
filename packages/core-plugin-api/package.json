@@ -2,7 +2,6 @@
   "name": "@backstage/core-plugin-api",
   "description": "Core API used by Backstage plugins",
   "version": "1.0.6-next.1",
-  "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
