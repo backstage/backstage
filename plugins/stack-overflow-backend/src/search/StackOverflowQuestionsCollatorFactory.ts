@@ -95,6 +95,35 @@ export class StackOverflowQuestionsCollatorFactory
     return Readable.from(this.execute());
   }
 
+  async getQuestions() {
+    let hasMorePages = true;
+    let page = 1;
+    const items = [];
+
+    const params = qs.stringify(this.requestParams, {
+      arrayFormat: 'comma',
+      addQueryPrefix: true,
+    });
+
+    const apiKeyParam = this.apiKey
+      ? `${params ? '&' : '?'}key=${this.apiKey}`
+      : '';
+
+    while (hasMorePages) {
+      const res = await fetch(
+        `${this.baseUrl}/questions${params}${apiKeyParam}&page=${page}`,
+      );
+
+      const data = await res.json();
+      items.push(...data.items);
+      hasMorePages = data.has_more;
+      page = page + 1;
+    }
+    return {
+      items,
+    };
+  }
+
   async *execute(): AsyncGenerator<StackOverflowDocument> {
     if (!this.baseUrl) {
       this.logger.debug(
@@ -113,17 +142,7 @@ export class StackOverflowQuestionsCollatorFactory
       this.logger.error(`Caught ${e}`);
     }
 
-    const params = qs.stringify(this.requestParams, {
-      arrayFormat: 'comma',
-      addQueryPrefix: true,
-    });
-
-    const apiKeyParam = this.apiKey
-      ? `${params ? '&' : '?'}key=${this.apiKey}`
-      : '';
-
-    const res = await fetch(`${this.baseUrl}/questions${params}${apiKeyParam}`);
-    const data = await res.json();
+    const data = await this.getQuestions();
 
     for (const question of data.items) {
       yield {
