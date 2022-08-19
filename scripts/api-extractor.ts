@@ -201,7 +201,6 @@ const ALLOW_WARNINGS = [
   'packages/core-components',
   'plugins/catalog',
   'plugins/catalog-import',
-  'plugins/circleci',
   'plugins/cost-insights',
   'plugins/git-release-manager',
   'plugins/github-actions',
