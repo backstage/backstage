@@ -40,6 +40,7 @@ import {
 // express uses mime v1 while we only have types for mime v2
 type Mime = { lookup(arg0: string): string };
 
+/** @public */
 export interface RouterOptions {
   config: Config;
   logger: Logger;
@@ -85,6 +86,7 @@ export interface RouterOptions {
   disableConfigInjection?: boolean;
 }
 
+/** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

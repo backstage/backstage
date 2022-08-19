@@ -201,7 +201,6 @@ const ALLOW_WARNINGS = [
   'packages/core-components',
   'plugins/allure',
   'plugins/apache-airflow',
-  'plugins/app-backend',
   'plugins/auth-backend',
   'plugins/bitrise',
   'plugins/catalog',
