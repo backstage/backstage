@@ -202,7 +202,6 @@ const ALLOW_WARNINGS = [
   'plugins/catalog',
   'plugins/catalog-import',
   'plugins/git-release-manager',
-  'plugins/github-pull-requests-board',
   'plugins/jenkins',
   'plugins/kubernetes',
   'plugins/kubernetes-common',
