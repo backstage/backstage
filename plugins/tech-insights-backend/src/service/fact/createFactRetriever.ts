@@ -27,6 +27,7 @@ import { Duration } from 'luxon';
  * @param cadence - cron expression to indicate when the fact retriever should be triggered
  * @param factRetriever - Implementation of fact retriever consisting of at least id, version, schema and handler
  * @param lifecycle - Optional lifecycle definition indicating the cleanup logic of facts when this retriever is run
+ * @param timeout - Optional duration to determine how long the fact retriever should be allowed to run, defaults to 5 minutes
  *
  */
 export type FactRetrieverRegistrationOptions = {
@@ -40,10 +41,10 @@ export type FactRetrieverRegistrationOptions = {
  * @public
  *
  * A helper function to construct fact retriever registrations.
- *
- * @param cadence - cron expression to indicate when the fact retriever should be triggered
- * @param factRetriever - Implementation of fact retriever consisting of at least id, version, schema and handler
- * @param lifecycle - Optional lifecycle definition indicating the cleanup logic of facts when this retriever is run
+ * @param options.cadence - Cron expression to indicate when the fact retriever should be triggered
+ * @param options.factRetriever - Implementation of fact retriever consisting of at least id, version, schema and handler
+ * @param options.lifecycle - Optional lifecycle definition indicating the cleanup logic of facts when this retriever is run
+ * @param options.timeout - Optional duration to determine how long the fact retriever should be allowed to run, defaults to 5 minutes
  *
  *
  * @remarks
