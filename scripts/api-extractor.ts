@@ -208,7 +208,6 @@ const ALLOW_WARNINGS = [
   'plugins/catalog-import',
   'plugins/cicd-statistics',
   'plugins/circleci',
-  'plugins/config-schema',
   'plugins/cost-insights',
   'plugins/dynatrace',
   'plugins/explore',
