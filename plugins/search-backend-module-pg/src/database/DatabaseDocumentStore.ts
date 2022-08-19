@@ -32,6 +32,7 @@ const migrationsDir = resolvePackagePath(
   'migrations',
 );
 
+/** @public */
 export class DatabaseDocumentStore implements DatabaseStore {
   static async create(
     database: PluginDatabaseManager,

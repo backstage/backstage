@@ -230,7 +230,6 @@ const ALLOW_WARNINGS = [
   'plugins/newrelic',
   'plugins/newrelic-dashboard',
   'plugins/pagerduty',
-  'plugins/search-backend-module-pg',
 ];
 
 async function resolvePackagePath(
