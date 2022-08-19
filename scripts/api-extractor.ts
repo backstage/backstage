@@ -233,7 +233,6 @@ const ALLOW_WARNINGS = [
   'plugins/newrelic',
   'plugins/newrelic-dashboard',
   'plugins/pagerduty',
-  'plugins/rollbar',
   'plugins/rollbar-backend',
   'plugins/search-backend-module-pg',
   'plugins/sentry',

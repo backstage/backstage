@@ -22,6 +22,7 @@ import {
 } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
+/** @public */
 export class RollbarClient implements RollbarApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
