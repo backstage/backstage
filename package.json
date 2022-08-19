@@ -45,7 +45,6 @@
     ]
   },
   "resolutions": {
-    "**/@graphql-codegen/cli/**/ws": "^8.0.0",
     "@types/react": "^17",
     "@types/react-dom": "^17"
   },
