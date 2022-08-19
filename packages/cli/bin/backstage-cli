@@ -30,6 +30,8 @@ if (!isLocal || process.env.BACKSTAGE_E2E_CLI_TEST) {
       [
         '--esm',
         '--transpile-only',
+        '--compilerOptions',
+        '{"module":"Node16","moduleResolution":"Node16"}',
         '--project',
         path.resolve(__dirname, '../../../tsconfig.json'),
         path.resolve(__dirname, '../src/index.ts'),
