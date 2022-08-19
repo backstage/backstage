@@ -22,6 +22,7 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 
+/** @public */
 export interface JenkinsInfoProvider {
   getInstance(options: {
     /**
@@ -37,6 +38,7 @@ export interface JenkinsInfoProvider {
   }): Promise<JenkinsInfo>;
 }
 
+/** @public */
 export interface JenkinsInfo {
   baseUrl: string;
   headers?: Record<string, string | string[]>;
@@ -44,6 +46,7 @@ export interface JenkinsInfo {
   crumbIssuer?: boolean;
 }
 
+/** @public */
 export interface JenkinsInstanceConfig {
   name: string;
   baseUrl: string;
@@ -54,6 +57,8 @@ export interface JenkinsInstanceConfig {
 
 /**
  * Holds multiple Jenkins configurations.
+ *
+ * @public
  */
 export class JenkinsConfig {
   constructor(public readonly instances: JenkinsInstanceConfig[]) {}
@@ -163,6 +168,8 @@ export class JenkinsConfig {
  * Use default config and annotations, build using fromConfig static function.
  *
  * This will fallback through various deprecated config and annotation schemes.
+ *
+ * @public
  */
 export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
   static readonly OLD_JENKINS_ANNOTATION = 'jenkins.io/github-folder';

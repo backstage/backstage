@@ -207,7 +207,6 @@ const ALLOW_WARNINGS = [
   'plugins/github-deployments',
   'plugins/github-pull-requests-board',
   'plugins/jenkins',
-  'plugins/jenkins-backend',
   'plugins/kubernetes',
   'plugins/kubernetes-common',
 ];
