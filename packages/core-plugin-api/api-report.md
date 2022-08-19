@@ -649,10 +649,7 @@ export interface PluginOptionsProviderProps {
 }
 
 // @alpha
-export const PluginProvider: ({
-  children,
-  plugin,
-}: PluginOptionsProviderProps) => JSX.Element;
+export const PluginProvider: (props: PluginOptionsProviderProps) => JSX.Element;
 
 // @public
 export type ProfileInfo = {

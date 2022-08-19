@@ -272,9 +272,11 @@ export class CatalogClient implements CatalogApi {
    * {@inheritdoc CatalogApi.addLocation}
    */
   async addLocation(
-    { type = 'url', target, dryRun }: AddLocationRequest,
+    request: AddLocationRequest,
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse> {
+    const { type = 'url', target, dryRun } = request;
+
     const response = await this.fetchApi.fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/locations${
         dryRun ? '?dryRun=true' : ''

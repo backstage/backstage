@@ -77,10 +77,7 @@ export class AzureDevOpsApi {
     top: number,
   ): Promise<RepoBuild[]>;
   // (undocumented)
-  getTeamMembers({
-    projectId,
-    teamId,
-  }: {
+  getTeamMembers(options: {
     projectId: string;
     teamId: string;
   }): Promise<TeamMember[] | undefined>;

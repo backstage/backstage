@@ -41,7 +41,8 @@ type Props = {
   endpoints: EndpointProps[];
 };
 
-export const ApolloExplorerPage = ({ title, subtitle, endpoints }: Props) => {
+export const ApolloExplorerPage = (props: Props) => {
+  const { title, subtitle, endpoints } = props;
   return (
     <Page themeId="tool">
       <Header title={title ?? 'Apollo Explorer 👩‍🚀'} subtitle={subtitle ?? ''} />

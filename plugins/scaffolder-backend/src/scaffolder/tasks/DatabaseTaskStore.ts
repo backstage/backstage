@@ -256,9 +256,11 @@ export class DatabaseTaskStore implements TaskStore {
     }
   }
 
-  async listStaleTasks({ timeoutS }: { timeoutS: number }): Promise<{
+  async listStaleTasks(options: { timeoutS: number }): Promise<{
     tasks: { taskId: string }[];
   }> {
+    const { timeoutS } = options;
+
     const rawRows = await this.db<RawDbTaskRow>('tasks')
       .where('status', 'processing')
       .andWhere(
@@ -277,15 +279,13 @@ export class DatabaseTaskStore implements TaskStore {
     return { tasks };
   }
 
-  async completeTask({
-    taskId,
-    status,
-    eventBody,
-  }: {
+  async completeTask(options: {
     taskId: string;
     status: TaskStatus;
     eventBody: JsonObject;
   }): Promise<void> {
+    const { taskId, status, eventBody } = options;
+
     let oldStatus: string;
     if (status === 'failed' || status === 'completed') {
       oldStatus = 'processing';
@@ -346,10 +346,10 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  async listEvents({
-    taskId,
-    after,
-  }: TaskStoreListEventsOptions): Promise<{ events: SerializedTaskEvent[] }> {
+  async listEvents(
+    options: TaskStoreListEventsOptions,
+  ): Promise<{ events: SerializedTaskEvent[] }> {
+    const { taskId, after } = options;
     const rawEvents = await this.db<RawDbTaskEventRow>('task_events')
       .where({
         task_id: taskId,

@@ -128,18 +128,14 @@ export const EntityCloudbuildContent: () => JSX.Element;
 // Warning: (ae-missing-release-tag) "EntityLatestCloudbuildRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityLatestCloudbuildRunCard: ({
-  branch,
-}: {
+export const EntityLatestCloudbuildRunCard: (props: {
   branch: string;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityLatestCloudbuildsForBranchCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityLatestCloudbuildsForBranchCard: ({
-  branch,
-}: {
+export const EntityLatestCloudbuildsForBranchCard: (props: {
   branch: string;
 }) => JSX.Element;
 
@@ -163,18 +159,12 @@ export { isCloudbuildAvailable as isPluginApplicableToEntity };
 // Warning: (ae-missing-release-tag) "LatestWorkflowRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const LatestWorkflowRunCard: ({
-  branch,
-}: {
-  branch: string;
-}) => JSX.Element;
+export const LatestWorkflowRunCard: (props: { branch: string }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "LatestWorkflowsForBranchCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const LatestWorkflowsForBranchCard: ({
-  branch,
-}: {
+export const LatestWorkflowsForBranchCard: (props: {
   branch: string;
 }) => JSX.Element;
 

@@ -72,11 +72,8 @@ const WidgetContent = ({
   );
 };
 
-export const LatestWorkflowRunCard = ({
-  branch = 'master',
-}: {
-  branch: string;
-}) => {
+export const LatestWorkflowRunCard = (props: { branch: string }) => {
+  const { branch = 'master' } = props;
   const { entity } = useEntity();
   const errorApi = useApi(errorApiRef);
   const projectId = entity?.metadata.annotations?.[CLOUDBUILD_ANNOTATION] || '';
@@ -103,11 +100,8 @@ export const LatestWorkflowRunCard = ({
   );
 };
 
-export const LatestWorkflowsForBranchCard = ({
-  branch = 'master',
-}: {
-  branch: string;
-}) => {
+export const LatestWorkflowsForBranchCard = (props: { branch: string }) => {
+  const { branch = 'master' } = props;
   const { entity } = useEntity();
 
   return (

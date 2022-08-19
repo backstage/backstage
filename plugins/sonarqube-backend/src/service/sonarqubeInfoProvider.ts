@@ -30,7 +30,7 @@ export interface SonarqubeInfoProvider {
    * @param instanceName - Name of the sonarqube instance to get the info from
    * @returns the url of the instance
    */
-  getBaseUrl({ instanceName }?: { instanceName?: string }): { baseUrl: string };
+  getBaseUrl(options?: { instanceName?: string }): { baseUrl: string };
 
   /**
    * Query the sonarqube instance corresponding to the instanceName to get all
@@ -43,10 +43,7 @@ export interface SonarqubeInfoProvider {
    * @returns All measures with the analysis date. Will return undefined if we
    * can't provide the full response
    */
-  getFindings({
-    componentKey,
-    instanceName,
-  }: {
+  getFindings(options: {
     componentKey: string;
     instanceName?: string;
   }): Promise<SonarqubeFindings | undefined>;
@@ -185,9 +182,10 @@ export class SonarqubeConfig {
    * @returns The requested Sonarqube instance.
    * @throws Error when no default config could be found or the requested name couldn't be found in config.
    */
-  getInstanceConfig({
-    sonarqubeName,
-  }: { sonarqubeName?: string } = {}): SonarqubeInstanceConfig {
+  getInstanceConfig(
+    options: { sonarqubeName?: string } = {},
+  ): SonarqubeInstanceConfig {
+    const { sonarqubeName } = options;
     const DEFAULT_SONARQUBE_NAME = 'default';
 
     if (!sonarqubeName || sonarqubeName === DEFAULT_SONARQUBE_NAME) {
@@ -303,11 +301,11 @@ export class DefaultSonarqubeInfoProvider implements SonarqubeInfoProvider {
    * {@inheritDoc SonarqubeInfoProvider.getBaseUrl}
    * @throws Error If configuration can't be retrieved.
    */
-  getBaseUrl({ instanceName }: { instanceName?: string } = {}): {
+  getBaseUrl(options: { instanceName?: string } = {}): {
     baseUrl: string;
   } {
     const instanceConfig = this.config.getInstanceConfig({
-      sonarqubeName: instanceName,
+      sonarqubeName: options.instanceName,
     });
     return { baseUrl: instanceConfig.baseUrl };
   }
@@ -316,13 +314,11 @@ export class DefaultSonarqubeInfoProvider implements SonarqubeInfoProvider {
    * {@inheritDoc SonarqubeInfoProvider.getFindings}
    * @throws Error If configuration can't be retrieved.
    */
-  async getFindings({
-    componentKey,
-    instanceName,
-  }: {
+  async getFindings(options: {
     componentKey: string;
     instanceName?: string;
   }): Promise<SonarqubeFindings | undefined> {
+    const { componentKey, instanceName } = options;
     const { baseUrl, apiKey } = this.config.getInstanceConfig({
       sonarqubeName: instanceName,
     });

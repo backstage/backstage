@@ -25,6 +25,7 @@ import {
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const apiDocsPlugin = createPlugin({
   id: 'api-docs',
   routes: {

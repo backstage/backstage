@@ -296,13 +296,11 @@ export class AzureDevOpsApi {
     );
   }
 
-  public async getTeamMembers({
-    projectId,
-    teamId,
-  }: {
+  public async getTeamMembers(options: {
     projectId: string;
     teamId: string;
   }): Promise<TeamMember[] | undefined> {
+    const { projectId, teamId } = options;
     this.logger?.debug(`Getting team member ids for team '${teamId}'.`);
 
     const client = await this.webApi.getCoreApi();
