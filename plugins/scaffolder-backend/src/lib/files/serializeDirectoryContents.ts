@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import globby from 'globby';
 import limiterFactory from 'p-limit';
-import { join as joinPath } from 'path';
+import { resolveSafeChildPath } from '@backstage/backend-common';
 import { SerializedFile } from './types';
 
 const DEFAULT_GLOB_PATTERNS = ['./**', '!.git'];
@@ -57,23 +57,21 @@ export async function serializeDirectoryContents(
     paths
       .filter(({ dirent }) => !dirent.isDirectory())
       .filter(({ dirent, path }) => {
-        if (!dirent.isSymbolicLink()) return true
-        if (!fs.existsSync(joinPath(sourcePath, path))) return true  // We only want symlinks that DO NOT exist
-        return false
+        if (!dirent.isSymbolicLink()) return true;
+        if (!fs.existsSync(resolveSafeChildPath(sourcePath, path))) return true; // We only want symlinks that DO NOT exist (yet)
+        return false;
       })
       .map(async ({ dirent, path, stats }) => ({
-      path,
-      content: await limiter(async () => {
-        const absFilePath = joinPath(sourcePath, path)
-        // Treat readlink as an explicit Buffer instead of implict utf-8 for consistency between types
-        const readLinkConf = { options: { encoding: null }}
-        if (dirent.isSymbolicLink()) {
-          return fs.readlink(absFilePath, readLinkConf)
-        }
-        return fs.readFile(absFilePath)
-      }),
-      executable: isExecutable(stats?.mode),
-      symlink: dirent.isSymbolicLink(),
-    })),
+        path,
+        content: await limiter(async () => {
+          const absFilePath = resolveSafeChildPath(sourcePath, path);
+          if (dirent.isSymbolicLink()) {
+            return fs.readlinkSync(absFilePath, 'buffer');
+          }
+          return fs.readFile(absFilePath);
+        }),
+        executable: isExecutable(stats?.mode),
+        symlink: dirent.isSymbolicLink(),
+      })),
   );
 }
