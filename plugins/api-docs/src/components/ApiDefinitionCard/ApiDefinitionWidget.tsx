@@ -19,6 +19,7 @@ import { GraphQlDefinitionWidget } from '../GraphQlDefinitionWidget';
 import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget';
 import { GrpcApiDefinitionWidget } from '../GrpcApiDefinitionWidget';
 
+/** @public */
 export type ApiDefinitionWidget = {
   type: string;
   title: string;
@@ -26,6 +27,7 @@ export type ApiDefinitionWidget = {
   rawLanguage?: string;
 };
 
+/** @public */
 export function defaultDefinitionWidgets(): ApiDefinitionWidget[] {
   return [
     {

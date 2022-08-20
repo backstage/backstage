@@ -1,5 +1,23 @@
 # @backstage/plugin-adr
 
+## 0.2.0
+
+### Minor Changes
+
+- bfc7c50a09: Display associated entity as a chip in `AdrSearchResultListItem`
+
+  BREAKING: `AdrDocument` now includes a `entityRef` property, if you have a custom `AdrParser` you will have to supply this property in your returned documents
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-adr-common@0.2.0
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-react@1.1.3
+  - @backstage/integration-react@1.1.3
+  - @backstage/plugin-search-react@1.0.1
+
 ## 0.2.0-next.2
 
 ### Minor Changes

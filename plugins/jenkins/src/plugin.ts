@@ -26,16 +26,19 @@ import {
 } from '@backstage/core-plugin-api';
 import { JenkinsClient, jenkinsApiRef } from './api';
 
+/** @public */
 export const rootRouteRef = createRouteRef({
   id: 'jenkins',
 });
 
+/** @public */
 export const buildRouteRef = createSubRouteRef({
   id: 'jenkins/builds',
   path: '/builds/:jobFullName/:buildNumber',
   parent: rootRouteRef,
 });
 
+/** @public */
 export const jenkinsPlugin = createPlugin({
   id: 'jenkins',
   apis: [
@@ -51,6 +54,7 @@ export const jenkinsPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const EntityJenkinsContent = jenkinsPlugin.provide(
   createRoutableExtension({
     name: 'EntityJenkinsContent',
@@ -58,6 +62,8 @@ export const EntityJenkinsContent = jenkinsPlugin.provide(
     mountPoint: rootRouteRef,
   }),
 );
+
+/** @public */
 export const EntityLatestJenkinsRunCard = jenkinsPlugin.provide(
   createComponentExtension({
     name: 'EntityLatestJenkinsRunCard',

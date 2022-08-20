@@ -97,9 +97,7 @@ export async function createRouter(
   let taskBroker: TaskBroker;
 
   if (!options.taskBroker) {
-    const databaseTaskStore = await DatabaseTaskStore.create({
-      database: await database.getClient(),
-    });
+    const databaseTaskStore = await DatabaseTaskStore.create({ database });
     taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
   } else {
     taskBroker = options.taskBroker;

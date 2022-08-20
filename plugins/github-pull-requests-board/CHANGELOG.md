@@ -1,5 +1,16 @@
 # @backstage/plugin-github-pull-requests-board
 
+## 0.1.2
+
+### Patch Changes
+
+- 73268a67ff: Fixed rendering when PR contains references to deleted Github accounts
+- Updated dependencies
+  - @backstage/integration@1.3.0
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-react@1.1.3
+
 ## 0.1.2-next.1
 
 ### Patch Changes

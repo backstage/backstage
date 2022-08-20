@@ -26,10 +26,10 @@ import {
   Team,
 } from '@backstage/plugin-azure-devops-common';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
-
-import { AzureDevOpsApi } from './AzureDevOpsApi';
 import { ResponseError } from '@backstage/errors';
+import { AzureDevOpsApi } from './AzureDevOpsApi';
 
+/** @public */
 export class AzureDevOpsClient implements AzureDevOpsApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;

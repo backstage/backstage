@@ -23,6 +23,7 @@ import { KafkaApi, KafkaJsApiImpl } from './KafkaApi';
 import _ from 'lodash';
 import { getClusterDetails } from '../config/ClusterReader';
 
+/** @public */
 export interface RouterOptions {
   logger: Logger;
   config: Config;
@@ -84,6 +85,7 @@ export const makeRouter = (
   return router;
 };
 
+/** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

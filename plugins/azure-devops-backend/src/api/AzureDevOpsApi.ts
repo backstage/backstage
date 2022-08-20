@@ -53,6 +53,7 @@ import {
   WebApiTeam,
 } from 'azure-devops-node-api/interfaces/CoreInterfaces';
 
+/** @public */
 export class AzureDevOpsApi {
   public constructor(
     private readonly logger: Logger,
@@ -73,6 +74,7 @@ export class AzureDevOpsApi {
       a.name && b.name ? a.name.localeCompare(b.name) : 0,
     );
   }
+
   public async getGitRepository(
     projectName: string,
     repoName: string,
@@ -294,13 +296,11 @@ export class AzureDevOpsApi {
     );
   }
 
-  public async getTeamMembers({
-    projectId,
-    teamId,
-  }: {
+  public async getTeamMembers(options: {
     projectId: string;
     teamId: string;
   }): Promise<TeamMember[] | undefined> {
+    const { projectId, teamId } = options;
     this.logger?.debug(`Getting team member ids for team '${teamId}'.`);
 
     const client = await this.webApi.getCoreApi();

@@ -1,5 +1,17 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.30
+
+### Patch Changes
+
+- b746eca638: Make `products` field optional in the config
+- daf4b33e34: Add name property to Group
+- 08562ebe11: Display minus sign in trends in `CostOverviewCard`
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-cost-insights-common@0.1.1
+
 ## 0.11.30-next.1
 
 ### Patch Changes

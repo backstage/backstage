@@ -51,7 +51,7 @@ steps:
       imageName: 'foo/custom-built-cookiecutter-image-with-extensions'
 ```
 
-See for example, the [`Dockerfile`](./Dockerfile) in this directory.
+For example, you can `pip install jinja2_custom_filters_extension` as part of your cookiecutter Dockerfile.
 
 ### Instructing Cookiecutter to use the extension
 

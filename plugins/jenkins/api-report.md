@@ -14,24 +14,15 @@ import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "EntityJenkinsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const EntityJenkinsContent: (_props: {}) => JSX.Element;
+export const EntityJenkinsContent: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "EntityLatestJenkinsRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const EntityLatestJenkinsRunCard: ({
-  branch,
-  variant,
-}: {
+export const EntityLatestJenkinsRunCard: (props: {
   branch: string;
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "isJenkinsAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 const isJenkinsAvailable: (entity: Entity) => boolean;
 export { isJenkinsAvailable };
@@ -101,8 +92,6 @@ export class JenkinsClient implements JenkinsApi {
   }): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "jenkinsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 const jenkinsPlugin: BackstagePlugin<
   {
@@ -117,12 +106,9 @@ export { jenkinsPlugin as plugin };
 // Warning: (ae-missing-release-tag) "LatestRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const LatestRunCard: ({
-  branch,
-  variant,
-}: {
+export const LatestRunCard: (props: {
   branch: string;
-  variant?: InfoCardVariants | undefined;
+  variant?: InfoCardVariants;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "LEGACY_JENKINS_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -130,9 +116,8 @@ export const LatestRunCard: ({
 // @public (undocumented)
 export const LEGACY_JENKINS_ANNOTATION = 'jenkins.io/github-folder';
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Router: (_props: Props) => JSX.Element;
+export const Router: () => JSX.Element;
 ```

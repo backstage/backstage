@@ -1,5 +1,22 @@
 # @backstage/plugin-techdocs-node
 
+## 1.3.0
+
+### Minor Changes
+
+- ad35364e97: feat(techdocs): add edit button support for bitbucketServer
+
+### Patch Changes
+
+- c8196bd37d: Fix AWS S3 404 NotFound error
+
+  When reading an object from the S3 bucket through a stream, the aws-sdk getObject() API may throw a 404 NotFound Error with no error message or, in fact, any sort of HTTP-layer error responses. These fail the @backstage/error's assertError() checks, so they must be wrapped. The test for this case was also updated to match the wrapped error message.
+
+- f833344611: Bump default `TechDocs` image to `v1.1.0`, see the release [here](https://github.com/backstage/techdocs-container/releases/tag/v1.1.0).
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/integration@1.3.0
+
 ## 1.3.0-next.1
 
 ### Minor Changes

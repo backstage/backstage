@@ -1,5 +1,21 @@
 # @backstage/backend-app-api
 
+## 0.2.0
+
+### Minor Changes
+
+- 5df230d48c: Introduced a new `backend-defaults` package carrying `createBackend` which was previously exported from `backend-app-api`.
+  The `backend-app-api` package now exports the `createSpecializedBacked` that does not add any service factories by default.
+
+### Patch Changes
+
+- 0599732ec0: Refactored experimental backend system with new type names.
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/backend-plugin-api@0.1.1
+  - @backstage/backend-tasks@0.3.4
+  - @backstage/plugin-permission-node@0.6.4
+
 ## 0.1.1-next.0
 
 ### Patch Changes

@@ -26,10 +26,12 @@ import {
 } from '@backstage/core-plugin-api';
 import { KafkaDashboardClient } from './api/KafkaDashboardClient';
 
+/** @public */
 export const rootCatalogKafkaRouteRef = createRouteRef({
   id: 'kafka',
 });
 
+/** @public */
 export const kafkaPlugin = createPlugin({
   id: 'kafka',
   apis: [
@@ -50,6 +52,7 @@ export const kafkaPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const EntityKafkaContent = kafkaPlugin.provide(
   createRoutableExtension({
     name: 'EntityKafkaContent',

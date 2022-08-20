@@ -28,35 +28,22 @@ export enum BuildStatus {
   'success' = 0,
 }
 
-// Warning: (ae-missing-release-tag) "EntityGithubActionsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EntityGithubActionsContent: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "EntityLatestGithubActionRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const EntityLatestGithubActionRunCard: ({
-  branch,
-  variant,
-}: {
+export const EntityLatestGithubActionRunCard: (props: {
   branch: string;
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "EntityLatestGithubActionsForBranchCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const EntityLatestGithubActionsForBranchCard: ({
-  branch,
-  variant,
-}: {
+export const EntityLatestGithubActionsForBranchCard: (props: {
   branch: string;
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "EntityRecentGithubActionsRunsCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const EntityRecentGithubActionsRunsCard: ({
@@ -191,8 +178,6 @@ export class GithubActionsClient implements GithubActionsApi {
   }): Promise<any>;
 }
 
-// Warning: (ae-missing-release-tag) "githubActionsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 const githubActionsPlugin: BackstagePlugin<
   {
@@ -233,22 +218,21 @@ export type Jobs = {
   jobs: Job[];
 };
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "LatestWorkflowRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const LatestWorkflowRunCard: ({
-  branch,
-  variant,
-}: Props_2) => JSX.Element;
+export const LatestWorkflowRunCard: (props: {
+  branch: string;
+  variant?: InfoCardVariants;
+}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "LatestWorkflowsForBranchCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const LatestWorkflowsForBranchCard: ({
-  branch,
-  variant,
-}: Props_2) => JSX.Element;
+export const LatestWorkflowsForBranchCard: (props: {
+  branch: string;
+  variant?: InfoCardVariants;
+}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "RecentWorkflowRunsCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

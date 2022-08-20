@@ -31,13 +31,7 @@ export const adrPlugin: BackstagePlugin<
 
 // @public
 export const AdrReader: {
-  ({
-    adr,
-    decorators,
-  }: {
-    adr: string;
-    decorators?: AdrContentDecorator[] | undefined;
-  }): JSX.Element;
+  (props: { adr: string; decorators?: AdrContentDecorator[] }): JSX.Element;
   decorators: Readonly<{
     createRewriteRelativeLinksDecorator(): AdrContentDecorator;
     createRewriteRelativeEmbedsDecorator(): AdrContentDecorator;
@@ -45,23 +39,15 @@ export const AdrReader: {
 };
 
 // @public
-export const AdrSearchResultListItem: ({
-  lineClamp,
-  highlight,
-  rank,
-  result,
-}: {
-  lineClamp?: number | undefined;
-  highlight?: ResultHighlight | undefined;
-  rank?: number | undefined;
+export function AdrSearchResultListItem(props: {
+  lineClamp?: number;
+  highlight?: ResultHighlight;
+  rank?: number;
   result: AdrDocument;
-}) => JSX.Element;
+}): JSX.Element;
 
 // @public
-export const EntityAdrContent: ({
-  contentDecorators,
-  filePathFilterFn,
-}: {
+export const EntityAdrContent: (props: {
   contentDecorators?: AdrContentDecorator[] | undefined;
   filePathFilterFn?: AdrFilePathFilterFn | undefined;
 }) => JSX.Element;

@@ -21,23 +21,17 @@ import { RepoBuildOptions } from '@backstage/plugin-azure-devops-common';
 import { SvgIconProps } from '@material-ui/core';
 import { Team } from '@backstage/plugin-azure-devops-common';
 
-// Warning: (ae-missing-release-tag) "AllFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type AllFilter = BaseFilter & {
   type: FilterType.All;
 };
 
-// Warning: (ae-missing-release-tag) "AssignedToTeamFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type AssignedToTeamFilter = BaseFilter & {
   type: FilterType.AssignedToTeam;
   teamId: string;
 };
 
-// Warning: (ae-missing-release-tag) "AssignedToTeamsFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type AssignedToTeamsFilter = BaseFilter &
   (
@@ -51,8 +45,6 @@ export type AssignedToTeamsFilter = BaseFilter &
       }
   );
 
-// Warning: (ae-missing-release-tag) "AssignedToUserFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type AssignedToUserFilter = BaseFilter &
   (
@@ -66,8 +58,6 @@ export type AssignedToUserFilter = BaseFilter &
       }
   );
 
-// Warning: (ae-missing-release-tag) "AzureDevOpsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface AzureDevOpsApi {
   // (undocumented)
@@ -112,13 +102,9 @@ export interface AzureDevOpsApi {
   getUserTeamIds(userId: string): Promise<string[]>;
 }
 
-// Warning: (ae-missing-release-tag) "azureDevOpsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const azureDevOpsApiRef: ApiRef<AzureDevOpsApi>;
 
-// Warning: (ae-missing-release-tag) "AzureDevOpsClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class AzureDevOpsClient implements AzureDevOpsApi {
   constructor(options: {
@@ -167,38 +153,24 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   getUserTeamIds(userId: string): Promise<string[]>;
 }
 
-// Warning: (ae-missing-release-tag) "azureDevOpsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const azureDevOpsPlugin: BackstagePlugin<{}, {}, {}>;
 
-// Warning: (ae-missing-release-tag) "AzurePullRequestsIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const AzurePullRequestsIcon: (props: SvgIconProps) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "AzurePullRequestsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const AzurePullRequestsPage: ({
-  projectName,
-  pollingInterval,
-  defaultColumnConfigs,
-}: {
+export const AzurePullRequestsPage: (props: {
   projectName?: string | undefined;
   pollingInterval?: number | undefined;
   defaultColumnConfigs?: PullRequestColumnConfig[] | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "BaseFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type BaseFilter = {
   type: FilterType;
 };
 
-// Warning: (ae-missing-release-tag) "CreatedByTeamFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type CreatedByTeamFilter = BaseFilter &
   ({
@@ -212,8 +184,6 @@ export type CreatedByTeamFilter = BaseFilter &
       }
   ));
 
-// Warning: (ae-missing-release-tag) "CreatedByTeamsFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type CreatedByTeamsFilter = BaseFilter &
   (
@@ -233,8 +203,6 @@ export type CreatedByTeamsFilter = BaseFilter &
       }
   );
 
-// Warning: (ae-missing-release-tag) "CreatedByUserFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type CreatedByUserFilter = BaseFilter &
   (
@@ -248,31 +216,19 @@ export type CreatedByUserFilter = BaseFilter &
       }
   );
 
-// Warning: (ae-missing-release-tag) "EntityAzureGitTagsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EntityAzureGitTagsContent: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "EntityAzurePipelinesContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const EntityAzurePipelinesContent: ({
-  defaultLimit,
-}: {
+export const EntityAzurePipelinesContent: (props: {
   defaultLimit?: number | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "EntityAzurePullRequestsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const EntityAzurePullRequestsContent: ({
-  defaultLimit,
-}: {
+export const EntityAzurePullRequestsContent: (props: {
   defaultLimit?: number | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "Filter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type Filter =
   | AssignedToUserFilter
@@ -283,8 +239,6 @@ export type Filter =
   | CreatedByTeamsFilter
   | AllFilter;
 
-// Warning: (ae-missing-release-tag) "FilterType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export enum FilterType {
   // (undocumented)
@@ -311,18 +265,12 @@ export enum FilterType {
   CreatedByUser = 'CreatedByUser',
 }
 
-// Warning: (ae-missing-release-tag) "isAzureDevOpsAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const isAzureDevOpsAvailable: (entity: Entity) => boolean;
 
-// Warning: (ae-missing-release-tag) "isAzurePipelinesAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const isAzurePipelinesAvailable: (entity: Entity) => boolean;
 
-// Warning: (ae-missing-release-tag) "PullRequestColumnConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface PullRequestColumnConfig {
   // (undocumented)
@@ -333,8 +281,6 @@ export interface PullRequestColumnConfig {
   title: string;
 }
 
-// Warning: (ae-missing-release-tag) "PullRequestFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type PullRequestFilter = (pullRequest: DashboardPullRequest) => boolean;
 

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { Box, Grid, MenuItem, Select } from '@material-ui/core';
 import { useApi, storageApiRef } from '@backstage/core-plugin-api';
@@ -27,13 +28,15 @@ import { newRelicDashboardApiRef } from '../../../api';
 import { DashboardSnapshotSummary } from '../../../api/NewRelicDashboardApi';
 import useObservable from 'react-use/lib/useObservable';
 
-type Props = {
+/**
+ * @public
+ */
+export const DashboardSnapshot = (props: {
   guid: string;
   name: string;
   permalink: string;
-};
-
-export const DashboardSnapshot = ({ guid, name, permalink }: Props) => {
+}) => {
+  const { guid, name, permalink } = props;
   const newRelicDashboardAPI = useApi(newRelicDashboardApiRef);
   const storageApi = useApi(storageApiRef).forBucket('newrelic-dashboard');
   const setStorageValue = (value: number) => {

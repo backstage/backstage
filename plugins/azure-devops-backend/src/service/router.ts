@@ -31,12 +31,14 @@ import express from 'express';
 
 const DEFAULT_TOP = 10;
 
+/** @public */
 export interface RouterOptions {
   azureDevOpsApi?: AzureDevOpsApi;
   logger: Logger;
   config: Config;
 }
 
+/** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

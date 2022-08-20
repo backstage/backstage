@@ -130,7 +130,7 @@ export async function createRouter(
   if (options.database) {
     const store = await StaticAssetsStore.create({
       logger,
-      database: await options.database.getClient(),
+      database: options.database,
     });
 
     const assets = await findStaticAssets(staticDir);

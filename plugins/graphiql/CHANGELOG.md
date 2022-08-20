@@ -1,5 +1,14 @@
 # @backstage/plugin-graphiql
 
+## 0.2.40
+
+### Patch Changes
+
+- 3a8ab72248: Minor internal tweak to lazy loading in order to improve module compatibility.
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+
 ## 0.2.40-next.1
 
 ### Patch Changes

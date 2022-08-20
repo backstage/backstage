@@ -58,13 +58,11 @@ const useStyles = makeStyles((theme: Theme) => ({
  * Component for browsing ADRs on an entity page.
  * @public
  */
-export const EntityAdrContent = ({
-  contentDecorators,
-  filePathFilterFn,
-}: {
+export const EntityAdrContent = (props: {
   contentDecorators?: AdrContentDecorator[];
   filePathFilterFn?: AdrFilePathFilterFn;
 }) => {
+  const { contentDecorators, filePathFilterFn } = props;
   const classes = useStyles();
   const { entity } = useEntity();
   const rootLink = useRouteRef(rootRouteRef);

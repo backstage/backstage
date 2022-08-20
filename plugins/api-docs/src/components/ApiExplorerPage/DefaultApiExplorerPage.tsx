@@ -64,11 +64,9 @@ export type DefaultApiExplorerPageProps = {
  * DefaultApiExplorerPage
  * @public
  */
-export const DefaultApiExplorerPage = ({
-  initiallySelectedFilter = 'all',
-  columns,
-  actions,
-}: DefaultApiExplorerPageProps) => {
+export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
+  const { initiallySelectedFilter = 'all', columns, actions } = props;
+
   const configApi = useApi(configApiRef);
   const generatedSubtitle = `${
     configApi.getOptionalString('organization.name') ?? 'Backstage'

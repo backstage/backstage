@@ -1,5 +1,22 @@
 # @backstage/plugin-techdocs
 
+## 1.3.1
+
+### Patch Changes
+
+- e924d2d013: Added back reduction in size, this fixes the extremely large TeachDocs headings
+- b86ed4d990: Add highlight to active navigation item and navigation parents.
+- 7a98c73dc8: Fixed techdocs sidebar layout bug for medium devices.
+- 8acb22205c: Scroll techdocs navigation into focus and expand any nested navigation items.
+- Updated dependencies
+  - @backstage/integration@1.3.0
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-react@1.1.3
+  - @backstage/plugin-techdocs-react@1.0.3
+  - @backstage/integration-react@1.1.3
+  - @backstage/plugin-search-react@1.0.1
+
 ## 1.3.1-next.2
 
 ### Patch Changes
