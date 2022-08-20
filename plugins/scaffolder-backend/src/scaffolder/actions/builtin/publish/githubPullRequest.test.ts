@@ -373,9 +373,9 @@ describe('createPublishGithubPullRequestAction', () => {
 
       mockFs({
         [workspacePath]: {
-          'Makefile': mockFs.symlink({
-            path: '../../nothing/yet'
-          })
+          Makefile: mockFs.symlink({
+            path: '../../nothing/yet',
+          }),
         },
       });
 
@@ -401,7 +401,7 @@ describe('createPublishGithubPullRequestAction', () => {
           {
             commit: 'Create my new app',
             files: {
-              'Makefile': {
+              Makefile: {
                 content: Buffer.from('../../nothing/yet').toString('utf-8'),
                 encoding: 'utf-8',
                 mode: '120000',
@@ -411,7 +411,7 @@ describe('createPublishGithubPullRequestAction', () => {
         ],
       });
     });
-  })
+  });
 
   describe('with executable file mode 755', () => {
     let input: GithubPullRequestActionInput;

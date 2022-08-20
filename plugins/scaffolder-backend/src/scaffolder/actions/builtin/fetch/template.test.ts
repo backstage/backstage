@@ -298,8 +298,8 @@ describe('fetch:template', () => {
                 path: 'a-binary-file.png',
               }),
               brokenSymlink: mockFs.symlink({
-                path: './not-a-real-file.txt'
-              })
+                path: './not-a-real-file.txt',
+              }),
             },
           });
 
@@ -382,9 +382,9 @@ describe('fetch:template', () => {
         ).resolves.toBe(true);
 
         await expect(
-          fs.readlink(`${workspacePath}/target/brokenSymlink`)
+          fs.readlink(`${workspacePath}/target/brokenSymlink`),
         ).resolves.toEqual('./not-a-real-file.txt');
-      })
+      });
     });
   });
 
