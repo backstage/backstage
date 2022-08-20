@@ -259,8 +259,9 @@ export const createPublishGithubPullRequestAction = ({
         return '100644';
       };
 
-      const determineFileEncoding = (file: SerializedFile): string =>
-        file.symlink ? 'utf-8' : 'base64';
+      const determineFileEncoding = (
+        file: SerializedFile,
+      ): 'utf-8' | 'base64' => (file.symlink ? 'utf-8' : 'base64');
 
       const files = Object.fromEntries(
         directoryContents.map(file => [
