@@ -130,20 +130,20 @@ describe('serializeDirectoryContents', () => {
     mockFs({
       root: {
         'b.txt': mockFs.symlink({
-          path: './a.txt'
-        })
-      }
-    })
+          path: './a.txt',
+        }),
+      },
+    });
 
     await expect(serializeDirectoryContents('root')).resolves.toEqual([
       {
         path: 'b.txt',
         executable: false,
         symlink: true,
-        content: './a.txt',
-      }
-    ])
-  })
+        content: Buffer.from('./a.txt', 'utf8'),
+      },
+    ]);
+  });
 
   it('should ignore symlinked folder files', async () => {
     mockFs({
