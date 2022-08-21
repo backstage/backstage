@@ -267,7 +267,7 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
       return {
         ...result,
         token: jwt,
-      }
+      };
     }
     const claims = verifyResult.payload as CloudflareAccessClaims;
     // Builds a passport profile from JWT claims first
