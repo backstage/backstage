@@ -7144,9 +7144,9 @@
   integrity sha512-Lx+EZoJxUKw4dp8uei9XiUVNlgkYmax5+ovqt6Xf3LzJOnWhlfJw/jLBmqfGVwOP/pDr4HT8bI1WtxK0IChMLw==
 
 "@types/marked@^4.0.0":
-  version "4.0.5"
-  resolved "https://registry.npmjs.org/@types/marked/-/marked-4.0.5.tgz#3e900fa331a9b1a98f7a8a50f0f39b4bf2b6469f"
-  integrity sha512-jMN2moJ+lSf1VZXQo3VXeMCjoXuciVONig8+U0YNBop5aBvQw4qkolx1Nzn1i0T8L2l9IZ3jju6bS1pPwlaY1w==
+  version "4.0.6"
+  resolved "https://registry.npmjs.org/@types/marked/-/marked-4.0.6.tgz#9ca544c1057f3c8b3f649b5e8e56d9241e3ca22d"
+  integrity sha512-ITAVUzsnVbhy5afxhs4PPPbrv2hKVEDH5BhhaQNQlVG0UNu+9A18XSdYr53nBdHZ0ADEQLl+ciOjXbs7eHdiQQ==
 
 "@types/mdast@^3.0.0", "@types/mdast@^3.0.3":
   version "3.0.10"
@@ -18280,9 +18280,9 @@ markdown-table@^3.0.0:
   integrity sha512-CBbaYXKSGnE1uLRpKA1SWgIRb2PQrpkllNWpZtZe6VojOJ4ysqiq7/2glYcmKsOYN09QgH/HEBX5hIshAeiK6A==
 
 marked@^4.0.14:
-  version "4.0.18"
-  resolved "https://registry.npmjs.org/marked/-/marked-4.0.18.tgz#cd0ac54b2e5610cfb90e8fd46ccaa8292c9ed569"
-  integrity sha512-wbLDJ7Zh0sqA0Vdg6aqlbT+yPxqLblpAZh1mK2+AO2twQkPywvvqQNfEPVwSSRjZ7dZcdeVBIAgiO7MMp3Dszw==
+  version "4.0.19"
+  resolved "https://registry.npmjs.org/marked/-/marked-4.0.19.tgz#d36198d1ac1255525153c351c68c75bc1d7aee46"
+  integrity sha512-rgQF/OxOiLcvgUAj1Q1tAf4Bgxn5h5JZTp04Fx4XUkVhs7B+7YA9JEWJhJpoO8eJt8MkZMwqLCNeNqj1bCREZQ==
 
 match-sorter@^6.0.2:
   version "6.3.1"
