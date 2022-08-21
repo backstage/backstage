@@ -204,7 +204,7 @@ export type CloudflareAccessResult = {
   claims: CloudflareAccessClaims;
   cfIdentity: CloudflareAccessIdentityProfile;
   expiresInSeconds?: number;
-  jwt: string;
+  token: string;
 };
 
 // @public
