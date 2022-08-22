@@ -4954,18 +4954,6 @@
     outvariant "^1.2.1"
     strict-event-emitter "^0.2.0"
 
-"@mswjs/interceptors@^0.16.3":
-  version "0.16.6"
-  resolved "https://registry.npmjs.org/@mswjs/interceptors/-/interceptors-0.16.6.tgz#c1a777ed3f69b55bbbc725b2deb827f160c0107c"
-  integrity sha512-7ax1sRx5s4ZWl0KvVhhcPOUoPbCCkVh8M8hYaqOyvoAQOiqLVzy+Z6Mh2ywPhYw4zudr5Mo/E8UT/zJBO/Wxrw==
-  dependencies:
-    "@open-draft/until" "^1.0.3"
-    "@xmldom/xmldom" "^0.7.5"
-    debug "^4.3.3"
-    headers-polyfill "^3.0.4"
-    outvariant "^1.2.1"
-    strict-event-emitter "^0.2.4"
-
 "@mswjs/interceptors@^0.17.2":
   version "0.17.2"
   resolved "https://registry.npmjs.org/@mswjs/interceptors/-/interceptors-0.17.2.tgz#a1d1cd8ef98b944c91d9fe202f27a68ec3673b88"
@@ -19239,36 +19227,10 @@ msw@^0.39.2:
     type-fest "^1.2.2"
     yargs "^17.3.1"
 
-msw@^0.43.0:
-  version "0.43.1"
-  resolved "https://registry.npmjs.org/msw/-/msw-0.43.1.tgz#57cb4af56f07442e8a6d14d76032a0ab41434256"
-  integrity sha512-wzhPpL6RsiYkyIUlTCg0aZY0aRZa4Eiubd6MOA5oJVgfuapDmvZrI8OMi4h4e+fpHD+Qsy+4unAjv3wpWia5yw==
-  dependencies:
-    "@mswjs/cookies" "^0.2.0"
-    "@mswjs/interceptors" "^0.16.3"
-    "@open-draft/until" "^1.0.3"
-    "@types/cookie" "^0.4.1"
-    "@types/js-levenshtein" "^1.1.1"
-    chalk "4.1.1"
-    chokidar "^3.4.2"
-    cookie "^0.4.2"
-    graphql "^16.3.0"
-    headers-polyfill "^3.0.4"
-    inquirer "^8.2.0"
-    is-node-process "^1.0.1"
-    js-levenshtein "^1.1.6"
-    node-fetch "^2.6.7"
-    outvariant "^1.3.0"
-    path-to-regexp "^6.2.0"
-    statuses "^2.0.0"
-    strict-event-emitter "^0.2.0"
-    type-fest "^1.2.2"
-    yargs "^17.3.1"
-
-msw@^0.44.0, msw@^0.44.2:
-  version "0.44.2"
-  resolved "https://registry.npmjs.org/msw/-/msw-0.44.2.tgz#00a901b6cc9d119fb30f794330d96dca6944afc2"
-  integrity sha512-u8wjzzcMWouoZtuIShCwx4M3wFF5sBAV1f8K4a0WX8kiihFjzl89IKE1VYmTclLyMIwpOq8qQ1HTpuh2BFX/3A==
+msw@^0.45.0:
+  version "0.45.0"
+  resolved "https://registry.npmjs.org/msw/-/msw-0.45.0.tgz#7bab4ff0a03875aa17b7fefd5fbeea0b71f95957"
+  integrity sha512-aZgYsSJWYLHj5wZs/g640GP5AK6gfHC6dKTED8bforKZx10IJ+b0z7Y+0infEKD4gNT3orj7tiUZe4pxgpY0SQ==
   dependencies:
     "@mswjs/cookies" "^0.2.2"
     "@mswjs/interceptors" "^0.17.2"
@@ -19278,7 +19240,6 @@ msw@^0.44.0, msw@^0.44.2:
     chalk "4.1.1"
     chokidar "^3.4.2"
     cookie "^0.4.2"
-    graphql "^16.3.0"
     headers-polyfill "^3.0.4"
     inquirer "^8.2.0"
     is-node-process "^1.0.1"
