@@ -17,9 +17,12 @@
 import {
   createPlugin,
   createComponentExtension,
+  createApiFactory,
+  configApiRef,
 } from '@backstage/core-plugin-api';
 import { createCardExtension } from '@backstage/plugin-home';
 import { StackOverflowQuestionsContentProps } from './types';
+import { stackOverflowApiRef, StackOverflowClient } from './api';
 
 /**
  * The Backstage plugin that holds stack overflow specific components
@@ -28,6 +31,18 @@ import { StackOverflowQuestionsContentProps } from './types';
  */
 export const stackOverflowPlugin = createPlugin({
   id: 'stack-overflow',
+  apis: [
+    createApiFactory({
+      api: stackOverflowApiRef,
+      deps: { configApi: configApiRef },
+      factory: ({ configApi }) =>
+        new StackOverflowClient({
+          baseUrl:
+            configApi.getOptionalString('stackoverflow.baseUrl') ||
+            'https://api.stackexchange.com/2.2',
+        }),
+    }),
+  ],
 });
 
 /**
