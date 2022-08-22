@@ -29,6 +29,7 @@ import {
   createApiFactory,
   createPlugin,
   createRoutableExtension,
+  createComponentExtension,
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
@@ -105,5 +106,15 @@ export const EntityAzurePullRequestsContent = azureDevOpsPlugin.provide(
         m => m.EntityPageAzurePullRequests,
       ),
     mountPoint: azurePullRequestsEntityContentRouteRef,
+  }),
+);
+
+/** @public */
+export const EntityAzureReadmeCard = azureDevOpsPlugin.provide(
+  createComponentExtension({
+    name: 'EntityAzureReadmeCard',
+    component: {
+      lazy: () => import('./components/ReadmeCard').then(m => m.ReadmeCard),
+    },
   }),
 );

@@ -21,6 +21,8 @@ import {
   GitTag,
   PullRequest,
   PullRequestOptions,
+  Readme,
+  ReadmeConfig,
   RepoBuild,
   RepoBuildOptions,
   Team,
@@ -128,6 +130,14 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     )}?${queryString}`;
     const items = await this.get<BuildRun[]>(urlSegment);
     return { items };
+  }
+
+  public async getReadme(opts: ReadmeConfig): Promise<Readme> {
+    return await this.get(
+      `readme/${encodeURIComponent(opts.project)}/${encodeURIComponent(
+        opts.repo,
+      )}`,
+    );
   }
 
   private async get<T>(path: string): Promise<T> {

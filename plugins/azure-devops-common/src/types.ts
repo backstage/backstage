@@ -207,6 +207,18 @@ export interface Team {
 }
 
 /** @public */
+export interface ReadmeConfig {
+  project: string;
+  repo: string;
+}
+
+/** @public */
+export interface Readme {
+  url: string;
+  content: string;
+}
+
+/** @public */
 export interface TeamMember {
   id?: string;
   displayName?: string;

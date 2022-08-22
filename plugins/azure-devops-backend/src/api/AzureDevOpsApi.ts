@@ -42,6 +42,8 @@ import {
   convertDashboardPullRequest,
   convertPolicy,
   getArtifactId,
+  replaceReadme,
+  buildEncodedUrl,
 } from '../utils';
 
 import { TeamMember as AdoTeamMember } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
@@ -52,12 +54,14 @@ import {
   TeamProjectReference,
   WebApiTeam,
 } from 'azure-devops-node-api/interfaces/CoreInterfaces';
+import { UrlReader } from '@backstage/backend-common';
 
 /** @public */
 export class AzureDevOpsApi {
   public constructor(
     private readonly logger: Logger,
     private readonly webApi: WebApi,
+    private readonly urlReader: UrlReader,
   ) {}
 
   public async getProjects(): Promise<Project[]> {
@@ -392,6 +396,28 @@ export class AzureDevOpsApi {
     const buildRuns: BuildRun[] = builds.map(mappedBuildRun);
 
     return buildRuns;
+  }
+
+  public async getReadme(
+    host: string,
+    org: string,
+    project: string,
+    repo: string,
+  ): Promise<{
+    url: string;
+    content: string;
+  }> {
+    const url = buildEncodedUrl(host, org, project, repo, 'README.md');
+    const response = await this.urlReader.read(url);
+    const content = await replaceReadme(
+      this.urlReader,
+      host,
+      org,
+      project,
+      repo,
+      response.toString(),
+    );
+    return { url, content };
   }
 }
 

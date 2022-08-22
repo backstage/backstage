@@ -18,11 +18,12 @@ import { PullRequestOptions } from '@backstage/plugin-azure-devops-common';
 import { RepoBuild } from '@backstage/plugin-azure-devops-common';
 import { Team } from '@backstage/plugin-azure-devops-common';
 import { TeamMember } from '@backstage/plugin-azure-devops-common';
+import { UrlReader } from '@backstage/backend-common';
 import { WebApi } from 'azure-devops-node-api';
 
 // @public (undocumented)
 export class AzureDevOpsApi {
-  constructor(logger: Logger, webApi: WebApi);
+  constructor(logger: Logger, webApi: WebApi, urlReader: UrlReader);
   // (undocumented)
   getAllTeams(): Promise<Team[]>;
   // (undocumented)
@@ -71,6 +72,16 @@ export class AzureDevOpsApi {
     options: PullRequestOptions,
   ): Promise<PullRequest[]>;
   // (undocumented)
+  getReadme(
+    host: string,
+    org: string,
+    project: string,
+    repo: string,
+  ): Promise<{
+    url: string;
+    content: string;
+  }>;
+  // (undocumented)
   getRepoBuilds(
     projectName: string,
     repoName: string,
@@ -94,6 +105,8 @@ export interface RouterOptions {
   config: Config;
   // (undocumented)
   logger: Logger;
+  // (undocumented)
+  reader: UrlReader;
 }
 
 // (No @packageDocumentation comment for this package)

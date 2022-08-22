@@ -198,6 +198,22 @@ export enum PullRequestVoteStatus {
 }
 
 // @public (undocumented)
+export interface Readme {
+  // (undocumented)
+  content: string;
+  // (undocumented)
+  url: string;
+}
+
+// @public (undocumented)
+export interface ReadmeConfig {
+  // (undocumented)
+  project: string;
+  // (undocumented)
+  repo: string;
+}
+
+// @public (undocumented)
 export type RepoBuild = {
   id?: number;
   title: string;

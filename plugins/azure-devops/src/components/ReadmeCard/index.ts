@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-import { createRouter } from '@backstage/plugin-azure-devops-backend';
-import { Router } from 'express';
-import type { PluginEnvironment } from '../types';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return createRouter({
-    logger: env.logger,
-    config: env.config,
-    reader: env.reader,
-  });
-}
+export { ReadmeCard } from './ReadmeCard';
