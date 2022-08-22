@@ -3943,12 +3943,20 @@
   resolved "https://registry.npmjs.org/@juggle/resize-observer/-/resize-observer-3.3.1.tgz#b50a781709c81e10701004214340f25475a171a0"
   integrity sha512-zMM9Ds+SawiUkakS7y94Ymqx+S0ORzpG3frZirN3l+UlXUmSUR7hF4wxCVqW+ei94JzV5kt0uXBcoOEAuiydrw==
 
-"@keyv/redis@^2.2.3":
-  version "2.3.8"
-  resolved "https://registry.npmjs.org/@keyv/redis/-/redis-2.3.8.tgz#8939a91e5b5d49da43005cf363a63fe475e1a19d"
-  integrity sha512-zzk/6TiuxqBcQd8vJDJaxTJDrbLDNaiRlLKDgpSB+xYBjd4NJK5Fl8YIPV9A+oteroJtwGgwdML9VJRXmaus3A==
+"@keyv/memcache@^1.3.3":
+  version "1.3.3"
+  resolved "https://registry.npmjs.org/@keyv/memcache/-/memcache-1.3.3.tgz#3eae06ee412a6b9f5ccb7a8b8ea34dabded32bec"
+  integrity sha512-55YzZUrxVDc+gPOTbf/6C7+qJ4OWWYrfeI5kBnuCJmEQp4pjsdXQjOrEEz4ojJ9Y4V4JfWDUVu2DEFqqWS4Qlg==
   dependencies:
-    ioredis "^5.1.0"
+    json-buffer "^3.0.1"
+    memjs "^1.3.0"
+
+"@keyv/redis@^2.5.0":
+  version "2.5.0"
+  resolved "https://registry.npmjs.org/@keyv/redis/-/redis-2.5.0.tgz#9054f93a56a02f46bb90053902a88cd46c94b0b9"
+  integrity sha512-w3tQqTmzIa7cagPKYsPcIPQ9kGdzEiTOGRxZ97En8TC5a4NGVc0VMFRXimz0+4BJ5cHwwDYQvJvlMrf95XaDdQ==
+  dependencies:
+    ioredis "^5.2.2"
 
 "@kubernetes/client-node@^0.17.0":
   version "0.17.0"
@@ -7105,9 +7113,9 @@
     jwt-decode "*"
 
 "@types/keyv@*":
-  version "3.1.1"
-  resolved "https://registry.npmjs.org/@types/keyv/-/keyv-3.1.1.tgz#e45a45324fca9dab716ab1230ee249c9fb52cfa7"
-  integrity sha512-MPtoySlAZQ37VoLaPcTHCu1RWJ4llDkULYZIzOYxlhxBqYPB0RsRlmMU0R6tahtFe27mIdkHV+551ZWV4PLmVw==
+  version "3.1.4"
+  resolved "https://registry.npmjs.org/@types/keyv/-/keyv-3.1.4.tgz#3ccdb1c6751b0c7e52300bcdacd5bcbf8faa75b6"
+  integrity sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==
   dependencies:
     "@types/node" "*"
 
@@ -15527,10 +15535,10 @@ invert-kv@^1.0.0:
   resolved "https://registry.npmjs.org/invert-kv/-/invert-kv-1.0.0.tgz#104a8e4aaca6d3d8cd157a8ef8bfab2d7a3ffdb6"
   integrity sha1-EEqOSqym09jNFXqO+L+rLXo//bY=
 
-ioredis@^5.1.0:
-  version "5.1.0"
-  resolved "https://registry.npmjs.org/ioredis/-/ioredis-5.1.0.tgz#17bc0bc40f164ef26910ca6e56981c2a9bfdf57e"
-  integrity sha512-HYHnvwxFwefeUBj0hZFejLvd8Q/YNAfnZlZG/hSRxkRhXMs1H8soMEVccHd1WlLrKkynorXBsAtqDGskOdAfVQ==
+ioredis@^5.2.2:
+  version "5.2.2"
+  resolved "https://registry.npmjs.org/ioredis/-/ioredis-5.2.2.tgz#212467e04f6779b4e0e800cece7bb7d3d7b546d2"
+  integrity sha512-wryKc1ur8PcCmNwfcGkw5evouzpbDXxxkMkzPK8wl4xQfQf7lHe11Jotell5ikMVAtikXJEu/OJVaoV51BggRQ==
   dependencies:
     "@ioredis/commands" "^1.1.1"
     cluster-key-slot "^1.1.0"
@@ -17356,15 +17364,7 @@ kafkajs@^2.0.0:
   resolved "https://registry.npmjs.org/kafkajs/-/kafkajs-2.1.0.tgz#32ede4e8080cc75586c5e4406eeb582fa73f7b1e"
   integrity sha512-6IYiOdGWvFPbSbVB+AV3feT+A7vzw5sXm7Ze4QTfP7FRNdY8pGcpiNPvD2lfgYFD8Dm9KbMgBgTt2mf8KaIkzw==
 
-keyv-memcache@^1.2.5:
-  version "1.2.9"
-  resolved "https://registry.npmjs.org/keyv-memcache/-/keyv-memcache-1.2.9.tgz#68776b098233e4305ec729fbeb5ad5905f6ac914"
-  integrity sha512-hcHeihL/LjAhP1qvLSWuwCxDQlSkkGwlvH7RfIIO+57s7J5dhFLQQko1WcAbcd1jlxV6iPHAEvkDwp8c7XQzgA==
-  dependencies:
-    json-buffer "^3.0.1"
-    memjs "^1.3.0"
-
-keyv@^4.0.0, keyv@^4.0.3:
+keyv@^4.0.0, keyv@^4.4.1:
   version "4.4.1"
   resolved "https://registry.npmjs.org/keyv/-/keyv-4.4.1.tgz#5d97bae8dfbb6788ebc9330daf5eb6582e2d3d1c"
   integrity sha512-PzByhNxfBLnSBW2MZi1DF+W5+qB/7BMpOokewqIvqS8GFtP7xHm2oeGU72Y1fhtfOv/FiEnI4+nyViYDmUChnw==

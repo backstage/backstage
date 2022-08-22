@@ -16,8 +16,7 @@
 
 import { Config } from '@backstage/config';
 import Keyv from 'keyv';
-// @ts-expect-error
-import KeyvMemcache from 'keyv-memcache';
+import KeyvMemcache from '@keyv/memcache';
 import KeyvRedis from '@keyv/redis';
 import { Logger } from 'winston';
 import { getRootLogger } from '../logging';
@@ -129,21 +128,24 @@ export class CacheManager {
     pluginId: string,
     defaultTtl: number | undefined,
   ): Keyv {
+    const store = new KeyvRedis(this.connection);
     return new Keyv({
       namespace: pluginId,
       ttl: defaultTtl,
-      store: new KeyvRedis(this.connection),
+      store,
     });
   }
 
   private getMemcacheClient(
     pluginId: string,
     defaultTtl: number | undefined,
-  ): Keyv {
+  ): Keyv<string | undefined> {
+    const store = new KeyvMemcache(this.connection);
+    // @ts-expect-error - This works but a transitive @types/keyv import disagrees
     return new Keyv({
       namespace: pluginId,
       ttl: defaultTtl,
-      store: new KeyvMemcache(this.connection),
+      store,
     });
   }
 
@@ -159,9 +161,10 @@ export class CacheManager {
   }
 
   private getNoneClient(pluginId: string): Keyv {
-    return new Keyv({
+    const x = new Keyv({
       namespace: pluginId,
       store: new NoStore(),
     });
+    return x;
   }
 }
