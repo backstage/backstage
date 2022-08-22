@@ -36,10 +36,6 @@ jobs:
         run: yarn prettier:check
         working-directory: microsite
 
-      - name: lock
-        run: yarn lock:check
-        working-directory: microsite
-
       - name: build microsite
         run: yarn build
         working-directory: microsite

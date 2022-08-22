@@ -1371,13 +1371,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@yarnpkg/lockfile@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@yarnpkg/lockfile@npm:1.1.0"
-  checksum: 05b881b4866a3546861fee756e6d3812776ea47fa6eb7098f983d6d0eefa02e12b66c3fff931574120f196286a7ad4879ce02743c8bb2be36c6a576c7852083a
-  languageName: node
-  linkType: hard
-
 "abbrev@npm:1":
   version: 1.1.1
   resolution: "abbrev@npm:1.1.1"
@@ -1799,7 +1792,6 @@ __metadata:
     docusaurus: ^2.0.0-alpha.70
     js-yaml: ^4.1.0
     prettier: ^2.6.2
-    yarn-lock-check: ^1.0.5
   languageName: unknown
   linkType: soft
 
@@ -4283,7 +4275,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^7.0.0, glob@npm:^7.0.5, glob@npm:^7.1.2, glob@npm:^7.1.3, glob@npm:^7.1.6, glob@npm:^7.1.7":
+"glob@npm:^7.0.0, glob@npm:^7.0.5, glob@npm:^7.1.2, glob@npm:^7.1.3, glob@npm:^7.1.6":
   version: 7.2.0
   resolution: "glob@npm:7.2.0"
   dependencies:
@@ -4926,13 +4918,6 @@ __metadata:
   version: 1.3.8
   resolution: "ini@npm:1.3.8"
   checksum: dfd98b0ca3a4fc1e323e38a6c8eb8936e31a97a918d3b377649ea15bdb15d481207a0dda1021efbd86b464cae29a0d33c1d7dcaf6c5672bee17fa849bc50a1b3
-  languageName: node
-  linkType: hard
-
-"ini@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "ini@npm:2.0.0"
-  checksum: e7aadc5fb2e4aefc666d74ee2160c073995a4061556b1b5b4241ecb19ad609243b9cceafe91bae49c219519394bbd31512516cb22a3b1ca6e66d869e0447e84e
   languageName: node
   linkType: hard
 
@@ -9554,19 +9539,6 @@ __metadata:
   dependencies:
     wordwrap: 0.0.2
   checksum: 82750e56c1069470901fc79dc463a87b034eb7c7645bee638f97ccc024dd68e36f5c6f51a1d320502e2ac43047fe10cc9cb6e81ff3b92009c05d48cee59b4ba8
-  languageName: node
-  linkType: hard
-
-"yarn-lock-check@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "yarn-lock-check@npm:1.0.5"
-  dependencies:
-    "@yarnpkg/lockfile": ^1.1.0
-    glob: ^7.1.7
-    ini: ^2.0.0
-  bin:
-    yarn-lock-check: dist/index.js
-  checksum: cb8b9f7ce2009bf95d8fe97cd2071f86a4b6d9444f0b8dc98ef8435560198858e322c412572e33114f5f59f64df9713e93f56e47f8f1fea052bdf5ab5fbe89ae
   languageName: node
   linkType: hard
 

@@ -25644,7 +25644,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ini@npm:2.0.0, ini@npm:^2.0.0":
+"ini@npm:2.0.0":
   version: 2.0.0
   resolution: "ini@npm:2.0.0"
   checksum: e7aadc5fb2e4aefc666d74ee2160c073995a4061556b1b5b4241ecb19ad609243b9cceafe91bae49c219519394bbd31512516cb22a3b1ca6e66d869e0447e84e
@@ -36269,7 +36269,6 @@ __metadata:
     shx: ^0.3.2
     ts-node: ^10.4.0
     typescript: ~4.7.0
-    yarn-lock-check: ^1.0.5
   languageName: unknown
   linkType: soft
 
@@ -41228,19 +41227,6 @@ __metadata:
     y18n: ^3.2.1
     yargs-parser: ^3.2.0
   checksum: 478e9c8562c5cf5b9c2efc7c917e0b00c489cc50153d5d911ab68767c2cfddaf0b5bd4e04d6fefc00cb1d8f6263eab1d73df79a24d650ba95f5d45c819a1585a
-  languageName: node
-  linkType: hard
-
-"yarn-lock-check@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "yarn-lock-check@npm:1.0.5"
-  dependencies:
-    "@yarnpkg/lockfile": ^1.1.0
-    glob: ^7.1.7
-    ini: ^2.0.0
-  bin:
-    yarn-lock-check: dist/index.js
-  checksum: cb8b9f7ce2009bf95d8fe97cd2071f86a4b6d9444f0b8dc98ef8435560198858e322c412572e33114f5f59f64df9713e93f56e47f8f1fea052bdf5ab5fbe89ae
   languageName: node
   linkType: hard
 

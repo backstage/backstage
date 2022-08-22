@@ -35,8 +35,7 @@
     "build-storybook": "yarn --cwd storybook build-storybook",
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
-    "prepare": "husky install",
-    "lock:check": "yarn-lock-check"
+    "prepare": "husky install"
   },
   "workspaces": {
     "packages": [
@@ -80,8 +79,7 @@
     "semver": "^7.3.2",
     "shx": "^0.3.2",
     "ts-node": "^10.4.0",
-    "typescript": "~4.7.0",
-    "yarn-lock-check": "^1.0.5"
+    "typescript": "~4.7.0"
   },
   "prettier": "@spotify/prettier-config",
   "lint-staged": {
