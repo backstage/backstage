@@ -72,7 +72,7 @@ export const EntityPicker = (
 
   const onSelect = useCallback(
     (_: any, value: string | null) => {
-      onChange(value || '');
+      onChange(value ?? undefined);
     },
     [onChange],
   );
