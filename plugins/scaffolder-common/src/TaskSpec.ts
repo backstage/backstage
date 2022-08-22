@@ -33,6 +33,9 @@ export type TemplateInfo = {
    */
   baseUrl?: string;
 
+  /**
+   * The Template entity's metadata
+   */
   entityMetadata: EntityMeta;
 };
 
