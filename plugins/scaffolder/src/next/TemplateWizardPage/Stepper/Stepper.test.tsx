@@ -47,17 +47,17 @@ describe('Stepper', () => {
       title: 'React JSON Schema Form Test',
     };
 
-    const { getByText } = await renderInTestApp(
+    const { getByRole } = await renderInTestApp(
       <Stepper manifest={manifest} extensions={[]} />,
     );
 
-    expect(getByText('Next')).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Next' })).toBeInTheDocument();
 
     await act(async () => {
-      await fireEvent.click(getByText('Next'));
+      await fireEvent.click(getByRole('button', { name: 'Next' }));
     });
 
-    expect(getByText('Review')).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Review' })).toBeInTheDocument();
   });
 
   it('should remember the state of the form when cycling through the pages', async () => {
@@ -87,7 +87,7 @@ describe('Stepper', () => {
       title: 'React JSON Schema Form Test',
     };
 
-    const { getByRole, getByText } = await renderInTestApp(
+    const { getByRole } = await renderInTestApp(
       <Stepper manifest={manifest} extensions={[]} />,
     );
 
@@ -96,11 +96,11 @@ describe('Stepper', () => {
     });
 
     await act(async () => {
-      await fireEvent.click(getByText('Next'));
+      await fireEvent.click(getByRole('button', { name: 'Next' }));
     });
 
     await act(async () => {
-      await fireEvent.click(getByText('Back'));
+      await fireEvent.click(getByRole('button', { name: 'Back' }));
     });
 
     expect(getByRole('textbox', { name: 'name' })).toHaveValue(

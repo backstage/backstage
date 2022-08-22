@@ -19,17 +19,16 @@ import { UiSchema } from '@rjsf/core';
 import { TemplateParameterSchema } from '../../../types';
 import { extractSchemaFromStep } from './schema';
 
+export interface ParsedTemplateSchema {
+  uiSchema: UiSchema;
+  mergedSchema: JsonObject;
+  schema: JsonObject;
+  title: string;
+  description?: string;
+}
 export const useTemplateSchema = (
   manifest: TemplateParameterSchema,
-): {
-  steps: {
-    uiSchema: UiSchema;
-    mergedSchema: JsonObject;
-    schema: JsonObject;
-    title: string;
-    description?: string;
-  }[];
-} => {
+): { steps: ParsedTemplateSchema[] } => {
   const featureFlags = useApi(featureFlagsApiRef);
   const steps = manifest.steps.map(({ title, description, schema }) => ({
     title,
