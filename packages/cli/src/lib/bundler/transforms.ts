@@ -30,7 +30,7 @@ type TransformOptions = {
 };
 
 export const transforms = (options: TransformOptions): Transforms => {
-  const { isDev } = options;
+  const { isDev, isBackend } = options;
 
   // This ensures that styles inserted from the style-loader and any
   // async style chunks are always given lower priority than JSS styles.
@@ -58,6 +58,8 @@ export const transforms = (options: TransformOptions): Transforms => {
           loader: 'swc-loader',
           options: {
             jsc: {
+              target: 'es2019',
+              externalHelpers: !isBackend,
               parser: {
                 syntax: 'typescript',
                 tsx: true,
@@ -82,6 +84,8 @@ export const transforms = (options: TransformOptions): Transforms => {
           loader: 'swc-loader',
           options: {
             jsc: {
+              target: 'es2019',
+              externalHelpers: !isBackend,
               parser: {
                 syntax: 'ecmascript',
                 jsx: true,
