@@ -115,7 +115,7 @@ export const transforms = (options: TransformOptions): Transforms => {
           loader: require.resolve('esbuild-loader'),
           options: {
             loader: 'jsx',
-            target: 'es2015',
+            target: 'es2019',
           },
         },
         {
