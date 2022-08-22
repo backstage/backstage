@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 export {
+  PullRequestsCard,
   EntityTeamPullRequestsCard,
+  UserPullRequestsCard,
   EntityTeamPullRequestsContent,
+  UserPullRequestsContent,
 } from './plugin';

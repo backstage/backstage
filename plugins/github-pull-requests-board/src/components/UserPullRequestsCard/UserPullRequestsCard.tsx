@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FunctionComponent } from 'react';
-import { useTeamRepositories } from '../../hooks/useTeamRepositories';
+import React from 'react';
+import { useUserRepositories } from '../../hooks/useUserRepositories';
+import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { PullRequestsCard } from '../PullRequestsCard';
 
-const EntityTeamPullRequestsCard: FunctionComponent = () => {
-  const { repositories } = useTeamRepositories();
+const UserPullRequestsCard = (
+  identity: BackstageUserIdentity,
+  allowedKinds?: string[],
+) => {
+  const { repositories } = useUserRepositories(identity, allowedKinds);
   return <PullRequestsCard repositories={repositories} />;
 };
 
-export default EntityTeamPullRequestsCard;
+export default UserPullRequestsCard;

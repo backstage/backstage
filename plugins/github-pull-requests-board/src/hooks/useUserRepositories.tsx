@@ -13,33 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useApi } from '@backstage/core-plugin-api';
+import { BackstageUserIdentity, useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
-  humanizeEntityRef,
-  useEntity,
+  getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { useCallback, useEffect, useState } from 'react';
-import { getProjectNameFromEntity } from '../utils/functions';
+import { getProjectNameFromEntity, parseEntityRef } from '../utils/functions';
+import { RELATION_MEMBER_OF } from '@backstage/catalog-model';
 
-export function useUserRepositories() {
-  const { entity: teamEntity } = useEntity();
+export const useUserRepositories = (
+  identity: BackstageUserIdentity,
+  allowedKinds?: string[],
+) => {
   const catalogApi = useApi(catalogApiRef);
   const [repositories, setRepositories] = useState<string[]>([]);
 
   const getRepositoriesNames = useCallback(async () => {
-    const entitiesList = await catalogApi.getEntities({
-      filter: {
-        'spec.owner': humanizeEntityRef(teamEntity, { defaultKind: 'group' }),
-      },
+    const userRef = parseEntityRef(identity.userEntityRef);
+
+    const user = await catalogApi.getEntityByRef({
+      kind: 'User',
+      namespace: userRef.namespace ?? 'default',
+      name: userRef.name,
     });
 
-    const entitiesNames: string[] = entitiesList.items.map(componentEntity =>
-      getProjectNameFromEntity(componentEntity),
-    );
+    if (user) {
+      const groups = getEntityRelations(user, RELATION_MEMBER_OF).map(
+        entityRef => entityRef.name,
+      );
 
-    setRepositories([...new Set(entitiesNames)]);
-  }, [catalogApi, teamEntity]);
+      const entitiesList = await catalogApi.getEntities({
+        filter: {
+          kind: allowedKinds ?? ['Component', 'API'],
+          'spec.owner': [...groups, `user:${user.metadata.name}`],
+        },
+        fields: ['kind', 'spec.type', 'metadata.annotations'],
+      });
+
+      const entitiesNames: string[] = entitiesList.items.map(componentEntity =>
+        getProjectNameFromEntity(componentEntity),
+      );
+
+      setRepositories([...new Set(entitiesNames)]);
+    }
+  }, [catalogApi, allowedKinds, identity]);
 
   useEffect(() => {
     getRepositoriesNames();
@@ -48,4 +66,4 @@ export function useUserRepositories() {
   return {
     repositories,
   };
-}
+};

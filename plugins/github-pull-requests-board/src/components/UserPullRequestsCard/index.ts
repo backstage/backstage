@@ -13,13 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FunctionComponent } from 'react';
-import { useTeamRepositories } from '../../hooks/useTeamRepositories';
-import { PullRequestsCard } from '../PullRequestsCard';
-
-const EntityTeamPullRequestsCard: FunctionComponent = () => {
-  const { repositories } = useTeamRepositories();
-  return <PullRequestsCard repositories={repositories} />;
-};
-
-export default EntityTeamPullRequestsCard;
+export { default as UserPullRequestsCard } from './UserPullRequestsCard';

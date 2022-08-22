@@ -50,3 +50,36 @@ export const EntityTeamPullRequestsContent =
       mountPoint: rootRouteRef,
     }),
   );
+
+export const UserPullRequestsCard = githubPullRequestsBoardPlugin.provide(
+  createComponentExtension({
+    name: 'UserPullRequestsCard',
+    component: {
+      lazy: () =>
+        import('./components/UserPullRequestsCard').then(
+          m => m.UserPullRequestsCard,
+        ),
+    },
+  }),
+);
+
+export const PullRequestsCard = githubPullRequestsBoardPlugin.provide(
+  createComponentExtension({
+    name: 'PullRequestsCard',
+    component: {
+      lazy: () =>
+        import('./components/PullRequestsCard').then(m => m.PullRequestsCard),
+    },
+  }),
+);
+export const UserPullRequestsContent = githubPullRequestsBoardPlugin.provide(
+  createComponentExtension({
+    name: 'UserPullRequestsContent',
+    component: {
+      lazy: () =>
+        import('./components/UserPullRequestsContent').then(
+          m => m.UserPullRequestsContent,
+        ),
+    },
+  }),
+);

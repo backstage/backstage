@@ -13,13 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FunctionComponent } from 'react';
-import { useTeamRepositories } from '../../hooks/useTeamRepositories';
-import { PullRequestsCard } from '../PullRequestsCard';
+import { identityApiRef, useApi } from '@backstage/core-plugin-api';
+import useAsync from 'react-use/lib/useAsync';
 
-const EntityTeamPullRequestsCard: FunctionComponent = () => {
-  const { repositories } = useTeamRepositories();
-  return <PullRequestsCard repositories={repositories} />;
+/**
+ * React hook to retrieve a reference of authenticated user identity.
+ * */
+export const useIdentity = () => {
+  const identityApi = useApi(identityApiRef);
+
+  const { value, error, loading } = useAsync(async () => {
+    return {
+      identity: await identityApi.getBackstageIdentity(),
+    };
+  }, [identityApi]);
+
+  return {
+    identity: value?.identity,
+    loading,
+    error,
+  };
 };
-
-export default EntityTeamPullRequestsCard;

@@ -107,3 +107,18 @@ export const formatPRsByReviewDecision = (
     { title: COLUMNS.APPROVED, content: reviewDecisions.APPROVED },
   ];
 };
+
+export function parseEntityRef(ref: string) {
+  const match = /^([^:/]+:)?([^:/]+\/)?([^:/]+)$/.exec(ref.trim());
+  if (!match) {
+    throw new TypeError(
+      `Entity reference "${ref}" was not on the form [<kind>:][<namespace>/]<name>`,
+    );
+  }
+
+  return {
+    kind: match[1]?.slice(0, -1),
+    namespace: match[2]?.slice(0, -1),
+    name: match[3],
+  };
+}
