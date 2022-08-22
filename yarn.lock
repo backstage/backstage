@@ -5897,12 +5897,12 @@
     react-use "^17.2.4"
 
 "@roadiehq/backstage-plugin-github-insights@^2.0.0":
-  version "2.0.3"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-2.0.3.tgz#736a55a91df963ecbaa259728b1418d362261479"
-  integrity sha512-s81O1VKtsJ0Znhjn7Uw17o1aHc8VxSL3kvet7cttcPSjLPlbFGqlF4CuFOEGHw7lsrKMrhWfcFaIWhCitc8wrg==
+  version "2.0.4"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-2.0.4.tgz#4b90f6081795340922d47d3a6abfe6fa877c0746"
+  integrity sha512-e+WCgWycfvqwn3cNJ37qD0YOtrinUWhFoQGh7spEsNYba9RUN/dSkUcMP1sSWcnHgWOJKtx1s//YbxeeUc4uXw==
   dependencies:
     "@backstage/catalog-model" "^1.0.0"
-    "@backstage/core-components" "^0.10.0"
+    "@backstage/core-components" "^0.11.0"
     "@backstage/core-plugin-api" "^1.0.0"
     "@backstage/integration-react" "^1.0.0"
     "@backstage/plugin-catalog-react" "^1.0.0"
