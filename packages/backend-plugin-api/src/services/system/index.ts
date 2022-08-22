@@ -20,6 +20,5 @@ export type {
   DepsToDepFactories,
   FactoryFunc,
   ServiceFactory,
-  AnyServiceFactory,
 } from './types';
 export { createServiceRef, createServiceFactory } from './types';
