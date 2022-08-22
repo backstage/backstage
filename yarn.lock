@@ -17014,10 +17014,10 @@ json-schema-compare@^0.2.2:
   dependencies:
     lodash "^4.17.4"
 
-json-schema-library@^6.0.0:
-  version "6.1.0"
-  resolved "https://registry.npmjs.org/json-schema-library/-/json-schema-library-6.1.0.tgz#dc811698dcc0364d869dc5dfc509acab8cc63de3"
-  integrity sha512-Ql7sz3sdGyDeyRygbhcPs/iBebarA7PgTa1gLMmx54u64kC1IpCiNar4bgw3c02ReElfZ43d/t5eKX33r1MD2w==
+json-schema-library@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.npmjs.org/json-schema-library/-/json-schema-library-7.0.0.tgz#6230a4efba33fe32f9f202298be49c22f981f88f"
+  integrity sha512-MO3MwDOVhAZU+7k2EZc5Rw5XijdLFZi4T/l7Nhu7HIoopp44JCmCsXD/p73umZhgj3PWhdv3ZqZSukxcvcXhxQ==
   dependencies:
     deepmerge "^4.2.2"
     fast-deep-equal "^3.1.3"
