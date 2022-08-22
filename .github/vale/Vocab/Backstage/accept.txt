@@ -366,4 +366,3 @@ zoomable
 zsh
 Alef
 Cloudflare
-telus
