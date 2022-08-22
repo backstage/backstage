@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="react" />
 
+import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { FunctionComponent } from 'react';
 
 // Warning: (ae-missing-release-tag) "EntityTeamPullRequestsCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -16,6 +17,32 @@ export const EntityTeamPullRequestsCard: FunctionComponent<{}>;
 //
 // @public (undocumented)
 export const EntityTeamPullRequestsContent: FunctionComponent<{}>;
+
+// Warning: (ae-missing-release-tag) "PullRequestsCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const PullRequestsCard: ({
+  repositories,
+}: {
+  repositories: string[];
+}) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "UserPullRequestsCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const UserPullRequestsCard: (
+  identity: BackstageUserIdentity,
+  allowedKinds?: string[] | undefined,
+) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "UserPullRequestsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const UserPullRequestsContent: ({
+  allowedKinds,
+}: {
+  allowedKinds?: string[] | undefined;
+}) => JSX.Element;
 
 // (No @packageDocumentation comment for this package)
 ```
