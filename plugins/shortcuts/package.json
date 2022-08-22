@@ -33,13 +33,13 @@
     "@material-ui/lab": "4.0.0-alpha.57",
     "@types/zen-observable": "^0.8.2",
     "react-hook-form": "^7.12.2",
-    "react-router": "6.0.0-beta.0",
     "react-use": "^17.2.4",
     "uuid": "^8.3.2",
     "zen-observable": "^0.8.15"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0"
+    "react": "^16.13.1 || ^17.0.0",
+    "react-router": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.18.2-next.0",

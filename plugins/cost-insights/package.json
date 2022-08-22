@@ -50,7 +50,6 @@
     "luxon": "^3.0.0",
     "pluralize": "^8.0.0",
     "qs": "^6.9.4",
-    "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4",
     "recharts": "^1.8.5",
     "regression": "^2.0.1",
@@ -58,7 +57,8 @@
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",
-    "react": "^16.13.1 || ^17.0.0"
+    "react": "^16.13.1 || ^17.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.18.2-next.0",

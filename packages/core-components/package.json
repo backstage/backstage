@@ -60,8 +60,6 @@
     "react-helmet": "6.1.0",
     "react-hook-form": "^7.12.2",
     "react-markdown": "^8.0.0",
-    "react-router": "6.0.0-beta.0",
-    "react-router-dom": "6.0.0-beta.0",
     "react-sparklines": "^1.7.0",
     "react-syntax-highlighter": "^15.4.5",
     "react-text-truncate": "^0.19.0",
@@ -76,7 +74,9 @@
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0"
+    "react-dom": "^16.13.1 || ^17.0.0",
+    "react-router": "6.0.0-beta.0 || ^6.3.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
     "@backstage/core-app-api": "^1.0.6-next.0",
