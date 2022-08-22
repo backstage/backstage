@@ -48,7 +48,7 @@
     "@backstage/test-utils": "^1.1.3",
     "@types/jest": "^26.0.7",
     "@types/luxon": "^3.0.0",
-    "msw": "^0.44.0"
+    "msw": "^0.45.0"
   },
   "files": [
     "dist",
