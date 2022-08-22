@@ -5,4 +5,4 @@
 '@backstage/plugin-scaffolder-common': minor
 ---
 
-add entityMetadata to the scaffolder templateInfo field
+add entity metadata to the template info type
