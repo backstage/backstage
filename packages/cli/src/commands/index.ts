@@ -180,6 +180,15 @@ export function registerMigrateCommand(program: Command) {
     .action(
       lazy(() => import('./migrate/packageLintConfigs').then(m => m.command)),
     );
+
+  command
+    .command('react-router-deps')
+    .description(
+      'Migrates the react-router dependencies for all packages to be peer dependencies',
+    )
+    .action(
+      lazy(() => import('./migrate/reactRouterDeps').then(m => m.command)),
+    );
 }
 
 export function registerCommands(program: Command) {
