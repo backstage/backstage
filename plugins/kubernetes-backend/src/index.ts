@@ -27,6 +27,7 @@ export * from './kubernetes-auth-translator/GoogleServiceAccountAuthProvider';
 export * from './kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
 export * from './kubernetes-auth-translator/NoopKubernetesAuthTranslator';
 export * from './kubernetes-auth-translator/OidcKubernetesAuthTranslator';
+export * from './kubernetes-auth-translator/types';
 
 export * from './service/router';
 export * from './service/KubernetesBuilder';

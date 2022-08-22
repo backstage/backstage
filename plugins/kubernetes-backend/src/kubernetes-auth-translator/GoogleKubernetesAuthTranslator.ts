@@ -18,6 +18,10 @@ import { KubernetesAuthTranslator } from './types';
 import { GKEClusterDetails } from '../types/types';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
+/**
+ *
+ * @alpha
+ */
 export class GoogleKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
