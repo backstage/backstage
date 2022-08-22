@@ -74,9 +74,14 @@ describe('FetchUrlReader', () => {
           reading: {
             allow: [
               { host: 'example.com' },
+              { host: 'example.com:100-200' },
               { host: 'example.com:700' },
               { host: '*.examples.org' },
               { host: '*.examples.org:700' },
+              { host: '*.examples.org:900-1000' },
+              { host: '*.examples.org:900-1000' },
+              { host: 'https.org:443' },
+              { host: 'http.org:80' },
               {
                 host: 'foobar.org',
                 paths: ['/dir1/'],
@@ -113,6 +118,55 @@ describe('FetchUrlReader', () => {
     expect(predicate(new URL('https://foobar.org/dir1/subpath'))).toBe(true);
     expect(predicate(new URL('https://foobar.org/dir12'))).toBe(false);
     expect(predicate(new URL('https://foobar.org/'))).toBe(false);
+    expect(predicate(new URL('https://a.examples.org:900/test'))).toBe(true);
+    expect(predicate(new URL('https://a.examples.org:1000/test'))).toBe(true);
+    expect(predicate(new URL('https://a.examples.org:950/test'))).toBe(true);
+    expect(predicate(new URL('https://a.examples.org:1050/test'))).toBe(false);
+    expect(predicate(new URL('https://example.com:150/test'))).toBe(true);
+    expect(predicate(new URL('https://example.com:4000/test'))).toBe(false);
+    expect(predicate(new URL('https://https.org'))).toBe(true);
+    expect(predicate(new URL('http://https.org'))).toBe(false);
+    expect(predicate(new URL('http://http.org'))).toBe(true);
+    expect(predicate(new URL('https://http.org'))).toBe(false);
+  });
+
+  it('factory should throw for malformed uri', async () => {
+    const buildFactory = (hosts: string[]) => {
+      return FetchUrlReader.factory({
+        config: new ConfigReader({
+          backend: {
+            reading: {
+              allow: hosts.map(host => ({ host })),
+            },
+          },
+        }),
+        logger: getVoidLogger(),
+        treeResponseFactory: DefaultReadTreeResponseFactory.create({
+          config: new ConfigReader({}),
+        }),
+      });
+    };
+    expect(() =>
+      buildFactory(['example.com:100-200', 'example.com:100-']),
+    ).toThrow();
+    expect(() =>
+      buildFactory(['example.com:100-200', 'example.com:-']),
+    ).toThrow();
+    expect(() =>
+      buildFactory(['example.com:100-200', 'example.com:500-']),
+    ).toThrow();
+    expect(() =>
+      buildFactory(['example.com:100-200', 'example.com:100-50']),
+    ).toThrow();
+    expect(() =>
+      buildFactory(['example.com:100-200', 'example.com:-330-']),
+    ).toThrow();
+    expect(() =>
+      buildFactory(['example.com:100-200', 'example.com:-100-300']),
+    ).not.toThrow();
+    expect(() =>
+      buildFactory(['example.com:100-200', 'example.com:nb-300']),
+    ).toThrow();
   });
 
   describe('read', () => {
