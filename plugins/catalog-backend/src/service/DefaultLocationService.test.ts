@@ -29,6 +29,7 @@ describe('DefaultLocationServiceTest', () => {
     listLocations: jest.fn(),
     getLocation: jest.fn(),
   };
+  const locationService = new DefaultLocationService(store, orchestrator);
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -80,7 +81,6 @@ describe('DefaultLocationServiceTest', () => {
         errors: [],
       });
 
-      const locationService = new DefaultLocationService(store, orchestrator);
       await locationService.createLocation(
         { type: 'url', target: 'https://backstage.io/catalog-info.yaml' },
         true,
@@ -145,7 +145,6 @@ describe('DefaultLocationServiceTest', () => {
         { id: '137', ...locationSpec },
       ]);
 
-      const locationService = new DefaultLocationService(store, orchestrator);
       const result = await locationService.createLocation(
         { type: 'url', target: 'https://backstage.io/catalog-info.yaml' },
         true,
@@ -199,7 +198,6 @@ describe('DefaultLocationServiceTest', () => {
         errors: [],
       });
 
-      const locationService = new DefaultLocationService(store, orchestrator);
       await expect(
         locationService.createLocation(
           { type: 'url', target: 'https://backstage.io/catalog-info.yaml' },
@@ -229,7 +227,6 @@ describe('DefaultLocationServiceTest', () => {
         { id: '987', type: 'url', target: 'https://example.com' },
       ]);
 
-      const locationService = new DefaultLocationService(store, orchestrator);
       const result = await locationService.createLocation(
         { type: 'url', target: 'https://backstage.io/catalog-info.yaml' },
         true,
@@ -248,7 +245,6 @@ describe('DefaultLocationServiceTest', () => {
         id: '123',
       });
 
-      const locationService = new DefaultLocationService(store, orchestrator);
       await expect(
         locationService.createLocation(locationSpec, false),
       ).resolves.toEqual({
@@ -276,11 +272,15 @@ describe('DefaultLocationServiceTest', () => {
         id: '123',
       });
 
-      const locationService = new DefaultLocationService(store, orchestrator, {
-        allowedLocationTypes: ['url', 'unknown'],
-      });
+      const locationServiceAllowingUnknownType = new DefaultLocationService(
+        store,
+        orchestrator,
+        {
+          allowedLocationTypes: ['url', 'unknown'],
+        },
+      );
       await expect(
-        locationService.createLocation(locationSpec, false),
+        locationServiceAllowingUnknownType.createLocation(locationSpec, false),
       ).resolves.toEqual({
         entities: [],
         location: {
@@ -296,7 +296,6 @@ describe('DefaultLocationServiceTest', () => {
     });
 
     it('should not allow locations of unknown types by default', async () => {
-      const locationService = new DefaultLocationService(store, orchestrator);
       await expect(
         locationService.createLocation(
           {
@@ -316,7 +315,6 @@ describe('DefaultLocationServiceTest', () => {
         errors: [new Error('Error: Unable to read url')],
       });
 
-      const locationService = new DefaultLocationService(store, orchestrator);
       await expect(
         locationService.createLocation(
           {
@@ -331,7 +329,6 @@ describe('DefaultLocationServiceTest', () => {
 
   describe('listLocations', () => {
     it('should call locationStore.deleteLocation', async () => {
-      const locationService = new DefaultLocationService(store, orchestrator);
       await locationService.listLocations();
       expect(store.listLocations).toBeCalled();
     });
@@ -339,7 +336,6 @@ describe('DefaultLocationServiceTest', () => {
 
   describe('deleteLocation', () => {
     it('should call locationStore.deleteLocation', async () => {
-      const locationService = new DefaultLocationService(store, orchestrator);
       await locationService.deleteLocation('123');
       expect(store.deleteLocation).toBeCalledWith('123');
     });
@@ -347,7 +343,6 @@ describe('DefaultLocationServiceTest', () => {
 
   describe('getLocation', () => {
     it('should call locationStore.getLocation', async () => {
-      const locationService = new DefaultLocationService(store, orchestrator);
       await locationService.getLocation('123');
       expect(store.getLocation).toBeCalledWith('123');
     });
