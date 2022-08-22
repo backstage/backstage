@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { UserEntity } from '@backstage/catalog-model';
-import { JsonValue, JsonObject } from '@backstage/types';
+import type { EntityMeta, UserEntity } from '@backstage/catalog-model';
+import type { JsonValue, JsonObject } from '@backstage/types';
 
 /**
  * Information about a template that is stored on a task specification.
@@ -32,6 +32,8 @@ export type TemplateInfo = {
    * Where the template is stored, so we can resolve relative paths for things like `fetch:template` paths.
    */
   baseUrl?: string;
+
+  entityMetadata: EntityMeta;
 };
 
 /**

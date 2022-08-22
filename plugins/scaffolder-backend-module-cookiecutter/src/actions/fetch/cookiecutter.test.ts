@@ -92,6 +92,9 @@ describe('fetch:cookiecutter', () => {
       templateInfo: {
         entityRef: 'template:default/cookiecutter',
         baseUrl: 'somebase',
+        entityMetadata: {
+          name: 'cookiecutter',
+        },
       },
       workspacePath: mockTmpDir,
       logger: getVoidLogger(),

@@ -181,13 +181,21 @@ describe('DefaultWorkflowRunner', () => {
             input: { foo: 1 },
           },
         ],
-        templateInfo: { entityRef },
+        templateInfo: {
+          entityRef,
+          entityMetadata: {
+            name: 'templateName',
+          },
+        },
       });
 
       await runner.execute(task);
 
       expect(fakeActionHandler.mock.calls[0][0].templateInfo).toEqual({
         entityRef,
+        entityMetadata: {
+          name: 'templateName',
+        },
       });
     });
 

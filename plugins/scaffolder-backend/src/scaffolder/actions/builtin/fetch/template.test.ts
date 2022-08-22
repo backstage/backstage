@@ -78,6 +78,9 @@ describe('fetch:template', () => {
     templateInfo: {
       baseUrl: 'base-url',
       entityRef: 'template:default/test-template',
+      entityMetadata: {
+        name: 'test-template',
+      },
     },
     input: {
       url: './skeleton',
