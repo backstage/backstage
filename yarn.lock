@@ -3011,7 +3011,8 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/types": "workspace:^"
     "@google-cloud/storage": ^6.0.0
-    "@keyv/redis": ^2.2.3
+    "@keyv/memcache": ^1.3.3
+    "@keyv/redis": ^2.5.0
     "@kubernetes/client-node": ^0.17.0
     "@manypkg/get-packages": ^1.1.3
     "@octokit/rest": ^19.0.3
@@ -3051,8 +3052,7 @@ __metadata:
     http-errors: ^2.0.0
     isomorphic-git: ^1.8.0
     jose: ^4.6.0
-    keyv: ^4.0.3
-    keyv-memcache: ^1.2.5
+    keyv: ^4.4.1
     knex: ^2.0.0
     lodash: ^4.17.21
     logform: ^2.3.2
@@ -10330,12 +10330,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@keyv/redis@npm:^2.2.3":
-  version: 2.3.8
-  resolution: "@keyv/redis@npm:2.3.8"
+"@keyv/memcache@npm:^1.3.3":
+  version: 1.3.3
+  resolution: "@keyv/memcache@npm:1.3.3"
   dependencies:
-    ioredis: ^5.1.0
-  checksum: 7927d870094161db5bf90677008f6a584235162a0981f875a8616d244d2ba1da525858f656f434aea2a923fb39c5ce0cf88fd9720061e5f025c9db59146e6f48
+    json-buffer: ^3.0.1
+    memjs: ^1.3.0
+  checksum: 3e4e2b9f198c930b0a0fa2f839c001c95ce203741317a42b738e6371b8439d9b8c91caf080b08a5eac8cc5ee88f6662c8ed133bd3407f3ca1624ce51ee3092ff
+  languageName: node
+  linkType: hard
+
+"@keyv/redis@npm:^2.5.0":
+  version: 2.5.1
+  resolution: "@keyv/redis@npm:2.5.1"
+  dependencies:
+    ioredis: ^5.2.3
+  checksum: 1e61ad21a2ec1c21bbc47b686ace86f2e663bd96299a45e041b392a49f73a2bc12f58fc1683ac25ab543c5761cab8051447aa4ab450db44d1519790269be3bd9
   languageName: node
   linkType: hard
 
@@ -25139,9 +25149,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ioredis@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "ioredis@npm:5.1.0"
+"ioredis@npm:^5.2.3":
+  version: 5.2.3
+  resolution: "ioredis@npm:5.2.3"
   dependencies:
     "@ioredis/commands": ^1.1.1
     cluster-key-slot: ^1.1.0
@@ -25152,7 +25162,7 @@ __metadata:
     redis-errors: ^1.2.0
     redis-parser: ^3.0.0
     standard-as-callback: ^2.1.0
-  checksum: 7b1c137836ee136a634926df4ec68cc2393772a32ecda8e30dd305d7b9182af02d600456e661f96a6ceada17560ce7b6458948fd09b8adc277a1d287325777dd
+  checksum: 2cb7f0f4217e6774accad3620af1b7114722721c1d1824be2c9f0c2a77ab9629f2e0848d18b1a7208bc37796ae1207cb3e0898fce61900cfe797da0382724ad1
   languageName: node
   linkType: hard
 
@@ -27536,23 +27546,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keyv-memcache@npm:^1.2.5":
-  version: 1.2.9
-  resolution: "keyv-memcache@npm:1.2.9"
-  dependencies:
-    json-buffer: ^3.0.1
-    memjs: ^1.3.0
-  checksum: d5134c69be50407498b425d4b8a45204d3a69cfcc2572dd089804f95f4fd9516e7bc6e1fce0e90d036a615e79d72fe8f0f9b17c30dbc66ceabf77f891ac4bbcf
-  languageName: node
-  linkType: hard
-
-"keyv@npm:^4.0.0, keyv@npm:^4.0.3":
+"keyv@npm:^4.0.0":
   version: 4.3.2
   resolution: "keyv@npm:4.3.2"
   dependencies:
     compress-brotli: ^1.3.8
     json-buffer: 3.0.1
   checksum: 237952f5faa2ed08da36677d7a3faae48b7e3c305264698cbf4480443f293a2f0c6c63c1d05f5cd4a842ee864dbb395745e6636fecd07489565776a22de7b8d6
+  languageName: node
+  linkType: hard
+
+"keyv@npm:^4.4.1":
+  version: 4.5.0
+  resolution: "keyv@npm:4.5.0"
+  dependencies:
+    json-buffer: 3.0.1
+  checksum: d294873cf88ec8f691e5edeb7b4b884f886c5f021a01902a0e243c362449db2b55419d7fb7187d059add747b7398321e39e44d391b65f94935174ce13452714d
   languageName: node
   linkType: hard
 
