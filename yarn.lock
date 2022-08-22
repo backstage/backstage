@@ -5878,12 +5878,12 @@
   integrity sha512-8UiDeDbjCImFSfOegGu13otQ7OdP9FOYpcLjeouppnhs+MPeIEAtYS+jCcBKmi3reyTagC15/KVSRhde1wS1vg==
 
 "@roadiehq/backstage-plugin-buildkite@^2.0.0":
-  version "2.0.6"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-buildkite/-/backstage-plugin-buildkite-2.0.6.tgz#2ef3c7095953d969adc78e1dc84633d822a69bc1"
-  integrity sha512-rb/oeh2fvM0WUKcJ55N+PN/Gy4Tm6HwQiozboXr8Ap7uwzyBq0j7REICsVpBUJZbMg7MlRaMjBWDKeogG4Rtpg==
+  version "2.0.7"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-buildkite/-/backstage-plugin-buildkite-2.0.7.tgz#fdd6b3d3c0eb2be09b35b38b207d6a0873147764"
+  integrity sha512-TTv6S2+ByNG2BFtonwDQ/RiMpbTyQxkSFNdw1ZWQZyiaeMYRdIxlTKsZ8BzvmcGW+Ez6z7zEFT6x2T22GdXvqA==
   dependencies:
     "@backstage/catalog-model" "^1.0.0"
-    "@backstage/core-components" "^0.10.0"
+    "@backstage/core-components" "^0.11.0"
     "@backstage/core-plugin-api" "^1.0.0"
     "@backstage/plugin-catalog-react" "^1.0.0"
     "@backstage/theme" "^0.2.6"
