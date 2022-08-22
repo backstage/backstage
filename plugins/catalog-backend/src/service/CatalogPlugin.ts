@@ -35,12 +35,16 @@ class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
   #processors = new Array<CatalogProcessor>();
   #entityProviders = new Array<EntityProvider>();
 
-  addProcessor(processor: CatalogProcessor): void {
-    this.#processors.push(processor);
+  addProcessor(
+    ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
+  ): void {
+    this.#processors.push(...processors.flat());
   }
 
-  addEntityProvider(provider: EntityProvider): void {
-    this.#entityProviders.push(provider);
+  addEntityProvider(
+    ...providers: Array<EntityProvider | Array<EntityProvider>>
+  ): void {
+    this.#entityProviders.push(...providers.flat());
   }
 
   get processors() {

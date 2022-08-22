@@ -13,9 +13,13 @@ import { JsonValue } from '@backstage/types';
 // @alpha (undocumented)
 export interface CatalogProcessingExtensionPoint {
   // (undocumented)
-  addEntityProvider(provider: EntityProvider): void;
+  addEntityProvider(
+    ...providers: Array<EntityProvider | Array<EntityProvider>>
+  ): void;
   // (undocumented)
-  addProcessor(processor: CatalogProcessor): void;
+  addProcessor(
+    ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
+  ): void;
 }
 
 // @alpha (undocumented)

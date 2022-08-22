@@ -33,22 +33,14 @@ export type CheckResultRenderer = {
 };
 
 // @public (undocumented)
-export const EntityTechInsightsScorecardCard: ({
-  title,
-  description,
-  checksId,
-}: {
+export const EntityTechInsightsScorecardCard: (props: {
   title?: string | undefined;
   description?: string | undefined;
   checksId?: string[] | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
-export const EntityTechInsightsScorecardContent: ({
-  title,
-  description,
-  checksId,
-}: {
+export const EntityTechInsightsScorecardContent: (props: {
   title?: string | undefined;
   description?: string | undefined;
   checksId?: string[] | undefined;

@@ -90,7 +90,7 @@ export class LdapClient {
   searchStreaming(
     dn: string,
     options: SearchOptions,
-    f: (entry: SearchEntry) => void,
+    f: (entry: SearchEntry) => Promise<void> | void,
   ): Promise<void>;
 }
 

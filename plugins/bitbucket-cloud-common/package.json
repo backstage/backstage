@@ -34,7 +34,7 @@
   "devDependencies": {
     "@backstage/cli": "^0.18.1",
     "@openapitools/openapi-generator-cli": "^2.4.26",
-    "msw": "^0.44.0",
+    "msw": "^0.45.0",
     "ts-morph": "^15.0.0"
   },
   "files": [

@@ -57,9 +57,7 @@ export const makeRouter = async (
 ): Promise<express.Router> => {
   const { config, logger, discovery, database, urlReader } = options;
 
-  const codeCoverageDatabase = await CodeCoverageDatabase.create(
-    await database.getClient(),
-  );
+  const codeCoverageDatabase = await CodeCoverageDatabase.create(database);
   const codecovUrl = await discovery.getExternalBaseUrl('code-coverage');
   const catalogApi: CatalogApi = new CatalogClient({ discoveryApi: discovery });
   const scm = ScmIntegrations.fromConfig(config);

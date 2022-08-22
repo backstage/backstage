@@ -115,14 +115,14 @@ export class PgSearchEngine implements SearchEngine {
     config: Config;
   }): Promise<PgSearchEngine> {
     return new PgSearchEngine(
-      await DatabaseDocumentStore.create(await options.database.getClient()),
+      await DatabaseDocumentStore.create(options.database),
       options.config,
     );
   }
 
   static async fromConfig(config: Config, options: PgSearchOptions) {
     return new PgSearchEngine(
-      await DatabaseDocumentStore.create(await options.database.getClient()),
+      await DatabaseDocumentStore.create(options.database),
       config,
     );
   }

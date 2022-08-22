@@ -32,13 +32,14 @@
     "express-promise-router": "^4.1.0",
     "p-limit": "^3.1.0",
     "winston": "^3.2.1",
-    "yn": "^4.0.0"
+    "yn": "^4.0.0",
+    "mime-types": "^2.1.27"
   },
   "devDependencies": {
     "@backstage/cli": "^0.18.1",
     "@types/supertest": "^2.0.8",
     "supertest": "^6.1.6",
-    "msw": "^0.44.0"
+    "msw": "^0.45.0"
   },
   "files": [
     "dist",

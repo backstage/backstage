@@ -29,6 +29,7 @@ import {
   createApiFactory,
   createPlugin,
   createRoutableExtension,
+  createComponentExtension,
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
@@ -37,9 +38,11 @@ import { AzureDevOpsClient } from './api/AzureDevOpsClient';
 import { Entity } from '@backstage/catalog-model';
 import { azureDevOpsApiRef } from './api/AzureDevOpsApi';
 
+/** @public */
 export const isAzureDevOpsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[AZURE_DEVOPS_REPO_ANNOTATION]);
 
+/** @public */
 export const isAzurePipelinesAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[AZURE_DEVOPS_REPO_ANNOTATION]) ||
   (Boolean(entity.metadata.annotations?.[AZURE_DEVOPS_PROJECT_ANNOTATION]) &&
@@ -47,6 +50,7 @@ export const isAzurePipelinesAvailable = (entity: Entity) =>
       entity.metadata.annotations?.[AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION],
     ));
 
+/** @public */
 export const azureDevOpsPlugin = createPlugin({
   id: 'azureDevOps',
   apis: [
@@ -59,6 +63,7 @@ export const azureDevOpsPlugin = createPlugin({
   ],
 });
 
+/** @public */
 export const AzurePullRequestsPage = azureDevOpsPlugin.provide(
   createRoutableExtension({
     name: 'AzurePullRequestsPage',
@@ -68,6 +73,7 @@ export const AzurePullRequestsPage = azureDevOpsPlugin.provide(
   }),
 );
 
+/** @public */
 export const EntityAzurePipelinesContent = azureDevOpsPlugin.provide(
   createRoutableExtension({
     name: 'EntityAzurePipelinesContent',
@@ -79,6 +85,7 @@ export const EntityAzurePipelinesContent = azureDevOpsPlugin.provide(
   }),
 );
 
+/** @public */
 export const EntityAzureGitTagsContent = azureDevOpsPlugin.provide(
   createRoutableExtension({
     name: 'EntityAzureGitTagsContent',
@@ -90,6 +97,7 @@ export const EntityAzureGitTagsContent = azureDevOpsPlugin.provide(
   }),
 );
 
+/** @public */
 export const EntityAzurePullRequestsContent = azureDevOpsPlugin.provide(
   createRoutableExtension({
     name: 'EntityAzurePullRequestsContent',
@@ -98,5 +106,15 @@ export const EntityAzurePullRequestsContent = azureDevOpsPlugin.provide(
         m => m.EntityPageAzurePullRequests,
       ),
     mountPoint: azurePullRequestsEntityContentRouteRef,
+  }),
+);
+
+/** @public */
+export const EntityAzureReadmeCard = azureDevOpsPlugin.provide(
+  createComponentExtension({
+    name: 'EntityAzureReadmeCard',
+    component: {
+      lazy: () => import('./components/ReadmeCard').then(m => m.ReadmeCard),
+    },
   }),
 );

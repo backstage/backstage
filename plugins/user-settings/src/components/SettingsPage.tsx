@@ -28,11 +28,11 @@ import { UserSettingsFeatureFlags } from './FeatureFlags';
 import { UserSettingsGeneral } from './General';
 import { USER_SETTINGS_TAB_KEY, UserSettingsTabProps } from './UserSettingsTab';
 
-type Props = {
-  providerSettings?: JSX.Element;
-};
-
-export const SettingsPage = ({ providerSettings }: Props) => {
+/**
+ * @public
+ */
+export const SettingsPage = (props: { providerSettings?: JSX.Element }) => {
+  const { providerSettings } = props;
   const { isMobile } = useSidebarPinState();
   const outlet = useOutlet();
 

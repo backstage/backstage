@@ -194,9 +194,7 @@ export interface ScaffolderApi {
 
   getTask(taskId: string): Promise<ScaffolderTask>;
 
-  listTasks?({
-    filterByOwnership,
-  }: {
+  listTasks?(options: {
     filterByOwnership: 'owned' | 'all';
   }): Promise<{ tasks: ScaffolderTask[] }>;
 

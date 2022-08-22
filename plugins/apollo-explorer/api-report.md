@@ -10,11 +10,7 @@ import { JSONObject } from '@apollo/explorer/src/helpers/types';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
-export const ApolloExplorerPage: ({
-  title,
-  subtitle,
-  endpoints,
-}: {
+export const ApolloExplorerPage: (props: {
   title?: string | undefined;
   subtitle?: string | undefined;
   endpoints: {

@@ -65,6 +65,7 @@
     "humanize-duration": "^3.25.1",
     "immer": "^9.0.1",
     "json-schema": "^0.4.0",
+    "json-schema-library": "^7.0.0",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
     "qs": "^6.9.4",
@@ -94,7 +95,7 @@
     "@types/node": "^16.11.26",
     "cross-fetch": "^3.1.5",
     "event-source-polyfill": "1.0.25",
-    "msw": "^0.44.0"
+    "msw": "^0.45.0"
   },
   "files": [
     "dist",

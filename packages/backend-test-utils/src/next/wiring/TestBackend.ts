@@ -16,7 +16,7 @@
 
 import { createSpecializedBackend } from '@backstage/backend-app-api';
 import {
-  AnyServiceFactory,
+  ServiceFactory,
   ServiceRef,
   createServiceFactory,
   BackendFeature,
@@ -31,7 +31,7 @@ export interface TestBackendOptions<
   services?: readonly [
     ...{
       [index in keyof TServices]:
-        | AnyServiceFactory
+        | ServiceFactory<TServices[index]>
         | [ServiceRef<TServices[index]>, Partial<TServices[index]>];
     },
   ];
@@ -68,7 +68,7 @@ export async function startTestBackend<
         factory: async () => async () => serviceDef[1],
       });
     }
-    return serviceDef as AnyServiceFactory;
+    return serviceDef as ServiceFactory;
   });
 
   const backend = createSpecializedBackend({

@@ -17,7 +17,7 @@ import React from 'react';
 import { TemplateParameterSchema } from '../../../types';
 import { Stepper } from './Stepper';
 import { renderInTestApp } from '@backstage/test-utils';
-import { fireEvent } from '@testing-library/react';
+import { act, fireEvent } from '@testing-library/react';
 
 describe('Stepper', () => {
   it('should render the step titles for each step of the manifest', async () => {
@@ -47,15 +47,17 @@ describe('Stepper', () => {
       title: 'React JSON Schema Form Test',
     };
 
-    const { getByText } = await renderInTestApp(
+    const { getByRole } = await renderInTestApp(
       <Stepper manifest={manifest} extensions={[]} />,
     );
 
-    expect(getByText('Next')).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Next' })).toBeInTheDocument();
 
-    await fireEvent.click(getByText('Next'));
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Next' }));
+    });
 
-    expect(getByText('Review')).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Review' })).toBeInTheDocument();
   });
 
   it('should remember the state of the form when cycling through the pages', async () => {
@@ -85,7 +87,7 @@ describe('Stepper', () => {
       title: 'React JSON Schema Form Test',
     };
 
-    const { getByRole, getByText } = await renderInTestApp(
+    const { getByRole } = await renderInTestApp(
       <Stepper manifest={manifest} extensions={[]} />,
     );
 
@@ -93,9 +95,13 @@ describe('Stepper', () => {
       target: { value: 'im a test value' },
     });
 
-    await fireEvent.click(getByText('Next'));
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Next' }));
+    });
 
-    await fireEvent.click(getByText('Back'));
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Back' }));
+    });
 
     expect(getByRole('textbox', { name: 'name' })).toHaveValue(
       'im a test value',

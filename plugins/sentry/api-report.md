@@ -42,8 +42,6 @@ export class MockSentryApi implements SentryApi {
   fetchIssues(): Promise<SentryIssue[]>;
 }
 
-// Warning: (ae-missing-release-tag) "ProductionSentryApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class ProductionSentryApi implements SentryApi {
   constructor(
@@ -61,13 +59,9 @@ export class ProductionSentryApi implements SentryApi {
   ): Promise<SentryIssue[]>;
 }
 
-// Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const Router: ({ entity }: { entity: Entity }) => JSX.Element;
+export const Router: (props: { entity: Entity }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SentryApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface SentryApi {
   // (undocumented)
@@ -80,8 +74,6 @@ export interface SentryApi {
   ): Promise<SentryIssue[]>;
 }
 
-// Warning: (ae-missing-release-tag) "sentryApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const sentryApiRef: ApiRef<SentryApi>;
 
@@ -121,25 +113,15 @@ export type SentryIssue = {
   statusDetails: any;
 };
 
-// Warning: (ae-missing-release-tag) "SentryIssuesWidget" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const SentryIssuesWidget: ({
-  entity,
-  statsFor,
-  tableOptions,
-  variant,
-  query,
-}: {
+export const SentryIssuesWidget: (props: {
   entity: Entity;
   statsFor: '24h' | '14d' | '';
   tableOptions: Options<never>;
-  variant?: InfoCardVariants | undefined;
-  query?: string | undefined;
+  variant?: InfoCardVariants;
+  query?: string;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "sentryPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 const sentryPlugin: BackstagePlugin<
   {
