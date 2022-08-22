@@ -5,6 +5,7 @@
 ```ts
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { Config } from '@backstage/config';
+import { Duration } from 'luxon';
 import express from 'express';
 import { FactChecker } from '@backstage/plugin-tech-insights-node';
 import { FactCheckerFactory } from '@backstage/plugin-tech-insights-node';
@@ -12,6 +13,7 @@ import { FactLifecycle } from '@backstage/plugin-tech-insights-node';
 import { FactRetriever } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistration } from '@backstage/plugin-tech-insights-node';
 import { FactSchema } from '@backstage/plugin-tech-insights-node';
+import { HumanDuration } from '@backstage/backend-tasks';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -50,6 +52,7 @@ export type FactRetrieverRegistrationOptions = {
   cadence: string;
   factRetriever: FactRetriever;
   lifecycle?: FactLifecycle;
+  timeout?: Duration | HumanDuration;
 };
 
 // @public (undocumented)
