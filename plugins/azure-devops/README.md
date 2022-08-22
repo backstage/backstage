@@ -76,7 +76,7 @@ In this case `<project-name>` will be the name of your Team Project and `<build-
 
 To get the Azure Pipelines component working you'll need to do the following two steps:
 
-1. First we need to add the @backstage/plugin-azure-devops package to your frontend app:
+1. First we need to add the `@backstage/plugin-azure-devops` package to your frontend app:
 
    ```bash
    # From your Backstage root directory

@@ -1,36 +1,9 @@
 ---
 '@backstage/plugin-azure-devops': minor
-'@backstage/plugin-azure-devops-backend': minor
 '@backstage/plugin-azure-devops-common': minor
 ---
 
-Added README card for Azure Devops
-
-**Before:**
-
-Remember to check if you have already provided these settings previously, as we will need them for the reamde card to work.
-
-#### [Azure DevOps](https://github.com/backstage/backstage/blob/master/app-config.yaml#L48L51:~:text=azureDevOps%3A,%3A%20my%2Dcompany)
-
-```yaml
-# app-config.yaml
-azureDevOps:
-  host: dev.azure.com
-  token: my-token
-  organization: my-company
-```
-
-#### [Azure Integrations](https://github.com/backstage/backstage/blob/master/app-config.yaml#L48L51:~:text=azure%3A,%3A%20%24%7BAZURE_TOKEN%7D)
-
-```yaml
-# app-config.yaml
-integrations:
-    azure:
-    - host: dev.azure.com
-        token: ${AZURE_TOKEN}
-```
-
-**After:**
+Added README card `EntityAzureReadmeCard` for Azure Devops.
 
 To get the README component working you'll need to do the following two steps:
 
