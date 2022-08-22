@@ -132,7 +132,7 @@ export class StackOverflowQuestionsCollatorFactory
     while (hasMorePages) {
       if (page === this.maxPage) {
         this.logger.warn(
-          'You have made over 100 requests to the Stack Overflow API, we recommend you to specify requestParams to limit your search to not reach your API limit or configure your own maxPage.',
+          `Over ${this.maxPage} requests to the Stack Overflow API have been made, which may not have been intended. Either specify requestParams that limit the questions returned, or configure a higher maxPage if necessary.`,
         );
         break;
       }
