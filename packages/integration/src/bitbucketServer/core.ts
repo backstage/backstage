@@ -140,6 +140,10 @@ export function getBitbucketServerRequestOptions(
   if (config.token) {
     headers.Authorization = `Bearer ${config.token}`;
   }
+  if (config.username && config.password) {
+    const buffer = Buffer.from(`${config.username}:${config.password}`, 'utf8');
+    headers.Authorization = `Basic ${buffer.toString('base64')}`;
+  }
 
   return {
     headers,

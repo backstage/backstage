@@ -62,9 +62,10 @@ export class CircleCIApi {
   }
 
   async getBuilds(
-    { limit = 10, offset = 0 }: { limit: number; offset: number },
+    pagination: { limit: number; offset: number },
     options: Partial<CircleCIOptions>,
   ) {
+    const { limit = 10, offset = 0 } = pagination;
     return getBuildSummaries('', {
       options: {
         limit,

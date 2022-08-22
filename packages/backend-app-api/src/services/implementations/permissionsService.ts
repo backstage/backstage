@@ -23,6 +23,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
+/** @public */
 export const permissionsFactory = createServiceFactory({
   service: permissionsServiceRef,
   deps: {

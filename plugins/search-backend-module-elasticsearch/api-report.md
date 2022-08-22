@@ -132,17 +132,13 @@ export class ElasticSearchClientWrapper {
     refreshOnCompletion?: string | boolean;
   }): BulkHelper<BulkStats>;
   // (undocumented)
-  createIndex({
-    index,
-  }: {
+  createIndex(options: {
     index: string;
   }):
     | TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>
     | TransportRequestPromise_2<ApiResponse_2<Record<string, any>, unknown>>;
   // (undocumented)
-  deleteIndex({
-    index,
-  }: {
+  deleteIndex(options: {
     index: string | string[];
   }):
     | TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>
@@ -152,17 +148,13 @@ export class ElasticSearchClientWrapper {
     options: ElasticSearchClientOptions,
   ): ElasticSearchClientWrapper;
   // (undocumented)
-  getAliases({
-    aliases,
-  }: {
+  getAliases(options: {
     aliases: string[];
   }):
     | TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>
     | TransportRequestPromise_2<ApiResponse_2<Record<string, any>, unknown>>;
   // (undocumented)
-  indexExists({
-    index,
-  }: {
+  indexExists(options: {
     index: string | string[];
   }):
     | TransportRequestPromise<ApiResponse<boolean, unknown>>
@@ -174,19 +166,14 @@ export class ElasticSearchClientWrapper {
     | TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>
     | TransportRequestPromise_2<ApiResponse_2<Record<string, any>, unknown>>;
   // (undocumented)
-  search({
-    index,
-    body,
-  }: {
+  search(options: {
     index: string | string[];
     body: Object;
   }):
     | TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>
     | TransportRequestPromise_2<ApiResponse_2<Record<string, any>, unknown>>;
   // (undocumented)
-  updateAliases({
-    actions,
-  }: {
+  updateAliases(options: {
     actions: ElasticSearchAliasAction[];
   }):
     | TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>
@@ -331,6 +318,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     aliasPostfix: string,
     indexPrefix: string,
     logger: Logger,
+    batchSize: number,
     highlightOptions?: ElasticSearchHighlightOptions,
   );
   // (undocumented)
@@ -377,6 +365,7 @@ export type ElasticSearchSearchEngineIndexerOptions = {
   alias: string;
   logger: Logger;
   elasticSearchClientWrapper: ElasticSearchClientWrapper;
+  batchSize: number;
 };
 
 // @public (undocumented)

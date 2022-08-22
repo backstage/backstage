@@ -1,5 +1,50 @@
 # @techdocs/cli
 
+## 1.2.0
+
+### Minor Changes
+
+- 855952db53: Added CLI option `--docker-option` to allow passing additional options to the `docker run` command executed my `serve` and `serve:mkdocs`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/plugin-techdocs-node@1.3.0
+
+## 1.2.0-next.2
+
+### Minor Changes
+
+- 855952db53: Added CLI option `--docker-option` to allow passing additional options to the `docker run` command executed my `serve` and `serve:mkdocs`.
+
+## 1.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.1
+  - @backstage/plugin-techdocs-node@1.3.0-next.1
+
+## 1.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/plugin-techdocs-node@1.2.1-next.0
+
+## 1.1.3
+
+### Patch Changes
+
+- a5d73da942: Fix the flag parsing for `legacyCopyReadmeMdToIndexMd` in `techdocs-cli generate` command, and decouple it's logic from the `techdocs-ref` flag.
+- 14ce0d9347: Fixed a bug that prevented docker images from being pulled by default when generating TechDocs.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.2.0
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+
 ## 1.1.3-next.1
 
 ### Patch Changes

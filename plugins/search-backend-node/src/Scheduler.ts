@@ -43,8 +43,8 @@ export class Scheduler {
   private abortController: AbortController;
   private isRunning: boolean;
 
-  constructor({ logger }: { logger: Logger }) {
-    this.logger = logger;
+  constructor(options: { logger: Logger }) {
+    this.logger = options.logger;
     this.schedule = {};
     this.abortController = new AbortController();
     this.isRunning = false;
@@ -55,7 +55,9 @@ export class Scheduler {
    * When running the tasks, the scheduler waits at least for the time specified
    * in the interval once the task was completed, before running it again.
    */
-  addToSchedule({ id, task, scheduledRunner }: ScheduleTaskParameters) {
+  addToSchedule(options: ScheduleTaskParameters) {
+    const { id, task, scheduledRunner } = options;
+
     if (this.isRunning) {
       throw new Error(
         'Cannot add task to schedule that has already been started.',

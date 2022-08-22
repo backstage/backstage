@@ -35,8 +35,32 @@ export type DynatraceProblem = {
   affectedEntities: Array<DynatraceEntity>;
 };
 
+type SyntheticRequestResults = {
+  startTimestamp: number;
+};
+
+export interface DynatraceSyntheticResults {
+  monitorId: string;
+  locationsExecutionResults: [
+    {
+      locationId: number;
+      executionId: string;
+      requestResults: Array<SyntheticRequestResults>;
+    },
+  ];
+}
+
+export interface DynatraceSyntheticLocationInfo {
+  entityId: string;
+  name: string;
+  city: string;
+  browserType: string;
+}
+
 export interface DynatraceProblems {
   problems: Array<DynatraceProblem>;
+  totalCount: number;
+  pageSize: number;
 }
 
 export const dynatraceApiRef = createApiRef<DynatraceApi>({
@@ -47,4 +71,10 @@ export type DynatraceApi = {
   getDynatraceProblems(
     dynatraceEntityId: string,
   ): Promise<DynatraceProblems | undefined>;
+  getDynatraceSyntheticFailures(
+    syntheticsId: string,
+  ): Promise<DynatraceSyntheticResults | undefined>;
+  getDynatraceSyntheticLocationInfo(
+    syntheticLocationId: string,
+  ): Promise<DynatraceSyntheticLocationInfo | undefined>;
 };

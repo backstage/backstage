@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getVoidLogger, resolvePackagePath } from '@backstage/backend-common';
-import { Knex } from 'knex';
+import {
+  getVoidLogger,
+  PluginDatabaseManager,
+  resolvePackagePath,
+} from '@backstage/backend-common';
 import { Logger } from 'winston';
 import { TechInsightsDatabase } from './TechInsightsDatabase';
 import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
@@ -47,13 +50,18 @@ const defaultOptions: CreateDatabaseOptions = {
  * @public
  */
 export const initializePersistenceContext = async (
-  knex: Knex,
+  database: PluginDatabaseManager,
   options: CreateDatabaseOptions = defaultOptions,
 ): Promise<PersistenceContext> => {
-  await knex.migrate.latest({
-    directory: migrationsDir,
-  });
+  const client = await database.getClient();
+
+  if (!database.migrations?.skip) {
+    await client.migrate.latest({
+      directory: migrationsDir,
+    });
+  }
+
   return {
-    techInsightsStore: new TechInsightsDatabase(knex, options.logger),
+    techInsightsStore: new TechInsightsDatabase(client, options.logger),
   };
 };

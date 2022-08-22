@@ -1,5 +1,52 @@
 # @backstage/plugin-bazaar
 
+## 0.1.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.18.1
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog@1.5.0
+  - @backstage/plugin-catalog-react@1.1.3
+
+## 0.1.23-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.3-next.2
+  - @backstage/cli@0.18.1-next.1
+  - @backstage/core-components@0.11.0-next.2
+  - @backstage/plugin-catalog@1.5.0-next.2
+
+## 0.1.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/plugin-catalog@1.5.0-next.0
+  - @backstage/cli@0.18.1-next.0
+  - @backstage/plugin-catalog-react@1.1.3-next.0
+  - @backstage/core-components@0.10.1-next.0
+
+## 0.1.22
+
+### Patch Changes
+
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 77abf50acf: Fixed api warnings
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-catalog@1.4.0
+  - @backstage/cli@0.18.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/catalog-client@1.0.4
+  - @backstage/plugin-catalog-react@1.1.2
+
 ## 0.1.22-next.3
 
 ### Patch Changes

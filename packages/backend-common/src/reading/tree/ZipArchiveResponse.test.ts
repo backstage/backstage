@@ -22,8 +22,14 @@ import { ZipArchiveResponse } from './ZipArchiveResponse';
 const archiveData = fs.readFileSync(
   resolvePath(__filename, '../../__fixtures__/mock-main.zip'),
 );
+const archiveDataCorrupted = fs.readFileSync(
+  resolvePath(__filename, '../../__fixtures__/mock-corrupted.zip'),
+);
 const archiveDataWithExtraDir = fs.readFileSync(
   resolvePath(__filename, '../../__fixtures__/mock-with-extra-root-dir.zip'),
+);
+const archiveWithMaliciousEntry = fs.readFileSync(
+  resolvePath(__filename, '../../__fixtures__/mallory.zip'),
 );
 
 describe('ZipArchiveResponse', () => {
@@ -31,6 +37,8 @@ describe('ZipArchiveResponse', () => {
     mockFs({
       '/test-archive.zip': archiveData,
       '/test-archive-with-extra-root-dir.zip': archiveDataWithExtraDir,
+      '/test-archive-corrupted.zip': archiveDataCorrupted,
+      '/test-archive-malicious.zip': archiveWithMaliciousEntry,
       '/tmp': mockFs.directory(),
     });
   });
@@ -55,6 +63,7 @@ describe('ZipArchiveResponse', () => {
         content: expect.any(Function),
       },
     ]);
+
     const contents = await Promise.all(files.map(f => f.content()));
     expect(contents.map(c => c.toString('utf8').trim())).toEqual([
       'site_name: Test',
@@ -129,7 +138,6 @@ describe('ZipArchiveResponse', () => {
 
     const res = new ZipArchiveResponse(stream, 'docs/', '/tmp', 'etag');
     const dir = await res.dir();
-
     expect(dir).toMatch(/^[\/\\]tmp[\/\\].*$/);
     await expect(
       fs.readFile(resolvePath(dir, 'index.md'), 'utf8'),
@@ -151,5 +159,34 @@ describe('ZipArchiveResponse', () => {
     await expect(
       fs.pathExists(resolvePath(dir, 'docs/index.md')),
     ).resolves.toBe(false);
+  });
+
+  it('should throw on invalid archive', async () => {
+    const stream = fs.createReadStream('/test-archive-corrupted.zip');
+
+    const res = new ZipArchiveResponse(stream, '', '/tmp', 'etag');
+    const filesPromise = res.files();
+
+    await expect(filesPromise).rejects.toThrow(
+      'invalid comment length. expected: 55. found: 0',
+    );
+  });
+
+  it('should throw on entries with a path outside the destination dir', async () => {
+    const stream = fs.createReadStream('/test-archive-malicious.zip');
+
+    const res = new ZipArchiveResponse(stream, '', '/tmp', 'etag');
+    await expect(res.files()).rejects.toThrow(
+      'invalid relative path: ../side.txt',
+    );
+  });
+
+  it('should throw on entries that attempt to write outside destination dir', async () => {
+    const stream = fs.createReadStream('/test-archive-malicious.zip');
+
+    const res = new ZipArchiveResponse(stream, '', '/tmp', 'etag');
+    await expect(res.dir()).rejects.toThrow(
+      'invalid relative path: ../side.txt',
+    );
   });
 });

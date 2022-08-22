@@ -1,5 +1,24 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.4.1
+
+### Patch Changes
+
+- 0297da83c0: Added `DaemonSets` to the default kubernetes resources.
+
+## 0.4.0
+
+### Minor Changes
+
+- 0791af993f: Refactor `KubernetesObjectsProvider` with new methods, `KubernetesServiceLocator` now takes an `Entity` instead of `serviceId`
+
+### Patch Changes
+
+- 60e5f9fe68: Fixed the lack of `limitranges` as part of the Default Objects to fetch from the kubernetes api
+- eadb3a8d2e: Updated dependency `@kubernetes/client-node` to `^0.17.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0
+
 ## 0.4.0-next.2
 
 ### Patch Changes

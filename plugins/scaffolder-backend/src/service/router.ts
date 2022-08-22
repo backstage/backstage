@@ -17,17 +17,17 @@
 import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
+  Entity,
   parseEntityRef,
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { Entity } from '@backstage/catalog-model';
 import { Config, JsonObject } from '@backstage/config';
 import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import {
-  TemplateEntityV1beta3,
   TaskSpec,
+  TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
 import { JsonValue } from '@backstage/types';
@@ -35,8 +35,8 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
 import { Logger } from 'winston';
-import { TemplateFilter } from '../lib';
 import { z } from 'zod';
+import { TemplateFilter } from '../lib';
 import {
   createBuiltinActions,
   DatabaseTaskStore,
@@ -47,7 +47,7 @@ import {
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-import { getEntityBaseUrl, getWorkingDirectory, findTemplate } from './helpers';
+import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
 
 /**
  * RouterOptions
@@ -97,9 +97,7 @@ export async function createRouter(
   let taskBroker: TaskBroker;
 
   if (!options.taskBroker) {
-    const databaseTaskStore = await DatabaseTaskStore.create({
-      database: await database.getClient(),
-    });
+    const databaseTaskStore = await DatabaseTaskStore.create({ database });
     taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
   } else {
     taskBroker = options.taskBroker;
@@ -146,7 +144,10 @@ export async function createRouter(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
       async (req, res) => {
         const { namespace, kind, name } = req.params;
-        const { token } = parseBearerToken(req.headers.authorization);
+        const { token } = parseBearerToken({
+          header: req.headers.authorization,
+          logger,
+        });
         const template = await findTemplate({
           catalogApi: catalogClient,
           entityRef: { kind, namespace, name },
@@ -156,8 +157,10 @@ export async function createRouter(
           const parameters = [template.spec.parameters ?? []].flat();
           res.json({
             title: template.metadata.title ?? template.metadata.name,
+            description: template.metadata.description,
             steps: parameters.map(schema => ({
-              title: schema.title ?? 'Fill in template parameters',
+              title: schema.title ?? 'Please enter the following information',
+              description: schema.description,
               schema,
             })),
           });
@@ -185,13 +188,20 @@ export async function createRouter(
       const { kind, namespace, name } = parseEntityRef(templateRef, {
         defaultKind: 'template',
       });
-      const { token, entityRef: userEntityRef } = parseBearerToken(
-        req.headers.authorization,
-      );
+      const { token, entityRef: userEntityRef } = parseBearerToken({
+        header: req.headers.authorization,
+        logger,
+      });
 
       const userEntity = userEntityRef
         ? await catalogClient.getEntityByRef(userEntityRef, { token })
         : undefined;
+
+      let auditLog = `Scaffolding task for ${templateRef}`;
+      if (userEntityRef) {
+        auditLog += ` created by ${userEntityRef}`;
+      }
+      logger.info(auditLog);
 
       const values = req.body.values;
 
@@ -305,6 +315,7 @@ export async function createRouter(
           logger.error(
             `Received error from event stream when observing taskId '${taskId}', ${error}`,
           );
+          res.end();
         },
         next: ({ events }) => {
           let shouldUnsubscribe = false;
@@ -318,7 +329,10 @@ export async function createRouter(
           }
           // res.flush() is only available with the compression middleware
           res.flush?.();
-          if (shouldUnsubscribe) subscription.unsubscribe();
+          if (shouldUnsubscribe) {
+            subscription.unsubscribe();
+            res.end();
+          }
         },
       });
 
@@ -377,7 +391,10 @@ export async function createRouter(
         throw new InputError('Input template is not a template');
       }
 
-      const { token } = parseBearerToken(req.headers.authorization);
+      const { token } = parseBearerToken({
+        header: req.headers.authorization,
+        logger,
+      });
 
       for (const parameters of [template.spec.parameters ?? []].flat()) {
         const result = validate(body.values, parameters);
@@ -428,7 +445,13 @@ export async function createRouter(
   return app;
 }
 
-function parseBearerToken(header?: string): {
+function parseBearerToken({
+  header,
+  logger,
+}: {
+  header?: string;
+  logger: Logger;
+}): {
   token?: string;
   entityRef?: string;
 } {
@@ -460,8 +483,12 @@ function parseBearerToken(header?: string): {
       throw new TypeError('Expected string sub claim');
     }
 
+    // Check that it's a valid ref, otherwise this will throw.
+    parseEntityRef(sub);
+
     return { entityRef: sub, token };
   } catch (e) {
-    throw new InputError(`Invalid authorization header: ${stringifyError(e)}`);
+    logger.error(`Invalid authorization header: ${stringifyError(e)}`);
+    return {};
   }
 }

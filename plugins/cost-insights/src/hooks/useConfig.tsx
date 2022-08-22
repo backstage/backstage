@@ -85,12 +85,15 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
 
   useEffect(() => {
     function getProducts(): Product[] {
-      const products = c.getConfig('costInsights.products');
-      return products.keys().map(key => ({
-        kind: key,
-        name: products.getString(`${key}.name`),
-        aggregation: [0, 0],
-      }));
+      const products = c.getOptionalConfig('costInsights.products');
+      if (products) {
+        return products.keys().map(key => ({
+          kind: key,
+          name: products.getString(`${key}.name`),
+          aggregation: [0, 0],
+        }));
+      }
+      return [];
     }
 
     function getMetrics(): Metric[] {
@@ -122,13 +125,14 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
     }
 
     function getIcons(): Icon[] {
-      const products = c.getConfig('costInsights.products');
-      const keys = products.keys();
-
-      return keys.map(k => ({
-        kind: k,
-        component: getIcon(products.getOptionalString(`${k}.icon`)),
-      }));
+      const products = c.getOptionalConfig('costInsights.products');
+      if (products) {
+        return products.keys().map(k => ({
+          kind: k,
+          component: getIcon(products.getOptionalString(`${k}.icon`)),
+        }));
+      }
+      return [];
     }
 
     function getEngineerCost(): number {

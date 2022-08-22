@@ -73,6 +73,9 @@ describe.each`
   ${0.123123}       | ${'12%'}
   ${1.123}          | ${'112%'}
   ${10.123}         | ${'>1000%'}
+  ${-0.123123}      | ${'-12%'}
+  ${-1.123}         | ${'-112%'}
+  ${-10.123}        | ${'>-1000%'}
 `('formatPercent', ({ ratio, expected }) => {
   it(`correctly formats ${ratio} as ${expected}`, () => {
     expect(formatPercent(ratio)).toBe(expected);

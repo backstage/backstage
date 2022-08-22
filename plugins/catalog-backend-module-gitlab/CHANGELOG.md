@@ -1,5 +1,86 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.1.6
+
+### Patch Changes
+
+- 24979413a4: Enhancing GitLab provider with filtering projects by pattern RegExp
+
+  ```yaml
+  providers:
+    gitlab:
+      stg:
+        host: gitlab.stg.company.io
+        branch: main
+        projectPattern: 'john/' # new option
+        entityFilename: template.yaml
+  ```
+
+  With the aforementioned parameter you can filter projects, and keep only who belongs to the namespace "john".
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/integration@1.3.0
+  - @backstage/backend-tasks@0.3.4
+  - @backstage/plugin-catalog-backend@1.3.1
+
+## 0.1.6-next.1
+
+### Patch Changes
+
+- 24979413a4: Enhancing GitLab provider with filtering projects by pattern RegExp
+
+  ```yaml
+  providers:
+    gitlab:
+      stg:
+        host: gitlab.stg.company.io
+        branch: main
+        projectPattern: 'john/' # new option
+        entityFilename: template.yaml
+  ```
+
+  With the aforementioned parameter you can filter projects, and keep only who belongs to the namespace "john".
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.3.1-next.2
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/integration@1.3.0-next.0
+  - @backstage/backend-tasks@0.3.4-next.0
+  - @backstage/plugin-catalog-backend@1.3.1-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 49ff472c0b: Add the possibility in the `GitlabDiscoveryEntityProvider` to scan the whole project instead of concrete groups. For that, use a configuration like this one, where the group parameter is omitted (not mandatory anymore):
+
+  ```yaml
+  catalog:
+    providers:
+      gitlab:
+        yourProviderId:
+          host: gitlab-host # Identifies one of the hosts set up in the integrations
+          branch: main # Optional. Uses `master` as default
+          entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.3.0
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/integration@1.2.2
+  - @backstage/backend-tasks@0.3.3
+  - @backstage/errors@1.1.0
+
 ## 0.1.5-next.2
 
 ### Patch Changes

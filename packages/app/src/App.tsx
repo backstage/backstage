@@ -35,11 +35,13 @@ import {
 } from '@backstage/core-components';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import { AzurePullRequestsPage } from '@backstage/plugin-azure-devops';
+
 import {
   CatalogEntityPage,
   CatalogIndexPage,
   catalogPlugin,
-} from '@backstage/plugin-catalog';
+} from '@internal/plugin-catalog-customized';
+
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import {
   CatalogImportPage,
@@ -60,6 +62,7 @@ import { NewRelicPage } from '@backstage/plugin-newrelic';
 import {
   ScaffolderFieldExtensions,
   ScaffolderPage,
+  NextScaffolderPage,
   scaffolderPlugin,
 } from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
@@ -88,7 +91,10 @@ import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
 import { homePage } from './components/home/HomePage';
 import { Root } from './components/Root';
-import { LowerCaseValuePickerFieldExtension } from './components/scaffolder/customScaffolderExtensions';
+import {
+  DelayingComponentFieldExtension,
+  LowerCaseValuePickerFieldExtension,
+} from './components/scaffolder/customScaffolderExtensions';
 import { defaultPreviewTemplate } from './components/scaffolder/defaultPreviewTemplate';
 import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
@@ -208,6 +214,24 @@ const routes = (
     >
       <ScaffolderFieldExtensions>
         <LowerCaseValuePickerFieldExtension />
+      </ScaffolderFieldExtensions>
+    </Route>
+    <Route
+      path="/create/next"
+      element={
+        <NextScaffolderPage
+          groups={[
+            {
+              title: 'Recommended',
+              filter: entity =>
+                entity?.metadata?.tags?.includes('recommended') ?? false,
+            },
+          ]}
+        />
+      }
+    >
+      <ScaffolderFieldExtensions>
+        <DelayingComponentFieldExtension />
       </ScaffolderFieldExtensions>
     </Route>
     <Route path="/explore" element={<ExplorePage />} />

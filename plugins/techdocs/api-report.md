@@ -291,6 +291,7 @@ const techdocsPlugin: BackstagePlugin<
     }>;
     entityContent: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export { techdocsPlugin as plugin };
@@ -344,11 +345,7 @@ export type TechDocsReaderPageProps = {
 };
 
 // @public
-export type TechDocsReaderPageRenderFunction = ({
-  techdocsMetadataValue,
-  entityMetadataValue,
-  entityRef,
-}: {
+export type TechDocsReaderPageRenderFunction = (options: {
   techdocsMetadataValue?: TechDocsMetadata_2 | undefined;
   entityMetadataValue?: TechDocsEntityMetadata_2 | undefined;
   entityRef: CompoundEntityRef;
@@ -356,10 +353,8 @@ export type TechDocsReaderPageRenderFunction = ({
 }) => JSX.Element;
 
 // @public
-export const TechDocsReaderPageSubheader: ({
-  toolbarProps,
-}: {
-  toolbarProps?: ToolbarProps<'div', {}> | undefined;
+export const TechDocsReaderPageSubheader: (props: {
+  toolbarProps?: ToolbarProps;
 }) => JSX.Element | null;
 
 // @public

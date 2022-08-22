@@ -227,4 +227,113 @@ describe('GitlabDiscoveryEntityProvider', () => {
       entities: expectedEntities,
     });
   });
+
+  it('should filter found projects based on a provided project pattern', async () => {
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'test-gitlab',
+            apiBaseUrl: 'https://api.gitlab.example/api/v4',
+            token: '1234',
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          gitlab: {
+            'test-id': {
+              host: 'test-gitlab',
+              projectPattern: 'john/',
+            },
+          },
+        },
+      },
+    });
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    server.use(
+      rest.get(
+        `https://api.gitlab.example/api/v4/projects`,
+        (_req, res, ctx) => {
+          const response = [
+            {
+              id: 123,
+              default_branch: 'master',
+              archived: false,
+              last_activity_at: new Date().toString(),
+              web_url: 'https://api.gitlab.example/test-group/test-repo',
+              path_with_namespace: 'test-group/test-repo',
+            },
+            {
+              id: 124,
+              default_branch: 'master',
+              archived: false,
+              last_activity_at: new Date().toString(),
+              web_url: 'https://api.gitlab.example/john/example',
+              path_with_namespace: 'john/example',
+            },
+          ];
+          return res(ctx.json(response));
+        },
+      ),
+      rest.head(
+        'https://api.gitlab.example/api/v4/projects/test-group%2Ftest-repo/repository/files/catalog-info.yaml',
+        (req, res, ctx) => {
+          if (req.url.searchParams.get('ref') === 'master') {
+            return res(ctx.status(200));
+          }
+          return res(ctx.status(404, 'Not Found'));
+        },
+      ),
+      rest.head(
+        'https://api.gitlab.example/api/v4/projects/john%2Fexample/repository/files/catalog-info.yaml',
+        (req, res, ctx) => {
+          if (req.url.searchParams.get('ref') === 'master') {
+            return res(ctx.status(200));
+          }
+          return res(ctx.status(404, 'Not Found'));
+        },
+      ),
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    await provider.refresh(logger);
+
+    expect(entityProviderConnection.applyMutation).toBeCalledWith({
+      type: 'full',
+      entities: [
+        {
+          entity: {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Location',
+            metadata: {
+              annotations: {
+                'backstage.io/managed-by-location':
+                  'url:https://api.gitlab.example/john/example/-/blob/master/catalog-info.yaml',
+                'backstage.io/managed-by-origin-location':
+                  'url:https://api.gitlab.example/john/example/-/blob/master/catalog-info.yaml',
+              },
+              name: 'generated-2045212e5b3e9e6bacf51cec709e362282e3cda9',
+            },
+            spec: {
+              presence: 'optional',
+              target:
+                'https://api.gitlab.example/john/example/-/blob/master/catalog-info.yaml',
+              type: 'url',
+            },
+          },
+          locationKey: 'GitlabDiscoveryEntityProvider:test-id',
+        },
+      ],
+    });
+  });
 });

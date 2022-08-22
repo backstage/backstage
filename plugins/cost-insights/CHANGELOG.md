@@ -1,5 +1,52 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.30
+
+### Patch Changes
+
+- b746eca638: Make `products` field optional in the config
+- daf4b33e34: Add name property to Group
+- 08562ebe11: Display minus sign in trends in `CostOverviewCard`
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.11.30-next.1
+
+### Patch Changes
+
+- b746eca638: Make `products` field optional in the config
+- daf4b33e34: Add name property to Group
+- Updated dependencies
+  - @backstage/plugin-cost-insights-common@0.1.1-next.0
+  - @backstage/core-components@0.11.0-next.2
+
+## 0.11.30-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/core-components@0.10.1-next.0
+
+## 0.11.29
+
+### Patch Changes
+
+- 3e032a5de2: Move cost-insights data specific API types (non react) into an @backstage/plugin-cost-insights-common
+  isomorphic package. This allows these types to be shared in any backend packages or other cost-insight
+  modules.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-cost-insights-common@0.1.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/theme@0.2.16
+
 ## 0.11.29-next.3
 
 ### Patch Changes

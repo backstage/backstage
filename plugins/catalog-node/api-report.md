@@ -7,19 +7,23 @@
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { JsonValue } from '@backstage/types';
-import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @alpha (undocumented)
 export interface CatalogProcessingExtensionPoint {
   // (undocumented)
-  addEntityProvider(provider: EntityProvider): void;
+  addEntityProvider(
+    ...providers: Array<EntityProvider | Array<EntityProvider>>
+  ): void;
   // (undocumented)
-  addProcessor(processor: CatalogProcessor): void;
+  addProcessor(
+    ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
+  ): void;
 }
 
 // @alpha (undocumented)
-export const catalogProcessingExtentionPoint: ServiceRef<CatalogProcessingExtensionPoint>;
+export const catalogProcessingExtensionPoint: ExtensionPoint<CatalogProcessingExtensionPoint>;
 
 // @public (undocumented)
 export type CatalogProcessor = {

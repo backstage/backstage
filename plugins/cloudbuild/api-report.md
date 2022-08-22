@@ -60,31 +60,20 @@ export interface BUILD {
 // @public (undocumented)
 export const CLOUDBUILD_ANNOTATION = 'google.com/cloudbuild-project-slug';
 
-// Warning: (ae-missing-release-tag) "CloudbuildApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type CloudbuildApi = {
-  listWorkflowRuns: (request: {
+  listWorkflowRuns: (options: {
     projectId: string;
   }) => Promise<ActionsListWorkflowRunsForRepoResponseData>;
-  getWorkflow: ({
-    projectId,
-    id,
-  }: {
+  getWorkflow: (options: {
     projectId: string;
     id: string;
   }) => Promise<ActionsGetWorkflowResponseData>;
-  getWorkflowRun: ({
-    projectId,
-    id,
-  }: {
+  getWorkflowRun: (options: {
     projectId: string;
     id: string;
   }) => Promise<ActionsGetWorkflowResponseData>;
-  reRunWorkflow: ({
-    projectId,
-    runId,
-  }: {
+  reRunWorkflow: (options: {
     projectId: string;
     runId: string;
   }) => Promise<any>;
@@ -95,43 +84,27 @@ export type CloudbuildApi = {
 // @public (undocumented)
 export const cloudbuildApiRef: ApiRef<CloudbuildApi>;
 
-// Warning: (ae-missing-release-tag) "CloudbuildClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class CloudbuildClient implements CloudbuildApi {
   constructor(googleAuthApi: OAuthApi);
   // (undocumented)
   getToken(): Promise<string>;
   // (undocumented)
-  getWorkflow({
-    projectId,
-    id,
-  }: {
+  getWorkflow(options: {
     projectId: string;
     id: string;
   }): Promise<ActionsGetWorkflowResponseData>;
   // (undocumented)
-  getWorkflowRun({
-    projectId,
-    id,
-  }: {
+  getWorkflowRun(options: {
     projectId: string;
     id: string;
   }): Promise<ActionsGetWorkflowResponseData>;
   // (undocumented)
-  listWorkflowRuns({
-    projectId,
-  }: {
+  listWorkflowRuns(options: {
     projectId: string;
   }): Promise<ActionsListWorkflowRunsForRepoResponseData>;
   // (undocumented)
-  reRunWorkflow({
-    projectId,
-    runId,
-  }: {
-    projectId: string;
-    runId: string;
-  }): Promise<void>;
+  reRunWorkflow(options: { projectId: string; runId: string }): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "cloudbuildPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -141,6 +114,7 @@ const cloudbuildPlugin: BackstagePlugin<
   {
     entityContent: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export { cloudbuildPlugin };
@@ -154,18 +128,14 @@ export const EntityCloudbuildContent: () => JSX.Element;
 // Warning: (ae-missing-release-tag) "EntityLatestCloudbuildRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityLatestCloudbuildRunCard: ({
-  branch,
-}: {
+export const EntityLatestCloudbuildRunCard: (props: {
   branch: string;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityLatestCloudbuildsForBranchCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityLatestCloudbuildsForBranchCard: ({
-  branch,
-}: {
+export const EntityLatestCloudbuildsForBranchCard: (props: {
   branch: string;
 }) => JSX.Element;
 
@@ -189,18 +159,12 @@ export { isCloudbuildAvailable as isPluginApplicableToEntity };
 // Warning: (ae-missing-release-tag) "LatestWorkflowRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const LatestWorkflowRunCard: ({
-  branch,
-}: {
-  branch: string;
-}) => JSX.Element;
+export const LatestWorkflowRunCard: (props: { branch: string }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "LatestWorkflowsForBranchCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const LatestWorkflowsForBranchCard: ({
-  branch,
-}: {
+export const LatestWorkflowsForBranchCard: (props: {
   branch: string;
 }) => JSX.Element;
 

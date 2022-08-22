@@ -134,6 +134,7 @@ export type SelectProps = {
   triggerReset?: boolean;
   native?: boolean;
   disabled?: boolean;
+  margin?: 'dense' | 'none';
 };
 
 /** @public */
@@ -148,6 +149,7 @@ export function SelectComponent(props: SelectProps) {
     triggerReset,
     native = false,
     disabled = false,
+    margin,
   } = props;
   const classes = useStyles();
   const [value, setValue] = useState<SelectedItems>(
@@ -206,6 +208,7 @@ export function SelectComponent(props: SelectProps) {
             data-testid="select"
             displayEmpty
             multiple={multiple}
+            margin={margin}
             onChange={handleChange}
             onClick={handleClick}
             open={isOpen}

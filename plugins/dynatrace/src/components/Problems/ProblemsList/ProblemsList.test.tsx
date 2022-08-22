@@ -36,12 +36,12 @@ describe('ProblemStatus', () => {
       .mockResolvedValue({ problems });
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <ProblemsList dynatraceEntityId="example-service-3" />
+        <ProblemsList dynatraceEntityId="__service_id__" />
       </ApiProvider>,
     );
     expect(await rendered.findByText('example-service')).toBeInTheDocument();
   });
-  it('renders "nothing to report :)" if no problems are found', async () => {
+  it('returns "No Problems to Report!" if no problems are found', async () => {
     mockDynatraceApi.getDynatraceProblems = jest.fn().mockResolvedValue({});
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -49,7 +49,7 @@ describe('ProblemStatus', () => {
       </ApiProvider>,
     );
     expect(
-      await rendered.findByText('Nothing to report :)'),
+      await rendered.findByText('No Problems to Report!'),
     ).toBeInTheDocument();
   });
 });

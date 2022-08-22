@@ -377,6 +377,10 @@ import {
 export class SystemXReaderProcessor implements CatalogProcessor {
   constructor(private readonly reader: UrlReader) {}
 
+  getProcessorName(): string {
+    return 'SystemXReaderProcessor';
+  }
+
   async readLocation(
     location: LocationSpec,
     _optional: boolean,

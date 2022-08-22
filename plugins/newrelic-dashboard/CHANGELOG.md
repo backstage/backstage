@@ -1,5 +1,48 @@
 # @backstage/plugin-newrelic-dashboard
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-react@1.1.3
+
+## 0.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.3-next.2
+  - @backstage/core-components@0.11.0-next.2
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/plugin-catalog-react@1.1.3-next.0
+  - @backstage/core-components@0.10.1-next.0
+
+## 0.2.0
+
+### Minor Changes
+
+- 79ecedded9: Fix bug where the default time window/snapshot duration was supposed to be 30 days, but ended up being 43 weeks
+
+  **BREAKING**: Add a select input to change the time window of the snapshot displayed. This removes the duration prop from the `DashboardSnapshot` component.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/errors@1.1.0
+
 ## 0.2.0-next.3
 
 ### Minor Changes

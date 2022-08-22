@@ -81,9 +81,17 @@ export function formatCurrency(amount: number, currency?: string): string {
   return currency ? `${numString} ${pluralize(currency, n)}` : numString;
 }
 
-export function formatChange(change: ChangeStatistic): string {
+export function formatChange(
+  change: ChangeStatistic,
+  options?: { absolute: boolean },
+): string {
   if (notEmpty(change.ratio)) {
-    return formatPercent(Math.abs(change.ratio));
+    return formatPercent(
+      options?.absolute ? Math.abs(change.ratio) : change.ratio,
+    );
+  }
+  if (options?.absolute) {
+    return '∞';
   }
   return change.amount >= 0 ? '∞' : '-∞';
 }
@@ -95,7 +103,7 @@ export function formatPercent(n: number): string {
   }
 
   if (Math.abs(n) > 10) {
-    return `>1000%`;
+    return `>${n < 0 ? '-' : ''}1000%`;
   }
 
   return `${(n * 100).toFixed(0)}%`;

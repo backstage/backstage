@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { PluginDatabaseManager } from '@backstage/backend-common';
-import { SearchEngine } from '@backstage/plugin-search-backend-node';
+import { SearchEngine } from '@backstage/plugin-search-common';
 import {
   SearchQuery,
   IndexableResultSet,
@@ -115,14 +115,14 @@ export class PgSearchEngine implements SearchEngine {
     config: Config;
   }): Promise<PgSearchEngine> {
     return new PgSearchEngine(
-      await DatabaseDocumentStore.create(await options.database.getClient()),
+      await DatabaseDocumentStore.create(options.database),
       options.config,
     );
   }
 
   static async fromConfig(config: Config, options: PgSearchOptions) {
     return new PgSearchEngine(
-      await DatabaseDocumentStore.create(await options.database.getClient()),
+      await DatabaseDocumentStore.create(options.database),
       config,
     );
   }

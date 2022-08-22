@@ -17,6 +17,7 @@
 import { Config } from '@backstage/config';
 import { createApiRef } from '@backstage/core-plugin-api';
 
+/** @public */
 export type LighthouseCategoryId =
   | 'pwa'
   | 'seo'
@@ -24,17 +25,20 @@ export type LighthouseCategoryId =
   | 'accessibility'
   | 'best-practices';
 
+/** @public */
 export interface LighthouseCategoryAbbr {
   id: LighthouseCategoryId;
   score: number;
   title: string;
 }
 
+/** @public */
 export interface LASListRequest {
   offset?: number;
   limit?: number;
 }
 
+/** @public */
 export interface LASListResponse<Item> {
   items: Item[];
   total: number;
@@ -42,21 +46,25 @@ export interface LASListResponse<Item> {
   limit: number;
 }
 
-interface AuditBase {
+/** @public */
+export interface AuditBase {
   id: string;
   url: string;
   timeCreated: string;
 }
 
+/** @public */
 export interface AuditRunning extends AuditBase {
   status: 'RUNNING';
 }
 
+/** @public */
 export interface AuditFailed extends AuditBase {
   status: 'FAILED';
   timeCompleted: string;
 }
 
+/** @public */
 export interface AuditCompleted extends AuditBase {
   status: 'COMPLETED';
   timeCompleted: string;
@@ -64,16 +72,20 @@ export interface AuditCompleted extends AuditBase {
   categories: Record<LighthouseCategoryId, LighthouseCategoryAbbr>;
 }
 
+/** @public */
 export type Audit = AuditRunning | AuditFailed | AuditCompleted;
 
+/** @public */
 export interface Website {
   url: string;
   audits: Audit[];
   lastAudit: Audit;
 }
 
+/** @public */
 export type WebsiteListResponse = LASListResponse<Website>;
 
+/** @public */
 export interface TriggerAuditPayload {
   url: string;
   options: {
@@ -85,6 +97,7 @@ export interface TriggerAuditPayload {
   };
 }
 
+/** @public */
 export class FetchError extends Error {
   get name(): string {
     return this.constructor.name;
@@ -99,6 +112,7 @@ export class FetchError extends Error {
   }
 }
 
+/** @public */
 export type LighthouseApi = {
   url: string;
   getWebsiteList: (listOptions: LASListRequest) => Promise<WebsiteListResponse>;
@@ -107,10 +121,12 @@ export type LighthouseApi = {
   getWebsiteByUrl: (websiteUrl: string) => Promise<Website>;
 };
 
+/** @public */
 export const lighthouseApiRef = createApiRef<LighthouseApi>({
   id: 'plugin.lighthouse.service',
 });
 
+/** @public */
 export class LighthouseRestApi implements LighthouseApi {
   static fromConfig(config: Config) {
     return new LighthouseRestApi(config.getString('lighthouse.baseUrl'));
@@ -124,10 +140,10 @@ export class LighthouseRestApi implements LighthouseApi {
     return await resp.json();
   }
 
-  async getWebsiteList({
-    limit,
-    offset,
-  }: LASListRequest = {}): Promise<WebsiteListResponse> {
+  async getWebsiteList(
+    options: LASListRequest = {},
+  ): Promise<WebsiteListResponse> {
+    const { limit, offset } = options;
     const params = new URLSearchParams();
     if (typeof limit === 'number') params.append('limit', limit.toString());
     if (typeof offset === 'number') params.append('offset', offset.toString());

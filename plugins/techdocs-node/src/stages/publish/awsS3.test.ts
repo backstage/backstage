@@ -478,7 +478,7 @@ describe('AwsS3Publish', () => {
 
       await expect(fails).rejects.toMatchObject({
         message: expect.stringMatching(
-          /TechDocs metadata fetch failed; caused by Error: The file .* does not exist/i,
+          'TechDocs metadata fetch failed; caused by Error: Unable to read stream; caused by Error: The file invalid/triplet/path/techdocs_metadata.json does not exist',
         ),
       });
     });

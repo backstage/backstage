@@ -33,9 +33,7 @@ export const DomainCard: ({ entity }: DomainCardProps) => JSX.Element;
 // Warning: (ae-missing-release-tag) "DomainExplorerContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const DomainExplorerContent: ({
-  title,
-}: {
+export const DomainExplorerContent: (props: {
   title?: string | undefined;
 }) => JSX.Element;
 
@@ -68,7 +66,8 @@ const explorePlugin: BackstagePlugin<
       },
       true
     >;
-  }
+  },
+  {}
 >;
 export { explorePlugin };
 export { explorePlugin as plugin };
@@ -81,18 +80,14 @@ export const exploreRouteRef: RouteRef<undefined>;
 // Warning: (ae-missing-release-tag) "GroupsExplorerContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const GroupsExplorerContent: ({
-  title,
-}: {
+export const GroupsExplorerContent: (props: {
   title?: string | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "ToolExplorerContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const ToolExplorerContent: ({
-  title,
-}: {
+export const ToolExplorerContent: (props: {
   title?: string | undefined;
 }) => JSX.Element;
 

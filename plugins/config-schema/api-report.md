@@ -38,6 +38,7 @@ export const configSchemaPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 

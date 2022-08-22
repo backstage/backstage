@@ -1,5 +1,71 @@
 # @backstage/plugin-sonarqube
 
+## 0.4.0
+
+### Minor Changes
+
+- 619b515172: **BREAKING** This plugin now call the `sonarqube-backend` plugin instead of relying on the proxy plugin
+
+  The whole proxy's `'/sonarqube':` key can be removed from your configuration files.
+
+  Then head to the [README in sonarqube-backend plugin page](https://github.com/backstage/backstage/tree/master/plugins/sonarqube-backend/README.md) to learn how to set-up the link to your Sonarqube instances.
+
+### Patch Changes
+
+- f9c310a439: Add ability to provide an optional Sonarqube instance into the annotation in the `catalog-info.yaml` file
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-react@1.1.3
+
+## 0.4.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.3-next.2
+  - @backstage/core-components@0.11.0-next.2
+
+## 0.4.0-next.1
+
+### Minor Changes
+
+- 619b515172: **BREAKING** This plugin now call the `sonarqube-backend` plugin instead of relying on the proxy plugin
+
+  The whole proxy's `'/sonarqube':` key can be removed from your configuration files.
+
+  Then head to the [README in sonarqube-backend plugin page](https://github.com/backstage/backstage/tree/master/plugins/sonarqube-backend/README.md) to learn how to set-up the link to your Sonarqube instances.
+
+### Patch Changes
+
+- f9c310a439: Add ability to provide an optional Sonarqube instance into the annotation in the `catalog-info.yaml` file
+- Updated dependencies
+  - @backstage/core-components@0.10.1-next.1
+  - @backstage/plugin-catalog-react@1.1.3-next.1
+
+## 0.3.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/plugin-catalog-react@1.1.3-next.0
+  - @backstage/core-components@0.10.1-next.0
+
+## 0.3.7
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 15201b1032: Updated dependency `rc-progress` to `3.4.0`.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/theme@0.2.16
+
 ## 0.3.7-next.3
 
 ### Patch Changes

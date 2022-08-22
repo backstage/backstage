@@ -7,6 +7,7 @@
 
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
+import { CacheClient } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
@@ -169,6 +170,41 @@ export class CatalogIdentityClient {
   // Warning: (ae-forgotten-export) The symbol "MemberClaimQuery" needs to be exported by the entry point index.d.ts
   resolveCatalogMembership(query: MemberClaimQuery): Promise<string[]>;
 }
+
+// @public
+export type CloudflareAccessClaims = {
+  aud: string[];
+  email: string;
+  exp: number;
+  iat: number;
+  nonce: string;
+  identity_nonce: string;
+  sub: string;
+  iss: string;
+  custom: string;
+};
+
+// @public
+export type CloudflareAccessGroup = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+// @public
+export type CloudflareAccessIdentityProfile = {
+  id: string;
+  name: string;
+  email: string;
+  groups: CloudflareAccessGroup[];
+};
+
+// @public (undocumented)
+export type CloudflareAccessResult = {
+  claims: CloudflareAccessClaims;
+  cfIdentity: CloudflareAccessIdentityProfile;
+  expiresInSeconds?: number;
+};
 
 // @public
 export type CookieConfigurer = (ctx: {
@@ -470,6 +506,18 @@ export const providers: Readonly<{
     resolvers: Readonly<{
       usernameMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
       userIdMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
+    }>;
+  }>;
+  cfAccess: Readonly<{
+    create: (options: {
+      authHandler?: AuthHandler<CloudflareAccessResult> | undefined;
+      signIn: {
+        resolver: SignInResolver<CloudflareAccessResult>;
+      };
+      cache?: CacheClient | undefined;
+    }) => AuthProviderFactory;
+    resolvers: Readonly<{
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
     }>;
   }>;
   gcpIap: Readonly<{

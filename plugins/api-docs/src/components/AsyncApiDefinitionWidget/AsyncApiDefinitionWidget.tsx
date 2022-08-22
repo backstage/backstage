@@ -25,10 +25,12 @@ const LazyAsyncApiDefinition = React.lazy(() =>
   })),
 );
 
+/** @public */
 export type AsyncApiDefinitionWidgetProps = {
   definition: string;
 };
 
+/** @public */
 export const AsyncApiDefinitionWidget = (
   props: AsyncApiDefinitionWidgetProps,
 ) => {

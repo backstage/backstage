@@ -24,5 +24,6 @@ export default async function createPlugin(
   return createRouter({
     logger: env.logger,
     config: env.config,
+    reader: env.reader,
   });
 }

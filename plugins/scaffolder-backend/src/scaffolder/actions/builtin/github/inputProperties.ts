@@ -23,6 +23,10 @@ const description = {
   title: 'Repository Description',
   type: 'string',
 };
+const homepage = {
+  title: 'Repository Homepage',
+  type: 'string',
+};
 const access = {
   title: 'Repository Access',
   description: `Sets an admin collaborator on the repository. Can either be a user reference different from 'owner' in 'repoUrl' or team reference, eg. 'org/team-name'`,
@@ -128,6 +132,11 @@ const protectDefaultBranch = {
   type: 'boolean',
   description: `Protect the default branch after creating the repository. The default value is 'true'`,
 };
+const protectEnforceAdmins = {
+  title: 'Enforce Admins On Protected Branches',
+  type: 'boolean',
+  description: `Enforce admins to adhere to default branch protection. The default value is 'true'`,
+};
 const gitCommitMessage = {
   title: 'Git Commit Message',
   type: 'string',
@@ -151,7 +160,9 @@ export { description };
 export { gitAuthorEmail };
 export { gitAuthorName };
 export { gitCommitMessage };
+export { homepage };
 export { protectDefaultBranch };
+export { protectEnforceAdmins };
 export { repoUrl };
 export { repoVisibility };
 export { requireCodeOwnerReviews };

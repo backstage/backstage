@@ -278,10 +278,7 @@ Note: We recommend Python version 3.7 or higher.
 
 > Caveat: Please install the `mkdocs-techdocs-core` package after all other
 > Python packages. The order is important to make sure we get correct version of
-> some of the dependencies. For example, we want `Markdown` version to be
-> [3.2.2](https://github.com/backstage/backstage/blob/f9f70c225548017b6a14daea75b00fbd399c11eb/packages/techdocs-container/techdocs-core/requirements.txt#L11).
-> You can also explicitly install `Markdown==3.2.2` after installing all other
-> Python packages.
+> some of the dependencies.
 
 ## Running Backstage locally
 

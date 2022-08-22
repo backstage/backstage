@@ -27,7 +27,7 @@ export interface VaultApi {
 export const vaultApiRef: ApiRef<VaultApi>;
 
 // @public
-export const vaultPlugin: BackstagePlugin<{}, {}>;
+export const vaultPlugin: BackstagePlugin<{}, {}, {}>;
 
 // @public
 export type VaultSecret = {

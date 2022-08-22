@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-graphql
 
+## 0.3.12
+
+### Patch Changes
+
+- fa3eeee92d: Updated dependency `@graphql-tools/schema` to `^9.0.0`.
+
+## 0.3.11
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0
+
 ## 0.3.11-next.1
 
 ### Patch Changes

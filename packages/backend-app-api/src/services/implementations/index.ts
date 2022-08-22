@@ -14,26 +14,13 @@
  * limitations under the License.
  */
 
-import { cacheFactory } from './cacheService';
-import { configFactory } from './configService';
-import { databaseFactory } from './databaseService';
-import { discoveryFactory } from './discoveryService';
-import { loggerFactory } from './loggerService';
-import { permissionsFactory } from './permissionsService';
-import { schedulerFactory } from './schedulerService';
-import { tokenManagerFactory } from './tokenManagerService';
-import { urlReaderFactory } from './urlReaderService';
-import { httpRouterFactory } from './httpRouterService';
-
-export const defaultServiceFactories = [
-  cacheFactory,
-  configFactory,
-  databaseFactory,
-  discoveryFactory,
-  loggerFactory,
-  permissionsFactory,
-  schedulerFactory,
-  tokenManagerFactory,
-  urlReaderFactory,
-  httpRouterFactory,
-];
+export { cacheFactory } from './cacheService';
+export { configFactory } from './configService';
+export { databaseFactory } from './databaseService';
+export { discoveryFactory } from './discoveryService';
+export { loggerFactory } from './loggerService';
+export { permissionsFactory } from './permissionsService';
+export { schedulerFactory } from './schedulerService';
+export { tokenManagerFactory } from './tokenManagerService';
+export { urlReaderFactory } from './urlReaderService';
+export { httpRouterFactory } from './httpRouterService';

@@ -33,10 +33,12 @@ import {
   createVersionedValueMap,
 } from '@backstage/version-bridge';
 
-import { useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 import { techdocsApiRef } from './api';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
+
+import { toLowercaseEntityRefMaybe } from './helpers';
 
 const areEntityRefsEqual = (
   prevEntityRef: CompoundEntityRef,
@@ -107,6 +109,7 @@ export type TechDocsReaderPageProviderProps = {
 export const TechDocsReaderPageProvider = memo(
   ({ entityRef, children }: TechDocsReaderPageProviderProps) => {
     const techdocsApi = useApi(techdocsApiRef);
+    const config = useApi(configApiRef);
 
     const metadata = useAsync(async () => {
       return techdocsApi.getTechDocsMetadata(entityRef);
@@ -126,7 +129,7 @@ export const TechDocsReaderPageProvider = memo(
 
     const value = {
       metadata,
-      entityRef,
+      entityRef: toLowercaseEntityRefMaybe(entityRef, config),
       entityMetadata,
       shadowRoot,
       setShadowRoot,

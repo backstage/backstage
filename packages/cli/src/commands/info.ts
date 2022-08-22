@@ -19,17 +19,30 @@ import os from 'os';
 import { runPlain } from '../lib/run';
 import { paths } from '../lib/paths';
 import { Lockfile } from '../lib/versioning';
+import fs from 'fs-extra';
 
 export default async () => {
   await new Promise(async () => {
     const yarnVersion = await runPlain('yarn --version');
-    // eslint-disable-next-line no-restricted-syntax
-    const isLocal = require('fs').existsSync(paths.resolveOwn('./src'));
+    const isLocal = fs.existsSync(paths.resolveOwn('./src'));
+
+    const backstageFile = paths.resolveTargetRoot('backstage.json');
+    let backstageVersion = 'N/A';
+    if (fs.existsSync(backstageFile)) {
+      try {
+        const backstageJson = await fs.readJSON(backstageFile);
+        backstageVersion = backstageJson.version ?? 'N/A';
+      } catch (error) {
+        console.warn('The "backstage.json" file is not in the expected format');
+        console.log();
+      }
+    }
 
     console.log(`OS:   ${os.type} ${os.release} - ${os.platform}/${os.arch}`);
     console.log(`node: ${process.version}`);
     console.log(`yarn: ${yarnVersion}`);
     console.log(`cli:  ${cliVersion} (${isLocal ? 'local' : 'installed'})`);
+    console.log(`backstage:  ${backstageVersion}`);
     console.log();
     console.log('Dependencies:');
     const lockfilePath = paths.resolveTargetRoot('yarn.lock');

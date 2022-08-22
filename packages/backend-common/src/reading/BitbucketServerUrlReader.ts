@@ -205,8 +205,19 @@ export class BitbucketServerUrlReader implements UrlReader {
 
     const commits = await commitResponse.json();
 
+    // Handles case when a branch is provided in the URL
     if (commits && commits.id) {
       return commits.id.substring(0, 12);
+    }
+
+    // Handles case when no branch is provided in the URL
+    if (
+      commits &&
+      commits.values &&
+      commits.values.length > 0 &&
+      commits.values[0].id
+    ) {
+      return commits.values[0].id.substring(0, 12);
     }
 
     throw new Error(`Failed to read response from ${commitApiUrl}`);

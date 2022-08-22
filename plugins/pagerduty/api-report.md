@@ -82,7 +82,7 @@ export class PagerDutyClient implements PagerDutyApi {
   // (undocumented)
   static fromConfig(
     configApi: ConfigApi,
-    { discoveryApi, fetchApi }: PagerDutyClientApiDependencies,
+    dependencies: PagerDutyClientApiDependencies,
   ): PagerDutyClient;
   // (undocumented)
   getChangeEventsByServiceId(
@@ -166,7 +166,7 @@ export type PagerDutyOnCallsResponse = {
 // Warning: (ae-missing-release-tag) "pagerDutyPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-const pagerDutyPlugin: BackstagePlugin<{}, {}>;
+const pagerDutyPlugin: BackstagePlugin<{}, {}, {}>;
 export { pagerDutyPlugin };
 export { pagerDutyPlugin as plugin };
 

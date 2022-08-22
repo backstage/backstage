@@ -43,6 +43,7 @@ import { HasSubcomponentsCardProps } from './components/HasSubcomponentsCard';
 import { HasSystemsCardProps } from './components/HasSystemsCard';
 import { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
 import { rootRouteRef } from './routes';
+import { CatalogInputPluginOptions, CatalogPluginOptions } from './options';
 
 /** @public */
 export const catalogPlugin = createPlugin({
@@ -71,6 +72,14 @@ export const catalogPlugin = createPlugin({
   externalRoutes: {
     createComponent: createComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
+  },
+  __experimentalConfigure(
+    options?: CatalogInputPluginOptions,
+  ): CatalogPluginOptions {
+    const defaultOptions = {
+      createButtonTitle: 'Create',
+    };
+    return { ...defaultOptions, ...options };
   },
 });
 
