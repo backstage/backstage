@@ -20,7 +20,7 @@ import {
 } from '@backstage/plugin-search-common';
 import { Config } from '@backstage/config';
 import { Readable } from 'stream';
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
 import qs from 'qs';
 import { Logger } from 'winston';
 

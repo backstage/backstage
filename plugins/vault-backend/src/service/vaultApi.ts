@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
 import plimit from 'p-limit';
 import { getVaultConfig, VaultConfig } from '../config';
 

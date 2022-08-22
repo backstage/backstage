@@ -42,10 +42,10 @@
     "@types/express": "*",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
-    "cross-fetch": "^3.1.5",
-    "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
+    "express": "^4.17.1",
     "helmet": "^5.0.2",
+    "node-fetch": "^2.6.7",
     "p-limit": "^3.1.0",
     "winston": "^3.7.2",
     "yn": "^5.0.0"
