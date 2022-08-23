@@ -420,7 +420,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   branchName: string;
   targetPath: string;
   token?: string | undefined;
-  commitAction?: 'update' | 'create' | 'delete' | undefined;
+  commitAction?: 'update' | 'delete' | 'create' | undefined;
   projectid?: string | undefined;
   removeSourceBranch?: boolean | undefined;
   assignee?: string | undefined;
@@ -536,7 +536,7 @@ export interface RouterOptions {
   // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)
-  identity: IdentityApi;
+  identity?: IdentityApi;
   // (undocumented)
   logger: Logger;
   // (undocumented)

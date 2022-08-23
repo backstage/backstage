@@ -26,6 +26,7 @@ import { setupServer } from 'msw/node';
 import { v4 as uuid } from 'uuid';
 
 import { DefaultIdentityClient } from './DefaultIdentityClient';
+import { IdentityApiGetIdentityRequest } from './types';
 
 interface AnyJWK extends Record<string, string> {
   use: 'sig';
@@ -364,6 +365,53 @@ describe('DefaultIdentityClient', () => {
       discovery.getBaseUrl = getBaseUrl;
       discovery.getExternalBaseUrl = getExternalBaseUrl;
       dateSpy.mockClear();
+    });
+  });
+
+  describe('getIdentity', () => {
+    beforeEach(() => {
+      server.use(
+        rest.get(
+          `${mockBaseUrl}/.well-known/jwks.json`,
+          async (_, res, ctx) => {
+            const keys = await factory.listPublicKeys();
+            return res(ctx.json(keys));
+          },
+        ),
+      );
+    });
+
+    it('returns the identity', async () => {
+      const token = await factory.issueToken({
+        claims: { sub: 'foo', ent: ['entity1', 'entity2'] },
+      });
+      const response = await client.getIdentity({
+        request: { headers: { authorization: `Bearer ${token}` } },
+      } as IdentityApiGetIdentityRequest);
+      expect(response).toEqual({
+        token: token,
+        identity: {
+          type: 'user',
+          userEntityRef: 'foo',
+          ownershipEntityRefs: ['entity1', 'entity2'],
+        },
+      });
+    });
+
+    it('given a corrupt the identity', async () => {
+      await expect(
+        client.getIdentity({
+          request: { headers: { authorization: `Bearer bad-token` } },
+        } as IdentityApiGetIdentityRequest),
+      ).rejects.toThrow('Invalid JWT');
+    });
+
+    it('given no authorization header', async () => {
+      expect(
+        await client.getIdentity({
+          request: { headers: {} },
+        } as IdentityApiGetIdentityRequest),
+      ).toEqual(undefined);
     });
   });
 });

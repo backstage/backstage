@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageIdentityResponse } from './types';
-import { Request } from 'express';
+import {
+  BackstageIdentityResponse,
+  IdentityApiGetIdentityRequest,
+} from './types';
 
 /**
  * An identity client api to authenticate Backstage
@@ -30,6 +32,6 @@ export interface IdentityApi {
    * The method throws an error if verification fails.
    */
   getIdentity(
-    req: Request<any>,
+    options: IdentityApiGetIdentityRequest,
   ): Promise<BackstageIdentityResponse | undefined>;
 }

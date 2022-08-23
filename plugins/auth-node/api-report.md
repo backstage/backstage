@@ -29,7 +29,11 @@ export class DefaultIdentityClient implements IdentityApi {
   authenticate(token: string | undefined): Promise<BackstageIdentityResponse>;
   static create(options: IdentityClientOptions): DefaultIdentityClient;
   // (undocumented)
-  getIdentity(req: Request_2): Promise<BackstageIdentityResponse | undefined>;
+  getIdentity({
+    request,
+  }: IdentityApiGetIdentityRequest): Promise<
+    BackstageIdentityResponse | undefined
+  >;
 }
 
 // @public
@@ -40,9 +44,14 @@ export function getBearerTokenFromAuthorizationHeader(
 // @public
 export interface IdentityApi {
   getIdentity(
-    req: Request_2<any>,
+    options: IdentityApiGetIdentityRequest,
   ): Promise<BackstageIdentityResponse | undefined>;
 }
+
+// @public
+export type IdentityApiGetIdentityRequest = {
+  request: Request_2<unknown>;
+};
 
 // @public @deprecated
 export class IdentityClient {

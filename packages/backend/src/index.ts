@@ -75,8 +75,6 @@ function makeCreateEnv(config: Config) {
   const taskScheduler = TaskScheduler.fromConfig(config);
   const identity = DefaultIdentityClient.create({
     discovery,
-    algorithms: undefined,
-    issuer: undefined,
   });
 
   root.info(`Created UrlReader ${reader}`);

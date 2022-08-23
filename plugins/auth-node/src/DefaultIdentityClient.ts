@@ -24,9 +24,11 @@ import {
   jwtVerify,
 } from 'jose';
 import { GetKeyFunction } from 'jose/dist/types/types';
-import { Request } from 'express';
 
-import { BackstageIdentityResponse } from './types';
+import {
+  BackstageIdentityResponse,
+  IdentityApiGetIdentityRequest,
+} from './types';
 import { getBearerTokenFromAuthorizationHeader, IdentityApi } from '.';
 
 const CLOCK_MARGIN_S = 10;
@@ -75,14 +77,13 @@ export class DefaultIdentityClient implements IdentityApi {
       : ['ES256'];
   }
 
-  async getIdentity(req: Request) {
-    try {
-      return await this.authenticate(
-        getBearerTokenFromAuthorizationHeader(req.headers.authorization),
-      );
-    } catch (e) {
+  async getIdentity({ request }: IdentityApiGetIdentityRequest) {
+    if (!request.headers.authorization) {
       return undefined;
     }
+    return await this.authenticate(
+      getBearerTokenFromAuthorizationHeader(request.headers.authorization),
+    );
   }
 
   /**

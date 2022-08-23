@@ -188,7 +188,7 @@ export async function createRouter(
       req: Request<EvaluatePermissionRequestBatch>,
       res: Response<EvaluatePermissionResponseBatch>,
     ) => {
-      const user = await identity.getIdentity(req);
+      const user = await identity.getIdentity({ request: req });
 
       const parseResult = evaluatePermissionRequestBatchSchema.safeParse(
         req.body,

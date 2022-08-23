@@ -22,8 +22,8 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { Config, JsonObject } from '@backstage/config';
-import { InputError, NotFoundError } from '@backstage/errors';
+import { Config, JsonObject, JsonValue } from '@backstage/config';
+import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import {
   TaskSpec,
@@ -47,7 +47,10 @@ import {
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
-import { IdentityApi } from '@backstage/plugin-auth-node';
+import {
+  IdentityApi,
+  IdentityApiGetIdentityRequest,
+} from '@backstage/plugin-auth-node';
 
 /**
  * RouterOptions
@@ -65,12 +68,86 @@ export interface RouterOptions {
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
-  identity: IdentityApi;
+  identity?: IdentityApi;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
   return entity.apiVersion === 'scaffolder.backstage.io/v1beta3';
 }
+
+function buildDefaultIdentityClient({
+  logger,
+}: {
+  logger: Logger;
+}): IdentityApi {
+  return {
+    getIdentity: async ({ request }: IdentityApiGetIdentityRequest) => {
+      const header = request.headers.authorization;
+
+      if (!header) {
+        return undefined;
+      }
+
+      try {
+        const token = header.match(/^Bearer\s(\S+\.\S+\.\S+)$/i)?.[1];
+        if (!token) {
+          throw new TypeError('Expected Bearer with JWT');
+        }
+
+        const [_header, rawPayload, _signature] = token.split('.');
+        const payload: JsonValue = JSON.parse(
+          Buffer.from(rawPayload, 'base64').toString(),
+        );
+
+        if (
+          typeof payload !== 'object' ||
+          payload === null ||
+          Array.isArray(payload)
+        ) {
+          throw new TypeError('Malformed JWT payload');
+        }
+
+        const sub = payload.sub;
+        if (typeof sub !== 'string') {
+          throw new TypeError('Expected string sub claim');
+        }
+
+        // Check that it's a valid ref, otherwise this will throw.
+        parseEntityRef(sub);
+
+        return {
+          identity: {
+            userEntityRef: sub,
+            ownershipEntityRefs: [],
+            type: 'user',
+          },
+          token,
+        };
+      } catch (e) {
+        logger.error(`Invalid authorization header: ${stringifyError(e)}`);
+        return undefined;
+      }
+    },
+  };
+}
+
+const getIdentity = async ({
+  request,
+  identity,
+  logger,
+}: {
+  request: express.Request;
+  identity: IdentityApi;
+  logger: Logger;
+}) => {
+  let callerIdentity = undefined;
+  try {
+    callerIdentity = await identity.getIdentity({ request });
+  } catch (e: any) {
+    logger.debug(`identity could not be determined: ${e.message}`);
+  }
+  return callerIdentity;
+};
 
 /**
  * A method to create a router for the scaffolder backend plugin.
@@ -91,10 +168,13 @@ export async function createRouter(
     actions,
     taskWorkers,
     additionalTemplateFilters,
-    identity,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
+
+  const identity: IdentityApi =
+    options.identity || buildDefaultIdentityClient({ logger });
+
   const workingDirectory = await getWorkingDirectory(config, logger);
   const integrations = ScmIntegrations.fromConfig(config);
   let taskBroker: TaskBroker;
@@ -148,7 +228,11 @@ export async function createRouter(
       async (req, res) => {
         const { namespace, kind, name } = req.params;
 
-        const userIdentity = await identity.getIdentity(req);
+        const userIdentity = await getIdentity({
+          request: req,
+          logger,
+          identity,
+        });
         const token = userIdentity?.token;
 
         const template = await findTemplate({
@@ -192,7 +276,11 @@ export async function createRouter(
         defaultKind: 'template',
       });
 
-      const callerIdentity = await identity.getIdentity(req);
+      const callerIdentity = await getIdentity({
+        request: req,
+        logger,
+        identity,
+      });
       const token = callerIdentity?.token;
       const userEntityRef = callerIdentity?.identity.userEntityRef;
 
@@ -397,7 +485,8 @@ export async function createRouter(
         throw new InputError('Input template is not a template');
       }
 
-      const token = (await identity.getIdentity(req))?.token;
+      const token = (await getIdentity({ request: req, logger, identity }))
+        ?.token;
 
       for (const parameters of [template.spec.parameters ?? []].flat()) {
         const result = validate(body.values, parameters);

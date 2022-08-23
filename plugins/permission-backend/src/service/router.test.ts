@@ -70,7 +70,7 @@ describe('createRouter', () => {
         getExternalBaseUrl: jest.fn(),
       },
       identity: {
-        getIdentity: jest.fn(req => {
+        getIdentity: jest.fn(({ request: req }) => {
           const token = req.headers.authorization?.replace(/^Bearer[ ]+/, '');
 
           if (!token) {

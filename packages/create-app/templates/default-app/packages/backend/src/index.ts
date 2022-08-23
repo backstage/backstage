@@ -44,7 +44,6 @@ function makeCreateEnv(config: Config) {
   const identity = DefaultIdentityClient.create({
     discovery,
   });
-
   const permissions = ServerPermissionClient.fromConfig(config, {
     discovery,
     tokenManager,

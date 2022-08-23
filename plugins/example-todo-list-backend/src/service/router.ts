@@ -61,7 +61,7 @@ export async function createRouter(
   router.post('/todos', async (req, res) => {
     let author: string | undefined = undefined;
 
-    const user = await identity.getIdentity(req);
+    const user = await identity.getIdentity({ request: req });
     author = user?.identity.userEntityRef;
 
     if (!isTodoCreateRequest(req.body)) {
