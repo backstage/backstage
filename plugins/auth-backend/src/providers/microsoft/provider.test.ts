@@ -23,6 +23,12 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { AuthResolverContext } from '../types';
 
+jest.mock('../../lib/passport/PassportStrategyHelper', () => {
+  return {
+    executeFrameHandlerStrategy: jest.fn(),
+  };
+});
+
 const mockFrameHandler = jest.spyOn(
   helpers,
   'executeFrameHandlerStrategy',
