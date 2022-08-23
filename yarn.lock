@@ -13459,8 +13459,6 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     react-dom "^17.0.2"
     react-router "^6.3.0"
     react-router-dom "^6.3.0"
-    react-router-dom-stable "npm:react-router-dom@^6.3.0"
-    react-router-stable "npm:react-router@^6.3.0"
     react-use "^17.2.4"
     zen-observable "^0.8.15"
 
@@ -22402,6 +22400,21 @@ react-resize-detector@^6.6.3:
     lodash "^4.17.21"
     resize-observer-polyfill "^1.5.1"
 
+"react-router-beta@npm:react-router@6.0.0-beta.0", react-router@6.0.0-beta.0:
+  version "6.0.0-beta.0"
+  resolved "https://registry.npmjs.org/react-router/-/react-router-6.0.0-beta.0.tgz#3e11f39b6ded4412c2fed9e4f989dd4c8156724d"
+  integrity sha512-VgMdfpVcmFQki/LZuLh8E/MNACekDetz4xqft+a6fBZvvJnVqKbLqebF7hyoawGrV1HcO5tVaUang2Og4W2j1Q==
+  dependencies:
+    prop-types "^15.7.2"
+
+"react-router-dom-beta@npm:react-router-dom@6.0.0-beta.0", react-router-dom@6.0.0-beta.0:
+  version "6.0.0-beta.0"
+  resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.0.0-beta.0.tgz#9dcc8555365f22f7fbd09f26b6b82543f3eb97d6"
+  integrity sha512-36yNNGMT8RB9FRPL9nKJi6HKDkgOakU+o/2hHpSzR6e37gN70MpOU6QQlmif4oAWWBwjyGc3ZNOMFCsFuHUY5w==
+  dependencies:
+    prop-types "^15.7.2"
+    react-router "6.0.0-beta.0"
+
 "react-router-dom-stable@npm:react-router-dom@^6.3.0", react-router-dom@^6.3.0:
   version "6.3.0"
   resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.3.0.tgz#a0216da813454e521905b5fa55e0e5176123f43d"
@@ -22410,14 +22423,6 @@ react-resize-detector@^6.6.3:
     history "^5.2.0"
     react-router "6.3.0"
 
-react-router-dom@6.0.0-beta.0:
-  version "6.0.0-beta.0"
-  resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.0.0-beta.0.tgz#9dcc8555365f22f7fbd09f26b6b82543f3eb97d6"
-  integrity sha512-36yNNGMT8RB9FRPL9nKJi6HKDkgOakU+o/2hHpSzR6e37gN70MpOU6QQlmif4oAWWBwjyGc3ZNOMFCsFuHUY5w==
-  dependencies:
-    prop-types "^15.7.2"
-    react-router "6.0.0-beta.0"
-
 "react-router-stable@npm:react-router@^6.3.0", react-router@6.3.0, react-router@^6.3.0:
   name react-router-stable
   version "6.3.0"
@@ -22425,13 +22430,6 @@ react-router-dom@6.0.0-beta.0:
   integrity sha512-7Wh1DzVQ+tlFjkeo+ujvjSqSJmkt1+8JO+T5xklPlgrh70y7ogx75ODRW0ThWhY7S+6yEDks8TYrtQe/aoboBQ==
   dependencies:
     history "^5.2.0"
-
-react-router@6.0.0-beta.0:
-  version "6.0.0-beta.0"
-  resolved "https://registry.npmjs.org/react-router/-/react-router-6.0.0-beta.0.tgz#3e11f39b6ded4412c2fed9e4f989dd4c8156724d"
-  integrity sha512-VgMdfpVcmFQki/LZuLh8E/MNACekDetz4xqft+a6fBZvvJnVqKbLqebF7hyoawGrV1HcO5tVaUang2Og4W2j1Q==
-  dependencies:
-    prop-types "^15.7.2"
 
 react-router@^6.0.0-beta.0:
   version "6.2.1"

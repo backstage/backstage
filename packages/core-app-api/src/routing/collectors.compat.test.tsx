@@ -29,12 +29,12 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   beforeAll(() => {
     jest.doMock('react-router', () =>
       rrVersion === 'beta'
-        ? jest.requireActual('react-router')
+        ? jest.requireActual('react-router-beta')
         : jest.requireActual('react-router-stable'),
     );
     jest.doMock('react-router-dom', () =>
       rrVersion === 'beta'
-        ? jest.requireActual('react-router-dom')
+        ? jest.requireActual('react-router-dom-beta')
         : jest.requireActual('react-router-dom-stable'),
     );
   });
