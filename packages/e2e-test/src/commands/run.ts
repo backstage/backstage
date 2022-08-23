@@ -172,7 +172,7 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
   await pinYarnVersion(workspaceDir);
 
   print('Installing workspace dependencies');
-  await runPlain(['yarn', 'install', '--production', '--frozen-lockfile'], {
+  await runPlain(['yarn', 'workspaces', 'focus', '--all', '--production'], {
     cwd: workspaceDir,
   });
 
@@ -195,10 +195,20 @@ async function pinYarnVersion(dir: string) {
   }
   const [, localYarnPath] = match;
   const yarnPath = paths.resolveOwnRoot(localYarnPath);
+  const yarnPluginPath = paths.resolveOwnRoot(
+    localYarnPath,
+    '../../plugins/@yarnpkg/plugin-workspace-tools.cjs',
+  );
 
   await fs.writeFile(
     resolvePath(dir, '.yarnrc.yml'),
-    `yarnPath: ${yarnPath}\n`,
+    `yarnPath: ${yarnPath}
+nodeLinker: node-modules
+enableGlobalCache: true
+plugins:
+  - path: ${yarnPluginPath}
+    spec: '@yarnpkg/plugin-workspace-tools'
+`,
   );
 }
 
