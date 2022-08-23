@@ -16,39 +16,12 @@
 
 import React, { PropsWithChildren, ReactElement } from 'react';
 import { render } from '@testing-library/react';
-import {
-  childDiscoverer,
-  routeElementDiscoverer,
-  traverseElementTree,
-} from '../extensions/traversal';
-import {
-  createPlugin,
-  createRouteRef,
-  createExternalRouteRef,
+import type {
+  BackstagePlugin,
   RouteRef,
   ExternalRouteRef,
 } from '@backstage/core-plugin-api';
-import { routingV2Collector } from './collectors';
-import { validateRouteParameters } from './validation';
-import { AnyRouteRef, RouteFunc } from './types';
-import { AppContextProvider } from '../app/AppContext';
-
-const plugin = createPlugin({ id: 'my-plugin' });
-
-const refPage1 = createRouteRef({ id: 'refPage1' });
-const refSource1 = createRouteRef({ id: 'refSource1' });
-const refPage2 = createRouteRef({ id: 'refPage2' });
-const refSource2 = createRouteRef({ id: 'refSource2' });
-const refPage3 = createRouteRef({ id: 'refPage3', params: ['x'] });
-const eRefA = createExternalRouteRef({ id: '1' });
-const eRefB = createExternalRouteRef({ id: '2' });
-const eRefC = createExternalRouteRef({ id: '3', params: ['y'] });
-const eRefD = createExternalRouteRef({ id: '4', optional: true });
-const eRefE = createExternalRouteRef({
-  id: '5',
-  optional: true,
-  params: ['z'],
-});
+import type { AnyRouteRef, RouteFunc } from './types';
 
 const mockContext = {
   getComponents: () => ({ Progress: () => null } as any),
@@ -62,8 +35,12 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     return {
       ...(require('./FlatRoutes') as typeof import('./FlatRoutes')),
       ...(require('react-router-dom') as typeof import('react-router-dom')),
-      ...(require('./collectors') as typeof import('./collectors')),
       ...(require('./RoutingProvider') as typeof import('./RoutingProvider')),
+      ...(require('../extensions/traversal') as typeof import('../extensions/traversal')),
+      ...(require('./collectors') as typeof import('./collectors')),
+      ...(require('./validation') as typeof import('./validation')),
+      ...(require('./types') as typeof import('./types')),
+      ...(require('../app/AppContext') as typeof import('../app/AppContext')),
       ...(require('@backstage/core-plugin-api') as typeof import('@backstage/core-plugin-api')),
     };
   }
@@ -103,6 +80,18 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     }
   };
 
+  let plugin: BackstagePlugin;
+  let refPage1: RouteRef;
+  let refSource1: RouteRef;
+  let refPage2: RouteRef;
+  let refSource2: RouteRef;
+  let refPage3: RouteRef<{ x: string }>;
+  let eRefA: ExternalRouteRef;
+  let eRefB: ExternalRouteRef;
+  let eRefC: ExternalRouteRef;
+  let eRefD: ExternalRouteRef;
+  let eRefE: ExternalRouteRef;
+
   let ExtensionPage1: typeof MockComponent;
   let ExtensionPage2: typeof MockComponent;
   let ExtensionPage3: typeof MockComponent;
@@ -122,7 +111,24 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
         : jest.requireActual('react-router-dom-stable'),
     );
 
-    const { createRoutableExtension } = requireDeps();
+    const {
+      createRoutableExtension,
+      createExternalRouteRef,
+      createRouteRef,
+      createPlugin,
+    } = requireDeps();
+
+    plugin = createPlugin({ id: 'my-plugin' });
+    refPage1 = createRouteRef({ id: 'refPage1' });
+    refSource1 = createRouteRef({ id: 'refSource1' });
+    refPage2 = createRouteRef({ id: 'refPage2' });
+    refSource2 = createRouteRef({ id: 'refSource2' });
+    refPage3 = createRouteRef({ id: 'refPage3', params: ['x'] });
+    eRefA = createExternalRouteRef({ id: '1' });
+    eRefB = createExternalRouteRef({ id: '2' });
+    eRefC = createExternalRouteRef({ id: '3', params: ['y'] });
+    eRefD = createExternalRouteRef({ id: '4', optional: true });
+    eRefE = createExternalRouteRef({ id: '5', optional: true, params: ['z'] });
 
     ExtensionPage1 = plugin.provide(
       createRoutableExtension({
@@ -172,6 +178,13 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     root: ReactElement,
     routeBindings: [ExternalRouteRef, RouteRef][] = [],
   ) {
+    const {
+      traverseElementTree,
+      childDiscoverer,
+      routeElementDiscoverer,
+      routingV2Collector,
+      RoutingProvider,
+    } = requireDeps();
     const { routing } = traverseElementTree({
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
@@ -179,7 +192,6 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
         routing: routingV2Collector,
       },
     });
-    const { RoutingProvider } = requireDeps();
 
     return (
       <RoutingProvider
@@ -195,7 +207,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   }
 
   it('should handle simple routeRef path creation for routeRefs used in other parts of the app', async () => {
-    const { MemoryRouter, Routes, Route } = requireDeps();
+    const { MemoryRouter, Routes, Route, AppContextProvider } = requireDeps();
     const root = (
       <AppContextProvider appContext={mockContext}>
         <MemoryRouter initialEntries={['/foo/bar']}>
@@ -262,7 +274,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   });
 
   it('should handle routeRefs with parameters', async () => {
-    const { MemoryRouter, Routes, Route } = requireDeps();
+    const { MemoryRouter, Routes, Route, AppContextProvider } = requireDeps();
     const root = (
       <AppContextProvider appContext={mockContext}>
         <MemoryRouter initialEntries={['/foo/bar/wat']}>
@@ -300,7 +312,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   });
 
   it('should handle relative routing within parameterized routePaths', async () => {
-    const { MemoryRouter, Routes, Route } = requireDeps();
+    const { MemoryRouter, Routes, Route, AppContextProvider } = requireDeps();
     const root = (
       <AppContextProvider appContext={mockContext}>
         <MemoryRouter initialEntries={['/foo/blob/bar']}>
@@ -372,7 +384,16 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   });
 
   it('should handle relative routing of parameterized routePaths with duplicate param names', () => {
-    const { MemoryRouter, Routes, Route } = requireDeps();
+    const {
+      MemoryRouter,
+      Routes,
+      Route,
+      traverseElementTree,
+      childDiscoverer,
+      routeElementDiscoverer,
+      routingV2Collector,
+      validateRouteParameters,
+    } = requireDeps();
     const root = (
       <MemoryRouter>
         <Routes>
