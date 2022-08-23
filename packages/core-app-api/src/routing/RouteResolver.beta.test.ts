@@ -25,6 +25,11 @@ import {
 import { RouteResolver } from './RouteResolver';
 import { MATCH_ALL_ROUTE } from './collectors';
 
+jest.mock('react-router', () => jest.requireActual('react-router-beta'));
+jest.mock('react-router-dom', () =>
+  jest.requireActual('react-router-dom-beta'),
+);
+
 const element = () => null;
 const rest = { element, caseSensitive: false, children: [MATCH_ALL_ROUTE] };
 
