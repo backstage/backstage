@@ -33,10 +33,12 @@ describe('<Link />', () => {
     const linkText = 'Navigate!';
     const { getByText } = render(
       wrapInTestApp(
-        <Routes>
+        <>
           <Link to="/test">{linkText}</Link>
-          <Route path="/test" element={<p>{testString}</p>} />
-        </Routes>,
+          <Routes>
+            <Route path="/test" element={<p>{testString}</p>} />
+          </Routes>
+        </>,
       ),
     );
     expect(() => getByText(testString)).toThrow();
@@ -116,8 +118,8 @@ describe('<Link />', () => {
       const { getByText } = render(
         wrapInTestApp(
           <TestApiProvider apis={[[configApiRef, configApi]]}>
+            <Link to="/example/test">{linkText}</Link>
             <Routes>
-              <Link to="/example/test">{linkText}</Link>
               <Route path="/example/test" element={<p>{testString}</p>} />
             </Routes>
           </TestApiProvider>,
@@ -141,8 +143,8 @@ describe('<Link />', () => {
       const { getByText } = render(
         wrapInTestApp(
           <TestApiProvider apis={[[configApiRef, configApi]]}>
+            <Link to="/test">{linkText}</Link>
             <Routes>
-              <Link to="/test">{linkText}</Link>
               <Route path="/example/test" element={<p>{testString}</p>} />
             </Routes>
           </TestApiProvider>,
