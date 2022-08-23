@@ -125,6 +125,7 @@ export const Router = (props: RouterProps) => {
   return (
     <Routes>
       <Route
+        path="/"
         element={
           <ScaffolderPage
             groups={groups}
