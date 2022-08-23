@@ -135,10 +135,6 @@ export async function createConfig(
     }),
   );
 
-  const resolvePlugins: webpack.ResolvePluginInstance[] = [
-    new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
-  ];
-
   // These files are required by the transpiled code when using React Refresh.
   // They need to be excluded to the module scope plugin which ensures that files
   // that exist in the package are required.
@@ -149,13 +145,6 @@ export async function createConfig(
     require.resolve('@pmmmwh/react-refresh-webpack-plugin/overlay/index.js'),
     require.resolve('react-refresh'),
   ];
-
-  resolvePlugins.push(
-    new ModuleScopePlugin(
-      [paths.targetSrc, paths.targetDev],
-      [paths.targetPackageJson, ...reactRefreshFiles],
-    ),
-  );
 
   return {
     mode: isDev ? 'development' : 'production',
@@ -188,7 +177,13 @@ export async function createConfig(
         http: false,
         util: require.resolve('util/'),
       },
-      plugins: resolvePlugins,
+      plugins: [
+        new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
+        new ModuleScopePlugin(
+          [paths.targetSrc, paths.targetDev],
+          [paths.targetPackageJson, ...reactRefreshFiles],
+        ),
+      ],
     },
     module: {
       rules: loaders,
@@ -236,14 +231,6 @@ export async function createBackendConfig(
     runScriptNodeArgs.push('--inspect-brk');
   }
 
-  const resolvePlugins: webpack.ResolvePluginInstance[] = [
-    new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
-    new ModuleScopePlugin(
-      [paths.targetSrc, paths.targetDev],
-      [paths.targetPackageJson],
-    ),
-  ];
-
   return {
     mode: isDev ? 'development' : 'production',
     profile: false,
@@ -283,7 +270,13 @@ export async function createBackendConfig(
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json'],
       mainFields: ['main'],
       modules: [paths.rootNodeModules, ...moduleDirs],
-      plugins: resolvePlugins,
+      plugins: [
+        new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
+        new ModuleScopePlugin(
+          [paths.targetSrc, paths.targetDev],
+          [paths.targetPackageJson],
+        ),
+      ],
     },
     module: {
       rules: loaders,
