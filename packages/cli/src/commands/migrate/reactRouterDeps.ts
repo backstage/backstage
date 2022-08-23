@@ -34,14 +34,17 @@ export async function command() {
       }
 
       let changed = false;
-      if (packageJson.dependencies) {
-        for (const key of Object.keys(packageJson.dependencies)) {
-          if (REACT_ROUTER_DEPS.includes(key)) {
-            delete packageJson.dependencies[key];
-            const peerDeps = (packageJson.peerDependencies =
-              packageJson.peerDependencies ?? {});
-            peerDeps[key] = REACT_ROUTER_RANGE;
-            changed = true;
+      for (const depName of ['dependencies', 'devDependencies'] as const) {
+        const depsCollection = packageJson[depName];
+        if (depsCollection) {
+          for (const key of Object.keys(depsCollection)) {
+            if (REACT_ROUTER_DEPS.includes(key)) {
+              delete depsCollection[key];
+              const peerDeps = (packageJson.peerDependencies =
+                packageJson.peerDependencies ?? {});
+              peerDeps[key] = REACT_ROUTER_RANGE;
+              changed = true;
+            }
           }
         }
       }
