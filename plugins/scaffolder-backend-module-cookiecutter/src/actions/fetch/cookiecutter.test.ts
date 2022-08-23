@@ -13,16 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const executeShellCommand = jest.fn();
-const commandExists = jest.fn();
-const fetchContents = jest.fn();
-
-jest.mock('@backstage/plugin-scaffolder-backend', () => ({
-  ...jest.requireActual('@backstage/plugin-scaffolder-backend'),
-  fetchContents,
-  executeShellCommand,
-}));
-jest.mock('command-exists', () => commandExists);
 
 import {
   getVoidLogger,
@@ -38,6 +28,23 @@ import { PassThrough } from 'stream';
 import { createFetchCookiecutterAction } from './cookiecutter';
 import { join } from 'path';
 import type { ActionContext } from '@backstage/plugin-scaffolder-backend';
+
+const executeShellCommand = jest.fn();
+const commandExists = jest.fn();
+const fetchContents = jest.fn();
+
+jest.mock('@backstage/plugin-scaffolder-backend', () => ({
+  ...jest.requireActual('@backstage/plugin-scaffolder-backend'),
+  fetchContents: (...args: any[]) => fetchContents(...args),
+  executeShellCommand: (...args: any[]) => executeShellCommand(...args),
+}));
+
+jest.mock(
+  'command-exists',
+  () =>
+    (...args: any[]) =>
+      commandExists(...args),
+);
 
 describe('fetch:cookiecutter', () => {
   const integrations = ScmIntegrations.fromConfig(

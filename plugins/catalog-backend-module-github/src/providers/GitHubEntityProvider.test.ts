@@ -21,6 +21,11 @@ import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { GitHubEntityProvider } from './GitHubEntityProvider';
 import * as helpers from '../lib/github';
 
+jest.mock('../lib/github', () => {
+  return {
+    getOrganizationRepositories: jest.fn(),
+  };
+});
 class PersistingTaskRunner implements TaskRunner {
   private tasks: TaskInvocationDefinition[] = [];
 
