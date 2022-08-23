@@ -2,4 +2,4 @@
 '@backstage/dev-utils': patch
 ---
 
-Removing dependency on `react-hot-loader`, the we ship `swc` and `React Refresh` out of the box now with the `cli`
+Removed the dependency and setup of `react-hot-loader`, since the `@backstage/cli` now uses `swc` with `React Refresh` instead.

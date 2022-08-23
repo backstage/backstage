@@ -53,7 +53,7 @@
     "@svgr/plugin-svgo": "6.3.x",
     "@svgr/rollup": "6.3.x",
     "@svgr/webpack": "6.3.x",
-    "@swc/core": "^1.2.205",
+    "@swc/core": "^1.2.239",
     "@swc/helpers": "^0.4.7",
     "@swc/jest": "^0.2.22",
     "@types/webpack-env": "^1.15.2",
