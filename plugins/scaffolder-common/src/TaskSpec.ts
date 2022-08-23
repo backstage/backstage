@@ -34,9 +34,14 @@ export type TemplateInfo = {
   baseUrl?: string;
 
   /**
-   * The metadata of the Template entity
+   * the Template entity
    */
-  entityMetadata: EntityMeta;
+  entity?: {
+    /**
+     * The metadata of the Template
+     */
+    metadata: EntityMeta;
+  };
 };
 
 /**

@@ -261,7 +261,9 @@ describe('createRouter', () => {
                 name: mockTemplate.metadata?.name,
               }),
               baseUrl: 'https://dev.azure.com',
-              entityMetadata: mockTemplate.metadata,
+              entity: {
+                metadata: mockTemplate.metadata,
+              },
             },
           },
         }),
@@ -313,7 +315,9 @@ describe('createRouter', () => {
                 name: mockTemplate.metadata?.name,
               }),
               baseUrl: 'https://dev.azure.com',
-              entityMetadata: mockTemplate.metadata,
+              entity: {
+                metadata: mockTemplate.metadata,
+              },
             },
           },
         }),

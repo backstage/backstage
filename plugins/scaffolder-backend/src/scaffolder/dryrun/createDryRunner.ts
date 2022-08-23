@@ -106,9 +106,6 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
             baseUrl: pathToFileURL(
               resolveSafeChildPath(contentsPath, 'template.yaml'),
             ).toString(),
-            entityMetadata: {
-              name: 'dry-run',
-            },
           },
         },
         secrets: input.secrets,

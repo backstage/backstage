@@ -65,6 +65,8 @@ export const templateEntityV1beta3Validator: KindValidator;
 export type TemplateInfo = {
   entityRef: string;
   baseUrl?: string;
-  entityMetadata: EntityMeta;
+  entity?: {
+    metadata: EntityMeta;
+  };
 };
 ```

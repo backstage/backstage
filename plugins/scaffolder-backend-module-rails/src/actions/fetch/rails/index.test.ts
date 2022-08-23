@@ -65,9 +65,6 @@ describe('fetch:rails', () => {
     templateInfo: {
       baseUrl: 'somebase',
       entityRef: 'template:default/myTemplate',
-      entityMetadata: {
-        name: 'myTemplate',
-      },
     },
     workspacePath: mockTmpDir,
     logger: getVoidLogger(),
