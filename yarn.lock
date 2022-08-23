@@ -22401,7 +22401,6 @@ react-resize-detector@^6.6.3:
     resize-observer-polyfill "^1.5.1"
 
 "react-router-beta@npm:react-router@6.0.0-beta.0", react-router@6.0.0-beta.0:
-  name react-router-beta
   version "6.0.0-beta.0"
   resolved "https://registry.npmjs.org/react-router/-/react-router-6.0.0-beta.0.tgz#3e11f39b6ded4412c2fed9e4f989dd4c8156724d"
   integrity sha512-VgMdfpVcmFQki/LZuLh8E/MNACekDetz4xqft+a6fBZvvJnVqKbLqebF7hyoawGrV1HcO5tVaUang2Og4W2j1Q==
@@ -22409,7 +22408,6 @@ react-resize-detector@^6.6.3:
     prop-types "^15.7.2"
 
 "react-router-dom-beta@npm:react-router-dom@6.0.0-beta.0", react-router-dom@6.0.0-beta.0:
-  name react-router-dom-beta
   version "6.0.0-beta.0"
   resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.0.0-beta.0.tgz#9dcc8555365f22f7fbd09f26b6b82543f3eb97d6"
   integrity sha512-36yNNGMT8RB9FRPL9nKJi6HKDkgOakU+o/2hHpSzR6e37gN70MpOU6QQlmif4oAWWBwjyGc3ZNOMFCsFuHUY5w==
@@ -22426,7 +22424,6 @@ react-resize-detector@^6.6.3:
     react-router "6.3.0"
 
 "react-router-stable@npm:react-router@^6.3.0", react-router@6.3.0, react-router@^6.0.0-beta.0, react-router@^6.3.0:
-  name react-router-stable
   version "6.3.0"
   resolved "https://registry.npmjs.org/react-router/-/react-router-6.3.0.tgz#3970cc64b4cb4eae0c1ea5203a80334fdd175557"
   integrity sha512-7Wh1DzVQ+tlFjkeo+ujvjSqSJmkt1+8JO+T5xklPlgrh70y7ogx75ODRW0ThWhY7S+6yEDks8TYrtQe/aoboBQ==
