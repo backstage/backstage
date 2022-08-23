@@ -987,13 +987,10 @@ export type SidebarOpenState = {
 };
 
 // @public
-export const SidebarOpenStateProvider: ({
-  children,
-  value,
-}: {
+export function SidebarOpenStateProvider(props: {
   children: ReactNode;
   value: SidebarOpenState;
-}) => JSX.Element;
+}): JSX.Element;
 
 // @public (undocumented)
 export type SidebarOptions = {
@@ -1034,13 +1031,10 @@ export type SidebarPinStateContextType = {
 };
 
 // @public
-export const SidebarPinStateProvider: ({
-  children,
-  value,
-}: {
+export function SidebarPinStateProvider(props: {
   children: ReactNode;
   value: SidebarPinStateContextType;
-}) => JSX.Element;
+}): JSX.Element;
 
 // @public (undocumented)
 export type SidebarProps = {

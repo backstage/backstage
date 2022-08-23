@@ -272,7 +272,7 @@ export const CostInsightsPage = () => {
             <Grid container direction="column">
               <Grid item xs>
                 <CostInsightsHeader
-                  owner={pageFilters.group}
+                  groupId={pageFilters.group}
                   groups={groups}
                   hasCostData={!!dailyCost.aggregation.length}
                   alerts={active.length}

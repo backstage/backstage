@@ -19,6 +19,7 @@ import { OAuthState } from './types';
 import pickBy from 'lodash/pickBy';
 import { CookieConfigurer } from '../../providers/types';
 
+/** @public */
 export const readState = (stateString: string): OAuthState => {
   const state = Object.fromEntries(
     new URLSearchParams(Buffer.from(stateString, 'hex').toString('utf-8')),
@@ -35,6 +36,7 @@ export const readState = (stateString: string): OAuthState => {
   return state as OAuthState;
 };
 
+/** @public */
 export const encodeState = (state: OAuthState): string => {
   const stateString = new URLSearchParams(
     pickBy<string>(state, value => value !== undefined),
@@ -43,6 +45,7 @@ export const encodeState = (state: OAuthState): string => {
   return Buffer.from(stateString, 'utf-8').toString('hex');
 };
 
+/** @public */
 export const verifyNonce = (req: express.Request, providerId: string) => {
   const cookieNonce = req.cookies[`${providerId}-nonce`];
   const state: OAuthState = readState(req.query.state?.toString() ?? '');

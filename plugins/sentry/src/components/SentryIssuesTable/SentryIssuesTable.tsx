@@ -64,11 +64,8 @@ type SentryIssuesTableProps = {
   tableOptions: Options<never>;
 };
 
-const SentryIssuesTable = ({
-  sentryIssues,
-  statsFor,
-  tableOptions,
-}: SentryIssuesTableProps) => {
+const SentryIssuesTable = (props: SentryIssuesTableProps) => {
+  const { sentryIssues, statsFor, tableOptions } = props;
   return (
     <Table
       columns={columns}

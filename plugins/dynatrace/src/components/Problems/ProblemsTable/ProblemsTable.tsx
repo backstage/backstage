@@ -17,17 +17,19 @@ import React from 'react';
 import { Table, TableColumn } from '@backstage/core-components';
 import { DynatraceProblem } from '../../../api/DynatraceApi';
 import { ProblemStatus } from '../ProblemStatus';
-import { configApiRef } from '@backstage/core-plugin-api';
-import { useApi } from '@backstage/core-plugin-api';
 import { Link } from '@material-ui/core';
 
 type ProblemsTableProps = {
   problems: DynatraceProblem[];
+  dynatraceBaseUrl: string;
 };
 
-export const ProblemsTable = ({ problems }: ProblemsTableProps) => {
-  const configApi = useApi(configApiRef);
-  const dynatraceBaseUrl = configApi.getString('dynatrace.baseUrl');
+const parseTimestamp = (timestamp: number | undefined) => {
+  return timestamp ? new Date(timestamp).toLocaleString() : 'N/A';
+};
+
+export const ProblemsTable = (props: ProblemsTableProps) => {
+  const { problems, dynatraceBaseUrl } = props;
   const columns: TableColumn[] = [
     {
       title: 'Title',
@@ -62,20 +64,18 @@ export const ProblemsTable = ({ problems }: ProblemsTableProps) => {
     {
       title: 'Start Time',
       field: 'startTime',
-      render: (row: Partial<DynatraceProblem>) =>
-        new Date(row.startTime || 0).toString(),
+      render: (row: Partial<DynatraceProblem>) => parseTimestamp(row.startTime),
     },
     {
       title: 'End Time',
       field: 'endTime',
       render: (row: Partial<DynatraceProblem>) =>
-        row.endTime === -1 ? 'ongoing' : new Date(row.endTime || 0).toString(),
+        row.endTime === -1 ? 'ongoing' : parseTimestamp(row.endTime),
     },
   ];
 
   return (
     <Table
-      title="Problems"
       options={{ search: true, paging: true }}
       columns={columns}
       data={problems.map(p => {

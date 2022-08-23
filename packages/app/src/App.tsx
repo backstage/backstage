@@ -85,13 +85,15 @@ import {
 import { AdvancedSettings } from './components/advancedSettings';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import React from 'react';
-import { hot } from 'react-hot-loader/root';
 import { Navigate, Route } from 'react-router';
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
 import { homePage } from './components/home/HomePage';
 import { Root } from './components/Root';
-import { LowerCaseValuePickerFieldExtension } from './components/scaffolder/customScaffolderExtensions';
+import {
+  DelayingComponentFieldExtension,
+  LowerCaseValuePickerFieldExtension,
+} from './components/scaffolder/customScaffolderExtensions';
 import { defaultPreviewTemplate } from './components/scaffolder/defaultPreviewTemplate';
 import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
@@ -228,7 +230,7 @@ const routes = (
       }
     >
       <ScaffolderFieldExtensions>
-        <LowerCaseValuePickerFieldExtension />
+        <DelayingComponentFieldExtension />
       </ScaffolderFieldExtensions>
     </Route>
     <Route path="/explore" element={<ExplorePage />} />
@@ -273,4 +275,4 @@ const App = () => (
   </AppProvider>
 );
 
-export default hot(App);
+export default App;

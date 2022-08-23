@@ -29,12 +29,12 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 const useTechDocsReaderDom = jest.fn();
 jest.mock('./dom', () => ({
   ...jest.requireActual('./dom'),
-  useTechDocsReaderDom,
+  useTechDocsReaderDom: (...args: any[]) => useTechDocsReaderDom(...args),
 }));
 const useReaderState = jest.fn();
 jest.mock('../useReaderState', () => ({
   ...jest.requireActual('../useReaderState'),
-  useReaderState,
+  useReaderState: (...args: any[]) => useReaderState(...args),
 }));
 
 import { TechDocsReaderPageContent } from './TechDocsReaderPageContent';

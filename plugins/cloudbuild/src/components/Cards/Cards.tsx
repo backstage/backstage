@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { useEffect } from 'react';
 import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
 import { WorkflowRunsTable } from '../WorkflowRunsTable';
@@ -72,11 +73,9 @@ const WidgetContent = ({
   );
 };
 
-export const LatestWorkflowRunCard = ({
-  branch = 'master',
-}: {
-  branch: string;
-}) => {
+/** @public */
+export const LatestWorkflowRunCard = (props: { branch: string }) => {
+  const { branch = 'master' } = props;
   const { entity } = useEntity();
   const errorApi = useApi(errorApiRef);
   const projectId = entity?.metadata.annotations?.[CLOUDBUILD_ANNOTATION] || '';
@@ -103,11 +102,9 @@ export const LatestWorkflowRunCard = ({
   );
 };
 
-export const LatestWorkflowsForBranchCard = ({
-  branch = 'master',
-}: {
-  branch: string;
-}) => {
+/** @public */
+export const LatestWorkflowsForBranchCard = (props: { branch: string }) => {
+  const { branch = 'master' } = props;
   const { entity } = useEntity();
 
   return (

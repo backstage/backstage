@@ -179,6 +179,7 @@ export function createGithubRepoCreateAction(options: {
 }): TemplateAction<{
   repoUrl: string;
   description?: string | undefined;
+  homepage?: string | undefined;
   access?: string | undefined;
   deleteBranchOnMerge?: boolean | undefined;
   gitAuthorName?: string | undefined;
@@ -304,11 +305,6 @@ export function createPublishBitbucketServerAction(options: {
   token?: string | undefined;
 }>;
 
-// @public @deprecated
-export function createPublishFileAction(): TemplateAction<{
-  path: string;
-}>;
-
 // @public
 export function createPublishGerritAction(options: {
   integrations: ScmIntegrationRegistry;
@@ -344,6 +340,7 @@ export function createPublishGithubAction(options: {
 }): TemplateAction<{
   repoUrl: string;
   description?: string | undefined;
+  homepage?: string | undefined;
   access?: string | undefined;
   defaultBranch?: string | undefined;
   protectDefaultBranch?: boolean | undefined;
@@ -460,11 +457,7 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   claimTask(): Promise<SerializedTask | undefined>;
   // (undocumented)
-  completeTask({
-    taskId,
-    status,
-    eventBody,
-  }: {
+  completeTask(options: {
     taskId: string;
     status: TaskStatus;
     eventBody: JsonObject;
@@ -492,11 +485,11 @@ export class DatabaseTaskStore implements TaskStore {
     tasks: SerializedTask[];
   }>;
   // (undocumented)
-  listEvents({ taskId, after }: TaskStoreListEventsOptions): Promise<{
+  listEvents(options: TaskStoreListEventsOptions): Promise<{
     events: SerializedTaskEvent[];
   }>;
   // (undocumented)
-  listStaleTasks({ timeoutS }: { timeoutS: number }): Promise<{
+  listStaleTasks(options: { timeoutS: number }): Promise<{
     tasks: {
       taskId: string;
     }[];
@@ -505,20 +498,14 @@ export class DatabaseTaskStore implements TaskStore {
 
 // @public
 export type DatabaseTaskStoreOptions = {
-  database: Knex;
+  database: PluginDatabaseManager | Knex;
 };
 
 // @public
 export const executeShellCommand: (options: RunCommandOptions) => Promise<void>;
 
 // @public
-export function fetchContents({
-  reader,
-  integrations,
-  baseUrl,
-  fetchUrl,
-  outputPath,
-}: {
+export function fetchContents(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   baseUrl?: string;

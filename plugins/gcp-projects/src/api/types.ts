@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** @public */
 export type Project = {
   name: string;
   projectNumber?: string;
@@ -22,10 +23,12 @@ export type Project = {
   createTime?: string;
 };
 
+/** @public */
 export type ProjectDetails = {
   details: string;
 };
 
+/** @public */
 export type Operation = {
   name: string;
   metadata: string;
@@ -34,6 +37,7 @@ export type Operation = {
   response: string;
 };
 
+/** @public */
 export type Status = {
   code: number;
   message: string;

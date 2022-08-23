@@ -32,15 +32,14 @@ import { AdrContentDecorator } from './types';
 
 /**
  * Component to fetch and render an ADR.
+ *
  * @public
  */
-export const AdrReader = ({
-  adr,
-  decorators,
-}: {
+export const AdrReader = (props: {
   adr: string;
   decorators?: AdrContentDecorator[];
 }) => {
+  const { adr, decorators } = props;
   const { entity } = useEntity();
   const scmIntegrations = useApi(scmIntegrationsApiRef);
   const adrLocationUrl = getAdrLocationUrl(entity, scmIntegrations);

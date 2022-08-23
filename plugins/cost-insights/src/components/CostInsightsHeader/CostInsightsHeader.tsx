@@ -28,19 +28,20 @@ function useDisplayName(): string {
 }
 
 type CostInsightsHeaderProps = {
-  owner: string;
+  groupId: string;
   groups: Group[];
   hasCostData: boolean;
   alerts: number;
 };
 
 const CostInsightsHeaderNoData = ({
-  owner,
+  groupId,
   groups,
 }: CostInsightsHeaderProps) => {
   const displayName = useDisplayName();
   const classes = useCostInsightsStyles();
   const hasMultipleGroups = groups.length > 1;
+  const ownerName = groups.find(({ id }) => id === groupId)?.name ?? groupId;
 
   return (
     <>
@@ -51,8 +52,8 @@ const CostInsightsHeaderNoData = ({
         Well this is awkward
       </Typography>
       <Typography className={classes.h6Subtle} align="center" gutterBottom>
-        <b>Hey, {displayName}!</b> <b>{owner}</b> doesn't seem to have any cloud
-        costs.
+        <b>Hey, {displayName}!</b> <b>{ownerName}</b> doesn't seem to have any
+        cloud costs.
       </Typography>
       {hasMultipleGroups && (
         <Typography align="center" gutterBottom>
@@ -64,11 +65,13 @@ const CostInsightsHeaderNoData = ({
 };
 
 const CostInsightsHeaderAlerts = ({
-  owner,
+  groupId,
+  groups,
   alerts,
 }: CostInsightsHeaderProps) => {
   const displayName = useDisplayName();
   const classes = useCostInsightsStyles();
+  const ownerName = groups.find(({ id }) => id === groupId)?.name ?? groupId;
 
   return (
     <>
@@ -81,15 +84,19 @@ const CostInsightsHeaderAlerts = ({
       <Typography className={classes.h6Subtle} align="center" gutterBottom>
         <b>Hey, {displayName}!</b> We've identified{' '}
         {alerts > 1 ? 'a few things ' : 'one thing '}
-        <b>{owner}</b> should look into next.
+        <b>{ownerName}</b> should look into next.
       </Typography>
     </>
   );
 };
 
-const CostInsightsHeaderNoAlerts = ({ owner }: CostInsightsHeaderProps) => {
+const CostInsightsHeaderNoAlerts = ({
+  groupId,
+  groups,
+}: CostInsightsHeaderProps) => {
   const displayName = useDisplayName();
   const classes = useCostInsightsStyles();
+  const ownerName = groups.find(({ id }) => id === groupId)?.name ?? groupId;
 
   return (
     <>
@@ -100,7 +107,7 @@ const CostInsightsHeaderNoAlerts = ({ owner }: CostInsightsHeaderProps) => {
         Your team is doing great
       </Typography>
       <Typography className={classes.h6Subtle} align="center" gutterBottom>
-        <b>Hey, {displayName}!</b> <b>{owner}</b> is doing well. No major
+        <b>Hey, {displayName}!</b> <b>{ownerName}</b> is doing well. No major
         changes this month.
       </Typography>
     </>

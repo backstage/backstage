@@ -45,11 +45,10 @@
     ]
   },
   "resolutions": {
-    "**/@graphql-codegen/cli/**/ws": "^8.0.0",
     "@types/react": "^17",
     "@types/react-dom": "^17"
   },
-  "version": "1.5.0",
+  "version": "1.6.0-next.0",
   "dependencies": {
     "@manypkg/get-packages": "^1.1.3",
     "@microsoft/api-documenter": "^7.17.11",

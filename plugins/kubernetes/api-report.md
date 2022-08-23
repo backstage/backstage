@@ -208,16 +208,10 @@ export interface GroupedResponses extends DeploymentResources {
 // @public (undocumented)
 export const GroupedResponsesContext: React_2.Context<GroupedResponses>;
 
-// Warning: (ae-missing-release-tag) "HorizontalPodAutoscalerDrawer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const HorizontalPodAutoscalerDrawer: ({
-  hpa,
-  expanded,
-  children,
-}: {
+export const HorizontalPodAutoscalerDrawer: (props: {
   hpa: V1HorizontalPodAutoscaler;
-  expanded?: boolean | undefined;
+  expanded?: boolean;
   children?: React_2.ReactNode;
 }) => JSX.Element;
 
@@ -361,15 +355,10 @@ const kubernetesPlugin: BackstagePlugin<
 export { kubernetesPlugin };
 export { kubernetesPlugin as plugin };
 
-// Warning: (ae-missing-release-tag) "PodDrawer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const PodDrawer: ({
-  pod,
-  expanded,
-}: {
+export const PodDrawer: (props: {
   pod: V1Pod;
-  expanded?: boolean | undefined;
+  expanded?: boolean;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "PodNamesWithErrorsContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

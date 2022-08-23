@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-export { AtlassianAuthProvider } from './atlassian';
 export type { AwsAlbResult } from './aws-alb';
 export type {
   BitbucketOAuthResult,
@@ -50,6 +49,7 @@ export type {
   StateEncoder,
   AuthResponse,
   ProfileInfo,
+  OAuthStartResponse,
 } from './types';
 
 export { prepareBackstageIdentityResponse } from './prepareBackstageIdentityResponse';

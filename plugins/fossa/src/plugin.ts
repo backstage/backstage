@@ -24,6 +24,7 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const fossaPlugin = createPlugin({
   id: 'fossa',
   apis: [

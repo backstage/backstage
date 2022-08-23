@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { SearchEngine } from '@backstage/plugin-search-common';
 import {
@@ -79,6 +80,7 @@ export type PgSearchHighlightOptions = {
   postTag: string;
 };
 
+/** @public */
 export class PgSearchEngine implements SearchEngine {
   private readonly highlightOptions: PgSearchHighlightOptions;
 
@@ -115,14 +117,14 @@ export class PgSearchEngine implements SearchEngine {
     config: Config;
   }): Promise<PgSearchEngine> {
     return new PgSearchEngine(
-      await DatabaseDocumentStore.create(await options.database.getClient()),
+      await DatabaseDocumentStore.create(options.database),
       options.config,
     );
   }
 
   static async fromConfig(config: Config, options: PgSearchOptions) {
     return new PgSearchEngine(
-      await DatabaseDocumentStore.create(await options.database.getClient()),
+      await DatabaseDocumentStore.create(options.database),
       config,
     );
   }

@@ -19,6 +19,7 @@ import { makeBadge, Format } from 'badge-maker';
 import { BadgeBuilder, BadgeInfo, BadgeOptions, BadgeSpec } from './types';
 import { Badge, BadgeFactories } from '../../types';
 
+/** @public */
 export class DefaultBadgeBuilder implements BadgeBuilder {
   constructor(private readonly factories: BadgeFactories) {}
 

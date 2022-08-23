@@ -29,7 +29,6 @@ import {
   ILertApi,
   GetIncidentsOpts,
   GetIncidentsCountOpts,
-  Options,
   EventRequest,
 } from './types';
 import { DateTime as dt } from 'luxon';
@@ -39,6 +38,7 @@ import {
   DiscoveryApi,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const ilertApiRef = createApiRef<ILertApi>({
   id: 'plugin.ilert.service',
 });
@@ -49,6 +49,7 @@ const JSON_HEADERS = {
   Accept: 'application/json',
 };
 
+/** @public */
 export class ILertClient implements ILertApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly proxyPath: string;
@@ -66,7 +67,20 @@ export class ILertClient implements ILertApi {
     });
   }
 
-  constructor(opts: Options) {
+  constructor(opts: {
+    discoveryApi: DiscoveryApi;
+
+    /**
+     * URL used by users to access iLert web UI.
+     * Example: https://my-org.ilert.com/
+     */
+    baseUrl: string;
+
+    /**
+     * Path to use for requests via the proxy, defaults to /ilert/api
+     */
+    proxyPath: string;
+  }) {
     this.discoveryApi = opts.discoveryApi;
     this.baseUrl = opts.baseUrl;
     this.proxyPath = opts.proxyPath;

@@ -26,6 +26,7 @@ import {
 
 export const rootRouteRef = createRouteRef({ id: 'splunk-on-call' });
 
+/** @public */
 export const splunkOnCallPlugin = createPlugin({
   id: 'splunk-on-call',
   apis: [
@@ -41,6 +42,7 @@ export const splunkOnCallPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const SplunkOnCallPage = splunkOnCallPlugin.provide(
   createRoutableExtension({
     name: 'SplunkOnCallPage',
@@ -50,6 +52,7 @@ export const SplunkOnCallPage = splunkOnCallPlugin.provide(
   }),
 );
 
+/** @public */
 export const EntitySplunkOnCallCard = splunkOnCallPlugin.provide(
   createComponentExtension({
     name: 'EntitySplunkOnCallCard',

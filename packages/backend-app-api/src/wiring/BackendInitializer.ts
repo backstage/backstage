@@ -108,7 +108,9 @@ export class BackendInitializer {
             id: feature.id,
             provides,
             consumes: new Set(Object.values(registerOptions.deps)),
-            deps: registerOptions.deps,
+            deps: registerOptions.deps as {
+              [name: string]: ServiceOrExtensionPoint;
+            },
             init: registerOptions.init as BackendRegisterInit['init'],
           };
         },

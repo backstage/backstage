@@ -1,5 +1,15 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.31-next.0
+
+### Patch Changes
+
+- 9318bf15d4: The `CostInsightsHeader`component now uses group names if available
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/core-components@0.11.1-next.0
+
 ## 0.11.30
 
 ### Patch Changes

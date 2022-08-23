@@ -80,7 +80,7 @@ catalog:
           # See https://docs.microsoft.com/en-us/graph/search-query-parameter
           search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
           # Optional select for groups, this will allow you work with schemaExtensions
-          # in order to add extra information to your groups that can be used on you custom groupTransformers
+          # in order to add extra information to your groups that can be used on your custom groupTransformers
           # See  https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-1.0
           select: ['id', 'displayName', 'description']
 ```

@@ -45,6 +45,7 @@ export function createPublishGithubAction(options: {
   return createTemplateAction<{
     repoUrl: string;
     description?: string;
+    homepage?: string;
     access?: string;
     defaultBranch?: string;
     protectDefaultBranch?: boolean;
@@ -88,6 +89,7 @@ export function createPublishGithubAction(options: {
         properties: {
           repoUrl: inputProps.repoUrl,
           description: inputProps.description,
+          homepage: inputProps.homepage,
           access: inputProps.access,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
@@ -120,6 +122,7 @@ export function createPublishGithubAction(options: {
       const {
         repoUrl,
         description,
+        homepage,
         access,
         requireCodeOwnerReviews = false,
         requiredStatusCheckContexts = [],
@@ -159,6 +162,7 @@ export function createPublishGithubAction(options: {
         owner,
         repoVisibility,
         description,
+        homepage,
         deleteBranchOnMerge,
         allowMergeCommit,
         allowSquashMerge,

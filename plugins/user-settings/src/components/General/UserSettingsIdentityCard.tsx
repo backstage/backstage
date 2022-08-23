@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { InfoCard } from '@backstage/core-components';
 import React from 'react';
 import { useUserProfile } from '../useUserProfileInfo';
@@ -20,6 +21,7 @@ import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
+/** @public */
 export const UserSettingsIdentityCard = () => {
   const { backstageIdentity } = useUserProfile();
 

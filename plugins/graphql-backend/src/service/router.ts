@@ -25,11 +25,13 @@ import { Config } from '@backstage/config';
 import helmet from 'helmet';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 
+/** @public */
 export interface RouterOptions {
   logger: Logger;
   config: Config;
 }
 
+/** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

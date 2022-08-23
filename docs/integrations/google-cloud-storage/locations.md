@@ -36,6 +36,13 @@ Then make sure the environment variables `GCS_CLIENT_EMAIL` and
 Since this integration uses the Google Storage SDK, you can also choose to not
 provide any explicit credentials and let the SDK discover them automatically.
 
+Please note that for this method to work you must add an empty `googleGcs` object to the `integrations` section in `app-config.yaml`.
+
+```yaml
+integrations:
+  googleGcs: {}
+```
+
 One of these discovery methods is to provide an environment variable called
 `GOOGLE_APPLICATION_CREDENTIALS` and set it to the file path of your JSON
 service account key.

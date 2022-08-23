@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { FactRetrieverEngine } from './fact/FactRetrieverEngine';
+import {
+  DefaultFactRetrieverEngine,
+  FactRetrieverEngine,
+} from './fact/FactRetrieverEngine';
 import { Logger } from 'winston';
 import {
   DefaultFactRetrieverRegistry,
@@ -93,6 +96,7 @@ export type TechInsightsContext<
 > = {
   factChecker?: FactChecker<CheckType, CheckResultType>;
   persistenceContext: PersistenceContext;
+  factRetrieverEngine: FactRetrieverEngine;
 };
 
 /**
@@ -135,12 +139,11 @@ export const buildTechInsightsContext = async <
 
   const factRetrieverRegistry = buildFactRetrieverRegistry();
 
-  const persistenceContext = await initializePersistenceContext(
-    await database.getClient(),
-    { logger },
-  );
+  const persistenceContext = await initializePersistenceContext(database, {
+    logger,
+  });
 
-  const factRetrieverEngine = await FactRetrieverEngine.create({
+  const factRetrieverEngine = await DefaultFactRetrieverEngine.create({
     scheduler,
     repository: persistenceContext.techInsightsStore,
     factRetrieverRegistry,
@@ -161,10 +164,12 @@ export const buildTechInsightsContext = async <
     return {
       persistenceContext,
       factChecker,
+      factRetrieverEngine,
     };
   }
 
   return {
     persistenceContext,
+    factRetrieverEngine,
   };
 };

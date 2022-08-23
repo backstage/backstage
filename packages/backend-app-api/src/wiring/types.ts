@@ -15,7 +15,7 @@
  */
 
 import {
-  AnyServiceFactory,
+  ServiceFactory,
   BackendFeature,
   ExtensionPoint,
   FactoryFunc,
@@ -43,7 +43,7 @@ export interface BackendRegisterInit {
  * @public
  */
 export interface CreateSpecializedBackendOptions {
-  services: AnyServiceFactory[];
+  services: ServiceFactory[];
 }
 
 export type ServiceHolder = {

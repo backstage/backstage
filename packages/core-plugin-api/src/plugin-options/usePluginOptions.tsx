@@ -39,10 +39,11 @@ export interface PluginOptionsProviderProps {
  *
  * @alpha
  */
-export const PluginProvider = ({
-  children,
-  plugin,
-}: PluginOptionsProviderProps): JSX.Element => {
+export const PluginProvider = (
+  props: PluginOptionsProviderProps,
+): JSX.Element => {
+  const { children, plugin } = props;
+
   const { Provider } = createVersionedContext<{
     1: { plugin: BackstagePlugin | undefined };
   }>(contextKey);

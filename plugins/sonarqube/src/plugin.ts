@@ -23,6 +23,7 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const sonarQubePlugin = createPlugin({
   id: 'sonarqube',
   apis: [
@@ -41,6 +42,7 @@ export const sonarQubePlugin = createPlugin({
   ],
 });
 
+/** @public */
 export const EntitySonarQubeCard = sonarQubePlugin.provide(
   createComponentExtension({
     name: 'EntitySonarQubeCard',

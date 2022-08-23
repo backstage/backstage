@@ -77,16 +77,13 @@ export const TechDocsReaderPageHeader = (
 
   useEffect(() => {
     if (!metadata) return;
-    setTitle(prevTitle => {
-      const { site_name } = metadata;
-      return prevTitle || site_name;
-    });
-    setSubtitle(prevSubtitle => {
+    setTitle(metadata.site_name);
+    setSubtitle(() => {
       let { site_description } = metadata;
       if (!site_description || site_description === 'None') {
         site_description = 'Home';
       }
-      return prevSubtitle || site_description;
+      return site_description;
     });
   }, [metadata, setTitle, setSubtitle]);
 

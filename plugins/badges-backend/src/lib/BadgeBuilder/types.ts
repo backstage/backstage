@@ -16,15 +16,18 @@
 
 import { Badge, BadgeContext } from '../../types';
 
+/** @public */
 export type BadgeInfo = {
   id: string;
 };
 
+/** @public */
 export type BadgeOptions = {
   badgeInfo: BadgeInfo;
   context: BadgeContext;
 };
 
+/** @public */
 export type BadgeSpec = {
   /** Badge id */
   id: string;
@@ -39,6 +42,7 @@ export type BadgeSpec = {
   markdown: string;
 };
 
+/** @public */
 export type BadgeBuilder = {
   getBadges(): Promise<BadgeInfo[]>;
   createBadgeJson(options: BadgeOptions): Promise<BadgeSpec>;

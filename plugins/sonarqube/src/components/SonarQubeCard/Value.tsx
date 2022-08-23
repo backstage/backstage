@@ -27,8 +27,7 @@ const useStyles = makeStyles((theme: BackstageTheme) => {
   };
 });
 
-export const Value = ({ value }: { value?: string }) => {
+export const Value = (props: { value?: string }) => {
   const classes = useStyles();
-
-  return <span className={classes.value}>{value}</span>;
+  return <span className={classes.value}>{props.value}</span>;
 };

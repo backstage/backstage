@@ -13,25 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { OAuthApi, createApiRef, FetchApi } from '@backstage/core-plugin-api';
 
+import { OAuthApi, createApiRef, FetchApi } from '@backstage/core-plugin-api';
 import { GCalendarEvent, GCalendarList } from './types';
 import { ResponseError } from '@backstage/errors';
 
-type Options = {
-  authApi: OAuthApi;
-  fetchApi: FetchApi;
-};
-
+/** @public */
 export const gcalendarApiRef = createApiRef<GCalendarApiClient>({
   id: 'plugin.gcalendar.service',
 });
 
+/** @public */
 export class GCalendarApiClient {
   private readonly authApi: OAuthApi;
   private readonly fetchApi: FetchApi;
 
-  constructor(options: Options) {
+  constructor(options: { authApi: OAuthApi; fetchApi: FetchApi }) {
     this.authApi = options.authApi;
     this.fetchApi = options.fetchApi;
   }

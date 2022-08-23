@@ -19,6 +19,7 @@ export {
   EntityAzurePipelinesContent,
   EntityAzureGitTagsContent,
   EntityAzurePullRequestsContent,
+  EntityAzureReadmeCard,
   isAzureDevOpsAvailable,
   isAzurePipelinesAvailable,
   AzurePullRequestsPage,

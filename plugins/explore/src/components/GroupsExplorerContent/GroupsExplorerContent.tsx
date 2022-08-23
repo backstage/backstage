@@ -31,21 +31,14 @@ const useStyles = makeStyles({
   },
 });
 
-type GroupsExplorerContentProps = {
-  title?: string;
-};
-
-export const GroupsExplorerContent = ({
-  title,
-}: GroupsExplorerContentProps) => {
+export const GroupsExplorerContent = (props: { title?: string }) => {
   const classes = useStyles();
 
   return (
     <Content noPadding stretch className={classes.root}>
-      <ContentHeader title={title ?? 'Groups'}>
+      <ContentHeader title={props.title ?? 'Groups'}>
         <SupportButton>Explore your groups.</SupportButton>
       </ContentHeader>
-
       <GroupsDiagram />
     </Content>
   );

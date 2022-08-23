@@ -53,15 +53,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 /**
- * Props for Toolkit content component {@link Content}.
- *
- * @public
- */
-export type ToolkitContentProps = {
-  tools: Tool[];
-};
-
-/**
  * A component to display a list of tools for the user.
  *
  * @public
@@ -84,4 +75,13 @@ export const Content = (props: ToolkitContentProps) => {
       ))}
     </List>
   );
+};
+
+/**
+ * Props for Toolkit Content component.
+ *
+ * @public
+ */
+export type ToolkitContentProps = {
+  tools: Tool[];
 };

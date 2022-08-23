@@ -23,6 +23,7 @@ import {
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const circleCIPlugin = createPlugin({
   id: 'circleci',
   apis: [
@@ -34,6 +35,7 @@ export const circleCIPlugin = createPlugin({
   ],
 });
 
+/** @public */
 export const EntityCircleCIContent = circleCIPlugin.provide(
   createRoutableExtension({
     name: 'EntityCircleCIContent',

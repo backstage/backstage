@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { GithubDeployment } from '../../api';
 import { DateTime } from 'luxon';
@@ -43,50 +44,54 @@ export const GithubStateIndicator = (props: { state: string }) => {
   }
 };
 
-export function createEnvironmentColumn(): TableColumn<GithubDeployment> {
-  return {
-    title: 'Environment',
-    field: 'environment',
-    highlight: true,
-  };
-}
+export const columnFactories = Object.freeze({
+  createEnvironmentColumn(): TableColumn<GithubDeployment> {
+    return {
+      title: 'Environment',
+      field: 'environment',
+      highlight: true,
+    };
+  },
 
-export function createStatusColumn(): TableColumn<GithubDeployment> {
-  return {
-    title: 'Status',
-    render: (row: GithubDeployment): JSX.Element => (
-      <Box display="flex" alignItems="center">
-        <GithubStateIndicator state={row.state} />
-        <Typography variant="caption">{row.state}</Typography>
-      </Box>
-    ),
-  };
-}
-
-export function createCommitColumn(): TableColumn<GithubDeployment> {
-  return {
-    title: 'Commit',
-    render: (row: GithubDeployment) =>
-      row.commit && (
-        <Link to={row.commit.commitUrl} target="_blank" rel="noopener">
-          {row.commit.abbreviatedOid}
-        </Link>
+  createStatusColumn(): TableColumn<GithubDeployment> {
+    return {
+      title: 'Status',
+      render: (row: GithubDeployment): JSX.Element => (
+        <Box display="flex" alignItems="center">
+          <GithubStateIndicator state={row.state} />
+          <Typography variant="caption">{row.state}</Typography>
+        </Box>
       ),
-  };
-}
+    };
+  },
 
-export function createCreatorColumn(): TableColumn<GithubDeployment> {
-  return {
-    title: 'Creator',
-    field: 'creator.login',
-  };
-}
+  createCommitColumn(): TableColumn<GithubDeployment> {
+    return {
+      title: 'Commit',
+      render: (row: GithubDeployment) =>
+        row.commit && (
+          <Link to={row.commit.commitUrl} target="_blank" rel="noopener">
+            {row.commit.abbreviatedOid}
+          </Link>
+        ),
+    };
+  },
 
-export function createLastUpdatedColumn(): TableColumn<GithubDeployment> {
-  return {
-    title: 'Last Updated',
-    render: (row: GithubDeployment): JSX.Element => (
-      <Box>{DateTime.fromISO(row.updatedAt).toRelative({ locale: 'en' })}</Box>
-    ),
-  };
-}
+  createCreatorColumn(): TableColumn<GithubDeployment> {
+    return {
+      title: 'Creator',
+      field: 'creator.login',
+    };
+  },
+
+  createLastUpdatedColumn(): TableColumn<GithubDeployment> {
+    return {
+      title: 'Last Updated',
+      render: (row: GithubDeployment): JSX.Element => (
+        <Box>
+          {DateTime.fromISO(row.updatedAt).toRelative({ locale: 'en' })}
+        </Box>
+      ),
+    };
+  },
+});

@@ -90,7 +90,6 @@ const DISABLE_CACHE: {
 const Divider: () => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "SemverTagParts" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "getBumpedSemverTagParts" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 function getBumpedSemverTagParts(
@@ -105,14 +104,8 @@ function getBumpedSemverTagParts(
   };
 };
 
-// Warning: (ae-missing-release-tag) "getBumpedTag" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
-function getBumpedTag({
-  project,
-  tag,
-  bumpLevel,
-}: {
+function getBumpedTag(options: {
   project: Project;
   tag: string;
   bumpLevel: keyof typeof SEMVER_PARTS;
@@ -167,10 +160,8 @@ function getSemverTagParts(tag: string):
 // @public (undocumented)
 function getShortCommitHash(hash: string): string;
 
-// Warning: (ae-missing-release-tag) "getTagParts" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
-function getTagParts({ project, tag }: { project: Project; tag: string }):
+function getTagParts(options: { project: Project; tag: string }):
   | {
       error: AlertError;
       tagParts?: undefined;
@@ -207,14 +198,8 @@ export const gitReleaseManagerPlugin: BackstagePlugin<
   {}
 >;
 
-// Warning: (ae-missing-release-tag) "InfoCardPlus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-const InfoCardPlus: ({
-  children,
-}: {
-  children?: React_2.ReactNode;
-}) => JSX.Element;
+const InfoCardPlus: (props: { children?: React_2.ReactNode }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "internals" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -625,16 +610,8 @@ declare namespace testIds {
   export { TEST_IDS };
 }
 
-// Warning: (ae-missing-release-tag) "validateTagName" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-const validateTagName: ({
-  project,
-  tagName,
-}: {
-  project: Project;
-  tagName?: string | undefined;
-}) =>
+const validateTagName: (options: { project: Project; tagName?: string }) =>
   | {
       tagNameError: null;
     }
@@ -653,9 +630,9 @@ const VERSIONING_STRATEGIES: {
 // Warnings were encountered during analysis:
 //
 // src/components/ResponseStepDialog/LinearProgressWithLabel.d.ts:5:5 - (ae-forgotten-export) The symbol "ResponseStep" needs to be exported by the entry point index.d.ts
-// src/helpers/getBumpedTag.d.ts:14:5 - (ae-forgotten-export) The symbol "Project" needs to be exported by the entry point index.d.ts
-// src/helpers/getBumpedTag.d.ts:19:5 - (ae-forgotten-export) The symbol "CalverTagParts" needs to be exported by the entry point index.d.ts
-// src/helpers/getBumpedTag.d.ts:31:5 - (ae-forgotten-export) The symbol "AlertError" needs to be exported by the entry point index.d.ts
+// src/helpers/getBumpedTag.d.ts:16:5 - (ae-forgotten-export) The symbol "Project" needs to be exported by the entry point index.d.ts
+// src/helpers/getBumpedTag.d.ts:21:5 - (ae-forgotten-export) The symbol "CalverTagParts" needs to be exported by the entry point index.d.ts
+// src/helpers/getBumpedTag.d.ts:33:5 - (ae-forgotten-export) The symbol "AlertError" needs to be exported by the entry point index.d.ts
 // src/index.d.ts:9:5 - (ae-forgotten-export) The symbol "components" needs to be exported by the entry point index.d.ts
 // src/index.d.ts:10:5 - (ae-forgotten-export) The symbol "constants" needs to be exported by the entry point index.d.ts
 // src/index.d.ts:11:5 - (ae-forgotten-export) The symbol "helpers" needs to be exported by the entry point index.d.ts

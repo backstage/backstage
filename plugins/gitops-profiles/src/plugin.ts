@@ -26,6 +26,7 @@ import {
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const gitopsProfilesPlugin = createPlugin({
   id: 'gitops-profiles',
   apis: [
@@ -38,6 +39,7 @@ export const gitopsProfilesPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const GitopsProfilesClusterListPage = gitopsProfilesPlugin.provide(
   createRoutableExtension({
     name: 'GitopsProfilesClusterListPage',
@@ -46,6 +48,7 @@ export const GitopsProfilesClusterListPage = gitopsProfilesPlugin.provide(
   }),
 );
 
+/** @public */
 export const GitopsProfilesClusterPage = gitopsProfilesPlugin.provide(
   createRoutableExtension({
     name: 'GitopsProfilesClusterPage',
@@ -54,6 +57,7 @@ export const GitopsProfilesClusterPage = gitopsProfilesPlugin.provide(
   }),
 );
 
+/** @public */
 export const GitopsProfilesCreatePage = gitopsProfilesPlugin.provide(
   createRoutableExtension({
     name: 'GitopsProfilesCreatePage',

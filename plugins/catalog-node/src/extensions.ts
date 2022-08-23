@@ -21,8 +21,12 @@ import { CatalogProcessor } from './api/processor';
  * @alpha
  */
 export interface CatalogProcessingExtensionPoint {
-  addProcessor(processor: CatalogProcessor): void;
-  addEntityProvider(provider: EntityProvider): void;
+  addProcessor(
+    ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
+  ): void;
+  addEntityProvider(
+    ...providers: Array<EntityProvider | Array<EntityProvider>>
+  ): void;
 }
 
 /**

@@ -1,5 +1,14 @@
 # @backstage/backend-defaults
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- de3347ca74: Updated usages of `ServiceFactory`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.2-next.0
+  - @backstage/backend-app-api@0.2.1-next.0
+
 ## 0.1.0
 
 ### Minor Changes

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { useEffect, useState } from 'react';
 import {
   Button,
@@ -30,19 +31,15 @@ import {
   SessionState,
 } from '@backstage/core-plugin-api';
 
-type Props = {
+/** @public */
+export const ProviderSettingsItem = (props: {
   title: string;
   description: string;
   icon: IconComponent;
   apiRef: ApiRef<SessionApi>;
-};
+}) => {
+  const { title, description, icon: Icon, apiRef } = props;
 
-export const ProviderSettingsItem = ({
-  title,
-  description,
-  icon: Icon,
-  apiRef,
-}: Props) => {
   const api = useApi(apiRef);
   const [signedIn, setSignedIn] = useState(false);
 

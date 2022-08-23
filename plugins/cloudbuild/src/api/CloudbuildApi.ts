@@ -20,32 +20,25 @@ import {
 } from '../api/types';
 import { createApiRef } from '@backstage/core-plugin-api';
 
+/** @public */
 export const cloudbuildApiRef = createApiRef<CloudbuildApi>({
   id: 'plugin.cloudbuild.service',
 });
 
+/** @public */
 export type CloudbuildApi = {
-  listWorkflowRuns: (request: {
+  listWorkflowRuns: (options: {
     projectId: string;
   }) => Promise<ActionsListWorkflowRunsForRepoResponseData>;
-  getWorkflow: ({
-    projectId,
-    id,
-  }: {
+  getWorkflow: (options: {
     projectId: string;
     id: string;
   }) => Promise<ActionsGetWorkflowResponseData>;
-  getWorkflowRun: ({
-    projectId,
-    id,
-  }: {
+  getWorkflowRun: (options: {
     projectId: string;
     id: string;
   }) => Promise<ActionsGetWorkflowResponseData>;
-  reRunWorkflow: ({
-    projectId,
-    runId,
-  }: {
+  reRunWorkflow: (options: {
     projectId: string;
     runId: string;
   }) => Promise<any>;

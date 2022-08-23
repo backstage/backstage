@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { dynatraceApiRef, DynatraceClient } from './api';
 import {
   createApiFactory,
@@ -23,7 +24,10 @@ import {
 } from '@backstage/core-plugin-api';
 
 import { Entity } from '@backstage/catalog-model';
-import { DYNATRACE_ID_ANNOTATION } from './constants';
+import {
+  DYNATRACE_ID_ANNOTATION,
+  DYNATRACE_SYNTHETICS_ANNOTATION,
+} from './constants';
 
 import { rootRouteRef } from './routes';
 
@@ -52,10 +56,11 @@ export const dynatracePlugin = createPlugin({
 /**
  * Checks if the entity has a dynatrace id annotation.
  * @public
- * @param entity {Entity} - The entity to check for the dynatrace id annotation.
+ * @param entity - The entity to check for the dynatrace id annotation.
  */
 export const isDynatraceAvailable = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[DYNATRACE_ID_ANNOTATION]);
+  Boolean(entity.metadata.annotations?.[DYNATRACE_ID_ANNOTATION]) ||
+  Boolean(entity.metadata.annotations?.[DYNATRACE_SYNTHETICS_ANNOTATION]);
 
 /**
  * Creates a routable extension for the dynatrace plugin tab.

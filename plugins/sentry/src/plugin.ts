@@ -24,10 +24,12 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const rootRouteRef = createRouteRef({
   id: 'sentry',
 });
 
+/** @public */
 export const sentryPlugin = createPlugin({
   id: 'sentry',
   apis: [

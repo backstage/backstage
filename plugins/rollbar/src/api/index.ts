@@ -16,3 +16,4 @@
 
 export * from './RollbarApi';
 export * from './RollbarClient';
+export * from './types';
