@@ -47,6 +47,7 @@ const safeForwardHeaders = [
   'user-agent',
 ];
 
+/** @public */
 export interface RouterOptions {
   logger: Logger;
   config: Config;
@@ -177,6 +178,7 @@ export function buildMiddleware(
   return createProxyMiddleware(filter, fullConfig);
 }
 
+/** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

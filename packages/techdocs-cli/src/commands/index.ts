@@ -216,6 +216,10 @@ export function registerCommands(program: Command) {
       'Override the image entrypoint',
     )
     .option(
+      '--docker-option <DOCKER_OPTION...>',
+      'Extra options to pass to the docker run command, e.g. "--add-host=internal.host:192.168.11.12" (can be added multiple times).',
+    )
+    .option(
       '--no-docker',
       'Do not use Docker, run `mkdocs serve` in current user environment.',
     )
@@ -236,6 +240,10 @@ export function registerCommands(program: Command) {
     .option(
       '--docker-entrypoint <DOCKER_ENTRYPOINT>',
       'Override the image entrypoint',
+    )
+    .option(
+      '--docker-option <DOCKER_OPTION...>',
+      'Extra options to pass to the docker run command, e.g. "--add-host=internal.host:192.168.11.12" (can be added multiple times).',
     )
     .option(
       '--no-docker',

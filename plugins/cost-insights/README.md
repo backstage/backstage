@@ -120,13 +120,23 @@ To expose the plugin to your users, you can integrate the `cost-insights` route 
 
 ## Configuration
 
-Cost Insights has only two required configuration fields: a map of cloud `products` for showing cost breakdowns and `engineerCost` - the average yearly cost of an engineer including benefits. Products must be defined as keys on the `products` field.
+Cost Insights has only one required configuration field: `engineerCost` - the average yearly cost of an engineer including benefits.
+
+### Basic
+
+```yaml
+## ./app-config.yaml
+costInsights:
+  engineerCost: 200000
+```
+
+### Products (Optional)
+
+For showing cost breakdowns you can define a map of cloud products. They must be defined as keys on the `products` field. A user-friendly name is **required**.
 
 You can optionally supply a product `icon` to display in Cost Insights navigation. See the [type file](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/types/Icon.ts) for supported types and Material UI icon [mappings](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/utils/navigation.tsx).
 
 **Note:** Product keys should be unique and camelCased. Backstage does not support underscores in configuration keys.
-
-### Basic
 
 ```yaml
 ## ./app-config.yaml

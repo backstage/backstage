@@ -27,7 +27,7 @@ import { CatalogBuilder } from './CatalogBuilder';
 import {
   CatalogProcessor,
   CatalogProcessingExtensionPoint,
-  catalogProcessingExtentionPoint,
+  catalogProcessingExtensionPoint,
   EntityProvider,
 } from '@backstage/plugin-catalog-node';
 
@@ -35,12 +35,16 @@ class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
   #processors = new Array<CatalogProcessor>();
   #entityProviders = new Array<EntityProvider>();
 
-  addProcessor(processor: CatalogProcessor): void {
-    this.#processors.push(processor);
+  addProcessor(
+    ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
+  ): void {
+    this.#processors.push(...processors.flat());
   }
 
-  addEntityProvider(provider: EntityProvider): void {
-    this.#entityProviders.push(provider);
+  addEntityProvider(
+    ...providers: Array<EntityProvider | Array<EntityProvider>>
+  ): void {
+    this.#entityProviders.push(...providers.flat());
   }
 
   get processors() {
@@ -62,7 +66,7 @@ export const catalogPlugin = createBackendPlugin({
     const processingExtensions = new CatalogExtensionPointImpl();
     // plugins depending on this API will be initialized before this plugins init method is executed.
     env.registerExtensionPoint(
-      catalogProcessingExtentionPoint,
+      catalogProcessingExtensionPoint,
       processingExtensions,
     );
 

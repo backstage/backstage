@@ -113,7 +113,10 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
     // Delete old relations
     let previousRelationRows: DbRelationsRow[];
-    if (tx.client.config.client.includes('sqlite3')) {
+    if (
+      tx.client.config.client.includes('sqlite3') ||
+      tx.client.config.client.includes('mysql')
+    ) {
       previousRelationRows = await tx<DbRelationsRow>('relations')
         .select('*')
         .where({ originating_entity_id: id });
@@ -201,6 +204,13 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
     if (toRemove.length) {
       let removedCount = 0;
+      const rootId = () => {
+        if (tx.client.config.client.includes('mysql')) {
+          return tx.raw('CAST(NULL as UNSIGNED INT)', []);
+        }
+
+        return tx.raw('CAST(NULL as INT)', []);
+      };
       for (const refs of lodash.chunk(toRemove, 1000)) {
         /*
       WITH RECURSIVE
@@ -266,7 +276,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
                 .withRecursive('ancestors', function ancestors(outer) {
                   return outer
                     .select({
-                      root_id: tx.raw('CAST(NULL as INT)', []),
+                      root_id: rootId(),
                       via_entity_ref: 'entity_ref',
                       to_entity_ref: 'entity_ref',
                     })
@@ -435,15 +445,26 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .orderBy('next_update_at', 'asc');
 
     const interval = this.options.refreshInterval();
+
+    const nextUpdateAt = (refreshInterval: number) => {
+      if (tx.client.config.client.includes('sqlite3')) {
+        return tx.raw(`datetime('now', ?)`, [`${refreshInterval} seconds`]);
+      }
+
+      if (tx.client.config.client.includes('mysql')) {
+        return tx.raw(`now() + interval ${refreshInterval} second`);
+      }
+
+      return tx.raw(`now() + interval '${refreshInterval} seconds'`);
+    };
+
     await tx<DbRefreshStateRow>('refresh_state')
       .whereIn(
         'entity_ref',
         items.map(i => i.entity_ref),
       )
       .update({
-        next_update_at: tx.client.config.client.includes('sqlite3')
-          ? tx.raw(`datetime('now', ?)`, [`${interval} seconds`])
-          : tx.raw(`now() + interval '${interval} seconds'`),
+        next_update_at: nextUpdateAt(interval),
       });
 
     return {

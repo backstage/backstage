@@ -20,28 +20,28 @@ import {
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import {
-  humanizeEntityRef,
-  getEntityRelations,
-  useEntityList,
-  useStarredEntities,
-} from '@backstage/plugin-catalog-react';
-import Edit from '@material-ui/icons/Edit';
-import OpenInNew from '@material-ui/icons/OpenInNew';
-import { capitalize } from 'lodash';
-import React, { useMemo } from 'react';
-import { columnFactories } from './columns';
-import { CatalogTableRow } from './types';
-import {
   CodeSnippet,
   Table,
   TableColumn,
   TableProps,
   WarningPanel,
 } from '@backstage/core-components';
-import StarBorder from '@material-ui/icons/StarBorder';
-import { withStyles } from '@material-ui/core/styles';
-import Star from '@material-ui/icons/Star';
+import {
+  getEntityRelations,
+  humanizeEntityRef,
+  useEntityList,
+  useStarredEntities,
+} from '@backstage/plugin-catalog-react';
 import { Typography } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import Edit from '@material-ui/icons/Edit';
+import OpenInNew from '@material-ui/icons/OpenInNew';
+import Star from '@material-ui/icons/Star';
+import StarBorder from '@material-ui/icons/StarBorder';
+import { capitalize } from 'lodash';
+import React, { useMemo } from 'react';
+import { columnFactories } from './columns';
+import { CatalogTableRow } from './types';
 
 /**
  * Props for {@link CatalogTable}.
@@ -52,6 +52,7 @@ export interface CatalogTableProps {
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
   tableOptions?: TableProps<CatalogTableRow>['options'];
+  subtitle?: string;
 }
 
 const YellowStar = withStyles({
@@ -62,7 +63,7 @@ const YellowStar = withStyles({
 
 /** @public */
 export const CatalogTable = (props: CatalogTableProps) => {
-  const { columns, actions, tableOptions } = props;
+  const { columns, actions, tableOptions, subtitle } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const { loading, error, entities, filters } = useEntityList();
 
@@ -226,6 +227,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       title={`${titlePreamble} (${entities.length})`}
       data={rows}
       actions={actions || defaultActions}
+      subtitle={subtitle}
     />
   );
 };

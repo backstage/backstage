@@ -22,6 +22,7 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const badgesPlugin = createPlugin({
   id: 'badges',
   apis: [
@@ -34,6 +35,7 @@ export const badgesPlugin = createPlugin({
   ],
 });
 
+/** @public */
 export const EntityBadgesDialog = badgesPlugin.provide(
   createComponentExtension({
     name: 'EntityBadgesDialog',

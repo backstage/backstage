@@ -38,6 +38,7 @@ class BackstageLogger implements Logger {
   }
 }
 
+/** @public */
 export const loggerFactory = createServiceFactory({
   service: loggerServiceRef,
   deps: {},

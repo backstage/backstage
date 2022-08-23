@@ -97,6 +97,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   owner: string,
   repoVisibility: 'private' | 'internal' | 'public',
   description: string | undefined,
+  homepage: string | undefined,
   deleteBranchOnMerge: boolean,
   allowMergeCommit: boolean,
   allowSquashMerge: boolean,
@@ -138,6 +139,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           allow_merge_commit: allowMergeCommit,
           allow_squash_merge: allowSquashMerge,
           allow_rebase_merge: allowRebaseMerge,
+          homepage: homepage,
         })
       : client.rest.repos.createForAuthenticatedUser({
           name: repo,
@@ -147,6 +149,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           allow_merge_commit: allowMergeCommit,
           allow_squash_merge: allowSquashMerge,
           allow_rebase_merge: allowRebaseMerge,
+          homepage: homepage,
         });
 
   let newRepo;

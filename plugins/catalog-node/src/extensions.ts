@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createServiceRef } from '@backstage/backend-plugin-api';
+import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { EntityProvider } from './api';
 import { CatalogProcessor } from './api/processor';
 
@@ -21,14 +21,18 @@ import { CatalogProcessor } from './api/processor';
  * @alpha
  */
 export interface CatalogProcessingExtensionPoint {
-  addProcessor(processor: CatalogProcessor): void;
-  addEntityProvider(provider: EntityProvider): void;
+  addProcessor(
+    ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
+  ): void;
+  addEntityProvider(
+    ...providers: Array<EntityProvider | Array<EntityProvider>>
+  ): void;
 }
 
 /**
  * @alpha
  */
-export const catalogProcessingExtentionPoint =
-  createServiceRef<CatalogProcessingExtensionPoint>({
+export const catalogProcessingExtensionPoint =
+  createExtensionPoint<CatalogProcessingExtensionPoint>({
     id: 'catalog.processing',
   });

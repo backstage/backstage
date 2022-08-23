@@ -147,6 +147,10 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     };
 
     for await (const project of projects) {
+      if (!this.config.projectPattern.test(project.path_with_namespace ?? '')) {
+        continue;
+      }
+
       res.scanned++;
 
       if (project.archived) {

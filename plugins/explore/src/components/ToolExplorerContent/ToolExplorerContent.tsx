@@ -18,7 +18,6 @@ import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { ToolCard } from '../ToolCard';
-
 import {
   Content,
   ContentHeader,
@@ -28,7 +27,6 @@ import {
   SupportButton,
   WarningPanel,
 } from '@backstage/core-components';
-
 import { useApi } from '@backstage/core-plugin-api';
 
 const Body = () => {
@@ -68,13 +66,9 @@ const Body = () => {
   );
 };
 
-type ToolExplorerContentProps = {
-  title?: string;
-};
-
-export const ToolExplorerContent = ({ title }: ToolExplorerContentProps) => (
+export const ToolExplorerContent = (props: { title?: string }) => (
   <Content noPadding>
-    <ContentHeader title={title ?? 'Tools'}>
+    <ContentHeader title={props.title ?? 'Tools'}>
       <SupportButton>Discover the tools in your ecosystem.</SupportButton>
     </ContentHeader>
     <Body />

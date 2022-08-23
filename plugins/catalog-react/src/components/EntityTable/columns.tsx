@@ -70,17 +70,14 @@ export const columnFactories = Object.freeze({
       ),
     };
   },
-  createEntityRelationColumn<T extends Entity>({
-    title,
-    relation,
-    defaultKind,
-    filter: entityFilter,
-  }: {
+  createEntityRelationColumn<T extends Entity>(options: {
     title: string;
     relation: string;
     defaultKind?: string;
     filter?: { kind: string };
   }): TableColumn<T> {
+    const { title, relation, defaultKind, filter: entityFilter } = options;
+
     function getRelations(entity: T): CompoundEntityRef[] {
       return getEntityRelations(entity, relation, entityFilter);
     }
@@ -147,7 +144,6 @@ export const columnFactories = Object.freeze({
           line={2}
         />
       ),
-      width: 'auto',
     };
   },
   createSpecLifecycleColumn<T extends Entity>(): TableColumn<T> {

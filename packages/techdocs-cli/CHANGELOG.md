@@ -1,5 +1,31 @@
 # @techdocs/cli
 
+## 1.2.0
+
+### Minor Changes
+
+- 855952db53: Added CLI option `--docker-option` to allow passing additional options to the `docker run` command executed my `serve` and `serve:mkdocs`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/plugin-techdocs-node@1.3.0
+
+## 1.2.0-next.2
+
+### Minor Changes
+
+- 855952db53: Added CLI option `--docker-option` to allow passing additional options to the `docker run` command executed my `serve` and `serve:mkdocs`.
+
+## 1.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.1
+  - @backstage/plugin-techdocs-node@1.3.0-next.1
+
 ## 1.1.4-next.0
 
 ### Patch Changes

@@ -28,6 +28,12 @@ export type ServiceRef<T> = {
    */
   T: T;
 
+  /**
+   * The default factory that will be used to create service
+   * instances if no other factory is provided.
+   */
+  defaultFactory?: (service: ServiceRef<T>) => Promise<ServiceFactory<T>>;
+
   toString(): string;
 
   $$ref: 'service';
@@ -45,32 +51,26 @@ export type DepsToDepFactories<T> = {
 export type FactoryFunc<Impl> = (pluginId: string) => Promise<Impl>;
 
 /** @public */
-export type ServiceFactory<
-  TApi,
-  TImpl extends TApi,
-  TDeps extends { [name in string]: unknown },
-> = {
-  service: ServiceRef<TApi>;
-  deps: TypesToServiceRef<TDeps>;
-  factory(deps: DepsToDepFactories<TDeps>): Promise<FactoryFunc<TImpl>>;
+export type ServiceFactory<TService = unknown> = {
+  service: ServiceRef<TService>;
+  deps: { [key in string]: ServiceRef<unknown> };
+  factory(deps: { [key in string]: unknown }): Promise<FactoryFunc<TService>>;
 };
-
-/** @public */
-export type AnyServiceFactory = ServiceFactory<
-  unknown,
-  unknown,
-  { [key in string]: unknown }
->;
 
 /**
  * @public
  */
-export function createServiceRef<T>(options: { id: string }): ServiceRef<T> {
+export function createServiceRef<T>(options: {
+  id: string;
+  defaultFactory?: (service: ServiceRef<T>) => Promise<ServiceFactory<T>>;
+}): ServiceRef<T> {
+  const { id, defaultFactory } = options;
   return {
-    id: options.id,
+    id,
     get T(): T {
       throw new Error(`tried to read ServiceRef.T of ${this}`);
     },
+    defaultFactory,
     toString() {
       return `serviceRef{${options.id}}`;
     },
@@ -82,9 +82,13 @@ export function createServiceRef<T>(options: { id: string }): ServiceRef<T> {
  * @public
  */
 export function createServiceFactory<
-  Api,
-  Impl extends Api,
-  Deps extends { [name in string]: unknown },
->(factory: ServiceFactory<Api, Impl, Deps>): ServiceFactory<Api, Api, {}> {
-  return factory;
+  TService,
+  TImpl extends TService,
+  TDeps extends { [name in string]: unknown },
+>(factory: {
+  service: ServiceRef<TService>;
+  deps: TypesToServiceRef<TDeps>;
+  factory(deps: DepsToDepFactories<TDeps>): Promise<FactoryFunc<TImpl>>;
+}): ServiceFactory<TService> {
+  return factory as ServiceFactory<TService>;
 }

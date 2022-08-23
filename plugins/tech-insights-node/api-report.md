@@ -169,11 +169,7 @@ export interface TechInsightsStore {
     [factRef: string]: FlatTechInsightFact;
   }>;
   getLatestSchemas(ids?: string[]): Promise<FactSchema[]>;
-  insertFacts({
-    id,
-    facts,
-    lifecycle,
-  }: {
+  insertFacts(options: {
     id: string;
     facts: TechInsightFact[];
     lifecycle?: FactLifecycle;

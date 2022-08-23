@@ -1,5 +1,21 @@
 # @backstage/plugin-xcmetrics
 
+## 0.2.28
+
+### Patch Changes
+
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+
+## 0.2.28-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.0-next.2
+
 ## 0.2.28-next.0
 
 ### Patch Changes

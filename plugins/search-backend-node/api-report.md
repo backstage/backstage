@@ -56,9 +56,9 @@ export abstract class DecoratorBase extends Transform {
 
 // @public
 export class IndexBuilder {
-  constructor({ logger, searchEngine }: IndexBuilderOptions);
-  addCollator({ factory, schedule }: RegisterCollatorParameters): void;
-  addDecorator({ factory }: RegisterDecoratorParameters): void;
+  constructor(options: IndexBuilderOptions);
+  addCollator(options: RegisterCollatorParameters): void;
+  addDecorator(options: RegisterDecoratorParameters): void;
   build(): Promise<{
     scheduler: Scheduler;
   }>;
@@ -77,7 +77,7 @@ export type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
 
 // @public
 export class LunrSearchEngine implements SearchEngine {
-  constructor({ logger }: { logger: Logger });
+  constructor(options: { logger: Logger });
   // (undocumented)
   protected docStore: Record<string, IndexableDocument>;
   // (undocumented)
@@ -157,8 +157,8 @@ export interface RegisterDecoratorParameters {
 
 // @public
 export class Scheduler {
-  constructor({ logger }: { logger: Logger });
-  addToSchedule({ id, task, scheduledRunner }: ScheduleTaskParameters): void;
+  constructor(options: { logger: Logger });
+  addToSchedule(options: ScheduleTaskParameters): void;
   start(): void;
   stop(): void;
 }

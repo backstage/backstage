@@ -100,4 +100,34 @@ describe('<MarkdownContent />', () => {
       'https://example.com/blog/assets/6/header.png',
     );
   });
+
+  it('render MarkdownContent component with headings given proper ids', async () => {
+    const rendered = await renderWithEffects(
+      wrapInTestApp(
+        <MarkdownContent
+          content={
+            '# Lorem ipsum\n' +
+            '## bing bong\n' +
+            '### The FitnessGram Pacer Test is a multistage aerobic capacity test'
+          }
+        />,
+      ),
+    );
+
+    expect(rendered.getByText('Lorem ipsum').getAttribute('id')).toEqual(
+      'lorem-ipsum',
+    );
+    expect(rendered.getByText('bing bong').getAttribute('id')).toEqual(
+      'bing-bong',
+    );
+    expect(
+      rendered
+        .getByText(
+          'The FitnessGram Pacer Test is a multistage aerobic capacity test',
+        )
+        .getAttribute('id'),
+    ).toEqual(
+      'the-fitnessgram-pacer-test-is-a-multistage-aerobic-capacity-test',
+    );
+  });
 });

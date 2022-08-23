@@ -1,5 +1,34 @@
 # @backstage/plugin-catalog-react
 
+## 1.1.3
+
+### Patch Changes
+
+- 44e691a7f9: Modify description column to not use auto width.
+- Updated dependencies
+  - @backstage/integration@1.3.0
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-common@1.0.5
+  - @backstage/plugin-permission-react@0.4.4
+
+## 1.1.3-next.2
+
+### Patch Changes
+
+- 44e691a7f9: Modify description column to not use auto width.
+- Updated dependencies
+  - @backstage/core-components@0.11.0-next.2
+
+## 1.1.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.10.1-next.1
+  - @backstage/plugin-catalog-common@1.0.5-next.0
+  - @backstage/integration@1.3.0-next.1
+
 ## 1.1.3-next.0
 
 ### Patch Changes

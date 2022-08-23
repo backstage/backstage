@@ -14,35 +14,47 @@
  * limitations under the License.
  */
 import {
-  AnyServiceFactory,
+  ServiceFactory,
   FactoryFunc,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
 
 export class ServiceRegistry {
-  readonly #implementations: Map<string, Map<string, unknown>>;
-  readonly #factories: Map<string, AnyServiceFactory>;
+  readonly #providedFactories: Map<string, ServiceFactory>;
+  readonly #loadedDefaultFactories: Map<Function, ServiceFactory>;
+  readonly #implementations: Map<ServiceFactory, Map<string, unknown>>;
 
-  constructor(factories: AnyServiceFactory[]) {
-    this.#factories = new Map(factories.map(f => [f.service.id, f]));
+  constructor(factories: ServiceFactory<any>[]) {
+    this.#providedFactories = new Map(factories.map(f => [f.service.id, f]));
+    this.#loadedDefaultFactories = new Map();
     this.#implementations = new Map();
   }
 
   get<T>(ref: ServiceRef<T>): FactoryFunc<T> | undefined {
-    const factory = this.#factories.get(ref.id);
-    if (!factory) {
+    let factory = this.#providedFactories.get(ref.id);
+    const { defaultFactory } = ref;
+    if (!factory && !defaultFactory) {
       return undefined;
     }
 
     return async (pluginId: string): Promise<T> => {
-      let implementations = this.#implementations.get(ref.id);
+      if (!factory) {
+        let loadedFactory = this.#loadedDefaultFactories.get(defaultFactory!);
+        if (!loadedFactory) {
+          loadedFactory = (await defaultFactory!(ref)) as ServiceFactory;
+          this.#loadedDefaultFactories.set(defaultFactory!, loadedFactory);
+        }
+        factory = loadedFactory;
+      }
+
+      let implementations = this.#implementations.get(factory);
       if (implementations) {
         if (implementations.has(pluginId)) {
           return implementations.get(pluginId) as T;
         }
       } else {
         implementations = new Map();
-        this.#implementations.set(ref.id, implementations);
+        this.#implementations.set(factory, implementations);
       }
 
       const factoryDeps = Object.fromEntries(

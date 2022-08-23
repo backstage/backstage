@@ -18,13 +18,13 @@ import { getCalverTagParts } from './getCalverTagParts';
 import { getSemverTagParts } from './getSemverTagParts';
 import { Project } from '../../contexts/ProjectContext';
 
-export const validateTagName = ({
-  project,
-  tagName,
-}: {
+/** @public */
+export const validateTagName = (options: {
   project: Project;
   tagName?: string;
 }) => {
+  const { project, tagName } = options;
+
   if (!tagName) {
     return {
       tagNameError: null,
@@ -33,7 +33,6 @@ export const validateTagName = ({
 
   if (project.versioningStrategy === 'calver') {
     const { error } = getCalverTagParts(tagName);
-
     return {
       tagNameError: error,
     };

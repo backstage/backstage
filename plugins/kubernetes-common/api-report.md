@@ -7,6 +7,7 @@ import { Entity } from '@backstage/catalog-model';
 import type { JsonObject } from '@backstage/types';
 import { V1ConfigMap } from '@kubernetes/client-node';
 import { V1CronJob } from '@kubernetes/client-node';
+import { V1DaemonSet } from '@kubernetes/client-node';
 import { V1Deployment } from '@kubernetes/client-node';
 import { V1HorizontalPodAutoscaler } from '@kubernetes/client-node';
 import { V1Ingress } from '@kubernetes/client-node';
@@ -114,6 +115,16 @@ export interface CustomResourceFetchResponse {
   type: 'customresources';
 }
 
+// Warning: (ae-missing-release-tag) "DaemonSetsFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface DaemonSetsFetchResponse {
+  // (undocumented)
+  resources: Array<V1DaemonSet>;
+  // (undocumented)
+  type: 'daemonsets';
+}
+
 // Warning: (ae-missing-release-tag) "DeploymentFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -139,7 +150,8 @@ export type FetchResponse =
   | CronJobsFetchResponse
   | IngressesFetchResponse
   | CustomResourceFetchResponse
-  | StatefulSetsFetchResponse;
+  | StatefulSetsFetchResponse
+  | DaemonSetsFetchResponse;
 
 // Warning: (ae-missing-release-tag) "HorizontalPodAutoscalersFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

@@ -118,6 +118,12 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
     plural: 'statefulsets',
     objectType: 'statefulsets',
   },
+  {
+    group: 'apps',
+    apiVersion: 'v1',
+    plural: 'daemonsets',
+    objectType: 'daemonsets',
+  },
 ];
 
 export interface KubernetesFanOutHandlerOptions
@@ -211,19 +217,14 @@ export class KubernetesFanOutHandler {
     entity,
     auth,
   }: KubernetesObjectsByEntity): Promise<ObjectsByEntityResponse> {
-    return this.fanOutRequests(
-      entity,
-      auth,
-      this.objectTypesToFetch,
-      this.customResources,
-    );
+    return this.fanOutRequests(entity, auth, this.objectTypesToFetch);
   }
 
   private async fanOutRequests(
     entity: Entity,
     auth: KubernetesRequestAuth,
     objectTypesToFetch: Set<ObjectToFetch>,
-    customResources: CustomResourceMatcher[],
+    customResources?: CustomResourceMatcher[],
   ) {
     const entityName =
       entity.metadata?.annotations?.['backstage.io/kubernetes-id'] ||
@@ -254,7 +255,11 @@ export class KubernetesFanOutHandler {
             clusterDetails: clusterDetailsItem,
             objectTypesToFetch: objectTypesToFetch,
             labelSelector,
-            customResources: customResources.map(c => ({
+            customResources: (
+              customResources ||
+              clusterDetailsItem.customResources ||
+              this.customResources
+            ).map(c => ({
               ...c,
               objectType: 'customresources',
             })),

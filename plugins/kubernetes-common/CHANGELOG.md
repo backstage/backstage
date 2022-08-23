@@ -1,5 +1,11 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.4.1
+
+### Patch Changes
+
+- 0297da83c0: Added `DaemonSets` to the default kubernetes resources.
+
 ## 0.4.0
 
 ### Minor Changes

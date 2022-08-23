@@ -83,6 +83,8 @@ Serve a documentation project locally in a Backstage app-like environment
 Options:
   -i, --docker-image <DOCKER_IMAGE>        The mkdocs docker container to use (default: "spotify/techdocs")
   --docker-entrypoint <DOCKER_ENTRYPOINT>  Override the image entrypoint
+  --docker-option <DOCKER_OPTION...>       Extra options to pass to the docker run command, e.g. "--add-host=internal.host:192.168.11.12"
+                                           (can be added multiple times).
   --no-docker                              Do not use Docker, use MkDocs executable in current user environment.
   --mkdocs-port <PORT>                     Port for MkDocs server to use (default: "8000")
   -v --verbose                             Enable verbose output. (default: false)

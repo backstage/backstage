@@ -1,5 +1,32 @@
 # @backstage/plugin-jenkins
 
+## 0.7.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-react@1.1.3
+  - @backstage/plugin-jenkins-common@0.1.7
+
+## 0.7.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.3-next.2
+  - @backstage/core-components@0.11.0-next.2
+
+## 0.7.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.10.1-next.1
+  - @backstage/plugin-catalog-react@1.1.3-next.1
+  - @backstage/plugin-jenkins-common@0.1.7-next.0
+
 ## 0.7.7-next.0
 
 ### Patch Changes

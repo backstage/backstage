@@ -21,6 +21,7 @@ import {
   discoveryServiceRef,
 } from '@backstage/backend-plugin-api';
 
+/** @public */
 export const discoveryFactory = createServiceFactory({
   service: discoveryServiceRef,
   deps: {

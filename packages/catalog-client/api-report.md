@@ -78,7 +78,7 @@ export class CatalogClient implements CatalogApi {
     };
   });
   addLocation(
-    { type, target, dryRun }: AddLocationRequest,
+    request: AddLocationRequest,
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse>;
   getEntities(

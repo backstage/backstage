@@ -142,6 +142,7 @@ export class DefaultAdrCollatorFactory implements DocumentCollatorFactory {
             'metadata.annotations',
             'metadata.name',
             'metadata.namespace',
+            'metadata.title',
           ],
         },
         { token },

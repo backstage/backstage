@@ -23,6 +23,7 @@ import {
   urlReaderServiceRef,
 } from '@backstage/backend-plugin-api';
 
+/** @public */
 export const urlReaderFactory = createServiceFactory({
   service: urlReaderServiceRef,
   deps: {

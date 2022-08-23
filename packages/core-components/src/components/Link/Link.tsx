@@ -47,8 +47,9 @@ const useStyles = makeStyles(
 
 export const isExternalUri = (uri: string) => /^([a-z+.-]+):/.test(uri);
 
-export type LinkProps = MaterialLinkProps &
-  RouterLinkProps & {
+export type LinkProps = Omit<MaterialLinkProps, 'to'> &
+  Omit<RouterLinkProps, 'to'> & {
+    to: string;
     component?: ElementType<any>;
     noTrack?: boolean;
   };

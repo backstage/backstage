@@ -35,6 +35,7 @@ export interface ClusterDetails {
   authProvider: string;
   // (undocumented)
   caData?: string | undefined;
+  customResources?: CustomResourceMatcher[];
   dashboardApp?: string;
   dashboardParameters?: JsonObject;
   dashboardUrl?: string;
@@ -226,7 +227,8 @@ export type KubernetesObjectTypes =
   | 'cronjobs'
   | 'ingresses'
   | 'customresources'
-  | 'statefulsets';
+  | 'statefulsets'
+  | 'daemonsets';
 
 // @alpha
 export interface KubernetesServiceLocator {
