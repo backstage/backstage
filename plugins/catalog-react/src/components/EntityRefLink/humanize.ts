@@ -24,8 +24,8 @@ import {
 export function humanizeEntityRef(
   entityRef: Entity | CompoundEntityRef,
   opts?: {
-    defaultKind?: string
-    skipDefaultNamespace?: boolean
+    defaultKind?: string;
+    skipDefaultNamespace?: boolean;
   },
 ) {
   const defaultKind = opts?.defaultKind;
