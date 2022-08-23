@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import { render, RenderResult } from '@testing-library/react';
+import tlr, { render, RenderResult } from '@testing-library/react';
 import React, { ReactNode } from 'react';
 import { LocalStorageFeatureFlags } from '../apis';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
 import { AppContext } from '../app';
 import { AppContextProvider } from '../app/AppContext';
-import { TestApiProvider } from '@backstage/test-utils';
 
 describe.each(['beta', 'stable'])('FlatRoutes %s', rrVersion => {
   beforeAll(() => {
     jest.doMock('react', () => React);
+    // This has some side effects, so need this to be stable to avoid re-require
+    jest.doMock('@testing-library/react', () => tlr);
     jest.doMock('react-router', () =>
       rrVersion === 'beta'
         ? jest.requireActual('react-router-beta')
@@ -50,11 +51,12 @@ describe.each(['beta', 'stable'])('FlatRoutes %s', rrVersion => {
     return {
       ...(require('./FlatRoutes') as typeof import('./FlatRoutes')),
       ...(require('react-router-dom') as typeof import('react-router-dom')),
+      ...(require('@backstage/test-utils') as typeof import('@backstage/test-utils')),
     };
   }
 
   function makeRouteRenderer(node: ReactNode) {
-    const { MemoryRouter } = requireDeps();
+    const { MemoryRouter, TestApiProvider } = requireDeps();
     let rendered: RenderResult | undefined = undefined;
 
     const Wrapper = ({ children }: { children?: React.ReactNode }) => (
