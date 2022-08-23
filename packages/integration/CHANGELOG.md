@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 1.3.1-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+
 ## 1.3.0
 
 ### Minor Changes

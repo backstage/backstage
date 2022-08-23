@@ -1,5 +1,17 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.1.26-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/catalog-client@1.0.5-next.0
+  - @backstage/plugin-auth-node@0.2.5-next.0
+  - @backstage/plugin-permission-common@0.6.4-next.0
+  - @backstage/plugin-jenkins-common@0.1.8-next.0
+
 ## 0.1.25
 
 ### Patch Changes

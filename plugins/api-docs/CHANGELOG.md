@@ -1,5 +1,18 @@
 # @backstage/plugin-api-docs
 
+## 0.8.9-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- ef9ab322de: Minor API signatures cleanup
+- c8bb0ff8ce: Minor cleanup of the public API surface to reduce the number of warnings
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/core-components@0.11.1-next.0
+  - @backstage/plugin-catalog-react@1.1.4-next.0
+  - @backstage/plugin-catalog@1.5.1-next.0
+
 ## 0.8.8
 
 ### Patch Changes

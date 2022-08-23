@@ -1,5 +1,16 @@
 # @backstage/test-utils
 
+## 1.1.4-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-app-api@1.0.6-next.0
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/plugin-permission-common@0.6.4-next.0
+  - @backstage/plugin-permission-react@0.4.5-next.0
+
 ## 1.1.3
 
 ### Patch Changes

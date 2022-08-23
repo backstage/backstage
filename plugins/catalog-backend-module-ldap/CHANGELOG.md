@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.5.3-next.0
+
+### Patch Changes
+
+- c54fcea9af: Now the `searchStream` method in LDAP client awaits the callbacks
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.5-next.0
+  - @backstage/plugin-catalog-backend@1.3.2-next.0
+
 ## 0.5.2
 
 ### Patch Changes

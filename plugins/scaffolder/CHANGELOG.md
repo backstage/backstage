@@ -1,5 +1,29 @@
 # @backstage/plugin-scaffolder
 
+## 1.6.0-next.0
+
+### Minor Changes
+
+- 3424a8075d: Added support for `async` validation for the `next` version of the plugin
+- 192d856495: Implementing review step for the scaffolder under `create/next`
+
+### Patch Changes
+
+- 9ffb75616d: Fix bug with empty strings in `EntityPicker`
+- 3f739be9d9: Minor API signatures cleanup
+- 9097278df2: Updated dependency `json-schema-library` to `^7.0.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/core-components@0.11.1-next.0
+  - @backstage/catalog-client@1.0.5-next.0
+  - @backstage/integration-react@1.1.4-next.0
+  - @backstage/integration@1.3.1-next.0
+  - @backstage/plugin-scaffolder-common@1.2.0-next.0
+  - @backstage/plugin-catalog-react@1.1.4-next.0
+  - @backstage/plugin-permission-react@0.4.5-next.0
+  - @backstage/plugin-catalog-common@1.0.6-next.0
+
 ## 1.5.0
 
 ### Minor Changes

@@ -1,5 +1,63 @@
 # example-app
 
+## 0.2.75-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kafka@0.3.9-next.0
+  - @backstage/plugin-lighthouse@0.3.9-next.0
+  - @backstage/plugin-scaffolder@1.6.0-next.0
+  - @backstage/plugin-azure-devops@0.2.0-next.0
+  - @backstage/plugin-cloudbuild@0.3.9-next.0
+  - @backstage/plugin-explore@0.3.40-next.0
+  - @backstage/plugin-github-actions@0.5.9-next.0
+  - @backstage/plugin-jenkins@0.7.8-next.0
+  - @backstage/plugin-newrelic-dashboard@0.2.2-next.0
+  - @backstage/plugin-pagerduty@0.5.2-next.0
+  - @backstage/plugin-sentry@0.4.2-next.0
+  - @backstage/plugin-tech-insights@0.2.5-next.0
+  - @backstage/plugin-techdocs@1.3.2-next.0
+  - @backstage/plugin-techdocs-module-addons-contrib@1.0.4-next.0
+  - @backstage/plugin-user-settings@0.4.8-next.0
+  - @backstage/plugin-dynatrace@0.2.0-next.0
+  - @backstage/plugin-cost-insights@0.11.31-next.0
+  - @backstage/core-app-api@1.0.6-next.0
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/core-components@0.11.1-next.0
+  - @backstage/plugin-org@0.5.9-next.0
+  - @backstage/cli@0.18.2-next.0
+  - @backstage/integration-react@1.1.4-next.0
+  - @backstage/plugin-airbrake@0.3.9-next.0
+  - @backstage/plugin-apache-airflow@0.2.2-next.0
+  - @backstage/plugin-api-docs@0.8.9-next.0
+  - @backstage/plugin-badges@0.2.33-next.0
+  - @backstage/plugin-catalog-import@0.8.12-next.0
+  - @backstage/plugin-circleci@0.3.9-next.0
+  - @backstage/plugin-code-coverage@0.2.2-next.0
+  - @backstage/plugin-gcalendar@0.3.5-next.0
+  - @backstage/plugin-gcp-projects@0.3.28-next.0
+  - @backstage/plugin-gocd@0.1.15-next.0
+  - @backstage/plugin-graphiql@0.2.41-next.0
+  - @backstage/plugin-home@0.4.25-next.0
+  - @backstage/plugin-kubernetes@0.7.2-next.0
+  - @backstage/plugin-newrelic@0.3.27-next.0
+  - @backstage/plugin-rollbar@0.4.9-next.0
+  - @backstage/plugin-search@1.0.2-next.0
+  - @backstage/plugin-shortcuts@0.3.1-next.0
+  - @backstage/plugin-stack-overflow@0.1.5-next.0
+  - @backstage/plugin-tech-radar@0.5.16-next.0
+  - @backstage/plugin-todo@0.2.11-next.0
+  - @backstage/plugin-catalog-react@1.1.4-next.0
+  - @backstage/app-defaults@1.0.6-next.0
+  - @backstage/plugin-catalog-graph@0.2.21-next.0
+  - @backstage/plugin-search-react@1.0.2-next.0
+  - @backstage/plugin-permission-react@0.4.5-next.0
+  - @backstage/plugin-techdocs-react@1.0.4-next.0
+  - @backstage/plugin-catalog-common@1.0.6-next.0
+  - @backstage/plugin-search-common@1.0.1-next.0
+  - @internal/plugin-catalog-customized@0.0.2-next.0
+
 ## 0.2.74
 
 ### Patch Changes

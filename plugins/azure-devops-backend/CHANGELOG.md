@@ -1,5 +1,52 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.3.15-next.0
+
+### Patch Changes
+
+- 3f739be9d9: Minor API signatures cleanup
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- cb1cfc018b: `createRouter` now requires an additional reader: `UrlReader` argument
+
+  ```diff
+  export default async function createPlugin(
+    env: PluginEnvironment,
+  ): Promise<Router> {
+    return createRouter({
+      logger: env.logger,
+      config: env.config,
+  +   reader: env.reader,
+    });
+  }
+  ```
+
+  Remember to check if you have already provided these settings previously.
+
+  #### [Azure DevOps]
+
+  ```yaml
+  # app-config.yaml
+  azureDevOps:
+    host: dev.azure.com
+    token: my-token
+    organization: my-company
+  ```
+
+  #### [Azure Integrations]
+
+  ```yaml
+  # app-config.yaml
+  integrations:
+    azure:
+      - host: dev.azure.com
+        token: ${AZURE_TOKEN}
+  ```
+
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/plugin-azure-devops-common@0.3.0-next.0
+
 ## 0.3.14
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.0.2-next.0
+
+### Patch Changes
+
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.0.2-next.0
+  - @backstage/plugin-search-common@1.0.1-next.0
+
 ## 1.0.1
 
 ### Patch Changes

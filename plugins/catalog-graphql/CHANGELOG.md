@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-graphql
 
+## 0.3.13-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+
 ## 0.3.12
 
 ### Patch Changes

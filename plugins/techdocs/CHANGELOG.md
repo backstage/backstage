@@ -1,5 +1,23 @@
 # @backstage/plugin-techdocs
 
+## 1.3.2-next.0
+
+### Patch Changes
+
+- 3f739be9d9: Minor API signatures cleanup
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 829f14a9b0: Always update the title and sub-title when the location changes on a `TechDocs` reader page.
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/core-components@0.11.1-next.0
+  - @backstage/integration-react@1.1.4-next.0
+  - @backstage/integration@1.3.1-next.0
+  - @backstage/plugin-catalog-react@1.1.4-next.0
+  - @backstage/plugin-search-react@1.0.2-next.0
+  - @backstage/plugin-techdocs-react@1.0.4-next.0
+  - @backstage/plugin-search-common@1.0.1-next.0
+
 ## 1.3.1
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/plugin-app-backend
 
+## 0.3.36-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 8872cc735d: Fixed a bug where the database option to skip migrations was ignored.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/config-loader@1.1.4-next.0
+
 ## 0.3.35
 
 ### Patch Changes

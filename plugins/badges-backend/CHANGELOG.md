@@ -1,5 +1,14 @@
 # @backstage/plugin-badges-backend
 
+## 0.1.30-next.0
+
+### Patch Changes
+
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/catalog-client@1.0.5-next.0
+
 ## 0.1.29
 
 ### Patch Changes
