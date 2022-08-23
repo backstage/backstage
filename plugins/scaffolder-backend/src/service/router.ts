@@ -249,6 +249,9 @@ export async function createRouter(
             name: template.metadata?.name,
           }),
           baseUrl,
+          entity: {
+            metadata: template.metadata,
+          },
         },
       };
 
