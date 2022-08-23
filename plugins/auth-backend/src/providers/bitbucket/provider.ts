@@ -39,7 +39,7 @@ import {
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import {
   AuthHandler,
-  RedirectInfo,
+  OAuthStartResponse,
   SignInResolver,
   AuthResolverContext,
 } from '../types';
@@ -54,6 +54,7 @@ type Options = OAuthProviderOptions & {
   resolverContext: AuthResolverContext;
 };
 
+/** @public */
 export type BitbucketOAuthResult = {
   fullProfile: BitbucketPassportProfile;
   params: {
@@ -65,6 +66,7 @@ export type BitbucketOAuthResult = {
   refreshToken?: string;
 };
 
+/** @public */
 export type BitbucketPassportProfile = PassportProfile & {
   id?: string;
   displayName?: string;
@@ -119,7 +121,7 @@ export class BitbucketAuthProvider implements OAuthHandlers {
     );
   }
 
-  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     return await executeRedirectStrategy(req, this._strategy, {
       accessType: 'offline',
       prompt: 'consent',

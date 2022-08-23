@@ -26,6 +26,7 @@ const rootCatalogCicdStatsRouteRef = createRouteRef({
   id: 'cicd-statistics',
 });
 
+/** @public */
 export const cicdStatisticsPlugin = createPlugin({
   id: 'cicd-statistics',
   routes: {
@@ -33,6 +34,7 @@ export const cicdStatisticsPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const EntityCicdStatisticsContent = cicdStatisticsPlugin.provide(
   createRoutableExtension({
     component: () => import('./entity-page').then(m => m.EntityPageCicdCharts),

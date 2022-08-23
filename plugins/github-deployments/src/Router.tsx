@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity } from '@backstage/catalog-model';
 
+/** @public */
 export const GITHUB_PROJECT_SLUG_ANNOTATION = 'github.com/project-slug';
 
+/** @public */
 export const isGithubDeploymentsAvailable = (entity: Entity) =>
   Boolean(entity?.metadata.annotations?.[GITHUB_PROJECT_SLUG_ANNOTATION]);

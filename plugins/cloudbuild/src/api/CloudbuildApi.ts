@@ -20,6 +20,7 @@ import {
 } from '../api/types';
 import { createApiRef } from '@backstage/core-plugin-api';
 
+/** @public */
 export const cloudbuildApiRef = createApiRef<CloudbuildApi>({
   id: 'plugin.cloudbuild.service',
 });

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** @public */
 export enum CurrencyType {
   USD = 'USD',
   CarbonOffsetTons = 'CARBON_OFFSET_TONS',

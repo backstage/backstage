@@ -146,7 +146,6 @@ export type CloudflareAccessIdentityProfile = {
 };
 
 /**
- *
  * @public
  */
 export type CloudflareAccessResult = {

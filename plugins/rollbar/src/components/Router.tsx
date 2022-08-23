@@ -22,12 +22,12 @@ import { ROLLBAR_ANNOTATION } from '../constants';
 import { EntityPageRollbar } from './EntityPageRollbar/EntityPageRollbar';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
+/** @public */
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[ROLLBAR_ANNOTATION]);
 
-type Props = {};
-
-export const Router = (_props: Props) => {
+/** @public */
+export const Router = () => {
   const { entity } = useEntity();
 
   if (!isPluginApplicableToEntity(entity)) {

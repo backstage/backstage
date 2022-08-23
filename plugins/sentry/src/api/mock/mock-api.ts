@@ -30,9 +30,12 @@ function getMockIssue(): SentryIssue {
     stats: randomizedStats,
   };
 }
+
 function getMockIssues(number: number): SentryIssue[] {
   return new Array(number).fill(0).map(getMockIssue);
 }
+
+/** @public */
 export class MockSentryApi implements SentryApi {
   fetchIssues(): Promise<SentryIssue[]> {
     return new Promise(resolve => {

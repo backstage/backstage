@@ -23,6 +23,8 @@ import Observable from 'zen-observable';
 
 /**
  * Implementation of the ShortcutApi that uses the StorageApi to store shortcuts.
+ *
+ * @public
  */
 export class LocalStoredShortcuts implements ShortcutApi {
   constructor(private readonly storageApi: StorageApi) {}

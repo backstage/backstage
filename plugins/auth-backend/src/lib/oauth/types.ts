@@ -17,10 +17,12 @@
 import express from 'express';
 import { Profile as PassportProfile } from 'passport';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
-import { RedirectInfo, ProfileInfo } from '../../providers/types';
+import { OAuthStartResponse, ProfileInfo } from '../../providers/types';
 
 /**
  * Common options for passport.js-based OAuth providers
+ *
+ * @public
  */
 export type OAuthProviderOptions = {
   /**
@@ -37,6 +39,7 @@ export type OAuthProviderOptions = {
   callbackUrl: string;
 };
 
+/** @public */
 export type OAuthResult = {
   fullProfile: PassportProfile;
   params: {
@@ -59,6 +62,7 @@ export type OAuthResponse = {
   backstageIdentity?: BackstageSignInResult;
 };
 
+/** @public */
 export type OAuthProviderInfo = {
   /**
    * An access token issued for the signed in user.
@@ -78,6 +82,7 @@ export type OAuthProviderInfo = {
   scope: string;
 };
 
+/** @public */
 export type OAuthState = {
   /* A type for the serialized value in the `state` parameter of the OAuth authorization flow
    */
@@ -87,11 +92,13 @@ export type OAuthState = {
   scope?: string;
 };
 
+/** @public */
 export type OAuthStartRequest = express.Request<{}> & {
   scope: string;
   state: OAuthState;
 };
 
+/** @public */
 export type OAuthRefreshRequest = express.Request<{}> & {
   scope: string;
   refreshToken: string;
@@ -108,7 +115,7 @@ export interface OAuthHandlers {
   /**
    * Initiate a sign in request with an auth provider.
    */
-  start(req: OAuthStartRequest): Promise<RedirectInfo>;
+  start(req: OAuthStartRequest): Promise<OAuthStartResponse>;
 
   /**
    * Handle the redirect from the auth provider when the user has signed in.

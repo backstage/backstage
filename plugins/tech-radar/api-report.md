@@ -9,8 +9,6 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "MovedState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export enum MovedState {
   Down = -1,
@@ -18,8 +16,6 @@ export enum MovedState {
   Up = 1,
 }
 
-// Warning: (ae-missing-release-tag) "RadarEntry" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface RadarEntry {
   description?: string;
@@ -31,8 +27,6 @@ export interface RadarEntry {
   url: string;
 }
 
-// Warning: (ae-missing-release-tag) "RadarEntrySnapshot" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface RadarEntrySnapshot {
   date: Date;
@@ -41,21 +35,15 @@ export interface RadarEntrySnapshot {
   ringId: string;
 }
 
-// Warning: (ae-missing-release-tag) "RadarPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function RadarPage(props: TechRadarPageProps): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "RadarQuadrant" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface RadarQuadrant {
   id: string;
   name: string;
 }
 
-// Warning: (ae-missing-release-tag) "RadarRing" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface RadarRing {
   color: string;
@@ -63,30 +51,20 @@ export interface RadarRing {
   name: string;
 }
 
-// Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public @deprecated (undocumented)
 export const Router: typeof RadarPage;
 
-// Warning: (ae-missing-release-tag) "TechRadarApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface TechRadarApi {
   load: (id: string | undefined) => Promise<TechRadarLoaderResponse>;
 }
 
-// Warning: (ae-missing-release-tag) "techRadarApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const techRadarApiRef: ApiRef<TechRadarApi>;
 
-// Warning: (ae-missing-release-tag) "RadarComponent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function TechRadarComponent(props: TechRadarComponentProps): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "TechRadarComponentProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface TechRadarComponentProps {
   height: number;
@@ -96,8 +74,6 @@ export interface TechRadarComponentProps {
   width: number;
 }
 
-// Warning: (ae-missing-release-tag) "TechRadarLoaderResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface TechRadarLoaderResponse {
   entries: RadarEntry[];
@@ -105,13 +81,9 @@ export interface TechRadarLoaderResponse {
   rings: RadarRing[];
 }
 
-// Warning: (ae-missing-release-tag) "TechRadarPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const TechRadarPage: RadarPage;
 
-// Warning: (ae-missing-release-tag) "TechRadarPageProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface TechRadarPageProps extends TechRadarComponentProps {
   pageTitle?: string;
@@ -119,8 +91,6 @@ export interface TechRadarPageProps extends TechRadarComponentProps {
   title?: string;
 }
 
-// Warning: (ae-missing-release-tag) "techRadarPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 const techRadarPlugin: BackstagePlugin<
   {

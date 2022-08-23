@@ -30,6 +30,7 @@ const baseUrl = 'https://api.rollbar.com/api/1';
 
 const buildUrl = (url: string) => `${baseUrl}${url}`;
 
+/** @public */
 export class RollbarApi {
   private projectMap: ProjectMetadataMap | undefined;
 
@@ -165,6 +166,7 @@ export class RollbarApi {
   }
 }
 
+/** @public */
 export function getRequestHeaders(token: string) {
   return {
     headers: {

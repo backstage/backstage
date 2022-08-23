@@ -14,84 +14,56 @@ import { PropsWithChildren } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "DefaultProviderSettings" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const DefaultProviderSettings: ({
-  configuredProviders,
-}: Props_2) => JSX.Element;
+export const DefaultProviderSettings: (props: {
+  configuredProviders: string[];
+}) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "ProviderSettingsItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const ProviderSettingsItem: ({
-  title,
-  description,
-  icon: Icon,
-  apiRef,
-}: Props_3) => JSX.Element;
+export const ProviderSettingsItem: (props: {
+  title: string;
+  description: string;
+  icon: IconComponent;
+  apiRef: ApiRef<SessionApi>;
+}) => JSX.Element;
 
 // @public (undocumented)
 export const Router: (props: { providerSettings?: JSX.Element }) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "SettingsProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "Settings" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const Settings: (props: SettingsProps) => JSX.Element;
+export const Settings: (props: { icon?: IconComponent }) => JSX.Element;
 
 // @public (undocumented)
 export const USER_SETTINGS_TAB_KEY = 'user-settings.tab';
 
-// Warning: (ae-missing-release-tag) "UserSettingsAppearanceCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const UserSettingsAppearanceCard: () => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "UserSettingsAuthProviders" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const UserSettingsAuthProviders: ({
-  providerSettings,
-}: Props) => JSX.Element;
+export const UserSettingsAuthProviders: (props: {
+  providerSettings?: JSX.Element;
+}) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "UserSettingsFeatureFlags" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const UserSettingsFeatureFlags: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "UserSettingsGeneral" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const UserSettingsGeneral: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "UserSettingsIdentityCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const UserSettingsIdentityCard: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "UserSettingsMenu" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const UserSettingsMenu: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "UserSettingsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const UserSettingsPage: (props: {
   providerSettings?: JSX.Element | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "UserSettingsPinToggle" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const UserSettingsPinToggle: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "userSettingsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 const userSettingsPlugin: BackstagePlugin<
   {
@@ -103,16 +75,13 @@ const userSettingsPlugin: BackstagePlugin<
 export { userSettingsPlugin as plugin };
 export { userSettingsPlugin };
 
-// Warning: (ae-missing-release-tag) "UserSettingsProfileCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const UserSettingsProfileCard: () => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "UserSettingsSignInAvatar" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const UserSettingsSignInAvatar: ({ size }: Props_4) => JSX.Element;
+export const UserSettingsSignInAvatar: (props: {
+  size?: number;
+}) => JSX.Element;
 
 // @public
 export const UserSettingsTab: (props: UserSettingsTabProps) => JSX.Element;
@@ -123,13 +92,9 @@ export type UserSettingsTabProps = PropsWithChildren<{
   title: string;
 }>;
 
-// Warning: (ae-missing-release-tag) "UserSettingsThemeToggle" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const UserSettingsThemeToggle: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "useUserProfile" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const useUserProfile: () =>
   | {

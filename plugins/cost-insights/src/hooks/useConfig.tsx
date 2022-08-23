@@ -58,6 +58,7 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
  *       rate: 3.5
  */
 
+/** @public */
 export type ConfigContextProps = {
   metrics: Metric[];
   products: Product[];

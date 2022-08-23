@@ -21,6 +21,8 @@ import { Entity } from '@backstage/catalog-model';
  *
  * If all of these aren't applicable to the underlying CI/CD, these can be
  * configured to be hidden, using the `availableStatuses` in `CicdConfiguration`.
+ *
+ * @public
  */
 export type FilterStatusType =
   | 'unknown'
@@ -32,6 +34,10 @@ export type FilterStatusType =
   | 'failed'
   | 'stalled'
   | 'expired';
+
+/**
+ * @public
+ */
 export const statusTypes: Array<FilterStatusType> = [
   'succeeded',
   'failed',
@@ -50,9 +56,14 @@ export const statusTypes: Array<FilterStatusType> = [
  * The concept of what constitutes a master branch is generic. It might be called
  * something like 'release' or 'main' or 'trunk' in the underlying CI/CD system,
  * which is then up to the Api to map accordingly.
+ *
+ * @public
  */
 export type FilterBranchType = 'master' | 'branch';
 
+/**
+ * @public
+ */
 export type TriggerReason =
   /** Triggered by source code management, e.g. a Github hook */
   | 'scm'
@@ -63,6 +74,9 @@ export type TriggerReason =
   /** Triggered for some other reason */
   | 'other';
 
+/**
+ * @public
+ */
 export const triggerReasons: Array<TriggerReason> = [
   'scm',
   'manual',
@@ -76,6 +90,8 @@ export const triggerReasons: Array<TriggerReason> = [
  * This may be called things like Stage or Step or Task in CI/CD systems, but is
  * generic here. There's also no concept of parallelism which might exist within
  * some stages.
+ *
+ * @public
  */
 export interface Stage {
   name: string;
@@ -94,6 +110,8 @@ export interface Stage {
  * Generic Build type.
  *
  * A build has e.g. a build type (master/branch), a status and (possibly) sub stages.
+ *
+ * @public
  */
 export interface Build {
   raw?: unknown;
@@ -125,6 +143,8 @@ export interface Build {
  *
  * This can be useful in an Api to use while mapping internal data structures
  * (raw) into generic builds.
+ *
+ * @public
  */
 export type BuildWithRaw<T = any> = Build & {
   raw: T;
@@ -136,8 +156,16 @@ export type BuildWithRaw<T = any> = Build & {
  * Values are:
  *  * `duration`: shows an area chart of the duration over time
  *  * `count`: shows a bar chart of the number of build per day
+ *
+ * @public
  */
 export type ChartType = 'duration' | 'count';
+
+/**
+ * Chart types.
+ *
+ * @public
+ */
 export type ChartTypes = Array<ChartType>;
 
 /**
@@ -145,6 +173,8 @@ export type ChartTypes = Array<ChartType>;
  *
  * These are all optional, but can be overridden from the Api to whatever makes
  * most sense for that implementation.
+ *
+ * @public
  */
 export interface CicdDefaults {
   timeFrom: Date;
@@ -171,6 +201,8 @@ export interface CicdDefaults {
  * configuration before anything else.
  *
  * All of these fields are optional though, and will fallback to hard-coded defaults.
+ *
+ * @public
  */
 export interface CicdConfiguration {
   /**
@@ -200,11 +232,15 @@ export interface CicdConfiguration {
 /**
  * If the Api implements support for aborting the fetching of builds, throw an
  * AbortError of this type (or any other error with name === 'AbortError').
+ *
+ * @public
  */
 export class AbortError extends Error {}
 
 /**
  * The result type for `fetchBuilds`.
+ *
+ * @public
  */
 export interface CicdState {
   builds: Array<Build>;
@@ -222,6 +258,8 @@ export interface CicdState {
  * the UI.
  *
  * Optionally this can signal multiple progresses in several steps
+ *
+ * @public
  */
 export interface UpdateProgress {
   (completed: number, total: number, started?: number): void;
@@ -238,6 +276,8 @@ export interface UpdateProgress {
 /**
  * When reading configuration, the Api can return a custom settings depending on
  * the entity being viewed.
+ *
+ * @public
  */
 export interface GetConfigurationOptions {
   entity: Entity;
@@ -252,6 +292,8 @@ export interface GetConfigurationOptions {
  *
  * When the UI re-fetches, it will abort any previous fetching, so polling
  * `abortSignal.aborted`, and possibly throwing an `AbortError`, can be useful.
+ *
+ * @public
  */
 export interface FetchBuildsOptions {
   entity: Entity;
@@ -266,6 +308,8 @@ export interface FetchBuildsOptions {
 /**
  * The interface which is mapped to the `cicdStatisticsApiRef` which is used by
  * the UI.
+ *
+ * @public
  */
 export interface CicdStatisticsApi {
   getConfiguration(
