@@ -1,5 +1,16 @@
 # @backstage/plugin-code-coverage-backend
 
+## 0.2.2-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 8872cc735d: Fixed a bug where the database option to skip migrations was ignored.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/catalog-client@1.0.5-next.0
+  - @backstage/integration@1.3.1-next.0
+
 ## 0.2.1
 
 ### Patch Changes

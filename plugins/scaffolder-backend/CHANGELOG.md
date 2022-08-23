@@ -1,5 +1,39 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.6.0-next.0
+
+### Minor Changes
+
+- ea2eee9e6a: Add the option for a homepage when using the `github:publish` action
+- 8872cc735d: Fixed a bug in plugin-scaffolder-backend where it ignores the skip migration database options.
+
+  To use this new implementation you need to create the instance of `DatabaseTaskStore` using the `PluginDatabaseManager` instead of `Knex`;
+
+  ```
+  import { DatabaseManager, getRootLogger, loadBackendConfig } from '@backstage/backend-common';
+  import { DatabaseTaskStore } from '@backstage/plugin-scaffolder-backend';
+
+  const config = await loadBackendConfig({ argv: process.argv, logger: getRootLogger() });
+  const databaseManager = DatabaseManager.fromConfig(config, { migrations: { skip: true } });
+  const databaseTaskStore = await DatabaseTaskStore.create(databaseManager);
+  ```
+
+- 1ff817b3f0: add entity metadata to the template info type
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 2df9955f4a: Removed the depreacated `publish:file` action, use the template editor to test templates instead.
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/plugin-catalog-backend@1.3.2-next.0
+  - @backstage/backend-plugin-api@0.1.2-next.0
+  - @backstage/catalog-client@1.0.5-next.0
+  - @backstage/integration@1.3.1-next.0
+  - @backstage/plugin-scaffolder-common@1.2.0-next.0
+  - @backstage/plugin-catalog-node@1.0.2-next.0
+
 ## 1.5.0
 
 ### Minor Changes

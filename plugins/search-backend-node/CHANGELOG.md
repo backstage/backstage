@@ -1,5 +1,16 @@
 # @backstage/plugin-search-backend-node
 
+## 1.0.2-next.0
+
+### Patch Changes
+
+- 3f739be9d9: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/backend-tasks@0.3.5-next.0
+  - @backstage/plugin-permission-common@0.6.4-next.0
+  - @backstage/plugin-search-common@1.0.1-next.0
+
 ## 1.0.1
 
 ### Patch Changes

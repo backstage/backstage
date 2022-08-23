@@ -1,5 +1,15 @@
 # @backstage/backend-common
 
+## 0.15.1-next.0
+
+### Patch Changes
+
+- 399286d7dd: Workaround support for `swc` instead of `sucrase`
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.4-next.0
+  - @backstage/integration@1.3.1-next.0
+
 ## 0.15.0
 
 ### Minor Changes

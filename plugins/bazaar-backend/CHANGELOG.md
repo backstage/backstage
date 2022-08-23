@@ -1,5 +1,14 @@
 # @backstage/plugin-bazaar-backend
 
+## 0.1.20-next.0
+
+### Patch Changes
+
+- 8872cc735d: Fixed a bug where the database option to skip migrations was ignored.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/backend-test-utils@0.1.28-next.0
+
 ## 0.1.19
 
 ### Patch Changes

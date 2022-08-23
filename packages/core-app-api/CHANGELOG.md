@@ -1,5 +1,14 @@
 # @backstage/core-app-api
 
+## 1.0.6-next.0
+
+### Patch Changes
+
+- 744fea158b: Added `getSystemIcons()` function to the `AppContext` available through `useApp` that will pull a list of all the icons that have been registered in the App.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+
 ## 1.0.5
 
 ### Patch Changes
