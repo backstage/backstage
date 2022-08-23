@@ -26,27 +26,41 @@ export const useGetPullRequestsFromRepository = () => {
     async (repo: string): Promise<PullRequestsNumber[]> => {
       const [organisation, repositoryName] = repo.split('/');
 
-      const { repository } = await graphql(
-        `
-          query ($name: String!, $owner: String!) {
-            repository(name: $name, owner: $owner) {
-              pullRequests(states: OPEN, first: 10) {
-                edges {
-                  node {
-                    number
+      const pullRequestEdges = [];
+      let result: GraphQlPullRequests<PullRequestsNumber[]> | undefined =
+        undefined;
+      do {
+        result = await graphql(
+          `
+            query ($name: String!, $owner: String!, $endCursor: String) {
+              repository(name: $name, owner: $owner) {
+                pullRequests(states: OPEN, first: 100, after: $endCursor) {
+                  edges {
+                    node {
+                      number
+                    }
+                  }
+                  pageInfo {
+                    hasNextPage
+                    endCursor
                   }
                 }
               }
             }
-          }
-        `,
-        {
-          name: repositoryName,
-          owner: organisation,
-        },
-      );
+          `,
+          {
+            name: repositoryName,
+            owner: organisation,
+            endCursor: result
+              ? result.repository.pullRequests.pageInfo.endCursor
+              : undefined,
+          },
+        );
 
-      return repository.pullRequests.edges;
+        pullRequestEdges.push(...result.repository.pullRequests.edges);
+      } while (result.repository.pullRequests.pageInfo.hasNextPage);
+
+      return pullRequestEdges;
     },
   );
 
