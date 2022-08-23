@@ -142,7 +142,7 @@ export async function createRouter<
   });
 
   /**
-   * /facts/latest?entity=component:default/mycomponent&startDateTime=2021-12-24T01:23:45&endDateTime=2021-12-31T23:59:59&ids[]=factRetrieverId1&ids[]=factRetrieverId2
+   * /facts/range?entity=component:default/mycomponent&startDateTime=2021-12-24T01:23:45&endDateTime=2021-12-31T23:59:59&ids[]=factRetrieverId1&ids[]=factRetrieverId2
    */
   router.get('/facts/range', async (req, res) => {
     const { entity } = req.query;
