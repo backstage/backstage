@@ -1000,12 +1000,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       });
 
       it('should emit auditlog containing user identifier when backstage auth is passed', async () => {
-        const mockToken =
-          'blob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvZ3Vlc3QiLCJuYW1lIjoiSm9obiBEb2UifQ.blob';
-
         await request(app)
           .post('/v2/tasks')
-          .set('Authorization', `Bearer ${mockToken}`)
           .send({
             templateRef: stringifyEntityRef({
               kind: 'template',
