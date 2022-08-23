@@ -114,10 +114,16 @@ export class LunrSearchEngine implements SearchEngine {
 
             // Require that the given field has the given value
             if (['string', 'number', 'boolean'].includes(typeof value)) {
-              q.term(lunr.tokenizer(value?.toString()), {
-                presence: lunr.Query.presence.REQUIRED,
-                fields: [field],
-              });
+              q.term(
+                lunr
+                  .tokenizer(value?.toString())
+                  .map(lunr.stopWordFilter)
+                  .filter(element => element !== undefined),
+                {
+                  presence: lunr.Query.presence.REQUIRED,
+                  fields: [field],
+                },
+              );
             } else if (Array.isArray(value)) {
               // Illustrate how multi-value filters could work.
               // But warn that Lurn supports this poorly.
