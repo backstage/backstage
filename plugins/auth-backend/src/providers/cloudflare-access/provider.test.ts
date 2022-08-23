@@ -138,12 +138,28 @@ describe('CloudflareAccessAuthProvider', () => {
   const provider = new CloudflareAccessAuthProvider({
     teamName: 'foobar',
     resolverContext: {} as AuthResolverContext,
-    authHandler: async ({ claims }) => ({
-      profile: {
-        email: claims.email,
-      },
-    }),
-    signInResolver: async () => {
+    authHandler: async result => {
+      expect(result).toEqual(
+        expect.objectContaining({
+          claims: mockClaims,
+          cfIdentity: mockCfIdentity,
+          token: mockJwt,
+        }),
+      );
+      return {
+        profile: {
+          email: result.claims.email,
+        },
+      };
+    },
+    signInResolver: async ({ result }) => {
+      expect(result).toEqual(
+        expect.objectContaining({
+          claims: mockClaims,
+          cfIdentity: mockCfIdentity,
+          token: mockJwt,
+        }),
+      );
       return {
         token:
           'eyblob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iLCJlbnQiOlsidXNlcjpkZWZhdWx0L2ppbW15bWFya3VtIl19.eyblob',
