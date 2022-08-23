@@ -47,7 +47,7 @@ describe('humanizeEntityRef', () => {
         lifecycle: 'production',
       },
     };
-    const title = humanizeEntityRef(entity, {skipDefaultNamespace: false});
+    const title = humanizeEntityRef(entity, { skipDefaultNamespace: false });
     expect(title).toEqual('component:default/software');
   });
 
@@ -128,7 +128,9 @@ describe('humanizeEntityRef', () => {
       name: 'software',
     };
 
-    const title = humanizeEntityRef(entityName, {skipDefaultNamespace: false});
+    const title = humanizeEntityRef(entityName, {
+      skipDefaultNamespace: false,
+    });
     expect(title).toEqual('component:default/software');
   });
 });
