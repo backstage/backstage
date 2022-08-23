@@ -112,10 +112,17 @@ export const transforms = (options: TransformOptions): Transforms => {
       test: [/\.icon\.svg$/],
       use: [
         {
-          loader: require.resolve('esbuild-loader'),
+          loader: 'swc-loader',
           options: {
-            loader: 'jsx',
-            target: 'es2019',
+            jsc: {
+              target: 'es2019',
+              externalHelpers: !isBackend,
+              parser: {
+                syntax: 'ecmascript',
+                jsx: true,
+                dynamicImport: true,
+              },
+            },
           },
         },
         {
