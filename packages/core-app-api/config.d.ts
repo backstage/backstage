@@ -65,6 +65,26 @@ export interface Config {
         }>;
       }>;
     };
+    /**
+     * Running the frontend app with https
+     */
+    https?: {
+      /**
+       * Parent object containing certificate and the private key
+       */
+      credentials?: {
+        /**
+         * Https Certificate private key. Can be loaded using $file
+         * @visibility frontend
+         */
+        key?: string;
+        /**
+         * Https Certificate. Can be loaded using $file
+         * @visibility frontend
+         */
+        cert?: string;
+      };
+    };
   };
 
   /**
