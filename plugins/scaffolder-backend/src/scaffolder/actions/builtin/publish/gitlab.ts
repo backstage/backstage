@@ -112,6 +112,10 @@ export function createPublishGitlabAction(options: {
             title: 'A URL to the root of the repository',
             type: 'string',
           },
+          projectId: {
+            title: 'The ID of the project',
+            type: 'string',
+          },
         },
       },
     },
@@ -214,6 +218,7 @@ export function createPublishGitlabAction(options: {
 
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
+      ctx.output('projectId', projectId);
     },
   });
 }
