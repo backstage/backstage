@@ -8,9 +8,12 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { ErrorApi } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { InfoCardVariants } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
@@ -55,6 +58,28 @@ export interface AboutFieldProps {
   label: string;
   // (undocumented)
   value?: string;
+}
+
+// Warning: (ae-missing-release-tag) "BackendStarredEntitiesApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class BackendStarredEntitiesApi implements StarredEntitiesApi {
+  constructor(opts: {
+    storageApi: StorageApi;
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+    errorApi: ErrorApi;
+  });
+  // (undocumented)
+  isSynced: boolean;
+  // (undocumented)
+  loadFromServer(): Promise<void>;
+  // (undocumented)
+  performMigration(): Promise<void>;
+  // (undocumented)
+  starredEntitie$(): Observable<Set<string>>;
+  // (undocumented)
+  toggleStarred(entityRef: string): Promise<void>;
 }
 
 // @public (undocumented)

@@ -84,6 +84,11 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
     </Sidebar>
 ```
 
+### Storing starred entities
+
+The starred entities are by default stored in the `LocalStorage` of the browser.
+To persist them in the database, check the [`@backstage/plugin-catalog-starred-entities-backend`](../catalog-starred-entities-backend/).
+
 ## Development
 
 This frontend plugin can be started in a standalone mode from directly in this
