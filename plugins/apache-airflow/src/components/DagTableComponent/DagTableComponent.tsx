@@ -131,7 +131,7 @@ export const DenseTable = ({ dags }: DenseTableProps) => {
   return (
     <Table
       title="DAGs"
-      options={{ pageSize: 5 }}
+      options={{ pageSize: 5, columnsButton: true }}
       columns={columns}
       data={dags}
     />
