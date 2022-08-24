@@ -13,18 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { createDevApp } from '@backstage/dev-utils';
-import {
-  techInsightsPlugin,
-  EntityTechInsightsScorecardContent,
-} from '../src/plugin';
 
-createDevApp()
-  .registerPlugin(techInsightsPlugin)
-  .addPage({
-    element: <EntityTechInsightsScorecardContent title="Test scorecard" />,
-    title: 'Root Page',
-    path: '/tech-insight-scorecard',
-  })
-  .render();
+export { ScorecardsList } from './ScorecardsList';

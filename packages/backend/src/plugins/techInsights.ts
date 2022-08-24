@@ -57,33 +57,34 @@ export default async function createPlugin(
       logger: env.logger,
       checks: [
         {
-          id: 'simpleTestCheck',
+          id: 'titleCheck',
           type: JSON_RULE_ENGINE_CHECK_TYPE,
-          name: 'simpleTestCheck',
-          description: 'Simple Check For Testing',
-          factIds: [
-            'entityMetadataFactRetriever',
-            'techdocsFactRetriever',
-            'entityOwnershipFactRetriever',
-          ],
+          name: 'Title Check',
+          description:
+            'Verifies that a Title, used to improve readability, has been set for this entity',
+          factIds: ['entityMetadataFactRetriever'],
           rule: {
             conditions: {
               all: [
-                {
-                  fact: 'hasGroupOwner',
-                  operator: 'equal',
-                  value: true,
-                },
                 {
                   fact: 'hasTitle',
                   operator: 'equal',
                   value: true,
                 },
-                {
-                  fact: 'hasDescription',
-                  operator: 'equal',
-                  value: true,
-                },
+              ],
+            },
+          },
+        },
+        {
+          id: 'techDocsCheck',
+          type: JSON_RULE_ENGINE_CHECK_TYPE,
+          name: 'TechDocs Check',
+          description:
+            'Verifies that TechDocs has been enabled for this entity',
+          factIds: ['techdocsFactRetriever'],
+          rule: {
+            conditions: {
+              all: [
                 {
                   fact: 'hasAnnotationBackstageIoTechdocsRef',
                   operator: 'equal',

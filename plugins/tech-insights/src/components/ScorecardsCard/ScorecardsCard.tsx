@@ -25,7 +25,7 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import { getCompoundEntityRef } from '@backstage/catalog-model';
 
 export const ScorecardsCard = (props: {
-  title?: string;
+  title: string;
   description?: string;
   checksId?: string[];
 }) => {
@@ -46,7 +46,7 @@ export const ScorecardsCard = (props: {
     <ScorecardInfo
       title={title}
       description={description}
-      checks={value || []}
+      checkResults={value || []}
     />
   );
 };

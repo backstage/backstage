@@ -33,7 +33,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 export const ScorecardsContent = (props: {
-  title?: string;
+  title: string;
   description?: string;
   checksId?: string[];
 }) => {
@@ -57,7 +57,7 @@ export const ScorecardsContent = (props: {
         <ScorecardInfo
           title={title}
           description={description}
-          checks={value || []}
+          checkResults={value || []}
         />
       </Content>
     </Page>
