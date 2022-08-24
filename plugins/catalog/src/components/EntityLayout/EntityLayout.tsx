@@ -52,7 +52,7 @@ import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 
 /** @public */
 export type EntityLayoutRouteProps = {
-  path?: string;
+  path: string;
   title: string;
   children: JSX.Element;
   if?: (entity: Entity) => boolean;

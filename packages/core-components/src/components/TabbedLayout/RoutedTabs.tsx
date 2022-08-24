@@ -29,7 +29,7 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 
   const routes = subRoutes.map(({ path, children }) => ({
     caseSensitive: false,
-    path: path ? `${path}/*` : '.',
+    path: `${path}/*`,
     element: children,
   }));
 
@@ -68,7 +68,7 @@ export function RoutedTabs(props: { routes: SubRoute[] }) {
   const headerTabs = useMemo(
     () =>
       routes.map(t => ({
-        id: t.path ?? '.',
+        id: t.path,
         label: t.title,
         tabProps: t.tabProps,
       })),
@@ -76,7 +76,7 @@ export function RoutedTabs(props: { routes: SubRoute[] }) {
   );
 
   const onTabChange = (tabIndex: number) => {
-    let { path = '.' } = routes[tabIndex];
+    let { path } = routes[tabIndex];
     // Remove trailing /*
     path = path.replace(/\/\*$/, '');
     // And remove leading / for relative navigation
