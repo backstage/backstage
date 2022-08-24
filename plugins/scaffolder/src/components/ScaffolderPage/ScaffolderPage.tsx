@@ -31,6 +31,7 @@ import {
   EntitySearchBar,
   EntityTagPicker,
   UserListPicker,
+  EntityGenericPicker,
 } from '@backstage/plugin-catalog-react';
 import React, { ComponentType } from 'react';
 import { TemplateList } from '../TemplateList';
@@ -59,6 +60,11 @@ export type ScaffolderPageProps = {
     title?: string;
     subtitle?: string;
   };
+  customFilters?: Array<{
+    name: string;
+    filterValue: string;
+    filterKey?: string;
+  }>;
 };
 
 export const ScaffolderPageContents = ({
@@ -67,6 +73,7 @@ export const ScaffolderPageContents = ({
   templateFilter,
   contextMenu,
   headerOptions,
+  customFilters,
 }: ScaffolderPageProps) => {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const otherTemplatesGroup = {
@@ -116,6 +123,15 @@ export const ScaffolderPageContents = ({
             />
             <TemplateTypePicker />
             <EntityTagPicker />
+            {customFilters &&
+              customFilters.map((filter, index) => (
+                <EntityGenericPicker
+                  key={index}
+                  name={filter.name}
+                  filterValue={filter.filterValue}
+                  filterKey={filter.filterKey}
+                />
+              ))}
           </CatalogFilterLayout.Filters>
           <CatalogFilterLayout.Content>
             {groups &&
@@ -146,6 +162,7 @@ export const ScaffolderPage = ({
   templateFilter,
   contextMenu,
   headerOptions,
+  customFilters,
 }: ScaffolderPageProps) => (
   <EntityListProvider>
     <ScaffolderPageContents
@@ -154,6 +171,7 @@ export const ScaffolderPage = ({
       templateFilter={templateFilter}
       contextMenu={contextMenu}
       headerOptions={headerOptions}
+      customFilters={customFilters}
     />
   </EntityListProvider>
 );
