@@ -26,6 +26,7 @@ import {
 } from '@material-ui/core';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import useAsync from 'react-use/lib/useAsync';
+import _unescape from 'lodash/unescape';
 import qs from 'qs';
 import React from 'react';
 import {
@@ -73,7 +74,7 @@ export const Content = (props: StackOverflowQuestionsContentProps) => {
           <ListItem key={question.link}>
             {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
             <ListItemText
-              primary={question.title}
+              primary={_unescape(question.title)}
               secondary={getSecondaryText(question.answer_count)}
             />
             <ListItemSecondaryAction>
