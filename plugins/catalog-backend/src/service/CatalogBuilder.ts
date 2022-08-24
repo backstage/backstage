@@ -368,7 +368,7 @@ export class CatalogBuilder {
   /**
    * Sets up the allowed location types from being registered via the location service.
    *
-   * @param allowedLocationTypes
+   * @param allowedLocationTypes - the allowed location types
    */
   setAllowedLocationTypes(allowedLocationTypes: string[]) {
     this.allowedLocationType = allowedLocationTypes;

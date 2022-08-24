@@ -150,6 +150,7 @@ export class CatalogBuilder {
   getDefaultProcessors(): CatalogProcessor[];
   replaceEntityPolicies(policies: EntityPolicy[]): CatalogBuilder;
   replaceProcessors(processors: CatalogProcessor[]): CatalogBuilder;
+  setAllowedLocationTypes(allowedLocationTypes: string[]): this;
   setEntityDataParser(parser: CatalogProcessorParser): CatalogBuilder;
   setFieldFormatValidators(validators: Partial<Validators>): CatalogBuilder;
   setLocationAnalyzer(locationAnalyzer: LocationAnalyzer): CatalogBuilder;
