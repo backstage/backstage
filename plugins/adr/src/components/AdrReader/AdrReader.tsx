@@ -45,7 +45,7 @@ export const AdrReader = (props: {
   const adrLocationUrl = getAdrLocationUrl(entity, scmIntegrations);
 
   const { value, loading, error } = useOctokitRequest(
-    `${adrLocationUrl}/${adr}`,
+    `${adrLocationUrl.replace(/\/$/, '')}/${adr}`,
   );
 
   const adrContent = useMemo(() => {
