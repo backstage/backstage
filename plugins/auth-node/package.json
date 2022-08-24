@@ -31,6 +31,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "^0.1.28-next.0",
     "@backstage/cli": "^0.18.2-next.0",
     "lodash": "^4.17.21",
     "msw": "^0.45.0",

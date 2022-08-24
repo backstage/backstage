@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { rest } from 'msw';
 import fs from 'fs-extra';
@@ -49,12 +51,11 @@ class PersistingTaskRunner implements TaskRunner {
 const logger = getVoidLogger();
 
 describe('GerritEntityProvider', () => {
-  beforeAll(() => server.listen());
+  setupRequestMockHandlers(server);
+
   afterEach(() => {
     jest.resetAllMocks();
-    server.resetHandlers();
   });
-  afterAll(() => server.close());
 
   const config = new ConfigReader({
     catalog: {
