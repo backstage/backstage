@@ -134,9 +134,10 @@ export const Router = (props: RouterProps) => {
           />
         }
       />
-      <Route path={legacySelectedTemplateRouteRef.path}>
-        <RedirectingComponent />
-      </Route>
+      <Route
+        path={legacySelectedTemplateRouteRef.path}
+        element={<RedirectingComponent />}
+      />
       <Route
         path={selectedTemplateRouteRef.path}
         element={
