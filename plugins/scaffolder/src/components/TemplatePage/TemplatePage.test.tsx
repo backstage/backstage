@@ -13,16 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  renderInTestApp,
-  renderWithEffects,
-  TestApiRegistry,
-} from '@backstage/test-utils';
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { act, fireEvent, within } from '@testing-library/react';
 import React from 'react';
-import { MemoryRouter, Route } from 'react-router';
+import { Route, Routes } from 'react-router';
 import { scaffolderApiRef } from '../../api';
 import { ScaffolderApi } from '../../types';
 import { rootRouteRef } from '../../routes';
@@ -169,17 +163,17 @@ describe('TemplatePage', () => {
       undefined as any,
     );
 
-    const rendered = await renderWithEffects(
+    const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <ThemeProvider theme={lightTheme}>
-          <MemoryRouter initialEntries={['/create/test']}>
-            <Route path="/create/test">
-              <TemplatePage />
-            </Route>
-            <Route path="/create" element={<>This is root</>} />
-          </MemoryRouter>
-        </ThemeProvider>
+        <Routes>
+          <Route path="/create/test" element={<TemplatePage />} />
+          <Route path="/create" element={<>This is root</>} />
+        </Routes>
       </ApiProvider>,
+      {
+        routeEntries: ['/create'],
+        mountedRoutes: { '/create': rootRouteRef },
+      },
     );
 
     expect(

@@ -34,7 +34,6 @@ import {
 } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
-import { Route, Routes } from 'react-router';
 import { EntityLayout } from './EntityLayout';
 
 const mockEntity = {
@@ -160,28 +159,21 @@ describe('EntityLayout', () => {
 
   it('navigates when user clicks different tab', async () => {
     const rendered = await renderInTestApp(
-      <Routes>
-        <Route
-          path="/*"
-          element={
-            <ApiProvider apis={mockApis}>
-              <EntityProvider entity={mockEntity}>
-                <EntityLayout>
-                  <EntityLayout.Route path="/" title="tabbed-test-title">
-                    <div>tabbed-test-content</div>
-                  </EntityLayout.Route>
-                  <EntityLayout.Route
-                    path="/some-other-path"
-                    title="tabbed-test-title-2"
-                  >
-                    <div>tabbed-test-content-2</div>
-                  </EntityLayout.Route>
-                </EntityLayout>
-              </EntityProvider>
-            </ApiProvider>
-          }
-        />
-      </Routes>,
+      <ApiProvider apis={mockApis}>
+        <EntityProvider entity={mockEntity}>
+          <EntityLayout>
+            <EntityLayout.Route path="/" title="tabbed-test-title">
+              <div>tabbed-test-content</div>
+            </EntityLayout.Route>
+            <EntityLayout.Route
+              path="/some-other-path"
+              title="tabbed-test-title-2"
+            >
+              <div>tabbed-test-content-2</div>
+            </EntityLayout.Route>
+          </EntityLayout>
+        </EntityProvider>
+      </ApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
