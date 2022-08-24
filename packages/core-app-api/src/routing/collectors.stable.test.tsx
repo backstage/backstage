@@ -249,6 +249,46 @@ describe('discovery', () => {
     ]);
   });
 
+  it('should handle absolute route paths', () => {
+    const root = (
+      <MemoryRouter>
+        <Routes>
+          <Route path="/foo" element={<Extension1 />}>
+            <Routes>
+              <Route path="/bar/:id" element={<Extension2 />} />
+            </Routes>
+          </Route>
+          <Route path="/baz" element={<Extension3 />}>
+            <Route path="/divsoup" element={<Extension4 />} />
+            <Route path="/blop" element={<Extension5 />} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    );
+
+    const { routing } = traverseElementTree({
+      root,
+      discoverers: [childDiscoverer, routeElementDiscoverer],
+      collectors: {
+        routing: routingV2Collector,
+      },
+    });
+    expect(sortedEntries(routing.paths)).toEqual([
+      [ref1, 'foo'],
+      [ref2, 'bar/:id'],
+      [ref3, 'baz'],
+      [ref4, 'divsoup'],
+      [ref5, 'blop'],
+    ]);
+    expect(sortedEntries(routing.parents)).toEqual([
+      [ref1, undefined],
+      [ref2, ref1],
+      [ref3, undefined],
+      [ref4, ref3],
+      [ref5, ref3],
+    ]);
+  });
+
   it('should use the route aggregator key to bind child routes to the same path', () => {
     const root = (
       <MemoryRouter>
@@ -309,11 +349,11 @@ describe('discovery', () => {
       <MemoryRouter>
         <Routes>
           <Route path="foo" element={<Extension1 />}>
-            <AggregationComponent path="bar">
+            <AggregationComponent path="/bar">
               <Extension2>
                 <Routes>
                   <Route path="baz" element={<Extension3 />}>
-                    <Route path="blop" element={<Extension4 />} />
+                    <Route path="/blop" element={<Extension4 />} />
                   </Route>
                 </Routes>
                 <Extension5 />

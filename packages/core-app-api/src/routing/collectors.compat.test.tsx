@@ -187,7 +187,9 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
                     <div />
                     {null}
                     <div />
-                    <Route path="baz" element={<Extension3 />} />
+                    <Routes>
+                      <Route path="/baz" element={<Extension3 />} />
+                    </Routes>
                   </div>
                 </Route>
                 {false}
@@ -211,7 +213,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
       expect(sortedEntries(routing.paths)).toEqual([
         [ref1, 'foo'],
         [ref2, 'bar/:id'],
-        [ref3, 'baz'],
+        [ref3, rrVersion === 'beta' ? '/baz' : 'baz'],
         [ref4, 'divsoup'],
         [ref5, 'blop'],
       ]);
@@ -227,7 +229,11 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
           'foo',
           [ref1],
           [
-            routeObj('bar/:id', [ref2], [routeObj('baz', [ref3])]),
+            routeObj(
+              'bar/:id',
+              [ref2],
+              [routeObj(rrVersion === 'beta' ? '/baz' : 'baz', [ref3])],
+            ),
             routeObj('blop', [ref5]),
           ],
         ),

@@ -87,10 +87,10 @@ export const routingV2Collector = createCollector(
     objects: new Array<BackstageRouteObject>(),
   }),
   (acc, node, parent, ctx?: RoutingV2CollectorContext) => {
-    const path: unknown = node.props?.path;
+    const pathProp: unknown = node.props?.path;
 
     const mountPoint = getComponentData<RouteRef>(node, 'core.mountPoint');
-    if (mountPoint && path) {
+    if (mountPoint && pathProp) {
       throw new Error(
         `Path property may not be set directly on a routable extension "${stringifyNode(
           node,
@@ -109,12 +109,14 @@ export const routingV2Collector = createCollector(
 
     const parentChildren = ctx?.obj?.children ?? acc.objects;
 
-    if (path) {
-      if (typeof path !== 'string') {
+    if (pathProp) {
+      if (typeof pathProp !== 'string') {
         throw new Error(
           `Element path must be a string at "${stringifyNode(node)}"`,
         );
       }
+
+      const path = pathProp.startsWith('/') ? pathProp.slice(1) : pathProp;
 
       const elementProp = node.props.element;
 
@@ -149,7 +151,7 @@ export const routingV2Collector = createCollector(
         const [extension, ...others] = collectSubTree(elementProp);
         if (others.length > 0) {
           throw new Error(
-            `Route element with path "${path}" may not contain multiple routable extensions`,
+            `Route element with path "${pathProp}" may not contain multiple routable extensions`,
           );
         }
         if (!extension) {
