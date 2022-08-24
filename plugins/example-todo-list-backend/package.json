@@ -28,9 +28,8 @@
     "@backstage/errors": "^1.1.0",
     "@backstage/plugin-auth-node": "^0.2.5-next.0",
     "@types/express": "^4.17.6",
-    "cross-fetch": "^3.1.5",
-    "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
+    "express": "^4.17.1",
     "uuid": "^8.3.2",
     "winston": "^3.2.1",
     "yn": "^4.0.0"

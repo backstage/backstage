@@ -25,19 +25,18 @@
     "@backstage/backend-common": "^0.15.1-next.0",
     "@backstage/config": "^1.0.1",
     "@types/express": "*",
-    "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
+    "express": "^4.17.1",
     "http-proxy-middleware": "^2.0.0",
     "winston": "^3.2.1",
-    "cross-fetch": "^3.0.6",
     "yn": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.18.2-next.0",
     "@types/http-proxy-middleware": "^0.19.3",
     "@types/supertest": "^2.0.8",
-    "supertest": "^6.1.6",
-    "msw": "^0.45.0"
+    "msw": "^0.45.0",
+    "supertest": "^6.1.6"
   },
   "files": [
     "dist",
