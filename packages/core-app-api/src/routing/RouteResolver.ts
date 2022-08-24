@@ -82,7 +82,7 @@ function resolveTargetRef(
 
   // Find the path that our target route is bound to
   const resolvedPath = routePaths.get(targetRef);
-  if (!resolvedPath) {
+  if (resolvedPath === undefined) {
     return [undefined, ''];
   }
 
@@ -154,7 +154,7 @@ function resolveBasePath(
   // what parameters those are.
   const diffPaths = refDiffList.slice(0, -1).map(ref => {
     const path = routePaths.get(ref);
-    if (!path) {
+    if (path === undefined) {
       throw new Error(`No path for ${ref}`);
     }
     if (path.includes(':')) {

@@ -41,7 +41,7 @@ export function validateRouteParameters(
     let fullPath = '';
     while (currentRouteRef) {
       const path = routePaths.get(currentRouteRef);
-      if (!path) {
+      if (path === undefined) {
         throw new Error(`No path for ${currentRouteRef}`);
       }
       fullPath = joinPaths(path, fullPath);

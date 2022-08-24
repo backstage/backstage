@@ -518,7 +518,7 @@ describe('Integration Test', () => {
           </Provider>,
         ),
       ).toThrow(
-        'Parameter :thing is duplicated in path /test/:thing/some/:thing',
+        'Parameter :thing is duplicated in path test/:thing/some/:thing',
       );
     });
     expect(errorLogs).toEqual([
