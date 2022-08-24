@@ -15,6 +15,7 @@
  */
 
 export * from './CatalogFilterLayout';
+export * from './EntityGenericPicker';
 export * from './EntityKindPicker';
 export * from './EntityLifecyclePicker';
 export * from './EntityOwnerPicker';
