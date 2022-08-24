@@ -236,3 +236,16 @@ export class EntityErrorFilter implements EntityFilter {
     return error !== undefined && this.value === error;
   }
 }
+
+/**
+ * Filters entities based on the metadata category (status, domain, capabilities etc) provided.
+ * @public
+ */
+export class EntityGenericFilter implements EntityFilter {
+  constructor(readonly values: string[], readonly category: string) {}
+  filterEntity(entity: Entity): boolean {
+    return this.values.every(v =>
+      ((entity.metadata[this.category] as string[]) ?? []).includes(v),
+    );
+  }
+}
