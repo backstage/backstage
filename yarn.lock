@@ -7018,9 +7018,9 @@
     "@types/d3-selection" "*"
 
 "@types/dagre@^0.7.44":
-  version "0.7.47"
-  resolved "https://registry.npmjs.org/@types/dagre/-/dagre-0.7.47.tgz#1d1b89e1fac36aaf5ef5ed6274bb123073095ac5"
-  integrity sha512-oX+3aRf7L6Cqq1MvbWmmD7FpAU/T8URwFFuHBagAiyHILn3i+RNZ35/tvyq28de+lZGY3W19BxJ7FeITQDO7aA==
+  version "0.7.48"
+  resolved "https://registry.npmjs.org/@types/dagre/-/dagre-0.7.48.tgz#e3ff1962df959c22af44d58d4275d35bd9309043"
+  integrity sha512-rF3yXSwHIrDxEkN6edCE4TXknb5YSEpiXfLaspw1I08grC49ZFuAVGOQCmZGIuLUGoFgcqGlUFBL/XrpgYpQgw==
 
 "@types/debug@^4.0.0":
   version "4.1.7"
