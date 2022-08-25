@@ -673,7 +673,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       if (
         isError(error) &&
         (error.message.includes('UNIQUE constraint failed') ||
-          /Duplicate entry.*for key/.test(error.message)) // MySQL failure
+          error.message.includes('Duplicate entry')) // MySQL failure
       ) {
         return false;
       }
