@@ -131,24 +131,6 @@ function buildDefaultIdentityClient({
   };
 }
 
-const getIdentity = async ({
-  request,
-  identity,
-  logger,
-}: {
-  request: express.Request;
-  identity: IdentityApi;
-  logger: Logger;
-}) => {
-  let callerIdentity = undefined;
-  try {
-    callerIdentity = await identity.getIdentity({ request });
-  } catch (e: any) {
-    logger.debug(`identity could not be determined: ${e.message}`);
-  }
-  return callerIdentity;
-};
-
 /**
  * A method to create a router for the scaffolder backend plugin.
  * @public
@@ -228,10 +210,8 @@ export async function createRouter(
       async (req, res) => {
         const { namespace, kind, name } = req.params;
 
-        const userIdentity = await getIdentity({
+        const userIdentity = await identity.getIdentity({
           request: req,
-          logger,
-          identity,
         });
         const token = userIdentity?.token;
 
@@ -276,10 +256,8 @@ export async function createRouter(
         defaultKind: 'template',
       });
 
-      const callerIdentity = await getIdentity({
+      const callerIdentity = await identity.getIdentity({
         request: req,
-        logger,
-        identity,
       });
       const token = callerIdentity?.token;
       const userEntityRef = callerIdentity?.identity.userEntityRef;
@@ -485,8 +463,11 @@ export async function createRouter(
         throw new InputError('Input template is not a template');
       }
 
-      const token = (await getIdentity({ request: req, logger, identity }))
-        ?.token;
+      const token = (
+        await identity.getIdentity({
+          request: req,
+        })
+      )?.token;
 
       for (const parameters of [template.spec.parameters ?? []].flat()) {
         const result = validate(body.values, parameters);

@@ -886,11 +886,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             },
           );
         });
-        it('should not throw', async () => {
-          const broker =
-            taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
-
-          await request(app)
+        it('return an error', async () => {
+          const response = await request(app)
             .post('/v2/tasks')
             .send({
               templateRef: stringifyEntityRef({
@@ -901,42 +898,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
                 required: 'required-value',
               },
             });
-          expect(broker).toHaveBeenCalledWith(
-            expect.objectContaining({
-              createdBy: undefined,
-              secrets: {
-                backstageToken: undefined,
-              },
-
-              spec: {
-                apiVersion: mockTemplate.apiVersion,
-                steps: mockTemplate.spec.steps.map((step, index) => ({
-                  ...step,
-                  id: step.id ?? `step-${index + 1}`,
-                  name: step.name ?? step.action,
-                })),
-                output: mockTemplate.spec.output ?? {},
-                parameters: {
-                  required: 'required-value',
-                },
-                user: {
-                  entity: undefined,
-                  ref: undefined,
-                },
-                templateInfo: {
-                  entityRef: stringifyEntityRef({
-                    kind: 'Template',
-                    namespace: 'Default',
-                    name: mockTemplate.metadata?.name,
-                  }),
-                  baseUrl: 'https://dev.azure.com',
-                  entity: {
-                    metadata: mockTemplate.metadata,
-                  },
-                },
-              },
-            }),
-          );
+          expect(response.status).not.toEqual(201);
         });
       });
 
