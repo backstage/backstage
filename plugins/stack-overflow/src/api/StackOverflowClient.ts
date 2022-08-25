@@ -20,7 +20,6 @@ import {
   StackOverflowQuestion,
   StackOverflowQuestionsRequestParams,
 } from '../types';
-import qs from 'qs';
 
 export class StackOverflowClient implements StackOverflowApi {
   private baseUrl: string;
