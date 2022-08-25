@@ -56,6 +56,16 @@ import { DeferredEntity } from '@backstage/plugin-catalog-node';
 const BATCH_SIZE = 50;
 const MAX_ANCESTOR_DEPTH = 32;
 
+function nowPlusSeconds(tx: Knex.Transaction, seconds: number) {
+  const client = tx.client.config.client;
+  if (client.includes('sqlite3')) {
+    return tx.raw(`datetime('now', ?)`, [`${seconds} seconds`]);
+  } else if (client === 'pg') {
+    return tx.raw(`now() + interval '${seconds} seconds'`);
+  }
+  return tx.raw(`date_add(now(), interval ${seconds} second)`);
+}
+
 export class DefaultProcessingDatabase implements ProcessingDatabase {
   constructor(
     private readonly options: {
@@ -82,6 +92,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       refreshKeys,
       locationKey,
     } = options;
+    const configClient = tx.client.config.client;
     const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
       .update({
         processed_entity: JSON.stringify(processedEntity),
@@ -113,7 +124,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
     // Delete old relations
     let previousRelationRows: DbRelationsRow[];
-    if (tx.client.config.client.includes('sqlite3')) {
+    if (configClient.includes('sqlite3') || configClient.includes('mysql')) {
       previousRelationRows = await tx<DbRelationsRow>('relations')
         .select('*')
         .where({ originating_entity_id: id });
@@ -196,7 +207,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     options: ReplaceUnprocessedEntitiesOptions,
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
-
     const { toAdd, toUpsert, toRemove } = await this.createDelta(tx, options);
 
     if (toRemove.length) {
@@ -266,7 +276,14 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
                 .withRecursive('ancestors', function ancestors(outer) {
                   return outer
                     .select({
-                      root_id: tx.raw('CAST(NULL as INT)', []),
+                      root_id: tx.raw(
+                        `CAST(NULL as ${
+                          tx.client.config.client.startsWith('mysql')
+                            ? 'unsigned'
+                            : 'int'
+                        })`,
+                        [],
+                      ),
                       via_entity_ref: 'entity_ref',
                       to_entity_ref: 'entity_ref',
                     })
@@ -441,9 +458,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         items.map(i => i.entity_ref),
       )
       .update({
-        next_update_at: tx.client.config.client.includes('sqlite3')
-          ? tx.raw(`datetime('now', ?)`, [`${interval} seconds`])
-          : tx.raw(`now() + interval '${interval} seconds'`),
+        next_update_at: nowPlusSeconds(tx, interval),
       });
 
     return {
@@ -641,11 +656,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         last_discovery_at: tx.fn.now(),
       });
 
-      // TODO(Rugvip): only tested towards Postgres and SQLite
+      // TODO(Rugvip): only tested towards MySQL, Postgres and SQLite.
       // We have to do this because the only way to detect if there was a conflict with
       // SQLite is to catch the error, while Postgres needs to ignore the conflict to not
       // break the ongoing transaction.
-      if (!tx.client.config.client.includes('sqlite3')) {
+      if (tx.client.config.client.includes('pg')) {
         query = query.onConflict('entity_ref').ignore() as any; // type here does not match runtime
       }
 
@@ -653,10 +668,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       const result: { rowCount?: number; length?: number } = await query;
       return result.rowCount === 1 || result.length === 1;
     } catch (error) {
-      // SQLite reached this rather than the rowCount check above
+      // SQLite, or MySQL reached this rather than the rowCount check above
       if (
-        isError(error) &&
-        error.message.includes('UNIQUE constraint failed')
+        (isError(error) &&
+          error.message.includes('UNIQUE constraint failed')) ||
+        /Duplicate entry.*for key/.test(error.message) // MySQL failure
       ) {
         return false;
       }
@@ -679,7 +695,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .select('location_key')
       .where('entity_ref', entityRef)
       .first();
-
     const conflictingKey = row?.location_key;
 
     // If there's no existing key we can't have a conflict
@@ -804,6 +819,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         hash,
         locationKey,
       );
+
       if (updated) {
         stateReferences.push(entityRef);
         continue;
@@ -815,11 +831,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         hash,
         locationKey,
       );
+
       if (inserted) {
         stateReferences.push(entityRef);
         continue;
       }
-
       // If the row can't be inserted, we have a conflict, but it could be either
       // because of a conflicting locationKey or a race with another instance, so check
       // whether the conflicting entity has the same entityRef but a different locationKey

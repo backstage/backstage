@@ -26,9 +26,10 @@ export function isDatabaseConflictError(e: unknown) {
   const message = (e as any)?.message;
 
   return (
-    typeof message === 'string' &&
-    (/SQLITE_CONSTRAINT(?:_UNIQUE)?: UNIQUE/.test(message) ||
-      /UNIQUE constraint failed:/.test(message) ||
-      /unique constraint/.test(message))
+    (typeof message === 'string' &&
+      (/SQLITE_CONSTRAINT(?:_UNIQUE)?: UNIQUE/.test(message) ||
+        /UNIQUE constraint failed:/.test(message) ||
+        /unique constraint/.test(message))) ||
+    /Duplicate entry.*for key/.test(message) // MySQL uniqueness error msg
   );
 }

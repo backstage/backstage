@@ -29,7 +29,7 @@ import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 
 describe('DefaultEntitiesCatalog', () => {
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+    ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
 
   async function createDatabase(databaseId: TestDatabaseId) {
@@ -232,7 +232,10 @@ describe('DefaultEntitiesCatalog', () => {
           expect.arrayContaining([
             {
               entity: expect.objectContaining({ metadata: { name: 'root' } }),
-              parentEntityRefs: ['k:default/parent1', 'k:default/parent2'],
+              parentEntityRefs: expect.arrayContaining([
+                'k:default/parent1',
+                'k:default/parent2',
+              ]),
             },
             {
               entity: expect.objectContaining({

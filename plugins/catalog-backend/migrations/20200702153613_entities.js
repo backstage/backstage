@@ -31,6 +31,7 @@ exports.up = async function up(knex) {
   }
   await knex.schema.alterTable('entities', table => {
     table.dropUnique([], 'entities_unique_name');
+    table.dropForeign(['location_id']);
   });
   // Setup temporary tables
   await knex.schema.renameTable('entities_search', 'tmp_entities_search');
@@ -56,7 +57,7 @@ exports.up = async function up(knex) {
           'An opaque string that changes for each update operation to any part of the entity, including metadata.',
         );
       table
-        .string('generation')
+        .integer('generation')
         .notNullable()
         .unsigned()
         .comment(
