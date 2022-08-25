@@ -28,6 +28,7 @@ import { PRCardFormating } from '../../utils/types';
 import { DraftPrIcon } from '../icons/DraftPr';
 import { useUserRepositories } from '../../hooks/useUserRepositories';
 
+/** @public */
 export interface EntityTeamPullRequestsCardProps {
   defaultLimit?: number;
 }

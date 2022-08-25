@@ -5,13 +5,27 @@
 ```ts
 /// <reference types="react" />
 
-import { FunctionComponent } from 'react';
+// @public (undocumented)
+export const EntityTeamPullRequestsCard: (
+  props: EntityTeamPullRequestsCardProps,
+) => JSX.Element | null;
 
 // @public (undocumented)
-export const EntityTeamPullRequestsCard: FunctionComponent<{}>;
+export interface EntityTeamPullRequestsCardProps {
+  // (undocumented)
+  defaultLimit?: number;
+}
 
 // @public (undocumented)
-export const EntityTeamPullRequestsContent: FunctionComponent<{}>;
+export const EntityTeamPullRequestsContent: (
+  props: EntityTeamPullRequestsContentProps,
+) => JSX.Element | null;
+
+// @public (undocumented)
+export interface EntityTeamPullRequestsContentProps {
+  // (undocumented)
+  defaultLimit?: number;
+}
 
 // (No @packageDocumentation comment for this package)
 ```
