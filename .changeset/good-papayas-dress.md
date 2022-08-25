@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-backend': minor
 ---
 
-added projectId for gitlab projects to be displayed in the output
+Added `projectId` for gitlab projects to be displayed in the `gitlab:publish` output
