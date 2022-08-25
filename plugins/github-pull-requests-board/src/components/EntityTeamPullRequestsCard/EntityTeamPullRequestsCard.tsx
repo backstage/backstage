@@ -28,11 +28,20 @@ import { PRCardFormating } from '../../utils/types';
 import { DraftPrIcon } from '../icons/DraftPr';
 import { useUserRepositories } from '../../hooks/useUserRepositories';
 
-const EntityTeamPullRequestsCard: FunctionComponent = () => {
+export interface EntityTeamPullRequestsCardProps {
+  defaultLimit?: number;
+}
+
+const EntityTeamPullRequestsCard: FunctionComponent<
+  EntityTeamPullRequestsCardProps
+> = (props: EntityTeamPullRequestsCardProps) => {
+  const { defaultLimit = 100 } = props;
   const [infoCardFormat, setInfoCardFormat] = useState<PRCardFormating[]>([]);
   const { repositories } = useUserRepositories();
-  const { loading, pullRequests, refreshPullRequests } =
-    usePullRequestsByTeam(repositories);
+  const { loading, pullRequests, refreshPullRequests } = usePullRequestsByTeam(
+    repositories,
+    defaultLimit,
+  );
 
   const header = (
     <InfoCardHeader onRefresh={refreshPullRequests}>

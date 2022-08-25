@@ -18,6 +18,8 @@ import {
   createComponentExtension,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
+import { EntityTeamPullRequestsCardProps } from './components/EntityTeamPullRequestsCard/EntityTeamPullRequestsCard';
+import { EntityTeamPullRequestsContentProps } from './components/EntityTeamPullRequestsContent/EntityTeamPullRequestsContent';
 import { rootRouteRef } from './routes';
 
 const githubPullRequestsBoardPlugin = createPlugin({
@@ -28,7 +30,9 @@ const githubPullRequestsBoardPlugin = createPlugin({
 });
 
 /** @public */
-export const EntityTeamPullRequestsCard = githubPullRequestsBoardPlugin.provide(
+export const EntityTeamPullRequestsCard: (
+  props: EntityTeamPullRequestsCardProps,
+) => JSX.Element | null = githubPullRequestsBoardPlugin.provide(
   createComponentExtension({
     name: 'EntityTeamPullRequestsCard',
     component: {
@@ -41,14 +45,15 @@ export const EntityTeamPullRequestsCard = githubPullRequestsBoardPlugin.provide(
 );
 
 /** @public */
-export const EntityTeamPullRequestsContent =
-  githubPullRequestsBoardPlugin.provide(
-    createRoutableExtension({
-      name: 'PullRequestPage',
-      component: () =>
-        import('./components/EntityTeamPullRequestsContent').then(
-          m => m.EntityTeamPullRequestsContent,
-        ),
-      mountPoint: rootRouteRef,
-    }),
-  );
+export const EntityTeamPullRequestsContent: (
+  props: EntityTeamPullRequestsContentProps,
+) => JSX.Element | null = githubPullRequestsBoardPlugin.provide(
+  createRoutableExtension({
+    name: 'PullRequestPage',
+    component: () =>
+      import('./components/EntityTeamPullRequestsContent').then(
+        m => m.EntityTeamPullRequestsContent,
+      ),
+    mountPoint: rootRouteRef,
+  }),
+);

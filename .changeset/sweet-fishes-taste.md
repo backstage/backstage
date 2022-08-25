@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-github-pull-requests-board': patch
+'@backstage/plugin-github-pull-requests-board': minor
 ---
 
-The PR dashboard will now show more than 10 pull requests at one time.
+Add optional `defaultLimit` prop to `EntityTeamPullRequestsCard` and `EntityTeamPullRequestsContent` to limit the number of PRs shown per repository. Excluding this prop will result in showing all PRs for each repository.
