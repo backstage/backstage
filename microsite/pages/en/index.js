@@ -413,6 +413,16 @@ class Index extends React.Component {
               </Block.Paragraph>
             </Block.TextBox>
 
+            <Block.Image
+              wide
+              style={{
+                background: `url(${baseUrl}img/backstage-search-screenshot.png)`,
+                backgroundSize: '594px 435.5px',
+                width: '594px',
+                height: '435.5px',
+                margin: '-380px 105px 0 10px',
+              }}
+            />
             <Block.TextBox small>
               <BulletLine />
               <Block.SmallTitle small>
