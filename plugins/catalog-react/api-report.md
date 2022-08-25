@@ -77,6 +77,9 @@ export type CatalogReactComponentsNameToClassKey = {
 };
 
 // @public (undocumented)
+export type CatalogReactEntityGenericPickerClassKey = 'input';
+
+// @public (undocumented)
 export type CatalogReactEntityLifecyclePickerClassKey = 'input';
 
 // @public (undocumented)
@@ -135,6 +138,7 @@ export type DefaultEntityFilters = {
   orphan?: EntityOrphanFilter;
   error?: EntityErrorFilter;
   namespace?: EntityNamespaceFilter;
+  option?: EntityGenericFilter;
 };
 
 // @public
@@ -155,6 +159,24 @@ export type EntityFilter = {
   filterEntity?: (entity: Entity) => boolean;
   toQueryValue?: () => string | string[];
 };
+
+// @public
+export class EntityGenericFilter implements EntityFilter {
+  constructor(values: string[], category: string);
+  // (undocumented)
+  readonly category: string;
+  // (undocumented)
+  filterEntity(entity: Entity): boolean;
+  // (undocumented)
+  readonly values: string[];
+}
+
+// Warning: (ae-forgotten-export) The symbol "EntityGenericPickerProps" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export const EntityGenericPicker: (
+  props: EntityGenericPickerProps,
+) => JSX.Element | null;
 
 // @public
 export class EntityKindFilter implements EntityFilter {

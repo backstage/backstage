@@ -399,6 +399,11 @@ export type RouterProps = {
     editor?: boolean;
     actions?: boolean;
   };
+  customFilters?: Array<{
+    name: string;
+    filterValue: string;
+    filterKey?: string;
+  }>;
 };
 
 // @public @deprecated (undocumented)
