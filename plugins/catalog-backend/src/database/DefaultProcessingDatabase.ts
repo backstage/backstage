@@ -124,10 +124,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
     // Delete old relations
     let previousRelationRows: DbRelationsRow[];
-    if (
-      tx.client.config.client.includes('sqlite3') ||
-      tx.client.config.client.includes('mysql')
-    ) {
+    if (configClient.includes('sqlite3') || configClient.includes('mysql')) {
       previousRelationRows = await tx<DbRelationsRow>('relations')
         .select('*')
         .where({ originating_entity_id: id });
@@ -674,9 +671,9 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     } catch (error) {
       // SQLite, or MySQL reached this rather than the rowCount check above
       if (
-        (isError(error) &&
-          error.message.includes('UNIQUE constraint failed')) ||
-        /Duplicate entry.*for key/.test(error.message) // MySQL failure
+        isError(error) &&
+        (error.message.includes('UNIQUE constraint failed') ||
+          /Duplicate entry.*for key/.test(error.message)) // MySQL failure
       ) {
         return false;
       }
