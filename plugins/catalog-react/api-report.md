@@ -171,12 +171,20 @@ export class EntityGenericFilter implements EntityFilter {
   readonly values: string[];
 }
 
-// Warning: (ae-forgotten-export) The symbol "EntityGenericPickerProps" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export const EntityGenericPicker: (
   props: EntityGenericPickerProps,
 ) => JSX.Element | null;
+
+// @public
+export interface EntityGenericPickerProps {
+  // (undocumented)
+  filterKey?: string;
+  // (undocumented)
+  filterValue: string;
+  // (undocumented)
+  name: string;
+}
 
 // @public
 export class EntityKindFilter implements EntityFilter {

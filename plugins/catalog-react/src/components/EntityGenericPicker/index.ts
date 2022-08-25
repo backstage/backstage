@@ -15,4 +15,5 @@
  */
 
 export { EntityGenericPicker } from './EntityGenericPicker';
+export type { EntityGenericPickerProps } from './EntityGenericPicker';
 export type { CatalogReactEntityGenericPickerClassKey } from './EntityGenericPicker';
