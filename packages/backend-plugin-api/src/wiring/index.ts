@@ -21,7 +21,7 @@ export {
   createExtensionPoint,
 } from './factories';
 export type {
-  BackendInitRegistry,
-  BackendRegistrable,
+  BackendRegistrationPoints,
+  BackendFeature,
   ExtensionPoint,
 } from './types';

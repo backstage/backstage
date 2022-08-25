@@ -14,20 +14,6 @@
  * limitations under the License.
  */
 
-const mockAccess = jest.fn();
-jest.doMock('fs-extra', () => ({
-  access: mockAccess,
-  promises: {
-    access: mockAccess,
-  },
-  constants: {
-    F_OK: 0,
-    W_OK: 1,
-  },
-  mkdir: jest.fn(),
-  remove: jest.fn(),
-}));
-
 import {
   DatabaseManager,
   getVoidLogger,
@@ -54,6 +40,21 @@ import {
 } from '@backstage/catalog-model';
 import { createRouter, DatabaseTaskStore, TaskBroker } from '../index';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
+
+const mockAccess = jest.fn();
+
+jest.mock('fs-extra', () => ({
+  access: (...args: any[]) => mockAccess(...args),
+  promises: {
+    access: (...args: any[]) => mockAccess(...args),
+  },
+  constants: {
+    F_OK: 0,
+    W_OK: 1,
+  },
+  mkdir: jest.fn(),
+  remove: jest.fn(),
+}));
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -127,7 +128,7 @@ describe('createRouter', () => {
   beforeEach(async () => {
     const logger = getVoidLogger();
     const databaseTaskStore = await DatabaseTaskStore.create({
-      database: await createDatabase().getClient(),
+      database: createDatabase(),
     });
     taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
 
@@ -261,6 +262,63 @@ describe('createRouter', () => {
                 name: mockTemplate.metadata?.name,
               }),
               baseUrl: 'https://dev.azure.com',
+              entity: {
+                metadata: mockTemplate.metadata,
+              },
+            },
+          },
+        }),
+      );
+    });
+
+    it('should not throw when an invalid authorization header is passed', async () => {
+      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+      const mockToken = 'blob.eyJzdWIiOiIiLCJuYW1lIjoiSm9obiBEb2UifQ.blob';
+
+      await request(app)
+        .post('/v2/tasks')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            required: 'required-value',
+          },
+        });
+      expect(broker).toHaveBeenCalledWith(
+        expect.objectContaining({
+          createdBy: undefined,
+          secrets: {
+            backstageToken: undefined,
+          },
+
+          spec: {
+            apiVersion: mockTemplate.apiVersion,
+            steps: mockTemplate.spec.steps.map((step, index) => ({
+              ...step,
+              id: step.id ?? `step-${index + 1}`,
+              name: step.name ?? step.action,
+            })),
+            output: mockTemplate.spec.output ?? {},
+            parameters: {
+              required: 'required-value',
+            },
+            user: {
+              entity: undefined,
+              ref: undefined,
+            },
+            templateInfo: {
+              entityRef: stringifyEntityRef({
+                kind: 'Template',
+                namespace: 'Default',
+                name: mockTemplate.metadata?.name,
+              }),
+              baseUrl: 'https://dev.azure.com',
+              entity: {
+                metadata: mockTemplate.metadata,
+              },
             },
           },
         }),

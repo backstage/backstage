@@ -26,17 +26,10 @@ import {
 } from '@backstage/catalog-model';
 import { TokenManager } from '@backstage/backend-common';
 
-type UserQuery = {
-  annotations: Record<string, string>;
-};
-
-type MemberClaimQuery = {
-  entityRefs: string[];
-  logger?: Logger;
-};
-
 /**
  * A catalog client tailored for reading out identity data from the catalog.
+ *
+ * @public
  */
 export class CatalogIdentityClient {
   private readonly catalogApi: CatalogApi;
@@ -52,7 +45,9 @@ export class CatalogIdentityClient {
    *
    * Throws a NotFoundError or ConflictError if 0 or multiple users are found.
    */
-  async findUser(query: UserQuery): Promise<UserEntity> {
+  async findUser(query: {
+    annotations: Record<string, string>;
+  }): Promise<UserEntity> {
     const filter: Record<string, string> = {
       kind: 'user',
     };
@@ -81,7 +76,10 @@ export class CatalogIdentityClient {
    *
    * Returns a superset of the entity names that can be passed directly to `issueToken` as `ent`.
    */
-  async resolveCatalogMembership(query: MemberClaimQuery): Promise<string[]> {
+  async resolveCatalogMembership(query: {
+    entityRefs: string[];
+    logger?: Logger;
+  }): Promise<string[]> {
     const { entityRefs, logger } = query;
     const resolvedEntityRefs = entityRefs
       .map((ref: string) => {

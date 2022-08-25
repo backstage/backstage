@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
@@ -32,6 +32,13 @@ export const BitbucketRepoPicker = (props: {
   const ownerItems: SelectItem[] = allowedOwners
     ? allowedOwners?.map(i => ({ label: i, value: i }))
     : [];
+
+  useEffect(() => {
+    if (host === 'bitbucket.org' && allowedOwners.length) {
+      onChange({ workspace: allowedOwners[0] });
+    }
+  }, [allowedOwners, host, onChange]);
+
   return (
     <>
       {host === 'bitbucket.org' && (

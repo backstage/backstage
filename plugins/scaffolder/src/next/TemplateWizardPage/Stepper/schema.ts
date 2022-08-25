@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { JsonObject } from '@backstage/types';
-import { UiSchema } from '@rjsf/core';
+import { FieldValidation, UiSchema } from '@rjsf/core';
 
 function isObject(value: unknown): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -109,4 +109,19 @@ export const extractSchemaFromStep = (
   const returnSchema: JsonObject = JSON.parse(JSON.stringify(inputStep));
   extractUiSchema(returnSchema, uiSchema);
   return { uiSchema, schema: returnSchema };
+};
+
+/**
+ * @alpha
+ * Creates a field validation object for use in react jsonschema form
+ */
+export const createFieldValidation = (): FieldValidation => {
+  const fieldValidation: FieldValidation = {
+    __errors: [] as string[],
+    addError: (message: string) => {
+      fieldValidation.__errors.push(message);
+    },
+  };
+
+  return fieldValidation;
 };

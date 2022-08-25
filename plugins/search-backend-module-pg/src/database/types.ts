@@ -17,6 +17,7 @@ import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
 import { PgSearchHighlightOptions } from '../PgSearchEngine';
 
+/** @public */
 export interface PgSearchQuery {
   fields?: Record<string, string | string[]>;
   types?: string[];
@@ -26,6 +27,7 @@ export interface PgSearchQuery {
   options: PgSearchHighlightOptions;
 }
 
+/** @public */
 export interface DatabaseStore {
   transaction<T>(fn: (tx: Knex.Transaction) => Promise<T>): Promise<T>;
   getTransaction(): Promise<Knex.Transaction>;
@@ -42,12 +44,14 @@ export interface DatabaseStore {
   ): Promise<DocumentResultRow[]>;
 }
 
+/** @public */
 export interface RawDocumentRow {
   document: IndexableDocument;
   type: string;
   hash: unknown;
 }
 
+/** @public */
 export interface DocumentResultRow {
   document: IndexableDocument;
   type: string;

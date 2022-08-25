@@ -33,9 +33,8 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const { logger, database } = options;
-  const db = await database.getClient();
 
-  const dbHandler = await DatabaseHandler.create({ database: db });
+  const dbHandler = await DatabaseHandler.create({ database });
 
   logger.info('Initializing Bazaar backend');
 

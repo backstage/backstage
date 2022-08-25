@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+/** @public */
 export const ROLLBAR_ANNOTATION = 'rollbar.com/project-slug';

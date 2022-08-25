@@ -61,6 +61,8 @@ function matchFilter(filter?: string): (entry: RadarEntry) => boolean {
 
 /**
  * Properties of {@link TechRadarComponent}
+ *
+ * @public
  */
 export interface TechRadarComponentProps {
   /**
@@ -95,6 +97,8 @@ export interface TechRadarComponentProps {
  * @remarks
  *
  * For advanced use cases. Typically, you want to use {@link TechRadarPage}
+ *
+ * @public
  */
 export function RadarComponent(props: TechRadarComponentProps) {
   const { loading, error, value: data } = useTechRadarLoader(props.id);

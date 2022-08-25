@@ -124,7 +124,10 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
     // Delete old relations
     let previousRelationRows: DbRelationsRow[];
-    if (configClient.includes('sqlite3') || configClient.includes('mysql')) {
+    if (
+      tx.client.config.client.includes('sqlite3') ||
+      tx.client.config.client.includes('mysql')
+    ) {
       previousRelationRows = await tx<DbRelationsRow>('relations')
         .select('*')
         .where({ originating_entity_id: id });
@@ -207,10 +210,18 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     options: ReplaceUnprocessedEntitiesOptions,
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
+
     const { toAdd, toUpsert, toRemove } = await this.createDelta(tx, options);
 
     if (toRemove.length) {
       let removedCount = 0;
+      const rootId = () => {
+        if (tx.client.config.client.includes('mysql')) {
+          return tx.raw('CAST(NULL as UNSIGNED INT)', []);
+        }
+
+        return tx.raw('CAST(NULL as INT)', []);
+      };
       for (const refs of lodash.chunk(toRemove, 1000)) {
         /*
       WITH RECURSIVE
@@ -276,14 +287,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
                 .withRecursive('ancestors', function ancestors(outer) {
                   return outer
                     .select({
-                      root_id: tx.raw(
-                        `CAST(NULL as ${
-                          tx.client.config.client.startsWith('mysql')
-                            ? 'unsigned'
-                            : 'int'
-                        })`,
-                        [],
-                      ),
+                      root_id: rootId(),
                       via_entity_ref: 'entity_ref',
                       to_entity_ref: 'entity_ref',
                     })
@@ -695,6 +699,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .select('location_key')
       .where('entity_ref', entityRef)
       .first();
+
     const conflictingKey = row?.location_key;
 
     // If there's no existing key we can't have a conflict
@@ -819,7 +824,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         hash,
         locationKey,
       );
-
       if (updated) {
         stateReferences.push(entityRef);
         continue;
@@ -831,11 +835,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         hash,
         locationKey,
       );
-
       if (inserted) {
         stateReferences.push(entityRef);
         continue;
       }
+
       // If the row can't be inserted, we have a conflict, but it could be either
       // because of a conflicting locationKey or a race with another instance, so check
       // whether the conflicting entity has the same entityRef but a different locationKey

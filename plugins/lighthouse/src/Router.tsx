@@ -25,9 +25,11 @@ import { LIGHTHOUSE_WEBSITE_URL_ANNOTATION } from '../constants';
 import { AuditListForEntity } from './components/AuditList/AuditListForEntity';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
+/** @public */
 export const isLighthouseAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[LIGHTHOUSE_WEBSITE_URL_ANNOTATION]);
 
+/** @public */
 export const Router = () => (
   <Routes>
     <Route path="/" element={<AuditList />} />
@@ -36,9 +38,8 @@ export const Router = () => (
   </Routes>
 );
 
-type Props = {};
-
-export const EmbeddedRouter = (_props: Props) => {
+/** @public */
+export const EmbeddedRouter = () => {
   const { entity } = useEntity();
 
   if (!isLighthouseAvailable(entity)) {

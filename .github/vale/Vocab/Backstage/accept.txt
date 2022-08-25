@@ -313,6 +313,7 @@ Talkdesk
 tasklist
 techdocs
 Telenor
+telus
 templated
 templater
 Templater

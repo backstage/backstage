@@ -1,5 +1,65 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.6.0-next.0
+
+### Minor Changes
+
+- ea2eee9e6a: Add the option for a homepage when using the `github:publish` action
+- 8872cc735d: Fixed a bug in plugin-scaffolder-backend where it ignores the skip migration database options.
+
+  To use this new implementation you need to create the instance of `DatabaseTaskStore` using the `PluginDatabaseManager` instead of `Knex`;
+
+  ```
+  import { DatabaseManager, getRootLogger, loadBackendConfig } from '@backstage/backend-common';
+  import { DatabaseTaskStore } from '@backstage/plugin-scaffolder-backend';
+
+  const config = await loadBackendConfig({ argv: process.argv, logger: getRootLogger() });
+  const databaseManager = DatabaseManager.fromConfig(config, { migrations: { skip: true } });
+  const databaseTaskStore = await DatabaseTaskStore.create(databaseManager);
+  ```
+
+- 1ff817b3f0: add entity metadata to the template info type
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 2df9955f4a: Removed the depreacated `publish:file` action, use the template editor to test templates instead.
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/plugin-catalog-backend@1.3.2-next.0
+  - @backstage/backend-plugin-api@0.1.2-next.0
+  - @backstage/catalog-client@1.0.5-next.0
+  - @backstage/integration@1.3.1-next.0
+  - @backstage/plugin-scaffolder-common@1.2.0-next.0
+  - @backstage/plugin-catalog-node@1.0.2-next.0
+
+## 1.5.0
+
+### Minor Changes
+
+- c4b452e16a: Starting the implementation of the Wizard page for the `next` scaffolder plugin
+- 593dea6710: Add support for Basic Auth for Bitbucket Server.
+- 3b7930b3e5: Add support for Bearer Authorization header / token-based auth at Git commands.
+- 3f1316f1c5: User Bearer Authorization header at Git commands with token-based auth at Bitbucket Server.
+- eeff5046ae: Updated `publish:gitlab:merge-request` action to allow commit updates and deletes
+- 692d5d3405: Added `reviewers` and `teamReviewers` parameters to `publish:github:pull-request` action to add reviewers on the pull request created by the action
+
+### Patch Changes
+
+- fc8a5f797b: Add a `publish:gerrit:review` scaffolder action
+- c971afbf21: The `publish:file` action has been deprecated in favor of testing templates using the template editor instead. Note that this action is not and was never been installed by default.
+- b10b6c4aa4: Fix issue on Windows where templated files where not properly skipped as intended.
+- 56e1b4b89c: Fixed typos in alpha types.
+- dad0f65494: Fail gracefully if an invalid `Authorization` header is passed to `POST /v2/tasks`
+- 014b3b7776: Add missing `res.end()` in scaffolder backend `EventStream` usage
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/backend-plugin-api@0.1.1
+  - @backstage/plugin-catalog-node@1.0.1
+  - @backstage/integration@1.3.0
+  - @backstage/plugin-catalog-backend@1.3.1
+
 ## 1.5.0-next.2
 
 ### Minor Changes

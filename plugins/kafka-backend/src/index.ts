@@ -20,4 +20,5 @@
  * @packageDocumentation
  */
 
+export type { RouterOptions } from './service/router';
 export { createRouter } from './service/router';

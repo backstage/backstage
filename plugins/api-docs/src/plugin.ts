@@ -25,6 +25,7 @@ import {
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const apiDocsPlugin = createPlugin({
   id: 'api-docs',
   routes: {
@@ -49,6 +50,7 @@ export const apiDocsPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const ApiExplorerPage = apiDocsPlugin.provide(
   createRoutableExtension({
     name: 'ApiExplorerPage',
@@ -58,6 +60,7 @@ export const ApiExplorerPage = apiDocsPlugin.provide(
   }),
 );
 
+/** @public */
 export const EntityApiDefinitionCard = apiDocsPlugin.provide(
   createComponentExtension({
     name: 'EntityApiDefinitionCard',
@@ -68,6 +71,7 @@ export const EntityApiDefinitionCard = apiDocsPlugin.provide(
   }),
 );
 
+/** @public */
 export const EntityConsumedApisCard = apiDocsPlugin.provide(
   createComponentExtension({
     name: 'EntityConsumedApisCard',
@@ -78,6 +82,7 @@ export const EntityConsumedApisCard = apiDocsPlugin.provide(
   }),
 );
 
+/** @public */
 export const EntityConsumingComponentsCard = apiDocsPlugin.provide(
   createComponentExtension({
     name: 'EntityConsumingComponentsCard',
@@ -90,6 +95,7 @@ export const EntityConsumingComponentsCard = apiDocsPlugin.provide(
   }),
 );
 
+/** @public */
 export const EntityProvidedApisCard = apiDocsPlugin.provide(
   createComponentExtension({
     name: 'EntityProvidedApisCard',
@@ -100,6 +106,7 @@ export const EntityProvidedApisCard = apiDocsPlugin.provide(
   }),
 );
 
+/** @public */
 export const EntityProvidingComponentsCard = apiDocsPlugin.provide(
   createComponentExtension({
     name: 'EntityProvidingComponentsCard',
@@ -112,6 +119,7 @@ export const EntityProvidingComponentsCard = apiDocsPlugin.provide(
   }),
 );
 
+/** @public */
 export const EntityHasApisCard = apiDocsPlugin.provide(
   createComponentExtension({
     name: 'EntityHasApisCard',

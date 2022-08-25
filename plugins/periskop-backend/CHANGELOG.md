@@ -1,5 +1,20 @@
 # @backstage/plugin-periskop-backend
 
+## 0.1.7-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+
 ## 0.1.6-next.0
 
 ### Patch Changes

@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+/** @public */
 export const DEFAULT_DATE_FORMAT = 'yyyy-LL-dd';

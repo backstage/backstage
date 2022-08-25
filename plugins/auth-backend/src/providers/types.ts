@@ -126,7 +126,8 @@ export type AuthProviderConfig = {
   cookieConfigurer?: CookieConfigurer;
 };
 
-export type RedirectInfo = {
+/** @public */
+export type OAuthStartResponse = {
   /**
    * URL to redirect to
    */
@@ -147,6 +148,8 @@ export type RedirectInfo = {
  * `/auth/[provider]/handler/frame -> frameHandler`
  * `/auth/[provider]/refresh -> refresh`
  * `/auth/[provider]/logout -> logout`
+ *
+ * @public
  */
 export interface AuthProviderRouteHandlers {
   /**
@@ -192,6 +195,7 @@ export interface AuthProviderRouteHandlers {
   logout?(req: express.Request, res: express.Response): Promise<void>;
 }
 
+/** @public */
 export type AuthProviderFactory = (options: {
   providerId: string;
   globalConfig: AuthProviderConfig;

@@ -19,12 +19,14 @@ import {
   createRouteRef,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const exploreRouteRef = createRouteRef({
   id: 'explore',
 });
 
 /**
  * @deprecated This route is no longer used and can be removed
+ * @public
  */
 export const catalogEntityRouteRef = createExternalRouteRef({
   id: 'catalog-entity',

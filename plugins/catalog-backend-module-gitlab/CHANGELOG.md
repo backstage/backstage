@@ -1,5 +1,40 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.1.7-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/backend-tasks@0.3.5-next.0
+  - @backstage/plugin-catalog-backend@1.3.2-next.0
+  - @backstage/integration@1.3.1-next.0
+
+## 0.1.6
+
+### Patch Changes
+
+- 24979413a4: Enhancing GitLab provider with filtering projects by pattern RegExp
+
+  ```yaml
+  providers:
+    gitlab:
+      stg:
+        host: gitlab.stg.company.io
+        branch: main
+        projectPattern: 'john/' # new option
+        entityFilename: template.yaml
+  ```
+
+  With the aforementioned parameter you can filter projects, and keep only who belongs to the namespace "john".
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/integration@1.3.0
+  - @backstage/backend-tasks@0.3.4
+  - @backstage/plugin-catalog-backend@1.3.1
+
 ## 0.1.6-next.1
 
 ### Patch Changes

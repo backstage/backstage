@@ -23,6 +23,7 @@ import { growthOf } from '../../utils/change';
 import { ChangeStatistic, GrowthType, Maybe } from '../../types';
 import { useCostGrowthStyles as useStyles } from '../../utils/styles';
 
+/** @public */
 export type CostGrowthIndicatorProps = TypographyProps & {
   change: ChangeStatistic;
   formatter?: (
@@ -31,12 +32,10 @@ export type CostGrowthIndicatorProps = TypographyProps & {
   ) => Maybe<string>;
 };
 
-export const CostGrowthIndicator = ({
-  change,
-  formatter,
-  className,
-  ...props
-}: CostGrowthIndicatorProps) => {
+/** @public */
+export const CostGrowthIndicator = (props: CostGrowthIndicatorProps) => {
+  const { change, formatter, className, ...extraProps } = props;
+
   const classes = useStyles();
   const growth = growthOf(change);
 
@@ -46,7 +45,7 @@ export const CostGrowthIndicator = ({
   });
 
   return (
-    <Typography className={classNames} component="span" {...props}>
+    <Typography className={classNames} component="span" {...extraProps}>
       {formatter ? formatter(change, { absolute: true }) : change.ratio}
       {growth === GrowthType.Excess && <ArrowDropUp aria-label="excess" />}
       {growth === GrowthType.Savings && <ArrowDropDown aria-label="savings" />}

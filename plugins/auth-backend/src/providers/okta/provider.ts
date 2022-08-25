@@ -38,7 +38,7 @@ import {
 } from '../../lib/passport';
 import {
   AuthHandler,
-  RedirectInfo,
+  OAuthStartResponse,
   SignInResolver,
   AuthResolverContext,
 } from '../types';
@@ -125,7 +125,7 @@ export class OktaAuthProvider implements OAuthHandlers {
     );
   }
 
-  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     return await executeRedirectStrategy(req, this.strategy, {
       accessType: 'offline',
       prompt: 'consent',

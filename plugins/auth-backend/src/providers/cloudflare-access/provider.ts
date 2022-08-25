@@ -146,13 +146,13 @@ export type CloudflareAccessIdentityProfile = {
 };
 
 /**
- *
  * @public
  */
 export type CloudflareAccessResult = {
   claims: CloudflareAccessClaims;
   cfIdentity: CloudflareAccessIdentityProfile;
   expiresInSeconds?: number;
+  token: string;
 };
 
 /**
@@ -262,7 +262,11 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
     const sub = verifyResult.payload.sub;
     const cfAccessResultStr = await this.cache?.get(`${CACHE_PREFIX}/${sub}`);
     if (typeof cfAccessResultStr === 'string') {
-      return JSON.parse(cfAccessResultStr) as CloudflareAccessResult;
+      const result = JSON.parse(cfAccessResultStr) as CloudflareAccessResult;
+      return {
+        ...result,
+        token: jwt,
+      };
     }
     const claims = verifyResult.payload as CloudflareAccessClaims;
     // Builds a passport profile from JWT claims first
@@ -273,13 +277,16 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
       const cfIdentity = await this.getIdentityProfile(jwt);
       // Stores a stringified JSON object in cfaccess provider cache only when
       // we complete all steps
-      const cfAccessResult: CloudflareAccessResult = {
+      const cfAccessResult = {
         claims,
         cfIdentity,
         expiresInSeconds: claims.exp - claims.iat,
       };
       this.cache?.set(`${CACHE_PREFIX}/${sub}`, JSON.stringify(cfAccessResult));
-      return cfAccessResult;
+      return {
+        ...cfAccessResult,
+        token: jwt,
+      };
     } catch (err) {
       throw new ForwardedError(
         'Failed to populate access identity information',

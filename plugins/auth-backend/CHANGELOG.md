@@ -1,5 +1,25 @@
 # @backstage/plugin-auth-backend
 
+## 0.15.2-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/catalog-client@1.0.5-next.0
+  - @backstage/plugin-auth-node@0.2.5-next.0
+
+## 0.15.1
+
+### Patch Changes
+
+- c676a9e07b: Fixed a bug in auth plugin on the backend where it ignores the skip migration database options when using the database provider.
+- 2d7d6028e1: Updated dependency `@google-cloud/firestore` to `^6.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/plugin-auth-node@0.2.4
+
 ## 0.15.1-next.1
 
 ### Patch Changes

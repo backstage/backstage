@@ -1,5 +1,23 @@
 # @backstage/plugin-tech-radar
 
+## 0.5.16-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/core-components@0.11.1-next.0
+
+## 0.5.15
+
+### Patch Changes
+
+- a641f79dcb: Move CSS overflow property to quadrant block element (i.e. to a div element) in RadarLegend component.
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+
 ## 0.5.15-next.1
 
 ### Patch Changes

@@ -22,6 +22,7 @@ import {
   storageApiRef,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const shortcutsPlugin = createPlugin({
   id: 'shortcuts',
   apis: [
@@ -34,6 +35,7 @@ export const shortcutsPlugin = createPlugin({
   ],
 });
 
+/** @public */
 export const Shortcuts = shortcutsPlugin.provide(
   createComponentExtension({
     name: 'Shortcuts',

@@ -40,7 +40,7 @@ async function createStore(): Promise<DatabaseTaskStore> {
     }),
   ).forPlugin('scaffolder');
   return await DatabaseTaskStore.create({
-    database: await manager.getClient(),
+    database: manager,
   });
 }
 

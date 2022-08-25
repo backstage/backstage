@@ -37,6 +37,7 @@ const transformIgnorePattern = [
   'react-dom',
   'highlight\\.js',
   'prismjs',
+  'json-schema',
   'react-use',
   'typescript',
 ].join('|');
@@ -131,9 +132,9 @@ async function getProjectConfig(targetPath, displayName) {
 
     transform: {
       '\\.(js|jsx|ts|tsx|mjs|cjs)$': [
-        require.resolve('./jestSucraseTransform.js'),
+        require.resolve('./jestSwcTransform'),
         {
-          enableSourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
+          sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
         },
       ],
       '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg|eot|woff|woff2|ttf)$':
@@ -149,7 +150,6 @@ async function getProjectConfig(targetPath, displayName) {
       : undefined,
 
     transformIgnorePatterns: [`/node_modules/(?:${transformIgnorePattern})/`],
-
     ...getRoleConfig(closestPkgJson?.backstage?.role),
   };
 

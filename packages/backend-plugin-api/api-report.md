@@ -17,32 +17,11 @@ import { TransportStreamOptions } from 'winston-transport';
 import { UrlReader } from '@backstage/backend-common';
 
 // @public (undocumented)
-export type AnyServiceFactory = ServiceFactory<
-  unknown,
-  unknown,
-  {
-    [key in string]: unknown;
-  }
->;
-
-// @public (undocumented)
-export interface BackendInitRegistry {
+export interface BackendFeature {
   // (undocumented)
-  registerExtensionPoint<TExtensionPoint>(
-    ref: ServiceRef<TExtensionPoint>,
-    impl: TExtensionPoint,
-  ): void;
+  id: string;
   // (undocumented)
-  registerInit<
-    Deps extends {
-      [name in string]: unknown;
-    },
-  >(options: {
-    deps: {
-      [name in keyof Deps]: ServiceRef<Deps[name]>;
-    };
-    init: (deps: Deps) => Promise<void>;
-  }): void;
+  register(reg: BackendRegistrationPoints): void;
 }
 
 // @public (undocumented)
@@ -53,7 +32,7 @@ export interface BackendModuleConfig<TOptions> {
   pluginId: string;
   // (undocumented)
   register(
-    reg: Omit<BackendInitRegistry, 'registerExtensionPoint'>,
+    reg: Omit<BackendRegistrationPoints, 'registerExtensionPoint'>,
     options: TOptions,
   ): void;
 }
@@ -63,15 +42,27 @@ export interface BackendPluginConfig<TOptions> {
   // (undocumented)
   id: string;
   // (undocumented)
-  register(reg: BackendInitRegistry, options: TOptions): void;
+  register(reg: BackendRegistrationPoints, options: TOptions): void;
 }
 
 // @public (undocumented)
-export interface BackendRegistrable {
+export interface BackendRegistrationPoints {
   // (undocumented)
-  id: string;
+  registerExtensionPoint<TExtensionPoint>(
+    ref: ExtensionPoint<TExtensionPoint>,
+    impl: TExtensionPoint,
+  ): void;
   // (undocumented)
-  register(reg: BackendInitRegistry): void;
+  registerInit<
+    Deps extends {
+      [name in string]: unknown;
+    },
+  >(options: {
+    deps: {
+      [name in keyof Deps]: ServiceRef<Deps[name]> | ExtensionPoint<Deps[name]>;
+    };
+    init(deps: Deps): Promise<void>;
+  }): void;
 }
 
 // @public (undocumented)
@@ -84,15 +75,15 @@ export const configServiceRef: ServiceRef<Config>;
 export function createBackendModule<TOptions>(
   config: BackendModuleConfig<TOptions>,
 ): undefined extends TOptions
-  ? (options?: TOptions) => BackendRegistrable
-  : (options: TOptions) => BackendRegistrable;
+  ? (options?: TOptions) => BackendFeature
+  : (options: TOptions) => BackendFeature;
 
 // @public (undocumented)
 export function createBackendPlugin<TOptions>(
   config: BackendPluginConfig<TOptions>,
 ): undefined extends TOptions
-  ? (options?: TOptions) => BackendRegistrable
-  : (options: TOptions) => BackendRegistrable;
+  ? (options?: TOptions) => BackendFeature
+  : (options: TOptions) => BackendFeature;
 
 // @public (undocumented)
 export function createExtensionPoint<T>(options: {
@@ -101,15 +92,22 @@ export function createExtensionPoint<T>(options: {
 
 // @public (undocumented)
 export function createServiceFactory<
-  Api,
-  Impl extends Api,
-  Deps extends {
+  TService,
+  TImpl extends TService,
+  TDeps extends {
     [name in string]: unknown;
   },
->(factory: ServiceFactory<Api, Impl, Deps>): ServiceFactory<Api, Api, {}>;
+>(factory: {
+  service: ServiceRef<TService>;
+  deps: TypesToServiceRef<TDeps>;
+  factory(deps: DepsToDepFactories<TDeps>): Promise<FactoryFunc<TImpl>>;
+}): ServiceFactory<TService>;
 
 // @public (undocumented)
-export function createServiceRef<T>(options: { id: string }): ServiceRef<T>;
+export function createServiceRef<T>(options: {
+  id: string;
+  defaultFactory?: (service: ServiceRef<T>) => Promise<ServiceFactory<T>>;
+}): ServiceRef<T>;
 
 // @public (undocumented)
 export const databaseServiceRef: ServiceRef<PluginDatabaseManager>;
@@ -168,22 +166,21 @@ export const permissionsServiceRef: ServiceRef<
 export const schedulerServiceRef: ServiceRef<PluginTaskScheduler>;
 
 // @public (undocumented)
-export type ServiceFactory<
-  TApi,
-  TImpl extends TApi,
-  TDeps extends {
-    [name in string]: unknown;
-  },
-> = {
-  service: ServiceRef<TApi>;
-  deps: TypesToServiceRef<TDeps>;
-  factory(deps: DepsToDepFactories<TDeps>): Promise<FactoryFunc<TImpl>>;
+export type ServiceFactory<TService = unknown> = {
+  service: ServiceRef<TService>;
+  deps: {
+    [key in string]: ServiceRef<unknown>;
+  };
+  factory(deps: {
+    [key in string]: unknown;
+  }): Promise<FactoryFunc<TService>>;
 };
 
 // @public
 export type ServiceRef<T> = {
   id: string;
   T: T;
+  defaultFactory?: (service: ServiceRef<T>) => Promise<ServiceFactory<T>>;
   toString(): string;
   $$ref: 'service';
 };

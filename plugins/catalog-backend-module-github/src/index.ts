@@ -27,3 +27,5 @@ export { GitHubEntityProvider } from './providers/GitHubEntityProvider';
 export { GitHubOrgEntityProvider } from './providers/GitHubOrgEntityProvider';
 export type { GitHubOrgEntityProviderOptions } from './providers/GitHubOrgEntityProvider';
 export type { GithubMultiOrgConfig } from './lib';
+export { githubEntityProviderCatalogModule } from './module';
+export type { GithubEntityProviderCatalogModuleOptions } from './module';

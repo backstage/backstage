@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity } from '@backstage/catalog-model';
 
+/** @public */
 export const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
 
 export const getProjectNameFromEntity = (entity: Entity) =>

@@ -24,6 +24,7 @@ import {
 } from '@material-ui/core';
 import { useSidebarPinState } from '@backstage/core-components';
 
+/** @public */
 export const UserSettingsPinToggle = () => {
   const { isPinned, toggleSidebarPinState } = useSidebarPinState();
 

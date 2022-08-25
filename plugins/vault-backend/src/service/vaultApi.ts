@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
 import plimit from 'p-limit';
 import { getVaultConfig, VaultConfig } from '../config';
 
@@ -79,8 +79,8 @@ export class VaultClient implements VaultApi {
   private vaultConfig: VaultConfig;
   private readonly limit = plimit(5);
 
-  constructor({ config }: { config: Config }) {
-    this.vaultConfig = getVaultConfig(config);
+  constructor(options: { config: Config }) {
+    this.vaultConfig = getVaultConfig(options.config);
   }
 
   private async callApi<T>(

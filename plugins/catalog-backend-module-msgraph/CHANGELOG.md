@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.4.2-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 4c82b955fc: Fix typo
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.5-next.0
+  - @backstage/plugin-catalog-backend@1.3.2-next.0
+
+## 0.4.1
+
+### Patch Changes
+
+- b1995df9f3: Adjust references in deprecation warnings to point to stable URL/document.
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.4
+  - @backstage/plugin-catalog-backend@1.3.1
+
 ## 0.4.1-next.0
 
 ### Patch Changes

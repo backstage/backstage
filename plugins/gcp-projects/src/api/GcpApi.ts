@@ -17,10 +17,12 @@
 import { Project, Operation } from './types';
 import { createApiRef } from '@backstage/core-plugin-api';
 
+/** @public */
 export const gcpApiRef = createApiRef<GcpApi>({
   id: 'plugin.gcpprojects.service',
 });
 
+/** @public */
 export type GcpApi = {
   listProjects(): Promise<Project[]>;
   getProject(projectId: string): Promise<Project>;

@@ -34,16 +34,12 @@ const codeSmellsQuery = `${basicIssuesOptions}&${categoriesFilter}=Complexity`;
 const duplicationQuery = `${basicIssuesOptions}&${categoriesFilter}=Duplication`;
 const otherIssuesQuery = `${basicIssuesOptions}&${categoriesFilter}=Bug%20Risk`;
 
-type Options = {
-  discoveryApi: DiscoveryApi;
-  fetchApi: FetchApi;
-};
-
+/** @public */
 export class ProductionCodeClimateApi implements CodeClimateApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
 
-  constructor(options: Options) {
+  constructor(options: { discoveryApi: DiscoveryApi; fetchApi: FetchApi }) {
     this.discoveryApi = options.discoveryApi;
     this.fetchApi = options.fetchApi;
   }

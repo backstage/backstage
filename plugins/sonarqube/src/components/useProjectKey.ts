@@ -19,6 +19,7 @@ import { Entity } from '@backstage/catalog-model';
 export const SONARQUBE_PROJECT_KEY_ANNOTATION = 'sonarqube.org/project-key';
 export const SONARQUBE_PROJECT_INSTANCE_SEPARATOR = '/';
 
+/** @public */
 export const isSonarQubeAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[SONARQUBE_PROJECT_KEY_ANNOTATION]);
 

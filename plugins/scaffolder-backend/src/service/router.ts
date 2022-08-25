@@ -97,9 +97,7 @@ export async function createRouter(
   let taskBroker: TaskBroker;
 
   if (!options.taskBroker) {
-    const databaseTaskStore = await DatabaseTaskStore.create({
-      database: await database.getClient(),
-    });
+    const databaseTaskStore = await DatabaseTaskStore.create({ database });
     taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
   } else {
     taskBroker = options.taskBroker;
@@ -146,7 +144,10 @@ export async function createRouter(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
       async (req, res) => {
         const { namespace, kind, name } = req.params;
-        const { token } = parseBearerToken(req.headers.authorization);
+        const { token } = parseBearerToken({
+          header: req.headers.authorization,
+          logger,
+        });
         const template = await findTemplate({
           catalogApi: catalogClient,
           entityRef: { kind, namespace, name },
@@ -187,9 +188,10 @@ export async function createRouter(
       const { kind, namespace, name } = parseEntityRef(templateRef, {
         defaultKind: 'template',
       });
-      const { token, entityRef: userEntityRef } = parseBearerToken(
-        req.headers.authorization,
-      );
+      const { token, entityRef: userEntityRef } = parseBearerToken({
+        header: req.headers.authorization,
+        logger,
+      });
 
       const userEntity = userEntityRef
         ? await catalogClient.getEntityByRef(userEntityRef, { token })
@@ -247,6 +249,9 @@ export async function createRouter(
             name: template.metadata?.name,
           }),
           baseUrl,
+          entity: {
+            metadata: template.metadata,
+          },
         },
       };
 
@@ -389,7 +394,10 @@ export async function createRouter(
         throw new InputError('Input template is not a template');
       }
 
-      const { token } = parseBearerToken(req.headers.authorization);
+      const { token } = parseBearerToken({
+        header: req.headers.authorization,
+        logger,
+      });
 
       for (const parameters of [template.spec.parameters ?? []].flat()) {
         const result = validate(body.values, parameters);
@@ -440,7 +448,13 @@ export async function createRouter(
   return app;
 }
 
-function parseBearerToken(header?: string): {
+function parseBearerToken({
+  header,
+  logger,
+}: {
+  header?: string;
+  logger: Logger;
+}): {
   token?: string;
   entityRef?: string;
 } {
@@ -472,8 +486,12 @@ function parseBearerToken(header?: string): {
       throw new TypeError('Expected string sub claim');
     }
 
+    // Check that it's a valid ref, otherwise this will throw.
+    parseEntityRef(sub);
+
     return { entityRef: sub, token };
   } catch (e) {
-    throw new InputError(`Invalid authorization header: ${stringifyError(e)}`);
+    logger.error(`Invalid authorization header: ${stringifyError(e)}`);
+    return {};
   }
 }

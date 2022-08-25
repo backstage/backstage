@@ -5,7 +5,7 @@
 ```ts
 /// <reference types="node" />
 
-import { BackendRegistrable } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
@@ -150,6 +150,7 @@ export class CatalogBuilder {
   getDefaultProcessors(): CatalogProcessor[];
   replaceEntityPolicies(policies: EntityPolicy[]): CatalogBuilder;
   replaceProcessors(processors: CatalogProcessor[]): CatalogBuilder;
+  setAllowedLocationTypes(allowedLocationTypes: string[]): CatalogBuilder;
   setEntityDataParser(parser: CatalogProcessorParser): CatalogBuilder;
   setFieldFormatValidators(validators: Partial<Validators>): CatalogBuilder;
   setLocationAnalyzer(locationAnalyzer: LocationAnalyzer): CatalogBuilder;
@@ -224,7 +225,7 @@ export type CatalogPermissionRule<TParams extends unknown[] = unknown[]> =
   PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 // @alpha
-export const catalogPlugin: (options?: unknown) => BackendRegistrable;
+export const catalogPlugin: (options?: unknown) => BackendFeature;
 
 // @public (undocumented)
 export interface CatalogProcessingEngine {

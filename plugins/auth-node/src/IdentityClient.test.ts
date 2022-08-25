@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import {
   decodeProtectedHeader,
   exportJWK,
@@ -100,9 +102,7 @@ describe('IdentityClient', () => {
   let factory: FakeTokenFactory;
   const keyDurationSeconds = 5;
 
-  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterAll(() => server.close());
-  afterEach(() => server.resetHandlers());
+  setupRequestMockHandlers(server);
 
   beforeEach(() => {
     client = IdentityClient.create({ discovery, issuer: mockBaseUrl });

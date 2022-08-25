@@ -53,10 +53,12 @@ const getBaseUrl = (
   return config?.config.apiBaseUrl;
 };
 
-type Node = {
+/** @public */
+export type Node = {
   logUrl?: string;
 };
 
+/** @public */
 export type GithubDeployment = {
   environment: string;
   state: string;

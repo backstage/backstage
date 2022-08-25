@@ -18,15 +18,15 @@ export type ConcretePgSearchQuery = {
   pageSize: number;
 };
 
-// Warning: (ae-missing-release-tag) "DatabaseDocumentStore" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class DatabaseDocumentStore implements DatabaseStore {
   constructor(db: Knex);
   // (undocumented)
   completeInsert(tx: Knex.Transaction, type: string): Promise<void>;
   // (undocumented)
-  static create(knex: Knex): Promise<DatabaseDocumentStore>;
+  static create(
+    database: PluginDatabaseManager,
+  ): Promise<DatabaseDocumentStore>;
   // (undocumented)
   getTransaction(): Promise<Knex.Transaction>;
   // (undocumented)
@@ -37,8 +37,6 @@ export class DatabaseDocumentStore implements DatabaseStore {
   ): Promise<void>;
   // (undocumented)
   prepareInsert(tx: Knex.Transaction): Promise<void>;
-  // Warning: (ae-forgotten-export) The symbol "DocumentResultRow" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   query(
     tx: Knex.Transaction,
@@ -50,8 +48,6 @@ export class DatabaseDocumentStore implements DatabaseStore {
   transaction<T>(fn: (tx: Knex.Transaction) => Promise<T>): Promise<T>;
 }
 
-// Warning: (ae-missing-release-tag) "DatabaseStore" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface DatabaseStore {
   // (undocumented)
@@ -75,8 +71,16 @@ export interface DatabaseStore {
   transaction<T>(fn: (tx: Knex.Transaction) => Promise<T>): Promise<T>;
 }
 
-// Warning: (ae-missing-release-tag) "PgSearchEngine" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export interface DocumentResultRow {
+  // (undocumented)
+  document: IndexableDocument;
+  // (undocumented)
+  highlight: IndexableDocument;
+  // (undocumented)
+  type: string;
+}
+
 // @public (undocumented)
 export class PgSearchEngine implements SearchEngine {
   // @deprecated
@@ -106,8 +110,6 @@ export class PgSearchEngine implements SearchEngine {
   ): ConcretePgSearchQuery;
 }
 
-// Warning: (ae-missing-release-tag) "PgSearchEngineIndexer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
   constructor(options: PgSearchEngineIndexerOptions);
@@ -119,8 +121,6 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
   initialize(): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "PgSearchEngineIndexerOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type PgSearchEngineIndexerOptions = {
   batchSize: number;
@@ -146,8 +146,6 @@ export type PgSearchOptions = {
   database: PluginDatabaseManager;
 };
 
-// Warning: (ae-missing-release-tag) "PgSearchQuery" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface PgSearchQuery {
   // (undocumented)
@@ -175,8 +173,6 @@ export type PgSearchQueryTranslatorOptions = {
   highlightOptions: PgSearchHighlightOptions;
 };
 
-// Warning: (ae-missing-release-tag) "RawDocumentRow" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface RawDocumentRow {
   // (undocumented)

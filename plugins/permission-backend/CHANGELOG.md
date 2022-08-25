@@ -1,5 +1,25 @@
 # @backstage/plugin-permission-backend
 
+## 0.5.11-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/plugin-auth-node@0.2.5-next.0
+  - @backstage/plugin-permission-common@0.6.4-next.0
+  - @backstage/plugin-permission-node@0.6.5-next.0
+
+## 0.5.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/plugin-auth-node@0.2.4
+  - @backstage/plugin-permission-node@0.6.4
+
 ## 0.5.10-next.0
 
 ### Patch Changes

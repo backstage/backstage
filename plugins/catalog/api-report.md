@@ -65,6 +65,9 @@ export type BackstageOverrides = Overrides & {
 };
 
 // @public (undocumented)
+export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
+// @public (undocumented)
 export const CatalogEntityPage: () => JSX.Element;
 
 // @public (undocumented)
@@ -79,8 +82,6 @@ export interface CatalogKindHeaderProps {
   initialFilter?: string;
 }
 
-// Warning: (ae-forgotten-export) The symbol "CatalogInputPluginOptions" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export const catalogPlugin: BackstagePlugin<
   {
@@ -175,6 +176,9 @@ export interface CatalogTableRow {
     ownedByRelations: CompoundEntityRef[];
   };
 }
+
+// @public (undocumented)
+export type ColumnBreakpoints = Record<Breakpoint, number>;
 
 // @public
 export interface DefaultCatalogPageProps {
@@ -296,15 +300,11 @@ export type EntityLayoutRouteProps = {
   >;
 };
 
-// Warning: (ae-forgotten-export) The symbol "EntityLinksCard" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
-export const EntityLinksCard: EntityLinksCard_2;
+export const EntityLinksCard: (props: EntityLinksCardProps) => JSX.Element;
 
 // @public (undocumented)
 export interface EntityLinksCardProps {
-  // Warning: (ae-forgotten-export) The symbol "ColumnBreakpoints" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   cols?: ColumnBreakpoints | number;
   // (undocumented)

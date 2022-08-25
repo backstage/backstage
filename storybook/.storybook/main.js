@@ -52,7 +52,7 @@ module.exports = Object.assign(({ args }) => {
       // Mirror config in packages/cli/src/lib/bundler
       config.resolve.mainFields = ['browser', 'module', 'main'];
 
-      // Remove the default babel-loader for js files, we're using sucrase instead
+      // Remove the default babel-loader for js files, we're using swc instead
       const [jsLoader] = config.module.rules.splice(0, 1);
       if (!jsLoader.use[0].loader.includes('babel-loader')) {
         throw new Error(
@@ -66,17 +66,41 @@ module.exports = Object.assign(({ args }) => {
         {
           test: /\.(tsx?)$/,
           exclude: /node_modules/,
-          loader: require.resolve('@sucrase/webpack-loader'),
+          loader: require.resolve('swc-loader'),
           options: {
-            transforms: ['typescript', 'jsx', 'react-hot-loader'],
+            jsc: {
+              target: 'es2019',
+              parser: {
+                syntax: 'typescript',
+                tsx: true,
+                dynamicImport: true,
+              },
+              transform: {
+                react: {
+                  runtime: 'automatic',
+                },
+              },
+            },
           },
         },
         {
           test: /\.(jsx?|mjs|cjs)$/,
           exclude: /node_modules/,
-          loader: require.resolve('@sucrase/webpack-loader'),
+          loader: require.resolve('swc-loader'),
           options: {
-            transforms: ['jsx', 'react-hot-loader'],
+            jsc: {
+              target: 'es2019',
+              parser: {
+                syntax: 'ecmascript',
+                jsx: true,
+                dynamicImport: true,
+              },
+              transform: {
+                react: {
+                  runtime: 'automatic',
+                },
+              },
+            },
           },
         },
       );

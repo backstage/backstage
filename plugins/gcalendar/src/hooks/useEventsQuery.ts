@@ -15,12 +15,11 @@
  */
 import { compact, unescape } from 'lodash';
 import { useMemo } from 'react';
-import { useQueries } from 'react-query';
+import { useQueries } from '@tanstack/react-query';
 
 import { useApi } from '@backstage/core-plugin-api';
 
-import { gcalendarApiRef } from '../api';
-import { GCalendar, GCalendarEvent } from '../api';
+import { gcalendarApiRef, GCalendar, GCalendarEvent } from '../api';
 
 type Options = {
   selectedCalendars?: string[];
@@ -41,8 +40,8 @@ export const useEventsQuery = ({
   timeZone,
 }: Options) => {
   const calendarApi = useApi(gcalendarApiRef);
-  const eventQueries = useQueries(
-    selectedCalendars
+  const eventQueries = useQueries({
+    queries: selectedCalendars
       .filter(id => calendars.find(c => c.id === id))
       .map(calendarId => {
         const calendar = calendars.find(c => c.id === calendarId);
@@ -53,6 +52,7 @@ export const useEventsQuery = ({
           initialData: [],
           refetchInterval: 60000,
           refetchIntervalInBackground: true,
+
           queryFn: async (): Promise<GCalendarEvent[]> => {
             const data = await calendarApi.getEvents(calendarId, {
               calendarId,
@@ -82,7 +82,7 @@ export const useEventsQuery = ({
           },
         };
       }),
-  );
+  });
 
   const events = useMemo(
     () => compact(eventQueries.map(({ data }) => data).flat()),

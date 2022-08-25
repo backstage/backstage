@@ -27,6 +27,7 @@ type TimeObj = {
   label: string;
 };
 
+/** @public */
 export type ClockConfig = {
   label: string;
   timeZone: string;

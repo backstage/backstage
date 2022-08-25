@@ -1,5 +1,26 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/catalog-client@1.0.5-next.0
+  - @backstage/plugin-auth-node@0.2.5-next.0
+
+## 0.7.1
+
+### Patch Changes
+
+- 0297da83c0: Added `DaemonSets` to the default kubernetes resources.
+- 0cd87cf30d: Added a new `customResources` field to the ClusterDetails interface, in order to specify (override) custom resources per cluster
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/plugin-kubernetes-common@0.4.1
+  - @backstage/plugin-auth-node@0.2.4
+
 ## 0.7.1-next.1
 
 ### Patch Changes

@@ -18,12 +18,15 @@ import { IChangeEvent } from '@rjsf/core';
 import qs from 'qs';
 import React, { useCallback, useContext, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router';
-import { useParams } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import { scaffolderApiRef } from '../../api';
 import { FieldExtensionOptions } from '../../extensions';
 import { SecretsContext } from '../secrets/SecretsContext';
-import { rootRouteRef, scaffolderTaskRouteRef } from '../../routes';
+import {
+  rootRouteRef,
+  scaffolderTaskRouteRef,
+  selectedTemplateRouteRef,
+} from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { createValidator } from './createValidator';
 
@@ -33,6 +36,7 @@ import {
   useApi,
   useApiHolder,
   useRouteRef,
+  useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 
@@ -54,7 +58,9 @@ export const TemplatePage = ({
   const secretsContext = useContext(SecretsContext);
   const errorApi = useApi(errorApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
-  const { templateName, namespace } = useParams();
+  const { templateName, namespace } = useRouteRefParams(
+    selectedTemplateRouteRef,
+  );
   const templateRef = stringifyEntityRef({
     name: templateName,
     kind: 'template',

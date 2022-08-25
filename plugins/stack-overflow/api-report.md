@@ -6,14 +6,12 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { ComponentRenderer } from '@backstage/plugin-home';
+import { CardExtensionProps } from '@backstage/plugin-home';
 import { ReactNode } from 'react';
 
 // @public
 export const HomePageStackOverflowQuestions: (
-  props: ComponentRenderer & {
-    title?: string | undefined;
-  } & StackOverflowQuestionsContentProps,
+  props: CardExtensionProps<StackOverflowQuestionsContentProps>,
 ) => JSX.Element;
 
 // @public

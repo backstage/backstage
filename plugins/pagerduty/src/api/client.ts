@@ -31,8 +31,10 @@ import { NotFoundError } from '@backstage/errors';
 import { Entity } from '@backstage/catalog-model';
 import { getPagerDutyEntity } from '../components/pagerDutyEntity';
 
+/** @public */
 export class UnauthorizedError extends Error {}
 
+/** @public */
 export const pagerDutyApiRef = createApiRef<PagerDutyApi>({
   id: 'plugin.pagerduty.api',
 });
@@ -40,11 +42,14 @@ export const pagerDutyApiRef = createApiRef<PagerDutyApi>({
 const commonGetServiceParams =
   'time_zone=UTC&include[]=integrations&include[]=escalation_policies';
 
+/** @public */
 export class PagerDutyClient implements PagerDutyApi {
   static fromConfig(
     configApi: ConfigApi,
-    { discoveryApi, fetchApi }: PagerDutyClientApiDependencies,
+    dependencies: PagerDutyClientApiDependencies,
   ) {
+    const { discoveryApi, fetchApi } = dependencies;
+
     const eventsBaseUrl: string =
       configApi.getOptionalString('pagerDuty.eventsBaseUrl') ??
       'https://events.pagerduty.com/v2';
@@ -55,6 +60,7 @@ export class PagerDutyClient implements PagerDutyApi {
       fetchApi,
     });
   }
+
   constructor(private readonly config: PagerDutyClientApiConfig) {}
 
   async getServiceByEntity(entity: Entity): Promise<PagerDutyServiceResponse> {
