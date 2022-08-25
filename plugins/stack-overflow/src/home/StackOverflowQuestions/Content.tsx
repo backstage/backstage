@@ -27,7 +27,6 @@ import {
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import useAsync from 'react-use/lib/useAsync';
 import _unescape from 'lodash/unescape';
-import qs from 'qs';
 import React from 'react';
 import {
   StackOverflowQuestion,

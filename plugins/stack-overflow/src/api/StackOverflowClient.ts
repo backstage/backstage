@@ -15,6 +15,7 @@
  */
 
 import fetch from 'cross-fetch';
+import qs from 'qs';
 import { StackOverflowApi } from './StackOverflowApi';
 import {
   StackOverflowQuestion,
