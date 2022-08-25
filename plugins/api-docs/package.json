@@ -43,7 +43,7 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
-    "graphiql": "^1.8.8",
+    "graphiql": "^2.0.0",
     "graphql": "^16.0.0",
     "graphql-ws": "^5.4.1",
     "isomorphic-form-data": "^2.0.0",
