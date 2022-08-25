@@ -2842,9 +2842,9 @@
     meros "^1.1.4"
 
 "@graphql-codegen/cli@^2.3.1":
-  version "2.11.6"
-  resolved "https://registry.npmjs.org/@graphql-codegen/cli/-/cli-2.11.6.tgz#3acfd7cd3bac40999ba1262063d84ca7c96172dc"
-  integrity sha512-0R2Bhgjt3XZTSdsn8MGGuJjDEN2z+KCo7920zLZz9boy6bQ0EyuxS9AUATePS9aC3djy2POAIPCHz8iHK68IlQ==
+  version "2.11.7"
+  resolved "https://registry.npmjs.org/@graphql-codegen/cli/-/cli-2.11.7.tgz#ee08dde48bac3b54ee30542f6bc6ed0a7acc3631"
+  integrity sha512-Ldh9gRfmRL2ulMfEOGr3nuIv3s0YMnmJZ52Q1Z/eQoiW+x8KLwNIJNCS/O++YyoEO975WA5GLjfBoNzJ5qUQYw==
   dependencies:
     "@graphql-codegen/core" "2.6.2"
     "@graphql-codegen/plugin-helpers" "^2.6.2"
@@ -2858,7 +2858,7 @@
     "@graphql-tools/prisma-loader" "^7.2.7"
     "@graphql-tools/url-loader" "^7.13.2"
     "@graphql-tools/utils" "^8.9.0"
-    "@whatwg-node/fetch" "^0.2.3"
+    "@whatwg-node/fetch" "^0.3.0"
     ansi-escapes "^4.3.1"
     chalk "^4.1.0"
     chokidar "^3.5.2"
@@ -8458,10 +8458,25 @@
     "@webassemblyjs/ast" "1.11.1"
     "@xtuc/long" "4.2.2"
 
-"@whatwg-node/fetch@^0.2.3", "@whatwg-node/fetch@^0.2.4":
+"@whatwg-node/fetch@^0.2.4":
   version "0.2.6"
   resolved "https://registry.npmjs.org/@whatwg-node/fetch/-/fetch-0.2.6.tgz#eb8e68624c55aecfa4c6d7ea36b3ce3ad5d5f79e"
   integrity sha512-NhHiqeGcKjgqUZvJTZSou9qsFEPBBG1LPm2Npz0cmcPvukhhQfjX+p3quRx6b9AyjNPp1f73VB1z4ApHy9FcNg==
+  dependencies:
+    "@peculiar/webcrypto" "^1.4.0"
+    abort-controller "^3.0.0"
+    busboy "^1.6.0"
+    event-target-polyfill "^0.0.3"
+    form-data-encoder "^1.7.1"
+    formdata-node "^4.3.1"
+    node-fetch "^2.6.7"
+    undici "^5.8.0"
+    web-streams-polyfill "^3.2.0"
+
+"@whatwg-node/fetch@^0.3.0":
+  version "0.3.2"
+  resolved "https://registry.npmjs.org/@whatwg-node/fetch/-/fetch-0.3.2.tgz#da4323795c26c135563ba01d49dc16037bec4287"
+  integrity sha512-Bs5zAWQs0tXsLa4mRmLw7Psps1EN78vPtgcLpw3qPY8s6UYPUM67zFZ9cy+7tZ64PXhfwzxJn+m7RH2Lq48RNQ==
   dependencies:
     "@peculiar/webcrypto" "^1.4.0"
     abort-controller "^3.0.0"
