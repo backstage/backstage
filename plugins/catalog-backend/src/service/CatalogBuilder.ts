@@ -370,7 +370,7 @@ export class CatalogBuilder {
    *
    * @param allowedLocationTypes - the allowed location types
    */
-  setAllowedLocationTypes(allowedLocationTypes: string[]) {
+  setAllowedLocationTypes(allowedLocationTypes: string[]): CatalogBuilder {
     this.allowedLocationType = allowedLocationTypes;
     return this;
   }
