@@ -15,7 +15,7 @@
  */
 
 import React, { ComponentType, useEffect } from 'react';
-import { Routes, Route, useOutlet, Navigate, useParams } from 'react-router';
+import { Routes, Route, useOutlet, Navigate } from 'react-router';
 import { Entity } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ScaffolderPage } from './ScaffolderPage';
@@ -31,7 +31,11 @@ import {
   FIELD_EXTENSION_KEY,
   DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
 } from '../extensions';
-import { useElementFilter, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  useElementFilter,
+  useRouteRef,
+  useRouteRefParams,
+} from '@backstage/core-plugin-api';
 import {
   actionsRouteRef,
   editRouteRef,
@@ -105,7 +109,7 @@ export const Router = (props: RouterProps) => {
    * This component can be deleted once the older routes have been deprecated.
    */
   const RedirectingComponent = () => {
-    const { templateName } = useParams();
+    const { templateName } = useRouteRefParams(legacySelectedTemplateRouteRef);
     const newLink = useRouteRef(selectedTemplateRouteRef);
     useEffect(
       () =>

@@ -32,6 +32,7 @@ export const unlabeledDataflowAlertRef = createRouteRef({
   id: 'cost-insights:labeling-jobs',
 });
 
+/** @public */
 export const costInsightsPlugin = createPlugin({
   id: 'cost-insights',
   featureFlags: [{ name: 'cost-insights-currencies' }],
@@ -42,6 +43,7 @@ export const costInsightsPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const CostInsightsPage = costInsightsPlugin.provide(
   createRoutableExtension({
     name: 'CostInsightsPage',
@@ -51,6 +53,7 @@ export const CostInsightsPage = costInsightsPlugin.provide(
   }),
 );
 
+/** @public */
 export const CostInsightsProjectGrowthInstructionsPage =
   costInsightsPlugin.provide(
     createRoutableExtension({
@@ -63,6 +66,7 @@ export const CostInsightsProjectGrowthInstructionsPage =
     }),
   );
 
+/** @public */
 export const CostInsightsLabelDataflowInstructionsPage =
   costInsightsPlugin.provide(
     createRoutableExtension({

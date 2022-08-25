@@ -58,7 +58,6 @@ export const CalendarSelect = ({
   calendars,
 }: CalendarSelectProps) => {
   const classes = useStyles();
-
   return (
     <FormControl className={classes.formControl}>
       <Select

@@ -16,6 +16,7 @@
 
 import React, { createContext } from 'react';
 
+/** @public */
 export type Tool = {
   label: string;
   url: string;

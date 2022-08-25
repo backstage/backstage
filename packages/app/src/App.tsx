@@ -85,7 +85,6 @@ import {
 import { AdvancedSettings } from './components/advancedSettings';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import React from 'react';
-import { hot } from 'react-hot-loader/root';
 import { Navigate, Route } from 'react-router';
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
@@ -276,4 +275,4 @@ const App = () => (
   </AppProvider>
 );
 
-export default hot(App);
+export default App;

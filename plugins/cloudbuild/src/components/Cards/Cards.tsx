@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { useEffect } from 'react';
 import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
 import { WorkflowRunsTable } from '../WorkflowRunsTable';
@@ -72,6 +73,7 @@ const WidgetContent = ({
   );
 };
 
+/** @public */
 export const LatestWorkflowRunCard = (props: { branch: string }) => {
   const { branch = 'master' } = props;
   const { entity } = useEntity();
@@ -100,6 +102,7 @@ export const LatestWorkflowRunCard = (props: { branch: string }) => {
   );
 };
 
+/** @public */
 export const LatestWorkflowsForBranchCard = (props: { branch: string }) => {
   const { branch = 'master' } = props;
   const { entity } = useEntity();

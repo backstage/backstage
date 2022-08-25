@@ -21,7 +21,10 @@ import {
   TechInsightsStore,
 } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistry } from './FactRetrieverRegistry';
-import { FactRetrieverEngine } from './FactRetrieverEngine';
+import {
+  DefaultFactRetrieverEngine,
+  FactRetrieverEngine,
+} from './FactRetrieverEngine';
 import {
   DatabaseManager,
   getVoidLogger,
@@ -131,7 +134,7 @@ describe('FactRetrieverEngine', () => {
     };
     const manager = databaseManager as DatabaseManager;
     const scheduler = new TaskScheduler(manager, getVoidLogger());
-    return await FactRetrieverEngine.create({
+    return await DefaultFactRetrieverEngine.create({
       factRetrieverContext: {
         logger: getVoidLogger(),
         config: ConfigReader.fromConfigs([]),

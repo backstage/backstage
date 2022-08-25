@@ -39,6 +39,7 @@ import {
   trendlineOf,
 } from '../testUtils';
 
+/** @public */
 export class ExampleCostInsightsClient implements CostInsightsApi {
   private request(_: any, res: any): Promise<any> {
     return new Promise(resolve => setTimeout(resolve, 0, res));

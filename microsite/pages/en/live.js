@@ -64,7 +64,7 @@ const Background = props => {
                 Good First Issues
               </a>
               <br />- Subscribe to the{' '}
-              <a href="https://mailchi.mp/spotify/backstage-community">
+              <a href="https://info.backstage.spotify.com/newsletter_subscribe">
                 Community newsletter
               </a>
               <br />- Join the{' '}

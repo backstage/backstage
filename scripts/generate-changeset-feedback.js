@@ -73,11 +73,20 @@ async function listChangedFiles(ref) {
 }
 
 async function listPackages() {
-  const { stdout } = await execFile('yarn', ['-s', 'workspaces', 'info']);
-  return Object.entries(JSON.parse(stdout)).map(([name, info]) => ({
-    name,
-    path: info.location,
-  }));
+  const { stdout: version } = await execFile('yarn', ['--version']);
+  if (version.match(/^1\./)) {
+    const { stdout } = await execFile('yarn', ['-s', 'workspaces', 'info']);
+    return Object.entries(JSON.parse(stdout)).map(([name, info]) => ({
+      name,
+      path: info.location,
+    }));
+  }
+  const { stdout } = await execFile('yarn', ['workspaces', 'list', '--json']);
+  return stdout
+    .split(/\r?\n/)
+    .filter(line => line)
+    .map(line => JSON.parse(line))
+    .map(({ name, location }) => ({ name, path: location }));
 }
 
 async function loadChangesets(filePaths) {

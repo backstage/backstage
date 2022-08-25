@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { RollbarApi, getRequestHeaders } from './RollbarApi';
+export { getRequestHeaders, RollbarApi } from './RollbarApi';
+export * from './types';

@@ -1,5 +1,16 @@
 # @backstage/backend-app-api
 
+## 0.2.1-next.0
+
+### Patch Changes
+
+- de3347ca74: Updated usages of `ServiceFactory`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/backend-tasks@0.3.5-next.0
+  - @backstage/backend-plugin-api@0.1.2-next.0
+  - @backstage/plugin-permission-node@0.6.5-next.0
+
 ## 0.2.0
 
 ### Minor Changes

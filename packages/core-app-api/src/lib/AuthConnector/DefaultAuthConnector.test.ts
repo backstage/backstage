@@ -22,6 +22,12 @@ import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 
+jest.mock('../loginPopup', () => {
+  return {
+    showLoginPopup: jest.fn(),
+  };
+});
+
 const defaultOptions = {
   discoveryApi: UrlPatternDiscovery.compile('http://my-host/api/{{pluginId}}'),
   environment: 'production',

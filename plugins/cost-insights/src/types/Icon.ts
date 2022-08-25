@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+/** @public */
 export type Icon = {
   kind: string;
   component: JSX.Element;
 };
 
+/** @public */
 export enum IconType {
   Compute = 'compute',
   Data = 'data',

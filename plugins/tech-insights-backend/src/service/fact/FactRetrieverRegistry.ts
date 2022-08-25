@@ -36,7 +36,7 @@ export interface FactRetrieverRegistry {
 /**
  * A basic in memory fact retriever registry.
  *
- * You can replace this with a persistance based version using the FactRetrieverRegistry interface.
+ * You can replace this with a persistence based version using the FactRetrieverRegistry interface.
  *
  */
 export class DefaultFactRetrieverRegistry implements FactRetrieverRegistry {

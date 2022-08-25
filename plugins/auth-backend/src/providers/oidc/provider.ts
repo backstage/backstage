@@ -40,7 +40,7 @@ import {
 import {
   AuthHandler,
   AuthResolverContext,
-  RedirectInfo,
+  OAuthStartResponse,
   SignInResolver,
 } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
@@ -91,7 +91,7 @@ export class OidcAuthProvider implements OAuthHandlers {
     this.resolverContext = options.resolverContext;
   }
 
-  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     const { strategy } = await this.implementation;
     const options: Record<string, string> = {
       scope: req.scope || this.scope || 'openid profile email',

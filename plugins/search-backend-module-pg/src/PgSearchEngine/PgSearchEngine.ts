@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { SearchEngine } from '@backstage/plugin-search-common';
 import {
@@ -79,6 +80,7 @@ export type PgSearchHighlightOptions = {
   postTag: string;
 };
 
+/** @public */
 export class PgSearchEngine implements SearchEngine {
   private readonly highlightOptions: PgSearchHighlightOptions;
 

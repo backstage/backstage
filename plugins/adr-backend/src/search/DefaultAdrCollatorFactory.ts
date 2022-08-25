@@ -30,7 +30,7 @@ import {
 } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { NotModifiedError } from '@backstage/errors';
+import { NotModifiedError, stringifyError } from '@backstage/errors';
 import {
   ScmIntegrationRegistry,
   ScmIntegrations,
@@ -155,9 +155,9 @@ export class DefaultAdrCollatorFactory implements DocumentCollatorFactory {
         adrsUrl = getAdrLocationUrl(ent, this.scmIntegrations);
       } catch (e: any) {
         this.logger.error(
-          `Unable to get ADR location URL for ${stringifyEntityRef(ent)}: ${
-            e.message
-          }`,
+          `Unable to get ADR location URL for ${stringifyEntityRef(
+            ent,
+          )}: ${stringifyError(e)}`,
         );
         continue;
       }
@@ -190,7 +190,10 @@ export class DefaultAdrCollatorFactory implements DocumentCollatorFactory {
       } catch (error: any) {
         // Ignore error if we're able to use cached response
         if (!cacheItem || error.name !== NotModifiedError.name) {
-          throw error;
+          this.logger.error(
+            `Unable to fetch ADRs from ${adrsUrl}: ${stringifyError(error)}`,
+          );
+          continue;
         }
       }
 
@@ -203,7 +206,9 @@ export class DefaultAdrCollatorFactory implements DocumentCollatorFactory {
           });
           yield adrDoc;
         } catch (e: any) {
-          this.logger.error(`Unable to parse ADR ${path}: ${e.message}`);
+          this.logger.error(
+            `Unable to parse ADR ${path}: ${stringifyError(e)}`,
+          );
         }
       }
 

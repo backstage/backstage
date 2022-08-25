@@ -8,6 +8,7 @@ import { Config } from '@backstage/config';
 import { DateTime } from 'luxon';
 import { Duration } from 'luxon';
 import { DurationLike } from 'luxon';
+import { HumanDuration } from '@backstage/backend-tasks';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -72,7 +73,7 @@ export type FactRetrieverContext = {
 export type FactRetrieverRegistration = {
   factRetriever: FactRetriever;
   cadence?: string;
-  timeout?: Duration;
+  timeout?: Duration | HumanDuration;
   lifecycle?: FactLifecycle;
 };
 

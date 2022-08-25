@@ -1,5 +1,16 @@
 # @backstage/plugin-sentry
 
+## 0.4.2-next.0
+
+### Patch Changes
+
+- 3f739be9d9: Minor API signatures cleanup
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/core-components@0.11.1-next.0
+  - @backstage/plugin-catalog-react@1.1.4-next.0
+
 ## 0.4.1
 
 ### Patch Changes

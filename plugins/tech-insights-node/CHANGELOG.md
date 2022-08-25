@@ -1,5 +1,15 @@
 # @backstage/plugin-tech-insights-node
 
+## 0.3.4-next.0
+
+### Patch Changes
+
+- 3f739be9d9: Minor API signatures cleanup
+- 2e0689e536: Support for timeout in FactRetrieverRegistrationOptions
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/backend-tasks@0.3.5-next.0
+
 ## 0.3.3
 
 ### Patch Changes

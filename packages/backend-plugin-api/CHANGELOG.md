@@ -1,5 +1,16 @@
 # @backstage/backend-plugin-api
 
+## 0.1.2-next.0
+
+### Patch Changes
+
+- eef91a2558: Simplified the `ServiceFactory` type and removed `AnyServiceFactory`.
+- 68513f169a: When defining a new `ServiceRef` you can now also include a `defaultFactory`, which will be used to construct instances of the service in case there is no explicit factory defined.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/backend-tasks@0.3.5-next.0
+  - @backstage/plugin-permission-common@0.6.4-next.0
+
 ## 0.1.1
 
 ### Patch Changes

@@ -26,34 +26,28 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 
 import {
   CheckResultRenderer,
-  defaultCheckResultRenderers,
+  jsonRulesEngineCheckResultRenderer,
 } from '../components/CheckResultRenderer';
 
 /** @public */
 export class TechInsightsClient implements TechInsightsApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
+  private readonly renderers?: CheckResultRenderer[];
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
+    renderers?: CheckResultRenderer[];
   }) {
     this.discoveryApi = options.discoveryApi;
     this.identityApi = options.identityApi;
+    this.renderers = options.renderers;
   }
 
-  getScorecardsDefinition(
-    type: string,
-    value: CheckResult[],
-    title?: string,
-    description?: string,
-  ): CheckResultRenderer | undefined {
-    const resultRenderers = defaultCheckResultRenderers(
-      value,
-      title,
-      description,
-    );
-    return resultRenderers.find(d => d.type === type);
+  getCheckResultRenderers(types: string[]): CheckResultRenderer[] {
+    const renderers = this.renderers ?? [jsonRulesEngineCheckResultRenderer];
+    return renderers.filter(d => types.includes(d.type));
   }
 
   async getAllChecks(): Promise<Check[]> {

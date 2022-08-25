@@ -1,5 +1,19 @@
 # @backstage/dev-utils
 
+## 1.0.6-next.0
+
+### Patch Changes
+
+- 4c5e85ddf3: Removed the dependency and setup of `react-hot-loader`, since the `@backstage/cli` now uses `swc` with `React Refresh` instead.
+- Updated dependencies
+  - @backstage/core-app-api@1.0.6-next.0
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/core-components@0.11.1-next.0
+  - @backstage/integration-react@1.1.4-next.0
+  - @backstage/test-utils@1.1.4-next.0
+  - @backstage/plugin-catalog-react@1.1.4-next.0
+  - @backstage/app-defaults@1.0.6-next.0
+
 ## 1.0.5
 
 ### Patch Changes

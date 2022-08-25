@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** @public */
 export type Step = {
   name: string;
   status: string;
@@ -23,6 +24,7 @@ export type Step = {
   completed_at?: string;
 };
 
+/** @public */
 export type Job = {
   html_url?: string;
   status: string;
@@ -34,11 +36,13 @@ export type Job = {
   steps?: Step[];
 };
 
+/** @public */
 export type Jobs = {
   total_count: number;
   jobs: Job[];
 };
 
+/** @public */
 export enum BuildStatus {
   'success',
   'failure',

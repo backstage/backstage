@@ -78,6 +78,7 @@ const WidgetContent = (props: {
   );
 };
 
+/** @public */
 export const LatestWorkflowRunCard = (props: {
   branch: string;
   variant?: InfoCardVariants;
@@ -118,6 +119,7 @@ export const LatestWorkflowRunCard = (props: {
   );
 };
 
+/** @public */
 export const LatestWorkflowsForBranchCard = (props: {
   branch: string;
   variant?: InfoCardVariants;

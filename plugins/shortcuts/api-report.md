@@ -12,8 +12,6 @@ import { Observable } from '@backstage/types';
 import { default as Observable_2 } from 'zen-observable';
 import { StorageApi } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "LocalStoredShortcuts" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class LocalStoredShortcuts implements ShortcutApi {
   constructor(storageApi: StorageApi);
@@ -31,8 +29,6 @@ export class LocalStoredShortcuts implements ShortcutApi {
   update(shortcut: Shortcut): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "Shortcut" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type Shortcut = {
   id: string;
@@ -40,8 +36,6 @@ export type Shortcut = {
   title: string;
 };
 
-// Warning: (ae-missing-release-tag) "ShortcutApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface ShortcutApi {
   add(shortcut: Omit<Shortcut, 'id'>): Promise<void>;
@@ -52,18 +46,12 @@ export interface ShortcutApi {
   update(shortcut: Shortcut): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "Shortcuts" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const Shortcuts: (props: ShortcutsProps) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "shortcutsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const shortcutsApiRef: ApiRef<ShortcutApi>;
 
-// Warning: (ae-missing-release-tag) "shortcutsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const shortcutsPlugin: BackstagePlugin<{}, {}, {}>;
 

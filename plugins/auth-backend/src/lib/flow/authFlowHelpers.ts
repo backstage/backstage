@@ -24,6 +24,7 @@ export const safelyEncodeURIComponent = (value: string) => {
   return encodeURIComponent(value).replace(/'/g, '%27');
 };
 
+/** @public */
 export const postMessageResponse = (
   res: express.Response,
   appOrigin: string,
@@ -68,6 +69,7 @@ export const postMessageResponse = (
   res.end(`<html><body><script>${script}</script></body></html>`);
 };
 
+/** @public */
 export const ensuresXRequestedWith = (req: express.Request) => {
   const requiredHeader = req.header('X-Requested-With');
   if (!requiredHeader || requiredHeader !== 'XMLHttpRequest') {

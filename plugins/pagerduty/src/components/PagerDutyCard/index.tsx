@@ -46,12 +46,14 @@ const BasicCard = ({ children }: { children: ReactNode }) => (
   <InfoCard title="PagerDuty">{children}</InfoCard>
 );
 
+/** @public */
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(
     entity.metadata.annotations?.[PAGERDUTY_INTEGRATION_KEY] ||
       entity.metadata.annotations?.[PAGERDUTY_SERVICE_ID],
   );
 
+/** @public */
 export const PagerDutyCard = () => {
   const { entity } = useEntity();
   const pagerDutyEntity = getPagerDutyEntity(entity);
