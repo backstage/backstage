@@ -86,7 +86,7 @@ export class DefaultIdentityClient implements IdentityApi {
         getBearerTokenFromAuthorizationHeader(request.headers.authorization),
       );
     } catch (e) {
-      throw new NotAllowedError('Failed to authenticate the provided token');
+      throw new NotAllowedError(e.message);
     }
   }
 
