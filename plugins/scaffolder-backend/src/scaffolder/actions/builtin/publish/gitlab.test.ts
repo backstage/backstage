@@ -313,11 +313,12 @@ describe('publish:gitlab', () => {
     });
   });
 
-  it('should call output with the remoteUrl and repoContentsUrl', async () => {
+  it('should call output with the remoteUrl and repoContentsUrl and projectId', async () => {
     mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
+      id: 1234,
     });
 
     await action.handler(mockContext);
@@ -330,6 +331,7 @@ describe('publish:gitlab', () => {
       'repoContentsUrl',
       'http://mockurl/-/blob/master',
     );
+    expect(mockContext.output).toHaveBeenCalledWith('projectId', 1234);
   });
 
   it('should call the correct Gitlab APIs when setUserAsOwner option is true and integration config has a token', async () => {
