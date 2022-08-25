@@ -18,7 +18,7 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import {
   createBackendModule,
   createServiceFactory,
-  createServiceRef,
+  discoveryServiceRef,
 } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { CatalogClient } from '@backstage/catalog-client';
@@ -27,9 +27,7 @@ import { catalogServiceRef } from './catalogService';
 describe('catalogServiceRef', () => {
   it('should return a catalogClient', async () => {
     const mockDiscoveryFactory = createServiceFactory({
-      service: createServiceRef<PluginEndpointDiscovery>({
-        id: 'core.discovery',
-      }),
+      service: discoveryServiceRef,
       deps: {},
       factory: async ({}) => {
         return async () => jest.fn() as unknown as PluginEndpointDiscovery;
