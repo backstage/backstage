@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { AuthenticationError } from '@backstage/errors';
+import { AuthenticationError, NotAllowedError } from '@backstage/errors';
 import {
   createRemoteJWKSet,
   decodeJwt,
@@ -81,9 +81,13 @@ export class DefaultIdentityClient implements IdentityApi {
     if (!request.headers.authorization) {
       return undefined;
     }
-    return await this.authenticate(
-      getBearerTokenFromAuthorizationHeader(request.headers.authorization),
-    );
+    try {
+      return await this.authenticate(
+        getBearerTokenFromAuthorizationHeader(request.headers.authorization),
+      );
+    } catch (e) {
+      throw new NotAllowedError('Failed to authenticate the provided token');
+    }
   }
 
   /**
