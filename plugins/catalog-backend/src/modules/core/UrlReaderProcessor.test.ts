@@ -27,6 +27,7 @@ import {
   CatalogProcessorCache,
   CatalogProcessorEntityResult,
   CatalogProcessorErrorResult,
+  CatalogProcessorRefreshKeysResult,
   CatalogProcessorResult,
 } from '@backstage/plugin-catalog-node';
 import { defaultEntityDataParser } from '../util/parse';
@@ -136,8 +137,8 @@ describe('UrlReaderProcessor', () => {
       mockCache,
     );
 
-    const entity = emitted[0];
-    const refresh = emitted[1];
+    const entity = emitted[0] as CatalogProcessorEntityResult;
+    const refresh = emitted[1] as CatalogProcessorRefreshKeysResult;
 
     expect(entity.type).toBe('entity');
     expect(entity.location).toEqual(spec);
