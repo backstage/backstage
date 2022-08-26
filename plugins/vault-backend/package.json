@@ -44,7 +44,7 @@
     "cors": "^2.8.5",
     "express-promise-router": "^4.1.0",
     "express": "^4.17.1",
-    "helmet": "^5.0.2",
+    "helmet": "^6.0.0",
     "node-fetch": "^2.6.7",
     "p-limit": "^3.1.0",
     "winston": "^3.7.2",
