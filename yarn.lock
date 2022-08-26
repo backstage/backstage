@@ -6560,17 +6560,17 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
-"@tanstack/query-core@^4.0.0-beta.1":
-  version "4.2.1"
-  resolved "https://registry.npmjs.org/@tanstack/query-core/-/query-core-4.2.1.tgz#21ff3a33f27bf038c990ea53af89cf7c7e8078fc"
-  integrity sha512-UOyOhHKLS/5i9qG2iUnZNVV3R9riJJmG9eG+hnMFIPT/oRh5UzAfjxCtBneNgPQZLDuP8y6YtRYs/n4qVAD5Ng==
+"@tanstack/query-core@4.2.3":
+  version "4.2.3"
+  resolved "https://registry.npmjs.org/@tanstack/query-core/-/query-core-4.2.3.tgz#52d75430c9662cc85c160761c1421de483c7791f"
+  integrity sha512-zdt5lYWs1dZaA3IxJbCgtAfHZJScRZONpiLL7YkeOkrme5MfjQqTpjq7LYbzpyuwPOh2Jx68le0PLl57JFv5hQ==
 
 "@tanstack/react-query@^4.1.3":
-  version "4.2.1"
-  resolved "https://registry.npmjs.org/@tanstack/react-query/-/react-query-4.2.1.tgz#1f00f03573b35a353e62fa64f904bbb0286a1808"
-  integrity sha512-w02oTOYpoxoBzD/onAGRQNeLAvggLn7WZjS811cT05WAE/4Q3br0PTp388M7tnmyYGbgOOhFq0MkhH0wIfAKqA==
+  version "4.2.3"
+  resolved "https://registry.npmjs.org/@tanstack/react-query/-/react-query-4.2.3.tgz#782fd0f84553ba6219f1137a12ea28ab8cd3a3f3"
+  integrity sha512-JLaMOxoJTkiAu7QpevRCt2uI/0vd3E8K/rSlCuRgWlcW5DeJDFpDS5kfzmLO5MOcD97fgsJRrDbxDORxR1FdJA==
   dependencies:
-    "@tanstack/query-core" "^4.0.0-beta.1"
+    "@tanstack/query-core" "4.2.3"
     "@types/use-sync-external-store" "^0.0.3"
     use-sync-external-store "^1.2.0"
 
