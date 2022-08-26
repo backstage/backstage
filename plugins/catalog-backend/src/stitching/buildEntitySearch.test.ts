@@ -109,10 +109,10 @@ describe('buildEntitySearch', () => {
       expect(output).toEqual([]);
     });
 
-    it('skips very large values', () => {
+    it('replaces very large values with null', () => {
       const input = [{ key: 'foo', value: 'a'.repeat(10000) }];
       const output = mapToRows(input, 'eid');
-      expect(output).toEqual([]);
+      expect(output).toEqual([{ entity_id: 'eid', key: 'foo', value: null }]);
     });
   });
 

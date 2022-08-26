@@ -144,6 +144,7 @@ describe('DefaultLocationServiceTest', () => {
       store.listLocations.mockResolvedValueOnce([
         { id: '137', ...locationSpec },
       ]);
+
       const result = await locationService.createLocation(
         { type: 'url', target: 'https://backstage.io/catalog-info.yaml' },
         true,
@@ -225,6 +226,7 @@ describe('DefaultLocationServiceTest', () => {
       store.listLocations.mockResolvedValueOnce([
         { id: '987', type: 'url', target: 'https://example.com' },
       ]);
+
       const result = await locationService.createLocation(
         { type: 'url', target: 'https://backstage.io/catalog-info.yaml' },
         true,
@@ -259,7 +261,41 @@ describe('DefaultLocationServiceTest', () => {
       });
     });
 
-    it('should not allow locations of unknown types', async () => {
+    it('should create location with unknown type if configuration allows it', async () => {
+      const locationSpec = {
+        type: 'unknown',
+        target: 'https://backstage.io/catalog-info.yaml',
+      };
+
+      store.createLocation.mockResolvedValue({
+        ...locationSpec,
+        id: '123',
+      });
+
+      const locationServiceAllowingUnknownType = new DefaultLocationService(
+        store,
+        orchestrator,
+        {
+          allowedLocationTypes: ['url', 'unknown'],
+        },
+      );
+      await expect(
+        locationServiceAllowingUnknownType.createLocation(locationSpec, false),
+      ).resolves.toEqual({
+        entities: [],
+        location: {
+          id: '123',
+          target: 'https://backstage.io/catalog-info.yaml',
+          type: 'unknown',
+        },
+      });
+      expect(store.createLocation).toBeCalledWith({
+        target: 'https://backstage.io/catalog-info.yaml',
+        type: 'unknown',
+      });
+    });
+
+    it('should not allow locations of unknown types by default', async () => {
       await expect(
         locationService.createLocation(
           {
