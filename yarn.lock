@@ -2671,16 +2671,6 @@
   resolved "https://registry.npmjs.org/@emotion/unitless/-/unitless-0.7.5.tgz#77211291c1900a700b8a78cfafda3160d76949ed"
   integrity sha512-OWORNpfjMsSSUBVrRBVGECkhWcULOAJz9ZW8uK9qgxD+87M7jHRcvh/A96XXNhXTLmKcoYSQtBEX7lHMO7YRwg==
 
-"@endemolshinegroup/cosmiconfig-typescript-loader@3.0.2":
-  version "3.0.2"
-  resolved "https://registry.npmjs.org/@endemolshinegroup/cosmiconfig-typescript-loader/-/cosmiconfig-typescript-loader-3.0.2.tgz#eea4635828dde372838b0909693ebd9aafeec22d"
-  integrity sha512-QRVtqJuS1mcT56oHpVegkKBlgtWjXw/gHNWO3eL9oyB5Sc7HBoc2OLG/nYpVfT/Jejvo3NUrD0Udk7XgoyDKkA==
-  dependencies:
-    lodash.get "^4"
-    make-error "^1"
-    ts-node "^9"
-    tslib "^2"
-
 "@esbuild/linux-loong64@0.14.54":
   version "0.14.54"
   resolved "https://registry.npmjs.org/@esbuild/linux-loong64/-/linux-loong64-0.14.54.tgz#de2a4be678bd4d0d1ffbb86e6de779cde5999028"
@@ -2842,9 +2832,9 @@
     meros "^1.1.4"
 
 "@graphql-codegen/cli@^2.3.1":
-  version "2.11.7"
-  resolved "https://registry.npmjs.org/@graphql-codegen/cli/-/cli-2.11.7.tgz#ee08dde48bac3b54ee30542f6bc6ed0a7acc3631"
-  integrity sha512-Ldh9gRfmRL2ulMfEOGr3nuIv3s0YMnmJZ52Q1Z/eQoiW+x8KLwNIJNCS/O++YyoEO975WA5GLjfBoNzJ5qUQYw==
+  version "2.11.8"
+  resolved "https://registry.npmjs.org/@graphql-codegen/cli/-/cli-2.11.8.tgz#6dfe2efe701f6f35eba8a817f13aa79d64fc5af7"
+  integrity sha512-LFEgDk+ShNsuy8GVR8bkLcfvvq6ugq3NmDsHYzCtJO/NW/8InQeqoH2X4e+7YhS/4M9iA2vdzSk0hSsv610Oww==
   dependencies:
     "@graphql-codegen/core" "2.6.2"
     "@graphql-codegen/plugin-helpers" "^2.6.2"
@@ -2865,7 +2855,7 @@
     cosmiconfig "^7.0.0"
     debounce "^1.2.0"
     detect-indent "^6.0.0"
-    graphql-config "^4.3.1"
+    graphql-config "^4.3.4"
     inquirer "^8.0.0"
     is-glob "^4.0.1"
     json-to-pretty-yaml "^1.2.2"
@@ -11253,6 +11243,11 @@ cosmiconfig-toml-loader@1.0.0:
   dependencies:
     "@iarna/toml" "^2.2.5"
 
+cosmiconfig-typescript-loader@^3.1.0:
+  version "3.1.1"
+  resolved "https://registry.npmjs.org/cosmiconfig-typescript-loader/-/cosmiconfig-typescript-loader-3.1.1.tgz#9cdc2ae1a219cf52b0bc0647596c6691b9ab56a3"
+  integrity sha512-SR5/NciF0vyYqcGsmB9WJ4QOKkcSSSzcBPLrnT6094BYahMy0eImWvlH3zoEOYqpF2zgiyAKHtWTXTo+fqgxPg==
+
 cosmiconfig@7.0.1, cosmiconfig@^7.0.0, cosmiconfig@^7.0.1:
   version "7.0.1"
   resolved "https://registry.npmjs.org/cosmiconfig/-/cosmiconfig-7.0.1.tgz#714d756522cace867867ccb4474c5d01bbae5d6d"
@@ -14848,12 +14843,11 @@ graphlib@^2.1.8:
   dependencies:
     lodash "^4.17.15"
 
-graphql-config@^4.3.1:
-  version "4.3.1"
-  resolved "https://registry.npmjs.org/graphql-config/-/graphql-config-4.3.1.tgz#636b539b1acc06fb48012d0e0f228014ccb0325f"
-  integrity sha512-czBWzJSGaLJfOHBLuUTZVRTjfgohPfvlaeN1B5nXBVptFARpiFuS7iI4FnRhCGwm6qt1h2j1g05nkg0OIGA6bg==
+graphql-config@^4.3.4:
+  version "4.3.4"
+  resolved "https://registry.npmjs.org/graphql-config/-/graphql-config-4.3.4.tgz#6d2df477bb83bf05b800fe4d80214e2ccae0cd11"
+  integrity sha512-TAUEs+NOrECotpQM89bDyg2laTCDtGjH7zv6CAdLG0l8NhybqChVQszvSpHIKJJbJdmrLkYbLmyA1WdxDaz3wA==
   dependencies:
-    "@endemolshinegroup/cosmiconfig-typescript-loader" "3.0.2"
     "@graphql-tools/graphql-file-loader" "^7.3.7"
     "@graphql-tools/json-file-loader" "^7.3.7"
     "@graphql-tools/load" "^7.5.5"
@@ -14862,8 +14856,11 @@ graphql-config@^4.3.1:
     "@graphql-tools/utils" "^8.6.5"
     cosmiconfig "7.0.1"
     cosmiconfig-toml-loader "1.0.0"
+    cosmiconfig-typescript-loader "^3.1.0"
     minimatch "4.2.1"
     string-env-interpolation "1.0.1"
+    ts-node "^10.8.1"
+    tslib "^2.4.0"
 
 graphql-executor@0.0.23:
   version "0.0.23"
@@ -18100,7 +18097,7 @@ lodash.flattendeep@^4.0.0:
   resolved "https://registry.npmjs.org/lodash.flattendeep/-/lodash.flattendeep-4.4.0.tgz#fb030917f86a3134e5bc9bec0d69e0013ddfedb2"
   integrity sha1-+wMJF/hqMTTlvJvsDWngAT3f7bI=
 
-lodash.get@^4, lodash.get@^4.4.2:
+lodash.get@^4.4.2:
   version "4.4.2"
   resolved "https://registry.npmjs.org/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
   integrity sha1-LRd/ZS+jHpObRDjVNBSZ36OCXpk=
@@ -18419,7 +18416,7 @@ make-dir@^3.0.0, make-dir@^3.1.0:
   dependencies:
     semver "^6.0.0"
 
-make-error@^1, make-error@^1.1.1:
+make-error@^1.1.1:
   version "1.3.6"
   resolved "https://registry.npmjs.org/make-error/-/make-error-1.3.6.tgz#2eb2e37ea9b67c4891f684a1394799af484cf7a2"
   integrity sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==
@@ -24144,7 +24141,7 @@ source-map-resolve@^0.5.0:
     source-map-url "^0.4.0"
     urix "^0.1.0"
 
-source-map-support@^0.5.10, source-map-support@^0.5.16, source-map-support@^0.5.17, source-map-support@^0.5.6, source-map-support@~0.5.20:
+source-map-support@^0.5.10, source-map-support@^0.5.16, source-map-support@^0.5.6, source-map-support@~0.5.20:
   version "0.5.21"
   resolved "https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.21.tgz#04fe7c7f9e1ed2d662233c28cb2b35b9f63f6e4f"
   integrity sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==
@@ -25486,7 +25483,7 @@ ts-morph@^15.0.0:
     "@ts-morph/common" "~0.16.0"
     code-block-writer "^11.0.0"
 
-ts-node@^10.0.0, ts-node@^10.2.1, ts-node@^10.4.0:
+ts-node@^10.0.0, ts-node@^10.2.1, ts-node@^10.4.0, ts-node@^10.8.1:
   version "10.9.1"
   resolved "https://registry.npmjs.org/ts-node/-/ts-node-10.9.1.tgz#e73de9102958af9e1f0b168a6ff320e25adcff4b"
   integrity sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==
@@ -25505,18 +25502,6 @@ ts-node@^10.0.0, ts-node@^10.2.1, ts-node@^10.4.0:
     v8-compile-cache-lib "^3.0.1"
     yn "3.1.1"
 
-ts-node@^9:
-  version "9.1.1"
-  resolved "https://registry.npmjs.org/ts-node/-/ts-node-9.1.1.tgz#51a9a450a3e959401bda5f004a72d54b936d376d"
-  integrity sha512-hPlt7ZACERQGf03M253ytLY3dHbGNGrAq9qIHWUY9XHYl1z7wYngSr3OQ5xmui8o2AaxsONxIzjafLUiWBo1Fg==
-  dependencies:
-    arg "^4.1.0"
-    create-require "^1.1.0"
-    diff "^4.0.1"
-    make-error "^1.1.1"
-    source-map-support "^0.5.17"
-    yn "3.1.1"
-
 tsconfig-paths@^3.14.1:
   version "3.14.1"
   resolved "https://registry.npmjs.org/tsconfig-paths/-/tsconfig-paths-3.14.1.tgz#ba0734599e8ea36c862798e920bcf163277b137a"
@@ -25532,7 +25517,7 @@ tslib@2.0.3:
   resolved "https://registry.npmjs.org/tslib/-/tslib-2.0.3.tgz#8e0741ac45fc0c226e58a17bfc3e64b9bc6ca61c"
   integrity sha512-uZtkfKblCEQtZKBF6EBXVZeQNl82yqtDQdv+eck8u7tdPxjLu2/lp5/uPW+um2tpuxINHWy3GhiccY7QgEaVHQ==
 
-tslib@2.3.1, tslib@^2, tslib@^2.0.0, tslib@^2.0.1, tslib@^2.0.3, tslib@^2.2.0, tslib@^2.3.1, tslib@~2.3.0:
+tslib@2.3.1, tslib@^2.0.0, tslib@^2.0.1, tslib@^2.0.3, tslib@^2.2.0, tslib@^2.3.1, tslib@~2.3.0:
   version "2.3.1"
   resolved "https://registry.npmjs.org/tslib/-/tslib-2.3.1.tgz#e8a335add5ceae51aa261d32a490158ef042ef01"
   integrity sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==
