@@ -8,7 +8,7 @@
 // @public (undocumented)
 export const EntityTeamPullRequestsCard: (
   props: EntityTeamPullRequestsCardProps,
-) => JSX.Element | null;
+) => JSX.Element;
 
 // @public (undocumented)
 export interface EntityTeamPullRequestsCardProps {
@@ -19,7 +19,7 @@ export interface EntityTeamPullRequestsCardProps {
 // @public (undocumented)
 export const EntityTeamPullRequestsContent: (
   props: EntityTeamPullRequestsContentProps,
-) => JSX.Element | null;
+) => JSX.Element;
 
 // @public (undocumented)
 export interface EntityTeamPullRequestsContentProps {

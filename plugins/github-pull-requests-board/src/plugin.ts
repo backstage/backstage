@@ -18,8 +18,6 @@ import {
   createComponentExtension,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
-import { EntityTeamPullRequestsCardProps } from './components/EntityTeamPullRequestsCard/EntityTeamPullRequestsCard';
-import { EntityTeamPullRequestsContentProps } from './components/EntityTeamPullRequestsContent/EntityTeamPullRequestsContent';
 import { rootRouteRef } from './routes';
 
 const githubPullRequestsBoardPlugin = createPlugin({
