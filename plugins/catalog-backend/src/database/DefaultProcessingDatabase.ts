@@ -145,20 +145,22 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       BATCH_SIZE,
     );
 
-    // Delete old refresh keys
-    await tx<DbRefreshKeysRow>('refresh_keys')
-      .where({ entity_id: id })
-      .delete();
+    if (refreshKeys && refreshKeys.length > 0) {
+      // Delete old refresh keys
+      await tx<DbRefreshKeysRow>('refresh_keys')
+        .where({ entity_id: id })
+        .delete();
 
-    // Insert the refresh keys for the processed entity
-    await tx.batchInsert(
-      'refresh_keys',
-      refreshKeys.map(k => ({
-        entity_id: id,
-        key: k.key,
-      })),
-      BATCH_SIZE,
-    );
+      // Insert the refresh keys for the processed entity
+      await tx.batchInsert(
+        'refresh_keys',
+        refreshKeys.map(k => ({
+          entity_id: id,
+          key: k.key,
+        })),
+        BATCH_SIZE,
+      );
+    }
 
     return {
       previous: {
