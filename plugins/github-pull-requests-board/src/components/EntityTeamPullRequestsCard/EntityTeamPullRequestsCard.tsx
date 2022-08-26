@@ -33,9 +33,7 @@ export interface EntityTeamPullRequestsCardProps {
   defaultLimit?: number;
 }
 
-const EntityTeamPullRequestsCard: FunctionComponent<
-  EntityTeamPullRequestsCardProps
-> = (props: EntityTeamPullRequestsCardProps) => {
+const EntityTeamPullRequestsCard = (props: EntityTeamPullRequestsCardProps) => {
   const { defaultLimit = 100 } = props;
   const [infoCardFormat, setInfoCardFormat] = useState<PRCardFormating[]>([]);
   const { repositories } = useUserRepositories();

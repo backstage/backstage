@@ -30,9 +30,7 @@ const githubPullRequestsBoardPlugin = createPlugin({
 });
 
 /** @public */
-export const EntityTeamPullRequestsCard: (
-  props: EntityTeamPullRequestsCardProps,
-) => JSX.Element | null = githubPullRequestsBoardPlugin.provide(
+export const EntityTeamPullRequestsCard = githubPullRequestsBoardPlugin.provide(
   createComponentExtension({
     name: 'EntityTeamPullRequestsCard',
     component: {
@@ -45,15 +43,14 @@ export const EntityTeamPullRequestsCard: (
 );
 
 /** @public */
-export const EntityTeamPullRequestsContent: (
-  props: EntityTeamPullRequestsContentProps,
-) => JSX.Element | null = githubPullRequestsBoardPlugin.provide(
-  createRoutableExtension({
-    name: 'PullRequestPage',
-    component: () =>
-      import('./components/EntityTeamPullRequestsContent').then(
-        m => m.EntityTeamPullRequestsContent,
-      ),
-    mountPoint: rootRouteRef,
-  }),
-);
+export const EntityTeamPullRequestsContent =
+  githubPullRequestsBoardPlugin.provide(
+    createRoutableExtension({
+      name: 'PullRequestPage',
+      component: () =>
+        import('./components/EntityTeamPullRequestsContent').then(
+          m => m.EntityTeamPullRequestsContent,
+        ),
+      mountPoint: rootRouteRef,
+    }),
+  );
