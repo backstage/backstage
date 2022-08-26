@@ -44,6 +44,7 @@ export function createPublishAzureAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
   }>({
+    supportsDryRun: true,
     id: 'publish:azure',
     description:
       'Initializes a git repository of the content in the workspace, and publishes it to Azure.',
@@ -104,6 +105,10 @@ export function createPublishAzureAction(options: {
             title: 'A URL to the root of the repository',
             type: 'string',
           },
+          repositoryId: {
+            title: 'The Id of the created repository',
+            type: 'string',
+          },
         },
       },
     },
@@ -160,6 +165,11 @@ export function createPublishAzureAction(options: {
           'No remote URL returned from create repository for Azure',
         );
       }
+      const repositoryId = returnedRepo.id;
+
+      if (!repositoryId) {
+        throw new InputError('No Id returned from create repository for Azure');
+      }
 
       // blam: Repo contents is serialized into the path,
       // so it's just the base path I think
@@ -191,6 +201,7 @@ export function createPublishAzureAction(options: {
 
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
+      ctx.output('repositoryId', repositoryId);
     },
   });
 }
