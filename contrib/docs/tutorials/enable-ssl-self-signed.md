@@ -4,11 +4,7 @@ If you need to use an `https:` URL for local testing (i.e. if an OAuth provider 
 
 ## Backend
 
-1. Generate a self-signed certificate and key for localhost. One approach uses OpenSSL:
-   ```bash
-   mkdir certs ;
-   openssl req -x509 -newkey rsa:2048 -nodes -keyout certs/localhost.key -out certs/localhost.crt -sha256 -days 3650 -subj '/CN=localhost' ;
-   ```
+1. Generate a self-signed certificate and key for localhost and configure your system to trust it. [mkcert](https://github.com/FiloSottile/mkcert) is a helpful tool to accomplish this.
 1. Update `backend.baseUrl` in app-config.local.yaml to use an `https:` address, and copy the contents of the certificate and key files into `backend.https.certificate.cert` and `backend.https.certificate.cert`, respectively. Your app-config.local.yaml should look something like:
    ```yaml
    backend:
@@ -26,8 +22,7 @@ If you need to use an `https:` URL for local testing (i.e. if an OAuth provider 
            ...
            -----END PRIVATE KEY-----
    ```
-1. Convince your browser to trust the certificate. In Windows this might mean adding the certificate to your Trusted Root CAs, or you may use a browser-specific configuration like Chrome's flag `chrome://flags/#allow-insecure-localhost`.
-1. Start the backend with `NODE_EXTRA_CA_CERTS=/absolute/path/to/certs/localhost.crt yarn start-backend`
+1. Start the backend with `NODE_EXTRA_CA_CERTS=/absolute/path/to/cert.pem yarn start-backend`
 
 ## Frontend
 
