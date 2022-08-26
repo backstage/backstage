@@ -122,6 +122,7 @@ describe('publish:azure', () => {
   it('should not throw if there is a token provided through ctx.input', async () => {
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: 'http://google.com',
+      id: '709e891c-dee7-4f91-b963-534713c0737f',
     }));
 
     await action.handler({
@@ -148,6 +149,7 @@ describe('publish:azure', () => {
   it('should throw if there is no remoteUrl returned', async () => {
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: null,
+      id: '709e891c-dee7-4f91-b963-534713c0737f',
     }));
     await expect(
       action.handler({
@@ -177,6 +179,7 @@ describe('publish:azure', () => {
   it('should call the azureApis with the correct values', async () => {
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: 'http://google.com',
+      id: '709e891c-dee7-4f91-b963-534713c0737f',
     }));
 
     await action.handler(mockContext);
@@ -197,6 +200,7 @@ describe('publish:azure', () => {
   it('should call initRepoAndPush with the correct values', async () => {
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      id: '709e891c-dee7-4f91-b963-534713c0737f',
     }));
 
     await action.handler(mockContext);
@@ -215,6 +219,7 @@ describe('publish:azure', () => {
   it('should call initRepoAndPush with the correct default branch', async () => {
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      id: '709e891c-dee7-4f91-b963-534713c0737f',
     }));
 
     await action.handler({
@@ -261,6 +266,7 @@ describe('publish:azure', () => {
 
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      id: '709e891c-dee7-4f91-b963-534713c0737f',
     }));
 
     await customAuthorAction.handler(mockContext);
@@ -298,6 +304,7 @@ describe('publish:azure', () => {
 
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      id: '709e891c-dee7-4f91-b963-534713c0737f',
     }));
 
     await customAuthorAction.handler(mockContext);
