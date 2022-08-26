@@ -40,6 +40,7 @@ export async function serveBundle(options: ServeOptions) {
     isDev: true,
     baseUrl: url,
   });
+
   const compiler = webpack(config);
 
   const server = new WebpackDevServer(
@@ -64,10 +65,10 @@ export async function serveBundle(options: ServeOptions) {
         url.protocol === 'https:'
           ? {
               cert: options.frontendConfig.getOptionalString(
-                'app.https.credentials.cert',
+                'app.https.certificate.cert',
               ),
               key: options.frontendConfig.getOptionalString(
-                'app.https.credentials.key',
+                'app.https.certificate.key',
               ),
             }
           : false,

@@ -3,11 +3,11 @@ app:
   baseUrl: http://localhost:3000
   googleAnalyticsTrackingId: # UA-000000-0
   # https:
-  #   credentials:
+  #   certificate:
   #     cert:
-  #       $file '\path\to\the\certificate'
+  #       $file: '\path\to\the\certificate'
   #     key:
-  #       $file '\path\to\the\private-key'
+  #       $file: '\path\to\the\private-key'
   #datadogRum:
   #  clientToken: '123456789'
   #  applicationId: qwerty

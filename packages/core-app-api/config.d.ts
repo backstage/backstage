@@ -72,14 +72,14 @@ export interface Config {
       /**
        * Parent object containing certificate and the private key
        */
-      credentials?: {
+      certificate?: {
         /**
-         * Https Certificate private key. Can be loaded using $file
+         * Https Certificate private key. Use $file to load in a file
          * @visibility frontend
          */
         key?: string;
         /**
-         * Https Certificate. Can be loaded using $file
+         * Https Certificate. Use $file to load in a file
          * @visibility frontend
          */
         cert?: string;
