@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
+import { promises as fs, existsSync } from 'fs';
 import globby from 'globby';
 import limiterFactory from 'p-limit';
 import { resolveSafeChildPath } from '@backstage/backend-common';
@@ -58,7 +58,8 @@ export async function serializeDirectoryContents(
       .filter(({ dirent }) => !dirent.isDirectory())
       .filter(({ dirent, path }) => {
         if (!dirent.isSymbolicLink()) return true;
-        if (!fs.existsSync(resolveSafeChildPath(sourcePath, path))) return true; // We only want symlinks that DO NOT exist (yet)
+        const safePath = resolveSafeChildPath(sourcePath, path);
+        if (!existsSync(safePath)) return true; // We only want symlinks that DO NOT exist (yet)
         return false;
       })
       .map(async ({ dirent, path, stats }) => ({
@@ -66,7 +67,7 @@ export async function serializeDirectoryContents(
         content: await limiter(async () => {
           const absFilePath = resolveSafeChildPath(sourcePath, path);
           if (dirent.isSymbolicLink()) {
-            return fs.readlinkSync(absFilePath, 'buffer');
+            return fs.readlink(absFilePath, 'buffer');
           }
           return fs.readFile(absFilePath);
         }),
