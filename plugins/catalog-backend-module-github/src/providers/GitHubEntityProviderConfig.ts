@@ -26,6 +26,7 @@ export type GitHubEntityProviderConfig = {
   filters?: {
     repository?: RegExp;
     branch?: string;
+    topic?: string;
   };
 };
 
@@ -58,6 +59,7 @@ function readProviderConfig(
     config.getOptionalString('catalogPath') ?? DEFAULT_CATALOG_PATH;
   const repositoryPattern = config.getOptionalString('filters.repository');
   const branchPattern = config.getOptionalString('filters.branch');
+  const topicPattern = config.getOptionalString('filters.topic');
 
   return {
     id,
@@ -68,6 +70,7 @@ function readProviderConfig(
         ? compileRegExp(repositoryPattern)
         : undefined,
       branch: branchPattern || undefined,
+      topic: topicPattern || undefined,
     },
   };
 }

@@ -116,6 +116,7 @@ describe('GitHubEntityProvider', () => {
               filters: {
                 branch: 'main',
                 repository: 'test-.*',
+                topic: 'blah',
               },
             },
           },
@@ -143,6 +144,13 @@ describe('GitHubEntityProvider', () => {
           {
             name: 'test-repo',
             url: 'https://github.com/test-org/test-repo',
+            repositoryTopics: {
+              nodes: [
+                {
+                  topic: { name: 'blah' },
+                },
+              ],
+            },
             isArchived: false,
             defaultBranchRef: {
               name: 'main',

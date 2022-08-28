@@ -183,11 +183,16 @@ export class GitHubEntityProvider implements EntityProvider {
 
   private matchesFilters(repositories: Repository[]) {
     const repositoryFilter = this.config.filters?.repository;
+    const topicFilter = this.config.filters?.topic;
 
     const matchingRepositories = repositories.filter(r => {
+      const topics: string[] = r.repositoryTopics.nodes.map(
+        node => node.topic.name,
+      );
       return (
         !r.isArchived &&
         (!repositoryFilter || repositoryFilter.test(r.name)) &&
+        (!topicFilter || topics.includes(topicFilter)) &&
         r.defaultBranchRef?.name
       );
     });

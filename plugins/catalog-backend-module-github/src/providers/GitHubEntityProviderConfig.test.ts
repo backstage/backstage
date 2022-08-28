@@ -68,13 +68,19 @@ describe('readProviderConfigs', () => {
                 branch: 'branch-name',
               },
             },
+            providerWithTopicFilter: {
+              organization: 'test-org5',
+              filters: {
+                topic: 'backstage-exclude',
+              },
+            },
           },
         },
       },
     });
     const providerConfigs = readProviderConfigs(config);
 
-    expect(providerConfigs).toHaveLength(4);
+    expect(providerConfigs).toHaveLength(5);
     expect(providerConfigs[0]).toEqual({
       id: 'providerOrganizationOnly',
       organization: 'test-org1',
@@ -109,6 +115,16 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: 'branch-name',
+      },
+    });
+    expect(providerConfigs[4]).toEqual({
+      id: 'providerWithTopicFilter',
+      organization: 'test-org5',
+      catalogPath: '/catalog-info.yaml',
+      filters: {
+        repository: undefined,
+        branch: undefined,
+        topic: 'backstage-exclude',
       },
     });
   });
