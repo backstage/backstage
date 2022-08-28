@@ -113,7 +113,7 @@ This provider supports multiple organizations via unique provider IDs.
     Regular expression used to filter results based on the repository name.
   - **topic** _(optional)_:
     String used to filter results based on repository topics. By default, repositories that match the topic filter will be **ignored**. See below for the inverse.
-    This is useful for excluding excess locations from being registered such as hackathon experiments, practical tests, non-production tooling and so on.
+    This is useful for excluding excess locations from being registered such as experiments, practical tests, non-production tooling and so on.
   - **topicIncludesIfMatch** _(optional)_:
     Default: `false`
     If set to `true` and a topic filter is set, **ONLY** repositories matching the topic filter will have a location registered.
