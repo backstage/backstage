@@ -16590,12 +16590,12 @@ jake@^10.8.5:
     filelist "^1.0.1"
     minimatch "^3.0.4"
 
-jenkins@^0.28.1:
-  version "0.28.1"
-  resolved "https://registry.npmjs.org/jenkins/-/jenkins-0.28.1.tgz#f7951798ee5d2bb501a831979b6b5ecc1a922a64"
-  integrity sha512-gcC4QUrP4VzdqOMHoVzh36XlJprxJkI2HGLQSY7w84KoCTVNDcR/8O00tYyXp9vrZOx4wl5zCXLVKMgH2IoyJQ==
+jenkins@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/jenkins/-/jenkins-1.0.0.tgz#e82b05876f6406bcb4dfa71813d4fbb5d830aa61"
+  integrity sha512-pDIK53BHXJJF520IRJwTyRpXvXhfz2j5azZBtvoqJO72Vd9Sk1/yEtso0/zgbmQ/K08WbJfnYB4UgXyqLhpEEQ==
   dependencies:
-    papi "^0.29.0"
+    papi "^1.1.0"
 
 jest-changed-files@^27.5.1:
   version "27.5.1"
@@ -20622,10 +20622,10 @@ pako@^1.0.10, pako@^1.0.5, pako@~1.0.5:
   resolved "https://registry.npmjs.org/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"
   integrity sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==
 
-papi@^0.29.0:
-  version "0.29.1"
-  resolved "https://registry.npmjs.org/papi/-/papi-0.29.1.tgz#7373e2c527f5117d61fd2a0e6c6b1dd72bf7f180"
-  integrity sha512-Y9ipSMfWuuVFO3zY9PlxOmEg+bQ7CeJ28sa9/a0veYNynLf9fwjR3+3fld5otEy7okUaEOUuCHVH62MyTmACXQ==
+papi@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/papi/-/papi-1.1.0.tgz#15eb3f10b219f478544d51b1b4da394062c67e65"
+  integrity sha512-w02EYhPtKYAGB8XJz+yi5WJPfSev1Zfo3vZrqqvHN6LvkIIJKfJ+VwAnL9EanBMcg6G8Bbwgxh7cqirfsJn2IQ==
 
 param-case@^3.0.4:
   version "3.0.4"
