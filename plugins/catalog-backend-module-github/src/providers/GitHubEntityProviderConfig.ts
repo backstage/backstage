@@ -18,6 +18,7 @@ import { Config } from '@backstage/config';
 
 const DEFAULT_CATALOG_PATH = '/catalog-info.yaml';
 const DEFAULT_PROVIDER_ID = 'default';
+const DEFAULT_TOPIC_INCLUSION = false;
 
 export type GitHubEntityProviderConfig = {
   id: string;
@@ -27,6 +28,7 @@ export type GitHubEntityProviderConfig = {
     repository?: RegExp;
     branch?: string;
     topic?: string;
+    topicIncludesIfMatch: boolean;
   };
 };
 
@@ -60,6 +62,9 @@ function readProviderConfig(
   const repositoryPattern = config.getOptionalString('filters.repository');
   const branchPattern = config.getOptionalString('filters.branch');
   const topicPattern = config.getOptionalString('filters.topic');
+  const topicIncludesIfMatch =
+    config.getOptionalBoolean('filters.topicIncludesIfMatch') ??
+    DEFAULT_TOPIC_INCLUSION;
 
   return {
     id,
@@ -71,6 +76,7 @@ function readProviderConfig(
         : undefined,
       branch: branchPattern || undefined,
       topic: topicPattern || undefined,
+      topicIncludesIfMatch,
     },
   };
 }

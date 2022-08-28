@@ -105,7 +105,91 @@ describe('GitHubEntityProvider', () => {
     );
   });
 
-  it('apply full update on scheduled execution', async () => {
+  it('apply full update on scheduled execution with basic filters', async () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            myProvider: {
+              organization: 'test-org',
+              catalogPath: 'custom/path/catalog-custom.yaml',
+              filters: {
+                branch: 'main',
+                repository: 'test-.*',
+              },
+            },
+          },
+        },
+      },
+    });
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+    };
+
+    const provider = GitHubEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    const mockGetOrganizationRepositories = jest.spyOn(
+      helpers,
+      'getOrganizationRepositories',
+    );
+
+    mockGetOrganizationRepositories.mockReturnValue(
+      Promise.resolve({
+        repositories: [
+          {
+            name: 'test-repo',
+            url: 'https://github.com/test-org/test-repo',
+            repositoryTopics: { nodes: [] },
+            isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
+          },
+        ],
+      }),
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual('github-provider:myProvider:refresh');
+    await (taskDef.fn as () => Promise<void>)();
+
+    const url = `https://github.com/test-org/test-repo/blob/main/custom/path/catalog-custom.yaml`;
+    const expectedEntities = [
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location': `url:${url}`,
+              'backstage.io/managed-by-origin-location': `url:${url}`,
+            },
+            name: 'generated-5e4b9498097f15434e88c477cfba6c079aa8ca7f',
+          },
+          spec: {
+            presence: 'optional',
+            target: `${url}`,
+            type: 'url',
+          },
+        },
+        locationKey: 'github-provider:myProvider',
+      },
+    ];
+
+    expect(entityProviderConnection.applyMutation).toBeCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toBeCalledWith({
+      type: 'full',
+      entities: expectedEntities,
+    });
+  });
+
+  it('apply full update on scheduled execution with topic exclusion', async () => {
     const config = new ConfigReader({
       catalog: {
         providers: {
@@ -148,6 +232,75 @@ describe('GitHubEntityProvider', () => {
               nodes: [
                 {
                   topic: { name: 'blah' },
+                },
+              ],
+            },
+            isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
+          },
+        ],
+      }),
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual('github-provider:myProvider:refresh');
+    await (taskDef.fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).toBeCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toBeCalledWith({
+      type: 'full',
+      entities: [],
+    });
+  });
+
+  it('apply full update on scheduled execution with topic inclusion', async () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            myProvider: {
+              organization: 'test-org',
+              catalogPath: 'custom/path/catalog-custom.yaml',
+              filters: {
+                branch: 'main',
+                repository: 'test-.*',
+                topic: 'backstage-include',
+                topicIncludesIfMatch: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+    };
+
+    const provider = GitHubEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    const mockGetOrganizationRepositories = jest.spyOn(
+      helpers,
+      'getOrganizationRepositories',
+    );
+
+    mockGetOrganizationRepositories.mockReturnValue(
+      Promise.resolve({
+        repositories: [
+          {
+            name: 'test-repo',
+            url: 'https://github.com/test-org/test-repo',
+            repositoryTopics: {
+              nodes: [
+                {
+                  topic: { name: 'backstage-include' },
                 },
               ],
             },

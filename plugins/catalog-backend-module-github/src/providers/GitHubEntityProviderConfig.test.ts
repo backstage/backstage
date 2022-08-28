@@ -74,13 +74,20 @@ describe('readProviderConfigs', () => {
                 topic: 'backstage-exclude',
               },
             },
+            providerWithTopicFilterAndInclusion: {
+              organization: 'test-org6',
+              filters: {
+                topic: 'backstage-include',
+                topicIncludesIfMatch: false,
+              },
+            },
           },
         },
       },
     });
     const providerConfigs = readProviderConfigs(config);
 
-    expect(providerConfigs).toHaveLength(5);
+    expect(providerConfigs).toHaveLength(6);
     expect(providerConfigs[0]).toEqual({
       id: 'providerOrganizationOnly',
       organization: 'test-org1',
@@ -88,6 +95,8 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: undefined,
+        topic: undefined,
+        topicIncludesIfMatch: false,
       },
     });
     expect(providerConfigs[1]).toEqual({
@@ -97,6 +106,8 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: undefined,
+        topic: undefined,
+        topicIncludesIfMatch: false,
       },
     });
     expect(providerConfigs[2]).toEqual({
@@ -106,6 +117,8 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: /^repository.*filter$/, // repo
         branch: undefined, // branch
+        topic: undefined,
+        topicIncludesIfMatch: false,
       },
     });
     expect(providerConfigs[3]).toEqual({
@@ -115,6 +128,8 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: 'branch-name',
+        topic: undefined,
+        topicIncludesIfMatch: false,
       },
     });
     expect(providerConfigs[4]).toEqual({
@@ -125,6 +140,18 @@ describe('readProviderConfigs', () => {
         repository: undefined,
         branch: undefined,
         topic: 'backstage-exclude',
+        topicIncludesIfMatch: false,
+      },
+    });
+    expect(providerConfigs[5]).toEqual({
+      id: 'providerWithTopicFilterAndInclusion',
+      organization: 'test-org6',
+      catalogPath: '/catalog-info.yaml',
+      filters: {
+        repository: undefined,
+        branch: undefined,
+        topic: 'backstage-include',
+        topicIncludesIfMatch: false,
       },
     });
   });
