@@ -34,6 +34,12 @@
   - @backstage/plugin-scaffolder-common@1.2.0-next.0
   - @backstage/plugin-catalog-node@1.0.2-next.0
 
+## 1.5.1
+
+### Patch Changes
+
+- Fix minimum required version for `vm2`
+
 ## 1.5.0
 
 ### Minor Changes
