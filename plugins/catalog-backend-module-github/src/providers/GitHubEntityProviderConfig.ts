@@ -16,9 +16,17 @@
 
 import { Config } from '@backstage/config';
 
+export enum TopicTypes {
+  Includes = 'INCLUDES',
+  Excludes = 'EXCLUDES',
+}
+
+const isValidTopicType = (topicType: string) =>
+  (Object.values(TopicTypes) as string[]).includes(topicType);
+
 const DEFAULT_CATALOG_PATH = '/catalog-info.yaml';
 const DEFAULT_PROVIDER_ID = 'default';
-const DEFAULT_TOPIC_INCLUSION = false;
+const DEFAULT_TOPIC_FILTER_TYPE: TopicTypes = TopicTypes.Excludes;
 
 export type GitHubEntityProviderConfig = {
   id: string;
@@ -27,8 +35,10 @@ export type GitHubEntityProviderConfig = {
   filters?: {
     repository?: RegExp;
     branch?: string;
-    topic?: string;
-    topicIncludesIfMatch: boolean;
+    topic?: {
+      name?: string;
+      type: TopicTypes;
+    };
   };
 };
 
@@ -61,10 +71,9 @@ function readProviderConfig(
     config.getOptionalString('catalogPath') ?? DEFAULT_CATALOG_PATH;
   const repositoryPattern = config.getOptionalString('filters.repository');
   const branchPattern = config.getOptionalString('filters.branch');
-  const topicPattern = config.getOptionalString('filters.topic');
-  const topicIncludesIfMatch =
-    config.getOptionalBoolean('filters.topicIncludesIfMatch') ??
-    DEFAULT_TOPIC_INCLUSION;
+  const topicFilterConfig = config.getOptionalConfig('filters.topic');
+  const topicFilterName = topicFilterConfig?.getOptionalString('name');
+  const topicFilterType = topicFilterConfig?.getOptionalString('type');
 
   return {
     id,
@@ -75,8 +84,13 @@ function readProviderConfig(
         ? compileRegExp(repositoryPattern)
         : undefined,
       branch: branchPattern || undefined,
-      topic: topicPattern || undefined,
-      topicIncludesIfMatch,
+      topic: {
+        name: topicFilterName || undefined,
+        type:
+          topicFilterType && isValidTopicType(topicFilterType)
+            ? (topicFilterType as TopicTypes)
+            : DEFAULT_TOPIC_FILTER_TYPE,
+      },
     },
   };
 }

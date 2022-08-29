@@ -93,8 +93,9 @@ catalog:
         filters:
           branch: 'main' # string
           repository: '.*' # Regex
-          topic: 'backstage-include' # optional string
-          topicIncludesIfMatch: true # optional boolean (default: false)
+          topic:
+            name: 'backstage-include' # optional string
+            type: 'INCLUDES' # optional enum (INCLUDES or EXCLUDES)
 ```
 
 This provider supports multiple organizations via unique provider IDs.
@@ -112,11 +113,13 @@ This provider supports multiple organizations via unique provider IDs.
   - **repository** _(optional)_:
     Regular expression used to filter results based on the repository name.
   - **topic** _(optional)_:
-    String used to filter results based on repository topics. By default, repositories that match the topic filter will be **ignored**. See below for the inverse.
-    This is useful for excluding excess locations from being registered such as experiments, practical tests, non-production tooling and so on.
-  - **topicIncludesIfMatch** _(optional)_:
-    Default: `false`
-    If set to `true` and a topic filter is set, **ONLY** repositories matching the topic filter will have a location registered.
+    - **name** _(optional)_:
+      String used to filter results based on repository topics. If configured, only repositories that match the topic filter will be registered. See below for the reverse.
+      This is useful for excluding excess locations from being registered such as experiments, practical tests, non-production tooling and so on.
+    - **type** _(optional)_:
+      Default: `INCLUDES`
+      When set to `INCLUDES`, locations matching the topic filter will be registered and other repositories will be ignored
+      When set to `EXCLUDES`, locations matching the topic filter will not be registered and other repositories will be registered
 - **organization**:
   Name of your organization account/workspace.
   If you want to add multiple organizations, you need to add one provider config each.

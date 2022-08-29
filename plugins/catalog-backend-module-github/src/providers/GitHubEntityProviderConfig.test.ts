@@ -71,14 +71,18 @@ describe('readProviderConfigs', () => {
             providerWithTopicFilter: {
               organization: 'test-org5',
               filters: {
-                topic: 'backstage-exclude',
+                topic: {
+                  name: 'backstage-exclude',
+                },
               },
             },
             providerWithTopicFilterAndInclusion: {
               organization: 'test-org6',
               filters: {
-                topic: 'backstage-include',
-                topicIncludesIfMatch: false,
+                topic: {
+                  name: 'backstage-include',
+                  type: 'INCLUDES',
+                },
               },
             },
           },
@@ -95,8 +99,10 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: undefined,
-        topic: undefined,
-        topicIncludesIfMatch: false,
+        topic: {
+          name: undefined,
+          type: 'EXCLUDES',
+        },
       },
     });
     expect(providerConfigs[1]).toEqual({
@@ -106,8 +112,10 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: undefined,
-        topic: undefined,
-        topicIncludesIfMatch: false,
+        topic: {
+          name: undefined,
+          type: 'EXCLUDES',
+        },
       },
     });
     expect(providerConfigs[2]).toEqual({
@@ -117,8 +125,10 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: /^repository.*filter$/, // repo
         branch: undefined, // branch
-        topic: undefined,
-        topicIncludesIfMatch: false,
+        topic: {
+          name: undefined,
+          type: 'EXCLUDES',
+        },
       },
     });
     expect(providerConfigs[3]).toEqual({
@@ -128,8 +138,10 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: 'branch-name',
-        topic: undefined,
-        topicIncludesIfMatch: false,
+        topic: {
+          name: undefined,
+          type: 'EXCLUDES',
+        },
       },
     });
     expect(providerConfigs[4]).toEqual({
@@ -139,8 +151,10 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: undefined,
-        topic: 'backstage-exclude',
-        topicIncludesIfMatch: false,
+        topic: {
+          name: 'backstage-exclude',
+          type: 'EXCLUDES',
+        },
       },
     });
     expect(providerConfigs[5]).toEqual({
@@ -150,8 +164,10 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: undefined,
-        topic: 'backstage-include',
-        topicIncludesIfMatch: false,
+        topic: {
+          name: 'backstage-include',
+          type: 'INCLUDES',
+        },
       },
     });
   });

@@ -200,7 +200,9 @@ describe('GitHubEntityProvider', () => {
               filters: {
                 branch: 'main',
                 repository: 'test-.*',
-                topic: 'blah',
+                topic: {
+                  name: 'blah',
+                },
               },
             },
           },
@@ -268,8 +270,10 @@ describe('GitHubEntityProvider', () => {
               filters: {
                 branch: 'main',
                 repository: 'test-.*',
-                topic: 'backstage-include',
-                topicIncludesIfMatch: true,
+                topic: {
+                  name: 'backstage-include',
+                  type: 'INCLUDES',
+                },
               },
             },
           },

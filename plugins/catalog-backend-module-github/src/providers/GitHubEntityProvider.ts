@@ -36,6 +36,7 @@ import { Logger } from 'winston';
 import {
   readProviderConfigs,
   GitHubEntityProviderConfig,
+  TopicTypes,
 } from './GitHubEntityProviderConfig';
 import { getOrganizationRepositories, Repository } from '../lib/github';
 
@@ -184,17 +185,29 @@ export class GitHubEntityProvider implements EntityProvider {
   private matchesFilters(repositories: Repository[]) {
     const repositoryFilter = this.config.filters?.repository;
     const topicFilter = this.config.filters?.topic;
-    const topicIncludesIfMatch = this.config.filters?.topicIncludesIfMatch;
 
     const matchingRepositories = repositories.filter(r => {
-      const topics: string[] = r.repositoryTopics.nodes.map(
+      const repoTopics: string[] = r.repositoryTopics.nodes.map(
         node => node.topic.name,
       );
+      const satisfiesTopicFilter = (
+        topics: string[],
+        filter: typeof topicFilter,
+      ) => {
+        if (!filter || !filter.name) return true;
+        if (filter.type === TopicTypes.Includes && topics.includes(filter.name))
+          return true;
+        if (
+          filter.type === TopicTypes.Excludes &&
+          !topics.includes(filter.name)
+        )
+          return true;
+        return false;
+      };
       return (
         !r.isArchived &&
         (!repositoryFilter || repositoryFilter.test(r.name)) &&
-        (!topicFilter ||
-          (topics.includes(topicFilter) && topicIncludesIfMatch)) &&
+        satisfiesTopicFilter(repoTopics, topicFilter) &&
         r.defaultBranchRef?.name
       );
     });
