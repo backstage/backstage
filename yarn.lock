@@ -16591,9 +16591,9 @@ jake@^10.8.5:
     minimatch "^3.0.4"
 
 jenkins@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/jenkins/-/jenkins-1.0.0.tgz#e82b05876f6406bcb4dfa71813d4fbb5d830aa61"
-  integrity sha512-pDIK53BHXJJF520IRJwTyRpXvXhfz2j5azZBtvoqJO72Vd9Sk1/yEtso0/zgbmQ/K08WbJfnYB4UgXyqLhpEEQ==
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/jenkins/-/jenkins-1.0.1.tgz#cf782afd5bf756036aea63bdcbcc89f6e4674c5a"
+  integrity sha512-AIcd38CBzro7fnjqUhuBlDXwIR/C1dhRNVz5pzKsHyEEGUk3zwHw1v5vouBap/y6FkNMxAMB7nwiesidOGXnqw==
   dependencies:
     papi "^1.1.0"
 
