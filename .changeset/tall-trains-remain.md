@@ -1,5 +1,5 @@
 ---
-'@backstage/core-app-api': minor
+'@backstage/core-app-api': patch
 ---
 
-Updated `FlatRoutes` to be compatible with `react-router` v6 stable.
+Updated `FlatRoutes` to be compatible with React Router v6 stable.
