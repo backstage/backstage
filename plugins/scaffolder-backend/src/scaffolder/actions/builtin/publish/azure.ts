@@ -44,7 +44,6 @@ export function createPublishAzureAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
   }>({
-    supportsDryRun: true,
     id: 'publish:azure',
     description:
       'Initializes a git repository of the content in the workspace, and publishes it to Azure.',
