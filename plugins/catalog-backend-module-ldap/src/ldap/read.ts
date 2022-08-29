@@ -128,7 +128,6 @@ export async function readLdapUsers(
     mapReferencesAttr(user, vendor, map.memberOf, (myDn, vs) => {
       ensureItems(userMemberOf, myDn, vs);
     });
-
     entities.push(entity);
   });
 
