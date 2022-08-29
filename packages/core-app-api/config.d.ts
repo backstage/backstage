@@ -75,7 +75,7 @@ export interface Config {
       certificate?: {
         /**
          * Https Certificate private key. Use $file to load in a file
-         * @visibility frontend
+         * @visibility secret
          */
         key?: string;
         /**

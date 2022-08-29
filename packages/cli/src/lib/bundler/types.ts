@@ -31,6 +31,8 @@ export type ServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
   frontendConfig: Config;
   frontendAppConfigs: AppConfig[];
+  backendConfig: Config;
+  backendAppConfigs: AppConfig[];
 };
 
 export type BuildOptions = BundlingPathsOptions & {

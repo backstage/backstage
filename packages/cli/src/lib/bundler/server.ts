@@ -67,7 +67,7 @@ export async function serveBundle(options: ServeOptions) {
               cert: options.frontendConfig.getOptionalString(
                 'app.https.certificate.cert',
               ),
-              key: options.frontendConfig.getOptionalString(
+              key: options.backendConfig.getOptionalString(
                 'app.https.certificate.key',
               ),
             }
