@@ -21,7 +21,7 @@ import { useGetPullRequestDetails } from '../api/useGetPullRequestDetails';
 
 export function usePullRequestsByTeam(
   repositories: string[],
-  defaultLimit?: number,
+  pullRequestLimit?: number,
 ) {
   const [pullRequests, setPullRequests] = useState<PullRequestsColumn[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -32,7 +32,7 @@ export function usePullRequestsByTeam(
     async (repository: string): Promise<PullRequests> => {
       const pullRequestsNumbers = await getPullRequests(
         repository,
-        defaultLimit,
+        pullRequestLimit,
       );
 
       const pullRequestsWithDetails = await Promise.all(
@@ -43,7 +43,7 @@ export function usePullRequestsByTeam(
 
       return pullRequestsWithDetails;
     },
-    [getPullRequests, getPullRequestDetails, defaultLimit],
+    [getPullRequests, getPullRequestDetails, pullRequestLimit],
   );
 
   const getPRsFromTeam = useCallback(

@@ -18,6 +18,9 @@ import React from 'react';
 import { GraphQlPullRequests, PullRequestsNumber } from '../utils/types';
 import { useOctokitGraphQl } from './useOctokitGraphQl';
 
+const PULL_REQUEST_LIMIT = 10;
+const GITHUB_GRAPHQL_MAX_ITEMS = 100;
+
 export const useGetPullRequestsFromRepository = () => {
   const graphql =
     useOctokitGraphQl<GraphQlPullRequests<PullRequestsNumber[]>>();
@@ -25,23 +28,16 @@ export const useGetPullRequestsFromRepository = () => {
   const fn = React.useRef(
     async (
       repo: string,
-      defaultLimit?: number,
+      pullRequestLimit?: number,
     ): Promise<PullRequestsNumber[]> => {
+      const limit = pullRequestLimit ?? PULL_REQUEST_LIMIT;
       const [organisation, repositoryName] = repo.split('/');
 
-      if (defaultLimit) {
-        return getLimitedPullRequestEdges(
-          graphql,
-          repositoryName,
-          organisation,
-          defaultLimit,
-        );
-      }
-
-      return await getAllPullRequestEdges(
+      return await getPullRequestEdges(
         graphql,
         repositoryName,
         organisation,
+        limit,
       );
     },
   );
@@ -49,46 +45,14 @@ export const useGetPullRequestsFromRepository = () => {
   return fn.current;
 };
 
-async function getLimitedPullRequestEdges(
+async function getPullRequestEdges(
   graphql: (
     path: string,
     options?: any,
   ) => Promise<GraphQlPullRequests<PullRequestsNumber[]>>,
   repositoryName: string,
   organisation: string,
-  defaultLimit: number,
-): Promise<PullRequestsNumber[]> {
-  const result = await graphql(
-    `
-      query ($name: String!, $owner: String!, $defaultLimit: Int) {
-        repository(name: $name, owner: $owner) {
-          pullRequests(states: OPEN, first: $defaultLimit) {
-            edges {
-              node {
-                number
-              }
-            }
-          }
-        }
-      }
-    `,
-    {
-      name: repositoryName,
-      owner: organisation,
-      defaultLimit: defaultLimit,
-    },
-  );
-
-  return result.repository.pullRequests.edges;
-}
-
-async function getAllPullRequestEdges(
-  graphql: (
-    path: string,
-    options?: any,
-  ) => Promise<GraphQlPullRequests<PullRequestsNumber[]>>,
-  repositoryName: string,
-  organisation: string,
+  pullRequestLimit: number,
 ): Promise<PullRequestsNumber[]> {
   const pullRequestEdges: PullRequestsNumber[] = [];
   let result: GraphQlPullRequests<PullRequestsNumber[]> | undefined = undefined;
@@ -96,9 +60,14 @@ async function getAllPullRequestEdges(
   do {
     result = await graphql(
       `
-        query ($name: String!, $owner: String!, $endCursor: String) {
+        query (
+          $name: String!
+          $owner: String!
+          $first: Int
+          $endCursor: String
+        ) {
           repository(name: $name, owner: $owner) {
-            pullRequests(states: OPEN, first: 100, after: $endCursor) {
+            pullRequests(states: OPEN, first: $first, after: $endCursor) {
               edges {
                 node {
                   number
@@ -115,6 +84,10 @@ async function getAllPullRequestEdges(
       {
         name: repositoryName,
         owner: organisation,
+        first:
+          pullRequestLimit > GITHUB_GRAPHQL_MAX_ITEMS
+            ? GITHUB_GRAPHQL_MAX_ITEMS
+            : pullRequestLimit,
         endCursor: result
           ? result.repository.pullRequests.pageInfo.endCursor
           : undefined,
@@ -122,6 +95,8 @@ async function getAllPullRequestEdges(
     );
 
     pullRequestEdges.push(...result.repository.pullRequests.edges);
+
+    if (pullRequestEdges.length >= pullRequestLimit) return pullRequestEdges;
   } while (result.repository.pullRequests.pageInfo.hasNextPage);
 
   return pullRequestEdges;

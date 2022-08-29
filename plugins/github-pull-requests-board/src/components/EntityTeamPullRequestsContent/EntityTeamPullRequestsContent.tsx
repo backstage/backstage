@@ -28,18 +28,18 @@ import { useUserRepositories } from '../../hooks/useUserRepositories';
 
 /** @public */
 export interface EntityTeamPullRequestsContentProps {
-  defaultLimit?: number;
+  pullRequestLimit?: number;
 }
 
 const EntityTeamPullRequestsContent = (
   props: EntityTeamPullRequestsContentProps,
 ) => {
-  const { defaultLimit } = props;
+  const { pullRequestLimit } = props;
   const [infoCardFormat, setInfoCardFormat] = useState<PRCardFormating[]>([]);
   const { repositories } = useUserRepositories();
   const { loading, pullRequests, refreshPullRequests } = usePullRequestsByTeam(
     repositories,
-    defaultLimit,
+    pullRequestLimit,
   );
 
   const header = (

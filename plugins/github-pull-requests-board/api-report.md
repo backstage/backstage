@@ -13,7 +13,7 @@ export const EntityTeamPullRequestsCard: (
 // @public (undocumented)
 export interface EntityTeamPullRequestsCardProps {
   // (undocumented)
-  defaultLimit?: number;
+  pullRequestLimit?: number;
 }
 
 // @public (undocumented)
@@ -24,7 +24,7 @@ export const EntityTeamPullRequestsContent: (
 // @public (undocumented)
 export interface EntityTeamPullRequestsContentProps {
   // (undocumented)
-  defaultLimit?: number;
+  pullRequestLimit?: number;
 }
 
 // (No @packageDocumentation comment for this package)
