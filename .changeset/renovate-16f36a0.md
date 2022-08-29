@@ -7,3 +7,8 @@
 ---
 
 Updated dependency `helmet` to `^6.0.0`.
+
+Please note that these policies are no longer applied by default:
+
+helmet.contentSecurityPolicy no longer sets block-all-mixed-content directive by default
+helmet.expectCt is no longer set by default. It can, however, be explicitly enabled. It will be removed in Helmet 7.
