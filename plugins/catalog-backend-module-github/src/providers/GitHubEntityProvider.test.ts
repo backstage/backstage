@@ -75,6 +75,29 @@ describe('GitHubEntityProvider', () => {
     expect(providers[0].getProviderName()).toEqual('github-provider:default');
   });
 
+  it('throws when the integration config does not exist', () => {
+    const schedule = new PersistingTaskRunner();
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+            host: 'ghe.internal.com',
+          },
+        },
+      },
+    });
+
+    expect(() =>
+      GitHubEntityProvider.fromConfig(config, {
+        logger,
+        schedule,
+      }),
+    ).toThrowError(
+      /There is no GitHub config that matches host ghe.internal.com/,
+    );
+  });
+
   it('multiple provider configs', () => {
     const schedule = new PersistingTaskRunner();
     const config = new ConfigReader({
