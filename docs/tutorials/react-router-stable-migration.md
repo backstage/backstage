@@ -43,7 +43,7 @@ You can automate this step by running the following command:
 yarn backstage-cli migrate react-router-deps
 ```
 
-For those interested in doing this manually, apply the below change to all `package.json` files except the one in the app. Skip moving any dependencies that don't already exist, and move both `dependencies` and `devDependencies`.
+For those interested in doing this manually, apply the below change to all `package.json` files except the one at `packages/app/package.json` or any other app packages. Skip moving any dependencies that don't already exist, and move both `dependencies` and `devDependencies`.
 
 ```diff
  dependencies {
@@ -85,17 +85,17 @@ Once the change has been made, run `yarn install`, and then `yarn why react-rout
 => Found "react-router@6.3.0"
 ```
 
-If you see multiple entries, and especially `=> Found "react-router@6.0.0-beta.0"`, then your dependencies have not yet been fully migrate to support React Router v6 stable. Double check the steps above, using the information that the Yarn `why` command logged. Repeat the same process for `yarn why react-router-dom`.
+If you see multiple entries, and especially `=> Found "react-router@6.0.0-beta.0"`, then your dependencies have not yet been fully migrated to support React Router v6 stable. Double check the steps above, using the information that the Yarn `why` command logged. Repeat the same process for `yarn why react-router-dom`.
 
-If you end up being stuck not being able to move your entire project your entire project to stable versions cleanly, then you can use Yarn `"resolutions"` overrides in your root `package.json`. Try to avoid this option as it may lead to hidden breakages at runtime, and verify any plugins that needed the override. A better option is likely to hold off migrating for a while until plugins have had time to be updated.
+If you end up being stuck not being able to move your entire project to stable versions cleanly, then you can use Yarn `"resolutions"` overrides in your root `package.json`. Try to avoid this option as it may lead to hidden breakages at runtime, and verify any plugins that needed the override. A better option is likely to hold off migrating for a while until plugins have had time to be updated.
 
 ### Step 5 - Breaking Changes
 
-For a new app created with `npx @backstage/create-app`, the above steps are all you need to do. That may not be where you are at though, having created many internal plugins and customizations. Review the breaking changes in the [React Router changelog](https://reactrouter.com/docs/en/v6/upgrading/reach#breaking-updates) and validate all parts of your app. We've summarized the most important breaking changes below.
+For a new app created with `npx @backstage/create-app`, the above steps are all you need to do. If you have created internal plugins and customizations then be sure to review the breaking changes in the [React Router changelog](https://reactrouter.com/docs/en/v6/upgrading/reach#breaking-updates) and validate all parts of your app. We've summarized the most important breaking changes below.
 
 ## Breaking Changes
 
-See [changelog](https://reactrouter.com/docs/en/v6/upgrading/reach#breaking-updates) for a full list of breaking changes. Below we highlight a couple of most important ones.
+See [changelog](https://reactrouter.com/docs/en/v6/upgrading/reach#breaking-updates) for a full list of breaking changes. Below we highlight a couple of the most important ones.
 
 ### Route paths
 
@@ -187,7 +187,7 @@ In addition, you need to make sure that your plugin truly is compatible with bot
 
 Check the browser console for React Router related error messages.
 
-Check yarn.lock for packages depending on older versions of react-router
+Check `yarn.lock` for packages depending on older versions of `react-router`:
 
 ```bash
 yarn why react-router
