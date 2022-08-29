@@ -45,7 +45,7 @@
     "express-promise-router": "^4.1.0",
     "graphql": "^16.0.0",
     "graphql-modules": "^2.0.0",
-    "helmet": "^5.0.2",
+    "helmet": "^6.0.0",
     "reflect-metadata": "^0.1.13",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
