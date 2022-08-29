@@ -92,9 +92,22 @@ For a new app created with `npx @backstage/create-app`, the above steps are all 
 
 See [changelog](https://reactrouter.com/docs/en/v6/upgrading/reach#breaking-updates) for a full list of breaking changes. Below we highlight a couple of most important ones.
 
-PermissionedRoute
-
 ### Route paths
+
+`Route` components must always contain a `path` or `index` prop.
+
+```tsx
+<Routes>
+  {/* Invalid */}
+  <Route element={<Example />} />
+
+  {/* Valid */}
+  <Route path="/" element={<Example />} />
+
+  {/* Valid but discouraged due to incompatibility with react-router beta */}
+  <Route index element={<Example />} />
+</Routes>
+```
 
 Absolute route paths within each `Routes` element must now match their own location, meaning that the following is invalid:
 
@@ -106,10 +119,6 @@ Absolute route paths within each `Routes` element must now match their own locat
 </Routes>
 ```
 
-The most common case where this will cause breakages in the `EntityPage`s, which is covered in the above migration steps. But this change may also cause breakages in plugins as well.
-
-<how the route paths broke>
-
 ### Routes and Route components
 
 The `Routes` and `Route` component both received a large related breaking changes. It is no longer possible
@@ -118,7 +127,7 @@ structures like these:
 
 ```tsx
 <Routes>
-  <Navigate key="/foo" to="/bar" />
+  <MyComponent path="/foo" />
   ...
 </Routes>
 ```
@@ -127,7 +136,7 @@ need to be migrated to this:
 
 ```tsx
 <Routes>
-  <Route path="/foo" element={<Navigate to="/bar" />} />
+  <Route path="/foo" element={<MyComponent />} />
   ...
 </Routes>
 ```
@@ -135,22 +144,46 @@ need to be migrated to this:
 Somewhat related to the `Routes` change, it is no longer possible to render a
 `Route` element by itself, outside of a `Routes` wrapper. Previously, rendering
 such a `Route` element would cause the contents of its `element` prop to be
-rendered instead, but now it will throw an error.
+rendered instead, but it will now throw an error.
 
-### NavLink
+### `PermissionedRoute`
 
+Because of the above change, the `PermissionedRoute` component no longer works in all situations with React Router v6 stable. It has been deprecated in favor of the new `RequirePermission` component, which can be placed anywhere in order to perform a permissions check.
+
+```diff
+-    <PermissionedRoute
+-      path="/catalog-import"
+-      permission={catalogEntityCreatePermission}
+-      element={<CatalogImportPage />}
++    <Route
++      path="/catalog-import"
++      element={
++        <RequirePermission permission={catalogEntityCreatePermission}>
++          <CatalogImportPage />
++        </RequirePermission>
++      }
+     />
 ```
 
-```
+### `NavLink`
 
-### Troubleshooting
+The `NavLink` component no longer has the `activeClassName` and `activeStyle` props. Instead, the `className` and `style` props accept a callback that receives a boolean indicating whether the link is active.
 
-Use console
+## For Plugin Authors
+
+There are a few things to keep in mind when migrating a published plugin. You of course need to make sure that dependencies on React Router are moved to `peerDependencies` as described above.
+In addition, you need to make sure that your plugin truly is compatible with both versions of React Router at runtime. To help you achieve that, you can follow these additional guidelines:
+
+- Bump the version of `react-router` and `react-router-dom` in your own project to use the stable version. Place them in `devDependencies` if your plugin is a single package project. The stable version is more strict, so this is the better baseline to work from.
+- Make sure all `Route` elements have a `path` prop. Do not use the new `index` props, as it is not supported by the beta version. Use `path="/"` for the index routes within a `Routes`.
+- If you are using `NavLink`, use both the new and old APIs simultaneously, and work around any TypeScript errors.
+
+## Troubleshooting
+
+Check the browser console for React Router related error messages.
 
 Check yarn.lock for packages depending on older versions of react-router
 
 ```bash
-grep 'react-router-dom "6.0.0-beta.0"' yarn.lock
+yarn why react-router
 ```
-
-^ do we have to support ranges as well? maybe not
