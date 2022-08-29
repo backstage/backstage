@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.5.1
+
+### Patch Changes
+
+- Fix minimum required version for `vm2`
+
 ## 1.5.0
 
 ### Minor Changes
