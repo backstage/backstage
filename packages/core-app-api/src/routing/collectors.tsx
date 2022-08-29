@@ -109,7 +109,7 @@ export const routingV2Collector = createCollector(
 
     const parentChildren = ctx?.obj?.children ?? acc.objects;
 
-    if (pathProp) {
+    if (pathProp !== undefined) {
       if (typeof pathProp !== 'string') {
         throw new Error(
           `Element path must be a string at "${stringifyNode(node)}"`,
