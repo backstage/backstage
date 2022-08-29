@@ -31,7 +31,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import Alert from '@material-ui/lab/Alert';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { apacheAirflowApiRef } from '../../api';
 import { Dag } from '../../api/types';
@@ -49,7 +49,7 @@ const columns: TableColumn[] = [
     field: 'is_paused',
     render: (row: Partial<DagTableRow>) => (
       <Tooltip title="Pause/Unpause DAG">
-        <Switch checked={!row.is_paused} disabled />
+        <Switch checked={!row.is_paused} />
       </Tooltip>
     ),
     width: '5%',
@@ -70,6 +70,7 @@ const columns: TableColumn[] = [
       </div>
     ),
     width: '50%',
+    disableClick: true,
   },
   {
     title: 'Runs',
@@ -77,6 +78,7 @@ const columns: TableColumn[] = [
       <LatestDagRunsStatus dagId={row.dag_id || ''} />
     ),
     width: '10%',
+    disableClick: true,
   },
   {
     title: 'Owner',
@@ -89,6 +91,7 @@ const columns: TableColumn[] = [
       </Box>
     ),
     width: '10%',
+    disableClick: true,
   },
   {
     title: 'Active',
@@ -101,6 +104,7 @@ const columns: TableColumn[] = [
       </Box>
     ),
     width: '10%',
+    disableClick: true,
   },
   {
     title: 'Schedule',
@@ -108,6 +112,7 @@ const columns: TableColumn[] = [
       <ScheduleIntervalLabel interval={row.schedule_interval} />
     ),
     width: '10%',
+    disableClick: true,
   },
   {
     title: 'Link',
@@ -120,20 +125,23 @@ const columns: TableColumn[] = [
       </a>
     ),
     width: '5%',
+    disableClick: true,
   },
 ];
 
 type DenseTableProps = {
   dags: Dag[];
+  rowClick: Function;
 };
 
-export const DenseTable = ({ dags }: DenseTableProps) => {
+export const DenseTable = ({ dags, rowClick }: DenseTableProps) => {
   return (
     <Table
       title="DAGs"
       options={{ pageSize: 5, columnsButton: true }}
       columns={columns}
       data={dags}
+      onRowClick={(_event, rowData) => rowClick(rowData)}
     />
   );
 };
@@ -143,7 +151,25 @@ type DagTableComponentProps = {
 };
 
 export const DagTableComponent = ({ dagIds }: DagTableComponentProps) => {
+  const [dagsData, setDagsData] = useState<DagTableRow[] | []>([]);
   const apiClient = useApi(apacheAirflowApiRef);
+
+  const updatePaused = async (rowData: Dag): Promise<Dag> => {
+    const newDag = await apiClient.updateDag(
+      rowData.dag_id,
+      !rowData.is_paused,
+    );
+
+    const newDags = dagsData.map(el => {
+      if (el.dag_id === newDag.dag_id) {
+        return { ...el, is_paused: newDag.is_paused };
+      }
+      return el;
+    });
+
+    setDagsData(newDags);
+    return newDag;
+  };
 
   const { value, loading, error } = useAsync(async (): Promise<Dag[]> => {
     if (dagIds) {
@@ -153,17 +179,25 @@ export const DagTableComponent = ({ dagIds }: DagTableComponentProps) => {
     return await apiClient.listDags();
   }, []);
 
+  const data = value?.map(el => ({
+    ...el,
+    id: el.dag_id, // table records require `id` attribute
+    dagUrl: `${apiClient.baseUrl}dag_details?dag_id=${el.dag_id}`, // construct path to DAG using `baseUrl`
+  }));
+
+  useEffect(() => {
+    if (data) {
+      setDagsData(data);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data?.length]);
+
   if (loading) {
     return <Progress />;
   } else if (error) {
     return <Alert severity="error">{error.message}</Alert>;
   }
 
-  const data = value?.map(el => ({
-    ...el,
-    id: el.dag_id, // table records require `id` attribute
-    dagUrl: `${apiClient.baseUrl}dag_details?dag_id=${el.dag_id}`, // construct path to DAG using `baseUrl`
-  }));
   const dagsNotFound =
     dagIds && value
       ? dagIds.filter(id => !value.find(d => d.dag_id === id))
@@ -179,7 +213,7 @@ export const DagTableComponent = ({ dagIds }: DagTableComponentProps) => {
       ) : (
         ''
       )}
-      <DenseTable dags={data || []} />
+      <DenseTable dags={dagsData} rowClick={updatePaused} />
     </>
   );
 };

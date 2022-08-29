@@ -98,6 +98,9 @@ export class ApacheAirflowClient implements ApacheAirflowApi {
   async updateDag(dagId: string, isPaused: boolean): Promise<Dag> {
     const init = {
       method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ is_paused: isPaused }),
     };
     return await this.fetch<Dag>(`/dags/${dagId}`, init);
