@@ -25,10 +25,8 @@ import { ConfigReader } from '@backstage/core-app-api';
 import { TestApiProvider, renderWithEffects } from '@backstage/test-utils';
 
 import { searchApiRef } from '../../api';
-import {
-  SearchAutocomplete,
-  SearchAutocompleteDefaultOption,
-} from './SearchAutocomplete';
+import { SearchAutocomplete } from './SearchAutocomplete';
+import { SearchAutocompleteDefaultOption } from './SearchAutocompleteDefaultOption';
 
 const title = 'Backstage Test App';
 const configApiMock = new ConfigReader({
@@ -98,7 +96,7 @@ describe('SearchAutocomplete', () => {
     );
 
     await waitFor(() => {
-      expect(query).toBeCalledWith({
+      expect(query).toHaveBeenCalledWith({
         filters: {},
         pageCursor: undefined,
         term: options[0],
@@ -120,7 +118,7 @@ describe('SearchAutocomplete', () => {
     );
 
     await waitFor(() => {
-      expect(query).toBeCalledWith({
+      expect(query).toHaveBeenCalledWith({
         filters: {},
         pageCursor: undefined,
         term: options[0],
@@ -131,7 +129,7 @@ describe('SearchAutocomplete', () => {
     await userEvent.click(screen.getByLabelText('Clear'));
 
     await waitFor(() => {
-      expect(query).toBeCalledWith({
+      expect(query).toHaveBeenCalledWith({
         filters: {},
         pageCursor: undefined,
         term: '',
@@ -157,7 +155,7 @@ describe('SearchAutocomplete', () => {
     await userEvent.click(screen.getByText(options[0]));
 
     await waitFor(() => {
-      expect(query).toBeCalledWith({
+      expect(query).toHaveBeenCalledWith({
         filters: {},
         pageCursor: undefined,
         term: options[0],

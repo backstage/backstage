@@ -55,7 +55,7 @@ describe('SearchModal', () => {
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(query).toHaveBeenCalledTimes(2);
+    expect(query).toHaveBeenCalledTimes(1);
   });
 
   it('Should use parent search context if defined', async () => {
@@ -133,7 +133,7 @@ describe('SearchModal', () => {
       },
     );
 
-    expect(query).toHaveBeenCalledTimes(2);
+    expect(query).toHaveBeenCalledTimes(1);
     await userEvent.keyboard('{Escape}');
     expect(toggleModal).toHaveBeenCalledTimes(1);
   });

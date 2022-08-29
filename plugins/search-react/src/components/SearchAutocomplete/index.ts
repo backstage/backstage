@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-export {
-  SearchAutocomplete,
-  SearchAutocompleteDefaultOption,
-} from './SearchAutocomplete';
+export { SearchAutocomplete } from './SearchAutocomplete';
+
+export { SearchAutocompleteDefaultOption } from './SearchAutocompleteDefaultOption';
 
 export type {
   SearchAutocompleteProps,
-  SearchAutocompleteDefaultOptionProps,
+  SearchAutocompleteComponent,
 } from './SearchAutocomplete';
+
+export type { SearchAutocompleteDefaultOptionProps } from './SearchAutocompleteDefaultOption';

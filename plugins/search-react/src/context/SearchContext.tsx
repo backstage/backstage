@@ -100,11 +100,6 @@ const searchInitialState: SearchContextState = {
   types: [],
 };
 
-/**
- * Creates a new local search context.
- * @remarks Use it for isolating this context from parent search contexts.
- * @internal
- */
 const useSearchContextValue = (
   initialValue: SearchContextState = searchInitialState,
 ) => {
@@ -165,32 +160,15 @@ const useSearchContextValue = (
   return value;
 };
 
-/**
- * Props for {@link SearchContextProvider}
- *
- * @public
- */
-export type SearchContextProviderProps = PropsWithChildren<{
+export type LocalSearchContextProps = PropsWithChildren<{
   initialState?: SearchContextState;
-  /**
-   * If true, don't create a child context if there is a parent one already defined.
-   * @remarks Default to false.
-   */
-  useParentContext?: boolean;
 }>;
 
-/**
- * @public
- * Search context provider which gives you access to shared state between search components
- */
-export const SearchContextProvider = (props: SearchContextProviderProps) => {
-  const { initialState, useParentContext, children } = props;
-  const hasParentContext = useSearchContextCheck();
+const LocalSearchContext = (props: SearchContextProviderProps) => {
+  const { initialState, children } = props;
   const value = useSearchContextValue(initialState);
 
-  return useParentContext && hasParentContext ? (
-    <>{children}</>
-  ) : (
+  return (
     <AnalyticsContext
       attributes={{ searchTypes: value.types.sort().join(',') }}
     >
@@ -198,5 +176,50 @@ export const SearchContextProvider = (props: SearchContextProviderProps) => {
         {children}
       </SearchContext.Provider>
     </AnalyticsContext>
+  );
+};
+
+/**
+ * Props for {@link SearchContextProvider}
+ *
+ * @public
+ */
+export type SearchContextProviderProps =
+  | PropsWithChildren<{
+      /**
+       * State initialized by a local context.
+       */
+      initialState?: SearchContextState;
+      /**
+       * Do not create an inheritance from the parent, as a new initial state must be defined in a local context.
+       */
+      inheritParentContextIfAvailable?: never;
+    }>
+  | PropsWithChildren<{
+      /**
+       * Does not accept initial state since it is already initialized by parent context.
+       */
+      initialState?: never;
+      /**
+       * If true, don't create a child context if there is a parent one already defined.
+       * @remarks Defaults to false.
+       */
+      inheritParentContextIfAvailable?: boolean;
+    }>;
+
+/**
+ * @public
+ * Search context provider which gives you access to shared state between search components
+ */
+export const SearchContextProvider = (props: SearchContextProviderProps) => {
+  const { initialState, inheritParentContextIfAvailable, children } = props;
+  const hasParentContext = useSearchContextCheck();
+
+  return hasParentContext && inheritParentContextIfAvailable ? (
+    <>{children}</>
+  ) : (
+    <LocalSearchContext initialState={initialState}>
+      {children}
+    </LocalSearchContext>
   );
 };

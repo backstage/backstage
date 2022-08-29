@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import React, { ChangeEvent, ReactNode, useCallback, useMemo } from 'react';
+import React, { ChangeEvent, useCallback, useMemo } from 'react';
 
+import { CircularProgress } from '@material-ui/core';
 import {
-  CircularProgress,
-  ListItemIcon,
-  ListItemText,
-  ListItemTextProps,
-} from '@material-ui/core';
-import {
-  Value,
   Autocomplete,
   AutocompleteProps,
   AutocompleteChangeDetails,
@@ -39,38 +33,29 @@ import { SearchBar, SearchBarProps } from '../SearchBar';
  *
  * @public
  */
-export type SearchAutocompleteProps<
-  T,
-  Multiple extends boolean | undefined,
-  DisableClearable extends boolean | undefined,
-  FreeSolo extends boolean | undefined,
-> = Omit<
-  AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>,
-  'renderInput'
+export type SearchAutocompleteProps<Option> = Omit<
+  AutocompleteProps<Option, undefined, undefined, boolean>,
+  'renderInput' | 'disableClearable' | 'multiple'
 > & {
+  'data-testid'?: string;
+  inputPlaceholder?: SearchBarProps['placeholder'];
   inputDebounceTime?: SearchBarProps['debounceTime'];
-  renderInput?: (params: AutocompleteRenderInputParams) => JSX.Element;
 };
 
+/**
+ * Type for {@link SearchAutocomplete}.
+ *
+ * @public
+ */
+export type SearchAutocompleteComponent = <Option>(
+  props: SearchAutocompleteProps<Option>,
+) => JSX.Element;
+
 const withContext = (
-  Component: <
-    T,
-    Multiple extends boolean | undefined,
-    DisableClearable extends boolean | undefined,
-    FreeSolo extends boolean | undefined,
-  >(
-    props: SearchAutocompleteProps<T, Multiple, DisableClearable, FreeSolo>,
-  ) => JSX.Element,
-) => {
-  return <
-    T,
-    Multiple extends boolean | undefined,
-    DisableClearable extends boolean | undefined,
-    FreeSolo extends boolean | undefined,
-  >(
-    props: SearchAutocompleteProps<T, Multiple, DisableClearable, FreeSolo>,
-  ) => (
-    <SearchContextProvider useParentContext>
+  Component: SearchAutocompleteComponent,
+): SearchAutocompleteComponent => {
+  return props => (
+    <SearchContextProvider inheritParentContextIfAvailable>
       <Component {...props} />
     </SearchContextProvider>
   );
@@ -82,43 +67,54 @@ const withContext = (
  * @public
  */
 export const SearchAutocomplete = withContext(
-  <
-    T,
-    Multiple extends boolean | undefined,
-    DisableClearable extends boolean | undefined,
-    FreeSolo extends boolean | undefined,
-  >({
-    loading,
-    value,
-    onChange = () => {},
-    options = [],
-    getOptionLabel = (option: T) => String(option),
-    renderInput,
-    inputDebounceTime,
-    fullWidth = true,
-    clearOnBlur = false,
-    ...rest
-  }: SearchAutocompleteProps<T, Multiple, DisableClearable, FreeSolo>) => {
+  function SearchAutocompleteComponent<Option>(
+    props: SearchAutocompleteProps<Option>,
+  ) {
+    const {
+      loading,
+      value,
+      onChange = () => {},
+      options = [],
+      getOptionLabel = (option: Option) => String(option),
+      inputPlaceholder,
+      inputDebounceTime,
+      freeSolo = true,
+      fullWidth = true,
+      clearOnBlur = false,
+      'data-testid': dataTestId = 'search-autocomplete',
+      ...rest
+    } = props;
+
     const { setTerm } = useSearch();
 
-    const inputValue = useMemo(() => {
-      return value ? getOptionLabel(value as T) : '';
-    }, [value, getOptionLabel]);
+    const getInputValue = useCallback(
+      (option?: null | string | Option) => {
+        if (!option) return '';
+        if (typeof option === 'string') return option;
+        return getOptionLabel(option);
+      },
+      [getOptionLabel],
+    );
+
+    const inputValue = useMemo(
+      () => getInputValue(value),
+      [value, getInputValue],
+    );
 
     const handleChange = useCallback(
       (
         event: ChangeEvent<{}>,
-        newValue: Value<T, Multiple, DisableClearable, FreeSolo>,
+        option: null | string | Option,
         reason: AutocompleteChangeReason,
-        details?: AutocompleteChangeDetails<T>,
+        details?: AutocompleteChangeDetails<Option>,
       ) => {
-        onChange(event, newValue, reason, details);
-        setTerm(newValue ? getOptionLabel(newValue as T) : '');
+        setTerm(getInputValue(option));
+        onChange(event, option, reason, details);
       },
-      [getOptionLabel, setTerm, onChange],
+      [getInputValue, setTerm, onChange],
     );
 
-    const defaultRenderInput = useCallback(
+    const renderInput = useCallback(
       ({
         InputProps: { ref, endAdornment },
         InputLabelProps,
@@ -129,6 +125,7 @@ export const SearchAutocomplete = withContext(
           ref={ref}
           clearButton={false}
           value={inputValue}
+          placeholder={inputPlaceholder}
           debounceTime={inputDebounceTime}
           endAdornment={
             loading ? (
@@ -143,60 +140,22 @@ export const SearchAutocomplete = withContext(
           }
         />
       ),
-      [loading, inputValue, inputDebounceTime],
+      [loading, inputValue, inputPlaceholder, inputDebounceTime],
     );
 
     return (
       <Autocomplete
-        data-testid="search-autocomplete"
+        {...rest}
+        data-testid={dataTestId}
         value={value}
         onChange={handleChange}
         options={options}
         getOptionLabel={getOptionLabel}
-        renderInput={renderInput ?? defaultRenderInput}
+        renderInput={renderInput}
+        freeSolo={freeSolo}
         fullWidth={fullWidth}
         clearOnBlur={clearOnBlur}
-        {...rest}
       />
     );
   },
-);
-
-/**
- * Props for {@link SearchAutocompleteDefaultOption}.
- *
- * @public
- */
-export type SearchAutocompleteDefaultOptionProps = {
-  icon?: ReactNode;
-  primaryText: ListItemTextProps['primary'];
-  primaryTextTypographyProps?: ListItemTextProps['primaryTypographyProps'];
-  secondaryText?: ListItemTextProps['secondary'];
-  secondaryTextTypographyProps?: ListItemTextProps['secondaryTypographyProps'];
-  disableTextTypography?: ListItemTextProps['disableTypography'];
-};
-
-/**
- * A default search bar autocomplete component.
- *
- * @public
- */
-export const SearchAutocompleteDefaultOption = ({
-  icon,
-  primaryText,
-  primaryTextTypographyProps,
-  secondaryText,
-  secondaryTextTypographyProps,
-  disableTextTypography,
-}: SearchAutocompleteDefaultOptionProps) => (
-  <>
-    {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
-    <ListItemText
-      primary={primaryText}
-      primaryTypographyProps={primaryTextTypographyProps}
-      secondary={secondaryText}
-      secondaryTypographyProps={secondaryTextTypographyProps}
-      disableTypography={disableTextTypography}
-    />
-  </>
 );
