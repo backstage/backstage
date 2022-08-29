@@ -1,17 +1,20 @@
 ---
-id: read-router-stable-migration
-title: react-router stable migration
-description: Guide for how to migrate from react-router beta to react-router 6 stable
+id: react-router-stable-migration
+title: React Router 6.0 Migration
+description: Guide for how to migrate from React Router v6 beta to React Router v6 stable
 ---
 
-Backstage has for a long time been using `react-router` version `6.0.0-beta.0`. We adopted this unstable
-version because v6 had some new and features that fit really well with Backstage, particularly relative routing.
-Because we jumped on this early and unstable version, we knew that we would at some point need
-a breaking migration to the stable version of `react-router` v6, which is the point we're at now!
+Backstage has for a long time been using `react-router` version `6.0.0-beta.0`.
+We adopted this unstable version because v6 had some new features that fit
+really well with Backstage, particularly relative routing. Because we jumped on
+this early and unstable version, we knew that we would at some point need a
+breaking migration to the stable version of `react-router` v6, which is the
+point we're at now!
 
-This migration is required but controlled by each app, meaning that you choose when you want
-to migrate your app. There will however be some point in the future where we drop support for the
-beta version of `react-router`, at which point you would be forced to migrate.
+This migration is required but controlled by each app, meaning that you choose
+when you want to migrate your app. There will however be some point in the
+future where we drop support for the beta version of `react-router`, at which
+time you would be forced to migrate.
 
 The stable version of React Router v6 brings a number of improvements and bug
 fixes. Notably, the way that paths are resolved has been improved, which fixes a
@@ -25,12 +28,14 @@ The first Backstage release to support `react-router` v6 is `1.6`. You should up
 
 ### Step 2 - Move `react-router` to `peerDependencies`
 
-It's important that only one version of `react-router` is installed in the project at a time. Similar to how the `react` version
-is handled, all plugins and packages now declare a peer dependency on the React Router dependencies, rather than a direct dependency.
-The only exception to this is the app package, which has the direct dependencies that end up deciding what version of React Router that
-you are using in your project.
+It's important that only one version of `react-router` is installed in the
+project at a time. Similar to how the `react` version is handled, all plugins
+and packages now declare a peer dependency on the React Router dependencies,
+rather than a direct dependency. The only exception to this is the app package
+(in `packages/app/package.json`), which has the direct dependencies that end up
+deciding what version of React Router that you are using in your project.
 
-Your internal packages might specify a dependency on `react-router` or `react-router-dom` in their `package.json` and important that those are converted to `peerDependencies` so we can control the version of `react-router` in the app `package.json`.
+Your internal packages might specify a dependency on `react-router` or `react-router-dom` in their `package.json`, and it's important that those are converted to `peerDependencies` so that we can control the version of `react-router` in the app `package.json`.
 
 You can automate this step by running the following command:
 
