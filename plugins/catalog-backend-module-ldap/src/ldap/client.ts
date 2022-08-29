@@ -25,8 +25,9 @@ import {
   DefaultLdapVendor,
   FreeIpaVendor,
   LdapVendor,
+  getVendorByName,
 } from './vendors';
-
+import tlsLib from 'tls';
 /**
  * Basic wrapper for the `ldapjs` library.
  *
@@ -43,9 +44,16 @@ export class LdapClient {
     bind?: BindConfig,
     tls?: TLSConfig,
   ): Promise<LdapClient> {
+    const tlsOptions = {
+      secureContext: tlsLib.createSecureContext({
+        cert: tls?.certs,
+        key: tls?.keys,
+      }),
+      rejectUnauthorized: tls?.rejectUnauthorized,
+    };
     const client = ldap.createClient({
       url: target,
-      tlsOptions: tls,
+      tlsOptions: tlsOptions,
     });
 
     // We want to have a catch-all error handler at the top, since the default
@@ -216,10 +224,16 @@ export class LdapClient {
    *
    * @see https://ldapwiki.com/wiki/Determine%20LDAP%20Server%20Vendor
    */
-  async getVendor(): Promise<LdapVendor> {
+  async getVendor(vendorOverride?: String): Promise<LdapVendor> {
     if (this.vendor) {
       return this.vendor;
     }
+
+    if (vendorOverride) {
+      this.vendor = getVendorByName(vendorOverride);
+      return this.vendor;
+    }
+
     this.vendor = this.getRootDSE()
       .then(root => {
         if (root && root.raw?.forestFunctionality) {

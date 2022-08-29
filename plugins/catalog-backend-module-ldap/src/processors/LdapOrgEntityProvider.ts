@@ -89,6 +89,11 @@ export interface LdapOrgEntityProviderOptions {
    * The function that transforms a group entry in LDAP to an entity.
    */
   groupTransformer?: GroupTransformer;
+
+  /**
+   * Specify which vendor to use.
+   */
+  vendorOverride?: String;
 }
 
 /**
@@ -131,6 +136,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
       provider,
       userTransformer: options.userTransformer,
       groupTransformer: options.groupTransformer,
+      vendorOverride: options.vendorOverride,
       logger,
     });
 
@@ -146,6 +152,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
       logger: Logger;
       userTransformer?: UserTransformer;
       groupTransformer?: GroupTransformer;
+      vendorOverride?: String;
     },
   ) {}
 
@@ -179,6 +186,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
       this.options.logger,
       this.options.provider.target,
       this.options.provider.bind,
+      // Todo maybe pass TLS certs and keys from bind
       this.options.provider.tls,
     );
 
@@ -189,6 +197,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
       {
         groupTransformer: this.options.groupTransformer,
         userTransformer: this.options.userTransformer,
+        vendorOverride: this.options.vendorOverride,
         logger,
       },
     );

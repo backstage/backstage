@@ -73,6 +73,30 @@ export const FreeIpaVendor: LdapVendor = {
   },
 };
 
+export const GsuiteVendor: LdapVendor = {
+  dnAttributeName: 'dn',
+  uuidAttributeName: 'entryUUID',
+  decodeStringAttribute: (entry, name) => {
+    return decode(entry, name, value => {
+      return value.toString();
+    });
+  },
+};
+
+export function getVendorByName(vendor: String): Promise<LdapVendor> {
+  return new Promise<LdapVendor>(resolve => {
+    if (vendor === 'activeDirectory') {
+      resolve(ActiveDirectoryVendor);
+    } else if (vendor === 'freeIpa') {
+      resolve(FreeIpaVendor);
+    } else if (vendor === 'gsuite') {
+      resolve(GsuiteVendor);
+    } else {
+      resolve(DefaultLdapVendor);
+    }
+  });
+}
+
 // Decode an attribute to a consumer
 function decode(
   entry: SearchEntry,

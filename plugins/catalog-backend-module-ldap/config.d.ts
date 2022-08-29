@@ -56,6 +56,8 @@ export interface Config {
       tls?: {
         // Node TLS rejectUnauthorized
         rejectUnauthorized?: boolean;
+        keys: string;
+        certs: string;
       };
 
       /**

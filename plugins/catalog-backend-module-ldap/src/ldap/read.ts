@@ -105,13 +105,13 @@ export async function defaultUserTransformer(
 export async function readLdapUsers(
   client: LdapClient,
   config: UserConfig,
-  opts?: { transformer?: UserTransformer },
+  opts?: { transformer?: UserTransformer; vendorOverride?: String },
 ): Promise<{
   users: UserEntity[]; // With all relations empty
   userMemberOf: Map<string, Set<string>>; // DN -> DN or UUID of groups
 }> {
   const { dn, options, map } = config;
-  const vendor = await client.getVendor();
+  const vendor = await client.getVendor(opts?.vendorOverride);
 
   const entities: UserEntity[] = [];
   const userMemberOf: Map<string, Set<string>> = new Map();
@@ -210,6 +210,7 @@ export async function readLdapGroups(
   config: GroupConfig,
   opts?: {
     transformer?: GroupTransformer;
+    vendorOverride?: String;
   },
 ): Promise<{
   groups: GroupEntity[]; // With all relations empty
@@ -221,7 +222,7 @@ export async function readLdapGroups(
   const groupMember: Map<string, Set<string>> = new Map();
 
   const { dn, map, options } = config;
-  const vendor = await client.getVendor();
+  const vendor = await client.getVendor(opts?.vendorOverride);
 
   const transformer = opts?.transformer ?? defaultGroupTransformer;
 
@@ -270,6 +271,7 @@ export async function readLdapOrg(
   options: {
     groupTransformer?: GroupTransformer;
     userTransformer?: UserTransformer;
+    vendorOverride?: String;
     logger: Logger;
   },
 ): Promise<{
@@ -281,11 +283,15 @@ export async function readLdapOrg(
 
   const { users, userMemberOf } = await readLdapUsers(client, userConfig, {
     transformer: options?.userTransformer,
+    vendorOverride: options?.vendorOverride,
   });
   const { groups, groupMemberOf, groupMember } = await readLdapGroups(
     client,
     groupConfig,
-    { transformer: options?.groupTransformer },
+    {
+      transformer: options?.groupTransformer,
+      vendorOverride: options?.vendorOverride,
+    },
   );
 
   resolveRelations(groups, users, userMemberOf, groupMemberOf, groupMember);

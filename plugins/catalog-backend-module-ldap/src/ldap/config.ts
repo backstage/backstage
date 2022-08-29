@@ -20,6 +20,7 @@ import { SearchOptions } from 'ldapjs';
 import mergeWith from 'lodash/mergeWith';
 import { trimEnd } from 'lodash';
 import { RecursivePartial } from './util';
+import fs from 'fs';
 
 /**
  * The configuration parameters for a single LDAP provider.
@@ -49,6 +50,8 @@ export type LdapProviderConfig = {
 export type TLSConfig = {
   // Node TLS rejectUnauthorized
   rejectUnauthorized?: boolean;
+  keys?: string;
+  certs?: string;
 };
 
 /**
@@ -205,6 +208,8 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
     }
     return {
       rejectUnauthorized: c.getOptionalBoolean('rejectUnauthorized'),
+      keys: fs.readFileSync(c.getString('keys')).toString(),
+      certs: fs.readFileSync(c.getString('certs')).toString(),
     };
   }
 
