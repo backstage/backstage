@@ -170,4 +170,31 @@ describe('ServiceRegistry', () => {
     expect(await factoryB('catalog')).toBe(await factoryB('catalog'));
     expect(await factoryA('catalog')).not.toBe(await factoryB('catalog'));
   });
+
+  it('should not call factory functions more than once', async () => {
+    const innerFactory = jest.fn(async (pluginId: string) => {
+      return { x: 1, pluginId };
+    });
+    const factory = jest.fn(async () => innerFactory);
+    const myFactory = createServiceFactory({
+      service: ref1,
+      deps: {},
+      factory,
+    });
+
+    const registry = new ServiceRegistry([myFactory]);
+
+    await Promise.all([
+      registry.get(ref1)!('catalog')!,
+      registry.get(ref1)!('catalog')!,
+      registry.get(ref1)!('catalog')!,
+      registry.get(ref1)!('scaffolder')!,
+      registry.get(ref1)!('scaffolder')!,
+    ]);
+
+    expect(factory).toHaveBeenCalledTimes(1);
+    expect(innerFactory).toHaveBeenCalledTimes(2);
+    expect(innerFactory).toHaveBeenCalledWith('catalog');
+    expect(innerFactory).toHaveBeenCalledWith('scaffolder');
+  });
 });

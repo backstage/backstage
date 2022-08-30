@@ -22,7 +22,13 @@ import {
 export class ServiceRegistry {
   readonly #providedFactories: Map<string, ServiceFactory>;
   readonly #loadedDefaultFactories: Map<Function, ServiceFactory>;
-  readonly #implementations: Map<ServiceFactory, Map<string, unknown>>;
+  readonly #implementations: Map<
+    ServiceFactory,
+    {
+      factoryFunc: Promise<FactoryFunc<unknown>>;
+      byPlugin: Map<string, Promise<unknown>>;
+    }
+  >;
 
   constructor(factories: ServiceFactory<any>[]) {
     this.#providedFactories = new Map(factories.map(f => [f.service.id, f]));
@@ -47,29 +53,31 @@ export class ServiceRegistry {
         factory = loadedFactory;
       }
 
-      let implementations = this.#implementations.get(factory);
-      if (implementations) {
-        if (implementations.has(pluginId)) {
-          return implementations.get(pluginId) as T;
-        }
-      } else {
-        implementations = new Map();
-        this.#implementations.set(factory, implementations);
+      let implementation = this.#implementations.get(factory);
+      if (!implementation) {
+        const factoryDeps = Object.fromEntries(
+          Object.entries(factory.deps).map(([name, serviceRef]) => [
+            name,
+            this.get(serviceRef)!, // TODO: throw
+          ]),
+        );
+
+        implementation = {
+          factoryFunc: factory.factory(factoryDeps),
+          byPlugin: new Map(),
+        };
+
+        this.#implementations.set(factory, implementation);
       }
 
-      const factoryDeps = Object.fromEntries(
-        Object.entries(factory.deps).map(([name, serviceRef]) => [
-          name,
-          this.get(serviceRef)!, // TODO: throw
-        ]),
-      );
+      let result = implementation.byPlugin.get(pluginId) as Promise<any>;
+      if (!result) {
+        result = implementation.factoryFunc.then(func => func(pluginId));
 
-      const factoryFunc = await factory.factory(factoryDeps);
-      const implementation = await factoryFunc(pluginId);
+        implementation.byPlugin.set(pluginId, result);
+      }
 
-      implementations.set(pluginId, implementation);
-
-      return implementation as T;
+      return result;
     };
   }
 }
