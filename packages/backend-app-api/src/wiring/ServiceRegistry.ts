@@ -21,7 +21,7 @@ import {
 
 export class ServiceRegistry {
   readonly #providedFactories: Map<string, ServiceFactory>;
-  readonly #loadedDefaultFactories: Map<Function, ServiceFactory>;
+  readonly #loadedDefaultFactories: Map<Function, Promise<ServiceFactory>>;
   readonly #implementations: Map<
     ServiceFactory,
     {
@@ -47,10 +47,11 @@ export class ServiceRegistry {
       if (!factory) {
         let loadedFactory = this.#loadedDefaultFactories.get(defaultFactory!);
         if (!loadedFactory) {
-          loadedFactory = (await defaultFactory!(ref)) as ServiceFactory;
+          loadedFactory = defaultFactory!(ref) as Promise<ServiceFactory>;
           this.#loadedDefaultFactories.set(defaultFactory!, loadedFactory);
         }
-        factory = loadedFactory;
+        // NOTE: This await is safe as long as #providedFactories is not mutated.
+        factory = await loadedFactory;
       }
 
       let implementation = this.#implementations.get(factory);

@@ -17,6 +17,7 @@
 import {
   createServiceRef,
   createServiceFactory,
+  ServiceRef,
 } from '@backstage/backend-plugin-api';
 import { ServiceRegistry } from './ServiceRegistry';
 
@@ -169,6 +170,28 @@ describe('ServiceRegistry', () => {
     expect(await factoryA('catalog')).toBe(await factoryA('catalog'));
     expect(await factoryB('catalog')).toBe(await factoryB('catalog'));
     expect(await factoryA('catalog')).not.toBe(await factoryB('catalog'));
+  });
+
+  it('should only call each default factory loader once', async () => {
+    const factoryLoader = jest.fn(async (service: ServiceRef<void>) =>
+      createServiceFactory({
+        service,
+        deps: {},
+        factory: async () => async () => {},
+      }),
+    );
+    const ref = createServiceRef<void>({
+      id: '1',
+      defaultFactory: factoryLoader,
+    });
+
+    const registry = new ServiceRegistry([]);
+    const factory = registry.get(ref)!;
+    await Promise.all([
+      expect(factory('catalog')).resolves.toBeUndefined(),
+      expect(factory('catalog')).resolves.toBeUndefined(),
+    ]);
+    expect(factoryLoader).toHaveBeenCalledTimes(1);
   });
 
   it('should not call factory functions more than once', async () => {
