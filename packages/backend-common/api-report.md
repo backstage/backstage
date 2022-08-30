@@ -252,6 +252,7 @@ export class DatabaseManager {
 // @public
 export type DatabaseManagerOptions = {
   migrations?: PluginDatabaseManager['migrations'];
+  logger?: Logger;
 };
 
 // @public

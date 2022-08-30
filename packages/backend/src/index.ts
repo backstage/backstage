@@ -69,7 +69,7 @@ function makeCreateEnv(config: Config) {
     discovery,
     tokenManager,
   });
-  const databaseManager = DatabaseManager.fromConfig(config);
+  const databaseManager = DatabaseManager.fromConfig(config, { logger: root });
   const cacheManager = CacheManager.fromConfig(config);
   const taskScheduler = TaskScheduler.fromConfig(config);
 
