@@ -479,4 +479,4 @@ for more info.
 [1]: https://cloud.google.com/kubernetes-engine
 [2]: https://cloud.google.com/docs/authentication/production#linux-or-macos
 [3]: https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/
-[4]: https://https://backstage.io/docs/features/kubernetes/authentication
+[4]: https://backstage.io/docs/features/kubernetes/authentication
