@@ -16,6 +16,7 @@ jobs:
 
     env:
       CI: true
+      KUBERNETES: true
 
     steps:
       - uses: actions/checkout@v3

@@ -26,11 +26,13 @@ import {
 import { RunContainerOptions } from './ContainerRunner';
 import { PassThrough } from 'stream';
 
-const describeIfCI = Boolean(process.env.CI) ? describe : describe.skip;
+const describeIfKubernetes = Boolean(process.env.KUBERNETES)
+  ? describe
+  : describe.skip;
 
 jest.setTimeout(10 * 1000);
 
-describeIfCI('KubernetesContainerRunner', () => {
+describeIfKubernetes('KubernetesContainerRunner', () => {
   const kubeConfig = new KubeConfig();
   kubeConfig.loadFromDefault();
   const name = 'kube-runner';
