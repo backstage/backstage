@@ -82,6 +82,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       refreshKeys,
       locationKey,
     } = options;
+    const configClient = tx.client.config.client;
     const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
       .update({
         processed_entity: JSON.stringify(processedEntity),
@@ -114,10 +115,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     // Delete old relations
     // NOTE(freben): knex implemented support for returning() on update queries for sqlite, but at the current time of writing (Sep 2022) not for delete() queries.
     let previousRelationRows: DbRelationsRow[];
-    if (
-      tx.client.config.client.includes('sqlite3') ||
-      tx.client.config.client.includes('mysql')
-    ) {
+    if (configClient.includes('sqlite3') || configClient.includes('mysql')) {
       previousRelationRows = await tx<DbRelationsRow>('relations')
         .select('*')
         .where({ originating_entity_id: id });
@@ -663,11 +661,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         last_discovery_at: tx.fn.now(),
       });
 
-      // TODO(Rugvip): only tested towards Postgres and SQLite
+      // TODO(Rugvip): only tested towards MySQL, Postgres and SQLite.
       // We have to do this because the only way to detect if there was a conflict with
       // SQLite is to catch the error, while Postgres needs to ignore the conflict to not
       // break the ongoing transaction.
-      if (!tx.client.config.client.includes('sqlite3')) {
+      if (tx.client.config.client.includes('pg')) {
         query = query.onConflict('entity_ref').ignore() as any; // type here does not match runtime
       }
 
@@ -675,10 +673,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       const result: { rowCount?: number; length?: number } = await query;
       return result.rowCount === 1 || result.length === 1;
     } catch (error) {
-      // SQLite reached this rather than the rowCount check above
+      // SQLite, or MySQL reached this rather than the rowCount check above
       if (
         isError(error) &&
-        error.message.includes('UNIQUE constraint failed')
+        (error.message.includes('UNIQUE constraint failed') ||
+          error.message.includes('Duplicate entry')) // MySQL failure
       ) {
         return false;
       }
