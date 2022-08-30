@@ -23,6 +23,10 @@ export type GraphQlPullRequests<T> = {
   repository: {
     pullRequests: {
       edges: T;
+      pageInfo: {
+        hasNextPage: boolean;
+        endCursor?: string;
+      };
     };
   };
 };

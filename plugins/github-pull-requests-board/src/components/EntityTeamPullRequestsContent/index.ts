@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { default as EntityTeamPullRequestsContent } from './EntityTeamPullRequestsContent';
+export type { EntityTeamPullRequestsContentProps } from './EntityTeamPullRequestsContent';
