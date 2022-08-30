@@ -20,7 +20,7 @@ createApiFactory({
   api: analyticsApiRef,
   deps: { configApi: configApiRef, identityApi: identityApiRef, storageApi: storageApiRef },
   factory: ({ configApi, identityApi, storageApi }) =>
-    MultipleAnalyticsApi.withApis([
+    MultipleAnalyticsApi.fromApis([
       VendorAnalyticsApi.fromConfig(configApi, { identityApi }),
       CustomAnalyticsApi.fromConfig(configApi, { identityApi, storageApi }),
     ]),

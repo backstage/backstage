@@ -28,7 +28,7 @@ import { AnalyticsApi, AnalyticsEvent } from '@backstage/core-plugin-api';
  *   api: analyticsApiRef,
  *   deps: { configApi: configApiRef, identityApi: identityApiRef, storageApi: storageApiRef },
  *   factory: ({ configApi, identityApi, storageApi }) =>
- *     MultipleAnalyticsApi.withApis([
+ *     MultipleAnalyticsApi.fromApis([
  *       VendorAnalyticsApi.fromConfig(configApi, { identityApi }),
  *       CustomAnalyticsApi.fromConfig(configApi, { identityApi, storageApi }),
  *     ]),
@@ -45,13 +45,13 @@ export class MultipleAnalyticsApi implements AnalyticsApi {
    * @example
    *
    * ```jsx
-   * MultipleAnalyticsApi.withApis([
+   * MultipleAnalyticsApi.fromApis([
    *   SomeAnalyticsApi.fromConfig(configApi),
    *   new CustomAnalyticsApi(),
    * ]);
    * ```
    */
-  static withApis(actualApis: AnalyticsApi[] = []) {
+  static fromApis(actualApis: AnalyticsApi[]) {
     return new MultipleAnalyticsApi(actualApis);
   }
 
@@ -60,10 +60,11 @@ export class MultipleAnalyticsApi implements AnalyticsApi {
    */
   captureEvent(event: AnalyticsEvent): void {
     this.actualApis.forEach(analyticsApi => {
-      /* eslint no-empty: ["error", { "allowEmptyCatch": true }] */
       try {
         analyticsApi.captureEvent(event);
-      } catch {}
+      } catch {
+        /* ignored */
+      }
     });
   }
 }

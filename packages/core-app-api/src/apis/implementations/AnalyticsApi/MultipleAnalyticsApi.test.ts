@@ -18,7 +18,7 @@ import { MultipleAnalyticsApi } from './MultipleAnalyticsApi';
 describe('MultipleAnalyticsApi', () => {
   const analyticsApiOne = { captureEvent: jest.fn() };
   const analyticsApiTwo = { captureEvent: jest.fn() };
-  const multipleApis = MultipleAnalyticsApi.withApis([
+  const multipleApis = MultipleAnalyticsApi.fromApis([
     analyticsApiOne,
     analyticsApiTwo,
   ]);
