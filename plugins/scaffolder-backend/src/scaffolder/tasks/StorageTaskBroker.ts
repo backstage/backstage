@@ -27,6 +27,7 @@ import {
   SerializedTask,
 } from './types';
 import { TaskBrokerDispatchOptions } from '.';
+import { Config } from '@backstage/config';
 
 /**
  * TaskManager
@@ -149,6 +150,7 @@ export class StorageTaskBroker implements TaskBroker {
   constructor(
     private readonly storage: TaskStore,
     private readonly logger: Logger,
+    private readonly config: Config,
   ) {}
 
   async list(options?: {
@@ -200,11 +202,33 @@ export class StorageTaskBroker implements TaskBroker {
     };
   }
 
+  private isStaleTask(task: SerializedTask) {
+    const { status, lastHeartbeatAt } = task;
+    if (status === 'processing' && lastHeartbeatAt) {
+      const timeDiff =
+        new Date().getTime() - new Date(lastHeartbeatAt).getTime();
+      const timeoutLimit =
+        this.config.getOptionalNumber('scaffolder.taskTimeout.ms') || 3600000;
+      return timeDiff >= timeoutLimit;
+    }
+    return false;
+  }
+
   /**
    * {@inheritdoc TaskBroker.get}
    */
   async get(taskId: string): Promise<SerializedTask> {
-    return this.storage.getTask(taskId);
+    let task = await this.storage.getTask(taskId);
+    if (this.isStaleTask(task)) {
+      await this.storage.shutdownTask({
+        taskId,
+        message: this.config.getOptionalString(
+          'scaffolder.taskTimeout.message',
+        ),
+      });
+      task = await this.storage.getTask(taskId);
+    }
+    return task;
   }
 
   /**

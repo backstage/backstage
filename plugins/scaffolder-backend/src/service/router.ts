@@ -170,7 +170,7 @@ export async function createRouter(
 
   if (!options.taskBroker) {
     const databaseTaskStore = await DatabaseTaskStore.create({ database });
-    taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+    taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config);
   } else {
     taskBroker = options.taskBroker;
   }

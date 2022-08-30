@@ -28,5 +28,12 @@ export interface Config {
      * The commit message used when new components are created.
      */
     defaultCommitMessage?: string;
+    /**
+     * To mark stale tasks has closed
+     */
+    taskTimeout?: {
+      ms?: number;
+      message?: string;
+    };
   };
 }

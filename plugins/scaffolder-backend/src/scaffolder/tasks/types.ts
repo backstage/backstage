@@ -157,6 +157,16 @@ export type TaskStoreListEventsOptions = {
 };
 
 /**
+ * TaskStoreShutDownTaskOptions
+ *
+ * @public
+ */
+export type TaskStoreShutDownTaskOptions = {
+  taskId: string;
+  message?: string | undefined;
+};
+
+/**
  * The options passed to {@link TaskStore.createTask}
  * @public
  */
@@ -201,6 +211,10 @@ export interface TaskStore {
     taskId,
     after,
   }: TaskStoreListEventsOptions): Promise<{ events: SerializedTaskEvent[] }>;
+  shutdownTask({
+    taskId,
+    message,
+  }: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
 export type WorkflowResponse = { output: { [key: string]: JsonValue } };

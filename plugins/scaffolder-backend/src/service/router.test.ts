@@ -131,13 +131,16 @@ describe('createRouter', () => {
     },
   };
 
-  describe('not providing an identity api', () => {
-    beforeEach(async () => {
-      const logger = getVoidLogger();
-      const databaseTaskStore = await DatabaseTaskStore.create({
-        database: createDatabase(),
-      });
-      taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+  beforeEach(async () => {
+    const logger = getVoidLogger();
+    const databaseTaskStore = await DatabaseTaskStore.create({
+      database: createDatabase(),
+    });
+    taskBroker = new StorageTaskBroker(
+      databaseTaskStore,
+      logger,
+      new ConfigReader({ scaffolder: {} }),
+    );
 
       jest.spyOn(taskBroker, 'dispatch');
       jest.spyOn(taskBroker, 'get');
