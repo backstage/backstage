@@ -170,7 +170,7 @@ describe('<FossaPage />', () => {
       },
     );
 
-    expect(catalogApi.getEntities).toBeCalledWith(
+    expect(catalogApi.getEntities).toHaveBeenCalledWith(
       expect.objectContaining({
         filter: { kind: 'API' },
       }),

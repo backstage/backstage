@@ -66,9 +66,9 @@ describe('ServerTokenManager', () => {
       const tokenManager = ServerTokenManager.fromConfig(configWithSecret, {
         logger,
       });
-      await expect(
-        tokenManager.authenticate('random-string'),
-      ).rejects.toThrowError(/invalid server token/i);
+      await expect(tokenManager.authenticate('random-string')).rejects.toThrow(
+        /invalid server token/i,
+      );
     });
 
     it('should validate server tokens created by a different instance using the same secret', async () => {
@@ -129,7 +129,7 @@ describe('ServerTokenManager', () => {
 
       const { token } = await tokenManager1.getToken();
 
-      await expect(tokenManager2.authenticate(token)).rejects.toThrowError(
+      await expect(tokenManager2.authenticate(token)).rejects.toThrow(
         /invalid server token/i,
       );
     });
@@ -145,7 +145,7 @@ describe('ServerTokenManager', () => {
 
       const { token } = await noopTokenManager.getToken();
 
-      await expect(tokenManager.authenticate(token)).rejects.toThrowError(
+      await expect(tokenManager.authenticate(token)).rejects.toThrow(
         /invalid server token/i,
       );
     });
@@ -164,7 +164,7 @@ describe('ServerTokenManager', () => {
 
       const { token } = await tokenManager2.getToken();
 
-      await expect(tokenManager1.authenticate(token)).rejects.toThrowError(
+      await expect(tokenManager1.authenticate(token)).rejects.toThrow(
         /invalid server token/i,
       );
     });

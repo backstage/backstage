@@ -45,7 +45,7 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
         };
       });
       await processor.readLocation(location, false, emit);
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'entity',
         location,
         entity: {
@@ -94,8 +94,8 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
         };
       });
       await processor.readLocation(locationTest, false, emit);
-      expect(emit).toBeCalledTimes(1);
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledTimes(1);
+      expect(emit).toHaveBeenCalledWith({
         type: 'entity',
         location: locationTest,
         entity: {

@@ -221,7 +221,7 @@ describe('OwnershipCard', () => {
     expect(
       queryByText(getByText('OPENAPI').parentElement!, '1'),
     ).toBeInTheDocument();
-    expect(() => getByText('LIBRARY')).toThrowError();
+    expect(() => getByText('LIBRARY')).toThrow();
   });
 
   it('links to the catalog with the group filter', async () => {

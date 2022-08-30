@@ -27,7 +27,7 @@ describe('clusterLinks - rancher formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrowError('Rancher dashboard requires a dashboardUrl option');
+    ).toThrow('Rancher dashboard requires a dashboardUrl option');
   });
   it('should return a url on the workloads when there is a namespace only', () => {
     const url = rancherFormatter({

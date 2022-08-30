@@ -122,7 +122,7 @@ describe('Oauth2ProxyAuthProvider', () => {
 
       await provider.refresh(mockRequest, mockResponse);
 
-      expect(mockRequest.header).toBeCalledWith(OAUTH2_PROXY_JWT_HEADER);
+      expect(mockRequest.header).toHaveBeenCalledWith(OAUTH2_PROXY_JWT_HEADER);
       expect(mockJwtDecode).toHaveBeenCalledWith('token');
       expect(mockResponse.json).toHaveBeenCalled();
     });
@@ -197,7 +197,7 @@ describe('Oauth2ProxyAuthProvider', () => {
       } as any);
       await handler.refresh!(mockRequest, mockResponse);
 
-      expect(mockRequest.header).toBeCalledWith(OAUTH2_PROXY_JWT_HEADER);
+      expect(mockRequest.header).toHaveBeenCalledWith(OAUTH2_PROXY_JWT_HEADER);
       expect(mockJwtDecode).toHaveBeenCalledWith('token');
       expect(mockResponse.json).toHaveBeenCalled();
     });

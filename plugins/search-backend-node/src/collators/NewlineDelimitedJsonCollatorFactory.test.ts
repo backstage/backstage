@@ -72,7 +72,7 @@ describe('DefaultCatalogCollatorFactory', () => {
     it('throws if url reader throws an error during search', async () => {
       reader.search.mockRejectedValue(new Error('Expected error'));
 
-      await expect(() => factory.getCollator()).rejects.toThrowError(
+      await expect(() => factory.getCollator()).rejects.toThrow(
         'Expected error',
       );
     });
@@ -80,7 +80,7 @@ describe('DefaultCatalogCollatorFactory', () => {
     it('throws if no matching files are found', async () => {
       reader.search.mockResolvedValue({ files: [], etag: '' });
 
-      await expect(() => factory.getCollator()).rejects.toThrowError(
+      await expect(() => factory.getCollator()).rejects.toThrow(
         'Could not find an .ndjson file matching',
       );
     });
@@ -95,7 +95,7 @@ describe('DefaultCatalogCollatorFactory', () => {
         stream: jest.fn().mockReturnValue(readable),
       });
 
-      await expect(() => factory.getCollator()).rejects.toThrowError(
+      await expect(() => factory.getCollator()).rejects.toThrow(
         'Could not find an .ndjson file matching',
       );
     });

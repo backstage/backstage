@@ -44,7 +44,7 @@ describe('<MaxDepthFilter/>', () => {
     );
 
     await userEvent.click(getByLabelText('clear max depth'));
-    expect(onChange).toBeCalledWith(Number.POSITIVE_INFINITY);
+    expect(onChange).toHaveBeenCalledWith(Number.POSITIVE_INFINITY);
   });
 
   test('should set max depth to undefined if below one', async () => {
@@ -56,7 +56,7 @@ describe('<MaxDepthFilter/>', () => {
     await userEvent.clear(getByLabelText('maxp'));
     await userEvent.type(getByLabelText('maxp'), '0');
 
-    expect(onChange).toBeCalledWith(Number.POSITIVE_INFINITY);
+    expect(onChange).toHaveBeenCalledWith(Number.POSITIVE_INFINITY);
   });
 
   test('should select direction', async () => {
@@ -70,7 +70,7 @@ describe('<MaxDepthFilter/>', () => {
     await userEvent.clear(getByLabelText('maxp'));
     await userEvent.type(getByLabelText('maxp'), '10');
     waitFor(() => {
-      expect(onChange).toBeCalledWith(10);
+      expect(onChange).toHaveBeenCalledWith(10);
     });
   });
 });

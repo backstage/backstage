@@ -41,7 +41,7 @@ describe('<DirectionFilter/>', () => {
 
     await waitFor(() => {
       expect(getByText('Top to bottom')).toBeInTheDocument();
-      expect(onChange).toBeCalledWith(Direction.TOP_BOTTOM);
+      expect(onChange).toHaveBeenCalledWith(Direction.TOP_BOTTOM);
     });
   });
 });

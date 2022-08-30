@@ -126,7 +126,7 @@ describe('PermissionClient', () => {
       );
       await expect(
         client.authorize([mockAuthorizeConditional], { token }),
-      ).rejects.toThrowError(/request failed with 401/i);
+      ).rejects.toThrow(/request failed with 401/i);
     });
 
     it('should reject responses with missing ids', async () => {
@@ -141,7 +141,7 @@ describe('PermissionClient', () => {
       );
       await expect(
         client.authorize([mockAuthorizeConditional], { token }),
-      ).rejects.toThrowError(/items in response do not match request/i);
+      ).rejects.toThrow(/items in response do not match request/i);
     });
 
     it('should reject invalid responses', async () => {
@@ -159,7 +159,7 @@ describe('PermissionClient', () => {
       );
       await expect(
         client.authorize([mockAuthorizeConditional], { token }),
-      ).rejects.toThrowError(/invalid input/i);
+      ).rejects.toThrow(/invalid input/i);
     });
 
     it('should allow all when permission.enabled is false', async () => {
@@ -183,7 +183,7 @@ describe('PermissionClient', () => {
       expect(response[0]).toEqual(
         expect.objectContaining({ result: AuthorizeResult.ALLOW }),
       );
-      expect(mockAuthorizeHandler).not.toBeCalled();
+      expect(mockAuthorizeHandler).not.toHaveBeenCalled();
     });
 
     it('should allow all when permission.enabled is not configured', async () => {
@@ -207,7 +207,7 @@ describe('PermissionClient', () => {
       expect(response[0]).toEqual(
         expect.objectContaining({ result: AuthorizeResult.ALLOW }),
       );
-      expect(mockAuthorizeHandler).not.toBeCalled();
+      expect(mockAuthorizeHandler).not.toHaveBeenCalled();
     });
   });
 
@@ -307,7 +307,7 @@ describe('PermissionClient', () => {
         client.authorizeConditional([mockResourceAuthorizeConditional], {
           token,
         }),
-      ).rejects.toThrowError(/request failed with 401/i);
+      ).rejects.toThrow(/request failed with 401/i);
     });
 
     it('should reject responses with missing ids', async () => {
@@ -324,7 +324,7 @@ describe('PermissionClient', () => {
         client.authorizeConditional([mockResourceAuthorizeConditional], {
           token,
         }),
-      ).rejects.toThrowError(/items in response do not match request/i);
+      ).rejects.toThrow(/items in response do not match request/i);
     });
 
     it('should reject invalid responses', async () => {
@@ -344,7 +344,7 @@ describe('PermissionClient', () => {
         client.authorizeConditional([mockResourceAuthorizeConditional], {
           token,
         }),
-      ).rejects.toThrowError(/invalid input/i);
+      ).rejects.toThrow(/invalid input/i);
     });
 
     it('should allow all when permission.enabled is false', async () => {
@@ -373,7 +373,7 @@ describe('PermissionClient', () => {
       expect(response[0]).toEqual(
         expect.objectContaining({ result: AuthorizeResult.ALLOW }),
       );
-      expect(mockPolicyDecisionHandler).not.toBeCalled();
+      expect(mockPolicyDecisionHandler).not.toHaveBeenCalled();
     });
 
     it('should allow all when permission.enabled is not configured', async () => {
@@ -402,7 +402,7 @@ describe('PermissionClient', () => {
       expect(response[0]).toEqual(
         expect.objectContaining({ result: AuthorizeResult.ALLOW }),
       );
-      expect(mockPolicyDecisionHandler).not.toBeCalled();
+      expect(mockPolicyDecisionHandler).not.toHaveBeenCalled();
     });
   });
 });

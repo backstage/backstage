@@ -46,7 +46,7 @@ describe('DefaultStarredEntitiesApi', () => {
       const api = new DefaultStarredEntitiesApi({
         storageApi: MockStorageApi.create(),
       });
-      expect(performMigrationToTheNewBucket).toBeCalledTimes(1);
+      expect(performMigrationToTheNewBucket).toHaveBeenCalledTimes(1);
       expect(api).toBeDefined();
     });
   });

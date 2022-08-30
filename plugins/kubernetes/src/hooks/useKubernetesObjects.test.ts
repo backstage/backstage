@@ -72,9 +72,11 @@ describe('useKubernetesObjects', () => {
   const mockDecorateRequestBodyForAuth = jest.fn();
 
   const expectMocksCalledCorrectly = (numOfCalls: number = 1) => {
-    expect(mockGetClusters).toBeCalledTimes(numOfCalls);
+    expect(mockGetClusters).toHaveBeenCalledTimes(numOfCalls);
     expect(mockGetClusters).toHaveBeenLastCalledWith();
-    expect(mockDecorateRequestBodyForAuth).toBeCalledTimes(numOfCalls * 2);
+    expect(mockDecorateRequestBodyForAuth).toHaveBeenCalledTimes(
+      numOfCalls * 2,
+    );
     expect(mockDecorateRequestBodyForAuth).toHaveBeenCalledWith('google', {
       entity,
     });
@@ -82,7 +84,7 @@ describe('useKubernetesObjects', () => {
       'authprovider2',
       entityWithAuthToken,
     );
-    expect(mockGetObjectsByEntity).toBeCalledTimes(numOfCalls);
+    expect(mockGetObjectsByEntity).toHaveBeenCalledTimes(numOfCalls);
     expect(mockGetObjectsByEntity).toHaveBeenLastCalledWith(
       entityWithAuthToken,
     );
@@ -166,10 +168,10 @@ describe('useKubernetesObjects', () => {
     expect(result.current.error).toBe('some-error');
     expect(result.current.kubernetesObjects).toBeUndefined();
 
-    expect(mockGetClusters).toBeCalledTimes(1);
+    expect(mockGetClusters).toHaveBeenCalledTimes(1);
     expect(mockGetClusters).toHaveBeenLastCalledWith();
-    expect(mockDecorateRequestBodyForAuth).toBeCalledTimes(0);
-    expect(mockGetObjectsByEntity).toBeCalledTimes(0);
+    expect(mockDecorateRequestBodyForAuth).toHaveBeenCalledTimes(0);
+    expect(mockGetObjectsByEntity).toHaveBeenCalledTimes(0);
   });
   it('should return error when decorateRequestBodyForAuth throws', async () => {
     (useApi as any).mockReturnValue({
@@ -189,12 +191,12 @@ describe('useKubernetesObjects', () => {
     expect(result.current.error).toBe('some-error');
     expect(result.current.kubernetesObjects).toBeUndefined();
 
-    expect(mockGetClusters).toBeCalledTimes(1);
+    expect(mockGetClusters).toHaveBeenCalledTimes(1);
     expect(mockGetClusters).toHaveBeenLastCalledWith();
-    expect(mockDecorateRequestBodyForAuth).toBeCalledTimes(1);
+    expect(mockDecorateRequestBodyForAuth).toHaveBeenCalledTimes(1);
     expect(mockDecorateRequestBodyForAuth).toHaveBeenCalledWith('google', {
       entity,
     });
-    expect(mockGetObjectsByEntity).toBeCalledTimes(0);
+    expect(mockGetObjectsByEntity).toHaveBeenCalledTimes(0);
   });
 });

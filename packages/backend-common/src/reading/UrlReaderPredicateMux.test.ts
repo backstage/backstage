@@ -64,7 +64,7 @@ describe('UrlReaderPredicateMux', () => {
   it('throws an error if no predicate matches', async () => {
     const mux = new UrlReaderPredicateMux(getVoidLogger());
 
-    await expect(mux.readUrl('http://foo/1')).rejects.toThrowError(
+    await expect(mux.readUrl('http://foo/1')).rejects.toThrow(
       /^Reading from 'http:\/\/foo\/1' is not allowed. You may/,
     );
 
@@ -80,7 +80,7 @@ describe('UrlReaderPredicateMux', () => {
 
     await expect(mux.readUrl('http://foo/1')).resolves.toBeUndefined();
 
-    await expect(mux.readUrl('http://bar/1')).rejects.toThrowError(
+    await expect(mux.readUrl('http://bar/1')).rejects.toThrow(
       /^Reading from 'http:\/\/bar\/1' is not allowed. You may/,
     );
   });

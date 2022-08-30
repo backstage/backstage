@@ -37,12 +37,12 @@ describe('AbortContext', () => {
 
       expect(child.abortSignal.aborted).toBe(false);
       expect(Math.abs(+child.deadline! - deadline)).toBeLessThan(50);
-      expect(childListener).toBeCalledTimes(0);
+      expect(childListener).toHaveBeenCalledTimes(0);
 
       jest.advanceTimersByTime(timeout + 1);
 
       expect(child.abortSignal.aborted).toBe(true);
-      expect(childListener).toBeCalledTimes(1);
+      expect(childListener).toHaveBeenCalledTimes(1);
     });
 
     it('results in minimum deadline when parent triggers sooner', async () => {
@@ -66,15 +66,15 @@ describe('AbortContext', () => {
       expect(child.abortSignal.aborted).toBe(false);
       expect(Math.abs(+parent.deadline! - parentDeadline)).toBeLessThan(50);
       expect(Math.abs(+child.deadline! - childDeadline)).toBeLessThan(50);
-      expect(parentListener).toBeCalledTimes(0);
-      expect(childListener).toBeCalledTimes(0);
+      expect(parentListener).toHaveBeenCalledTimes(0);
+      expect(childListener).toHaveBeenCalledTimes(0);
 
       jest.advanceTimersByTime(parentTimeout + 1);
 
       expect(parent.abortSignal.aborted).toBe(true);
       expect(child.abortSignal.aborted).toBe(true);
-      expect(parentListener).toBeCalledTimes(1);
-      expect(childListener).toBeCalledTimes(1);
+      expect(parentListener).toHaveBeenCalledTimes(1);
+      expect(childListener).toHaveBeenCalledTimes(1);
     });
 
     it('results in minimum deadline when child triggers sooner', async () => {
@@ -98,22 +98,22 @@ describe('AbortContext', () => {
       expect(child.abortSignal.aborted).toBe(false);
       expect(Math.abs(+parent.deadline! - parentDeadline)).toBeLessThan(50);
       expect(Math.abs(+child.deadline! - childDeadline)).toBeLessThan(50);
-      expect(parentListener).toBeCalledTimes(0);
-      expect(childListener).toBeCalledTimes(0);
+      expect(parentListener).toHaveBeenCalledTimes(0);
+      expect(childListener).toHaveBeenCalledTimes(0);
 
       jest.advanceTimersByTime(childTimeout + 1);
 
       expect(parent.abortSignal.aborted).toBe(false);
       expect(child.abortSignal.aborted).toBe(true);
-      expect(parentListener).toBeCalledTimes(0);
-      expect(childListener).toBeCalledTimes(1);
+      expect(parentListener).toHaveBeenCalledTimes(0);
+      expect(childListener).toHaveBeenCalledTimes(1);
 
       jest.advanceTimersByTime(parentTimeout - childTimeout + 1);
 
       expect(parent.abortSignal.aborted).toBe(true);
       expect(child.abortSignal.aborted).toBe(true);
-      expect(parentListener).toBeCalledTimes(1);
-      expect(childListener).toBeCalledTimes(1);
+      expect(parentListener).toHaveBeenCalledTimes(1);
+      expect(childListener).toHaveBeenCalledTimes(1);
     });
 
     it('child carries over parent signal state if parent was already aborted and had no deadline', async () => {
@@ -133,13 +133,13 @@ describe('AbortContext', () => {
       child.abortSignal.addEventListener('abort', childListener);
 
       expect(child.abortSignal.aborted).toBe(true);
-      expect(childListener).toBeCalledTimes(0);
+      expect(childListener).toHaveBeenCalledTimes(0);
       expect(Math.abs(+child.deadline! - childDeadline)).toBeLessThan(50);
 
       jest.advanceTimersByTime(childTimeout + 1);
 
       expect(child.abortSignal.aborted).toBe(true);
-      expect(childListener).toBeCalledTimes(0); // still
+      expect(childListener).toHaveBeenCalledTimes(0); // still
     });
 
     it('child carries over parent signal state if parent was already aborted and had a deadline', async () => {
@@ -175,15 +175,15 @@ describe('AbortContext', () => {
 
       expect(parent.abortSignal.aborted).toBe(false);
       expect(child.abortSignal.aborted).toBe(false);
-      expect(parentListener).toBeCalledTimes(0);
-      expect(childListener).toBeCalledTimes(0);
+      expect(parentListener).toHaveBeenCalledTimes(0);
+      expect(childListener).toHaveBeenCalledTimes(0);
 
       parentController.abort();
 
       expect(parent.abortSignal.aborted).toBe(true);
       expect(child.abortSignal.aborted).toBe(true);
-      expect(parentListener).toBeCalledTimes(1);
-      expect(childListener).toBeCalledTimes(1);
+      expect(parentListener).toHaveBeenCalledTimes(1);
+      expect(childListener).toHaveBeenCalledTimes(1);
     });
 
     it('does not signal parent when child is aborted', async () => {
@@ -201,15 +201,15 @@ describe('AbortContext', () => {
 
       expect(parent.abortSignal.aborted).toBe(false);
       expect(child.abortSignal.aborted).toBe(false);
-      expect(parentListener).toBeCalledTimes(0);
-      expect(childListener).toBeCalledTimes(0);
+      expect(parentListener).toHaveBeenCalledTimes(0);
+      expect(childListener).toHaveBeenCalledTimes(0);
 
       childController.abort();
 
       expect(parent.abortSignal.aborted).toBe(false);
       expect(child.abortSignal.aborted).toBe(true);
-      expect(parentListener).toBeCalledTimes(0);
-      expect(childListener).toBeCalledTimes(1);
+      expect(parentListener).toHaveBeenCalledTimes(0);
+      expect(childListener).toHaveBeenCalledTimes(1);
     });
 
     it('child carries over parent signal state if parent was already aborted', async () => {
@@ -227,13 +227,13 @@ describe('AbortContext', () => {
 
       expect(parent.abortSignal.aborted).toBe(true);
       expect(child.abortSignal.aborted).toBe(true);
-      expect(childListener).toBeCalledTimes(0);
+      expect(childListener).toHaveBeenCalledTimes(0);
 
       childController.abort();
 
       expect(parent.abortSignal.aborted).toBe(true);
       expect(child.abortSignal.aborted).toBe(true);
-      expect(childListener).toBeCalledTimes(0);
+      expect(childListener).toHaveBeenCalledTimes(0);
     });
 
     it('child carries over given signal state if it was already aborted', async () => {
@@ -247,7 +247,7 @@ describe('AbortContext', () => {
       child.abortSignal.addEventListener('abort', childListener);
 
       expect(child.abortSignal.aborted).toBe(true);
-      expect(childListener).toBeCalledTimes(0);
+      expect(childListener).toHaveBeenCalledTimes(0);
     });
   });
 
@@ -267,15 +267,15 @@ describe('AbortContext', () => {
 
       expect(parent.abortSignal.aborted).toBe(false);
       expect(child.abortSignal.aborted).toBe(false);
-      expect(parentListener).toBeCalledTimes(0);
-      expect(childListener).toBeCalledTimes(0);
+      expect(parentListener).toHaveBeenCalledTimes(0);
+      expect(childListener).toHaveBeenCalledTimes(0);
 
       parentController.abort();
 
       expect(parent.abortSignal.aborted).toBe(true);
       expect(child.abortSignal.aborted).toBe(true);
-      expect(parentListener).toBeCalledTimes(1);
-      expect(childListener).toBeCalledTimes(1);
+      expect(parentListener).toHaveBeenCalledTimes(1);
+      expect(childListener).toHaveBeenCalledTimes(1);
     });
 
     it('does not signal parent when child is aborted', async () => {
@@ -293,15 +293,15 @@ describe('AbortContext', () => {
 
       expect(parent.abortSignal.aborted).toBe(false);
       expect(child.abortSignal.aborted).toBe(false);
-      expect(parentListener).toBeCalledTimes(0);
-      expect(childListener).toBeCalledTimes(0);
+      expect(parentListener).toHaveBeenCalledTimes(0);
+      expect(childListener).toHaveBeenCalledTimes(0);
 
       childController.abort();
 
       expect(parent.abortSignal.aborted).toBe(false);
       expect(child.abortSignal.aborted).toBe(true);
-      expect(parentListener).toBeCalledTimes(0);
-      expect(childListener).toBeCalledTimes(1);
+      expect(parentListener).toHaveBeenCalledTimes(0);
+      expect(childListener).toHaveBeenCalledTimes(1);
     });
 
     it('child carries over parent signal state if parent was already aborted', async () => {
@@ -319,13 +319,13 @@ describe('AbortContext', () => {
 
       expect(parent.abortSignal.aborted).toBe(true);
       expect(child.abortSignal.aborted).toBe(true);
-      expect(childListener).toBeCalledTimes(0);
+      expect(childListener).toHaveBeenCalledTimes(0);
 
       childController.abort();
 
       expect(parent.abortSignal.aborted).toBe(true);
       expect(child.abortSignal.aborted).toBe(true);
-      expect(childListener).toBeCalledTimes(0);
+      expect(childListener).toHaveBeenCalledTimes(0);
     });
 
     it('child carries over given signal state if it was already aborted', async () => {
@@ -339,7 +339,7 @@ describe('AbortContext', () => {
       child.abortSignal.addEventListener('abort', childListener);
 
       expect(child.abortSignal.aborted).toBe(true);
-      expect(childListener).toBeCalledTimes(0);
+      expect(childListener).toHaveBeenCalledTimes(0);
     });
   });
 });

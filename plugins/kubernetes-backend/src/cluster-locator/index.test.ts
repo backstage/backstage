@@ -103,7 +103,7 @@ describe('getCombinedClusterSupplier', () => {
       'ctx',
     );
 
-    expect(() => getCombinedClusterSupplier(config, catalogApi)).toThrowError(
+    expect(() => getCombinedClusterSupplier(config, catalogApi)).toThrow(
       new Error('Unsupported kubernetes.clusterLocatorMethods: "magic"'),
     );
   });

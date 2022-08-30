@@ -392,9 +392,9 @@ describe('buildMiddleware', () => {
   it('rejects malformed target URLs', async () => {
     expect(() =>
       buildMiddleware('/proxy', logger, '/test', 'backstage.io'),
-    ).toThrowError(/Proxy target is not a valid URL/);
+    ).toThrow(/Proxy target is not a valid URL/);
     expect(() =>
       buildMiddleware('/proxy', logger, '/test', { target: 'backstage.io' }),
-    ).toThrowError(/Proxy target is not a valid URL/);
+    ).toThrow(/Proxy target is not a valid URL/);
   });
 });

@@ -66,7 +66,7 @@ describe('EditShortcut', () => {
 
     fireEvent.click(screen.getByText('Save'));
     await waitFor(() => {
-      expect(spy).toBeCalledWith({
+      expect(spy).toHaveBeenCalledWith({
         id: 'id',
         title: 'some new title',
         url: '/some-new-url',
@@ -81,7 +81,7 @@ describe('EditShortcut', () => {
     await renderInTestApp(<EditShortcut {...props} />);
 
     fireEvent.click(screen.getByText('Remove'));
-    expect(spy).toBeCalledWith('id');
+    expect(spy).toHaveBeenCalledWith('id');
   });
 
   it('displays errors', async () => {

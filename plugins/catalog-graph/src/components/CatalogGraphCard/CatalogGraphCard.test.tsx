@@ -81,7 +81,7 @@ describe('<CatalogGraphCard/>', () => {
 
     expect(await findByText('b:d/c')).toBeInTheDocument();
     expect(await findAllByTestId('node')).toHaveLength(1);
-    expect(catalog.getEntityByRef).toBeCalledTimes(1);
+    expect(catalog.getEntityByRef).toHaveBeenCalledTimes(1);
   });
 
   test('renders with custom title', async () => {

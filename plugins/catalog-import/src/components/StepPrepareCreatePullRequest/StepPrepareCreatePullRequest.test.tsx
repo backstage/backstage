@@ -173,7 +173,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
       await userEvent.click(screen.getByRole('button', { name: /Create PR/i }));
     });
 
-    expect(catalogImportApi.submitPullRequest).toBeCalledTimes(1);
+    expect(catalogImportApi.submitPullRequest).toHaveBeenCalledTimes(1);
     expect(catalogImportApi.submitPullRequest.mock.calls[0]).toMatchObject([
       {
         body: 'My **body**',
@@ -189,7 +189,7 @@ spec:
         title: 'My title',
       },
     ]);
-    expect(onPrepareFn).toBeCalledTimes(1);
+    expect(onPrepareFn).toHaveBeenCalledTimes(1);
     expect(onPrepareFn.mock.calls[0]).toMatchObject([
       {
         type: 'repository',
@@ -250,8 +250,8 @@ spec:
     });
 
     expect(screen.getByText('some error')).toBeInTheDocument();
-    expect(catalogImportApi.submitPullRequest).toBeCalledTimes(1);
-    expect(onPrepareFn).toBeCalledTimes(0);
+    expect(catalogImportApi.submitPullRequest).toHaveBeenCalledTimes(1);
+    expect(onPrepareFn).toHaveBeenCalledTimes(0);
   });
 
   it('should load groups', async () => {
@@ -283,8 +283,8 @@ spec:
       );
     });
 
-    expect(catalogApi.getEntities).toBeCalledTimes(1);
-    expect(renderFormFieldsFn).toBeCalled();
+    expect(catalogApi.getEntities).toHaveBeenCalledTimes(1);
+    expect(renderFormFieldsFn).toHaveBeenCalled();
     expect(renderFormFieldsFn.mock.calls[0][0]).toMatchObject({
       groups: [],
       groupsLoading: true,

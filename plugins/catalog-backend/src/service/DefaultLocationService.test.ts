@@ -86,7 +86,7 @@ describe('DefaultLocationServiceTest', () => {
         true,
       );
 
-      expect(orchestrator.process).toBeCalledWith({
+      expect(orchestrator.process).toHaveBeenCalledWith({
         entity: {
           apiVersion: 'backstage.io/v1alpha1',
           kind: 'Location',
@@ -108,7 +108,7 @@ describe('DefaultLocationServiceTest', () => {
         state: expect.anything(),
       });
 
-      expect(orchestrator.process).toBeCalledWith({
+      expect(orchestrator.process).toHaveBeenCalledWith({
         entity: {
           apiVersion: 'backstage.io/v1alpha1',
           kind: 'Component',
@@ -116,8 +116,8 @@ describe('DefaultLocationServiceTest', () => {
         },
         state: expect.anything(),
       });
-      expect(orchestrator.process).toBeCalledTimes(2);
-      expect(store.createLocation).not.toBeCalled();
+      expect(orchestrator.process).toHaveBeenCalledTimes(2);
+      expect(store.createLocation).not.toHaveBeenCalled();
     });
 
     it('should check for location existence when running in dry run', async () => {
@@ -255,7 +255,7 @@ describe('DefaultLocationServiceTest', () => {
           type: 'url',
         },
       });
-      expect(store.createLocation).toBeCalledWith({
+      expect(store.createLocation).toHaveBeenCalledWith({
         target: 'https://backstage.io/catalog-info.yaml',
         type: 'url',
       });
@@ -289,7 +289,7 @@ describe('DefaultLocationServiceTest', () => {
           type: 'unknown',
         },
       });
-      expect(store.createLocation).toBeCalledWith({
+      expect(store.createLocation).toHaveBeenCalledWith({
         target: 'https://backstage.io/catalog-info.yaml',
         type: 'unknown',
       });
@@ -330,21 +330,21 @@ describe('DefaultLocationServiceTest', () => {
   describe('listLocations', () => {
     it('should call locationStore.deleteLocation', async () => {
       await locationService.listLocations();
-      expect(store.listLocations).toBeCalled();
+      expect(store.listLocations).toHaveBeenCalled();
     });
   });
 
   describe('deleteLocation', () => {
     it('should call locationStore.deleteLocation', async () => {
       await locationService.deleteLocation('123');
-      expect(store.deleteLocation).toBeCalledWith('123');
+      expect(store.deleteLocation).toHaveBeenCalledWith('123');
     });
   });
 
   describe('getLocation', () => {
     it('should call locationStore.getLocation', async () => {
       await locationService.getLocation('123');
-      expect(store.getLocation).toBeCalledWith('123');
+      expect(store.getLocation).toHaveBeenCalledWith('123');
     });
   });
 });

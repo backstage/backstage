@@ -173,7 +173,7 @@ describe('FactRetrieverEngine', () => {
         () => {},
         schemaAssertionCallback,
       );
-      expect(schemaAssertionCallback).toBeCalled();
+      expect(schemaAssertionCallback).toHaveBeenCalled();
     },
     60_000,
   );

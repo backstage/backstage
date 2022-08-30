@@ -151,7 +151,7 @@ describe('TechDocsCache', () => {
 
       await expect(
         CacheUnderTest.invalidateMultiple(expectedPaths),
-      ).rejects.toThrowError(CacheInvalidationError);
+      ).rejects.toThrow(CacheInvalidationError);
       expect(MockClient.delete).toHaveBeenCalledTimes(2);
     });
 

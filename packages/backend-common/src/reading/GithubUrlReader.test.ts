@@ -551,7 +551,7 @@ describe('GithubUrlReader', () => {
             credentialsProvider: mockCredentialsProvider,
           },
         );
-      }).toThrowError('must configure an explicit apiBaseUrl');
+      }).toThrow('must configure an explicit apiBaseUrl');
     });
   });
 

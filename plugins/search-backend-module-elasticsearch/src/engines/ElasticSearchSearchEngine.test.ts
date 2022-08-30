@@ -937,7 +937,7 @@ describe('ElasticSearchSearchEngine', () => {
             logger: getVoidLogger(),
             config,
           }),
-      ).not.toThrowError();
+      ).not.toThrow();
     });
   });
 });

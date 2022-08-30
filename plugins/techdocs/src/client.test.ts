@@ -103,7 +103,7 @@ describe('TechDocsStorageClient', () => {
       identityApi.getCredentials.mockResolvedValue({});
       await storageApi.syncEntityDocs(mockEntity);
 
-      expect(MockedEventSource).toBeCalledWith(
+      expect(MockedEventSource).toHaveBeenCalledWith(
         'http://backstage:9191/api/techdocs/sync/default/Component/test-component',
         { withCredentials: true, headers: {} },
       );
@@ -128,7 +128,7 @@ describe('TechDocsStorageClient', () => {
       identityApi.getCredentials.mockResolvedValue({ token: 'token' });
       await storageApi.syncEntityDocs(mockEntity);
 
-      expect(MockedEventSource).toBeCalledWith(
+      expect(MockedEventSource).toHaveBeenCalledWith(
         'http://backstage:9191/api/techdocs/sync/default/Component/test-component',
         { withCredentials: true, headers: { Authorization: 'Bearer token' } },
       );
@@ -204,8 +204,8 @@ describe('TechDocsStorageClient', () => {
         storageApi.syncEntityDocs(mockEntity, logHandler),
       ).resolves.toEqual('cached');
 
-      expect(logHandler).toBeCalledTimes(1);
-      expect(logHandler).toBeCalledWith('A log message');
+      expect(logHandler).toHaveBeenCalledTimes(1);
+      expect(logHandler).toHaveBeenCalledWith('A log message');
     });
 
     it('should throw NotFoundError', async () => {
@@ -232,7 +232,7 @@ describe('TechDocsStorageClient', () => {
       } as any);
 
       await expect(promise).rejects.toThrow(NotFoundError);
-      await expect(promise).rejects.toThrowError('Some not found warning');
+      await expect(promise).rejects.toThrow('Some not found warning');
     });
 
     it('should throw generic errors', async () => {
@@ -259,7 +259,7 @@ describe('TechDocsStorageClient', () => {
       } as any);
 
       await expect(promise).rejects.toThrow(Error);
-      await expect(promise).rejects.toThrowError('Some other error');
+      await expect(promise).rejects.toThrow('Some other error');
     });
   });
 });

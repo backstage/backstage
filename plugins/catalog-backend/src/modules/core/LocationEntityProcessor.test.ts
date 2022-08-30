@@ -57,7 +57,7 @@ describe('LocationEntityProcessor', () => {
         'http://b.com/z',
       );
 
-      expect(integrations.resolveUrl).toBeCalledTimes(3);
+      expect(integrations.resolveUrl).toHaveBeenCalledTimes(3);
     });
 
     it('handles azure urls specifically', () => {

@@ -110,7 +110,7 @@ describe('AuthorizedEntitiesCatalog', () => {
 
       await expect(() =>
         catalog.removeEntityByUid('uid', { authorizationToken: 'abcd' }),
-      ).rejects.toThrowError(NotAllowedError);
+      ).rejects.toThrow(NotAllowedError);
     });
 
     it('throws error on CONDITIONAL authorization that evaluates to 0 entities', async () => {
@@ -129,7 +129,7 @@ describe('AuthorizedEntitiesCatalog', () => {
 
       await expect(() =>
         catalog.removeEntityByUid('uid', { authorizationToken: 'abcd' }),
-      ).rejects.toThrowError(NotAllowedError);
+      ).rejects.toThrow(NotAllowedError);
     });
 
     it('calls underlying catalog method on CONDITIONAL authorization that evaluates to nonzero entities', async () => {
@@ -185,7 +185,7 @@ describe('AuthorizedEntitiesCatalog', () => {
         catalog.entityAncestry('backstage:default/component', {
           authorizationToken: 'Bearer abcd',
         }),
-      ).rejects.toThrowError(NotAllowedError);
+      ).rejects.toThrow(NotAllowedError);
     });
 
     it('filters out unauthorized entities and their parents', async () => {

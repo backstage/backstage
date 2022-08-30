@@ -114,7 +114,7 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws UnauthorizedError', async () => {
-          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+          await expect(client.getServiceByEntity(entity)).rejects.toThrow(
             UnauthorizedError,
           );
         });
@@ -130,7 +130,7 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws NotFoundError', async () => {
-          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+          await expect(client.getServiceByEntity(entity)).rejects.toThrow(
             NotFoundError,
           );
         });
@@ -149,7 +149,7 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws NotFoundError', async () => {
-          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+          await expect(client.getServiceByEntity(entity)).rejects.toThrow(
             'Request failed with 500, Not valid request internal error occurred',
           );
         });
@@ -165,7 +165,7 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws NotFoundError', async () => {
-          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+          await expect(client.getServiceByEntity(entity)).rejects.toThrow(
             NotFoundError,
           );
         });
@@ -212,7 +212,7 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws UnauthorizedError', async () => {
-          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+          await expect(client.getServiceByEntity(entity)).rejects.toThrow(
             UnauthorizedError,
           );
         });
@@ -228,7 +228,7 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws NotFoundError', async () => {
-          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+          await expect(client.getServiceByEntity(entity)).rejects.toThrow(
             NotFoundError,
           );
         });
@@ -247,7 +247,7 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws NotFoundError', async () => {
-          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+          await expect(client.getServiceByEntity(entity)).rejects.toThrow(
             'Request failed with 500, Not valid request internal error occurred',
           );
         });
@@ -295,7 +295,7 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws UnauthorizedError', async () => {
-          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+          await expect(client.getServiceByEntity(entity)).rejects.toThrow(
             UnauthorizedError,
           );
         });
@@ -311,7 +311,7 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws NotFoundError', async () => {
-          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+          await expect(client.getServiceByEntity(entity)).rejects.toThrow(
             NotFoundError,
           );
         });
@@ -330,7 +330,7 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws NotFoundError', async () => {
-          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+          await expect(client.getServiceByEntity(entity)).rejects.toThrow(
             'Request failed with 500, Not valid request internal error occurred',
           );
         });
@@ -346,7 +346,7 @@ describe('PagerDutyClient', () => {
         });
 
         it('throws NotFoundError', async () => {
-          await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+          await expect(client.getServiceByEntity(entity)).rejects.toThrow(
             NotFoundError,
           );
         });
@@ -366,7 +366,7 @@ describe('PagerDutyClient', () => {
       });
 
       it('throws NotFoundError', async () => {
-        await expect(client.getServiceByEntity(entity)).rejects.toThrowError(
+        await expect(client.getServiceByEntity(entity)).rejects.toThrow(
           NotFoundError,
         );
         expect(mockFetch).not.toHaveBeenCalled();

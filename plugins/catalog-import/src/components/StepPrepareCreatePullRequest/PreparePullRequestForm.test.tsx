@@ -42,7 +42,7 @@ describe('<PreparePullRequestForm />', () => {
       await userEvent.click(getByRole('button', { name: /submit/i }));
     });
 
-    expect(onSubmitFn).toBeCalledTimes(1);
+    expect(onSubmitFn).toHaveBeenCalledTimes(1);
     expect(onSubmitFn.mock.calls[0][0]).toMatchObject({ main: 'default' });
   });
 
@@ -72,7 +72,7 @@ describe('<PreparePullRequestForm />', () => {
       await userEvent.click(getByRole('button', { name: /submit/i }));
     });
 
-    expect(onSubmitFn).toBeCalledTimes(1);
+    expect(onSubmitFn).toHaveBeenCalledTimes(1);
     expect(onSubmitFn.mock.calls[0][0]).toMatchObject({ main: 'My Text' });
   });
 
@@ -107,7 +107,7 @@ describe('<PreparePullRequestForm />', () => {
       await userEvent.click(getByRole('button', { name: /submit/i }));
     });
 
-    expect(onSubmitFn).not.toBeCalled();
+    expect(onSubmitFn).not.toHaveBeenCalled();
     expect(queryByText('Error in required main field')).toBeInTheDocument();
   });
 });

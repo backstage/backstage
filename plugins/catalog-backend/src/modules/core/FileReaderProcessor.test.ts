@@ -80,7 +80,7 @@ describe('FileReaderProcessor', () => {
       defaultEntityDataParser,
     );
 
-    expect(emit).toBeCalledTimes(4);
+    expect(emit).toHaveBeenCalledTimes(4);
     expect(emit.mock.calls[0][0].entity).toEqual({
       kind: 'Component',
       metadata: { name: 'component-test' },

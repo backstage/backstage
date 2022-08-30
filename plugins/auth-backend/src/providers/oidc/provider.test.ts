@@ -83,7 +83,7 @@ describe('OidcAuthProvider', () => {
       };
     };
     // Assert that the expected request to the metadaurl was made.
-    expect(handler).toBeCalledTimes(1);
+    expect(handler).toHaveBeenCalledTimes(1);
     const { _client, _issuer } = strategy;
     expect(_client.client_id).toBe(clientMetadata.clientId);
     expect(_issuer.token_endpoint).toBe(issuerMetadata.token_endpoint);
@@ -183,6 +183,6 @@ describe('OidcAuthProvider', () => {
     // Cast provider as any here to be able to inspect private members
     await (provider as any).handlers.get('testEnv').handlers.implementation;
     // Assert that the expected request to the metadaurl was made.
-    expect(handler).toBeCalledTimes(1);
+    expect(handler).toHaveBeenCalledTimes(1);
   });
 });

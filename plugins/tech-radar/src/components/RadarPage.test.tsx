@@ -98,7 +98,7 @@ describe('RadarPage', () => {
     expect(
       getByText('Pick the recommended technologies for your projects'),
     ).toBeInTheDocument();
-    expect(mockClient.load).toBeCalledWith(undefined);
+    expect(mockClient.load).toHaveBeenCalledWith(undefined);
   });
 
   it('should call load with id', async () => {
@@ -119,7 +119,7 @@ describe('RadarPage', () => {
     );
 
     await expect(findByTestId('tech-radar-svg')).resolves.toBeInTheDocument();
-    expect(mockClient.load).toBeCalledWith('myId');
+    expect(mockClient.load).toHaveBeenCalledWith('myId');
   });
 
   it('should call the errorApi if load fails', async () => {

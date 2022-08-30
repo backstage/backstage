@@ -166,7 +166,7 @@ describe('useConsumerGroupOffsets', () => {
       },
     };
     const { result } = subject();
-    expect(() => result.current).toThrowError();
+    expect(() => result.current).toThrow();
     expect(result.error).toStrictEqual(
       new Error(
         `Failed to parse kafka consumer group annotation: got "dev/another,consumer"`,

@@ -45,7 +45,7 @@ describe('AwsEKSClusterProcessor', () => {
       AWSMock.mock('EKS', 'describeCluster', cluster);
 
       await processor.readLocation(location, false, emit);
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'entity',
         location,
         entity: {

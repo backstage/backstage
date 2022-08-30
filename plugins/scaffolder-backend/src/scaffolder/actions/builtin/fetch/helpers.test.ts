@@ -81,7 +81,7 @@ describe('fetchContent helper', () => {
       fetchUrl: 'foo',
       outputPath: 'somepath',
     });
-    expect(fs.copy).toBeCalledWith(resolvePath('/some/foo'), 'somepath');
+    expect(fs.copy).toHaveBeenCalledWith(resolvePath('/some/foo'), 'somepath');
   });
 
   it('should reject if no integration matches location', async () => {
@@ -116,7 +116,7 @@ describe('fetchContent helper', () => {
       outputPath: 'foo',
       fetchUrl: 'https://github.com/backstage/foo',
     });
-    expect(fs.ensureDir).toBeCalled();
-    expect(dirFunction).toBeCalledWith({ targetDir: 'foo' });
+    expect(fs.ensureDir).toHaveBeenCalled();
+    expect(dirFunction).toHaveBeenCalledWith({ targetDir: 'foo' });
   });
 });
