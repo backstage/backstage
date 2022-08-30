@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentProps, ReactElement, ReactNode } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import { Route } from 'react-router';
 import { useApp } from '@backstage/core-plugin-api';
 import { usePermission } from '../hooks';
