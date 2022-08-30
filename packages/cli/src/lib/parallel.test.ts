@@ -43,7 +43,7 @@ describe('parseParallelismOption', () => {
   });
 
   it.each([['on'], [2.5], ['2.5']])('throws error for %p', value => {
-    expect(() => parseParallelismOption(value as any)).toThrowError(
+    expect(() => parseParallelismOption(value as any)).toThrow(
       `Parallel option value '${value}' is not a boolean or integer`,
     );
   });
