@@ -26,6 +26,8 @@ import { catalogServiceRef } from './catalogService';
 
 describe('catalogServiceRef', () => {
   it('should return a catalogClient', async () => {
+    expect.assertions(1);
+
     const mockDiscoveryFactory = createServiceFactory({
       service: discoveryServiceRef,
       deps: {},
