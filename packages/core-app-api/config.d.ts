@@ -65,26 +65,6 @@ export interface Config {
         }>;
       }>;
     };
-    /**
-     * Running the frontend app with https
-     */
-    https?: {
-      /**
-       * Parent object containing certificate and the private key
-       */
-      certificate?: {
-        /**
-         * Https Certificate private key. Use $file to load in a file
-         * @visibility secret
-         */
-        key?: string;
-        /**
-         * Https Certificate. Use $file to load in a file
-         * @visibility frontend
-         */
-        cert?: string;
-      };
-    };
   };
 
   /**

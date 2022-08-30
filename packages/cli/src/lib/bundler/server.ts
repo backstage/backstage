@@ -64,12 +64,10 @@ export async function serveBundle(options: ServeOptions) {
       https:
         url.protocol === 'https:'
           ? {
-              cert: options.frontendConfig.getOptionalString(
+              cert: options.backendConfig.getString(
                 'app.https.certificate.cert',
               ),
-              key: options.backendConfig.getOptionalString(
-                'app.https.certificate.key',
-              ),
+              key: options.backendConfig.getString('app.https.certificate.key'),
             }
           : false,
       host,

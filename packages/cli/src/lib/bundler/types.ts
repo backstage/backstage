@@ -32,7 +32,6 @@ export type ServeOptions = BundlingPathsOptions & {
   frontendConfig: Config;
   frontendAppConfigs: AppConfig[];
   backendConfig: Config;
-  backendAppConfigs: AppConfig[];
 };
 
 export type BuildOptions = BundlingPathsOptions & {

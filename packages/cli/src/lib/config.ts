@@ -96,11 +96,7 @@ export async function loadCliConfig(options: Options) {
     });
     const frontendConfig = ConfigReader.fromConfigs(frontendAppConfigs);
 
-    const backendAppConfigs = schema.process(appConfigs, {
-      visibility: ['frontend', 'backend', 'secret'],
-      withFilteredKeys: options.withFilteredKeys,
-      withDeprecatedKeys: options.withDeprecatedKeys,
-    });
+    const backendAppConfigs = schema.process(appConfigs);
     const backendConfig = ConfigReader.fromConfigs(backendAppConfigs);
 
     return {
@@ -108,7 +104,6 @@ export async function loadCliConfig(options: Options) {
       appConfigs,
       frontendConfig,
       frontendAppConfigs,
-      backendAppConfigs,
       backendConfig,
     };
   } catch (error) {
