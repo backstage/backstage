@@ -196,9 +196,6 @@ jobs:
       - name: lint
         run: yarn backstage-cli repo lint --since origin/master
 
-      - name: bootstrap kind
-        uses: helm/kind-action@v1.3.0
-
       - name: test changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}
         run: yarn lerna -- run test --since origin/master -- --coverage --runInBand

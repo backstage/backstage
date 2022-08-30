@@ -31,7 +31,8 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "clean": "backstage-cli package clean",
-    "start": "backstage-cli package start"
+    "start": "backstage-cli package start",
+    "test:kubernetes:ci": "backstage-cli test -t KubernetesContainerRunner --watchAll=false --ci"
   },
   "dependencies": {
     "@backstage/cli-common": "^0.1.9",
