@@ -55,6 +55,7 @@ process is used to release an emergency fix as version `6.5.1` in the patch rele
         of the repo in order to convert your changeset into package version bumps and changelog entries.
         Commit these changes as a second `"Generated release"` commit.
   - [ ] Create PR towards the base branch (`patch/v1.18.0`) containing the two commits.
+    - [ ] Add a PR body, it will be used as the release description. Typically something like "This release fixes ...".
   - [ ] Review/Merge the PR into `patch/v1.18.0`. This will automatically trigger a release.
 
 - [ ] Look up the new version of our package in the patch PR as well as the new release
@@ -65,5 +66,5 @@ process is used to release an emergency fix as version `6.5.1` in the patch rele
       master branch as well. Create a PR that contains the following:
 
   - [ ] The fix, which you can likely cherry-pick from your patch branch: `git cherry-pick origin/patch/v1.18.0^`
-  - [ ] An updated `CHANGELOG.md` of all patched packages from the tip of the patch branch, `git checkout origin/patch/v1.18.0 -- {packages,plugins}/*/CHANGELOG.md`.
+  - [ ] An updated `CHANGELOG.md` of all patched packages from the tip of the patch branch, `git checkout origin/patch/v1.18.0 -- {packages,plugins}/*/CHANGELOG.md`. Note that if the patch happens after any next-line releases you'll need to restore those entries in the changelog, placing the patch release entry beneath any next-line release entries.
   - [ ] A changeset with the message "Applied the fix from version `6.5.1` of this package, which is part of the `v1.18.1` release of Backstage."

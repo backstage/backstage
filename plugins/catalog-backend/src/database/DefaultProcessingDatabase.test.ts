@@ -1225,7 +1225,7 @@ describe('Default Processing Database', () => {
             ],
           });
         });
-        expect(fakeLogger.debug).toBeCalledWith(
+        expect(fakeLogger.debug).toHaveBeenCalledWith(
           expect.stringMatching(
             /Fast insert path failed, falling back to slow path/,
           ),

@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { default as EntityTeamPullRequestsCard } from './EntityTeamPullRequestsCard';
+export type { EntityTeamPullRequestsCardProps } from './EntityTeamPullRequestsCard';

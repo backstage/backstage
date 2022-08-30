@@ -573,7 +573,7 @@ describe('BitbucketDiscoveryProcessor', () => {
 
       await processor.readLocation(location, false, emitter);
 
-      expect(emitter).toBeCalledTimes(2);
+      expect(emitter).toHaveBeenCalledTimes(2);
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
         location: {
@@ -615,7 +615,7 @@ describe('BitbucketDiscoveryProcessor', () => {
 
       await processor.readLocation(location, false, emitter);
 
-      expect(emitter).toBeCalledTimes(2);
+      expect(emitter).toHaveBeenCalledTimes(2);
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
         location: {
@@ -657,7 +657,7 @@ describe('BitbucketDiscoveryProcessor', () => {
 
       await processor.readLocation(location, false, emitter);
 
-      expect(emitter).toBeCalledTimes(2);
+      expect(emitter).toHaveBeenCalledTimes(2);
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
         location: {
@@ -698,7 +698,7 @@ describe('BitbucketDiscoveryProcessor', () => {
       const emitter = jest.fn();
       await processor.readLocation(location, false, emitter);
 
-      expect(emitter).toBeCalledTimes(1);
+      expect(emitter).toHaveBeenCalledTimes(1);
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
         location: {
@@ -734,7 +734,7 @@ describe('BitbucketDiscoveryProcessor', () => {
       const emitter = jest.fn();
       await processor.readLocation(location, false, emitter);
 
-      expect(emitter).toBeCalledTimes(1);
+      expect(emitter).toHaveBeenCalledTimes(1);
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
         location: {
@@ -762,7 +762,7 @@ describe('BitbucketDiscoveryProcessor', () => {
       const emitter = jest.fn();
       await processor.readLocation(location, false, emitter);
 
-      expect(emitter).toBeCalledTimes(1);
+      expect(emitter).toHaveBeenCalledTimes(1);
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
         location: {
@@ -772,7 +772,7 @@ describe('BitbucketDiscoveryProcessor', () => {
           presence: 'optional',
         },
       });
-      expect(mockCall).toBeCalledTimes(1);
+      expect(mockCall).toHaveBeenCalledTimes(1);
       // it should be possible to do this via an `expect.objectContaining` check but seems to fail with some encoding issue.
       expect(mockCall.mock.calls[0][0].url).toMatchInlineSnapshot(
         `"https://api.bitbucket.org/2.0/repositories/myworkspace?page=1&pagelen=100&q=project.key+%7E+%22prj-one%22"`,
@@ -875,7 +875,7 @@ describe('BitbucketDiscoveryProcessor', () => {
 
       await processor.readLocation(location, false, emitter);
 
-      expect(emitter).toBeCalledTimes(2);
+      expect(emitter).toHaveBeenCalledTimes(2);
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
         location: {
@@ -921,7 +921,7 @@ describe('BitbucketDiscoveryProcessor', () => {
 
       await processor.readLocation(location, false, emitter);
 
-      expect(emitter).toBeCalledTimes(2);
+      expect(emitter).toHaveBeenCalledTimes(2);
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
         location: {
@@ -967,7 +967,7 @@ describe('BitbucketDiscoveryProcessor', () => {
 
       await processor.readLocation(location, false, emitter);
 
-      expect(emitter).toBeCalledTimes(2);
+      expect(emitter).toHaveBeenCalledTimes(2);
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
         location: {
@@ -1012,7 +1012,7 @@ describe('BitbucketDiscoveryProcessor', () => {
       const emitter = jest.fn();
       await processor.readLocation(location, false, emitter);
 
-      expect(emitter).toBeCalledTimes(1);
+      expect(emitter).toHaveBeenCalledTimes(1);
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
         location: {
@@ -1052,7 +1052,7 @@ describe('BitbucketDiscoveryProcessor', () => {
       const emitter = jest.fn();
       await processor.readLocation(location, false, emitter);
 
-      expect(emitter).toBeCalledTimes(1);
+      expect(emitter).toHaveBeenCalledTimes(1);
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
         location: {

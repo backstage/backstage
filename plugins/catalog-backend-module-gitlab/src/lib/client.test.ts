@@ -214,7 +214,7 @@ describe('GitLabClient', () => {
         logger: getVoidLogger(),
       });
       // non-200 status code should throw
-      await expect(() => client.pagedRequest(endpoint)).rejects.toThrowError();
+      await expect(() => client.pagedRequest(endpoint)).rejects.toThrow();
     });
   });
 

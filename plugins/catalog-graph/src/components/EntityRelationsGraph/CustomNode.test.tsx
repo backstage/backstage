@@ -75,7 +75,7 @@ describe('<CustomNode />', () => {
 
     expect(getByText('kind:namespace/name')).toBeInTheDocument();
     await userEvent.click(getByText('kind:namespace/name'));
-    expect(onClick).toBeCalledTimes(1);
+    expect(onClick).toHaveBeenCalledTimes(1);
   });
 
   test('renders title if entity has one', async () => {

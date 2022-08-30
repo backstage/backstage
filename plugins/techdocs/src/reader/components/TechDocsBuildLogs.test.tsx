@@ -54,7 +54,7 @@ describe('<TechDocsBuildLogsDrawerContent />', () => {
       await rendered.findByText(/Waiting for logs.../i),
     ).toBeInTheDocument();
 
-    expect(onClose).toBeCalledTimes(0);
+    expect(onClose).toHaveBeenCalledTimes(0);
   });
 
   it('should render logs', async () => {
@@ -69,7 +69,7 @@ describe('<TechDocsBuildLogsDrawerContent />', () => {
     expect(await rendered.findByText(/Line 1/i)).toBeInTheDocument();
     expect(await rendered.findByText(/Line 2/i)).toBeInTheDocument();
 
-    expect(onClose).toBeCalledTimes(0);
+    expect(onClose).toHaveBeenCalledTimes(0);
   });
 
   it('should call onClose', async () => {
@@ -79,6 +79,6 @@ describe('<TechDocsBuildLogsDrawerContent />', () => {
     );
     rendered.getByTitle('Close the drawer').click();
 
-    expect(onClose).toBeCalledTimes(1);
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });

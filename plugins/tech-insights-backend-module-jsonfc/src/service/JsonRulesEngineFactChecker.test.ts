@@ -219,14 +219,14 @@ describe('JsonRulesEngineFactChecker', () => {
   describe('when running checks', () => {
     it('should throw on incorrectly configured checks conditions', async () => {
       const cur = async () => await factChecker.runChecks('a/a/a', ['broken']);
-      await expect(cur()).rejects.toThrowError(
+      await expect(cur()).rejects.toThrow(
         'Failed to run rules engine, Unknown operator: largerThan',
       );
     });
 
     it('should handle cases where wrong facts are referenced', async () => {
       const cur = async () => await factChecker.runChecks('a/a/a', ['broken2']);
-      await expect(cur()).rejects.toThrowError(
+      await expect(cur()).rejects.toThrow(
         'Failed to run rules engine, Undefined fact: somefact',
       );
     });

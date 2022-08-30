@@ -55,7 +55,7 @@ describe('ReadUrlResponseFactory', () => {
     it('buffer cannot be called after stream is called', async () => {
       const response = await ReadUrlResponseFactory.fromReadable(readable);
       response.stream!();
-      expect(() => response.buffer()).toThrowError(ConflictError);
+      expect(() => response.buffer()).toThrow(ConflictError);
     });
 
     it('stream returns expected data', async () => {
@@ -68,7 +68,7 @@ describe('ReadUrlResponseFactory', () => {
     it('stream cannot be called after buffer is called', async () => {
       const response = await ReadUrlResponseFactory.fromReadable(readable);
       response.buffer();
-      expect(() => response.stream!()).toThrowError(ConflictError);
+      expect(() => response.stream!()).toThrow(ConflictError);
     });
   });
 

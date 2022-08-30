@@ -115,7 +115,9 @@ describe('GerritEntityProvider', () => {
     expect(taskDef.id).toEqual('gerrit-provider:active-training:refresh');
     await (taskDef.fn as () => Promise<void>)();
 
-    expect(entityProviderConnection.applyMutation).toBeCalledWith(expected);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith(
+      expected,
+    );
   });
 
   it('handles api errors.', async () => {

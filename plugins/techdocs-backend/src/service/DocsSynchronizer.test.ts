@@ -144,19 +144,21 @@ describe('DocsSynchronizer', () => {
         generators,
       });
 
-      expect(mockResponseHandler.log).toBeCalledTimes(3);
-      expect(mockResponseHandler.log).toBeCalledWith('Some log');
-      expect(mockResponseHandler.log).toBeCalledWith('Another log');
-      expect(mockResponseHandler.log).toBeCalledWith(
+      expect(mockResponseHandler.log).toHaveBeenCalledTimes(3);
+      expect(mockResponseHandler.log).toHaveBeenCalledWith('Some log');
+      expect(mockResponseHandler.log).toHaveBeenCalledWith('Another log');
+      expect(mockResponseHandler.log).toHaveBeenCalledWith(
         expect.stringMatching(/info.*Some more log/),
       );
 
-      expect(mockResponseHandler.finish).toBeCalledWith({ updated: true });
+      expect(mockResponseHandler.finish).toHaveBeenCalledWith({
+        updated: true,
+      });
 
-      expect(mockResponseHandler.error).toBeCalledTimes(0);
+      expect(mockResponseHandler.error).toHaveBeenCalledTimes(0);
 
-      expect(shouldCheckForUpdate).toBeCalledTimes(1);
-      expect(DocsBuilder.prototype.build).toBeCalledTimes(1);
+      expect(shouldCheckForUpdate).toHaveBeenCalledTimes(1);
+      expect(DocsBuilder.prototype.build).toHaveBeenCalledTimes(1);
     });
 
     it('should limit concurrent updates', async () => {
@@ -210,13 +212,15 @@ describe('DocsSynchronizer', () => {
         generators,
       });
 
-      expect(mockResponseHandler.finish).toBeCalledWith({ updated: false });
+      expect(mockResponseHandler.finish).toHaveBeenCalledWith({
+        updated: false,
+      });
 
-      expect(mockResponseHandler.log).toBeCalledTimes(0);
-      expect(mockResponseHandler.error).toBeCalledTimes(0);
+      expect(mockResponseHandler.log).toHaveBeenCalledTimes(0);
+      expect(mockResponseHandler.error).toHaveBeenCalledTimes(0);
 
-      expect(shouldCheckForUpdate).toBeCalledTimes(1);
-      expect(DocsBuilder.prototype.build).toBeCalledTimes(0);
+      expect(shouldCheckForUpdate).toHaveBeenCalledTimes(1);
+      expect(DocsBuilder.prototype.build).toHaveBeenCalledTimes(0);
     });
 
     it('should forward build errors', async () => {
@@ -242,15 +246,15 @@ describe('DocsSynchronizer', () => {
         generators,
       });
 
-      expect(mockResponseHandler.log).toBeCalledTimes(1);
-      expect(mockResponseHandler.log).toBeCalledWith(
+      expect(mockResponseHandler.log).toHaveBeenCalledTimes(1);
+      expect(mockResponseHandler.log).toHaveBeenCalledWith(
         expect.stringMatching(
           /error.*: Failed to build the docs page: Some random error/,
         ),
       );
-      expect(mockResponseHandler.finish).toBeCalledTimes(0);
-      expect(mockResponseHandler.error).toBeCalledTimes(1);
-      expect(mockResponseHandler.error).toBeCalledWith(error);
+      expect(mockResponseHandler.finish).toHaveBeenCalledTimes(0);
+      expect(mockResponseHandler.error).toHaveBeenCalledTimes(1);
+      expect(mockResponseHandler.error).toHaveBeenCalledWith(error);
     });
   });
 
@@ -275,8 +279,10 @@ describe('DocsSynchronizer', () => {
         entity,
       });
 
-      expect(mockResponseHandler.finish).toBeCalledWith({ updated: false });
-      expect(shouldCheckForUpdate).toBeCalledTimes(1);
+      expect(mockResponseHandler.finish).toHaveBeenCalledWith({
+        updated: false,
+      });
+      expect(shouldCheckForUpdate).toHaveBeenCalledTimes(1);
     });
 
     it('should do nothing if source/cached metadata matches', async () => {
@@ -292,7 +298,9 @@ describe('DocsSynchronizer', () => {
         entity,
       });
 
-      expect(mockResponseHandler.finish).toBeCalledWith({ updated: false });
+      expect(mockResponseHandler.finish).toHaveBeenCalledWith({
+        updated: false,
+      });
     });
 
     it('should invalidate expected files when source/cached metadata differ', async () => {
@@ -309,7 +317,9 @@ describe('DocsSynchronizer', () => {
         entity,
       });
 
-      expect(mockResponseHandler.finish).toBeCalledWith({ updated: true });
+      expect(mockResponseHandler.finish).toHaveBeenCalledWith({
+        updated: true,
+      });
       expect(cache.invalidateMultiple).toHaveBeenCalledWith([
         'default/component/test/index.html',
       ]);
@@ -342,7 +352,9 @@ describe('DocsSynchronizer', () => {
         entity,
       });
 
-      expect(mockResponseHandler.finish).toBeCalledWith({ updated: true });
+      expect(mockResponseHandler.finish).toHaveBeenCalledWith({
+        updated: true,
+      });
       expect(cache.invalidateMultiple).toHaveBeenCalledWith([
         'default/Component/test/index.html',
       ]);
@@ -361,7 +373,9 @@ describe('DocsSynchronizer', () => {
         entity,
       });
 
-      expect(mockResponseHandler.finish).toBeCalledWith({ updated: false });
+      expect(mockResponseHandler.finish).toHaveBeenCalledWith({
+        updated: false,
+      });
     });
 
     it("adds the build log transport to the logger's list of transports", async () => {

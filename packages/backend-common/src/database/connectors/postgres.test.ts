@@ -194,7 +194,7 @@ describe('postgres', () => {
             'postgresql://postgres:pass@localhost:5432/dbname?sslrootcert=/path/to/file',
           ),
         ),
-      ).toThrowError(/no such file or directory/);
+      ).toThrow(/no such file or directory/);
     });
   });
 

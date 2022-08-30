@@ -63,23 +63,24 @@ export class GitHubEntityProvider implements EntityProvider {
     },
   ): GitHubEntityProvider[] {
     const integrations = ScmIntegrations.fromConfig(config);
-    const integration = integrations.github.byHost('github.com');
 
-    if (!integration) {
-      throw new Error(
-        `There is no GitHub config that matches github. Please add a configuration entry for it under integrations.github`,
+    return readProviderConfigs(config).map(providerConfig => {
+      const integrationHost = providerConfig.host;
+      const integration = integrations.github.byHost(integrationHost);
+
+      if (!integration) {
+        throw new Error(
+          `There is no GitHub config that matches host ${integrationHost}. Please add a configuration entry for it under integrations.github`,
+        );
+      }
+
+      return new GitHubEntityProvider(
+        providerConfig,
+        integration,
+        options.logger,
+        options.schedule,
       );
-    }
-
-    return readProviderConfigs(config).map(
-      providerConfig =>
-        new GitHubEntityProvider(
-          providerConfig,
-          integration,
-          options.logger,
-          options.schedule,
-        ),
-    );
+    });
   }
 
   private constructor(
