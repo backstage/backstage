@@ -172,6 +172,15 @@ It's crucial that you update to `RequirePermission` at the same time as you upda
      />
 ```
 
+### `<Navigate />` component
+
+When migrating over to React Router v6 stable, you might also see browser console warnings for the `Navigate` component. This will need to be wrapped up in a `Route` component with the `Navigate` component in the `element` prop.
+
+```diff
+- <Navigate key="/" to="catalog" />
++ <Route path="/" element={<Navigate to="/catalog" />} />
+```
+
 ### `NavLink`
 
 The `NavLink` component no longer has the `activeClassName` and `activeStyle` props. Instead, the `className` and `style` props accept a callback that receives a boolean indicating whether the link is active.
