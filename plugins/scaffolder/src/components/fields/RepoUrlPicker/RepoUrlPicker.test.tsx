@@ -15,7 +15,8 @@
  */
 import React, { useContext } from 'react';
 import { RepoUrlPicker } from './RepoUrlPicker';
-import Form from '@rjsf/core';
+import { withTheme } from '@rjsf/core';
+import { Theme } from '@rjsf/material-ui';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
   scmIntegrationsApiRef,
@@ -49,6 +50,8 @@ describe('RepoUrlPicker', () => {
   const mockScmAuthApi: Partial<ScmAuthApi> = {
     getCredentials: jest.fn().mockResolvedValue({ token: 'abc123' }),
   };
+
+  const Form = withTheme(Theme);
 
   describe('happy path rendering', () => {
     it('should render the repo url picker with minimal props', async () => {

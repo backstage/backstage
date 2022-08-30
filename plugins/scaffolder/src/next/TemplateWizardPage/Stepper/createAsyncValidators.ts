@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FieldValidation } from '@rjsf/core';
+import { FieldValidation } from '@rjsf/utils';
 import { JsonObject } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { CustomFieldValidator } from '../../../extensions';

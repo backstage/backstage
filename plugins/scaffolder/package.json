@@ -56,6 +56,7 @@
     "@react-hookz/web": "^15.0.0",
     "@rjsf/core": "^5.0.0-beta.2",
     "@rjsf/material-ui": "^5.0.0-beta.2",
+    "@rjsf/utils": "^5.0.0-beta.2",
     "@rjsf/validator-ajv6": "^5.0.0-beta.2",
     "@types/json-schema": "^7.0.9",
     "@uiw/react-codemirror": "^4.9.3",

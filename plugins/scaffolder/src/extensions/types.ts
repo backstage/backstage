@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { ApiHolder } from '@backstage/core-plugin-api';
-import { FieldValidation, FieldProps } from '@rjsf/core';
+import { FieldValidation, FieldProps } from '@rjsf/utils';
 
 /**
  * Field validation type for Custom Field Extensions.

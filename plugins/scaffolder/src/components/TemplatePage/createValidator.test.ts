@@ -17,7 +17,7 @@
 import { createValidator } from './createValidator';
 import { CustomFieldValidator } from '../../extensions';
 import { ApiHolder } from '@backstage/core-plugin-api';
-import { FormValidation } from '@rjsf/core';
+import { FormValidation } from '@rjsf/utils';
 
 describe('createValidator', () => {
   const validators: Record<string, undefined | CustomFieldValidator<unknown>> =

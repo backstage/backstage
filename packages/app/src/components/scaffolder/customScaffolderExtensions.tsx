@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import type { FieldValidation } from '@rjsf/core';
+import type { FieldValidation } from '@rjsf/utils';
 import {
   createScaffolderFieldExtension,
   FieldExtensionComponentProps,

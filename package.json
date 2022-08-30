@@ -37,8 +37,7 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "plugins/*",
-      "../react-jsonschema-form/packages/*"
+      "plugins/*"
     ]
   },
   "resolutions": {
