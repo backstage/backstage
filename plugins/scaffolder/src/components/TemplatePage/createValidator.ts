@@ -15,7 +15,7 @@
  */
 
 import { CustomFieldValidator } from '../../extensions';
-import { FormValidation } from '@rjsf/core';
+import { FormValidation } from '@rjsf/utils';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
 

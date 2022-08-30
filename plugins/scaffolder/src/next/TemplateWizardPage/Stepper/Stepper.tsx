@@ -22,7 +22,8 @@ import {
   Button,
   makeStyles,
 } from '@material-ui/core';
-import { FieldValidation, withTheme } from '@rjsf/core';
+import { withTheme } from '@rjsf/core';
+import { FieldValidation } from '@rjsf/utils';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useMemo, useState } from 'react';
 import { FieldExtensionOptions } from '../../../extensions';

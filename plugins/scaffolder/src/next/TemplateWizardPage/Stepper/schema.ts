@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { JsonObject } from '@backstage/types';
-import { FieldValidation, UiSchema } from '@rjsf/core';
+import { FieldValidation, UiSchema } from '@rjsf/utils';
 
 function isObject(value: unknown): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);

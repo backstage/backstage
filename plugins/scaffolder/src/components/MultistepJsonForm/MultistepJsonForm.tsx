@@ -29,7 +29,8 @@ import {
   useApi,
   featureFlagsApiRef,
 } from '@backstage/core-plugin-api';
-import { FormProps, IChangeEvent, UiSchema, withTheme } from '@rjsf/core';
+import { UiSchema } from '@rjsf/utils';
+import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
 import { Theme } from '@rjsf/material-ui';
 import validator from '@rjsf/validator-ajv6';
 import React, { useState } from 'react';
@@ -215,7 +216,7 @@ export const MultistepJsonForm = (props: Props) => {
                   formData={formData}
                   formContext={{ formData }}
                   onChange={onChange}
-                  onSubmit={e => {
+                  onSubmit={(e: any) => {
                     if (e.errors.length === 0) handleNext();
                   }}
                   {...formProps}
