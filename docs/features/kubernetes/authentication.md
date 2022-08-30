@@ -23,7 +23,7 @@ The providers available as server side are:
 
 ## Client Side Providers
 
-These providers authenticate your user with the cluster, each user will be requested for
+These providers authenticate your _user_ with the cluster. Each Backstage user will be prompted for
 credentials and will have access to the clusters as long as the user has been authorized
 to access said cluster, if the cluster is listed in the `clusterLocatorMethods` in the
 config, but the user hasn't been authorized to access, the user will see the cluster
