@@ -69,8 +69,6 @@
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
     "qs": "^6.9.4",
-    "react-router": "6.0.0-beta.0",
-    "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4",
     "use-immer": "^0.7.0",
     "yaml": "^2.0.0",
@@ -78,7 +76,9 @@
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",
-    "react": "^16.13.1 || ^17.0.0"
+    "react": "^16.13.1 || ^17.0.0",
+    "react-router": "6.0.0-beta.0 || ^6.3.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.18.2-next.0",

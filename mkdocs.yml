@@ -181,6 +181,7 @@ nav:
       - Deprecations: 'api/deprecations.md'
   - Tutorials:
       - Future developer journey: 'tutorials/journey.md'
+      - React Router 6.0 Migration: 'tutorials/react-router-stable-migration.md'
       - Package Role Migration: 'tutorials/package-role-migration.md'
       - Migrating away from @backstage/core: 'tutorials/migrating-away-from-core.md'
       - Adding Custom Plugin to Existing Monorepo App: 'tutorials/quickstart-app-plugin.md'

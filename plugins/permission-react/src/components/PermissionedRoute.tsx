@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentProps, ReactElement } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import { Route } from 'react-router';
 import { useApp } from '@backstage/core-plugin-api';
 import { usePermission } from '../hooks';
@@ -29,20 +29,25 @@ import {
  * NotFoundErrorPage (see {@link @backstage/core-app-api#AppComponents}).
  *
  * @public
+ * @deprecated This component no longer works with the most recent version of `@backstage/core-app-api` and react-router v6, use {@link RequirePermission} instead.
  */
 export const PermissionedRoute = (
-  props: ComponentProps<typeof Route> & {
+  props: {
+    caseSensitive?: boolean;
+    children?: ReactNode;
+    element?: ReactElement | null;
+    path?: string;
     errorComponent?: ReactElement | null;
   } & (
-      | {
-          permission: Exclude<Permission, ResourcePermission>;
-          resourceRef?: never;
-        }
-      | {
-          permission: ResourcePermission;
-          resourceRef: string | undefined;
-        }
-    ),
+    | {
+        permission: Exclude<Permission, ResourcePermission>;
+        resourceRef?: never;
+      }
+    | {
+        permission: ResourcePermission;
+        resourceRef: string | undefined;
+      }
+  ),
 ) => {
   const { permission, resourceRef, errorComponent, ...otherProps } = props;
 

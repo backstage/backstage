@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { PermissionedRoute } from '.';
+import { RequirePermission } from './RequirePermission';
 import { usePermission } from '../hooks';
 import { renderInTestApp } from '@backstage/test-utils';
 import { createPermission } from '@backstage/plugin-permission-common';
@@ -32,14 +32,14 @@ const permission = createPermission({
   attributes: { action: 'read' },
 });
 
-describe('PermissionedRoute', () => {
+describe('RequirePermission', () => {
   it('Does not render when loading', async () => {
     mockUsePermission.mockReturnValue({ loading: true, allowed: false });
 
     const { queryByText } = await renderInTestApp(
-      <PermissionedRoute
+      <RequirePermission
         permission={permission}
-        element={<div>content</div>}
+        children={<div>content</div>}
       />,
     );
 
@@ -50,9 +50,9 @@ describe('PermissionedRoute', () => {
     mockUsePermission.mockReturnValue({ loading: false, allowed: true });
 
     const { getByText } = await renderInTestApp(
-      <PermissionedRoute
+      <RequirePermission
         permission={permission}
-        element={<div>content</div>}
+        children={<div>content</div>}
       />,
     );
 
@@ -64,9 +64,9 @@ describe('PermissionedRoute', () => {
 
     await expect(
       renderInTestApp(
-        <PermissionedRoute
+        <RequirePermission
           permission={permission}
-          element={<div>content</div>}
+          children={<div>content</div>}
         />,
       ),
     ).rejects.toThrowError('Reached NotFound Page');
@@ -76,10 +76,10 @@ describe('PermissionedRoute', () => {
     mockUsePermission.mockReturnValue({ loading: false, allowed: false });
 
     const { getByText } = await renderInTestApp(
-      <PermissionedRoute
+      <RequirePermission
         permission={permission}
-        element={<div>content</div>}
-        errorComponent={<h1>Custom Error</h1>}
+        children={<div>content</div>}
+        errorPage={<h1>Custom Error</h1>}
       />,
     );
 

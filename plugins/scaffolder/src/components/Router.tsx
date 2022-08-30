@@ -125,6 +125,7 @@ export const Router = (props: RouterProps) => {
   return (
     <Routes>
       <Route
+        path="/"
         element={
           <ScaffolderPage
             groups={groups}
@@ -133,9 +134,10 @@ export const Router = (props: RouterProps) => {
           />
         }
       />
-      <Route path={legacySelectedTemplateRouteRef.path}>
-        <RedirectingComponent />
-      </Route>
+      <Route
+        path={legacySelectedTemplateRouteRef.path}
+        element={<RedirectingComponent />}
+      />
       <Route
         path={selectedTemplateRouteRef.path}
         element={

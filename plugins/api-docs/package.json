@@ -47,14 +47,14 @@
     "graphql": "^16.0.0",
     "graphql-ws": "^5.4.1",
     "isomorphic-form-data": "^2.0.0",
-    "react-router": "6.0.0-beta.0",
-    "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4",
     "swagger-ui-react": "^4.11.1"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",
-    "react": "^16.13.1 || ^17.0.0"
+    "react": "^16.13.1 || ^17.0.0",
+    "react-router": "6.0.0-beta.0 || ^6.3.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.18.2-next.0",
