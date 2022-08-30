@@ -1,5 +1,5 @@
 ---
-id: kubernetes-auth
+id: authentication
 title: Kubernetes Authentication
 description: Authentication in Kubernetes plugin
 ---
