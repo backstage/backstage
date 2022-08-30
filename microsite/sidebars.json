@@ -81,6 +81,7 @@
           "features/kubernetes/overview",
           "features/kubernetes/installation",
           "features/kubernetes/configuration",
+          "features/kubernetes/authentication",
           "features/kubernetes/troubleshooting"
         ]
       },
