@@ -21,12 +21,21 @@ import {
   StackOverflowQuestion,
   StackOverflowQuestionsRequestParams,
 } from '../types';
+import { Config } from '@backstage/config';
 
 export class StackOverflowClient implements StackOverflowApi {
   private baseUrl: string;
 
   constructor({ baseUrl }: { baseUrl: string }) {
     this.baseUrl = baseUrl;
+  }
+
+  static fromConfig(config: Config) {
+    return new StackOverflowClient({
+      baseUrl:
+        config.getOptionalString('stackoverflow.baseUrl') ||
+        'https://api.stackexchange.com/2.2',
+    });
   }
 
   /**

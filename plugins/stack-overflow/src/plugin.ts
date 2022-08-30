@@ -35,12 +35,7 @@ export const stackOverflowPlugin = createPlugin({
     createApiFactory({
       api: stackOverflowApiRef,
       deps: { configApi: configApiRef },
-      factory: ({ configApi }) =>
-        new StackOverflowClient({
-          baseUrl:
-            configApi.getOptionalString('stackoverflow.baseUrl') ||
-            'https://api.stackexchange.com/2.2',
-        }),
+      factory: ({ configApi }) => StackOverflowClient.fromConfig(configApi),
     }),
   ],
 });
