@@ -6,7 +6,6 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
-import { ComponentProps } from 'react';
 import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { EvaluatePermissionRequest } from '@backstage/plugin-permission-common';
@@ -16,7 +15,6 @@ import { Permission } from '@backstage/plugin-permission-common';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
-import { Route } from 'react-router';
 
 // @public (undocumented)
 export type AsyncPermissionResult = {
@@ -51,19 +49,23 @@ export const permissionApiRef: ApiRef<PermissionApi>;
 
 // @public @deprecated
 export const PermissionedRoute: (
-  _props: ComponentProps<typeof Route> & {
+  props: {
+    caseSensitive?: boolean;
+    children?: ReactNode;
+    element?: ReactElement | null;
+    path?: string;
     errorComponent?: ReactElement | null;
   } & (
-      | {
-          permission: Exclude<Permission, ResourcePermission>;
-          resourceRef?: never;
-        }
-      | {
-          permission: ResourcePermission;
-          resourceRef: string | undefined;
-        }
-    ),
-) => never;
+    | {
+        permission: Exclude<Permission, ResourcePermission>;
+        resourceRef?: never;
+      }
+    | {
+        permission: ResourcePermission;
+        resourceRef: string | undefined;
+      }
+  ),
+) => JSX.Element;
 
 // @public
 export function RequirePermission(
