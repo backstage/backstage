@@ -1,7 +1,7 @@
 ---
 id: kubernetes-auth
 title: Kubernetes Authentication
-description: Authentication in kubernetes plugin
+description: Authentication in Kubernetes plugin
 ---
 
 The authentication process in kubernetes is basically separate from backstage auth, the
