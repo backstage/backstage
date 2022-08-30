@@ -36,7 +36,7 @@
     "@material-ui/core": "^4.12.2"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.18.2-next.0"
+    "@backstage/cli": "^0.19.0-next.1"
   },
   "files": [
     "dist"
