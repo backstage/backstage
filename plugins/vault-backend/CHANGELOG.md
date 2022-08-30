@@ -1,5 +1,21 @@
 # @backstage/plugin-vault-backend
 
+## 0.2.2-next.1
+
+### Patch Changes
+
+- 148568b5c2: Switched to using node-fetch instead of cross-fetch as is standard for our backend packages
+- 60b85d8ade: Updated dependency `helmet` to `^6.0.0`.
+
+  Please note that these policies are no longer applied by default:
+
+  helmet.contentSecurityPolicy no longer sets block-all-mixed-content directive by default
+  helmet.expectCt is no longer set by default. It can, however, be explicitly enabled. It will be removed in Helmet 7.
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.1
+  - @backstage/backend-test-utils@0.1.28-next.1
+
 ## 0.2.2-next.0
 
 ### Patch Changes

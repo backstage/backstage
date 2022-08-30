@@ -1,5 +1,18 @@
 # @backstage/core-app-api
 
+## 1.1.0-next.1
+
+### Minor Changes
+
+- a448fea691: Updated the routing system to be compatible with React Router v6 stable.
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 70299c99d5: Updated `FlatRoutes` to be compatible with React Router v6 stable.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.1
+
 ## 1.0.6-next.0
 
 ### Patch Changes

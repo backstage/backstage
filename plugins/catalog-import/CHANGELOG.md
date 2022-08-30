@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-import
 
+## 0.8.12-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.1
+  - @backstage/core-plugin-api@1.0.6-next.1
+  - @backstage/plugin-catalog-react@1.1.4-next.1
+
 ## 0.8.12-next.0
 
 ### Patch Changes

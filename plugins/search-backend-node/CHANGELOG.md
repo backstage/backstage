@@ -1,5 +1,13 @@
 # @backstage/plugin-search-backend-node
 
+## 1.0.2-next.1
+
+### Patch Changes
+
+- a1124adf5e: Fixed bug in LunrSearchEngine where stopwords in title is causing in-doc search not working
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.1
+
 ## 1.0.2-next.0
 
 ### Patch Changes

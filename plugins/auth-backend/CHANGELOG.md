@@ -1,5 +1,20 @@
 # @backstage/plugin-auth-backend
 
+## 0.16.0-next.1
+
+### Minor Changes
+
+- 2fc41ebf07: Removed the previously deprecated class `AtlassianAuthProvider`. Please use `providers.atlassian.create(...)` instead.
+- a291688bc5: Renamed the `RedirectInfo` type to `OAuthStartResponse`
+
+### Patch Changes
+
+- d669d89206: Minor API signatures cleanup
+- e1ebaeb332: Cloudflare Access Provider: Add JWT to CloudflareAccessResult
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.5-next.1
+  - @backstage/backend-common@0.15.1-next.1
+
 ## 0.15.2-next.0
 
 ### Patch Changes

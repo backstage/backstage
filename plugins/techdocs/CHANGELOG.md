@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs
 
+## 1.3.2-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 763fb81e82: Internal refactor to use more type safe code when dealing with route parameters.
+- 817f3196f6: Updated the `TechDocsReaderPage` to be compatible with React Router v6 stable.
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.1
+  - @backstage/core-plugin-api@1.0.6-next.1
+  - @backstage/plugin-catalog-react@1.1.4-next.1
+  - @backstage/plugin-search-react@1.0.2-next.1
+  - @backstage/plugin-techdocs-react@1.0.4-next.1
+
 ## 1.3.2-next.0
 
 ### Patch Changes

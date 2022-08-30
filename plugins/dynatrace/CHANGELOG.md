@@ -1,5 +1,15 @@
 # @backstage/plugin-dynatrace
 
+## 0.2.0-next.1
+
+### Patch Changes
+
+- 148568b5c2: Switched to using node-fetch instead of cross-fetch as is standard for our backend packages
+- d669d89206: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.1
+  - @backstage/core-plugin-api@1.0.6-next.1
+
 ## 0.2.0-next.0
 
 ### Minor Changes

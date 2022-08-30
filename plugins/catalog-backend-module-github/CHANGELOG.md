@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.1.7-next.1
+
+### Patch Changes
+
+- 287a64bf97: Added the ability to configure the host for the `GitHubEntityProvider` to use against GitHub Enterprise
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.1
+  - @backstage/plugin-catalog-backend@1.4.0-next.1
+
 ## 0.1.7-next.0
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-graphiql
 
+## 0.2.41-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.1
+  - @backstage/core-plugin-api@1.0.6-next.1
+
 ## 0.2.41-next.0
 
 ### Patch Changes

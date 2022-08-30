@@ -1,5 +1,26 @@
 # example-backend
 
+## 0.2.75-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.5-next.1
+  - @backstage/plugin-permission-node@0.6.5-next.1
+  - @backstage/backend-common@0.15.1-next.1
+  - @backstage/plugin-catalog-backend@1.4.0-next.1
+  - @backstage/plugin-auth-backend@0.16.0-next.1
+  - @backstage/plugin-scaffolder-backend@1.6.0-next.1
+  - @backstage/plugin-search-backend-node@1.0.2-next.1
+  - @backstage/plugin-app-backend@0.3.36-next.1
+  - @backstage/plugin-graphql-backend@0.1.26-next.1
+  - @backstage/plugin-jenkins-backend@0.1.26-next.1
+  - @backstage/plugin-rollbar-backend@0.1.33-next.1
+  - @backstage/plugin-search-backend-module-pg@0.4.0-next.1
+  - @backstage/plugin-kubernetes-backend@0.7.2-next.1
+  - @backstage/plugin-tech-insights-backend@0.5.2-next.1
+  - example-app@0.2.75-next.1
+
 ## 0.2.75-next.0
 
 ### Patch Changes

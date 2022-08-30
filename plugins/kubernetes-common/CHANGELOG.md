@@ -1,5 +1,11 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.4.2-next.0
+
+### Patch Changes
+
+- d669d89206: Minor API signatures cleanup
+
 ## 0.4.1
 
 ### Patch Changes

@@ -1,5 +1,24 @@
 # @backstage/cli
 
+## 0.19.0-next.1
+
+### Minor Changes
+
+- 1fe6823bb5: Updated dependency `eslint-plugin-jest` to `^27.0.0`.
+
+  Note that this major update to the Jest plugin contains some breaking changes.
+  This means that some of your tests may start seeing some new lint errors. [Read
+  about them
+  here](https://github.com/jest-community/eslint-plugin-jest/blob/main/CHANGELOG.md#2700-2022-08-28).
+
+  These are mostly possible to fix automatically. You can try to run `yarn backstage-cli repo lint --fix` in your repo root to have most or all of them
+  corrected.
+
+### Patch Changes
+
+- 817f3196f6: Added a new `migrate react-router-deps` command to aid in the migration to React Router v6 stable.
+- 33fbd9f9a4: Updated dependency `@types/minimatch` to `^5.0.0`.
+
 ## 0.18.2-next.0
 
 ### Patch Changes

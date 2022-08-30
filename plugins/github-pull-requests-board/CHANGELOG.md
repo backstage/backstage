@@ -1,5 +1,16 @@
 # @backstage/plugin-github-pull-requests-board
 
+## 0.1.3-next.1
+
+### Patch Changes
+
+- d669d89206: Minor API signatures cleanup
+- 723113296b: Add optional `pullRequestLimit` prop to `EntityTeamPullRequestsCard` and `EntityTeamPullRequestsContent` to limit the number of PRs shown per repository. Excluding this prop will default the number of pull requests shown to 10 per repository (the existing functionality).
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.1
+  - @backstage/core-plugin-api@1.0.6-next.1
+  - @backstage/plugin-catalog-react@1.1.4-next.1
+
 ## 0.1.3-next.0
 
 ### Patch Changes

@@ -1,5 +1,25 @@
 # @backstage/create-app
 
+## 0.4.31-next.1
+
+### Patch Changes
+
+- c1f1a4c760: The Backstage packages and plugins have all been updated to support React Router v6 stable. The `create-app` template has not been migrated yet, but if you want to migrate your own app or plugins, check out the [migration guide](https://backstage.io/docs/tutorials/react-router-stable-migration).
+- c3c90280be: The options part of `DatabaseManager.fromConfig` now accepts an optional logger
+  field. You may want to supply that logger in your backend initialization code to
+  ensure that you can get relevant logging data when things happen related to the
+  connection pool.
+
+  In `packages/backend/src/index.ts`:
+
+  ```diff
+   function makeCreateEnv(config: Config) {
+     const root = getRootLogger();
+     ...
+  -  const databaseManager = DatabaseManager.fromConfig(config);
+  +  const databaseManager = DatabaseManager.fromConfig(config, { logger: root });
+  ```
+
 ## 0.4.31-next.0
 
 ### Patch Changes

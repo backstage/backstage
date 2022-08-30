@@ -1,5 +1,14 @@
 # @backstage/plugin-tech-radar
 
+## 0.5.16-next.1
+
+### Patch Changes
+
+- d669d89206: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.1
+  - @backstage/core-plugin-api@1.0.6-next.1
+
 ## 0.5.16-next.0
 
 ### Patch Changes

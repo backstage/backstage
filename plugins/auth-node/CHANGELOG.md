@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-node
 
+## 0.2.5-next.1
+
+### Patch Changes
+
+- 9212439d15: Minor update to tests
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.1
+
 ## 0.2.5-next.0
 
 ### Patch Changes
