@@ -6,8 +6,8 @@ description: Authentication in Kubernetes plugin
 
 The authentication process in kubernetes is basically separate from backstage auth, the
 providers are configured so your kubernetes plugin can locate and access the clusters you
-have access to, the providers currently available are categorized in server side auth and
-client side auth.
+have access to. The providers currently available are divided into server side and
+client side.
 
 ## Server Side Providers
 
