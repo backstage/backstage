@@ -193,8 +193,13 @@ jobs:
       - name: lock
         run: yarn lock:check
 
-      - name: lint
+      - name: lint changed packages
+        if: ${{ steps.yarn-lock.outcome == 'success' }}
         run: yarn backstage-cli repo lint --since origin/master
+
+      - name: lint all packages
+        if: ${{ steps.yarn-lock.outcome == 'failure' }}
+        run: yarn backstage-cli repo lint
 
       - name: test changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}
