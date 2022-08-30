@@ -135,20 +135,16 @@ export async function createConfig(
     }),
   );
 
-  // Detect and use the appropriate react-dom hot-loader patch based on what
-  // version of React is used within the target repo.
-  const resolveAliases: Record<string, string> = {};
-  try {
-    // eslint-disable-next-line import/no-extraneous-dependencies
-    const { version: reactDomVersion } = require('react-dom/package.json');
-    if (reactDomVersion.startsWith('16.')) {
-      resolveAliases['react-dom'] = '@hot-loader/react-dom-v16';
-    } else {
-      resolveAliases['react-dom'] = '@hot-loader/react-dom-v17';
-    }
-  } catch (error) {
-    console.warn(`WARNING: Failed to read react-dom version, ${error}`);
-  }
+  // These files are required by the transpiled code when using React Refresh.
+  // They need to be excluded to the module scope plugin which ensures that files
+  // that exist in the package are required.
+  const reactRefreshFiles = [
+    require.resolve(
+      '@pmmmwh/react-refresh-webpack-plugin/lib/runtime/RefreshUtils.js',
+    ),
+    require.resolve('@pmmmwh/react-refresh-webpack-plugin/overlay/index.js'),
+    require.resolve('react-refresh'),
+  ];
 
   return {
     mode: isDev ? 'development' : 'production',
@@ -160,7 +156,7 @@ export async function createConfig(
     },
     devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
     context: paths.targetPath,
-    entry: [require.resolve('react-hot-loader/patch'), paths.targetEntry],
+    entry: [paths.targetEntry],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json', '.wasm'],
       mainFields: ['browser', 'module', 'main'],
@@ -185,10 +181,9 @@ export async function createConfig(
         new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],
-          [paths.targetPackageJson],
+          [paths.targetPackageJson, ...reactRefreshFiles],
         ),
       ],
-      alias: resolveAliases,
     },
     module: {
       rules: loaders,
@@ -282,9 +277,6 @@ export async function createBackendConfig(
           [paths.targetPackageJson],
         ),
       ],
-      alias: {
-        'react-dom': '@hot-loader/react-dom',
-      },
     },
     module: {
       rules: loaders,

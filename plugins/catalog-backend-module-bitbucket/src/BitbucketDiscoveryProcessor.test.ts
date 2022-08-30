@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { Models } from '@backstage/plugin-bitbucket-cloud-common';
 import {
@@ -175,9 +176,7 @@ function setupBitbucketCloudSearchStubs(
 }
 
 describe('BitbucketDiscoveryProcessor', () => {
-  beforeAll(() => server.listen());
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
+  setupRequestMockHandlers(server);
 
   afterEach(() => jest.resetAllMocks());
 

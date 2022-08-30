@@ -1,5 +1,20 @@
 # @backstage/plugin-adr
 
+## 0.2.1-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- c8bb0ff8ce: Minor cleanup of the public API surface to reduce the number of warnings
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/core-components@0.11.1-next.0
+  - @backstage/integration-react@1.1.4-next.0
+  - @backstage/plugin-catalog-react@1.1.4-next.0
+  - @backstage/plugin-search-react@1.0.2-next.0
+  - @backstage/plugin-adr-common@0.2.1-next.0
+  - @backstage/plugin-search-common@1.0.1-next.0
+
 ## 0.2.0
 
 ### Minor Changes

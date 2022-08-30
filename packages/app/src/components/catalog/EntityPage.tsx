@@ -110,6 +110,7 @@ import {
 } from '@backstage/plugin-rollbar';
 import { EntitySentryContent } from '@backstage/plugin-sentry';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
+import { EntityTechInsightsScorecardCard } from '@backstage/plugin-tech-insights';
 import { EntityTodoContent } from '@backstage/plugin-todo';
 import { Button, Grid } from '@material-ui/core';
 import BadgeIcon from '@material-ui/icons/CallToAction';
@@ -443,6 +444,24 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/code-insights" title="Code Insights">
       <EntityGithubInsightsContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/tech-insights" title="Scorecards">
+      <Grid container spacing={3} alignItems="stretch">
+        <Grid item xs={12} md={6}>
+          <EntityTechInsightsScorecardCard
+            title="Scorecard 1"
+            description="This is a sample scorecard no. 1"
+            checksId={['titleCheck']}
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <EntityTechInsightsScorecardCard
+            title="Scorecard 2"
+            checksId={['techDocsCheck']}
+          />
+        </Grid>
+      </Grid>
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/code-coverage" title="Code Coverage">

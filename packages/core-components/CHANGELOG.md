@@ -1,5 +1,15 @@
 # @backstage/core-components
 
+## 0.11.1-next.0
+
+### Patch Changes
+
+- b29c44d895: Adds code to generate ids for headers parsed through the MarkdownContent component.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- c8bb0ff8ce: Minor cleanup of the public API surface to reduce the number of warnings
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+
 ## 0.11.0
 
 ### Minor Changes

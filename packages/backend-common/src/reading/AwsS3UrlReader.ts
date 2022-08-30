@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import aws, { Credentials, S3 } from 'aws-sdk';
+// note: We do the import like this so that we don't get issues destructuring
+// and it not being mocked by the aws-sdk-mock package which is unfortunate.
+import aws from 'aws-sdk';
 import { CredentialsOptions } from 'aws-sdk/lib/credentials';
 import {
   ReaderFactory,
@@ -126,7 +128,7 @@ export class AwsS3UrlReader implements UrlReader {
     return integrations.awsS3.list().map(integration => {
       const credentials = AwsS3UrlReader.buildCredentials(integration);
 
-      const s3 = new S3({
+      const s3 = new aws.S3({
         apiVersion: '2006-03-01',
         credentials,
         endpoint: integration.config.endpoint,
@@ -145,7 +147,7 @@ export class AwsS3UrlReader implements UrlReader {
   constructor(
     private readonly integration: AwsS3Integration,
     private readonly deps: {
-      s3: S3;
+      s3: aws.S3;
       treeResponseFactory: ReadTreeResponseFactory;
     },
   ) {}
@@ -156,17 +158,17 @@ export class AwsS3UrlReader implements UrlReader {
    */
   private static buildCredentials(
     integration?: AwsS3Integration,
-  ): Credentials | CredentialsOptions | undefined {
+  ): aws.Credentials | CredentialsOptions | undefined {
     if (!integration) {
       return undefined;
     }
 
     const accessKeyId = integration.config.accessKeyId;
     const secretAccessKey = integration.config.secretAccessKey;
-    let explicitCredentials: Credentials | undefined;
+    let explicitCredentials: aws.Credentials | undefined;
 
     if (accessKeyId && secretAccessKey) {
-      explicitCredentials = new Credentials({
+      explicitCredentials = new aws.Credentials({
         accessKeyId,
         secretAccessKey,
       });

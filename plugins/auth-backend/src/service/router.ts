@@ -36,8 +36,10 @@ import passport from 'passport';
 import { Minimatch } from 'minimatch';
 import { CatalogAuthResolverContext } from '../lib/resolvers';
 
-type ProviderFactories = { [s: string]: AuthProviderFactory };
+/** @public */
+export type ProviderFactories = { [s: string]: AuthProviderFactory };
 
+/** @public */
 export interface RouterOptions {
   logger: Logger;
   database: PluginDatabaseManager;
@@ -48,6 +50,7 @@ export interface RouterOptions {
   providerFactories?: ProviderFactories;
 }
 
+/** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
@@ -187,6 +190,7 @@ export async function createRouter(
   return router;
 }
 
+/** @public */
 export function createOriginFilter(
   config: Config,
 ): (origin: string) => boolean {

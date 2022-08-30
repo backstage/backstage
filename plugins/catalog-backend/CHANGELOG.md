@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-backend
 
+## 1.3.2-next.0
+
+### Patch Changes
+
+- 243533ecdc: Added support to mysql on some raw queries
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 62788b2ee8: The experimental `CatalogProcessingExtensionPoint` now accepts multiple providers and processors at once.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/backend-plugin-api@0.1.2-next.0
+  - @backstage/catalog-client@1.0.5-next.0
+  - @backstage/integration@1.3.1-next.0
+  - @backstage/plugin-permission-common@0.6.4-next.0
+  - @backstage/plugin-permission-node@0.6.5-next.0
+  - @backstage/plugin-scaffolder-common@1.2.0-next.0
+  - @backstage/plugin-catalog-node@1.0.2-next.0
+  - @backstage/plugin-catalog-common@1.0.6-next.0
+  - @backstage/plugin-search-common@1.0.1-next.0
+
 ## 1.3.1
 
 ### Patch Changes

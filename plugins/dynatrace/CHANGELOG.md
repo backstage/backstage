@@ -1,5 +1,23 @@
 # @backstage/plugin-dynatrace
 
+## 0.2.0-next.0
+
+### Minor Changes
+
+- e44c0b3811: New features:
+
+  - Some visual improvements to the table that displays Problems
+  - Added support for viewing recent Synthetics results using
+  - Added some additional linking to the configured Dynatrace instance
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/core-components@0.11.1-next.0
+  - @backstage/plugin-catalog-react@1.1.4-next.0
+
 ## 0.1.2
 
 ### Patch Changes

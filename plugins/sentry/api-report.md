@@ -14,28 +14,18 @@ import { InfoCardVariants } from '@backstage/core-components';
 import { Options } from '@material-table/core';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-forgotten-export) The symbol "SentryPageProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "EntitySentryCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const EntitySentryCard: ({
-  statsFor,
-  tableOptions,
-}: SentryPageProps) => JSX.Element;
+export const EntitySentryCard: (props: SentryPageProps) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "EntitySentryContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const EntitySentryContent: ({
-  statsFor,
-  tableOptions,
-}: SentryPageProps) => JSX.Element;
+export const EntitySentryContent: (props: SentryPageProps) => JSX.Element;
+
+// @public (undocumented)
+export type EventPoint = number[];
 
 // @public
 export const isSentryAvailable: (entity: Entity) => boolean;
 
-// Warning: (ae-missing-release-tag) "MockSentryApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class MockSentryApi implements SentryApi {
   // (undocumented)
@@ -75,10 +65,13 @@ export interface SentryApi {
 }
 
 // @public (undocumented)
+export type SentryApiError = {
+  detail: string;
+};
+
+// @public (undocumented)
 export const sentryApiRef: ApiRef<SentryApi>;
 
-// Warning: (ae-missing-release-tag) "SentryIssue" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type SentryIssue = {
   platform: SentryPlatform;
@@ -114,6 +107,14 @@ export type SentryIssue = {
 };
 
 // @public (undocumented)
+export type SentryIssueMetadata = {
+  function?: string;
+  type?: string;
+  value?: string;
+  filename?: string;
+};
+
+// @public (undocumented)
 export const SentryIssuesWidget: (props: {
   entity: Entity;
   statsFor: '24h' | '14d' | '';
@@ -121,6 +122,15 @@ export const SentryIssuesWidget: (props: {
   variant?: InfoCardVariants;
   query?: string;
 }) => JSX.Element;
+
+// @public (undocumented)
+export type SentryPageProps = {
+  statsFor?: '24h' | '14d' | '';
+  tableOptions?: Options<never>;
+};
+
+// @public (undocumented)
+export type SentryPlatform = 'javascript' | 'javascript-react' | string;
 
 // @public (undocumented)
 const sentryPlugin: BackstagePlugin<
@@ -133,10 +143,11 @@ const sentryPlugin: BackstagePlugin<
 export { sentryPlugin as plugin };
 export { sentryPlugin };
 
-// Warnings were encountered during analysis:
-//
-// src/api/sentry-issue.d.ts:16:5 - (ae-forgotten-export) The symbol "SentryPlatform" needs to be exported by the entry point index.d.ts
-// src/api/sentry-issue.d.ts:21:9 - (ae-forgotten-export) The symbol "EventPoint" needs to be exported by the entry point index.d.ts
-// src/api/sentry-issue.d.ts:31:5 - (ae-forgotten-export) The symbol "SentryIssueMetadata" needs to be exported by the entry point index.d.ts
-// src/api/sentry-issue.d.ts:44:5 - (ae-forgotten-export) The symbol "SentryProject" needs to be exported by the entry point index.d.ts
+// @public (undocumented)
+export type SentryProject = {
+  platform: SentryPlatform;
+  slug: string;
+  id: string;
+  name: string;
+};
 ```

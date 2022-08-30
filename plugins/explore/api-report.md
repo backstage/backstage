@@ -12,8 +12,6 @@ import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TabProps } from '@material-ui/core';
 
-// Warning: (ae-missing-release-tag) "catalogEntityRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public @deprecated (undocumented)
 export const catalogEntityRouteRef: ExternalRouteRef<
   {
@@ -24,34 +22,30 @@ export const catalogEntityRouteRef: ExternalRouteRef<
   true
 >;
 
-// Warning: (ae-forgotten-export) The symbol "DomainCardProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "DomainCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const DomainCard: ({ entity }: DomainCardProps) => JSX.Element;
+export const DomainCard: (props: { entity: DomainEntity }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "DomainExplorerContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const DomainExplorerContent: (props: {
   title?: string | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "ExploreLayout" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const ExploreLayout: {
-  ({ title, subtitle, children }: ExploreLayoutProps): JSX.Element;
+  (props: ExploreLayoutProps): JSX.Element;
   Route: (props: SubRoute) => null;
 };
 
-// Warning: (ae-missing-release-tag) "ExplorePage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type ExploreLayoutProps = {
+  title?: string;
+  subtitle?: string;
+  children?: default_2.ReactNode;
+};
+
 // @public (undocumented)
 export const ExplorePage: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "explorePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 const explorePlugin: BackstagePlugin<
   {
@@ -72,27 +66,29 @@ const explorePlugin: BackstagePlugin<
 export { explorePlugin };
 export { explorePlugin as plugin };
 
-// Warning: (ae-missing-release-tag) "exploreRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const exploreRouteRef: RouteRef<undefined>;
 
-// Warning: (ae-missing-release-tag) "GroupsExplorerContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const GroupsExplorerContent: (props: {
   title?: string | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "ToolExplorerContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type SubRoute = {
+  path: string;
+  title: string;
+  children: JSX.Element;
+  tabProps?: TabProps<
+    default_2.ElementType,
+    {
+      component?: default_2.ElementType;
+    }
+  >;
+};
+
 // @public (undocumented)
 export const ToolExplorerContent: (props: {
   title?: string | undefined;
 }) => JSX.Element;
-
-// Warnings were encountered during analysis:
-//
-// src/components/ExploreLayout/ExploreLayout.d.ts:29:5 - (ae-forgotten-export) The symbol "ExploreLayoutProps" needs to be exported by the entry point index.d.ts
-// src/components/ExploreLayout/ExploreLayout.d.ts:30:5 - (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
 ```

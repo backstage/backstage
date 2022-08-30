@@ -24,6 +24,7 @@ import {
   ActiveDirectoryVendor,
   DefaultLdapVendor,
   FreeIpaVendor,
+  AEDirVendor,
   LdapVendor,
 } from './vendors';
 
@@ -226,6 +227,8 @@ export class LdapClient {
           return ActiveDirectoryVendor;
         } else if (root && root.raw?.ipaDomainLevel) {
           return FreeIpaVendor;
+        } else if (root && 'aeRoot' in root.raw) {
+          return AEDirVendor;
         }
         return DefaultLdapVendor;
       })

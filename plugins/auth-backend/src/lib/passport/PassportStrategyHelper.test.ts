@@ -33,7 +33,7 @@ describe('PassportStrategyHelper', () => {
   }
 
   describe('executeRedirectStrategy', () => {
-    it('should call authenticate and resolve with RedirectInfo', async () => {
+    it('should call authenticate and resolve with OAuthStartResponse', async () => {
       const mockStrategy = new MyCustomRedirectStrategy();
       const spyAuthenticate = jest.spyOn(mockStrategy, 'authenticate');
       const redirectStrategyPromise = executeRedirectStrategy(

@@ -39,7 +39,7 @@ import {
 import {
   AuthHandler,
   AuthResolverContext,
-  RedirectInfo,
+  OAuthStartResponse,
   SignInResolver,
 } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
@@ -98,7 +98,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
     );
   }
 
-  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     return await executeRedirectStrategy(req, this.strategy, {
       accessType: 'offline',
       prompt: 'consent',

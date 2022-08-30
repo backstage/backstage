@@ -20,19 +20,19 @@ import LensIcon from '@material-ui/icons/Lens';
 import HelpOutlineOutlinedIcon from '@material-ui/icons/HelpOutlineOutlined';
 import { useCostGrowthLegendStyles } from '../../utils/styles';
 
+/** @public */
 export type LegendItemProps = {
   title: string;
   tooltipText?: string;
   markerColor?: string;
 };
 
-export const LegendItem = ({
-  title,
-  tooltipText,
-  markerColor,
-  children,
-}: PropsWithChildren<LegendItemProps>) => {
+/** @public */
+export const LegendItem = (props: PropsWithChildren<LegendItemProps>) => {
+  const { title, tooltipText, markerColor, children } = props;
+
   const classes = useCostGrowthLegendStyles();
+
   return (
     <Box display="flex" flexDirection="column">
       <Box

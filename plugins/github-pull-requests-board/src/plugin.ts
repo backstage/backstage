@@ -27,6 +27,7 @@ const githubPullRequestsBoardPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const EntityTeamPullRequestsCard = githubPullRequestsBoardPlugin.provide(
   createComponentExtension({
     name: 'EntityTeamPullRequestsCard',
@@ -39,6 +40,7 @@ export const EntityTeamPullRequestsCard = githubPullRequestsBoardPlugin.provide(
   }),
 );
 
+/** @public */
 export const EntityTeamPullRequestsContent =
   githubPullRequestsBoardPlugin.provide(
     createRoutableExtension({

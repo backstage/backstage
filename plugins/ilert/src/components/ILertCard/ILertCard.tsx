@@ -35,6 +35,7 @@ import { ILertCardEmptyState } from './ILertCardEmptyState';
 import { ILertCardOnCall } from './ILertCardOnCall';
 import { ResponseErrorPanel } from '@backstage/core-components';
 
+/** @public */
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[ILERT_INTEGRATION_KEY_ANNOTATION]);
 
@@ -50,6 +51,7 @@ const useStyles = makeStyles({
   },
 });
 
+/** @public */
 export const ILertCard = () => {
   const classes = useStyles();
   const { integrationKey, name } = useILertEntity();

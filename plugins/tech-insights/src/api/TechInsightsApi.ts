@@ -38,12 +38,7 @@ export const techInsightsApiRef = createApiRef<TechInsightsApi>({
  * @public
  */
 export interface TechInsightsApi {
-  getScorecardsDefinition: (
-    type: string,
-    value: CheckResult[],
-    title?: string,
-    description?: string,
-  ) => CheckResultRenderer | undefined;
+  getCheckResultRenderers: (types: string[]) => CheckResultRenderer[];
   getAllChecks(): Promise<Check[]>;
   runChecks(
     entityParams: CompoundEntityRef,

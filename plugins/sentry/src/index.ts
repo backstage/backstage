@@ -23,5 +23,6 @@
 export * from './api';
 export * from './components';
 export { sentryPlugin, sentryPlugin as plugin } from './plugin';
+export type { SentryPageProps } from './extensions';
 export { EntitySentryCard, EntitySentryContent } from './extensions';
 export { Router } from './components/Router';

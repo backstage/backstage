@@ -1,5 +1,16 @@
 # @backstage/plugin-vault-backend
 
+## 0.2.2-next.0
+
+### Patch Changes
+
+- 3f739be9d9: Minor API signatures cleanup
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/backend-tasks@0.3.5-next.0
+  - @backstage/backend-test-utils@0.1.28-next.0
+
 ## 0.2.1
 
 ### Patch Changes

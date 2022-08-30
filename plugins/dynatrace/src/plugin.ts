@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { dynatraceApiRef, DynatraceClient } from './api';
 import {
   createApiFactory,
@@ -55,7 +56,7 @@ export const dynatracePlugin = createPlugin({
 /**
  * Checks if the entity has a dynatrace id annotation.
  * @public
- * @param entity {Entity} - The entity to check for the dynatrace id annotation.
+ * @param entity - The entity to check for the dynatrace id annotation.
  */
 export const isDynatraceAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[DYNATRACE_ID_ANNOTATION]) ||

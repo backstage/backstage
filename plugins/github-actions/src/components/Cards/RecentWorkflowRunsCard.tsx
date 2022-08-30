@@ -32,29 +32,28 @@ import {
 
 const firstLine = (message: string): string => message.split('\n')[0];
 
-export type Props = {
+/** @public */
+export const RecentWorkflowRunsCard = (props: {
   branch?: string;
   dense?: boolean;
   limit?: number;
   variant?: InfoCardVariants;
-};
+}) => {
+  const { branch, dense = false, limit = 5, variant } = props;
 
-export const RecentWorkflowRunsCard = ({
-  branch,
-  dense = false,
-  limit = 5,
-  variant,
-}: Props) => {
   const { entity } = useEntity();
   const config = useApi(configApiRef);
   const errorApi = useApi(errorApiRef);
+
   // TODO: Get github hostname from metadata annotation
   const hostname = readGitHubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
   )[0].host;
+
   const [owner, repo] = (
     entity?.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] ?? '/'
   ).split('/');
+
   const [{ runs = [], loading, error }] = useWorkflowRuns({
     hostname,
     owner,
@@ -62,6 +61,7 @@ export const RecentWorkflowRunsCard = ({
     branch,
     initialPageSize: limit,
   });
+
   useEffect(() => {
     if (error) {
       errorApi.post(error);

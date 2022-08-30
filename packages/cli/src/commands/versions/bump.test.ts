@@ -51,6 +51,13 @@ jest.mock('ora', () => ({
   },
 }));
 
+jest.mock('../../lib/run', () => {
+  return {
+    run: jest.fn(),
+    runPlain: jest.fn(),
+  };
+});
+
 const REGISTRY_VERSIONS: { [name: string]: string } = {
   '@backstage/core': '1.0.6',
   '@backstage/core-api': '1.0.7',

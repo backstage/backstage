@@ -15,6 +15,7 @@ nav:
       - The Spotify Story: 'overview/background.md'
       - Strategies for adopting: 'overview/adopting.md'
       - Release & Versioning Policy: 'overview/versioning-policy.md'
+      - Backstage Threat Model: 'overview/threat-model.md'
       - Support and community: 'overview/support.md'
       - Glossary: 'overview/glossary.md'
       - Logo assets: 'overview/logos.md'

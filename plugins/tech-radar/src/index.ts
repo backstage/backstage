@@ -32,6 +32,8 @@ export * from './components';
 
 /**
  * @deprecated Use plugin extensions instead
+ *
+ * @public
  */
 export const Router = RadarPage;
 

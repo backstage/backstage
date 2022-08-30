@@ -24,6 +24,7 @@ export const settingsRouteRef = createRouteRef({
   id: 'user-settings',
 });
 
+/** @public */
 export const userSettingsPlugin = createPlugin({
   id: 'user-settings',
   routes: {
@@ -31,6 +32,7 @@ export const userSettingsPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const UserSettingsPage = userSettingsPlugin.provide(
   createRoutableExtension({
     name: 'UserSettingsPage',

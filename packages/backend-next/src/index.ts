@@ -20,6 +20,6 @@ import { createBackend } from '@backstage/backend-defaults';
 
 const backend = createBackend();
 
-backend.add(catalogPlugin({}));
-backend.add(scaffolderCatalogModule({}));
+backend.add(catalogPlugin());
+backend.add(scaffolderCatalogModule());
 backend.start();

@@ -22,8 +22,6 @@ export const EntityNewRelicDashboardCard: () => JSX.Element;
 // @public (undocumented)
 export const EntityNewRelicDashboardContent: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "isNewRelicDashboardAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const isNewRelicDashboardAvailable: (entity: Entity) => boolean;
 

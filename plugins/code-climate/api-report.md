@@ -11,21 +11,15 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "CodeClimateApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface CodeClimateApi {
   // (undocumented)
   fetchData(repoID: string): Promise<CodeClimateData>;
 }
 
-// Warning: (ae-missing-release-tag) "codeClimateApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const codeClimateApiRef: ApiRef<CodeClimateApi>;
 
-// Warning: (ae-missing-release-tag) "CodeClimateData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type CodeClimateData = {
   repoID: string;
@@ -42,8 +36,6 @@ export type CodeClimateData = {
   numberOfOtherIssues: number;
 };
 
-// Warning: (ae-missing-release-tag) "codeClimatePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const codeClimatePlugin: BackstagePlugin<
   {
@@ -53,30 +45,18 @@ export const codeClimatePlugin: BackstagePlugin<
   {}
 >;
 
-// Warning: (ae-missing-release-tag) "EntityCodeClimateCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EntityCodeClimateCard: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "MockCodeClimateApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class MockCodeClimateApi implements CodeClimateApi {
   // (undocumented)
   fetchData(): Promise<CodeClimateData>;
 }
 
-// Warning: (ae-missing-release-tag) "mockData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const mockData: CodeClimateData;
-
-// Warning: (ae-missing-release-tag) "ProductionCodeClimateApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class ProductionCodeClimateApi implements CodeClimateApi {
-  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
-  constructor(options: Options);
+  constructor(options: { discoveryApi: DiscoveryApi; fetchApi: FetchApi });
   // (undocumented)
   fetchAllData(options: {
     apiUrl: string;

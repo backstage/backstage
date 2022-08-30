@@ -39,7 +39,7 @@ import {
 import {
   AuthHandler,
   AuthResolverContext,
-  RedirectInfo,
+  OAuthStartResponse,
   SignInResolver,
 } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
@@ -114,7 +114,7 @@ export class OAuth2AuthProvider implements OAuthHandlers {
     );
   }
 
-  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     return await executeRedirectStrategy(req, this._strategy, {
       accessType: 'offline',
       prompt: 'consent',

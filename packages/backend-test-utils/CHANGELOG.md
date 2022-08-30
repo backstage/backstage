@@ -1,5 +1,17 @@
 # @backstage/backend-test-utils
 
+## 0.1.28-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- de3347ca74: Updated usages of `ServiceFactory`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/cli@0.18.2-next.0
+  - @backstage/backend-plugin-api@0.1.2-next.0
+  - @backstage/backend-app-api@0.2.1-next.0
+
 ## 0.1.27
 
 ### Patch Changes

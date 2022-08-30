@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** @public */
 export type PagerDutyChangeEvent = {
   id: string;
   integration: [
@@ -33,6 +34,7 @@ export type PagerDutyChangeEvent = {
   timestamp: string;
 };
 
+/** @public */
 export type PagerDutyIncident = {
   id: string;
   title: string;
@@ -47,6 +49,7 @@ export type PagerDutyIncident = {
   created_at: string;
 };
 
+/** @public */
 export type PagerDutyService = {
   id: string;
   name: string;
@@ -59,17 +62,20 @@ export type PagerDutyService = {
   };
 };
 
+/** @public */
 export type PagerDutyOnCall = {
   user: PagerDutyUser;
   escalation_level: number;
 };
 
+/** @public */
 export type PagerDutyAssignee = {
   id: string;
   summary: string;
   html_url: string;
 };
 
+/** @public */
 export type PagerDutyUser = {
   id: string;
   summary: string;
@@ -78,6 +84,7 @@ export type PagerDutyUser = {
   name: string;
 };
 
+/** @public */
 export type SubHeaderLink = {
   title: string;
   href?: string;

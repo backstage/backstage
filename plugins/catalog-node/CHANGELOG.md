@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-node
 
+## 1.0.2-next.0
+
+### Patch Changes
+
+- 62788b2ee8: The experimental `CatalogProcessingExtensionPoint` now accepts multiple providers and processors at once.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.2-next.0
+
 ## 1.0.1
 
 ### Patch Changes

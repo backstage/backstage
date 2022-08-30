@@ -4,10 +4,11 @@
 
 ```ts
 import { Entity } from '@backstage/catalog-model';
+import type { EntityMeta } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
-import { JsonValue } from '@backstage/types';
+import type { JsonValue } from '@backstage/types';
 import { KindValidator } from '@backstage/catalog-model';
-import { UserEntity } from '@backstage/catalog-model';
+import type { UserEntity } from '@backstage/catalog-model';
 
 // @public
 export type TaskSpec = TaskSpecV1beta3;
@@ -64,5 +65,8 @@ export const templateEntityV1beta3Validator: KindValidator;
 export type TemplateInfo = {
   entityRef: string;
   baseUrl?: string;
+  entity?: {
+    metadata: EntityMeta;
+  };
 };
 ```

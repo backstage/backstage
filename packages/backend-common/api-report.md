@@ -8,6 +8,7 @@
 
 import { AbortController as AbortController_2 } from 'node-abort-controller';
 import { AbortSignal as AbortSignal_2 } from 'node-abort-controller';
+import aws from 'aws-sdk';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BitbucketCloudIntegration } from '@backstage/integration';
@@ -34,7 +35,6 @@ import { Readable } from 'stream';
 import { ReadCommitResult } from 'isomorphic-git';
 import { RequestHandler } from 'express';
 import { Router } from 'express';
-import { S3 } from 'aws-sdk';
 import { Server } from 'http';
 import * as winston from 'winston';
 import { Writable } from 'stream';
@@ -44,7 +44,7 @@ export class AwsS3UrlReader implements UrlReader {
   constructor(
     integration: AwsS3Integration,
     deps: {
-      s3: S3;
+      s3: aws.S3;
       treeResponseFactory: ReadTreeResponseFactory;
     },
   );

@@ -21,6 +21,11 @@ import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { GitHubEntityProvider } from './GitHubEntityProvider';
 import * as helpers from '../lib/github';
 
+jest.mock('../lib/github', () => {
+  return {
+    getOrganizationRepositories: jest.fn(),
+  };
+});
 class PersistingTaskRunner implements TaskRunner {
   private tasks: TaskInvocationDefinition[] = [];
 
@@ -68,6 +73,29 @@ describe('GitHubEntityProvider', () => {
 
     expect(providers).toHaveLength(1);
     expect(providers[0].getProviderName()).toEqual('github-provider:default');
+  });
+
+  it('throws when the integration config does not exist', () => {
+    const schedule = new PersistingTaskRunner();
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+            host: 'ghe.internal.com',
+          },
+        },
+      },
+    });
+
+    expect(() =>
+      GitHubEntityProvider.fromConfig(config, {
+        logger,
+        schedule,
+      }),
+    ).toThrowError(
+      /There is no GitHub config that matches host ghe.internal.com/,
+    );
   });
 
   it('multiple provider configs', () => {
