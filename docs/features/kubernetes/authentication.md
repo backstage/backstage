@@ -13,8 +13,12 @@ client side auth, here's the list:
 
 These providers authenticate your _application_ with the cluster, meaning anyone that is
 logged in into your backstage app will be granted the same access to Kubernetes objects. The providers
-available as server side are `serviceAccount`, `googleServiceAccount`, `aws`, `azure`
-and `localKubectlProxy`.
+available as server side are:
+* `aws`
+* `azure`
+* `googleServiceAccount`
+* `localKubectlProxy`
+* `serviceAccount`
 
 ## Client Side Providers
 
