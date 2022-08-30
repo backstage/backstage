@@ -499,6 +499,11 @@ export class DatabaseTaskStore implements TaskStore {
       taskId: string;
     }[];
   }>;
+  // (undocumented)
+  shutdownTask({
+    taskId,
+    message,
+  }: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
 // @public
@@ -741,6 +746,11 @@ export interface TaskStore {
       taskId: string;
     }[];
   }>;
+  // (undocumented)
+  shutdownTask({
+    taskId,
+    message,
+  }: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
 // @public
@@ -765,6 +775,12 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
 export type TaskStoreListEventsOptions = {
   taskId: string;
   after?: number | undefined;
+};
+
+// @public
+export type TaskStoreShutDownTaskOptions = {
+  taskId: string;
+  message?: string | undefined;
 };
 
 // @public

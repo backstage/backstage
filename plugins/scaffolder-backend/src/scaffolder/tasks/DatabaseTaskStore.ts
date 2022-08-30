@@ -32,6 +32,7 @@ import {
   TaskStoreListEventsOptions,
   TaskStoreCreateTaskOptions,
   TaskStoreCreateTaskResult,
+  TaskStoreShutDownTaskOptions,
 } from './types';
 import { DateTime } from 'luxon';
 
@@ -379,5 +380,47 @@ export class DatabaseTaskStore implements TaskStore {
       }
     });
     return { events };
+  }
+
+  async shutdownTask({
+    taskId,
+    message,
+  }: TaskStoreShutDownTaskOptions): Promise<void> {
+    const errorMessage =
+      message || `This task was marked as stale as it exceeded its timeout`;
+
+    const statusStepEvents = (await this.listEvents({ taskId })).events.filter(
+      ({ body }) => body?.stepId,
+    );
+
+    const completedSteps = statusStepEvents
+      .filter(
+        ({ body: { status } }) => status === 'failed' || status === 'completed',
+      )
+      .map(step => step.body.stepId);
+
+    const hungProcessingSteps = statusStepEvents
+      .filter(({ body: { status } }) => status === 'processing')
+      .map(event => event.body.stepId)
+      .filter(step => !completedSteps.includes(step));
+
+    for (const step of hungProcessingSteps) {
+      await this.emitLogEvent({
+        taskId,
+        body: {
+          message: errorMessage,
+          stepId: step,
+          status: 'failed',
+        },
+      });
+    }
+
+    await this.completeTask({
+      taskId,
+      status: 'failed',
+      eventBody: {
+        message: errorMessage,
+      },
+    });
   }
 }
