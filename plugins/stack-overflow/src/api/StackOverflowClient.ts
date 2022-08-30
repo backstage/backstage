@@ -26,7 +26,7 @@ import { Config } from '@backstage/config';
 export class StackOverflowClient implements StackOverflowApi {
   private baseUrl: string;
 
-  constructor({ baseUrl }: { baseUrl: string }) {
+  private constructor({ baseUrl }: { baseUrl: string }) {
     this.baseUrl = baseUrl;
   }
 

@@ -19,6 +19,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { StackOverflowClient } from './index';
 import { StackOverflowQuestion } from '../types';
+import { ConfigReader } from '@backstage/config';
 
 const server = setupServer();
 
@@ -61,9 +62,13 @@ describe('StackOverflowClient', () => {
 
   it('list questions should return all questions', async () => {
     setupHandlers();
-    const client = new StackOverflowClient({
-      baseUrl: 'https://example.com:9191',
-    });
+    const client = StackOverflowClient.fromConfig(
+      new ConfigReader({
+        stackoverflow: {
+          baseUrl: 'https://example.com:9191',
+        },
+      }),
+    );
 
     const responseQuestions = await client.listQuestions({
       requestParams: { tagged: 'backstage' },
