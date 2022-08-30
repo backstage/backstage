@@ -7,18 +7,19 @@ description: Authentication in kubernetes plugin
 The authentication process in kubernetes is basically separate from backstage auth, the
 providers are configured so your kubernetes plugin can locate and access the clusters you
 have access to, the providers currently available are categorized in server side auth and
-client side auth, here's the list:
+client side auth.
 
 ## Server Side Providers
 
 These providers authenticate your _application_ with the cluster, meaning anyone that is
-logged in into your backstage app will be granted the same access to Kubernetes objects. The providers
-available as server side are:
-* `aws`
-* `azure`
-* `googleServiceAccount`
-* `localKubectlProxy`
-* `serviceAccount`
+logged in into your backstage app will be granted the same access to Kubernetes objects.
+The providers available as server side are:
+
+- `aws`
+- `azure`
+- `googleServiceAccount`
+- `localKubectlProxy`
+- `serviceAccount`
 
 ## Client Side Providers
 
@@ -27,4 +28,8 @@ credentials and will have access to the clusters as long as the user has been au
 to access said cluster, if the cluster is listed in the `clusterLocatorMethods` in the
 config, but the user hasn't been authorized to access, the user will see the cluster
 listed but will not see any resources in the plugin page for that cluster, and the error
-will show as `401` or similar, current providers available are `google` and `oidc`.
+will show as `401` or similar.
+The providers available as client side are:
+
+- `google`
+- `oidc`
