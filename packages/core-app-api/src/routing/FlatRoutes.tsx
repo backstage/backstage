@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import { useRoutes } from 'react-router-dom';
 import { useApp, useElementFilter } from '@backstage/core-plugin-api';
+import { isReactRouterBeta } from '../app/isReactRouterBeta';
 
 let warned = false;
 
@@ -49,6 +50,7 @@ export type FlatRoutesProps = {
 export const FlatRoutes = (props: FlatRoutesProps): JSX.Element | null => {
   const app = useApp();
   const { NotFoundErrorPage } = app.getComponents();
+  const isBeta = useMemo(() => isReactRouterBeta(), []);
   const routes = useElementFilter(props.children, elements =>
     elements
       .getElements<{
@@ -65,14 +67,14 @@ export const FlatRoutes = (props: FlatRoutesProps): JSX.Element | null => {
         }
         path = path?.replace(/\/\*$/, '') ?? '/';
 
-        let element = child.props.element;
-        if (!element) {
+        let element = isBeta ? child : child.props.element;
+        if (!isBeta && !element) {
           element = child;
           if (!warned && process.env.NODE_ENV !== 'test') {
             // eslint-disable-next-line no-console
             console.warn(
               'DEPRECATION WARNING: All elements within <FlatRoutes> must be of type <Route> with an element prop. ' +
-                'Existing usages of <Navigate key=[path] to=[to] /> should be replaced with <Route path=[path] element={<Navigate to=[to] />} />',
+                'Existing usages of <Navigate key=[path] to=[to] /> should be replaced with <Route path=[path] element={<Navigate to=[to] />} />.',
             );
             warned = true;
           }

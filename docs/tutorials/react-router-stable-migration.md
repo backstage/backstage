@@ -155,6 +155,8 @@ rendered instead, but it will now throw an error.
 
 Because of the above change, the `PermissionedRoute` component no longer works in all situations with React Router v6 stable. It has been deprecated in favor of the new `RequirePermission` component, which can be placed anywhere in order to perform a permissions check.
 
+It's crucial that you update to `RequirePermission` at the same time as you update to React Router v6 stable as the `PermissionedRoute` component will no longer function.
+
 ```diff
 -    <PermissionedRoute
 -      path="/catalog-import"

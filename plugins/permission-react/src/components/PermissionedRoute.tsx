@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { ComponentProps, ReactElement } from 'react';
+import React, { ComponentProps, ReactElement, ReactNode } from 'react';
 import { Route } from 'react-router';
+import { useApp } from '@backstage/core-plugin-api';
+import { usePermission } from '../hooks';
 import {
+  isResourcePermission,
   Permission,
   ResourcePermission,
 } from '@backstage/plugin-permission-common';
@@ -29,20 +32,41 @@ import {
  * @deprecated This component no longer works with the most recent version of `@backstage/core-app-api` and react-router v6, use {@link RequirePermission} instead.
  */
 export const PermissionedRoute = (
-  _props: ComponentProps<typeof Route> & {
+  props: {
+    caseSensitive?: boolean;
+    children?: ReactNode;
+    element?: ReactElement | null;
+    path?: string;
     errorComponent?: ReactElement | null;
   } & (
-      | {
-          permission: Exclude<Permission, ResourcePermission>;
-          resourceRef?: never;
-        }
-      | {
-          permission: ResourcePermission;
-          resourceRef: string | undefined;
-        }
-    ),
+    | {
+        permission: Exclude<Permission, ResourcePermission>;
+        resourceRef?: never;
+      }
+    | {
+        permission: ResourcePermission;
+        resourceRef: string | undefined;
+      }
+  ),
 ) => {
-  throw new Error(
-    'PermissionedRoute is no longer supported, switch to using <RequirePermission> instead: <Route path="/" element={<RequirePermission permission={...}>...<RequirePermission/>}/>',
+  const { permission, resourceRef, errorComponent, ...otherProps } = props;
+
+  const permissionResult = usePermission(
+    isResourcePermission(permission)
+      ? { permission, resourceRef }
+      : { permission },
   );
+  const app = useApp();
+  const { NotFoundErrorPage } = app.getComponents();
+
+  let shownElement: ReactElement | null | undefined =
+    errorComponent === undefined ? <NotFoundErrorPage /> : errorComponent;
+
+  if (permissionResult.loading) {
+    shownElement = null;
+  } else if (permissionResult.allowed) {
+    shownElement = props.element;
+  }
+
+  return <Route {...otherProps} element={shownElement} />;
 };
