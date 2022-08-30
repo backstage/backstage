@@ -312,11 +312,11 @@ describe('useReaderState', () => {
           contentReload: expect.any(Function),
         });
 
-        expect(techdocsStorageApi.getEntityDocs).toBeCalledWith(
+        expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(
           { kind: 'Component', namespace: 'default', name: 'backstage' },
           '/example',
         );
-        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith(
+        expect(techdocsStorageApi.syncEntityDocs).toHaveBeenCalledWith(
           {
             kind: 'Component',
             namespace: 'default',
@@ -397,13 +397,13 @@ describe('useReaderState', () => {
           contentReload: expect.any(Function),
         });
 
-        expect(techdocsStorageApi.getEntityDocs).toBeCalledTimes(2);
-        expect(techdocsStorageApi.getEntityDocs).toBeCalledWith(
+        expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledTimes(2);
+        expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(
           { kind: 'Component', namespace: 'default', name: 'backstage' },
           '/example',
         );
-        expect(techdocsStorageApi.syncEntityDocs).toBeCalledTimes(1);
-        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith(
+        expect(techdocsStorageApi.syncEntityDocs).toHaveBeenCalledTimes(1);
+        expect(techdocsStorageApi.syncEntityDocs).toHaveBeenCalledWith(
           {
             kind: 'Component',
             namespace: 'default',
@@ -511,12 +511,12 @@ describe('useReaderState', () => {
           contentReload: expect.any(Function),
         });
 
-        expect(techdocsStorageApi.getEntityDocs).toBeCalledTimes(2);
-        expect(techdocsStorageApi.getEntityDocs).toBeCalledWith(
+        expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledTimes(2);
+        expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(
           { kind: 'Component', namespace: 'default', name: 'backstage' },
           '/example',
         );
-        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith(
+        expect(techdocsStorageApi.syncEntityDocs).toHaveBeenCalledWith(
           {
             kind: 'Component',
             namespace: 'default',
@@ -607,15 +607,15 @@ describe('useReaderState', () => {
           contentReload: expect.any(Function),
         });
 
-        expect(techdocsStorageApi.getEntityDocs).toBeCalledWith(
+        expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(
           { kind: 'Component', namespace: 'default', name: 'backstage' },
           '/example',
         );
-        expect(techdocsStorageApi.getEntityDocs).toBeCalledWith(
+        expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(
           { kind: 'Component', namespace: 'default', name: 'backstage' },
           '/new',
         );
-        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith(
+        expect(techdocsStorageApi.syncEntityDocs).toHaveBeenCalledWith(
           {
             kind: 'Component',
             namespace: 'default',
@@ -660,11 +660,11 @@ describe('useReaderState', () => {
           contentReload: expect.any(Function),
         });
 
-        expect(techdocsStorageApi.getEntityDocs).toBeCalledWith(
+        expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(
           { kind: 'Component', namespace: 'default', name: 'backstage' },
           '/example',
         );
-        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith(
+        expect(techdocsStorageApi.syncEntityDocs).toHaveBeenCalledWith(
           {
             kind: 'Component',
             namespace: 'default',

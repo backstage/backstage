@@ -83,6 +83,6 @@ describe('usePermission', () => {
     const { findByText } = renderComponent(mockPermissionApi);
 
     expect(mockPermissionApi.authorize).toHaveBeenCalledWith({ permission });
-    await expect(findByText('content')).rejects.toThrowError();
+    await expect(findByText('content')).rejects.toThrow();
   });
 });

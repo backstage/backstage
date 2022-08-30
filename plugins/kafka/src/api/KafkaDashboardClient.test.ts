@@ -133,6 +133,6 @@ describe('KafkaDashboardClient', () => {
     } as unknown as Entity;
 
     kafkaDashboardClient.getDashboardUrl('cluster2', '', mockEntity);
-    expect(mockConfigApi.getConfigArray).toBeCalled();
+    expect(mockConfigApi.getConfigArray).toHaveBeenCalled();
   });
 });

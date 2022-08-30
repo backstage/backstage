@@ -462,7 +462,7 @@ describe('helpers', () => {
       // Check if the file exists
       await expect(
         fs.access(filePath, fs.constants.F_OK),
-      ).resolves.not.toThrowError();
+      ).resolves.not.toThrow();
     });
 
     it('should throw error when the JSON is invalid', async () => {
@@ -470,7 +470,7 @@ describe('helpers', () => {
 
       await expect(
         createOrUpdateMetadata(filePath, mockLogger),
-      ).rejects.toThrowError('Unexpected token d in JSON at position 0');
+      ).rejects.toThrow('Unexpected token d in JSON at position 0');
     });
 
     it('should add build timestamp to the metadata json', async () => {
@@ -511,9 +511,9 @@ describe('helpers', () => {
     it('should throw error when the JSON is invalid', async () => {
       const filePath = path.join(rootDir, 'invalid_techdocs_metadata.json');
 
-      await expect(
-        storeEtagMetadata(filePath, 'etag123abc'),
-      ).rejects.toThrowError('Unexpected token d in JSON at position 0');
+      await expect(storeEtagMetadata(filePath, 'etag123abc')).rejects.toThrow(
+        'Unexpected token d in JSON at position 0',
+      );
     });
 
     it('should add etag to the metadata json', async () => {
@@ -552,7 +552,7 @@ describe('helpers', () => {
 
     it('throws when neither .yml nor .yaml file is present', async () => {
       const invalidInputDir = resolvePath(__filename);
-      await expect(getMkdocsYml(invalidInputDir)).rejects.toThrowError(
+      await expect(getMkdocsYml(invalidInputDir)).rejects.toThrow(
         /Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml for validation/,
       );
     });

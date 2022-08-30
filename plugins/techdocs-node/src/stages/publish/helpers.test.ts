@@ -102,9 +102,9 @@ describe('lowerCaseEntityTripletInStoragePath', () => {
   it('throws error when there is no triplet', () => {
     const originalPath = '/default/component/IMAGE.png';
     const error = `Encountered file unmanaged by TechDocs ${originalPath}. Skipping.`;
-    expect(() =>
-      lowerCaseEntityTripletInStoragePath(originalPath),
-    ).toThrowError(error);
+    expect(() => lowerCaseEntityTripletInStoragePath(originalPath)).toThrow(
+      error,
+    );
   });
 });
 

@@ -100,8 +100,8 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     await engine.start();
     await waitForExpect(() => {
-      expect(orchestrator.process).toBeCalledTimes(1);
-      expect(orchestrator.process).toBeCalledWith({
+      expect(orchestrator.process).toHaveBeenCalledTimes(1);
+      expect(orchestrator.process).toHaveBeenCalledWith({
         entity: {
           apiVersion: '1',
           kind: 'Location',
@@ -167,8 +167,8 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     await engine.start();
     await waitForExpect(() => {
-      expect(orchestrator.process).toBeCalledTimes(1);
-      expect(orchestrator.process).toBeCalledWith({
+      expect(orchestrator.process).toHaveBeenCalledTimes(1);
+      expect(orchestrator.process).toHaveBeenCalledWith({
         entity: {
           apiVersion: '1',
           kind: 'Location',
@@ -232,10 +232,10 @@ describe('DefaultCatalogProcessingEngine', () => {
     await engine.start();
 
     await waitForExpect(() => {
-      expect(orchestrator.process).toBeCalledTimes(1);
-      expect(hash.digest).toBeCalledTimes(1);
-      expect(db.updateProcessedEntity).toBeCalledTimes(1);
-      expect(db.listParents).toBeCalledTimes(1);
+      expect(orchestrator.process).toHaveBeenCalledTimes(1);
+      expect(hash.digest).toHaveBeenCalledTimes(1);
+      expect(db.updateProcessedEntity).toHaveBeenCalledTimes(1);
+      expect(db.listParents).toHaveBeenCalledTimes(1);
     });
     expect(db.updateEntityCache).not.toHaveBeenCalled();
 
@@ -247,11 +247,11 @@ describe('DefaultCatalogProcessingEngine', () => {
       .mockResolvedValue({ items: [] });
 
     await waitForExpect(() => {
-      expect(orchestrator.process).toBeCalledTimes(2);
-      expect(hash.digest).toBeCalledTimes(2);
-      expect(db.updateProcessedEntity).toBeCalledTimes(1);
-      expect(db.updateEntityCache).toBeCalledTimes(1);
-      expect(db.listParents).toBeCalledTimes(2);
+      expect(orchestrator.process).toHaveBeenCalledTimes(2);
+      expect(hash.digest).toHaveBeenCalledTimes(2);
+      expect(db.updateProcessedEntity).toHaveBeenCalledTimes(1);
+      expect(db.updateEntityCache).toHaveBeenCalledTimes(1);
+      expect(db.listParents).toHaveBeenCalledTimes(2);
     });
     expect(db.updateEntityCache).toHaveBeenCalledWith(expect.anything(), {
       id: '',
@@ -307,7 +307,7 @@ describe('DefaultCatalogProcessingEngine', () => {
     }));
 
     await waitForExpect(() => {
-      expect(db.updateEntityCache).toBeCalledTimes(1);
+      expect(db.updateEntityCache).toHaveBeenCalledTimes(1);
     });
 
     expect(db.updateEntityCache).toHaveBeenCalledWith(expect.anything(), {
@@ -329,7 +329,7 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     db.updateEntityCache.mockReset();
     await waitForExpect(() => {
-      expect(db.updateEntityCache).toBeCalledTimes(1);
+      expect(db.updateEntityCache).toHaveBeenCalledTimes(1);
     });
 
     expect(db.updateEntityCache).toHaveBeenCalledWith(expect.anything(), {
@@ -442,7 +442,7 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     await engine.start();
     await waitForExpect(() => {
-      expect(stitcher.stitch).toBeCalledTimes(2);
+      expect(stitcher.stitch).toHaveBeenCalledTimes(2);
     });
     expect([...stitcher.stitch.mock.calls[0][0]]).toEqual(
       expect.arrayContaining(['k:ns/me', 'k:ns/other1', 'k:ns/other2']),

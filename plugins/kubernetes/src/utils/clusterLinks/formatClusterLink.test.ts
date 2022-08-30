@@ -42,9 +42,7 @@ describe('clusterLinks', () => {
           },
           kind: 'Deployment',
         }),
-      ).toThrowError(
-        "Could not find Kubernetes dashboard app named 'unknownapp'",
-      );
+      ).toThrow("Could not find Kubernetes dashboard app named 'unknownapp'");
     });
 
     describe('default app', () => {

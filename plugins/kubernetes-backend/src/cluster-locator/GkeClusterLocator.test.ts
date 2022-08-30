@@ -35,7 +35,7 @@ describe('GkeClusterLocator', () => {
         listClusters: mockedListClusters,
       } as any);
 
-      expect(mockedListClusters).toBeCalledTimes(0);
+      expect(mockedListClusters).toHaveBeenCalledTimes(0);
     });
     it('should not accept missing projectId', async () => {
       const config: Config = new ConfigReader({
@@ -48,7 +48,7 @@ describe('GkeClusterLocator', () => {
         } as any),
       ).toThrow("Missing required config value at 'projectId'");
 
-      expect(mockedListClusters).toBeCalledTimes(0);
+      expect(mockedListClusters).toHaveBeenCalledTimes(0);
     });
   });
   describe('listClusters', () => {
@@ -72,7 +72,7 @@ describe('GkeClusterLocator', () => {
       const result = await sut.getClusters();
 
       expect(result).toStrictEqual([]);
-      expect(mockedListClusters).toBeCalledTimes(1);
+      expect(mockedListClusters).toHaveBeenCalledTimes(1);
       expect(mockedListClusters).toHaveBeenCalledWith({
         parent: 'projects/some-project/locations/some-region',
       });
@@ -111,7 +111,7 @@ describe('GkeClusterLocator', () => {
           skipMetricsLookup: true,
         },
       ]);
-      expect(mockedListClusters).toBeCalledTimes(1);
+      expect(mockedListClusters).toHaveBeenCalledTimes(1);
       expect(mockedListClusters).toHaveBeenCalledWith({
         parent: 'projects/some-project/locations/some-region',
       });
@@ -148,7 +148,7 @@ describe('GkeClusterLocator', () => {
           skipMetricsLookup: false,
         },
       ]);
-      expect(mockedListClusters).toBeCalledTimes(1);
+      expect(mockedListClusters).toHaveBeenCalledTimes(1);
       expect(mockedListClusters).toHaveBeenCalledWith({
         parent: 'projects/some-project/locations/-',
       });
@@ -197,7 +197,7 @@ describe('GkeClusterLocator', () => {
           skipMetricsLookup: false,
         },
       ]);
-      expect(mockedListClusters).toBeCalledTimes(1);
+      expect(mockedListClusters).toHaveBeenCalledTimes(1);
       expect(mockedListClusters).toHaveBeenCalledWith({
         parent: 'projects/some-project/locations/some-region',
       });
@@ -252,7 +252,7 @@ describe('GkeClusterLocator', () => {
           skipMetricsLookup: false,
         },
       ]);
-      expect(mockedListClusters).toBeCalledTimes(1);
+      expect(mockedListClusters).toHaveBeenCalledTimes(1);
       expect(mockedListClusters).toHaveBeenCalledWith({
         parent: 'projects/some-project/locations/some-region',
       });
@@ -306,7 +306,7 @@ describe('GkeClusterLocator', () => {
           skipMetricsLookup: false,
         },
       ]);
-      expect(mockedListClusters).toBeCalledTimes(1);
+      expect(mockedListClusters).toHaveBeenCalledTimes(1);
       expect(mockedListClusters).toHaveBeenCalledWith({
         parent: 'projects/some-project/locations/some-region',
       });
@@ -330,7 +330,7 @@ describe('GkeClusterLocator', () => {
         'There was an error retrieving clusters from GKE for projectId=some-project region=some-region; caused by Error: some error',
       );
 
-      expect(mockedListClusters).toBeCalledTimes(1);
+      expect(mockedListClusters).toHaveBeenCalledTimes(1);
       expect(mockedListClusters).toHaveBeenCalledWith({
         parent: 'projects/some-project/locations/some-region',
       });
@@ -376,7 +376,7 @@ describe('GkeClusterLocator', () => {
           },
         },
       ]);
-      expect(mockedListClusters).toBeCalledTimes(1);
+      expect(mockedListClusters).toHaveBeenCalledTimes(1);
       expect(mockedListClusters).toHaveBeenCalledWith({
         parent: 'projects/some-project/locations/some-region',
       });

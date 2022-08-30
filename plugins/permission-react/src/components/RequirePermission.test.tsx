@@ -69,7 +69,7 @@ describe('RequirePermission', () => {
           children={<div>content</div>}
         />,
       ),
-    ).rejects.toThrowError('Reached NotFound Page');
+    ).rejects.toThrow('Reached NotFound Page');
   });
 
   it('Renders custom error page if not authorized', async () => {

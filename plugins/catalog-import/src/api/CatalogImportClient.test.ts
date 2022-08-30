@@ -164,7 +164,7 @@ describe('CatalogImportClient', () => {
         type: 'locations',
       });
 
-      expect(catalogApi.addLocation).toBeCalledTimes(1);
+      expect(catalogApi.addLocation).toHaveBeenCalledTimes(1);
       expect(catalogApi.addLocation.mock.calls[0][0]).toEqual({
         type: 'url',
         target: 'http://example.com/folder/catalog-info.yaml',
@@ -213,7 +213,7 @@ describe('CatalogImportClient', () => {
         type: 'locations',
       });
 
-      expect(catalogApi.addLocation).toBeCalledTimes(1);
+      expect(catalogApi.addLocation).toHaveBeenCalledTimes(1);
       expect(catalogApi.addLocation.mock.calls[0][0]).toEqual({
         type: 'url',
         target:
@@ -261,7 +261,7 @@ describe('CatalogImportClient', () => {
         type: 'locations',
       });
 
-      expect(catalogApi.addLocation).toBeCalledTimes(1);
+      expect(catalogApi.addLocation).toHaveBeenCalledTimes(1);
       expect(catalogApi.addLocation.mock.calls[0][0]).toEqual({
         type: 'url',
         target: 'http://example.com/folder/catalog-info.yaml?branch=test',

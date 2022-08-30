@@ -141,7 +141,7 @@ describe('<ListTasksPage />', () => {
       },
     );
 
-    expect(scaffolderApiMock.listTasks).toBeCalledWith({
+    expect(scaffolderApiMock.listTasks).toHaveBeenCalledWith({
       filterByOwnership: 'owned',
     });
     expect(getByText('List template tasks')).toBeInTheDocument();
@@ -240,7 +240,7 @@ describe('<ListTasksPage />', () => {
       fireEvent.click(allButton);
     });
 
-    expect(scaffolderApiMock.listTasks).toBeCalledWith({
+    expect(scaffolderApiMock.listTasks).toHaveBeenCalledWith({
       filterByOwnership: 'all',
     });
     expect(await findByText('One Template')).toBeInTheDocument();

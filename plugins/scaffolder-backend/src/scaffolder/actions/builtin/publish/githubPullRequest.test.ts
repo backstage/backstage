@@ -302,8 +302,8 @@ describe('createPublishGithubPullRequestAction', () => {
     it('creates a pull request and requests a review from the given reviewers', async () => {
       await instance.handler(ctx);
 
-      expect(fakeClient.createPullRequest).toBeCalled();
-      expect(fakeClient.rest.pulls.requestReviewers).toBeCalledWith({
+      expect(fakeClient.createPullRequest).toHaveBeenCalled();
+      expect(fakeClient.rest.pulls.requestReviewers).toHaveBeenCalledWith({
         owner: 'myorg',
         repo: 'myrepo',
         pull_number: 123,
@@ -354,8 +354,8 @@ describe('createPublishGithubPullRequestAction', () => {
     it('does not call the API endpoint for requesting reviewers', async () => {
       await instance.handler(ctx);
 
-      expect(fakeClient.createPullRequest).toBeCalled();
-      expect(fakeClient.rest.pulls.requestReviewers).not.toBeCalled();
+      expect(fakeClient.createPullRequest).toHaveBeenCalled();
+      expect(fakeClient.rest.pulls.requestReviewers).not.toHaveBeenCalled();
     });
   });
 

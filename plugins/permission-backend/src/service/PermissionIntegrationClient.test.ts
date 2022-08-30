@@ -189,7 +189,7 @@ describe('PermissionIntegrationClient', () => {
             conditions: mockConditions,
           },
         ]),
-      ).rejects.toThrowError(/401/i);
+      ).rejects.toThrow(/401/i);
     });
 
     it('should reject invalid responses', async () => {
@@ -210,7 +210,7 @@ describe('PermissionIntegrationClient', () => {
             conditions: mockConditions,
           },
         ]),
-      ).rejects.toThrowError(/invalid input/i);
+      ).rejects.toThrow(/invalid input/i);
     });
 
     it('should batch requests to plugin backends', async () => {

@@ -64,7 +64,7 @@ describe('OAuthProvider Utils', () => {
       } as unknown as express.Request;
       expect(() => {
         verifyNonce(mockRequest, 'providera');
-      }).toThrowError('Auth response is missing cookie nonce');
+      }).toThrow('Auth response is missing cookie nonce');
     });
 
     it('should throw error if state nonce missing', () => {
@@ -76,7 +76,7 @@ describe('OAuthProvider Utils', () => {
       } as unknown as express.Request;
       expect(() => {
         verifyNonce(mockRequest, 'providera');
-      }).toThrowError('Invalid state passed via request');
+      }).toThrow('Invalid state passed via request');
     });
 
     it('should throw error if nonce mismatch', () => {
@@ -91,7 +91,7 @@ describe('OAuthProvider Utils', () => {
       } as unknown as express.Request;
       expect(() => {
         verifyNonce(mockRequest, 'providera');
-      }).toThrowError('Invalid nonce');
+      }).toThrow('Invalid nonce');
     });
 
     it('should not throw any error if nonce matches', () => {

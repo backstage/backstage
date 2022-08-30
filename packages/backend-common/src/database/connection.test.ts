@@ -110,7 +110,7 @@ describe('database connection', () => {
             connection: '',
           }),
         ),
-      ).toThrowError();
+      ).toThrow();
     });
 
     it('throws an error without a connection', () => {
@@ -120,7 +120,7 @@ describe('database connection', () => {
             client: 'pg',
           }),
         ),
-      ).toThrowError();
+      ).toThrow();
     });
   });
 
@@ -147,7 +147,7 @@ describe('database connection', () => {
     });
 
     it('throws an error for unknown connection', () => {
-      expect(() => createNameOverride('unknown', 'testname')).toThrowError();
+      expect(() => createNameOverride('unknown', 'testname')).toThrow();
     });
   });
 

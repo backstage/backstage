@@ -133,16 +133,16 @@ describe('LunrSearchEngine', () => {
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
 
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 100,
         usePipeline: true,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 10,
         usePipeline: false,
         wildcard: lunr.Query.wildcard.TRAILING,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 1,
         usePipeline: false,
         editDistance: 2,
@@ -174,16 +174,16 @@ describe('LunrSearchEngine', () => {
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
 
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 100,
         usePipeline: true,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 10,
         usePipeline: false,
         wildcard: lunr.Query.wildcard.TRAILING,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 1,
         usePipeline: false,
         editDistance: 2,
@@ -215,21 +215,21 @@ describe('LunrSearchEngine', () => {
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
 
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 100,
         usePipeline: true,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 10,
         usePipeline: false,
         wildcard: lunr.Query.wildcard.TRAILING,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 1,
         usePipeline: false,
         editDistance: 2,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testKind'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testKind'), {
         fields: ['kind'],
         presence: lunr.Query.presence.REQUIRED,
       });
@@ -260,7 +260,7 @@ describe('LunrSearchEngine', () => {
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
 
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testKind'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testKind'), {
         fields: ['kind'],
         presence: lunr.Query.presence.REQUIRED,
       });
@@ -291,25 +291,25 @@ describe('LunrSearchEngine', () => {
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
 
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 100,
         usePipeline: true,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 10,
         usePipeline: false,
         wildcard: lunr.Query.wildcard.TRAILING,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 1,
         usePipeline: false,
         editDistance: 2,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testKind'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testKind'), {
         fields: ['kind'],
         presence: lunr.Query.presence.REQUIRED,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testNameSpace'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testNameSpace'), {
         fields: ['namespace'],
         presence: lunr.Query.presence.REQUIRED,
       });

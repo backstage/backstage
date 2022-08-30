@@ -117,7 +117,7 @@ describe('fetch:template', () => {
     it('throws if output directory is outside the workspace', async () => {
       await expect(() =>
         action.handler(mockContext({ targetPath: '../' })),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         /relative path is not allowed to refer to a directory outside its parent/i,
       );
     });
@@ -127,7 +127,7 @@ describe('fetch:template', () => {
         action.handler(
           mockContext({ copyWithoutRender: 'abc' as unknown as string[] }),
         ),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         /copyWithoutRender\/copyWithoutTemplating must be an array/i,
       );
     });
@@ -140,7 +140,7 @@ describe('fetch:template', () => {
             copyWithoutTemplating: 'def' as unknown as string[],
           }),
         ),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         /copyWithoutRender and copyWithoutTemplating can not be used at the same time/i,
       );
     });
@@ -153,7 +153,7 @@ describe('fetch:template', () => {
             templateFileExtension: true,
           }),
         ),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         /input extension incompatible with copyWithoutRender\/copyWithoutTemplating and cookiecutterCompat/,
       );
     });
@@ -166,7 +166,7 @@ describe('fetch:template', () => {
             templateFileExtension: true,
           }),
         ),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         /input extension incompatible with copyWithoutRender\/copyWithoutTemplating and cookiecutterCompat/,
       );
     });

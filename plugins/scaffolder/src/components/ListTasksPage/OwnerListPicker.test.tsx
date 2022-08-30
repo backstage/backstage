@@ -42,6 +42,6 @@ describe('<OwnerListPicker />', () => {
     const { getByText } = await renderInTestApp(<OwnerListPicker {...props} />);
 
     fireEvent.click(await getByText('All'));
-    expect(props.onSelectOwner).toBeCalledWith('all');
+    expect(props.onSelectOwner).toHaveBeenCalledWith('all');
   });
 });

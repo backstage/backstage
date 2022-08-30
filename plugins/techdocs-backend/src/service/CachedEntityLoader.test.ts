@@ -58,7 +58,7 @@ describe('CachedEntityLoader', () => {
     const result = await loader.load(entityName, token);
 
     expect(result).toEqual(entity);
-    expect(cache.set).toBeCalledWith(
+    expect(cache.set).toHaveBeenCalledWith(
       'catalog:component:default/test:test-token',
       entity,
       { ttl: 5000 },
@@ -71,7 +71,7 @@ describe('CachedEntityLoader', () => {
     const result = await loader.load(entityName, token);
 
     expect(result).toEqual(entity);
-    expect(catalog.getEntityByRef).not.toBeCalled();
+    expect(catalog.getEntityByRef).not.toHaveBeenCalled();
   });
 
   it('does not cache missing entites', async () => {
@@ -81,7 +81,7 @@ describe('CachedEntityLoader', () => {
     const result = await loader.load(entityName, token);
 
     expect(result).toBeUndefined();
-    expect(cache.set).not.toBeCalled();
+    expect(cache.set).not.toHaveBeenCalled();
   });
 
   it('uses entity ref as cache key for anonymous users', async () => {
@@ -91,9 +91,13 @@ describe('CachedEntityLoader', () => {
     const result = await loader.load(entityName, undefined);
 
     expect(result).toEqual(entity);
-    expect(cache.set).toBeCalledWith('catalog:component:default/test', entity, {
-      ttl: 5000,
-    });
+    expect(cache.set).toHaveBeenCalledWith(
+      'catalog:component:default/test',
+      entity,
+      {
+        ttl: 5000,
+      },
+    );
   });
 
   it('calls the catalog if the cache read takes too long', async () => {

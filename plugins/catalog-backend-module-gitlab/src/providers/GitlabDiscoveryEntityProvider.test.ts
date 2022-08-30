@@ -221,8 +221,8 @@ describe('GitlabDiscoveryEntityProvider', () => {
       },
     ];
 
-    expect(entityProviderConnection.applyMutation).toBeCalledTimes(1);
-    expect(entityProviderConnection.applyMutation).toBeCalledWith({
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
       type: 'full',
       entities: expectedEntities,
     });
@@ -308,7 +308,7 @@ describe('GitlabDiscoveryEntityProvider', () => {
 
     await provider.refresh(logger);
 
-    expect(entityProviderConnection.applyMutation).toBeCalledWith({
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
       type: 'full',
       entities: [
         {

@@ -91,7 +91,7 @@ describe('UrlReaderProcessor', () => {
       type: 'refresh',
       key: 'url:http://localhost/component.yaml',
     });
-    expect(mockCache.set).toBeCalledWith('v1', {
+    expect(mockCache.set).toHaveBeenCalledWith('v1', {
       etag: 'my-etag',
       value: [
         {
@@ -101,7 +101,7 @@ describe('UrlReaderProcessor', () => {
         },
       ],
     });
-    expect(mockCache.set).toBeCalledTimes(1);
+    expect(mockCache.set).toHaveBeenCalledTimes(1);
   });
 
   it('should use cached data when available', async () => {
@@ -147,9 +147,9 @@ describe('UrlReaderProcessor', () => {
     expect(refresh.type).toBe('refresh');
     expect(refresh.key).toBe('url:http://localhost/component.yaml');
 
-    expect(mockCache.get).toBeCalledWith('v1');
-    expect(mockCache.get).toBeCalledTimes(1);
-    expect(mockCache.set).toBeCalledTimes(0);
+    expect(mockCache.get).toHaveBeenCalledWith('v1');
+    expect(mockCache.get).toHaveBeenCalledTimes(1);
+    expect(mockCache.set).toHaveBeenCalledTimes(0);
   });
 
   it('should fail load from url with error', async () => {
@@ -211,6 +211,6 @@ describe('UrlReaderProcessor', () => {
       mockCache,
     );
 
-    expect(reader.search).toBeCalledTimes(1);
+    expect(reader.search).toHaveBeenCalledTimes(1);
   });
 });

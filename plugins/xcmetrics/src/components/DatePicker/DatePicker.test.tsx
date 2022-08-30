@@ -34,7 +34,7 @@ describe('DatePicker', () => {
     const input = rendered.getByLabelText(label);
 
     await userEvent.type(input, '2020-02-02');
-    expect(callback).toBeCalledWith('2020-02-02');
+    expect(callback).toHaveBeenCalledWith('2020-02-02');
   });
 
   it('should not accept non date', async () => {

@@ -200,7 +200,7 @@ describe('<StepPrepareSelectLocations />', () => {
       await userEvent.click(getByRole('button', { name: /Back/i }));
     });
 
-    expect(onGoBack).toBeCalledTimes(1);
+    expect(onGoBack).toHaveBeenCalledTimes(1);
   });
 
   it('should submit', async () => {
@@ -224,7 +224,7 @@ describe('<StepPrepareSelectLocations />', () => {
       await userEvent.click(getByRole('button', { name: /Review/i }));
     });
 
-    expect(onPrepare).toBeCalledTimes(1);
+    expect(onPrepare).toHaveBeenCalledTimes(1);
     expect(onPrepare.mock.calls[0][0]).toMatchObject({
       type: 'locations',
       locations: [
