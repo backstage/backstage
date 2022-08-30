@@ -39,4 +39,3 @@ jobs:
       - name: techdocs-cli kubernetes test
         working-directory: packages/backend-common
         run: yarn test:kubernetes:ci
-  
