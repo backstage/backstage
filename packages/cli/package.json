@@ -157,7 +157,7 @@
     "msw": "^0.46.0",
     "nodemon": "^2.0.2",
     "ts-node": "^10.0.0",
-    "type-fest": "^0.21.0"
+    "type-fest": "^2.0.0"
   },
   "peerDependencies": {
     "@microsoft/api-extractor": "^7.21.2"
