@@ -1,5 +1,4 @@
 ---
-'@backstage/errors': patch
 '@backstage/plugin-catalog-backend': patch
 ---
 
