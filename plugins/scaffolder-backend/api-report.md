@@ -419,7 +419,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   branchName: string;
   targetPath: string;
   token?: string | undefined;
-  commitAction?: 'update' | 'create' | 'delete' | undefined;
+  commitAction?: 'update' | 'delete' | 'create' | undefined;
   projectid?: string | undefined;
   removeSourceBranch?: boolean | undefined;
   assignee?: string | undefined;
@@ -568,6 +568,19 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
   // (undocumented)
   validateEntityKind(entity: Entity): Promise<boolean>;
 }
+
+// @alpha
+export const scaffolderPlugin: (
+  options: ScaffolderPluginOptions,
+) => BackendFeature;
+
+// @alpha
+export type ScaffolderPluginOptions = {
+  actions?: TemplateAction<any>[];
+  taskWorkers?: number;
+  taskBroker?: TaskBroker;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
+};
 
 // @public
 export type SerializedTask = {
