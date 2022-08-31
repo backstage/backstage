@@ -61,6 +61,11 @@ export function registerRepoCommand(program: Command) {
     .action(lazy(() => import('./repo/lint').then(m => m.command)));
 
   command
+    .command('clean')
+    .description('Delete cache and output directories')
+    .action(lazy(() => import('./repo/clean').then(m => m.command)));
+
+  command
     .command('list-deprecations', { hidden: true })
     .description('List deprecations. [EXPERIMENTAL]')
     .option('--json', 'Output as JSON')
