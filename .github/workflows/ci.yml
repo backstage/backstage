@@ -190,9 +190,6 @@ jobs:
         run: git diff --quiet origin/master HEAD -- yarn.lock
         continue-on-error: true
 
-      - name: lock
-        run: yarn lock:check
-
       - name: lint
         run: yarn backstage-cli repo lint --since origin/master
 
