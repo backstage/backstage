@@ -1001,7 +1001,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         });
 
         const response = await request(app).get(`/v2/tasks`);
-        expect(taskBroker.list).toBeCalledWith({
+        expect(taskBroker.list).toHaveBeenCalledWith({
           createdBy: undefined,
         });
         expect(response.status).toEqual(200);
@@ -1036,7 +1036,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         const response = await request(app).get(
           `/v2/tasks?createdBy=user:default/foo`,
         );
-        expect(taskBroker.list).toBeCalledWith({
+        expect(taskBroker.list).toHaveBeenCalledWith({
           createdBy: 'user:default/foo',
         });
 
@@ -1136,18 +1136,20 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
         expect(statusCode).toBe(200);
         expect(headers['content-type']).toBe('text/event-stream');
-        expect(responseDataFn).toBeCalledTimes(2);
-        expect(responseDataFn).toBeCalledWith(`event: log
+        expect(responseDataFn).toHaveBeenCalledTimes(2);
+        expect(responseDataFn).toHaveBeenCalledWith(`event: log
 data: {"id":0,"taskId":"a-random-id","type":"log","createdAt":"","body":{"message":"My log message"}}
 
 `);
-        expect(responseDataFn).toBeCalledWith(`event: completion
+        expect(responseDataFn).toHaveBeenCalledWith(`event: completion
 data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{"message":"Finished!"}}
 
 `);
 
-        expect(taskBroker.event$).toBeCalledTimes(1);
-        expect(taskBroker.event$).toBeCalledWith({ taskId: 'a-random-id' });
+        expect(taskBroker.event$).toHaveBeenCalledTimes(1);
+        expect(taskBroker.event$).toHaveBeenCalledWith({
+          taskId: 'a-random-id',
+        });
         expect(subscriber!.closed).toBe(true);
       });
 
@@ -1198,8 +1200,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         expect(statusCode).toBe(200);
         expect(headers['content-type']).toBe('text/event-stream');
 
-        expect(taskBroker.event$).toBeCalledTimes(1);
-        expect(taskBroker.event$).toBeCalledWith({
+        expect(taskBroker.event$).toHaveBeenCalledTimes(1);
+        expect(taskBroker.event$).toHaveBeenCalledWith({
           taskId: 'a-random-id',
           after: 10,
         });
@@ -1257,8 +1259,10 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           },
         ]);
 
-        expect(taskBroker.event$).toBeCalledTimes(1);
-        expect(taskBroker.event$).toBeCalledWith({ taskId: 'a-random-id' });
+        expect(taskBroker.event$).toHaveBeenCalledTimes(1);
+        expect(taskBroker.event$).toHaveBeenCalledWith({
+          taskId: 'a-random-id',
+        });
         expect(subscriber!.closed).toBe(true);
       });
 
@@ -1280,8 +1284,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         expect(response.status).toEqual(200);
         expect(response.body).toEqual([]);
 
-        expect(taskBroker.event$).toBeCalledTimes(1);
-        expect(taskBroker.event$).toBeCalledWith({
+        expect(taskBroker.event$).toHaveBeenCalledTimes(1);
+        expect(taskBroker.event$).toHaveBeenCalledWith({
           taskId: 'a-random-id',
           after: 10,
         });
