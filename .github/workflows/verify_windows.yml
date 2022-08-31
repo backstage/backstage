@@ -50,6 +50,7 @@ jobs:
         env:
           BACKSTAGE_NEXT_TESTS: 1
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
+          SOMETHING: 1
 
       # credit: https://github.com/appleboy/discord-action/issues/3#issuecomment-731426861
       - name: Discord notification
