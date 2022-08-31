@@ -24388,8 +24388,8 @@ __metadata:
   linkType: hard
 
 "google-auth-library@npm:^8.0.0":
-  version: 8.5.0
-  resolution: "google-auth-library@npm:8.5.0"
+  version: 8.5.1
+  resolution: "google-auth-library@npm:8.5.1"
   dependencies:
     arrify: ^2.0.0
     base64-js: ^1.3.0
@@ -24400,7 +24400,7 @@ __metadata:
     gtoken: ^6.1.0
     jws: ^4.0.0
     lru-cache: ^6.0.0
-  checksum: 718c7bfd9b4f6a4b2693ad10f280ff85b2e16fa49c9b8d72c0dbd6660525131d378b3b30b79b03dcb1de1a9ae001c05f936444b3de56f8fc4f46259c831ad0b8
+  checksum: 0d80d7e136e672055e44fdb44f9e13843a554cc531a01deb1b0da6b78427778785faa7377ed85d840208bb61878cd7d69902172886476bd49ea67e645729570a
   languageName: node
   linkType: hard
 
