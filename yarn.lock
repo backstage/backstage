@@ -24634,7 +24634,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"grpc-docs@npm:^1.0.6, grpc-docs@npm:^1.1.2":
+"grpc-docs@npm:^1.0.6":
   version: 1.1.2
   resolution: "grpc-docs@npm:1.1.2"
   dependencies:
@@ -24655,6 +24655,30 @@ __metadata:
   peerDependencies:
     react: ^16.0.0
   checksum: ad1bac493e42bdf4cd363eed80f70f40e80ee3e7605e530958c4155e95e3c9ca6f92f6fa9f28a6c5304327c3926fc6661fc1127b79ca43ef32bc9558a0b093cc
+  languageName: node
+  linkType: hard
+
+"grpc-docs@npm:^1.1.2":
+  version: 1.1.3
+  resolution: "grpc-docs@npm:1.1.3"
+  dependencies:
+    "@improbable-eng/grpc-web": ^0.15.0
+    "@types/minimatch": ^3.0.5
+    gendocu-public-apis: ^1.0.0
+    google-protobuf: ^3.19.1
+    grpc-docs: ^1.0.6
+    js-yaml: ^4.1.0
+    minimatch: ^3.0.4
+    react-copy-to-clipboard: ^5.0.4
+    react-dom: ^16.13.1
+    react-is: ^16.8.0
+    react-syntax-highlighter: ^15.4.5
+    rollup: ^0.60
+    rollup-plugin-smart-asset: ^2.1.2
+    styled-components: ^5.3.3
+  peerDependencies:
+    react: ^16.0.0
+  checksum: 1bcd3179ce276e8fd34229acc6d3f1024908b7e6734e36ddcc4852c6db0100b900093355652577ab476c9927167cff92b05e560713995803154d4dbd4459f973
   languageName: node
   linkType: hard
 
