@@ -32,6 +32,15 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
+      # Needed until there are pre-built binaries of node-canvas for Node 18
+      - name: node-canvas dependencies
+        if: matrix.node-version == '18.x'
+        # From https://github.com/Automattic/node-canvas/blob/master/.github/workflows/ci.yaml
+        run: |
+          Invoke-WebRequest "https://ftp-osl.osuosl.org/pub/gnome/binaries/win64/gtk+/2.22/gtk+-bundle_2.22.1-20101229_win64.zip" -OutFile "gtk.zip"
+          Expand-Archive gtk.zip -DestinationPath "C:\GTK"
+          Invoke-WebRequest "https://downloads.sourceforge.net/project/libjpeg-turbo/2.0.4/libjpeg-turbo-2.0.4-vc64.exe" -OutFile "libjpeg.exe" -UserAgent NativeHost
+          .\libjpeg.exe /S
       # Windows file operation slowness means there's no point caching this
       - name: yarn install
         run: yarn install --immutable

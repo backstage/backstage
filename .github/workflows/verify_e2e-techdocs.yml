@@ -28,6 +28,13 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
 
+      # Needed until there are pre-built binaries of node-canvas for Node 18
+      - name: node-canvas dependencies
+        if: matrix.node-version == '18.x'
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+
       - name: install dependencies
         run: yarn install --immutable
 
