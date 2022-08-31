@@ -15,7 +15,7 @@
  */
 
 import os from 'os';
-import { join as joinPath } from 'path';
+import { join as joinPath, sep } from 'path';
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import {
@@ -64,9 +64,9 @@ describe('fetch:template', () => {
   let action: TemplateAction<any>;
 
   const workspacePath = os.tmpdir();
-  const createTemporaryDirectory: jest.MockedFunction<ActionContext<
-    FetchTemplateInput
-  >['createTemporaryDirectory']> = jest.fn(() =>
+  const createTemporaryDirectory: jest.MockedFunction<
+    ActionContext<FetchTemplateInput>['createTemporaryDirectory']
+  > = jest.fn(() =>
     Promise.resolve(
       joinPath(workspacePath, `${createTemporaryDirectory.mock.calls.length}`),
     ),
@@ -100,8 +100,8 @@ describe('fetch:template', () => {
     });
 
     action = createFetchTemplateAction({
-      reader: (Symbol('UrlReader') as unknown) as UrlReader,
-      integrations: (Symbol('Integrations') as unknown) as ScmIntegrations,
+      reader: Symbol('UrlReader') as unknown as UrlReader,
+      integrations: Symbol('Integrations') as unknown as ScmIntegrations,
     });
   });
 
@@ -125,7 +125,7 @@ describe('fetch:template', () => {
     it('throws if copyWithoutRender parameter is not an array', async () => {
       await expect(() =>
         action.handler(
-          mockContext({ copyWithoutRender: ('abc' as unknown) as string[] }),
+          mockContext({ copyWithoutRender: 'abc' as unknown as string[] }),
         ),
       ).rejects.toThrow(
         /copyWithoutRender\/copyWithoutTemplating must be an array/i,
@@ -136,8 +136,8 @@ describe('fetch:template', () => {
       await expect(() =>
         action.handler(
           mockContext({
-            copyWithoutRender: ('abc' as unknown) as string[],
-            copyWithoutTemplating: ('def' as unknown) as string[],
+            copyWithoutRender: 'abc' as unknown as string[],
+            copyWithoutTemplating: 'def' as unknown as string[],
           }),
         ),
       ).rejects.toThrow(
@@ -201,12 +201,14 @@ describe('fetch:template', () => {
                 },
               },
               subdir2: {
-                '${{ "dummy-subdir" if not values.skipMultiplesDirectories else "" }}': {
-                  '${{ "dummy-subdir" if not values.skipMultiplesDirectories else "" }}': {
-                    'multipleDirectorySkippedFile.txt':
-                      'file inside multiple optional subdirectories',
+                '${{ "dummy-subdir" if not values.skipMultiplesDirectories else "" }}':
+                  {
+                    '${{ "dummy-subdir" if not values.skipMultiplesDirectories else "" }}':
+                      {
+                        'multipleDirectorySkippedFile.txt':
+                          'file inside multiple optional subdirectories',
+                      },
                   },
-                },
               },
               subdir3: {
                 '${{ "fileSkippedInsideDirectory.txt" if not values.skipFileInsideDirectory else "" }}':
@@ -381,11 +383,7 @@ describe('fetch:template', () => {
 
         await expect(
           fs.readlink(`${workspacePath}/target/brokenSymlink`),
-        ).resolves.toEqual(
-          process.platform === 'win32'
-            ? '.\\\\not-a-real-file.txt'
-            : './not-a-real-file.txt',
-        );
+        ).resolves.toEqual(`.${sep}not-a-real-file.txt`);
       });
     });
   });
