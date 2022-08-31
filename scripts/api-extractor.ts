@@ -20,6 +20,7 @@
 import {
   resolve as resolvePath,
   relative as relativePath,
+  basename,
   dirname,
   join,
 } from 'path';
@@ -1197,11 +1198,18 @@ async function runCliExtraction({
     if (!pkgJson.bin) {
       throw new Error(`CLI Package in ${packageDir} has no bin field`);
     }
+
     const models = new Array<CliModel>();
-    for (const [name, path] of Object.entries<string>(pkgJson.bin)) {
-      const run = createBinRunner(fullDir, path);
+    if (typeof pkgJson.bin === 'string') {
+      const run = createBinRunner(fullDir, pkgJson.bin);
       const helpPages = await exploreCliHelpPages(run);
-      models.push({ name, helpPages });
+      models.push({ name: basename(pkgJson.bin), helpPages });
+    } else {
+      for (const [name, path] of Object.entries<string>(pkgJson.bin)) {
+        const run = createBinRunner(fullDir, path);
+        const helpPages = await exploreCliHelpPages(run);
+        models.push({ name, helpPages });
+      }
     }
 
     const report = generateCliReport(pkgJson.name, models);
