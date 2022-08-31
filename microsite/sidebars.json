@@ -331,7 +331,8 @@
       "tutorials/configuring-plugin-databases",
       "tutorials/switching-sqlite-postgres",
       "tutorials/using-backstage-proxy-within-plugin",
-      "tutorials/backend-to-backend-auth"
+      "tutorials/backend-to-backend-auth",
+      "tutorials/yarn-migration"
     ],
     "Architecture Decision Records (ADRs)": [
       "architecture-decisions/adrs-overview",

@@ -67,18 +67,21 @@ export async function copyPackageDist(packageDir: string, targetDir: string) {
     delete pkg.optionalDependencies;
   }
 
-  // Write the modified package.json so that the file listing is correct
-  await fs.writeJson(pkgPath, pkg, { encoding: 'utf8', spaces: 2 });
-
   // Lists all dist files, respecting .npmignore, files field in package.json, etc.
-  const filePaths = await npmPackList({ path: packageDir });
+  const filePaths = await npmPackList({
+    path: packageDir,
+    // This makes sure we use the update package.json when listing files
+    packageJsonCache: new Map([[resolvePath(packageDir, 'package.json'), pkg]]),
+  });
 
   await fs.ensureDir(targetDir);
   for (const filePath of filePaths.sort()) {
-    await fs.copy(
-      resolvePath(packageDir, filePath),
-      resolvePath(targetDir, filePath),
-    );
+    const target = resolvePath(targetDir, filePath);
+    if (filePath === 'package.json') {
+      await fs.writeJson(target, pkg, { encoding: 'utf8', spaces: 2 });
+    } else {
+      await fs.copy(resolvePath(packageDir, filePath), target);
+    }
   }
 
   if (publishConfig.alphaTypes) {
@@ -87,7 +90,4 @@ export async function copyPackageDist(packageDir: string, targetDir: string) {
   if (publishConfig.betaTypes) {
     await writeReleaseStageEntrypoint(pkg, 'beta', targetDir);
   }
-
-  // Restore package.json
-  await fs.writeFile(pkgPath, pkgContent, 'utf8');
 }

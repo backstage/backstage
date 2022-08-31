@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { Link } from '@backstage/core-components';
 import {
   IconButton,
@@ -27,12 +27,12 @@ import {
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import useAsync from 'react-use/lib/useAsync';
 import _unescape from 'lodash/unescape';
-import qs from 'qs';
 import React from 'react';
 import {
   StackOverflowQuestion,
   StackOverflowQuestionsContentProps,
 } from '../../types';
+import { stackOverflowApiRef } from '../../api';
 
 /**
  * A component to display a list of stack overflow questions on the homepage.
@@ -42,18 +42,12 @@ import {
 
 export const Content = (props: StackOverflowQuestionsContentProps) => {
   const { requestParams } = props;
-  const configApi = useApi(configApiRef);
-  const baseUrl =
-    configApi.getOptionalString('stackoverflow.baseUrl') ||
-    'https://api.stackexchange.com/2.2';
+  const stackOverflowApi = useApi(stackOverflowApiRef);
 
   const { value, loading, error } = useAsync(async (): Promise<
     StackOverflowQuestion[]
   > => {
-    const params = qs.stringify(requestParams, { addQueryPrefix: true });
-    const response = await fetch(`${baseUrl}/questions${params}`);
-    const data = await response.json();
-    return data.items;
+    return await stackOverflowApi.listQuestions({ requestParams });
   }, []);
 
   if (loading) {

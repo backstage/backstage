@@ -569,6 +569,19 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
   validateEntityKind(entity: Entity): Promise<boolean>;
 }
 
+// @alpha
+export const scaffolderPlugin: (
+  options: ScaffolderPluginOptions,
+) => BackendFeature;
+
+// @alpha
+export type ScaffolderPluginOptions = {
+  actions?: TemplateAction<any>[];
+  taskWorkers?: number;
+  taskBroker?: TaskBroker;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
+};
+
 // @public
 export type SerializedTask = {
   id: string;

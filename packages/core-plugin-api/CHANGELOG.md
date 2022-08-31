@@ -1,5 +1,11 @@
 # @backstage/core-plugin-api
 
+## 1.0.6-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+
 ## 1.0.6-next.0
 
 ### Patch Changes
