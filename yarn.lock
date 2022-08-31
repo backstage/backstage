@@ -22543,15 +22543,22 @@ react-resize-detector@^6.6.3:
     lodash "^4.17.21"
     resize-observer-polyfill "^1.5.1"
 
-"react-router-beta@npm:react-router@6.0.0-beta.0", react-router@6.0.0-beta.0:
-  name react-router-beta
-  version "6.0.0-beta.0"
-  resolved "https://registry.npmjs.org/react-router/-/react-router-6.0.0-beta.0.tgz#3e11f39b6ded4412c2fed9e4f989dd4c8156724d"
-  integrity sha512-VgMdfpVcmFQki/LZuLh8E/MNACekDetz4xqft+a6fBZvvJnVqKbLqebF7hyoawGrV1HcO5tVaUang2Og4W2j1Q==
+"react-router-beta@npm:react-router@6.3.0", "react-router-stable@npm:react-router@^6.3.0", react-router@6.3.0, react-router@^6.0.0-beta.0, react-router@^6.3.0:
+  version "6.3.0"
+  resolved "https://registry.npmjs.org/react-router/-/react-router-6.3.0.tgz#3970cc64b4cb4eae0c1ea5203a80334fdd175557"
+  integrity sha512-7Wh1DzVQ+tlFjkeo+ujvjSqSJmkt1+8JO+T5xklPlgrh70y7ogx75ODRW0ThWhY7S+6yEDks8TYrtQe/aoboBQ==
   dependencies:
-    prop-types "^15.7.2"
+    history "^5.2.0"
 
-"react-router-dom-beta@npm:react-router-dom@6.0.0-beta.0", react-router-dom@6.0.0-beta.0:
+"react-router-dom-beta@npm:react-router-dom@6.3.0", "react-router-dom-stable@npm:react-router-dom@^6.3.0", react-router-dom@^6.3.0:
+  version "6.3.0"
+  resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.3.0.tgz#a0216da813454e521905b5fa55e0e5176123f43d"
+  integrity sha512-uaJj7LKytRxZNQV8+RbzJWnJ8K2nPsOOEuX7aQstlMZKQT0164C+X2w6bnkqU3sjtLvpd5ojrezAyfZ1+0sStw==
+  dependencies:
+    history "^5.2.0"
+    react-router "6.3.0"
+
+react-router-dom@6.0.0-beta.0:
   name react-router-dom-beta
   version "6.0.0-beta.0"
   resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.0.0-beta.0.tgz#9dcc8555365f22f7fbd09f26b6b82543f3eb97d6"
@@ -22560,20 +22567,13 @@ react-resize-detector@^6.6.3:
     prop-types "^15.7.2"
     react-router "6.0.0-beta.0"
 
-"react-router-dom-stable@npm:react-router-dom@^6.3.0", react-router-dom@^6.3.0:
-  version "6.3.0"
-  resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.3.0.tgz#a0216da813454e521905b5fa55e0e5176123f43d"
-  integrity sha512-uaJj7LKytRxZNQV8+RbzJWnJ8K2nPsOOEuX7aQstlMZKQT0164C+X2w6bnkqU3sjtLvpd5ojrezAyfZ1+0sStw==
+react-router@6.0.0-beta.0:
+  name react-router-beta
+  version "6.0.0-beta.0"
+  resolved "https://registry.npmjs.org/react-router/-/react-router-6.0.0-beta.0.tgz#3e11f39b6ded4412c2fed9e4f989dd4c8156724d"
+  integrity sha512-VgMdfpVcmFQki/LZuLh8E/MNACekDetz4xqft+a6fBZvvJnVqKbLqebF7hyoawGrV1HcO5tVaUang2Og4W2j1Q==
   dependencies:
-    history "^5.2.0"
-    react-router "6.3.0"
-
-"react-router-stable@npm:react-router@^6.3.0", react-router@6.3.0, react-router@^6.0.0-beta.0, react-router@^6.3.0:
-  version "6.3.0"
-  resolved "https://registry.npmjs.org/react-router/-/react-router-6.3.0.tgz#3970cc64b4cb4eae0c1ea5203a80334fdd175557"
-  integrity sha512-7Wh1DzVQ+tlFjkeo+ujvjSqSJmkt1+8JO+T5xklPlgrh70y7ogx75ODRW0ThWhY7S+6yEDks8TYrtQe/aoboBQ==
-  dependencies:
-    history "^5.2.0"
+    prop-types "^15.7.2"
 
 react-side-effect@^2.1.0:
   version "2.1.0"
