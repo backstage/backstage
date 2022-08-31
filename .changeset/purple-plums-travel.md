@@ -2,4 +2,4 @@
 '@backstage/cli': patch
 ---
 
-Use the `webpack` `esmodule` detection for React Refresh
+Fixed a misconfiguration where all modules where treated as ESM by the React Refresh plugin for Webpack.
