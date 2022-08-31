@@ -46,7 +46,7 @@
     "@types/jest": "*",
     "@types/node": "*",
     "express": "^4.18.1",
-    "msw": "^0.45.0"
+    "msw": "^0.46.0"
   },
   "files": [
     "dist",

@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@backstage/test-utils": "^1.2.0-next.1",
-    "msw": "^0.45.0",
+    "msw": "^0.46.0",
     "@types/jest": "^26.0.7",
     "@types/node": "^16.0.0"
   },
