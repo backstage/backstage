@@ -3177,6 +3177,7 @@ __metadata:
     tar: ^6.1.2
     terser-webpack-plugin: ^5.1.3
     ts-node: ^10.0.0
+    type-fest: ^0.17.0
     util: ^0.12.3
     webpack: ^5.70.0
     webpack-dev-server: ^4.7.3
@@ -39199,6 +39200,13 @@ __metadata:
   version: 0.13.1
   resolution: "type-fest@npm:0.13.1"
   checksum: e6bf2e3c449f27d4ef5d56faf8b86feafbc3aec3025fc9a5fbe2db0a2587c44714521f9c30d8516a833c8c506d6263f5cc11267522b10c6ccdb6cc55b0a9d1c4
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "type-fest@npm:0.17.0"
+  checksum: ad346fd4991c860cfc20186c187a93ce82eeaca9d00f2d2ce04aab52b7e4437101f35cc795e377b4957568610b4b77b3db1670ed2b5a0bc3fe2fbb0ca997d6e9
   languageName: node
   linkType: hard
 
