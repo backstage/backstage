@@ -251,7 +251,7 @@
           },
           "https": {
             "type": "object",
-            "description": "Running the frontend app with https",
+            "description": "Only used for local development. The https object is passed to webpack in order to enable using https on localhost.",
             "properties": {
               "certificate": {
                 "type": "object",
