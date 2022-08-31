@@ -43,7 +43,7 @@ export type ScaffolderPluginOptions = {
 
 /**
  * @alpha
- * TODO: MOVE to catalog-node before merge.
+ * TODO: MOVE to scaffolder-node.
  */
 interface ScaffolderActionsExtensionPoint {
   addActions(...actions: TemplateAction<any>[]): void;
@@ -63,7 +63,7 @@ class ScaffolderActionsExtensionPointImpl
 
 /**
  * @alpha
- * TODO: MOVE to catalog-node before merge.
+ * TODO: MOVE to scaffolder-node.
  */
 export const scaffolderActionsExtensionPoint =
   createExtensionPoint<ScaffolderActionsExtensionPoint>({
