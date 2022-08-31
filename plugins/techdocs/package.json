@@ -53,7 +53,7 @@
     "@material-ui/styles": "^4.10.0",
     "dompurify": "^2.2.9",
     "event-source-polyfill": "1.0.25",
-    "git-url-parse": "^12.0.0",
+    "git-url-parse": "^13.0.0",
     "jss": "~10.8.2",
     "lodash": "^4.17.21",
     "react-helmet": "6.1.0",
