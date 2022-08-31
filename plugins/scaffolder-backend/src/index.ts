@@ -26,3 +26,4 @@ export * from './lib';
 export * from './processor';
 export * from './extension';
 export { scaffolderPlugin } from './ScaffolderPlugin';
+export type { ScaffolderPluginOptions } from './ScaffolderPlugin';
