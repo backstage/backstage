@@ -53,7 +53,7 @@
     "@types/jest": "^26.0.7",
     "@types/node": "^16.11.26",
     "@types/recharts": "^1.8.15",
-    "msw": "^0.45.0"
+    "msw": "^0.46.0"
   },
   "files": [
     "dist"
