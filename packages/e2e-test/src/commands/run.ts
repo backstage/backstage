@@ -50,6 +50,9 @@ export async function run() {
   print('Building dist workspace');
   const workspaceDir = await buildDistWorkspace('workspace', rootDir);
 
+  // Otherwise yarn will refuse to install with CI=true
+  process.env.YARN_ENABLE_IMMUTABLE_INSTALLS = 'false';
+
   print('Creating a Backstage App');
   const appDir = await createApp('test-app', workspaceDir, rootDir);
 
