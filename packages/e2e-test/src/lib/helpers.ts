@@ -31,7 +31,7 @@ export function spawnPiped(cmd: string[], options?: SpawnOptions) {
     return (data: Buffer) => {
       const prefixedMsg = data
         .toString('utf8')
-        .trimRight()
+        .trimEnd()
         .replace(/^/gm, prefix);
       stream.write(`${prefixedMsg}\n`, 'utf8');
     };
