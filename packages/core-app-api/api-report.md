@@ -410,6 +410,12 @@ export class MicrosoftAuth {
 }
 
 // @public
+export class MultipleAnalyticsApi implements AnalyticsApi {
+  captureEvent(event: AnalyticsEvent): void;
+  static fromApis(actualApis: AnalyticsApi[]): MultipleAnalyticsApi;
+}
+
+// @public
 export class NoOpAnalyticsApi implements AnalyticsApi {
   // (undocumented)
   captureEvent(_event: AnalyticsEvent): void;
