@@ -25,6 +25,11 @@ import {
 import { RouteResolver } from './RouteResolver';
 import { MATCH_ALL_ROUTE } from './collectors';
 
+jest.mock('react-router', () => jest.requireActual('react-router-stable'));
+jest.mock('react-router-dom', () =>
+  jest.requireActual('react-router-dom-stable'),
+);
+
 const element = () => null;
 const rest = { element, caseSensitive: false, children: [MATCH_ALL_ROUTE] };
 
@@ -81,9 +86,9 @@ describe('RouteResolver', () => {
 
   it('should resolve an absolute route', () => {
     const r = new RouteResolver(
-      new Map([[ref1, '/my-route']]),
+      new Map([[ref1, 'my-route']]),
       new Map(),
-      [{ routeRefs: new Set([ref1]), path: '/my-route', ...rest }],
+      [{ routeRefs: new Set([ref1]), path: 'my-route', ...rest }],
       new Map(),
       '',
     );
@@ -103,18 +108,18 @@ describe('RouteResolver', () => {
   it('should resolve an absolute route and sub route with an app base path', () => {
     const r = new RouteResolver(
       new Map<RouteRef, string>([
-        [ref2, '/my-parent/:x'],
-        [ref1, '/my-route'],
+        [ref2, 'my-parent/:x'],
+        [ref1, 'my-route'],
       ]),
       new Map<RouteRef, RouteRef>([[ref1, ref2]]),
       [
         {
           routeRefs: new Set([ref2]),
-          path: '/my-parent/:x',
+          path: 'my-parent/:x',
           ...rest,
           children: [
             MATCH_ALL_ROUTE,
-            { routeRefs: new Set([ref1]), path: '/my-route', ...rest },
+            { routeRefs: new Set([ref1]), path: 'my-route', ...rest },
           ],
         },
       ],
@@ -158,18 +163,18 @@ describe('RouteResolver', () => {
   it('should resolve an absolute route with a param and with a parent', () => {
     const r = new RouteResolver(
       new Map<RouteRef, string>([
-        [ref1, '/my-route'],
-        [ref2, '/my-parent/:x'],
+        [ref1, 'my-route'],
+        [ref2, 'my-parent/:x'],
       ]),
       new Map([[ref2, ref1]]),
       [
         {
           routeRefs: new Set([ref2]),
-          path: '/my-parent/:x',
+          path: 'my-parent/:x',
           ...rest,
           children: [
             MATCH_ALL_ROUTE,
-            { routeRefs: new Set([ref1]), path: '/my-route', ...rest },
+            { routeRefs: new Set([ref1]), path: 'my-route', ...rest },
           ],
         },
       ],
@@ -204,9 +209,9 @@ describe('RouteResolver', () => {
   it('should resolve the most specific match', () => {
     const r = new RouteResolver(
       new Map<RouteRef, string>([
-        [ref1, '/deep'],
-        [ref2, '/root/:x'],
-        [ref3, '/sub/:y'],
+        [ref1, 'deep'],
+        [ref2, 'root/:x'],
+        [ref3, 'sub/:y'],
       ]),
       new Map<RouteRef, RouteRef>([
         [ref3, ref2],
@@ -215,19 +220,19 @@ describe('RouteResolver', () => {
       [
         {
           routeRefs: new Set([ref2]),
-          path: '/root/:x',
+          path: 'root/:x',
           ...rest,
           children: [
             MATCH_ALL_ROUTE,
             {
               routeRefs: new Set([ref3]),
-              path: '/sub/:y',
+              path: 'sub/:y',
               ...rest,
               children: [
                 MATCH_ALL_ROUTE,
                 {
                   routeRefs: new Set([ref1]),
-                  path: '/deep',
+                  path: 'deep',
                   ...rest,
                 },
               ],
@@ -258,9 +263,9 @@ describe('RouteResolver', () => {
   it('should resolve an absolute route with multiple parents', () => {
     const r = new RouteResolver(
       new Map<RouteRef, string>([
-        [ref1, '/my-route'],
-        [ref2, '/my-parent/:x'],
-        [ref3, '/my-grandparent/:y'],
+        [ref1, 'my-route'],
+        [ref2, 'my-parent/:x'],
+        [ref3, 'my-grandparent/:y'],
       ]),
       new Map<RouteRef, RouteRef>([
         [ref1, ref2],
@@ -269,17 +274,17 @@ describe('RouteResolver', () => {
       [
         {
           routeRefs: new Set([ref3]),
-          path: '/my-grandparent/:y',
+          path: 'my-grandparent/:y',
           ...rest,
           children: [
             MATCH_ALL_ROUTE,
             {
               routeRefs: new Set([ref2]),
-              path: '/my-parent/:x',
+              path: 'my-parent/:x',
               ...rest,
               children: [
                 MATCH_ALL_ROUTE,
-                { routeRefs: new Set([ref1]), path: '/my-route', ...rest },
+                { routeRefs: new Set([ref1]), path: 'my-route', ...rest },
               ],
             },
           ],

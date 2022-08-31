@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { BitbucketServerIntegrationConfig } from '@backstage/integration';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -49,9 +50,7 @@ describe('BitbucketServerClient', () => {
     config: config,
   });
 
-  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterAll(() => server.close());
-  afterEach(() => server.resetHandlers());
+  setupRequestMockHandlers(server);
 
   it('listProjects', async () => {
     server.use(

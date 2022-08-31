@@ -1,5 +1,13 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.5.2-next.1
+
+### Patch Changes
+
+- 12c6a07c2a: Changed the description of the `techdocsAnnotationFactName` fact.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.1
+
 ## 0.5.2-next.0
 
 ### Patch Changes

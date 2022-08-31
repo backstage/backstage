@@ -75,7 +75,7 @@ describe('<SelectedKindsFilter/>', () => {
     await userEvent.click(getByText('System'));
 
     await waitFor(() => {
-      expect(onChange).toBeCalledWith(['api', 'component', 'system']);
+      expect(onChange).toHaveBeenCalledWith(['api', 'component', 'system']);
     });
   });
 
@@ -96,7 +96,7 @@ describe('<SelectedKindsFilter/>', () => {
     await userEvent.click(getByText('Resource'));
 
     await waitFor(() => {
-      expect(onChange).toBeCalledWith(undefined);
+      expect(onChange).toHaveBeenCalledWith(undefined);
     });
   });
 
@@ -112,7 +112,7 @@ describe('<SelectedKindsFilter/>', () => {
     await userEvent.tab();
 
     await waitFor(() => {
-      expect(onChange).toBeCalledWith(undefined);
+      expect(onChange).toHaveBeenCalledWith(undefined);
     });
   });
 });

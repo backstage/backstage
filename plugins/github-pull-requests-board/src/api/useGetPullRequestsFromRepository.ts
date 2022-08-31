@@ -18,37 +18,86 @@ import React from 'react';
 import { GraphQlPullRequests, PullRequestsNumber } from '../utils/types';
 import { useOctokitGraphQl } from './useOctokitGraphQl';
 
+const PULL_REQUEST_LIMIT = 10;
+const GITHUB_GRAPHQL_MAX_ITEMS = 100;
+
 export const useGetPullRequestsFromRepository = () => {
   const graphql =
     useOctokitGraphQl<GraphQlPullRequests<PullRequestsNumber[]>>();
 
   const fn = React.useRef(
-    async (repo: string): Promise<PullRequestsNumber[]> => {
+    async (
+      repo: string,
+      pullRequestLimit?: number,
+    ): Promise<PullRequestsNumber[]> => {
+      const limit = pullRequestLimit ?? PULL_REQUEST_LIMIT;
       const [organisation, repositoryName] = repo.split('/');
 
-      const { repository } = await graphql(
-        `
-          query ($name: String!, $owner: String!) {
-            repository(name: $name, owner: $owner) {
-              pullRequests(states: OPEN, first: 10) {
-                edges {
-                  node {
-                    number
-                  }
-                }
-              }
-            }
-          }
-        `,
-        {
-          name: repositoryName,
-          owner: organisation,
-        },
+      return await getPullRequestEdges(
+        graphql,
+        repositoryName,
+        organisation,
+        limit,
       );
-
-      return repository.pullRequests.edges;
     },
   );
 
   return fn.current;
 };
+
+async function getPullRequestEdges(
+  graphql: (
+    path: string,
+    options?: any,
+  ) => Promise<GraphQlPullRequests<PullRequestsNumber[]>>,
+  repositoryName: string,
+  organisation: string,
+  pullRequestLimit: number,
+): Promise<PullRequestsNumber[]> {
+  const pullRequestEdges: PullRequestsNumber[] = [];
+  let result: GraphQlPullRequests<PullRequestsNumber[]> | undefined = undefined;
+
+  do {
+    result = await graphql(
+      `
+        query (
+          $name: String!
+          $owner: String!
+          $first: Int
+          $endCursor: String
+        ) {
+          repository(name: $name, owner: $owner) {
+            pullRequests(states: OPEN, first: $first, after: $endCursor) {
+              edges {
+                node {
+                  number
+                }
+              }
+              pageInfo {
+                hasNextPage
+                endCursor
+              }
+            }
+          }
+        }
+      `,
+      {
+        name: repositoryName,
+        owner: organisation,
+        first:
+          pullRequestLimit > GITHUB_GRAPHQL_MAX_ITEMS
+            ? GITHUB_GRAPHQL_MAX_ITEMS
+            : pullRequestLimit,
+        endCursor: result
+          ? result.repository.pullRequests.pageInfo.endCursor
+          : undefined,
+      },
+    );
+
+    pullRequestEdges.push(...result.repository.pullRequests.edges);
+
+    if (pullRequestEdges.length >= pullRequestLimit) return pullRequestEdges;
+  } while (result.repository.pullRequests.pageInfo.hasNextPage);
+
+  return pullRequestEdges;
+}

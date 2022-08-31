@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,30 +19,23 @@ import React from 'react';
 import { BooleanCheck } from './BooleanCheck';
 
 /**
- * Defines a react component that is responsible for rendering a results of a given type.
+ * Defines a react component that is responsible for rendering a result of a given type.
  *
  * @public
  */
 export type CheckResultRenderer = {
   type: string;
-  title: string;
-  description: string;
-  component: React.ReactElement;
+  component: (check: CheckResult) => React.ReactElement;
 };
 
-export function defaultCheckResultRenderers(
-  value: CheckResult[],
-  title?: string,
-  description?: string,
-): CheckResultRenderer[] {
-  return [
-    {
-      type: 'json-rules-engine',
-      title: title || 'Boolean scorecard',
-      description:
-        description ||
-        'This card represents an overview of default boolean Backstage checks:',
-      component: <BooleanCheck checkResult={value} />,
-    },
-  ];
-}
+/**
+ * Default renderer for json-rules-engine check results.
+ *
+ * @public
+ */
+export const jsonRulesEngineCheckResultRenderer: CheckResultRenderer = {
+  type: 'json-rules-engine',
+  component: (checkResult: CheckResult) => (
+    <BooleanCheck checkResult={checkResult} />
+  ),
+};

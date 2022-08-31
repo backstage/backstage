@@ -282,6 +282,8 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
       client,
       provider.tenantId,
       {
+        userExpand: provider.userExpand,
+        groupExpand: provider.groupExpand,
         userFilter: provider.userFilter,
         userGroupMemberFilter: provider.userGroupMemberFilter,
         userGroupMemberSearch: provider.userGroupMemberSearch,

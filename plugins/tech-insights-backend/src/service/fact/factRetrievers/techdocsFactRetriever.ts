@@ -40,7 +40,7 @@ export const techdocsFactRetriever: FactRetriever = {
   schema: {
     [techdocsAnnotationFactName]: {
       type: 'boolean',
-      description: 'The entity has a title in metadata',
+      description: 'The entity has a TechDocs reference annotation',
     },
   },
   handler: async ({

@@ -23,15 +23,20 @@ import {
   MarkdownContent,
 } from '@backstage/core-components';
 import { FieldExtensionOptions } from '../../extensions';
-import { Navigate, useParams } from 'react-router';
+import { Navigate } from 'react-router';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { errorApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  errorApiRef,
+  useApi,
+  useRouteRef,
+  useRouteRefParams,
+} from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
 import { makeStyles } from '@material-ui/core';
 import { Stepper } from './Stepper';
 import { BackstageTheme } from '@backstage/theme';
-import { nextRouteRef } from '../../routes';
+import { nextRouteRef, selectedTemplateRouteRef } from '../../routes';
 
 export interface TemplateWizardPageProps {
   customFieldExtensions: FieldExtensionOptions<any, any>[];
@@ -62,7 +67,9 @@ const useTemplateParameterSchema = (templateRef: string) => {
 export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const styles = useStyles();
   const rootRef = useRouteRef(nextRouteRef);
-  const { templateName, namespace } = useParams();
+  const { templateName, namespace } = useRouteRefParams(
+    selectedTemplateRouteRef,
+  );
   const errorApi = useApi(errorApiRef);
   const { loading, manifest, error } = useTemplateParameterSchema(
     stringifyEntityRef({

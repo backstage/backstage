@@ -1,5 +1,14 @@
 # @backstage/core-components
 
+## 0.11.1-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 37e8c5e128: The `RoutedTabs` component has been updated to be compatible with React Router v6 stable.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.1
+
 ## 0.11.1-next.0
 
 ### Patch Changes

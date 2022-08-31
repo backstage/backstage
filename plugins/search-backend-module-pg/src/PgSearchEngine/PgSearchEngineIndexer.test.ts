@@ -77,7 +77,7 @@ describe('PgSearchEngineIndexer', () => {
 
     expect(database.getTransaction).toHaveBeenCalledTimes(1);
     expect(database.prepareInsert).toHaveBeenCalledTimes(1);
-    expect(database.insertDocuments).toBeCalledTimes(4);
+    expect(database.insertDocuments).toHaveBeenCalledTimes(4);
     expect(database.completeInsert).toHaveBeenCalledWith(tx, 'my-type');
   });
 

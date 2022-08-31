@@ -111,7 +111,7 @@ describe('GitHubOrgEntityProvider', () => {
 
       await entityProvider.read();
 
-      expect(entityProviderConnection.applyMutation).toBeCalledWith({
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
         entities: [
           {
             entity: {

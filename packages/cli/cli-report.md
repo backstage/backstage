@@ -157,6 +157,7 @@ Commands:
   package-roles
   package-scripts
   package-lint-configs
+  react-router-deps
   help [command]
 ```
 
@@ -182,6 +183,15 @@ Options:
 
 ```
 Usage: backstage-cli migrate package-scripts [options]
+
+Options:
+  -h, --help
+```
+
+### `backstage-cli migrate react-router-deps`
+
+```
+Usage: backstage-cli migrate react-router-deps [options]
 
 Options:
   -h, --help

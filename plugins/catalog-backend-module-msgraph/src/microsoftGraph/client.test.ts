@@ -51,8 +51,8 @@ describe('MicrosoftGraphClient', () => {
 
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ value: 'example' });
-    expect(tokenCredential.getToken).toBeCalledTimes(1);
-    expect(tokenCredential.getToken).toBeCalledWith(
+    expect(tokenCredential.getToken).toHaveBeenCalledTimes(1);
+    expect(tokenCredential.getToken).toHaveBeenCalledWith(
       'https://graph.microsoft.com/.default',
     );
   });
@@ -158,7 +158,7 @@ describe('MicrosoftGraphClient', () => {
       ),
     );
 
-    await expect(() => client.getUserProfile('user-id')).rejects.toThrowError();
+    await expect(() => client.getUserProfile('user-id')).rejects.toThrow();
   });
 
   it('should load user profile photo with max size of 120', async () => {

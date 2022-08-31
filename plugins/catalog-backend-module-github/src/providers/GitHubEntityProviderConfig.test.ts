@@ -68,17 +68,22 @@ describe('readProviderConfigs', () => {
                 branch: 'branch-name',
               },
             },
+            providerWithHost: {
+              organization: 'test-org1',
+              host: 'ghe.internal.com',
+            },
           },
         },
       },
     });
     const providerConfigs = readProviderConfigs(config);
 
-    expect(providerConfigs).toHaveLength(4);
+    expect(providerConfigs).toHaveLength(5);
     expect(providerConfigs[0]).toEqual({
       id: 'providerOrganizationOnly',
       organization: 'test-org1',
       catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
       filters: {
         repository: undefined,
         branch: undefined,
@@ -88,6 +93,7 @@ describe('readProviderConfigs', () => {
       id: 'providerCustomCatalogPath',
       organization: 'test-org2',
       catalogPath: 'custom/path/catalog-info.yaml',
+      host: 'github.com',
       filters: {
         repository: undefined,
         branch: undefined,
@@ -97,6 +103,7 @@ describe('readProviderConfigs', () => {
       id: 'providerWithRepositoryFilter',
       organization: 'test-org3', // organization
       catalogPath: '/catalog-info.yaml', // file
+      host: 'github.com',
       filters: {
         repository: /^repository.*filter$/, // repo
         branch: undefined, // branch
@@ -106,9 +113,20 @@ describe('readProviderConfigs', () => {
       id: 'providerWithBranchFilter',
       organization: 'test-org4',
       catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
       filters: {
         repository: undefined,
         branch: 'branch-name',
+      },
+    });
+    expect(providerConfigs[4]).toEqual({
+      id: 'providerWithHost',
+      organization: 'test-org1',
+      catalogPath: '/catalog-info.yaml',
+      host: 'ghe.internal.com',
+      filters: {
+        repository: undefined,
+        branch: undefined,
       },
     });
   });

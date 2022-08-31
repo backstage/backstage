@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.6.0-next.1
+
+### Minor Changes
+
+- 7db9613671: Added `projectId` for gitlab projects to be displayed in the `gitlab:publish` output
+
+### Patch Changes
+
+- 0d8d650e32: Applied the fix from version 1.5.1 of this package, which is part of the v1.5.1 release of Backstage.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.1
+  - @backstage/plugin-catalog-backend@1.4.0-next.1
+
 ## 1.6.0-next.0
 
 ### Minor Changes
@@ -33,6 +46,12 @@
   - @backstage/integration@1.3.1-next.0
   - @backstage/plugin-scaffolder-common@1.2.0-next.0
   - @backstage/plugin-catalog-node@1.0.2-next.0
+
+## 1.5.1
+
+### Patch Changes
+
+- Fix minimum required version for `vm2`
 
 ## 1.5.0
 

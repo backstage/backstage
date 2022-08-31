@@ -41,5 +41,5 @@ If you are a Backstage enthusiast, please [join me][news] and the entire Backsta
 [da]: https://medium.com/dazn-tech/developer-experience-dx-at-dazn-e6de9a0208d2
 [ex]: https://backstage.spotify.com/blog/community-session/firehydrant-expedia-loblaw/
 [plugins]: https://backstage.io/plugins
-[news]: https://mailchi.mp/spotify/backstage-community
+[news]: https://info.backstage.spotify.com/newsletter_subscribe
 [gh]: https://github.com/backstage/backstage/blob/master/ADOPTERS.md

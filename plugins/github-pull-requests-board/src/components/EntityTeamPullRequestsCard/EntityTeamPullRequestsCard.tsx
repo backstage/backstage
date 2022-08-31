@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FunctionComponent, useState } from 'react';
+import React, { useState } from 'react';
 import { Grid, Typography } from '@material-ui/core';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 
@@ -28,11 +28,19 @@ import { PRCardFormating } from '../../utils/types';
 import { DraftPrIcon } from '../icons/DraftPr';
 import { useUserRepositories } from '../../hooks/useUserRepositories';
 
-const EntityTeamPullRequestsCard: FunctionComponent = () => {
+/** @public */
+export interface EntityTeamPullRequestsCardProps {
+  pullRequestLimit?: number;
+}
+
+const EntityTeamPullRequestsCard = (props: EntityTeamPullRequestsCardProps) => {
+  const { pullRequestLimit } = props;
   const [infoCardFormat, setInfoCardFormat] = useState<PRCardFormating[]>([]);
   const { repositories } = useUserRepositories();
-  const { loading, pullRequests, refreshPullRequests } =
-    usePullRequestsByTeam(repositories);
+  const { loading, pullRequests, refreshPullRequests } = usePullRequestsByTeam(
+    repositories,
+    pullRequestLimit,
+  );
 
   const header = (
     <InfoCardHeader onRefresh={refreshPullRequests}>

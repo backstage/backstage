@@ -58,6 +58,7 @@ import { pluginCollector } from '../plugins/collectors';
 import {
   featureFlagCollector,
   routingV1Collector,
+  routingV2Collector,
 } from '../routing/collectors';
 import { RoutingProvider } from '../routing/RoutingProvider';
 import { RouteTracker } from '../routing/RouteTracker';
@@ -80,6 +81,7 @@ import { defaultConfigLoader } from './defaultConfigLoader';
 import { ApiRegistry } from '../apis/system/ApiRegistry';
 import { resolveRouteBindings } from './resolveRouteBindings';
 import { BackstageRouteObject } from '../routing/types';
+import { isReactRouterBeta } from './isReactRouterBeta';
 
 type CompatiblePlugin =
   | BackstagePlugin
@@ -223,7 +225,9 @@ export class AppManager implements BackstageApp {
           root: children,
           discoverers: [childDiscoverer, routeElementDiscoverer],
           collectors: {
-            routing: routingV1Collector,
+            routing: isReactRouterBeta()
+              ? routingV1Collector
+              : routingV2Collector,
             collectedPlugins: pluginCollector,
             featureFlags: featureFlagCollector,
           },

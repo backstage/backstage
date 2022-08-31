@@ -20,6 +20,7 @@ import {
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
   EntityPolicies,
+  EntityPolicy,
   LocationEntity,
 } from '@backstage/catalog-model';
 import { ScmIntegrations } from '@backstage/integration';
@@ -35,6 +36,7 @@ import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
 import { defaultEntityDataParser } from '../modules/util/parse';
 import { ConfigReader } from '@backstage/config';
+import { InputError } from '@backstage/errors';
 
 class FooBarProcessor implements CatalogProcessor {
   getProcessorName = () => 'foo-bar';
@@ -191,23 +193,23 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
   });
 
   describe('rules', () => {
-    it('enforces catalog rules', async () => {
-      const entity: LocationEntity = {
-        apiVersion: 'backstage.io/v1beta1',
-        kind: 'Location',
-        metadata: {
-          name: 'l',
-          annotations: {
-            [ANNOTATION_ORIGIN_LOCATION]: 'url:https://example.com/origin.yaml',
-            [ANNOTATION_LOCATION]: 'url:https://example.com/origin.yaml',
-          },
+    const entity: LocationEntity = {
+      apiVersion: 'backstage.io/v1beta1',
+      kind: 'Location',
+      metadata: {
+        name: 'l',
+        annotations: {
+          [ANNOTATION_ORIGIN_LOCATION]: 'url:https://example.com/origin.yaml',
+          [ANNOTATION_LOCATION]: 'url:https://example.com/origin.yaml',
         },
-        spec: {
-          type: 'url',
-          target: 'http://example.com/entity.yaml',
-        },
-      };
+      },
+      spec: {
+        type: 'url',
+        target: 'http://example.com/entity.yaml',
+      },
+    };
 
+    it('enforces catalog rules', async () => {
       const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
       const processor: jest.Mocked<CatalogProcessor> = {
         getProcessorName: jest.fn(),
@@ -240,6 +242,50 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
       await expect(
         orchestrator.process({ entity, state: {} }),
       ).resolves.toEqual(expect.objectContaining({ ok: false }));
+    });
+
+    it('includes entity ref within error', async () => {
+      const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
+      const processor: jest.Mocked<CatalogProcessor> = {
+        getProcessorName: jest.fn(),
+        validateEntityKind: jest.fn(async () => true),
+        readLocation: jest.fn(async (_l, _o, emit) => {
+          emit(processingResult.entity({ type: 't', target: 't' }, entity));
+          return true;
+        }),
+      };
+      const parser: CatalogProcessorParser = jest.fn();
+      const rulesEnforcer: jest.Mocked<CatalogRulesEnforcer> = {
+        isAllowed: jest.fn(),
+      };
+
+      class FailingEntityPolicy implements EntityPolicy {
+        async enforce(_entity: Entity): Promise<Entity> {
+          // eslint-disable-next-line no-throw-literal
+          throw 'boom';
+        }
+      }
+      const orchestrator = new DefaultCatalogProcessingOrchestrator({
+        processors: [processor],
+        integrations,
+        logger: getVoidLogger(),
+        parser,
+        policy: EntityPolicies.allOf([new FailingEntityPolicy()]),
+        rulesEnforcer,
+      });
+
+      await expect(
+        orchestrator.process({ entity, state: {} }),
+      ).resolves.toEqual(
+        expect.objectContaining({
+          ok: false,
+          errors: [
+            new InputError(
+              "Policy check failed for location:default/l; caused by unknown error 'boom'",
+            ),
+          ],
+        }),
+      );
     });
   });
 });

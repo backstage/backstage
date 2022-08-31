@@ -10,6 +10,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
+import { Response as Response_2 } from 'node-fetch';
 import { TaskRunner } from '@backstage/backend-tasks';
 
 // @public
@@ -24,7 +25,7 @@ export class BitbucketServerClient {
     projectKey: string;
     repo: string;
     path: string;
-  }): Promise<Response>;
+  }): Promise<Response_2>;
   // (undocumented)
   getRepository(options: {
     projectKey: string;

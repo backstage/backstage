@@ -123,7 +123,7 @@ describe('<CatalogGraphPage/>', () => {
     expect(await findByText('b:d/c')).toBeInTheDocument();
     expect(await findByText('b:d/e')).toBeInTheDocument();
     expect(await findAllByTestId('node')).toHaveLength(2);
-    expect(catalog.getEntityByRef).toBeCalledTimes(2);
+    expect(catalog.getEntityByRef).toHaveBeenCalledTimes(2);
   });
 
   test('should toggle filters', async () => {
@@ -169,7 +169,7 @@ describe('<CatalogGraphPage/>', () => {
     const user = userEvent.setup();
     await user.keyboard('{Shift>}');
     await user.click(getByText('b:d/e'));
-    expect(navigate).toBeCalledWith('/entity/{kind}/{namespace}/{name}');
+    expect(navigate).toHaveBeenCalledWith('/entity/{kind}/{namespace}/{name}');
   });
 
   test('should capture analytics event when selecting other entity', async () => {

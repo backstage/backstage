@@ -44,11 +44,11 @@ const serviceEntityPage = (
 );
 ```
 
-It is not obligatory to pass title and description props to `EntityTechInsightsScorecardContent`. If those are left out, default values from `defaultCheckResultRenderers` in `CheckResultRenderer` will be taken, hence `Boolean scorecard` and `This card represents an overview of default boolean Backstage checks`.
+It is obligatory to pass `title` prop to `EntityTechInsightsScorecardContent`, `description` prop is optional.
 
 If you like to display multiple cards in a `EntityLayout.Route` use `EntityTechInsightsScorecardCard`.
 
-You can pass an array `checksId` as a prop with the [Fact Retrievers ids](../tech-insights-backend#creating-fact-retrievers) to limit which checks you want to show in this card, If you don't pass, the default value is show all checks.
+You can pass an array `checksId` as a prop with the [Fact Retrievers ids](../tech-insights-backend#creating-fact-retrievers) to limit which checks you want to show in this card. If you don't pass, the default value is show all checks.
 
 ```tsx
 <EntityTechInsightsScorecardContent
@@ -87,6 +87,43 @@ const overviewContent = (
 
 ## Boolean Scorecard Example
 
-If you follow the [Backend Example](https://github.com/backstage/backstage/tree/master/plugins/tech-insights-backend#backend-example), once the needed facts have been generated the boolean scorecard will look like this:
+If you follow the [Backend Example](https://github.com/backstage/backstage/tree/master/plugins/tech-insights-backend#backend-example), once the needed facts have been generated the default boolean scorecard will look like this:
 
 ![Boolean Scorecard Example](./docs/boolean-scorecard-example.png)
+
+## Adding custom rendering components
+
+Default scorecard implementation displays only `json-rules-engine` check results. If you would like to support different types, you need to inject custom rendering components to the `TechInsightsClient` constructor.
+
+```ts
+// packages/app/src/apis.ts
+
+export const apis: AnyApiFactory[] = [
+...
+  createApiFactory({
+    api: techInsightsApiRef,
+    deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
+    factory: ({ discoveryApi, identityApi }) =>
+      new TechInsightsClient({
+        discoveryApi,
+        identityApi,
+        renderers: [
+          jsonRulesEngineCheckResultRenderer, // default json-rules-engine renderer
+          myCustomBooleanRenderer, // custom renderer
+        ],
+      }),
+  }),
+...
+];
+```
+
+```tsx
+// packages/app/src/components/myCustomBooleanRenderer.tsx
+
+export const myCustomBooleanRenderer: CheckResultRenderer = {
+  type: 'boolean',
+  component: (checkResult: CheckResult) => (
+    <BooleanCheck checkResult={checkResult} />
+  ),
+};
+```

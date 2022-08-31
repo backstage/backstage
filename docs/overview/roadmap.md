@@ -111,5 +111,4 @@ guidelines to get started.
 
 If you have specific questions about the roadmap, please create an
 [issue](https://github.com/backstage/backstage/issues/new/choose), ping us on
-[Discord](https://discord.gg/qxsEfa8Vq8), or [book
-time](http://calendly.com/spotify-backstage) with the Spotify team.
+[Discord](https://discord.gg/qxsEfa8Vq8), or [book time](https://info.backstage.spotify.com/office-hours) with the Spotify team.

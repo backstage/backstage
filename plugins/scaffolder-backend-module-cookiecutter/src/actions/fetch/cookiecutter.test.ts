@@ -139,7 +139,7 @@ describe('fetch:cookiecutter', () => {
   it('should throw an error when copyWithoutRender is not an array', async () => {
     (mockContext.input as any).copyWithoutRender = 'not an array';
 
-    await expect(action.handler(mockContext)).rejects.toThrowError(
+    await expect(action.handler(mockContext)).rejects.toThrow(
       /Fetch action input copyWithoutRender must be an Array/,
     );
   });
@@ -147,7 +147,7 @@ describe('fetch:cookiecutter', () => {
   it('should throw an error when extensions is not an array', async () => {
     (mockContext.input as any).extensions = 'not an array';
 
-    await expect(action.handler(mockContext)).rejects.toThrowError(
+    await expect(action.handler(mockContext)).rejects.toThrow(
       /Fetch action input extensions must be an Array/,
     );
   });

@@ -23,6 +23,7 @@ export type GitHubEntityProviderConfig = {
   id: string;
   catalogPath: string;
   organization: string;
+  host: string;
   filters?: {
     repository?: RegExp;
     branch?: string;
@@ -56,6 +57,7 @@ function readProviderConfig(
   const organization = config.getString('organization');
   const catalogPath =
     config.getOptionalString('catalogPath') ?? DEFAULT_CATALOG_PATH;
+  const host = config.getOptionalString('host') ?? 'github.com';
   const repositoryPattern = config.getOptionalString('filters.repository');
   const branchPattern = config.getOptionalString('filters.branch');
 
@@ -63,6 +65,7 @@ function readProviderConfig(
     id,
     catalogPath,
     organization,
+    host,
     filters: {
       repository: repositoryPattern
         ? compileRegExp(repositoryPattern)

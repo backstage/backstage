@@ -38,7 +38,7 @@ describe('GoogleAnalytics', () => {
   describe('fromConfig', () => {
     it('throws when missing trackingId', () => {
       const config = new ConfigReader({ app: { analytics: { ga: {} } } });
-      expect(() => GoogleAnalytics.fromConfig(config)).toThrowError(
+      expect(() => GoogleAnalytics.fromConfig(config)).toThrow(
         /Missing required config value/,
       );
     });
