@@ -17,6 +17,7 @@
 import {
   createServiceRef,
   createServiceFactory,
+  ServiceRef,
 } from '@backstage/backend-plugin-api';
 import { ServiceRegistry } from './ServiceRegistry';
 
@@ -169,5 +170,54 @@ describe('ServiceRegistry', () => {
     expect(await factoryA('catalog')).toBe(await factoryA('catalog'));
     expect(await factoryB('catalog')).toBe(await factoryB('catalog'));
     expect(await factoryA('catalog')).not.toBe(await factoryB('catalog'));
+  });
+
+  it('should only call each default factory loader once', async () => {
+    const factoryLoader = jest.fn(async (service: ServiceRef<void>) =>
+      createServiceFactory({
+        service,
+        deps: {},
+        factory: async () => async () => {},
+      }),
+    );
+    const ref = createServiceRef<void>({
+      id: '1',
+      defaultFactory: factoryLoader,
+    });
+
+    const registry = new ServiceRegistry([]);
+    const factory = registry.get(ref)!;
+    await Promise.all([
+      expect(factory('catalog')).resolves.toBeUndefined(),
+      expect(factory('catalog')).resolves.toBeUndefined(),
+    ]);
+    expect(factoryLoader).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not call factory functions more than once', async () => {
+    const innerFactory = jest.fn(async (pluginId: string) => {
+      return { x: 1, pluginId };
+    });
+    const factory = jest.fn(async () => innerFactory);
+    const myFactory = createServiceFactory({
+      service: ref1,
+      deps: {},
+      factory,
+    });
+
+    const registry = new ServiceRegistry([myFactory]);
+
+    await Promise.all([
+      registry.get(ref1)!('catalog')!,
+      registry.get(ref1)!('catalog')!,
+      registry.get(ref1)!('catalog')!,
+      registry.get(ref1)!('scaffolder')!,
+      registry.get(ref1)!('scaffolder')!,
+    ]);
+
+    expect(factory).toHaveBeenCalledTimes(1);
+    expect(innerFactory).toHaveBeenCalledTimes(2);
+    expect(innerFactory).toHaveBeenCalledWith('catalog');
+    expect(innerFactory).toHaveBeenCalledWith('scaffolder');
   });
 });

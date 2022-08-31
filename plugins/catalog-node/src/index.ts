@@ -22,5 +22,6 @@
 
 export type { CatalogProcessingExtensionPoint } from './extensions';
 export { catalogProcessingExtensionPoint } from './extensions';
+export { catalogServiceRef } from './catalogService';
 export * from './api';
 export * from './processing';
