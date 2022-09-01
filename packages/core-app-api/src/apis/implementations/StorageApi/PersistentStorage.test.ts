@@ -65,7 +65,7 @@ describe('Persistent Storage API', () => {
 
     server.use(
       rest.get(
-        `${mockBaseUrl}/buckets/:bucket/:key`,
+        `${mockBaseUrl}/buckets/:bucket/keys/:key`,
         async (_req, res, ctx) => {
           return res(ctx.json({ value: 'a' }));
         },
@@ -85,13 +85,16 @@ describe('Persistent Storage API', () => {
     const dummyValue = 'a';
 
     server.use(
-      rest.put(`${mockBaseUrl}/buckets/:bucket/:key`, async (req, res, ctx) => {
-        const body = await req.json();
-        const data = { value: JSON.stringify(dummyValue) };
-        expect(body).toEqual(data);
+      rest.put(
+        `${mockBaseUrl}/buckets/:bucket/keys/:key`,
+        async (req, res, ctx) => {
+          const body = await req.json();
+          const data = { value: JSON.stringify(dummyValue) };
+          expect(body).toEqual(data);
 
-        return res(ctx.json(data));
-      }),
+          return res(ctx.json(data));
+        },
+      ),
     );
 
     await storage.set('my-key', dummyValue);
@@ -105,13 +108,16 @@ describe('Persistent Storage API', () => {
     };
 
     server.use(
-      rest.put(`${mockBaseUrl}/buckets/:bucket/:key`, async (req, res, ctx) => {
-        const body = await req.json();
-        const data = { value: JSON.stringify(dummyValue) };
-        expect(body).toEqual(data);
+      rest.put(
+        `${mockBaseUrl}/buckets/:bucket/keys/:key`,
+        async (req, res, ctx) => {
+          const body = await req.json();
+          const data = { value: JSON.stringify(dummyValue) };
+          expect(body).toEqual(data);
 
-        return res(ctx.json(data));
-      }),
+          return res(ctx.json(data));
+        },
+      ),
     );
 
     await storage.set('my-key', dummyValue);
@@ -125,13 +131,16 @@ describe('Persistent Storage API', () => {
     const mockData = { hello: 'im a great new value' };
 
     server.use(
-      rest.put(`${mockBaseUrl}/buckets/:bucket/:key`, async (req, res, ctx) => {
-        const body = await req.json();
-        const data = { value: JSON.stringify(mockData) };
-        expect(body).toEqual(data);
+      rest.put(
+        `${mockBaseUrl}/buckets/:bucket/keys/:key`,
+        async (req, res, ctx) => {
+          const body = await req.json();
+          const data = { value: JSON.stringify(mockData) };
+          expect(body).toEqual(data);
 
-        return res(ctx.json(data));
-      }),
+          return res(ctx.json(data));
+        },
+      ),
     );
 
     await new Promise<void>(resolve => {
@@ -166,7 +175,7 @@ describe('Persistent Storage API', () => {
 
     server.use(
       rest.delete(
-        `${mockBaseUrl}/buckets/:bucket/:key`,
+        `${mockBaseUrl}/buckets/:bucket/keys/:key`,
         async (_req, res, ctx) => {
           return res(ctx.status(204));
         },
@@ -202,23 +211,29 @@ describe('Persistent Storage API', () => {
     const selectedKeyNextHandler = jest.fn();
 
     server.use(
-      rest.put(`${mockBaseUrl}/buckets/:bucket/:key`, async (req, res, ctx) => {
-        const { bucket, key } = req.params;
-        const { value } = await req.json();
+      rest.put(
+        `${mockBaseUrl}/buckets/:bucket/keys/:key`,
+        async (req, res, ctx) => {
+          const { bucket, key } = req.params;
+          const { value } = await req.json();
 
-        expect(bucket).toEqual('default.profile.something.deep');
-        expect(key).toEqual('test2');
+          expect(bucket).toEqual('default.profile.something.deep');
+          expect(key).toEqual('test2');
 
-        return res(ctx.json({ value }));
-      }),
-      rest.get(`${mockBaseUrl}/buckets/:bucket/:key`, async (req, res, ctx) => {
-        const { bucket, key } = req.params;
+          return res(ctx.json({ value }));
+        },
+      ),
+      rest.get(
+        `${mockBaseUrl}/buckets/:bucket/keys/:key`,
+        async (req, res, ctx) => {
+          const { bucket, key } = req.params;
 
-        expect(bucket).toEqual('default.profile/something');
-        expect(key).toEqual('deep/test2');
+          expect(bucket).toEqual('default.profile/something');
+          expect(key).toEqual('deep/test2');
 
-        return res(ctx.status(404));
-      }),
+          return res(ctx.status(404));
+        },
+      ),
     );
 
     // when getting key test2 it will translate to default.profile.something.deep/test2
@@ -259,14 +274,17 @@ describe('Persistent Storage API', () => {
     });
 
     server.use(
-      rest.get(`${mockBaseUrl}/buckets/:bucket/:key`, async (req, res, ctx) => {
-        const { bucket, key } = req.params;
+      rest.get(
+        `${mockBaseUrl}/buckets/:bucket/keys/:key`,
+        async (req, res, ctx) => {
+          const { bucket, key } = req.params;
 
-        expect(bucket).toEqual('Test.Mock.Thing');
-        expect(key).toEqual('key');
+          expect(bucket).toEqual('Test.Mock.Thing');
+          expect(key).toEqual('key');
 
-        return res(ctx.text('{ invalid: json string }'));
-      }),
+          return res(ctx.text('{ invalid: json string }'));
+        },
+      ),
     );
 
     await new Promise<void>(resolve => {
@@ -297,7 +315,7 @@ describe('Persistent Storage API', () => {
 
     server.use(
       rest.get(
-        `${mockBaseUrl}/buckets/:bucket/:key`,
+        `${mockBaseUrl}/buckets/:bucket/keys/:key`,
         async (_req, res, ctx) => {
           return res(ctx.text(JSON.stringify({ value: JSON.stringify(data) })));
         },

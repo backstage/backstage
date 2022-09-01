@@ -195,7 +195,7 @@ describe('createRouter', () => {
     });
   });
 
-  describe('GET /buckets/:bucket/:key', () => {
+  describe('GET /buckets/:bucket/keys/:key', () => {
     it('returns ok', async () => {
       const setting = { bucket: 'my-bucket', key: 'my-key', value: 'a' };
       authenticateMock.mockResolvedValue({
@@ -205,7 +205,7 @@ describe('createRouter', () => {
       userSettingsStore.get.mockResolvedValue(setting);
 
       const responses = await request(app)
-        .get('/buckets/my-bucket/my-key')
+        .get('/buckets/my-bucket/keys/my-key')
         .set('Authorization', 'Bearer foo');
 
       expect(responses.status).toEqual(200);
@@ -221,14 +221,16 @@ describe('createRouter', () => {
     });
 
     it('returns an error if the Authorization header is missing', async () => {
-      const responses = await request(app).get('/buckets/my-bucket/my-key');
+      const responses = await request(app).get(
+        '/buckets/my-bucket/keys/my-key',
+      );
 
       expect(responses.status).toEqual(401);
       expect(userSettingsStore.get).not.toHaveBeenCalled();
     });
   });
 
-  describe('DELETE /buckets/:bucket/:key', () => {
+  describe('DELETE /buckets/:bucket/keys/:key', () => {
     it('returns ok', async () => {
       authenticateMock.mockResolvedValue({
         identity: { userEntityRef: 'user-1' },
@@ -237,7 +239,7 @@ describe('createRouter', () => {
       userSettingsStore.delete.mockResolvedValue();
 
       const responses = await request(app)
-        .delete('/buckets/my-bucket/my-key')
+        .delete('/buckets/my-bucket/keys/my-key')
         .set('Authorization', 'Bearer foo');
 
       expect(responses.status).toEqual(204);
@@ -252,14 +254,16 @@ describe('createRouter', () => {
     });
 
     it('returns an error if the Authorization header is missing', async () => {
-      const responses = await request(app).delete('/buckets/my-bucket/my-key');
+      const responses = await request(app).delete(
+        '/buckets/my-bucket/keys/my-key',
+      );
 
       expect(responses.status).toEqual(401);
       expect(userSettingsStore.delete).not.toHaveBeenCalled();
     });
   });
 
-  describe('PUT /buckets/:bucket/:key', () => {
+  describe('PUT /buckets/:bucket/keys/:key', () => {
     it('returns ok', async () => {
       const setting = { bucket: 'my-bucket', key: 'my-key', value: 'a' };
       authenticateMock.mockResolvedValue({
@@ -270,7 +274,7 @@ describe('createRouter', () => {
       userSettingsStore.get.mockResolvedValue(setting);
 
       const responses = await request(app)
-        .put('/buckets/my-bucket/my-key')
+        .put('/buckets/my-bucket/keys/my-key')
         .set('Authorization', 'Bearer foo')
         .send({ value: 'a' });
 
@@ -299,7 +303,7 @@ describe('createRouter', () => {
       });
 
       const responses = await request(app)
-        .put('/buckets/my-bucket/my-key')
+        .put('/buckets/my-bucket/keys/my-key')
         .set('Authorization', 'Bearer foo')
         .send({ value: { invalid: 'because not a string' } });
 
@@ -310,7 +314,9 @@ describe('createRouter', () => {
     });
 
     it('returns an error if the Authorization header is missing', async () => {
-      const responses = await request(app).get('/buckets/my-bucket/my-key');
+      const responses = await request(app).get(
+        '/buckets/my-bucket/keys/my-key',
+      );
 
       expect(responses.status).toEqual(401);
       expect(userSettingsStore.get).not.toHaveBeenCalled();
