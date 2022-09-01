@@ -59,6 +59,7 @@ import jenkins from './plugins/jenkins';
 import permission from './plugins/permission';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
+import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -72,6 +73,9 @@ function makeCreateEnv(config: Config) {
   const databaseManager = DatabaseManager.fromConfig(config, { logger: root });
   const cacheManager = CacheManager.fromConfig(config);
   const taskScheduler = TaskScheduler.fromConfig(config);
+  const identity = DefaultIdentityClient.create({
+    discovery,
+  });
 
   root.info(`Created UrlReader ${reader}`);
 
@@ -80,6 +84,7 @@ function makeCreateEnv(config: Config) {
     const database = databaseManager.forPlugin(plugin);
     const cache = cacheManager.forPlugin(plugin);
     const scheduler = taskScheduler.forPlugin(plugin);
+
     return {
       logger,
       cache,
@@ -90,6 +95,7 @@ function makeCreateEnv(config: Config) {
       tokenManager,
       permissions,
       scheduler,
+      identity,
     };
   };
 }
