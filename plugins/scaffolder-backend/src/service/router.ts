@@ -22,7 +22,7 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { Config, JsonObject } from '@backstage/config';
+import { Config, JsonObject, JsonValue } from '@backstage/config';
 import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -30,7 +30,6 @@ import {
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
-import { JsonValue } from '@backstage/types';
 import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
@@ -48,6 +47,10 @@ import {
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
+import {
+  IdentityApi,
+  IdentityApiGetIdentityRequest,
+} from '@backstage/plugin-auth-node';
 
 /**
  * RouterOptions
@@ -60,14 +63,79 @@ export interface RouterOptions {
   reader: UrlReader;
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
+
   actions?: TemplateAction<any>[];
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  identity?: IdentityApi;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
   return entity.apiVersion === 'scaffolder.backstage.io/v1beta3';
+}
+
+/*
+ * @deprecated This function remains as the DefaultIdentityClient behaves slightly differently to the pre-existing
+ * scaffolder behaviour. Specifically if the token fails to parse, the DefaultIdentityClient will raise an error.
+ * The scaffolder did not raise an error in this case. As such we chose to allow it to behave as it did previously
+ * until someone explicitly passes an IdentityApi. When we have reasonable confidence that most backstage deployments
+ * are using the IdentityApi, we can remove this function.
+ */
+function buildDefaultIdentityClient({
+  logger,
+}: {
+  logger: Logger;
+}): IdentityApi {
+  return {
+    getIdentity: async ({ request }: IdentityApiGetIdentityRequest) => {
+      const header = request.headers.authorization;
+
+      if (!header) {
+        return undefined;
+      }
+
+      try {
+        const token = header.match(/^Bearer\s(\S+\.\S+\.\S+)$/i)?.[1];
+        if (!token) {
+          throw new TypeError('Expected Bearer with JWT');
+        }
+
+        const [_header, rawPayload, _signature] = token.split('.');
+        const payload: JsonValue = JSON.parse(
+          Buffer.from(rawPayload, 'base64').toString(),
+        );
+
+        if (
+          typeof payload !== 'object' ||
+          payload === null ||
+          Array.isArray(payload)
+        ) {
+          throw new TypeError('Malformed JWT payload');
+        }
+
+        const sub = payload.sub;
+        if (typeof sub !== 'string') {
+          throw new TypeError('Expected string sub claim');
+        }
+
+        // Check that it's a valid ref, otherwise this will throw.
+        parseEntityRef(sub);
+
+        return {
+          identity: {
+            userEntityRef: sub,
+            ownershipEntityRefs: [],
+            type: 'user',
+          },
+          token,
+        };
+      } catch (e) {
+        logger.error(`Invalid authorization header: ${stringifyError(e)}`);
+        return undefined;
+      }
+    },
+  };
 }
 
 /**
@@ -92,6 +160,10 @@ export async function createRouter(
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
+
+  const identity: IdentityApi =
+    options.identity || buildDefaultIdentityClient({ logger });
+
   const workingDirectory = await getWorkingDirectory(config, logger);
   const integrations = ScmIntegrations.fromConfig(config);
   let taskBroker: TaskBroker;
@@ -144,10 +216,12 @@ export async function createRouter(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
       async (req, res) => {
         const { namespace, kind, name } = req.params;
-        const { token } = parseBearerToken({
-          header: req.headers.authorization,
-          logger,
+
+        const userIdentity = await identity.getIdentity({
+          request: req,
         });
+        const token = userIdentity?.token;
+
         const template = await findTemplate({
           catalogApi: catalogClient,
           entityRef: { kind, namespace, name },
@@ -188,10 +262,12 @@ export async function createRouter(
       const { kind, namespace, name } = parseEntityRef(templateRef, {
         defaultKind: 'template',
       });
-      const { token, entityRef: userEntityRef } = parseBearerToken({
-        header: req.headers.authorization,
-        logger,
+
+      const callerIdentity = await identity.getIdentity({
+        request: req,
       });
+      const token = callerIdentity?.token;
+      const userEntityRef = callerIdentity?.identity.userEntityRef;
 
       const userEntity = userEntityRef
         ? await catalogClient.getEntityByRef(userEntityRef, { token })
@@ -394,10 +470,11 @@ export async function createRouter(
         throw new InputError('Input template is not a template');
       }
 
-      const { token } = parseBearerToken({
-        header: req.headers.authorization,
-        logger,
-      });
+      const token = (
+        await identity.getIdentity({
+          request: req,
+        })
+      )?.token;
 
       for (const parameters of [template.spec.parameters ?? []].flat()) {
         const result = validate(body.values, parameters);
@@ -446,52 +523,4 @@ export async function createRouter(
   app.use('/', router);
 
   return app;
-}
-
-function parseBearerToken({
-  header,
-  logger,
-}: {
-  header?: string;
-  logger: Logger;
-}): {
-  token?: string;
-  entityRef?: string;
-} {
-  if (!header) {
-    return {};
-  }
-
-  try {
-    const token = header.match(/^Bearer\s(\S+\.\S+\.\S+)$/i)?.[1];
-    if (!token) {
-      throw new TypeError('Expected Bearer with JWT');
-    }
-
-    const [_header, rawPayload, _signature] = token.split('.');
-    const payload: JsonValue = JSON.parse(
-      Buffer.from(rawPayload, 'base64').toString(),
-    );
-
-    if (
-      typeof payload !== 'object' ||
-      payload === null ||
-      Array.isArray(payload)
-    ) {
-      throw new TypeError('Malformed JWT payload');
-    }
-
-    const sub = payload.sub;
-    if (typeof sub !== 'string') {
-      throw new TypeError('Expected string sub claim');
-    }
-
-    // Check that it's a valid ref, otherwise this will throw.
-    parseEntityRef(sub);
-
-    return { entityRef: sub, token };
-  } catch (e) {
-    logger.error(`Invalid authorization header: ${stringifyError(e)}`);
-    return {};
-  }
 }

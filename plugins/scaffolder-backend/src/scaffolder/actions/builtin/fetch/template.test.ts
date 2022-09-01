@@ -15,7 +15,7 @@
  */
 
 import os from 'os';
-import { join as joinPath } from 'path';
+import { join as joinPath, sep as pathSep } from 'path';
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import {
@@ -356,6 +356,7 @@ describe('fetch:template', () => {
           fs.readFile(`${workspacePath}/target/a-binary-file.png`),
         ).resolves.toEqual(aBinaryFile);
       });
+
       it('copies files and maintains the original file permissions', async () => {
         await expect(
           fs
@@ -363,6 +364,7 @@ describe('fetch:template', () => {
             .then(fObj => fObj.mode),
         ).resolves.toEqual(parseInt('100755', 8));
       });
+
       it('copies file symlinks as-is without processing them', async () => {
         await expect(
           fs
@@ -374,6 +376,7 @@ describe('fetch:template', () => {
           fs.realpath(`${workspacePath}/target/symlink`),
         ).resolves.toBe(joinPath(workspacePath, 'target', 'a-binary-file.png'));
       });
+
       it('copies broken symlinks as-is without processing them', async () => {
         await expect(
           fs
@@ -383,7 +386,7 @@ describe('fetch:template', () => {
 
         await expect(
           fs.readlink(`${workspacePath}/target/brokenSymlink`),
-        ).resolves.toEqual('./not-a-real-file.txt');
+        ).resolves.toEqual(`.${pathSep}not-a-real-file.txt`);
       });
     });
   });
