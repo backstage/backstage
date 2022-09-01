@@ -8,7 +8,7 @@ It will help you and your team stay on top of open pull requests, hopefully redu
 
 ## Prerequisites
 
-- [GitHub Authentication Provider](https://backstage.io/docs/auth/github/provider)
+- [GitHub Authentication Provider](https://backstage.io/docs/auth/github/provider) (With `read-only` permission granted for `Pull Requests`)
 
 ## Getting started
 
