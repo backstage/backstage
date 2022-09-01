@@ -109,7 +109,7 @@ describeIfKubernetes('KubernetesContainerRunner', () => {
       args: ['echo', 'hello world'],
       logStream,
       mountDirs: {
-        '/notWorkdir/app': '/app',
+        hostdir: '/app',
       },
     };
     await expect(containerRunner.runContainer(runOptions)).rejects.toThrow(
