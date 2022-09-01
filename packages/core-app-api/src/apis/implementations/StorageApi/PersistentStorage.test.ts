@@ -15,8 +15,12 @@
  */
 
 import { PersistentStorage } from './PersistentStorage';
-import { ErrorApi, FetchApi, StorageApi } from '@backstage/core-plugin-api';
-import { DiscoveryApi } from '@backstage/plugin-permission-common';
+import {
+  ErrorApi,
+  FetchApi,
+  StorageApi,
+  DiscoveryApi,
+} from '@backstage/core-plugin-api';
 import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
 
 import { rest } from 'msw';

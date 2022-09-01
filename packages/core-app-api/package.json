@@ -35,7 +35,6 @@
     "@backstage/config": "^1.0.1",
     "@backstage/core-plugin-api": "^1.0.6-next.1",
     "@backstage/errors": "^1.1.0",
-    "@backstage/plugin-permission-common": "^0.6.4-next.0",
     "@backstage/types": "^1.0.0",
     "@backstage/version-bridge": "^1.0.1",
     "@types/prop-types": "^15.7.3",
