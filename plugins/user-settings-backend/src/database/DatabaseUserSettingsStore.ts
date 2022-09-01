@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { resolvePackagePath } from '@backstage/backend-common';
+import {
+  PluginDatabaseManager,
+  resolvePackagePath,
+} from '@backstage/backend-common';
 import { NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 
@@ -42,11 +45,19 @@ export type RawDbUserSettingsRow = {
 export class DatabaseUserSettingsStore
   implements UserSettingsStore<Knex.Transaction>
 {
-  static async create(knex: Knex): Promise<DatabaseUserSettingsStore> {
-    await knex.migrate.latest({
-      directory: migrationsDir,
-    });
-    return new DatabaseUserSettingsStore(knex);
+  static async create(options: {
+    database: PluginDatabaseManager;
+  }): Promise<DatabaseUserSettingsStore> {
+    const { database } = options;
+    const client = await database.getClient();
+
+    if (!database.migrations?.skip) {
+      await client.migrate.latest({
+        directory: migrationsDir,
+      });
+    }
+
+    return new DatabaseUserSettingsStore(client);
   }
 
   private constructor(private readonly db: Knex) {}

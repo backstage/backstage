@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PluginDatabaseManager, errorHandler } from '@backstage/backend-common';
+import { errorHandler } from '@backstage/backend-common';
 import { AuthenticationError, InputError } from '@backstage/errors';
 import {
   getBearerTokenFromAuthorizationHeader,
@@ -22,14 +22,7 @@ import {
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
 
-import { DatabaseUserSettingsStore, UserSettingsStore } from '../database';
-
-/**
- * @public
- */
-export async function createUserSettingsStore(database: PluginDatabaseManager) {
-  return await DatabaseUserSettingsStore.create(await database.getClient());
-}
+import { UserSettingsStore } from '../database';
 
 /**
  * @public
