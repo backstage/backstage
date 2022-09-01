@@ -21,6 +21,7 @@ import {
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import { BadgeBuilder, DefaultBadgeBuilder } from '../lib/BadgeBuilder';
@@ -33,12 +34,14 @@ export interface RouterOptions {
   catalog?: CatalogApi;
   config: Config;
   discovery: PluginEndpointDiscovery;
+  identity?: IdentityApi;
 }
 
 /** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
+  const { identity } = options;
   const catalog =
     options.catalog || new CatalogClient({ discoveryApi: options.discovery });
   const badgeBuilder =
@@ -48,10 +51,14 @@ export async function createRouter(
 
   router.get('/entity/:namespace/:kind/:name/badge-specs', async (req, res) => {
     const { namespace, kind, name } = req.params;
+    const user = identity
+      ? await identity.getIdentity({ request: req })
+      : undefined;
+    const token = user ? user.token : getBearerToken(req.headers.authorization);
     const entity = await catalog.getEntityByRef(
       { namespace, kind, name },
       {
-        token: getBearerToken(req.headers.authorization),
+        token,
       },
     );
     if (!entity) {
@@ -86,10 +93,17 @@ export async function createRouter(
     '/entity/:namespace/:kind/:name/badge/:badgeId',
     async (req, res) => {
       const { namespace, kind, name, badgeId } = req.params;
+      const user = identity
+        ? await identity.getIdentity({ request: req })
+        : undefined;
+      const token = user
+        ? user.token
+        : getBearerToken(req.headers.authorization);
+
       const entity = await catalog.getEntityByRef(
         { namespace, kind, name },
         {
-          token: getBearerToken(req.headers.authorization),
+          token,
         },
       );
       if (!entity) {
@@ -145,6 +159,9 @@ async function getBadgeUrl(
   return `${baseUrl}/entity/${namespace}/${kind}/${name}/badge/${badgeId}`;
 }
 
+/*
+ * @deprecated Please use identity.getIdentity({ request }) instead of this.
+ */
 function getBearerToken(header?: string): string | undefined {
   return header?.match(/Bearer\s+(\S+)/i)?.[1];
 }

@@ -51,118 +51,235 @@ describe('createRouter', () => {
     listTodos: jest.fn(),
   };
 
-  beforeAll(async () => {
-    const router = await createRouter({
-      todoService: mockService,
-    });
-    app = express().use(router).use(errorHandler());
-  });
-
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  describe('GET /todos', () => {
-    it('returns list without query', async () => {
-      mockService.listTodos.mockResolvedValueOnce(mockListBody);
-
-      const response = await request(app).get('/v1/todos');
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual(mockListBody);
-      expect(mockService.listTodos).toHaveBeenCalledWith(
-        {
-          entity: undefined,
-          offset: undefined,
-          limit: undefined,
-        },
-        { token: undefined },
-      );
+  describe('not passing identity', () => {
+    beforeAll(async () => {
+      const router = await createRouter({
+        todoService: mockService,
+      });
+      app = express().use(router).use(errorHandler());
     });
 
-    it('forwards auth token', async () => {
-      mockService.listTodos.mockResolvedValueOnce(mockListBody);
+    describe('GET /todos', () => {
+      it('returns list without query', async () => {
+        mockService.listTodos.mockResolvedValueOnce(mockListBody);
 
-      const response = await request(app)
-        .get('/v1/todos')
-        .set('Authorization', 'Bearer secret');
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual(mockListBody);
-      expect(mockService.listTodos).toHaveBeenCalledWith(
-        {
-          entity: undefined,
-          offset: undefined,
-          limit: undefined,
-        },
-        { token: 'secret' },
-      );
-    });
-
-    it('forwards pagination query', async () => {
-      mockService.listTodos.mockResolvedValueOnce(mockListBody);
-
-      const response = await request(app).get('/v1/todos?offset=5&limit=3');
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual(mockListBody);
-      expect(mockService.listTodos).toHaveBeenCalledWith(
-        {
-          entity: undefined,
-          offset: 5,
-          limit: 3,
-        },
-        { token: undefined },
-      );
-    });
-
-    it('forwards entity query', async () => {
-      mockService.listTodos.mockResolvedValueOnce(mockListBody);
-
-      const response = await request(app).get(
-        '/v1/todos?entity=component:my-component',
-      );
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual(mockListBody);
-      expect(mockService.listTodos).toHaveBeenCalledWith(
-        {
-          entity: {
-            name: 'my-component',
-            kind: 'component',
-            namespace: 'default',
+        const response = await request(app).get('/v1/todos');
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual(mockListBody);
+        expect(mockService.listTodos).toHaveBeenCalledWith(
+          {
+            entity: undefined,
+            offset: undefined,
+            limit: undefined,
           },
-          offset: undefined,
-          limit: undefined,
+          { token: undefined },
+        );
+      });
+
+      it('forwards auth token', async () => {
+        mockService.listTodos.mockResolvedValueOnce(mockListBody);
+
+        const response = await request(app)
+          .get('/v1/todos')
+          .set('Authorization', 'Bearer secret');
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual(mockListBody);
+        expect(mockService.listTodos).toHaveBeenCalledWith(
+          {
+            entity: undefined,
+            offset: undefined,
+            limit: undefined,
+          },
+          { token: 'secret' },
+        );
+      });
+
+      it('forwards pagination query', async () => {
+        mockService.listTodos.mockResolvedValueOnce(mockListBody);
+
+        const response = await request(app).get('/v1/todos?offset=5&limit=3');
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual(mockListBody);
+        expect(mockService.listTodos).toHaveBeenCalledWith(
+          {
+            entity: undefined,
+            offset: 5,
+            limit: 3,
+          },
+          { token: undefined },
+        );
+      });
+
+      it('forwards entity query', async () => {
+        mockService.listTodos.mockResolvedValueOnce(mockListBody);
+
+        const response = await request(app).get(
+          '/v1/todos?entity=component:my-component',
+        );
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual(mockListBody);
+        expect(mockService.listTodos).toHaveBeenCalledWith(
+          {
+            entity: {
+              name: 'my-component',
+              kind: 'component',
+              namespace: 'default',
+            },
+            offset: undefined,
+            limit: undefined,
+          },
+          { token: undefined },
+        );
+      });
+
+      it('rejects invalid queries', async () => {
+        await expect(
+          request(app).get('/v1/todos?entity=k:n&entity=k:n'),
+        ).resolves.toMatchObject(
+          matchErrorResponse(
+            400,
+            'InputError',
+            'entity query must be a string',
+          ),
+        );
+
+        await expect(
+          request(app).get('/v1/todos?entity=:n'),
+        ).resolves.toMatchObject(
+          matchErrorResponse(
+            400,
+            'InputError',
+            'Invalid entity ref, TypeError: Entity reference ":n" was not on the form [<kind>:][<namespace>/]<name>',
+          ),
+        );
+
+        await expect(
+          request(app).get('/v1/todos?offset=1.5'),
+        ).resolves.toMatchObject(
+          matchErrorResponse(
+            400,
+            'InputError',
+            'invalid offset query, not an integer',
+          ),
+        );
+
+        expect(mockService.listTodos).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('passing identity', () => {
+    beforeAll(async () => {
+      const router = await createRouter({
+        todoService: mockService,
+        identity: {
+          getIdentity: async _request => {
+            return {
+              token: 'secret',
+              identity: {
+                type: 'user',
+                ownershipEntityRefs: [],
+                userEntityRef: 'user:default/guest',
+              },
+            };
+          },
         },
-        { token: undefined },
-      );
+      });
+      app = express().use(router).use(errorHandler());
     });
 
-    it('rejects invalid queries', async () => {
-      await expect(
-        request(app).get('/v1/todos?entity=k:n&entity=k:n'),
-      ).resolves.toMatchObject(
-        matchErrorResponse(400, 'InputError', 'entity query must be a string'),
-      );
+    describe('GET /todos', () => {
+      it('returns list without query', async () => {
+        mockService.listTodos.mockResolvedValueOnce(mockListBody);
 
-      await expect(
-        request(app).get('/v1/todos?entity=:n'),
-      ).resolves.toMatchObject(
-        matchErrorResponse(
-          400,
-          'InputError',
-          'Invalid entity ref, TypeError: Entity reference ":n" was not on the form [<kind>:][<namespace>/]<name>',
-        ),
-      );
+        const response = await request(app).get('/v1/todos');
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual(mockListBody);
+        expect(mockService.listTodos).toHaveBeenCalledWith(
+          {
+            entity: undefined,
+            offset: undefined,
+            limit: undefined,
+          },
+          { token: 'secret' },
+        );
+      });
 
-      await expect(
-        request(app).get('/v1/todos?offset=1.5'),
-      ).resolves.toMatchObject(
-        matchErrorResponse(
-          400,
-          'InputError',
-          'invalid offset query, not an integer',
-        ),
-      );
+      it('forwards pagination query', async () => {
+        mockService.listTodos.mockResolvedValueOnce(mockListBody);
 
-      expect(mockService.listTodos).not.toHaveBeenCalled();
+        const response = await request(app).get('/v1/todos?offset=5&limit=3');
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual(mockListBody);
+        expect(mockService.listTodos).toHaveBeenCalledWith(
+          {
+            entity: undefined,
+            offset: 5,
+            limit: 3,
+          },
+          { token: 'secret' },
+        );
+      });
+
+      it('forwards entity query', async () => {
+        mockService.listTodos.mockResolvedValueOnce(mockListBody);
+
+        const response = await request(app).get(
+          '/v1/todos?entity=component:my-component',
+        );
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual(mockListBody);
+        expect(mockService.listTodos).toHaveBeenCalledWith(
+          {
+            entity: {
+              name: 'my-component',
+              kind: 'component',
+              namespace: 'default',
+            },
+            offset: undefined,
+            limit: undefined,
+          },
+          { token: 'secret' },
+        );
+      });
+
+      it('rejects invalid queries', async () => {
+        await expect(
+          request(app).get('/v1/todos?entity=k:n&entity=k:n'),
+        ).resolves.toMatchObject(
+          matchErrorResponse(
+            400,
+            'InputError',
+            'entity query must be a string',
+          ),
+        );
+
+        await expect(
+          request(app).get('/v1/todos?entity=:n'),
+        ).resolves.toMatchObject(
+          matchErrorResponse(
+            400,
+            'InputError',
+            'Invalid entity ref, TypeError: Entity reference ":n" was not on the form [<kind>:][<namespace>/]<name>',
+          ),
+        );
+
+        await expect(
+          request(app).get('/v1/todos?offset=1.5'),
+        ).resolves.toMatchObject(
+          matchErrorResponse(
+            400,
+            'InputError',
+            'invalid offset query, not an integer',
+          ),
+        );
+
+        expect(mockService.listTodos).not.toHaveBeenCalled();
+      });
     });
   });
 });

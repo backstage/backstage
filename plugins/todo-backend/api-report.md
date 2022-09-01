@@ -7,6 +7,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import express from 'express';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Logger } from 'winston';
 import { ScmIntegrations } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
@@ -52,6 +53,8 @@ export type ReadTodosResult = {
 
 // @public (undocumented)
 export interface RouterOptions {
+  // (undocumented)
+  identity?: IdentityApi;
   // (undocumented)
   todoService: TodoService;
 }

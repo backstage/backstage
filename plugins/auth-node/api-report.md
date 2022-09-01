@@ -36,7 +36,7 @@ export class DefaultIdentityClient implements IdentityApi {
   >;
 }
 
-// @public
+// @public @deprecated
 export function getBearerTokenFromAuthorizationHeader(
   authorizationHeader: unknown,
 ): string | undefined;

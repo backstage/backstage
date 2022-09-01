@@ -11,6 +11,7 @@ import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GeneratorBuilder } from '@backstage/plugin-techdocs-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { Permission } from '@backstage/plugin-permission-common';
@@ -79,6 +80,7 @@ export type OutOfTheBoxDeploymentOptions = {
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;
   buildLogTransport?: winston.transport;
+  identity?: IdentityApi;
 };
 
 // @public
@@ -90,6 +92,7 @@ export type RecommendedDeploymentOptions = {
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;
   buildLogTransport?: winston.transport;
+  identity?: IdentityApi;
 };
 
 // @public

@@ -25,6 +25,9 @@
  * without first checking that it exists.
  *
  * @public
+ *
+ * @deprecated This function has been replaced by identity.getIdentity(\{ request \}):
+ *   const \{ token \} = await identity.getIdentity(\{ request \})
  */
 export function getBearerTokenFromAuthorizationHeader(
   authorizationHeader: unknown,

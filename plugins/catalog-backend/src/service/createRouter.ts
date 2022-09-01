@@ -46,6 +46,7 @@ import { parseEntityFacetParams } from './request/parseEntityFacetParams';
 import { RefreshOptions, LocationService, RefreshService } from './types';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 
 /**
  * Options used by {@link createRouter}.
@@ -61,6 +62,7 @@ export interface RouterOptions {
   logger: Logger;
   config: Config;
   permissionIntegrationRouter?: express.Router;
+  identity?: IdentityApi;
 }
 
 /**
@@ -80,6 +82,7 @@ export async function createRouter(
     config,
     logger,
     permissionIntegrationRouter,
+    identity,
   } = options;
   const router = Router();
   router.use(express.json());
@@ -93,9 +96,13 @@ export async function createRouter(
   if (refreshService) {
     router.post('/refresh', async (req, res) => {
       const refreshOptions: RefreshOptions = req.body;
-      refreshOptions.authorizationToken = getBearerToken(
-        req.header('authorization'),
-      );
+      const user = identity
+        ? await identity.getIdentity({ request: req })
+        : undefined;
+      const token = user
+        ? user.token
+        : getBearerToken(req.headers.authorization);
+      refreshOptions.authorizationToken = token;
 
       await refreshService.refresh(refreshOptions);
       res.status(200).send();
@@ -109,11 +116,17 @@ export async function createRouter(
   if (entitiesCatalog) {
     router
       .get('/entities', async (req, res) => {
+        const user = identity
+          ? await identity.getIdentity({ request: req })
+          : undefined;
+        const token = user
+          ? user.token
+          : getBearerToken(req.headers.authorization);
         const { entities, pageInfo } = await entitiesCatalog.entities({
           filter: parseEntityFilterParams(req.query),
           fields: parseEntityTransformParams(req.query),
           pagination: parseEntityPaginationParams(req.query),
-          authorizationToken: getBearerToken(req.header('authorization')),
+          authorizationToken: token,
         });
 
         // Add a Link header to the next page
@@ -129,9 +142,16 @@ export async function createRouter(
       })
       .get('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
+        const user = identity
+          ? await identity.getIdentity({ request: req })
+          : undefined;
+        const token = user
+          ? user.token
+          : getBearerToken(req.headers.authorization);
+
         const { entities } = await entitiesCatalog.entities({
           filter: basicEntityFilter({ 'metadata.uid': uid }),
-          authorizationToken: getBearerToken(req.header('authorization')),
+          authorizationToken: token,
         });
         if (!entities.length) {
           throw new NotFoundError(`No entity with uid ${uid}`);
@@ -140,20 +160,36 @@ export async function createRouter(
       })
       .delete('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
+
+        const user = identity
+          ? await identity.getIdentity({ request: req })
+          : undefined;
+        const token = user
+          ? user.token
+          : getBearerToken(req.headers.authorization);
+
         await entitiesCatalog.removeEntityByUid(uid, {
-          authorizationToken: getBearerToken(req.header('authorization')),
+          authorizationToken: token,
         });
         res.status(204).end();
       })
       .get('/entities/by-name/:kind/:namespace/:name', async (req, res) => {
         const { kind, namespace, name } = req.params;
+
+        const user = identity
+          ? await identity.getIdentity({ request: req })
+          : undefined;
+        const token = user
+          ? user.token
+          : getBearerToken(req.headers.authorization);
+
         const { entities } = await entitiesCatalog.entities({
           filter: basicEntityFilter({
             kind: kind,
             'metadata.namespace': namespace,
             'metadata.name': name,
           }),
-          authorizationToken: getBearerToken(req.header('authorization')),
+          authorizationToken: token,
         });
         if (!entities.length) {
           throw new NotFoundError(
@@ -167,17 +203,32 @@ export async function createRouter(
         async (req, res) => {
           const { kind, namespace, name } = req.params;
           const entityRef = stringifyEntityRef({ kind, namespace, name });
+
+          const user = identity
+            ? await identity.getIdentity({ request: req })
+            : undefined;
+          const token = user
+            ? user.token
+            : getBearerToken(req.headers.authorization);
+
           const response = await entitiesCatalog.entityAncestry(entityRef, {
-            authorizationToken: getBearerToken(req.header('authorization')),
+            authorizationToken: token,
           });
           res.status(200).json(response);
         },
       )
       .get('/entity-facets', async (req, res) => {
+        const user = identity
+          ? await identity.getIdentity({ request: req })
+          : undefined;
+        const token = user
+          ? user.token
+          : getBearerToken(req.headers.authorization);
+
         const response = await entitiesCatalog.facets({
           filter: parseEntityFilterParams(req.query),
           facets: parseEntityFacetParams(req.query),
-          authorizationToken: getBearerToken(req.header('authorization')),
+          authorizationToken: token,
         });
         res.status(200).json(response);
       });
@@ -194,23 +245,40 @@ export async function createRouter(
         if (!dryRun) {
           disallowReadonlyMode(readonlyEnabled);
         }
-
+        const user = identity
+          ? await identity.getIdentity({ request: req })
+          : undefined;
+        const token = user
+          ? user.token
+          : getBearerToken(req.headers.authorization);
         const output = await locationService.createLocation(location, dryRun, {
-          authorizationToken: getBearerToken(req.header('authorization')),
+          authorizationToken: token,
         });
         res.status(201).json(output);
       })
       .get('/locations', async (req, res) => {
+        const user = identity
+          ? await identity.getIdentity({ request: req })
+          : undefined;
+        const token = user
+          ? user.token
+          : getBearerToken(req.headers.authorization);
         const locations = await locationService.listLocations({
-          authorizationToken: getBearerToken(req.header('authorization')),
+          authorizationToken: token,
         });
         res.status(200).json(locations.map(l => ({ data: l })));
       })
 
       .get('/locations/:id', async (req, res) => {
         const { id } = req.params;
+        const user = identity
+          ? await identity.getIdentity({ request: req })
+          : undefined;
+        const token = user
+          ? user.token
+          : getBearerToken(req.headers.authorization);
         const output = await locationService.getLocation(id, {
-          authorizationToken: getBearerToken(req.header('authorization')),
+          authorizationToken: token,
         });
         res.status(200).json(output);
       })
@@ -218,8 +286,15 @@ export async function createRouter(
         disallowReadonlyMode(readonlyEnabled);
 
         const { id } = req.params;
+        const user = identity
+          ? await identity.getIdentity({ request: req })
+          : undefined;
+        const token = user
+          ? user.token
+          : getBearerToken(req.headers.authorization);
+
         await locationService.deleteLocation(id, {
-          authorizationToken: getBearerToken(req.header('authorization')),
+          authorizationToken: token,
         });
         res.status(204).end();
       });
@@ -287,6 +362,9 @@ export async function createRouter(
   return router;
 }
 
+/*
+ * @deprecated Please use identity.getIdentity({ request }) instead of this.
+ */
 function getBearerToken(
   authorizationHeader: string | undefined,
 ): string | undefined {

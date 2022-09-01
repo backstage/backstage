@@ -16,6 +16,7 @@
 
 import { CompoundEntityRef, parseEntityRef } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import express from 'express';
 import Router from 'express-promise-router';
 import { TodoService } from './types';
@@ -31,13 +32,14 @@ const TODO_FIELDS = [
 /** @public */
 export interface RouterOptions {
   todoService: TodoService;
+  identity?: IdentityApi;
 }
 
 /** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { todoService } = options;
+  const { todoService, identity } = options;
 
   const router = Router();
   router.use(express.json());
@@ -60,7 +62,10 @@ export async function createRouter(
         throw new InputError(`Invalid entity ref, ${error}`);
       }
     }
-
+    const user = identity
+      ? await identity.getIdentity({ request: req })
+      : undefined;
+    const token = user ? user.token : getBearerToken(req.headers.authorization);
     const todos = await todoService.listTodos(
       {
         entity,
@@ -70,7 +75,7 @@ export async function createRouter(
         filters,
       },
       {
-        token: getBearerToken(req.headers.authorization),
+        token,
       },
     );
     res.json(todos);
@@ -165,6 +170,9 @@ export function parseFilterParam<T extends readonly string[]>(
   return filters;
 }
 
+/*
+ * @deprecated Please use identity.getIdentity({ request }) instead of this.
+ */
 function getBearerToken(header?: string): string | undefined {
   return header?.match(/Bearer\s+(\S+)/i)?.[1];
 }

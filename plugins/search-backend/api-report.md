@@ -6,6 +6,7 @@
 import { Config } from '@backstage/config';
 import { DocumentTypeInfo } from '@backstage/plugin-search-common';
 import express from 'express';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Logger } from 'winston';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -21,5 +22,6 @@ export type RouterOptions = {
   permissions: PermissionEvaluator | PermissionAuthorizer;
   config: Config;
   logger: Logger;
+  identity?: IdentityApi;
 };
 ```

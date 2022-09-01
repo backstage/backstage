@@ -22,7 +22,10 @@ import { errorHandler } from '@backstage/backend-common';
 import { ErrorResponseBody, InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { JsonObject, JsonValue } from '@backstage/types';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import {
+  getBearerTokenFromAuthorizationHeader,
+  IdentityApi,
+} from '@backstage/plugin-auth-node';
 import {
   PermissionAuthorizer,
   PermissionEvaluator,
@@ -60,6 +63,7 @@ export type RouterOptions = {
   permissions: PermissionEvaluator | PermissionAuthorizer;
   config: Config;
   logger: Logger;
+  identity?: IdentityApi;
 };
 
 const allowedLocationProtocols = ['http:', 'https:'];
@@ -70,7 +74,14 @@ const allowedLocationProtocols = ['http:', 'https:'];
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { engine: inputEngine, types, permissions, config, logger } = options;
+  const {
+    engine: inputEngine,
+    types,
+    permissions,
+    config,
+    logger,
+    identity,
+  } = options;
 
   const requestSchema = z.object({
     term: z.string().default(''),
@@ -148,10 +159,12 @@ export async function createRouter(
           query.types ? query.types.join(',') : ''
         }, pageCursor=${query.pageCursor ?? ''}`,
       );
-
-      const token = getBearerTokenFromAuthorizationHeader(
-        req.header('authorization'),
-      );
+      const user = identity
+        ? await identity.getIdentity({ request: req })
+        : undefined;
+      const token = user
+        ? user.token
+        : getBearerTokenFromAuthorizationHeader(req.headers.authorization);
 
       try {
         const resultSet = await engine?.query(query, { token });
