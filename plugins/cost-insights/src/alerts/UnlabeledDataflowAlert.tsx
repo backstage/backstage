@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { UnlabeledDataflowAlertCard } from '../components/UnlabeledDataflowAlertCard';
 import { Alert, AlertStatus, UnlabeledDataflowData } from '../types';
 
 /**
@@ -43,9 +41,5 @@ export class UnlabeledDataflowAlert implements Alert {
 
   get subtitle() {
     return 'Labels show in billing data, enabling cost insights for each workflow.';
-  }
-
-  get element() {
-    return <UnlabeledDataflowAlertCard alert={this.data} />;
   }
 }

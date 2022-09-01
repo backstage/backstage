@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { ForwardRefExoticComponent, RefAttributes } from 'react';
 import { ChangeStatistic, Maybe } from '@backstage/plugin-cost-insights-common';
 import { Duration } from './Duration';
 
@@ -35,27 +33,15 @@ import { Duration } from './Duration';
  * @public
  */
 export type Alert = {
-  title: string | JSX.Element;
-  subtitle: string | JSX.Element;
-  element?: JSX.Element;
+  title: string;
+  subtitle: string;
   status?: AlertStatus;
   url?: string;
   buttonText?: string; // Default: View Instructions
-  SnoozeForm?: Maybe<AlertForm>;
-  AcceptForm?: Maybe<AlertForm>;
-  DismissForm?: Maybe<AlertForm>;
   onSnoozed?(options: AlertOptions): Promise<Alert[]>;
   onAccepted?(options: AlertOptions): Promise<Alert[]>;
   onDismissed?(options: AlertOptions): Promise<Alert[]>;
 };
-
-/** @public */
-export type AlertForm<
-  A extends Alert = any,
-  Data = any,
-> = ForwardRefExoticComponent<
-  AlertFormProps<A, Data> & RefAttributes<HTMLFormElement>
->;
 
 /** @public */
 export interface AlertOptions<T = any> {

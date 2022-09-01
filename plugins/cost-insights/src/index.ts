@@ -28,33 +28,6 @@ export {
   CostInsightsLabelDataflowInstructionsPage,
 } from './plugin';
 export { ExampleCostInsightsClient } from './example';
-export {
-  BarChart,
-  BarChartLegend,
-  BarChartTooltip,
-  BarChartTooltipItem,
-  CostGrowth,
-  CostGrowthIndicator,
-  LegendItem,
-} from './components';
-export { MockConfigProvider, MockCurrencyProvider } from './testUtils';
-export type {
-  MockConfigProviderProps,
-  MockCurrencyProviderProps,
-} from './testUtils';
 export * from './api';
-export * from './alerts';
 export type { ConfigContextProps, CurrencyContextProps } from './hooks';
 export * from './types';
-
-export type {
-  BarChartProps,
-  BarChartLegendOptions,
-  BarChartLegendProps,
-  BarChartTooltipProps,
-  BarChartTooltipItemProps,
-  CostGrowthProps,
-  CostGrowthIndicatorProps,
-  TooltipItem,
-  LegendItemProps,
-} from './components';

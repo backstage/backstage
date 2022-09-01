@@ -29,7 +29,7 @@ import {
 import { default as CloseIcon } from '@material-ui/icons/Close';
 import { useAlertDialogStyles as useStyles } from '../../utils/styles';
 import { Alert, AlertStatus, Maybe } from '../../types';
-import { choose, formOf } from '../../utils/alerts';
+import { choose } from '../../utils/alerts';
 
 const DEFAULT_FORM_ID = 'alert-form';
 
@@ -51,16 +51,12 @@ export const AlertDialog = ({
   onSubmit,
 }: AlertDialogProps) => {
   const classes = useStyles();
-  const [isSubmitDisabled, setSubmitDisabled] = useState(true);
+  const [_isSubmitDisabled, setSubmitDisabled] = useState(true);
   const formRef = useRef<Maybe<HTMLFormElement>>(null);
 
   useEffect(() => {
     setSubmitDisabled(open);
   }, [open]);
-
-  function disableSubmit(isDisabled: boolean) {
-    setSubmitDisabled(isDisabled);
-  }
 
   function onDialogClose() {
     onClose();
@@ -86,8 +82,6 @@ export const AlertDialog = ({
       }
     },
   };
-
-  const Form = formOf(alert, status);
 
   return (
     <Dialog
@@ -131,39 +125,18 @@ export const AlertDialog = ({
           </Typography>
           <Typography color="textSecondary">{alert?.subtitle}</Typography>
         </Box>
-        {Form && (
-          <Form
-            ref={formRef}
-            alert={alert}
-            onSubmit={onSubmit}
-            disableSubmit={disableSubmit}
-          />
-        )}
       </DialogContent>
       <Divider />
       <DialogActions className={classes.actions} disableSpacing>
-        {Form ? (
-          <Button
-            type="submit"
-            color="primary"
-            variant="contained"
-            aria-label={action}
-            form={DEFAULT_FORM_ID}
-            disabled={isSubmitDisabled}
-          >
-            {capitalize(action)}
-          </Button>
-        ) : (
-          <Button
-            type="button"
-            color="primary"
-            variant="contained"
-            aria-label={action}
-            onClick={() => onSubmit(null)}
-          >
-            {capitalize(action)}
-          </Button>
-        )}
+        <Button
+          type="button"
+          color="primary"
+          variant="contained"
+          aria-label={action}
+          onClick={() => onSubmit(null)}
+        >
+          {capitalize(action)}
+        </Button>
       </DialogActions>
     </Dialog>
   );

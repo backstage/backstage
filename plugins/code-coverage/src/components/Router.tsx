@@ -15,19 +15,10 @@
  */
 
 import React from 'react';
-import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { CodeCoveragePage } from './CodeCoveragePage';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
-
-/**
- * Returns true if the given entity has code coverage enabled.
- *
- * @public
- */
-export function isCodeCoverageAvailable(entity: Entity) {
-  return Boolean(entity.metadata.annotations?.['backstage.io/code-coverage']);
-}
+import { isCodeCoverageAvailable } from './isCodeCoverageAvailable';
 
 /**
  * @public

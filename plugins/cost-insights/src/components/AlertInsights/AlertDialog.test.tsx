@@ -17,17 +17,7 @@ import React from 'react';
 import { capitalize } from '@material-ui/core';
 import { AlertDialog } from './AlertDialog';
 import { render } from '@testing-library/react';
-import { Alert, AlertFormProps, AlertStatus } from '../../types';
-
-type MockFormDataProps = AlertFormProps<Alert>;
-
-function createForm(title: string) {
-  return React.forwardRef<HTMLFormElement, MockFormDataProps>((props, ref) => (
-    <form ref={ref} onSubmit={props.onSubmit}>
-      You. {title}. Me.
-    </form>
-  ));
-}
+import { Alert, AlertStatus } from '../../types';
 
 const snoozableAlert: Alert = {
   title: 'title',
@@ -51,42 +41,36 @@ const customSnoozeAlert: Alert = {
   title: 'title',
   subtitle: 'subtitle',
   onSnoozed: jest.fn(),
-  SnoozeForm: createForm('Snooze'),
 };
 
 const customDismissAlert: Alert = {
   title: 'title',
   subtitle: 'subtitle',
   onDismissed: jest.fn(),
-  DismissForm: createForm('Dismiss'),
 };
 
 const customAcceptAlert: Alert = {
   title: 'title',
   subtitle: 'test-subtitle',
   onAccepted: jest.fn(),
-  AcceptForm: createForm('Accept'),
 };
 
 const nullAcceptAlert: Alert = {
   title: 'title',
   subtitle: 'test-subtitle',
   onAccepted: jest.fn(),
-  AcceptForm: null,
 };
 
 const nullDismissAlert: Alert = {
   title: 'title',
   subtitle: 'test-subtitle',
   onDismissed: jest.fn(),
-  DismissForm: null,
 };
 
 const nullSnoozeAlert: Alert = {
   title: 'title',
   subtitle: 'test-subtitle',
   onSnoozed: jest.fn(),
-  SnoozeForm: null,
 };
 
 describe('<AlertDialog />', () => {

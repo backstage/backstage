@@ -54,8 +54,8 @@ describe('<AlertInsightsSection/>', () => {
       <AlertInsightsSection
         alert={{
           ...mockAlert,
-          title: <span>Foo</span>,
-          subtitle: <span>Bar</span>,
+          title: '',
+          subtitle: '',
         }}
         number={1}
         onSnooze={jest.fn()}

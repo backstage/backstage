@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Alert, AlertForm, AlertStatus, Maybe } from '../types';
-import { AlertAcceptForm, AlertDismissForm, AlertSnoozeForm } from '../forms';
+import { Alert, AlertStatus, Maybe } from '../types';
 
 const createAlertHandler = (status?: AlertStatus) => (alert: Alert) =>
   alert.status === status;
@@ -39,68 +38,13 @@ export const isAcceptEnabled = createAlertEventHandler('onAccepted');
 export const isDismissEnabled = createAlertEventHandler('onDismissed');
 
 const createFormEnabledHandler =
-  (Form: 'SnoozeForm' | 'AcceptForm' | 'DismissForm') =>
-  (alert: Maybe<Alert>): boolean => {
-    if (!alert) return false;
-    if (alert[Form] === null) return false;
-    switch (Form) {
-      case 'SnoozeForm':
-        return isSnoozeEnabled(alert);
-      case 'AcceptForm':
-        return isAcceptEnabled(alert);
-      case 'DismissForm':
-        return isDismissEnabled(alert);
-      default:
-        return false;
-    }
+  (_Form: 'SnoozeForm' | 'AcceptForm' | 'DismissForm') =>
+  (_alert: Maybe<Alert>): boolean => {
+    return false;
   };
 export const isSnoozeFormEnabled = createFormEnabledHandler('SnoozeForm');
 export const isAcceptFormEnabled = createFormEnabledHandler('AcceptForm');
 export const isDismissFormEnabled = createFormEnabledHandler('DismissForm');
-
-/**
- * Utility for determining if a form is disabled.
- * When a form is disabled, the dialog button's type should convert from submit to button.
- * @param alert
- * @param status
- */
-export const isFormDisabled = (
-  alert: Maybe<Alert>,
-  status: Maybe<AlertStatus>,
-): boolean => {
-  switch (status) {
-    case AlertStatus.Snoozed:
-      return alert?.SnoozeForm === null;
-    case AlertStatus.Accepted:
-      return alert?.AcceptForm === null;
-    case AlertStatus.Dismissed:
-      return alert?.DismissForm === null;
-    default:
-      return false;
-  }
-};
-
-export function formOf(
-  alert: Maybe<Alert>,
-  status: Maybe<AlertStatus>,
-): Maybe<AlertForm> {
-  switch (status) {
-    case AlertStatus.Snoozed: {
-      const SnoozeForm = alert?.SnoozeForm ?? AlertSnoozeForm;
-      return isSnoozeFormEnabled(alert) ? SnoozeForm : null;
-    }
-    case AlertStatus.Accepted: {
-      const AcceptForm = alert?.AcceptForm ?? AlertAcceptForm;
-      return isAcceptFormEnabled(alert) ? AcceptForm : null;
-    }
-    case AlertStatus.Dismissed: {
-      const DismissForm = alert?.DismissForm ?? AlertDismissForm;
-      return isDismissFormEnabled(alert) ? DismissForm : null;
-    }
-    default:
-      return null;
-  }
-}
 
 /**
  * Utility for choosing from a fixed set of values for a given alert status.

@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import pluralize from 'pluralize';
-import { KubernetesMigrationAlertCard } from '../components';
 import { CostInsightsApi } from '../../api';
 import {
   Alert,
-  AlertForm,
   AlertOptions,
   AlertStatus,
   AlertSnoozeFormData,
   ChangeStatistic,
   Entity,
 } from '../../types';
-import {
-  KubernetesMigrationDismissForm,
-  KubernetesMigrationDismissFormData,
-} from '../forms';
-import { Lifecycle } from '@backstage/core-components';
+import { KubernetesMigrationDismissFormData } from '../forms';
 
 export interface KubernetesMigrationData {
   startDate: string;
@@ -77,10 +69,6 @@ export class KubernetesMigrationAlert implements KubernetesMigrationApi {
   // Dialog will not render a form if form property set to null.
   AcceptForm = null;
   // Overrides default Dismiss form with a custom form component.
-  DismissForm: AlertForm<
-    KubernetesMigrationAlert,
-    KubernetesMigrationDismissFormData
-  > = KubernetesMigrationDismissForm;
 
   constructor(api: CostInsightsApi, data: KubernetesMigrationData) {
     this.api = api;
@@ -88,30 +76,7 @@ export class KubernetesMigrationAlert implements KubernetesMigrationApi {
   }
 
   get title() {
-    return (
-      <span>
-        Consider migrating{' '}
-        {pluralize('service', this.data.services.length, true)} to Kubernetes{' '}
-        <Lifecycle shorthand />
-      </span>
-    );
-  }
-
-  get element() {
-    const subheader = `${pluralize(
-      'Service',
-      this.data.services.length,
-      true,
-    )}, sorted by cost`;
-    return (
-      <KubernetesMigrationAlertCard
-        data={this.data}
-        title="Migrate to Kubernetes"
-        subheader={subheader}
-        currentProduct="Compute Engine"
-        comparedProduct="Kubernetes"
-      />
-    );
+    return 'kk';
   }
 
   /* Fires when the onSubmit event is raised on a Dismiss form. Displays custom dismiss form. */

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { ProjectGrowthAlertCard } from '../components/ProjectGrowthAlertCard';
 import { Alert, ProjectGrowthData } from '../types';
 
 /**
@@ -42,9 +40,5 @@ export class ProjectGrowthAlert implements Alert {
 
   get subtitle() {
     return 'Cost growth outpacing business growth is unsustainable long-term.';
-  }
-
-  get element() {
-    return <ProjectGrowthAlertCard alert={this.data} />;
   }
 }

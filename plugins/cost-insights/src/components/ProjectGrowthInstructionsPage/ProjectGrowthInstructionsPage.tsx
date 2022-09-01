@@ -19,47 +19,12 @@ import { DateTime } from 'luxon';
 import { Box, Typography } from '@material-ui/core';
 import { AlertInstructionsLayout } from '../AlertInstructionsLayout';
 import { ProductInsightsChart } from '../ProductInsightsCard';
-import {
-  Alert,
-  DEFAULT_DATE_FORMAT,
-  Duration,
-  Entity,
-  Product,
-  ProjectGrowthData,
-} from '../../types';
-import { ProjectGrowthAlert } from '../../alerts';
+import { DEFAULT_DATE_FORMAT, Duration, Entity, Product } from '../../types';
 import { InfoCard } from '@backstage/core-components';
 
 const today = DateTime.now().toFormat(DEFAULT_DATE_FORMAT);
 
 export const ProjectGrowthInstructionsPage = () => {
-  const alertData: ProjectGrowthData = {
-    project: 'example-project',
-    periodStart: 'Q1 2020',
-    periodEnd: 'Q2 2020',
-    aggregation: [60000, 120000],
-    change: {
-      ratio: 1,
-      amount: 60000,
-    },
-    products: [
-      {
-        id: 'Compute Engine',
-        aggregation: [58000, 118000],
-      },
-      {
-        id: 'Cloud Dataflow',
-        aggregation: [1200, 1500],
-      },
-      {
-        id: 'Cloud Storage',
-        aggregation: [800, 500],
-      },
-    ],
-  };
-
-  const projectGrowthAlert: Alert = new ProjectGrowthAlert(alertData);
-
   const product: Product = {
     kind: 'ComputeEngine',
     name: 'Compute Engine',
@@ -154,9 +119,6 @@ export const ProjectGrowthInstructionsPage = () => {
           For projects meeting the alert threshold, Cost Insights shows a cost
           comparison of cloud products over the examined time period:
         </Typography>
-        <Box mt={2} mb={2}>
-          {projectGrowthAlert.element}
-        </Box>
         <Typography paragraph>
           This allows you to quickly see which cloud products contributed to the
           growth in cloud costs.

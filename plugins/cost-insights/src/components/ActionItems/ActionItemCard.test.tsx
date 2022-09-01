@@ -50,8 +50,8 @@ describe('<ActionItemCard/>', () => {
         <ActionItemCard
           alert={{
             ...alert,
-            title: <span>Foo</span>,
-            subtitle: <span>Bar</span>,
+            title: '',
+            subtitle: '',
           }}
           avatar={<div>1</div>}
         />

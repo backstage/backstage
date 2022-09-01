@@ -19,8 +19,8 @@ import { rootRouteRef } from './routes';
 import {
   createApiFactory,
   createPlugin,
-  createRoutableExtension,
   discoveryApiRef,
+  createComponentExtension,
 } from '@backstage/core-plugin-api';
 
 /**
@@ -46,9 +46,10 @@ export const codeCoveragePlugin = createPlugin({
  * @public
  */
 export const EntityCodeCoverageContent = codeCoveragePlugin.provide(
-  createRoutableExtension({
+  createComponentExtension({
     name: 'EntityCodeCoverageContent',
-    component: () => import('./components/Router').then(m => m.Router),
-    mountPoint: rootRouteRef,
+    component: {
+      lazy: () => import('./components/Router').then(m => m.Router),
+    },
   }),
 );

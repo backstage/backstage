@@ -95,7 +95,6 @@ export const AlertInsightsSection = ({
           )}
         </Box>
       )}
-      {alert.element}
     </Box>
   );
 };

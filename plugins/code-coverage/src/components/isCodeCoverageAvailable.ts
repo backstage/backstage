@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-export * from './KubernetesMigrationAlertCard';
+import { Entity } from '@backstage/catalog-model';
+
+export function isCodeCoverageAvailable(entity: Entity) {
+  return Boolean(entity.metadata.annotations?.['backstage.io/code-coverage']);
+}
