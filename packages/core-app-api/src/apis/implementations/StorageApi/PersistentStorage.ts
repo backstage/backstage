@@ -182,7 +182,7 @@ export class PersistentStorage implements StorageApi {
     const baseUrl = await this.discoveryApi.getBaseUrl('user-settings');
     const encodedNamespace = encodeURIComponent(this.namespace);
     const encodedKey = encodeURIComponent(key);
-    return `${baseUrl}/${encodedNamespace}/${encodedKey}`;
+    return `${baseUrl}/buckets/${encodedNamespace}/${encodedKey}`;
   }
 
   private async notifyChanges<T>(snapshot: StorageValueSnapshot<T>) {
