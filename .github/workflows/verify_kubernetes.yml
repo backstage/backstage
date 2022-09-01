@@ -1,10 +1,10 @@
-name: KubernetesContainerRunner
+name: E2E Test Kubernetes
 on:
   pull_request:
     paths:
       - 'yarn.lock'
       - '.github/workflows/verify_kubernetes.yml'
-      - 'packages/backend-common/src/util/**'
+      - 'packages/backend-common/src/**'
 
 jobs:
   verify:
@@ -16,12 +16,10 @@ jobs:
 
     env:
       CI: true
-      KUBERNETES: true
+      KUBERNETES_TESTS: true
 
     steps:
       - uses: actions/checkout@v3
-      - name: fetch branch master
-        run: git fetch origin master
 
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -37,6 +35,6 @@ jobs:
       - name: bootstrap kind
         uses: helm/kind-action@v1.3.0
 
-      - name: techdocs-cli kubernetes test
+      - name: kubernetes test
         working-directory: packages/backend-common
-        run: yarn test:kubernetes:ci
+        run: yarn test:kubernetes

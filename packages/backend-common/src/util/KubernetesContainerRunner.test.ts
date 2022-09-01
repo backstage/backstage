@@ -26,7 +26,9 @@ import {
 import { RunContainerOptions } from './ContainerRunner';
 import { PassThrough } from 'stream';
 
-const describeIfKubernetes = Boolean(process.env.KUBERNETES)
+// This ensures E2E tests that require a Kubernetes cluster are only run
+// where KUBERNETES_TESTS environment variable is true
+const describeIfKubernetes = Boolean(process.env.KUBERNETES_TESTS)
   ? describe
   : describe.skip;
 
