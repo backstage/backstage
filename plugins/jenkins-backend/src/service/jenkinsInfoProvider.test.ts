@@ -55,6 +55,9 @@ describe('JenkinsConfig', () => {
               baseUrl: 'https://jenkins.example.com',
               username: 'backstage - bot',
               apiKey: '123456789abcdef0123456789abcedf012',
+              headers: {
+                myHeader: 'my-value',
+              },
             },
           ],
         },
@@ -67,6 +70,9 @@ describe('JenkinsConfig', () => {
         baseUrl: 'https://jenkins.example.com',
         username: 'backstage - bot',
         apiKey: '123456789abcdef0123456789abcedf012',
+        headers: {
+          myHeader: 'my-value',
+        },
       },
     ]);
   });
@@ -197,6 +203,9 @@ describe('DefaultJenkinsInfoProvider', () => {
           baseUrl: 'https://jenkins.example.com',
           username: 'backstage - bot',
           apiKey: '123456789abcdef0123456789abcedf012',
+          extraRequestHeaders: {
+            ['extra-header']: 'extra-value',
+          },
         },
       },
       {
@@ -218,6 +227,7 @@ describe('DefaultJenkinsInfoProvider', () => {
       headers: {
         Authorization:
           'Basic YmFja3N0YWdlIC0gYm90OjEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNlZGYwMTI=',
+        'extra-header': 'extra-value',
       },
       jobFullName: 'teamA/artistLookup-build',
     });

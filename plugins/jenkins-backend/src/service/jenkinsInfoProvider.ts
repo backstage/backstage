@@ -53,6 +53,10 @@ export interface JenkinsInstanceConfig {
   username: string;
   apiKey: string;
   crumbIssuer?: boolean;
+  /**
+   * Extra headers to send to Jenkins instance
+   */
+  extraRequestHeaders?: Record<string, string>;
 }
 
 /**
@@ -74,12 +78,13 @@ export class JenkinsConfig {
     const jenkinsConfig = config.getConfig('jenkins');
 
     // load all named instance config
-    const namedInstanceConfig =
+    const namedInstanceConfig: JenkinsInstanceConfig[] =
       jenkinsConfig.getOptionalConfigArray('instances')?.map(c => ({
         name: c.getString('name'),
         baseUrl: c.getString('baseUrl'),
         username: c.getString('username'),
         apiKey: c.getString('apiKey'),
+        headers: c.getOptional('headers'),
         crumbIssuer: c.getOptionalBoolean('crumbIssuer'),
       })) || [];
 
@@ -93,6 +98,9 @@ export class JenkinsConfig {
     const username = jenkinsConfig.getOptionalString('username');
     const apiKey = jenkinsConfig.getOptionalString('apiKey');
     const crumbIssuer = jenkinsConfig.getOptionalBoolean('crumbIssuer');
+    const extraRequestHeaders = jenkinsConfig.getOptional<
+      JenkinsInstanceConfig['extraRequestHeaders']
+    >('extraRequestHeaders');
 
     if (hasNamedDefault && (baseUrl || username || apiKey)) {
       throw new Error(
@@ -109,19 +117,16 @@ export class JenkinsConfig {
     }
 
     if (unnamedAllPresent) {
-      const unnamedInstanceConfig = [
-        { name: DEFAULT_JENKINS_NAME, baseUrl, username, apiKey, crumbIssuer },
-      ] as {
-        name: string;
-        baseUrl: string;
-        username: string;
-        apiKey: string;
-        crumbIssuer: boolean;
-      }[];
-
       return new JenkinsConfig([
         ...namedInstanceConfig,
-        ...unnamedInstanceConfig,
+        {
+          name: DEFAULT_JENKINS_NAME,
+          baseUrl,
+          username,
+          apiKey,
+          extraRequestHeaders,
+          crumbIssuer,
+        },
       ]);
     }
 
@@ -243,6 +248,7 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
       baseUrl: instanceConfig.baseUrl,
       headers: {
         Authorization: `Basic ${creds}`,
+        ...instanceConfig.extraRequestHeaders,
       },
       jobFullName,
       crumbIssuer: instanceConfig.crumbIssuer,
