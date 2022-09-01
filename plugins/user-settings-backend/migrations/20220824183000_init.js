@@ -22,11 +22,11 @@ exports.up = async function up(knex) {
     table.comment('The table of user related settings');
 
     table
-      .text('user_entity_ref')
+      .string('user_entity_ref')
       .notNullable()
       .comment('The entityRef of the user');
-    table.text('bucket').notNullable().comment('Name of the bucket');
-    table.text('key').notNullable().comment('Key of a bucket value');
+    table.string('bucket').notNullable().comment('Name of the bucket');
+    table.string('key').notNullable().comment('Key of a bucket value');
     table.text('value').notNullable().comment('The value');
 
     table.primary(['user_entity_ref', 'bucket', 'key']);
