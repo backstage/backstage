@@ -2,7 +2,6 @@
   "name": "@backstage/release-manifests",
   "description": "Helper library for receiving release manifests",
   "version": "0.0.6-next.0",
-  "private": false,
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
@@ -37,9 +36,9 @@
   },
   "devDependencies": {
     "@backstage/test-utils": "^1.2.0-next.1",
-    "msw": "^0.45.0",
     "@types/jest": "^26.0.7",
-    "@types/node": "^16.0.0"
+    "@types/node": "^16.0.0",
+    "msw": "^0.46.0"
   },
   "files": [
     "dist"

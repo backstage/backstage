@@ -4,7 +4,6 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
-  "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -48,7 +47,7 @@
     "@types/jest": "^26.0.7",
     "@types/node": "^16.11.26",
     "cross-fetch": "^3.1.5",
-    "msw": "^0.45.0"
+    "msw": "^0.46.0"
   },
   "files": [
     "dist",

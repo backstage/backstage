@@ -101,7 +101,7 @@ export async function command(opts: OptionValues): Promise<void> {
     if (resultText) {
       console.log();
       console.log(chalk.red(`Lint failed in ${relativeDir}:`));
-      console.log(resultText.trimLeft());
+      console.log(resultText.trimStart());
 
       failed = true;
     }

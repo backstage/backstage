@@ -2,7 +2,6 @@
   "name": "@backstage/app-defaults",
   "description": "Provides the default wiring of a Backstage App",
   "version": "1.0.6-next.1",
-  "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -33,8 +32,8 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/core-components": "^0.11.1-next.1",
     "@backstage/core-app-api": "^1.1.0-next.1",
+    "@backstage/core-components": "^0.11.1-next.1",
     "@backstage/core-plugin-api": "^1.0.6-next.1",
     "@backstage/plugin-permission-react": "^0.4.5-next.1",
     "@backstage/theme": "^0.2.16",

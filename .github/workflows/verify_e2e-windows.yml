@@ -48,7 +48,7 @@ jobs:
       - name: setup chrome
         uses: browser-actions/setup-chrome@latest
       - name: yarn install
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - run: yarn tsc
       - run: yarn backstage-cli repo build

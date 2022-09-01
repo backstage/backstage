@@ -22,6 +22,7 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
+    "@apollo/explorer": "^1.1.1",
     "@backstage/core-components": "^0.11.1-next.1",
     "@backstage/core-plugin-api": "^1.0.6-next.1",
     "@backstage/theme": "^0.2.16",
@@ -29,7 +30,6 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "react-use": "^17.2.4",
-    "@apollo/explorer": "^1.1.1",
     "use-deep-compare-effect": "^1.8.1"
   },
   "peerDependencies": {
@@ -45,8 +45,8 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/jest": "*",
     "@types/node": "*",
-    "msw": "^0.45.0",
-    "cross-fetch": "^3.1.5"
+    "cross-fetch": "^3.1.5",
+    "msw": "^0.46.0"
   },
   "files": [
     "dist"

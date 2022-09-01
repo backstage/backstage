@@ -2,7 +2,6 @@
   "name": "@backstage/theme",
   "description": "material-ui theme for use with Backstage.",
   "version": "0.2.16",
-  "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",

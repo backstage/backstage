@@ -56,7 +56,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: yarn install
         if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       # End of yarn setup
 
       - name: create-app

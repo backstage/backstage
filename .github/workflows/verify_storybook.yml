@@ -39,7 +39,7 @@ jobs:
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
       - name: storybook yarn install
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
         working-directory: storybook
 
       - run: yarn build-storybook

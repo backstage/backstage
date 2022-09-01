@@ -5,7 +5,6 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
-  "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
@@ -60,7 +59,7 @@
     "@backstage/cli": "^0.19.0-next.1",
     "@backstage/plugin-search-backend-node": "1.0.2-next.1",
     "@types/dockerode": "^3.3.0",
-    "msw": "^0.45.0",
+    "msw": "^0.46.0",
     "supertest": "^6.1.3"
   },
   "files": [
