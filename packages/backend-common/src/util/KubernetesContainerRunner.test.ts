@@ -102,18 +102,17 @@ describeIfKubernetes('KubernetesContainerRunner', () => {
       },
     };
     const containerRunner = new KubernetesContainerRunner(options);
-    const hostDir = '/notWorkdir/app';
     const logStream = new PassThrough();
     const runOptions: RunContainerOptions = {
       imageName: 'golang:1.17',
       args: ['echo', 'hello world'],
       logStream,
       mountDirs: {
-        hostdir: '/app',
+        '/notWorkdir/app': '/app',
       },
     };
     await expect(containerRunner.runContainer(runOptions)).rejects.toThrow(
-      `Mounted '${hostDir}' dir should be subdirectories of '${
+      `Mounted /notWorkdir/app dir should be subdirectories of '${
         options!.mountBase!.basePath
       }`,
     );
