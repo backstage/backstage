@@ -63,7 +63,7 @@ export async function createRouter<T>(
   };
 
   // get all user related settings
-  router.get('/', async (req, res) => {
+  router.get('/buckets', async (req, res) => {
     const userEntityRef = await getUserEntityRef(req);
 
     const settings = await userSettingsStore.transaction(tx =>
@@ -74,7 +74,7 @@ export async function createRouter<T>(
   });
 
   // remove all user related settings
-  router.delete('/', async (req, res) => {
+  router.delete('/buckets', async (req, res) => {
     const userEntityRef = await getUserEntityRef(req);
 
     await userSettingsStore.transaction(tx =>
@@ -85,7 +85,7 @@ export async function createRouter<T>(
   });
 
   // get a single bucket
-  router.get('/:bucket', async (req, res) => {
+  router.get('/buckets/:bucket', async (req, res) => {
     const userEntityRef = await getUserEntityRef(req);
     const { bucket } = req.params;
 
@@ -97,7 +97,7 @@ export async function createRouter<T>(
   });
 
   // delete a whole bucket
-  router.delete('/:bucket', async (req, res) => {
+  router.delete('/buckets/:bucket', async (req, res) => {
     const userEntityRef = await getUserEntityRef(req);
     const { bucket } = req.params;
 
@@ -109,7 +109,7 @@ export async function createRouter<T>(
   });
 
   // get a single value
-  router.get('/:bucket/:key', async (req, res) => {
+  router.get('/buckets/:bucket/:key', async (req, res) => {
     const userEntityRef = await getUserEntityRef(req);
     const { bucket, key } = req.params;
 
@@ -121,7 +121,7 @@ export async function createRouter<T>(
   });
 
   // set a single value
-  router.put('/:bucket/:key', async (req, res) => {
+  router.put('/buckets/:bucket/:key', async (req, res) => {
     const userEntityRef = await getUserEntityRef(req);
     const { bucket, key } = req.params;
     const { value } = req.body;
@@ -144,7 +144,7 @@ export async function createRouter<T>(
   });
 
   // get a single value
-  router.delete('/:bucket/:key', async (req, res) => {
+  router.delete('/buckets/:bucket/:key', async (req, res) => {
     const userEntityRef = await getUserEntityRef(req);
     const { bucket, key } = req.params;
 

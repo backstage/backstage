@@ -52,7 +52,7 @@ describe('Persistent Storage API', () => {
 
   beforeEach(() => {
     server.use(
-      rest.get(`${mockBaseUrl}/`, async (_req, res, ctx) => {
+      rest.get(`${mockBaseUrl}/buckets/`, async (_req, res, ctx) => {
         return res(ctx.json([]));
       }),
     );
@@ -64,9 +64,12 @@ describe('Persistent Storage API', () => {
     const storage = createPersistentStorage();
 
     server.use(
-      rest.get(`${mockBaseUrl}/:bucket/:key`, async (_req, res, ctx) => {
-        return res(ctx.json({ value: 'a' }));
-      }),
+      rest.get(
+        `${mockBaseUrl}/buckets/:bucket/:key`,
+        async (_req, res, ctx) => {
+          return res(ctx.json({ value: 'a' }));
+        },
+      ),
     );
 
     expect(storage.snapshot('myfakekey').value).toBeUndefined();
@@ -82,7 +85,7 @@ describe('Persistent Storage API', () => {
     const dummyValue = 'a';
 
     server.use(
-      rest.put(`${mockBaseUrl}/:bucket/:key`, async (req, res, ctx) => {
+      rest.put(`${mockBaseUrl}/buckets/:bucket/:key`, async (req, res, ctx) => {
         const body = await req.json();
         const data = { value: JSON.stringify(dummyValue) };
         expect(body).toEqual(data);
@@ -102,7 +105,7 @@ describe('Persistent Storage API', () => {
     };
 
     server.use(
-      rest.put(`${mockBaseUrl}/:bucket/:key`, async (req, res, ctx) => {
+      rest.put(`${mockBaseUrl}/buckets/:bucket/:key`, async (req, res, ctx) => {
         const body = await req.json();
         const data = { value: JSON.stringify(dummyValue) };
         expect(body).toEqual(data);
@@ -122,7 +125,7 @@ describe('Persistent Storage API', () => {
     const mockData = { hello: 'im a great new value' };
 
     server.use(
-      rest.put(`${mockBaseUrl}/:bucket/:key`, async (req, res, ctx) => {
+      rest.put(`${mockBaseUrl}/buckets/:bucket/:key`, async (req, res, ctx) => {
         const body = await req.json();
         const data = { value: JSON.stringify(mockData) };
         expect(body).toEqual(data);
@@ -162,9 +165,12 @@ describe('Persistent Storage API', () => {
     const selectedKeyNextHandler = jest.fn();
 
     server.use(
-      rest.delete(`${mockBaseUrl}/:bucket/:key`, async (_req, res, ctx) => {
-        return res(ctx.status(204));
-      }),
+      rest.delete(
+        `${mockBaseUrl}/buckets/:bucket/:key`,
+        async (_req, res, ctx) => {
+          return res(ctx.status(204));
+        },
+      ),
     );
 
     await new Promise<void>(resolve => {
@@ -196,7 +202,7 @@ describe('Persistent Storage API', () => {
     const selectedKeyNextHandler = jest.fn();
 
     server.use(
-      rest.put(`${mockBaseUrl}/:bucket/:key`, async (req, res, ctx) => {
+      rest.put(`${mockBaseUrl}/buckets/:bucket/:key`, async (req, res, ctx) => {
         const { bucket, key } = req.params;
         const { value } = await req.json();
 
@@ -205,7 +211,7 @@ describe('Persistent Storage API', () => {
 
         return res(ctx.json({ value }));
       }),
-      rest.get(`${mockBaseUrl}/:bucket/:key`, async (req, res, ctx) => {
+      rest.get(`${mockBaseUrl}/buckets/:bucket/:key`, async (req, res, ctx) => {
         const { bucket, key } = req.params;
 
         expect(bucket).toEqual('default.profile/something');
@@ -253,7 +259,7 @@ describe('Persistent Storage API', () => {
     });
 
     server.use(
-      rest.get(`${mockBaseUrl}/:bucket/:key`, async (req, res, ctx) => {
+      rest.get(`${mockBaseUrl}/buckets/:bucket/:key`, async (req, res, ctx) => {
         const { bucket, key } = req.params;
 
         expect(bucket).toEqual('Test.Mock.Thing');
@@ -290,9 +296,12 @@ describe('Persistent Storage API', () => {
     const data = { foo: 'bar', baz: [{ foo: 'bar' }] };
 
     server.use(
-      rest.get(`${mockBaseUrl}/:bucket/:key`, async (_req, res, ctx) => {
-        return res(ctx.text(JSON.stringify({ value: JSON.stringify(data) })));
-      }),
+      rest.get(
+        `${mockBaseUrl}/buckets/:bucket/:key`,
+        async (_req, res, ctx) => {
+          return res(ctx.text(JSON.stringify({ value: JSON.stringify(data) })));
+        },
+      ),
     );
 
     await new Promise<void>(resolve => {
