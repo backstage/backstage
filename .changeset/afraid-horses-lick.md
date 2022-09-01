@@ -1,0 +1,54 @@
+---
+'@backstage/app-defaults': patch
+'@backstage/core-app-api': patch
+'@backstage/core-components': patch
+'@backstage/core-plugin-api': patch
+'@backstage/dev-utils': patch
+'@backstage/test-utils': patch
+'@backstage/plugin-adr': patch
+'@backstage/plugin-airbrake': patch
+'@backstage/plugin-allure': patch
+'@backstage/plugin-api-docs': patch
+'@backstage/plugin-azure-devops': patch
+'@backstage/plugin-badges': patch
+'@backstage/plugin-bazaar': patch
+'@backstage/plugin-catalog-graph': patch
+'@backstage/plugin-catalog-import': patch
+'@backstage/plugin-catalog-react': patch
+'@backstage/plugin-catalog': patch
+'@backstage/plugin-circleci': patch
+'@backstage/plugin-cloudbuild': patch
+'@backstage/plugin-code-climate': patch
+'@backstage/plugin-code-coverage': patch
+'@backstage/plugin-codescene': patch
+'@backstage/plugin-cost-insights': patch
+'@backstage/plugin-explore': patch
+'@backstage/plugin-gcp-projects': patch
+'@backstage/plugin-git-release-manager': patch
+'@backstage/plugin-github-actions': patch
+'@backstage/plugin-gitops-profiles': patch
+'@backstage/plugin-graphiql': patch
+'@backstage/plugin-home': patch
+'@backstage/plugin-jenkins': patch
+'@backstage/plugin-kafka': patch
+'@backstage/plugin-kubernetes': patch
+'@backstage/plugin-lighthouse': patch
+'@backstage/plugin-org': patch
+'@backstage/plugin-pagerduty': patch
+'@backstage/plugin-permission-react': patch
+'@backstage/plugin-rollbar': patch
+'@backstage/plugin-scaffolder': patch
+'@backstage/plugin-search-react': patch
+'@backstage/plugin-search': patch
+'@backstage/plugin-sentry': patch
+'@backstage/plugin-shortcuts': patch
+'@backstage/plugin-splunk-on-call': patch
+'@backstage/plugin-tech-insights': patch
+'@backstage/plugin-techdocs-addons-test-utils': patch
+'@backstage/plugin-techdocs-react': patch
+'@backstage/plugin-techdocs': patch
+'@backstage/plugin-todo': patch
+'@backstage/plugin-user-settings': patch
+---
+
+Updated React Router dependencies to be peer dependencies.

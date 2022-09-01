@@ -8,11 +8,11 @@
     "build-storybook": "build-storybook --output-dir dist"
   },
   "dependencies": {
-    "swc-loader": "^0.2.3",
+    "@swc/core": "^1.2.239",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-hot-loader": "^4.13.0",
-    "@swc/core": "^1.2.239"
+    "swc-loader": "^0.2.3"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^6.5.9",
@@ -32,9 +32,9 @@
     "webpack": "^5.73.0"
   },
   "peerDependencies": {
-    "@backstage/core-app-api": "link:../packages/core-app-api",
-    "@backstage/core-plugin-api": "link:../packages/core-plugin-api",
-    "@backstage/test-utils": "link:../packages/test-utils",
-    "@backstage/theme": "link:../packages/theme"
+    "@backstage/core-app-api": "*",
+    "@backstage/core-plugin-api": "*",
+    "@backstage/test-utils": "*",
+    "@backstage/theme": "*"
   }
 }

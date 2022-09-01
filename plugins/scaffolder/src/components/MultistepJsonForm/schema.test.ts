@@ -347,6 +347,128 @@ describe('transformSchemaToProps', () => {
     });
   });
 
+  it('transforms schema with complex dependencies', () => {
+    const inputSchema = {
+      type: 'object',
+      properties: {
+        conditional: {
+          title: 'Person',
+          type: 'object',
+          properties: {
+            'Do you have any pets?': {
+              type: 'string',
+              enum: ['No', 'Yes: One', 'Yes: More than one'],
+              default: 'No',
+              'ui:widget': 'radio',
+            },
+          },
+          required: ['Do you have any pets?'],
+          dependencies: {
+            'Do you have any pets?': {
+              oneOf: [
+                {
+                  properties: {
+                    'Do you have any pets?': {
+                      enum: ['No'],
+                    },
+                  },
+                },
+                {
+                  properties: {
+                    'Do you have any pets?': {
+                      enum: ['Yes: One'],
+                    },
+                    'How old is your pet?': {
+                      type: 'number',
+                    },
+                  },
+                  required: ['How old is your pet?'],
+                },
+                {
+                  properties: {
+                    'Do you have any pets?': {
+                      enum: ['Yes: More than one'],
+                    },
+                    'Do you want to get rid of any?': {
+                      type: 'boolean',
+                    },
+                  },
+                  required: ['Do you want to get rid of any?'],
+                },
+              ],
+            },
+          },
+        },
+      },
+    };
+    const expectedSchema = {
+      type: 'object',
+      properties: {
+        conditional: {
+          title: 'Person',
+          type: 'object',
+          properties: {
+            'Do you have any pets?': {
+              type: 'string',
+              enum: ['No', 'Yes: One', 'Yes: More than one'],
+              default: 'No',
+            },
+          },
+          required: ['Do you have any pets?'],
+          dependencies: {
+            'Do you have any pets?': {
+              oneOf: [
+                {
+                  properties: {
+                    'Do you have any pets?': {
+                      enum: ['No'],
+                    },
+                  },
+                },
+                {
+                  properties: {
+                    'Do you have any pets?': {
+                      enum: ['Yes: One'],
+                    },
+                    'How old is your pet?': {
+                      type: 'number',
+                    },
+                  },
+                  required: ['How old is your pet?'],
+                },
+                {
+                  properties: {
+                    'Do you have any pets?': {
+                      enum: ['Yes: More than one'],
+                    },
+                    'Do you want to get rid of any?': {
+                      type: 'boolean',
+                    },
+                  },
+                  required: ['Do you want to get rid of any?'],
+                },
+              ],
+            },
+          },
+        },
+      },
+    };
+    const expectedUiSchema = {
+      conditional: {
+        'Do you have any pets?': {
+          'ui:widget': 'radio',
+        },
+        'Do you want to get rid of any?': {},
+        'How old is your pet?': {},
+      },
+    };
+
+    expect(transformSchemaToProps(inputSchema)).toEqual({
+      schema: expectedSchema,
+      uiSchema: expectedUiSchema,
+    });
+  });
+
   it('transforms schema with array items', () => {
     const inputSchema = {
       type: 'object',

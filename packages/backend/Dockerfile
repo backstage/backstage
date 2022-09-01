@@ -25,13 +25,18 @@ WORKDIR /app
 # This switches many Node.js dependencies to production mode.
 ENV NODE_ENV production
 
+# Copy over Yarn 3 configuration, release, and plugins
+COPY .yarn ./.yarn
+COPY .yarnrc.yml ./
+
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
 # and along with yarn.lock and the root package.json, that's enough to run yarn install.
 COPY --chown=node:node yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
 RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 
-RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
+# Note that this install is not immutable, which is one of the reasons we don't recommend Yarn 3 yet
+RUN yarn workspaces focus --all --production && rm -rf "$(yarn cache clean)"
 
 # Then copy the rest of the backend bundle, along with any other files we might want.
 COPY --chown=node:node packages/backend/dist/bundle.tar.gz app-config*.yaml ./

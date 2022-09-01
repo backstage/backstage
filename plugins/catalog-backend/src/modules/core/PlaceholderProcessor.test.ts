@@ -86,8 +86,8 @@ describe('PlaceholderProcessor', () => {
       spec: { a: [{ b: 'TEXT' }] },
     });
 
-    expect(read).not.toBeCalled();
-    expect(upperResolver).toBeCalledWith(
+    expect(read).not.toHaveBeenCalled();
+    expect(upperResolver).toHaveBeenCalledWith(
       expect.objectContaining({
         key: 'upper',
         value: 'text',
@@ -115,7 +115,7 @@ describe('PlaceholderProcessor', () => {
       processor.preProcessEntity(entity, { type: 'a', target: 'b' }, () => {}),
     ).resolves.toEqual(entity);
 
-    expect(read).not.toBeCalled();
+    expect(read).not.toHaveBeenCalled();
   });
 
   it('ignores unknown placeholders', async () => {
@@ -136,7 +136,7 @@ describe('PlaceholderProcessor', () => {
       processor.preProcessEntity(entity, { type: 'a', target: 'b' }, () => {}),
     ).resolves.toEqual(entity);
 
-    expect(read).not.toBeCalled();
+    expect(read).not.toHaveBeenCalled();
   });
 
   it('works with the text resolver', async () => {
@@ -169,7 +169,7 @@ describe('PlaceholderProcessor', () => {
       spec: { data: 'TEXT' },
     });
 
-    expect(read).toBeCalledWith(
+    expect(read).toHaveBeenCalledWith(
       'https://github.com/backstage/backstage/a/file.txt',
     );
   });
@@ -206,7 +206,7 @@ describe('PlaceholderProcessor', () => {
       spec: { data: { a: ['b', 7] } },
     });
 
-    expect(read).toBeCalledWith(
+    expect(read).toHaveBeenCalledWith(
       'https://github.com/backstage/backstage/a/b/file.json',
     );
   });
@@ -241,7 +241,7 @@ describe('PlaceholderProcessor', () => {
       spec: { data: { foo: [{ bar: 7 }] } },
     });
 
-    expect(read).toBeCalledWith(
+    expect(read).toHaveBeenCalledWith(
       'https://github.com/backstage/backstage/a/file.yaml',
     );
   });
@@ -280,7 +280,7 @@ describe('PlaceholderProcessor', () => {
       spec: { data: 'TEXT' },
     });
 
-    expect(read).toBeCalledWith(
+    expect(read).toHaveBeenCalledWith(
       'https://github.com/backstage/backstage/catalog-info.yaml',
     );
   });
@@ -318,7 +318,7 @@ describe('PlaceholderProcessor', () => {
       spec: { data: 'TEXT' },
     });
 
-    expect(read).toBeCalledWith(
+    expect(read).toHaveBeenCalledWith(
       'https://github.com/backstage/backstage/catalog-info.yaml',
     );
   });
@@ -356,7 +356,7 @@ describe('PlaceholderProcessor', () => {
       /^Placeholder \$text could not form a URL out of \.\/a\/b\/catalog-info\.yaml and \.\.\/c\/catalog-info\.yaml, TypeError \[ERR_INVALID_URL\]/,
     );
 
-    expect(read).not.toBeCalled();
+    expect(read).not.toHaveBeenCalled();
   });
   it('should emit the resolverValue as a refreshKey', async () => {
     read.mockResolvedValue(

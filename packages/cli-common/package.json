@@ -2,7 +2,6 @@
   "name": "@backstage/cli-common",
   "description": "Common functionality used by cli, backend, and create-app",
   "version": "0.1.9",
-  "private": false,
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {

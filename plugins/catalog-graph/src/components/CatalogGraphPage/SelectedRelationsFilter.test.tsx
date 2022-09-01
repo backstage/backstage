@@ -57,7 +57,7 @@ describe('<SelectedRelationsFilter/>', () => {
     await userEvent.click(getByText(RELATION_HAS_MEMBER));
 
     await waitFor(() => {
-      expect(onChange).toBeCalledWith([
+      expect(onChange).toHaveBeenCalledWith([
         RELATION_OWNED_BY,
         RELATION_CHILD_OF,
         RELATION_HAS_MEMBER,
@@ -86,7 +86,7 @@ describe('<SelectedRelationsFilter/>', () => {
     await userEvent.click(getByText(RELATION_HAS_MEMBER));
 
     await waitFor(() => {
-      expect(onChange).toBeCalledWith(undefined);
+      expect(onChange).toHaveBeenCalledWith(undefined);
     });
   });
 
@@ -104,7 +104,7 @@ describe('<SelectedRelationsFilter/>', () => {
     await userEvent.tab();
 
     await waitFor(() => {
-      expect(onChange).toBeCalledWith(undefined);
+      expect(onChange).toHaveBeenCalledWith(undefined);
     });
   });
 });

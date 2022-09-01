@@ -26,10 +26,12 @@ describe('<Button />', () => {
     const buttonLabel = 'Navigate!';
     const { getByText } = render(
       wrapInTestApp(
-        <Routes>
-          <Route path="/test" element={<p>{testString}</p>} />
+        <>
           <Button to="/test">{buttonLabel}</Button>
-        </Routes>,
+          <Routes>
+            <Route path="/test" element={<p>{testString}</p>} />
+          </Routes>
+        </>,
       ),
     );
 

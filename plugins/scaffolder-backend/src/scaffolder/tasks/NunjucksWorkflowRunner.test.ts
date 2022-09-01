@@ -128,7 +128,7 @@ describe('DefaultWorkflowRunner', () => {
       steps: [{ id: 'test', name: 'name', action: 'does-not-exist' }],
     });
 
-    await expect(runner.execute(task)).rejects.toThrowError(
+    await expect(runner.execute(task)).rejects.toThrow(
       "Template action with ID 'does-not-exist' is not registered.",
     );
   });
@@ -142,7 +142,7 @@ describe('DefaultWorkflowRunner', () => {
         steps: [{ id: 'test', name: 'name', action: 'jest-validated-action' }],
       });
 
-      await expect(runner.execute(task)).rejects.toThrowError(
+      await expect(runner.execute(task)).rejects.toThrow(
         /Invalid input passed to action jest-validated-action, instance requires property \"foo\"/,
       );
     });

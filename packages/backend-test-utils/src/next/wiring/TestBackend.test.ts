@@ -92,6 +92,6 @@ describe('TestBackend', () => {
       features: [testModule({})],
     });
 
-    expect(testFn).toBeCalledWith('winning');
+    expect(testFn).toHaveBeenCalledWith('winning');
   });
 });

@@ -129,7 +129,7 @@ describe('SonarqubeConfig', () => {
             },
           }),
         ),
-      ).toThrowError(Error);
+      ).toThrow(Error);
     });
 
     it('Throw an error if default config is partially provided', async () => {
@@ -141,7 +141,7 @@ describe('SonarqubeConfig', () => {
             },
           }),
         ),
-      ).toThrowError(Error);
+      ).toThrow(Error);
     });
   });
 
@@ -208,7 +208,7 @@ describe('SonarqubeConfig', () => {
 
       expect(() =>
         config.getInstanceConfig({ sonarqubeName: 'default' }),
-      ).toThrowError(Error);
+      ).toThrow(Error);
     });
 
     it('Throw an error if named instance could not be found', async () => {
@@ -218,7 +218,7 @@ describe('SonarqubeConfig', () => {
 
       expect(() =>
         config.getInstanceConfig({ sonarqubeName: 'other' }),
-      ).toThrowError(Error);
+      ).toThrow(Error);
     });
   });
 });

@@ -233,6 +233,6 @@ describe('useEntityStore', () => {
       });
     });
 
-    expect(catalogApi.getEntityByRef).toBeCalledTimes(2);
+    expect(catalogApi.getEntityByRef).toHaveBeenCalledTimes(2);
   });
 });

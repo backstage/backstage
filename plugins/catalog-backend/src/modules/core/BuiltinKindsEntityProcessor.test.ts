@@ -52,8 +52,8 @@ describe('BuiltinKindsEntityProcessor', () => {
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toBeCalledTimes(14);
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledTimes(14);
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Group', namespace: 'default', name: 'o' },
@@ -61,7 +61,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Component', namespace: 'default', name: 'n' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Component', namespace: 'default', name: 'n' },
@@ -69,7 +69,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Group', namespace: 'default', name: 'o' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'API', namespace: 'default', name: 'b' },
@@ -77,7 +77,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Component', namespace: 'default', name: 'n' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Component', namespace: 'default', name: 'n' },
@@ -85,7 +85,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'API', namespace: 'default', name: 'b' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'API', namespace: 'default', name: 'c' },
@@ -93,7 +93,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Component', namespace: 'default', name: 'n' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Component', namespace: 'default', name: 'n' },
@@ -101,7 +101,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'API', namespace: 'default', name: 'c' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Component', namespace: 'default', name: 'n' },
@@ -109,7 +109,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Resource', namespace: 'default', name: 'r' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Resource', namespace: 'default', name: 'r' },
@@ -117,7 +117,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Component', namespace: 'default', name: 'n' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Component', namespace: 'default', name: 'n' },
@@ -125,7 +125,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Component', namespace: 'default', name: 'd' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Component', namespace: 'default', name: 'd' },
@@ -133,7 +133,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Component', namespace: 'default', name: 'n' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Component', namespace: 'default', name: 's' },
@@ -141,7 +141,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Component', namespace: 'default', name: 'n' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Component', namespace: 'default', name: 'n' },
@@ -149,7 +149,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Component', namespace: 'default', name: 's' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'System', namespace: 'default', name: 's' },
@@ -157,7 +157,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Component', namespace: 'default', name: 'n' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Component', namespace: 'default', name: 'n' },
@@ -185,7 +185,7 @@ describe('BuiltinKindsEntityProcessor', () => {
       };
       await expect(
         processor.postProcessEntity(entity, location, emit),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         'Entity reference "r" had missing or empty kind (e.g. did not start with "component:" or similar)',
       );
     });
@@ -206,8 +206,8 @@ describe('BuiltinKindsEntityProcessor', () => {
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toBeCalledTimes(4);
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledTimes(4);
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Group', namespace: 'default', name: 'o' },
@@ -215,7 +215,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'API', namespace: 'default', name: 'n' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'API', namespace: 'default', name: 'n' },
@@ -223,7 +223,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Group', namespace: 'default', name: 'o' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'System', namespace: 'default', name: 's' },
@@ -231,7 +231,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'API', namespace: 'default', name: 'n' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'API', namespace: 'default', name: 'n' },
@@ -257,8 +257,8 @@ describe('BuiltinKindsEntityProcessor', () => {
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toBeCalledTimes(10);
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledTimes(10);
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Group', namespace: 'default', name: 'o' },
@@ -266,7 +266,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Resource', namespace: 'default', name: 'n' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Resource', namespace: 'default', name: 'n' },
@@ -275,7 +275,7 @@ describe('BuiltinKindsEntityProcessor', () => {
         },
       });
 
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Resource', namespace: 'default', name: 'n' },
@@ -283,7 +283,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Component', namespace: 'default', name: 'c' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Component', namespace: 'default', name: 'c' },
@@ -292,7 +292,7 @@ describe('BuiltinKindsEntityProcessor', () => {
         },
       });
 
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Resource', namespace: 'default', name: 'n' },
@@ -300,7 +300,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Resource', namespace: 'default', name: 'r' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Resource', namespace: 'default', name: 'r' },
@@ -309,7 +309,7 @@ describe('BuiltinKindsEntityProcessor', () => {
         },
       });
 
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'System', namespace: 'default', name: 's' },
@@ -317,7 +317,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Resource', namespace: 'default', name: 'n' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Resource', namespace: 'default', name: 'n' },
@@ -326,7 +326,7 @@ describe('BuiltinKindsEntityProcessor', () => {
         },
       });
 
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Resource', namespace: 'default', name: 'n' },
@@ -334,7 +334,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Component', namespace: 'default', name: 'd' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Component', namespace: 'default', name: 'd' },
@@ -358,7 +358,7 @@ describe('BuiltinKindsEntityProcessor', () => {
       };
       await expect(
         processor.postProcessEntity(entity, location, emit),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         'Entity reference "c" had missing or empty kind (e.g. did not start with "component:" or similar)',
       );
     });
@@ -376,8 +376,8 @@ describe('BuiltinKindsEntityProcessor', () => {
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toBeCalledTimes(4);
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledTimes(4);
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Group', namespace: 'default', name: 'o' },
@@ -385,7 +385,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'System', namespace: 'default', name: 'n' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'System', namespace: 'default', name: 'n' },
@@ -393,7 +393,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Group', namespace: 'default', name: 'o' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Domain', namespace: 'default', name: 'd' },
@@ -401,7 +401,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'System', namespace: 'default', name: 'n' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'System', namespace: 'default', name: 'n' },
@@ -423,8 +423,8 @@ describe('BuiltinKindsEntityProcessor', () => {
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toBeCalledTimes(2);
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledTimes(2);
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Group', namespace: 'default', name: 'o' },
@@ -432,7 +432,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Domain', namespace: 'default', name: 'n' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Domain', namespace: 'default', name: 'n' },
@@ -454,8 +454,8 @@ describe('BuiltinKindsEntityProcessor', () => {
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toBeCalledTimes(2);
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledTimes(2);
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'User', namespace: 'default', name: 'n' },
@@ -463,7 +463,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Group', namespace: 'default', name: 'g' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Group', namespace: 'default', name: 'g' },
@@ -488,8 +488,8 @@ describe('BuiltinKindsEntityProcessor', () => {
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toBeCalledTimes(6);
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledTimes(6);
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Group', namespace: 'default', name: 'n' },
@@ -497,7 +497,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Group', namespace: 'default', name: 'p' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Group', namespace: 'default', name: 'p' },
@@ -505,7 +505,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Group', namespace: 'default', name: 'n' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Group', namespace: 'default', name: 'c' },
@@ -513,7 +513,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Group', namespace: 'default', name: 'n' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Group', namespace: 'default', name: 'n' },
@@ -521,7 +521,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Group', namespace: 'default', name: 'c' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'User', namespace: 'default', name: 'm' },
@@ -529,7 +529,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Group', namespace: 'default', name: 'n' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Group', namespace: 'default', name: 'n' },

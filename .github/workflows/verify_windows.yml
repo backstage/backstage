@@ -34,7 +34,7 @@ jobs:
 
       # Windows file operation slowness means there's no point caching this
       - name: yarn install
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - name: lint
         run: yarn backstage-cli repo lint

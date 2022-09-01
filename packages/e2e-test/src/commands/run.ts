@@ -50,6 +50,9 @@ export async function run() {
   print('Building dist workspace');
   const workspaceDir = await buildDistWorkspace('workspace', rootDir);
 
+  // Otherwise yarn will refuse to install with CI=true
+  process.env.YARN_ENABLE_IMMUTABLE_INSTALLS = 'false';
+
   print('Creating a Backstage App');
   const appDir = await createApp('test-app', workspaceDir, rootDir);
 
@@ -172,7 +175,7 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
   await pinYarnVersion(workspaceDir);
 
   print('Installing workspace dependencies');
-  await runPlain(['yarn', 'install', '--production', '--frozen-lockfile'], {
+  await runPlain(['yarn', 'workspaces', 'focus', '--all', '--production'], {
     cwd: workspaceDir,
   });
 
@@ -183,20 +186,33 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
  * Pin the yarn version in a directory to the one we're using in the Backstage repo
  */
 async function pinYarnVersion(dir: string) {
-  const yarnRc = await fs.readFile(paths.resolveOwnRoot('.yarnrc'), 'utf8');
+  const yarnRc = await fs.readFile(paths.resolveOwnRoot('.yarnrc.yml'), 'utf8');
   const yarnRcLines = yarnRc.split('\n');
-  const yarnPathLine = yarnRcLines.find(line => line.startsWith('yarn-path'));
+  const yarnPathLine = yarnRcLines.find(line => line.startsWith('yarnPath:'));
   if (!yarnPathLine) {
-    throw new Error(`Unable to find 'yarn-path' in ${yarnRc}`);
+    throw new Error(`Unable to find 'yarnPath' in ${yarnRc}`);
   }
-  const match = yarnPathLine.match(/"(.*)"/);
+  const match = yarnPathLine.match(/^yarnPath: (.*)$/);
   if (!match) {
-    throw new Error(`Invalid 'yarn-path' in ${yarnRc}`);
+    throw new Error(`Invalid 'yarnPath' in ${yarnRc}`);
   }
   const [, localYarnPath] = match;
   const yarnPath = paths.resolveOwnRoot(localYarnPath);
+  const yarnPluginPath = paths.resolveOwnRoot(
+    localYarnPath,
+    '../../plugins/@yarnpkg/plugin-workspace-tools.cjs',
+  );
 
-  await fs.writeFile(resolvePath(dir, '.yarnrc'), `yarn-path "${yarnPath}"\n`);
+  await fs.writeFile(
+    resolvePath(dir, '.yarnrc.yml'),
+    `yarnPath: ${yarnPath}
+nodeLinker: node-modules
+enableGlobalCache: true
+plugins:
+  - path: ${yarnPluginPath}
+    spec: '@yarnpkg/plugin-workspace-tools'
+`,
+  );
 }
 
 /**
@@ -342,7 +358,10 @@ async function createPlugin(
 
     const pluginDir = resolvePath(appDir, 'plugins', canonicalName);
 
-    for (const cmd of [['tsc'], ['lint'], ['test', '--no-watch']]) {
+    print(`Running 'yarn tsc' in root for newly created plugin`);
+    await runPlain(['yarn', 'tsc'], { cwd: appDir });
+
+    for (const cmd of [['lint'], ['test', '--no-watch']]) {
       print(`Running 'yarn ${cmd.join(' ')}' in newly created plugin`);
       await runPlain(['yarn', ...cmd], { cwd: pluginDir });
     }

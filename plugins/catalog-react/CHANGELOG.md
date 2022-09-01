@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-react
 
+## 1.1.4-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- a6d551fad9: Properly handle free-text entity filtering in the case of empty tag arrays
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.1
+  - @backstage/core-plugin-api@1.0.6-next.1
+  - @backstage/plugin-permission-react@0.4.5-next.1
+
 ## 1.1.4-next.0
 
 ### Patch Changes

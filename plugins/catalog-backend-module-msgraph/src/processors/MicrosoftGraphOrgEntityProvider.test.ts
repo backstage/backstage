@@ -108,7 +108,7 @@ describe('MicrosoftGraphOrgEntityProvider', () => {
 
     await provider.read();
 
-    expect(entityProviderConnection.applyMutation).toBeCalledWith({
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
       entities: [
         {
           entity: {

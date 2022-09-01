@@ -112,6 +112,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     });
 
     // Delete old relations
+    // NOTE(freben): knex implemented support for returning() on update queries for sqlite, but at the current time of writing (Sep 2022) not for delete() queries.
     let previousRelationRows: DbRelationsRow[];
     if (
       tx.client.config.client.includes('sqlite3') ||

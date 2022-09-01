@@ -46,13 +46,13 @@ describe('SearchResultPager', () => {
       expect(getByLabelText('previous page')).toBeInTheDocument();
     });
     await userEvent.click(getByLabelText('previous page'));
-    expect(fetchPreviousPage).toBeCalled();
+    expect(fetchPreviousPage).toHaveBeenCalled();
 
     await waitFor(() => {
       expect(getByLabelText('next page')).toBeInTheDocument();
     });
     await userEvent.click(getByLabelText('next page'));
 
-    expect(fetchNextPage).toBeCalled();
+    expect(fetchNextPage).toHaveBeenCalled();
   });
 });

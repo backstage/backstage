@@ -54,7 +54,7 @@ describe('debug:log', () => {
   it('should do nothing', async () => {
     await action.handler(mockContext);
 
-    expect(logStream.write).toBeCalledTimes(0);
+    expect(logStream.write).toHaveBeenCalledTimes(0);
   });
 
   it('should log the workspace content, if active', async () => {
@@ -67,11 +67,11 @@ describe('debug:log', () => {
 
     await action.handler(context);
 
-    expect(logStream.write).toBeCalledTimes(1);
-    expect(logStream.write).toBeCalledWith(
+    expect(logStream.write).toHaveBeenCalledTimes(1);
+    expect(logStream.write).toHaveBeenCalledWith(
       expect.stringContaining('README.md'),
     );
-    expect(logStream.write).toBeCalledWith(
+    expect(logStream.write).toHaveBeenCalledWith(
       expect.stringContaining(join('a-directory', 'index.md')),
     );
   });
@@ -86,8 +86,8 @@ describe('debug:log', () => {
 
     await action.handler(context);
 
-    expect(logStream.write).toBeCalledTimes(1);
-    expect(logStream.write).toBeCalledWith(
+    expect(logStream.write).toHaveBeenCalledTimes(1);
+    expect(logStream.write).toHaveBeenCalledWith(
       expect.stringContaining('Hello Backstage!'),
     );
   });

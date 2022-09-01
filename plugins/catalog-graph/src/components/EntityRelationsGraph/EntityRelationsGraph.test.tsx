@@ -153,7 +153,7 @@ describe('<EntityRelationsGraph/>', () => {
 
     expect(await findByText('b:d/c')).toBeInTheDocument();
     expect(await findAllByTestId('node')).toHaveLength(1);
-    expect(catalog.getEntityByRef).toBeCalledTimes(1);
+    expect(catalog.getEntityByRef).toHaveBeenCalledTimes(1);
   });
 
   test('renders a progress indicator while loading', async () => {
@@ -168,7 +168,7 @@ describe('<EntityRelationsGraph/>', () => {
     );
 
     expect(await findByRole('progressbar')).toBeInTheDocument();
-    expect(catalog.getEntityByRef).toBeCalledTimes(1);
+    expect(catalog.getEntityByRef).toHaveBeenCalledTimes(1);
   });
 
   test('does not explode if an entity is missing', async () => {
@@ -208,7 +208,7 @@ describe('<EntityRelationsGraph/>', () => {
 
     expect(await findByText('b:d/c')).toBeInTheDocument();
     expect(await findAllByTestId('node')).toHaveLength(1);
-    expect(catalog.getEntityByRef).toBeCalledTimes(2);
+    expect(catalog.getEntityByRef).toHaveBeenCalledTimes(2);
   });
 
   test('renders at max depth of one', async () => {
@@ -231,7 +231,7 @@ describe('<EntityRelationsGraph/>', () => {
     expect(await findAllByText('hasPart')).toHaveLength(1);
     expect(await findAllByTestId('label')).toHaveLength(2);
 
-    expect(catalog.getEntityByRef).toBeCalledTimes(3);
+    expect(catalog.getEntityByRef).toHaveBeenCalledTimes(3);
   });
 
   test('renders simplied graph at full depth', async () => {
@@ -256,7 +256,7 @@ describe('<EntityRelationsGraph/>', () => {
     expect(await findAllByText('hasPart')).toHaveLength(2);
     expect(await findAllByTestId('label')).toHaveLength(3);
 
-    expect(catalog.getEntityByRef).toBeCalledTimes(4);
+    expect(catalog.getEntityByRef).toHaveBeenCalledTimes(4);
   });
 
   test('renders full graph at full depth', async () => {
@@ -283,7 +283,7 @@ describe('<EntityRelationsGraph/>', () => {
     expect(await findAllByText('partOf')).toHaveLength(2);
     expect(await findAllByTestId('label')).toHaveLength(8);
 
-    expect(catalog.getEntityByRef).toBeCalledTimes(4);
+    expect(catalog.getEntityByRef).toHaveBeenCalledTimes(4);
   });
 
   test('renders full graph at full depth with merged relations', async () => {
@@ -308,7 +308,7 @@ describe('<EntityRelationsGraph/>', () => {
     expect(await findAllByText('hasPart')).toHaveLength(2);
     expect(await findAllByTestId('label')).toHaveLength(4);
 
-    expect(catalog.getEntityByRef).toBeCalledTimes(4);
+    expect(catalog.getEntityByRef).toHaveBeenCalledTimes(4);
   });
 
   test('renders a graph with multiple root nodes', async () => {
@@ -334,7 +334,7 @@ describe('<EntityRelationsGraph/>', () => {
     expect(await findAllByText('partOf')).toHaveLength(2);
     expect(await findAllByTestId('label')).toHaveLength(3);
 
-    expect(catalog.getEntityByRef).toBeCalledTimes(4);
+    expect(catalog.getEntityByRef).toHaveBeenCalledTimes(4);
   });
 
   test('renders a graph with filtered kinds and relations', async () => {
@@ -356,7 +356,7 @@ describe('<EntityRelationsGraph/>', () => {
     expect(await findAllByText('ownerOf')).toHaveLength(1);
     expect(await findAllByTestId('label')).toHaveLength(1);
 
-    expect(catalog.getEntityByRef).toBeCalledTimes(2);
+    expect(catalog.getEntityByRef).toHaveBeenCalledTimes(2);
   });
 
   test('handle clicks on a node', async () => {
@@ -371,7 +371,7 @@ describe('<EntityRelationsGraph/>', () => {
     );
 
     await userEvent.click(await findByText('k:d/a1'));
-    expect(onNodeClick).toBeCalledTimes(1);
+    expect(onNodeClick).toHaveBeenCalledTimes(1);
   });
 
   test('render custom node', async () => {

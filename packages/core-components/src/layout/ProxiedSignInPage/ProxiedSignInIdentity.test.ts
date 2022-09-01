@@ -121,9 +121,9 @@ describe('ProxiedSignInIdentity', () => {
       getBaseUrl.mockResolvedValue('http://example.com/api/auth');
 
       await identity.start(); // should not throw
-      expect(getBaseUrl).toBeCalledTimes(1);
-      expect(getBaseUrl).lastCalledWith('auth');
-      expect(serverCalled).toBeCalledTimes(1);
+      expect(getBaseUrl).toHaveBeenCalledTimes(1);
+      expect(getBaseUrl).toHaveBeenLastCalledWith('auth');
+      expect(serverCalled).toHaveBeenCalledTimes(1);
 
       // All information should now be available
       await expect(identity.getBackstageIdentity()).resolves.toEqual({
@@ -148,7 +148,7 @@ describe('ProxiedSignInIdentity', () => {
       });
 
       await identity.getSessionAsync(); // no need to fetch again just yet
-      expect(serverCalled).toBeCalledTimes(1);
+      expect(serverCalled).toHaveBeenCalledTimes(1);
 
       // Use a fairly large margin (1000) since the iat and exp are clamped to
       // full seconds, but the "local current time" isn't
@@ -156,11 +156,11 @@ describe('ProxiedSignInIdentity', () => {
         3600 * 1000 - DEFAULTS.tokenExpiryMarginMillis - 1000,
       );
       await identity.getSessionAsync(); // still no need to fetch again
-      expect(serverCalled).toBeCalledTimes(1);
+      expect(serverCalled).toHaveBeenCalledTimes(1);
 
       jest.advanceTimersByTime(1001);
       await identity.getSessionAsync(); // now the expiry has passed
-      expect(serverCalled).toBeCalledTimes(2);
+      expect(serverCalled).toHaveBeenCalledTimes(2);
     });
   });
 });

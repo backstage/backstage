@@ -26,7 +26,10 @@ import { InputError, CustomErrorBase } from '@backstage/errors';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 import { getOctokitOptions } from '../github/helpers';
-import { serializeDirectoryContents } from '../../../../lib/files';
+import {
+  SerializedFile,
+  serializeDirectoryContents,
+} from '../../../../lib/files';
 import { Logger } from 'winston';
 
 export type Encoding = 'utf-8' | 'base64';
@@ -249,21 +252,33 @@ export const createPublishGithubPullRequestAction = ({
       const directoryContents = await serializeDirectoryContents(fileRoot, {
         gitignore: true,
       });
+
+      const determineFileMode = (file: SerializedFile): string => {
+        if (file.symlink) return '120000';
+        if (file.executable) return '100755';
+        return '100644';
+      };
+
+      const determineFileEncoding = (
+        file: SerializedFile,
+      ): 'utf-8' | 'base64' => (file.symlink ? 'utf-8' : 'base64');
+
       const files = Object.fromEntries(
         directoryContents.map(file => [
           targetPath ? path.posix.join(targetPath, file.path) : file.path,
           {
             // See the properties of tree items
             // in https://docs.github.com/en/rest/reference/git#trees
-            mode: file.executable ? '100755' : '100644',
-            // Always use base64 encoding to avoid doubling a binary file in size
+            mode: determineFileMode(file),
+            // Always use base64 encoding where possible to avoid doubling a binary file in size
             // due to interpreting a binary file as utf-8 and sending github
-            // the utf-8 encoded content.
+            // the utf-8 encoded content. Symlinks are kept as utf-8 to avoid them
+            // being formatted as a series of scrambled characters
             //
             // For example, the original gradle-wrapper.jar is 57.8k in https://github.com/kennethzfeng/pull-request-test/pull/5/files.
             // Its size could be doubled to 98.3K (See https://github.com/kennethzfeng/pull-request-test/pull/4/files)
-            encoding: 'base64' as const,
-            content: file.content.toString('base64'),
+            encoding: determineFileEncoding(file),
+            content: file.content.toString(determineFileEncoding(file)),
           },
         ]),
       );

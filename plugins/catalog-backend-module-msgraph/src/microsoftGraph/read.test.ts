@@ -111,15 +111,18 @@ describe('read microsoft graph', () => {
         }),
       ]);
 
-      expect(client.getUsers).toBeCalledTimes(1);
-      expect(client.getUsers).toBeCalledWith(
+      expect(client.getUsers).toHaveBeenCalledTimes(1);
+      expect(client.getUsers).toHaveBeenCalledWith(
         {
           filter: 'accountEnabled eq true',
         },
         undefined,
       );
-      expect(client.getUserPhotoWithSizeLimit).toBeCalledTimes(1);
-      expect(client.getUserPhotoWithSizeLimit).toBeCalledWith('userid', 120);
+      expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
+      expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledWith(
+        'userid',
+        120,
+      );
     });
 
     it('should read users with advanced query mode', async () => {
@@ -162,15 +165,18 @@ describe('read microsoft graph', () => {
         }),
       ]);
 
-      expect(client.getUsers).toBeCalledTimes(1);
-      expect(client.getUsers).toBeCalledWith(
+      expect(client.getUsers).toHaveBeenCalledTimes(1);
+      expect(client.getUsers).toHaveBeenCalledWith(
         {
           filter: 'accountEnabled eq true',
         },
         'advanced',
       );
-      expect(client.getUserPhotoWithSizeLimit).toBeCalledTimes(1);
-      expect(client.getUserPhotoWithSizeLimit).toBeCalledWith('userid', 120);
+      expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
+      expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledWith(
+        'userid',
+        120,
+      );
     });
 
     it('should read users with userExpand and custom transformer', async () => {
@@ -208,16 +214,19 @@ describe('read microsoft graph', () => {
         },
       ]);
 
-      expect(client.getUsers).toBeCalledTimes(1);
-      expect(client.getUsers).toBeCalledWith(
+      expect(client.getUsers).toHaveBeenCalledTimes(1);
+      expect(client.getUsers).toHaveBeenCalledWith(
         {
           expand: 'manager',
           filter: 'accountEnabled eq true',
         },
         undefined,
       );
-      expect(client.getUserPhotoWithSizeLimit).toBeCalledTimes(1);
-      expect(client.getUserPhotoWithSizeLimit).toBeCalledWith('userid', 120);
+      expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
+      expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledWith(
+        'userid',
+        120,
+      );
     });
   });
 
@@ -280,22 +289,25 @@ describe('read microsoft graph', () => {
         }),
       ]);
 
-      expect(client.getGroups).toBeCalledTimes(1);
-      expect(client.getGroups).toBeCalledWith(
+      expect(client.getGroups).toHaveBeenCalledTimes(1);
+      expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq true',
         },
         undefined,
       );
-      expect(client.getGroupMembers).toBeCalledTimes(1);
-      expect(client.getGroupMembers).toBeCalledWith('groupid');
+      expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
+      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid');
 
-      expect(client.getUserProfile).toBeCalledTimes(1);
-      expect(client.getUserProfile).toBeCalledWith('userid', {
+      expect(client.getUserProfile).toHaveBeenCalledTimes(1);
+      expect(client.getUserProfile).toHaveBeenCalledWith('userid', {
         expand: undefined,
       });
-      expect(client.getUserPhotoWithSizeLimit).toBeCalledTimes(1);
-      expect(client.getUserPhotoWithSizeLimit).toBeCalledWith('userid', 120);
+      expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
+      expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledWith(
+        'userid',
+        120,
+      );
     });
 
     it('should read users from Groups with advanced query mode', async () => {
@@ -357,22 +369,25 @@ describe('read microsoft graph', () => {
         }),
       ]);
 
-      expect(client.getGroups).toBeCalledTimes(1);
-      expect(client.getGroups).toBeCalledWith(
+      expect(client.getGroups).toHaveBeenCalledTimes(1);
+      expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq true',
         },
         'advanced',
       );
-      expect(client.getGroupMembers).toBeCalledTimes(1);
-      expect(client.getGroupMembers).toBeCalledWith('groupid');
+      expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
+      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid');
 
-      expect(client.getUserProfile).toBeCalledTimes(1);
-      expect(client.getUserProfile).toBeCalledWith('userid', {
+      expect(client.getUserProfile).toHaveBeenCalledTimes(1);
+      expect(client.getUserProfile).toHaveBeenCalledWith('userid', {
         expand: undefined,
       });
-      expect(client.getUserPhotoWithSizeLimit).toBeCalledTimes(1);
-      expect(client.getUserPhotoWithSizeLimit).toBeCalledWith('userid', 120);
+      expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
+      expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledWith(
+        'userid',
+        120,
+      );
     });
 
     it('should read users with userExpand, groupExpand and custom transformer', async () => {
@@ -430,23 +445,26 @@ describe('read microsoft graph', () => {
         },
       ]);
 
-      expect(client.getGroups).toBeCalledTimes(1);
-      expect(client.getGroups).toBeCalledWith(
+      expect(client.getGroups).toHaveBeenCalledTimes(1);
+      expect(client.getGroups).toHaveBeenCalledWith(
         {
           expand: 'member',
           filter: 'securityEnabled eq true',
         },
         undefined,
       );
-      expect(client.getGroupMembers).toBeCalledTimes(1);
-      expect(client.getGroupMembers).toBeCalledWith('groupid');
+      expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
+      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid');
 
-      expect(client.getUserProfile).toBeCalledTimes(1);
-      expect(client.getUserProfile).toBeCalledWith('userid', {
+      expect(client.getUserProfile).toHaveBeenCalledTimes(1);
+      expect(client.getUserProfile).toHaveBeenCalledWith('userid', {
         expand: 'manager',
       });
-      expect(client.getUserPhotoWithSizeLimit).toBeCalledTimes(1);
-      expect(client.getUserPhotoWithSizeLimit).toBeCalledWith('userid', 120);
+      expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
+      expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledWith(
+        'userid',
+        120,
+      );
     });
   });
 
@@ -481,8 +499,8 @@ describe('read microsoft graph', () => {
         }),
       );
 
-      expect(client.getOrganization).toBeCalledTimes(1);
-      expect(client.getOrganization).toBeCalledWith('tenantid');
+      expect(client.getOrganization).toHaveBeenCalledTimes(1);
+      expect(client.getOrganization).toHaveBeenCalledWith('tenantid');
     });
 
     it('should read organization with custom transformer', async () => {
@@ -499,8 +517,8 @@ describe('read microsoft graph', () => {
 
       expect(rootGroup).toEqual(undefined);
 
-      expect(client.getOrganization).toBeCalledTimes(1);
-      expect(client.getOrganization).toBeCalledWith('tenantid');
+      expect(client.getOrganization).toHaveBeenCalledTimes(1);
+      expect(client.getOrganization).toHaveBeenCalledWith('tenantid');
     });
   });
 
@@ -585,15 +603,15 @@ describe('read microsoft graph', () => {
       expect(groupMemberOf.get('userid')).toEqual(new Set(['groupid']));
       expect(groupMember.get('organization_name')).toEqual(new Set());
 
-      expect(client.getGroups).toBeCalledTimes(1);
-      expect(client.getGroups).toBeCalledWith(
+      expect(client.getGroups).toHaveBeenCalledTimes(1);
+      expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq false',
         },
         undefined,
       );
-      expect(client.getGroupMembers).toBeCalledTimes(1);
-      expect(client.getGroupMembers).toBeCalledWith('groupid');
+      expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
+      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid');
       // TODO: Loading groups photos doesn't work right now as Microsoft Graph
       // doesn't allows this yet
       // expect(client.getGroupPhotoWithSizeLimit).toBeCalledTimes(1);
@@ -681,15 +699,15 @@ describe('read microsoft graph', () => {
       expect(groupMemberOf.get('userid')).toEqual(new Set(['groupid']));
       expect(groupMember.get('organization_name')).toEqual(new Set());
 
-      expect(client.getGroups).toBeCalledTimes(1);
-      expect(client.getGroups).toBeCalledWith(
+      expect(client.getGroups).toHaveBeenCalledTimes(1);
+      expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq false',
         },
         'advanced',
       );
-      expect(client.getGroupMembers).toBeCalledTimes(1);
-      expect(client.getGroupMembers).toBeCalledWith('groupid');
+      expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
+      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid');
       // TODO: Loading groups photos doesn't work right now as Microsoft Graph
       // doesn't allows this yet
       // expect(client.getGroupPhotoWithSizeLimit).toBeCalledTimes(1);
@@ -777,16 +795,16 @@ describe('read microsoft graph', () => {
       expect(groupMemberOf.get('userid')).toEqual(new Set(['groupid']));
       expect(groupMember.get('organization_name')).toEqual(new Set());
 
-      expect(client.getGroups).toBeCalledTimes(1);
-      expect(client.getGroups).toBeCalledWith(
+      expect(client.getGroups).toHaveBeenCalledTimes(1);
+      expect(client.getGroups).toHaveBeenCalledWith(
         {
           expand: 'member',
           filter: 'securityEnabled eq false',
         },
         undefined,
       );
-      expect(client.getGroupMembers).toBeCalledTimes(1);
-      expect(client.getGroupMembers).toBeCalledWith('groupid');
+      expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
+      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid');
       // TODO: Loading groups photos doesn't work right now as Microsoft Graph
       // doesn't allows this yet
       // expect(client.getGroupPhotoWithSizeLimit).toBeCalledTimes(1);
@@ -872,14 +890,14 @@ describe('read microsoft graph', () => {
         }),
       ]);
       expect(rootGroup).toEqual(expectedRootGroup);
-      expect(client.getGroups).toBeCalledWith(
+      expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq true',
         },
         undefined,
       );
-      expect(client.getGroupMembers).toBeCalledTimes(1);
-      expect(client.getGroupMembers).toBeCalledWith('groupid');
+      expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
+      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid');
     });
   });
 
@@ -1034,15 +1052,15 @@ describe('read microsoft graph', () => {
         groupFilter: 'securityEnabled eq false',
       });
 
-      expect(client.getUsers).toBeCalledTimes(1);
-      expect(client.getUsers).toBeCalledWith(
+      expect(client.getUsers).toHaveBeenCalledTimes(1);
+      expect(client.getUsers).toHaveBeenCalledWith(
         {
           filter: undefined,
         },
         undefined,
       );
-      expect(client.getGroups).toBeCalledTimes(1);
-      expect(client.getGroups).toBeCalledWith(
+      expect(client.getGroups).toHaveBeenCalledTimes(1);
+      expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq false',
         },
@@ -1074,16 +1092,16 @@ describe('read microsoft graph', () => {
         groupFilter: 'securityEnabled eq false',
       });
 
-      expect(client.getUsers).toBeCalledTimes(1);
-      expect(client.getUsers).toBeCalledWith(
+      expect(client.getUsers).toHaveBeenCalledTimes(1);
+      expect(client.getUsers).toHaveBeenCalledWith(
         {
           expand: 'manager',
           filter: 'accountEnabled eq true',
         },
         undefined,
       );
-      expect(client.getGroups).toBeCalledTimes(1);
-      expect(client.getGroups).toBeCalledWith(
+      expect(client.getGroups).toHaveBeenCalledTimes(1);
+      expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq false',
         },
@@ -1115,22 +1133,22 @@ describe('read microsoft graph', () => {
         groupFilter: 'securityEnabled eq false',
       });
 
-      expect(client.getUsers).toBeCalledTimes(0);
-      expect(client.getGroups).toBeCalledTimes(2);
-      expect(client.getGroups).toBeCalledWith(
+      expect(client.getUsers).toHaveBeenCalledTimes(0);
+      expect(client.getGroups).toHaveBeenCalledTimes(2);
+      expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'name eq backstage-group',
         },
         undefined,
       );
-      expect(client.getGroups).toBeCalledWith(
+      expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq false',
         },
         undefined,
       );
-      expect(client.getUserProfile).toBeCalledTimes(1);
-      expect(client.getUserPhotoWithSizeLimit).toBeCalledTimes(1);
+      expect(client.getUserProfile).toHaveBeenCalledTimes(1);
+      expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -117,7 +117,7 @@ describe('fetch:template', () => {
     it('throws if output directory is outside the workspace', async () => {
       await expect(() =>
         action.handler(mockContext({ targetPath: '../' })),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         /relative path is not allowed to refer to a directory outside its parent/i,
       );
     });
@@ -127,7 +127,7 @@ describe('fetch:template', () => {
         action.handler(
           mockContext({ copyWithoutRender: 'abc' as unknown as string[] }),
         ),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         /copyWithoutRender\/copyWithoutTemplating must be an array/i,
       );
     });
@@ -140,7 +140,7 @@ describe('fetch:template', () => {
             copyWithoutTemplating: 'def' as unknown as string[],
           }),
         ),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         /copyWithoutRender and copyWithoutTemplating can not be used at the same time/i,
       );
     });
@@ -153,7 +153,7 @@ describe('fetch:template', () => {
             templateFileExtension: true,
           }),
         ),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         /input extension incompatible with copyWithoutRender\/copyWithoutTemplating and cookiecutterCompat/,
       );
     });
@@ -166,7 +166,7 @@ describe('fetch:template', () => {
             templateFileExtension: true,
           }),
         ),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         /input extension incompatible with copyWithoutRender\/copyWithoutTemplating and cookiecutterCompat/,
       );
     });
@@ -297,6 +297,9 @@ describe('fetch:template', () => {
               symlink: mockFs.symlink({
                 path: 'a-binary-file.png',
               }),
+              brokenSymlink: mockFs.symlink({
+                path: './not-a-real-file.txt',
+              }),
             },
           });
 
@@ -370,6 +373,17 @@ describe('fetch:template', () => {
         await expect(
           fs.realpath(`${workspacePath}/target/symlink`),
         ).resolves.toBe(joinPath(workspacePath, 'target', 'a-binary-file.png'));
+      });
+      it('copies broken symlinks as-is without processing them', async () => {
+        await expect(
+          fs
+            .lstat(`${workspacePath}/target/brokenSymlink`)
+            .then(i => i.isSymbolicLink()),
+        ).resolves.toBe(true);
+
+        await expect(
+          fs.readlink(`${workspacePath}/target/brokenSymlink`),
+        ).resolves.toEqual('./not-a-real-file.txt');
       });
     });
   });

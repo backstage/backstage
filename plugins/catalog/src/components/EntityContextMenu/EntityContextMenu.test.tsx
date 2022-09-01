@@ -57,7 +57,7 @@ describe('ComponentContextMenu', () => {
     expect(unregister).toBeInTheDocument();
     fireEvent.click(unregister);
 
-    expect(mockCallback).toBeCalled();
+    expect(mockCallback).toHaveBeenCalled();
   });
 
   it('check Unregister entity button is disabled', async () => {
@@ -102,7 +102,7 @@ describe('ComponentContextMenu', () => {
     expect(unregister).toBeInTheDocument();
     fireEvent.click(unregister);
 
-    expect(mockCallback).toBeCalled();
+    expect(mockCallback).toHaveBeenCalled();
   });
 
   it('supports extra items', async () => {
@@ -128,6 +128,6 @@ describe('ComponentContextMenu', () => {
     expect(item).toBeInTheDocument();
     fireEvent.click(item);
 
-    expect(extra.onClick).toBeCalled();
+    expect(extra.onClick).toHaveBeenCalled();
   });
 });
