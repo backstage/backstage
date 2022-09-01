@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-badges': patch
+'@backstage/plugin-badges-backend': patch
 '@backstage/plugin-catalog-backend': patch
 '@backstage/plugin-jenkins-backend': patch
 '@backstage/plugin-search-backend': patch
