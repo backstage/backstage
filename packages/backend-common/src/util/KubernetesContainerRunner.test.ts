@@ -112,7 +112,7 @@ describeIfKubernetes('KubernetesContainerRunner', () => {
         '/notWorkdir/app': '/app',
       },
     };
-    await expect(containerRunner.runContainer(runOptions)).rejects.toThrowError(
+    await expect(containerRunner.runContainer(runOptions)).rejects.toThrow(
       `Mounted '${hostDir}' dir should be subdirectories of '${
         options!.mountBase!.basePath
       }`,
@@ -151,7 +151,7 @@ describeIfKubernetes('KubernetesContainerRunner', () => {
       imageName: 'alpine',
       args: ['sleep', '10'],
     };
-    await expect(containerRunner.runContainer(runOptions)).rejects.toThrowError(
+    await expect(containerRunner.runContainer(runOptions)).rejects.toThrow(
       `Failed to complete in ${options.timeoutMs} ms`,
     );
   });
@@ -167,7 +167,7 @@ describeIfKubernetes('KubernetesContainerRunner', () => {
       imageName: 'alpine',
       args: ['fake'],
     };
-    await expect(containerRunner.runContainer(runOptions)).rejects.toThrowError(
+    await expect(containerRunner.runContainer(runOptions)).rejects.toThrow(
       `Container execution failed`,
     );
   });
@@ -183,7 +183,7 @@ describeIfKubernetes('KubernetesContainerRunner', () => {
       imageName: 'golang:1.17',
       args: ['echo', 'hello world'],
     };
-    await expect(containerRunner.runContainer(runOptions)).rejects.toThrowError(
+    await expect(containerRunner.runContainer(runOptions)).rejects.toThrow(
       'Kubernetes Job creation failed with the following error message: namespaces "fake" not found',
     );
   });
@@ -221,9 +221,7 @@ describeIfKubernetes('KubernetesContainerRunner', () => {
         imageName: 'golang:1.17',
         args: ['echo', 'hello world'],
       };
-      await expect(
-        containerRunner.runContainer(runOptions),
-      ).rejects.toThrowError(
+      await expect(containerRunner.runContainer(runOptions)).rejects.toThrow(
         'Kubernetes watch request failed with the following error message: Error: Forbidden',
       );
     });
