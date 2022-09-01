@@ -7,8 +7,11 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/lib/useAsync';
+import { AutocompleteProps } from '@material-ui/lab';
+import { ForwardRefExoticComponent } from 'react';
 import { InputBaseProps } from '@material-ui/core';
 import { JsonObject } from '@backstage/types';
+import { ListItemTextProps } from '@material-ui/core';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
@@ -74,6 +77,34 @@ export interface SearchApi {
 // @public (undocumented)
 export const searchApiRef: ApiRef<SearchApi>;
 
+// @public
+export const SearchAutocomplete: SearchAutocompleteComponent;
+
+// @public
+export type SearchAutocompleteComponent = <Option>(
+  props: SearchAutocompleteProps<Option>,
+) => JSX.Element;
+
+// @public
+export const SearchAutocompleteDefaultOption: ({
+  icon,
+  primaryText,
+  primaryTextTypographyProps,
+  secondaryText,
+  secondaryTextTypographyProps,
+  disableTextTypography,
+}: SearchAutocompleteDefaultOptionProps) => JSX.Element;
+
+// @public
+export type SearchAutocompleteDefaultOptionProps = {
+  icon?: ReactNode;
+  primaryText: ListItemTextProps['primary'];
+  primaryTextTypographyProps?: ListItemTextProps['primaryTypographyProps'];
+  secondaryText?: ListItemTextProps['secondary'];
+  secondaryTextTypographyProps?: ListItemTextProps['secondaryTypographyProps'];
+  disableTextTypography?: ListItemTextProps['disableTypography'];
+};
+
 // @public (undocumented)
 export type SearchAutocompleteFilterProps = SearchFilterComponentProps & {
   filterSelectedOptions?: boolean;
@@ -82,21 +113,20 @@ export type SearchAutocompleteFilterProps = SearchFilterComponentProps & {
 };
 
 // @public
-export const SearchBar: ({ onChange, ...props }: SearchBarProps) => JSX.Element;
+export type SearchAutocompleteProps<Option> = Omit<
+  AutocompleteProps<Option, undefined, undefined, boolean>,
+  'renderInput' | 'disableClearable' | 'multiple'
+> & {
+  'data-testid'?: string;
+  inputPlaceholder?: SearchBarProps['placeholder'];
+  inputDebounceTime?: SearchBarProps['debounceTime'];
+};
 
 // @public
-export const SearchBarBase: ({
-  onChange,
-  onKeyDown,
-  onSubmit,
-  debounceTime,
-  clearButton,
-  fullWidth,
-  value: defaultValue,
-  inputProps: defaultInputProps,
-  endAdornment: defaultEndAdornment,
-  ...props
-}: SearchBarBaseProps) => JSX.Element;
+export const SearchBar: ForwardRefExoticComponent<SearchBarProps>;
+
+// @public
+export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps>;
 
 // @public
 export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
@@ -116,9 +146,15 @@ export const SearchContextProvider: (
 ) => JSX.Element;
 
 // @public
-export type SearchContextProviderProps = PropsWithChildren<{
-  initialState?: SearchContextState;
-}>;
+export type SearchContextProviderProps =
+  | PropsWithChildren<{
+      initialState?: SearchContextState;
+      inheritParentContextIfAvailable?: never;
+    }>
+  | PropsWithChildren<{
+      initialState?: never;
+      inheritParentContextIfAvailable?: boolean;
+    }>;
 
 // @public (undocumented)
 export type SearchContextState = {
