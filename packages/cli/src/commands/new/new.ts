@@ -18,7 +18,7 @@ import os from 'os';
 import fs from 'fs-extra';
 import { join as joinPath } from 'path';
 import { OptionValues } from 'commander';
-import { FactoryRegistry } from '../../lib/create/FactoryRegistry';
+import { FactoryRegistry } from '../../lib/new/FactoryRegistry';
 import { paths } from '../../lib/paths';
 import { assertError } from '@backstage/errors';
 import { Task } from '../../lib/tasks';

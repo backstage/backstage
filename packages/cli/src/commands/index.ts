@@ -219,7 +219,7 @@ export function registerCommands(program: Command) {
       'The package registry to use for new packages',
     )
     .option('--no-private', 'Do not mark new packages as private')
-    .action(lazy(() => import('./create/create').then(m => m.default)));
+    .action(lazy(() => import('./new/new').then(m => m.default)));
 
   program
     .command('create', { hidden: true })
@@ -243,7 +243,7 @@ export function registerCommands(program: Command) {
       'The package registry to use for new packages',
     )
     .option('--no-private', 'Do not mark new packages as private')
-    .action(lazy(() => import('./create/create').then(m => m.default)));
+    .action(lazy(() => import('./new/new').then(m => m.default)));
 
   program
     .command('create-plugin', { hidden: true })
