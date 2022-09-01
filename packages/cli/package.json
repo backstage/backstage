@@ -248,6 +248,32 @@
                 "description": "The port that the frontend should be bound to. Only used for local development."
               }
             }
+          },
+          "https": {
+            "type": "object",
+            "description": "Only used for local development. The https object is passed to webpack in order to enable using https on localhost.",
+            "properties": {
+              "certificate": {
+                "type": "object",
+                "description": "Parent object containing certificate and the private key",
+                "required": [
+                  "key",
+                  "cert"
+                ],
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "visibility": "secret",
+                    "description": "Https Certificate private key. Use $file to load in a file"
+                  },
+                  "cert": {
+                    "type": "string",
+                    "visibility": "secret",
+                    "description": "Https Certificate. Use $file to load in a file"
+                  }
+                }
+              }
+            }
           }
         }
       }
