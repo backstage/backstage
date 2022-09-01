@@ -28,7 +28,7 @@
     "@backstage/plugin-search-common": "^1.0.1-next.0",
     "@elastic/elasticsearch": "^7.13.0",
     "@opensearch-project/opensearch": "^2.0.0",
-    "aws-os-connection": "^0.1.0",
+    "aws-os-connection": "^0.2.0",
     "aws-sdk": "^2.948.0",
     "elastic-builder": "^2.16.0",
     "lodash": "^4.17.21",

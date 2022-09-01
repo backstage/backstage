@@ -6530,7 +6530,7 @@ __metadata:
     "@elastic/elasticsearch-mock": ^1.0.0
     "@opensearch-project/opensearch": ^2.0.0
     "@short.io/opensearch-mock": ^0.3.1
-    aws-os-connection: ^0.1.0
+    aws-os-connection: ^0.2.0
     aws-sdk: ^2.948.0
     elastic-builder: ^2.16.0
     lodash: ^4.17.21
@@ -16999,15 +16999,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-os-connection@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "aws-os-connection@npm:0.1.0"
+"aws-os-connection@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "aws-os-connection@npm:0.2.0"
   dependencies:
     aws4: ^1.11.0
   peerDependencies:
-    "@opensearch-project/opensearch": 1.0.2
+    "@opensearch-project/opensearch": 2
     aws-sdk: ">=2"
-  checksum: 3d8b5c56ab5a86ecee31bd17c11632f6e597cbfa178dbe5d0f2c91336fdf95b23bbc62a1991b3121d4e83beeac5423877fbc8838247dc08aa479cd1b8bb0af8d
+  checksum: 1708ffd9bdc5f7bd6b8447f97859936a8657f4df567f61f12dacd040e6f1a25020bbea8027bb28f19fe27d171a0d3a5090c2d84d6f752bb04e387640413fec7c
   languageName: node
   linkType: hard
 
