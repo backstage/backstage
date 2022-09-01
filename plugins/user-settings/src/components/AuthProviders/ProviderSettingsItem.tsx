@@ -26,9 +26,10 @@ import {
 import {
   ApiRef,
   SessionApi,
+  ProfileInfoApi,
+  ProfileInfo,
   useApi,
   IconComponent,
-  SessionState,
 } from '@backstage/core-plugin-api';
 
 /** @public */
@@ -36,23 +37,27 @@ export const ProviderSettingsItem = (props: {
   title: string;
   description: string;
   icon: IconComponent;
-  apiRef: ApiRef<SessionApi>;
+  apiRef: ApiRef<ProfileInfoApi & SessionApi>;
 }) => {
   const { title, description, icon: Icon, apiRef } = props;
 
   const api = useApi(apiRef);
   const [signedIn, setSignedIn] = useState(false);
+  const [profileEmail, setProfileEmail] = useState('');
 
   useEffect(() => {
     let didCancel = false;
 
-    const subscription = api
-      .sessionState$()
-      .subscribe((sessionState: SessionState) => {
-        if (!didCancel) {
-          setSignedIn(sessionState === SessionState.SignedIn);
-        }
-      });
+    const subscription = api.sessionState$().subscribe(() => {
+      if (!didCancel) {
+        api
+          .getProfile({ optional: false })
+          .then((profile: ProfileInfo | undefined) => {
+            setSignedIn(profile !== undefined);
+            setProfileEmail(profile?.email ?? '');
+          });
+      }
+    });
 
     return () => {
       didCancel = true;
@@ -69,7 +74,9 @@ export const ProviderSettingsItem = (props: {
         primary={title}
         secondary={
           <Tooltip placement="top" arrow title={description}>
-            <span>{description}</span>
+            <span>
+              {description}. Signed in as {profileEmail}
+            </span>
           </Tooltip>
         }
         secondaryTypographyProps={{ noWrap: true, style: { width: '80%' } }}
