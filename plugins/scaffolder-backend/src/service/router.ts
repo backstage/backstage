@@ -75,6 +75,13 @@ function isSupportedTemplate(entity: TemplateEntityV1beta3) {
   return entity.apiVersion === 'scaffolder.backstage.io/v1beta3';
 }
 
+/*
+ * @deprecated This function remains as the DefaultIdentityClient behaves slightly differently to the pre-existing
+ * scaffolder behaviour. Specifically if the token fails to parse, the DefaultIdentityClient will raise an error.
+ * The scaffolder did not raise an error in this case. As such we chose to allow it to behave as it did previously
+ * until someone explicitly passes an IdentityApi. When we have reasonable confidence that most backstage deployments
+ * are using the IdentityApi, we can remove this function.
+ */
 function buildDefaultIdentityClient({
   logger,
 }: {
