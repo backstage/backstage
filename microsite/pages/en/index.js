@@ -33,10 +33,11 @@ class Index extends React.Component {
             </Banner.Dismissable>
             <Banner.Dismissable storageKey="2022-09-01-backstagecon-cta">
               <div>
-                🤩 Join us for the first {' '}
+                🤩 Join us for the first{' '}
                 <a href="https://events.linuxfoundation.org/backstagecon-north-america/">
                   BackstageCon
-                </a>{' '} on October 24, 2022!
+                </a>{' '}
+                on October 24, 2022!
               </div>
             </Banner.Dismissable>
           </Banner.Container>
