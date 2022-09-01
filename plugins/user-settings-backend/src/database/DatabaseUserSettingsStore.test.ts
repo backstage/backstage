@@ -29,9 +29,18 @@ const databases = TestDatabases.create({
 
 async function createStore(databaseId: TestDatabaseId) {
   const knex = await databases.init(databaseId);
+  const databaseManager = {
+    getClient: async () => knex,
+    migrations: {
+      skip: false,
+    },
+  };
+
   return {
     knex,
-    storage: await DatabaseUserSettingsStore.create(knex),
+    storage: await DatabaseUserSettingsStore.create({
+      database: databaseManager,
+    }),
   };
 }
 

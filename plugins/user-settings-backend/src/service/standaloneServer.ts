@@ -52,7 +52,9 @@ export async function startStandaloneServer(
   } as IdentityClient;
 
   const router = await createRouter({
-    userSettingsStore: await DatabaseUserSettingsStore.create(database),
+    userSettingsStore: await DatabaseUserSettingsStore.create({
+      database: { getClient: async () => database },
+    }),
     identity: identityMock,
   });
 

@@ -13,8 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  createRouter,
-  createUserSettingsStore,
-  type RouterOptions,
-} from './router';
+export { createRouter, type RouterOptions } from './router';

@@ -13,17 +13,14 @@ export function createRouter<T>(
   options: RouterOptions<T>,
 ): Promise<express.Router>;
 
-// @public (undocumented)
-export function createUserSettingsStore(
-  database: PluginDatabaseManager,
-): Promise<DatabaseUserSettingsStore>;
-
 // @public
 export class DatabaseUserSettingsStore
   implements UserSettingsStore<Knex.Transaction>
 {
   // (undocumented)
-  static create(knex: Knex): Promise<DatabaseUserSettingsStore>;
+  static create(options: {
+    database: PluginDatabaseManager;
+  }): Promise<DatabaseUserSettingsStore>;
   // (undocumented)
   delete(
     tx: Knex.Transaction<any, any[]>,
