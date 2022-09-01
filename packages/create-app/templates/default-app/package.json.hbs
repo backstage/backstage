@@ -13,7 +13,7 @@
     "build-image": "yarn workspace backend build-image",
     "tsc": "tsc",
     "tsc:full": "tsc --skipLibCheck false --incremental false",
-    "clean": "backstage-cli clean && lerna run clean",
+    "clean": "backstage-cli repo clean",
     "diff": "lerna run diff --",
     "test": "backstage-cli test",
     "test:all": "lerna run test -- --coverage",

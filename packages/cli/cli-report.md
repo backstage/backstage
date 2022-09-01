@@ -415,6 +415,7 @@ Options:
 Commands:
   build [options]
   lint [options]
+  clean
   help [command]
 ```
 
@@ -426,6 +427,15 @@ Usage: backstage-cli repo build [options]
 Options:
   --all
   --since <ref>
+  -h, --help
+```
+
+### `backstage-cli repo clean`
+
+```
+Usage: backstage-cli repo clean [options]
+
+Options:
   -h, --help
 ```
 
