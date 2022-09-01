@@ -53,6 +53,8 @@ interface RoutingV2CollectorContext {
   isElementAncestor?: boolean;
 }
 
+// This collects all the mount points and their plugins within an element tree.
+// Unlike regular traversal this ignores all other things, like path props and mount point gatherers.
 function collectSubTree(
   node: ReactNode,
   entries = new Array<{ routeRef: RouteRef; plugin?: BackstagePlugin }>(),
@@ -60,12 +62,6 @@ function collectSubTree(
   Children.forEach(node, element => {
     if (!isValidElement(element)) {
       return;
-    }
-
-    if (element.props.path) {
-      throw new Error(
-        `Elements within the element prop tree may not have paths, found "${element.props.path}"`,
-      );
     }
 
     const routeRef = getComponentData<RouteRef>(element, 'core.mountPoint');
@@ -87,6 +83,16 @@ export const routingV2Collector = createCollector(
     objects: new Array<BackstageRouteObject>(),
   }),
   (acc, node, parent, ctx?: RoutingV2CollectorContext) => {
+    // If we're in an element prop, ignore everything
+    if (ctx?.isElementAncestor) {
+      return ctx;
+    }
+
+    // Start ignoring everything if we enter an element prop
+    if (parent?.props.element === node) {
+      return { ...ctx, isElementAncestor: true };
+    }
+
     const pathProp: unknown = node.props?.path;
 
     const mountPoint = getComponentData<RouteRef>(node, 'core.mountPoint');
@@ -96,15 +102,6 @@ export const routingV2Collector = createCollector(
           node,
         )}"`,
       );
-    }
-
-    // If we're in an element prop, ignore everything
-    if (ctx?.isElementAncestor) {
-      return ctx;
-    }
-    // Start ignoring everything if we enter an element prop
-    if (parent?.props.element === node) {
-      return { ...ctx, isElementAncestor: true };
     }
 
     const parentChildren = ctx?.obj?.children ?? acc.objects;
