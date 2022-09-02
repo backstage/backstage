@@ -61,6 +61,7 @@ export type AlertDisplayProps = {
     vertical: 'top' | 'bottom';
     horizontal: 'left' | 'center' | 'right';
   };
+  transientTimeoutMs?: number;
 };
 
 // @public

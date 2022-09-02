@@ -22,16 +22,6 @@ import { Alert } from '@material-ui/lab';
 import pluralize from 'pluralize';
 import React, { useEffect, useState } from 'react';
 
-// TODO: improve on this and promote to a shared component for use by all apps.
-
-/** @public */
-export type AlertDisplayProps = {
-  anchorOrigin?: {
-    vertical: 'top' | 'bottom';
-    horizontal: 'left' | 'center' | 'right';
-  };
-};
-
 /**
  * Displays alerts from {@link @backstage/core-plugin-api#AlertApi}
  *
@@ -40,11 +30,27 @@ export type AlertDisplayProps = {
  *
  * Shown as SnackBar at the center top of the page by default. Configurable with props.
  */
+
+// TODO: improve on this and promote to a shared component for use by all apps.
+
+export type AlertDisplayProps = {
+  anchorOrigin?: {
+    vertical: 'top' | 'bottom';
+    horizontal: 'left' | 'center' | 'right';
+  };
+  transientTimeoutMs?: number;
+};
+
+/** @public */
 export function AlertDisplay(props: AlertDisplayProps) {
   const [messages, setMessages] = useState<Array<AlertMessage>>([]);
   const alertApi = useApi(alertApiRef);
 
-  const { anchorOrigin = { vertical: 'top', horizontal: 'center' } } = props;
+  const {
+    anchorOrigin = { vertical: 'top', horizontal: 'center' },
+    transientTimeoutMs,
+  } = props;
+  const timeoutMs = transientTimeoutMs ?? 5000;
 
   useEffect(() => {
     const subscription = alertApi
@@ -55,6 +61,14 @@ export function AlertDisplay(props: AlertDisplayProps) {
       subscription.unsubscribe();
     };
   }, [alertApi]);
+
+  useEffect(() => {
+    const [current] = messages;
+    if (current && current.transient)
+      setTimeout(() => {
+        setMessages(msgs => msgs.filter(msg => msg !== current));
+      }, timeoutMs);
+  }, [messages, timeoutMs]);
 
   if (messages.length === 0) {
     return null;
