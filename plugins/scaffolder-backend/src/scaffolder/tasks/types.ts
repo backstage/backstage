@@ -128,6 +128,7 @@ export interface TaskBroker {
     options: TaskBrokerDispatchOptions,
   ): Promise<TaskBrokerDispatchResult>;
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
+  closeStaleTasks(): Promise<void>;
   event$(options: {
     taskId: string;
     after: number | undefined;
