@@ -136,7 +136,6 @@ async function getProjectConfig(targetPath, displayName) {
         {
           sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
           jsc: {
-            target: 'es2019',
             parser: {
               syntax: 'ecmascript',
             },
@@ -165,7 +164,23 @@ async function getProjectConfig(targetPath, displayName) {
           },
         },
       ],
-      '\\.tsx?$': [
+      '\\.ts$': [
+        require.resolve('./jestSwcTransform'),
+        {
+          sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
+          jsc: {
+            parser: {
+              syntax: 'typescript',
+            },
+            transform: {
+              react: {
+                runtime: 'automatic',
+              },
+            },
+          },
+        },
+      ],
+      '\\.tsx$': [
         require.resolve('./jestSwcTransform'),
         {
           sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
