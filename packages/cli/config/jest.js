@@ -131,7 +131,7 @@ async function getProjectConfig(targetPath, displayName) {
     },
 
     transform: {
-      '\\.(mjs|cjs)$': [
+      '\\.(mjs|cjs|js)$': [
         require.resolve('./jestSwcTransform'),
         {
           sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
@@ -147,7 +147,7 @@ async function getProjectConfig(targetPath, displayName) {
           },
         },
       ],
-      '\\.jsx?$': [
+      '\\.jsx$': [
         require.resolve('./jestSwcTransform'),
         {
           sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
@@ -171,11 +171,6 @@ async function getProjectConfig(targetPath, displayName) {
           jsc: {
             parser: {
               syntax: 'typescript',
-            },
-            transform: {
-              react: {
-                runtime: 'automatic',
-              },
             },
           },
         },
