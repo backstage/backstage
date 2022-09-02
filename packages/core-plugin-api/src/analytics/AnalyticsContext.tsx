@@ -91,7 +91,7 @@ export const AnalyticsContext = (options: {
  * @param values - Analytics context key/value pairs.
  * @internal
  */
-export function withAnalyticsContext<P>(
+export function withAnalyticsContext<P extends {}>(
   Component: React.ComponentType<P>,
   values: AnalyticsContextValue,
 ) {
