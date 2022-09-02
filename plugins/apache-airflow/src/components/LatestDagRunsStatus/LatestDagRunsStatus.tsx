@@ -33,10 +33,13 @@ import {
   StatusOK,
   StatusPending,
   StatusRunning,
+  Link,
 } from '@backstage/core-components';
 import DirectionsRun from '@material-ui/icons/DirectionsRun';
 import Check from '@material-ui/icons/Check';
 import CalendarToday from '@material-ui/icons/CalendarToday';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import qs from 'qs';
 
 interface LatestDagRunsStatusProps {
   dagId: string;
@@ -49,7 +52,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const DagRunTooltip = ({ dagRun }: { dagRun: DagRun }) => {
+const DagRunTooltip = ({
+  dagRun,
+  graphUrl,
+}: {
+  dagRun: DagRun;
+  graphUrl: string;
+}) => {
   return (
     <List>
       <ListItem>
@@ -70,6 +79,16 @@ const DagRunTooltip = ({ dagRun }: { dagRun: DagRun }) => {
         </ListItemIcon>
         <Typography>
           {dagRun.end_date ? new Date(dagRun.end_date).toLocaleString() : '-'}
+        </Typography>
+      </ListItem>
+      <ListItem>
+        <ListItemIcon aria-label="Link To Detail">
+          <MoreHorizIcon />
+        </ListItemIcon>
+        <Typography>
+          <Link to={graphUrl} color="inherit">
+            Link To DAG Run Detail
+          </Link>
         </Typography>
       </ListItem>
     </List>
@@ -115,12 +134,17 @@ export const LatestDagRunsStatus = ({
     }
 
     const key = dagRun.dag_id + dagRun.dag_run_id;
-
+    const dagRunParams = {
+      dag_id: dagRun.dag_id,
+      execution_date: dagRun.logical_date,
+    };
+    const graphUrl = `${apiClient.baseUrl}graph?${qs.stringify(dagRunParams)}`;
     return (
       <Tooltip
-        title={<DagRunTooltip dagRun={dagRun} />}
+        title={<DagRunTooltip dagRun={dagRun} graphUrl={graphUrl} />}
         key={key}
         classes={{ tooltip: classes.noMaxWidth }}
+        interactive
       >
         <Box width="fit-content" component="span">
           {status()}
