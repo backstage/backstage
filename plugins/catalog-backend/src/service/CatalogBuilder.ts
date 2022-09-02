@@ -96,6 +96,7 @@ import {
   RESOURCE_TYPE_CATALOG_ENTITY,
 } from '@backstage/plugin-catalog-common';
 import { AuthorizedLocationService } from './AuthorizedLocationService';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 
 /** @public */
 export type CatalogEnvironment = {
@@ -104,6 +105,7 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
+  identity?: IdentityApi;
 };
 
 /**
@@ -382,7 +384,7 @@ export class CatalogBuilder {
     processingEngine: CatalogProcessingEngine;
     router: Router;
   }> {
-    const { config, database, logger, permissions } = this.env;
+    const { config, database, logger, permissions, identity } = this.env;
 
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
@@ -495,6 +497,7 @@ export class CatalogBuilder {
       logger,
       config,
       permissionIntegrationRouter,
+      identity,
     });
 
     await connectEntityProviders(processingDatabase, entityProviders);

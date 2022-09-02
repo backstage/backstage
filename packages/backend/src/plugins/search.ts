@@ -97,5 +97,6 @@ export default async function createPlugin(
     permissions: env.permissions,
     config: env.config,
     logger: env.logger,
+    identity: env.identity,
   });
 }

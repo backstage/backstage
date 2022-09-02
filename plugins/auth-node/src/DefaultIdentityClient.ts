@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { AuthenticationError, NotAllowedError } from '@backstage/errors';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
+import { AuthenticationError } from '@backstage/errors';
 import {
   createRemoteJWKSet,
   decodeJwt,
@@ -46,6 +49,7 @@ export type IdentityClientOptions = {
   /** JWS "alg" (Algorithm) Header Parameter values. Defaults to an array containing just ES256.
    * More info on supported algorithms: https://github.com/panva/jose */
   algorithms?: string[];
+  serverTokenManager?: TokenManager;
 };
 
 /**
@@ -61,6 +65,7 @@ export class DefaultIdentityClient implements IdentityApi {
   private readonly algorithms?: string[];
   private keyStore?: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput>;
   private keyStoreUpdated: number = 0;
+  private readonly serverTokenManager: TokenManager | undefined;
 
   /**
    * Create a new {@link DefaultIdentityClient} instance.
@@ -75,18 +80,27 @@ export class DefaultIdentityClient implements IdentityApi {
     this.algorithms = options.hasOwnProperty('algorithms')
       ? options.algorithms
       : ['ES256'];
+    this.serverTokenManager = options.serverTokenManager;
   }
 
   async getIdentity({ request }: IdentityApiGetIdentityRequest) {
-    if (!request.headers.authorization) {
+    const token = getBearerTokenFromAuthorizationHeader(
+      request.headers.authorization,
+    );
+
+    if (!token) {
       return undefined;
     }
+
     try {
-      return await this.authenticate(
-        getBearerTokenFromAuthorizationHeader(request.headers.authorization),
-      );
+      return await this.authenticate(token);
     } catch (e) {
-      throw new NotAllowedError(e.message);
+      if (this.serverTokenManager) {
+        // really this should return some sore of identity that represents the backend.
+        await this.serverTokenManager.authenticate(token);
+        return undefined;
+      }
+      throw new AuthenticationError(e.message);
     }
   }
 

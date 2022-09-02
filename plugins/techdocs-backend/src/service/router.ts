@@ -40,7 +40,10 @@ import {
 } from './DocsBuildStrategy';
 import * as winston from 'winston';
 import { PassThrough } from 'stream';
-import { IdentityApi } from '@backstage/plugin-auth-node';
+import {
+  getBearerTokenFromAuthorizationHeader,
+  IdentityApi,
+} from '@backstage/plugin-auth-node';
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
@@ -142,16 +145,27 @@ export async function createRouter(
     cache,
   });
 
+  async function getRequestToken(
+    request: express.Request,
+  ): Promise<string | undefined> {
+    if (identity) {
+      const user = await identity.getIdentity({ request });
+      if (user?.token) {
+        return user.token;
+      }
+    }
+    return getBearerTokenFromAuthorizationHeader(request.headers.authorization);
+  }
+
   router.get('/metadata/techdocs/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
     const entityName = { kind, namespace, name };
-    const user = identity
-      ? await identity.getIdentity({ request: req })
-      : undefined;
-    const token = user ? user.token : getBearerToken(req.headers.authorization);
 
     // Verify that the related entity exists and the current user has permission to view it.
-    const entity = await entityLoader.load(entityName, token);
+    const entity = await entityLoader.load(
+      entityName,
+      await getRequestToken(req),
+    );
 
     if (!entity) {
       throw new NotFoundError(
@@ -181,12 +195,11 @@ export async function createRouter(
   router.get('/metadata/entity/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
     const entityName = { kind, namespace, name };
-    const user = identity
-      ? await identity.getIdentity({ request: req })
-      : undefined;
-    const token = user ? user.token : getBearerToken(req.headers.authorization);
 
-    const entity = await entityLoader.load(entityName, token);
+    const entity = await entityLoader.load(
+      entityName,
+      await getRequestToken(req),
+    );
 
     if (!entity) {
       throw new NotFoundError(
@@ -216,10 +229,7 @@ export async function createRouter(
   // If a build is required, responds with a success when finished
   router.get('/sync/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
-    const user = identity
-      ? await identity.getIdentity({ request: req })
-      : undefined;
-    const token = user ? user.token : getBearerToken(req.headers.authorization);
+    const token = await getRequestToken(req);
 
     const entity = await entityLoader.load({ kind, namespace, name }, token);
 
@@ -278,14 +288,11 @@ export async function createRouter(
       async (req, _res, next) => {
         const { kind, namespace, name } = req.params;
         const entityName = { kind, namespace, name };
-        const user = identity
-          ? await identity.getIdentity({ request: req })
-          : undefined;
-        const token = user
-          ? user.token
-          : getBearerToken(req.headers.authorization);
 
-        const entity = await entityLoader.load(entityName, token);
+        const entity = await entityLoader.load(
+          entityName,
+          await getRequestToken(req),
+        );
 
         if (!entity) {
           throw new NotFoundError(
@@ -307,13 +314,6 @@ export async function createRouter(
   router.use('/static/docs', publisher.docsRouter());
 
   return router;
-}
-
-/*
- * @deprecated Please use identity.getIdentity({ request }) to retrieve the user's token
- */
-function getBearerToken(header?: string): string | undefined {
-  return header?.match(/(?:Bearer)\s+(\S+)/i)?.[1];
 }
 
 /**

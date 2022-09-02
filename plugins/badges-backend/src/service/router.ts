@@ -21,7 +21,10 @@ import {
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
-import { IdentityApi } from '@backstage/plugin-auth-node';
+import {
+  IdentityApi,
+  getBearerTokenFromAuthorizationHeader,
+} from '@backstage/plugin-auth-node';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import { BadgeBuilder, DefaultBadgeBuilder } from '../lib/BadgeBuilder';
@@ -49,12 +52,21 @@ export async function createRouter(
     new DefaultBadgeBuilder(options.badgeFactories || {});
   const router = Router();
 
+  async function getRequestToken(
+    request: express.Request,
+  ): Promise<string | undefined> {
+    if (identity) {
+      const user = await identity.getIdentity({ request });
+      if (user?.token) {
+        return user.token;
+      }
+    }
+    return getBearerTokenFromAuthorizationHeader(request.headers.authorization);
+  }
+
   router.get('/entity/:namespace/:kind/:name/badge-specs', async (req, res) => {
     const { namespace, kind, name } = req.params;
-    const user = identity
-      ? await identity.getIdentity({ request: req })
-      : undefined;
-    const token = user ? user.token : getBearerToken(req.headers.authorization);
+    const token = await getRequestToken(req);
     const entity = await catalog.getEntityByRef(
       { namespace, kind, name },
       {
@@ -93,12 +105,7 @@ export async function createRouter(
     '/entity/:namespace/:kind/:name/badge/:badgeId',
     async (req, res) => {
       const { namespace, kind, name, badgeId } = req.params;
-      const user = identity
-        ? await identity.getIdentity({ request: req })
-        : undefined;
-      const token = user
-        ? user.token
-        : getBearerToken(req.headers.authorization);
+      const token = await getRequestToken(req);
 
       const entity = await catalog.getEntityByRef(
         { namespace, kind, name },
@@ -157,11 +164,4 @@ async function getBadgeUrl(
 ): Promise<string> {
   const baseUrl = await options.discovery.getExternalBaseUrl('badges');
   return `${baseUrl}/entity/${namespace}/${kind}/${name}/badge/${badgeId}`;
-}
-
-/*
- * @deprecated Please use identity.getIdentity({ request }) instead of this.
- */
-function getBearerToken(header?: string): string | undefined {
-  return header?.match(/Bearer\s+(\S+)/i)?.[1];
 }

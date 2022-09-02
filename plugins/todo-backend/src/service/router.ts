@@ -16,7 +16,10 @@
 
 import { CompoundEntityRef, parseEntityRef } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
-import { IdentityApi } from '@backstage/plugin-auth-node';
+import {
+  getBearerTokenFromAuthorizationHeader,
+  IdentityApi,
+} from '@backstage/plugin-auth-node';
 import express from 'express';
 import Router from 'express-promise-router';
 import { TodoService } from './types';
@@ -44,11 +47,25 @@ export async function createRouter(
   const router = Router();
   router.use(express.json());
 
+  async function getRequestToken(
+    request: express.Request,
+  ): Promise<string | undefined> {
+    if (identity) {
+      const user = await identity.getIdentity({ request });
+      if (user?.token) {
+        return user.token;
+      }
+    }
+    return getBearerTokenFromAuthorizationHeader(request.headers.authorization);
+  }
+
   router.get('/v1/todos', async (req, res) => {
     const offset = parseIntegerParam(req.query.offset, 'offset query');
     const limit = parseIntegerParam(req.query.limit, 'limit query');
     const orderBy = parseOrderByParam(req.query.orderBy, TODO_FIELDS);
     const filters = parseFilterParam(req.query.filter, TODO_FIELDS);
+
+    const token = await getRequestToken(req);
 
     const entityRef = req.query.entity;
     if (entityRef && typeof entityRef !== 'string') {
@@ -62,10 +79,6 @@ export async function createRouter(
         throw new InputError(`Invalid entity ref, ${error}`);
       }
     }
-    const user = identity
-      ? await identity.getIdentity({ request: req })
-      : undefined;
-    const token = user ? user.token : getBearerToken(req.headers.authorization);
     const todos = await todoService.listTodos(
       {
         entity,
@@ -168,11 +181,4 @@ export function parseFilterParam<T extends readonly string[]>(
   }
 
   return filters;
-}
-
-/*
- * @deprecated Please use identity.getIdentity({ request }) instead of this.
- */
-function getBearerToken(header?: string): string | undefined {
-  return header?.match(/Bearer\s+(\S+)/i)?.[1];
 }

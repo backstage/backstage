@@ -41,5 +41,6 @@ export default async function createPlugin(
 
   return await createRouter({
     todoService,
+    identity: env.identity,
   });
 }

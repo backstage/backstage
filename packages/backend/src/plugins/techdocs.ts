@@ -63,5 +63,6 @@ export default async function createPlugin(
     config: env.config,
     discovery: env.discovery,
     cache: env.cache,
+    identity: env.identity,
   });
 }

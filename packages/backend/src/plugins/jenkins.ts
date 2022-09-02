@@ -33,5 +33,6 @@ export default async function createPlugin(
       catalog,
       config: env.config,
     }),
+    identity: env.identity,
   });
 }
