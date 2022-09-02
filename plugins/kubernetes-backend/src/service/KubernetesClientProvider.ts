@@ -22,6 +22,10 @@ import {
 } from '@kubernetes/client-node';
 import { ClusterDetails } from '../types/types';
 
+/**
+ *
+ * @alpha
+ */
 export class KubernetesClientProvider {
   // visible for testing
   getKubeConfig(clusterDetails: ClusterDetails) {

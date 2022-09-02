@@ -5,18 +5,24 @@
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import { CoreV1Api } from '@kubernetes/client-node';
+import { Credentials } from 'aws-sdk';
+import { CustomObjectsApi } from '@kubernetes/client-node';
 import { Duration } from 'luxon';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import type { FetchResponse } from '@backstage/plugin-kubernetes-common';
 import type { JsonObject } from '@backstage/types';
+import { KubeConfig } from '@kubernetes/client-node';
 import type { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
-import type { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
+import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { Logger } from 'winston';
+import { Metrics } from '@kubernetes/client-node';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PodStatus } from '@kubernetes/client-node/dist/top';
+import { TokenCredential } from '@azure/identity';
 
 // @alpha (undocumented)
 export interface AWSClusterDetails extends ClusterDetails {
@@ -27,7 +33,43 @@ export interface AWSClusterDetails extends ClusterDetails {
 }
 
 // @alpha (undocumented)
+export class AwsIamKubernetesAuthTranslator
+  implements KubernetesAuthTranslator
+{
+  // (undocumented)
+  awsGetCredentials: () => Promise<Credentials>;
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: AWSClusterDetails,
+  ): Promise<AWSClusterDetails>;
+  // (undocumented)
+  getBearerToken(
+    clusterName: string,
+    assumeRole?: string,
+    externalId?: string,
+  ): Promise<string>;
+  // (undocumented)
+  getCredentials(
+    assumeRole?: string,
+    externalId?: string,
+  ): Promise<SigningCreds>;
+  // (undocumented)
+  validCredentials(creds: SigningCreds): boolean;
+}
+
+// @alpha (undocumented)
 export interface AzureClusterDetails extends ClusterDetails {}
+
+// @alpha (undocumented)
+export class AzureIdentityKubernetesAuthTranslator
+  implements KubernetesAuthTranslator
+{
+  constructor(logger: Logger, tokenCredential?: TokenCredential);
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: AzureClusterDetails,
+  ): Promise<AzureClusterDetails>;
+}
 
 // @alpha (undocumented)
 export interface ClusterDetails {
@@ -81,6 +123,47 @@ export interface FetchResponseWrapper {
 
 // @alpha (undocumented)
 export interface GKEClusterDetails extends ClusterDetails {}
+
+// @alpha (undocumented)
+export class GoogleKubernetesAuthTranslator
+  implements KubernetesAuthTranslator
+{
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: GKEClusterDetails,
+    authConfig: KubernetesRequestAuth,
+  ): Promise<GKEClusterDetails>;
+}
+
+// @alpha (undocumented)
+export class GoogleServiceAccountAuthTranslator
+  implements KubernetesAuthTranslator
+{
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: GKEClusterDetails,
+  ): Promise<GKEClusterDetails>;
+}
+
+// @alpha (undocumented)
+export interface KubernetesAuthTranslator {
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: ClusterDetails,
+    authConfig: KubernetesRequestAuth,
+  ): Promise<ClusterDetails>;
+}
+
+// @alpha (undocumented)
+export class KubernetesAuthTranslatorGenerator {
+  // (undocumented)
+  static getKubernetesAuthTranslatorInstance(
+    authProvider: string,
+    options: {
+      logger: Logger;
+    },
+  ): KubernetesAuthTranslator;
+}
 
 // @alpha (undocumented)
 export class KubernetesBuilder {
@@ -151,6 +234,18 @@ export type KubernetesBuilderReturn = Promise<{
   objectsProvider: KubernetesObjectsProvider;
   serviceLocator: KubernetesServiceLocator;
 }>;
+
+// @alpha (undocumented)
+export class KubernetesClientProvider {
+  // (undocumented)
+  getCoreClientByClusterDetails(clusterDetails: ClusterDetails): CoreV1Api;
+  // (undocumented)
+  getCustomObjectsClient(clusterDetails: ClusterDetails): CustomObjectsApi;
+  // (undocumented)
+  getKubeConfig(clusterDetails: ClusterDetails): KubeConfig;
+  // (undocumented)
+  getMetricsClient(clusterDetails: ClusterDetails): Metrics;
+}
 
 // @alpha
 export interface KubernetesClustersSupplier {
@@ -239,6 +334,14 @@ export interface KubernetesServiceLocator {
 }
 
 // @alpha (undocumented)
+export class NoopKubernetesAuthTranslator implements KubernetesAuthTranslator {
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: ServiceAccountClusterDetails,
+  ): Promise<ServiceAccountClusterDetails>;
+}
+
+// @alpha (undocumented)
 export interface ObjectFetchParams {
   // (undocumented)
   clusterDetails:
@@ -274,6 +377,15 @@ export interface ObjectToFetch {
 }
 
 // @alpha (undocumented)
+export class OidcKubernetesAuthTranslator implements KubernetesAuthTranslator {
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: ClusterDetails,
+    authConfig: KubernetesRequestAuth,
+  ): Promise<ClusterDetails>;
+}
+
+// @alpha (undocumented)
 export interface RouterOptions {
   // (undocumented)
   catalogApi: CatalogApi;
@@ -292,4 +404,11 @@ export interface ServiceAccountClusterDetails extends ClusterDetails {}
 
 // @alpha (undocumented)
 export type ServiceLocatorMethod = 'multiTenant' | 'http';
+
+// @alpha (undocumented)
+export type SigningCreds = {
+  accessKeyId: string | undefined;
+  secretAccessKey: string | undefined;
+  sessionToken: string | undefined;
+};
 ```
