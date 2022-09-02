@@ -78,7 +78,11 @@ export function EmptyState(props: Props) {
         </Grid>
       </Grid>
       <Grid item xs={12} md={6} className={classes.imageContainer}>
-        {typeof missing === 'string' ? <EmptyStateImage missing={missing} /> : missing.customImage}
+        {typeof missing === 'string' ? (
+          <EmptyStateImage missing={missing} />
+        ) : (
+          missing.customImage
+        )}
       </Grid>
     </Grid>
   );
