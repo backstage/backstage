@@ -112,9 +112,9 @@ describeIfKubernetes('KubernetesContainerRunner', () => {
       },
     };
     await expect(containerRunner.runContainer(runOptions)).rejects.toThrow(
-      `Mounted /notWorkdir/app dir should be subdirectories of '${
+      `Mounted '/notWorkdir/app' dir should be subdirectories of '${
         options!.mountBase!.basePath
-      }`,
+      }'`,
     );
   });
 

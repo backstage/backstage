@@ -32,11 +32,29 @@ import {
 import { v4 as uuid } from 'uuid';
 import { Request } from 'request';
 
+/**
+ * An existing Kubernetes volume that will be used as base for mounts.
+ *
+ * Every mount must start with the 'basePath'.
+ *
+ * @public
+ */
 export type MountBaseOptions = {
   volumeName: string;
   basePath: string;
 };
 
+/**
+ * Options to create a {@link KubernetesContainerRunner}
+ *
+ * Kubernetes Jobs will be created on the provided 'namespace'
+ * and their names will be prefixed with the provided 'name'.
+ *
+ * 'podTemplate' defines a Pod template for the Jobs. It has to include
+ * a volume definition named as the {@link MountBaseOptions} 'volumeName'.
+ *
+ * @public
+ */
 export type KubernetesContainerRunnerOptions = {
   kubeConfig: KubeConfig;
   name: string;
@@ -48,6 +66,8 @@ export type KubernetesContainerRunnerOptions = {
 
 /**
  * A {@link ContainerRunner} for Kubernetes.
+ *
+ * Runs containers leveraging Jobs on a Kubernetes cluster
  *
  * @public
  */
