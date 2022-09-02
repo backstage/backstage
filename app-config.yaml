@@ -278,7 +278,7 @@ scaffolder:
   # defaultCommitMessage: 'Initial commit'
   # Use to customize when will stale tasks be marked as closed
   # taskTimeout:
-  #   ms: 3600000 # 1hr
+  #   seconds: 120
   #   taskTimeoutMessage: 'This task was canceled as it timed out'
 
 auth:

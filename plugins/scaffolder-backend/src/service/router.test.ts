@@ -131,16 +131,17 @@ describe('createRouter', () => {
     },
   };
 
-  beforeEach(async () => {
-    const logger = getVoidLogger();
-    const databaseTaskStore = await DatabaseTaskStore.create({
-      database: createDatabase(),
-    });
-    taskBroker = new StorageTaskBroker(
-      databaseTaskStore,
-      logger,
-      new ConfigReader({ scaffolder: {} }),
-    );
+  describe('not providing an identity api', () => {
+    beforeEach(async () => {
+      const logger = getVoidLogger();
+      const databaseTaskStore = await DatabaseTaskStore.create({
+        database: createDatabase(),
+      });
+      taskBroker = new StorageTaskBroker(
+        databaseTaskStore,
+        logger,
+        new ConfigReader({ scaffolder: {} }),
+      );
 
       jest.spyOn(taskBroker, 'dispatch');
       jest.spyOn(taskBroker, 'get');
@@ -562,11 +563,9 @@ describe('createRouter', () => {
         expect(responseDataFn).toHaveBeenCalledTimes(2);
         expect(responseDataFn).toHaveBeenCalledWith(`event: log
 data: {"id":0,"taskId":"a-random-id","type":"log","createdAt":"","body":{"message":"My log message"}}
-
 `);
         expect(responseDataFn).toHaveBeenCalledWith(`event: completion
 data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{"message":"Finished!"}}
-
 `);
 
         expect(taskBroker.event$).toHaveBeenCalledTimes(1);
@@ -722,7 +721,11 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       const databaseTaskStore = await DatabaseTaskStore.create({
         database: createDatabase(),
       });
-      taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+      taskBroker = new StorageTaskBroker(
+        databaseTaskStore,
+        logger,
+        new ConfigReader({}),
+      );
 
       jest.spyOn(taskBroker, 'dispatch');
       jest.spyOn(taskBroker, 'get');
@@ -1142,11 +1145,9 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         expect(responseDataFn).toHaveBeenCalledTimes(2);
         expect(responseDataFn).toHaveBeenCalledWith(`event: log
 data: {"id":0,"taskId":"a-random-id","type":"log","createdAt":"","body":{"message":"My log message"}}
-
 `);
         expect(responseDataFn).toHaveBeenCalledWith(`event: completion
 data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{"message":"Finished!"}}
-
 `);
 
         expect(taskBroker.event$).toHaveBeenCalledTimes(1);
