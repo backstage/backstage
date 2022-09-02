@@ -33,7 +33,7 @@ export function requestLoggingHandler(logger?: Logger): RequestHandler {
 
   return morgan('combined', {
     stream: {
-      write(message: String) {
+      write(message: string) {
         actualLogger.info(message.trimEnd());
       },
     },
