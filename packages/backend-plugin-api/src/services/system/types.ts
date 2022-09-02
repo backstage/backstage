@@ -41,7 +41,9 @@ export type InternalServiceRef<T> = ServiceRef<T> & {
    * The default factory that will be used to create service
    * instances if no other factory is provided.
    */
-  __defaultFactory?: (service: ServiceRef<T>) => Promise<ServiceFactory<T>>;
+  __defaultFactory?: (
+    service: ServiceRef<T>,
+  ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
 };
 
 /** @public */
@@ -67,7 +69,9 @@ export type ServiceFactory<TService = unknown> = {
  */
 export function createServiceRef<T>(options: {
   id: string;
-  defaultFactory?: (service: ServiceRef<T>) => Promise<ServiceFactory<T>>;
+  defaultFactory?: (
+    service: ServiceRef<T>,
+  ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
 }): ServiceRef<T> {
   const { id, defaultFactory } = options;
   return {
