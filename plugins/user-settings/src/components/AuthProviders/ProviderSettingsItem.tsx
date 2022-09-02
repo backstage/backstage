@@ -51,7 +51,7 @@ export const ProviderSettingsItem = (props: {
     const subscription = api.sessionState$().subscribe(() => {
       if (!didCancel) {
         api
-          .getProfile({ optional: false })
+          .getProfile({ optional: true })
           .then((profile: ProfileInfo | undefined) => {
             setSignedIn(profile !== undefined);
             setProfileEmail(profile?.email ?? '');
