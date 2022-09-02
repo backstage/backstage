@@ -57,6 +57,7 @@ export type CreateGithubPullRequestClientFactoryInput = {
   owner: string;
   repo: string;
   token?: string;
+  throttling?: boolean;
 };
 
 export const defaultClientFactory = async ({
