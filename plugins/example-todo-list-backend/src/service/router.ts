@@ -62,7 +62,9 @@ export async function createRouter(
     let author: string | undefined = undefined;
 
     const user = await identity.getIdentity({ request: req });
-    author = user?.identity.userEntityRef;
+    if (user?.identity.type === 'user') {
+      author = user.identity.userEntityRef;
+    }
 
     if (!isTodoCreateRequest(req.body)) {
       throw new InputError('Invalid payload');

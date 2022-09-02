@@ -267,7 +267,10 @@ export async function createRouter(
         request: req,
       });
       const token = callerIdentity?.token;
-      const userEntityRef = callerIdentity?.identity.userEntityRef;
+      let userEntityRef: string | undefined = undefined;
+      if (callerIdentity?.identity.type === 'user') {
+        userEntityRef = callerIdentity.identity.userEntityRef;
+      }
 
       const userEntity = userEntityRef
         ? await catalogClient.getEntityByRef(userEntityRef, { token })
