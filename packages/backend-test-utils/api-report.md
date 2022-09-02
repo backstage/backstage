@@ -46,6 +46,7 @@ export interface TestBackendOptions<
     ...{
       [index in keyof TServices]:
         | ServiceFactory<TServices[index]>
+        | (() => ServiceFactory<TServices[index]>)
         | [ServiceRef<TServices[index]>, Partial<TServices[index]>];
     },
   ];
