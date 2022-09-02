@@ -42,9 +42,14 @@ const useStyles = makeStyles(
 type Props = {
   title: string;
   description?: string | JSX.Element;
-  missing: 'field' | 'info' | 'content' | 'data';
   action?: JSX.Element;
-};
+} & (
+  | {
+      missing: 'field' | 'info' | 'content' | 'data';
+      customImage?: never;
+    }
+  | { missing?: never; customImage: JSX.Element }
+);
 
 /**
  * Various placeholder views for empty state pages
@@ -53,7 +58,7 @@ type Props = {
  *
  */
 export function EmptyState(props: Props) {
-  const { title, description, missing, action } = props;
+  const { title, description, missing, action, customImage } = props;
   const classes = useStyles();
   return (
     <Grid
@@ -78,7 +83,7 @@ export function EmptyState(props: Props) {
         </Grid>
       </Grid>
       <Grid item xs={12} md={6} className={classes.imageContainer}>
-        <EmptyStateImage missing={missing} />
+        {customImage ?? <EmptyStateImage missing={missing} />}
       </Grid>
     </Grid>
   );
