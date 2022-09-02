@@ -30,6 +30,7 @@ import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { EntityProviderMutation } from '@backstage/plugin-catalog-node';
 import { EntityRelationSpec } from '@backstage/plugin-catalog-node';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonValue } from '@backstage/types';
 import { LocationEntityV1alpha1 } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
@@ -218,6 +219,7 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
+  identity?: IdentityApi;
 };
 
 // @alpha

@@ -5,6 +5,7 @@
 ```ts
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Request as Request_2 } from 'express';
+import { TokenManager } from '@backstage/backend-common';
 
 // @public
 export interface BackstageIdentityResponse extends BackstageSignInResult {
@@ -66,5 +67,6 @@ export type IdentityClientOptions = {
   discovery: PluginEndpointDiscovery;
   issuer?: string;
   algorithms?: string[];
+  serverTokenManager?: TokenManager;
 };
 ```
