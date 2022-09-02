@@ -13,6 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// @ts-check
+// NOTE: This file is intentionally .jsx, so that there is one file in this repo where we make sure .jsx files work.
+
 import React from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
@@ -33,7 +37,8 @@ export const GraphiQLPage = () => {
   const graphQlBrowseApi = useApi(graphQlBrowseApiRef);
   const endpoints = useAsync(() => graphQlBrowseApi.getEndpoints());
 
-  let content: JSX.Element;
+  /** @type JSX.Element */
+  let content;
 
   if (endpoints.loading) {
     content = (
@@ -53,7 +58,7 @@ export const GraphiQLPage = () => {
   } else {
     content = (
       <Content noPadding>
-        <GraphiQLBrowser endpoints={endpoints.value!} />
+        <GraphiQLBrowser endpoints={endpoints.value} />
       </Content>
     );
   }
