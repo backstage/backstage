@@ -20967,10 +20967,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"devtools-protocol@npm:0.0.1019158":
-  version: 0.0.1019158
-  resolution: "devtools-protocol@npm:0.0.1019158"
-  checksum: 3b40771d231597dea5d502e708ac1ea1225214d4e007e12f7f82fb1966b76d9980665481f8495df444e3632d86b0361e2625502b5ef918884a4ed7fe57518723
+"devtools-protocol@npm:0.0.1036444":
+  version: 0.0.1036444
+  resolution: "devtools-protocol@npm:0.0.1036444"
+  checksum: 6975c8def95a5e1a4207d6deb05322e335d6a37bdaa3e589cbd5bde40fbbe3ab0df2cfedb1b3ad2785401f208c150fd489a6a065a4624b56e4c0c4c1bfd89172
   languageName: node
   linkType: hard
 
@@ -34226,12 +34226,12 @@ __metadata:
   linkType: hard
 
 "puppeteer@npm:^17.0.0":
-  version: 17.0.0
-  resolution: "puppeteer@npm:17.0.0"
+  version: 17.1.0
+  resolution: "puppeteer@npm:17.1.0"
   dependencies:
     cross-fetch: 3.1.5
     debug: 4.3.4
-    devtools-protocol: 0.0.1019158
+    devtools-protocol: 0.0.1036444
     extract-zip: 2.0.1
     https-proxy-agent: 5.0.1
     progress: 2.0.3
@@ -34240,7 +34240,7 @@ __metadata:
     tar-fs: 2.1.1
     unbzip2-stream: 1.4.3
     ws: 8.8.1
-  checksum: 435c03852a8f9606d169e646d7f5a98ca2637bc8fc882c2abf3a60d8e42eace07b6625cafbf0d46f61eda908715fe8f98741bcbb115bfebffb7c2b47624bf691
+  checksum: 22087d492da78c3e4840c56dfa4a114fe89421da5dcc78909de9ced6159ca0e28f755732404298455a0ac7bcede43b53cf66b4c9704cb959a9b12aaf9fdb2dbf
   languageName: node
   linkType: hard
 
