@@ -63,16 +63,23 @@ export async function createRouter(
   const router = Router();
   router.use(express.json());
 
+  async function getRequestToken(
+    request: express.Request,
+  ): Promise<string | undefined> {
+    if (identity) {
+      const user = await identity.getIdentity({ request });
+      if (user?.token) {
+        return user.token;
+      }
+    }
+    return getBearerTokenFromAuthorizationHeader(request.headers.authorization);
+  }
+
   router.get(
     '/v1/entity/:namespace/:kind/:name/projects',
     async (request, response) => {
       const { namespace, kind, name } = request.params;
-      const user = identity
-        ? await identity.getIdentity({ request })
-        : undefined;
-      const token = user
-        ? user.token
-        : getBearerTokenFromAuthorizationHeader(request.headers.authorization);
+      const token = await getRequestToken(request);
 
       const branch = request.query.branch;
       let branches: string[] | undefined;
@@ -124,15 +131,10 @@ export async function createRouter(
   router.get(
     '/v1/entity/:namespace/:kind/:name/job/:jobFullName/:buildNumber',
     async (request, response) => {
-      const user = identity
-        ? await identity.getIdentity({ request })
-        : undefined;
-      const token = user
-        ? user.token
-        : getBearerTokenFromAuthorizationHeader(request.headers.authorization);
-
       const { namespace, kind, name, jobFullName, buildNumber } =
         request.params;
+
+      const token = await getRequestToken(request);
 
       const jenkinsInfo = await jenkinsInfoProvider.getInstance({
         entityRef: {
@@ -160,12 +162,8 @@ export async function createRouter(
     '/v1/entity/:namespace/:kind/:name/job/:jobFullName/:buildNumber::rebuild',
     async (request, response) => {
       const { namespace, kind, name, jobFullName } = request.params;
-      const user = identity
-        ? await identity.getIdentity({ request })
-        : undefined;
-      const token = user
-        ? user.token
-        : getBearerTokenFromAuthorizationHeader(request.headers.authorization);
+      const token = await getRequestToken(request);
+
       const jenkinsInfo = await jenkinsInfoProvider.getInstance({
         entityRef: {
           kind,

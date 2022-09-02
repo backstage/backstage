@@ -138,6 +138,19 @@ export async function createRouter(
   });
 
   const router = Router();
+
+  async function getRequestToken(
+    request: express.Request,
+  ): Promise<string | undefined> {
+    if (identity) {
+      const user = await identity.getIdentity({ request });
+      if (user?.token) {
+        return user.token;
+      }
+    }
+    return getBearerTokenFromAuthorizationHeader(request.headers.authorization);
+  }
+
   router.get(
     '/query',
     async (
@@ -159,12 +172,8 @@ export async function createRouter(
           query.types ? query.types.join(',') : ''
         }, pageCursor=${query.pageCursor ?? ''}`,
       );
-      const user = identity
-        ? await identity.getIdentity({ request: req })
-        : undefined;
-      const token = user
-        ? user.token
-        : getBearerTokenFromAuthorizationHeader(req.headers.authorization);
+
+      const token = await getRequestToken(req);
 
       try {
         const resultSet = await engine?.query(query, { token });
