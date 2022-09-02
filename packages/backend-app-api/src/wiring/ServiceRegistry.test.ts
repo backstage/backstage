@@ -225,11 +225,8 @@ describe('ServiceRegistry', () => {
     const myFactory = createServiceFactory({
       service: ref1,
       deps: { dep: ref2 },
-      async factory({ dep }) {
-        return async pluginId => {
-          const d = await dep(pluginId);
-          return { x: d.x, pluginId };
-        };
+      async factory() {
+        throw new Error('ignored');
       },
     });
 
@@ -238,6 +235,36 @@ describe('ServiceRegistry', () => {
 
     await expect(factory('catalog')).rejects.toThrow(
       "Failed to instantiate service '1' for 'catalog' because the following dependent services are missing: '2'",
+    );
+  });
+
+  it('should throw if dependencies are not available 2', async () => {
+    const refA = createServiceRef<string>({ id: 'a' });
+    const refB = createServiceRef<string>({ id: 'b' });
+    const refC = createServiceRef<string>({ id: 'c' });
+    const refD = createServiceRef<string>({ id: 'd' });
+
+    const factoryA = createServiceFactory({
+      service: refA,
+      deps: { b: refB },
+      async factory({ b }) {
+        return async pluginId => b(pluginId);
+      },
+    });
+
+    const factoryB = createServiceFactory({
+      service: refB,
+      deps: { c: refC, d: refD },
+      async factory() {
+        throw new Error('ignored');
+      },
+    });
+
+    const registry = new ServiceRegistry([factoryA, factoryB]);
+    const factory = registry.get(refA)!;
+
+    await expect(factory('catalog')).rejects.toThrow(
+      "Failed to instantiate service 'a' for 'catalog' because the factory function threw an error, Error: Failed to instantiate service 'b' for 'catalog' because the following dependent services are missing: 'c', 'd'",
     );
   });
 
