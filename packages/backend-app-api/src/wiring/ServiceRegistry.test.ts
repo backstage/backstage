@@ -276,4 +276,20 @@ describe('ServiceRegistry', () => {
       "Failed to instantiate service '1' for 'catalog' because the factory function threw an error, Error: error in plugin catalog",
     );
   });
+
+  it('should decorate error messages thrown by default factory loaders', async () => {
+    const ref = createServiceRef<string>({
+      id: '1',
+      defaultFactory() {
+        throw new Error('default factory error');
+      },
+    });
+
+    const registry = new ServiceRegistry([]);
+    const factory = registry.get(ref)!;
+
+    await expect(factory('catalog')).rejects.toThrow(
+      "Failed to instantiate service '1' because the default factory loader threw an error, Error: default factory error",
+    );
+  });
 });

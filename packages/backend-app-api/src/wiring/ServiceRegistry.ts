@@ -48,11 +48,21 @@ export class ServiceRegistry {
       if (!factory) {
         let loadedFactory = this.#loadedDefaultFactories.get(defaultFactory!);
         if (!loadedFactory) {
-          loadedFactory = defaultFactory!(ref) as Promise<ServiceFactory>;
+          loadedFactory = Promise.resolve().then(
+            () => defaultFactory!(ref) as Promise<ServiceFactory>,
+          );
           this.#loadedDefaultFactories.set(defaultFactory!, loadedFactory);
         }
         // NOTE: This await is safe as long as #providedFactories is not mutated.
-        factory = await loadedFactory;
+        factory = await loadedFactory.catch(error => {
+          throw new Error(
+            `Failed to instantiate service '${
+              ref.id
+            }' because the default factory loader threw an error, ${stringifyError(
+              error,
+            )}`,
+          );
+        });
       }
 
       let implementation = this.#implementations.get(factory);
