@@ -29,5 +29,6 @@ export type {
   BackstageIdentityResponse,
   BackstageSignInResult,
   BackstageUserIdentity,
+  BackstageServerIdentity,
   IdentityApiGetIdentityRequest,
 } from './types';

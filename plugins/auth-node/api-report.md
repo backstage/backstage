@@ -9,8 +9,13 @@ import { TokenManager } from '@backstage/backend-common';
 
 // @public
 export interface BackstageIdentityResponse extends BackstageSignInResult {
-  identity: BackstageUserIdentity;
+  identity: BackstageUserIdentity | BackstageServerIdentity;
 }
+
+// @public
+export type BackstageServerIdentity = {
+  type: 'server';
+};
 
 // @public
 export interface BackstageSignInResult {
