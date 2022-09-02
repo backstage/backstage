@@ -269,8 +269,7 @@ export class DatabaseTaskStore implements TaskStore {
         '<=',
         this.db.client.config.client.includes('sqlite3')
           ? this.db.raw(`datetime('now', ?)`, [`-${timeoutS} seconds`])
-          : this.db.raw(`dateadd('second', ?, ?)`, [
-              `-${timeoutS}`,
+          : this.db.raw(`? - interval '${timeoutS} seconds'`, [
               this.db.fn.now(),
             ]),
       );
