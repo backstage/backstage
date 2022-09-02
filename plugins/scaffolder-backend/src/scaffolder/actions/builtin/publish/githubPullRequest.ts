@@ -66,6 +66,7 @@ export const defaultClientFactory = async ({
   repo,
   host = 'github.com',
   token: providedToken,
+  throttling,
 }: CreateGithubPullRequestClientFactoryInput): Promise<OctokitWithPullRequestPluginClient> => {
   const [encodedHost, encodedOwner, encodedRepo] = [host, owner, repo].map(
     encodeURIComponent,
@@ -79,7 +80,10 @@ export const defaultClientFactory = async ({
   });
 
   const OctokitPR = Octokit.plugin(createPullRequest);
-  return new OctokitPR(octokitOptions);
+  return new OctokitPR({
+    ...octokitOptions,
+    ...(!throttling && { throttle: { enabled: false } }),
+  });
 };
 
 /**
@@ -129,6 +133,7 @@ export const createPublishGithubPullRequestAction = ({
     token?: string;
     reviewers?: string[];
     teamReviewers?: string[];
+    throttling?: boolean;
   }>({
     id: 'publish:github:pull-request',
     schema: {
@@ -195,6 +200,11 @@ export const createPublishGithubPullRequestAction = ({
             description:
               'The teams that will be added as reviewers to the pull request',
           },
+          throttling: {
+            title: 'Github Throttling',
+            type: 'boolean',
+            description: 'Whether to enable Github request throttling',
+          },
         },
       },
       output: {
@@ -226,6 +236,7 @@ export const createPublishGithubPullRequestAction = ({
         token: providedToken,
         reviewers,
         teamReviewers,
+        throttling,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -243,6 +254,7 @@ export const createPublishGithubPullRequestAction = ({
         owner,
         repo,
         token: providedToken,
+        throttling,
       });
 
       const fileRoot = sourcePath
