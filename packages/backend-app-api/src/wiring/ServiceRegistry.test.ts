@@ -220,4 +220,24 @@ describe('ServiceRegistry', () => {
     expect(innerFactory).toHaveBeenCalledWith('catalog');
     expect(innerFactory).toHaveBeenCalledWith('scaffolder');
   });
+
+  it('should throw if dependencies are not available', async () => {
+    const myFactory = createServiceFactory({
+      service: ref1,
+      deps: { dep: ref2 },
+      async factory({ dep }) {
+        return async pluginId => {
+          const d = await dep(pluginId);
+          return { x: d.x, pluginId };
+        };
+      },
+    });
+
+    const registry = new ServiceRegistry([myFactory]);
+    const factory = registry.get(ref1)!;
+
+    await expect(factory('catalog')).rejects.toThrow(
+      "Failed to instantiate service '1' for 'catalog'. The following dependent services are missing: '2'",
+    );
+  });
 });

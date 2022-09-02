@@ -56,12 +56,24 @@ export class ServiceRegistry {
 
       let implementation = this.#implementations.get(factory);
       if (!implementation) {
-        const factoryDeps = Object.fromEntries(
-          Object.entries(factory.deps).map(([name, serviceRef]) => [
-            name,
-            this.get(serviceRef)!, // TODO: throw
-          ]),
-        );
+        const missingRefs = new Array<ServiceRef<unknown>>();
+        const factoryDeps: { [name in string]: FactoryFunc<unknown> } = {};
+
+        for (const [name, serviceRef] of Object.entries(factory.deps)) {
+          const target = this.get(serviceRef);
+          if (!target) {
+            missingRefs.push(serviceRef);
+          } else {
+            factoryDeps[name] = target;
+          }
+        }
+
+        if (missingRefs.length) {
+          const missing = missingRefs.map(r => `'${r.id}'`).join(', ');
+          throw new Error(
+            `Failed to instantiate service '${ref.id}' for '${pluginId}'. The following dependent services are missing: ${missing}`,
+          );
+        }
 
         implementation = {
           factoryFunc: factory.factory(factoryDeps),
