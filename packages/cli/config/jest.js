@@ -148,7 +148,7 @@ async function getProjectConfig(targetPath, displayName) {
           },
         },
       ],
-      '^.+\\.(t|j)sx?$': [
+      '\\.(t|j)sx?$': [
         require.resolve('./jestSwcTransform'),
         {
           sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
@@ -157,7 +157,6 @@ async function getProjectConfig(targetPath, displayName) {
               syntax: 'typescript',
               tsx: true,
             },
-
             transform: {
               react: {
                 runtime: 'automatic',
