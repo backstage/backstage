@@ -148,7 +148,24 @@ async function getProjectConfig(targetPath, displayName) {
           },
         },
       ],
-      '\\.(t|j)sx?$': [
+      '\\.jsx?$': [
+        require.resolve('./jestSwcTransform'),
+        {
+          sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
+          jsc: {
+            parser: {
+              syntax: 'ecmascript',
+              jsx: true,
+            },
+            transform: {
+              react: {
+                runtime: 'automatic',
+              },
+            },
+          },
+        },
+      ],
+      '\\.tsx?$': [
         require.resolve('./jestSwcTransform'),
         {
           sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
