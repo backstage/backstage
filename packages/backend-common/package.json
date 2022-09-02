@@ -30,7 +30,8 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "clean": "backstage-cli package clean",
-    "start": "backstage-cli package start"
+    "start": "backstage-cli package start",
+    "test:kubernetes": "backstage-cli package test -t KubernetesContainerRunner --no-watch"
   },
   "dependencies": {
     "@backstage/cli-common": "^0.1.9",
@@ -41,6 +42,7 @@
     "@backstage/types": "^1.0.0",
     "@google-cloud/storage": "^6.0.0",
     "@keyv/redis": "^2.2.3",
+    "@kubernetes/client-node": "^0.17.0",
     "@manypkg/get-packages": "^1.1.3",
     "@octokit/rest": "^19.0.3",
     "@types/cors": "^2.8.6",
@@ -74,9 +76,11 @@
     "node-abort-controller": "^3.0.1",
     "node-fetch": "^2.6.7",
     "raw-body": "^2.4.1",
+    "request": "^2.88.2",
     "selfsigned": "^2.0.0",
     "stoppable": "^1.1.0",
     "tar": "^6.1.2",
+    "uuid": "^8.3.2",
     "winston": "^3.2.1",
     "yauzl": "^2.10.0",
     "yn": "^4.0.0"
