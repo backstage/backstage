@@ -237,7 +237,43 @@ describe('ServiceRegistry', () => {
     const factory = registry.get(ref1)!;
 
     await expect(factory('catalog')).rejects.toThrow(
-      "Failed to instantiate service '1' for 'catalog'. The following dependent services are missing: '2'",
+      "Failed to instantiate service '1' for 'catalog' because the following dependent services are missing: '2'",
+    );
+  });
+
+  it('should decorate error messages thrown by the top-level factory function', async () => {
+    const myFactory = createServiceFactory({
+      service: ref1,
+      deps: {},
+      factory() {
+        throw new Error('top-level error');
+      },
+    });
+
+    const registry = new ServiceRegistry([myFactory]);
+    const factory = registry.get(ref1)!;
+
+    await expect(factory('catalog')).rejects.toThrow(
+      "Failed to instantiate service '1' because the top-level factory function threw an error, Error: top-level error",
+    );
+  });
+
+  it('should decorate error messages thrown by the plugin-level factory function', async () => {
+    const myFactory = createServiceFactory({
+      service: ref1,
+      deps: {},
+      async factory() {
+        return pluginId => {
+          throw new Error(`error in plugin ${pluginId}`);
+        };
+      },
+    });
+
+    const registry = new ServiceRegistry([myFactory]);
+    const factory = registry.get(ref1)!;
+
+    await expect(factory('catalog')).rejects.toThrow(
+      "Failed to instantiate service '1' for 'catalog' because the factory function threw an error, Error: error in plugin catalog",
     );
   });
 });
