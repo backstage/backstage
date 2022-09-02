@@ -56,6 +56,18 @@ describe('createBackendPlugin', () => {
     // @ts-expect-error
     expect(plugin({ b: 'b' })).toBeDefined();
   });
+
+  it('should create plugins without options', () => {
+    const plugin = createBackendPlugin({
+      id: 'x',
+      register() {},
+    });
+    expect(plugin).toBeDefined();
+    // @ts-expect-error
+    expect(plugin({ a: 'a' })).toBeDefined();
+    // @ts-expect-error
+    expect(plugin({})).toBeDefined();
+  });
 });
 
 describe('createBackendModule', () => {
@@ -85,5 +97,18 @@ describe('createBackendModule', () => {
     expect(mod()).toBeDefined();
     // @ts-expect-error
     expect(mod({ b: 'b' })).toBeDefined();
+  });
+
+  it('should create modules without options', () => {
+    const mod = createBackendModule({
+      pluginId: 'x',
+      moduleId: 'y',
+      register() {},
+    });
+    expect(mod).toBeDefined();
+    // @ts-expect-error
+    expect(mod({ a: 'a' })).toBeDefined();
+    // @ts-expect-error
+    expect(mod({})).toBeDefined();
   });
 });

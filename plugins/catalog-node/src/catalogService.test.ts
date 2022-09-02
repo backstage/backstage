@@ -53,7 +53,7 @@ describe('catalogServiceRef', () => {
 
     await startTestBackend({
       services: [mockDiscoveryFactory],
-      features: [testModule({})],
+      features: [testModule()],
     });
   });
 });

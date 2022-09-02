@@ -556,7 +556,7 @@ export type RunCommandOptions = {
 };
 
 // @alpha
-export const scaffolderCatalogModule: (options?: unknown) => BackendFeature;
+export const scaffolderCatalogModule: (options?: undefined) => BackendFeature;
 
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
