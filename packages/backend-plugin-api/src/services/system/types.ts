@@ -90,10 +90,22 @@ export function createServiceFactory<
   TService,
   TImpl extends TService,
   TDeps extends { [name in string]: unknown },
+  TOpts extends { [name in string]: unknown } | undefined = undefined,
 >(factory: {
   service: ServiceRef<TService>;
   deps: TypesToServiceRef<TDeps>;
-  factory(deps: DepsToDepFactories<TDeps>): Promise<FactoryFunc<TImpl>>;
-}): ServiceFactory<TService> {
-  return factory as ServiceFactory<TService>;
+  factory(
+    deps: DepsToDepFactories<TDeps>,
+    options: TOpts,
+  ): Promise<FactoryFunc<TImpl>>;
+}): undefined extends TOpts
+  ? (options?: TOpts) => ServiceFactory<TService>
+  : (options: TOpts) => ServiceFactory<TService> {
+  return (options?: TOpts) => ({
+    service: factory.service,
+    deps: factory.deps,
+    factory(deps: DepsToDepFactories<TDeps>) {
+      return factory.factory(deps, options!);
+    },
+  });
 }
