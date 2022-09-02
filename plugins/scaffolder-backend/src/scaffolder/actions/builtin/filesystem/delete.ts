@@ -23,7 +23,7 @@ import fs from 'fs-extra';
  * @public
  */
 export const createFilesystemDeleteAction = () => {
-  return createTemplateAction<{ files: string[] }>({
+  return createTemplateAction<{ files: string[], isDisabled?: boolean }>({
     id: 'fs:delete',
     description: 'Deletes files and directories from the workspace',
     schema: {
@@ -39,6 +39,11 @@ export const createFilesystemDeleteAction = () => {
               type: 'string',
             },
           },
+          isDisabled: {
+            title: 'Is Disabled',
+            description: 'Flag to skip this action',
+            type: 'boolean',
+          },
         },
       },
     },
@@ -46,6 +51,9 @@ export const createFilesystemDeleteAction = () => {
     async handler(ctx) {
       if (!Array.isArray(ctx.input?.files)) {
         throw new InputError('files must be an Array');
+      }
+      if (ctx.input.isDisabled) {
+        return;
       }
 
       for (const file of ctx.input.files) {

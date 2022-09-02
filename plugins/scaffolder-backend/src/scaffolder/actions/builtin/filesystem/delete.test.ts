@@ -124,4 +124,53 @@ describe('fs:delete', () => {
       expect(fileExists).toBe(false);
     });
   });
+
+  describe('isDisabled', () => {
+    it('should call fs.rm when not disabled', async () => {
+      const files = ['unit-test-a.js', 'unit-test-b.js'];
+
+      files.forEach(file => {
+        const filePath = resolvePath(workspacePath, file);
+        const fileExists = fs.existsSync(filePath);
+        expect(fileExists).toBe(true);
+      });
+
+      await action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          isDisabled: false,
+        }
+      });
+
+      files.forEach(file => {
+        const filePath = resolvePath(workspacePath, file);
+        const fileExists = fs.existsSync(filePath);
+        expect(fileExists).toBe(false);
+      });
+    });
+    it('should skip fs.rm when disabled', async () => {
+      const files = ['unit-test-a.js', 'unit-test-b.js'];
+
+      files.forEach(file => {
+        const filePath = resolvePath(workspacePath, file);
+        const fileExists = fs.existsSync(filePath);
+        expect(fileExists).toBe(true);
+      });
+
+      await action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          isDisabled: true,
+        }
+      });
+
+      files.forEach(file => {
+        const filePath = resolvePath(workspacePath, file);
+        const fileExists = fs.existsSync(filePath);
+        expect(fileExists).toBe(true);
+      });
+    });
+  });
 });
