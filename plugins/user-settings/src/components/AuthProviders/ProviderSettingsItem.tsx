@@ -26,6 +26,7 @@ import {
 import {
   ApiRef,
   SessionApi,
+  SessionState,
   ProfileInfoApi,
   ProfileInfo,
   useApi,
@@ -48,16 +49,22 @@ export const ProviderSettingsItem = (props: {
   useEffect(() => {
     let didCancel = false;
 
-    const subscription = api.sessionState$().subscribe(() => {
-      if (!didCancel) {
-        api
-          .getProfile({ optional: true })
-          .then((profile: ProfileInfo | undefined) => {
-            setSignedIn(profile !== undefined);
-            setProfileEmail(profile?.email ?? '');
-          });
-      }
-    });
+    const subscription = api
+      .sessionState$()
+      .subscribe((sessionState: SessionState) => {
+        if (!didCancel) {
+          api
+            .getProfile({ optional: true })
+            .then((profile: ProfileInfo | undefined) => {
+              if (sessionState === SessionState.SignedIn) {
+                setSignedIn(true);
+              } else {
+                setSignedIn(profile !== undefined);
+              }
+              setProfileEmail(profile?.email ?? '');
+            });
+        }
+      });
 
     return () => {
       didCancel = true;
