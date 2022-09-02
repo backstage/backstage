@@ -12,8 +12,7 @@ Options:
   -h, --help
 
 Commands:
-  create [options]
-  create-plugin [options]
+  new [options]
   plugin:diff [options]
   test
   config:docs [options]
@@ -100,39 +99,12 @@ Options:
   -h, --help
 ```
 
-### `backstage-cli create`
-
-```
-Usage: backstage-cli create [options]
-
-Options:
-  --select <name>
-  --option <name>=<value>
-  --scope <scope>
-  --npm-registry <URL>
-  --no-private
-  -h, --help
-```
-
 ### `backstage-cli create-github-app`
 
 ```
 Usage: backstage-cli create-github-app [options] <github-org>
 
 Options:
-  -h, --help
-```
-
-### `backstage-cli create-plugin`
-
-```
-Usage: backstage-cli create-plugin [options]
-
-Options:
-  --backend
-  --scope <scope>
-  --npm-registry <URL>
-  --no-private
   -h, --help
 ```
 
@@ -194,6 +166,20 @@ Options:
 Usage: backstage-cli migrate react-router-deps [options]
 
 Options:
+  -h, --help
+```
+
+### `backstage-cli new`
+
+```
+Usage: backstage-cli new [options]
+
+Options:
+  --select <name>
+  --option <name>=<value>
+  --scope <scope>
+  --npm-registry <URL>
+  --no-private
   -h, --help
 ```
 
@@ -415,6 +401,7 @@ Options:
 Commands:
   build [options]
   lint [options]
+  clean
   help [command]
 ```
 
@@ -426,6 +413,15 @@ Usage: backstage-cli repo build [options]
 Options:
   --all
   --since <ref>
+  -h, --help
+```
+
+### `backstage-cli repo clean`
+
+```
+Usage: backstage-cli repo clean [options]
+
+Options:
   -h, --help
 ```
 

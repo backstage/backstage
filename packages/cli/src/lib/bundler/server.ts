@@ -40,6 +40,7 @@ export async function serveBundle(options: ServeOptions) {
     isDev: true,
     baseUrl: url,
   });
+
   const compiler = webpack(config);
 
   const server = new WebpackDevServer(
@@ -60,7 +61,15 @@ export async function serveBundle(options: ServeOptions) {
         // See https://github.com/facebookincubator/create-react-app/issues/387.
         disableDotRule: true,
       },
-      https: url.protocol === 'https:',
+      https:
+        url.protocol === 'https:'
+          ? {
+              cert: options.backendConfig.getString(
+                'app.https.certificate.cert',
+              ),
+              key: options.backendConfig.getString('app.https.certificate.key'),
+            }
+          : false,
       host,
       port,
       proxy: pkg.proxy,

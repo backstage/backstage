@@ -8203,8 +8203,8 @@ __metadata:
   linkType: hard
 
 "@google-cloud/storage@npm:^6.0.0":
-  version: 6.4.1
-  resolution: "@google-cloud/storage@npm:6.4.1"
+  version: 6.4.2
+  resolution: "@google-cloud/storage@npm:6.4.2"
   dependencies:
     "@google-cloud/paginator": ^3.0.7
     "@google-cloud/projectify": ^3.0.0
@@ -8224,7 +8224,7 @@ __metadata:
     retry-request: ^5.0.0
     teeny-request: ^8.0.0
     uuid: ^8.0.0
-  checksum: 14e7b79b5ed896f1598bb16a9d5f8ca0432c1d5a5225e563b6ab6dbb397f20196eb4a5c45bdfd866dd1f74f486a9155570cb0d41dc1b170b16555e3e50c96094
+  checksum: ebd8bf46675f21b429915d9889c56574acc395745126e40f96803334c1e2d8b35a60d22b1f0ecf9db4bb67c373f53e4eeef9406af334cdf9c0ca8461da777ab3
   languageName: node
   linkType: hard
 
@@ -24660,7 +24660,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.0.0, graphql@npm:^16.3.0":
+"graphql@npm:^15.0.0 || ^16.0.0, graphql@npm:^16.0.0, graphql@npm:^16.3.0":
   version: 16.6.0
   resolution: "graphql@npm:16.6.0"
   checksum: bf1d9e3c1938ce3c1a81e909bd3ead1ae4707c577f91cff1ca2eca474bfbc7873d5d7b942e1e9777ff5a8304421dba57a4b76d7a29eb19de8711cb70e3c2415e
@@ -27527,9 +27527,9 @@ __metadata:
   linkType: hard
 
 "jose@npm:^4.6.0":
-  version: 4.9.1
-  resolution: "jose@npm:4.9.1"
-  checksum: ebd9a4c9610d7fb93e9385f042554f0f3a83b16f3932a0aa42a7b78499c2ffae0607bce6b50a256521b3bf700d65140fdfb8de73988f1f29100491f3312a3707
+  version: 4.9.2
+  resolution: "jose@npm:4.9.2"
+  checksum: d3950385a6417d988c50bd8ba5407f5960624060aa8e4662c2109f1ebcc40c418e64b721a87065d8197b4aa0ddd7fb4dad5064618956dba8e74dc630916bf40f
   languageName: node
   linkType: hard
 
@@ -30868,8 +30868,8 @@ __metadata:
   linkType: hard
 
 "msw@npm:^0.46.0":
-  version: 0.46.0
-  resolution: "msw@npm:0.46.0"
+  version: 0.46.1
+  resolution: "msw@npm:0.46.1"
   dependencies:
     "@mswjs/cookies": ^0.2.2
     "@mswjs/interceptors": ^0.17.2
@@ -30879,6 +30879,7 @@ __metadata:
     chalk: 4.1.1
     chokidar: ^3.4.2
     cookie: ^0.4.2
+    graphql: ^15.0.0 || ^16.0.0
     headers-polyfill: ^3.0.4
     inquirer: ^8.2.0
     is-node-process: ^1.0.1
@@ -30891,16 +30892,13 @@ __metadata:
     type-fest: ^2.19.0
     yargs: ^17.3.1
   peerDependencies:
-    graphql: ^15.0.0 || ^16.0.0
     typescript: ">= 4.2.x <= 4.8.x"
   peerDependenciesMeta:
-    graphql:
-      optional: true
     typescript:
       optional: true
   bin:
     msw: cli/index.js
-  checksum: 722ed4b149ab1b80715803fd7bba24e51a3741f43b223e3ab4421b31a2df258e777175137e63f14853cf5b6f6444c8e709c581c8d9486b30ed03bb5a17dea017
+  checksum: 50c941cb43acf64e888d7bc3642fdc269a553a3bdcddf8cf12e412acf4c732fa16834b0dc1ad54d1e3e04dc9815cb9f25fb79f45a1109fea5dca049c1495eabd
   languageName: node
   linkType: hard
 

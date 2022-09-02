@@ -61,6 +61,11 @@ export function registerRepoCommand(program: Command) {
     .action(lazy(() => import('./repo/lint').then(m => m.command)));
 
   command
+    .command('clean')
+    .description('Delete cache and output directories')
+    .action(lazy(() => import('./repo/clean').then(m => m.command)));
+
+  command
     .command('list-deprecations', { hidden: true })
     .description('List deprecations. [EXPERIMENTAL]')
     .option('--json', 'Output as JSON')
@@ -193,7 +198,7 @@ export function registerMigrateCommand(program: Command) {
 
 export function registerCommands(program: Command) {
   program
-    .command('create')
+    .command('new')
     .storeOptionsAsProperties(false)
     .description(
       'Open up an interactive guide to creating new things in your app',
@@ -214,15 +219,39 @@ export function registerCommands(program: Command) {
       'The package registry to use for new packages',
     )
     .option('--no-private', 'Do not mark new packages as private')
-    .action(lazy(() => import('./create/create').then(m => m.default)));
+    .action(lazy(() => import('./new/new').then(m => m.default)));
 
   program
-    .command('create-plugin')
+    .command('create', { hidden: true })
+    .storeOptionsAsProperties(false)
+    .description(
+      'Open up an interactive guide to creating new things in your app [DEPRECATED]',
+    )
+    .option(
+      '--select <name>',
+      'Select the thing you want to be creating upfront',
+    )
+    .option(
+      '--option <name>=<value>',
+      'Pre-fill options for the creation process',
+      (opt, arr: string[]) => [...arr, opt],
+      [],
+    )
+    .option('--scope <scope>', 'The scope to use for new packages')
+    .option(
+      '--npm-registry <URL>',
+      'The package registry to use for new packages',
+    )
+    .option('--no-private', 'Do not mark new packages as private')
+    .action(lazy(() => import('./new/new').then(m => m.default)));
+
+  program
+    .command('create-plugin', { hidden: true })
     .option(
       '--backend',
       'Create plugin with the backend dependencies as default',
     )
-    .description('Creates a new plugin in the current repository')
+    .description('Creates a new plugin in the current repository [DEPRECATED]')
     .option('--scope <scope>', 'npm scope')
     .option('--npm-registry <URL>', 'npm registry URL')
     .option('--no-private', 'Public npm package')

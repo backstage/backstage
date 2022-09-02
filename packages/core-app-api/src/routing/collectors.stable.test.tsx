@@ -453,18 +453,19 @@ describe('discovery', () => {
     );
   });
 
-  it('should throw elements within element prop contains a path', () => {
-    expect(() => {
-      traverseElementTree({
-        root: <Route path="foo" element={<Extension3 path="bar" />} />,
-        discoverers: [childDiscoverer, routeElementDiscoverer],
-        collectors: {
-          routing: routingV2Collector,
-        },
-      });
-    }).toThrow(
-      'Elements within the element prop tree may not have paths, found "bar"',
-    );
+  it('should ignore path props within route elements', () => {
+    const { routing } = traverseElementTree({
+      root: <Route path="foo" element={<Extension1 path="bar" />} />,
+      discoverers: [childDiscoverer, routeElementDiscoverer],
+      collectors: {
+        routing: routingV2Collector,
+      },
+    });
+    expect(sortedEntries(routing.paths)).toEqual([[ref1, 'foo']]);
+    expect(sortedEntries(routing.parents)).toEqual([[ref1, undefined]]);
+    expect(routing.objects).toEqual([
+      routeObj('foo', [ref1], [], undefined, plugin),
+    ]);
   });
 
   it('should throw when a routable extension does not have a path set', () => {
