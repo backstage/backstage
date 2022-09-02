@@ -15,6 +15,7 @@
  */
 
 import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
+import { TaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   Entity,
@@ -202,6 +203,16 @@ export async function createRouter(
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
   workers.forEach(worker => worker.start());
+
+  const scheduler = TaskScheduler.fromConfig(config).forPlugin('scaffolder');
+  await scheduler.scheduleTask({
+    id: 'close_stale_tasks',
+    frequency: { cron: '*/5 * * * *' }, // every 5 minutes, also supports Duration
+    timeout: { minutes: 15 },
+    fn: async () => {
+      await taskBroker.closeStaleTasks();
+    },
+  });
 
   const dryRunner = createDryRunner({
     actionRegistry,

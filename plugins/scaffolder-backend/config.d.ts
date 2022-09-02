@@ -29,10 +29,10 @@ export interface Config {
      */
     defaultCommitMessage?: string;
     /**
-     * To mark stale tasks has closed
+     * To mark stale tasks as closed
      */
     taskTimeout?: {
-      ms?: number;
+      seconds?: number;
       message?: string;
     };
   };

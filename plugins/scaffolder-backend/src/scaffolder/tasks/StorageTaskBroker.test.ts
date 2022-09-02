@@ -231,39 +231,4 @@ describe('StorageTaskBroker', () => {
     const promise = broker.list({ createdBy: 'user:default/foo' });
     await expect(promise).resolves.toEqual({ tasks: [task] });
   });
-
-  it('should shut down task if task is stale', async () => {
-    const broker = new StorageTaskBroker(
-      storage,
-      logger,
-      new ConfigReader({
-        scaffolder: {
-          taskTimeout: {
-            ms: -1,
-          },
-        },
-      }),
-    );
-    const { taskId } = await broker.dispatch({
-      spec: {} as TaskSpec,
-    });
-
-    jest.spyOn(storage, 'getTask').mockResolvedValueOnce({
-      status: 'processing',
-      lastHeartbeatAt: new Date().toISOString(),
-    } as any);
-
-    jest.spyOn(storage, 'getTask').mockResolvedValueOnce({
-      status: 'completed',
-    } as any);
-
-    jest
-      .spyOn(storage, 'shutdownTask')
-      .mockImplementationOnce(() => Promise.resolve());
-
-    const task = await broker.get(taskId);
-
-    expect(storage.shutdownTask).toHaveBeenCalled();
-    expect(task.status).toEqual('completed');
-  });
 });

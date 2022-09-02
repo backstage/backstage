@@ -620,6 +620,8 @@ export interface TaskBroker {
   // (undocumented)
   claim(): Promise<TaskContext>;
   // (undocumented)
+  closeStaleTasks(): Promise<void>;
+  // (undocumented)
   dispatch(
     options: TaskBrokerDispatchOptions,
   ): Promise<TaskBrokerDispatchResult>;

@@ -202,33 +202,11 @@ export class StorageTaskBroker implements TaskBroker {
     };
   }
 
-  private isStaleTask(task: SerializedTask) {
-    const { status, lastHeartbeatAt } = task;
-    if (status === 'processing' && lastHeartbeatAt) {
-      const timeDiff =
-        new Date().getTime() - new Date(lastHeartbeatAt).getTime();
-      const timeoutLimit =
-        this.config.getOptionalNumber('scaffolder.taskTimeout.ms') || 3600000;
-      return timeDiff >= timeoutLimit;
-    }
-    return false;
-  }
-
   /**
    * {@inheritdoc TaskBroker.get}
    */
   async get(taskId: string): Promise<SerializedTask> {
-    let task = await this.storage.getTask(taskId);
-    if (this.isStaleTask(task)) {
-      await this.storage.shutdownTask({
-        taskId,
-        message: this.config.getOptionalString(
-          'scaffolder.taskTimeout.message',
-        ),
-      });
-      task = await this.storage.getTask(taskId);
-    }
-    return task;
+    return this.storage.getTask(taskId);
   }
 
   /**
@@ -284,6 +262,20 @@ export class StorageTaskBroker implements TaskBroker {
         }
       }),
     );
+  }
+
+  /**
+   * {@inheritdoc TaskBroker.closeStaleTasks}
+   */
+  async closeStaleTasks(): Promise<void> {
+    const timeoutS =
+      this.config.getOptionalNumber('scaffolder.taskTimeout.seconds') || 300;
+    const { tasks } = await this.storage.listStaleTasks({ timeoutS });
+
+    for (const task of tasks) {
+      this.logger.info(`Successfully closed stale task ${task.taskId}`);
+      await this.storage.shutdownTask(task);
+    }
   }
 
   private waitForDispatch() {
