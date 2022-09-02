@@ -83,7 +83,11 @@ export class DefaultIdentityClient implements IdentityApi {
     this.serverTokenManager = options.serverTokenManager;
   }
 
-  async getIdentity({ request }: IdentityApiGetIdentityRequest) {
+  async getIdentity({
+    request,
+  }: IdentityApiGetIdentityRequest): Promise<
+    BackstageIdentityResponse | undefined
+  > {
     const token = getBearerTokenFromAuthorizationHeader(
       request.headers.authorization,
     );
@@ -98,7 +102,13 @@ export class DefaultIdentityClient implements IdentityApi {
       if (this.serverTokenManager) {
         // really this should return some sore of identity that represents the backend.
         await this.serverTokenManager.authenticate(token);
-        return undefined;
+        // in the meantime, return something
+        return {
+          identity: {
+            type: 'server',
+          },
+          token,
+        };
       }
       throw new AuthenticationError(e.message);
     }

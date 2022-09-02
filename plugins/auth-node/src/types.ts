@@ -50,8 +50,20 @@ export interface BackstageIdentityResponse extends BackstageSignInResult {
   /**
    * A plaintext description of the identity that is encapsulated within the token.
    */
-  identity: BackstageUserIdentity;
+  identity: BackstageUserIdentity | BackstageServerIdentity;
 }
+
+/**
+ * Server identity information within Backstage.
+ *
+ * @public
+ */
+export type BackstageServerIdentity = {
+  /**
+   * The type of identity that this structure represents.
+   */
+  type: 'server';
+};
 
 /**
  * User identity information within Backstage.
