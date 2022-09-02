@@ -22,7 +22,7 @@ interface Props {
   interval: ScheduleInterval | undefined;
 }
 
-const timeDeltaToLabel = (delta: TimeDelta): String => {
+const timeDeltaToLabel = (delta: TimeDelta): string => {
   let label = '';
   const date = new Date(0);
   date.setSeconds(delta.seconds);
@@ -45,7 +45,7 @@ const relativeDeltaToLabel = (delta: RelativeDelta) => {
 };
 
 export const ScheduleIntervalLabel = ({ interval }: Props) => {
-  let label: String = '';
+  let label = '';
   switch (interval?.__type) {
     case 'TimeDelta':
       label = timeDeltaToLabel(interval);
