@@ -87,15 +87,15 @@ catalog:
           branch: 'main' # string
           repository: '.*' # Regex
           topic: 'backstage-exclude' # optional string
-      topicProviderInclusionId:
+      topicFilterProviderId:
         organization: 'backstage' # string
         catalogPath: '/catalog-info.yaml' # string
         filters:
           branch: 'main' # string
           repository: '.*' # Regex
           topic:
-            name: 'backstage-include' # optional string
-            type: 'INCLUDES' # optional enum (INCLUDES or EXCLUDES)
+            include: ['backstage-include'] # optional array of strings
+            exclude: ['experiments'] # optional array of strings
 ```
 
 This provider supports multiple organizations via unique provider IDs.
@@ -113,13 +113,15 @@ This provider supports multiple organizations via unique provider IDs.
   - **repository** _(optional)_:
     Regular expression used to filter results based on the repository name.
   - **topic** _(optional)_:
-    - **name** _(optional)_:
-      String used to filter results based on repository topics. If configured, only repositories that match the topic filter will be registered. See below for the reverse.
-      This is useful for excluding excess locations from being registered such as experiments, practical tests, non-production tooling and so on.
-    - **type** _(optional)_:
-      Default: `INCLUDES`
-      When set to `INCLUDES`, locations matching the topic filter will be registered and other repositories will be ignored
-      When set to `EXCLUDES`, locations matching the topic filter will not be registered and other repositories will be registered
+    Both of the filters below may be used at the same time but the exclusion filter has the highest priority.
+    In the example above, a repository with the `backstage-include` topic would still be excluded
+    if it were also carrying the `experiments` topic.
+    - **include** _(optional)_:
+      An array of strings used to filter in results based on their associated Github topics.
+      If configured, only repositories with one (or more) topic(s) present in the inclusion filter will be ingested
+    - **exclude** _(optional)_:
+      An array of strings used to filter out results based on their associated Github topics.
+      If configured, all repositories _except_ those with one (or more) topics(s) present in the exclusion filter will be ingested.
 - **organization**:
   Name of your organization account/workspace.
   If you want to add multiple organizations, you need to add one provider config each.
