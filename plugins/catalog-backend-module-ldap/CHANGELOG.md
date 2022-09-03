@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.5.3-next.1
+
+### Patch Changes
+
+- 7fa54c3c77: Added ae-dir LDAP vendor to correctly extract DN.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.4.0-next.1
+
 ## 0.5.3-next.0
 
 ### Patch Changes

@@ -225,7 +225,7 @@ export type CatalogPermissionRule<TParams extends unknown[] = unknown[]> =
   PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 // @alpha
-export const catalogPlugin: (options?: unknown) => BackendFeature;
+export const catalogPlugin: (options?: undefined) => BackendFeature;
 
 // @public (undocumented)
 export interface CatalogProcessingEngine {

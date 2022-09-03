@@ -72,18 +72,14 @@ describe('readProviderConfigs', () => {
               organization: 'test-org5',
               filters: {
                 topic: {
-                  name: 'backstage-exclude',
+                  exclude: ['backstage-exclude'],
+                  include: ['backstage-include'],
                 },
               },
             },
-            providerWithTopicFilterAndInclusion: {
-              organization: 'test-org6',
-              filters: {
-                topic: {
-                  name: 'backstage-include',
-                  type: 'INCLUDES',
-                },
-              },
+            providerWithHost: {
+              organization: 'test-org1',
+              host: 'ghe.internal.com',
             },
           },
         },
@@ -96,12 +92,13 @@ describe('readProviderConfigs', () => {
       id: 'providerOrganizationOnly',
       organization: 'test-org1',
       catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
       filters: {
         repository: undefined,
         branch: undefined,
         topic: {
-          name: undefined,
-          type: 'EXCLUDES',
+          include: undefined,
+          exclude: undefined,
         },
       },
     });
@@ -109,12 +106,13 @@ describe('readProviderConfigs', () => {
       id: 'providerCustomCatalogPath',
       organization: 'test-org2',
       catalogPath: 'custom/path/catalog-info.yaml',
+      host: 'github.com',
       filters: {
         repository: undefined,
         branch: undefined,
         topic: {
-          name: undefined,
-          type: 'EXCLUDES',
+          include: undefined,
+          exclude: undefined,
         },
       },
     });
@@ -122,12 +120,13 @@ describe('readProviderConfigs', () => {
       id: 'providerWithRepositoryFilter',
       organization: 'test-org3', // organization
       catalogPath: '/catalog-info.yaml', // file
+      host: 'github.com',
       filters: {
         repository: /^repository.*filter$/, // repo
         branch: undefined, // branch
         topic: {
-          name: undefined,
-          type: 'EXCLUDES',
+          include: undefined,
+          exclude: undefined,
         },
       },
     });
@@ -135,12 +134,13 @@ describe('readProviderConfigs', () => {
       id: 'providerWithBranchFilter',
       organization: 'test-org4',
       catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
       filters: {
         repository: undefined,
         branch: 'branch-name',
         topic: {
-          name: undefined,
-          type: 'EXCLUDES',
+          include: undefined,
+          exclude: undefined,
         },
       },
     });
@@ -148,25 +148,27 @@ describe('readProviderConfigs', () => {
       id: 'providerWithTopicFilter',
       organization: 'test-org5',
       catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
       filters: {
         repository: undefined,
         branch: undefined,
         topic: {
-          name: 'backstage-exclude',
-          type: 'EXCLUDES',
+          include: ['backstage-include'],
+          exclude: ['backstage-exclude'],
         },
       },
     });
     expect(providerConfigs[5]).toEqual({
-      id: 'providerWithTopicFilterAndInclusion',
-      organization: 'test-org6',
+      id: 'providerWithHost',
+      organization: 'test-org1',
       catalogPath: '/catalog-info.yaml',
+      host: 'ghe.internal.com',
       filters: {
         repository: undefined,
         branch: undefined,
         topic: {
-          name: 'backstage-include',
-          type: 'INCLUDES',
+          include: undefined,
+          exclude: undefined,
         },
       },
     });

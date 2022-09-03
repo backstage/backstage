@@ -154,3 +154,39 @@ schema migrations as well, but you can do so in any manner that you see fit.
 See the [Knex library documentation](http://knexjs.org/) for examples and
 details on how to write schema migrations and perform SQL queries against your
 database..
+
+## Making Use of the User's Identity
+
+The Backstage backend comes with a facility for retrieving the identity of the
+logged in user.
+
+As part of the environment object that is passed to your `createPlugin`
+function, there is a `identity` field. You can use that to get an identity
+from the request.
+
+```ts
+// in packages/backend/src/plugins/carmen.ts
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter({
+    model: model,
+    logger: env.logger,
+    identity: env.identity,
+  });
+}
+```
+
+The plugin can then extract the identity from the request.
+
+```ts
+export async function createRouter(
+  options: RouterOptions,
+): Promise<express.Router> {
+  const router = Router();
+
+  router.post('/example', async (req, res) => {
+    const identity = await identity.getIdentity({ request: req });
+    ...
+  });
+```

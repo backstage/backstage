@@ -16,30 +16,24 @@
 
 import { Config } from '@backstage/config';
 
-export enum TopicTypes {
-  Includes = 'INCLUDES',
-  Excludes = 'EXCLUDES',
-}
-
-const isValidTopicType = (topicType: string) =>
-  (Object.values(TopicTypes) as string[]).includes(topicType);
-
 const DEFAULT_CATALOG_PATH = '/catalog-info.yaml';
 const DEFAULT_PROVIDER_ID = 'default';
-const DEFAULT_TOPIC_FILTER_TYPE: TopicTypes = TopicTypes.Excludes;
 
 export type GitHubEntityProviderConfig = {
   id: string;
   catalogPath: string;
   organization: string;
+  host: string;
   filters?: {
     repository?: RegExp;
     branch?: string;
-    topic?: {
-      name?: string;
-      type: TopicTypes;
-    };
+    topic?: GithubTopicFilters;
   };
+};
+
+export type GithubTopicFilters = {
+  exclude?: string[];
+  include?: string[];
 };
 
 export function readProviderConfigs(
@@ -69,27 +63,29 @@ function readProviderConfig(
   const organization = config.getString('organization');
   const catalogPath =
     config.getOptionalString('catalogPath') ?? DEFAULT_CATALOG_PATH;
+  const host = config.getOptionalString('host') ?? 'github.com';
   const repositoryPattern = config.getOptionalString('filters.repository');
   const branchPattern = config.getOptionalString('filters.branch');
-  const topicFilterConfig = config.getOptionalConfig('filters.topic');
-  const topicFilterName = topicFilterConfig?.getOptionalString('name');
-  const topicFilterType = topicFilterConfig?.getOptionalString('type');
+  const topicFilterInclude = config?.getOptionalStringArray(
+    'filters.topic.include',
+  );
+  const topicFilterExclude = config?.getOptionalStringArray(
+    'filters.topic.exclude',
+  );
 
   return {
     id,
     catalogPath,
     organization,
+    host,
     filters: {
       repository: repositoryPattern
         ? compileRegExp(repositoryPattern)
         : undefined,
       branch: branchPattern || undefined,
       topic: {
-        name: topicFilterName || undefined,
-        type:
-          topicFilterType && isValidTopicType(topicFilterType)
-            ? (topicFilterType as TopicTypes)
-            : DEFAULT_TOPIC_FILTER_TYPE,
+        include: topicFilterInclude,
+        exclude: topicFilterExclude,
       },
     },
   };

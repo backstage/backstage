@@ -78,6 +78,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
   return (
     <Routes>
       <Route
+        path="/"
         element={
           <TemplateListPage
             TemplateCardComponent={TemplateCardComponent}

@@ -14,6 +14,7 @@ import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GithubCredentialsProvider } from '@backstage/integration';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
@@ -535,6 +536,8 @@ export interface RouterOptions {
   // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)
+  identity?: IdentityApi;
+  // (undocumented)
   logger: Logger;
   // (undocumented)
   reader: UrlReader;
@@ -553,7 +556,7 @@ export type RunCommandOptions = {
 };
 
 // @alpha
-export const scaffolderCatalogModule: (options?: unknown) => BackendFeature;
+export const scaffolderCatalogModule: (options?: undefined) => BackendFeature;
 
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
@@ -568,6 +571,19 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
   // (undocumented)
   validateEntityKind(entity: Entity): Promise<boolean>;
 }
+
+// @alpha
+export const scaffolderPlugin: (
+  options: ScaffolderPluginOptions,
+) => BackendFeature;
+
+// @alpha
+export type ScaffolderPluginOptions = {
+  actions?: TemplateAction<any>[];
+  taskWorkers?: number;
+  taskBroker?: TaskBroker;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
+};
 
 // @public
 export type SerializedTask = {

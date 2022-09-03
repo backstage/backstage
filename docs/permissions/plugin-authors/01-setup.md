@@ -46,7 +46,7 @@ The source code is available here:
     Create a new `packages/backend/src/plugins/todolist.ts` with the following content:
 
     ```javascript
-    import { IdentityClient } from '@backstage/plugin-auth-node';
+    import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
     import { createRouter } from '@internal/plugin-todo-list-backend';
     import { Router } from 'express';
     import { PluginEnvironment } from '../types';
@@ -57,7 +57,7 @@ The source code is available here:
     }: PluginEnvironment): Promise<Router> {
       return await createRouter({
         logger,
-        identity: IdentityClient.create({
+        identity: DefaultIdentityClient.create({
           discovery,
           issuer: await discovery.getExternalBaseUrl('auth'),
         }),

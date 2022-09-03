@@ -66,7 +66,7 @@ describe('<TechDocsSearch />', () => {
       );
 
       await emptyResults;
-      expect(querySpy).toBeCalled();
+      expect(querySpy).toHaveBeenCalled();
       expect(rendered.getByTestId('techdocs-search-bar')).toBeInTheDocument();
     });
   });
@@ -88,7 +88,7 @@ describe('<TechDocsSearch />', () => {
       );
 
       await singleResult;
-      expect(querySpy).toBeCalledWith({
+      expect(querySpy).toHaveBeenCalledWith({
         filters: {
           kind: 'Testable',
           name: 'test',
@@ -107,7 +107,7 @@ describe('<TechDocsSearch />', () => {
 
       await singleResult;
       await waitFor(() =>
-        expect(querySpy).toBeCalledWith({
+        expect(querySpy).toHaveBeenCalledWith({
           filters: {
             kind: 'Testable',
             name: 'test',
@@ -148,7 +148,7 @@ describe('<TechDocsSearch />', () => {
       const rendered = render(<WrappedSearchBar />);
 
       await singleResult;
-      expect(querySpy).toBeCalledWith({
+      expect(querySpy).toHaveBeenCalledWith({
         filters: {
           kind: 'Testable',
           name: 'test',
@@ -164,7 +164,7 @@ describe('<TechDocsSearch />', () => {
 
       await singleResult;
       await waitFor(() =>
-        expect(querySpy).toBeCalledWith({
+        expect(querySpy).toHaveBeenCalledWith({
           filters: {
             kind: 'TestableDiff',
             name: 'test-diff',

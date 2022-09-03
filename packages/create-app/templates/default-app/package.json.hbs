@@ -13,7 +13,7 @@
     "build-image": "yarn workspace backend build-image",
     "tsc": "tsc",
     "tsc:full": "tsc --skipLibCheck false --incremental false",
-    "clean": "backstage-cli clean && lerna run clean",
+    "clean": "backstage-cli repo clean",
     "diff": "lerna run diff --",
     "test": "backstage-cli test",
     "test:all": "lerna run test -- --coverage",
@@ -21,7 +21,7 @@
     "lint:all": "backstage-cli repo lint",
     "prettier:check": "prettier --check .",
     "create-plugin": "backstage-cli create-plugin --scope internal",
-    "remove-plugin": "backstage-cli remove-plugin"
+    "new": "backstage-cli new --scope internal"
   },
   "workspaces": {
     "packages": [

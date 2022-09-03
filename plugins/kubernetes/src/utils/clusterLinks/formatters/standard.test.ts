@@ -34,7 +34,7 @@ describe('clusterLinks - standard formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrowError('standard dashboard requires a dashboardUrl option');
+    ).toThrow('standard dashboard requires a dashboardUrl option');
   });
   it('should return an url on the workloads when there is a namespace only', () => {
     const url = standardFormatter({

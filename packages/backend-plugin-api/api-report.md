@@ -72,14 +72,26 @@ export const cacheServiceRef: ServiceRef<PluginCacheManager>;
 export const configServiceRef: ServiceRef<Config>;
 
 // @public (undocumented)
-export function createBackendModule<TOptions>(
+export function createBackendModule<
+  TOptions extends
+    | {
+        [name: string]: unknown;
+      }
+    | undefined = undefined,
+>(
   config: BackendModuleConfig<TOptions>,
 ): undefined extends TOptions
   ? (options?: TOptions) => BackendFeature
   : (options: TOptions) => BackendFeature;
 
 // @public (undocumented)
-export function createBackendPlugin<TOptions>(
+export function createBackendPlugin<
+  TOptions extends
+    | {
+        [name: string]: unknown;
+      }
+    | undefined = undefined,
+>(
   config: BackendPluginConfig<TOptions>,
 ): undefined extends TOptions
   ? (options?: TOptions) => BackendFeature

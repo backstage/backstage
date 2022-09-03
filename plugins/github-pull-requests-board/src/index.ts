@@ -17,3 +17,5 @@ export {
   EntityTeamPullRequestsCard,
   EntityTeamPullRequestsContent,
 } from './plugin';
+export type { EntityTeamPullRequestsCardProps } from './components/EntityTeamPullRequestsCard';
+export type { EntityTeamPullRequestsContentProps } from './components/EntityTeamPullRequestsContent';

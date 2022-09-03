@@ -18,12 +18,20 @@ import { sign } from 'aws4';
 import { AWSClusterDetails } from '../types/types';
 import { KubernetesAuthTranslator } from './types';
 
-type SigningCreds = {
+/**
+ *
+ * @alpha
+ */
+export type SigningCreds = {
   accessKeyId: string | undefined;
   secretAccessKey: string | undefined;
   sessionToken: string | undefined;
 };
 
+/**
+ *
+ * @alpha
+ */
 export class AwsIamKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {

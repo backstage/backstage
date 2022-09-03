@@ -28,7 +28,7 @@ const executeCommand = (
   stdout: string;
   stderr: string;
 }> => {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     const stdout: Buffer[] = [];
     const stderr: Buffer[] = [];
 
@@ -43,6 +43,7 @@ const executeCommand = (
       stderr.push(Buffer.from(data));
     });
 
+    proc.on('error', reject);
     proc.on('exit', code => {
       resolve({
         exit: code ?? 0,
@@ -59,6 +60,7 @@ jest.setTimeout(timeout * 2);
 
 describe('end-to-end', () => {
   const cwd = path.resolve(__dirname, '../src/example-docs');
+  const entryPoint = path.resolve(__dirname, '../bin/techdocs-cli');
 
   afterEach(async () => {
     // On Windows the pid of a spawned process may be wrong
@@ -72,33 +74,24 @@ describe('end-to-end', () => {
     }
   });
 
-  beforeAll(() => {
-    execSync('yarn workspace @techdocs/cli link', { stdio: 'ignore' });
-  });
-
-  afterAll(() => {
-    execSync('yarn workspace @techdocs/cli unlink', { stdio: 'ignore' });
-  });
-
   it('shows help text', async () => {
-    const proc = await executeCommand('techdocs-cli', ['--help']);
+    const proc = await executeCommand(entryPoint, ['--help']);
     expect(proc.stdout).toContain('Usage: techdocs-cli [options]');
     expect(proc.exit).toEqual(0);
   });
 
   it('can generate', async () => {
-    const proc = await executeCommand(
-      'techdocs-cli',
-      ['generate', '--no-docker'],
-      { cwd, timeout },
-    );
+    const proc = await executeCommand(entryPoint, ['generate', '--no-docker'], {
+      cwd,
+      timeout,
+    });
     expect(proc.stdout).toContain('Successfully generated docs');
     expect(proc.exit).toEqual(0);
   });
 
   it('can serve in mkdocs', async () => {
     const proc = await executeCommand(
-      'techdocs-cli',
+      entryPoint,
       ['serve:mkdocs', '--no-docker'],
       { cwd, timeout },
     );
@@ -108,11 +101,10 @@ describe('end-to-end', () => {
 
   it('can serve in backstage', async () => {
     jest.setTimeout(30000);
-    const proc = await executeCommand(
-      'techdocs-cli',
-      ['serve', '--no-docker'],
-      { cwd, timeout },
-    );
+    const proc = await executeCommand(entryPoint, ['serve', '--no-docker'], {
+      cwd,
+      timeout,
+    });
     expect(proc.stdout).toContain('Starting mkdocs server');
     expect(proc.stdout).toContain('Serving docs in Backstage at');
     expect(proc.exit).toEqual(0);

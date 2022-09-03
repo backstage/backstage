@@ -29,6 +29,8 @@ import {
 } from './connection';
 import { PluginDatabaseManager } from './types';
 import path from 'path';
+import { Logger } from 'winston';
+import { stringifyError } from '@backstage/errors';
 
 /**
  * Provides a config lookup path for a plugin's config block.
@@ -44,6 +46,7 @@ function pluginPath(pluginId: string): string {
  */
 export type DatabaseManagerOptions = {
   migrations?: PluginDatabaseManager['migrations'];
+  logger?: Logger;
 };
 
 /**
@@ -339,6 +342,31 @@ export class DatabaseManager {
       schemaOverrides,
     );
 
-    return createDatabaseClient(pluginConfig, databaseClientOverrides);
+    const client = createDatabaseClient(pluginConfig, databaseClientOverrides);
+    this.startKeepaliveLoop(pluginId, client);
+
+    return client;
+  }
+
+  private startKeepaliveLoop(pluginId: string, client: Knex): void {
+    let lastKeepaliveFailed = false;
+
+    setInterval(() => {
+      client.raw('select 1').then(
+        () => {
+          lastKeepaliveFailed = false;
+        },
+        (error: unknown) => {
+          if (!lastKeepaliveFailed) {
+            lastKeepaliveFailed = true;
+            this.options?.logger?.warn(
+              `Database keepalive failed for plugin ${pluginId}, ${stringifyError(
+                error,
+              )}`,
+            );
+          }
+        },
+      );
+    }, 60 * 1000);
   }
 }

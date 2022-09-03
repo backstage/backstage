@@ -233,7 +233,7 @@ describe('CloudflareAccessAuthProvider', () => {
       mockFetch.mockReturnValue(Promise.reject());
       await expect(
         provider.refresh(mockRequestWithJwtCookie, mockResponse),
-      ).rejects.toThrowError();
+      ).rejects.toThrow();
     });
   });
 

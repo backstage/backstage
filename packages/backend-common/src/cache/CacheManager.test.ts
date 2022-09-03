@@ -65,7 +65,7 @@ describe('CacheManager', () => {
       const config = new ConfigReader({ backend: {} });
       expect(() => {
         CacheManager.fromConfig(config);
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
     it('throws on unknown cache store', () => {
@@ -74,7 +74,7 @@ describe('CacheManager', () => {
       });
       expect(() => {
         CacheManager.fromConfig(config);
-      }).toThrowError();
+      }).toThrow();
     });
   });
 

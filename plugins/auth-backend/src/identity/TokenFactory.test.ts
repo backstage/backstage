@@ -128,7 +128,7 @@ describe('TokenFactory', () => {
       return factory.issueToken({
         claims: { sub: 'UserId' },
       });
-    }).rejects.toThrowError();
+    }).rejects.toThrow();
   });
 
   it('should throw error on empty algorithm string', async () => {
@@ -145,7 +145,7 @@ describe('TokenFactory', () => {
       return factory.issueToken({
         claims: { sub: 'UserId' },
       });
-    }).rejects.toThrowError();
+    }).rejects.toThrow();
   });
 
   it('should defaults to ES256 when no algorithm string is supplied', async () => {

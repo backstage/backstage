@@ -1,5 +1,31 @@
 # @backstage/plugin-tech-insights
 
+## 0.3.0-next.1
+
+### Minor Changes
+
+- f7e99ac1d8: Added the possibility to display check results of different types on a single scorecard.
+
+  - **BREAKING** Removed the `getScorecardsDefinition` method from the `TechInsightsApi` interface. Added the `getCheckResultRenderers` method that returns rendering components for given types.
+  - **BREAKING** The `CheckResultRenderer` type now exposes the `component` factory method that creates a React component used to display a result of a provided check result.
+  - The `TechInsightsClient` constructor accepts now the optional `renderers` parameter that can be used to inject a custom renderer.
+  - **BREAKING** The `title` parameter in the `EntityTechInsightsScorecardContent` and `EntityTechInsightsScorecardCard` components is now mandatory.
+  - The `jsonRulesEngineCheckResultRenderer` used to render `json-rules-engine` check results is exported.
+  - The `BooleanCheck` component that can be used to render other check results types is also exported.
+
+  If you were overriding the `getScorecardsDefinition` method to adjust the rendering of check results, you should now provide a custom renderer using `renderers` parameter in the `TechInsightsClient` class.
+
+  See the [README](https://github.com/backstage/backstage/tree/master/plugins/tech-insights/README.md) for more details.
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 763fb81e82: Internal refactor to use more type safe code when dealing with route parameters.
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.1
+  - @backstage/core-plugin-api@1.0.6-next.1
+  - @backstage/plugin-catalog-react@1.1.4-next.1
+
 ## 0.2.5-next.0
 
 ### Patch Changes

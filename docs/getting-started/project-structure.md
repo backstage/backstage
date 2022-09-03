@@ -212,7 +212,7 @@ future.
   common for companies to have their own npm registry, and this file makes sure
   that this folder always uses the public registry.
 
-- [`.yarnrc`](https://github.com/backstage/backstage/tree/master/.yarnrc) -
+- [`.yarnrc.yml`](https://github.com/backstage/backstage/tree/master/.yarnrc.yml) -
   Enforces "our" version of Yarn.
 
 - [`app-config.yaml`](https://github.com/backstage/backstage/tree/master/app-config.yaml) -

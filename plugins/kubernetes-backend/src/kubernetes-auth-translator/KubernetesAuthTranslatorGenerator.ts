@@ -23,6 +23,10 @@ import { GoogleServiceAccountAuthTranslator } from './GoogleServiceAccountAuthPr
 import { AzureIdentityKubernetesAuthTranslator } from './AzureIdentityKubernetesAuthTranslator';
 import { OidcKubernetesAuthTranslator } from './OidcKubernetesAuthTranslator';
 
+/**
+ *
+ * @alpha
+ */
 export class KubernetesAuthTranslatorGenerator {
   static getKubernetesAuthTranslatorInstance(
     authProvider: string,

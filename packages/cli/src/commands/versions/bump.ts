@@ -124,13 +124,6 @@ export default async (opts: OptionValues) => {
       }
 
       for (const pkg of pkgs) {
-        if (semver.satisfies(target, pkg.range)) {
-          if (semver.minVersion(pkg.range)?.version !== target) {
-            unlocked.push({ name, range: pkg.range, target });
-          }
-
-          continue;
-        }
         versionBumps.set(
           pkg.name,
           (versionBumps.get(pkg.name) ?? []).concat({

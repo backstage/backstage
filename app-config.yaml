@@ -7,7 +7,6 @@ app:
   #  applicationId: qwerty
   #   site: # datadoghq.eu default = datadoghq.com
   #   env: # optional
-
   support:
     url: https://github.com/backstage/backstage/issues # Used by common ErrorPage
     items: # Used by common SupportButton component

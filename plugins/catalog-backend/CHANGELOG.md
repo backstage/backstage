@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend
 
+## 1.4.0-next.1
+
+### Minor Changes
+
+- dd395335bc: Allow unknown typed location from being registered via the location service by configuration settings
+- 651c9d6800: The search index now does retain fields that have a very long value, but in the form of just a null. This makes it possible to at least filter for their existence.
+
+### Patch Changes
+
+- ce77e78c93: Fixes a bug to be able to utilize refresh keys after the entity is loaded from cache
+- 679f7c5e95: Include entity ref into error message when catalog policies fail
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.6.5-next.1
+  - @backstage/backend-common@0.15.1-next.1
+
 ## 1.3.2-next.0
 
 ### Patch Changes

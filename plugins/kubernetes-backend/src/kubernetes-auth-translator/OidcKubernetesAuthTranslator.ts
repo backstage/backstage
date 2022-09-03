@@ -18,6 +18,10 @@ import { KubernetesAuthTranslator } from './types';
 import { ClusterDetails } from '../types/types';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
+/**
+ *
+ * @alpha
+ */
 export class OidcKubernetesAuthTranslator implements KubernetesAuthTranslator {
   async decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
