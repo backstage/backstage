@@ -21,6 +21,24 @@ jest.mock('../../api/XcmetricsClient');
 const client = require('../../api/XcmetricsClient');
 
 describe('BuildTimeline', () => {
+  const { ResizeObserver } = window;
+
+  beforeEach(() => {
+    // @ts-expect-error: Since we have strictNullChecks enabled, this will throw an error as window.ResizeObserver
+    // it's not an optional operand
+    delete window.ResizeObserver;
+    window.ResizeObserver = jest.fn().mockImplementation(() => ({
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+      disconnect: jest.fn(),
+    }));
+  });
+
+  afterEach(() => {
+    window.ResizeObserver = ResizeObserver;
+    jest.restoreAllMocks();
+  });
+
   it('should render', async () => {
     const rendered = await renderInTestApp(
       <BuildTimeline targets={[client.mockTarget]} height={100} width={100} />,
