@@ -33,11 +33,11 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.15.1",
-    "@backstage/config": "^1.0.2",
-    "@backstage/errors": "^1.1.1",
-    "@backstage/plugin-tech-insights-common": "^0.2.6",
-    "@backstage/plugin-tech-insights-node": "^0.3.4",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-tech-insights-common": "workspace:^",
+    "@backstage/plugin-tech-insights-node": "workspace:^",
     "ajv": "^8.10.0",
     "json-rules-engine": "^6.1.2",
     "lodash": "^4.17.21",
@@ -45,7 +45,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0"
+    "@backstage/cli": "workspace:^"
   },
   "files": [
     "dist"

@@ -32,14 +32,14 @@
     "start": "backstage-cli package start"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0",
+    "@backstage/cli": "workspace:^",
     "@types/luxon": "^3.0.0",
     "@types/react": "^16.13.1 || ^17.0.0"
   },
   "dependencies": {
-    "@backstage/catalog-model": "^1.1.1",
-    "@backstage/core-plugin-api": "^1.0.6",
-    "@backstage/plugin-catalog-react": "^1.1.4",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/plugin-catalog-react": "workspace:^",
     "@date-io/luxon": "^1.3.13",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.11.2",

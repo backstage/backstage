@@ -22,13 +22,13 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/catalog-client": "^1.1.0",
-    "@backstage/catalog-model": "^1.1.1",
-    "@backstage/cli": "^0.19.0",
-    "@backstage/core-components": "^0.11.1",
-    "@backstage/core-plugin-api": "^1.0.6",
-    "@backstage/plugin-catalog": "^1.5.1",
-    "@backstage/plugin-catalog-react": "^1.1.4",
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/core-components": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/plugin-catalog": "workspace:^",
+    "@backstage/plugin-catalog-react": "workspace:^",
     "@date-io/luxon": "1.x",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
@@ -44,8 +44,8 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0",
-    "@backstage/dev-utils": "^1.0.6",
+    "@backstage/cli": "workspace:^",
+    "@backstage/dev-utils": "workspace:^",
     "@testing-library/jest-dom": "^5.10.1",
     "cross-fetch": "^3.1.5"
   },

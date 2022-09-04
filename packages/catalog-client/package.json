@@ -32,12 +32,12 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/catalog-model": "^1.1.1",
-    "@backstage/errors": "^1.1.1",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "cross-fetch": "^3.1.5"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0",
+    "@backstage/cli": "workspace:^",
     "msw": "^0.47.0"
   },
   "files": [

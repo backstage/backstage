@@ -32,10 +32,10 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.15.1",
-    "@backstage/config": "^1.0.2",
-    "@backstage/errors": "^1.1.1",
-    "@backstage/types": "^1.0.0",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/types": "workspace:^",
     "@types/luxon": "^3.0.0",
     "cron": "^2.0.0",
     "knex": "^2.0.0",
@@ -47,8 +47,8 @@
     "zod": "^3.9.5"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "^0.1.28",
-    "@backstage/cli": "^0.19.0",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
     "@types/cron": "^2.0.0",
     "wait-for-expect": "^3.0.2"
   },

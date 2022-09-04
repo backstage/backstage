@@ -33,14 +33,14 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.15.1",
-    "@backstage/backend-tasks": "^0.3.5",
-    "@backstage/catalog-client": "^1.1.0",
-    "@backstage/catalog-model": "^1.1.1",
-    "@backstage/config": "^1.0.2",
-    "@backstage/errors": "^1.1.1",
-    "@backstage/plugin-tech-insights-common": "^0.2.6",
-    "@backstage/plugin-tech-insights-node": "^0.3.4",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-tasks": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-tech-insights-common": "workspace:^",
+    "@backstage/plugin-tech-insights-node": "workspace:^",
     "@types/express": "^4.17.6",
     "@types/luxon": "^3.0.0",
     "express": "^4.17.1",
@@ -54,8 +54,8 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "^0.1.28",
-    "@backstage/cli": "^0.19.0",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
     "@types/semver": "^7.3.8",
     "@types/supertest": "^2.0.8",
     "supertest": "^6.1.3",
