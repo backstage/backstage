@@ -218,6 +218,10 @@ export function registerCommands(program: Command) {
       '--npm-registry <URL>',
       'The package registry to use for new packages',
     )
+    .option(
+      '--baseVersion <version>',
+      'The version to use for any new packages (default: 0.1.0)',
+    )
     .option('--no-private', 'Do not mark new packages as private')
     .action(lazy(() => import('./new/new').then(m => m.default)));
 

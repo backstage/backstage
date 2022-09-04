@@ -179,6 +179,7 @@ Options:
   --option <name>=<value>
   --scope <scope>
   --npm-registry <URL>
+  --baseVersion <version>
   --no-private
   -h, --help
 ```
