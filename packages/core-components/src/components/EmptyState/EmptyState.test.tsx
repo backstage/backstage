@@ -36,4 +36,18 @@ describe('<EmptyState />', () => {
     expect(rendered.getByLabelText('button')).toBeInTheDocument();
     expect(rendered.getByAltText('annotation is missing')).toBeInTheDocument();
   });
+
+  it('renders custom image if one is provided', async () => {
+    const { getByText } = await renderWithEffects(
+      wrapInTestApp(
+        <EmptyState
+          title="Some empty state text"
+          missing={{ customImage: <div>Custom Image</div> }}
+        />,
+      ),
+    );
+
+    expect(getByText('Some empty state text')).toBeInTheDocument();
+    expect(getByText('Custom Image')).toBeInTheDocument();
+  });
 });
