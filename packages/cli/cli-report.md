@@ -13,7 +13,6 @@ Options:
 
 Commands:
   new [options]
-  plugin:diff [options]
   test
   config:docs [options]
   config:print [options]
@@ -377,17 +376,6 @@ Options:
   --watchAll
   --watchPathIgnorePatterns
   --watchman
-```
-
-### `backstage-cli plugin:diff`
-
-```
-Usage: backstage-cli plugin:diff [options]
-
-Options:
-  --check
-  --yes
-  -h, --help
 ```
 
 ### `backstage-cli repo`
