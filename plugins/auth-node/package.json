@@ -22,9 +22,9 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.15.1",
-    "@backstage/config": "^1.0.2",
-    "@backstage/errors": "^1.1.1",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@types/express": "*",
     "express": "^4.17.1",
     "jose": "^4.6.0",
@@ -32,8 +32,8 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "^0.1.28",
-    "@backstage/cli": "^0.19.0",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
     "lodash": "^4.17.21",
     "msw": "^0.47.0",
     "uuid": "^8.0.0"

@@ -41,14 +41,14 @@
     "url": "https://github.com/backstage/backstage/issues"
   },
   "dependencies": {
-    "@backstage/config": "^1.0.2",
-    "@backstage/errors": "^1.1.1",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "cross-fetch": "^3.1.5",
     "uuid": "^8.0.0",
     "zod": "^3.11.6"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0",
+    "@backstage/cli": "workspace:^",
     "msw": "^0.47.0"
   }
 }

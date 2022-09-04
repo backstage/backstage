@@ -32,13 +32,13 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/config": "^1.0.2",
-    "@backstage/core-app-api": "^1.1.0",
-    "@backstage/core-plugin-api": "^1.0.6",
-    "@backstage/plugin-permission-common": "^0.6.4",
-    "@backstage/plugin-permission-react": "^0.4.5",
-    "@backstage/theme": "^0.2.16",
-    "@backstage/types": "^1.0.0",
+    "@backstage/config": "workspace:^",
+    "@backstage/core-app-api": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-permission-react": "workspace:^",
+    "@backstage/theme": "workspace:^",
+    "@backstage/types": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.11.2",
     "@testing-library/jest-dom": "^5.10.1",
@@ -55,7 +55,7 @@
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0",
+    "@backstage/cli": "workspace:^",
     "@types/node": "^16.11.26",
     "msw": "^0.47.0"
   },

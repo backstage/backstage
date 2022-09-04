@@ -36,7 +36,7 @@
     "techdocs-cli": "bin/techdocs-cli"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0",
+    "@backstage/cli": "workspace:^",
     "@types/commander": "^2.12.2",
     "@types/fs-extra": "^9.0.6",
     "@types/http-proxy": "^1.17.4",
@@ -60,11 +60,11 @@
     "ext": "ts"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.15.1",
-    "@backstage/catalog-model": "^1.1.1",
-    "@backstage/cli-common": "^0.1.10",
-    "@backstage/config": "^1.0.2",
-    "@backstage/plugin-techdocs-node": "^1.4.0",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/cli-common": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/plugin-techdocs-node": "workspace:^",
     "@types/dockerode": "^3.3.0",
     "commander": "^9.1.0",
     "dockerode": "^3.3.1",
