@@ -34,11 +34,11 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/backend-app-api": "^0.2.1",
-    "@backstage/backend-common": "^0.15.1",
-    "@backstage/backend-plugin-api": "^0.1.2",
-    "@backstage/cli": "^0.19.0",
-    "@backstage/config": "^1.0.2",
+    "@backstage/backend-app-api": "workspace:^",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/config": "workspace:^",
     "better-sqlite3": "^7.5.0",
     "knex": "^2.0.0",
     "msw": "^0.47.0",
@@ -48,7 +48,7 @@
     "uuid": "^8.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0"
+    "@backstage/cli": "workspace:^"
   },
   "files": [
     "dist",

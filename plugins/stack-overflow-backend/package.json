@@ -32,9 +32,9 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/cli": "^0.19.0",
-    "@backstage/config": "^1.0.2",
-    "@backstage/plugin-search-common": "^1.0.1",
+    "@backstage/cli": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/plugin-search-common": "workspace:^",
     "node-fetch": "^2.6.7",
     "qs": "^6.9.4",
     "winston": "^3.2.1"

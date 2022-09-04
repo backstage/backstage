@@ -28,11 +28,11 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.15.1",
-    "@backstage/catalog-model": "^1.1.1",
-    "@backstage/errors": "^1.1.1",
-    "@backstage/plugin-auth-node": "^0.2.5",
-    "@backstage/types": "^1.0.0",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/types": "workspace:^",
     "@types/express": "^4.17.6",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
@@ -41,8 +41,8 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "^0.1.28",
-    "@backstage/cli": "^0.19.0",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
     "supertest": "^6.1.3"
   },

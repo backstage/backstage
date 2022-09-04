@@ -23,17 +23,17 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.15.1",
-    "@backstage/config": "^1.0.2",
-    "@backstage/plugin-search-backend-node": "^1.0.2",
-    "@backstage/plugin-search-common": "^1.0.1",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/plugin-search-backend-node": "workspace:^",
+    "@backstage/plugin-search-common": "workspace:^",
     "knex": "^2.0.0",
     "lodash": "^4.17.21",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "^0.1.28",
-    "@backstage/cli": "^0.19.0"
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^"
   },
   "files": [
     "dist",
