@@ -170,7 +170,7 @@ a@^1:
   integrity: sha512-xyz
   resolved: "https://my-registry/a-1.0.01.tgz#abc123"
 
-b@2.0.x:
+"b@2.0.x, b@^2.0.1":
   version: 2.0.1
 
 b@^2:
@@ -185,7 +185,7 @@ a@^1:
   integrity: sha512-xyz
   resolved: "https://my-registry/a-1.0.01.tgz#abc123"
 
-b@2.0.x:
+"b@2.0.x, b@^2.0.1":
   version: 2.0.1
 
 b@^2:
@@ -206,6 +206,7 @@ describe('New Lockfile', () => {
     expect(lockfile.get('a')).toEqual([{ range: '^1', version: '1.0.1' }]);
     expect(lockfile.get('b')).toEqual([
       { range: '2.0.x', version: '2.0.1' },
+      { range: '^2.0.1', version: '2.0.1' },
       { range: '^2', version: '2.0.0' },
     ]);
     expect(lockfile.toString()).toBe(mockANew);
