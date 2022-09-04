@@ -33,11 +33,11 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.15.1",
-    "@backstage/catalog-client": "^1.1.0",
-    "@backstage/catalog-model": "^1.1.1",
-    "@backstage/config": "^1.0.2",
-    "@backstage/errors": "^1.1.1",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@types/express": "^4.17.6",
     "badge-maker": "^3.3.0",
     "cors": "^2.8.5",
@@ -47,7 +47,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0",
+    "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
     "supertest": "^6.1.3"
   },
