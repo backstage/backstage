@@ -163,9 +163,9 @@ jobs:
       - name: publish
         run: |
           if [ -f ".changeset/pre.json" ]; then
-              yarn lerna publish from-package --yes --dist-tag next
+              yarn workspaces foreach -v --exclude=root --no-private npm publish --tag next
           else
-              yarn lerna publish from-package --yes
+              yarn workspaces foreach -v --exclude=root --no-private npm publish
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
