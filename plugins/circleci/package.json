@@ -28,7 +28,6 @@
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
-    "diff": "backstage-cli plugin:diff",
     "start": "backstage-cli package start",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack"

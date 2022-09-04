@@ -98,9 +98,6 @@ jobs:
       - name: verify type dependencies
         run: yarn lint:type-deps
 
-      - name: verify plugin template
-        run: yarn lerna -- run diff -- --check
-
       - name: ensure clean working directory
         run: |
           if files=$(git ls-files --exclude-standard --others --modified) && [[ -z "$files" ]]; then
