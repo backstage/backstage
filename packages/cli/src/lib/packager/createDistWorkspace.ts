@@ -39,6 +39,7 @@ import {
 } from '../builder';
 import { copyPackageDist } from './copyPackageDist';
 import { getRoleInfo } from '../role';
+import { runParallelWorkers } from '../parallel';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
 const UNSAFE_PACKAGES = [
@@ -88,6 +89,14 @@ type Options = {
   skeleton?: 'skeleton.tar' | 'skeleton.tar.gz';
 };
 
+function prefixLogFunc(prefix: string, out: 'stdout' | 'stderr') {
+  return (data: Buffer) => {
+    for (const line of data.toString('utf8').split(/\r?\n/)) {
+      process[out].write(`${prefix} ${line}\n`);
+    }
+  };
+}
+
 /**
  * Uses `yarn pack` to package local packages and unpacks them into a dist workspace.
  * The target workspace will end up containing dist version of each package and
@@ -124,7 +133,7 @@ export async function createDistWorkspace(
     );
 
     const standardBuilds = new Array<BuildOptions>();
-    const customBuild = new Array<string>();
+    const customBuild = new Array<{ dir: string; name: string }>();
 
     for (const pkg of packages) {
       if (!toBuild.has(pkg.packageJson.name)) {
@@ -135,13 +144,13 @@ export async function createDistWorkspace(
         console.warn(
           `Building ${pkg.packageJson.name} separately because it has no role`,
         );
-        customBuild.push(pkg.packageJson.name);
+        customBuild.push({ dir: pkg.dir, name: pkg.packageJson.name });
         continue;
       }
 
       const buildScript = pkg.packageJson.scripts?.build;
       if (!buildScript) {
-        customBuild.push(pkg.packageJson.name);
+        customBuild.push({ dir: pkg.dir, name: pkg.packageJson.name });
         continue;
       }
 
@@ -149,7 +158,7 @@ export async function createDistWorkspace(
         console.warn(
           `Building ${pkg.packageJson.name} separately because it has a custom build script, '${buildScript}'`,
         );
-        customBuild.push(pkg.packageJson.name);
+        customBuild.push({ dir: pkg.dir, name: pkg.packageJson.name });
         continue;
       }
 
@@ -157,7 +166,7 @@ export async function createDistWorkspace(
         console.warn(
           `Building ${pkg.packageJson.name} separately because it is a bundled package`,
         );
-        customBuild.push(pkg.packageJson.name);
+        customBuild.push({ dir: pkg.dir, name: pkg.packageJson.name });
         continue;
       }
 
@@ -181,14 +190,15 @@ export async function createDistWorkspace(
     await buildPackages(standardBuilds);
 
     if (customBuild.length > 0) {
-      const scopeArgs = customBuild.flatMap(name => ['--scope', name]);
-      const lernaArgs =
-        options.parallelism && Number.isInteger(options.parallelism)
-          ? ['--concurrency', options.parallelism.toString()]
-          : [];
-
-      await run('yarn', ['lerna', ...lernaArgs, 'run', ...scopeArgs, 'build'], {
-        cwd: paths.targetRoot,
+      await runParallelWorkers({
+        items: customBuild,
+        worker: async ({ name, dir }) => {
+          await run('yarn', ['run', 'build'], {
+            cwd: dir,
+            stdoutLogFunc: prefixLogFunc(`${name}: `, 'stdout'),
+            stderrLogFunc: prefixLogFunc(`${name}: `, 'stderr'),
+          });
+        },
       });
     }
   }
