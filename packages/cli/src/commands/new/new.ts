@@ -22,6 +22,7 @@ import { FactoryRegistry } from '../../lib/new/FactoryRegistry';
 import { paths } from '../../lib/paths';
 import { assertError } from '@backstage/errors';
 import { Task } from '../../lib/tasks';
+import { isMonoRepo } from '../../lib/monorepo/isMonoRepo';
 
 function parseOptions(optionStrings: string[]): Record<string, string> {
   const options: Record<string, string> = {};
@@ -49,21 +50,6 @@ export default async (opts: OptionValues) => {
     providedOptions,
   );
 
-  let isMonoRepo = false;
-  try {
-    const rootPackageJson = await fs.readJson(
-      paths.resolveTargetRoot('package.json'),
-    );
-    if (rootPackageJson.workspaces) {
-      isMonoRepo = true;
-    }
-  } catch (error) {
-    assertError(error);
-    if (error.code !== 'ENOENT') {
-      throw error;
-    }
-  }
-
   let defaultVersion = '0.1.0';
   try {
     const rootLernaJson = await fs.readJson(
@@ -89,7 +75,7 @@ export default async (opts: OptionValues) => {
   let modified = false;
   try {
     await factory.create(options, {
-      isMonoRepo,
+      isMonoRepo: await isMonoRepo(),
       defaultVersion,
       scope: opts.scope?.replace(/^@/, ''),
       npmRegistry: opts.npmRegistry,
