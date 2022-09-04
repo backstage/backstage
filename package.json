@@ -70,7 +70,6 @@
     "eslint-plugin-notice": "^0.9.10",
     "fs-extra": "10.1.0",
     "husky": "^8.0.0",
-    "lerna": "~5.0.0",
     "lint-staged": "^13.0.0",
     "minimist": "^1.2.5",
     "prettier": "^2.2.1",
