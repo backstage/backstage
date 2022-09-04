@@ -49,6 +49,7 @@ type ReducerLogEntry = {
     status?: ScaffolderTaskStatus;
     message: string;
     output?: ScaffolderTaskOutput;
+    error?: Error;
   };
 };
 
@@ -114,6 +115,8 @@ function reducer(draft: TaskStream, action: ReducerAction) {
     case 'COMPLETED': {
       draft.completed = true;
       draft.output = action.data.body.output;
+      draft.error = action.data.body.error;
+
       return;
     }
 
