@@ -84,6 +84,38 @@ describe('ServerTokenManager', () => {
       await expect(tokenManager2.authenticate(token)).resolves.not.toThrow();
     });
 
+    it('should validate server tokens created by a different instance using the same secret setting the subject', async () => {
+      const tokenManager1 = ServerTokenManager.fromConfig(configWithSecret, {
+        logger,
+        subject: 'test-subject-1',
+      });
+      const tokenManager2 = ServerTokenManager.fromConfig(configWithSecret, {
+        logger,
+        subject: 'test-subject-1',
+      });
+
+      const { token } = await tokenManager1.getToken();
+
+      await expect(tokenManager2.authenticate(token)).resolves.not.toThrow();
+    });
+
+    it('should reject server tokens created by a different instance using the same secret setting different subjects', async () => {
+      const tokenManager1 = ServerTokenManager.fromConfig(configWithSecret, {
+        logger,
+        subject: 'test-subject-1',
+      });
+      const tokenManager2 = ServerTokenManager.fromConfig(configWithSecret, {
+        logger,
+        subject: 'test-subject-2',
+      });
+
+      const { token } = await tokenManager1.getToken();
+
+      await expect(tokenManager2.authenticate(token)).rejects.toThrow(
+        `Illegal sub "test-subject-1"`,
+      );
+    });
+
     it('should validate server tokens created using any of the secrets', async () => {
       const tokenManager1 = ServerTokenManager.fromConfig(
         new ConfigReader({

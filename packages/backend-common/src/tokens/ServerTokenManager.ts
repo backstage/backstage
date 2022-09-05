@@ -50,6 +50,11 @@ export interface ServerTokenManagerOptions {
    * The logger to use.
    */
   logger: Logger;
+
+  /**
+   * The subject will be optionally used to set the subject and validate them on the issued tokens.
+   */
+  subject?: string;
 }
 
 /**
@@ -61,6 +66,7 @@ export interface ServerTokenManagerOptions {
 export class ServerTokenManager implements TokenManager {
   private readonly options: ServerTokenManagerOptions;
   private readonly verificationKeys: Uint8Array[];
+  private readonly subject?: string;
   private signingKey: Uint8Array;
   private privateKeyPromise: Promise<void> | undefined;
   private currentTokenPromise: Promise<{ token: string }> | undefined;
@@ -104,6 +110,7 @@ export class ServerTokenManager implements TokenManager {
     this.options = options;
     this.verificationKeys = secrets.map(s => base64url.decode(s));
     this.signingKey = this.verificationKeys[0];
+    this.subject = options.subject;
   }
 
   // Called when no keys have been generated yet in the dev environment
@@ -151,7 +158,7 @@ export class ServerTokenManager implements TokenManager {
     const result = Promise.resolve().then(async () => {
       const jwt = await new SignJWT({})
         .setProtectedHeader({ alg: TOKEN_ALG })
-        .setSubject(TOKEN_SUB)
+        .setSubject(this.subject || TOKEN_SUB)
         .setExpirationTime(
           DateTime.now().plus(TOKEN_EXPIRY_AFTER).toUnixInteger(),
         )
@@ -188,7 +195,7 @@ export class ServerTokenManager implements TokenManager {
           throw new AuthenticationError(`Illegal alg "${alg}"`);
         }
 
-        if (sub !== TOKEN_SUB) {
+        if (sub !== (this.subject || TOKEN_SUB)) {
           throw new AuthenticationError(`Illegal sub "${sub}"`);
         }
 
