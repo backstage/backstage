@@ -153,7 +153,7 @@ describe('GitlabDiscoveryProcessor', () => {
   setupRequestMockHandlers(server);
 
   beforeAll(() => {
-    jest.useFakeTimers('modern');
+    jest.useFakeTimers();
     jest.setSystemTime(new Date(SERVER_TIME));
   });
 
