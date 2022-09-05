@@ -220,4 +220,103 @@ describe('ServiceRegistry', () => {
     expect(innerFactory).toHaveBeenCalledWith('catalog');
     expect(innerFactory).toHaveBeenCalledWith('scaffolder');
   });
+
+  it('should throw if dependencies are not available', async () => {
+    const myFactory = createServiceFactory({
+      service: ref1,
+      deps: { dep: ref2 },
+      async factory() {
+        throw new Error('ignored');
+      },
+    });
+
+    const registry = new ServiceRegistry([myFactory]);
+    const factory = registry.get(ref1)!;
+
+    await expect(factory('catalog')).rejects.toThrow(
+      "Failed to instantiate service '1' for 'catalog' because the following dependent services are missing: '2'",
+    );
+  });
+
+  it('should throw if dependencies are not available 2', async () => {
+    const refA = createServiceRef<string>({ id: 'a' });
+    const refB = createServiceRef<string>({ id: 'b' });
+    const refC = createServiceRef<string>({ id: 'c' });
+    const refD = createServiceRef<string>({ id: 'd' });
+
+    const factoryA = createServiceFactory({
+      service: refA,
+      deps: { b: refB },
+      async factory({ b }) {
+        return async pluginId => b(pluginId);
+      },
+    });
+
+    const factoryB = createServiceFactory({
+      service: refB,
+      deps: { c: refC, d: refD },
+      async factory() {
+        throw new Error('ignored');
+      },
+    });
+
+    const registry = new ServiceRegistry([factoryA, factoryB]);
+    const factory = registry.get(refA)!;
+
+    await expect(factory('catalog')).rejects.toThrow(
+      "Failed to instantiate service 'a' for 'catalog' because the factory function threw an error, Error: Failed to instantiate service 'b' for 'catalog' because the following dependent services are missing: 'c', 'd'",
+    );
+  });
+
+  it('should decorate error messages thrown by the top-level factory function', async () => {
+    const myFactory = createServiceFactory({
+      service: ref1,
+      deps: {},
+      factory() {
+        throw new Error('top-level error');
+      },
+    });
+
+    const registry = new ServiceRegistry([myFactory]);
+    const factory = registry.get(ref1)!;
+
+    await expect(factory('catalog')).rejects.toThrow(
+      "Failed to instantiate service '1' because the top-level factory function threw an error, Error: top-level error",
+    );
+  });
+
+  it('should decorate error messages thrown by the plugin-level factory function', async () => {
+    const myFactory = createServiceFactory({
+      service: ref1,
+      deps: {},
+      async factory() {
+        return pluginId => {
+          throw new Error(`error in plugin ${pluginId}`);
+        };
+      },
+    });
+
+    const registry = new ServiceRegistry([myFactory]);
+    const factory = registry.get(ref1)!;
+
+    await expect(factory('catalog')).rejects.toThrow(
+      "Failed to instantiate service '1' for 'catalog' because the factory function threw an error, Error: error in plugin catalog",
+    );
+  });
+
+  it('should decorate error messages thrown by default factory loaders', async () => {
+    const ref = createServiceRef<string>({
+      id: '1',
+      defaultFactory() {
+        throw new Error('default factory error');
+      },
+    });
+
+    const registry = new ServiceRegistry([]);
+    const factory = registry.get(ref)!;
+
+    await expect(factory('catalog')).rejects.toThrow(
+      "Failed to instantiate service '1' because the default factory loader threw an error, Error: default factory error",
+    );
+  });
 });
