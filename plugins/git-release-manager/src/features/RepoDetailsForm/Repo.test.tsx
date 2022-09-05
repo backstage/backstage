@@ -65,7 +65,7 @@ describe('Repo', () => {
 
     await waitFor(() => screen.getAllByTestId(TEST_IDS.form.repo.empty));
     expect(getAllByTestId(TEST_IDS.form.repo.empty)).toMatchInlineSnapshot(`
-      Array [
+      [
         <p
           class="MuiFormHelperText-root Mui-required"
           data-testid="grm--form--repo--empty"

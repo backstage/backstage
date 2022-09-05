@@ -43,7 +43,7 @@ describe('getReleaseCandidateGitInfo', () => {
           injectedDate: '2021.01.28',
         }),
       ).toMatchInlineSnapshot(`
-        Object {
+        {
           "rcBranch": "rc/2021.01.28",
           "rcReleaseTag": "rc-2021.01.28_0",
           "releaseName": "Version 2021.01.28",
@@ -61,7 +61,7 @@ describe('getReleaseCandidateGitInfo', () => {
           semverBumpLevel: 'minor',
         }),
       ).toMatchInlineSnapshot(`
-        Object {
+        {
           "rcBranch": "rc/1.3.0",
           "rcReleaseTag": "rc-1.3.0",
           "releaseName": "Version 1.3.0",
@@ -77,7 +77,7 @@ describe('getReleaseCandidateGitInfo', () => {
           semverBumpLevel: 'minor',
         }),
       ).toMatchInlineSnapshot(`
-        Object {
+        {
           "rcBranch": "rc/0.0.1",
           "rcReleaseTag": "rc-0.0.1",
           "releaseName": "Version 0.0.1",

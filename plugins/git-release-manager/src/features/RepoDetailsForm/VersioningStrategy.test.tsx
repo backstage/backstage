@@ -51,10 +51,10 @@ describe('Repo', () => {
 
     fireEvent.click(radio2);
     expect(mockNavigate.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
+      [
+        [
           "?versioningStrategy=calver&owner=mock_owner&repo=mock_repo",
-          Object {
+          {
             "replace": true,
           },
         ],
