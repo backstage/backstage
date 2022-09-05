@@ -22,7 +22,7 @@ describe('gitReleaseManagerApiRef', () => {
 
     expect(result).toMatchInlineSnapshot(`
       ApiRefImpl {
-        "config": Object {
+        "config": {
           "id": "plugin.git-release-manager.service",
         },
       }

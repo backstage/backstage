@@ -60,23 +60,23 @@ describe('getReleaseStats', () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "releaseStats": Object {
-          "releases": Object {
-            "1.0": Object {
+      {
+        "releaseStats": {
+          "releases": {
+            "1.0": {
               "baseVersion": "1.0",
-              "candidates": Array [
-                Object {
+              "candidates": [
+                {
                   "tagName": "rc-1.0.0",
                   "tagSha": "sha",
                   "tagType": "tag",
                 },
-                Object {
+                {
                   "tagName": "rc-1.0.1",
                   "tagSha": "sha",
                   "tagType": "tag",
                 },
-                Object {
+                {
                   "tagName": "rc-1.0.2",
                   "tagSha": "sha",
                   "tagType": "tag",
@@ -84,18 +84,18 @@ describe('getReleaseStats', () => {
               ],
               "createdAt": "2021-01-01T10:11:12Z",
               "htmlUrl": "html_url",
-              "versions": Array [
-                Object {
+              "versions": [
+                {
                   "tagName": "version-1.0.2",
                   "tagSha": "sha",
                   "tagType": "tag",
                 },
               ],
             },
-            "1.1": Object {
+            "1.1": {
               "baseVersion": "1.1",
-              "candidates": Array [
-                Object {
+              "candidates": [
+                {
                   "tagName": "rc-1.1.1",
                   "tagSha": "sha",
                   "tagType": "tag",
@@ -103,14 +103,14 @@ describe('getReleaseStats', () => {
               ],
               "createdAt": "2021-01-01T10:11:12Z",
               "htmlUrl": "html_url",
-              "versions": Array [],
+              "versions": [],
             },
           },
-          "unmappableTags": Array [
+          "unmappableTags": [
             "rc-123.123.123",
           ],
-          "unmatchedReleases": Array [],
-          "unmatchedTags": Array [
+          "unmatchedReleases": [],
+          "unmatchedTags": [
             "rc-1/2/3",
           ],
         },

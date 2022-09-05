@@ -72,37 +72,37 @@ describe('useCreateReleaseCandidate', () => {
 
     expect(result.current.responseSteps).toHaveLength(7);
     expect(result.current).toMatchInlineSnapshot(`
-      Object {
+      {
         "progress": 100,
-        "responseSteps": Array [
-          Object {
+        "responseSteps": [
+          {
             "link": "https://latestCommit.html_url",
-            "message": "Fetched latest commit from \\"mock_defaultBranch\\"",
-            "secondaryMessage": "with message \\"latestCommit.commit.message\\"",
+            "message": "Fetched latest commit from "mock_defaultBranch"",
+            "secondaryMessage": "with message "latestCommit.commit.message"",
           },
-          Object {
+          {
             "message": "Created Release Branch",
-            "secondaryMessage": "with ref \\"mock_createRef_ref\\"",
+            "secondaryMessage": "with ref "mock_createRef_ref"",
           },
-          Object {
+          {
             "message": "Created Tag Object",
-            "secondaryMessage": "with sha \\"mock_tag_object_sha\\"",
+            "secondaryMessage": "with sha "mock_tag_object_sha"",
           },
-          Object {
+          {
             "message": "Cut Tag Reference",
-            "secondaryMessage": "with ref \\"mock_createRef_ref\\"",
+            "secondaryMessage": "with ref "mock_createRef_ref"",
           },
-          Object {
+          {
             "link": "https://mock_compareCommits_html_url",
             "message": "Fetched commit comparison",
             "secondaryMessage": "rc/2020.01.01_1...rc/2020.01.01_1",
           },
-          Object {
+          {
             "link": "https://mock_createRelease_html_url",
-            "message": "Created Release Candidate \\"mock_createRelease_name\\"",
-            "secondaryMessage": "with tag \\"rc-2020.01.01_1\\"",
+            "message": "Created Release Candidate "mock_createRelease_name"",
+            "secondaryMessage": "with tag "rc-2020.01.01_1"",
           },
-          Object {
+          {
             "icon": "success",
             "message": "Success callback successfully called 🚀",
           },
