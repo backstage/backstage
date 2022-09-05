@@ -27,7 +27,13 @@ export type GitHubEntityProviderConfig = {
   filters?: {
     repository?: RegExp;
     branch?: string;
+    topic?: GithubTopicFilters;
   };
+};
+
+export type GithubTopicFilters = {
+  exclude?: string[];
+  include?: string[];
 };
 
 export function readProviderConfigs(
@@ -60,6 +66,12 @@ function readProviderConfig(
   const host = config.getOptionalString('host') ?? 'github.com';
   const repositoryPattern = config.getOptionalString('filters.repository');
   const branchPattern = config.getOptionalString('filters.branch');
+  const topicFilterInclude = config?.getOptionalStringArray(
+    'filters.topic.include',
+  );
+  const topicFilterExclude = config?.getOptionalStringArray(
+    'filters.topic.exclude',
+  );
 
   return {
     id,
@@ -71,6 +83,10 @@ function readProviderConfig(
         ? compileRegExp(repositoryPattern)
         : undefined,
       branch: branchPattern || undefined,
+      topic: {
+        include: topicFilterInclude,
+        exclude: topicFilterExclude,
+      },
     },
   };
 }

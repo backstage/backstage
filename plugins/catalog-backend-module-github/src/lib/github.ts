@@ -61,9 +61,20 @@ export type Repository = {
   name: string;
   url: string;
   isArchived: boolean;
+  repositoryTopics: RepositoryTopics;
   defaultBranchRef: {
     name: string;
   } | null;
+};
+
+type RepositoryTopics = {
+  nodes: TopicNodes[];
+};
+
+type TopicNodes = {
+  topic: {
+    name: string;
+  };
 };
 
 export type Connection<T> = {
@@ -265,6 +276,15 @@ export async function getOrganizationRepositories(
             name
             url
             isArchived
+            repositoryTopics(first: 100) {
+              nodes {
+                ... on RepositoryTopic {
+                  topic {
+                    name
+                  }
+                }
+              }
+            }
             defaultBranchRef {
               name
             }

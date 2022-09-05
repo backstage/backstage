@@ -80,6 +80,22 @@ catalog:
         filters: # optional filters
           branch: 'develop' # optional string
           repository: '.*' # optional Regex
+      topicProviderId:
+        organization: 'backstage' # string
+        catalogPath: '/catalog-info.yaml' # string
+        filters:
+          branch: 'main' # string
+          repository: '.*' # Regex
+          topic: 'backstage-exclude' # optional string
+      topicFilterProviderId:
+        organization: 'backstage' # string
+        catalogPath: '/catalog-info.yaml' # string
+        filters:
+          branch: 'main' # string
+          repository: '.*' # Regex
+          topic:
+            include: ['backstage-include'] # optional array of strings
+            exclude: ['experiments'] # optional array of strings
 ```
 
 This provider supports multiple organizations via unique provider IDs.
@@ -96,6 +112,16 @@ This provider supports multiple organizations via unique provider IDs.
     String used to filter results based on the branch name.
   - **repository** _(optional)_:
     Regular expression used to filter results based on the repository name.
+  - **topic** _(optional)_:
+    Both of the filters below may be used at the same time but the exclusion filter has the highest priority.
+    In the example above, a repository with the `backstage-include` topic would still be excluded
+    if it were also carrying the `experiments` topic.
+    - **include** _(optional)_:
+      An array of strings used to filter in results based on their associated Github topics.
+      If configured, only repositories with one (or more) topic(s) present in the inclusion filter will be ingested
+    - **exclude** _(optional)_:
+      An array of strings used to filter out results based on their associated Github topics.
+      If configured, all repositories _except_ those with one (or more) topics(s) present in the exclusion filter will be ingested.
 - **organization**:
   Name of your organization account/workspace.
   If you want to add multiple organizations, you need to add one provider config each.

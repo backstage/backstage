@@ -68,6 +68,15 @@ describe('readProviderConfigs', () => {
                 branch: 'branch-name',
               },
             },
+            providerWithTopicFilter: {
+              organization: 'test-org5',
+              filters: {
+                topic: {
+                  exclude: ['backstage-exclude'],
+                  include: ['backstage-include'],
+                },
+              },
+            },
             providerWithHost: {
               organization: 'test-org1',
               host: 'ghe.internal.com',
@@ -78,7 +87,7 @@ describe('readProviderConfigs', () => {
     });
     const providerConfigs = readProviderConfigs(config);
 
-    expect(providerConfigs).toHaveLength(5);
+    expect(providerConfigs).toHaveLength(6);
     expect(providerConfigs[0]).toEqual({
       id: 'providerOrganizationOnly',
       organization: 'test-org1',
@@ -87,6 +96,10 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: undefined,
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
       },
     });
     expect(providerConfigs[1]).toEqual({
@@ -97,6 +110,10 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: undefined,
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
       },
     });
     expect(providerConfigs[2]).toEqual({
@@ -107,6 +124,10 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: /^repository.*filter$/, // repo
         branch: undefined, // branch
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
       },
     });
     expect(providerConfigs[3]).toEqual({
@@ -117,9 +138,27 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: 'branch-name',
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
       },
     });
     expect(providerConfigs[4]).toEqual({
+      id: 'providerWithTopicFilter',
+      organization: 'test-org5',
+      catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
+      filters: {
+        repository: undefined,
+        branch: undefined,
+        topic: {
+          include: ['backstage-include'],
+          exclude: ['backstage-exclude'],
+        },
+      },
+    });
+    expect(providerConfigs[5]).toEqual({
       id: 'providerWithHost',
       organization: 'test-org1',
       catalogPath: '/catalog-info.yaml',
@@ -127,6 +166,10 @@ describe('readProviderConfigs', () => {
       filters: {
         repository: undefined,
         branch: undefined,
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
       },
     });
   });
