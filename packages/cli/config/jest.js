@@ -27,7 +27,6 @@ const envOptions = {
 
 const transformIgnorePattern = [
   '@material-ui',
-  '@rjsf',
   'ajv',
   'core-js',
   'jest-.*',

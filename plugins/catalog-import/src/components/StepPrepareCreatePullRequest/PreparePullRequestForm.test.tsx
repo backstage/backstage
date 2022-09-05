@@ -87,7 +87,6 @@ describe('<PreparePullRequestForm />', () => {
             <TextField
               {...asInputRef(register('main', { required: true }))}
               name="main"
-              required
             />
             {formState.errors.main && (
               <FormHelperText error>

@@ -67,7 +67,9 @@ describe('<ErrorBoundary/>', () => {
     });
 
     expect(error).toEqual([
-      expect.stringMatching(/^Error: Uncaught \[Error: Bomb\]/),
+      expect.objectContaining({
+        detail: new Error('Bomb'),
+      }),
       expect.stringMatching(
         /^The above error occurred in the <Bomb> component:/,
       ),

@@ -18,7 +18,7 @@ import { getDurationFromDates } from './getDurationFromDates';
 
 describe('getDurationFromDates', () => {
   beforeAll(() => {
-    jest.useFakeTimers('modern');
+    jest.useFakeTimers();
     jest.setSystemTime(new Date('2021-10-15T09:45:25.0000000Z'));
   });
 

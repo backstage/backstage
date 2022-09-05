@@ -44,7 +44,7 @@ jest.mock('@google-cloud/firestore', () => ({
   Firestore: jest.fn().mockImplementation(() => firestoreMock),
 }));
 
-jest.useFakeTimers('legacy');
+jest.useFakeTimers({ legacyFakeTimers: true });
 
 describe('FirestoreKeyStore', () => {
   const key = {
