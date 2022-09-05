@@ -184,7 +184,7 @@ export const useTechDocsReaderDom = (
                 navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
                 // Scroll to hash if it's on the current page
                 transformedElement
-                  ?.querySelector(`#${parsedUrl.hash.slice(1)}`)
+                  ?.querySelector(`[id="${parsedUrl.hash.slice(1)}"]`)
                   ?.scrollIntoView();
               }
             } else {
