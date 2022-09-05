@@ -194,7 +194,7 @@ async function getProjectConfig(targetPath, displayName) {
     // A bit more opinionated
     testMatch: ['**/*.test.{js,jsx,ts,tsx,mjs,cjs}'],
 
-    moduleLoader: envOptions.nextTests
+    runtime: envOptions.nextTests
       ? require.resolve('./jestCachingModuleLoader')
       : undefined,
 
@@ -209,16 +209,16 @@ async function getProjectConfig(targetPath, displayName) {
 
   const config = Object.assign(options, ...pkgJsonConfigs);
 
-  // The config name is a cache key that lets us share the jest cache across projects.
-  // If no explicit name was configured, generated one based on the configuration.
-  if (!config.name) {
+  // The config id is a cache key that lets us share the jest cache across projects.
+  // If no explicit id was configured, generated one based on the configuration.
+  if (!config.id) {
     const configHash = crypto
       .createHash('md5')
       .update(version)
       .update(Buffer.alloc(1))
       .update(JSON.stringify(config.transform))
       .digest('hex');
-    config.name = `backstage_cli_${configHash}`;
+    config.id = `backstage_cli_${configHash}`;
   }
 
   return config;
