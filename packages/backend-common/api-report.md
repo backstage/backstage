@@ -646,6 +646,7 @@ export class ServerTokenManager implements TokenManager {
 // @public
 export interface ServerTokenManagerOptions {
   logger: Logger;
+  subject?: string;
 }
 
 // @public
