@@ -217,14 +217,12 @@ const routes = (
         />
       }
     >
-      <>
-        <ScaffolderFieldExtensions>
-          <LowerCaseValuePickerFieldExtension />
-        </ScaffolderFieldExtensions>
-        <ScaffolderLayouts>
-          <TwoColumnLayout />
-        </ScaffolderLayouts>
-      </>
+      <ScaffolderFieldExtensions>
+        <LowerCaseValuePickerFieldExtension />
+      </ScaffolderFieldExtensions>
+      <ScaffolderLayouts>
+        <TwoColumnLayout />
+      </ScaffolderLayouts>
     </Route>
     <Route
       path="/create/next"
