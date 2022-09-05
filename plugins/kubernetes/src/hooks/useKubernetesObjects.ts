@@ -47,6 +47,7 @@ export const useKubernetesObjects = (
 
     try {
       clusters = await kubernetesApi.getClusters();
+      setError(null);
     } catch (e) {
       setError(e.message);
       return;
@@ -75,6 +76,7 @@ export const useKubernetesObjects = (
             authProviderStr,
             requestBody,
           );
+        setError(null);
       } catch (e) {
         setError(e.message);
         return;
@@ -83,6 +85,7 @@ export const useKubernetesObjects = (
 
     try {
       setKubernetesObjects(await kubernetesApi.getObjectsByEntity(requestBody));
+      setError(null);
     } catch (e) {
       setError(e.message);
       return;
