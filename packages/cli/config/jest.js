@@ -139,11 +139,6 @@ async function getProjectConfig(targetPath, displayName) {
             parser: {
               syntax: 'ecmascript',
             },
-            transform: {
-              react: {
-                runtime: 'automatic',
-              },
-            },
           },
         },
       ],
