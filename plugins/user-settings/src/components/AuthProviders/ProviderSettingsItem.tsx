@@ -17,11 +17,13 @@
 import React, { useEffect, useState } from 'react';
 import {
   Button,
+  Grid,
   ListItem,
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
   Tooltip,
+  Typography,
 } from '@material-ui/core';
 import {
   ApiRef,
@@ -32,6 +34,7 @@ import {
   useApi,
   IconComponent,
 } from '@backstage/core-plugin-api';
+import { ProviderSettingsAvatar } from './ProviderSettingsAvatar';
 
 /** @public */
 export const ProviderSettingsItem = (props: {
@@ -44,7 +47,8 @@ export const ProviderSettingsItem = (props: {
 
   const api = useApi(apiRef);
   const [signedIn, setSignedIn] = useState(false);
-  const [profileEmail, setProfileEmail] = useState('');
+  const emptyProfile: ProfileInfo = {};
+  const [profile, setProfile] = useState(emptyProfile);
 
   useEffect(() => {
     let didCancel = false;
@@ -55,13 +59,13 @@ export const ProviderSettingsItem = (props: {
         if (!didCancel) {
           api
             .getProfile({ optional: true })
-            .then((profile: ProfileInfo | undefined) => {
+            .then((profileResponse: ProfileInfo | undefined) => {
               if (sessionState === SessionState.SignedIn) {
                 setSignedIn(true);
               } else {
-                setSignedIn(profile !== undefined);
+                setSignedIn(profileResponse !== undefined);
               }
-              setProfileEmail(profile?.email ?? '');
+              setProfile(profileResponse ?? {});
             });
         }
       });
@@ -82,7 +86,30 @@ export const ProviderSettingsItem = (props: {
         secondary={
           <Tooltip placement="top" arrow title={description}>
             <span>
-              {description}. Signed in as {profileEmail}
+              <Grid container spacing={6}>
+                <Grid item>
+                  <ProviderSettingsAvatar size={48} picture={profile.picture} />
+                </Grid>
+                <Grid item xs={12} sm container>
+                  <Grid item xs container direction="column" spacing={2}>
+                    <Grid item xs>
+                      <Typography
+                        variant="subtitle1"
+                        color="textPrimary"
+                        gutterBottom
+                      >
+                        {profile.displayName}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        {profile.email}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        {description}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
             </span>
           </Tooltip>
         }
