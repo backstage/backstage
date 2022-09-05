@@ -62,6 +62,7 @@ export async function executePluginPackageTemplate(
     tempDir,
     options.values,
     createPackageVersionProvider(lockfile),
+    ctx.isMonoRepo,
   );
 
   // Format package.json if it exists
