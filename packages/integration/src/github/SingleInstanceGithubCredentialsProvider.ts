@@ -93,12 +93,13 @@ class GithubAppManager {
     owner: string,
     repo?: string,
   ): Promise<{ accessToken: string | undefined }> {
-    const { installationId, suspended } = await this.getInstallationData(owner);
     if (this.allowedInstallationOwners) {
       if (!this.allowedInstallationOwners?.includes(owner)) {
         return { accessToken: undefined }; // An empty token allows anonymous access to public repos
       }
     }
+
+    const { installationId, suspended } = await this.getInstallationData(owner);
     if (suspended) {
       throw new Error(`The GitHub application for ${owner} is suspended`);
     }
