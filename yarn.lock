@@ -3055,6 +3055,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/cli-common@workspace:packages/cli-common"
   dependencies:
+    "@backstage/cli": ^0.19.0-next.1
     "@types/jest": ^26.0.7
     "@types/node": ^16.0.0
   languageName: unknown
@@ -3203,6 +3204,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/codemods@workspace:packages/codemods"
   dependencies:
+    "@backstage/cli": ^0.19.0-next.1
     "@backstage/cli-common": ^0.1.9
     "@types/jscodeshift": ^0.11.0
     "@types/node": ^16.11.26
@@ -3220,6 +3222,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/config-loader@workspace:packages/config-loader"
   dependencies:
+    "@backstage/cli": ^0.19.0-next.1
     "@backstage/cli-common": ^0.1.9
     "@backstage/config": ^1.0.1
     "@backstage/errors": ^1.1.0
@@ -3249,6 +3252,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/config@workspace:packages/config"
   dependencies:
+    "@backstage/cli": ^0.19.0-next.1
     "@backstage/test-utils": ^1.2.0-next.1
     "@backstage/types": ^1.0.0
     "@types/jest": ^26.0.7
@@ -3468,6 +3472,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/create-app@workspace:packages/create-app"
   dependencies:
+    "@backstage/cli": ^0.19.0-next.1
     "@backstage/cli-common": ^0.1.9
     "@types/fs-extra": ^9.0.1
     "@types/inquirer": ^8.1.3
@@ -4806,6 +4811,7 @@ __metadata:
   resolution: "@backstage/plugin-cicd-statistics@workspace:plugins/cicd-statistics"
   dependencies:
     "@backstage/catalog-model": ^1.1.0
+    "@backstage/cli": ^0.19.0-next.1
     "@backstage/core-plugin-api": ^1.0.6-next.1
     "@backstage/plugin-catalog-react": ^1.1.4-next.1
     "@date-io/luxon": ^1.3.13
@@ -6375,6 +6381,7 @@ __metadata:
   resolution: "@backstage/plugin-scaffolder-backend-module-yeoman@workspace:plugins/scaffolder-backend-module-yeoman"
   dependencies:
     "@backstage/backend-common": ^0.15.1-next.0
+    "@backstage/cli": ^0.19.0-next.1
     "@backstage/config": ^1.0.1
     "@backstage/plugin-scaffolder-backend": ^1.6.0-next.0
     "@backstage/types": ^1.0.0
@@ -6635,6 +6642,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-react@workspace:plugins/search-react"
   dependencies:
+    "@backstage/cli": ^0.19.0-next.1
     "@backstage/core-app-api": ^1.1.0-next.1
     "@backstage/core-components": ^0.11.1-next.1
     "@backstage/core-plugin-api": ^1.0.6-next.1
@@ -7208,6 +7216,7 @@ __metadata:
   resolution: "@backstage/plugin-techdocs-react@workspace:plugins/techdocs-react"
   dependencies:
     "@backstage/catalog-model": ^1.1.0
+    "@backstage/cli": ^0.19.0-next.1
     "@backstage/config": ^1.0.1
     "@backstage/core-components": ^0.11.1-next.1
     "@backstage/core-plugin-api": ^1.0.6-next.1
@@ -7458,6 +7467,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/release-manifests@workspace:packages/release-manifests"
   dependencies:
+    "@backstage/cli": ^0.19.0-next.1
     "@backstage/test-utils": ^1.2.0-next.1
     "@types/jest": ^26.0.7
     "@types/node": ^16.0.0
@@ -21315,6 +21325,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "e2e-test@workspace:packages/e2e-test"
   dependencies:
+    "@backstage/cli": ^0.19.0-next.1
     "@backstage/cli-common": ^0.1.9-next.0
     "@backstage/errors": ^1.1.0-next.0
     "@types/fs-extra": ^9.0.1
