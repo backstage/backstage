@@ -99,19 +99,22 @@ class GithubAppManager {
       }
     }
 
-    const { installationId, suspended } = await this.getInstallationData(owner);
-    if (suspended) {
-      throw new Error(`The GitHub application for ${owner} is suspended`);
-    }
-
     const cacheKey = repo ? `${owner}/${repo}` : owner;
 
     // Go and grab an access token for the app scoped to a repository if provided, if not use the organisation installation.
     return this.cache.getOrCreateToken(cacheKey, async () => {
+      const { installationId, suspended } = await this.getInstallationData(
+        owner,
+      );
+      if (suspended) {
+        throw new Error(`The GitHub application for ${owner} is suspended`);
+      }
+
       const result = await this.appClient.apps.createInstallationAccessToken({
         installation_id: installationId,
         headers: HEADERS,
       });
+
       if (repo && result.data.repository_selection === 'selected') {
         const installationClient = new Octokit({
           baseUrl: this.baseUrl,
