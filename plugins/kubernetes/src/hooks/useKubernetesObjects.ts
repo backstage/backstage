@@ -38,7 +38,7 @@ export const useKubernetesObjects = (
   const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
   const [result, setResult] = useState<KubernetesObjects>({
     kubernetesObjects: undefined,
-    error: undefined
+    error: undefined,
   });
 
   const getObjects = async () => {
@@ -55,7 +55,8 @@ export const useKubernetesObjects = (
       ...new Set(
         clusters.map(
           c =>
-            `${c.authProvider}${c.oidcTokenProvider ? `.${c.oidcTokenProvider}` : ''
+            `${c.authProvider}${
+              c.oidcTokenProvider ? `.${c.oidcTokenProvider}` : ''
             }`,
         ),
       ),
@@ -81,9 +82,9 @@ export const useKubernetesObjects = (
 
     try {
       const objects = await kubernetesApi.getObjectsByEntity(requestBody);
-      setResult({ kubernetesObjects: objects })
+      setResult({ kubernetesObjects: objects });
     } catch (e) {
-      setResult({ error: e.message })
+      setResult({ error: e.message });
       return;
     }
   };
