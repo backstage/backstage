@@ -110,6 +110,8 @@ cluster. Valid values are:
 | `azure`                | This will use [Azure Identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) to access resources in clusters                                                                   |
 | `oidc`                 | This will use [Oidc Tokens](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens) to authenticate to the Kubernetes API. When this is used the `oidcTokenProvider` field should also be set. |
 
+Check the [Kubernetes Authentication][4] section for additional explanation.
+
 ##### `clusters.\*.skipTLSVerify`
 
 This determines whether the Kubernetes client verifies the TLS certificate
@@ -477,3 +479,4 @@ for more info.
 [1]: https://cloud.google.com/kubernetes-engine
 [2]: https://cloud.google.com/docs/authentication/production#linux-or-macos
 [3]: https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/
+[4]: https://backstage.io/docs/features/kubernetes/authentication
