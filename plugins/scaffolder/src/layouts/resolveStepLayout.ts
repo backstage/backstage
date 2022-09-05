@@ -15,6 +15,7 @@
  */
 
 import { UiSchema } from '@rjsf/core';
+import { DefaultStepFormLayout } from '../components/layouts/DefaultStepFormLayout';
 import { DEFAULT_SCAFFOLDER_LAYOUT } from './default';
 import { LayoutOptions, LayoutTemplate } from './types';
 
@@ -31,7 +32,7 @@ export function resolveStepLayout(
   )?.component;
 
   if (!LayoutComponent) {
-    throw new Error(`no step layout found for ${layoutName}`);
+    return DefaultStepFormLayout;
   }
 
   return LayoutComponent;
