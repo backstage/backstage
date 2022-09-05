@@ -124,8 +124,8 @@ describe('RadarComponent', () => {
           );
         }).toThrow();
       }).error[0],
-    ).toMatch(
-      /^Error: Uncaught \[Error: No implementation available for apiRef{core.error}\]/,
-    );
+    ).toMatchObject({
+      detail: new Error('No implementation available for apiRef{core.error}'),
+    });
   });
 });
