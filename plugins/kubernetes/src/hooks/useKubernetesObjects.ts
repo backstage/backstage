@@ -55,8 +55,7 @@ export const useKubernetesObjects = (
       ...new Set(
         clusters.map(
           c =>
-            `${c.authProvider}${
-              c.oidcTokenProvider ? `.${c.oidcTokenProvider}` : ''
+            `${c.authProvider}${c.oidcTokenProvider ? `.${c.oidcTokenProvider}` : ''
             }`,
         ),
       ),
