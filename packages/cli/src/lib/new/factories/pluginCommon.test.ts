@@ -77,7 +77,6 @@ describe('pluginCommon factory', () => {
       'copying       .eslintrc.js',
       'templating    README.md.hbs',
       'templating    package.json.hbs',
-      'copying       tsconfig.json',
       'templating    index.ts.hbs',
       'copying       setupTests.ts',
       'Installing:',

@@ -82,7 +82,6 @@ describe('backendPlugin factory', () => {
       'copying       .eslintrc.js',
       'templating    README.md.hbs',
       'templating    package.json.hbs',
-      'copying       tsconfig.json',
       'copying       index.ts',
       'templating    run.ts.hbs',
       'copying       setupTests.ts',
