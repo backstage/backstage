@@ -192,7 +192,6 @@ export type ServiceFactory<TService = unknown> = {
 export type ServiceRef<T> = {
   id: string;
   T: T;
-  defaultFactory?: (service: ServiceRef<T>) => Promise<ServiceFactory<T>>;
   toString(): string;
   $$ref: 'service';
 };

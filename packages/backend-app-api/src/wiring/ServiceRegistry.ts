@@ -13,12 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   ServiceFactory,
   FactoryFunc,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
 import { stringifyError } from '@backstage/errors';
+
+/**
+ * Keep in sync with `@backstage/backend-plugin-api/src/services/system/types.ts`
+ * @internal
+ */
+export type InternalServiceRef<T> = ServiceRef<T> & {
+  __defaultFactory?: (service: ServiceRef<T>) => Promise<ServiceFactory<T>>;
+};
 
 export class ServiceRegistry {
   readonly #providedFactories: Map<string, ServiceFactory>;
@@ -39,7 +48,7 @@ export class ServiceRegistry {
 
   get<T>(ref: ServiceRef<T>): FactoryFunc<T> | undefined {
     let factory = this.#providedFactories.get(ref.id);
-    const { defaultFactory } = ref;
+    const { __defaultFactory: defaultFactory } = ref as InternalServiceRef<T>;
     if (!factory && !defaultFactory) {
       return undefined;
     }
