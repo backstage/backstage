@@ -45,7 +45,6 @@
     "@backstage/cli": "^0.19.0-next.2",
     "@backstage/config-loader": "^1.1.4-next.1",
     "@backstage/test-utils": "^1.2.0-next.2",
-    "@types/jest": "^26.0.7",
     "@types/luxon": "^3.0.0",
     "msw": "^0.47.0"
   },
