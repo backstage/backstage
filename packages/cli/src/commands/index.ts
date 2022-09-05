@@ -264,10 +264,12 @@ export function registerCommands(program: Command) {
     );
 
   program
-    .command('plugin:diff')
+    .command('plugin:diff', { hidden: true })
     .option('--check', 'Fail if changes are required')
     .option('--yes', 'Apply all changes')
-    .description('Diff an existing plugin with the creation template')
+    .description(
+      'Diff an existing plugin with the creation template [DEPRECATED]',
+    )
     .action(lazy(() => import('./plugin/diff').then(m => m.default)));
 
   // TODO(Rugvip): Deprecate in favor of package variant
