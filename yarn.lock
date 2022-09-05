@@ -34239,8 +34239,8 @@ __metadata:
   linkType: hard
 
 "puppeteer@npm:^17.0.0":
-  version: 17.1.0
-  resolution: "puppeteer@npm:17.1.0"
+  version: 17.1.1
+  resolution: "puppeteer@npm:17.1.1"
   dependencies:
     cross-fetch: 3.1.5
     debug: 4.3.4
@@ -34253,7 +34253,7 @@ __metadata:
     tar-fs: 2.1.1
     unbzip2-stream: 1.4.3
     ws: 8.8.1
-  checksum: 22087d492da78c3e4840c56dfa4a114fe89421da5dcc78909de9ced6159ca0e28f755732404298455a0ac7bcede43b53cf66b4c9704cb959a9b12aaf9fdb2dbf
+  checksum: 064537270ea5745186c87888252395bb0d06d3ae73b02a617856329501d21e2ce5d05c1ee307dc2e851f7d45a2185b9cddd44ec54106ffcba51e7a622bb6faeb
   languageName: node
   linkType: hard
 
