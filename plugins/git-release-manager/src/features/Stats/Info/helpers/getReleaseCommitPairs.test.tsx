@@ -96,29 +96,29 @@ describe('getReleaseCommitPairs', () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "releaseCommitPairs": Array [
-          Object {
+      {
+        "releaseCommitPairs": [
+          {
             "baseVersion": "2.0",
-            "endCommit": Object {
+            "endCommit": {
               "tagName": "version-2.0.0",
               "tagSha": "sha-2.0.0",
               "tagType": "tag",
             },
-            "startCommit": Object {
+            "startCommit": {
               "tagName": "rc-2.0.0",
               "tagSha": "sha-2.0.0",
               "tagType": "tag",
             },
           },
-          Object {
+          {
             "baseVersion": "3.0",
-            "endCommit": Object {
+            "endCommit": {
               "tagName": "version-3.0.1",
               "tagSha": "sha-3.0.1",
               "tagType": "tag",
             },
-            "startCommit": Object {
+            "startCommit": {
               "tagName": "rc-3.0.0",
               "tagSha": "sha-3.0.0",
               "tagType": "tag",

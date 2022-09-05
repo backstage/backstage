@@ -71,7 +71,7 @@ describe('Owner', () => {
 
     await waitFor(() => screen.getAllByTestId(TEST_IDS.form.owner.empty));
     expect(getAllByTestId(TEST_IDS.form.owner.empty)).toMatchInlineSnapshot(`
-      Array [
+      [
         <p
           class="MuiFormHelperText-root Mui-required"
           data-testid="grm--form--owner--empty"
