@@ -97,7 +97,7 @@ jobs:
 
       - name: test (and upload coverage)
         run: |
-          yarn lerna -- run test -- --coverage --runInBand
+          yarn lerna run test -- --coverage --runInBand
           bash <(curl -s https://codecov.io/bash)
           # Upload code coverage for some specific flags. Also see .codecov.yml
           bash <(curl -s https://codecov.io/bash) -f packages/core-app-api/coverage/* -F core-app-api
@@ -163,9 +163,9 @@ jobs:
       - name: publish
         run: |
           if [ -f ".changeset/pre.json" ]; then
-              yarn lerna -- publish from-package --yes --dist-tag next
+              yarn lerna publish from-package --yes --dist-tag next
           else
-              yarn lerna -- publish from-package --yes
+              yarn lerna publish from-package --yes
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
