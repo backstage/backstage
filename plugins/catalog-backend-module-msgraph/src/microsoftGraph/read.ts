@@ -89,6 +89,7 @@ export async function readMicrosoftGraphUsers(
     queryMode?: 'basic' | 'advanced';
     userFilter?: string;
     userExpand?: string;
+    userSelect?: string[];
     transformer?: UserTransformer;
     logger: Logger;
   },
@@ -105,6 +106,7 @@ export async function readMicrosoftGraphUsers(
     {
       filter: options.userFilter,
       expand: options.userExpand,
+      select: options.userSelect || [],
     },
     options.queryMode,
   )) {
