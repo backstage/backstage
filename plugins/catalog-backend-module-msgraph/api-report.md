@@ -193,6 +193,7 @@ export type MicrosoftGraphProviderConfig = {
   clientId?: string;
   clientSecret?: string;
   userFilter?: string;
+  userSelect?: string[];
   userExpand?: string;
   userGroupMemberFilter?: string;
   userGroupMemberSearch?: string;
