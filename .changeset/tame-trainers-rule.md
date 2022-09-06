@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-backend': patch
 ---
 
-Add throttling option to publish:github:pull-request
+Disable octokit throttling in publish:github:pull-request
