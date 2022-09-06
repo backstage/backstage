@@ -1,5 +1,17 @@
 # @backstage/backend-test-utils
 
+## 0.1.28-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/cli@0.19.0-next.2
+  - @backstage/backend-app-api@0.2.1-next.1
+  - @backstage/backend-plugin-api@0.1.2-next.1
+  - @backstage/backend-common@0.15.1-next.2
+
 ## 0.1.28-next.1
 
 ### Patch Changes

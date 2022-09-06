@@ -1,5 +1,87 @@
 # @backstage/create-app
 
+## 0.4.31-next.2
+
+### Patch Changes
+
+- 6ff94d60d5: Removed usage of the deprecated `diff` command in the root `package.json`.
+
+  To make this change in an existing app, make the following change in the root `package.json`:
+
+  ```diff
+  -    "diff": "lerna run diff --",
+  ```
+
+- 49416194e8: Adds `IdentityApi` configuration to `create-app` scaffolding templates.
+
+  To migrate to the new `IdentityApi`, edit the `packages/backend/src/index.ts` adding the following import:
+
+  ```typescript
+  import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+  ```
+
+  Use the factory function to create an `IdentityApi` in the `makeCreateEnv` function and return it from the
+  function as follows:
+
+  ```typescript
+  function makeCreateEnv(config: Config) {
+  ...
+    const identity = DefaultIdentityClient.create({
+      discovery,
+    });
+  ...
+
+    return {
+      ...,
+      identity
+    }
+  }
+  ```
+
+  Backend plugins can be upgraded to work with this new `IdentityApi`.
+
+  Add `identity` to the `RouterOptions` type.
+
+  ```typescript
+  export interface RouterOptions {
+    ...
+    identity: IdentityApi;
+  }
+  ```
+
+  Then you can use the `IdentityApi` from the plugin.
+
+  ```typescript
+  export async function createRouter(
+    options: RouterOptions,
+  ): Promise<express.Router> {
+    const { identity } = options;
+
+    router.get('/user', async (req, res) => {
+      const user = await identity.getIdentity({ request: req });
+      ...
+  ```
+
+- 8d886dd33e: Added `yarn new` as one of the scripts installed by default, which calls `backstage-cli new`. This script replaces `create-plugin`, which you can now remove if you want to. It is kept in the `create-app` template for backwards compatibility.
+
+  The `remove-plugin` command has been removed, as it has been removed from the Backstage CLI.
+
+  To apply these changes to an existing app, make the following change to the root `package.json`:
+
+  ```diff
+  -    "remove-plugin": "backstage-cli remove-plugin"
+  +    "new": "backstage-cli new --scope internal"
+  ```
+
+- a578558180: Updated the root `package.json` to use the new `backstage-cli repo clean` command.
+
+  To apply this change to an existing project, make the following change to the root `package.json`:
+
+  ```diff
+  -    "clean": "backstage-cli clean && lerna run clean",
+  +    "clean": "backstage-cli repo clean",
+  ```
+
 ## 0.4.31-next.1
 
 ### Patch Changes

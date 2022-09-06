@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-node
 
+## 1.0.2-next.1
+
+### Patch Changes
+
+- 7d7d947352: Adds experimental `catalogServiceRef` for obtaining a `CatalogClient` in the new backend system.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.2-next.1
+  - @backstage/catalog-client@1.0.5-next.1
+
 ## 1.0.2-next.0
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-bitbucket-cloud-common
 
+## 0.1.3-next.1
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/integration@1.3.1-next.1
+
 ## 0.1.3-next.0
 
 ### Patch Changes

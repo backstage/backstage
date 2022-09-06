@@ -1,5 +1,18 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.1.26-next.2
+
+### Patch Changes
+
+- 47952621dc: Extend configuration so that extra headers can be sent to jenkins instance
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.2
+  - @backstage/plugin-auth-node@0.2.5-next.2
+  - @backstage/catalog-client@1.0.5-next.1
+  - @backstage/plugin-permission-common@0.6.4-next.1
+
 ## 0.1.26-next.1
 
 ### Patch Changes

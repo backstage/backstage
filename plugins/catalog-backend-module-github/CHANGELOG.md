@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.1.7-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- 3a62594a11: Add support for including (or excluding) Github repositories by topic
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.2-next.1
+  - @backstage/plugin-catalog-node@1.0.2-next.1
+  - @backstage/backend-common@0.15.1-next.2
+  - @backstage/integration@1.3.1-next.1
+  - @backstage/plugin-catalog-backend@1.4.0-next.2
+
 ## 0.1.7-next.1
 
 ### Patch Changes

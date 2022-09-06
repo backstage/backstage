@@ -1,5 +1,75 @@
 # @backstage/plugin-search-react
 
+## 1.1.0-next.2
+
+### Minor Changes
+
+- 18f60427f2: Provides search autocomplete functionality through a `SearchAutocomplete` component.
+  A `SearchAutocompleteDefaultOption` can also be used to render options with icons, primary texts, and secondary texts.
+  Example:
+
+  ```jsx
+  import React, { ChangeEvent, useState, useCallback } from 'react';
+  import useAsync from 'react-use/lib/useAsync';
+
+  import { Grid, Paper } from '@material-ui/core';
+
+  import { Page, Content } from '@backstage/core-components';
+  import { SearchAutocomplete, SearchAutocompleteDefaultOption} from '@backstage/plugin-search-react';
+
+  const OptionsIcon = () => <svg />
+
+  const SearchPage = () => {
+    const [inputValue, setInputValue] = useState('');
+
+    const options = useAsync(async () => {
+      // Gets and returns autocomplete options
+    }, [inputValue])
+
+    const useCallback((_event: ChangeEvent<{}>, newInputValue: string) => {
+      setInputValue(newInputValue);
+    }, [setInputValue])
+
+    return (
+      <Page themeId="home">
+        <Content>
+          <Grid container direction="row">
+            <Grid item xs={12}>
+              <Paper>
+                <SearchAutocomplete
+                  options={options}
+                  inputValue={inputValue}
+                  inputDebounceTime={100}
+                  onInputChange={handleInputChange}
+                  getOptionLabel={option => option.title}
+                  renderOption={option => (
+                    <SearchAutocompleteDefaultOption
+                      icon={<OptionIcon />}
+                      primaryText={option.title}
+                      secondaryText={option.text}
+                    />
+                  )}
+                />
+              </Paper>
+            </Grid>
+          </Grid>
+          {'/* Filters and results are omitted */'}
+        </Content>
+      </Page>
+    );
+  };
+  ```
+
+- ca8d5a6eae: We noticed a repeated check for the existence of a parent context before creating a child search context in more the one component such as Search Modal and Search Bar and to remove code duplication we extract the conditional to the context provider, now you can use it passing an `inheritParentContextIfAvailable` prop to the `SearchContextProvider`.
+
+  Note: This added property does not create a local context if there is a parent context and in this case, you cannot use it together with `initialState`, it will result in a type error because the parent context is already initialized.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.2
+  - @backstage/core-plugin-api@1.0.6-next.2
+
 ## 1.0.2-next.1
 
 ### Patch Changes

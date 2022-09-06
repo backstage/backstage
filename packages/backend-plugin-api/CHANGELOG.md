@@ -1,5 +1,15 @@
 # @backstage/backend-plugin-api
 
+## 0.1.2-next.1
+
+### Patch Changes
+
+- 2c57c0c499: Made `ApiRef.defaultFactory` internal.
+- 91eed37a39: Updated `createBackendPlugin` and `createBackendModule` to properly forward lack of options.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.2
+  - @backstage/plugin-permission-common@0.6.4-next.1
+
 ## 0.1.2-next.0
 
 ### Patch Changes

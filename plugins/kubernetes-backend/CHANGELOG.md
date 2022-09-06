@@ -1,5 +1,15 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.7.2-next.2
+
+### Patch Changes
+
+- 8902c2e39d: chore: Exporting KubernetesClientProvider and everything in kubernetes-auth-translator as requested in issue #10457
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.2
+  - @backstage/plugin-auth-node@0.2.5-next.2
+  - @backstage/catalog-client@1.0.5-next.1
+
 ## 0.7.2-next.1
 
 ### Patch Changes
