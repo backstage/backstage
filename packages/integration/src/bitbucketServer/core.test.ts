@@ -42,6 +42,14 @@ describe('bitbucketServer core', () => {
         username: 'u',
         password: 'p',
       };
+      const withBasicAuthAndTokenPrecedence: BitbucketServerIntegrationConfig =
+        {
+          host: '',
+          apiBaseUrl: '',
+          token: 'A',
+          username: 'u',
+          password: 'p',
+        };
       const withoutCredentials: BitbucketServerIntegrationConfig = {
         host: '',
         apiBaseUrl: '',
@@ -54,6 +62,12 @@ describe('bitbucketServer core', () => {
         (getBitbucketServerRequestOptions(withBasicAuth).headers as any)
           .Authorization,
       ).toEqual('Basic dTpw');
+      expect(
+        (
+          getBitbucketServerRequestOptions(withBasicAuthAndTokenPrecedence)
+            .headers as any
+        ).Authorization,
+      ).toEqual('Bearer A');
       expect(
         (getBitbucketServerRequestOptions(withoutCredentials).headers as any)
           .Authorization,
