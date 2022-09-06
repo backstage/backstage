@@ -150,5 +150,30 @@ describe('OAuthProvider Utils', () => {
         secure: true,
       });
     });
+
+    it('should set sameSite to none for https', () => {
+      expect(
+        defaultCookieConfigurer({
+          baseUrl: '',
+          providerId: 'test-provider',
+          callbackUrl: 'https://domain.org/auth',
+        }),
+      ).toMatchObject({
+        sameSite: 'none',
+        secure: true,
+      });
+    });
+    it('should set sameSite to lax for http', () => {
+      expect(
+        defaultCookieConfigurer({
+          baseUrl: '',
+          providerId: 'test-provider',
+          callbackUrl: 'http://domain.org/auth',
+        }),
+      ).toMatchObject({
+        sameSite: 'lax',
+        secure: false,
+      });
+    });
   });
 });
