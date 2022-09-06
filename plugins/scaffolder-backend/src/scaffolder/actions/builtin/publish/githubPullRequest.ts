@@ -79,7 +79,10 @@ export const defaultClientFactory = async ({
   });
 
   const OctokitPR = Octokit.plugin(createPullRequest);
-  return new OctokitPR(octokitOptions);
+  return new OctokitPR({
+    ...octokitOptions,
+    ...{ throttle: { enabled: false } },
+  });
 };
 
 /**
