@@ -276,7 +276,7 @@ Usage: backstage-cli [--config=<pathToConfigFile>] [TestPathPattern]
 
 Options:
   -h, --help
-  -v, --version
+  --version
   --all
   --automock
   -b, --bail
@@ -289,7 +289,6 @@ Options:
   --clearMocks
   --collectCoverage
   --collectCoverageFrom
-  --collectCoverageOnlyFrom
   --color
   --colors
   -c, --config
@@ -312,6 +311,7 @@ Options:
   --globalTeardown
   --globals
   --haste
+  --ignoreProjects
   --init
   --injectGlobals
   --json
@@ -348,6 +348,7 @@ Options:
   --selectProjects
   --setupFiles
   --setupFilesAfterEnv
+  --shard
   --showConfig
   --silent
   --skipFilter
@@ -365,8 +366,6 @@ Options:
   --testRunner
   --testSequencer
   --testTimeout
-  --testURL
-  --timers
   --transform
   --transformIgnorePatterns
   --unmockedModulePathPatterns
@@ -433,7 +432,7 @@ Usage: backstage-cli [--config=<pathToConfigFile>] [TestPathPattern]
 
 Options:
   -h, --help
-  -v, --version
+  --version
   --all
   --automock
   -b, --bail
@@ -446,7 +445,6 @@ Options:
   --clearMocks
   --collectCoverage
   --collectCoverageFrom
-  --collectCoverageOnlyFrom
   --color
   --colors
   -c, --config
@@ -469,6 +467,7 @@ Options:
   --globalTeardown
   --globals
   --haste
+  --ignoreProjects
   --init
   --injectGlobals
   --json
@@ -505,6 +504,7 @@ Options:
   --selectProjects
   --setupFiles
   --setupFilesAfterEnv
+  --shard
   --showConfig
   --silent
   --skipFilter
@@ -522,8 +522,6 @@ Options:
   --testRunner
   --testSequencer
   --testTimeout
-  --testURL
-  --timers
   --transform
   --transformIgnorePatterns
   --unmockedModulePathPatterns
