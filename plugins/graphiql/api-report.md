@@ -72,10 +72,8 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
   static github(config: GithubEndpointConfig): GraphQLEndpoint;
 }
 
-// Warning: (ae-missing-release-tag) "GraphiQLPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export function Router(): JSX.Element;
+export const Router: () => JSX.Element;
 
 // (No @packageDocumentation comment for this package)
 ```
