@@ -58,6 +58,7 @@ export const GraphiQLPage = () => {
   } else {
     content = (
       <Content noPadding>
+        {/* @ts-expect-error */}
         <GraphiQLBrowser endpoints={endpoints.value} />
       </Content>
     );
