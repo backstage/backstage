@@ -169,7 +169,6 @@ export type CreateGithubPullRequestClientFactoryInput = {
   owner: string;
   repo: string;
   token?: string;
-  throttling?: boolean;
 };
 
 // @public
@@ -392,7 +391,6 @@ export const createPublishGithubPullRequestAction: ({
   token?: string | undefined;
   reviewers?: string[] | undefined;
   teamReviewers?: string[] | undefined;
-  throttling?: boolean | undefined;
 }>;
 
 // @public
