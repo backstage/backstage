@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-backend
 
+## 1.4.0-next.2
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- 06e2b077a1: Limit the length of error messages that get written to the database and logs - to prevent performance issues
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.2-next.1
+  - @backstage/plugin-catalog-node@1.0.2-next.1
+  - @backstage/backend-common@0.15.1-next.2
+  - @backstage/integration@1.3.1-next.1
+  - @backstage/catalog-client@1.0.5-next.1
+  - @backstage/plugin-permission-common@0.6.4-next.1
+  - @backstage/plugin-permission-node@0.6.5-next.2
+
 ## 1.4.0-next.1
 
 ### Minor Changes

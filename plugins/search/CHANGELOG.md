@@ -1,5 +1,17 @@
 # @backstage/plugin-search
 
+## 1.0.2-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- 18f60427f2: Use the new `inheritParentContextIfAvailable` search context property in `SearchModal` instead of manually checking if a parent context exists, this conditional statement was previously duplicated in more than one component like in `SearchBar` as well and is now only done in ` SearchContextProvider`.
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.2
+  - @backstage/core-plugin-api@1.0.6-next.2
+  - @backstage/plugin-search-react@1.1.0-next.2
+
 ## 1.0.2-next.1
 
 ### Patch Changes

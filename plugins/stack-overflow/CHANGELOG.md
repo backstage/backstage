@@ -1,5 +1,17 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.5-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- b8190af939: Create a front end API.
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.2
+  - @backstage/core-plugin-api@1.0.6-next.2
+  - @backstage/plugin-home@0.4.25-next.2
+
 ## 0.1.5-next.1
 
 ### Patch Changes

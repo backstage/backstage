@@ -1,5 +1,74 @@
 # @backstage/backend-common
 
+## 0.15.1-next.2
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 3d4f5daadf: Remove use of deprecated trimLeft/trimRight
+- bf3cc134eb: Implemented KubernetesContainerRunner: a ContainerRunner implementation that leverages Jobs on a kubernetes cluster
+
+  ```ts
+  const kubeConfig = new KubeConfig();
+  kubeConfig.loadFromDefault();
+
+  const options: KubernetesContainerRunnerOptions = {
+    kubeConfig,
+    // namespace where Jobs will be created
+    namespace: 'default',
+    // Jobs name will be prefixed with this name
+    name: 'my-runner',
+    // An existing Kubernetes volume that will be used
+    // as base for mounts
+    mountBase: {
+      volumeName: 'workdir',
+      // Every mount must start with the base path
+      // see example below
+      basePath: '/workdir',
+    },
+    // Define a Pod template for the Jobs. It has to include
+    // a volume definition named as the mountBase volumeName
+    podTemplate: {
+      spec: {
+        containers: [],
+        volumes: [
+          {
+            name: 'workdir',
+            persistentVolumeClaim: {
+              claimName: 'workdir-claim',
+            },
+          },
+        ],
+      },
+    },
+  };
+  const containerRunner = new KubernetesContainerRunner(options);
+
+  const runOptions: RunContainerOptions = {
+    imageName: 'golang:1.17',
+    args: ['echo', 'hello world'],
+    mountDirs: {
+      '/workdir/app': '/app',
+    },
+  };
+  containerRunner.runContainer(runOptions);
+  ```
+
+- e3b1993788: Added port ranges in allowed hosts:
+
+  ```yaml
+  reading:
+      allow:
+        - host: *.examples.org:900-1000
+  ```
+
+- 2f52e74b49: Got rid of usages of the uppercase String type
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/integration@1.3.1-next.1
+  - @backstage/config-loader@1.1.4-next.1
+
 ## 0.15.1-next.1
 
 ### Patch Changes

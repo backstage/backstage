@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog
 
+## 1.5.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.0.5-next.1
+  - @backstage/core-components@0.11.1-next.2
+  - @backstage/core-plugin-api@1.0.6-next.2
+  - @backstage/integration-react@1.1.4-next.1
+  - @backstage/plugin-search-react@1.1.0-next.2
+
 ## 1.5.1-next.1
 
 ### Patch Changes

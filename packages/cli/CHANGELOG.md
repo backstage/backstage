@@ -1,5 +1,26 @@
 # @backstage/cli
 
+## 0.19.0-next.2
+
+### Patch Changes
+
+- 8d886dd33e: The `create-plugin` and `create` commands have both been deprecated in favor of a new `new` command. The `new` command is functionally identical to `create`, but the new naming makes it possible to use as yarn script, since `yarn create` is reserved.
+- 548053614a: Deprecated the `plugin:diff` command. If you wish to keep running similar checks in your project we recommend using bespoke scripts. A useful utility for such scripts is `@manypkg/get-packages`, which helps you enumerate all packages in a monorepo.
+- 513b4dd4ef: The `versions:bump` command will now update dependency ranges in `package.json`, even if the new version is within the current range.
+- 221e951298: Added support for custom certificate for webpack dev server.
+- 934cc34563: Avoid validating the backend configuration schema when loading static configuration for building the frontend.
+- 3d4f5daadf: Remove use of deprecated trimLeft/trimRight
+- 742cb4f3d7: Fix issue when using `.jsx` files inside tests
+- e7600bdb04: Tweaked workspace packaging to not rewrite existing `package.json` files.
+- 1cb078ad9f: Fixed a misconfiguration where all modules where treated as ESM by the React Refresh plugin for Webpack.
+- 1fd4f2746f: Removed internal dependencies on Lerna. It is now no longer necessary to have Lerna installed in a project to use all features of the Backstage CLI.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- 68c2697077: Added a new `backstage-cli repo clean` command that cleans the repo root and runs the clean script in all packages.
+- Updated dependencies
+  - @backstage/config-loader@1.1.4-next.1
+  - @backstage/release-manifests@0.0.6-next.1
+
 ## 0.19.0-next.1
 
 ### Minor Changes

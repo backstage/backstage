@@ -1,5 +1,14 @@
 # @backstage/integration
 
+## 1.3.1-next.1
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- 42918e085c: Fixed bug in the `bitbucketServer` integration where token did not take precedence over supplied username and password which is described in the documentation.
+
 ## 1.3.1-next.0
 
 ### Patch Changes

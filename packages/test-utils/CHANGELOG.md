@@ -1,5 +1,16 @@
 # @backstage/test-utils
 
+## 1.2.0-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/core-app-api@1.1.0-next.2
+  - @backstage/core-plugin-api@1.0.6-next.2
+  - @backstage/plugin-permission-common@0.6.4-next.1
+
 ## 1.2.0-next.1
 
 ### Minor Changes

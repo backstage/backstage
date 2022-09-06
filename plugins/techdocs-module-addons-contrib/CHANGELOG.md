@@ -1,5 +1,18 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.0.4-next.1
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/integration@1.3.1-next.1
+  - @backstage/core-components@0.11.1-next.2
+  - @backstage/core-plugin-api@1.0.6-next.2
+  - @backstage/integration-react@1.1.4-next.1
+
 ## 1.0.4-next.0
 
 ### Patch Changes
