@@ -44,7 +44,7 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/jest": "^26.0.7",
     "@types/node": "^16.11.26",
-    "msw": "^0.46.0"
+    "msw": "^0.47.0"
   },
   "files": [
     "dist"
