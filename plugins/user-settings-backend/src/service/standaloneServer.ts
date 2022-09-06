@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Server } from 'http';
 
 import { createServiceBuilder, useHotMemoize } from '@backstage/backend-common';
-import Knex from 'knex';
-import { Logger } from 'winston';
-
-import { DatabaseUserSettingsStore } from '../database';
-import { createRouter } from './router';
 import { IdentityClient } from '@backstage/plugin-auth-node';
 import { Router } from 'express';
+import { Server } from 'http';
+import Knex from 'knex';
+import { Logger } from 'winston';
+import { DatabaseUserSettingsStore } from '../database';
+import { createRouter } from './router';
 
 export interface ServerOptions {
   port: number;

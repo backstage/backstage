@@ -15,4 +15,4 @@
  */
 
 export { WebStorage } from './WebStorage';
-export { PersistentStorage } from './PersistentStorage';
+export { UserSettingsStorage } from './UserSettingsStorage';

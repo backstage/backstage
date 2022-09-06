@@ -507,35 +507,6 @@ export type OneLoginAuthCreateOptions = {
 };
 
 // @public
-export class PersistentStorage implements StorageApi {
-  constructor(
-    namespace: string,
-    fetchApi: FetchApi,
-    discoveryApi: DiscoveryApi,
-    errorApi: ErrorApi,
-  );
-  // (undocumented)
-  static create(options: {
-    fetchApi: FetchApi;
-    discoveryApi: DiscoveryApi;
-    errorApi: ErrorApi;
-    namespace?: string;
-  }): PersistentStorage;
-  // (undocumented)
-  forBucket(name: string): StorageApi;
-  // (undocumented)
-  observe$<T extends JsonValue>(
-    key: string,
-  ): Observable<StorageValueSnapshot<T>>;
-  // (undocumented)
-  remove(key: string): Promise<void>;
-  // (undocumented)
-  set<T extends JsonValue>(key: string, data: T): Promise<void>;
-  // (undocumented)
-  snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
-}
-
-// @public
 export class SamlAuth
   implements ProfileInfoApi, BackstageIdentityApi, SessionApi
 {
@@ -570,6 +541,29 @@ export class UrlPatternDiscovery implements DiscoveryApi {
   static compile(pattern: string): UrlPatternDiscovery;
   // (undocumented)
   getBaseUrl(pluginId: string): Promise<string>;
+}
+
+// @public
+export class UserSettingsStorage implements StorageApi {
+  // (undocumented)
+  static create(options: {
+    fetchApi: FetchApi;
+    discoveryApi: DiscoveryApi;
+    errorApi: ErrorApi;
+    namespace?: string;
+  }): UserSettingsStorage;
+  // (undocumented)
+  forBucket(name: string): StorageApi;
+  // (undocumented)
+  observe$<T extends JsonValue>(
+    key: string,
+  ): Observable<StorageValueSnapshot<T>>;
+  // (undocumented)
+  remove(key: string): Promise<void>;
+  // (undocumented)
+  set<T extends JsonValue>(key: string, data: T): Promise<void>;
+  // (undocumented)
+  snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
 }
 
 // @public

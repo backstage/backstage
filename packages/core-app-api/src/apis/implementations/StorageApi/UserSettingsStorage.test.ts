@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-import { PersistentStorage } from './PersistentStorage';
 import {
+  DiscoveryApi,
   ErrorApi,
   FetchApi,
   StorageApi,
-  DiscoveryApi,
 } from '@backstage/core-plugin-api';
 import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
-
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-
-const server = setupServer();
+import { UserSettingsStorage } from './UserSettingsStorage';
 
 describe('Persistent Storage API', () => {
+  const server = setupServer();
   setupRequestMockHandlers(server);
+
   const mockBaseUrl = 'http://backstage:9191/api';
   const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
   const mockDiscoveryApi = { getBaseUrl: async () => mockBaseUrl };
@@ -42,7 +41,7 @@ describe('Persistent Storage API', () => {
       namespace?: string;
     }>,
   ): StorageApi => {
-    return PersistentStorage.create({
+    return UserSettingsStorage.create({
       errorApi: mockErrorApi,
       fetchApi: new MockFetchApi(),
       discoveryApi: mockDiscoveryApi,
@@ -58,7 +57,9 @@ describe('Persistent Storage API', () => {
     );
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
 
   it('should return undefined for values which are unset', async () => {
     const storage = createPersistentStorage();
@@ -267,7 +268,7 @@ describe('Persistent Storage API', () => {
     expect(mockErrorApi.post).not.toHaveBeenCalled();
   });
 
-  it('should call the error api when the json can not be parsed in local storage', async () => {
+  it('should silently treat the value as absent when the json can not be parsed', async () => {
     const selectedKeyNextHandler = jest.fn();
     const rootStorage = createPersistentStorage({
       namespace: 'Test.Mock.Thing',
@@ -278,10 +279,8 @@ describe('Persistent Storage API', () => {
         `${mockBaseUrl}/buckets/:bucket/keys/:key`,
         async (req, res, ctx) => {
           const { bucket, key } = req.params;
-
           expect(bucket).toEqual('Test.Mock.Thing');
           expect(key).toEqual('key');
-
           return res(ctx.text('{ invalid: json string }'));
         },
       ),
@@ -305,7 +304,6 @@ describe('Persistent Storage API', () => {
       presence: 'absent',
       value: undefined,
     });
-    expect(mockErrorApi.post).toHaveBeenCalledWith(expect.any(Error));
   });
 
   it('should freeze the snapshot value', async () => {

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { errorHandler } from '@backstage/backend-common';
 import { AuthenticationError, InputError } from '@backstage/errors';
 import {
@@ -21,7 +22,6 @@ import {
 } from '@backstage/plugin-auth-node';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
-
 import { UserSettingsStore } from '../database';
 
 /**

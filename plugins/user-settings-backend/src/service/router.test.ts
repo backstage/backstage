@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { AuthenticationError } from '@backstage/errors';
 import { IdentityClient } from '@backstage/plugin-auth-node';
 import express from 'express';
 import request from 'supertest';
-
 import { UserSettingsStore } from '../database';
 import { createRouter } from './router';
 
