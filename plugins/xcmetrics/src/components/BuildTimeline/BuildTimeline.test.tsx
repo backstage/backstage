@@ -24,8 +24,7 @@ describe('BuildTimeline', () => {
   const { ResizeObserver } = window;
 
   beforeEach(() => {
-    // @ts-expect-error: Since we have strictNullChecks enabled, this will throw an error as window.ResizeObserver
-    // it's not an optional operand
+    // @ts-expect-error
     delete window.ResizeObserver;
     window.ResizeObserver = jest.fn().mockImplementation(() => ({
       observe: jest.fn(),
