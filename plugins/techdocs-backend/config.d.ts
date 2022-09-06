@@ -233,6 +233,13 @@ export interface Config {
              * @visibility secret
              */
             credentials?: string;
+            /**
+             * (Optional) GCP project ID that contains the bucket. Should be
+             * set if credentials is not set, or if the service account in
+             * the credentials belongs to a different project to the bucket.
+             * @visibility backend
+             */
+            projectId?: string;
           };
         };
 

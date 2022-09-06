@@ -16,7 +16,12 @@
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError } from '@backstage/errors';
-import { File, FileExistsResponse, Storage } from '@google-cloud/storage';
+import {
+  File,
+  FileExistsResponse,
+  Storage,
+  StorageOptions,
+} from '@google-cloud/storage';
 import express from 'express';
 import JSON5 from 'json5';
 import path from 'path';
@@ -83,6 +88,9 @@ export class GoogleGCSPublish implements PublisherBase {
     const credentials = config.getOptionalString(
       'techdocs.publisher.googleGcs.credentials',
     );
+    const projectId = config.getOptionalString(
+      'techdocs.publisher.googleGcs.projectId',
+    );
     let credentialsJson: any = {};
     if (credentials) {
       try {
@@ -94,11 +102,17 @@ export class GoogleGCSPublish implements PublisherBase {
       }
     }
 
+    const clientOpts: StorageOptions = {};
+    if (projectId) {
+      clientOpts.projectId = projectId;
+    }
+
     const storageClient = new Storage({
       ...(credentials && {
         projectId: credentialsJson.project_id,
         credentials: credentialsJson,
       }),
+      ...clientOpts,
     });
 
     const legacyPathCasing =
