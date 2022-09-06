@@ -14,7 +14,7 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
       - name: Install Dependencies
-        run: yarn --frozen-lockfile
+        run: yarn --immutable
       - name: Create Release Pull Request
         uses: backstage/changesets-action@v2
         with:

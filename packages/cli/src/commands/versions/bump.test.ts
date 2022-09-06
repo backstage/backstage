@@ -174,6 +174,8 @@ describe('bump', () => {
       'unlocking @backstage/core@^1.0.3 ~> 1.0.6',
       'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
       'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
+      'bumping @backstage/core in a to ^1.0.6',
+      'bumping @backstage/core in b to ^1.0.6',
       'bumping @backstage/theme in b to ^2.0.0',
       'Running yarn install to install new versions',
       '⚠️  The following packages may have breaking changes:',
@@ -210,15 +212,15 @@ describe('bump', () => {
     expect(packageA).toEqual({
       name: 'a',
       dependencies: {
-        '@backstage/core': '^1.0.5', // not bumped since new version is within range
+        '@backstage/core': '^1.0.6',
       },
     });
     const packageB = await fs.readJson('/packages/b/package.json');
     expect(packageB).toEqual({
       name: 'b',
       dependencies: {
-        '@backstage/core': '^1.0.3', // not bumped
-        '@backstage/theme': '^2.0.0', // bumped since newer
+        '@backstage/core': '^1.0.6',
+        '@backstage/theme': '^2.0.0',
       },
     });
   });
@@ -297,6 +299,8 @@ describe('bump', () => {
       'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
       'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
       'bumping @backstage/theme in b to ^5.0.0',
+      'bumping @backstage/core in b to ^1.0.6',
+      'bumping @backstage/core in a to ^1.0.6',
       'Your project is now at version 0.0.1, which has been written to backstage.json',
       'Running yarn install to install new versions',
       '⚠️  The following packages may have breaking changes:',
@@ -333,15 +337,15 @@ describe('bump', () => {
     expect(packageA).toEqual({
       name: 'a',
       dependencies: {
-        '@backstage/core': '^1.0.5', // not bumped since new version is within range
+        '@backstage/core': '^1.0.6',
       },
     });
     const packageB = await fs.readJson('/packages/b/package.json');
     expect(packageB).toEqual({
       name: 'b',
       dependencies: {
-        '@backstage/core': '^1.0.3', // not bumped
-        '@backstage/theme': '^5.0.0', // bumped since newer
+        '@backstage/core': '^1.0.6',
+        '@backstage/theme': '^5.0.0',
       },
     });
   });
@@ -544,6 +548,8 @@ describe('bump', () => {
       'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
       'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
       'bumping @backstage/theme in b to ^5.0.0',
+      'bumping @backstage/core in b to ^1.0.6',
+      'bumping @backstage/core in a to ^1.0.6',
       'Your project is now at version 1.0.0, which has been written to backstage.json',
       'Running yarn install to install new versions',
       '⚠️  The following packages may have breaking changes:',
@@ -650,7 +656,11 @@ describe('bump', () => {
       'unlocking @backstage-extra/custom@^1.0.1 ~> 1.1.0',
       'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
       'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
+      'bumping @backstage/core in a to ^1.0.6',
+      'bumping @backstage-extra/custom in a to ^1.1.0',
       'bumping @backstage-extra/custom-two in a to ^2.0.0',
+      'bumping @backstage/core in b to ^1.0.6',
+      'bumping @backstage-extra/custom in b to ^1.1.0',
       'bumping @backstage-extra/custom-two in b to ^2.0.0',
       'bumping @backstage/theme in b to ^2.0.0',
       'Skipping backstage.json update as custom pattern is used',
@@ -690,9 +700,9 @@ describe('bump', () => {
     expect(packageA).toEqual({
       name: 'a',
       dependencies: {
-        '@backstage-extra/custom': '^1.0.1',
+        '@backstage-extra/custom': '^1.1.0',
         '@backstage-extra/custom-two': '^2.0.0',
-        '@backstage/core': '^1.0.5', // not bumped since new version is within range
+        '@backstage/core': '^1.0.6',
       },
     });
     const packageB = await fs.readJson('/packages/b/package.json');
@@ -701,8 +711,8 @@ describe('bump', () => {
       dependencies: {
         '@backstage-extra/custom': '^1.1.0',
         '@backstage-extra/custom-two': '^2.0.0',
-        '@backstage/core': '^1.0.3', // not bumped
-        '@backstage/theme': '^2.0.0', // bumped since newer
+        '@backstage/core': '^1.0.6',
+        '@backstage/theme': '^2.0.0',
       },
     });
   });

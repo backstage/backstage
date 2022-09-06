@@ -5,10 +5,12 @@
 ```ts
 /// <reference types="node" />
 
+import { CatalogApi } from '@backstage/catalog-client';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { JsonValue } from '@backstage/types';
+import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @alpha (undocumented)
 export interface CatalogProcessingExtensionPoint {
@@ -105,6 +107,9 @@ export type CatalogProcessorResult =
   | CatalogProcessorRelationResult
   | CatalogProcessorErrorResult
   | CatalogProcessorRefreshKeysResult;
+
+// @alpha
+export const catalogServiceRef: ServiceRef<CatalogApi>;
 
 // @public
 export type DeferredEntity = {

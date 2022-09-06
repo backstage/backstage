@@ -131,10 +131,60 @@ async function getProjectConfig(targetPath, displayName) {
     },
 
     transform: {
-      '\\.(js|jsx|ts|tsx|mjs|cjs)$': [
+      '\\.(mjs|cjs|js)$': [
         require.resolve('./jestSwcTransform'),
         {
           sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
+          jsc: {
+            parser: {
+              syntax: 'ecmascript',
+            },
+          },
+        },
+      ],
+      '\\.jsx$': [
+        require.resolve('./jestSwcTransform'),
+        {
+          sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
+          jsc: {
+            parser: {
+              syntax: 'ecmascript',
+              jsx: true,
+            },
+            transform: {
+              react: {
+                runtime: 'automatic',
+              },
+            },
+          },
+        },
+      ],
+      '\\.ts$': [
+        require.resolve('./jestSwcTransform'),
+        {
+          sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
+          jsc: {
+            parser: {
+              syntax: 'typescript',
+            },
+          },
+        },
+      ],
+      '\\.tsx$': [
+        require.resolve('./jestSwcTransform'),
+        {
+          sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
+          jsc: {
+            parser: {
+              syntax: 'typescript',
+              tsx: true,
+            },
+            transform: {
+              react: {
+                runtime: 'automatic',
+              },
+            },
+          },
         },
       ],
       '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg|eot|woff|woff2|ttf)$':

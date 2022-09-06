@@ -38,6 +38,7 @@ import {
   GitHubEntityProviderConfig,
 } from './GitHubEntityProviderConfig';
 import { getOrganizationRepositories, Repository } from '../lib/github';
+import { satisfiesTopicFilter } from '../lib/util';
 
 /**
  * Discovers catalog files located in [GitHub](https://github.com).
@@ -63,23 +64,24 @@ export class GitHubEntityProvider implements EntityProvider {
     },
   ): GitHubEntityProvider[] {
     const integrations = ScmIntegrations.fromConfig(config);
-    const integration = integrations.github.byHost('github.com');
 
-    if (!integration) {
-      throw new Error(
-        `There is no GitHub config that matches github. Please add a configuration entry for it under integrations.github`,
+    return readProviderConfigs(config).map(providerConfig => {
+      const integrationHost = providerConfig.host;
+      const integration = integrations.github.byHost(integrationHost);
+
+      if (!integration) {
+        throw new Error(
+          `There is no GitHub config that matches host ${integrationHost}. Please add a configuration entry for it under integrations.github`,
+        );
+      }
+
+      return new GitHubEntityProvider(
+        providerConfig,
+        integration,
+        options.logger,
+        options.schedule,
       );
-    }
-
-    return readProviderConfigs(config).map(
-      providerConfig =>
-        new GitHubEntityProvider(
-          providerConfig,
-          integration,
-          options.logger,
-          options.schedule,
-        ),
-    );
+    });
   }
 
   private constructor(
@@ -183,11 +185,16 @@ export class GitHubEntityProvider implements EntityProvider {
 
   private matchesFilters(repositories: Repository[]) {
     const repositoryFilter = this.config.filters?.repository;
+    const topicFilters = this.config.filters?.topic;
 
     const matchingRepositories = repositories.filter(r => {
+      const repoTopics: string[] = r.repositoryTopics.nodes.map(
+        node => node.topic.name,
+      );
       return (
         !r.isArchived &&
         (!repositoryFilter || repositoryFilter.test(r.name)) &&
+        satisfiesTopicFilter(repoTopics, topicFilters) &&
         r.defaultBranchRef?.name
       );
     });

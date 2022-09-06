@@ -137,7 +137,7 @@ describe('AwsS3EntityProvider', () => {
       };
     });
 
-    expect(entityProviderConnection.applyMutation).toBeCalledWith({
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
       type: 'full',
       entities: expectedEntities,
     });

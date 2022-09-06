@@ -13,16 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   ServiceFactory,
   FactoryFunc,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
+import { stringifyError } from '@backstage/errors';
+
+/**
+ * Keep in sync with `@backstage/backend-plugin-api/src/services/system/types.ts`
+ * @internal
+ */
+export type InternalServiceRef<T> = ServiceRef<T> & {
+  __defaultFactory?: (service: ServiceRef<T>) => Promise<ServiceFactory<T>>;
+};
 
 export class ServiceRegistry {
   readonly #providedFactories: Map<string, ServiceFactory>;
-  readonly #loadedDefaultFactories: Map<Function, ServiceFactory>;
-  readonly #implementations: Map<ServiceFactory, Map<string, unknown>>;
+  readonly #loadedDefaultFactories: Map<Function, Promise<ServiceFactory>>;
+  readonly #implementations: Map<
+    ServiceFactory,
+    {
+      factoryFunc: Promise<FactoryFunc<unknown>>;
+      byPlugin: Map<string, Promise<unknown>>;
+    }
+  >;
 
   constructor(factories: ServiceFactory<any>[]) {
     this.#providedFactories = new Map(factories.map(f => [f.service.id, f]));
@@ -32,7 +48,7 @@ export class ServiceRegistry {
 
   get<T>(ref: ServiceRef<T>): FactoryFunc<T> | undefined {
     let factory = this.#providedFactories.get(ref.id);
-    const { defaultFactory } = ref;
+    const { __defaultFactory: defaultFactory } = ref as InternalServiceRef<T>;
     if (!factory && !defaultFactory) {
       return undefined;
     }
@@ -41,35 +57,82 @@ export class ServiceRegistry {
       if (!factory) {
         let loadedFactory = this.#loadedDefaultFactories.get(defaultFactory!);
         if (!loadedFactory) {
-          loadedFactory = (await defaultFactory!(ref)) as ServiceFactory;
+          loadedFactory = Promise.resolve().then(
+            () => defaultFactory!(ref) as Promise<ServiceFactory>,
+          );
           this.#loadedDefaultFactories.set(defaultFactory!, loadedFactory);
         }
-        factory = loadedFactory;
+        // NOTE: This await is safe as long as #providedFactories is not mutated.
+        factory = await loadedFactory.catch(error => {
+          throw new Error(
+            `Failed to instantiate service '${
+              ref.id
+            }' because the default factory loader threw an error, ${stringifyError(
+              error,
+            )}`,
+          );
+        });
       }
 
-      let implementations = this.#implementations.get(factory);
-      if (implementations) {
-        if (implementations.has(pluginId)) {
-          return implementations.get(pluginId) as T;
+      let implementation = this.#implementations.get(factory);
+      if (!implementation) {
+        const missingRefs = new Array<ServiceRef<unknown>>();
+        const factoryDeps: { [name in string]: FactoryFunc<unknown> } = {};
+
+        for (const [name, serviceRef] of Object.entries(factory.deps)) {
+          const target = this.get(serviceRef);
+          if (!target) {
+            missingRefs.push(serviceRef);
+          } else {
+            factoryDeps[name] = target;
+          }
         }
-      } else {
-        implementations = new Map();
-        this.#implementations.set(factory, implementations);
+
+        if (missingRefs.length) {
+          const missing = missingRefs.map(r => `'${r.id}'`).join(', ');
+          throw new Error(
+            `Failed to instantiate service '${ref.id}' for '${pluginId}' because the following dependent services are missing: ${missing}`,
+          );
+        }
+
+        implementation = {
+          factoryFunc: Promise.resolve()
+            .then(() => factory!.factory(factoryDeps))
+            .catch(error => {
+              throw new Error(
+                `Failed to instantiate service '${
+                  ref.id
+                }' because the top-level factory function threw an error, ${stringifyError(
+                  error,
+                )}`,
+              );
+            }),
+          byPlugin: new Map(),
+        };
+
+        this.#implementations.set(factory, implementation);
       }
 
-      const factoryDeps = Object.fromEntries(
-        Object.entries(factory.deps).map(([name, serviceRef]) => [
-          name,
-          this.get(serviceRef)!, // TODO: throw
-        ]),
-      );
+      let result = implementation.byPlugin.get(pluginId) as Promise<any>;
+      if (!result) {
+        result = implementation.factoryFunc.then(func =>
+          Promise.resolve()
+            .then(() => func(pluginId))
+            .catch(error => {
+              throw new Error(
+                `Failed to instantiate service '${
+                  ref.id
+                }' for '${pluginId}' because the factory function threw an error, ${stringifyError(
+                  error,
+                )}`,
+              );
+            }),
+        );
 
-      const factoryFunc = await factory.factory(factoryDeps);
-      const implementation = await factoryFunc(pluginId);
+        implementation.byPlugin.set(pluginId, result);
+      }
 
-      implementations.set(pluginId, implementation);
-
-      return implementation as T;
+      return result;
     };
   }
 }

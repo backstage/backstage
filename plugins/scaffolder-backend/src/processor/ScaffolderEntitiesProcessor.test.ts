@@ -58,8 +58,8 @@ describe('ScaffolderEntitiesProcessor', () => {
 
       await processor.postProcessEntity(mockEntity, mockLocation, emit);
 
-      expect(emit).toBeCalledTimes(2);
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledTimes(2);
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Group', namespace: 'default', name: 'o' },
@@ -67,7 +67,7 @@ describe('ScaffolderEntitiesProcessor', () => {
           target: { kind: 'Template', namespace: 'default', name: 'n' },
         },
       });
-      expect(emit).toBeCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Template', namespace: 'default', name: 'n' },

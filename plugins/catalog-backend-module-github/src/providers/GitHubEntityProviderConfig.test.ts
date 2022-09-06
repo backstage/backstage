@@ -68,47 +68,108 @@ describe('readProviderConfigs', () => {
                 branch: 'branch-name',
               },
             },
+            providerWithTopicFilter: {
+              organization: 'test-org5',
+              filters: {
+                topic: {
+                  exclude: ['backstage-exclude'],
+                  include: ['backstage-include'],
+                },
+              },
+            },
+            providerWithHost: {
+              organization: 'test-org1',
+              host: 'ghe.internal.com',
+            },
           },
         },
       },
     });
     const providerConfigs = readProviderConfigs(config);
 
-    expect(providerConfigs).toHaveLength(4);
+    expect(providerConfigs).toHaveLength(6);
     expect(providerConfigs[0]).toEqual({
       id: 'providerOrganizationOnly',
       organization: 'test-org1',
       catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
       filters: {
         repository: undefined,
         branch: undefined,
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
       },
     });
     expect(providerConfigs[1]).toEqual({
       id: 'providerCustomCatalogPath',
       organization: 'test-org2',
       catalogPath: 'custom/path/catalog-info.yaml',
+      host: 'github.com',
       filters: {
         repository: undefined,
         branch: undefined,
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
       },
     });
     expect(providerConfigs[2]).toEqual({
       id: 'providerWithRepositoryFilter',
       organization: 'test-org3', // organization
       catalogPath: '/catalog-info.yaml', // file
+      host: 'github.com',
       filters: {
         repository: /^repository.*filter$/, // repo
         branch: undefined, // branch
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
       },
     });
     expect(providerConfigs[3]).toEqual({
       id: 'providerWithBranchFilter',
       organization: 'test-org4',
       catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
       filters: {
         repository: undefined,
         branch: 'branch-name',
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
+      },
+    });
+    expect(providerConfigs[4]).toEqual({
+      id: 'providerWithTopicFilter',
+      organization: 'test-org5',
+      catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
+      filters: {
+        repository: undefined,
+        branch: undefined,
+        topic: {
+          include: ['backstage-include'],
+          exclude: ['backstage-exclude'],
+        },
+      },
+    });
+    expect(providerConfigs[5]).toEqual({
+      id: 'providerWithHost',
+      organization: 'test-org1',
+      catalogPath: '/catalog-info.yaml',
+      host: 'ghe.internal.com',
+      filters: {
+        repository: undefined,
+        branch: undefined,
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
       },
     });
   });

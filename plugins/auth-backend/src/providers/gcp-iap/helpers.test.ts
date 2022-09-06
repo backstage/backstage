@@ -54,7 +54,7 @@ describe('helpers', () => {
         'a',
         mockClient as unknown as OAuth2Client,
       );
-      await expect(validator(validJwt)).rejects.toThrowError(TypeError);
+      await expect(validator(validJwt)).rejects.toThrow(TypeError);
     });
 
     it('rejects empty payload', async () => {

@@ -29,15 +29,11 @@ jobs:
         # Skip caching of microsite dependencies, it keeps the global cache size
         # smaller, which make Windows builds a lot faster for the rest of the project.
       - name: yarn install
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
         working-directory: microsite
 
       - name: prettier
         run: yarn prettier:check
-        working-directory: microsite
-
-      - name: lock
-        run: yarn lock:check
         working-directory: microsite
 
       - name: build microsite

@@ -73,6 +73,16 @@ export const FreeIpaVendor: LdapVendor = {
   },
 };
 
+export const AEDirVendor: LdapVendor = {
+  dnAttributeName: 'dn',
+  uuidAttributeName: 'entryUUID',
+  decodeStringAttribute: (entry, name) => {
+    return decode(entry, name, value => {
+      return value.toString();
+    });
+  },
+};
+
 // Decode an attribute to a consumer
 function decode(
   entry: SearchEntry,

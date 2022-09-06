@@ -50,7 +50,7 @@ function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
         continue;
       }
       const innerUiSchema = {};
-      uiSchema[propName] = innerUiSchema;
+      uiSchema[propName] = uiSchema[propName] || innerUiSchema;
       extractUiSchema(schemaNode, innerUiSchema);
     }
   }

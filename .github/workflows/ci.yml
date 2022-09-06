@@ -98,9 +98,6 @@ jobs:
       - name: verify type dependencies
         run: yarn lint:type-deps
 
-      - name: verify plugin template
-        run: yarn lerna -- run diff -- --check
-
       - name: ensure clean working directory
         run: |
           if files=$(git ls-files --exclude-standard --others --modified) && [[ -z "$files" ]]; then
@@ -190,15 +187,17 @@ jobs:
         run: git diff --quiet origin/master HEAD -- yarn.lock
         continue-on-error: true
 
-      - name: lock
-        run: yarn lock:check
-
-      - name: lint
+      - name: lint changed packages
+        if: ${{ steps.yarn-lock.outcome == 'success' }}
         run: yarn backstage-cli repo lint --since origin/master
+
+      - name: lint all packages
+        if: ${{ steps.yarn-lock.outcome == 'failure' }}
+        run: yarn backstage-cli repo lint
 
       - name: test changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}
-        run: yarn lerna -- run test --since origin/master -- --coverage --runInBand
+        run: yarn lerna run test --since origin/master -- --coverage --runInBand
         env:
           BACKSTAGE_NEXT_TESTS: 1
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
@@ -209,7 +208,7 @@ jobs:
       - name: test all packages (and upload coverage)
         if: ${{ steps.yarn-lock.outcome == 'failure' }}
         run: |
-          yarn lerna -- run test -- --coverage --runInBand
+          yarn lerna run test -- --coverage --runInBand
           bash <(curl -s https://codecov.io/bash) -N $(git rev-parse FETCH_HEAD)
         env:
           BACKSTAGE_NEXT_TESTS: 1

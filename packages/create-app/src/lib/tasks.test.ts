@@ -130,10 +130,10 @@ describe('buildAppTask', () => {
 
     const appDir = 'projects/dir';
     await expect(buildAppTask(appDir)).resolves.not.toThrow();
-    expect(mockChdir).toBeCalledTimes(2);
+    expect(mockChdir).toHaveBeenCalledTimes(2);
     expect(mockChdir).toHaveBeenNthCalledWith(1, appDir);
     expect(mockChdir).toHaveBeenNthCalledWith(2, appDir);
-    expect(mockExec).toBeCalledTimes(2);
+    expect(mockExec).toHaveBeenCalledTimes(2);
     expect(mockExec).toHaveBeenNthCalledWith(
       1,
       'yarn install',

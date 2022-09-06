@@ -12,9 +12,7 @@ Options:
   -h, --help
 
 Commands:
-  create [options]
-  create-plugin [options]
-  plugin:diff [options]
+  new [options]
   test
   config:docs [options]
   config:print [options]
@@ -100,39 +98,12 @@ Options:
   -h, --help
 ```
 
-### `backstage-cli create`
-
-```
-Usage: backstage-cli create [options]
-
-Options:
-  --select <name>
-  --option <name>=<value>
-  --scope <scope>
-  --npm-registry <URL>
-  --no-private
-  -h, --help
-```
-
 ### `backstage-cli create-github-app`
 
 ```
 Usage: backstage-cli create-github-app [options] <github-org>
 
 Options:
-  -h, --help
-```
-
-### `backstage-cli create-plugin`
-
-```
-Usage: backstage-cli create-plugin [options]
-
-Options:
-  --backend
-  --scope <scope>
-  --npm-registry <URL>
-  --no-private
   -h, --help
 ```
 
@@ -157,6 +128,7 @@ Commands:
   package-roles
   package-scripts
   package-lint-configs
+  react-router-deps
   help [command]
 ```
 
@@ -184,6 +156,30 @@ Options:
 Usage: backstage-cli migrate package-scripts [options]
 
 Options:
+  -h, --help
+```
+
+### `backstage-cli migrate react-router-deps`
+
+```
+Usage: backstage-cli migrate react-router-deps [options]
+
+Options:
+  -h, --help
+```
+
+### `backstage-cli new`
+
+```
+Usage: backstage-cli new [options]
+
+Options:
+  --select <name>
+  --option <name>=<value>
+  --scope <scope>
+  --npm-registry <URL>
+  --baseVersion <version>
+  --no-private
   -h, --help
 ```
 
@@ -383,17 +379,6 @@ Options:
   --watchman
 ```
 
-### `backstage-cli plugin:diff`
-
-```
-Usage: backstage-cli plugin:diff [options]
-
-Options:
-  --check
-  --yes
-  -h, --help
-```
-
 ### `backstage-cli repo`
 
 ```
@@ -405,6 +390,7 @@ Options:
 Commands:
   build [options]
   lint [options]
+  clean
   help [command]
 ```
 
@@ -416,6 +402,15 @@ Usage: backstage-cli repo build [options]
 Options:
   --all
   --since <ref>
+  -h, --help
+```
+
+### `backstage-cli repo clean`
+
+```
+Usage: backstage-cli repo clean [options]
+
+Options:
   -h, --help
 ```
 

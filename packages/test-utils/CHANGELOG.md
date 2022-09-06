@@ -1,5 +1,30 @@
 # @backstage/test-utils
 
+## 1.2.0-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/core-app-api@1.1.0-next.2
+  - @backstage/core-plugin-api@1.0.6-next.2
+  - @backstage/plugin-permission-common@0.6.4-next.1
+
+## 1.2.0-next.1
+
+### Minor Changes
+
+- 817f3196f6: Elements rendered in a test app are no longer wrapped in a `Routes` and `Route` element, as this is not compatible with React Router v6 stable.
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- Updated dependencies
+  - @backstage/core-app-api@1.1.0-next.1
+  - @backstage/core-plugin-api@1.0.6-next.1
+  - @backstage/plugin-permission-react@0.4.5-next.1
+
 ## 1.1.4-next.0
 
 ### Patch Changes

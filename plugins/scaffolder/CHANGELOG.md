@@ -1,5 +1,33 @@
 # @backstage/plugin-scaffolder
 
+## 1.6.0-next.2
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- de336de9cd: fix uiSchema generation when using complex dependencies
+- Updated dependencies
+  - @backstage/integration@1.3.1-next.1
+  - @backstage/catalog-client@1.0.5-next.1
+  - @backstage/core-components@0.11.1-next.2
+  - @backstage/core-plugin-api@1.0.6-next.2
+  - @backstage/integration-react@1.1.4-next.1
+
+## 1.6.0-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 763fb81e82: Internal refactor to use more type safe code when dealing with route parameters.
+- a66d44b72b: Fixing bug when the workspace would not be automatically saved when using `allowedOwners`
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.1
+  - @backstage/core-plugin-api@1.0.6-next.1
+  - @backstage/plugin-catalog-react@1.1.4-next.1
+  - @backstage/plugin-permission-react@0.4.5-next.1
+
 ## 1.6.0-next.0
 
 ### Minor Changes

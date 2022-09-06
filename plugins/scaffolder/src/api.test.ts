@@ -110,21 +110,21 @@ describe('api', () => {
             .subscribe({ next, complete });
         });
 
-        expect(MockedEventSource).toBeCalledWith(
+        expect(MockedEventSource).toHaveBeenCalledWith(
           'http://backstage/api/v2/tasks/a-random-task-id/eventstream',
           { withCredentials: true },
         );
-        expect(MockedEventSource.prototype.close).toBeCalled();
+        expect(MockedEventSource.prototype.close).toHaveBeenCalled();
 
-        expect(next).toBeCalledTimes(2);
-        expect(next).toBeCalledWith({
+        expect(next).toHaveBeenCalledTimes(2);
+        expect(next).toHaveBeenCalledWith({
           id: 1,
           taskId: 'a-random-id',
           type: 'log',
           createdAt: '',
           body: { message: 'My log message' },
         });
-        expect(next).toBeCalledWith({
+        expect(next).toHaveBeenCalledWith({
           id: 2,
           taskId: 'a-random-id',
           type: 'completion',
@@ -194,15 +194,15 @@ describe('api', () => {
             .subscribe({ next, complete }),
         );
 
-        expect(next).toBeCalledTimes(2);
-        expect(next).toBeCalledWith({
+        expect(next).toHaveBeenCalledTimes(2);
+        expect(next).toHaveBeenCalledWith({
           id: 1,
           taskId: 'a-random-id',
           type: 'log',
           createdAt: '',
           body: { message: 'My log message' },
         });
-        expect(next).toBeCalledWith({
+        expect(next).toHaveBeenCalledWith({
           id: 2,
           taskId: 'a-random-id',
           type: 'completion',
@@ -258,8 +258,8 @@ describe('api', () => {
             });
         });
 
-        expect(next).toBeCalledTimes(1);
-        expect(next).toBeCalledWith({
+        expect(next).toHaveBeenCalledTimes(1);
+        expect(next).toHaveBeenCalledWith({
           id: 1,
           taskId: 'a-random-id',
           type: 'log',
@@ -304,10 +304,10 @@ describe('api', () => {
             .subscribe({ next, complete }),
         );
 
-        expect(called).toBeCalledTimes(2);
+        expect(called).toHaveBeenCalledTimes(2);
 
-        expect(next).toBeCalledTimes(1);
-        expect(next).toBeCalledWith({
+        expect(next).toHaveBeenCalledTimes(1);
+        expect(next).toHaveBeenCalledWith({
           id: 2,
           taskId: 'a-random-id',
           type: 'completion',
@@ -387,7 +387,7 @@ describe('api', () => {
       });
 
       const result = await apiClient.listTasks({ filterByOwnership: 'owned' });
-      expect(identityApi.getBackstageIdentity).toBeCalled();
+      expect(identityApi.getBackstageIdentity).toHaveBeenCalled();
       expect(result.tasks).toHaveLength(1);
     });
   });

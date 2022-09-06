@@ -166,7 +166,7 @@ export default async function createPlugin(
 ### Built-in Resolvers
 
 You don't always have to write your own custom resolver. The auth backend plugin provides
-build-in resolvers for many of the common sign-in patterns. You access these via the `resolvers`
+built-in resolvers for many of the common sign-in patterns. You access these via the `resolvers`
 property of each of the auth provider integrations. For example, the Google provider has
 a built in resolver that works just like the one we defined above:
 

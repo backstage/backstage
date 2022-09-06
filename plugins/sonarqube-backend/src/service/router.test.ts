@@ -69,8 +69,8 @@ describe('createRouter', () => {
           instanceKey: DUMMY_INSTANCE_KEY,
         })
         .send();
-      expect(getFindingsMock).toBeCalledTimes(1);
-      expect(getFindingsMock).toBeCalledWith({
+      expect(getFindingsMock).toHaveBeenCalledTimes(1);
+      expect(getFindingsMock).toHaveBeenCalledWith({
         componentKey: DUMMY_COMPONENT_KEY,
         instanceName: DUMMY_INSTANCE_KEY,
       });
@@ -103,8 +103,8 @@ describe('createRouter', () => {
         })
         .send();
 
-      expect(getFindingsMock).toBeCalledTimes(1);
-      expect(getFindingsMock).toBeCalledWith({
+      expect(getFindingsMock).toHaveBeenCalledTimes(1);
+      expect(getFindingsMock).toHaveBeenCalledWith({
         componentKey: DUMMY_COMPONENT_KEY,
         instanceName: undefined,
       });
@@ -123,8 +123,8 @@ describe('createRouter', () => {
           instanceKey: DUMMY_INSTANCE_KEY,
         })
         .send();
-      expect(getBaseUrlMock).toBeCalledTimes(1);
-      expect(getBaseUrlMock).toBeCalledWith({
+      expect(getBaseUrlMock).toHaveBeenCalledTimes(1);
+      expect(getBaseUrlMock).toHaveBeenCalledWith({
         instanceName: DUMMY_INSTANCE_KEY,
       });
       expect(response.status).toEqual(200);
@@ -134,8 +134,8 @@ describe('createRouter', () => {
     it('query default instance when instanceKey not provided', async () => {
       getBaseUrlMock.mockReturnValue({ baseUrl: DUMMY_INSTANCE_URL });
       const response = await request(app).get('/instanceUrl').send();
-      expect(getBaseUrlMock).toBeCalledTimes(1);
-      expect(getBaseUrlMock).toBeCalledWith({
+      expect(getBaseUrlMock).toHaveBeenCalledTimes(1);
+      expect(getBaseUrlMock).toHaveBeenCalledWith({
         instanceName: undefined,
       });
       expect(response.status).toEqual(200);

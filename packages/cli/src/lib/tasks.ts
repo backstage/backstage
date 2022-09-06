@@ -22,7 +22,6 @@ import { promisify } from 'util';
 import { basename, dirname } from 'path';
 import recursive from 'recursive-readdir';
 import { exec as execCb } from 'child_process';
-import { paths } from './paths';
 import { assertError } from '@backstage/errors';
 
 const exec = promisify(execCb);
@@ -102,11 +101,11 @@ export async function templatingTask(
   destinationDir: string,
   context: any,
   versionProvider: (name: string, versionHint?: string) => string,
+  isMonoRepo: boolean,
 ) {
   const files = await recursive(templateDir).catch(error => {
     throw new Error(`Failed to read template directory: ${error.message}`);
   });
-  const isMonoRepo = await fs.pathExists(paths.resolveTargetRoot('lerna.json'));
 
   for (const file of files) {
     const destinationFile = file.replace(templateDir, destinationDir);

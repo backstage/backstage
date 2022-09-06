@@ -39,6 +39,6 @@ describe('<SwitchFilter/>', () => {
 
     await userEvent.click(getByLabelText('My label'));
 
-    expect(onChange).toBeCalledWith(false);
+    expect(onChange).toHaveBeenCalledWith(false);
   });
 });

@@ -284,7 +284,7 @@ describe('OpenStackSwiftPublish', () => {
           entity,
           directory: wrongPathToGeneratedDirectory,
         }),
-      ).rejects.toThrowError();
+      ).rejects.toThrow();
 
       const fails = publisher.publish({
         entity,

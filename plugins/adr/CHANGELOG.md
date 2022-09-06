@@ -1,5 +1,30 @@
 # @backstage/plugin-adr
 
+## 0.2.1-next.2
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.2
+  - @backstage/core-plugin-api@1.0.6-next.2
+  - @backstage/integration-react@1.1.4-next.1
+  - @backstage/plugin-search-react@1.1.0-next.2
+
+## 0.2.1-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- b489de83b1: Fix parsing of ADR location which includes a trailing slash
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.1
+  - @backstage/core-plugin-api@1.0.6-next.1
+  - @backstage/plugin-catalog-react@1.1.4-next.1
+  - @backstage/plugin-search-react@1.0.2-next.1
+
 ## 0.2.1-next.0
 
 ### Patch Changes

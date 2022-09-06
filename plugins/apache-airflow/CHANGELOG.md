@@ -1,5 +1,25 @@
 # @backstage/plugin-apache-airflow
 
+## 0.2.2-next.2
+
+### Patch Changes
+
+- 2f52e74b49: Got rid of usages of the uppercase String type
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.2
+  - @backstage/core-plugin-api@1.0.6-next.2
+
+## 0.2.2-next.1
+
+### Patch Changes
+
+- d669d89206: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.1
+  - @backstage/core-plugin-api@1.0.6-next.1
+
 ## 0.2.2-next.0
 
 ### Patch Changes

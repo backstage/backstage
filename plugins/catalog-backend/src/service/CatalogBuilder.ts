@@ -147,7 +147,8 @@ export class CatalogBuilder {
       maxSeconds: 150,
     });
   private locationAnalyzer: LocationAnalyzer | undefined = undefined;
-  private permissionRules: CatalogPermissionRule[];
+  private readonly permissionRules: CatalogPermissionRule[];
+  private allowedLocationType: string[];
 
   /**
    * Creates a catalog builder.
@@ -167,6 +168,7 @@ export class CatalogBuilder {
     this.processorsReplace = false;
     this.parser = undefined;
     this.permissionRules = Object.values(catalogPermissionRules);
+    this.allowedLocationType = ['url'];
   }
 
   /**
@@ -364,6 +366,16 @@ export class CatalogBuilder {
   }
 
   /**
+   * Sets up the allowed location types from being registered via the location service.
+   *
+   * @param allowedLocationTypes - the allowed location types
+   */
+  setAllowedLocationTypes(allowedLocationTypes: string[]): CatalogBuilder {
+    this.allowedLocationType = allowedLocationTypes;
+    return this;
+  }
+
+  /**
    * Wires up and returns all of the component parts of the catalog
    */
   async build(): Promise<{
@@ -465,7 +477,9 @@ export class CatalogBuilder {
     const locationAnalyzer =
       this.locationAnalyzer ?? new RepoLocationAnalyzer(logger, integrations);
     const locationService = new AuthorizedLocationService(
-      new DefaultLocationService(locationStore, orchestrator),
+      new DefaultLocationService(locationStore, orchestrator, {
+        allowedLocationTypes: this.allowedLocationType,
+      }),
       permissionEvaluator,
     );
     const refreshService = new AuthorizedRefreshService(

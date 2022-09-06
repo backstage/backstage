@@ -81,6 +81,7 @@
           "features/kubernetes/overview",
           "features/kubernetes/installation",
           "features/kubernetes/configuration",
+          "features/kubernetes/authentication",
           "features/kubernetes/troubleshooting"
         ]
       },
@@ -325,12 +326,14 @@
     "Tutorials": [
       "tutorials/journey",
       "tutorials/quickstart-app-plugin",
+      "tutorials/react-router-stable-migration",
       "tutorials/package-role-migration",
       "tutorials/migrating-away-from-core",
       "tutorials/configuring-plugin-databases",
       "tutorials/switching-sqlite-postgres",
       "tutorials/using-backstage-proxy-within-plugin",
-      "tutorials/backend-to-backend-auth"
+      "tutorials/backend-to-backend-auth",
+      "tutorials/yarn-migration"
     ],
     "Architecture Decision Records (ADRs)": [
       "architecture-decisions/adrs-overview",

@@ -18,7 +18,6 @@ import React from 'react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { act, render } from '@testing-library/react';
 import { useNavigateToQuery } from './util';
-import { Routes, Route } from 'react-router-dom';
 import { rootRouteRef } from '../plugin';
 
 const navigate = jest.fn();
@@ -38,16 +37,11 @@ describe('util', () => {
 
       await act(async () => {
         await render(
-          wrapInTestApp(
-            <Routes>
-              <Route element={<MyComponent />} />
-            </Routes>,
-            {
-              mountedRoutes: {
-                '/search': rootRouteRef,
-              },
+          wrapInTestApp(<MyComponent />, {
+            mountedRoutes: {
+              '/search': rootRouteRef,
             },
-          ),
+          }),
         );
 
         expect(navigate).toHaveBeenCalledTimes(1);

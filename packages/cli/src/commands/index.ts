@@ -61,6 +61,11 @@ export function registerRepoCommand(program: Command) {
     .action(lazy(() => import('./repo/lint').then(m => m.command)));
 
   command
+    .command('clean')
+    .description('Delete cache and output directories')
+    .action(lazy(() => import('./repo/clean').then(m => m.command)));
+
+  command
     .command('list-deprecations', { hidden: true })
     .description('List deprecations. [EXPERIMENTAL]')
     .option('--json', 'Output as JSON')
@@ -180,11 +185,20 @@ export function registerMigrateCommand(program: Command) {
     .action(
       lazy(() => import('./migrate/packageLintConfigs').then(m => m.command)),
     );
+
+  command
+    .command('react-router-deps')
+    .description(
+      'Migrates the react-router dependencies for all packages to be peer dependencies',
+    )
+    .action(
+      lazy(() => import('./migrate/reactRouterDeps').then(m => m.command)),
+    );
 }
 
 export function registerCommands(program: Command) {
   program
-    .command('create')
+    .command('new')
     .storeOptionsAsProperties(false)
     .description(
       'Open up an interactive guide to creating new things in your app',
@@ -204,16 +218,44 @@ export function registerCommands(program: Command) {
       '--npm-registry <URL>',
       'The package registry to use for new packages',
     )
+    .option(
+      '--baseVersion <version>',
+      'The version to use for any new packages (default: 0.1.0)',
+    )
     .option('--no-private', 'Do not mark new packages as private')
-    .action(lazy(() => import('./create/create').then(m => m.default)));
+    .action(lazy(() => import('./new/new').then(m => m.default)));
 
   program
-    .command('create-plugin')
+    .command('create', { hidden: true })
+    .storeOptionsAsProperties(false)
+    .description(
+      'Open up an interactive guide to creating new things in your app [DEPRECATED]',
+    )
+    .option(
+      '--select <name>',
+      'Select the thing you want to be creating upfront',
+    )
+    .option(
+      '--option <name>=<value>',
+      'Pre-fill options for the creation process',
+      (opt, arr: string[]) => [...arr, opt],
+      [],
+    )
+    .option('--scope <scope>', 'The scope to use for new packages')
+    .option(
+      '--npm-registry <URL>',
+      'The package registry to use for new packages',
+    )
+    .option('--no-private', 'Do not mark new packages as private')
+    .action(lazy(() => import('./new/new').then(m => m.default)));
+
+  program
+    .command('create-plugin', { hidden: true })
     .option(
       '--backend',
       'Create plugin with the backend dependencies as default',
     )
-    .description('Creates a new plugin in the current repository')
+    .description('Creates a new plugin in the current repository [DEPRECATED]')
     .option('--scope <scope>', 'npm scope')
     .option('--npm-registry <URL>', 'npm registry URL')
     .option('--no-private', 'Public npm package')
@@ -222,10 +264,12 @@ export function registerCommands(program: Command) {
     );
 
   program
-    .command('plugin:diff')
+    .command('plugin:diff', { hidden: true })
     .option('--check', 'Fail if changes are required')
     .option('--yes', 'Apply all changes')
-    .description('Diff an existing plugin with the creation template')
+    .description(
+      'Diff an existing plugin with the creation template [DEPRECATED]',
+    )
     .action(lazy(() => import('./plugin/diff').then(m => m.default)));
 
   // TODO(Rugvip): Deprecate in favor of package variant

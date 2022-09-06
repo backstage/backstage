@@ -1,5 +1,23 @@
 # @backstage/plugin-auth-node
 
+## 0.2.5-next.2
+
+### Patch Changes
+
+- 2cbd533426: `IdentityClient` is now deprecated. Please migrate to `IdentityApi` and `DefaultIdentityClient` instead. The authenticate function on `DefaultIdentityClient` is also deprecated. Please use `getIdentity` instead.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.2
+
+## 0.2.5-next.1
+
+### Patch Changes
+
+- 9212439d15: Minor update to tests
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.1
+
 ## 0.2.5-next.0
 
 ### Patch Changes

@@ -23,10 +23,17 @@ export type GitHubEntityProviderConfig = {
   id: string;
   catalogPath: string;
   organization: string;
+  host: string;
   filters?: {
     repository?: RegExp;
     branch?: string;
+    topic?: GithubTopicFilters;
   };
+};
+
+export type GithubTopicFilters = {
+  exclude?: string[];
+  include?: string[];
 };
 
 export function readProviderConfigs(
@@ -56,18 +63,30 @@ function readProviderConfig(
   const organization = config.getString('organization');
   const catalogPath =
     config.getOptionalString('catalogPath') ?? DEFAULT_CATALOG_PATH;
+  const host = config.getOptionalString('host') ?? 'github.com';
   const repositoryPattern = config.getOptionalString('filters.repository');
   const branchPattern = config.getOptionalString('filters.branch');
+  const topicFilterInclude = config?.getOptionalStringArray(
+    'filters.topic.include',
+  );
+  const topicFilterExclude = config?.getOptionalStringArray(
+    'filters.topic.exclude',
+  );
 
   return {
     id,
     catalogPath,
     organization,
+    host,
     filters: {
       repository: repositoryPattern
         ? compileRegExp(repositoryPattern)
         : undefined,
       branch: branchPattern || undefined,
+      topic: {
+        include: topicFilterInclude,
+        exclude: topicFilterExclude,
+      },
     },
   };
 }

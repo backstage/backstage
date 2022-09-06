@@ -100,29 +100,16 @@ const searchInitialState: SearchContextState = {
   types: [],
 };
 
-/**
- * Props for {@link SearchContextProvider}
- *
- * @public
- */
-export type SearchContextProviderProps = PropsWithChildren<{
-  initialState?: SearchContextState;
-}>;
-
-/**
- * @public
- *
- * Search context provider which gives you access to shared state between search components
- */
-export const SearchContextProvider = (props: SearchContextProviderProps) => {
-  const { initialState = searchInitialState, children } = props;
+const useSearchContextValue = (
+  initialValue: SearchContextState = searchInitialState,
+) => {
   const searchApi = useApi(searchApiRef);
   const [pageCursor, setPageCursor] = useState<string | undefined>(
-    initialState.pageCursor,
+    initialValue.pageCursor,
   );
-  const [filters, setFilters] = useState<JsonObject>(initialState.filters);
-  const [term, setTerm] = useState<string>(initialState.term);
-  const [types, setTypes] = useState<string[]>(initialState.types);
+  const [filters, setFilters] = useState<JsonObject>(initialValue.filters);
+  const [term, setTerm] = useState<string>(initialValue.term);
+  const [types, setTypes] = useState<string[]>(initialValue.types);
 
   const prevTerm = usePrevious(term);
 
@@ -170,11 +157,69 @@ export const SearchContextProvider = (props: SearchContextProviderProps) => {
     fetchPreviousPage: hasPreviousPage ? fetchPreviousPage : undefined,
   };
 
-  const versionedValue = createVersionedValueMap({ 1: value });
+  return value;
+};
+
+export type LocalSearchContextProps = PropsWithChildren<{
+  initialState?: SearchContextState;
+}>;
+
+const LocalSearchContext = (props: SearchContextProviderProps) => {
+  const { initialState, children } = props;
+  const value = useSearchContextValue(initialState);
 
   return (
-    <AnalyticsContext attributes={{ searchTypes: types.sort().join(',') }}>
-      <SearchContext.Provider value={versionedValue} children={children} />
+    <AnalyticsContext
+      attributes={{ searchTypes: value.types.sort().join(',') }}
+    >
+      <SearchContext.Provider value={createVersionedValueMap({ 1: value })}>
+        {children}
+      </SearchContext.Provider>
     </AnalyticsContext>
+  );
+};
+
+/**
+ * Props for {@link SearchContextProvider}
+ *
+ * @public
+ */
+export type SearchContextProviderProps =
+  | PropsWithChildren<{
+      /**
+       * State initialized by a local context.
+       */
+      initialState?: SearchContextState;
+      /**
+       * Do not create an inheritance from the parent, as a new initial state must be defined in a local context.
+       */
+      inheritParentContextIfAvailable?: never;
+    }>
+  | PropsWithChildren<{
+      /**
+       * Does not accept initial state since it is already initialized by parent context.
+       */
+      initialState?: never;
+      /**
+       * If true, don't create a child context if there is a parent one already defined.
+       * @remarks Defaults to false.
+       */
+      inheritParentContextIfAvailable?: boolean;
+    }>;
+
+/**
+ * @public
+ * Search context provider which gives you access to shared state between search components
+ */
+export const SearchContextProvider = (props: SearchContextProviderProps) => {
+  const { initialState, inheritParentContextIfAvailable, children } = props;
+  const hasParentContext = useSearchContextCheck();
+
+  return hasParentContext && inheritParentContextIfAvailable ? (
+    <>{children}</>
+  ) : (
+    <LocalSearchContext initialState={initialState}>
+      {children}
+    </LocalSearchContext>
   );
 };

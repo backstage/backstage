@@ -27,6 +27,41 @@ import {
 import path from 'path';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
+const isInRange = (num: number, [start, end]: [number, number]) => {
+  return num >= start && num <= end;
+};
+
+const parsePortRange = (port: string): [number, number] => {
+  const isRange = port.includes('-');
+  if (isRange) {
+    const range = port
+      .split('-')
+      .map(v => parseInt(v, 10))
+      .filter(Boolean) as [number, number];
+    if (range.length !== 2) throw new Error(`Port range is not valid: ${port}`);
+    const [start, end] = range;
+    if (start <= 0 || end <= 0 || start > end)
+      throw new Error(`Port range is not valid: [${start}, ${end}]`);
+    return range;
+  }
+  const parsedPort = parseInt(port, 10);
+  return [parsedPort, parsedPort];
+};
+
+const parsePortPredicate = (port: string | undefined) => {
+  if (port) {
+    const range = parsePortRange(port);
+    return (url: URL) => {
+      if (url.port) return isInRange(parseInt(url.port, 10), range);
+
+      if (url.protocol === 'http:') return isInRange(80, range);
+      if (url.protocol === 'https:') return isInRange(443, range);
+      return false;
+    };
+  }
+  return (url: URL) => !url.port;
+};
+
 /**
  * A {@link UrlReader} that does a plain fetch of the URL.
  *
@@ -60,11 +95,17 @@ export class FetchUrlReader implements UrlReader {
               }
             : (_url: URL) => true;
           const host = allowConfig.getString('host');
-          if (host.startsWith('*.')) {
-            const suffix = host.slice(1);
-            return (url: URL) => url.host.endsWith(suffix) && checkPath(url);
+          const [hostname, port] = host.split(':');
+
+          const checkPort = parsePortPredicate(port);
+
+          if (hostname.startsWith('*.')) {
+            const suffix = hostname.slice(1);
+            return (url: URL) =>
+              url.hostname.endsWith(suffix) && checkPath(url) && checkPort(url);
           }
-          return (url: URL) => url.host === host && checkPath(url);
+          return (url: URL) =>
+            url.hostname === hostname && checkPath(url) && checkPort(url);
         }) ?? [];
 
     const reader = new FetchUrlReader();

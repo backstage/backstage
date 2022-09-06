@@ -302,8 +302,8 @@ describe('createPublishGithubPullRequestAction', () => {
     it('creates a pull request and requests a review from the given reviewers', async () => {
       await instance.handler(ctx);
 
-      expect(fakeClient.createPullRequest).toBeCalled();
-      expect(fakeClient.rest.pulls.requestReviewers).toBeCalledWith({
+      expect(fakeClient.createPullRequest).toHaveBeenCalled();
+      expect(fakeClient.rest.pulls.requestReviewers).toHaveBeenCalledWith({
         owner: 'myorg',
         repo: 'myrepo',
         pull_number: 123,
@@ -354,8 +354,62 @@ describe('createPublishGithubPullRequestAction', () => {
     it('does not call the API endpoint for requesting reviewers', async () => {
       await instance.handler(ctx);
 
-      expect(fakeClient.createPullRequest).toBeCalled();
-      expect(fakeClient.rest.pulls.requestReviewers).not.toBeCalled();
+      expect(fakeClient.createPullRequest).toHaveBeenCalled();
+      expect(fakeClient.rest.pulls.requestReviewers).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('with broken symlink', () => {
+    let input: GithubPullRequestActionInput;
+    let ctx: ActionContext<GithubPullRequestActionInput>;
+
+    beforeEach(() => {
+      input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+      };
+
+      mockFs({
+        [workspacePath]: {
+          Makefile: mockFs.symlink({
+            path: '../../nothing/yet',
+          }),
+        },
+      });
+
+      ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+    });
+    it('creates a pull request', async () => {
+      await instance.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: 'Create my new app',
+        head: 'new-app',
+        body: 'This PR is really good',
+        changes: [
+          {
+            commit: 'Create my new app',
+            files: {
+              Makefile: {
+                content: Buffer.from('../../nothing/yet').toString('utf-8'),
+                encoding: 'utf-8',
+                mode: '120000',
+              },
+            },
+          },
+        ],
+      });
     });
   });
 

@@ -190,7 +190,6 @@ export const transforms = (options: TransformOptions): Transforms => {
   if (isDev) {
     plugins.push(
       new ReactRefreshPlugin({
-        esModule: true,
         overlay: { sockProtocol: 'ws' },
       }),
     );

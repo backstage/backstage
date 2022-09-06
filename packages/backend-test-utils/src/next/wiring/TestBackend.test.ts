@@ -89,9 +89,9 @@ describe('TestBackend', () => {
 
     await startTestBackend({
       services: [sf],
-      features: [testModule({})],
+      features: [testModule()],
     });
 
-    expect(testFn).toBeCalledWith('winning');
+    expect(testFn).toHaveBeenCalledWith('winning');
   });
 });

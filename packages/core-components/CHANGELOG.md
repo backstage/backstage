@@ -1,5 +1,24 @@
 # @backstage/core-components
 
+## 0.11.1-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- 13f23f6510: Allow custom images in the empty state component
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.2
+
+## 0.11.1-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 37e8c5e128: The `RoutedTabs` component has been updated to be compatible with React Router v6 stable.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.1
+
 ## 0.11.1-next.0
 
 ### Patch Changes

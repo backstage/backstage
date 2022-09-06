@@ -84,20 +84,32 @@ export class EntityTextFilter implements EntityFilter {
   constructor(readonly value: string) {}
 
   filterEntity(entity: Entity): boolean {
-    const upperCaseValue = this.value.toLocaleUpperCase('en-US');
+    const words = this.toUpperArray(this.value.split(/\s/));
+    const exactMatch = this.toUpperArray([entity.metadata.tags]);
+    const partialMatch = this.toUpperArray([
+      entity.metadata.name,
+      entity.metadata.title,
+    ]);
 
-    return (
-      entity.metadata.name
-        .toLocaleUpperCase('en-US')
-        .includes(upperCaseValue) ||
-      `${entity.metadata.title}`
-        .toLocaleUpperCase('en-US')
-        .includes(upperCaseValue) ||
-      entity.metadata.tags
-        ?.join('')
-        .toLocaleUpperCase('en-US')
-        .indexOf(upperCaseValue) !== -1
-    );
+    for (const word of words) {
+      if (
+        exactMatch.every(m => m !== word) &&
+        partialMatch.every(m => !m.includes(word))
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private toUpperArray(
+    value: Array<string | string[] | undefined>,
+  ): Array<string> {
+    return value
+      .flat()
+      .filter((m): m is string => Boolean(m))
+      .map(m => m.toLocaleUpperCase('en-US'));
   }
 }
 

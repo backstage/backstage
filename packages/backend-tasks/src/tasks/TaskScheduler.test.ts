@@ -53,7 +53,7 @@ describe('TaskScheduler', () => {
       });
 
       await waitForExpect(() => {
-        expect(fn).toBeCalled();
+        expect(fn).toHaveBeenCalled();
       });
     },
     60_000,
@@ -74,7 +74,7 @@ describe('TaskScheduler', () => {
       });
 
       await waitForExpect(() => {
-        expect(fn).toBeCalled();
+        expect(fn).toHaveBeenCalled();
       });
     },
     60_000,

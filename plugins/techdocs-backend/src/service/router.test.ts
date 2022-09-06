@@ -231,7 +231,7 @@ data: "Invalid configuration. docsBuildStrategy.shouldBuild returned 'true', but
 `,
         );
 
-        expect(MockDocsSynchronizer.prototype.doSync).toBeCalledTimes(0);
+        expect(MockDocsSynchronizer.prototype.doSync).toHaveBeenCalledTimes(0);
       });
 
       it('should execute synchronization', async () => {
@@ -249,8 +249,8 @@ data: "Invalid configuration. docsBuildStrategy.shouldBuild returned 'true', but
           .set('accept', 'text/event-stream')
           .send();
 
-        expect(MockDocsSynchronizer.prototype.doSync).toBeCalledTimes(1);
-        expect(MockDocsSynchronizer.prototype.doSync).toBeCalledWith({
+        expect(MockDocsSynchronizer.prototype.doSync).toHaveBeenCalledTimes(1);
+        expect(MockDocsSynchronizer.prototype.doSync).toHaveBeenCalledWith({
           responseHandler: {
             log: expect.any(Function),
             error: expect.any(Function),
@@ -313,7 +313,7 @@ data: {"updated":true}
         .send();
 
       expect(response.status).toBe(200);
-      expect(docsRouter).toBeCalled();
+      expect(docsRouter).toHaveBeenCalled();
     });
 
     it('should return assets from cache', async () => {
@@ -328,7 +328,7 @@ data: {"updated":true}
         .send();
 
       expect(response.status).toBe(200);
-      expect(MockTechDocsCache.get).toBeCalled();
+      expect(MockTechDocsCache.get).toHaveBeenCalled();
     });
 
     it('should check entity access when permissions are enabled', async () => {
@@ -347,7 +347,7 @@ data: {"updated":true}
         .send();
 
       expect(response.status).toBe(200);
-      expect(MockCachedEntityLoader.prototype.load).toBeCalled();
+      expect(MockCachedEntityLoader.prototype.load).toHaveBeenCalled();
     });
 
     it('should not return assets without corresponding entity access', async () => {
@@ -387,8 +387,8 @@ describe('createEventStream', () => {
   it('should return correct event stream', async () => {
     // called in beforeEach
 
-    expect(res.writeHead).toBeCalledTimes(1);
-    expect(res.writeHead).toBeCalledWith(200, {
+    expect(res.writeHead).toHaveBeenCalledTimes(1);
+    expect(res.writeHead).toHaveBeenCalledWith(200, {
       'Cache-Control': 'no-cache',
       Connection: 'keep-alive',
       'Content-Type': 'text/event-stream',
@@ -400,45 +400,45 @@ describe('createEventStream', () => {
 
     handlers.log('A Message');
 
-    expect(res.write).toBeCalledTimes(1);
-    expect(res.write).toBeCalledWith(`event: log
+    expect(res.write).toHaveBeenCalledTimes(1);
+    expect(res.write).toHaveBeenCalledWith(`event: log
 data: "A Message"
 
 `);
-    expect(res.flush).toBeCalledTimes(1);
+    expect(res.flush).toHaveBeenCalledTimes(1);
   });
 
   it('should write log', async () => {
     handlers.log('A Message');
 
-    expect(res.write).toBeCalledTimes(1);
-    expect(res.write).toBeCalledWith(`event: log
+    expect(res.write).toHaveBeenCalledTimes(1);
+    expect(res.write).toHaveBeenCalledWith(`event: log
 data: "A Message"
 
 `);
-    expect(res.end).toBeCalledTimes(0);
+    expect(res.end).toHaveBeenCalledTimes(0);
   });
 
   it('should write error and end the connection', async () => {
     handlers.error(new Error('Some Error'));
 
-    expect(res.write).toBeCalledTimes(1);
-    expect(res.write).toBeCalledWith(`event: error
+    expect(res.write).toHaveBeenCalledTimes(1);
+    expect(res.write).toHaveBeenCalledWith(`event: error
 data: "Some Error"
 
 `);
-    expect(res.end).toBeCalledTimes(1);
+    expect(res.end).toHaveBeenCalledTimes(1);
   });
 
   it('should finish and end the connection', async () => {
     handlers.finish({ updated: true });
 
-    expect(res.write).toBeCalledTimes(1);
-    expect(res.write).toBeCalledWith(`event: finish
+    expect(res.write).toHaveBeenCalledTimes(1);
+    expect(res.write).toHaveBeenCalledWith(`event: finish
 data: {"updated":true}
 
 `);
 
-    expect(res.end).toBeCalledTimes(1);
+    expect(res.end).toHaveBeenCalledTimes(1);
   });
 });

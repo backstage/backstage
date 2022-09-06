@@ -148,6 +148,7 @@ describe('GithubDiscoveryProcessor', () => {
           {
             name: 'backstage',
             url: 'https://github.com/backstage/backstage',
+            repositoryTopics: { nodes: [] },
             isArchived: false,
             defaultBranchRef: {
               name: 'master',
@@ -156,6 +157,7 @@ describe('GithubDiscoveryProcessor', () => {
           {
             name: 'demo',
             url: 'https://github.com/backstage/demo',
+            repositoryTopics: { nodes: [] },
             isArchived: false,
             defaultBranchRef: {
               name: 'main',
@@ -196,6 +198,7 @@ describe('GithubDiscoveryProcessor', () => {
           {
             name: 'backstage',
             url: 'https://github.com/backstage/tech-docs',
+            repositoryTopics: { nodes: [] },
             isArchived: false,
             defaultBranchRef: {
               name: 'main',
@@ -228,6 +231,7 @@ describe('GithubDiscoveryProcessor', () => {
           {
             name: 'backstage',
             url: 'https://github.com/backstage/tech-docs',
+            repositoryTopics: { nodes: [] },
             isArchived: false,
             defaultBranchRef: null,
           },
@@ -250,6 +254,7 @@ describe('GithubDiscoveryProcessor', () => {
           {
             name: 'backstage',
             url: 'https://github.com/backstage/backstage',
+            repositoryTopics: { nodes: [] },
             isArchived: false,
             defaultBranchRef: {
               name: 'master',
@@ -283,6 +288,7 @@ describe('GithubDiscoveryProcessor', () => {
           {
             name: 'backstage',
             url: 'https://github.com/backstage/backstage',
+            repositoryTopics: { nodes: [] },
             isArchived: false,
             defaultBranchRef: {
               name: 'main',
@@ -291,6 +297,7 @@ describe('GithubDiscoveryProcessor', () => {
           {
             name: 'techdocs-cli',
             url: 'https://github.com/backstage/techdocs-cli',
+            repositoryTopics: { nodes: [] },
             isArchived: false,
             defaultBranchRef: {
               name: 'main',
@@ -299,6 +306,7 @@ describe('GithubDiscoveryProcessor', () => {
           {
             name: 'techdocs-container',
             url: 'https://github.com/backstage/techdocs-container',
+            repositoryTopics: { nodes: [] },
             isArchived: false,
             defaultBranchRef: {
               name: 'main',
@@ -307,6 +315,7 @@ describe('GithubDiscoveryProcessor', () => {
           {
             name: 'techdocs-durp',
             url: 'https://github.com/backstage/techdocs-durp',
+            repositoryTopics: { nodes: [] },
             isArchived: false,
             defaultBranchRef: null,
           },
@@ -347,6 +356,7 @@ describe('GithubDiscoveryProcessor', () => {
             name: 'abstest',
             url: 'https://github.com/backstage/abctest',
             isArchived: false,
+            repositoryTopics: { nodes: [] },
             defaultBranchRef: {
               name: 'main',
             },
@@ -355,6 +365,7 @@ describe('GithubDiscoveryProcessor', () => {
             name: 'test',
             url: 'https://github.com/backstage/test',
             isArchived: false,
+            repositoryTopics: { nodes: [] },
             defaultBranchRef: {
               name: 'main',
             },
@@ -362,6 +373,7 @@ describe('GithubDiscoveryProcessor', () => {
           {
             name: 'test-archived',
             url: 'https://github.com/backstage/test',
+            repositoryTopics: { nodes: [] },
             isArchived: true,
             defaultBranchRef: {
               name: 'main',
@@ -370,6 +382,7 @@ describe('GithubDiscoveryProcessor', () => {
           {
             name: 'testxyz',
             url: 'https://github.com/backstage/testxyz',
+            repositoryTopics: { nodes: [] },
             isArchived: false,
             defaultBranchRef: {
               name: 'main',

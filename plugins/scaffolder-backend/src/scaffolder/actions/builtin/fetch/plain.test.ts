@@ -73,7 +73,7 @@ describe('fetch:plain', () => {
         targetPath: 'lol',
       },
     });
-    expect(fetchContents).toBeCalledWith(
+    expect(fetchContents).toHaveBeenCalledWith(
       expect.objectContaining({
         outputPath: resolvePath(mockContext.workspacePath, 'lol'),
         fetchUrl:

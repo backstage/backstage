@@ -28,15 +28,20 @@ export type ServiceRef<T> = {
    */
   T: T;
 
+  toString(): string;
+
+  $$ref: 'service';
+};
+
+/**
+ * @internal
+ */
+export type InternalServiceRef<T> = ServiceRef<T> & {
   /**
    * The default factory that will be used to create service
    * instances if no other factory is provided.
    */
-  defaultFactory?: (service: ServiceRef<T>) => Promise<ServiceFactory<T>>;
-
-  toString(): string;
-
-  $$ref: 'service';
+  __defaultFactory?: (service: ServiceRef<T>) => Promise<ServiceFactory<T>>;
 };
 
 /** @public */
@@ -70,12 +75,12 @@ export function createServiceRef<T>(options: {
     get T(): T {
       throw new Error(`tried to read ServiceRef.T of ${this}`);
     },
-    defaultFactory,
     toString() {
       return `serviceRef{${options.id}}`;
     },
     $$ref: 'service', // TODO: declare
-  };
+    __defaultFactory: defaultFactory,
+  } as InternalServiceRef<T>;
 }
 
 /**

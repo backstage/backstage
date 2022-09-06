@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.4.2-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.4.0-next.2
+
+## 0.4.2-next.1
+
+### Patch Changes
+
+- c1d32d2b76: Fixed a bug in the `MicrosoftGraphEntityProvider` that ignored the `userExpand` and `groupExpand` configuration parameters
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.4.0-next.1
+
 ## 0.4.2-next.0
 
 ### Patch Changes

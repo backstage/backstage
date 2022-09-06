@@ -27,6 +27,7 @@ import {
   CatalogProcessorCache,
   CatalogProcessorEntityResult,
   CatalogProcessorErrorResult,
+  CatalogProcessorRefreshKeysResult,
   CatalogProcessorResult,
 } from '@backstage/plugin-catalog-node';
 import { defaultEntityDataParser } from '../util/parse';
@@ -90,7 +91,7 @@ describe('UrlReaderProcessor', () => {
       type: 'refresh',
       key: 'url:http://localhost/component.yaml',
     });
-    expect(mockCache.set).toBeCalledWith('v1', {
+    expect(mockCache.set).toHaveBeenCalledWith('v1', {
       etag: 'my-etag',
       value: [
         {
@@ -100,7 +101,7 @@ describe('UrlReaderProcessor', () => {
         },
       ],
     });
-    expect(mockCache.set).toBeCalledTimes(1);
+    expect(mockCache.set).toHaveBeenCalledTimes(1);
   });
 
   it('should use cached data when available', async () => {
@@ -127,22 +128,28 @@ describe('UrlReaderProcessor', () => {
     mockCache.get.mockResolvedValue(cacheItem);
     const processor = new UrlReaderProcessor({ reader, logger });
 
-    const generated = (await new Promise<CatalogProcessorResult>(emit =>
-      processor.readLocation(
-        spec,
-        false,
-        emit,
-        defaultEntityDataParser,
-        mockCache,
-      ),
-    )) as CatalogProcessorEntityResult;
+    const emitted = new Array<CatalogProcessorResult>();
+    await processor.readLocation(
+      spec,
+      false,
+      r => emitted.push(r),
+      defaultEntityDataParser,
+      mockCache,
+    );
 
-    expect(generated.type).toBe('entity');
-    expect(generated.location).toEqual(spec);
-    expect(generated.entity).toEqual({ mock: 'entity' });
-    expect(mockCache.get).toBeCalledWith('v1');
-    expect(mockCache.get).toBeCalledTimes(1);
-    expect(mockCache.set).toBeCalledTimes(0);
+    const entity = emitted[0] as CatalogProcessorEntityResult;
+    const refresh = emitted[1] as CatalogProcessorRefreshKeysResult;
+
+    expect(entity.type).toBe('entity');
+    expect(entity.location).toEqual(spec);
+    expect(entity.entity).toEqual({ mock: 'entity' });
+
+    expect(refresh.type).toBe('refresh');
+    expect(refresh.key).toBe('url:http://localhost/component.yaml');
+
+    expect(mockCache.get).toHaveBeenCalledWith('v1');
+    expect(mockCache.get).toHaveBeenCalledTimes(1);
+    expect(mockCache.set).toHaveBeenCalledTimes(0);
   });
 
   it('should fail load from url with error', async () => {
@@ -204,6 +211,6 @@ describe('UrlReaderProcessor', () => {
       mockCache,
     );
 
-    expect(reader.search).toBeCalledTimes(1);
+    expect(reader.search).toHaveBeenCalledTimes(1);
   });
 });

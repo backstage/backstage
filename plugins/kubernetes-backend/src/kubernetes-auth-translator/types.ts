@@ -17,6 +17,10 @@
 import { ClusterDetails } from '../types/types';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
+/**
+ *
+ * @alpha
+ */
 export interface KubernetesAuthTranslator {
   decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
