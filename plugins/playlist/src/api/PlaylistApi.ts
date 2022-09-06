@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import { createApiRef } from '@backstage/core-plugin-api';
 import { Playlist, PlaylistMetadata } from '@backstage/plugin-playlist-common';
 
@@ -62,7 +63,7 @@ export interface PlaylistApi {
 
   addPlaylistEntities(playlistId: string, entityRefs: string[]): Promise<void>;
 
-  getPlaylistEntities(playlistId: string): Promise<string[]>;
+  getPlaylistEntities(playlistId: string): Promise<Entity[]>;
 
   removePlaylistEntities(
     playlistId: string,

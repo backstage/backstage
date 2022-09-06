@@ -523,4 +523,4 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   );
 }
 
-Table.tableIcons = Object.freeze(tableIcons);
+Table.icons = Object.freeze(tableIcons);

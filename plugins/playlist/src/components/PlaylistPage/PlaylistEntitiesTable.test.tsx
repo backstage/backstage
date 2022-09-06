@@ -15,11 +15,7 @@
  */
 
 import { ErrorApi, errorApiRef } from '@backstage/core-plugin-api';
-import {
-  CatalogApi,
-  catalogApiRef,
-  entityRouteRef,
-} from '@backstage/plugin-catalog-react';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   PermissionApi,
@@ -47,17 +43,6 @@ jest.mock('./AddEntitiesDrawer', () => ({
 
 describe('PlaylistEntitiesTable', () => {
   const errorApi: Partial<ErrorApi> = { post: jest.fn() };
-  const playlistApi: Partial<PlaylistApi> = {
-    getPlaylistEntities: jest
-      .fn()
-      .mockImplementation(async () => [
-        'system:default/test-ent',
-        'component:foo/test-ent2',
-      ]),
-    addPlaylistEntities: jest.fn().mockImplementation(async () => {}),
-    removePlaylistEntities: jest.fn().mockImplementation(async () => {}),
-  };
-
   const sampleEntities = [
     {
       kind: 'system',
@@ -81,10 +66,12 @@ describe('PlaylistEntitiesTable', () => {
       },
     },
   ];
-  const catalogApi: Partial<CatalogApi> = {
-    getEntities: jest
+  const playlistApi: Partial<PlaylistApi> = {
+    getPlaylistEntities: jest
       .fn()
-      .mockImplementation(async () => ({ items: sampleEntities })),
+      .mockImplementation(async () => sampleEntities),
+    addPlaylistEntities: jest.fn().mockImplementation(async () => {}),
+    removePlaylistEntities: jest.fn().mockImplementation(async () => {}),
   };
 
   const mockAuthorize = jest
@@ -97,7 +84,6 @@ describe('PlaylistEntitiesTable', () => {
     <SWRConfig value={{ provider: () => new Map() }}>
       <TestApiProvider
         apis={[
-          [catalogApiRef, catalogApi],
           [errorApiRef, errorApi],
           [permissionApiRef, permissionApi],
           [playlistApiRef, playlistApi],
@@ -121,28 +107,6 @@ describe('PlaylistEntitiesTable', () => {
     const rendered = await render();
 
     expect(playlistApi.getPlaylistEntities).toHaveBeenCalledWith('playlist-id');
-    expect(catalogApi.getEntities).toHaveBeenCalledWith({
-      filter: [
-        {
-          kind: 'system',
-          'metadata.namespace': 'default',
-          'metadata.name': 'test-ent',
-        },
-        {
-          kind: 'component',
-          'metadata.namespace': 'foo',
-          'metadata.name': 'test-ent2',
-        },
-      ],
-      fields: [
-        'kind',
-        'metadata.namespace',
-        'metadata.name',
-        'metadata.title',
-        'metadata.description',
-        'spec.type',
-      ],
-    });
 
     expect(rendered.getByText('Test Ent')).toBeInTheDocument();
     expect(rendered.getByText('system')).toBeInTheDocument();

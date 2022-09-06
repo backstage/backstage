@@ -16,7 +16,6 @@ import { CardHeaderProps } from '@material-ui/core/CardHeader';
 import { Column } from '@material-table/core';
 import { ComponentClass } from 'react';
 import { ComponentProps } from 'react';
-import { ComponentType } from 'react';
 import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
 import { ElementType } from 'react';
@@ -52,16 +51,6 @@ import { TextTruncateProps } from 'react-text-truncate';
 import { Theme } from '@material-ui/core/styles';
 import { TooltipProps } from '@material-ui/core/Tooltip';
 import { WithStyles } from '@material-ui/core/styles';
-
-// @public (undocumented)
-export type ActionItemProps = {
-  label?: ListItemTextProps['primary'];
-  secondaryLabel?: ListItemTextProps['secondary'];
-  icon?: ReactElement;
-  disabled?: boolean;
-  onClick?: (event: React_2.MouseEvent<HTMLDivElement>) => void;
-  WrapperComponent?: ComponentType;
-};
 
 // @public (undocumented)
 export function AlertDisplay(props: AlertDisplayProps): JSX.Element | null;
@@ -449,8 +438,17 @@ export function Header(props: PropsWithChildren<Props_14>): JSX.Element;
 export function HeaderActionMenu(props: HeaderActionMenuProps): JSX.Element;
 
 // @public (undocumented)
+export type HeaderActionMenuItem = {
+  label?: ListItemTextProps['primary'];
+  secondaryLabel?: ListItemTextProps['secondary'];
+  icon?: ReactElement;
+  disabled?: boolean;
+  onClick?: (event: React_2.MouseEvent<HTMLElement>) => void;
+};
+
+// @public (undocumented)
 export type HeaderActionMenuProps = {
-  actionItems: ActionItemProps[];
+  actionItems: HeaderActionMenuItem[];
 };
 
 // @public (undocumented)
@@ -1357,7 +1355,7 @@ export function Table<T extends object = {}>(props: TableProps<T>): JSX.Element;
 // @public (undocumented)
 export namespace Table {
   var // (undocumented)
-    tableIcons: Readonly<Icons>;
+    icons: Readonly<Icons>;
 }
 
 // Warning: (ae-missing-release-tag) "TableClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-import { errorHandler, PluginDatabaseManager } from '@backstage/backend-common';
+import {
+  errorHandler,
+  PluginDatabaseManager,
+  PluginEndpointDiscovery,
+} from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
+import { parseEntityRef } from '@backstage/catalog-model';
 import { NotAllowedError } from '@backstage/errors';
 import {
   getBearerTokenFromAuthorizationHeader,
-  IdentityClient,
+  IdentityApi,
 } from '@backstage/plugin-auth-node';
 import {
   AuthorizePermissionRequest,
@@ -44,7 +50,8 @@ import { parseListPlaylistsFilterParams } from './ListPlaylistsFilter';
  */
 export interface RouterOptions {
   database: PluginDatabaseManager;
-  identity: IdentityClient;
+  discovery: PluginEndpointDiscovery;
+  identity: IdentityApi;
   logger: Logger;
   permissions: PermissionEvaluator;
 }
@@ -57,6 +64,7 @@ export async function createRouter(
 ): Promise<express.Router> {
   const {
     database,
+    discovery,
     identity,
     logger,
     permissions: permissionEvaluator,
@@ -64,19 +72,23 @@ export async function createRouter(
 
   logger.info('Initializing Playlist backend');
 
+  const catalogClient = new CatalogClient({ discoveryApi: discovery });
   const db = await database.getClient();
   const dbHandler = await DatabaseHandler.create({ database: db });
 
   const evaluateRequestPermission = async (
-    req: express.Request,
+    request: express.Request,
     permission: AuthorizePermissionRequest | QueryPermissionRequest,
     conditional: boolean = false,
   ) => {
     const token = getBearerTokenFromAuthorizationHeader(
-      req.header('authorization'),
+      request.header('authorization'),
     );
 
-    const user = await identity.authenticate(token);
+    const user = await identity.getIdentity({ request });
+    if (!user) {
+      throw new NotAllowedError('Unauthorized');
+    }
 
     const decision = conditional
       ? (
@@ -196,7 +208,36 @@ export async function createRouter(
       permission: permissions.playlistListRead,
       resourceRef: req.params.playlistId,
     });
-    const entities = await dbHandler.getPlaylistEntities(req.params.playlistId);
+
+    const entityRefs = await dbHandler.getPlaylistEntities(
+      req.params.playlistId,
+    );
+    if (!entityRefs.length) {
+      res.json([]);
+      return;
+    }
+
+    const filter = entityRefs.map(ref => {
+      const compoundRef = parseEntityRef(ref);
+      return {
+        kind: compoundRef.kind,
+        'metadata.namespace': compoundRef.namespace,
+        'metadata.name': compoundRef.name,
+      };
+    });
+
+    const token = getBearerTokenFromAuthorizationHeader(
+      req.header('authorization'),
+    );
+
+    // TODO(kuanpg): entities in this playlist that no longer exist in the catalog will be
+    // excluded from this response, we need a way to clean up these orphaned refs potentially
+    // via catalog events (https://github.com/backstage/backstage/issues/8219)
+    //
+    // Note: This will also enforce catalog permissions and will only return entities for which the current user has access to
+    const entities = (await catalogClient.getEntities({ filter }, { token }))
+      .items;
+
     res.json(entities);
   });
 

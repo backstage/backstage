@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
+import {
+  DatabaseManager,
+  getVoidLogger,
+  PluginEndpointDiscovery,
+} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { IdentityClient } from '@backstage/plugin-auth-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { permissions } from '@backstage/plugin-playlist-common';
 import express from 'express';
@@ -24,8 +28,39 @@ import request from 'supertest';
 
 import { createRouter } from './router';
 
+const sampleEntities = [
+  {
+    kind: 'system',
+    metadata: {
+      namespace: 'default',
+      name: 'test-ent-system',
+      title: 'Test Ent',
+      description: 'test ent description',
+    },
+  },
+  {
+    kind: 'component',
+    metadata: {
+      namespace: 'default',
+      name: 'test-ent',
+      title: 'Test Ent 2',
+      description: 'test ent description 2',
+    },
+    spec: {
+      type: 'library',
+    },
+  },
+];
+const mockGetEntties = jest
+  .fn()
+  .mockImplementation(async () => ({ items: sampleEntities }));
+jest.mock('@backstage/catalog-client', () => ({
+  CatalogClient: jest
+    .fn()
+    .mockImplementation(() => ({ getEntities: mockGetEntties })),
+}));
+
 jest.mock('@backstage/plugin-auth-node', () => ({
-  ...jest.requireActual('@backstage/plugin-auth-node'),
   getBearerTokenFromAuthorizationHeader: () => 'token',
 }));
 
@@ -99,14 +134,20 @@ describe('createRouter', () => {
     userEntityRef: 'user:default/me',
   };
   const mockIdentityClient = {
-    authenticate: jest
+    getIdentity: jest
       .fn()
       .mockImplementation(async () => ({ identity: mockUser })),
-  } as unknown as IdentityClient;
+  } as unknown as IdentityApi;
+
+  const discovery: jest.Mocked<PluginEndpointDiscovery> = {
+    getBaseUrl: jest.fn(),
+    getExternalBaseUrl: jest.fn(),
+  };
 
   beforeEach(async () => {
     const router = await createRouter({
       database: createDatabase(),
+      discovery,
       identity: mockIdentityClient,
       logger: getVoidLogger(),
       permissions: mockPermissionEvaluator,
@@ -398,6 +439,7 @@ describe('createRouter', () => {
         { token: 'token' },
       );
       expect(mockDbHandler.getPlaylistEntities).not.toHaveBeenCalled();
+      expect(mockGetEntties).not.toHaveBeenCalled();
       expect(response.status).toEqual(403);
     });
 
@@ -406,8 +448,25 @@ describe('createRouter', () => {
       expect(mockDbHandler.getPlaylistEntities).toHaveBeenCalledWith(
         'playlist-id',
       );
+      expect(mockGetEntties).toHaveBeenCalledWith(
+        {
+          filter: [
+            {
+              kind: 'component',
+              'metadata.namespace': 'default',
+              'metadata.name': 'test-ent',
+            },
+            {
+              kind: 'system',
+              'metadata.namespace': 'default',
+              'metadata.name': 'test-ent-system',
+            },
+          ],
+        },
+        { token: 'token' },
+      );
       expect(response.status).toEqual(200);
-      expect(response.body).toEqual(mockEntities);
+      expect(response.body).toEqual(sampleEntities);
     });
   });
 

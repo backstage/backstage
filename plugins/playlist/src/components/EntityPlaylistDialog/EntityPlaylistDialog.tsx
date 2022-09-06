@@ -78,10 +78,9 @@ export type EntityPlaylistDialogProps = {
   onClose: () => void;
 };
 
-export const EntityPlaylistDialog = ({
-  open,
-  onClose,
-}: EntityPlaylistDialogProps) => {
+export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
+  const { open, onClose } = props;
+
   const classes = useStyles();
   const navigate = useNavigate();
   const { entity } = useAsyncEntity();

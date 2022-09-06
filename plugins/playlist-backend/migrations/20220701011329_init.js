@@ -37,7 +37,9 @@ exports.up = async function up(knex) {
       .onDelete('CASCADE')
       .comment('The id of the playlist this entity belongs to');
     table.string('entity_ref').notNullable().comment('A entity ref');
-    table.unique(['playlist_id', 'entity_ref']);
+    table.unique(['playlist_id', 'entity_ref'], {
+      indexName: 'playlist_entity_composite_index',
+    });
   });
 
   await knex.schema.createTable('followers', table => {
@@ -49,7 +51,9 @@ exports.up = async function up(knex) {
       .onDelete('CASCADE')
       .comment('The id of the playlist being followed');
     table.string('user_ref').notNullable().comment('A user entity ref');
-    table.unique(['playlist_id', 'user_ref']);
+    table.unique(['playlist_id', 'user_ref'], {
+      indexName: 'playlist_follower_composite_index',
+    });
   });
 };
 

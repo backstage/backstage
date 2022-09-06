@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  parseEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   ErrorPanel,
   SubvalueCell,
@@ -26,7 +22,7 @@ import {
   TableFilter,
 } from '@backstage/core-components';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
-import { catalogApiRef, EntityRefLink } from '@backstage/plugin-catalog-react';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { permissions } from '@backstage/plugin-playlist-common';
 import AddBoxIcon from '@material-ui/icons/AddBox';
@@ -43,7 +39,6 @@ export const PlaylistEntitiesTable = ({
 }: {
   playlistId: string;
 }) => {
-  const catalogApi = useApi(catalogApiRef);
   const errorApi = useApi(errorApiRef);
   const playlistApi = useApi(playlistApiRef);
   const [openAddEntitiesDrawer, setOpenAddEntitiesDrawer] = useState(false);
@@ -53,39 +48,10 @@ export const PlaylistEntitiesTable = ({
     resourceRef: playlistId,
   });
 
-  const [{ value: entities, loading, error }, loadEntities] =
-    useAsyncFn(async () => {
-      const entityRefs = await playlistApi.getPlaylistEntities(playlistId);
-      if (!entityRefs.length) {
-        return [];
-      }
-
-      const filter = entityRefs.map(ref => {
-        const compoundRef = parseEntityRef(ref);
-        return {
-          kind: compoundRef.kind,
-          'metadata.namespace': compoundRef.namespace,
-          'metadata.name': compoundRef.name,
-        };
-      });
-
-      // TODO(kuanpg): entities in this playlist that no longer exist in the catalog will be
-      // excluded from this response, we need a way to clean up these orphaned refs potentially
-      // via catalog events (https://github.com/backstage/backstage/issues/8219)
-      return (
-        await catalogApi.getEntities({
-          filter,
-          fields: [
-            'kind',
-            'metadata.namespace',
-            'metadata.name',
-            'metadata.title',
-            'metadata.description',
-            'spec.type',
-          ],
-        })
-      ).items;
-    }, [catalogApi, playlistApi]);
+  const [{ value: entities, loading, error }, loadEntities] = useAsyncFn(
+    () => playlistApi.getPlaylistEntities(playlistId),
+    [playlistApi],
+  );
 
   useEffect(() => {
     loadEntities();
@@ -190,7 +156,7 @@ export const PlaylistEntitiesTable = ({
         data={entities ?? []}
         filters={filters}
         icons={{
-          ...Table.tableIcons,
+          ...Table.icons,
           Search: forwardRef((props, ref) => (
             <SearchIcon {...props} ref={ref} />
           )),

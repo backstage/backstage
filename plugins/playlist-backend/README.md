@@ -21,20 +21,15 @@ import { createRouter } from '@backstage/plugin-playlist-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
-export default async function createPlugin({
-  database,
-  discovery,
-  logger,
-  permissions,
-}: PluginEnvironment): Promise<Router> {
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   return await createRouter({
-    database,
-    identity: IdentityClient.create({
-      discovery,
-      issuer: await discovery.getExternalBaseUrl('auth'),
-    }),
-    logger,
-    permissions,
+    database: env.database,
+    discovery: env.discovery,
+    identity: env.identity,
+    logger: env.logger,
+    permissions: env.permissions,
   });
 }
 ```

@@ -73,7 +73,7 @@ export function parseListPlaylistsFilterString(
     return undefined;
   }
 
-  const filtersByKey: Record<string, ListPlaylistsMatchFilter> = {};
+  const filtersByKey = new Map<string, ListPlaylistsMatchFilter>();
 
   for (const statement of statements) {
     const equalsIndex = statement.indexOf('=');
@@ -89,13 +89,12 @@ export function parseListPlaylistsFilterString(
       );
     }
 
-    const f =
-      key in filtersByKey
-        ? filtersByKey[key]
-        : (filtersByKey[key] = { key, values: [] });
+    const f = filtersByKey.has(key)
+      ? filtersByKey.get(key)
+      : filtersByKey.set(key, { key, values: [] }).get(key);
 
-    f.values.push(value);
+    f!.values.push(value);
   }
 
-  return Object.values(filtersByKey);
+  return [...filtersByKey.values()];
 }

@@ -23,7 +23,7 @@ import {
   useHotMemoize,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { IdentityClient } from '@backstage/plugin-auth-node';
+import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { Server } from 'http';
 import { Logger } from 'winston';
@@ -53,7 +53,7 @@ export async function startStandaloneServer(
     return manager.forPlugin('playlist');
   });
 
-  const identity = IdentityClient.create({
+  const identity = DefaultIdentityClient.create({
     discovery,
     issuer: await discovery.getExternalBaseUrl('auth'),
   });
@@ -69,6 +69,7 @@ export async function startStandaloneServer(
   logger.debug('Starting application server...');
   const router = await createRouter({
     database,
+    discovery,
     identity,
     logger,
     permissions,
