@@ -67,189 +67,14 @@ describe.each(databases.eachSupportedId())(
         .orderBy('user_entity_ref')
         .select();
 
-    describe('getAll', () => {
-      it('should return empty user settings', async () => {
-        expect(
-          await storage.transaction(tx =>
-            storage.getAll(tx, { userEntityRef: 'user-1' }),
-          ),
-        ).toEqual([]);
-      });
-
-      it('should return all user settings', async () => {
-        await insert([
-          {
-            user_entity_ref: 'user-1',
-            bucket: 'bucket-a',
-            key: 'key-a',
-            value: 'value-a',
-          },
-          {
-            user_entity_ref: 'user-1',
-            bucket: 'bucket-a',
-            key: 'key-b',
-            value: 'value-b',
-          },
-          {
-            user_entity_ref: 'user-1',
-            bucket: 'bucket-c',
-            key: 'key-c',
-            value: 'value-c',
-          },
-        ]);
-
-        expect(
-          await storage.transaction(tx =>
-            storage.getAll(tx, { userEntityRef: 'user-1' }),
-          ),
-        ).toEqual([
-          { bucket: 'bucket-a', key: 'key-a', value: 'value-a' },
-          { bucket: 'bucket-a', key: 'key-b', value: 'value-b' },
-          { bucket: 'bucket-c', key: 'key-c', value: 'value-c' },
-        ]);
-      });
-    });
-
-    describe('deleteAll', () => {
-      it('should delete all user settings', async () => {
-        await insert([
-          {
-            user_entity_ref: 'user-1',
-            bucket: 'bucket-a',
-            key: 'key-a',
-            value: 'value-a',
-          },
-          {
-            user_entity_ref: 'user-1',
-            bucket: 'bucket-c',
-            key: 'key-c',
-            value: 'value-c',
-          },
-          {
-            user_entity_ref: 'user-2',
-            bucket: 'bucket-c',
-            key: 'key-c',
-            value: 'value-c',
-          },
-        ]);
-
-        await storage.transaction(tx =>
-          storage.deleteAll(tx, { userEntityRef: 'user-1' }),
-        );
-
-        expect(await query()).toEqual([
-          {
-            user_entity_ref: 'user-2',
-            bucket: 'bucket-c',
-            key: 'key-c',
-            value: 'value-c',
-          },
-        ]);
-      });
-    });
-
-    describe('getBucket', () => {
-      it('should return an empty bucket', async () => {
-        expect(
-          await storage.transaction(tx =>
-            storage.getBucket(tx, {
-              userEntityRef: 'user-1',
-              bucket: 'bucket-c',
-            }),
-          ),
-        ).toEqual([]);
-      });
-
-      it('should return the settings of the bucket', async () => {
-        await insert([
-          {
-            user_entity_ref: 'user-1',
-            bucket: 'bucket-a',
-            key: 'key-a',
-            value: 'value-a',
-          },
-          {
-            user_entity_ref: 'user-1',
-            bucket: 'bucket-c',
-            key: 'key-c',
-            value: 'value-c',
-          },
-          {
-            user_entity_ref: 'user-2',
-            bucket: 'bucket-c',
-            key: 'key-c',
-            value: 'value-c',
-          },
-        ]);
-
-        expect(
-          await storage.transaction(tx =>
-            storage.getBucket(tx, {
-              userEntityRef: 'user-1',
-              bucket: 'bucket-a',
-            }),
-          ),
-        ).toEqual([{ bucket: 'bucket-a', key: 'key-a', value: 'value-a' }]);
-      });
-    });
-
-    describe('deleteBucket', () => {
-      it('should delete a bucket', async () => {
-        await insert([
-          {
-            user_entity_ref: 'user-1',
-            bucket: 'bucket-a',
-            key: 'key-a',
-            value: 'value-a',
-          },
-          {
-            user_entity_ref: 'user-1',
-            bucket: 'bucket-c',
-            key: 'key-c',
-            value: 'value-c',
-          },
-          {
-            user_entity_ref: 'user-2',
-            bucket: 'bucket-c',
-            key: 'key-c',
-            value: 'value-c',
-          },
-        ]);
-
-        await storage.transaction(tx =>
-          storage.deleteBucket(tx, {
-            userEntityRef: 'user-1',
-            bucket: 'bucket-a',
-          }),
-        );
-
-        expect(await query()).toEqual([
-          {
-            user_entity_ref: 'user-1',
-            bucket: 'bucket-c',
-            key: 'key-c',
-            value: 'value-c',
-          },
-          {
-            user_entity_ref: 'user-2',
-            bucket: 'bucket-c',
-            key: 'key-c',
-            value: 'value-c',
-          },
-        ]);
-      });
-    });
-
     describe('get', () => {
       it('should throw an error', async () => {
         await expect(() =>
-          storage.transaction(tx =>
-            storage.get(tx, {
-              userEntityRef: 'user-1',
-              bucket: 'bucket-c',
-              key: 'key-c',
-            }),
-          ),
+          storage.get({
+            userEntityRef: 'user-1',
+            bucket: 'bucket-c',
+            key: 'key-c',
+          }),
         ).rejects.toThrow(`Unable to find 'key-c' in bucket 'bucket-c'`);
       });
 
@@ -269,30 +94,30 @@ describe.each(databases.eachSupportedId())(
           },
         ]);
 
-        expect(
-          await storage.transaction(tx =>
-            storage.get(tx, {
-              userEntityRef: 'user-1',
-              bucket: 'bucket-a',
-              key: 'key-a',
-            }),
-          ),
-        ).toEqual({ bucket: 'bucket-a', key: 'key-a', value: 'value-a' });
+        await expect(
+          storage.get({
+            userEntityRef: 'user-1',
+            bucket: 'bucket-a',
+            key: 'key-a',
+          }),
+        ).resolves.toEqual({
+          bucket: 'bucket-a',
+          key: 'key-a',
+          value: 'value-a',
+        });
       });
     });
 
     describe('set', () => {
       it('should insert a new setting', async () => {
-        await storage.transaction(tx =>
-          storage.set(tx, {
-            userEntityRef: 'user-1',
-            bucket: 'bucket-a',
-            key: 'key-a',
-            value: 'value-a',
-          }),
-        );
+        await storage.set({
+          userEntityRef: 'user-1',
+          bucket: 'bucket-a',
+          key: 'key-a',
+          value: 'value-a',
+        });
 
-        expect(await query()).toEqual([
+        await expect(query()).resolves.toEqual([
           {
             user_entity_ref: 'user-1',
             bucket: 'bucket-a',
@@ -303,25 +128,21 @@ describe.each(databases.eachSupportedId())(
       });
 
       it('should overwrite an existing setting', async () => {
-        await storage.transaction(tx =>
-          storage.set(tx, {
-            userEntityRef: 'user-1',
-            bucket: 'bucket-a',
-            key: 'key-a',
-            value: 'value-a',
-          }),
-        );
+        await storage.set({
+          userEntityRef: 'user-1',
+          bucket: 'bucket-a',
+          key: 'key-a',
+          value: 'value-a',
+        });
 
-        await storage.transaction(tx =>
-          storage.set(tx, {
-            userEntityRef: 'user-1',
-            bucket: 'bucket-a',
-            key: 'key-a',
-            value: 'value-b',
-          }),
-        );
+        await storage.set({
+          userEntityRef: 'user-1',
+          bucket: 'bucket-a',
+          key: 'key-a',
+          value: 'value-b',
+        });
 
-        expect(await query()).toEqual([
+        await expect(query()).resolves.toEqual([
           {
             user_entity_ref: 'user-1',
             bucket: 'bucket-a',
@@ -334,15 +155,13 @@ describe.each(databases.eachSupportedId())(
 
     describe('delete', () => {
       it('should not throw an error if the entry does not exist', async () => {
-        await expect(() =>
-          storage.transaction(tx =>
-            storage.delete(tx, {
-              userEntityRef: 'user-1',
-              bucket: 'bucket-c',
-              key: 'key-c',
-            }),
-          ),
-        ).not.toThrow();
+        await expect(
+          storage.delete({
+            userEntityRef: 'user-1',
+            bucket: 'bucket-c',
+            key: 'key-c',
+          }),
+        ).resolves.toBeUndefined();
       });
 
       it('should return the setting', async () => {
@@ -361,14 +180,12 @@ describe.each(databases.eachSupportedId())(
           },
         ]);
 
-        await storage.transaction(tx =>
-          storage.delete(tx, {
-            userEntityRef: 'user-1',
-            bucket: 'bucket-a',
-            key: 'key-a',
-          }),
-        );
-        expect(await query()).toEqual([
+        await storage.delete({
+          userEntityRef: 'user-1',
+          bucket: 'bucket-a',
+          key: 'key-a',
+        });
+        await expect(query()).resolves.toEqual([
           {
             user_entity_ref: 'user-2',
             bucket: 'bucket-c',

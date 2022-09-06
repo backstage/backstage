@@ -15,7 +15,7 @@
  */
 
 /**
- * @public
+ * A single setting in a bucket
  */
 export type UserSetting = {
   bucket: string;
@@ -25,41 +25,24 @@ export type UserSetting = {
 
 /**
  * Store definition for the user settings.
- *
- * @public
  */
-export interface UserSettingsStore<Transaction> {
-  transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
+export interface UserSettingsStore {
+  get(options: {
+    userEntityRef: string;
+    bucket: string;
+    key: string;
+  }): Promise<UserSetting>;
 
-  get(
-    tx: Transaction,
-    opts: { userEntityRef: string; bucket: string; key: string },
-  ): Promise<UserSetting>;
+  set(options: {
+    userEntityRef: string;
+    bucket: string;
+    key: string;
+    value: string;
+  }): Promise<void>;
 
-  set(
-    tx: Transaction,
-    opts: { userEntityRef: string; bucket: string; key: string; value: string },
-  ): Promise<void>;
-
-  delete(
-    tx: Transaction,
-    opts: { userEntityRef: string; bucket: string; key: string },
-  ): Promise<void>;
-
-  getBucket(
-    tx: Transaction,
-    opts: { userEntityRef: string; bucket: string },
-  ): Promise<UserSetting[]>;
-
-  deleteBucket(
-    tx: Transaction,
-    opts: { userEntityRef: string; bucket: string },
-  ): Promise<void>;
-
-  getAll(
-    tx: Transaction,
-    opts: { userEntityRef: string },
-  ): Promise<UserSetting[]>;
-
-  deleteAll(tx: Transaction, opts: { userEntityRef: string }): Promise<void>;
+  delete(options: {
+    userEntityRef: string;
+    bucket: string;
+    key: string;
+  }): Promise<void>;
 }

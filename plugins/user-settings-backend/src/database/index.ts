@@ -14,8 +14,4 @@
  * limitations under the License.
  */
 
-export {
-  DatabaseUserSettingsStore,
-  type RawDbUserSettingsRow,
-} from './DatabaseUserSettingsStore';
-export type { UserSettingsStore, UserSetting } from './UserSettingsStore';
+export {};

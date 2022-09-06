@@ -20,8 +20,8 @@ import { Router } from 'express';
 import { Server } from 'http';
 import Knex from 'knex';
 import { Logger } from 'winston';
-import { DatabaseUserSettingsStore } from '../database';
-import { createRouter } from './router';
+import { DatabaseUserSettingsStore } from '../database/DatabaseUserSettingsStore';
+import { createRouterInternal } from './router';
 
 export interface ServerOptions {
   port: number;
@@ -50,7 +50,7 @@ export async function startStandaloneServer(
     }),
   } as IdentityClient;
 
-  const router = await createRouter({
+  const router = await createRouterInternal({
     userSettingsStore: await DatabaseUserSettingsStore.create({
       database: { getClient: async () => database },
     }),

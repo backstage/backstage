@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-import { AuthenticationError } from '@backstage/errors';
 import { IdentityClient } from '@backstage/plugin-auth-node';
 import express from 'express';
 import request from 'supertest';
-import { UserSettingsStore } from '../database';
-import { createRouter } from './router';
+import { UserSettingsStore } from '../database/UserSettingsStore';
+import { createRouterInternal } from './router';
 
 describe('createRouter', () => {
-  const userSettingsStore: jest.Mocked<UserSettingsStore<'tx'>> = {
-    transaction: jest.fn(),
-    deleteAll: jest.fn(),
-    getAll: jest.fn(),
-    getBucket: jest.fn(),
-    deleteBucket: jest.fn(),
+  const userSettingsStore: jest.Mocked<UserSettingsStore> = {
     get: jest.fn(),
     set: jest.fn(),
     delete: jest.fn(),
@@ -40,9 +34,7 @@ describe('createRouter', () => {
   let app: express.Express;
 
   beforeEach(async () => {
-    userSettingsStore.transaction.mockImplementation(fn => fn('tx'));
-
-    const router = await createRouter({
+    const router = await createRouterInternal({
       userSettingsStore,
       identity: identityClient as IdentityClient,
     });
@@ -52,147 +44,6 @@ describe('createRouter', () => {
 
   afterEach(() => {
     jest.resetAllMocks();
-  });
-
-  describe('GET /buckets/', () => {
-    it('returns ok', async () => {
-      const settings = [
-        { bucket: 'a', key: 'a', value: 'a' },
-        { bucket: 'b', key: 'b', value: 'b' },
-      ];
-      authenticateMock.mockResolvedValue({
-        identity: { userEntityRef: 'user-1' },
-      });
-
-      userSettingsStore.getAll.mockResolvedValue(settings);
-
-      const responses = await request(app)
-        .get('/buckets/')
-        .set('Authorization', 'Bearer foo');
-
-      expect(responses.status).toEqual(200);
-      expect(responses.body).toEqual(settings);
-
-      expect(authenticateMock).toHaveBeenCalledWith('foo');
-      expect(userSettingsStore.getAll).toHaveBeenCalledTimes(1);
-      expect(userSettingsStore.getAll).toHaveBeenCalledWith('tx', {
-        userEntityRef: 'user-1',
-      });
-    });
-
-    it('returns an error if the Authorization header is missing', async () => {
-      const responses = await request(app).get('/buckets/');
-
-      expect(responses.status).toEqual(401);
-      expect(userSettingsStore.getAll).not.toHaveBeenCalled();
-    });
-
-    it('returns an error if the token is not valid', async () => {
-      authenticateMock.mockRejectedValue(
-        new AuthenticationError('Invalid token'),
-      );
-
-      const responses = await request(app)
-        .get('/buckets/')
-        .set('Authorization', 'Bearer foo');
-
-      expect(responses.status).toEqual(401);
-      expect(userSettingsStore.getAll).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('DELETE /buckets/', () => {
-    it('returns ok', async () => {
-      authenticateMock.mockResolvedValue({
-        identity: { userEntityRef: 'user-1' },
-      });
-
-      userSettingsStore.deleteAll.mockResolvedValue();
-
-      const responses = await request(app)
-        .delete('/buckets/')
-        .set('Authorization', 'Bearer foo');
-
-      expect(responses.status).toEqual(204);
-
-      expect(authenticateMock).toHaveBeenCalledWith('foo');
-      expect(userSettingsStore.deleteAll).toHaveBeenCalledTimes(1);
-      expect(userSettingsStore.deleteAll).toHaveBeenCalledWith('tx', {
-        userEntityRef: 'user-1',
-      });
-    });
-
-    it('returns an error if the Authorization header is missing', async () => {
-      const responses = await request(app).delete('/buckets/');
-
-      expect(responses.status).toEqual(401);
-      expect(userSettingsStore.getAll).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('GET /buckets/:bucket', () => {
-    it('returns ok', async () => {
-      const settings = [
-        { bucket: 'my-bucket', key: 'a', value: 'a' },
-        { bucket: 'my-bucket', key: 'b', value: 'b' },
-      ];
-      authenticateMock.mockResolvedValue({
-        identity: { userEntityRef: 'user-1' },
-      });
-
-      userSettingsStore.getBucket.mockResolvedValue(settings);
-
-      const responses = await request(app)
-        .get('/buckets/my-bucket')
-        .set('Authorization', 'Bearer foo');
-
-      expect(responses.status).toEqual(200);
-      expect(responses.body).toEqual(settings);
-
-      expect(authenticateMock).toHaveBeenCalledWith('foo');
-      expect(userSettingsStore.getBucket).toHaveBeenCalledTimes(1);
-      expect(userSettingsStore.getBucket).toHaveBeenCalledWith('tx', {
-        userEntityRef: 'user-1',
-        bucket: 'my-bucket',
-      });
-    });
-
-    it('returns an error if the Authorization header is missing', async () => {
-      const responses = await request(app).get('/buckets/my-bucket');
-
-      expect(responses.status).toEqual(401);
-      expect(userSettingsStore.getBucket).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('DELETE /buckets/:bucket', () => {
-    it('returns ok', async () => {
-      authenticateMock.mockResolvedValue({
-        identity: { userEntityRef: 'user-1' },
-      });
-
-      userSettingsStore.deleteBucket.mockResolvedValue();
-
-      const responses = await request(app)
-        .delete('/buckets/my-bucket')
-        .set('Authorization', 'Bearer foo');
-
-      expect(responses.status).toEqual(204);
-
-      expect(authenticateMock).toHaveBeenCalledWith('foo');
-      expect(userSettingsStore.deleteBucket).toHaveBeenCalledTimes(1);
-      expect(userSettingsStore.deleteBucket).toHaveBeenCalledWith('tx', {
-        userEntityRef: 'user-1',
-        bucket: 'my-bucket',
-      });
-    });
-
-    it('returns an error if the Authorization header is missing', async () => {
-      const responses = await request(app).delete('/buckets/my-bucket');
-
-      expect(responses.status).toEqual(401);
-      expect(userSettingsStore.deleteBucket).not.toHaveBeenCalled();
-    });
   });
 
   describe('GET /buckets/:bucket/keys/:key', () => {
@@ -213,7 +64,7 @@ describe('createRouter', () => {
 
       expect(authenticateMock).toHaveBeenCalledWith('foo');
       expect(userSettingsStore.get).toHaveBeenCalledTimes(1);
-      expect(userSettingsStore.get).toHaveBeenCalledWith('tx', {
+      expect(userSettingsStore.get).toHaveBeenCalledWith({
         userEntityRef: 'user-1',
         bucket: 'my-bucket',
         key: 'my-key',
@@ -246,7 +97,7 @@ describe('createRouter', () => {
 
       expect(authenticateMock).toHaveBeenCalledWith('foo');
       expect(userSettingsStore.delete).toHaveBeenCalledTimes(1);
-      expect(userSettingsStore.delete).toHaveBeenCalledWith('tx', {
+      expect(userSettingsStore.delete).toHaveBeenCalledWith({
         userEntityRef: 'user-1',
         bucket: 'my-bucket',
         key: 'my-key',
@@ -283,14 +134,14 @@ describe('createRouter', () => {
 
       expect(authenticateMock).toHaveBeenCalledWith('foo');
       expect(userSettingsStore.set).toHaveBeenCalledTimes(1);
-      expect(userSettingsStore.set).toHaveBeenCalledWith('tx', {
+      expect(userSettingsStore.set).toHaveBeenCalledWith({
         userEntityRef: 'user-1',
         bucket: 'my-bucket',
         key: 'my-key',
         value: 'a',
       });
       expect(userSettingsStore.get).toHaveBeenCalledTimes(1);
-      expect(userSettingsStore.get).toHaveBeenCalledWith('tx', {
+      expect(userSettingsStore.get).toHaveBeenCalledWith({
         userEntityRef: 'user-1',
         bucket: 'my-bucket',
         key: 'my-key',

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
+import { errorHandler, PluginDatabaseManager } from '@backstage/backend-common';
 import { AuthenticationError, InputError } from '@backstage/errors';
 import {
   getBearerTokenFromAuthorizationHeader,
@@ -22,13 +22,14 @@ import {
 } from '@backstage/plugin-auth-node';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
-import { UserSettingsStore } from '../database';
+import { DatabaseUserSettingsStore } from '../database/DatabaseUserSettingsStore';
+import { UserSettingsStore } from '../database/UserSettingsStore';
 
 /**
  * @public
  */
-export interface RouterOptions<T> {
-  userSettingsStore: UserSettingsStore<T>;
+export interface RouterOptions {
+  database: PluginDatabaseManager;
   identity: IdentityClient;
 }
 
@@ -37,10 +38,23 @@ export interface RouterOptions<T> {
  *
  * @public
  */
-export async function createRouter<T>(
-  options: RouterOptions<T>,
+export async function createRouter(
+  options: RouterOptions,
 ): Promise<express.Router> {
-  const { userSettingsStore, identity } = options;
+  const userSettingsStore = await DatabaseUserSettingsStore.create({
+    database: options.database,
+  });
+
+  return await createRouterInternal({
+    userSettingsStore,
+    identity: options.identity,
+  });
+}
+
+export async function createRouterInternal(options: {
+  identity: IdentityClient;
+  userSettingsStore: UserSettingsStore;
+}): Promise<express.Router> {
   const router = Router();
   router.use(express.json());
 
@@ -57,65 +71,21 @@ export async function createRouter<T>(
     }
 
     // throws an AuthenticationError in case the token is invalid
-    const user = await identity.authenticate(token);
+    const user = await options.identity.authenticate(token);
 
     return user.identity.userEntityRef;
   };
-
-  // get all user related settings
-  router.get('/buckets', async (req, res) => {
-    const userEntityRef = await getUserEntityRef(req);
-
-    const settings = await userSettingsStore.transaction(tx =>
-      userSettingsStore.getAll(tx, { userEntityRef }),
-    );
-
-    res.json(settings);
-  });
-
-  // remove all user related settings
-  router.delete('/buckets', async (req, res) => {
-    const userEntityRef = await getUserEntityRef(req);
-
-    await userSettingsStore.transaction(tx =>
-      userSettingsStore.deleteAll(tx, { userEntityRef }),
-    );
-
-    res.send(204).end();
-  });
-
-  // get a single bucket
-  router.get('/buckets/:bucket', async (req, res) => {
-    const userEntityRef = await getUserEntityRef(req);
-    const { bucket } = req.params;
-
-    const settings = await userSettingsStore.transaction(tx =>
-      userSettingsStore.getBucket(tx, { userEntityRef, bucket }),
-    );
-
-    res.json(settings);
-  });
-
-  // delete a whole bucket
-  router.delete('/buckets/:bucket', async (req, res) => {
-    const userEntityRef = await getUserEntityRef(req);
-    const { bucket } = req.params;
-
-    await userSettingsStore.transaction(tx =>
-      userSettingsStore.deleteBucket(tx, { userEntityRef, bucket }),
-    );
-
-    res.status(204).end();
-  });
 
   // get a single value
   router.get('/buckets/:bucket/keys/:key', async (req, res) => {
     const userEntityRef = await getUserEntityRef(req);
     const { bucket, key } = req.params;
 
-    const setting = await userSettingsStore.transaction(tx =>
-      userSettingsStore.get(tx, { userEntityRef, bucket, key }),
-    );
+    const setting = await options.userSettingsStore.get({
+      userEntityRef,
+      bucket,
+      key,
+    });
 
     res.json(setting);
   });
@@ -130,14 +100,16 @@ export async function createRouter<T>(
       throw new InputError('Value must be a string');
     }
 
-    const setting = await userSettingsStore.transaction(async tx => {
-      await userSettingsStore.set(tx, {
-        userEntityRef,
-        bucket,
-        key,
-        value,
-      });
-      return userSettingsStore.get(tx, { userEntityRef, bucket, key });
+    await options.userSettingsStore.set({
+      userEntityRef,
+      bucket,
+      key,
+      value,
+    });
+    const setting = await options.userSettingsStore.get({
+      userEntityRef,
+      bucket,
+      key,
     });
 
     res.json(setting);
@@ -148,9 +120,7 @@ export async function createRouter<T>(
     const userEntityRef = await getUserEntityRef(req);
     const { bucket, key } = req.params;
 
-    await userSettingsStore.transaction(tx =>
-      userSettingsStore.delete(tx, { userEntityRef, bucket, key }),
-    );
+    await options.userSettingsStore.delete({ userEntityRef, bucket, key });
 
     res.send(204).end();
   });

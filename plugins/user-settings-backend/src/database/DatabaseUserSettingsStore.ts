@@ -42,9 +42,7 @@ export type RawDbUserSettingsRow = {
  *
  * @public
  */
-export class DatabaseUserSettingsStore
-  implements UserSettingsStore<Knex.Transaction>
-{
+export class DatabaseUserSettingsStore implements UserSettingsStore {
   static async create(options: {
     database: PluginDatabaseManager;
   }): Promise<DatabaseUserSettingsStore> {
@@ -62,93 +60,56 @@ export class DatabaseUserSettingsStore
 
   private constructor(private readonly db: Knex) {}
 
-  async getAll(tx: Knex.Transaction, opts: { userEntityRef: string }) {
-    const settings = await tx<RawDbUserSettingsRow>('user_settings')
-      .where({ user_entity_ref: opts.userEntityRef })
-      .select('bucket', 'key', 'value');
-
-    return settings;
-  }
-
-  async deleteAll(
-    tx: Knex.Transaction<any, any[]>,
-    opts: { userEntityRef: string },
-  ): Promise<void> {
-    await tx('user_settings')
-      .where({ user_entity_ref: opts.userEntityRef })
-      .delete();
-  }
-
-  async getBucket(
-    tx: Knex.Transaction<any, any[]>,
-    opts: { userEntityRef: string; bucket: string },
-  ): Promise<UserSetting[]> {
-    const settings = await tx<RawDbUserSettingsRow>('user_settings')
-      .where({ user_entity_ref: opts.userEntityRef, bucket: opts.bucket })
-      .select(['bucket', 'key', 'value']);
-
-    return settings;
-  }
-
-  async deleteBucket(
-    tx: Knex.Transaction<any, any[]>,
-    opts: { userEntityRef: string; bucket: string },
-  ): Promise<void> {
-    await tx('user_settings')
-      .where({ user_entity_ref: opts.userEntityRef, bucket: opts.bucket })
-      .delete();
-  }
-
-  async get(
-    tx: Knex.Transaction<any, any[]>,
-    opts: { userEntityRef: string; bucket: string; key: string },
-  ): Promise<UserSetting> {
-    const setting = await tx<RawDbUserSettingsRow>('user_settings')
+  async get(options: {
+    userEntityRef: string;
+    bucket: string;
+    key: string;
+  }): Promise<UserSetting> {
+    const rows = await this.db<RawDbUserSettingsRow>('user_settings')
       .where({
-        user_entity_ref: opts.userEntityRef,
-        bucket: opts.bucket,
-        key: opts.key,
+        user_entity_ref: options.userEntityRef,
+        bucket: options.bucket,
+        key: options.key,
       })
       .select(['bucket', 'key', 'value']);
 
-    if (!setting.length) {
+    if (!rows.length) {
       throw new NotFoundError(
-        `Unable to find '${opts.key}' in bucket '${opts.bucket}'`,
+        `Unable to find '${options.key}' in bucket '${options.bucket}'`,
       );
     }
 
-    return setting[0];
+    return rows[0];
   }
 
-  async set(
-    tx: Knex.Transaction<any, any[]>,
-    opts: { userEntityRef: string; bucket: string; key: string; value: string },
-  ): Promise<void> {
-    await tx<RawDbUserSettingsRow>('user_settings')
+  async set(options: {
+    userEntityRef: string;
+    bucket: string;
+    key: string;
+    value: string;
+  }): Promise<void> {
+    await this.db<RawDbUserSettingsRow>('user_settings')
       .insert({
-        user_entity_ref: opts.userEntityRef,
-        bucket: opts.bucket,
-        key: opts.key,
-        value: opts.value,
+        user_entity_ref: options.userEntityRef,
+        bucket: options.bucket,
+        key: options.key,
+        value: options.value,
       })
       .onConflict(['user_entity_ref', 'bucket', 'key'])
-      .merge({ value: opts.value });
+      .merge(['value']);
   }
 
-  async delete(
-    tx: Knex.Transaction<any, any[]>,
-    opts: { userEntityRef: string; bucket: string; key: string },
-  ): Promise<void> {
-    await tx<RawDbUserSettingsRow>('user_settings')
+  async delete(options: {
+    userEntityRef: string;
+    bucket: string;
+    key: string;
+  }): Promise<void> {
+    await this.db<RawDbUserSettingsRow>('user_settings')
       .where({
-        user_entity_ref: opts.userEntityRef,
-        bucket: opts.bucket,
-        key: opts.key,
+        user_entity_ref: options.userEntityRef,
+        bucket: options.bucket,
+        key: options.key,
       })
       .delete();
-  }
-
-  async transaction<T>(fn: (tx: Knex.Transaction) => Promise<T>) {
-    return await this.db.transaction(fn);
   }
 }
