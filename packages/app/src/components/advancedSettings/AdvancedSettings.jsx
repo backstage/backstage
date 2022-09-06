@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// @ts-check
+// NOTE: This file is intentionally .jsx, so that there is one file in this repo where we make sure .jsx files work.
+
 import React from 'react';
 import { InfoCard } from '@backstage/core-components';
 import {
@@ -27,12 +30,11 @@ import {
 import useLocalStorage from 'react-use/lib/useLocalStorage';
 
 export function AdvancedSettings() {
-  const [value, setValue] = useLocalStorage<'on' | 'off'>(
-    'advanced-option',
-    'off',
-  );
+  const [value, setValue] = useLocalStorage('advanced-option', 'off');
 
-  const toggleValue = (ev: React.ChangeEvent<HTMLInputElement>) => {
+  const toggleValue = (
+    /** @type {React.ChangeEvent<HTMLInputElement>} */ ev,
+  ) => {
     setValue(ev.currentTarget.checked ? 'on' : 'off');
   };
 
