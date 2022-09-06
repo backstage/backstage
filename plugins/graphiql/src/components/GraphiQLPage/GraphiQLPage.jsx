@@ -55,10 +55,17 @@ export const GraphiQLPage = () => {
         </Typography>
       </Content>
     );
+  } else if (!endpoints.value) {
+    content = (
+      <Content>
+        <Typography variant="h4" color="error">
+          No GraphQL endpoints available
+        </Typography>
+      </Content>
+    );
   } else {
     content = (
       <Content noPadding>
-        {/* @ts-expect-error */}
         <GraphiQLBrowser endpoints={endpoints.value} />
       </Content>
     );
