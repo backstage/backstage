@@ -43,98 +43,117 @@ type DagTableRow = Dag & {
   dagUrl: string;
 };
 
-const columns: TableColumn[] = [
-  {
-    title: 'Paused',
-    field: 'is_paused',
-    render: (row: Partial<DagTableRow>) => (
-      <Tooltip title="Pause/Unpause DAG">
-        <Switch checked={!row.is_paused} />
-      </Tooltip>
-    ),
-    width: '5%',
-  },
-  {
-    title: 'DAG',
-    field: 'id',
-    render: (row: Partial<DagTableRow>) => (
-      <div>
-        <Typography variant="subtitle2" gutterBottom noWrap>
-          {row.id}
-        </Typography>
-        <Box display="flex" alignItems="center">
-          {row.tags?.map((tag, ix) => (
-            <Chip label={tag.name} key={ix} size="small" />
-          ))}
-        </Box>
-      </div>
-    ),
-    width: '50%',
-    disableClick: true,
-  },
-  {
-    title: 'Runs',
-    render: (row: Partial<DagTableRow>) => (
-      <LatestDagRunsStatus dagId={row.dag_id || ''} />
-    ),
-    width: '10%',
-    disableClick: true,
-  },
-  {
-    title: 'Owner',
-    field: 'owners',
-    render: (row: Partial<DagTableRow>) => (
-      <Box display="flex" alignItems="center">
-        {row.owners?.map((owner, ix) => (
-          <Chip label={owner} key={ix} size="small" />
-        ))}
-      </Box>
-    ),
-    width: '10%',
-    disableClick: true,
-  },
-  {
-    title: 'Active',
-    render: (row: Partial<DagTableRow>) => (
-      <Box display="flex" alignItems="center">
-        {row.is_active ? <StatusOK /> : <StatusError />}
-        <Typography variant="body2">
-          {row.is_active ? 'Active' : 'Inactive'}
-        </Typography>
-      </Box>
-    ),
-    width: '10%',
-    disableClick: true,
-  },
-  {
-    title: 'Schedule',
-    render: (row: Partial<DagTableRow>) => (
-      <ScheduleIntervalLabel interval={row.schedule_interval} />
-    ),
-    width: '10%',
-    disableClick: true,
-  },
-  {
-    title: 'Link',
-    field: 'dagUrl',
-    render: (row: Partial<DagTableRow>) => (
-      <a href={row.dagUrl}>
-        <IconButton aria-label="details">
-          <OpenInBrowserIcon />
-        </IconButton>
-      </a>
-    ),
-    width: '5%',
-    disableClick: true,
-  },
-];
-
 type DenseTableProps = {
   dags: Dag[];
   rowClick: Function;
 };
 
 export const DenseTable = ({ dags, rowClick }: DenseTableProps) => {
+  const [hiddenColumns, setHiddenColumns] = useState<string[]>([]);
+
+  useEffect(() => {
+    const hiddenState = window.localStorage.getItem('hiddenColumns');
+    if (hiddenState) {
+      setHiddenColumns(JSON.parse(hiddenState));
+    }
+  }, []);
+
+  const columns: TableColumn[] = [
+    {
+      title: 'Paused',
+      field: 'is_paused',
+      render: (row: Partial<DagTableRow>) => (
+        <Tooltip title="Pause/Unpause DAG">
+          <Switch checked={!row.is_paused} />
+        </Tooltip>
+      ),
+      width: '5%',
+      hidden: hiddenColumns.some(field => field === 'is_paused'),
+    },
+    {
+      title: 'DAG',
+      field: 'id',
+      render: (row: Partial<DagTableRow>) => (
+        <div>
+          <Typography variant="subtitle2" gutterBottom noWrap>
+            {row.id}
+          </Typography>
+          <Box display="flex" alignItems="center">
+            {row.tags?.map((tag, ix) => (
+              <Chip label={tag.name} key={ix} size="small" />
+            ))}
+          </Box>
+        </div>
+      ),
+      width: '50%',
+      disableClick: true,
+      hidden: hiddenColumns.some(field => field === 'id'),
+    },
+    {
+      title: 'Runs',
+      field: 'runs',
+      render: (row: Partial<DagTableRow>) => (
+        <LatestDagRunsStatus dagId={row.dag_id || ''} />
+      ),
+      width: '10%',
+      disableClick: true,
+      hidden: hiddenColumns.some(field => field === 'runs'),
+    },
+    {
+      title: 'Owner',
+      field: 'owners',
+      render: (row: Partial<DagTableRow>) => (
+        <Box display="flex" alignItems="center">
+          {row.owners?.map((owner, ix) => (
+            <Chip label={owner} key={ix} size="small" />
+          ))}
+        </Box>
+      ),
+      width: '10%',
+      disableClick: true,
+      hidden: hiddenColumns.some(field => field === 'owners'),
+    },
+    {
+      title: 'Active',
+      field: 'active',
+      render: (row: Partial<DagTableRow>) => (
+        <Box display="flex" alignItems="center">
+          {row.is_active ? <StatusOK /> : <StatusError />}
+          <Typography variant="body2">
+            {row.is_active ? 'Active' : 'Inactive'}
+          </Typography>
+        </Box>
+      ),
+      width: '10%',
+      disableClick: true,
+      hidden: hiddenColumns.some(field => field === 'active'),
+    },
+    {
+      title: 'Schedule',
+      field: 'schedule',
+      render: (row: Partial<DagTableRow>) => (
+        <ScheduleIntervalLabel interval={row.schedule_interval} />
+      ),
+      width: '10%',
+      disableClick: true,
+      hidden: hiddenColumns.some(field => field === 'schedule'),
+    },
+    {
+      title: 'Link',
+      field: 'dagUrl',
+      render: (row: Partial<DagTableRow>) => (
+        <a href={row.dagUrl}>
+          <IconButton aria-label="details">
+            <OpenInBrowserIcon />
+          </IconButton>
+        </a>
+      ),
+      width: '5%',
+      disableClick: true,
+      hidden: hiddenColumns.some(field => field === 'dagUrl'),
+    },
+  ];
+
   return (
     <Table
       title="DAGs"
@@ -142,6 +161,21 @@ export const DenseTable = ({ dags, rowClick }: DenseTableProps) => {
       columns={columns}
       data={dags}
       onRowClick={(_event, rowData) => rowClick(rowData)}
+      onChangeColumnHidden={(column, hidden) => {
+        if (column.field) {
+          let newHiddenColumns: string[];
+          if (hidden) {
+            newHiddenColumns = hiddenColumns.concat(column.field);
+          } else {
+            newHiddenColumns = hiddenColumns.filter(v => v !== column.field);
+          }
+          setHiddenColumns(newHiddenColumns);
+          window.localStorage.setItem(
+            'hiddenColumns',
+            JSON.stringify(newHiddenColumns),
+          );
+        }
+      }}
     />
   );
 };
