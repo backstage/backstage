@@ -18,6 +18,7 @@ import express from 'express';
 import { THOUSAND_DAYS_MS, TEN_MINUTES_MS, OAuthAdapter } from './OAuthAdapter';
 import { encodeState } from './helpers';
 import { OAuthHandlers, OAuthState } from './types';
+import { CookieConfigurer } from '../../providers/types';
 
 const mockResponseData = {
   providerInfo: {
@@ -57,12 +58,17 @@ describe('OAuthAdapter', () => {
     }
   }
   const providerInstance = new MyAuthProvider();
+  const cookieConfig = {
+    domain: 'example.com',
+    path: '/auth/test-provider',
+    secure: false,
+    sameSite: 'lax',
+  } as ReturnType<CookieConfigurer>;
+
   const oAuthProviderOptions = {
     providerId: 'test-provider',
-    secure: false,
     appOrigin: 'http://localhost:3000',
-    cookieDomain: 'example.com',
-    cookiePath: '/auth/test-provider',
+    cookieConfig,
     tokenIssuer: {
       issueToken: async () => 'my-id-token',
       listPublicKeys: async () => ({ keys: [] }),
@@ -136,6 +142,8 @@ describe('OAuthAdapter', () => {
       expect.objectContaining({
         path: '/auth/test-provider',
         maxAge: THOUSAND_DAYS_MS,
+        secure: false,
+        sameSite: 'lax',
       }),
     );
   });
@@ -331,6 +339,7 @@ describe('OAuthAdapter', () => {
         domain: 'authdomain.org',
         path: '/auth/test-provider/handler',
         secure: true,
+        sameSite: 'none',
       }),
     );
   });

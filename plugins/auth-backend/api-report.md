@@ -187,6 +187,7 @@ export type CookieConfigurer = (ctx: {
   domain: string;
   path: string;
   secure: boolean;
+  sameSite?: 'none' | 'lax' | 'strict';
 };
 
 // @public
@@ -280,11 +281,9 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
 // @public (undocumented)
 export type OAuthAdapterOptions = {
   providerId: string;
-  secure: boolean;
   persistScopes?: boolean;
-  cookieDomain: string;
-  cookiePath: string;
   appOrigin: string;
+  cookieConfig: ReturnType<CookieConfigurer>;
   isOriginAllowed: (origin: string) => boolean;
   callbackUrl: string;
 };

@@ -68,6 +68,7 @@ export const defaultCookieConfigurer: CookieConfigurer = ({
 }) => {
   const { hostname: domain, pathname, protocol } = new URL(callbackUrl);
   const secure = protocol === 'https:';
+  const sameSite = secure ? 'none' : 'lax';
 
   // If the provider supports callbackUrls, the pathname will
   // contain the complete path to the frame handler so we need
@@ -76,5 +77,5 @@ export const defaultCookieConfigurer: CookieConfigurer = ({
     ? pathname.slice(0, -'/handler/frame'.length)
     : `${pathname}/${providerId}`;
 
-  return { domain, path, secure };
+  return { domain, path, secure, sameSite };
 };

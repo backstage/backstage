@@ -24,6 +24,7 @@ import {
 import {
   AuthProviderRouteHandlers,
   AuthProviderConfig,
+  CookieConfigurer,
 } from '../../providers/types';
 import {
   AuthenticationError,
@@ -47,11 +48,9 @@ export const TEN_MINUTES_MS = 600 * 1000;
 /** @public */
 export type OAuthAdapterOptions = {
   providerId: string;
-  secure: boolean;
   persistScopes?: boolean;
-  cookieDomain: string;
-  cookiePath: string;
   appOrigin: string;
+  cookieConfig: ReturnType<CookieConfigurer>;
   isOriginAllowed: (origin: string) => boolean;
   callbackUrl: string;
 };
@@ -78,9 +77,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     return new OAuthAdapter(handlers, {
       ...options,
       appOrigin,
-      cookieDomain: cookieConfig.domain,
-      cookiePath: cookieConfig.path,
-      secure: cookieConfig.secure,
+      cookieConfig,
       isOriginAllowed: config.isOriginAllowed,
     });
   }
@@ -93,10 +90,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
   ) {
     this.baseCookieOptions = {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: this.options.secure,
-      path: this.options.cookiePath,
-      domain: this.options.cookieDomain,
+      ...this.options.cookieConfig,
     };
   }
 
@@ -265,7 +259,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     res.cookie(`${this.options.providerId}-nonce`, nonce, {
       maxAge: TEN_MINUTES_MS,
       ...this.baseCookieOptions,
-      path: `${this.options.cookiePath}/handler`,
+      path: `${this.options.cookieConfig.path}/handler`,
     });
   };
 
