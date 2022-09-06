@@ -1128,9 +1128,6 @@ describe('read microsoft graph', () => {
 
       client.getGroups.mockImplementation(getExampleGroups);
       client.getGroupMembers.mockImplementation(getExampleGroupMembers);
-      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
-        'data:image/jpeg;base64,...',
-      );
 
       await readMicrosoftGraphOrg(client, 'tenantid', {
         logger: getVoidLogger(),
