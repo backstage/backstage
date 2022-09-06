@@ -4,7 +4,7 @@ If you need to use an `https:` URL for local testing (i.e. if an OAuth provider 
 
 ## Backend
 
-1. Generate a self-signed certificate and key for localhost and configure your system to trust it. The application ["mkcert"](https://github.com/FiloSottile/mkcert) is a helpful tool to accomplish this.
+1. Generate a self-signed certificate and key for localhost and configure your system to trust it. The application [`mkcert`](https://github.com/FiloSottile/mkcert) is a helpful tool to accomplish this.
 1. Update `backend.baseUrl` in app-config.local.yaml to use an `https:` address.
 1. Add the certificate and key to `backend.https.certificate.cert` and `backend.https.certificate.cert`, respectively.
    ```yaml
