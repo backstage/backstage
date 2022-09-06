@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, ReactElement, ComponentType } from 'react';
+import React, { Fragment, ReactElement } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -28,13 +28,12 @@ import MoreVert from '@material-ui/icons/MoreVert';
 /**
  * @public
  */
-export type ActionItemProps = {
+export type HeaderActionMenuItem = {
   label?: ListItemTextProps['primary'];
   secondaryLabel?: ListItemTextProps['secondary'];
   icon?: ReactElement;
   disabled?: boolean;
-  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
-  WrapperComponent?: ComponentType;
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
 const ActionItem = ({
@@ -43,10 +42,9 @@ const ActionItem = ({
   icon,
   disabled = false,
   onClick,
-  WrapperComponent = React.Fragment,
-}: ActionItemProps) => {
+}: HeaderActionMenuItem) => {
   return (
-    <WrapperComponent>
+    <React.Fragment>
       <ListItem
         data-testid="header-action-item"
         disabled={disabled}
@@ -60,7 +58,7 @@ const ActionItem = ({
         {icon && <ListItemIcon>{icon}</ListItemIcon>}
         <ListItemText primary={label} secondary={secondaryLabel} />
       </ListItem>
-    </WrapperComponent>
+    </React.Fragment>
   );
 };
 
@@ -68,7 +66,7 @@ const ActionItem = ({
  * @public
  */
 export type HeaderActionMenuProps = {
-  actionItems: ActionItemProps[];
+  actionItems: HeaderActionMenuItem[];
 };
 
 /**

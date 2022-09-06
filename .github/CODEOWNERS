@@ -16,6 +16,8 @@ yarn.lock                                           @backstage/reviewers @backst
 /docs/plugins/integrating-search-into-plugins.md    @backstage/reviewers @backstage/techdocs-core
 /packages/techdocs-cli                              @backstage/reviewers @backstage/techdocs-core
 /packages/techdocs-cli-embedded-app                 @backstage/reviewers @backstage/techdocs-core
+/plugins/adr                                        @backstage/reviewers @kuangp
+/plugins/adr-*                                      @backstage/reviewers @kuangp
 /plugins/allure                                     @backstage/reviewers @deepak-bhardwaj-ps
 /plugins/apache-airflow                             @backstage/reviewers @cmpadden
 /plugins/api-docs                                   @backstage/reviewers @backstage/sda-se-reviewers
@@ -47,6 +49,8 @@ yarn.lock                                           @backstage/reviewers @backst
 /plugins/kubernetes                                 @backstage/reviewers @backstage/warpspeed
 /plugins/kubernetes-*                               @backstage/reviewers @backstage/warpspeed
 /plugins/newrelic-dashboard                         @backstage/reviewers @mufaddal7
+/plugins/playlist                                   @backstage/reviewers @kuangp
+/plugins/playlist-*                                 @backstage/reviewers @kuangp
 /plugins/scaffolder-backend-module-rails            @backstage/reviewers @angeliski
 /plugins/scaffolder-backend-module-yeoman           @backstage/reviewers @pawelmitka
 /plugins/search                                     @backstage/reviewers @backstage/techdocs-core

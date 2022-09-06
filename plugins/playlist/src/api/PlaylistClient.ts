@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { Playlist, PlaylistMetadata } from '@backstage/plugin-playlist-common';
@@ -142,7 +143,7 @@ export class PlaylistClient implements PlaylistApi {
     }
   }
 
-  async getPlaylistEntities(playlistId: string): Promise<string[]> {
+  async getPlaylistEntities(playlistId: string): Promise<Entity[]> {
     const baseUrl = await this.discoveryApi.getBaseUrl('playlist');
     const resp = await this.fetchApi.fetch(
       `${baseUrl}/${playlistId}/entities`,

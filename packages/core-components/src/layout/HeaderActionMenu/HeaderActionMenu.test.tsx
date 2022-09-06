@@ -60,7 +60,7 @@ describe('<ComponentContextMenu />', () => {
     );
   });
 
-  it('Test wrapper, and secondary label', async () => {
+  it('Secondary label', async () => {
     const onClickFunction = jest.fn();
     const rendered = await renderInTestApp(
       <HeaderActionMenu
@@ -68,9 +68,7 @@ describe('<ComponentContextMenu />', () => {
           {
             label: 'Some label',
             secondaryLabel: 'Secondary label',
-            WrapperComponent: ({ children }) => (
-              <button onClick={onClickFunction}>{children}</button>
-            ),
+            onClick: onClickFunction,
           },
         ]}
       />,

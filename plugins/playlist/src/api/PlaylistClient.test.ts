@@ -215,7 +215,29 @@ describe('PlaylistClient', () => {
   });
 
   it('getPlaylistEntities', async () => {
-    const entities = ['component:default/ent1', 'component:default/ent2'];
+    const entities = [
+      {
+        kind: 'system',
+        metadata: {
+          namespace: 'default',
+          name: 'test-ent',
+          title: 'Test Ent',
+          description: 'test ent description',
+        },
+      },
+      {
+        kind: 'component',
+        metadata: {
+          namespace: 'foo',
+          name: 'test-ent2',
+          title: 'Test Ent 2',
+          description: 'test ent description 2',
+        },
+        spec: {
+          type: 'library',
+        },
+      },
+    ];
 
     server.use(
       rest.get(`${mockBaseUrl}/id/entities`, (_, res, ctx) =>

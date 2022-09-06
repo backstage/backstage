@@ -7,7 +7,7 @@ import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Conditions } from '@backstage/plugin-permission-node';
 import express from 'express';
-import { IdentityClient } from '@backstage/plugin-auth-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Logger } from 'winston';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
@@ -17,6 +17,7 @@ import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PlaylistMetadata } from '@backstage/plugin-playlist-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PolicyDecision } from '@backstage/plugin-permission-common';
 import { PolicyQuery } from '@backstage/plugin-permission-node';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
@@ -84,7 +85,9 @@ export interface RouterOptions {
   // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)
-  identity: IdentityClient;
+  discovery: PluginEndpointDiscovery;
+  // (undocumented)
+  identity: IdentityApi;
   // (undocumented)
   logger: Logger;
   // (undocumented)

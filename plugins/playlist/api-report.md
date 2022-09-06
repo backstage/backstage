@@ -8,16 +8,16 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { Entity } from '@backstage/catalog-model';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { Playlist } from '@backstage/plugin-playlist-common';
 import { PlaylistMetadata } from '@backstage/plugin-playlist-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
-export const EntityPlaylistDialog: ({
-  open,
-  onClose,
-}: EntityPlaylistDialogProps) => JSX.Element;
+export const EntityPlaylistDialog: (
+  props: EntityPlaylistDialogProps,
+) => JSX.Element;
 
 // @public (undocumented)
 export type EntityPlaylistDialogProps = {
@@ -49,7 +49,7 @@ export interface PlaylistApi {
   // (undocumented)
   getPlaylist(playlistId: string): Promise<Playlist>;
   // (undocumented)
-  getPlaylistEntities(playlistId: string): Promise<string[]>;
+  getPlaylistEntities(playlistId: string): Promise<Entity[]>;
   // (undocumented)
   removePlaylistEntities(
     playlistId: string,
@@ -80,7 +80,7 @@ export class PlaylistClient implements PlaylistApi {
   // (undocumented)
   getPlaylist(playlistId: string): Promise<Playlist>;
   // (undocumented)
-  getPlaylistEntities(playlistId: string): Promise<string[]>;
+  getPlaylistEntities(playlistId: string): Promise<Entity[]>;
   // (undocumented)
   removePlaylistEntities(
     playlistId: string,
