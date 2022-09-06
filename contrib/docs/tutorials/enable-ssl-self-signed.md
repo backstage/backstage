@@ -29,7 +29,6 @@ If you need to use an `https:` URL for local testing (i.e. if an OAuth provider 
 1. As with the backend instructions above, a trusted certificate and key are needed.
 1. Update `app.baseUrl` and `backend.cors.origin` in app-config.local.yaml to use an `https:` address.
 1. Add the certificate and key to `app.https.certificate.cert` and `app.https.certificate.cert`, respectively.
-
    ```yaml
    app:
      baseUrl: https://localhost:3000
@@ -43,7 +42,6 @@ If you need to use an `https:` URL for local testing (i.e. if an OAuth provider 
      cors:
        origin: https://localhost:3000
    ```
-
 1. and start the app with `yarn start`.
 
 Depending on what plugins are in use, you may need to override additional URLs to use `https` for those endpoints to work.
