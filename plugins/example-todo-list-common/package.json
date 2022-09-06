@@ -32,7 +32,7 @@
     "@backstage/test-utils": "^1.2.0-next.1",
     "@types/node": "^16.11.26",
     "cross-fetch": "^3.1.5",
-    "msw": "^0.46.0"
+    "msw": "^0.47.0"
   },
   "files": [
     "dist"
