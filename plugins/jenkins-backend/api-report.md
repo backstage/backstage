@@ -72,6 +72,7 @@ export interface JenkinsInstanceConfig {
   baseUrl: string;
   // (undocumented)
   crumbIssuer?: boolean;
+  extraRequestHeaders?: Record<string, string>;
   // (undocumented)
   name: string;
   // (undocumented)
