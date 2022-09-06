@@ -46,8 +46,10 @@ class Cache {
   ): Promise<{ accessToken: string }> {
     let ownerData = this.tokenCache.get(owner);
 
-    if (!ownerData || !this.isNotExpired(ownerData.expiresAt)) {
+    if (!ownerData || this.isExpired(ownerData.expiresAt)) {
       ownerData = await supplier();
+      // Allow 10 minutes grace to account for clock skew
+      ownerData.expiresAt = ownerData.expiresAt.minus({ minutes: 10 });
       this.tokenCache.set(owner, ownerData);
     }
 
@@ -61,8 +63,7 @@ class Cache {
   }
 
   // consider timestamps older than 50 minutes to be expired.
-  private isNotExpired = (date: DateTime) =>
-    date.diff(DateTime.local(), 'minutes').minutes > 50;
+  private isExpired = (date: DateTime) => DateTime.local() > date;
 
   private appliesToRepo(tokenData: InstallationTokenData, repo?: string) {
     // If no specific repo has been requested the token is applicable
