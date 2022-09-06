@@ -132,6 +132,7 @@ async function getProjectConfig(targetPath, displayName) {
     collectCoverageFrom: ['**/*.{js,jsx,ts,tsx,mjs,cjs}', '!**/*.d.ts'],
     moduleNameMapper: {
       '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),
+      '^d3-(.*)$': 'd3-$1/dist/d3-$1',
     },
 
     transform: {
