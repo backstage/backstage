@@ -20,6 +20,7 @@ import { DagRun } from '../../api/types/Dags';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   Box,
+  Button,
   CircularProgress,
   List,
   ListItem,
@@ -29,17 +30,17 @@ import {
   Typography,
 } from '@material-ui/core';
 import {
+  Link,
   StatusError,
   StatusOK,
   StatusPending,
   StatusRunning,
-  Link,
 } from '@backstage/core-components';
 import DirectionsRun from '@material-ui/icons/DirectionsRun';
 import Check from '@material-ui/icons/Check';
 import CalendarToday from '@material-ui/icons/CalendarToday';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import qs from 'qs';
+import AccountTree from '@material-ui/icons/AccountTree';
 
 interface LatestDagRunsStatusProps {
   dagId: string;
@@ -82,14 +83,16 @@ const DagRunTooltip = ({
         </Typography>
       </ListItem>
       <ListItem>
-        <ListItemIcon aria-label="Link To Detail">
-          <MoreHorizIcon />
-        </ListItemIcon>
-        <Typography>
+        <Button
+          startIcon={<AccountTree />}
+          aria-label="Link To Detail"
+          color="primary"
+          variant="outlined"
+        >
           <Link to={graphUrl} color="inherit">
-            Link To DAG Run Detail
+            Graph
           </Link>
-        </Typography>
+        </Button>
       </ListItem>
     </List>
   );
