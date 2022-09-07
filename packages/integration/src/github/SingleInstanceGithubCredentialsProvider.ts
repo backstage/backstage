@@ -62,7 +62,6 @@ class Cache {
     return { accessToken: ownerData.token };
   }
 
-  // consider timestamps older than 50 minutes to be expired.
   private isExpired = (date: DateTime) => DateTime.local() > date;
 
   private appliesToRepo(tokenData: InstallationTokenData, repo?: string) {
