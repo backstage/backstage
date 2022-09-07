@@ -28,6 +28,28 @@ The providers available as server side are:
 - `localKubectlProxy`
 - `serviceAccount`
 
+### Azure
+
+The Azure server side authentication provider works by authenticating on the server with
+the Azure CLI `az login`, meaning any user that can access the backstage app will have
+the same level of access to the cluster in the Kubernetes plugin, to put an example, even
+guest users would have access to the cluster resources.
+
+```yaml
+kubernetes:
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - name: Random cluster name in backstage
+          url: ${AZURE_CLUSTER_API_SERVER_ADDRESS}
+          authProvider: azure
+          skipTLSVerify: true
+```
+
+To get the API server address for your Azure cluster, go to the Azure console page for the
+cluster resource, go to `Overview` > `Properties` tab > `Networking` section and copy paste
+the API server address directly in that `url` field.
+
 ## Client Side Providers
 
 These providers authenticate your _user_ with the cluster. Each Backstage user will be
