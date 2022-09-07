@@ -21,7 +21,7 @@ import {
   stringifyEntityRef,
   stringifyLocationRef,
 } from '@backstage/catalog-model';
-import { ResponseError } from '@backstage/errors';
+import { ResponseError, SerializedError } from '@backstage/errors';
 import crossFetch from 'cross-fetch';
 import {
   CATALOG_FILTER_EXISTS,
@@ -36,6 +36,7 @@ import {
   Location,
   GetEntityFacetsRequest,
   GetEntityFacetsResponse,
+  ValidateEntityResponse,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import { FetchApi } from './types/fetch';
@@ -351,6 +352,41 @@ export class CatalogClient implements CatalogApi {
       `/entities/by-uid/${encodeURIComponent(uid)}`,
       options,
     );
+  }
+
+  /**
+   * {@inheritdoc CatalogApi.validateEntity}
+   */
+  async validateEntity(
+    entity: Entity,
+    location: string,
+    options?: CatalogRequestOptions,
+  ): Promise<ValidateEntityResponse> {
+    const response = await this.fetchApi.fetch(
+      `${await this.discoveryApi.getBaseUrl('catalog')}/validate-entity`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        },
+        method: 'POST',
+        body: JSON.stringify({ entity, location }),
+      },
+    );
+
+    if (response.ok) {
+      return {
+        valid: true,
+        errors: undefined,
+      };
+    }
+
+    const { errors } = (await response.json()) as { errors: SerializedError[] };
+
+    return {
+      valid: false,
+      errors,
+    };
   }
 
   //
