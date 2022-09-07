@@ -27,7 +27,6 @@ import {
   SerializedTask,
 } from './types';
 import { TaskBrokerDispatchOptions } from '.';
-import { Config } from '@backstage/config';
 
 /**
  * TaskManager
@@ -150,7 +149,6 @@ export class StorageTaskBroker implements TaskBroker {
   constructor(
     private readonly storage: TaskStore,
     private readonly logger: Logger,
-    private readonly config: Config,
   ) {}
 
   async list(options?: {
@@ -262,20 +260,6 @@ export class StorageTaskBroker implements TaskBroker {
         }
       }),
     );
-  }
-
-  /**
-   * {@inheritdoc TaskBroker.closeStaleTasks}
-   */
-  async closeStaleTasks(): Promise<void> {
-    const timeoutS =
-      this.config.getOptionalNumber('scaffolder.taskTimeout.seconds') || 300;
-    const { tasks } = await this.storage.listStaleTasks({ timeoutS });
-
-    for (const task of tasks) {
-      this.logger.info(`Successfully closed stale task ${task.taskId}`);
-      await this.storage.shutdownTask(task);
-    }
   }
 
   private waitForDispatch() {
