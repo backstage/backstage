@@ -24,6 +24,7 @@ import {
   checkAppExistsTask,
   checkPathExistsTask,
   createTemporaryAppFolderTask,
+  initGitRepository,
   moveAppTask,
   templatingTask,
 } from './tasks';
@@ -86,28 +87,100 @@ jest.mock('./versions', () => ({
   },
 }));
 
-describe('tasks', () => {
-  beforeEach(() => {
-    mockFs({
-      'projects/my-module.ts': '',
-      'projects/dir/my-file.txt': '',
-      'tmp/mockApp/.gitignore': '',
-      'tmp/mockApp/package.json': '',
-      'tmp/mockApp/packages/app/package.json': '',
-      // load templates into mock filesystem
-      'templates/': mockFs.load(path.resolve(__dirname, '../../templates/')),
-    });
+const mockExec = child_process.exec as unknown as jest.MockedFunction<
+  (
+    command: string,
+    callback: (error: null, stdout: any, stderr: any) => void,
+  ) => void
+>;
+
+beforeEach(() => {
+  mockFs({
+    'projects/my-module.ts': '',
+    'projects/dir/my-file.txt': '',
+    'tmp/mockApp/.gitignore': '',
+    'tmp/mockApp/package.json': '',
+    'tmp/mockApp/packages/app/package.json': '',
+    // load templates into mock filesystem
+    'templates/': mockFs.load(path.resolve(__dirname, '../../templates/')),
+  });
+});
+
+afterEach(() => {
+  mockExec.mockRestore();
+  mockFs.restore();
+});
+
+describe('checkAppExistsTask', () => {
+  it('should do nothing if the directory does not exist', async () => {
+    const dir = 'projects/';
+    const name = 'MyNewApp';
+    await expect(checkAppExistsTask(dir, name)).resolves.not.toThrow();
   });
 
   afterEach(() => {
     mockFs.restore();
   });
 
-  describe('checkAppExistsTask', () => {
-    it('should do nothing if the directory does not exist', async () => {
-      const dir = 'projects/';
-      const name = 'MyNewApp';
-      await expect(checkAppExistsTask(dir, name)).resolves.not.toThrow();
+  it('should throw an error when a directory of the same name exists', async () => {
+    const dir = 'projects/';
+    const name = 'dir';
+    await expect(checkAppExistsTask(dir, name)).rejects.toThrow(
+      'already exists',
+    );
+  });
+});
+
+describe('checkPathExistsTask', () => {
+  it('should create a directory at the given path', async () => {
+    const appDir = 'projects/newProject';
+    await expect(checkPathExistsTask(appDir)).resolves.not.toThrow();
+    expect(fs.existsSync(appDir)).toBe(true);
+  });
+
+  it('should do nothing if a directory of the same name exists', async () => {
+    const appDir = 'projects/dir';
+    await expect(checkPathExistsTask(appDir)).resolves.not.toThrow();
+    expect(fs.existsSync(appDir)).toBe(true);
+  });
+
+  it('should fail if a file of the same name exists', async () => {
+    await expect(checkPathExistsTask('projects/my-module.ts')).rejects.toThrow(
+      'already exists',
+    );
+  });
+});
+
+describe('createTemporaryAppFolderTask', () => {
+  it('should create a directory at a given path', async () => {
+    const tempDir = 'projects/tmpFolder';
+    await expect(createTemporaryAppFolderTask(tempDir)).resolves.not.toThrow();
+    expect(fs.existsSync(tempDir)).toBe(true);
+  });
+
+  it('should fail if a directory of the same name exists', async () => {
+    const tempDir = 'projects/dir';
+    await expect(createTemporaryAppFolderTask(tempDir)).rejects.toThrow(
+      'file already exists',
+    );
+  });
+
+  it('should fail if a file of the same name exists', async () => {
+    const tempDir = 'projects/dir/my-file.txt';
+    await expect(createTemporaryAppFolderTask(tempDir)).rejects.toThrow(
+      'file already exists',
+    );
+  });
+});
+
+describe('buildAppTask', () => {
+  it('should change to `appDir` and run `yarn install` and `yarn tsc`', async () => {
+    const mockChdir = jest.spyOn(process, 'chdir');
+
+    // requires callback implementation to support `promisify` wrapper
+    // https://stackoverflow.com/a/60579617/10044859
+    mockExec.mockImplementation((_command, callback) => {
+      callback(null, 'standard out', 'standard error');
     });
 
     it('should throw an error when a file of the same name exists', async () => {
@@ -272,5 +345,38 @@ describe('tasks', () => {
         fs.readFileSync('templatedApp/packages/backend/package.json', 'utf-8'),
       ).toContain('sqlite3"');
     });
+  });
+});
+
+describe('initGitRepository', () => {
+  it('should initialize a git repository at the given path', async () => {
+    const destinationDir = 'tmp/mockApp/';
+    const context = {
+      defaultBranch: '',
+    };
+
+    mockExec.mockImplementation((_command, callback) => {
+      callback(null, { stdout: 'main' }, 'standard error');
+    });
+
+    await initGitRepository(destinationDir, context);
+
+    expect(context.defaultBranch).toBe('main');
+    expect(mockExec).toHaveBeenCalledTimes(3);
+    expect(mockExec).toHaveBeenNthCalledWith(
+      1,
+      'git init',
+      expect.any(Function),
+    );
+    expect(mockExec).toHaveBeenNthCalledWith(
+      2,
+      'git commit --allow-empty -m "Initial commit"',
+      expect.any(Function),
+    );
+    expect(mockExec).toHaveBeenNthCalledWith(
+      3,
+      'git branch --format="%(refname:short)"',
+      expect.any(Function),
+    );
   });
 });

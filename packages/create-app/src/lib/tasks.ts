@@ -236,3 +236,34 @@ export async function moveAppTask(
       });
   });
 }
+
+/**
+ * Initializes a git repository in the destination folder
+ *
+ * @param dir - source path to initialize git repository in
+ * @param context - template parameters
+ * @throws if `exec` fails
+ */
+export async function initGitRepository(dir: string, context: any) {
+  const runCmd = async (cmd: string) => {
+    let cmdResponse = { stdout: '', stderr: '' };
+    await Task.forItem('executing', cmd, async () => {
+      process.chdir(dir);
+      cmdResponse = await exec(cmd).catch(error => {
+        process.stdout.write(error.stderr);
+        process.stdout.write(error.stdout);
+        throw new Error(`Could not execute command ${chalk.cyan(cmd)}`);
+      });
+    });
+    return cmdResponse;
+  };
+
+  await runCmd('git init');
+  await runCmd('git commit --allow-empty -m "Initial commit"');
+
+  const defaultBranch = await runCmd('git branch --format="%(refname:short)"');
+
+  context.defaultBranch = defaultBranch.stdout
+    ? defaultBranch.stdout.trim()
+    : 'master';
+}

@@ -32,6 +32,7 @@ const promptMock = jest.spyOn(inquirer, 'prompt');
 const checkPathExistsMock = jest.spyOn(tasks, 'checkPathExistsTask');
 const templatingMock = jest.spyOn(tasks, 'templatingTask');
 const checkAppExistsMock = jest.spyOn(tasks, 'checkAppExistsTask');
+const initGitRepositoryMock = jest.spyOn(tasks, 'initGitRepository');
 const createTemporaryAppFolderMock = jest.spyOn(
   tasks,
   'createTemporaryAppFolderTask',
@@ -67,6 +68,7 @@ describe('command entrypoint', () => {
     await createApp(cmd);
     expect(checkAppExistsMock).toHaveBeenCalled();
     expect(createTemporaryAppFolderMock).toHaveBeenCalled();
+    expect(initGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
     expect(moveAppMock).toHaveBeenCalled();
     expect(buildAppMock).toHaveBeenCalled();
@@ -76,6 +78,7 @@ describe('command entrypoint', () => {
     const cmd = { path: 'myDirectory' } as unknown as Command;
     await createApp(cmd);
     expect(checkPathExistsMock).toHaveBeenCalled();
+    expect(initGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
     expect(buildAppMock).toHaveBeenCalled();
   });

@@ -28,6 +28,7 @@ import {
   createTemporaryAppFolderTask,
   moveAppTask,
   templatingTask,
+  initGitRepository,
 } from './lib/tasks';
 
 export default async (opts: OptionValues): Promise<void> => {
@@ -79,6 +80,9 @@ export default async (opts: OptionValues): Promise<void> => {
       Task.section('Checking that supplied path exists');
       await checkPathExistsTask(appDir);
 
+      Task.section('Initializing git repository');
+      await initGitRepository(appDir, answers);
+
       Task.section('Preparing files');
       await templatingTask(templateDir, opts.path, answers);
     } else {
@@ -89,6 +93,9 @@ export default async (opts: OptionValues): Promise<void> => {
 
       Task.section('Creating a temporary app directory');
       await createTemporaryAppFolderTask(tempDir);
+
+      Task.section('Initializing git repository');
+      await initGitRepository(tempDir, answers);
 
       Task.section('Preparing files');
       await templatingTask(templateDir, tempDir, answers);
