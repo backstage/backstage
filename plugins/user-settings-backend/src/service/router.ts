@@ -16,10 +16,7 @@
 
 import { errorHandler, PluginDatabaseManager } from '@backstage/backend-common';
 import { AuthenticationError, InputError } from '@backstage/errors';
-import {
-  getBearerTokenFromAuthorizationHeader,
-  IdentityClient,
-} from '@backstage/plugin-auth-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
 import { DatabaseUserSettingsStore } from '../database/DatabaseUserSettingsStore';
@@ -30,7 +27,7 @@ import { UserSettingsStore } from '../database/UserSettingsStore';
  */
 export interface RouterOptions {
   database: PluginDatabaseManager;
-  identity: IdentityClient;
+  identity: IdentityApi;
 }
 
 /**
@@ -52,7 +49,7 @@ export async function createRouter(
 }
 
 export async function createRouterInternal(options: {
-  identity: IdentityClient;
+  identity: IdentityApi;
   userSettingsStore: UserSettingsStore;
 }): Promise<express.Router> {
   const router = Router();
@@ -62,18 +59,13 @@ export async function createRouterInternal(options: {
    * Helper method to extract the userEntityRef from the request.
    */
   const getUserEntityRef = async (req: Request): Promise<string> => {
-    const token = getBearerTokenFromAuthorizationHeader(
-      req.header('authorization'),
-    );
-
-    if (!token) {
+    // throws an AuthenticationError in case the token exists but is invalid
+    const identity = await options.identity.getIdentity({ request: req });
+    if (!identity) {
       throw new AuthenticationError(`Missing token in 'authorization' header`);
     }
 
-    // throws an AuthenticationError in case the token is invalid
-    const user = await options.identity.authenticate(token);
-
-    return user.identity.userEntityRef;
+    return identity.identity.userEntityRef;
   };
 
   // get a single value

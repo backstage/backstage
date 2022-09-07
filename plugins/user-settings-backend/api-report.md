@@ -4,7 +4,7 @@
 
 ```ts
 import express from 'express';
-import { IdentityClient } from '@backstage/plugin-auth-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 
 // @public
@@ -15,7 +15,7 @@ export interface RouterOptions {
   // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)
-  identity: IdentityClient;
+  identity: IdentityApi;
 }
 
 // (No @packageDocumentation comment for this package)

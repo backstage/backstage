@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { IdentityClient } from '@backstage/plugin-auth-node';
+import {
+  BackstageIdentityResponse,
+  IdentityApi,
+} from '@backstage/plugin-auth-node';
 import express from 'express';
 import request from 'supertest';
 import { UserSettingsStore } from '../database/UserSettingsStore';
@@ -26,9 +29,12 @@ describe('createRouter', () => {
     set: jest.fn(),
     delete: jest.fn(),
   };
-  const authenticateMock = jest.fn();
-  const identityClient: jest.Mocked<Partial<IdentityClient>> = {
-    authenticate: authenticateMock,
+  const getIdentityMock = jest.fn<
+    Promise<BackstageIdentityResponse | undefined>,
+    any
+  >();
+  const identityApi: jest.Mocked<Partial<IdentityApi>> = {
+    getIdentity: getIdentityMock,
   };
 
   let app: express.Express;
@@ -36,7 +42,7 @@ describe('createRouter', () => {
   beforeEach(async () => {
     const router = await createRouterInternal({
       userSettingsStore,
-      identity: identityClient as IdentityClient,
+      identity: identityApi as IdentityApi,
     });
 
     app = express().use(router);
@@ -49,8 +55,13 @@ describe('createRouter', () => {
   describe('GET /buckets/:bucket/keys/:key', () => {
     it('returns ok', async () => {
       const setting = { bucket: 'my-bucket', key: 'my-key', value: 'a' };
-      authenticateMock.mockResolvedValue({
-        identity: { userEntityRef: 'user-1' },
+      getIdentityMock.mockResolvedValue({
+        token: 'a',
+        identity: {
+          type: 'user',
+          ownershipEntityRefs: [],
+          userEntityRef: 'user-1',
+        },
       });
 
       userSettingsStore.get.mockResolvedValue(setting);
@@ -62,7 +73,7 @@ describe('createRouter', () => {
       expect(responses.status).toEqual(200);
       expect(responses.body).toEqual(setting);
 
-      expect(authenticateMock).toHaveBeenCalledWith('foo');
+      expect(getIdentityMock).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.get).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.get).toHaveBeenCalledWith({
         userEntityRef: 'user-1',
@@ -83,8 +94,13 @@ describe('createRouter', () => {
 
   describe('DELETE /buckets/:bucket/keys/:key', () => {
     it('returns ok', async () => {
-      authenticateMock.mockResolvedValue({
-        identity: { userEntityRef: 'user-1' },
+      getIdentityMock.mockResolvedValue({
+        token: 'a',
+        identity: {
+          type: 'user',
+          ownershipEntityRefs: [],
+          userEntityRef: 'user-1',
+        },
       });
 
       userSettingsStore.delete.mockResolvedValue();
@@ -95,7 +111,7 @@ describe('createRouter', () => {
 
       expect(responses.status).toEqual(204);
 
-      expect(authenticateMock).toHaveBeenCalledWith('foo');
+      expect(getIdentityMock).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.delete).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.delete).toHaveBeenCalledWith({
         userEntityRef: 'user-1',
@@ -117,8 +133,13 @@ describe('createRouter', () => {
   describe('PUT /buckets/:bucket/keys/:key', () => {
     it('returns ok', async () => {
       const setting = { bucket: 'my-bucket', key: 'my-key', value: 'a' };
-      authenticateMock.mockResolvedValue({
-        identity: { userEntityRef: 'user-1' },
+      getIdentityMock.mockResolvedValue({
+        token: 'a',
+        identity: {
+          type: 'user',
+          ownershipEntityRefs: [],
+          userEntityRef: 'user-1',
+        },
       });
 
       userSettingsStore.set.mockResolvedValue();
@@ -132,7 +153,7 @@ describe('createRouter', () => {
       expect(responses.status).toEqual(200);
       expect(responses.body).toEqual(setting);
 
-      expect(authenticateMock).toHaveBeenCalledWith('foo');
+      expect(getIdentityMock).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.set).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.set).toHaveBeenCalledWith({
         userEntityRef: 'user-1',
@@ -149,8 +170,13 @@ describe('createRouter', () => {
     });
 
     it('returns an error if the value is not given', async () => {
-      authenticateMock.mockResolvedValue({
-        identity: { userEntityRef: 'user-1' },
+      getIdentityMock.mockResolvedValue({
+        token: 'a',
+        identity: {
+          type: 'user',
+          ownershipEntityRefs: [],
+          userEntityRef: 'user-1',
+        },
       });
 
       const responses = await request(app)
@@ -160,7 +186,7 @@ describe('createRouter', () => {
 
       expect(responses.status).toEqual(400);
 
-      expect(authenticateMock).toHaveBeenCalledWith('foo');
+      expect(getIdentityMock).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.set).not.toHaveBeenCalled();
     });
 

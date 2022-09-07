@@ -15,8 +15,7 @@
  */
 
 import { createServiceBuilder, useHotMemoize } from '@backstage/backend-common';
-import { IdentityClient } from '@backstage/plugin-auth-node';
-import { Router } from 'express';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Server } from 'http';
 import Knex from 'knex';
 import { Logger } from 'winston';
@@ -44,11 +43,19 @@ export async function startStandaloneServer(
 
   logger.debug('Starting application server...');
 
-  const identityMock = {
-    authenticate: async token => ({
-      identity: { userEntityRef: token ?? 'user:default/john_doe' },
-    }),
-  } as IdentityClient;
+  const identityMock: IdentityApi = {
+    async getIdentity({ request }) {
+      const token = request.headers.authorization?.split(' ')[1];
+      return {
+        identity: {
+          type: 'user',
+          ownershipEntityRefs: [],
+          userEntityRef: token || 'user:default/john_doe',
+        },
+        token: token || 'no-token',
+      };
+    },
+  };
 
   const router = await createRouterInternal({
     userSettingsStore: await DatabaseUserSettingsStore.create({
@@ -57,18 +64,9 @@ export async function startStandaloneServer(
     identity: identityMock,
   });
 
-  // set a custom authorization header to simplify the development
-  const authWrapper = Router();
-  authWrapper.use((req, _res, next) => {
-    req.headers.authorization =
-      req.headers.authorization ?? 'Bearer user:default/john_doe';
-    next();
-  });
-  authWrapper.use(router);
-
   let service = createServiceBuilder(module)
     .setPort(options.port)
-    .addRouter('/user-settings', authWrapper);
+    .addRouter('/user-settings', router);
 
   if (options.enableCors) {
     service = service.enableCors({ origin: 'http://localhost:3000' });

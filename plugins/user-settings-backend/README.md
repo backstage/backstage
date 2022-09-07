@@ -18,64 +18,47 @@ yarn --cwd packages/backend add @backstage/plugin-user-settings-backend
 
 ```ts
 // packages/backend/src/plugins/userSettings.ts
-import { IdentityClient } from '@backstage/plugin-auth-node';
-import {
-  createRouter,
-  createUserSettingsStore,
-} from '@backstage/plugin-user-settings-backend';
-import { Router } from 'express';
-
+import { createRouter } from '@backstage/plugin-user-settings-backend';
 import { PluginEnvironment } from '../types';
 
-export default async function createPlugin({
-  database,
-  discovery,
-}: PluginEnvironment): Promise<Router> {
-  const identity = IdentityClient.create({
-    discovery,
-    issuer: await discovery.getExternalBaseUrl('auth'),
-  });
-
+export default async function createPlugin(env: PluginEnvironment) {
   return await createRouter({
-    userSettingsStore: await createUserSettingsStore(database),
-    identity,
+    database: env.database,
+    identity: env.identity,
   });
 }
 ```
 
-3. Add the new routes to your backend by modifying the
-   `packages/backend/src/index.ts`:
+3. Add the new routes to your backend by modifying `packages/backend/src/index.ts`:
 
 ```diff
-// packages/backend/src/index.ts
-+ import userSettings from './plugins/userSettings';
-async function main() {
-+ const userSettingsEnv = useHotMemoize(module, () =>
-+   createEnv('userSettings'),
-+ );
-  const apiRouter = Router();
-+ apiRouter.use('/user-settings', await userSettings(userSettingsEnv));
+ // packages/backend/src/index.ts
++import userSettings from './plugins/userSettings';
+ async function main() {
++  const userSettingsEnv = useHotMemoize(module, () => createEnv('userSettings'));
+   const apiRouter = Router();
++  apiRouter.use('/user-settings', await userSettings(userSettingsEnv));
 }
 ```
 
 ## Setup app
 
 To make use of the user settings backend, replace the `WebStorage` with the
-`PersistentStorage` by using the `storageApiRef`.
+`UserSettingsStorage` by using the `storageApiRef`.
 
 ```diff
-// packages/app/src/apis.ts
-import {
-  AnyApiFactory,
-  createApiFactory,
+ // packages/app/src/apis.ts
+ import {
+   AnyApiFactory,
+   createApiFactory,
 +  discoveryApiRef,
 +  fetchApiRef
-  errorApiRef,
+   errorApiRef,
 +  storageApiRef,
-} from '@backstage/core-plugin-api';
-+ import { PersistentStorage } from '@backstage/core-app-api';
+ } from '@backstage/core-plugin-api';
++import { UserSettingsStorage } from '@backstage/core-app-api';
 
-export const apis: AnyApiFactory[] = [
+ export const apis: AnyApiFactory[] = [
 +  createApiFactory({
 +    api: storageApiRef,
 +    deps: {
@@ -84,9 +67,9 @@ export const apis: AnyApiFactory[] = [
 +      fetchApi: fetchApiRef,
 +    },
 +    factory: ({ discoveryApi, errorApi, fetchApi }) =>
-+      PersistentStorage.create({ discoveryApi, errorApi, fetchApi }),
++      UserSettingsStorage.create({ discoveryApi, errorApi, fetchApi }),
 +  }),
-];
+ ];
 ```
 
 ## Development
