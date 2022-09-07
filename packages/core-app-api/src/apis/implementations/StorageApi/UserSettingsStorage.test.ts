@@ -49,14 +49,6 @@ describe('Persistent Storage API', () => {
     });
   };
 
-  beforeEach(() => {
-    server.use(
-      rest.get(`${mockBaseUrl}/buckets/`, async (_req, res, ctx) => {
-        return res(ctx.json([]));
-      }),
-    );
-  });
-
   afterEach(() => {
     jest.resetAllMocks();
   });
@@ -90,7 +82,8 @@ describe('Persistent Storage API', () => {
         `${mockBaseUrl}/buckets/:bucket/keys/:key`,
         async (req, res, ctx) => {
           const body = await req.json();
-          const data = { value: JSON.stringify(dummyValue) };
+          const data = { value: dummyValue };
+
           expect(body).toEqual(data);
 
           return res(ctx.json(data));
@@ -113,7 +106,7 @@ describe('Persistent Storage API', () => {
         `${mockBaseUrl}/buckets/:bucket/keys/:key`,
         async (req, res, ctx) => {
           const body = await req.json();
-          const data = { value: JSON.stringify(dummyValue) };
+          const data = { value: dummyValue };
           expect(body).toEqual(data);
 
           return res(ctx.json(data));
@@ -136,7 +129,7 @@ describe('Persistent Storage API', () => {
         `${mockBaseUrl}/buckets/:bucket/keys/:key`,
         async (req, res, ctx) => {
           const body = await req.json();
-          const data = { value: JSON.stringify(mockData) };
+          const data = { value: mockData };
           expect(body).toEqual(data);
 
           return res(ctx.json(data));
@@ -315,7 +308,7 @@ describe('Persistent Storage API', () => {
       rest.get(
         `${mockBaseUrl}/buckets/:bucket/keys/:key`,
         async (_req, res, ctx) => {
-          return res(ctx.text(JSON.stringify({ value: JSON.stringify(data) })));
+          return res(ctx.json({ value: data }));
         },
       ),
     );

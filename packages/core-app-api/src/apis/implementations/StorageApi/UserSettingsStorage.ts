@@ -106,7 +106,7 @@ export class UserSettingsStorage implements StorageApi {
 
   async set<T extends JsonValue>(key: string, data: T): Promise<void> {
     const fetchUrl = await this.getFetchUrl(key);
-    const body = JSON.stringify({ value: JSON.stringify(data) });
+    const body = JSON.stringify({ value: data });
 
     const response = await this.fetchApi.fetch(fetchUrl, {
       method: 'PUT',
@@ -121,7 +121,7 @@ export class UserSettingsStorage implements StorageApi {
 
     this.notifyChanges({
       key,
-      value: JSON.parse(value),
+      value,
       presence: 'present',
     });
   }
@@ -165,7 +165,7 @@ export class UserSettingsStorage implements StorageApi {
 
     try {
       const { value: rawValue } = await response.json();
-      const value = JSON.parse(rawValue, (_key, val) => {
+      const value = JSON.parse(JSON.stringify(rawValue), (_key, val) => {
         if (typeof val === 'object' && val !== null) {
           Object.freeze(val);
         }

@@ -32,6 +32,7 @@
     "@backstage/catalog-model": "^1.1.0",
     "@backstage/errors": "^1.1.0",
     "@backstage/plugin-auth-node": "^0.2.5-next.1",
+    "@backstage/types": "^1.0.0",
     "@types/express": "^4.17.6",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",

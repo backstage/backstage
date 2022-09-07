@@ -96,8 +96,8 @@ export async function createRouterInternal(options: {
     const { bucket, key } = req.params;
     const { value } = req.body;
 
-    if (typeof value !== 'string') {
-      throw new InputError('Value must be a string');
+    if (value === undefined) {
+      throw new InputError('Missing required field "value"');
     }
 
     await options.userSettingsStore.set({

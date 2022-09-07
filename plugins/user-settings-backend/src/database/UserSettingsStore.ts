@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { JsonValue } from '@backstage/types';
+
 /**
  * A single setting in a bucket
  */
 export type UserSetting = {
   bucket: string;
   key: string;
-  value: string;
+  value: JsonValue;
 };
 
 /**
@@ -37,7 +39,7 @@ export interface UserSettingsStore {
     userEntityRef: string;
     bucket: string;
     key: string;
-    value: string;
+    value: JsonValue;
   }): Promise<void>;
 
   delete(options: {

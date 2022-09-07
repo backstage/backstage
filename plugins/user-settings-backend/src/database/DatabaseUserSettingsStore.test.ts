@@ -84,13 +84,13 @@ describe.each(databases.eachSupportedId())(
             user_entity_ref: 'user-1',
             bucket: 'bucket-a',
             key: 'key-a',
-            value: 'value-a',
+            value: JSON.stringify('value-a'),
           },
           {
             user_entity_ref: 'user-2',
             bucket: 'bucket-c',
             key: 'key-c',
-            value: 'value-c',
+            value: JSON.stringify('value-c'),
           },
         ]);
 
@@ -122,7 +122,7 @@ describe.each(databases.eachSupportedId())(
             user_entity_ref: 'user-1',
             bucket: 'bucket-a',
             key: 'key-a',
-            value: 'value-a',
+            value: JSON.stringify('value-a'),
           },
         ]);
       });
@@ -147,7 +147,7 @@ describe.each(databases.eachSupportedId())(
             user_entity_ref: 'user-1',
             bucket: 'bucket-a',
             key: 'key-a',
-            value: 'value-b',
+            value: JSON.stringify('value-b'),
           },
         ]);
       });
@@ -170,13 +170,13 @@ describe.each(databases.eachSupportedId())(
             user_entity_ref: 'user-1',
             bucket: 'bucket-a',
             key: 'key-a',
-            value: 'value-a',
+            value: JSON.stringify('value-a'),
           },
           {
             user_entity_ref: 'user-2',
             bucket: 'bucket-c',
             key: 'key-c',
-            value: 'value-c',
+            value: JSON.stringify('value-c'),
           },
         ]);
 
@@ -190,7 +190,7 @@ describe.each(databases.eachSupportedId())(
             user_entity_ref: 'user-2',
             bucket: 'bucket-c',
             key: 'key-c',
-            value: 'value-c',
+            value: JSON.stringify('value-c'),
           },
         ]);
       });

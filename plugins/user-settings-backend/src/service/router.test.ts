@@ -148,7 +148,7 @@ describe('createRouter', () => {
       });
     });
 
-    it('returns an error if the value is not a string', async () => {
+    it('returns an error if the value is not given', async () => {
       authenticateMock.mockResolvedValue({
         identity: { userEntityRef: 'user-1' },
       });
@@ -156,7 +156,7 @@ describe('createRouter', () => {
       const responses = await request(app)
         .put('/buckets/my-bucket/keys/my-key')
         .set('Authorization', 'Bearer foo')
-        .send({ value: { invalid: 'because not a string' } });
+        .send({});
 
       expect(responses.status).toEqual(400);
 

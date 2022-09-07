@@ -19,8 +19,9 @@ import {
   resolvePackagePath,
 } from '@backstage/backend-common';
 import { NotFoundError } from '@backstage/errors';
+import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
-import { type UserSetting, UserSettingsStore } from './UserSettingsStore';
+import { UserSettingsStore, type UserSetting } from './UserSettingsStore';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-user-settings-backend',
@@ -79,21 +80,25 @@ export class DatabaseUserSettingsStore implements UserSettingsStore {
       );
     }
 
-    return rows[0];
+    return {
+      bucket: rows[0].bucket,
+      key: rows[0].key,
+      value: JSON.parse(rows[0].value),
+    };
   }
 
   async set(options: {
     userEntityRef: string;
     bucket: string;
     key: string;
-    value: string;
+    value: JsonValue;
   }): Promise<void> {
     await this.db<RawDbUserSettingsRow>('user_settings')
       .insert({
         user_entity_ref: options.userEntityRef,
         bucket: options.bucket,
         key: options.key,
-        value: options.value,
+        value: JSON.stringify(options.value),
       })
       .onConflict(['user_entity_ref', 'bucket', 'key'])
       .merge(['value']);
