@@ -12,6 +12,7 @@ window.addEventListener('DOMContentLoaded', () => {
       dismissButton.addEventListener('click', () => {
         banner.classList.add('Banner--hiding');
         localStorage.setItem(storageKey, 'true');
+        setTimeout(() => banner.classList.add('Banner--hidden'), 300);
       });
     }
   });
