@@ -88,7 +88,7 @@ class Index extends React.Component {
                 />
                 <Block.SmallTitle small>The Speed Paradox</Block.SmallTitle>
                 <Block.Paragraph>
-                  At Spotify, we’ve always believed in the speed and ingenuity
+                  At Spotify, we've always believed in the speed and ingenuity
                   that comes from having autonomous development teams. But as we
                   learned firsthand, the faster you grow, the more fragmented
                   and complex your software ecosystem becomes. And then
@@ -238,7 +238,7 @@ class Index extends React.Component {
                 </Block.SmallTitle>
                 <Block.Paragraph>
                   Using templates, engineers can spin up a new microservice with
-                  your organization’s best practices built-in, right from the
+                  your organization's best practices built-in, right from the
                   start
                 </Block.Paragraph>
               </Block.TextBox>
@@ -350,7 +350,7 @@ class Index extends React.Component {
                 <BulletLine />
                 <Block.SmallTitle small>Easy to maintain</Block.SmallTitle>
                 <Block.Paragraph>
-                  Updating code? Update your documentation while you’re there —
+                  Updating code? Update your documentation while you're there —
                   with docs and code in the same place, it becomes a natural
                   part of your workstream
                 </Block.Paragraph>
@@ -400,7 +400,7 @@ class Index extends React.Component {
                 {' '}
                 <img
                   className="Block__GIF"
-                  src={`${baseUrl}animations/backstage-software-catalog-icon-1.gif`}
+                  src={`${baseUrl}animations/backstage-search-platform-icon-1.gif`}
                 />
                 <Block.Subtitle>Backstage Search Platform</Block.Subtitle>
                 <Block.Title half>
@@ -409,11 +409,12 @@ class Index extends React.Component {
               </Block.TextBox>
               <Breakpoint
                 narrow={
-                  <Block.Graphics padding={5}>
+                  <Block.Graphics innerPadding={20}>
                     <Block.Graphic
                       y={-8}
+                      padding={0}
                       width={100}
-                      src={`${baseUrl}img/components-with-filter-small.png`}
+                      src={`${baseUrl}img/search-platform-overview-small.png`}
                     />
                   </Block.Graphics>
                 }
@@ -425,8 +426,8 @@ class Index extends React.Component {
                 </Block.SmallTitle>
                 <Block.Paragraph>
                   Backstage Search more than just a box you type questions into
-                  — it’s an entire platform all by itself, which you can
-                  customize to fit your organization’s needs
+                  — it's an entire platform all by itself, which you can
+                  customize to fit your organization's needs
                 </Block.Paragraph>
               </Block.TextBox>
               <Block.TextBox small>
@@ -442,11 +443,13 @@ class Index extends React.Component {
               <Block.Image
                 wide
                 style={{
-                  background: `url(${baseUrl}img/components-with-filter.png)`,
-                  backgroundSize: '594px 435.5px',
+                  background: `url(${baseUrl}img/search-platform-overview.png)`,
+                  backgroundSize: '594px 312px',
                   width: '594px',
-                  height: '435.5px',
-                  margin: '-380px 105px 0 10px',
+                  height: '312px',
+                  margin: '-50px 105px 0 10px',
+                  borderRadius: '8px',
+                  boxShadow: '2px 3px 6px rgba(0,0,0,0.1)',
                 }}
               />
               <Block.TextBox small>
@@ -456,7 +459,7 @@ class Index extends React.Component {
                 </Block.SmallTitle>
                 <Block.Paragraph>
                   With an extensible backend, you can search beyond the Software
-                  Catalog and index any source you’d like — whether it’s
+                  Catalog and index any source you'd like — whether it's
                   TechDocs or Confluence and Stack Overflow
                 </Block.Paragraph>
               </Block.TextBox>
@@ -603,7 +606,7 @@ class Index extends React.Component {
                 <BulletLine />
                 <Block.SmallTitle small>BYO Plugins</Block.SmallTitle>
                 <Block.Paragraph>
-                  If you don’t see the plugin you need, it’s simple to build
+                  If you don't see the plugin you need, it's simple to build
                   your own
                 </Block.Paragraph>
               </Block.TextBox>

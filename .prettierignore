@@ -1,6 +1,5 @@
 .yarn
 dist
-microsite
 coverage
 *.hbs
 templates
