@@ -126,6 +126,7 @@ export interface EntityProvider {
 // @public
 export interface EntityProviderConnection {
   applyMutation(mutation: EntityProviderMutation): Promise<void>;
+  refresh(keys: string[]): Promise<void>;
 }
 
 // @public
