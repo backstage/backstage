@@ -18,7 +18,6 @@ import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import child_process from 'child_process';
 import path from 'path';
-import { version as releaseVersion } from '../../../../package.json';
 import {
   buildAppTask,
   checkAppExistsTask,
@@ -29,6 +28,55 @@ import {
 } from './tasks';
 
 jest.mock('child_process');
+
+// By mocking this the filesystem mocks won't mess with reading all of the package.jsons
+jest.mock('./versions', () => ({
+  packageVersions: {
+    root: '1.2.3',
+    '@backstage/cli': '1.0.0',
+    '@backstage/backend-common': '1.0.0',
+    '@backstage/backend-tasks': '1.0.0',
+    '@backstage/catalog-model': '1.0.0',
+    '@backstage/catalog-client': '1.0.0',
+    '@backstage/config': '1.0.0',
+    '@backstage/plugin-app-backend': '1.0.0',
+    '@backstage/plugin-auth-backend': '1.0.0',
+    '@backstage/plugin-auth-node': '1.0.0',
+    '@backstage/plugin-catalog-backend': '1.0.0',
+    '@backstage/plugin-permission-common': '1.0.0',
+    '@backstage/plugin-permission-node': '1.0.0',
+    '@backstage/plugin-proxy-backend': '1.0.0',
+    '@backstage/plugin-scaffolder-backend': '1.0.0',
+    '@backstage/plugin-search-backend': '1.0.0',
+    '@backstage/plugin-search-backend-module-pg': '1.0.0',
+    '@backstage/plugin-search-backend-node': '1.0.0',
+    '@backstage/plugin-techdocs-backend': '1.0.0',
+    '@backstage/app-defaults': '1.0.0',
+    '@backstage/core-app-api': '1.0.0',
+    '@backstage/core-components': '1.0.0',
+    '@backstage/core-plugin-api': '1.0.0',
+    '@backstage/integration-react': '1.0.0',
+    '@backstage/plugin-api-docs': '1.0.0',
+    '@backstage/plugin-catalog': '1.0.0',
+    '@backstage/plugin-catalog-common': '1.0.0',
+    '@backstage/plugin-catalog-graph': '1.0.0',
+    '@backstage/plugin-catalog-import': '1.0.0',
+    '@backstage/plugin-catalog-react': '1.0.0',
+    '@backstage/plugin-github-actions': '1.0.0',
+    '@backstage/plugin-org': '1.0.0',
+    '@backstage/plugin-scaffolder': '1.0.0',
+    '@backstage/plugin-permission-react': '1.0.0',
+    '@backstage/plugin-search': '1.0.0',
+    '@backstage/plugin-search-react': '1.0.0',
+    '@backstage/plugin-tech-radar': '1.0.0',
+    '@backstage/plugin-techdocs': '1.0.0',
+    '@backstage/plugin-techdocs-react': '1.0.0',
+    '@backstage/plugin-techdocs-module-addons-contrib': '1.0.0',
+    '@backstage/plugin-user-settings': '1.0.0',
+    '@backstage/theme': '1.0.0',
+    '@backstage/test-utils': '1.0.0',
+  },
+}));
 
 beforeEach(() => {
   mockFs({
@@ -200,7 +248,7 @@ describe('templatingTask', () => {
     expect(fs.existsSync('templatedApp/package.json')).toBe(true);
     expect(fs.existsSync('templatedApp/.dockerignore')).toBe(true);
     await expect(fs.readJson('templatedApp/backstage.json')).resolves.toEqual({
-      version: releaseVersion,
+      version: '1.2.3',
     });
     // catalog was populated with `context.name`
     expect(
