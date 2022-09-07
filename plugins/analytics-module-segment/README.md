@@ -22,8 +22,7 @@ export const apis: AnyApiFactory[] = [
   createApiFactory({
     api: analyticsApiRef,
     deps: { configApi: configApiRef },
-    factory: ({ configApi, identityApi }) =>
-      SegmentAnalytics.fromConfig(configApi),
+    factory: ({ configApi }) => SegmentAnalytics.fromConfig(configApi),
   }),
 ];
 ```
