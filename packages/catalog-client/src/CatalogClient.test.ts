@@ -299,7 +299,7 @@ describe('CatalogClient', () => {
   describe('validateEntity', () => {
     it('returns valid false when validation fails', async () => {
       server.use(
-        rest.post(`${mockBaseUrl}/validate-entity`, (req, res, ctx) => {
+        rest.post(`${mockBaseUrl}/validate-entity`, (_req, res, ctx) => {
           return res(
             ctx.status(400),
             ctx.json({
@@ -336,7 +336,7 @@ describe('CatalogClient', () => {
 
     it('returns valid true when validation fails', async () => {
       server.use(
-        rest.post(`${mockBaseUrl}/validate-entity`, (req, res, ctx) => {
+        rest.post(`${mockBaseUrl}/validate-entity`, (_req, res, ctx) => {
           return res(ctx.status(200), ctx.text(''));
         }),
       );
