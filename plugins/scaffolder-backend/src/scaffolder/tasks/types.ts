@@ -128,7 +128,6 @@ export interface TaskBroker {
     options: TaskBrokerDispatchOptions,
   ): Promise<TaskBrokerDispatchResult>;
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
-  closeStaleTasks(): Promise<void>;
   event$(options: {
     taskId: string;
     after: number | undefined;
@@ -164,7 +163,6 @@ export type TaskStoreListEventsOptions = {
  */
 export type TaskStoreShutDownTaskOptions = {
   taskId: string;
-  message?: string | undefined;
 };
 
 /**
@@ -212,10 +210,7 @@ export interface TaskStore {
     taskId,
     after,
   }: TaskStoreListEventsOptions): Promise<{ events: SerializedTaskEvent[] }>;
-  shutdownTask({
-    taskId,
-    message,
-  }: TaskStoreShutDownTaskOptions): Promise<void>;
+  shutdownTask?({ taskId }: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
 export type WorkflowResponse = { output: { [key: string]: JsonValue } };

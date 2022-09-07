@@ -381,12 +381,8 @@ export class DatabaseTaskStore implements TaskStore {
     return { events };
   }
 
-  async shutdownTask({
-    taskId,
-    message,
-  }: TaskStoreShutDownTaskOptions): Promise<void> {
-    const errorMessage =
-      message || `This task was marked as stale as it exceeded its timeout`;
+  async shutdownTask({ taskId }: TaskStoreShutDownTaskOptions): Promise<void> {
+    const message = `This task was marked as stale as it exceeded its timeout`;
 
     const statusStepEvents = (await this.listEvents({ taskId })).events.filter(
       ({ body }) => body?.stepId,
@@ -407,7 +403,7 @@ export class DatabaseTaskStore implements TaskStore {
       await this.emitLogEvent({
         taskId,
         body: {
-          message: errorMessage,
+          message,
           stepId: step,
           status: 'failed',
         },
@@ -418,7 +414,7 @@ export class DatabaseTaskStore implements TaskStore {
       taskId,
       status: 'failed',
       eventBody: {
-        message: errorMessage,
+        message,
       },
     });
   }

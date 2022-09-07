@@ -27,6 +27,16 @@ import express from 'express';
 import request from 'supertest';
 import ObservableImpl from 'zen-observable';
 
+jest.mock('@backstage/backend-tasks', () => ({
+  TaskScheduler: {
+    fromConfig: () => ({
+      forPlugin: () => ({
+        scheduleTask: jest.fn(),
+      }),
+    }),
+  },
+}));
+
 /**
  * TODO: The following should import directly from the router file.
  * Due to a circular dependency between this plugin and the
@@ -137,11 +147,7 @@ describe('createRouter', () => {
       const databaseTaskStore = await DatabaseTaskStore.create({
         database: createDatabase(),
       });
-      taskBroker = new StorageTaskBroker(
-        databaseTaskStore,
-        logger,
-        new ConfigReader({ scaffolder: {} }),
-      );
+      taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
 
       jest.spyOn(taskBroker, 'dispatch');
       jest.spyOn(taskBroker, 'get');
@@ -155,6 +161,7 @@ describe('createRouter', () => {
         database: createDatabase(),
         catalogClient,
         reader: mockUrlReader,
+        databaseTaskStore,
         taskBroker,
       });
       app = express().use(router);
@@ -721,11 +728,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       const databaseTaskStore = await DatabaseTaskStore.create({
         database: createDatabase(),
       });
-      taskBroker = new StorageTaskBroker(
-        databaseTaskStore,
-        logger,
-        new ConfigReader({}),
-      );
+      taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
 
       jest.spyOn(taskBroker, 'dispatch');
       jest.spyOn(taskBroker, 'get');
@@ -756,6 +759,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         database: createDatabase(),
         catalogClient,
         reader: mockUrlReader,
+        databaseTaskStore,
         taskBroker,
         identity: { getIdentity },
       });

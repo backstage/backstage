@@ -52,8 +52,6 @@ describe('TaskWorker', () => {
   const actionRegistry: TemplateActionRegistry = {} as TemplateActionRegistry;
   const workingDirectory = '/tmp/scaffolder';
 
-  const config = new ConfigReader({ scaffolder: {} });
-
   const workflowRunner: NunjucksWorkflowRunner = {
     execute: jest.fn(),
   } as unknown as NunjucksWorkflowRunner;
@@ -70,7 +68,7 @@ describe('TaskWorker', () => {
   const logger = getVoidLogger();
 
   it('should call the default workflow runner when the apiVersion is beta3', async () => {
-    const broker = new StorageTaskBroker(storage, logger, config);
+    const broker = new StorageTaskBroker(storage, logger);
     const taskWorker = await TaskWorker.create({
       logger,
       workingDirectory,
@@ -101,7 +99,7 @@ describe('TaskWorker', () => {
       output: { testOutput: 'testmockoutput' },
     });
 
-    const broker = new StorageTaskBroker(storage, logger, config);
+    const broker = new StorageTaskBroker(storage, logger);
     const taskWorker = await TaskWorker.create({
       logger,
       workingDirectory,
