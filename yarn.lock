@@ -18219,14 +18219,14 @@ __metadata:
   linkType: hard
 
 "canvas@npm:^2.6.1":
-  version: 2.9.3
-  resolution: "canvas@npm:2.9.3"
+  version: 2.10.0
+  resolution: "canvas@npm:2.10.0"
   dependencies:
     "@mapbox/node-pre-gyp": ^1.0.0
     nan: ^2.15.0
     node-gyp: latest
     simple-get: ^3.0.3
-  checksum: 368112ba4b16f54ce6dfac1ccbc45ddd1eb0b76dc09509c2601c2a26459bb4449d259a7aa8664fd94153aad13b48557535f3b9eb7fad9a97929b9eb962e50f09
+  checksum: bed0f61d51a6f5d721742776e2dd1203ad6ca2475e1177cfb7a6f9ed1d313372ab8b4aa5a6780c85d35e533e2400cb5f291be1a1d35a84fc71d6372cd4cdbc61
   languageName: node
   linkType: hard
 
