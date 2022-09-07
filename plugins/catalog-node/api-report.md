@@ -126,7 +126,7 @@ export interface EntityProvider {
 // @public
 export interface EntityProviderConnection {
   applyMutation(mutation: EntityProviderMutation): Promise<void>;
-  refresh(keys: string[]): Promise<void>;
+  refresh(options: EntityProviderRefreshOptions): Promise<void>;
 }
 
 // @public
@@ -140,6 +140,11 @@ export type EntityProviderMutation =
       added: DeferredEntity[];
       removed: DeferredEntity[];
     };
+
+// @public (undocumented)
+export type EntityProviderRefreshOptions = {
+  keys: string[];
+};
 
 // @public
 export type EntityRelationSpec = {

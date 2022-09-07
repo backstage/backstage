@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend': minor
 ---
 
-Added refresh function to the EntityProviderConnection to be able to schedule refreshes from entity providers.
+Added the `refresh` function to the Connection of the entity providers.

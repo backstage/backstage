@@ -22,6 +22,7 @@ import { ProcessingDatabase } from '../database/types';
 import {
   EntityProvider,
   EntityProviderConnection,
+  EntityProviderRefreshOptions,
   EntityProviderMutation,
 } from '@backstage/plugin-catalog-node';
 
@@ -61,12 +62,12 @@ class Connection implements EntityProviderConnection {
     }
   }
 
-  async refresh(keys: string[]): Promise<void> {
+  async refresh(options: EntityProviderRefreshOptions): Promise<void> {
     const db = this.config.processingDatabase;
 
     await db.transaction(async (tx: any) => {
       return db.refreshByRefreshKeys(tx, {
-        keys,
+        keys: options.keys,
       });
     });
   }
