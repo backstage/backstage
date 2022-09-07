@@ -1086,9 +1086,13 @@ code {
   display: flex;
 }
 
-.Banner--hidden {
+.Banner--hiding {
   opacity: 0;
   transition: opacity 200ms ease-in-out;
+}
+
+.Banner--hidden {
+  display: none;
 }
 
 .Banner a {
