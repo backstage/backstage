@@ -36,6 +36,7 @@ export interface EntityProviderConnection {
    * Applies either a full or delta update to the catalog engine.
    */
   applyMutation(mutation: EntityProviderMutation): Promise<void>;
+  refresh(keys: string[]): Promise<void>;
 }
 
 /**
