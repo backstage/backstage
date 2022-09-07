@@ -337,9 +337,9 @@ export const KubernetesDrawer: <T extends KubernetesDrawerable>({
 // @public (undocumented)
 export interface KubernetesObjects {
   // (undocumented)
-  error: string | undefined;
+  error?: string;
   // (undocumented)
-  kubernetesObjects: ObjectsByEntityResponse | undefined;
+  kubernetesObjects?: ObjectsByEntityResponse;
 }
 
 // Warning: (ae-missing-release-tag) "kubernetesPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
