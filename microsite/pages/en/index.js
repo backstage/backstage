@@ -394,6 +394,97 @@ class Index extends React.Component {
             </ActionBlock.Link>
           </ActionBlock>
 
+          <Block className="stripe-top bg-teal-top-right" wrapped>
+            <Block.Container wrapped>
+              <Block.TextBox wide>
+                {' '}
+                <img
+                  className="Block__GIF"
+                  src={`${baseUrl}animations/backstage-software-catalog-icon-1.gif`}
+                />
+                <Block.Subtitle>Backstage Search Platform</Block.Subtitle>
+                <Block.Title half>
+                  A search platform made just for you
+                </Block.Title>
+              </Block.TextBox>
+              <Breakpoint
+                narrow={
+                  <Block.Graphics padding={5}>
+                    <Block.Graphic
+                      y={-8}
+                      width={100}
+                      src={`${baseUrl}img/components-with-filter-small.png`}
+                    />
+                  </Block.Graphics>
+                }
+              />
+              <Block.TextBox small>
+                <BulletLine />
+                <Block.SmallTitle small>
+                  Way more than a text box{' '}
+                </Block.SmallTitle>
+                <Block.Paragraph>
+                  Backstage Search more than just a box you type questions into
+                  — it’s an entire platform all by itself, which you can
+                  customize to fit your organization’s needs
+                </Block.Paragraph>
+              </Block.TextBox>
+              <Block.TextBox small>
+                <BulletLine />
+                <Block.SmallTitle small>
+                  Search the way you want
+                </Block.SmallTitle>
+                <Block.Paragraph>
+                  Bring your own search engine, create a customized search page
+                  experience, or edit the look and feel of each search result
+                </Block.Paragraph>
+              </Block.TextBox>
+              <Block.Image
+                wide
+                style={{
+                  background: `url(${baseUrl}img/components-with-filter.png)`,
+                  backgroundSize: '594px 435.5px',
+                  width: '594px',
+                  height: '435.5px',
+                  margin: '-380px 105px 0 10px',
+                }}
+              />
+              <Block.TextBox small>
+                <BulletLine />
+                <Block.SmallTitle small>
+                  Index everything, find anything
+                </Block.SmallTitle>
+                <Block.Paragraph>
+                  With an extensible backend, you can search beyond the Software
+                  Catalog and index any source you’d like — whether it’s
+                  TechDocs or Confluence and Stack Overflow
+                </Block.Paragraph>
+              </Block.TextBox>
+
+              <Block.TextBox small>
+                <BulletLine />
+                <Block.SmallTitle small>
+                  Discoverability unlocked
+                </Block.SmallTitle>
+                <Block.Paragraph>
+                  New hires and seasoned employees alike can easily search your
+                  infrastructure instead of getting lost in it
+                </Block.Paragraph>
+              </Block.TextBox>
+            </Block.Container>
+          </Block>
+
+          <ActionBlock className="stripe bg-teal">
+            <ActionBlock.Title>
+              Learn more about Backstage Search
+            </ActionBlock.Title>
+            <ActionBlock.Link
+              href={`https://backstage.io/docs/features/search/search-overview`}
+            >
+              Read
+            </ActionBlock.Link>
+          </ActionBlock>
+
           <Block className="stripe-top bg-teal-bottom" wrapped>
             <Block.Container wrapped>
               <Block.TextBox wide>
