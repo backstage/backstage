@@ -8,6 +8,10 @@ authorImageURL: https://avatars.githubusercontent.com/u/3496491?v=4
 
 **TL;DR** If you didn't know, now you know: the Backstage plugin analytics API is here to help you understand how developers in your organization are using Backstage.
 
+![The Plugin Analytics API](assets/22-09-08/analytics-api-fyi.png)
+
+<!--truncate-->
+
 ## What is the plugin analytics API?
 
 The plugin analytics API is a [utility api](https://backstage.io/docs/api/utility-apis) available by default in every Backstage instance, intended to bridge the gap between the needs of Backstage integrators and plugin developers. While Backstage integrators want visibility into the plugins they’ve installed, they lack the power to instrument those plugins. And although plugin developers have the power to instrument plugins, they can’t do so without a single, vendor-agnostic way to track events. Enter: the plugin analytics API.
