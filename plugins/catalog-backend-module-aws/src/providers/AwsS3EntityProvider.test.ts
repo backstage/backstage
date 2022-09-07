@@ -100,6 +100,7 @@ describe('AwsS3EntityProvider', () => {
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
+      refresh: jest.fn(),
     };
 
     const provider = AwsS3EntityProvider.fromConfig(config, {
