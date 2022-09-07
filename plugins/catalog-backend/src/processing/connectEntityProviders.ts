@@ -61,6 +61,16 @@ class Connection implements EntityProviderConnection {
     }
   }
 
+  async refresh(keys: string[]): Promise<void> {
+    const db = this.config.processingDatabase;
+
+    await db.transaction(async (tx: any) => {
+      return db.refreshByRefreshKeys(tx, {
+        keys,
+      });
+    });
+  }
+
   private check(entities: Entity[]) {
     for (const entity of entities) {
       try {
