@@ -53,11 +53,15 @@ Block.QuoteContainer = simpleComponent('div', 'Block__QuoteContainer');
 Block.Quote = simpleComponent('p', 'Block__Quote');
 Block.Divider = simpleComponent('p', 'Block__Divider', ['quote']);
 Block.MediaFrame = simpleComponent('div', 'Block__MediaFrame');
-Block.Graphics = ({ padding, children, innerPadding }) => {
+Block.Graphics = ({ padding, children, innerPadding, width }) => {
   const style = {};
   const innerStyle = {};
   if (padding) {
     style.padding = `${padding}% 0`;
+  }
+
+  if (width) {
+    style.width = width;
   }
 
   if (innerPadding) {

@@ -440,18 +440,6 @@ class Index extends React.Component {
                   experience, or edit the look and feel of each search result
                 </Block.Paragraph>
               </Block.TextBox>
-              <Block.Image
-                wide
-                style={{
-                  background: `url(${baseUrl}img/search-platform-overview.png)`,
-                  backgroundSize: '594px 312px',
-                  width: '594px',
-                  height: '312px',
-                  margin: '-50px 105px 0 10px',
-                  borderRadius: '8px',
-                  boxShadow: '2px 3px 6px rgba(0,0,0,0.1)',
-                }}
-              />
               <Block.TextBox small>
                 <BulletLine />
                 <Block.SmallTitle small>
@@ -463,7 +451,6 @@ class Index extends React.Component {
                   TechDocs or Confluence and Stack Overflow
                 </Block.Paragraph>
               </Block.TextBox>
-
               <Block.TextBox small>
                 <BulletLine />
                 <Block.SmallTitle small>
@@ -475,6 +462,22 @@ class Index extends React.Component {
                 </Block.Paragraph>
               </Block.TextBox>
             </Block.Container>
+            <Breakpoint
+              wide={
+                <Block.Graphics innerPadding={25} width={'1100px'}>
+                  <Block.Graphic
+                    padding={0}
+                    src={`${baseUrl}img/search-platform-overview.png`}
+                    width={100}
+                    style={{
+                      borderRadius: '8px',
+                      boxShadow: '3px 8px 8px rgba(0,0,0,0.3)',
+                      bottom: '8px',
+                    }}
+                  />
+                </Block.Graphics>
+              }
+            />
           </Block>
 
           <ActionBlock className="stripe bg-teal">
