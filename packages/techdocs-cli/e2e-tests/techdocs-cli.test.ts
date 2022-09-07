@@ -89,6 +89,23 @@ describe('end-to-end', () => {
     expect(proc.exit).toEqual(0);
   });
 
+  it('can generate with DOCKER_* TLS variables and --no-docker option', async () => {
+    const env = {
+      DOCKER_HOST: 'tcp://localhost:2376',
+      DOCKER_TLS_CERTDIR: '/certs',
+      DOCKER_TLS_VERIFY: '1',
+      DOCKER_CERT_PATH: '/certs/client',
+      ...process.env,
+    };
+    const proc = await executeCommand(entryPoint, ['generate', '--no-docker'], {
+      cwd,
+      timeout,
+      env,
+    });
+    expect(proc.stdout).toContain('Successfully generated docs');
+    expect(proc.exit).toEqual(0);
+  });
+
   it('can serve in mkdocs', async () => {
     const proc = await executeCommand(
       entryPoint,
