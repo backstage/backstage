@@ -178,7 +178,7 @@ export async function createRouter(
   const actionRegistry = new TemplateActionRegistry();
 
   const workers = [];
-  for (let i = 0; i < (taskWorkers || 1); i++) {
+  for (let i = 0; i < (taskWorkers || 3); i++) {
     const worker = await TaskWorker.create({
       taskBroker,
       actionRegistry,
