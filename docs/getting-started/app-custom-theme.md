@@ -15,7 +15,7 @@ completely new themes.
 The easiest way to create a new theme is to use the `createTheme` function
 exported by the
 [@backstage/theme](https://www.npmjs.com/package/@backstage/theme) package. You
-can use it to override so basic parameters of the default theme such as the
+can use it to override some basic parameters of the default theme such as the
 color palette and font.
 
 For example, you can create a new theme based on the default light theme like
