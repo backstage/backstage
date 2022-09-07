@@ -92,7 +92,6 @@
     "@types/d3-zoom": "^3.0.1",
     "@types/dagre": "^0.7.44",
     "@types/google-protobuf": "^3.7.2",
-    "@types/jest": "^26.0.7",
     "@types/node": "^16.11.26",
     "@types/react-helmet": "^6.1.0",
     "@types/react-syntax-highlighter": "^15.0.0",

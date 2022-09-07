@@ -89,7 +89,6 @@
     "@testing-library/react-hooks": "^8.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@types/humanize-duration": "^3.18.1",
-    "@types/jest": "^26.0.7",
     "@types/node": "^16.11.26",
     "cross-fetch": "^3.1.5",
     "event-source-polyfill": "1.0.25",

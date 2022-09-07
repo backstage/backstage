@@ -55,6 +55,7 @@
     "@swc/core": "^1.2.239",
     "@swc/helpers": "^0.4.7",
     "@swc/jest": "^0.2.22",
+    "@types/jest": "^27",
     "@types/webpack-env": "^1.15.2",
     "@typescript-eslint/eslint-plugin": "^5.9.0",
     "@typescript-eslint/parser": "^5.9.0",
