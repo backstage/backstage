@@ -500,10 +500,7 @@ export class DatabaseTaskStore implements TaskStore {
     }[];
   }>;
   // (undocumented)
-  shutdownTask({
-    taskId,
-    message,
-  }: TaskStoreShutDownTaskOptions): Promise<void>;
+  shutdownTask({ taskId }: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
 // @public
@@ -545,6 +542,8 @@ export interface RouterOptions {
   config: Config;
   // (undocumented)
   database: PluginDatabaseManager;
+  // (undocumented)
+  databaseTaskStore?: DatabaseTaskStore;
   // (undocumented)
   identity?: IdentityApi;
   // (undocumented)
@@ -619,8 +618,6 @@ export type SerializedTaskEvent = {
 export interface TaskBroker {
   // (undocumented)
   claim(): Promise<TaskContext>;
-  // (undocumented)
-  closeStaleTasks(): Promise<void>;
   // (undocumented)
   dispatch(
     options: TaskBrokerDispatchOptions,
@@ -749,10 +746,7 @@ export interface TaskStore {
     }[];
   }>;
   // (undocumented)
-  shutdownTask({
-    taskId,
-    message,
-  }: TaskStoreShutDownTaskOptions): Promise<void>;
+  shutdownTask?({ taskId }: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
 // @public
@@ -782,7 +776,6 @@ export type TaskStoreListEventsOptions = {
 // @public
 export type TaskStoreShutDownTaskOptions = {
   taskId: string;
-  message?: string | undefined;
 };
 
 // @public

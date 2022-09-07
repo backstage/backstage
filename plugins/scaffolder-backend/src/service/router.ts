@@ -68,6 +68,7 @@ export interface RouterOptions {
   actions?: TemplateAction<any>[];
   taskWorkers?: number;
   taskBroker?: TaskBroker;
+  databaseTaskStore?: DatabaseTaskStore;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   identity?: IdentityApi;
 }
@@ -167,11 +168,17 @@ export async function createRouter(
 
   const workingDirectory = await getWorkingDirectory(config, logger);
   const integrations = ScmIntegrations.fromConfig(config);
-  let taskBroker: TaskBroker;
 
+  let databaseTaskStore: DatabaseTaskStore;
+  if (!options.databaseTaskStore) {
+    databaseTaskStore = await DatabaseTaskStore.create({ database });
+  } else {
+    databaseTaskStore = options.databaseTaskStore;
+  }
+
+  let taskBroker: TaskBroker;
   if (!options.taskBroker) {
-    const databaseTaskStore = await DatabaseTaskStore.create({ database });
-    taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config);
+    taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
   } else {
     taskBroker = options.taskBroker;
   }
@@ -204,15 +211,24 @@ export async function createRouter(
   actionsToRegister.forEach(action => actionRegistry.register(action));
   workers.forEach(worker => worker.start());
 
-  const scheduler = TaskScheduler.fromConfig(config).forPlugin('scaffolder');
-  await scheduler.scheduleTask({
-    id: 'close_stale_tasks',
-    frequency: { cron: '*/5 * * * *' }, // every 5 minutes, also supports Duration
-    timeout: { minutes: 15 },
-    fn: async () => {
-      await taskBroker.closeStaleTasks();
-    },
-  });
+  if (databaseTaskStore.shutdownTask) {
+    const scheduler = TaskScheduler.fromConfig(config).forPlugin('scaffolder');
+    await scheduler.scheduleTask({
+      id: 'close_stale_tasks',
+      frequency: { cron: '*/5 * * * *' }, // every 5 minutes, also supports Duration
+      timeout: { minutes: 15 },
+      fn: async () => {
+        const { tasks } = await databaseTaskStore.listStaleTasks({
+          timeoutS: 3600,
+        });
+
+        for (const task of tasks) {
+          logger.info(`Successfully closed stale task ${task.taskId}`);
+          await databaseTaskStore.shutdownTask(task);
+        }
+      },
+    });
+  }
 
   const dryRunner = createDryRunner({
     actionRegistry,
