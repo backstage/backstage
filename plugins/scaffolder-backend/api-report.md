@@ -23,6 +23,7 @@ import { Logger } from 'winston';
 import { Observable } from '@backstage/types';
 import { Octokit } from 'octokit';
 import { PluginDatabaseManager } from '@backstage/backend-common';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
@@ -543,15 +544,17 @@ export interface RouterOptions {
   // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)
-  databaseTaskStore?: DatabaseTaskStore;
-  // (undocumented)
   identity?: IdentityApi;
   // (undocumented)
   logger: Logger;
   // (undocumented)
   reader: UrlReader;
   // (undocumented)
+  scheduler?: PluginTaskScheduler;
+  // (undocumented)
   taskBroker?: TaskBroker;
+  // (undocumented)
+  taskStore?: DatabaseTaskStore;
   // (undocumented)
   taskWorkers?: number;
 }

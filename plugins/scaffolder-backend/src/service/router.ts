@@ -15,7 +15,7 @@
  */
 
 import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
-import { TaskScheduler } from '@backstage/backend-tasks';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   Entity,
@@ -64,11 +64,12 @@ export interface RouterOptions {
   reader: UrlReader;
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
+  scheduler?: PluginTaskScheduler;
 
   actions?: TemplateAction<any>[];
   taskWorkers?: number;
   taskBroker?: TaskBroker;
-  databaseTaskStore?: DatabaseTaskStore;
+  taskStore?: DatabaseTaskStore;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   identity?: IdentityApi;
 }
@@ -158,6 +159,7 @@ export async function createRouter(
     catalogClient,
     actions,
     taskWorkers,
+    scheduler,
     additionalTemplateFilters,
   } = options;
 
@@ -170,10 +172,10 @@ export async function createRouter(
   const integrations = ScmIntegrations.fromConfig(config);
 
   let databaseTaskStore: DatabaseTaskStore;
-  if (!options.databaseTaskStore) {
+  if (!options.taskStore) {
     databaseTaskStore = await DatabaseTaskStore.create({ database });
   } else {
-    databaseTaskStore = options.databaseTaskStore;
+    databaseTaskStore = options.taskStore;
   }
 
   let taskBroker: TaskBroker;
@@ -211,8 +213,7 @@ export async function createRouter(
   actionsToRegister.forEach(action => actionRegistry.register(action));
   workers.forEach(worker => worker.start());
 
-  if (databaseTaskStore.shutdownTask) {
-    const scheduler = TaskScheduler.fromConfig(config).forPlugin('scaffolder');
+  if (scheduler && databaseTaskStore.listStaleTasks) {
     await scheduler.scheduleTask({
       id: 'close_stale_tasks',
       frequency: { cron: '*/5 * * * *' }, // every 5 minutes, also supports Duration
@@ -223,8 +224,8 @@ export async function createRouter(
         });
 
         for (const task of tasks) {
-          logger.info(`Successfully closed stale task ${task.taskId}`);
           await databaseTaskStore.shutdownTask(task);
+          logger.info(`Successfully closed stale task ${task.taskId}`);
         }
       },
     });
