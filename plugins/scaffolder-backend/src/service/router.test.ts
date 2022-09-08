@@ -27,16 +27,6 @@ import express from 'express';
 import request from 'supertest';
 import ObservableImpl from 'zen-observable';
 
-jest.mock('@backstage/backend-tasks', () => ({
-  TaskScheduler: {
-    fromConfig: () => ({
-      forPlugin: () => ({
-        scheduleTask: jest.fn(),
-      }),
-    }),
-  },
-}));
-
 /**
  * TODO: The following should import directly from the router file.
  * Due to a circular dependency between this plugin and the
@@ -161,7 +151,7 @@ describe('createRouter', () => {
         database: createDatabase(),
         catalogClient,
         reader: mockUrlReader,
-        databaseTaskStore,
+        taskStore: databaseTaskStore,
         taskBroker,
       });
       app = express().use(router);
@@ -570,9 +560,11 @@ describe('createRouter', () => {
         expect(responseDataFn).toHaveBeenCalledTimes(2);
         expect(responseDataFn).toHaveBeenCalledWith(`event: log
 data: {"id":0,"taskId":"a-random-id","type":"log","createdAt":"","body":{"message":"My log message"}}
+
 `);
         expect(responseDataFn).toHaveBeenCalledWith(`event: completion
 data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{"message":"Finished!"}}
+
 `);
 
         expect(taskBroker.event$).toHaveBeenCalledTimes(1);
@@ -759,7 +751,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         database: createDatabase(),
         catalogClient,
         reader: mockUrlReader,
-        databaseTaskStore,
+        taskStore: databaseTaskStore,
         taskBroker,
         identity: { getIdentity },
       });
@@ -1149,9 +1141,11 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         expect(responseDataFn).toHaveBeenCalledTimes(2);
         expect(responseDataFn).toHaveBeenCalledWith(`event: log
 data: {"id":0,"taskId":"a-random-id","type":"log","createdAt":"","body":{"message":"My log message"}}
+
 `);
         expect(responseDataFn).toHaveBeenCalledWith(`event: completion
 data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{"message":"Finished!"}}
+
 `);
 
         expect(taskBroker.event$).toHaveBeenCalledTimes(1);
