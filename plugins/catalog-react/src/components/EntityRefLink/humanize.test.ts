@@ -47,7 +47,7 @@ describe('humanizeEntityRef', () => {
         lifecycle: 'production',
       },
     };
-    const title = humanizeEntityRef(entity, { skipDefaultNamespace: false });
+    const title = humanizeEntityRef(entity, { defaultNamespace: false });
     expect(title).toEqual('component:default/software');
   });
 
@@ -69,6 +69,24 @@ describe('humanizeEntityRef', () => {
     expect(title).toEqual('component:test/software');
   });
 
+  it('formats entity in other namespace and hides this namespace', () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        namespace: 'test',
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+    const title = humanizeEntityRef(entity, { defaultNamespace: 'test' });
+    expect(title).toEqual('component:software');
+  });
+
   it('formats entity and hides default kind', () => {
     const entity = {
       apiVersion: 'v1',
@@ -87,6 +105,27 @@ describe('humanizeEntityRef', () => {
     expect(title).toEqual('test/software');
   });
 
+  it('formats entity and hides default kind and hiding namespace', () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        namespace: 'test',
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+    const title = humanizeEntityRef(entity, {
+      defaultKind: 'Component',
+      defaultNamespace: 'test',
+    });
+    expect(title).toEqual('software');
+  });
+
   it('formats entity name in default namespace', () => {
     const entityName = {
       kind: 'Component',
@@ -95,6 +134,16 @@ describe('humanizeEntityRef', () => {
     };
     const title = humanizeEntityRef(entityName);
     expect(title).toEqual('component:software');
+  });
+
+  it('formats entity name in default namespace and does not skip default namespace', () => {
+    const entityName = {
+      kind: 'Component',
+      namespace: 'default',
+      name: 'software',
+    };
+    const title = humanizeEntityRef(entityName, { defaultNamespace: false });
+    expect(title).toEqual('component:default/software');
   });
 
   it('formats entity name in other namespace', () => {
@@ -106,6 +155,19 @@ describe('humanizeEntityRef', () => {
 
     const title = humanizeEntityRef(entityName);
     expect(title).toEqual('component:test/software');
+  });
+
+  it('formats entity name in other namespace with skipping this namespace', () => {
+    const entityName = {
+      kind: 'Component',
+      namespace: 'test',
+      name: 'software',
+    };
+
+    const title = humanizeEntityRef(entityName, {
+      defaultNamespace: 'test',
+    });
+    expect(title).toEqual('component:software');
   });
 
   it('renders link for entity name and hides default kind', () => {
@@ -121,6 +183,20 @@ describe('humanizeEntityRef', () => {
     expect(title).toEqual('test/software');
   });
 
+  it('renders link for entity name and hides default kind with skipping namespace', () => {
+    const entityName = {
+      kind: 'Component',
+      namespace: 'test',
+      name: 'software',
+    };
+
+    const title = humanizeEntityRef(entityName, {
+      defaultKind: 'component',
+      defaultNamespace: 'test',
+    });
+    expect(title).toEqual('software');
+  });
+
   it('formats entity name in default namespace without skip of default namespace', () => {
     const entityName = {
       kind: 'Component',
@@ -129,7 +205,7 @@ describe('humanizeEntityRef', () => {
     };
 
     const title = humanizeEntityRef(entityName, {
-      skipDefaultNamespace: false,
+      defaultNamespace: false,
     });
     expect(title).toEqual('component:default/software');
   });
