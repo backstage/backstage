@@ -1,5 +1,5 @@
 ---
-'@backstage/integration': minor
+'@backstage/integration': patch
 ---
 
 Improved caching around github app tokens.

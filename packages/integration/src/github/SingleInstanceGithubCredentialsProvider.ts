@@ -44,22 +44,26 @@ class Cache {
     repo: string | undefined,
     supplier: () => Promise<InstallationTokenData>,
   ): Promise<{ accessToken: string }> {
-    let ownerData = this.tokenCache.get(owner);
+    let existingInstallationData = this.tokenCache.get(owner);
 
-    if (!ownerData || this.isExpired(ownerData.expiresAt)) {
-      ownerData = await supplier();
+    if (
+      !existingInstallationData ||
+      this.isExpired(existingInstallationData.expiresAt)
+    ) {
+      existingInstallationData = await supplier();
       // Allow 10 minutes grace to account for clock skew
-      ownerData.expiresAt = ownerData.expiresAt.minus({ minutes: 10 });
-      this.tokenCache.set(owner, ownerData);
+      existingInstallationData.expiresAt =
+        existingInstallationData.expiresAt.minus({ minutes: 10 });
+      this.tokenCache.set(owner, existingInstallationData);
     }
 
-    if (!this.appliesToRepo(ownerData, repo)) {
+    if (!this.appliesToRepo(existingInstallationData, repo)) {
       throw new Error(
         `The Backstage GitHub application used in the ${owner} organization does not have access to a repository with the name ${repo}`,
       );
     }
 
-    return { accessToken: ownerData.token };
+    return { accessToken: existingInstallationData.token };
   }
 
   private isExpired = (date: DateTime) => DateTime.local() > date;
