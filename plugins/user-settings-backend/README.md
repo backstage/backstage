@@ -35,7 +35,7 @@ export default async function createPlugin(env: PluginEnvironment) {
  // packages/backend/src/index.ts
 +import userSettings from './plugins/userSettings';
  async function main() {
-+  const userSettingsEnv = useHotMemoize(module, () => createEnv('userSettings'));
++  const userSettingsEnv = useHotMemoize(module, () => createEnv('user-settings'));
    const apiRouter = Router();
 +  apiRouter.use('/user-settings', await userSettings(userSettingsEnv));
 }
@@ -52,8 +52,9 @@ To make use of the user settings backend, replace the `WebStorage` with the
    AnyApiFactory,
    createApiFactory,
 +  discoveryApiRef,
-+  fetchApiRef
++  fetchApiRef,
    errorApiRef,
++  identityApi,
 +  storageApiRef,
  } from '@backstage/core-plugin-api';
 +import { UserSettingsStorage } from '@backstage/core-app-api';
@@ -65,9 +66,9 @@ To make use of the user settings backend, replace the `WebStorage` with the
 +      discoveryApi: discoveryApiRef,
 +      errorApi: errorApiRef,
 +      fetchApi: fetchApiRef,
++      identityApi: identityApiRef
 +    },
-+    factory: ({ discoveryApi, errorApi, fetchApi }) =>
-+      UserSettingsStorage.create({ discoveryApi, errorApi, fetchApi }),
++    factory: deps => UserSettingsStorage.create(deps),
 +  }),
  ];
 ```

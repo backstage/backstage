@@ -86,7 +86,9 @@ export class WebStorage implements StorageApi {
     this.notifyChanges(key);
   }
 
-  observe$<T>(key: string): Observable<StorageValueSnapshot<T>> {
+  observe$<T extends JsonValue>(
+    key: string,
+  ): Observable<StorageValueSnapshot<T>> {
     return this.observable.filter(({ key: messageKey }) => messageKey === key);
   }
 

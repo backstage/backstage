@@ -27,12 +27,16 @@ import Observable from 'zen-observable';
  * @public
  */
 export class LocalStoredShortcuts implements ShortcutApi {
-  constructor(private readonly storageApi: StorageApi) {}
+  private readonly shortcuts: Observable<Shortcut[]>;
+
+  constructor(private readonly storageApi: StorageApi) {
+    this.shortcuts = Observable.from(
+      this.storageApi.observe$<Shortcut[]>('items'),
+    ).map(snapshot => snapshot.value ?? []);
+  }
 
   shortcut$() {
-    return Observable.from(this.storageApi.observe$<Shortcut[]>('items')).map(
-      snapshot => snapshot.value ?? [],
-    );
+    return this.shortcuts;
   }
 
   get() {

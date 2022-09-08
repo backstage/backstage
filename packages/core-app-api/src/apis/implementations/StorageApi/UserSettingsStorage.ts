@@ -18,12 +18,19 @@ import {
   DiscoveryApi,
   ErrorApi,
   FetchApi,
+  IdentityApi,
   StorageApi,
   StorageValueSnapshot,
 } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { JsonValue, Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
+import { WebStorage } from './WebStorage';
+
+const JSON_HEADERS = {
+  'Content-Type': 'application/json; charset=utf-8',
+  Accept: 'application/json',
+};
 
 const buckets = new Map<string, UserSettingsStorage>();
 
@@ -38,26 +45,25 @@ export class UserSettingsStorage implements StorageApi {
     ZenObservable.SubscriptionObserver<StorageValueSnapshot<JsonValue>>
   >();
 
-  private readonly observable = new ObservableImpl<
-    StorageValueSnapshot<JsonValue>
-  >(subscriber => {
-    this.subscribers.add(subscriber);
-    return () => {
-      this.subscribers.delete(subscriber);
-    };
-  });
+  private readonly observables = new Map<
+    string,
+    Observable<StorageValueSnapshot<JsonValue>>
+  >();
 
   private constructor(
     private readonly namespace: string,
     private readonly fetchApi: FetchApi,
     private readonly discoveryApi: DiscoveryApi,
     private readonly errorApi: ErrorApi,
+    private readonly identityApi: IdentityApi,
+    private readonly fallback: WebStorage,
   ) {}
 
   static create(options: {
     fetchApi: FetchApi;
     discoveryApi: DiscoveryApi;
     errorApi: ErrorApi;
+    identityApi: IdentityApi;
     namespace?: string;
   }): UserSettingsStorage {
     return new UserSettingsStorage(
@@ -65,6 +71,11 @@ export class UserSettingsStorage implements StorageApi {
       options.fetchApi,
       options.discoveryApi,
       options.errorApi,
+      options.identityApi,
+      WebStorage.create({
+        namespace: options.namespace,
+        errorApi: options.errorApi,
+      }),
     );
   }
 
@@ -80,6 +91,8 @@ export class UserSettingsStorage implements StorageApi {
           this.fetchApi,
           this.discoveryApi,
           this.errorApi,
+          this.identityApi,
+          this.fallback,
         ),
       );
     }
@@ -95,72 +108,81 @@ export class UserSettingsStorage implements StorageApi {
     });
 
     if (!response.ok && response.status !== 404) {
-      throw ResponseError.fromResponse(response);
+      throw await ResponseError.fromResponse(response);
     }
 
-    this.notifyChanges({
-      key,
-      presence: 'absent',
-    });
+    this.notifyChanges({ key, presence: 'absent' });
   }
 
   async set<T extends JsonValue>(key: string, data: T): Promise<void> {
+    if (!(await this.isSignedIn())) {
+      await this.fallback.set(key, data);
+      this.notifyChanges({ key, presence: 'present', value: data });
+    }
+
     const fetchUrl = await this.getFetchUrl(key);
-    const body = JSON.stringify({ value: data });
 
     const response = await this.fetchApi.fetch(fetchUrl, {
       method: 'PUT',
-      body,
+      headers: JSON_HEADERS,
+      body: JSON.stringify({ value: data }),
     });
 
     if (!response.ok) {
-      throw ResponseError.fromResponse(response);
+      throw await ResponseError.fromResponse(response);
     }
 
     const { value } = await response.json();
 
-    this.notifyChanges({
-      key,
-      value,
-      presence: 'present',
-    });
+    this.notifyChanges({ key, value, presence: 'present' });
   }
 
   observe$<T extends JsonValue>(
     key: string,
   ): Observable<StorageValueSnapshot<T>> {
-    // TODO(freben): Introduce server polling or similar, to ensure that different devices update when values change
-    return this.observable.filter(({ key: messageKey }) => messageKey === key);
+    if (!this.observables.has(key)) {
+      this.observables.set(
+        key,
+        new ObservableImpl<StorageValueSnapshot<JsonValue>>(subscriber => {
+          this.subscribers.add(subscriber);
+
+          // TODO(freben): Introduce server polling or similar, to ensure that different devices update when values change
+          Promise.resolve()
+            .then(() => this.get(key))
+            .then(snapshot => subscriber.next(snapshot))
+            .catch(error => this.errorApi.post(error));
+
+          return () => {
+            this.subscribers.delete(subscriber);
+          };
+        }).filter(({ key: messageKey }) => messageKey === key),
+      );
+    }
+
+    return this.observables.get(key) as Observable<StorageValueSnapshot<T>>;
   }
 
   snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T> {
-    // trigger a reload, ensure it happens on the next tick (after returning)
-    Promise.resolve()
-      .then(() => this.get(key))
-      .then(snapshot => this.notifyChanges(snapshot))
-      .catch(error => this.errorApi.post(error));
-
-    return {
-      key,
-      presence: 'unknown',
-    };
+    return { key, presence: 'unknown' };
   }
 
   private async get<T extends JsonValue>(
     key: string,
   ): Promise<StorageValueSnapshot<T>> {
+    if (!(await this.isSignedIn())) {
+      // This explicitly uses WebStorage, which we know is synchronous and doesn't return presence: unknown
+      return this.fallback.snapshot(key);
+    }
+
     const fetchUrl = await this.getFetchUrl(key);
     const response = await this.fetchApi.fetch(fetchUrl);
 
     if (response.status === 404) {
-      return {
-        key,
-        presence: 'absent',
-      };
+      return { key, presence: 'absent' };
     }
 
     if (!response.ok) {
-      throw ResponseError.fromResponse(response);
+      throw await ResponseError.fromResponse(response);
     }
 
     try {
@@ -172,17 +194,10 @@ export class UserSettingsStorage implements StorageApi {
         return val;
       });
 
-      return {
-        key,
-        presence: 'present',
-        value,
-      };
+      return { key, presence: 'present', value };
     } catch {
       // If the value is not valid JSON, we return an unknown presence. This should never happen
-      return {
-        key,
-        presence: 'absent',
-      };
+      return { key, presence: 'absent' };
     }
   }
 
@@ -202,6 +217,15 @@ export class UserSettingsStorage implements StorageApi {
       } catch {
         // ignore
       }
+    }
+  }
+
+  private async isSignedIn(): Promise<boolean> {
+    try {
+      const credentials = await this.identityApi.getCredentials();
+      return credentials?.token ? true : false;
+    } catch {
+      return false;
     }
   }
 }

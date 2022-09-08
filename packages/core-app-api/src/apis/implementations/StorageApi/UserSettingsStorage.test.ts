@@ -18,6 +18,7 @@ import {
   DiscoveryApi,
   ErrorApi,
   FetchApi,
+  IdentityApi,
   StorageApi,
 } from '@backstage/core-plugin-api';
 import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
@@ -31,7 +32,12 @@ describe('Persistent Storage API', () => {
 
   const mockBaseUrl = 'http://backstage:9191/api';
   const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
-  const mockDiscoveryApi = { getBaseUrl: async () => mockBaseUrl };
+  const mockDiscoveryApi = {
+    getBaseUrl: async () => mockBaseUrl,
+  };
+  const mockIdentityApi: Partial<IdentityApi> = {
+    getCredentials: async () => ({ token: 'a-token' }),
+  };
 
   const createPersistentStorage = (
     args?: Partial<{
@@ -45,6 +51,7 @@ describe('Persistent Storage API', () => {
       errorApi: mockErrorApi,
       fetchApi: new MockFetchApi(),
       discoveryApi: mockDiscoveryApi,
+      identityApi: mockIdentityApi as IdentityApi,
       ...args,
     });
   };
