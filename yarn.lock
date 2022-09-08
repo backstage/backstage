@@ -12492,9 +12492,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@roadiehq/backstage-plugin-buildkite@npm:^2.0.0":
-  version: 2.0.7
-  resolution: "@roadiehq/backstage-plugin-buildkite@npm:2.0.7"
+"@roadiehq/backstage-plugin-buildkite@npm:^2.0.8":
+  version: 2.0.8
+  resolution: "@roadiehq/backstage-plugin-buildkite@npm:2.0.8"
   dependencies:
     "@backstage/catalog-model": ^1.0.0
     "@backstage/core-components": ^0.11.0
@@ -12506,19 +12506,19 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.57
     history: ^5.0.0
     moment: ^2.29.1
-    react-router: 6.0.0-beta.0
-    react-router-dom: 6.0.0-beta.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
-  checksum: cf7ba623c418d3ea7ea56c67b0fe10d6be7fe36531539c31e87b586897fcb9c3474a432239d7d6c01623ff6fc29fb4ae905564a9d2aae11e2ce54b8502cc1c29
+    react-router: 6.0.0-beta.0 || ^6.3.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  checksum: 589f89b53ff166ca9099ea8d2a5b6f96b87a3daf2e0cb115e94c8880639f69bc25a04cab2926cba0c99dc9bb70a159528c6f1fc10a9fba67e4fb3abe40bce0bf
   languageName: node
   linkType: hard
 
-"@roadiehq/backstage-plugin-github-insights@npm:^2.0.0":
-  version: 2.0.4
-  resolution: "@roadiehq/backstage-plugin-github-insights@npm:2.0.4"
+"@roadiehq/backstage-plugin-github-insights@npm:^2.0.5":
+  version: 2.0.5
+  resolution: "@roadiehq/backstage-plugin-github-insights@npm:2.0.5"
   dependencies:
     "@backstage/catalog-model": ^1.0.0
     "@backstage/core-components": ^0.11.0
@@ -12534,19 +12534,19 @@ __metadata:
     "@octokit/types": ^6.14.2
     history: ^5.0.0
     immer: 9.0.7
-    react-router: ^6.0.0-beta.0
     react-use: ^17.2.4
     zustand: 3.6.9
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
-  checksum: 2cc6eb992e78d7ce32ecce09996bda4eb34d4af3564ab54d180543d3a195a8b6e93f3137724569c49e645d44bfc00f3802285418f690393c456700668be01c25
+    react-router: 6.0.0-beta.0 || ^6.3.0
+  checksum: 37f99d0478dee6acbbafaf334a2eb1f75c251e96f8b10cead0d6f6dc203667dca51ded935ca704900251c01493b6287a66814f79245410a79ad66c843a3d4803
   languageName: node
   linkType: hard
 
-"@roadiehq/backstage-plugin-github-pull-requests@npm:^2.0.0":
-  version: 2.2.6
-  resolution: "@roadiehq/backstage-plugin-github-pull-requests@npm:2.2.6"
+"@roadiehq/backstage-plugin-github-pull-requests@npm:^2.2.7":
+  version: 2.2.7
+  resolution: "@roadiehq/backstage-plugin-github-pull-requests@npm:2.2.7"
   dependencies:
     "@backstage/catalog-model": ^1.0.0
     "@backstage/core-components": ^0.11.0
@@ -12564,18 +12564,18 @@ __metadata:
     moment: ^2.27.0
     msw: ^0.39.2
     node-fetch: ^2.6.1
-    react-router: 6.0.0-beta.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
-  checksum: 1b6d584a1e6cc668026d9bcdea7e5588ad22084412e5e2c52659aed9da0f90fa5edb81e8d90d2ff67b645e0fb96790b91cb0a1024f1682319c7fb4799b62baa8
+    react-router: 6.0.0-beta.0 || ^6.3.0
+  checksum: 2453f72c4b853e4d6f43cb27aaf27cbce5d122fbcdc71625b1e1493486acde551798524cc84f792d986397011ab458ba9b7e56eec34cde55660ccd69ea488cb0
   languageName: node
   linkType: hard
 
-"@roadiehq/backstage-plugin-travis-ci@npm:^2.0.0":
-  version: 2.0.4
-  resolution: "@roadiehq/backstage-plugin-travis-ci@npm:2.0.4"
+"@roadiehq/backstage-plugin-travis-ci@npm:^2.0.5":
+  version: 2.0.5
+  resolution: "@roadiehq/backstage-plugin-travis-ci@npm:2.0.5"
   dependencies:
     "@backstage/catalog-model": ^1.0.0
     "@backstage/core-components": ^0.11.0
@@ -12589,13 +12589,13 @@ __metadata:
     date-fns: ^2.18.0
     history: ^5.0.0
     moment: ^2.29.1
-    react-router: 6.0.0-beta.0
-    react-router-dom: 6.0.0-beta.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
-  checksum: 1c0f3389f6415d23fe1926e3387433da7f3d22b4a237c3a690c894cfa4c281b21307a3ec51a2c48cfa115727cca182c15017ef1e58a2e9b893d89d06df6db35e
+    react-router: 6.0.0-beta.0 || ^6.3.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  checksum: bafcef69ca1b36585dbafcf8964d897942bd026f74dad81f372aed9ee1ce496a4821570f462b62b1b8d0cb86013615ad39e103827163bde8cf32037143b05c7a
   languageName: node
   linkType: hard
 
@@ -22435,10 +22435,10 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.57
     "@octokit/rest": ^19.0.3
     "@rjsf/core": ^3.2.1
-    "@roadiehq/backstage-plugin-buildkite": ^2.0.0
-    "@roadiehq/backstage-plugin-github-insights": ^2.0.0
-    "@roadiehq/backstage-plugin-github-pull-requests": ^2.0.0
-    "@roadiehq/backstage-plugin-travis-ci": ^2.0.0
+    "@roadiehq/backstage-plugin-buildkite": ^2.0.8
+    "@roadiehq/backstage-plugin-github-insights": ^2.0.5
+    "@roadiehq/backstage-plugin-github-pull-requests": ^2.2.7
+    "@roadiehq/backstage-plugin-travis-ci": ^2.0.5
     "@testing-library/cypress": ^8.0.2
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
@@ -34556,7 +34556,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-stable@npm:react-router@^6.3.0, react-router@npm:6.3.0, react-router@npm:^6.0.0-beta.0, react-router@npm:^6.3.0":
+"react-router-stable@npm:react-router@^6.3.0, react-router@npm:6.3.0, react-router@npm:^6.3.0":
   version: 6.3.0
   resolution: "react-router@npm:6.3.0"
   dependencies:
