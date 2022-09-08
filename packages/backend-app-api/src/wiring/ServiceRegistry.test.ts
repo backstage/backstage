@@ -18,6 +18,7 @@ import {
   createServiceRef,
   createServiceFactory,
   ServiceRef,
+  pluginMetadataServiceRef,
 } from '@backstage/backend-plugin-api';
 import { ServiceRegistry } from './ServiceRegistry';
 
@@ -35,26 +36,23 @@ const sf1 = createServiceFactory({
 });
 
 const ref2 = createServiceRef<{ x: number }>({
+  scope: 'root',
   id: '2',
 });
 const sf2 = createServiceFactory({
   service: ref2,
   deps: {},
   factory: async () => {
-    return async () => {
-      return { x: 2 };
-    };
+    return { x: 2 };
   },
 });
 const sf2b = createServiceFactory({
   service: ref2,
   deps: {},
   factory: async () => {
-    return async () => {
-      return { x: 22 };
-    };
+    return { x: 22 };
   },
-});
+})();
 
 const refDefault1 = createServiceRef<{ x: number }>({
   id: '1',
@@ -63,7 +61,7 @@ const refDefault1 = createServiceRef<{ x: number }>({
       service,
       deps: {},
       factory: async () => async () => ({ x: 10 }),
-    }),
+    })(),
 });
 
 const refDefault2a = createServiceRef<{ x: number }>({
@@ -119,6 +117,64 @@ describe('ServiceRegistry', () => {
     expect(await registry.get(ref1, 'catalog')).not.toBe(
       await registry.get(ref2, 'catalog'),
     );
+  });
+
+  it('should not be possible for root scoped services to depend on plugin scoped services', async () => {
+    const factory = createServiceFactory({
+      service: ref2,
+      deps: { pluginDep: ref1 },
+      factory: async () => {
+        return { x: 2 };
+      },
+    });
+    const registry = new ServiceRegistry([factory, sf1]);
+    await expect(registry.get(ref2, 'catalog')).rejects.toThrow(
+      "Failed to instantiate 'root' scoped service '2' because it depends on 'plugin' scoped service '1'.",
+    );
+  });
+
+  it('should be possible for plugin scoped services to depend on root scoped services', async () => {
+    const factory = createServiceFactory({
+      service: ref1,
+      deps: { rootDep: ref2 },
+      factory: async ({ rootDep }) => {
+        return async () => ({ x: rootDep.x });
+      },
+    });
+    const registry = new ServiceRegistry([factory, sf2]);
+    await expect(registry.get(ref1, 'catalog')).resolves.toEqual({
+      x: 2,
+    });
+  });
+
+  it('should be possible for root scoped services to depend on root scoped services', async () => {
+    const ref = createServiceRef<{ x: number }>({ id: 'x', scope: 'root' });
+    const factory = createServiceFactory({
+      service: ref,
+      deps: { rootDep: ref2 },
+      factory: async ({ rootDep }) => {
+        return { x: rootDep.x };
+      },
+    });
+    const registry = new ServiceRegistry([factory, sf2]);
+    await expect(registry.get(ref, 'catalog')).resolves.toEqual({
+      x: 2,
+    });
+  });
+
+  it('should return the pluginId from the pluginMetadata service', async () => {
+    const ref = createServiceRef<{ pluginId: string }>({ id: 'x' });
+    const factory = createServiceFactory({
+      service: ref,
+      deps: { meta: pluginMetadataServiceRef },
+      factory: async ({}) => {
+        return async ({ meta }) => ({ pluginId: meta.getId() });
+      },
+    });
+    const registry = new ServiceRegistry([factory]);
+    await expect(registry.get(ref, 'catalog')).resolves.toEqual({
+      pluginId: 'catalog',
+    });
   });
 
   it('should use the last factory for each ref', async () => {
