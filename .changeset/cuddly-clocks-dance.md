@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-backend-module-msgraph': minor
+'@backstage/plugin-catalog-backend-module-msgraph': patch
 ---
 
 Added $select attribute to user query
