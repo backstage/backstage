@@ -300,6 +300,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
               stepOutput[name] = value;
             },
             templateInfo: task.spec.templateInfo,
+            user: task.spec.user,
           });
 
           // Remove all temporary directories that were created when executing the action
