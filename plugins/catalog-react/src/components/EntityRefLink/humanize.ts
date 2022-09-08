@@ -21,8 +21,8 @@ import {
 } from '@backstage/catalog-model';
 
 /**
- * @property defaultNamespace - if set to false then namespace is never ommited,
- * if set to string which matches namespace of entity then omited
+ * @property defaultNamespace - if set to false then namespace is never omitted,
+ * if set to string which matches namespace of entity then omitted
  *
  * @public */
 export function humanizeEntityRef(
