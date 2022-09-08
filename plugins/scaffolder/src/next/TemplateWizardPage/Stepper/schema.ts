@@ -119,7 +119,7 @@ export const createFieldValidation = (): FieldValidation => {
   const fieldValidation: FieldValidation = {
     __errors: [] as string[],
     addError: (message: string) => {
-      fieldValidation.__errors.push(message);
+      fieldValidation.__errors?.push(message);
     },
   };
 

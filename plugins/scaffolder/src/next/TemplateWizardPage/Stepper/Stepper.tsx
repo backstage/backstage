@@ -23,7 +23,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { withTheme } from '@rjsf/core';
-import { FieldValidation } from '@rjsf/utils';
+import { ErrorSchema, FieldValidation } from '@rjsf/utils';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useMemo, useState } from 'react';
 import { FieldExtensionOptions } from '../../../extensions';
@@ -95,7 +95,7 @@ export const Stepper = (props: StepperProps) => {
     const returnedValidation = await validation(formData);
 
     const hasErrors = Object.values(returnedValidation).some(i => {
-      return i.__errors.length > 0;
+      return i.__errors?.length! > 0 ?? false;
     });
 
     if (hasErrors) {
@@ -127,7 +127,7 @@ export const Stepper = (props: StepperProps) => {
         {activeStep < steps.length ? (
           <Form
             validator={validator}
-            extraErrors={errors}
+            extraErrors={errors as unknown as ErrorSchema}
             formData={formState}
             schema={steps[activeStep].schema}
             uiSchema={steps[activeStep].uiSchema}
