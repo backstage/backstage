@@ -356,5 +356,26 @@ describe('CatalogClient', () => {
         valid: true,
       });
     });
+
+    it('throws unexpected error', async () => {
+      server.use(
+        rest.post(`${mockBaseUrl}/validate-entity`, (_req, res, ctx) => {
+          return res(ctx.status(500), ctx.json({}));
+        }),
+      );
+
+      await expect(() =>
+        client.validateEntity(
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: 'good',
+            },
+          },
+          'http://example.com',
+        ),
+      ).rejects.toThrow(/Request failed with 500 Error/);
+    });
   });
 });
