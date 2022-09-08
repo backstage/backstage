@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import OAuth2Strategy from 'passport-oauth2';
+import Auth0InternalStrategy from 'passport-auth0';
 
 export interface Auth0StrategyOptionsWithRequest {
   clientID: string;
@@ -23,10 +23,10 @@ export interface Auth0StrategyOptionsWithRequest {
   passReqToCallback: true;
 }
 
-export default class Auth0Strategy extends OAuth2Strategy {
+export default class Auth0Strategy extends Auth0InternalStrategy {
   constructor(
     options: Auth0StrategyOptionsWithRequest,
-    verify: OAuth2Strategy.VerifyFunctionWithRequest,
+    verify: Auth0InternalStrategy.VerifyFunctionWithRequest,
   ) {
     const optionsWithURLs = {
       ...options,

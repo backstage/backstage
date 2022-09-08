@@ -43,9 +43,11 @@ import {
   AuthResolverContext,
 } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
+import { ExtraVerificationParams } from 'passport-auth0';
 
 type PrivateInfo = {
   refreshToken: string;
+  extraParams: ExtraVerificationParams,
 };
 
 export type Auth0AuthProviderOptions = OAuthProviderOptions & {
@@ -53,6 +55,7 @@ export type Auth0AuthProviderOptions = OAuthProviderOptions & {
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
   resolverContext: AuthResolverContext;
+  audience?: string;
 };
 
 export class Auth0AuthProvider implements OAuthHandlers {
@@ -60,11 +63,13 @@ export class Auth0AuthProvider implements OAuthHandlers {
   private readonly signInResolver?: SignInResolver<OAuthResult>;
   private readonly authHandler: AuthHandler<OAuthResult>;
   private readonly resolverContext: AuthResolverContext;
+  private readonly audience?: string;
 
   constructor(options: Auth0AuthProviderOptions) {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
     this.resolverContext = options.resolverContext;
+    this.audience = options.audience;
     this._strategy = new Auth0Strategy(
       {
         clientID: options.clientId,
@@ -79,6 +84,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
         accessToken: any,
         refreshToken: any,
         params: any,
+        extraParams: ExtraVerificationParams,
         fullProfile: passport.Profile,
         done: PassportDoneCallback<OAuthResult, PrivateInfo>,
       ) => {
@@ -92,6 +98,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
           },
           {
             refreshToken,
+            extraParams
           },
         );
       },
@@ -104,6 +111,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
       prompt: 'consent',
       scope: req.scope,
       state: encodeState(req.state),
+      audience: this.audience as string
     });
   }
 
@@ -111,7 +119,9 @@ export class Auth0AuthProvider implements OAuthHandlers {
     const { result, privateInfo } = await executeFrameHandlerStrategy<
       OAuthResult,
       PrivateInfo
-    >(req, this._strategy);
+    >(req, this._strategy, {
+      audience: this.audience as string
+    });
 
     return {
       response: await this.handleResult(result),
@@ -198,6 +208,7 @@ export const auth0 = createAuthProviderIntegration({
         const clientSecret = envConfig.getString('clientSecret');
         const domain = envConfig.getString('domain');
         const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const audience = envConfig.getOptionalString('audience');
         const callbackUrl =
           customCallbackUrl ||
           `${globalConfig.baseUrl}/${providerId}/handler/frame`;
@@ -218,6 +229,7 @@ export const auth0 = createAuthProviderIntegration({
           authHandler,
           signInResolver,
           resolverContext,
+          audience,
         });
 
         return OAuthAdapter.fromConfig(globalConfig, provider, {

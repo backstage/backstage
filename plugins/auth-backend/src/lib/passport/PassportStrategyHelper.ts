@@ -91,6 +91,7 @@ export const executeRedirectStrategy = async (
 export const executeFrameHandlerStrategy = async <Result, PrivateInfo = never>(
   req: express.Request,
   providerStrategy: passport.Strategy,
+  options?: Record<string, string>,
 ) => {
   return new Promise<{ result: Result; privateInfo: PrivateInfo }>(
     (resolve, reject) => {
@@ -124,7 +125,7 @@ export const executeFrameHandlerStrategy = async <Result, PrivateInfo = never>(
       strategy.redirect = () => {
         reject(new Error('Unexpected redirect'));
       };
-      strategy.authenticate(req, {});
+      strategy.authenticate(req, { ...(options ?? {}) });
     },
   );
 };
