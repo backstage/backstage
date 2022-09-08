@@ -47,7 +47,7 @@ import { ExtraVerificationParams } from 'passport-auth0';
 
 type PrivateInfo = {
   refreshToken: string;
-  extraParams: ExtraVerificationParams,
+  extraParams: ExtraVerificationParams;
 };
 
 export type Auth0AuthProviderOptions = OAuthProviderOptions & {
@@ -98,7 +98,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
           },
           {
             refreshToken,
-            extraParams
+            extraParams,
           },
         );
       },
@@ -111,7 +111,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
       prompt: 'consent',
       scope: req.scope,
       state: encodeState(req.state),
-      audience: this.audience as string
+      audience: this.audience as string,
     });
   }
 
@@ -120,7 +120,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
       OAuthResult,
       PrivateInfo
     >(req, this._strategy, {
-      audience: this.audience as string
+      audience: this.audience as string,
     });
 
     return {
