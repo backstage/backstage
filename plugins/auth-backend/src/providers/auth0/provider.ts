@@ -80,7 +80,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
       cb(null, true);
     },
   };
-  
+
   constructor(options: Auth0AuthProviderOptions) {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
@@ -113,7 +113,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
             params,
           },
           {
-            refreshToken
+            refreshToken,
           },
         );
       },
