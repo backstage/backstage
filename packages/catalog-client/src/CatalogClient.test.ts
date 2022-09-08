@@ -295,4 +295,87 @@ describe('CatalogClient', () => {
       await client.getLocationById('42');
     });
   });
+
+  describe('validateEntity', () => {
+    it('returns valid false when validation fails', async () => {
+      server.use(
+        rest.post(`${mockBaseUrl}/validate-entity`, (_req, res, ctx) => {
+          return res(
+            ctx.status(400),
+            ctx.json({
+              errors: [
+                {
+                  message: 'Missing name',
+                },
+              ],
+            }),
+          );
+        }),
+      );
+
+      expect(
+        await client.validateEntity(
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: '',
+            },
+          },
+          'http://example.com',
+        ),
+      ).toMatchObject({
+        valid: false,
+        errors: [
+          {
+            message: 'Missing name',
+          },
+        ],
+      });
+    });
+
+    it('returns valid true when validation fails', async () => {
+      server.use(
+        rest.post(`${mockBaseUrl}/validate-entity`, (_req, res, ctx) => {
+          return res(ctx.status(200), ctx.text(''));
+        }),
+      );
+
+      expect(
+        await client.validateEntity(
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: 'good',
+            },
+          },
+          'http://example.com',
+        ),
+      ).toMatchObject({
+        valid: true,
+      });
+    });
+
+    it('throws unexpected error', async () => {
+      server.use(
+        rest.post(`${mockBaseUrl}/validate-entity`, (_req, res, ctx) => {
+          return res(ctx.status(500), ctx.json({}));
+        }),
+      );
+
+      await expect(() =>
+        client.validateEntity(
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: 'good',
+            },
+          },
+          'http://example.com',
+        ),
+      ).rejects.toThrow(/Request failed with 500 Error/);
+    });
+  });
 });

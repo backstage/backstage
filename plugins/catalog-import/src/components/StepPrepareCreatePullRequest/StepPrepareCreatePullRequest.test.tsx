@@ -46,6 +46,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
     refreshEntity: jest.fn(),
     getEntityAncestors: jest.fn(),
     getEntityFacets: jest.fn(),
+    validateEntity: jest.fn(),
   };
 
   const errorApi: jest.Mocked<typeof errorApiRef.T> = {

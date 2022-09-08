@@ -5,6 +5,7 @@
 ```ts
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
+import { SerializedError } from '@backstage/errors';
 
 // @public
 export type AddLocationRequest = {
@@ -65,6 +66,11 @@ export interface CatalogApi {
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
+  validateEntity(
+    entity: Entity,
+    location: string,
+    options?: CatalogRequestOptions,
+  ): Promise<ValidateEntityResponse>;
 }
 
 // @public
@@ -122,6 +128,11 @@ export class CatalogClient implements CatalogApi {
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
+  validateEntity(
+    entity: Entity,
+    location: string,
+    options?: CatalogRequestOptions,
+  ): Promise<ValidateEntityResponse>;
 }
 
 // @public
@@ -196,4 +207,14 @@ type Location_2 = {
   target: string;
 };
 export { Location_2 as Location };
+
+// @public
+export type ValidateEntityResponse =
+  | {
+      valid: true;
+    }
+  | {
+      valid: false;
+      errors: SerializedError[];
+    };
 ```

@@ -15,6 +15,7 @@
  */
 
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
+import { SerializedError } from '@backstage/errors';
 
 /**
  * This symbol can be used in place of a value when passed to filters in e.g.
@@ -270,6 +271,15 @@ export type AddLocationResponse = {
 };
 
 /**
+ * The response type for {@link CatalogClient.validateEntity}
+ *
+ * @public
+ */
+export type ValidateEntityResponse =
+  | { valid: true }
+  | { valid: false; errors: SerializedError[] };
+
+/**
  * A client for interacting with the Backstage software catalog through its API.
  *
  * @public
@@ -390,4 +400,16 @@ export interface CatalogApi {
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
+
+  /**
+   * Validate entity and its location.
+   *
+   * @param entity - Entity to validate
+   * @param location - URL location of the entity
+   */
+  validateEntity(
+    entity: Entity,
+    location: string,
+    options?: CatalogRequestOptions,
+  ): Promise<ValidateEntityResponse>;
 }
