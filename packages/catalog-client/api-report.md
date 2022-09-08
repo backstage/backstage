@@ -209,8 +209,12 @@ type Location_2 = {
 export { Location_2 as Location };
 
 // @public
-export type ValidateEntityResponse = {
-  valid: boolean;
-  errors?: SerializedError[];
-};
+export type ValidateEntityResponse =
+  | {
+      valid: true;
+    }
+  | {
+      valid: false;
+      errors: SerializedError[];
+    };
 ```

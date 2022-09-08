@@ -275,10 +275,9 @@ export type AddLocationResponse = {
  *
  * @public
  */
-export type ValidateEntityResponse = {
-  valid: boolean;
-  errors?: SerializedError[];
-};
+export type ValidateEntityResponse =
+  | { valid: true }
+  | { valid: false; errors: SerializedError[] };
 
 /**
  * A client for interacting with the Backstage software catalog through its API.

@@ -21,7 +21,7 @@ import {
   stringifyEntityRef,
   stringifyLocationRef,
 } from '@backstage/catalog-model';
-import { ResponseError, SerializedError } from '@backstage/errors';
+import { ResponseError } from '@backstage/errors';
 import crossFetch from 'cross-fetch';
 import {
   CATALOG_FILTER_EXISTS,
@@ -377,11 +377,14 @@ export class CatalogClient implements CatalogApi {
     if (response.ok) {
       return {
         valid: true,
-        errors: undefined,
       };
     }
 
-    const { errors } = (await response.json()) as { errors: SerializedError[] };
+    if (response.status !== 400) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    const { errors = [] } = await response.json();
 
     return {
       valid: false,
