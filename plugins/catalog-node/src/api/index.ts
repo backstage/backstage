@@ -32,4 +32,5 @@ export type {
   EntityProvider,
   EntityProviderConnection,
   EntityProviderMutation,
+  EntityProviderRefreshOptions,
 } from './provider';

@@ -95,6 +95,7 @@ describe('MicrosoftGraphOrgEntityProvider', () => {
     };
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
+      refresh: jest.fn(),
     };
     const provider = MicrosoftGraphOrgEntityProvider.fromConfig(
       new ConfigReader(config),

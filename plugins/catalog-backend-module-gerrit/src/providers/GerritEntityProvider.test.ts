@@ -83,6 +83,7 @@ describe('GerritEntityProvider', () => {
 
   const entityProviderConnection: EntityProviderConnection = {
     applyMutation: jest.fn(),
+    refresh: jest.fn(),
   };
 
   it('discovers projects from the api.', async () => {
