@@ -31,6 +31,7 @@ import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
+import { UserEntity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
 
 // @public
@@ -44,6 +45,10 @@ export type ActionContext<Input extends JsonObject> = {
   createTemporaryDirectory(): Promise<string>;
   templateInfo?: TemplateInfo;
   isDryRun?: boolean;
+  user?: {
+    entity?: UserEntity;
+    ref?: string;
+  };
 };
 
 // @public
