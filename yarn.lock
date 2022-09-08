@@ -2833,6 +2833,8 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router: 6.0.0-beta.0 || ^6.3.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -7421,6 +7423,7 @@ __metadata:
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
@@ -22442,6 +22445,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/jquery": ^3.3.34
     "@types/node": ^16.11.26
+    "@types/react": "*"
     "@types/react-dom": "*"
     "@types/zen-observable": ^0.8.0
     cross-env: ^7.0.0
@@ -35986,6 +35990,7 @@ __metadata:
     concurrently: ^7.0.0
     cross-env: ^7.0.0
     e2e-test: "workspace:*"
+    eslint: ^8.6.0
     eslint-plugin-notice: ^0.9.10
     fs-extra: 10.1.0
     husky: ^8.0.0
