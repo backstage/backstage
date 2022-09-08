@@ -354,7 +354,6 @@ describe('CatalogClient', () => {
         ),
       ).toMatchObject({
         valid: true,
-        errors: undefined,
       });
     });
   });
