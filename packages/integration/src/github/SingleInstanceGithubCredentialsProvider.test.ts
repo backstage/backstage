@@ -434,7 +434,7 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
     );
   });
 
-  it('should expire access token cache 10 mins before token expires', async () => {
+  it('should expire access token cache when less than 10 mins before token expires', async () => {
     octokit.apps.listInstallations.mockReturnValue({
       headers: {
         etag: '123',
@@ -452,7 +452,9 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
 
     octokit.apps.createInstallationAccessToken.mockReturnValue({
       data: {
-        expires_at: DateTime.local().plus({ minutes: 10 }).toString(),
+        expires_at: DateTime.local()
+          .plus({ minutes: 9, seconds: 59, milliseconds: 999 })
+          .toString(),
         token: 'secret_token',
       },
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
