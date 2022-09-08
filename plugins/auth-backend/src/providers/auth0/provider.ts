@@ -70,7 +70,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
    * so that the 'state' parameter of the oauth2 flow can be stored.
    * This implementation of StateStore matches the NullStore found within
    * passport-oauth2, which is the StateStore implementation used when options.state = false,
-   * allowing us to avoid using express-session in order to integrate with Okta.
+   * allowing us to avoid using express-session in order to integrate with auth0.
    */
   private store: StateStore = {
     store(_req: express.Request, cb: any) {
@@ -126,7 +126,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
       prompt: 'consent',
       scope: req.scope,
       state: encodeState(req.state),
-      audience: this.audience as string,
+      ...(this.audience ? { audience: this.audience } : {}),
     });
   }
 
@@ -135,7 +135,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
       OAuthResult,
       PrivateInfo
     >(req, this._strategy, {
-      audience: this.audience as string,
+      ...(this.audience ? { audience: this.audience } : {}),
     });
 
     return {

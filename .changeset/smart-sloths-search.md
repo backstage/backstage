@@ -2,4 +2,4 @@
 '@backstage/plugin-auth-backend': minor
 ---
 
-Converts the auth0 to the passport-auth0 package and allows the addition of audience to auth0 connections this means that you can connect to the correct API to get permissions, access tokens and full profile
+The auth0 integration is updated to use the passport-auth0 library. The configuration under auth.providers.auth0.* now supports an optional audience parameter; providing that allows you to connect to the correct API to get permissions, access tokens, and full profile information.
