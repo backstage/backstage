@@ -100,7 +100,7 @@ integrations:
 If you want to limit the GitHub app installations visible to backstage you may
 optionally include the `allowedInstallationOwners` option. If you configure
 multiple apps, specifying this will bring some small performance benefits
-as backstage can more easily select which app to use for a url.
+as backstage can more easily select which app to use for a URL.
 
 ```yaml
 appId: app id
