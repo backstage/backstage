@@ -36,6 +36,7 @@ async function getRedisClient(
     const redisConnectionUrl = options.config.getString(
       'backend.cache.connection',
     );
+
     client = createClient({
       url: redisConnectionUrl,
     });

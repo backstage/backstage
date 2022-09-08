@@ -76,9 +76,12 @@ export async function createRouter(
 
   switch (cacheMemoryType) {
     case 'redis':
-      cacheStore = new RedisStore({
-        client: await getRedisClient({ config }),
-      });
+      {
+        const redisClient = await getRedisClient({ config });
+        cacheStore = new RedisStore({
+          client: redisClient,
+        });
+      }
       break;
 
     case 'memory':
