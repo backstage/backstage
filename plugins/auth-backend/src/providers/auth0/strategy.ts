@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import Auth0InternalStrategy from 'passport-auth0';
+import { StateStore } from 'passport-oauth2';
 
 export interface Auth0StrategyOptionsWithRequest {
   clientID: string;
@@ -21,12 +22,13 @@ export interface Auth0StrategyOptionsWithRequest {
   callbackURL: string;
   domain: string;
   passReqToCallback: true;
+  store: StateStore;
 }
 
 export default class Auth0Strategy extends Auth0InternalStrategy {
   constructor(
     options: Auth0StrategyOptionsWithRequest,
-    verify: Auth0InternalStrategy.VerifyFunctionWithRequest,
+    verify: Auth0InternalStrategy.VerifyFunction,
   ) {
     const optionsWithURLs = {
       ...options,

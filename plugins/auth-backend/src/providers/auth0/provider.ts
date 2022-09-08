@@ -43,11 +43,10 @@ import {
   AuthResolverContext,
 } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
-import { ExtraVerificationParams } from 'passport-auth0';
+import { StateStore } from 'passport-oauth2';
 
 type PrivateInfo = {
   refreshToken: string;
-  extraParams: ExtraVerificationParams;
 };
 
 export type Auth0AuthProviderOptions = OAuthProviderOptions & {
@@ -65,6 +64,23 @@ export class Auth0AuthProvider implements OAuthHandlers {
   private readonly resolverContext: AuthResolverContext;
   private readonly audience?: string;
 
+  /**
+   * Due to passport-auth0 forcing options.state = true,
+   * passport-oauth2 requires express-session to be installed
+   * so that the 'state' parameter of the oauth2 flow can be stored.
+   * This implementation of StateStore matches the NullStore found within
+   * passport-oauth2, which is the StateStore implementation used when options.state = false,
+   * allowing us to avoid using express-session in order to integrate with Okta.
+   */
+  private store: StateStore = {
+    store(_req: express.Request, cb: any) {
+      cb(null, null);
+    },
+    verify(_req: express.Request, _state: string, cb: any) {
+      cb(null, true);
+    },
+  };
+  
   constructor(options: Auth0AuthProviderOptions) {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
@@ -79,12 +95,12 @@ export class Auth0AuthProvider implements OAuthHandlers {
         // We need passReqToCallback set to false to get params, but there's
         // no matching type signature for that, so instead behold this beauty
         passReqToCallback: false as true,
+        store: this.store,
       },
       (
         accessToken: any,
         refreshToken: any,
         params: any,
-        extraParams: ExtraVerificationParams,
         fullProfile: passport.Profile,
         done: PassportDoneCallback<OAuthResult, PrivateInfo>,
       ) => {
@@ -97,8 +113,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
             params,
           },
           {
-            refreshToken,
-            extraParams,
+            refreshToken
           },
         );
       },
