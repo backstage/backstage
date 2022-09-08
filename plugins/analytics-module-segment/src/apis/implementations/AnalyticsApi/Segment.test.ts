@@ -49,7 +49,7 @@ describe('SegmentAnalytics', () => {
   describe('fromConfig', () => {
     it('throws when missing writeKey', () => {
       const config = new ConfigReader({ app: { analytics: { segment: {} } } });
-      expect(() => SegmentAnalytics.fromConfig(config)).toThrowError(
+      expect(() => SegmentAnalytics.fromConfig(config)).toThrow(
         /Missing required config value/,
       );
     });
@@ -69,7 +69,7 @@ describe('SegmentAnalytics', () => {
         context,
       });
 
-      expect(mockIdentify).toBeCalledTimes(1);
+      expect(mockIdentify).toHaveBeenCalledTimes(1);
     });
 
     it('tracks basic pageview', () => {
@@ -80,7 +80,7 @@ describe('SegmentAnalytics', () => {
         context,
       });
 
-      expect(mockPage).toBeCalledTimes(1);
+      expect(mockPage).toHaveBeenCalledTimes(1);
     });
 
     it('tracks basic event', () => {
@@ -96,7 +96,7 @@ describe('SegmentAnalytics', () => {
         context,
       });
 
-      expect(mockTrack).toBeCalledTimes(1);
+      expect(mockTrack).toHaveBeenCalledTimes(1);
     });
   });
 });
