@@ -28,13 +28,19 @@ export interface AnyJWK extends Record<string, string> {
  * @public
  */
 export type TokenParams = {
-  /** The claims that will be embedded within the token */
+  /**
+   * The claims that will be embedded within the token. At a minimum, this should include
+   * the subject claim, `sub`. It is common to also list entity ownership relations in the
+   * `ent` list. Additional claims may also be added at the developer's discretion except
+   * for the following list, which will be overwritten by the TokenIssuer: `iss`, `aud`,
+   * `iat`, and `exp`.
+   */
   claims: {
     /** The token subject, i.e. User ID */
     sub: string;
     /** A list of entity references that the user claims ownership through */
     ent?: string[];
-  };
+  } & Record<string, string | string[]>;
 };
 
 /**
