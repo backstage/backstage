@@ -31,13 +31,11 @@ export const catalogServiceRef = createServiceRef<CatalogApi>({
     createServiceFactory({
       service,
       deps: {
-        discoveryFactory: discoveryServiceRef,
+        discoveryApi: discoveryServiceRef,
       },
-      factory: async ({ discoveryFactory }) => {
-        const discoveryApi = await discoveryFactory('root');
-        const catalogClient = new CatalogClient({ discoveryApi });
-        return async _pluginId => {
-          return catalogClient;
+      async factory() {
+        return async ({ discoveryApi }) => {
+          return new CatalogClient({ discoveryApi });
         };
       },
     }),
