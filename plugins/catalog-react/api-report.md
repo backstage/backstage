@@ -436,9 +436,7 @@ export function getEntitySourceLocation(
   scmIntegrationsApi: ScmIntegrationRegistry,
 ): EntitySourceLocation | undefined;
 
-// Warning: (tsdoc-undefined-tag) The TSDoc tag "@property" is not defined in this configuration
-//
-// @public
+// @public (undocumented)
 export function humanizeEntityRef(
   entityRef: Entity | CompoundEntityRef,
   opts?: {
