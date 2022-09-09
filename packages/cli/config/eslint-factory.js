@@ -22,6 +22,7 @@ const { join: joinPath } = require('path');
  * parameter also accepts the following keys:
  *
  * - `tsRules`: Additional ESLint rules to apply to TypeScript
+ * - `testFilePatterns`: Additional patterns to which to apply test overrides
  * - `testRules`: Additional ESLint rules to apply to tests
  * - `restrictedImports`: Additional paths to add to no-restricted-imports
  * - `restrictedSrcImports`: Additional paths to add to no-restricted-imports in src files
@@ -37,6 +38,7 @@ function createConfig(dir, extraConfig = {}) {
     env,
     parserOptions,
     ignorePatterns,
+    testFilePatterns,
     overrides,
 
     rules,
@@ -97,6 +99,9 @@ function createConfig(dir, extraConfig = {}) {
                 joinPath(dir, 'src/**/*.test.*'),
                 joinPath(dir, 'src/**/*.stories.*'),
                 joinPath(dir, 'src/setupTests.*'),
+                ...(testFilePatterns || []).map(pattern =>
+                  joinPath(dir, pattern),
+                ),
               ]
             : [
                 // Legacy config for packages that don't provide a dir
@@ -159,7 +164,13 @@ function createConfig(dir, extraConfig = {}) {
         },
       },
       {
-        files: ['**/*.test.*', '**/*.stories.*', 'src/setupTests.*', '!src/**'],
+        files: [
+          '**/*.test.*',
+          '**/*.stories.*',
+          'src/setupTests.*',
+          '!src/**',
+          ...(testFilePatterns || []),
+        ],
         rules: {
           ...testRules,
           'no-restricted-syntax': [
