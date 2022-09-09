@@ -127,7 +127,7 @@ nav:
       - Create a Backstage Plugin: 'plugins/create-a-plugin.md'
       - Plugin Development: 'plugins/plugin-development.md'
       - Structure of a plugin: 'plugins/structure-of-a-plugin.md'
-      - Integrate into the Software Cagittalog: 'plugins/integrating-plugin-into-software-catalog.md'
+      - Integrate into the Software Catalog: 'plugins/integrating-plugin-into-software-catalog.md'
       - Composability System: 'plugins/composability.md'
       - Plugin Analytics: 'plugins/analytics.md'
       - Feature Flags: 'plugins/feature-flags.md'

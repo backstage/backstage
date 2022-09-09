@@ -6,7 +6,7 @@ description: Details the process of defining setting and reading a plugin featur
 
 Backstage offers the ability to define feature flags inside a plugin. This allows you to restrict parts of your plugin to those individual users who have toggled the feature flag to on.
 
-This page describes the process of defining setting and reading a plugin feature flag.
+This page describes the process of defining setting and reading a plugin feature flag. If you are looking for using Feature flags with software templates that can be found under [Writing Templates](https://backstage.io/docs/features/software-templates/writing-templates#remove-sections-or-fields-based-on-feature-flags).
 
 ## Defining a Feature Flag
 
@@ -20,18 +20,17 @@ import ExampleComponent from './components/ExampleComponent';
 export const examplePlugin = createPlugin({
   id: 'example',
   routes: {
-    root: rootRouteRef
+    root: rootRouteRef,
   },
   featureFlags: [{ name: 'show-example-feature' }],
 });
-
 ```
 
 ## Enabling Feature Flags
 
-Feature flags are defaulted to off and can be updated by individual users in the backstage interface.   
+Feature flags are defaulted to off and can be updated by individual users in the backstage interface.
 
-These are set by navigating to the page under `Settings` > `Feature Flags`. 
+These are set by navigating to the page under `Settings` > `Feature Flags`.
 
 The users selection is saved in the users browsers local storage. Once toggled it may be required for a user to refresh the page to see any new changes.
 
@@ -45,20 +44,21 @@ import { FeatureFlagged } from '@backstage/core-app-api'
 ...
 
 <FeatureFlagged with="show-example-feature">
-    <SampleComponent />
+  <NewFeatureComponent />
 </FeatureFlagged>
 
 <FeatureFlagged without="show-example-feature">
-    <SampleComponent />
+  <PreviousFeatureComponent />
 </FeatureFlagged>
 ```
 
 ## Evaluating Feature Flag State
+
 It is also possible to test the feature flag state using the [FeatureFlags Api](https://backstage.io/docs/reference/core-plugin-api.featureflagsapi).
 
 ```ts
 import { useApi, featureFlagsApiRef } from '@backstage/core-plugin-api';
 
 const featureFlagsApi = useApi(featureFlagsApiRef);
-const isOn = featureFlagsApi.isActive("show-example-feature")
+const isOn = featureFlagsApi.isActive('show-example-feature');
 ```
