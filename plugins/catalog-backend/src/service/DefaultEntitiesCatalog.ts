@@ -35,6 +35,7 @@ import {
   EntityFacetsResponse,
   EntityFilter,
   EntityPagination,
+  EntitySortField,
   PaginatedEntitiesRequest,
   PaginatedEntitiesResponse,
 } from '../catalog/types';
@@ -54,8 +55,10 @@ import {
   isPaginatedEntitiesInitialRequest,
 } from './util';
 
-const defaultSortField = 'metadata.name';
-const defaultSortFieldOrder = 'asc';
+const defaultSortField: EntitySortField = {
+  field: 'metadata.name',
+  order: 'asc',
+};
 
 function parsePagination(input?: EntityPagination): {
   limit?: number;
@@ -328,19 +331,26 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const db = this.database;
     const limit = request?.limit ?? 20;
 
-    const cursor: Omit<Cursor, 'sortFieldId'> & { sortFieldId?: string } = {
+    const cursor: Omit<Cursor, 'sortFieldIds'> & { sortFieldIds?: string[] } = {
       firstFieldId: '',
-      sortField: defaultSortField,
-      sortFieldOrder: defaultSortFieldOrder,
+      sortFields: [defaultSortField],
       isPrevious: false,
       ...parseCursorFromRequest(request),
     };
 
     const isFetchingBackwards = cursor.isPrevious;
 
+    // TODO(vinzscam): at the moment only a single sortField is supported
+    const sortField: EntitySortField = {
+      ...defaultSortField,
+      ...cursor.sortFields[0],
+    };
+
+    const sortFieldId = cursor.sortFieldIds?.[0];
+
     const dbQuery = db('search')
       .join('final_entities', 'search.entity_id', 'final_entities.entity_id')
-      .where('key', cursor.sortField);
+      .where('key', sortField.field);
 
     if (cursor.filter) {
       parseFilter(cursor.filter, dbQuery, db, false, 'search.entity_id');
@@ -356,21 +366,19 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const countQuery = dbQuery.clone();
 
-    const isOrderingDescending = cursor.sortFieldOrder === 'desc';
-    if (cursor.sortFieldId) {
+    const isOrderingDescending = sortField.order === 'desc';
+    if (sortFieldId) {
       dbQuery.andWhere(
         'value',
         isFetchingBackwards !== isOrderingDescending ? '<' : '>',
-        cursor.sortFieldId,
+        sortFieldId,
       );
     }
 
     dbQuery
       .orderBy(
         'value',
-        isFetchingBackwards
-          ? invertOrder(cursor.sortFieldOrder)
-          : cursor.sortFieldOrder,
+        isFetchingBackwards ? invertOrder(sortField.order) : sortField.order,
       )
       // fetch an extra item to check if there are more items.
       .limit(isFetchingBackwards ? limit : limit + 1);
@@ -408,7 +416,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const nextCursor = hasMoreResults
       ? encodeCursor({
           ...cursor,
-          sortFieldId: rows[rows.length - 1].value,
+          sortFieldIds: [rows[rows.length - 1].value],
           firstFieldId,
           isPrevious: false,
           totalItems,
@@ -421,7 +429,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       rows[0].value !== cursor.firstFieldId
         ? encodeCursor({
             ...cursor,
-            sortFieldId: rows[0].value,
+            sortFieldIds: [rows[0].value],
             firstFieldId: cursor.firstFieldId,
             isPrevious: true,
             totalItems,
@@ -625,13 +633,8 @@ function parseCursorFromRequest(
   request?: PaginatedEntitiesRequest,
 ): Partial<Cursor> {
   if (isPaginatedEntitiesInitialRequest(request)) {
-    const {
-      filter,
-      sortField = defaultSortField,
-      sortFieldOrder = defaultSortFieldOrder,
-      query,
-    } = request;
-    return { filter, sortField, sortFieldOrder, query };
+    const { filter, sortFields = [defaultSortField], query } = request;
+    return { filter, sortFields, query };
   }
   if (isPaginatedEntitiesCursorRequest(request)) {
     try {
@@ -646,6 +649,6 @@ function parseCursorFromRequest(
   return {};
 }
 
-function invertOrder(order: Cursor['sortFieldOrder']) {
+function invertOrder(order: EntitySortField['order']) {
   return order === 'asc' ? 'desc' : 'asc';
 }
