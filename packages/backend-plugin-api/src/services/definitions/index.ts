@@ -26,3 +26,4 @@ export { discoveryServiceRef } from './discoveryServiceRef';
 export { tokenManagerServiceRef } from './tokenManagerServiceRef';
 export { permissionsServiceRef } from './permissionsServiceRef';
 export { schedulerServiceRef } from './schedulerServiceRef';
+export { pluginMetadataServiceRef } from './pluginMetadataServiceRef';
