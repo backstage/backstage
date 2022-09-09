@@ -28,7 +28,7 @@ const ref1 = createServiceRef<{ x: number }>({
 const sf1 = createServiceFactory({
   service: ref1,
   deps: {},
-  factory: async () => {
+  async factory() {
     return async () => {
       return { x: 1 };
     };
@@ -42,14 +42,14 @@ const ref2 = createServiceRef<{ x: number }>({
 const sf2 = createServiceFactory({
   service: ref2,
   deps: {},
-  factory: async () => {
+  async factory() {
     return { x: 2 };
   },
 });
 const sf2b = createServiceFactory({
   service: ref2,
   deps: {},
-  factory: async () => {
+  async factory() {
     return { x: 22 };
   },
 })();
@@ -60,7 +60,9 @@ const refDefault1 = createServiceRef<{ x: number }>({
     createServiceFactory({
       service,
       deps: {},
-      factory: async () => async () => ({ x: 10 }),
+      async factory() {
+        return async () => ({ x: 10 });
+      },
     })(),
 });
 
@@ -70,7 +72,9 @@ const refDefault2a = createServiceRef<{ x: number }>({
     createServiceFactory({
       service,
       deps: {},
-      factory: async () => async () => ({ x: 20 }),
+      async factory() {
+        return async () => ({ x: 20 });
+      },
     }),
 });
 
@@ -80,7 +84,9 @@ const refDefault2b = createServiceRef<{ x: number }>({
     createServiceFactory({
       service,
       deps: {},
-      factory: async () => async () => ({ x: 220 }),
+      async factory() {
+        return async () => ({ x: 220 });
+      },
     }),
 });
 
@@ -123,7 +129,7 @@ describe('ServiceRegistry', () => {
     const factory = createServiceFactory({
       service: ref2,
       deps: { pluginDep: ref1 },
-      factory: async () => {
+      async factory() {
         return { x: 2 };
       },
     });
@@ -137,7 +143,7 @@ describe('ServiceRegistry', () => {
     const factory = createServiceFactory({
       service: ref1,
       deps: { rootDep: ref2 },
-      factory: async ({ rootDep }) => {
+      async factory({ rootDep }) {
         return async () => ({ x: rootDep.x });
       },
     });
@@ -152,7 +158,7 @@ describe('ServiceRegistry', () => {
     const factory = createServiceFactory({
       service: ref,
       deps: { rootDep: ref2 },
-      factory: async ({ rootDep }) => {
+      async factory({ rootDep }) {
         return { x: rootDep.x };
       },
     });
@@ -167,7 +173,7 @@ describe('ServiceRegistry', () => {
     const factory = createServiceFactory({
       service: ref,
       deps: { meta: pluginMetadataServiceRef },
-      factory: async ({}) => {
+      async factory() {
         return async ({ meta }) => ({ pluginId: meta.getId() });
       },
     });
@@ -222,7 +228,9 @@ describe('ServiceRegistry', () => {
       createServiceFactory({
         service,
         deps: {},
-        factory: async () => async () => {},
+        async factory() {
+          return async () => {};
+        },
       }),
     );
     const ref = createServiceRef<void>({
