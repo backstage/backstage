@@ -35,6 +35,7 @@ describe('CatalogIdentityClient', () => {
     refreshEntity: jest.fn(),
     getEntityAncestors: jest.fn(),
     getEntityFacets: jest.fn(),
+    validateEntity: jest.fn(),
   };
   const tokenManager: jest.Mocked<TokenManager> = {
     getToken: jest.fn(),

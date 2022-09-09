@@ -67,6 +67,7 @@
     "concurrently": "^7.0.0",
     "cross-env": "^7.0.0",
     "e2e-test": "workspace:*",
+    "eslint": "^8.6.0",
     "eslint-plugin-notice": "^0.9.10",
     "fs-extra": "10.1.0",
     "husky": "^8.0.0",

@@ -364,7 +364,14 @@ export class EntityTagFilter implements EntityFilter {
 }
 
 // @public (undocumented)
-export const EntityTagPicker: () => JSX.Element | null;
+export const EntityTagPicker: (
+  props: EntityTagPickerProps,
+) => JSX.Element | null;
+
+// @public (undocumented)
+export type EntityTagPickerProps = {
+  showCounts?: boolean;
+};
 
 // @public
 export class EntityTextFilter implements EntityFilter {
