@@ -8093,11 +8093,11 @@ __metadata:
   linkType: hard
 
 "@google-cloud/container@npm:^4.0.0":
-  version: 4.1.1
-  resolution: "@google-cloud/container@npm:4.1.1"
+  version: 4.1.2
+  resolution: "@google-cloud/container@npm:4.1.2"
   dependencies:
     google-gax: ^3.3.0
-  checksum: 85c124163be7300c57b1f35323ea48a25c398bf072497a3e4a5d9117fe44547a63071dced681dbe8d2bd1a0997588d36c2428900184b030daf29b0f87ec7b09c
+  checksum: deb1b88732b2dd3dba5f7bea48fd672636fedb0d3bd894e29c8d097e087de3bfd30b53668e3686f8d879b3312be2e86d5a65cd1ba6bf630ba1c2bbe892e8bbb8
   languageName: node
   linkType: hard
 
