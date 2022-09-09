@@ -112,19 +112,13 @@ export function createServiceRef<T>(options: {
   };
 }
 
-type OnlyRootScopeDependencies<
-  TDeps extends { [key in string]: ServiceRef<unknown> },
-> = Pick<
-  TDeps,
-  {
-    [name in keyof TDeps]: TDeps[name]['scope'] extends 'root' ? name : never;
-  }[keyof TDeps]
->;
-
-type DependencyRefsToInstances<
+type ServiceRefsToInstances<
   T extends { [key in string]: ServiceRef<unknown> },
+  TScope extends 'root' | 'plugin' = 'root' | 'plugin',
 > = {
-  [key in keyof T]: T[key] extends ServiceRef<infer TImpl> ? TImpl : never;
+  [key in keyof T]: T[key] extends ServiceRef<infer TImpl, TScope>
+    ? TImpl
+    : never;
 };
 
 /**
@@ -140,11 +134,11 @@ export function createServiceFactory<
   service: ServiceRef<TService, TScope>;
   deps: TDeps;
   factory(
-    deps: DependencyRefsToInstances<OnlyRootScopeDependencies<TDeps>>,
+    deps: ServiceRefsToInstances<TDeps, 'root'>,
     options: TOpts,
   ): TScope extends 'root'
     ? Promise<TImpl>
-    : Promise<(deps: DependencyRefsToInstances<TDeps>) => Promise<TImpl>>;
+    : Promise<(deps: ServiceRefsToInstances<TDeps>) => Promise<TImpl>>;
 }): undefined extends TOpts
   ? (options?: TOpts) => ServiceFactory<TService>
   : (options: TOpts) => ServiceFactory<TService> {
@@ -153,9 +147,7 @@ export function createServiceFactory<
       scope: config.service.scope,
       service: config.service,
       deps: config.deps,
-      factory(
-        deps: DependencyRefsToInstances<OnlyRootScopeDependencies<TDeps>>,
-      ) {
+      factory(deps: ServiceRefsToInstances<TDeps, 'root'>) {
         return config.factory(deps, options!);
       },
     } as ServiceFactory<TService>);
