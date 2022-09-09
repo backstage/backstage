@@ -120,9 +120,9 @@ type ServiceRefsToInstances<
   T extends { [key in string]: ServiceRef<unknown> },
   TScope extends 'root' | 'plugin' = 'root' | 'plugin',
 > = {
-  [key in keyof T]: T[key] extends ServiceRef<infer TImpl, TScope>
-    ? TImpl
-    : never;
+  [name in {
+    [key in keyof T]: T[key] extends ServiceRef<unknown, TScope> ? key : never;
+  }[keyof T]]: T[name] extends ServiceRef<infer TImpl> ? TImpl : never;
 };
 
 /**
