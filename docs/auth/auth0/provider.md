@@ -34,6 +34,7 @@ auth:
         clientId: ${AUTH_AUTH0_CLIENT_ID}
         clientSecret: ${AUTH_AUTH0_CLIENT_SECRET}
         domain: ${AUTH_AUTH0_DOMAIN_ID}
+        audience: ${AUTH_AUTH0_AUDIENCE}
 ```
 
 The Auth0 provider is a structure with three configuration keys:

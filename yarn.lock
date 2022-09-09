@@ -3948,6 +3948,7 @@ __metadata:
     "@types/express-session": ^1.17.2
     "@types/jwt-decode": ^3.1.0
     "@types/passport": ^1.0.3
+    "@types/passport-auth0": ^1.0.5
     "@types/passport-github2": ^1.2.4
     "@types/passport-google-oauth20": ^2.0.3
     "@types/passport-microsoft": ^0.0.0
@@ -3974,6 +3975,7 @@ __metadata:
     node-fetch: ^2.6.7
     openid-client: ^5.1.3
     passport: ^0.6.0
+    passport-auth0: ^1.4.3
     passport-bitbucket-oauth2: ^0.1.2
     passport-github2: ^0.1.12
     passport-gitlab2: ^5.0.0
@@ -14638,6 +14640,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/passport-auth0@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "@types/passport-auth0@npm:1.0.5"
+  dependencies:
+    "@types/express": "*"
+    "@types/passport": "*"
+  checksum: b86b69a182864cae6877c0f16a1d62e24a394dc9cde8e7285a29aef89d52fbb555b899e061157bfd52420dcbccd6fd9b189155e5367a22763b0b2813cbb28354
+  languageName: node
+  linkType: hard
+
 "@types/passport-github2@npm:^1.2.4":
   version: 1.2.5
   resolution: "@types/passport-github2@npm:1.2.5"
@@ -16980,6 +16992,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios@npm:^0.27.2":
+  version: 0.27.2
+  resolution: "axios@npm:0.27.2"
+  dependencies:
+    follow-redirects: ^1.14.9
+    form-data: ^4.0.0
+  checksum: 38cb7540465fe8c4102850c4368053c21683af85c5fdf0ea619f9628abbcb59415d1e22ebc8a6390d2bbc9b58a9806c874f139767389c862ec9b772235f06854
+  languageName: node
+  linkType: hard
+
 "axobject-query@npm:^2.2.0":
   version: 2.2.0
   resolution: "axobject-query@npm:2.2.0"
@@ -18101,17 +18123,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001286":
-  version: 1.0.30001315
-  resolution: "caniuse-lite@npm:1.0.30001315"
-  checksum: 3938596c61e4a5c6e96d1c6aecbde67b31c4c92e55a9d443b8e51e0eac64b6dd848dfac84891f75464f8d25c7e1ed6e9c9640593922b9bd360629fd433fb69e2
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001366":
-  version: 1.0.30001367
-  resolution: "caniuse-lite@npm:1.0.30001367"
-  checksum: 9912aed182b8b3a834787424b56a0e71b5ecb5d2cb7235fb022227bc3a81202e8a34bebc5dc9cc504c515b4e052f825c36c2db4b0b880c10e195fe63673edfc6
+"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001286, caniuse-lite@npm:^1.0.30001366":
+  version: 1.0.30001392
+  resolution: "caniuse-lite@npm:1.0.30001392"
+  checksum: b46fdb4cd63f43e608c9378e9a4cfc1092407fccda32f13f53db8818e0e654e5b2b9e7aee76b95a1a4fd3f2c2eabd1157aef19905f2c60dfcec136b27ac5fce6
   languageName: node
   linkType: hard
 
@@ -23311,6 +23326,16 @@ __metadata:
     debug:
       optional: true
   checksum: eaec81c3e0ae57aae2422e38ad3539d0e7279b3a63f9681eeea319bb683dea67502c4e097136b8ce9721542b4e236e092b6b49e34e326cdd7733c274f0a3f378
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:^1.14.9":
+  version: 1.15.1
+  resolution: "follow-redirects@npm:1.15.1"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: 6aa4e3e3cdfa3b9314801a1cd192ba756a53479d9d8cca65bf4db3a3e8834e62139245cd2f9566147c8dfe2efff1700d3e6aefd103de4004a7b99985e71dd533
   languageName: node
   linkType: hard
 
@@ -32325,6 +32350,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"passport-auth0@npm:^1.4.3":
+  version: 1.4.3
+  resolution: "passport-auth0@npm:1.4.3"
+  dependencies:
+    axios: ^0.27.2
+    passport-oauth: ^1.0.0
+    passport-oauth2: ^1.6.0
+  checksum: 7658f58fd24831c67c783a9b0df3946bae9e6e42f8572747f17e77a2129d58ba21917a7531a4a328119b99a2a979ee857a1107c8e22e63e55739cdc1a8d1ccbc
+  languageName: node
+  linkType: hard
+
 "passport-bitbucket-oauth2@npm:^0.1.2":
   version: 0.1.2
   resolution: "passport-bitbucket-oauth2@npm:0.1.2"
@@ -32383,7 +32419,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-oauth2@npm:1.6.1, passport-oauth2@npm:1.x.x, passport-oauth2@npm:^1.1.2, passport-oauth2@npm:^1.4.0, passport-oauth2@npm:^1.6.1":
+"passport-oauth2@npm:1.6.1, passport-oauth2@npm:1.x.x, passport-oauth2@npm:^1.1.2, passport-oauth2@npm:^1.4.0, passport-oauth2@npm:^1.6.0, passport-oauth2@npm:^1.6.1":
   version: 1.6.1
   resolution: "passport-oauth2@npm:1.6.1"
   dependencies:
@@ -32396,7 +32432,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-oauth@npm:1.0.0":
+"passport-oauth@npm:1.0.0, passport-oauth@npm:^1.0.0":
   version: 1.0.0
   resolution: "passport-oauth@npm:1.0.0"
   dependencies:
