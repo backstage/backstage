@@ -14,25 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  configServiceRef,
-  createServiceFactory,
-  pluginMetadataServiceRef,
-  schedulerServiceRef,
-} from '@backstage/backend-plugin-api';
-import { TaskScheduler } from '@backstage/backend-tasks';
+import { createServiceRef } from '../system/types';
+import { Logger } from './loggerServiceRef';
 
-/** @public */
-export const schedulerFactory = createServiceFactory({
-  service: schedulerServiceRef,
-  deps: {
-    config: configServiceRef,
-    plugin: pluginMetadataServiceRef,
-  },
-  async factory({ config }) {
-    const taskScheduler = TaskScheduler.fromConfig(config);
-    return async ({ plugin }) => {
-      return taskScheduler.forPlugin(plugin.getId());
-    };
-  },
+/**
+ * @public
+ */
+export const rootLoggerServiceRef = createServiceRef<Logger>({
+  id: 'core.root.logger',
+  scope: 'root',
 });

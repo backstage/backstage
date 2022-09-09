@@ -19,19 +19,20 @@ import {
   configServiceRef,
   createServiceFactory,
   databaseServiceRef,
+  pluginMetadataServiceRef,
 } from '@backstage/backend-plugin-api';
 
 /** @public */
 export const databaseFactory = createServiceFactory({
   service: databaseServiceRef,
   deps: {
-    configFactory: configServiceRef,
+    config: configServiceRef,
+    plugin: pluginMetadataServiceRef,
   },
-  factory: async ({ configFactory }) => {
-    const config = await configFactory('root');
+  async factory({ config }) {
     const databaseManager = DatabaseManager.fromConfig(config);
-    return async (pluginId: string) => {
-      return databaseManager.forPlugin(pluginId);
+    return async ({ plugin }) => {
+      return databaseManager.forPlugin(plugin.getId());
     };
   },
 });
