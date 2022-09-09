@@ -76,23 +76,27 @@ export function createServiceRef<T>(options: {
   id: string;
   scope?: 'plugin';
   defaultFactory?: (
-    service: ServiceRef<T>,
+    service: ServiceRef<T, 'plugin'>,
   ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
 }): ServiceRef<T, 'plugin'>;
 export function createServiceRef<T>(options: {
   id: string;
   scope: 'root';
   defaultFactory?: (
-    service: ServiceRef<T>,
+    service: ServiceRef<T, 'root'>,
   ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
 }): ServiceRef<T, 'root'>;
 export function createServiceRef<T>(options: {
   id: string;
   scope?: 'plugin' | 'root';
-  defaultFactory?: (
-    service: ServiceRef<T>,
-  ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
-}): ServiceRef<T, 'plugin' | 'root'> {
+  defaultFactory?:
+    | ((
+        service: ServiceRef<T, 'plugin'>,
+      ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>)
+    | ((
+        service: ServiceRef<T, 'root'>,
+      ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>);
+}): ServiceRef<T> {
   const { id, scope = 'plugin', defaultFactory } = options;
   return {
     id,
