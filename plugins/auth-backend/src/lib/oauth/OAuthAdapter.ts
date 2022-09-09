@@ -50,7 +50,9 @@ export type OAuthAdapterOptions = {
   providerId: string;
   persistScopes?: boolean;
   appOrigin: string;
+  baseUrl: string;
   cookieConfig: ReturnType<CookieConfigurer>;
+  cookieConfigurer: CookieConfigurer;
   isOriginAllowed: (origin: string) => boolean;
   callbackUrl: string;
 };
@@ -65,24 +67,28 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       'providerId' | 'persistScopes' | 'callbackUrl'
     >,
   ): OAuthAdapter {
-    const { origin: appOrigin } = new URL(config.appUrl);
+    const { appUrl, baseUrl, isOriginAllowed } = config;
+    const { origin: appOrigin } = new URL(appUrl);
 
     const cookieConfigurer = config.cookieConfigurer ?? defaultCookieConfigurer;
     const cookieConfig = cookieConfigurer({
       providerId: options.providerId,
       baseUrl: config.baseUrl,
       callbackUrl: options.callbackUrl,
+      appOrigin,
     });
 
     return new OAuthAdapter(handlers, {
       ...options,
       appOrigin,
+      baseUrl,
       cookieConfig,
-      isOriginAllowed: config.isOriginAllowed,
+      cookieConfigurer,
+      isOriginAllowed,
     });
   }
 
-  private readonly baseCookieOptions: CookieOptions;
+  private baseCookieOptions: CookieOptions;
 
   constructor(
     private readonly handlers: OAuthHandlers,
@@ -90,6 +96,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
   ) {
     this.baseCookieOptions = {
       httpOnly: true,
+      sameSite: 'lax',
       ...this.options.cookieConfig,
     };
   }
@@ -146,6 +153,18 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
           throw new NotAllowedError(`Origin '${appOrigin}' is not allowed`);
         }
       }
+
+      // Update cookie options to reflect any changes for the appOrigin
+      const updatedCookieOptions = this.options.cookieConfigurer({
+        providerId: this.options.providerId,
+        baseUrl: this.options.baseUrl,
+        callbackUrl: this.options.callbackUrl,
+        appOrigin,
+      });
+      this.baseCookieOptions = {
+        ...this.baseCookieOptions,
+        ...updatedCookieOptions,
+      };
 
       // verify nonce cookie and state cookie on callback
       verifyNonce(req, this.options.providerId);

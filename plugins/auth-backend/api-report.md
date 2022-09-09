@@ -183,6 +183,7 @@ export type CookieConfigurer = (ctx: {
   providerId: string;
   baseUrl: string;
   callbackUrl: string;
+  appOrigin: string;
 }) => {
   domain: string;
   path: string;
@@ -283,7 +284,9 @@ export type OAuthAdapterOptions = {
   providerId: string;
   persistScopes?: boolean;
   appOrigin: string;
+  baseUrl: string;
   cookieConfig: ReturnType<CookieConfigurer>;
+  cookieConfigurer: CookieConfigurer;
   isOriginAllowed: (origin: string) => boolean;
   callbackUrl: string;
 };

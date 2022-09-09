@@ -37,6 +37,10 @@ const mockResponseData = {
 };
 
 describe('OAuthAdapter', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   class MyAuthProvider implements OAuthHandlers {
     async start() {
       return {
@@ -58,17 +62,19 @@ describe('OAuthAdapter', () => {
     }
   }
   const providerInstance = new MyAuthProvider();
-  const cookieConfig = {
+  const mockCookieConfig: ReturnType<CookieConfigurer> = {
     domain: 'example.com',
     path: '/auth/test-provider',
     secure: false,
-    sameSite: 'lax',
-  } as ReturnType<CookieConfigurer>;
+  };
+  const mockCookieConfigurer = jest.fn().mockReturnValue(mockCookieConfig);
 
   const oAuthProviderOptions = {
     providerId: 'test-provider',
     appOrigin: 'http://localhost:3000',
-    cookieConfig,
+    cookieConfig: mockCookieConfig,
+    cookieConfigurer: mockCookieConfigurer,
+    baseUrl: 'http://example.com:7007',
     tokenIssuer: {
       issueToken: async () => 'my-id-token',
       listPublicKeys: async () => ({ keys: [] }),
@@ -135,11 +141,13 @@ describe('OAuthAdapter', () => {
     } as unknown as express.Response;
 
     await oauthProvider.frameHandler(mockRequest, mockResponse);
+    expect(mockCookieConfigurer).toHaveBeenCalledTimes(1);
     expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
     expect(mockResponse.cookie).toHaveBeenCalledWith(
       expect.stringContaining('test-provider-refresh-token'),
       expect.stringContaining('token'),
       expect.objectContaining({
+        httpOnly: true,
         path: '/auth/test-provider',
         maxAge: THOUSAND_DAYS_MS,
         secure: false,
@@ -210,6 +218,7 @@ describe('OAuthAdapter', () => {
     } as unknown as express.Response;
 
     await oauthProvider.frameHandler(mockHandleReq, mockHandleRes);
+    expect(mockCookieConfigurer).toHaveBeenCalledTimes(1);
     expect(mockHandleRes.cookie).toHaveBeenCalledTimes(1);
     expect(mockHandleRes.cookie).toHaveBeenCalledWith(
       'test-provider-granted-scope',
@@ -303,7 +312,7 @@ describe('OAuthAdapter', () => {
     });
   });
 
-  it('sets the correct cookie configuration using a callbackUrl', async () => {
+  it('sets the correct cookie configuration using an unsecure callbackUrl', async () => {
     const config = {
       baseUrl: 'http://domain.org/auth',
       appUrl: 'http://domain.org',
@@ -312,7 +321,7 @@ describe('OAuthAdapter', () => {
 
     const oauthProvider = OAuthAdapter.fromConfig(config, providerInstance, {
       ...oAuthProviderOptions,
-      callbackUrl: 'https://authdomain.org/auth/test-provider/handler/frame',
+      callbackUrl: 'http://authdomain.org/auth/test-provider/handler/frame',
     });
 
     const mockRequest = {
@@ -330,14 +339,112 @@ describe('OAuthAdapter', () => {
     } as unknown as express.Response;
 
     await oauthProvider.start(mockRequest, mockResponse);
-
+    expect(mockCookieConfigurer).not.toHaveBeenCalled();
     expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
     expect(mockResponse.cookie).toHaveBeenCalledWith(
       `${oAuthProviderOptions.providerId}-nonce`,
       expect.any(String),
       expect.objectContaining({
+        httpOnly: true,
         domain: 'authdomain.org',
         path: '/auth/test-provider/handler',
+        secure: false,
+        sameSite: 'lax',
+      }),
+    );
+  });
+
+  it('sets the correct cookie configuration using an secure callbackUrl', async () => {
+    const config = {
+      baseUrl: 'https://domain.org/auth',
+      appUrl: 'http://domain.org',
+      isOriginAllowed: () => false,
+    };
+
+    const oauthProvider = OAuthAdapter.fromConfig(config, providerInstance, {
+      ...oAuthProviderOptions,
+      callbackUrl: 'https://authdomain.org/auth/test-provider/handler/frame',
+    });
+
+    const state = {
+      nonce: 'nonce',
+      env: 'development',
+    };
+
+    const mockRequest = {
+      cookies: {
+        'test-provider-nonce': 'nonce',
+      },
+      query: {
+        state: encodeState(state),
+      },
+    } as unknown as express.Request;
+
+    const mockResponse = {
+      cookie: jest.fn().mockReturnThis(),
+      setHeader: jest.fn().mockReturnThis(),
+      end: jest.fn().mockReturnThis(),
+    } as unknown as express.Response;
+
+    await oauthProvider.frameHandler(mockRequest, mockResponse);
+    expect(mockCookieConfigurer).not.toHaveBeenCalled();
+    expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
+    expect(mockResponse.cookie).toHaveBeenCalledWith(
+      expect.stringContaining('test-provider-refresh-token'),
+      expect.stringContaining('token'),
+      expect.objectContaining({
+        httpOnly: true,
+        domain: 'authdomain.org',
+        path: '/auth/test-provider',
+        secure: true,
+        sameSite: 'none',
+      }),
+    );
+  });
+
+  it('sets the correct cookie configuration using state', async () => {
+    const config = {
+      baseUrl: 'https://domain.org/auth',
+      appUrl: 'http://domain.org',
+      isOriginAllowed: () => true,
+    };
+
+    const oauthProvider = OAuthAdapter.fromConfig(config, providerInstance, {
+      ...oAuthProviderOptions,
+      callbackUrl: 'https://domain.org/auth/test-provider/handler/frame',
+    });
+
+    const state = {
+      nonce: 'nonce',
+      env: 'development',
+      origin: 'http://other.domain',
+    };
+
+    const mockRequest = {
+      cookies: {
+        'test-provider-nonce': 'nonce',
+      },
+      query: {
+        state: encodeState(state),
+      },
+    } as unknown as express.Request;
+
+    const mockResponse = {
+      cookie: jest.fn().mockReturnThis(),
+      setHeader: jest.fn().mockReturnThis(),
+      end: jest.fn().mockReturnThis(),
+    } as unknown as express.Response;
+
+    await oauthProvider.frameHandler(mockRequest, mockResponse);
+    expect(mockCookieConfigurer).not.toHaveBeenCalled();
+    expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
+    expect(mockResponse.cookie).toHaveBeenCalledWith(
+      expect.stringContaining('test-provider-refresh-token'),
+      expect.stringContaining('token'),
+      expect.objectContaining({
+        httpOnly: true,
+        domain: 'domain.org',
+        path: '/auth/test-provider',
         secure: true,
         sameSite: 'none',
       }),
