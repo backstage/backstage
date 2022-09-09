@@ -357,7 +357,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
                 {!currentStepId && <Progress />}
 
                 <div style={{ height: '80vh' }}>
-                  <TaskErrors taskStream={taskStream} />
+                  <TaskErrors error={taskStream.error} />
                   <LogViewer text={logAsString} />
                 </div>
               </Grid>

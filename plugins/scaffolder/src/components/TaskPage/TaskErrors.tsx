@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 import { Box } from '@material-ui/core';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { DismissableBanner } from '@backstage/core-components';
-import { TaskStream } from '../hooks/useEventStream';
 
-type TaskPageLinksProps = {
-  taskStream: TaskStream;
+type TaskErrorsProps = {
+  error?: Error;
 };
 
-export const TaskErrors = ({ taskStream }: TaskPageLinksProps) => {
-  return taskStream.error ? (
+export const TaskErrors = ({ error }: TaskErrorsProps) => {
+  const id = useRef('');
+
+  useEffect(() => {
+    id.current = String(Math.random());
+  }, [error]);
+  return error ? (
     <Box>
       <DismissableBanner
-        id={String(Math.random())}
+        id={id.current}
         variant="warning"
-        message={taskStream.error.message}
+        message={error.message}
       />
     </Box>
   ) : null;
