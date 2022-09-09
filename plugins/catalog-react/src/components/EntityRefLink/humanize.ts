@@ -21,7 +21,7 @@ import {
 } from '@backstage/catalog-model';
 
 /**
- * @property defaultNamespace - if set to false then namespace is never omitted,
+ * @param defaultNamespace - if set to false then namespace is never omitted,
  * if set to string which matches namespace of entity then omitted
  *
  * @public */
