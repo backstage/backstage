@@ -40,7 +40,7 @@ kubernetes:
   clusterLocatorMethods:
     - type: 'config'
       clusters:
-        - name: Random cluster name in backstage
+        - name: My AKS cluster
           url: ${AZURE_CLUSTER_API_SERVER_ADDRESS}
           authProvider: azure
           skipTLSVerify: true
