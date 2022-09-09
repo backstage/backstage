@@ -69,9 +69,7 @@ export type ServiceFactory<TService = unknown> =
       >;
     };
 
-/**
- * @public
- */
+/** @public */
 export function createServiceRef<T>(options: {
   id: string;
   scope?: 'plugin';
@@ -79,6 +77,7 @@ export function createServiceRef<T>(options: {
     service: ServiceRef<T, 'plugin'>,
   ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
 }): ServiceRef<T, 'plugin'>;
+/** @public */
 export function createServiceRef<T>(options: {
   id: string;
   scope: 'root';
