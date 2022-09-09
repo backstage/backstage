@@ -127,10 +127,10 @@ nav:
       - Create a Backstage Plugin: 'plugins/create-a-plugin.md'
       - Plugin Development: 'plugins/plugin-development.md'
       - Structure of a plugin: 'plugins/structure-of-a-plugin.md'
-      - Plugin Development: 'plugins/plugin-development.md'
       - Integrate into the Software Catalog: 'plugins/integrating-plugin-into-software-catalog.md'
       - Composability System: 'plugins/composability.md'
       - Plugin Analytics: 'plugins/analytics.md'
+      - Feature Flags: 'plugins/feature-flags.md'
       - Backends and APIs:
           - Proxying: 'plugins/proxying.md'
           - Backend plugin: 'plugins/backend-plugin.md'
