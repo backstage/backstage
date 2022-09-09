@@ -83,6 +83,7 @@ describe('GitHubOrgEntityProvider', () => {
 
       const entityProviderConnection: EntityProviderConnection = {
         applyMutation: jest.fn(),
+        refresh: jest.fn(),
       };
 
       const logger = getVoidLogger();

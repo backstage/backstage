@@ -27,6 +27,13 @@ export type EntityProviderMutation =
   | { type: 'delta'; added: DeferredEntity[]; removed: DeferredEntity[] };
 
 /**
+ * @public
+ */
+export type EntityProviderRefreshOptions = {
+  keys: string[];
+};
+
+/**
  * The EntityProviderConnection is the connection between the catalog and the entity provider.
  * The EntityProvider use this connection to add and remove entities from the catalog.
  * @public
@@ -36,6 +43,11 @@ export interface EntityProviderConnection {
    * Applies either a full or delta update to the catalog engine.
    */
   applyMutation(mutation: EntityProviderMutation): Promise<void>;
+
+  /**
+   * Schedules a refresh on all of the entities that has a matching refresh key associated with the provided keys.
+   */
+  refresh(options: EntityProviderRefreshOptions): Promise<void>;
 }
 
 /**

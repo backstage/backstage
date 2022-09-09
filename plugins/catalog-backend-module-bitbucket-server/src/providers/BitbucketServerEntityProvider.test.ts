@@ -221,6 +221,7 @@ describe('BitbucketServerEntityProvider', () => {
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
+      refresh: jest.fn(),
     };
     const provider = BitbucketServerEntityProvider.fromConfig(config, {
       logger,
@@ -296,6 +297,7 @@ describe('BitbucketServerEntityProvider', () => {
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
+      refresh: jest.fn(),
     };
     const provider = BitbucketServerEntityProvider.fromConfig(config, {
       logger,

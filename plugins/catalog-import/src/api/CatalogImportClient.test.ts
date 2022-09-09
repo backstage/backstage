@@ -100,6 +100,7 @@ describe('CatalogImportClient', () => {
     refreshEntity: jest.fn(),
     getEntityAncestors: jest.fn(),
     getEntityFacets: jest.fn(),
+    validateEntity: jest.fn(),
   };
 
   let catalogImportClient: CatalogImportClient;

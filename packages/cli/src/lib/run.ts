@@ -25,7 +25,7 @@ import { promisify } from 'util';
 import { LogFunc } from './logging';
 import { assertError, ForwardedError } from '@backstage/errors';
 
-const execFile = promisify(execFileCb);
+export const execFile = promisify(execFileCb);
 
 type SpawnOptionsPartialEnv = Omit<SpawnOptions, 'env'> & {
   env?: Partial<NodeJS.ProcessEnv>;
