@@ -116,6 +116,7 @@ export function createServiceRef<T>(options: {
   };
 }
 
+/** @ignore */
 type ServiceRefsToInstances<
   T extends { [key in string]: ServiceRef<unknown> },
   TScope extends 'root' | 'plugin' = 'root' | 'plugin',
