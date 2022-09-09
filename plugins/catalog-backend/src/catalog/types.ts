@@ -39,6 +39,14 @@ export type EntityPagination = {
 };
 
 /**
+ * A sorting rule for entities.
+ */
+export type EntitySortField = {
+  field: string;
+  order?: 'asc' | 'desc' | undefined;
+};
+
+/**
  * Matches rows in the search table.
  * @public
  */
@@ -190,9 +198,8 @@ export interface PaginatedEntitiesInitialRequest {
   fields?: (entity: Entity) => Entity;
   limit?: number;
   filter?: EntityFilter;
-  sortField?: string;
+  sortFields?: EntitySortField[];
   query?: string;
-  sortFieldOrder?: 'asc' | 'desc' | undefined;
 }
 
 /**
@@ -239,20 +246,19 @@ export interface PaginatedEntitiesResponse {
  */
 export type Cursor = {
   /**
-   * the id of the field used for sorting the data.
-   * For example, metadata.name
+   * An array of fields used for sorting the data.
+   * For example, [ { field: 'metadata.name', order: 'asc' } ]
    */
-  sortField: string;
+  sortFields: EntitySortField[];
   /**
-   * The value of the last item returned
-   * by the request. This is used for performing
-   * cursor based pagination.
+   * The value of the cursor of the last item returned.
+   * This is used for performing pagination.
    */
-  sortFieldId: string;
+  sortFieldIds: string[];
+
   /**
-   * In which order the data should be paginated.
+   * A filter to apply on the full list of entities.
    */
-  sortFieldOrder: 'asc' | 'desc';
   filter?: EntityFilter;
   /**
    * true if the cursor is a previous cursor.

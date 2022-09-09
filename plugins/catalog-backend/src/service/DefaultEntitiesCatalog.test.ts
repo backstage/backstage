@@ -582,7 +582,7 @@ describe('DefaultEntitiesCatalog', () => {
         const request1: PaginatedEntitiesInitialRequest = {
           filter,
           limit,
-          sortField: 'metadata.name',
+          sortFields: [{ field: 'metadata.name' }],
         };
         const response1 = await catalog.paginatedEntities(request1);
         expect(response1.entities).toEqual([entityFrom('A'), entityFrom('B')]);
@@ -734,8 +734,7 @@ describe('DefaultEntitiesCatalog', () => {
         const request1: PaginatedEntitiesInitialRequest = {
           filter,
           limit,
-          sortField: 'metadata.name',
-          sortFieldOrder: 'desc',
+          sortFields: [{ field: 'metadata.name', order: 'desc' }],
         };
         const response1 = await catalog.paginatedEntities(request1);
         expect(response1.entities).toEqual([entityFrom('G'), entityFrom('F')]);
@@ -885,7 +884,8 @@ describe('DefaultEntitiesCatalog', () => {
         const request: PaginatedEntitiesInitialRequest = {
           filter,
           limit: 100,
-          sortField: 'metadata.name',
+
+          sortFields: [{ field: 'metadata.name' }],
           query: 'cAt ',
         };
         const response = await catalog.paginatedEntities(request);
