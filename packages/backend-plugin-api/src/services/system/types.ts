@@ -41,7 +41,9 @@ export type InternalServiceRef<T> = ServiceRef<T> & {
    * The default factory that will be used to create service
    * instances if no other factory is provided.
    */
-  __defaultFactory?: (service: ServiceRef<T>) => Promise<ServiceFactory<T>>;
+  __defaultFactory?: (
+    service: ServiceRef<T>,
+  ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
 };
 
 /** @public */
@@ -67,7 +69,9 @@ export type ServiceFactory<TService = unknown> = {
  */
 export function createServiceRef<T>(options: {
   id: string;
-  defaultFactory?: (service: ServiceRef<T>) => Promise<ServiceFactory<T>>;
+  defaultFactory?: (
+    service: ServiceRef<T>,
+  ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
 }): ServiceRef<T> {
   const { id, defaultFactory } = options;
   return {
@@ -90,10 +94,22 @@ export function createServiceFactory<
   TService,
   TImpl extends TService,
   TDeps extends { [name in string]: unknown },
+  TOpts extends { [name in string]: unknown } | undefined = undefined,
 >(factory: {
   service: ServiceRef<TService>;
   deps: TypesToServiceRef<TDeps>;
-  factory(deps: DepsToDepFactories<TDeps>): Promise<FactoryFunc<TImpl>>;
-}): ServiceFactory<TService> {
-  return factory as ServiceFactory<TService>;
+  factory(
+    deps: DepsToDepFactories<TDeps>,
+    options: TOpts,
+  ): Promise<FactoryFunc<TImpl>>;
+}): undefined extends TOpts
+  ? (options?: TOpts) => ServiceFactory<TService>
+  : (options: TOpts) => ServiceFactory<TService> {
+  return (options?: TOpts) => ({
+    service: factory.service,
+    deps: factory.deps,
+    factory(deps: DepsToDepFactories<TDeps>) {
+      return factory.factory(deps, options!);
+    },
+  });
 }

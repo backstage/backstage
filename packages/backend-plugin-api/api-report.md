@@ -109,16 +109,28 @@ export function createServiceFactory<
   TDeps extends {
     [name in string]: unknown;
   },
+  TOpts extends
+    | {
+        [name in string]: unknown;
+      }
+    | undefined = undefined,
 >(factory: {
   service: ServiceRef<TService>;
   deps: TypesToServiceRef<TDeps>;
-  factory(deps: DepsToDepFactories<TDeps>): Promise<FactoryFunc<TImpl>>;
-}): ServiceFactory<TService>;
+  factory(
+    deps: DepsToDepFactories<TDeps>,
+    options: TOpts,
+  ): Promise<FactoryFunc<TImpl>>;
+}): undefined extends TOpts
+  ? (options?: TOpts) => ServiceFactory<TService>
+  : (options: TOpts) => ServiceFactory<TService>;
 
 // @public (undocumented)
 export function createServiceRef<T>(options: {
   id: string;
-  defaultFactory?: (service: ServiceRef<T>) => Promise<ServiceFactory<T>>;
+  defaultFactory?: (
+    service: ServiceRef<T>,
+  ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
 }): ServiceRef<T>;
 
 // @public (undocumented)
