@@ -15,8 +15,9 @@
  */
 
 import { Command, OptionValues } from 'commander';
-import { paths } from '../lib/paths';
-import { runCheck } from '../lib/run';
+import { PackageGraph } from '../../lib/monorepo';
+import { paths } from '../../lib/paths';
+import { runCheck } from '../../lib/run';
 
 function includesAnyOf(hayStack: string[], ...needles: string[]) {
   for (const needle of needles) {
@@ -27,7 +28,25 @@ function includesAnyOf(hayStack: string[], ...needles: string[]) {
   return false;
 }
 
-export default async (_opts: OptionValues, cmd: Command) => {
+function removeOptionArg(args: string[], option: string) {
+  let changed = false;
+  do {
+    changed = false;
+
+    const index = args.indexOf(option);
+    if (index >= 0) {
+      changed = true;
+      args.splice(index, 2);
+    }
+    const indexEq = args.findIndex(arg => arg.startsWith(`${option}=`));
+    if (indexEq >= 0) {
+      changed = true;
+      args.splice(indexEq, 1);
+    }
+  } while (changed);
+}
+
+export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   // all args are forwarded to jest
   let parent = cmd;
   while (parent.parent) {
@@ -65,6 +84,26 @@ export default async (_opts: OptionValues, cmd: Command) => {
     }
   }
 
+  if (opts.since) {
+    removeOptionArg(args, '--since');
+  }
+
+  if (opts.since && !args.some(arg => arg.startsWith('--selectProjects'))) {
+    const packages = await PackageGraph.listTargetPackages();
+    const graph = PackageGraph.fromPackages(packages);
+    const changedPackages = await graph.listChangedPackages({
+      ref: opts.since,
+    });
+
+    const packageNames = Array.from(
+      graph.collectPackageNames(
+        changedPackages.map(pkg => pkg.name),
+        pkg => pkg.allLocalDependents.keys(),
+      ),
+    );
+    args.push('--selectProjects', ...packageNames);
+  }
+
   // This is the only thing that is not implemented by jest.run(), so we do it here instead
   // https://github.com/facebook/jest/blob/cd8828f7bbec6e55b4df5e41e853a5133c4a3ee1/packages/jest-cli/bin/jest.js#L12
   if (!process.env.NODE_ENV) {
@@ -84,4 +123,4 @@ export default async (_opts: OptionValues, cmd: Command) => {
   }
 
   await require('jest').run(args);
-};
+}
