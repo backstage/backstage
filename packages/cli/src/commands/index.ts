@@ -72,6 +72,17 @@ export function registerRepoCommand(program: Command) {
     .action(
       lazy(() => import('./repo/list-deprecations').then(m => m.command)),
     );
+
+  command
+    .command('test')
+    .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
+    .option(
+      '--since <ref>',
+      'Only test packages that changed since the specified ref',
+    )
+    .helpOption(', --backstage-cli-help') // Let Jest handle help
+    .description('Run tests, forwarding args to Jest, defaulting to watch mode')
+    .action(lazy(() => import('./repo/test').then(m => m.command)));
 }
 
 export function registerScriptCommand(program: Command) {
