@@ -6,7 +6,7 @@ description: Details the process of defining setting and reading a plugin featur
 
 Backstage offers the ability to define feature flags inside a plugin. This allows you to restrict parts of your plugin to those individual users who have toggled the feature flag to on.
 
-This page describes the process of defining setting and reading a plugin feature flag. If you are looking for using Feature flags with software templates that can be found under [Writing Templates](https://backstage.io/docs/features/software-templates/writing-templates#remove-sections-or-fields-based-on-feature-flags).
+This page describes the process of defining setting and reading a plugin feature flag. If you are looking for using feature flags with software templates that can be found under [Writing Templates](https://backstage.io/docs/features/software-templates/writing-templates#remove-sections-or-fields-based-on-feature-flags).
 
 ## Defining a Feature Flag
 
