@@ -197,7 +197,7 @@ jobs:
 
       - name: test changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}
-        run: yarn lerna run test --since origin/master -- --coverage --runInBand
+        run: yarn backstage-cli repo test --maxWorkers=2 --workerIdleMemoryLimit=1300M --since origin/master
         env:
           BACKSTAGE_NEXT_TESTS: 1
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
@@ -208,7 +208,7 @@ jobs:
       - name: test all packages (and upload coverage)
         if: ${{ steps.yarn-lock.outcome == 'failure' }}
         run: |
-          yarn lerna run test -- --coverage --runInBand
+          yarn backstage-cli repo test --maxWorkers=2 --workerIdleMemoryLimit=1300M --coverage
           bash <(curl -s https://codecov.io/bash) -N $(git rev-parse FETCH_HEAD)
         env:
           BACKSTAGE_NEXT_TESTS: 1
