@@ -4402,7 +4402,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-azure-functions-backend@workspace:plugins/azure-functions-backend":
+"@backstage/plugin-azure-functions-backend@^0.1.0, @backstage/plugin-azure-functions-backend@workspace:plugins/azure-functions-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-azure-functions-backend@workspace:plugins/azure-functions-backend"
   dependencies:
@@ -4423,7 +4423,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-azure-functions@workspace:plugins/azure-functions":
+"@backstage/plugin-azure-functions@^0.1.0, @backstage/plugin-azure-functions@workspace:plugins/azure-functions":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-azure-functions@workspace:plugins/azure-functions"
   dependencies:
@@ -22863,6 +22863,7 @@ __metadata:
     "@backstage/plugin-apache-airflow": ^0.2.2-next.2
     "@backstage/plugin-api-docs": ^0.8.9-next.2
     "@backstage/plugin-azure-devops": ^0.2.0-next.2
+    "@backstage/plugin-azure-functions": ^0.1.0
     "@backstage/plugin-badges": ^0.2.33-next.2
     "@backstage/plugin-catalog-common": ^1.0.6-next.0
     "@backstage/plugin-catalog-graph": ^0.2.21-next.1
@@ -22966,6 +22967,7 @@ __metadata:
     "@backstage/plugin-auth-backend": ^0.16.0-next.2
     "@backstage/plugin-auth-node": ^0.2.5-next.2
     "@backstage/plugin-azure-devops-backend": ^0.3.15-next.1
+    "@backstage/plugin-azure-functions-backend": ^0.1.0
     "@backstage/plugin-badges-backend": ^0.1.30-next.0
     "@backstage/plugin-catalog-backend": ^1.4.0-next.2
     "@backstage/plugin-code-coverage-backend": ^0.2.2-next.1
