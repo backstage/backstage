@@ -1,0 +1,9 @@
+---
+title: Azure Functions
+author: FRISS
+authorUrl: https://friss.com
+category: Infrastructure
+description: View Azure Functions for your components in Backstage.
+documentation: https://github.com/backstage/backstage/tree/master/plugins/azure-functions
+iconUrl: img/azurefunctions-icon.svg
+npmPackageName: '@backstage/plugin-azure-functions'

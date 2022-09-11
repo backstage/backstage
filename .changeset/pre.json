@@ -52,6 +52,8 @@
     "@backstage/plugin-azure-devops": "0.1.24",
     "@backstage/plugin-azure-devops-backend": "0.3.14",
     "@backstage/plugin-azure-devops-common": "0.2.4",
+    "@backstage/plugin-azure-functions": "0.1.0",
+    "@backstage/plugin-azure-functions-backend": "0.1.0",
     "@backstage/plugin-badges": "0.2.32",
     "@backstage/plugin-badges-backend": "0.1.29",
     "@backstage/plugin-bazaar": "0.1.23",
