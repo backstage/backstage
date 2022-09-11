@@ -294,13 +294,13 @@ describe('discovery', () => {
     await expect(
       rendered.findByText('Path at inside: /foo/blob/baz'),
     ).resolves.toBeInTheDocument();
-    rendered.debug();
   });
 
   it('should throw errors for routing to other routeRefs with unsupported parameters', () => {
     const root = (
       <MemoryRouter initialEntries={['/']}>
         <Routes>
+          <Route path="/" element={<div />} />
           <Route path="foo:id" element={<ExtensionPage3 />}>
             <Route
               path="bar"
