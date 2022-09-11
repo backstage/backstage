@@ -51,7 +51,7 @@ export const EntityAzureFunctionsOverviewCard = azureFunctionsPlugin.provide(
     name: 'EntityAzureFunctionsOverviewCard',
     component: {
       lazy: () =>
-        import('./components/AzureFunctionsOverview/AzureFunctionsOverview').then(
+        import('./components/AzureFunctionsOverviewComponent/AzureFunctionsOverview').then(
           m => m.AzureFunctionsOverviewWidget,
         ),
     },

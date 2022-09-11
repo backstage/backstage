@@ -36,14 +36,15 @@ export class AzureFunctionsBackendClient implements AzureFunctionsApi {
     functionName: string;
   }): Promise<FunctionsData[]> {
     try {
-      const url = `${await this.discoveryApi.getBaseUrl('azure-functions')}/get?functionName=${functionName}`;
+      const url = `${await this.discoveryApi.getBaseUrl('azure-functions')}/list`;
       const { token: idToken } = await this.identityApi.getCredentials();
       const response = await fetch(url, {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(idToken && { Authorization: `Bearer ${idToken}` }),
-        }
+        },
+        body: JSON.stringify({ functionName: functionName })
       });
       return await response.json();
     } catch (e: any) {

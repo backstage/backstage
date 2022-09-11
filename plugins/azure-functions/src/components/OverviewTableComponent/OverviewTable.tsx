@@ -21,17 +21,9 @@ import {
   Link,
   LinearProgress
 } from '@material-ui/core';
-import { Entity } from '@backstage/catalog-model';
-import { useFunctions } from '../../hooks/useFunctions';
 import { FunctionsData } from '../../api/types';
-import {
-  AZURE_FUNCTIONS_ANNOTATION,
-  useServiceEntityAnnotations,
-} from '../../hooks/useServiceEntityAnnotations';
-import { MissingAnnotationEmptyState, Table, TableColumn } from '@backstage/core-components';
+import { Table, TableColumn } from '@backstage/core-components';
 import FlashOnIcon from '@material-ui/icons/FlashOn'
-import ErrorBoundary from '../ErrorBoundary';
-import { useEntity } from '@backstage/plugin-catalog-react';
 
 type States = 'Waiting' | 'Running' | 'Paused' | 'Failed';
 
@@ -58,8 +50,6 @@ const State = ({ value }: { value: States }) => {
     </Box>
   );
 };
-
-
 
 type FunctionTableProps = {
   data: FunctionsData[];
@@ -95,7 +85,7 @@ const DEFAULT_COLUMNS: TableColumn<FunctionsData>[] = [
   },
 ];
 
-const OverviewComponent = ({ data, loading }: FunctionTableProps) => {
+export const OverviewTable = ({ data, loading }: FunctionTableProps) => {
   const columns: TableColumn<FunctionsData>[] = [...DEFAULT_COLUMNS];
   const tableStyle = {
     minWidth: '0',
@@ -122,33 +112,4 @@ const OverviewComponent = ({ data, loading }: FunctionTableProps) => {
       />
     </Card>
   );
-};
-
-export const isAzureFunctionsAvailable = (entity: Entity) =>
-  entity?.metadata.annotations?.[AZURE_FUNCTIONS_ANNOTATION];
-
-const AzureFunctionsOverview = ({ entity }: { entity: Entity }) => {
-  const { functionsName } = useServiceEntityAnnotations(entity);
-
-  const [functionsData] = useFunctions({
-    functionsName
-  });
-
-  return (
-    <><OverviewComponent data={functionsData.data ?? []} loading={functionsData.loading} /></>
-  );
-};
-
-export const AzureFunctionsOverviewWidget = () => {
-  const { entity } = useEntity();
-
-  if (!isAzureFunctionsAvailable(entity)) {
-    return (<MissingAnnotationEmptyState annotation={AZURE_FUNCTIONS_ANNOTATION} />);
-  }
-
-  return (
-    <ErrorBoundary>
-      <AzureFunctionsOverview entity={entity} />
-    </ErrorBoundary>
-  )
 };

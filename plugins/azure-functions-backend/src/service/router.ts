@@ -38,8 +38,8 @@ export async function createRouter(
     logger.info('PONG!');
     response.send({ status: 'ok' });
   });
-  router.get('/get', async (request, response) => {
-    response.json(await azureWebManagementApi.list({ functionName: request.query.functionName!.toString() }))
+  router.post('/list', async (request, response) => {
+    response.json(await azureWebManagementApi.list({ functionName: request.body.functionName!.toString() }))
   });
   router.use(errorHandler());
   return router;

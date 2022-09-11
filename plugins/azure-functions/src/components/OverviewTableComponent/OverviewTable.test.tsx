@@ -27,13 +27,12 @@ import {
   setupRequestMockHandlers,
   TestApiProvider,
 } from '@backstage/test-utils';
-import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { setupServer } from 'msw/node';
 import {
-  entityMock,
   functionResponseMock,
 } from '../../mocks/mocks';
-import { azureFunctionsApiRef, AzureFunctionsOverviewWidget } from '../..';
+import { azureFunctionsApiRef } from '../..';
+import { OverviewTable } from './OverviewTable';
 
 const errorApiMock = { post: jest.fn(), error$: jest.fn() };
 const identityApiMock = (getCredentials: any) => ({
@@ -61,9 +60,11 @@ describe('AzureFunctionsOverviewWidget', () => {
 
   beforeEach(() => {
     worker.use(
-      rest.get(
-        'https://portal.azure.com/#@test/resource/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock_rg/providers/Microsoft.Web/sites/func-mock',
-        (_, res, ctx) => res(ctx.json(functionResponseMock)),
+      rest.post(
+        '/list',
+        (_, res, ctx) => {
+          res(ctx.json(functionResponseMock));
+        },
       ),
     );
   });
@@ -71,20 +72,19 @@ describe('AzureFunctionsOverviewWidget', () => {
   it('should display an overview table with the data from the requests', async () => {
     const rendered = render(
       <TestApiProvider apis={apis}>
-        <EntityProvider entity={entityMock}>
-          <AzureFunctionsOverviewWidget />
-        </EntityProvider>
+          <OverviewTable data={[functionResponseMock]} loading={false} />
       </TestApiProvider>,
     );
+
     expect(
-      await rendered.findByText(functionResponseMock.name),
+      await rendered.findByText(functionResponseMock.functionName),
     ).toBeInTheDocument();
     expect(
-      await rendered.findByText(functionResponseMock.properties.state),
+      await rendered.findByText(functionResponseMock.state),
     ).toBeInTheDocument();
     expect(
       await rendered.findByText(
-        new Date(functionResponseMock.properties.lastModifiedTimeUtc).toUTCString(),
+        new Date(functionResponseMock.lastModifiedDate).toUTCString(),
       ),
     ).toBeInTheDocument();
   });
