@@ -62,10 +62,10 @@ export const ProviderSettingsItem = (props: {
             .then((profileResponse: ProfileInfo | undefined) => {
               if (sessionState === SessionState.SignedIn) {
                 setSignedIn(true);
-              } else {
-                setSignedIn(profileResponse !== undefined);
               }
-              setProfile(profileResponse ?? {});
+              if (profileResponse) {
+                setProfile(profileResponse);
+              }
             });
         }
       });
