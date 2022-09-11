@@ -10,6 +10,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
+import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
@@ -24,7 +25,7 @@ export const ProviderSettingsItem: (props: {
   title: string;
   description: string;
   icon: IconComponent;
-  apiRef: ApiRef<SessionApi>;
+  apiRef: ApiRef<ProfileInfoApi & SessionApi>;
 }) => JSX.Element;
 
 // @public (undocumented)
