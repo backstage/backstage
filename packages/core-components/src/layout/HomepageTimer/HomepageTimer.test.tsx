@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { renderWithEffects, TestApiProvider } from '@backstage/test-utils';
+import {
+  renderWithEffects,
+  TestApiProvider,
+  withLogCollector,
+} from '@backstage/test-utils';
 import { HomepageTimer } from './HomepageTimer';
 import React from 'react';
 import { lightTheme } from '@backstage/theme';
@@ -35,13 +39,18 @@ it('changes default timezone to GMT', async () => {
     context: 'test',
   });
 
-  const rendered = await renderWithEffects(
-    <ThemeProvider theme={lightTheme}>
-      <TestApiProvider apis={[[configApiRef, configApi]]}>
-        <HomepageTimer />
-      </TestApiProvider>
-    </ThemeProvider>,
-  );
+  const { warn } = await withLogCollector(async () => {
+    const rendered = await renderWithEffects(
+      <ThemeProvider theme={lightTheme}>
+        <TestApiProvider apis={[[configApiRef, configApi]]}>
+          <HomepageTimer />
+        </TestApiProvider>
+      </ThemeProvider>,
+    );
 
-  expect(rendered.getByText('GMT')).toBeInTheDocument();
+    expect(rendered.getByText('GMT')).toBeInTheDocument();
+  });
+  expect(warn).toEqual([
+    'The timezone America/New_Pork is invalid. Defaulting to GMT',
+  ]);
 });
