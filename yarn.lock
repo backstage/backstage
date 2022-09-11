@@ -3100,7 +3100,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/catalog-model@^1.0.0, @backstage/catalog-model@^1.0.1, @backstage/catalog-model@^1.0.3, @backstage/catalog-model@^1.1.0, @backstage/catalog-model@workspace:packages/catalog-model":
+"@backstage/catalog-model@^1.0.0, @backstage/catalog-model@^1.0.1, @backstage/catalog-model@^1.0.3, @backstage/catalog-model@^1.1.0, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
   version: 0.0.0-use.local
   resolution: "@backstage/catalog-model@workspace:packages/catalog-model"
   dependencies:
@@ -4166,11 +4166,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-azure-functions@workspace:plugins/azure-functions"
   dependencies:
+    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": ^0.19.0-next.2
     "@backstage/core-app-api": ^1.1.0-next.2
     "@backstage/core-components": ^0.11.1-next.2
     "@backstage/core-plugin-api": ^1.0.6-next.2
     "@backstage/dev-utils": ^1.0.6-next.1
+    "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": ^1.2.0-next.2
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.9.13
@@ -4765,7 +4767,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-react@^1.1.4-next.0, @backstage/plugin-catalog-react@^1.1.4-next.1, @backstage/plugin-catalog-react@workspace:plugins/catalog-react":
+"@backstage/plugin-catalog-react@^1.1.4-next.0, @backstage/plugin-catalog-react@^1.1.4-next.1, @backstage/plugin-catalog-react@workspace:^, @backstage/plugin-catalog-react@workspace:plugins/catalog-react":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-react@workspace:plugins/catalog-react"
   dependencies:

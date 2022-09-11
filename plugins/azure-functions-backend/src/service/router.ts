@@ -39,7 +39,7 @@ export async function createRouter(
     response.send({ status: 'ok' });
   });
   router.get('/get', async (request, response) => {
-    response.json(await azureWebManagementApi.list({ functionName: request.query['functionName']!.toString() }))
+    response.json(await azureWebManagementApi.list({ functionName: request.query.functionName!.toString() }))
   });
   router.use(errorHandler());
   return router;

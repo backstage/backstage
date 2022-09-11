@@ -42,7 +42,7 @@ export class AzureWebManagementApi {
     constructor(private readonly config: AzureFunctionsConfig) {
         const creds = new ClientSecretCredential(config.tenantId, config.clientId, config.clientSecret);
         for (const subscription of config.allowedSubscriptions) {
-            if (!this.clients.some(c => c.subscriptionId == subscription.id)) {
+            if (!this.clients.some(c => c.subscriptionId === subscription.id)) {
                 this.clients.push(new WebSiteManagementClient(creds, subscription.id));
             }
         }

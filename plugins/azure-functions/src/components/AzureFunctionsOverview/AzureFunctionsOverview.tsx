@@ -29,7 +29,7 @@ import {
   useServiceEntityAnnotations,
 } from '../../hooks/useServiceEntityAnnotations';
 import { MissingAnnotationEmptyState, Table, TableColumn } from '@backstage/core-components';
-import { FlashOn } from '@material-ui/icons'
+import FlashOnIcon from '@material-ui/icons/FlashOn'
 import ErrorBoundary from '../ErrorBoundary';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
@@ -107,7 +107,7 @@ const OverviewComponent = ({ data, loading }: FunctionTableProps) => {
       <Table
         title={
           <Box display="flex" alignItems="center">
-            <FlashOn style={{ fontSize: 30 }} />
+            <FlashOnIcon style={{ fontSize: 30 }} />
             <Box mr={1} />
             Azure Functions
           </Box>
@@ -135,7 +135,7 @@ const AzureFunctionsOverview = ({ entity }: { entity: Entity }) => {
   });
 
   return (
-    <>{<OverviewComponent data={functionsData.data ?? []} loading={functionsData.loading} />}</>
+    <><OverviewComponent data={functionsData.data ?? []} loading={functionsData.loading} /></>
   );
 };
 
