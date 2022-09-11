@@ -19,6 +19,7 @@ import mockFs from 'mock-fs';
 import child_process from 'child_process';
 import path from 'path';
 import {
+  Task,
   buildAppTask,
   checkAppExistsTask,
   checkPathExistsTask,
@@ -26,6 +27,13 @@ import {
   moveAppTask,
   templatingTask,
 } from './tasks';
+
+jest.spyOn(Task, 'log').mockReturnValue(undefined);
+jest.spyOn(Task, 'error').mockReturnValue(undefined);
+jest.spyOn(Task, 'section').mockReturnValue(undefined);
+jest
+  .spyOn(Task, 'forItem')
+  .mockImplementation((_a, _b, taskFunc) => taskFunc());
 
 jest.mock('child_process');
 
