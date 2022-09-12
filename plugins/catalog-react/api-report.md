@@ -436,7 +436,7 @@ export function humanizeEntityRef(
   entityRef: Entity | CompoundEntityRef,
   opts?: {
     defaultKind?: string;
-    defaultNamespace?: string | boolean;
+    defaultNamespace?: string | false;
   },
 ): string;
 
