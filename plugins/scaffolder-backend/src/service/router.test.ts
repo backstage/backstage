@@ -151,7 +151,6 @@ describe('createRouter', () => {
         database: createDatabase(),
         catalogClient,
         reader: mockUrlReader,
-        taskStore: databaseTaskStore,
         taskBroker,
       });
       app = express().use(router);
@@ -751,7 +750,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         database: createDatabase(),
         catalogClient,
         reader: mockUrlReader,
-        taskStore: databaseTaskStore,
         taskBroker,
         identity: { getIdentity },
       });

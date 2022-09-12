@@ -554,8 +554,6 @@ export interface RouterOptions {
   // (undocumented)
   taskBroker?: TaskBroker;
   // (undocumented)
-  taskStore?: DatabaseTaskStore;
-  // (undocumented)
   taskWorkers?: number;
 }
 
