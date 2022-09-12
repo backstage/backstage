@@ -68,6 +68,6 @@ describe('createValidator', () => {
 
     /* THEN */
     expect(result).not.toBeNull();
-    expect(result.p1.addError).toHaveBeenCalledTimes(1);
+    expect(result.p1?.addError).toHaveBeenCalledTimes(1);
   });
 });

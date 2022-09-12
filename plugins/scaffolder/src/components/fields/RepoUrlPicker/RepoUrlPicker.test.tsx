@@ -32,6 +32,7 @@ import {
   SecretsContext,
 } from '../../secrets/SecretsContext';
 import { act, fireEvent } from '@testing-library/react';
+import { Field } from '@rjsf/utils';
 
 describe('RepoUrlPicker', () => {
   const mockScaffolderApi: Partial<ScaffolderApi> = {
@@ -68,7 +69,7 @@ describe('RepoUrlPicker', () => {
             <Form
               schema={{ type: 'string' }}
               uiSchema={{ 'ui:field': 'RepoUrlPicker' }}
-              fields={{ RepoUrlPicker: RepoUrlPicker }}
+              fields={{ RepoUrlPicker: RepoUrlPicker as Field<unknown> }}
               onSubmit={onSubmit}
             />
           </SecretsContextProvider>
@@ -107,7 +108,7 @@ describe('RepoUrlPicker', () => {
                 'ui:field': 'RepoUrlPicker',
                 'ui:options': { allowedHosts: ['dev.azure.com'] },
               }}
-              fields={{ RepoUrlPicker: RepoUrlPicker }}
+              fields={{ RepoUrlPicker: RepoUrlPicker as Field<unknown> }}
             />
           </SecretsContextProvider>
         </TestApiProvider>,
@@ -145,7 +146,7 @@ describe('RepoUrlPicker', () => {
                   },
                 },
               }}
-              fields={{ RepoUrlPicker: RepoUrlPicker }}
+              fields={{ RepoUrlPicker: RepoUrlPicker as Field<unknown> }}
             />
             <SecretsComponent />
           </SecretsContextProvider>

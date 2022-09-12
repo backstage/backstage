@@ -21,6 +21,7 @@ import {
   FieldExtensionComponentProps,
 } from './types';
 import { Extension, attachComponentData } from '@backstage/core-plugin-api';
+import { UIOptionsType } from '@rjsf/utils';
 
 export const FIELD_EXTENSION_WRAPPER_KEY = 'scaffolder.extensions.wrapper.v1';
 export const FIELD_EXTENSION_KEY = 'scaffolder.extensions.field.v1';
@@ -39,7 +40,7 @@ export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
  */
 export function createScaffolderFieldExtension<
   TReturnValue = unknown,
-  TInputProps = unknown,
+  TInputProps extends UIOptionsType = {},
 >(
   options: FieldExtensionOptions<TReturnValue, TInputProps>,
 ): Extension<FieldExtensionComponent<TReturnValue, TInputProps>> {

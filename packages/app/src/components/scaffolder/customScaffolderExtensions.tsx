@@ -30,7 +30,7 @@ const TextValuePicker = (props: FieldExtensionComponentProps<string>) => {
     schema: { title, description },
     rawErrors,
     formData,
-    uiSchema: { 'ui:autofocus': autoFocus },
+    uiSchema: { 'ui:autofocus': autoFocus } = {},
     idSchema,
     placeholder,
   } = props;

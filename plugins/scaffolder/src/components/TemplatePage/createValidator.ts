@@ -62,7 +62,7 @@ export const createValidator = (
           if (fieldName && typeof validators[fieldName] === 'function') {
             validators[fieldName]!(
               propData as JsonValue,
-              propValidation,
+              propValidation as FormValidation,
               context,
             );
           }
