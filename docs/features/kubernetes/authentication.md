@@ -18,7 +18,9 @@ The providers currently available are divided into server side and client side.
 ## Server Side Providers
 
 These providers authenticate your _application_ with the cluster, meaning anyone that is
-logged in into your backstage app will be granted the same access to Kubernetes objects.
+logged in into your backstage app will be granted the same access to Kubernetes objects,
+to put an example,even guest users would have access to the cluster resources, so be
+careful of using server side providers with guest access enabled.
 
 The providers available as server side are:
 
@@ -31,9 +33,13 @@ The providers available as server side are:
 ### Azure
 
 The Azure server side authentication provider works by authenticating on the server with
-the Azure CLI `az login`, meaning any user that can access the backstage app will have
-the same level of access to the cluster in the Kubernetes plugin, to put an example, even
-guest users would have access to the cluster resources.
+the Azure CLI, follow these steps:
+
+- Install the Azure CLI: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest
+- Login with your Azure/Microsoft account with `az login` in the server's terminal
+- Go to your AKS cluster's resource page in Azure Console and follow the steps in the
+  `Connect` tab to set the subscription and get your credentials for `kubectl` integration
+- Configure your cluster to use the `azure` auth provider like this:
 
 ```yaml
 kubernetes:
