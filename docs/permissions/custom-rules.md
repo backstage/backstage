@@ -49,6 +49,8 @@ The api for providing custom rules may differ between plugins, but there should 
 // packages/backend/src/plugins/catalog.ts
 
 import { isInSystemRule } from './permission';
+// The CatalogBuilder with the addPermissionRules function is in the alpha path
+import { CatalogBuilder } from '@backstage/plugin-catalog-backend/alpha';
 
 ...
 
@@ -56,7 +58,7 @@ export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
   const builder = await CatalogBuilder.create(env);
-  builder.addPermissionRules(isInSystem);
+  builder.addPermissionRules(isInSystemRule);
   ...
   return router;
 }
