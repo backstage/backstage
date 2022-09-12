@@ -19,7 +19,6 @@ import { FunctionsData } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 export class AzureFunctionsBackendClient implements AzureFunctionsApi {
-
   private readonly identityApi: IdentityApi;
   private readonly discoveryApi: DiscoveryApi;
   constructor(options: {
@@ -36,7 +35,9 @@ export class AzureFunctionsBackendClient implements AzureFunctionsApi {
     functionName: string;
   }): Promise<FunctionsData[]> {
     try {
-      const url = `${await this.discoveryApi.getBaseUrl('azure-functions')}/list`;
+      const url = `${await this.discoveryApi.getBaseUrl(
+        'azure-functions',
+      )}/list`;
       const { token: idToken } = await this.identityApi.getCredentials();
       const response = await fetch(url, {
         method: 'POST',
@@ -44,11 +45,11 @@ export class AzureFunctionsBackendClient implements AzureFunctionsApi {
           'Content-Type': 'application/json',
           ...(idToken && { Authorization: `Bearer ${idToken}` }),
         },
-        body: JSON.stringify({ functionName: functionName })
+        body: JSON.stringify({ functionName: functionName }),
       });
       return await response.json();
     } catch (e: any) {
-      throw new Error('MissingAzureBackendException')
+      throw new Error('MissingAzureBackendException');
     }
   }
 }

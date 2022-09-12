@@ -15,15 +15,10 @@
  */
 
 import React from 'react';
-import {
-  Box,
-  Card,
-  Link,
-  LinearProgress
-} from '@material-ui/core';
+import { Box, Card, Link, LinearProgress } from '@material-ui/core';
 import { FunctionsData } from '../../api/types';
 import { Table, TableColumn } from '@backstage/core-components';
-import FlashOnIcon from '@material-ui/icons/FlashOn'
+import FlashOnIcon from '@material-ui/icons/FlashOn';
 
 type States = 'Waiting' | 'Running' | 'Paused' | 'Failed';
 
@@ -61,7 +56,11 @@ const DEFAULT_COLUMNS: TableColumn<FunctionsData>[] = [
     title: 'name',
     highlight: true,
     render: (func: FunctionsData) => {
-      return (<Link href={func.href} target="_blank">{func.functionName}</Link>)
+      return (
+        <Link href={func.href} target="_blank">
+          {func.functionName}
+        </Link>
+      );
     },
   },
   {
@@ -74,13 +73,18 @@ const DEFAULT_COLUMNS: TableColumn<FunctionsData>[] = [
   },
   {
     title: 'last modified',
-    render: (func: FunctionsData) => new Date(func.lastModifiedDate).toUTCString(),
+    render: (func: FunctionsData) =>
+      new Date(func.lastModifiedDate).toUTCString(),
   },
   {
     title: 'logs',
     align: 'right',
     render: (func: FunctionsData) => {
-      return (<Link href={func.logstreamHref} target="_blank">View Logs</Link>)
+      return (
+        <Link href={func.logstreamHref} target="_blank">
+          View Logs
+        </Link>
+      );
     },
   },
 ];
@@ -104,9 +108,7 @@ export const OverviewTable = ({ data, loading }: FunctionTableProps) => {
         }
         options={{ paging: true, search: false, pageSize: 10 }}
         data={data}
-        emptyContent={
-          <LinearProgress />
-        }
+        emptyContent={<LinearProgress />}
         isLoading={loading}
         columns={columns}
       />

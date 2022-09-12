@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
-export { AzureWebManagementApi, AzureFunctionsConfig } from './AzureWebManagementApi'
-export * from './types'
+export {
+  AzureWebManagementApi,
+  AzureFunctionsConfig,
+} from './AzureWebManagementApi';
+export * from './types';

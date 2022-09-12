@@ -28,9 +28,7 @@ import {
   TestApiProvider,
 } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
-import {
-  functionResponseMock,
-} from '../../mocks/mocks';
+import { functionResponseMock } from '../../mocks/mocks';
 import { azureFunctionsApiRef } from '../..';
 import { OverviewTable } from './OverviewTable';
 
@@ -60,19 +58,16 @@ describe('AzureFunctionsOverviewWidget', () => {
 
   beforeEach(() => {
     worker.use(
-      rest.post(
-        '/list',
-        (_, res, ctx) => {
-          res(ctx.json(functionResponseMock));
-        },
-      ),
+      rest.post('/list', (_, res, ctx) => {
+        res(ctx.json(functionResponseMock));
+      }),
     );
   });
 
   it('should display an overview table with the data from the requests', async () => {
     const rendered = render(
       <TestApiProvider apis={apis}>
-          <OverviewTable data={[functionResponseMock]} loading={false} />
+        <OverviewTable data={[functionResponseMock]} loading={false} />
       </TestApiProvider>,
     );
 

@@ -17,69 +17,90 @@
 import { Config } from '@backstage/config';
 import { ClientSecretCredential } from '@azure/identity';
 import { WebSiteManagementClient } from '@azure/arm-appservice';
-import { AzureFunctionsAllowedSubscriptionsConfig, FunctionsData } from './types';
+import {
+  AzureFunctionsAllowedSubscriptionsConfig,
+  FunctionsData,
+} from './types';
 
 export class AzureFunctionsConfig {
-    constructor(public readonly tenantId: string, public readonly clientId: string, public readonly clientSecret: string, public readonly domain: string, public readonly allowedSubscriptions: AzureFunctionsAllowedSubscriptionsConfig[]) { }
+  constructor(
+    public readonly tenantId: string,
+    public readonly clientId: string,
+    public readonly clientSecret: string,
+    public readonly domain: string,
+    public readonly allowedSubscriptions: AzureFunctionsAllowedSubscriptionsConfig[],
+  ) {}
 
-    static fromConfig(config: Config): AzureFunctionsConfig {
-        const azfConfig = config.getConfig('azureFunctions');
+  static fromConfig(config: Config): AzureFunctionsConfig {
+    const azfConfig = config.getConfig('azureFunctions');
 
-        return new AzureFunctionsConfig(
-            azfConfig.getString('tenantId'),
-            azfConfig.getString('clientId'),
-            azfConfig.getString('clientSecret'),
-            azfConfig.getString('domain'),
-            azfConfig.getConfigArray('allowedSubscriptions').map<AzureFunctionsAllowedSubscriptionsConfig>(as => ({ id: as.getString('id'), name: as.getString('name') }))
-        )
-    }
+    return new AzureFunctionsConfig(
+      azfConfig.getString('tenantId'),
+      azfConfig.getString('clientId'),
+      azfConfig.getString('clientSecret'),
+      azfConfig.getString('domain'),
+      azfConfig
+        .getConfigArray('allowedSubscriptions')
+        .map<AzureFunctionsAllowedSubscriptionsConfig>(as => ({
+          id: as.getString('id'),
+          name: as.getString('name'),
+        })),
+    );
+  }
 }
 
 export class AzureWebManagementApi {
-    private readonly baseHref = (domain: string) => `https://portal.azure.com/#@${domain}/resource`;
-    private readonly clients: WebSiteManagementClient[] = [];
+  private readonly baseHref = (domain: string) =>
+    `https://portal.azure.com/#@${domain}/resource`;
+  private readonly clients: WebSiteManagementClient[] = [];
 
-    constructor(private readonly config: AzureFunctionsConfig) {
-        const creds = new ClientSecretCredential(config.tenantId, config.clientId, config.clientSecret);
-        for (const subscription of config.allowedSubscriptions) {
-            if (!this.clients.some(c => c.subscriptionId === subscription.id)) {
-                this.clients.push(new WebSiteManagementClient(creds, subscription.id));
-            }
+  constructor(private readonly config: AzureFunctionsConfig) {
+    const creds = new ClientSecretCredential(
+      config.tenantId,
+      config.clientId,
+      config.clientSecret,
+    );
+    for (const subscription of config.allowedSubscriptions) {
+      if (!this.clients.some(c => c.subscriptionId === subscription.id)) {
+        this.clients.push(new WebSiteManagementClient(creds, subscription.id));
+      }
+    }
+  }
+
+  static fromConfig(config: Config): AzureWebManagementApi {
+    return new AzureWebManagementApi(AzureFunctionsConfig.fromConfig(config));
+  }
+
+  async list({
+    functionName,
+  }: {
+    functionName: string;
+  }): Promise<FunctionsData[]> {
+    const results = [];
+    for (const client of this.clients) {
+      try {
+        for await (const webApp of client.webApps.list()) {
+          if (!webApp.name!.startsWith(functionName)) {
+            continue;
+          }
+          const v = webApp!;
+          results.push({
+            href: `${this.baseHref(this.config.domain)}${v.id!}`,
+            logstreamHref: `${this.baseHref(
+              this.config.domain,
+            )}${v.id!}/logStream`,
+            functionName: v.name!,
+            location: v.location!,
+            lastModifiedDate: v.lastModifiedTimeUtc!,
+            usageState: v.usageState!,
+            state: v.state!,
+            containerSize: v.containerSize!,
+          });
         }
+      } catch (ex) {
+        console.log(ex);
+      }
     }
-
-    static fromConfig(config: Config): AzureWebManagementApi {
-        return new AzureWebManagementApi(AzureFunctionsConfig.fromConfig(config));
-    }
-
-    async list({
-        functionName,
-    }: {
-        functionName: string;
-    }): Promise<FunctionsData[]> {
-        const results = [];
-        for (const client of this.clients) {
-            try {
-                for await (const webApp of client.webApps.list()) {
-                    if (!webApp.name!.startsWith(functionName)) {
-                        continue;
-                    }
-                    const v = webApp!;
-                    results.push({
-                        href: `${this.baseHref(this.config.domain)}${v.id!}`,
-                        logstreamHref: `${this.baseHref(this.config.domain)}${v.id!}/logStream`,
-                        functionName: v.name!,
-                        location: v.location!,
-                        lastModifiedDate: v.lastModifiedTimeUtc!,
-                        usageState: v.usageState!,
-                        state: v.state!,
-                        containerSize: v.containerSize!
-                    })
-                }
-            } catch (ex) {
-                console.log(ex);
-            }
-        }
-        return results;
-    }
+    return results;
+  }
 }

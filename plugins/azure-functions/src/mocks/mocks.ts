@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FunctionsData } from "../api";
+import { FunctionsData } from '../api';
 
 export const entityMock = {
   metadata: {
@@ -23,8 +23,7 @@ export const entityMock = {
       'portal.azure.com/functions-name': 'func-mock',
     },
     name: 'sample-azure-function-service',
-    description:
-      'A service for testing Backstage functionality.',
+    description: 'A service for testing Backstage functionality.',
     uid: 'c009b513-d053-4b3f-9429-8433a145e943',
   },
   apiVersion: 'backstage.io/v1alpha1',
@@ -38,12 +37,13 @@ export const entityMock = {
 
 // https://management.azure.com/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroup}}/providers/Microsoft.Web/sites/{{functionsName}}?api-version=2022-03-01
 export const functionResponseMock: FunctionsData = {
-  functionName: "func-mock",
-  location: "West Europe",
-  state: "Running",
-  href: "https://mockurl.api.azurewebsites.windows.net:454/subscriptions/00000000-0000-0000-0000-000000000000/webspaces/rg_mock-WestEuropewebspace/sites/func-mock",
-  logstreamHref: "https://mockurl.api.azurewebsites.windows.net:454/subscriptions/00000000-0000-0000-0000-000000000000/webspaces/rg_mock-WestEuropewebspace/sites/func-mock/logStream",
-  usageState: "Normal",
-  lastModifiedDate: new Date("2022-09-02T11:09:58.9033333"),
-  containerSize: 100
+  functionName: 'func-mock',
+  location: 'West Europe',
+  state: 'Running',
+  href: 'https://mockurl.api.azurewebsites.windows.net:454/subscriptions/00000000-0000-0000-0000-000000000000/webspaces/rg_mock-WestEuropewebspace/sites/func-mock',
+  logstreamHref:
+    'https://mockurl.api.azurewebsites.windows.net:454/subscriptions/00000000-0000-0000-0000-000000000000/webspaces/rg_mock-WestEuropewebspace/sites/func-mock/logStream',
+  usageState: 'Normal',
+  lastModifiedDate: new Date('2022-09-02T11:09:58.9033333'),
+  containerSize: 100,
 };

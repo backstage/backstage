@@ -15,19 +15,12 @@
  */
 
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
-import {
-  useApi,
-  errorApiRef,
-} from '@backstage/core-plugin-api';
+import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 import { FunctionsData } from '../api/types';
 import { azureFunctionsApiRef } from '../api';
 import { useCallback } from 'react';
 
-export function useFunctions({
-  functionsName
-}: {
-  functionsName: string;
-}) {
+export function useFunctions({ functionsName }: { functionsName: string }) {
   const azureFunctionsApi = useApi(azureFunctionsApiRef);
   const errorApi = useApi(errorApiRef);
 

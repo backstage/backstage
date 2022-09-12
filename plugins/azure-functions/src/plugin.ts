@@ -20,7 +20,7 @@ import {
   createPlugin,
   createRouteRef,
   discoveryApiRef,
-  identityApiRef
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 import { azureFunctionsApiRef, AzureFunctionsBackendClient } from './api';
 
@@ -39,7 +39,7 @@ export const azureFunctionsPlugin = createPlugin({
       },
       factory: ({ discoveryApi, identityApi }) =>
         new AzureFunctionsBackendClient({ discoveryApi, identityApi }),
-    })
+    }),
   ],
   routes: {
     entityContent: entityContentRouteRef,
@@ -51,9 +51,9 @@ export const EntityAzureFunctionsOverviewCard = azureFunctionsPlugin.provide(
     name: 'EntityAzureFunctionsOverviewCard',
     component: {
       lazy: () =>
-        import('./components/AzureFunctionsOverviewComponent/AzureFunctionsOverview').then(
-          m => m.AzureFunctionsOverviewWidget,
-        ),
+        import(
+          './components/AzureFunctionsOverviewComponent/AzureFunctionsOverview'
+        ).then(m => m.AzureFunctionsOverviewWidget),
     },
   }),
 );

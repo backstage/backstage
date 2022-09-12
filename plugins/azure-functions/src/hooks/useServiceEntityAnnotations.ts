@@ -25,6 +25,6 @@ export const useServiceEntityAnnotations = (entity: Entity) => {
 
   return {
     projectName,
-    functionsName
+    functionsName,
   };
 };

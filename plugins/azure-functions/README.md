@@ -2,7 +2,7 @@
 
 ![preview of Azure Functions table](docs/functions-table.png)
 
-*Inspired by [roadie.io AWS Lamda plugin](https://roadie.io/backstage/plugins/aws-lambda/)*
+_Inspired by [roadie.io AWS Lamda plugin](https://roadie.io/backstage/plugins/aws-lambda/)_
 
 ## Features
 

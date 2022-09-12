@@ -33,11 +33,16 @@ const AzureFunctionsOverview = ({ entity }: { entity: Entity }) => {
   const { functionsName } = useServiceEntityAnnotations(entity);
 
   const [functionsData] = useFunctions({
-    functionsName
+    functionsName,
   });
 
   return (
-    <><OverviewTable data={functionsData.data ?? []} loading={functionsData.loading} /></>
+    <>
+      <OverviewTable
+        data={functionsData.data ?? []}
+        loading={functionsData.loading}
+      />
+    </>
   );
 };
 
@@ -45,12 +50,14 @@ export const AzureFunctionsOverviewWidget = () => {
   const { entity } = useEntity();
 
   if (!isAzureFunctionsAvailable(entity)) {
-    return (<MissingAnnotationEmptyState annotation={AZURE_FUNCTIONS_ANNOTATION} />);
+    return (
+      <MissingAnnotationEmptyState annotation={AZURE_FUNCTIONS_ANNOTATION} />
+    );
   }
 
   return (
     <ErrorBoundary>
       <AzureFunctionsOverview entity={entity} />
     </ErrorBoundary>
-  )
+  );
 };
