@@ -26,7 +26,7 @@ describe('DefaultLocationStore', () => {
   async function createLocationStore(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);
     await applyDatabaseMigrations(knex);
-    const connection = { applyMutation: jest.fn() };
+    const connection = { applyMutation: jest.fn(), refresh: jest.fn() };
     const store = new DefaultLocationStore(knex);
     await store.connect(connection);
     return { store, connection };

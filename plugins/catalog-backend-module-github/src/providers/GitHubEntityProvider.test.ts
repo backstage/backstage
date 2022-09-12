@@ -146,6 +146,7 @@ describe('GitHubEntityProvider', () => {
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
+      refresh: jest.fn(),
     };
 
     const provider = GitHubEntityProvider.fromConfig(config, {
@@ -233,6 +234,7 @@ describe('GitHubEntityProvider', () => {
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
+      refresh: jest.fn(),
     };
 
     const provider = GitHubEntityProvider.fromConfig(config, {
@@ -306,6 +308,7 @@ describe('GitHubEntityProvider', () => {
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
+      refresh: jest.fn(),
     };
 
     const provider = GitHubEntityProvider.fromConfig(config, {
@@ -404,6 +407,7 @@ it('apply full update on scheduled execution with topic exclusion taking priorit
   const schedule = new PersistingTaskRunner();
   const entityProviderConnection: EntityProviderConnection = {
     applyMutation: jest.fn(),
+    refresh: jest.fn(),
   };
 
   const provider = GitHubEntityProvider.fromConfig(config, {

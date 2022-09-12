@@ -2833,6 +2833,8 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router: 6.0.0-beta.0 || ^6.3.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -3946,6 +3948,7 @@ __metadata:
     "@types/express-session": ^1.17.2
     "@types/jwt-decode": ^3.1.0
     "@types/passport": ^1.0.3
+    "@types/passport-auth0": ^1.0.5
     "@types/passport-github2": ^1.2.4
     "@types/passport-google-oauth20": ^2.0.3
     "@types/passport-microsoft": ^0.0.0
@@ -3972,6 +3975,7 @@ __metadata:
     node-fetch: ^2.6.7
     openid-client: ^5.1.3
     passport: ^0.6.0
+    passport-auth0: ^1.4.3
     passport-bitbucket-oauth2: ^0.1.2
     passport-github2: ^0.1.12
     passport-gitlab2: ^5.0.0
@@ -4164,7 +4168,6 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
-    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -7421,6 +7424,7 @@ __metadata:
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
@@ -8088,11 +8092,11 @@ __metadata:
   linkType: hard
 
 "@google-cloud/container@npm:^4.0.0":
-  version: 4.1.1
-  resolution: "@google-cloud/container@npm:4.1.1"
+  version: 4.1.2
+  resolution: "@google-cloud/container@npm:4.1.2"
   dependencies:
     google-gax: ^3.3.0
-  checksum: 85c124163be7300c57b1f35323ea48a25c398bf072497a3e4a5d9117fe44547a63071dced681dbe8d2bd1a0997588d36c2428900184b030daf29b0f87ec7b09c
+  checksum: deb1b88732b2dd3dba5f7bea48fd672636fedb0d3bd894e29c8d097e087de3bfd30b53668e3686f8d879b3312be2e86d5a65cd1ba6bf630ba1c2bbe892e8bbb8
   languageName: node
   linkType: hard
 
@@ -8678,15 +8682,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/merge@npm:8.3.5":
-  version: 8.3.5
-  resolution: "@graphql-tools/merge@npm:8.3.5"
+"@graphql-tools/merge@npm:8.3.6":
+  version: 8.3.6
+  resolution: "@graphql-tools/merge@npm:8.3.6"
   dependencies:
-    "@graphql-tools/utils": 8.11.0
+    "@graphql-tools/utils": 8.12.0
     tslib: ^2.4.0
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: c834619acabe0587d7528a795e2e7527b09e528486b965f4638f2bd831e0c1ac6439fb22e82d3512329cf293f69bca4db0e4696a5aac88748a09cb6de6597fb4
+  checksum: 3e45ebff0dce9524e72c4af1d2b9799c16515c1236290e07cd68fb2226c4e54734e2444d89a64b387b7ba991d15c6f948fdfc20c77a74b1d24babddd865ff32a
   languageName: node
   linkType: hard
 
@@ -8800,16 +8804,16 @@ __metadata:
   linkType: hard
 
 "@graphql-tools/schema@npm:^9.0.0":
-  version: 9.0.3
-  resolution: "@graphql-tools/schema@npm:9.0.3"
+  version: 9.0.4
+  resolution: "@graphql-tools/schema@npm:9.0.4"
   dependencies:
-    "@graphql-tools/merge": 8.3.5
-    "@graphql-tools/utils": 8.11.0
+    "@graphql-tools/merge": 8.3.6
+    "@graphql-tools/utils": 8.12.0
     tslib: ^2.4.0
     value-or-promise: 1.0.11
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 7ce960e3af637de592f7859db5841e3f0974997bd48767efab163bbafdc88a40e95a789f1f7cb7a178fb53b89f5a5bc881af5f8d796c096ce09386340b85ca4f
+  checksum: 0644ba225ff7fb03c6fb7f026b6a77a4ac5dd14fd10bb562ea0072bfe0258620fd4789b851b0b97007db8754d0b7d88a1061bb98bacc679b22e2eb7706e79e0e
   languageName: node
   linkType: hard
 
@@ -8863,14 +8867,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/utils@npm:8.11.0":
-  version: 8.11.0
-  resolution: "@graphql-tools/utils@npm:8.11.0"
+"@graphql-tools/utils@npm:8.12.0":
+  version: 8.12.0
+  resolution: "@graphql-tools/utils@npm:8.12.0"
   dependencies:
     tslib: ^2.4.0
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 2a223ba056c3c3851defa87a4e3a83fe523e5946f63ccdc8a181c7b290abcc9c3712cb0fb6a33edc8ae072c6530e4b667dc822a8debd9f80fea937a5b253eb26
+  checksum: 24edc6ba3bcfa9a4c1d1d37117c3f96d847beed9638325083c32c6ec9674729dc89fc8cc389d317ae5d9dba22e91443bd9788f1dc8de91a1b6f1e592112bd48f
   languageName: node
   linkType: hard
 
@@ -12489,9 +12493,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@roadiehq/backstage-plugin-buildkite@npm:^2.0.0":
-  version: 2.0.7
-  resolution: "@roadiehq/backstage-plugin-buildkite@npm:2.0.7"
+"@roadiehq/backstage-plugin-buildkite@npm:^2.0.8":
+  version: 2.0.8
+  resolution: "@roadiehq/backstage-plugin-buildkite@npm:2.0.8"
   dependencies:
     "@backstage/catalog-model": ^1.0.0
     "@backstage/core-components": ^0.11.0
@@ -12503,19 +12507,19 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.57
     history: ^5.0.0
     moment: ^2.29.1
-    react-router: 6.0.0-beta.0
-    react-router-dom: 6.0.0-beta.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
-  checksum: cf7ba623c418d3ea7ea56c67b0fe10d6be7fe36531539c31e87b586897fcb9c3474a432239d7d6c01623ff6fc29fb4ae905564a9d2aae11e2ce54b8502cc1c29
+    react-router: 6.0.0-beta.0 || ^6.3.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  checksum: 589f89b53ff166ca9099ea8d2a5b6f96b87a3daf2e0cb115e94c8880639f69bc25a04cab2926cba0c99dc9bb70a159528c6f1fc10a9fba67e4fb3abe40bce0bf
   languageName: node
   linkType: hard
 
-"@roadiehq/backstage-plugin-github-insights@npm:^2.0.0":
-  version: 2.0.4
-  resolution: "@roadiehq/backstage-plugin-github-insights@npm:2.0.4"
+"@roadiehq/backstage-plugin-github-insights@npm:^2.0.5":
+  version: 2.0.5
+  resolution: "@roadiehq/backstage-plugin-github-insights@npm:2.0.5"
   dependencies:
     "@backstage/catalog-model": ^1.0.0
     "@backstage/core-components": ^0.11.0
@@ -12531,19 +12535,19 @@ __metadata:
     "@octokit/types": ^6.14.2
     history: ^5.0.0
     immer: 9.0.7
-    react-router: ^6.0.0-beta.0
     react-use: ^17.2.4
     zustand: 3.6.9
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
-  checksum: 2cc6eb992e78d7ce32ecce09996bda4eb34d4af3564ab54d180543d3a195a8b6e93f3137724569c49e645d44bfc00f3802285418f690393c456700668be01c25
+    react-router: 6.0.0-beta.0 || ^6.3.0
+  checksum: 37f99d0478dee6acbbafaf334a2eb1f75c251e96f8b10cead0d6f6dc203667dca51ded935ca704900251c01493b6287a66814f79245410a79ad66c843a3d4803
   languageName: node
   linkType: hard
 
-"@roadiehq/backstage-plugin-github-pull-requests@npm:^2.0.0":
-  version: 2.2.6
-  resolution: "@roadiehq/backstage-plugin-github-pull-requests@npm:2.2.6"
+"@roadiehq/backstage-plugin-github-pull-requests@npm:^2.2.7":
+  version: 2.2.7
+  resolution: "@roadiehq/backstage-plugin-github-pull-requests@npm:2.2.7"
   dependencies:
     "@backstage/catalog-model": ^1.0.0
     "@backstage/core-components": ^0.11.0
@@ -12561,18 +12565,18 @@ __metadata:
     moment: ^2.27.0
     msw: ^0.39.2
     node-fetch: ^2.6.1
-    react-router: 6.0.0-beta.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
-  checksum: 1b6d584a1e6cc668026d9bcdea7e5588ad22084412e5e2c52659aed9da0f90fa5edb81e8d90d2ff67b645e0fb96790b91cb0a1024f1682319c7fb4799b62baa8
+    react-router: 6.0.0-beta.0 || ^6.3.0
+  checksum: 2453f72c4b853e4d6f43cb27aaf27cbce5d122fbcdc71625b1e1493486acde551798524cc84f792d986397011ab458ba9b7e56eec34cde55660ccd69ea488cb0
   languageName: node
   linkType: hard
 
-"@roadiehq/backstage-plugin-travis-ci@npm:^2.0.0":
-  version: 2.0.4
-  resolution: "@roadiehq/backstage-plugin-travis-ci@npm:2.0.4"
+"@roadiehq/backstage-plugin-travis-ci@npm:^2.0.5":
+  version: 2.0.5
+  resolution: "@roadiehq/backstage-plugin-travis-ci@npm:2.0.5"
   dependencies:
     "@backstage/catalog-model": ^1.0.0
     "@backstage/core-components": ^0.11.0
@@ -12586,13 +12590,13 @@ __metadata:
     date-fns: ^2.18.0
     history: ^5.0.0
     moment: ^2.29.1
-    react-router: 6.0.0-beta.0
-    react-router-dom: 6.0.0-beta.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
-  checksum: 1c0f3389f6415d23fe1926e3387433da7f3d22b4a237c3a690c894cfa4c281b21307a3ec51a2c48cfa115727cca182c15017ef1e58a2e9b893d89d06df6db35e
+    react-router: 6.0.0-beta.0 || ^6.3.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  checksum: bafcef69ca1b36585dbafcf8964d897942bd026f74dad81f372aed9ee1ce496a4821570f462b62b1b8d0cb86013615ad39e103827163bde8cf32037143b05c7a
   languageName: node
   linkType: hard
 
@@ -14635,6 +14639,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/passport-auth0@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "@types/passport-auth0@npm:1.0.5"
+  dependencies:
+    "@types/express": "*"
+    "@types/passport": "*"
+  checksum: b86b69a182864cae6877c0f16a1d62e24a394dc9cde8e7285a29aef89d52fbb555b899e061157bfd52420dcbccd6fd9b189155e5367a22763b0b2813cbb28354
+  languageName: node
+  linkType: hard
+
 "@types/passport-github2@npm:^1.2.4":
   version: 1.2.5
   resolution: "@types/passport-github2@npm:1.2.5"
@@ -15855,12 +15869,12 @@ __metadata:
   linkType: hard
 
 "@yarnpkg/parsers@npm:^3.0.0-rc.4":
-  version: 3.0.0-rc.15
-  resolution: "@yarnpkg/parsers@npm:3.0.0-rc.15"
+  version: 3.0.0-rc.18
+  resolution: "@yarnpkg/parsers@npm:3.0.0-rc.18"
   dependencies:
     js-yaml: ^3.10.0
     tslib: ^2.4.0
-  checksum: 2c6044479b1a8b5716d1536fce306c3c1f1989e00be5b7072255d0378d8679eba3dd6e3a854e75d8f675ea98a9612e5fbb1c3aac973860e6d5089658d3abf1d7
+  checksum: 73cc59cb2349ce78a376d6ad7953117360de9aff866f42329a3e957ebabbbd4cbd91bfe79e30aa3bf07f126af66b72c00a7fc733724ac93d7f46d420ba81beec
   languageName: node
   linkType: hard
 
@@ -16974,6 +16988,16 @@ __metadata:
   dependencies:
     follow-redirects: ^1.14.0
   checksum: 44245f24ac971e7458f3120c92f9d66d1fc695e8b97019139de5b0cc65d9b8104647db01e5f46917728edfc0cfd88eb30fc4c55e6053eef4ace76768ce95ff3c
+  languageName: node
+  linkType: hard
+
+"axios@npm:^0.27.2":
+  version: 0.27.2
+  resolution: "axios@npm:0.27.2"
+  dependencies:
+    follow-redirects: ^1.14.9
+    form-data: ^4.0.0
+  checksum: 38cb7540465fe8c4102850c4368053c21683af85c5fdf0ea619f9628abbcb59415d1e22ebc8a6390d2bbc9b58a9806c874f139767389c862ec9b772235f06854
   languageName: node
   linkType: hard
 
@@ -18098,29 +18122,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001286":
-  version: 1.0.30001315
-  resolution: "caniuse-lite@npm:1.0.30001315"
-  checksum: 3938596c61e4a5c6e96d1c6aecbde67b31c4c92e55a9d443b8e51e0eac64b6dd848dfac84891f75464f8d25c7e1ed6e9c9640593922b9bd360629fd433fb69e2
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001366":
-  version: 1.0.30001367
-  resolution: "caniuse-lite@npm:1.0.30001367"
-  checksum: 9912aed182b8b3a834787424b56a0e71b5ecb5d2cb7235fb022227bc3a81202e8a34bebc5dc9cc504c515b4e052f825c36c2db4b0b880c10e195fe63673edfc6
+"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001286, caniuse-lite@npm:^1.0.30001366":
+  version: 1.0.30001392
+  resolution: "caniuse-lite@npm:1.0.30001392"
+  checksum: b46fdb4cd63f43e608c9378e9a4cfc1092407fccda32f13f53db8818e0e654e5b2b9e7aee76b95a1a4fd3f2c2eabd1157aef19905f2c60dfcec136b27ac5fce6
   languageName: node
   linkType: hard
 
 "canvas@npm:^2.6.1":
-  version: 2.10.0
-  resolution: "canvas@npm:2.10.0"
+  version: 2.10.1
+  resolution: "canvas@npm:2.10.1"
   dependencies:
     "@mapbox/node-pre-gyp": ^1.0.0
     nan: ^2.15.0
     node-gyp: latest
     simple-get: ^3.0.3
-  checksum: bed0f61d51a6f5d721742776e2dd1203ad6ca2475e1177cfb7a6f9ed1d313372ab8b4aa5a6780c85d35e533e2400cb5f291be1a1d35a84fc71d6372cd4cdbc61
+  checksum: 29b162a59df8c63e5591cae62711ab3cc3b0a078f260b39b4594b51c5bcb9baa597eff40b52f25bd788aceb81756a41097c2dd0c01cbc17ae4a15e873da44cdf
   languageName: node
   linkType: hard
 
@@ -19432,10 +19449,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:^3.4.1, core-js@npm:^3.6.5":
+"core-js@npm:^3.4.1":
   version: 3.25.0
   resolution: "core-js@npm:3.25.0"
   checksum: 5a72740bf5babaf2e6203da4c0e831a0b97c3fe6f21b4c1aa8601d3a927660a22128dd8f0e86ce84778c4e5372ab0fc03c7944afa7e215c7fb13b2c79d5d5504
+  languageName: node
+  linkType: hard
+
+"core-js@npm:^3.6.5":
+  version: 3.25.1
+  resolution: "core-js@npm:3.25.1"
+  checksum: bfacb078e790913841e2d5008b9b6705ae56ed23f83c7f0ae08d330d874561012611089d53b71520105234ed0abba36f28d91b391514a16541a8c8d98c464239
   languageName: node
   linkType: hard
 
@@ -21974,8 +21998,8 @@ __metadata:
   linkType: hard
 
 "eslint-plugin-jest@npm:^27.0.0":
-  version: 27.0.1
-  resolution: "eslint-plugin-jest@npm:27.0.1"
+  version: 27.0.2
+  resolution: "eslint-plugin-jest@npm:27.0.2"
   dependencies:
     "@typescript-eslint/utils": ^5.10.0
   peerDependencies:
@@ -21986,7 +22010,7 @@ __metadata:
       optional: true
     jest:
       optional: true
-  checksum: 269d4dc46bb925eb4c19106fd9e03775a863f53e05716628cc47777abc15887775ee47d73c4f8bdd98bb26b7462d8d8f654610bb2a367f8c97881204a2c3f42e
+  checksum: 0545568a1ddd14138f08015f5f1a99e08c0d5ef5d2f14a8e66c28c1b8296a541c1075e9660f637fcb71be01f2a709991937878fc96abc760c00efc768f4598c8
   languageName: node
   linkType: hard
 
@@ -22432,16 +22456,17 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.57
     "@octokit/rest": ^19.0.3
     "@rjsf/core": ^3.2.1
-    "@roadiehq/backstage-plugin-buildkite": ^2.0.0
-    "@roadiehq/backstage-plugin-github-insights": ^2.0.0
-    "@roadiehq/backstage-plugin-github-pull-requests": ^2.0.0
-    "@roadiehq/backstage-plugin-travis-ci": ^2.0.0
+    "@roadiehq/backstage-plugin-buildkite": ^2.0.8
+    "@roadiehq/backstage-plugin-github-insights": ^2.0.5
+    "@roadiehq/backstage-plugin-github-pull-requests": ^2.2.7
+    "@roadiehq/backstage-plugin-travis-ci": ^2.0.5
     "@testing-library/cypress": ^8.0.2
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/jquery": ^3.3.34
     "@types/node": ^16.11.26
+    "@types/react": "*"
     "@types/react-dom": "*"
     "@types/zen-observable": ^0.8.0
     cross-env: ^7.0.0
@@ -23307,6 +23332,16 @@ __metadata:
     debug:
       optional: true
   checksum: eaec81c3e0ae57aae2422e38ad3539d0e7279b3a63f9681eeea319bb683dea67502c4e097136b8ce9721542b4e236e092b6b49e34e326cdd7733c274f0a3f378
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:^1.14.9":
+  version: 1.15.1
+  resolution: "follow-redirects@npm:1.15.1"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: 6aa4e3e3cdfa3b9314801a1cd192ba756a53479d9d8cca65bf4db3a3e8834e62139245cd2f9566147c8dfe2efff1700d3e6aefd103de4004a7b99985e71dd533
   languageName: node
   linkType: hard
 
@@ -32321,6 +32356,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"passport-auth0@npm:^1.4.3":
+  version: 1.4.3
+  resolution: "passport-auth0@npm:1.4.3"
+  dependencies:
+    axios: ^0.27.2
+    passport-oauth: ^1.0.0
+    passport-oauth2: ^1.6.0
+  checksum: 7658f58fd24831c67c783a9b0df3946bae9e6e42f8572747f17e77a2129d58ba21917a7531a4a328119b99a2a979ee857a1107c8e22e63e55739cdc1a8d1ccbc
+  languageName: node
+  linkType: hard
+
 "passport-bitbucket-oauth2@npm:^0.1.2":
   version: 0.1.2
   resolution: "passport-bitbucket-oauth2@npm:0.1.2"
@@ -32379,7 +32425,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-oauth2@npm:1.6.1, passport-oauth2@npm:1.x.x, passport-oauth2@npm:^1.1.2, passport-oauth2@npm:^1.4.0, passport-oauth2@npm:^1.6.1":
+"passport-oauth2@npm:1.6.1, passport-oauth2@npm:1.x.x, passport-oauth2@npm:^1.1.2, passport-oauth2@npm:^1.4.0, passport-oauth2@npm:^1.6.0, passport-oauth2@npm:^1.6.1":
   version: 1.6.1
   resolution: "passport-oauth2@npm:1.6.1"
   dependencies:
@@ -32392,7 +32438,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-oauth@npm:1.0.0":
+"passport-oauth@npm:1.0.0, passport-oauth@npm:^1.0.0":
   version: 1.0.0
   resolution: "passport-oauth@npm:1.0.0"
   dependencies:
@@ -33915,8 +33961,8 @@ __metadata:
   linkType: hard
 
 "puppeteer@npm:^17.0.0":
-  version: 17.1.1
-  resolution: "puppeteer@npm:17.1.1"
+  version: 17.1.3
+  resolution: "puppeteer@npm:17.1.3"
   dependencies:
     cross-fetch: 3.1.5
     debug: 4.3.4
@@ -33929,7 +33975,7 @@ __metadata:
     tar-fs: 2.1.1
     unbzip2-stream: 1.4.3
     ws: 8.8.1
-  checksum: 064537270ea5745186c87888252395bb0d06d3ae73b02a617856329501d21e2ce5d05c1ee307dc2e851f7d45a2185b9cddd44ec54106ffcba51e7a622bb6faeb
+  checksum: b4518956c661df4c37690d46b9c6744d42d59d01fe3764938b4b3af8de4c94ef11a9dfa6bc261798f5e5490c6dce4d4f555f05d42c735249683da3017faf4585
   languageName: node
   linkType: hard
 
@@ -34552,7 +34598,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-stable@npm:react-router@^6.3.0, react-router@npm:6.3.0, react-router@npm:^6.0.0-beta.0, react-router@npm:^6.3.0":
+"react-router-stable@npm:react-router@^6.3.0, react-router@npm:6.3.0, react-router@npm:^6.3.0":
   version: 6.3.0
   resolution: "react-router@npm:6.3.0"
   dependencies:
@@ -35986,6 +36032,7 @@ __metadata:
     concurrently: ^7.0.0
     cross-env: ^7.0.0
     e2e-test: "workspace:*"
+    eslint: ^8.6.0
     eslint-plugin-notice: ^0.9.10
     fs-extra: 10.1.0
     husky: ^8.0.0

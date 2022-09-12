@@ -68,6 +68,7 @@ describe('createRouter', () => {
       refreshEntity: jest.fn(),
       getEntityAncestors: jest.fn(),
       getEntityFacets: jest.fn(),
+      validateEntity: jest.fn(),
     };
 
     config = new ConfigReader({

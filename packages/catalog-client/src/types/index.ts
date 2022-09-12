@@ -27,5 +27,6 @@ export type {
   Location,
   GetEntityFacetsRequest,
   GetEntityFacetsResponse,
+  ValidateEntityResponse,
 } from './api';
 export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';

@@ -22,6 +22,7 @@ import { ProcessingDatabase } from '../database/types';
 import {
   EntityProvider,
   EntityProviderConnection,
+  EntityProviderRefreshOptions,
   EntityProviderMutation,
 } from '@backstage/plugin-catalog-node';
 
@@ -59,6 +60,16 @@ class Connection implements EntityProviderConnection {
         });
       });
     }
+  }
+
+  async refresh(options: EntityProviderRefreshOptions): Promise<void> {
+    const db = this.config.processingDatabase;
+
+    await db.transaction(async (tx: any) => {
+      return db.refreshByRefreshKeys(tx, {
+        keys: options.keys,
+      });
+    });
   }
 
   private check(entities: Entity[]) {

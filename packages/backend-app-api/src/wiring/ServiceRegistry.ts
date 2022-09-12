@@ -26,7 +26,9 @@ import { stringifyError } from '@backstage/errors';
  * @internal
  */
 export type InternalServiceRef<T> = ServiceRef<T> & {
-  __defaultFactory?: (service: ServiceRef<T>) => Promise<ServiceFactory<T>>;
+  __defaultFactory?: (
+    service: ServiceRef<T>,
+  ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
 };
 
 export class ServiceRegistry {
@@ -40,8 +42,18 @@ export class ServiceRegistry {
     }
   >;
 
-  constructor(factories: ServiceFactory<any>[]) {
-    this.#providedFactories = new Map(factories.map(f => [f.service.id, f]));
+  constructor(
+    factories: Array<ServiceFactory<unknown> | (() => ServiceFactory<unknown>)>,
+  ) {
+    this.#providedFactories = new Map(
+      factories.map(f => {
+        if (typeof f === 'function') {
+          const cf = f();
+          return [cf.service.id, cf];
+        }
+        return [f.service.id, f];
+      }),
+    );
     this.#loadedDefaultFactories = new Map();
     this.#implementations = new Map();
   }
@@ -57,9 +69,11 @@ export class ServiceRegistry {
       if (!factory) {
         let loadedFactory = this.#loadedDefaultFactories.get(defaultFactory!);
         if (!loadedFactory) {
-          loadedFactory = Promise.resolve().then(
-            () => defaultFactory!(ref) as Promise<ServiceFactory>,
-          );
+          loadedFactory = Promise.resolve()
+            .then(() => defaultFactory!(ref))
+            .then(f =>
+              typeof f === 'function' ? f() : f,
+            ) as Promise<ServiceFactory>;
           this.#loadedDefaultFactories.set(defaultFactory!, loadedFactory);
         }
         // NOTE: This await is safe as long as #providedFactories is not mutated.

@@ -28,7 +28,9 @@ const tags = ['tag1', 'tag2', 'tag3', 'tag4'];
 describe('<EntityTagPicker/>', () => {
   const mockCatalogApiRef = {
     getEntityFacets: async () => ({
-      facets: { 'metadata.tags': tags.map(value => ({ value })) },
+      facets: {
+        'metadata.tags': tags.map((value, idx) => ({ value, count: idx })),
+      },
     }),
   } as unknown as CatalogApi;
 
@@ -65,6 +67,26 @@ describe('<EntityTagPicker/>', () => {
       'tag2',
       'tag3',
       'tag4',
+    ]);
+  });
+
+  it('renders tags with counts', async () => {
+    const rendered = render(
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityTagPicker showCounts />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() => expect(rendered.getByText('Tags')).toBeInTheDocument());
+
+    fireEvent.click(rendered.getByTestId('tag-picker-expand'));
+
+    expect(rendered.getAllByRole('option').map(o => o.textContent)).toEqual([
+      'tag1 (0)',
+      'tag2 (1)',
+      'tag3 (2)',
+      'tag4 (3)',
     ]);
   });
 
