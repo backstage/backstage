@@ -29,11 +29,16 @@ import {
 } from '@backstage/plugin-graphiql';
 import {
   AnyApiFactory,
+  azureADAuthApiRef,
   configApiRef,
   createApiFactory,
+  createApiRef,
+  discoveryApiRef,
   errorApiRef,
   githubAuthApiRef,
+  oauthRequestApiRef,
 } from '@backstage/core-plugin-api';
+import { OAuth2 } from '@backstage/core-app-api';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
@@ -64,4 +69,24 @@ export const apis: AnyApiFactory[] = [
   }),
 
   createApiFactory(costInsightsApiRef, new ExampleCostInsightsClient()),
+
+  createApiFactory({
+    api: azureADAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+      OAuth2.create({
+        discoveryApi,
+        oauthRequestApi,
+        provider: {
+          id: 'oauth2',
+          title: 'Azure AD',
+          icon: () => null,
+        },
+        environment: configApi.getOptionalString('auth.environment'),
+      }),
+  }),
 ];

@@ -328,6 +328,16 @@ export const githubAuthApiRef: ApiRef<
   id: 'core.auth.github',
 });
 
+export const azureADAuthApiRef: ApiRef<
+  OAuthApi &
+    OpenIdConnectApi &
+    ProfileInfoApi &
+    BackstageIdentityApi &
+    SessionApi
+> = createApiRef({
+  id: 'internal.auth.azuread',
+});
+
 /**
  * Provides authentication towards Okta APIs.
  *

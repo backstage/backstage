@@ -18,6 +18,7 @@ import { kubernetesApiRef } from './api/types';
 import { kubernetesAuthProvidersApiRef } from './kubernetes-auth-provider/types';
 import { KubernetesAuthProviders } from './kubernetes-auth-provider/KubernetesAuthProviders';
 import {
+  azureADAuthApiRef,
   createApiFactory,
   createPlugin,
   createRouteRef,
@@ -49,7 +50,7 @@ export const kubernetesPlugin = createPlugin({
     createApiFactory({
       api: kubernetesAuthProvidersApiRef,
       deps: {
-        googleAuthApi: googleAuthApiRef,
+        googleAuthApi: azureADAuthApiRef,
         microsoftAuthApi: microsoftAuthApiRef,
         oktaAuthApi: oktaAuthApiRef,
         oneloginAuthApi: oneloginAuthApiRef,
