@@ -33,9 +33,10 @@ The providers available as server side are:
 ### Azure
 
 The Azure server side authentication provider works by authenticating on the server with
-the Azure CLI, follow these steps:
+the Azure CLI, please note that [Azure AD Authentication][1] is a requirement and has to
+be enabled in your AKS cluster, then follow these steps:
 
-- Install the Azure CLI: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest
+- [Install the Azure CLI][2]
 - Login with your Azure/Microsoft account with `az login` in the server's terminal
 - Go to your AKS cluster's resource page in Azure Console and follow the steps in the
   `Connect` tab to set the subscription and get your credentials for `kubectl` integration
@@ -69,3 +70,6 @@ The providers available as client side are:
 
 - `google`
 - `oidc`
+
+[1]: https://docs.microsoft.com/en-us/azure/aks/managed-aad
+[2]: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest
