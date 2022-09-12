@@ -29,7 +29,7 @@ export const EntityNamePicker = (
     schema: { title = 'Name', description = 'Unique name of the component' },
     rawErrors,
     formData,
-    uiSchema: { 'ui:autofocus': autoFocus },
+    uiSchema: { 'ui:autofocus': autoFocus } = {},
     idSchema,
     placeholder,
   } = props;

@@ -39,7 +39,7 @@ describe('<EntityPicker />', () => {
   const rawErrors: string[] = [];
   const formData = undefined;
 
-  let props: FieldProps;
+  let props: FieldProps<string | undefined>;
 
   const catalogApi: jest.Mocked<CatalogApi> = {
     getLocationById: jest.fn(),
@@ -76,7 +76,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as any;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -117,7 +117,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as any;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });

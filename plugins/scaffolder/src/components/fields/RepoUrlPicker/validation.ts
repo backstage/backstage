@@ -26,7 +26,7 @@ import { scmIntegrationsApiRef } from '@backstage/integration-react';
  * @public
  */
 export const repoPickerValidation = (
-  value: string,
+  value: string | undefined,
   validation: FieldValidation,
   context: { apiHolder: ApiHolder },
 ) => {

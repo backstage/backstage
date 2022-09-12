@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 import { ApiHolder } from '@backstage/core-plugin-api';
-import { FieldValidation, FieldProps } from '@rjsf/utils';
+import {
+  FieldValidation,
+  FieldProps,
+  UIOptionsType,
+  UiSchema,
+} from '@rjsf/utils';
+import { PropsWithChildren } from 'react';
 
 /**
  * Field validation type for Custom Field Extensions.
@@ -35,7 +41,7 @@ export type CustomFieldValidator<TFieldReturnValue> = (
  */
 export type FieldExtensionOptions<
   TFieldReturnValue = unknown,
-  TInputProps = unknown,
+  TInputProps extends UIOptionsType = {},
 > = {
   name: string;
   component: (
@@ -52,9 +58,9 @@ export type FieldExtensionOptions<
  */
 export interface FieldExtensionComponentProps<
   TFieldReturnValue,
-  TUiOptions extends {} = {},
-> extends FieldProps<TFieldReturnValue> {
-  uiSchema: FieldProps['uiSchema'] & {
-    'ui:options'?: TUiOptions;
+  TUiOptions = {},
+> extends PropsWithChildren<FieldProps<TFieldReturnValue>> {
+  uiSchema?: UiSchema<TFieldReturnValue> & {
+    'ui:options'?: TUiOptions & UIOptionsType;
   };
 }
