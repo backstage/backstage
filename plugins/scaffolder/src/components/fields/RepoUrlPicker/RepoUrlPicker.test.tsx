@@ -26,7 +26,7 @@ import {
 } from '@backstage/integration-react';
 import { scaffolderApiRef } from '../../../api';
 import { ScaffolderApi } from '../../../types';
-
+import validator from '@rjsf/validator-ajv6';
 import {
   SecretsContextProvider,
   SecretsContext,
@@ -67,6 +67,7 @@ describe('RepoUrlPicker', () => {
         >
           <SecretsContextProvider>
             <Form
+              validator={validator}
               schema={{ type: 'string' }}
               uiSchema={{ 'ui:field': 'RepoUrlPicker' }}
               fields={{ RepoUrlPicker: RepoUrlPicker as Field<unknown> }}
@@ -103,6 +104,7 @@ describe('RepoUrlPicker', () => {
         >
           <SecretsContextProvider>
             <Form
+              validator={validator}
               schema={{ type: 'string' }}
               uiSchema={{
                 'ui:field': 'RepoUrlPicker',
@@ -136,6 +138,7 @@ describe('RepoUrlPicker', () => {
         >
           <SecretsContextProvider>
             <Form
+              validator={validator}
               schema={{ type: 'string' }}
               uiSchema={{
                 'ui:field': 'RepoUrlPicker',
