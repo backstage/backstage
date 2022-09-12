@@ -24,8 +24,7 @@ different ways.
 ## Overview
 
 The following diagram shows how Backstage might look when deployed inside a
-company which uses the Tech Radar plugin, the Lighthouse plugin, the CircleCI
-plugin and the software catalog.
+company which uses the Tech Radar plugin
 
 There are 3 main components in this architecture:
 
