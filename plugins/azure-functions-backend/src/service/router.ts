@@ -21,11 +21,13 @@ import { Logger } from 'winston';
 
 import { AzureWebManagementApi } from '../api';
 
+/** @public */
 export interface RouterOptions {
   logger: Logger;
   azureWebManagementApi: AzureWebManagementApi;
 }
 
+/** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

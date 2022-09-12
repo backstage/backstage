@@ -24,10 +24,12 @@ import {
 } from '@backstage/core-plugin-api';
 import { azureFunctionsApiRef, AzureFunctionsBackendClient } from './api';
 
+/** @public */
 export const entityContentRouteRef = createRouteRef({
   id: 'Azure Functions Entity Content',
 });
 
+/** @public */
 export const azureFunctionsPlugin = createPlugin({
   id: 'azure-functions',
   apis: [
@@ -46,6 +48,7 @@ export const azureFunctionsPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const EntityAzureFunctionsOverviewCard = azureFunctionsPlugin.provide(
   createComponentExtension({
     name: 'EntityAzureFunctionsOverviewCard',

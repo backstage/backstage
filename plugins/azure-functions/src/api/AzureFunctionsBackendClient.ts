@@ -18,6 +18,7 @@ import { AzureFunctionsApi } from './AzureFunctionsApi';
 import { FunctionsData } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
+/** @public */
 export class AzureFunctionsBackendClient implements AzureFunctionsApi {
   private readonly identityApi: IdentityApi;
   private readonly discoveryApi: DiscoveryApi;

@@ -12,8 +12,6 @@ import { Entity } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "AzureFunctionsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type AzureFunctionsApi = {
   list: ({
@@ -23,13 +21,9 @@ export type AzureFunctionsApi = {
   }) => Promise<FunctionsData[]>;
 };
 
-// Warning: (ae-missing-release-tag) "azureFunctionsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const azureFunctionsApiRef: ApiRef<AzureFunctionsApi>;
 
-// Warning: (ae-missing-release-tag) "AzureFunctionsBackendClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class AzureFunctionsBackendClient implements AzureFunctionsApi {
   constructor(options: {
@@ -40,13 +34,9 @@ export class AzureFunctionsBackendClient implements AzureFunctionsApi {
   list({ functionName }: { functionName: string }): Promise<FunctionsData[]>;
 }
 
-// Warning: (ae-missing-release-tag) "AzureFunctionsOverviewWidget" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const AzureFunctionsOverviewWidget: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "azureFunctionsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const azureFunctionsPlugin: BackstagePlugin<
   {
@@ -56,18 +46,12 @@ export const azureFunctionsPlugin: BackstagePlugin<
   {}
 >;
 
-// Warning: (ae-missing-release-tag) "EntityAzureFunctionsOverviewCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EntityAzureFunctionsOverviewCard: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "entityContentRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const entityContentRouteRef: RouteRef<undefined>;
 
-// Warning: (ae-missing-release-tag) "FunctionsData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type FunctionsData = {
   href: string;
@@ -80,8 +64,6 @@ export type FunctionsData = {
   lastModifiedDate: Date;
 };
 
-// Warning: (ae-missing-release-tag) "isAzureFunctionsAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const isAzureFunctionsAvailable: (entity: Entity) => string | undefined;
 

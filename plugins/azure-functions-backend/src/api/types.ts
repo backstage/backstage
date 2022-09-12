@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+/** @public */
 export interface AzureFunctionsAllowedSubscriptionsConfig {
   name: string;
   id: string;
 }
 
+/** @public */
 export type FunctionsData = {
   href: string;
   logstreamHref: string;

@@ -22,6 +22,7 @@ import {
   FunctionsData,
 } from './types';
 
+/** @public */
 export class AzureFunctionsConfig {
   constructor(
     public readonly tenantId: string,
@@ -49,6 +50,7 @@ export class AzureFunctionsConfig {
   }
 }
 
+/** @public */
 export class AzureWebManagementApi {
   private readonly baseHref = (domain: string) =>
     `https://portal.azure.com/#@${domain}/resource`;

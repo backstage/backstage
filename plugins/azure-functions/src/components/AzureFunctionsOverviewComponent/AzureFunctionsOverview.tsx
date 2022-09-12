@@ -26,6 +26,7 @@ import ErrorBoundary from '../ErrorBoundary';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { OverviewTable } from '../OverviewTableComponent/OverviewTable';
 
+/** @public */
 export const isAzureFunctionsAvailable = (entity: Entity) =>
   entity?.metadata.annotations?.[AZURE_FUNCTIONS_ANNOTATION];
 
@@ -46,6 +47,7 @@ const AzureFunctionsOverview = ({ entity }: { entity: Entity }) => {
   );
 };
 
+/** @public */
 export const AzureFunctionsOverviewWidget = () => {
   const { entity } = useEntity();
 

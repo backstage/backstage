@@ -7,8 +7,6 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import { Logger } from 'winston';
 
-// Warning: (ae-missing-release-tag) "AzureFunctionsAllowedSubscriptionsConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface AzureFunctionsAllowedSubscriptionsConfig {
   // (undocumented)
@@ -17,8 +15,6 @@ export interface AzureFunctionsAllowedSubscriptionsConfig {
   name: string;
 }
 
-// Warning: (ae-missing-release-tag) "AzureFunctionsConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class AzureFunctionsConfig {
   constructor(
@@ -42,8 +38,6 @@ export class AzureFunctionsConfig {
   readonly tenantId: string;
 }
 
-// Warning: (ae-missing-release-tag) "AzureWebManagementApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class AzureWebManagementApi {
   constructor(config: AzureFunctionsConfig);
@@ -53,13 +47,9 @@ export class AzureWebManagementApi {
   list({ functionName }: { functionName: string }): Promise<FunctionsData[]>;
 }
 
-// Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// Warning: (ae-missing-release-tag) "FunctionsData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type FunctionsData = {
   href: string;
@@ -72,8 +62,6 @@ export type FunctionsData = {
   lastModifiedDate: Date;
 };
 
-// Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface RouterOptions {
   // (undocumented)

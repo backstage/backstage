@@ -89,6 +89,7 @@ const DEFAULT_COLUMNS: TableColumn<FunctionsData>[] = [
   },
 ];
 
+/** @public */
 export const OverviewTable = ({ data, loading }: FunctionTableProps) => {
   const columns: TableColumn<FunctionsData>[] = [...DEFAULT_COLUMNS];
   const tableStyle = {

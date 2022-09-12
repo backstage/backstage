@@ -17,10 +17,12 @@
 import { createApiRef } from '@backstage/core-plugin-api';
 import { FunctionsData } from './types';
 
+/** @public */
 export const azureFunctionsApiRef = createApiRef<AzureFunctionsApi>({
   id: 'plugin.azurefunctions.service',
 });
 
+/** @public */
 export type AzureFunctionsApi = {
   list: ({
     functionName,
