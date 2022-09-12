@@ -184,7 +184,8 @@ type DagTableComponentProps = {
   dagIds?: string[];
 };
 
-export const DagTableComponent = ({ dagIds }: DagTableComponentProps) => {
+export const DagTableComponent = (props: DagTableComponentProps) => {
+  const { dagIds } = props;
   const [dagsData, setDagsData] = useState<DagTableRow[] | []>([]);
   const apiClient = useApi(apacheAirflowApiRef);
 
