@@ -1,5 +1,6 @@
----
+4---
 '@backstage/plugin-github-actions': patch
+
 ---
 
-Modify RecentWorkflowRunsCard use constructed routeRef instead of hardcoded route.
+Modify RecentWorkflowRunsCard use constructed route instead of hardcoded route.
