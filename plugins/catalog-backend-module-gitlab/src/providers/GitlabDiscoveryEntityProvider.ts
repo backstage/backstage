@@ -161,6 +161,13 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         continue;
       }
 
+      const isRelativePath = this.config.catalogFile?.match(/[*?]/);
+
+      if (isRelativePath) {
+        res.matches.push(project);
+        continue;
+      }
+
       const project_branch = project.default_branch ?? this.config.branch;
 
       const projectHasFile: boolean = await client.hasFile(

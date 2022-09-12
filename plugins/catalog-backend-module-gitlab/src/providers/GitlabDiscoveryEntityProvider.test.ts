@@ -130,6 +130,89 @@ describe('GitlabDiscoveryEntityProvider', () => {
     );
   });
 
+  it('wildcard configuration', async () => {
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'test-gitlab',
+            apiBaseUrl: 'https://api.gitlab.example/api/v4',
+            token: '1234',
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          gitlab: {
+            'test-id': {
+              host: 'test-gitlab',
+              entityFilename: '**/file.yaml',
+            },
+          },
+        },
+      },
+    });
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    server.use(
+      rest.get(
+        `https://api.gitlab.example/api/v4/projects`,
+        (_req, res, ctx) => {
+          const response = [
+            {
+              id: 123,
+              default_branch: 'master',
+              archived: false,
+              last_activity_at: new Date().toString(),
+              web_url: 'https://api.gitlab.example/test-group/test-repo',
+              path_with_namespace: 'test-group/test-repo',
+            },
+          ];
+          return res(ctx.json(response));
+        },
+      ),
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    await provider.refresh(logger);
+
+    const url =
+      'https://api.gitlab.example/test-group/test-repo/-/blob/master/**/file.yaml';
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: [
+        {
+          entity: {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Location',
+            metadata: {
+              annotations: {
+                'backstage.io/managed-by-location': `url:${url}`,
+                'backstage.io/managed-by-origin-location': `url:${url}`,
+              },
+              name: 'generated-2b999773805810630be11fa714f1b0773e5fcb9f',
+            },
+            spec: {
+              presence: 'optional',
+              target: url,
+              type: 'url',
+            },
+          },
+          locationKey: 'GitlabDiscoveryEntityProvider:test-id',
+        },
+      ],
+    });
+  });
+
   it('apply full update on scheduled execution', async () => {
     const config = new ConfigReader({
       integrations: {
