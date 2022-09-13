@@ -670,6 +670,8 @@ export interface RouterOptions {
   // (undocumented)
   discovery: PluginEndpointDiscovery;
   // (undocumented)
+  keyDurationSeconds?: number;
+  // (undocumented)
   logger: Logger;
   // (undocumented)
   providerFactories?: ProviderFactories;

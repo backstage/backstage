@@ -48,6 +48,7 @@ export interface RouterOptions {
   tokenManager: TokenManager;
   tokenFactoryAlgorithm?: string;
   providerFactories?: ProviderFactories;
+  keyDurationSeconds?: number;
 }
 
 /** @public */
@@ -62,6 +63,7 @@ export async function createRouter(
     tokenManager,
     tokenFactoryAlgorithm,
     providerFactories,
+    keyDurationSeconds,
   } = options;
   const router = Router();
 
@@ -69,12 +71,11 @@ export async function createRouter(
   const authUrl = await discovery.getExternalBaseUrl('auth');
 
   const keyStore = await KeyStores.fromConfig(config, { logger, database });
-  const keyDurationSeconds = 3600;
 
   const tokenIssuer = new TokenFactory({
     issuer: authUrl,
     keyStore,
-    keyDurationSeconds,
+    keyDurationSeconds: keyDurationSeconds || 3600,
     logger: logger.child({ component: 'token-factory' }),
     algorithm: tokenFactoryAlgorithm,
   });
