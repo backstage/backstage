@@ -31,4 +31,5 @@ export type {
   BackstageUserIdentity,
   BackstageServerIdentity,
   IdentityApiGetIdentityRequest,
+  Identity,
 } from './types';

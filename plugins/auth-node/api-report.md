@@ -8,8 +8,10 @@ import { Request as Request_2 } from 'express';
 import { TokenManager } from '@backstage/backend-common';
 
 // @public
-export interface BackstageIdentityResponse extends BackstageSignInResult {
-  identity: BackstageUserIdentity | BackstageServerIdentity;
+export interface BackstageIdentityResponse<
+  I extends Identity = BackstageUserIdentity,
+> extends BackstageSignInResult {
+  identity: I;
 }
 
 // @public
@@ -38,7 +40,8 @@ export class DefaultIdentityClient implements IdentityApi {
   getIdentity({
     request,
   }: IdentityApiGetIdentityRequest): Promise<
-    BackstageIdentityResponse | undefined
+    | BackstageIdentityResponse<BackstageServerIdentity | BackstageUserIdentity>
+    | undefined
   >;
 }
 
@@ -48,10 +51,19 @@ export function getBearerTokenFromAuthorizationHeader(
 ): string | undefined;
 
 // @public
+export interface Identity {
+  // (undocumented)
+  type: 'server' | 'user';
+}
+
+// @public
 export interface IdentityApi {
   getIdentity(
     options: IdentityApiGetIdentityRequest,
-  ): Promise<BackstageIdentityResponse | undefined>;
+  ): Promise<
+    | BackstageIdentityResponse<BackstageUserIdentity | BackstageServerIdentity>
+    | undefined
+  >;
 }
 
 // @public

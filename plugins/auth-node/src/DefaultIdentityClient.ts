@@ -30,6 +30,8 @@ import { GetKeyFunction } from 'jose/dist/types/types';
 
 import {
   BackstageIdentityResponse,
+  BackstageServerIdentity,
+  BackstageUserIdentity,
   IdentityApiGetIdentityRequest,
 } from './types';
 import { getBearerTokenFromAuthorizationHeader, IdentityApi } from '.';
@@ -86,7 +88,8 @@ export class DefaultIdentityClient implements IdentityApi {
   async getIdentity({
     request,
   }: IdentityApiGetIdentityRequest): Promise<
-    BackstageIdentityResponse | undefined
+    | BackstageIdentityResponse<BackstageServerIdentity | BackstageUserIdentity>
+    | undefined
   > {
     const token = getBearerTokenFromAuthorizationHeader(
       request.headers.authorization,

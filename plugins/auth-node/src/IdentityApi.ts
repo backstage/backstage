@@ -15,6 +15,8 @@
  */
 import {
   BackstageIdentityResponse,
+  BackstageUserIdentity,
+  BackstageServerIdentity,
   IdentityApiGetIdentityRequest,
 } from './types';
 
@@ -33,5 +35,8 @@ export interface IdentityApi {
    */
   getIdentity(
     options: IdentityApiGetIdentityRequest,
-  ): Promise<BackstageIdentityResponse | undefined>;
+  ): Promise<
+    | BackstageIdentityResponse<BackstageUserIdentity | BackstageServerIdentity>
+    | undefined
+  >;
 }

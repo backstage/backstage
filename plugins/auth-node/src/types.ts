@@ -46,11 +46,22 @@ export type IdentityApiGetIdentityRequest = {
  *
  * @public
  */
-export interface BackstageIdentityResponse extends BackstageSignInResult {
+export interface BackstageIdentityResponse<
+  I extends Identity = BackstageUserIdentity,
+> extends BackstageSignInResult {
   /**
    * A plaintext description of the identity that is encapsulated within the token.
    */
-  identity: BackstageUserIdentity | BackstageServerIdentity;
+  identity: I;
+}
+
+/**
+ * Identity can represent a server or a user
+ *
+ * @public
+ */
+export interface Identity {
+  type: 'server' | 'user';
 }
 
 /**
