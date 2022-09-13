@@ -19,6 +19,7 @@ export {
   useSearch,
   useSearchContextCheck,
 } from './SearchContext';
+
 export type {
   SearchContextProviderProps,
   SearchContextState,
