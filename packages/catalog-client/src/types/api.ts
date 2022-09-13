@@ -263,6 +263,8 @@ export type EntitiesFilter =
 
 /**
  * Used for sorting the entities.
+ *
+ * @public
  */
 export type EntitySortField = { field: string; order: 'asc' | 'desc' };
 
