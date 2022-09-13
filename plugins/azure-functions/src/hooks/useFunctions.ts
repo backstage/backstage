@@ -16,7 +16,7 @@
 
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { useApi, errorApiRef } from '@backstage/core-plugin-api';
-import { FunctionsData } from '@backstage/plugin-azure-functions-common';
+import { FunctionsListResponse } from '@backstage/plugin-azure-functions-common';
 import { azureFunctionsApiRef } from '../api';
 import { useCallback } from 'react';
 
@@ -37,7 +37,7 @@ export function useFunctions({ functionsName }: { functionsName: string }) {
     value: data,
     error,
     retry,
-  } = useAsyncRetry<FunctionsData[] | null>(async () => {
+  } = useAsyncRetry<FunctionsListResponse | null>(async () => {
     try {
       const azureFunction = await list();
       return azureFunction;

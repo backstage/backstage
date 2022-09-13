@@ -9,7 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { FunctionsData } from '@backstage/plugin-azure-functions-common';
+import { FunctionsListResponse } from '@backstage/plugin-azure-functions-common';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
@@ -19,7 +19,7 @@ export type AzureFunctionsApi = {
     functionName,
   }: {
     functionName: string;
-  }) => Promise<FunctionsData[]>;
+  }) => Promise<FunctionsListResponse>;
 };
 
 // @public (undocumented)
@@ -32,7 +32,11 @@ export class AzureFunctionsBackendClient implements AzureFunctionsApi {
     identityApi: IdentityApi;
   });
   // (undocumented)
-  list({ functionName }: { functionName: string }): Promise<FunctionsData[]>;
+  list({
+    functionName,
+  }: {
+    functionName: string;
+  }): Promise<FunctionsListResponse>;
 }
 
 // @public (undocumented)

@@ -23,5 +23,10 @@ export type FunctionsData = {
   lastModifiedDate: Date;
 };
 
+// @public (undocumented)
+export type FunctionsListResponse = {
+  items: FunctionsData[];
+};
+
 // (No @packageDocumentation comment for this package)
 ```

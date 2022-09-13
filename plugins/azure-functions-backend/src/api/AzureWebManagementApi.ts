@@ -19,7 +19,7 @@ import { ClientSecretCredential } from '@azure/identity';
 import { WebSiteManagementClient } from '@azure/arm-appservice';
 import {
   AzureFunctionsAllowedSubscriptionsConfig,
-  FunctionsData,
+  FunctionsListResponse,
 } from '@backstage/plugin-azure-functions-common';
 
 /** @public */
@@ -77,8 +77,8 @@ export class AzureWebManagementApi {
     functionName,
   }: {
     functionName: string;
-  }): Promise<FunctionsData[]> {
-    const results = [];
+  }): Promise<FunctionsListResponse> {
+    const items = [];
     for (const client of this.clients) {
       try {
         for await (const webApp of client.webApps.list()) {
@@ -86,7 +86,7 @@ export class AzureWebManagementApi {
             continue;
           }
           const v = webApp!;
-          results.push({
+          items.push({
             href: `${this.baseHref(this.config.domain)}${v.id!}`,
             logstreamHref: `${this.baseHref(
               this.config.domain,
@@ -103,6 +103,6 @@ export class AzureWebManagementApi {
         console.log(ex);
       }
     }
-    return results;
+    return { items: items };
   }
 }

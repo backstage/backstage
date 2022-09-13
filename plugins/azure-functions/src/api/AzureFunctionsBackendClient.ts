@@ -15,7 +15,7 @@
  */
 
 import { AzureFunctionsApi } from './AzureFunctionsApi';
-import { FunctionsData } from '@backstage/plugin-azure-functions-common';
+import { FunctionsListResponse } from '@backstage/plugin-azure-functions-common';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 /** @public */
@@ -34,7 +34,7 @@ export class AzureFunctionsBackendClient implements AzureFunctionsApi {
     functionName,
   }: {
     functionName: string;
-  }): Promise<FunctionsData[]> {
+  }): Promise<FunctionsListResponse> {
     try {
       const url = `${await this.discoveryApi.getBaseUrl(
         'azure-functions',

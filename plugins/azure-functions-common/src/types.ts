@@ -31,3 +31,8 @@ export type FunctionsData = {
   containerSize: number;
   lastModifiedDate: Date;
 };
+
+/** @public */
+export type FunctionsListResponse = {
+  items: FunctionsData[];
+};

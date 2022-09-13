@@ -38,8 +38,7 @@ Here's how to get the backend plugin up and running:
 
    ```sh
    # From the Backstage root directory
-   cd packages/backend
-   yarn add @backstage/plugin-azure-functions-backend
+   yarn add --cwd packages/backend @backstage/plugin-azure-functions-backend
    ```
 
 2. Then we will create a new file named `packages/backend/src/plugins/azure-functions.ts`, and add the following to it:

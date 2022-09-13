@@ -6,7 +6,7 @@
 import { AzureFunctionsAllowedSubscriptionsConfig } from '@backstage/plugin-azure-functions-common';
 import { Config } from '@backstage/config';
 import express from 'express';
-import { FunctionsData } from '@backstage/plugin-azure-functions-common';
+import { FunctionsListResponse } from '@backstage/plugin-azure-functions-common';
 import { Logger } from 'winston';
 
 // @public (undocumented)
@@ -38,7 +38,11 @@ export class AzureWebManagementApi {
   // (undocumented)
   static fromConfig(config: Config): AzureWebManagementApi;
   // (undocumented)
-  list({ functionName }: { functionName: string }): Promise<FunctionsData[]>;
+  list({
+    functionName,
+  }: {
+    functionName: string;
+  }): Promise<FunctionsListResponse>;
 }
 
 // @public (undocumented)

@@ -4141,7 +4141,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-azure-functions-backend@^0.1.0, @backstage/plugin-azure-functions-backend@workspace:plugins/azure-functions-backend":
+"@backstage/plugin-azure-functions-backend@^0.0.0, @backstage/plugin-azure-functions-backend@workspace:plugins/azure-functions-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-azure-functions-backend@workspace:plugins/azure-functions-backend"
   dependencies:
@@ -4150,20 +4150,19 @@ __metadata:
     "@backstage/backend-common": ^0.15.1-next.2
     "@backstage/cli": ^0.19.0-next.2
     "@backstage/config": ^1.0.1
-    "@backstage/plugin-azure-functions-common": ^0.0.1
+    "@backstage/plugin-azure-functions-common": ^0.0.0
     "@types/express": "*"
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
     msw: ^0.44.0
     node-fetch: ^2.6.7
-    supertest: ^4.0.2
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-azure-functions-common@^0.0.1, @backstage/plugin-azure-functions-common@workspace:plugins/azure-functions-common":
+"@backstage/plugin-azure-functions-common@^0.0.0, @backstage/plugin-azure-functions-common@workspace:plugins/azure-functions-common":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-azure-functions-common@workspace:plugins/azure-functions-common"
   dependencies:
@@ -4171,7 +4170,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-azure-functions@^0.1.0, @backstage/plugin-azure-functions@workspace:plugins/azure-functions":
+"@backstage/plugin-azure-functions@^0.0.0, @backstage/plugin-azure-functions@workspace:plugins/azure-functions":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-azure-functions@workspace:plugins/azure-functions"
   dependencies:
@@ -4181,7 +4180,7 @@ __metadata:
     "@backstage/core-components": ^0.11.1-next.2
     "@backstage/core-plugin-api": ^1.0.6-next.2
     "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-azure-functions-common": ^0.0.1
+    "@backstage/plugin-azure-functions-common": ^0.0.0
     "@backstage/plugin-catalog-react": ^1.1.4-next.1
     "@backstage/test-utils": ^1.2.0-next.2
     "@backstage/theme": ^0.2.16
@@ -19143,7 +19142,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"component-emitter@npm:^1.2.0, component-emitter@npm:^1.2.1, component-emitter@npm:^1.3.0, component-emitter@npm:~1.3.0":
+"component-emitter@npm:^1.2.1, component-emitter@npm:^1.3.0, component-emitter@npm:~1.3.0":
   version: 1.3.0
   resolution: "component-emitter@npm:1.3.0"
   checksum: b3c46de38ffd35c57d1c02488355be9f218e582aec72d72d1b8bbec95a3ac1b38c96cd6e03ff015577e68f550fbb361a3bfdbd9bb248be9390b7b3745691be6b
@@ -19529,7 +19528,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookiejar@npm:^2.1.0, cookiejar@npm:^2.1.3":
+"cookiejar@npm:^2.1.3":
   version: 2.1.3
   resolution: "cookiejar@npm:2.1.3"
   checksum: 88259983ebc52ceb23cdacfa48762b6a518a57872eff1c7ed01d214fff5cf492e2660d7d5c04700a28f1787a76811df39e8639f8e17670b3cf94ecd86e161f07
@@ -22534,7 +22533,7 @@ __metadata:
     "@backstage/plugin-apache-airflow": ^0.2.2-next.2
     "@backstage/plugin-api-docs": ^0.8.9-next.2
     "@backstage/plugin-azure-devops": ^0.2.0-next.2
-    "@backstage/plugin-azure-functions": ^0.1.0
+    "@backstage/plugin-azure-functions": ^0.0.0
     "@backstage/plugin-badges": ^0.2.33-next.2
     "@backstage/plugin-catalog-common": ^1.0.6-next.0
     "@backstage/plugin-catalog-graph": ^0.2.21-next.1
@@ -22638,7 +22637,7 @@ __metadata:
     "@backstage/plugin-auth-backend": ^0.16.0-next.2
     "@backstage/plugin-auth-node": ^0.2.5-next.2
     "@backstage/plugin-azure-devops-backend": ^0.3.15-next.1
-    "@backstage/plugin-azure-functions-backend": ^0.1.0
+    "@backstage/plugin-azure-functions-backend": ^0.0.0
     "@backstage/plugin-badges-backend": ^0.1.30-next.0
     "@backstage/plugin-catalog-backend": ^1.4.0-next.2
     "@backstage/plugin-code-coverage-backend": ^0.2.2-next.1
@@ -23560,7 +23559,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:^2.3.1, form-data@npm:^2.3.2, form-data@npm:^2.5.0":
+"form-data@npm:^2.3.2, form-data@npm:^2.5.0":
   version: 2.5.1
   resolution: "form-data@npm:2.5.1"
   dependencies:
@@ -23628,13 +23627,6 @@ __metadata:
     node-domexception: 1.0.0
     web-streams-polyfill: 4.0.0-beta.1
   checksum: e1d7aae7d579775b813ddc8ea4511fee613552715e81b36afb188d3a65b3d4df2ef69017106079ba52d9ab1e3367fea0206862d8ae64c02008ababdb341d2c3d
-  languageName: node
-  linkType: hard
-
-"formidable@npm:^1.2.0":
-  version: 1.2.6
-  resolution: "formidable@npm:1.2.6"
-  checksum: 2b68ed07ba88302b9c63f8eda94f19a460cef6017bfda48348f09f41d2a36660c9353137991618e0e4c3db115b41e4b8f6fa63bc973b7a7c91dec66acdd02a56
   languageName: node
   linkType: hard
 
@@ -29899,7 +29891,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"methods@npm:^1.0.0, methods@npm:^1.1.1, methods@npm:^1.1.2, methods@npm:~1.1.2":
+"methods@npm:^1.0.0, methods@npm:^1.1.2, methods@npm:~1.1.2":
   version: 1.1.2
   resolution: "methods@npm:1.1.2"
   checksum: 0917ff4041fa8e2f2fda5425a955fe16ca411591fbd123c0d722fcf02b73971ed6f764d85f0a6f547ce49ee0221ce2c19a5fa692157931cecb422984f1dcd13a
@@ -30309,7 +30301,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime@npm:1.6.0, mime@npm:^1.3.4, mime@npm:^1.4.1":
+"mime@npm:1.6.0, mime@npm:^1.3.4":
   version: 1.6.0
   resolution: "mime@npm:1.6.0"
   bin:
@@ -34196,15 +34188,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:^6.5.1":
-  version: 6.11.0
-  resolution: "qs@npm:6.11.0"
-  dependencies:
-    side-channel: ^1.0.4
-  checksum: 6e1f29dd5385f7488ec74ac7b6c92f4d09a90408882d0c208414a34dd33badc1a621019d4c799a3df15ab9b1d0292f97c1dd71dc7c045e69f81a8064e5af7297
-  languageName: node
-  linkType: hard
-
 "qs@npm:~6.5.2":
   version: 6.5.2
   resolution: "qs@npm:6.5.2"
@@ -38047,24 +38030,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"superagent@npm:^3.8.3":
-  version: 3.8.3
-  resolution: "superagent@npm:3.8.3"
-  dependencies:
-    component-emitter: ^1.2.0
-    cookiejar: ^2.1.0
-    debug: ^3.1.0
-    extend: ^3.0.0
-    form-data: ^2.3.1
-    formidable: ^1.2.0
-    methods: ^1.1.1
-    mime: ^1.4.1
-    qs: ^6.5.1
-    readable-stream: ^2.3.5
-  checksum: b13d0303259d76c9180bd40d97d9f0713760f5ced1aef089bdb2fcdf69cfaef89004cd6e986416d59bd9a2f0f9933d72521b5171fa26f89b781a2c3460c516fe
-  languageName: node
-  linkType: hard
-
 "superagent@npm:^8.0.0":
   version: 8.0.0
   resolution: "superagent@npm:8.0.0"
@@ -38081,16 +38046,6 @@ __metadata:
     readable-stream: ^3.6.0
     semver: ^7.3.7
   checksum: 14343e59327eafd85fa230acb876017079d5efcecc72a56566abc0f965220bb460af2e070dddecd9e2856410b2d2b318d81d9cc1d342aa5922da93c29a295dd7
-  languageName: node
-  linkType: hard
-
-"supertest@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "supertest@npm:4.0.2"
-  dependencies:
-    methods: ^1.1.2
-    superagent: ^3.8.3
-  checksum: ec848088c5d0f6743a0829331c274f67ab4c2e5e6ba724f2fdf4965a73afa22d5091448323e28ae5b69137e42fe3ac67235dfc5b0a0acda3c088bdd193313319
   languageName: node
   linkType: hard
 

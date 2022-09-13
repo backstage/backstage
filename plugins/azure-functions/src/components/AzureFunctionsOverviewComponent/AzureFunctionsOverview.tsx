@@ -50,7 +50,7 @@ const AzureFunctionsOverview = ({ entity }: { entity: Entity }) => {
 
   return (
     <OverviewTable
-      data={functionsData.data ?? []}
+      data={functionsData.data?.items ?? []}
       loading={functionsData.loading}
     />
   );
