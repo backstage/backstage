@@ -25,6 +25,8 @@ import {
 import { InputError } from '@backstage/errors';
 import {
   BackstageIdentityResponse,
+  BackstageServerIdentity,
+  BackstageUserIdentity,
   IdentityApi,
 } from '@backstage/plugin-auth-node';
 import {
@@ -101,7 +103,9 @@ export interface RouterOptions {
 
 const handleRequest = async (
   requests: IdentifiedPermissionMessage<EvaluatePermissionRequest>[],
-  user: BackstageIdentityResponse | undefined,
+  user:
+    | BackstageIdentityResponse<BackstageUserIdentity | BackstageServerIdentity>
+    | undefined,
   policy: PermissionPolicy,
   permissionIntegrationClient: PermissionIntegrationClient,
   authHeader?: string,

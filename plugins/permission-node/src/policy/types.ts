@@ -18,7 +18,11 @@ import {
   Permission,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+import {
+  BackstageIdentityResponse,
+  BackstageServerIdentity,
+  BackstageUserIdentity,
+} from '@backstage/plugin-auth-node';
 
 /**
  * A query to be evaluated by the {@link PermissionPolicy}.
@@ -53,6 +57,8 @@ export type PolicyQuery = {
 export interface PermissionPolicy {
   handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse,
+    user?: BackstageIdentityResponse<
+      BackstageUserIdentity | BackstageServerIdentity
+    >,
   ): Promise<PolicyDecision>;
 }
