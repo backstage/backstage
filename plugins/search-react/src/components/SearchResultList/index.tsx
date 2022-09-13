@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-export * from './HighlightedSearchResultText';
-export * from './SearchBar';
-export * from './SearchAutocomplete';
-export * from './SearchFilter';
-export * from './SearchResult';
-export * from './SearchResultPager';
-export * from './SearchResultList';
-export * from './DefaultResultListItem';
+export { SearchResultList, SearchResultListLayout } from './SearchResultList';
+
+export type {
+  SearchResultListProps,
+  SearchResultListLayoutProps,
+} from './SearchResultList';

@@ -27,6 +27,7 @@ import { searchApiRef, MockSearchApi } from '../../api';
 import { SearchContextProvider } from '../../context';
 
 import { DefaultResultListItem } from '../DefaultResultListItem';
+import { SearchResultListLayout } from '../SearchResultList';
 
 import { SearchResult } from './SearchResult';
 
@@ -145,6 +146,36 @@ export const WithQuery = () => {
             }
           })}
         </List>
+      )}
+    </SearchResult>
+  );
+};
+
+export const ListLayout = () => {
+  return (
+    <SearchResult>
+      {({ results }) => (
+        <SearchResultListLayout
+          resultItems={results}
+          renderResultItem={({ type, document }) => {
+            switch (type) {
+              case 'custom-result-item':
+                return (
+                  <CustomResultListItem
+                    key={document.location}
+                    result={document}
+                  />
+                );
+              default:
+                return (
+                  <DefaultResultListItem
+                    key={document.location}
+                    result={document}
+                  />
+                );
+            }
+          }}
+        />
       )}
     </SearchResult>
   );
