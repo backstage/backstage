@@ -1,5 +1,13 @@
 # @backstage/plugin-periskop-backend
 
+## 0.1.7-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.2-next.0
+  - @backstage/backend-common@0.15.1-next.3
+
 ## 0.1.7-next.2
 
 ### Patch Changes

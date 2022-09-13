@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.4.2-next.3
+
+### Patch Changes
+
+- d80aab31ae: Added $select attribute to user query
+- Updated dependencies
+  - @backstage/catalog-model@1.1.1-next.0
+  - @backstage/config@1.0.2-next.0
+  - @backstage/plugin-catalog-backend@1.4.0-next.3
+  - @backstage/backend-tasks@0.3.5-next.1
+
 ## 0.4.2-next.2
 
 ### Patch Changes

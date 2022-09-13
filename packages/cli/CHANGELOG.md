@@ -1,5 +1,18 @@
 # @backstage/cli
 
+## 0.19.0-next.3
+
+### Patch Changes
+
+- 7d47def9c4: Added dependency on `@types/jest` v27. The `@types/jest` dependency has also been removed from the plugin template and should be removed from any of your own internal packages. If you wish to override the version of `@types/jest` or `jest`, use Yarn resolutions.
+- a7e82c9b01: Updated `versions:bump` command to be compatible with Yarn 3.
+- Updated dependencies
+  - @backstage/config-loader@1.1.4-next.2
+  - @backstage/cli-common@0.1.10-next.0
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+  - @backstage/release-manifests@0.0.6-next.2
+
 ## 0.19.0-next.2
 
 ### Patch Changes

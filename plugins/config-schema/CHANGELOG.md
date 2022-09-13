@@ -1,5 +1,16 @@
 # @backstage/plugin-config-schema
 
+## 0.1.32-next.3
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/config@1.0.2-next.0
+  - @backstage/core-components@0.11.1-next.3
+  - @backstage/core-plugin-api@1.0.6-next.3
+  - @backstage/errors@1.1.1-next.0
+
 ## 0.1.32-next.2
 
 ### Patch Changes
