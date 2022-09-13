@@ -35,6 +35,7 @@ export interface EntityPickerUiOptions {
   allowedKinds?: string[];
   defaultKind?: string;
   allowArbitraryValues?: boolean;
+  defaultNamespace?: string | false;
 }
 
 /**
@@ -57,6 +58,7 @@ export const EntityPicker = (
   } = props;
   const allowedKinds = uiSchema['ui:options']?.allowedKinds;
   const defaultKind = uiSchema['ui:options']?.defaultKind;
+  const defaultNamespace = uiSchema['ui:options']?.defaultNamespace;
 
   const catalogApi = useApi(catalogApiRef);
 
@@ -67,7 +69,7 @@ export const EntityPicker = (
   );
 
   const entityRefs = entities?.items.map(e =>
-    humanizeEntityRef(e, { defaultKind }),
+    humanizeEntityRef(e, { defaultKind, defaultNamespace }),
   );
 
   const onSelect = useCallback(
