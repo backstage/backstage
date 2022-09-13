@@ -25,8 +25,8 @@
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
     "clean": "backstage-cli package clean"
   },
   "bin": {
