@@ -45,12 +45,7 @@ import {
   selectedTemplateRouteRef,
 } from '../routes';
 import { ListTasksPage } from './ListTasksPage';
-import {
-  DEFAULT_SCAFFOLDER_LAYOUT,
-  LayoutOptions,
-  LAYOUTS_KEY,
-  LAYOUTS_WRAPPER_KEY,
-} from '../layouts';
+import { LayoutOptions, LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../layouts';
 
 /**
  * The props for the entrypoint `ScaffolderPage` component the plugin.
@@ -122,16 +117,8 @@ export const Router = (props: RouterProps) => {
       }),
   );
 
-  if (
-    !customLayouts.find(
-      layout => layout.name === DEFAULT_SCAFFOLDER_LAYOUT.name,
-    )
-  ) {
-    customLayouts.push(DEFAULT_SCAFFOLDER_LAYOUT);
-  }
-
   /**
-   * This component can be deleted once the older routes have been deprecated.
+   * This component can be deleted once the older routes havest been deprecated.
    */
   const RedirectingComponent = () => {
     const { templateName } = useRouteRefParams(legacySelectedTemplateRouteRef);

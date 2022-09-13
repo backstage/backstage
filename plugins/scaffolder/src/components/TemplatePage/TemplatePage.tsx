@@ -39,7 +39,7 @@ import {
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { DEFAULT_SCAFFOLDER_LAYOUT, LayoutOptions } from '../../layouts';
+import { LayoutOptions } from '../../layouts';
 
 const useTemplateParameterSchema = (templateRef: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -52,7 +52,7 @@ const useTemplateParameterSchema = (templateRef: string) => {
 
 export const TemplatePage = ({
   customFieldExtensions = [],
-  layouts = [DEFAULT_SCAFFOLDER_LAYOUT],
+  layouts = [],
 }: {
   customFieldExtensions?: FieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];

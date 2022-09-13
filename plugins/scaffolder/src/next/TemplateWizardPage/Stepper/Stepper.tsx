@@ -49,7 +49,6 @@ const useStyles = makeStyles(theme => ({
 export interface StepperProps {
   manifest: TemplateParameterSchema;
   extensions: FieldExtensionOptions<any, any>[];
-  layout?: LayoutOptions;
 }
 
 const Form = withTheme(MuiTheme);

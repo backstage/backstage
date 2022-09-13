@@ -17,7 +17,7 @@
 export const defaultPreviewTemplate = `# Edit the template parameters below to see how they will render in the scaffolder form UI
 parameters:
   - title: Fill in some steps
-    ui:layout: 'TwoColumn'
+    ui:ObjectFieldTemplate: TwoColumn
     required:
       - name
     properties:
