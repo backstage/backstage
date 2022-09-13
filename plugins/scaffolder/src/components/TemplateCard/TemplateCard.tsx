@@ -192,13 +192,13 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
   const href = templateRoute({ templateName: name, namespace });
 
   // TechDocs Links
-  const viewTechdocRoute = useRouteRef(viewTechDocRouteRef);
-  const viewTechdocAnnotation =
+  const viewTechDocsRoute = useRouteRef(viewTechDocRouteRef);
+  const viewTechDocsAnnotation =
     template.metadata.annotations?.['backstage.io/techdocs-ref'];
-  const viewTechdocLink =
-    !!viewTechdocAnnotation &&
-    !!viewTechdocRoute &&
-    viewTechdocRoute({
+  const viewTechDocsLink =
+    !!viewTechDocsAnnotation &&
+    !!viewTechDocsRoute &&
+    viewTechDocsRoute({
       namespace: template.metadata?.namespace || DEFAULT_NAMESPACE,
       kind: template.kind,
       name: template.metadata.name,
@@ -275,9 +275,12 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
               </IconButton>
             </Tooltip>
           )}
-          {viewTechdocLink && (
+          {viewTechDocsLink && (
             <Tooltip title="View TechDocs">
-              <IconButton className={classes.leftButton} href={viewTechdocLink}>
+              <IconButton
+                className={classes.leftButton}
+                href={viewTechDocsLink}
+              >
                 <MuiIcon icon={iconResolver('docs')} />
               </IconButton>
             </Tooltip>
