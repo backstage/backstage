@@ -157,7 +157,7 @@ export function createPublishAzureAction(options: {
           Please make sure that both the Org and Project are typed corrected and exist.`,
         );
       }
-      const remoteUrl = returnedRepo.remoteUrl;
+      const remoteUrl = returnedRepo.webUrl;
 
       if (!remoteUrl) {
         throw new InputError(
