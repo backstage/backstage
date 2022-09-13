@@ -102,7 +102,7 @@ function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
 
 export function transformSchemaToProps(
   inputSchema: JsonObject,
-  layouts: LayoutOptions[],
+  layouts: LayoutOptions[] = [],
 ): {
   schema: FormProps<any>['schema'];
   uiSchema: FormProps<any>['uiSchema'];

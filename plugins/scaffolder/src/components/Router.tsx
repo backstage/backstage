@@ -118,7 +118,7 @@ export const Router = (props: RouterProps) => {
   );
 
   /**
-   * This component can be deleted once the older routes havest been deprecated.
+   * This component can be deleted once the older routes have been deprecated.
    */
   const RedirectingComponent = () => {
     const { templateName } = useRouteRefParams(legacySelectedTemplateRouteRef);

@@ -193,8 +193,6 @@ export const MultistepJsonForm = (props: Props) => {
     <>
       <Stepper activeStep={activeStep} orientation="vertical">
         {steps.map(({ title, schema, ...formProps }, index) => {
-          const schemaProps = transformSchemaToProps(schema, layouts);
-
           return (
             <StepUI key={title}>
               <StepLabel
@@ -219,7 +217,7 @@ export const MultistepJsonForm = (props: Props) => {
                     if (e.errors.length === 0) handleNext();
                   }}
                   {...formProps}
-                  {...schemaProps}
+                  {...transformSchemaToProps(schema, layouts)}
                 >
                   <Button disabled={activeStep === 0} onClick={handleBack}>
                     Back
