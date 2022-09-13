@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import {
+  DEFAULT_NAMESPACE,
   Entity,
   EntityLink,
   parseEntityRef,
@@ -62,6 +63,7 @@ import {
   useApp,
   useRouteRef,
 } from '@backstage/core-plugin-api';
+import { viewTechDocRouteRef } from '@backstage/plugin-catalog/src/routes';
 
 const useStyles = makeStyles(theme => ({
   cardHeader: {
@@ -189,6 +191,19 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
   const { name, namespace } = parseEntityRef(stringifyEntityRef(template));
   const href = templateRoute({ templateName: name, namespace });
 
+  // TechDocs Links
+  const viewTechdocRoute = useRouteRef(viewTechDocRouteRef);
+  const viewTechdocAnnotation =
+    template.metadata.annotations?.['backstage.io/techdocs-ref'];
+  const viewTechdocLink =
+    !!viewTechdocAnnotation &&
+    !!viewTechdocRoute &&
+    viewTechdocRoute({
+      namespace: template.metadata?.namespace || DEFAULT_NAMESPACE,
+      kind: template.kind,
+      name: template.metadata.name,
+    });
+
   const iconResolver = (key?: string): IconComponent =>
     key ? app.getSystemIcon(key) ?? LanguageIcon : LanguageIcon;
 
@@ -257,6 +272,13 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
                 href={sourceLocation.locationTargetUrl}
               >
                 <ScmIntegrationIcon type={sourceLocation.integrationType} />
+              </IconButton>
+            </Tooltip>
+          )}
+          {viewTechdocLink && (
+            <Tooltip title="View TechDocs">
+              <IconButton className={classes.leftButton} href={viewTechdocLink}>
+                <MuiIcon icon={iconResolver('docs')} />
               </IconButton>
             </Tooltip>
           )}
