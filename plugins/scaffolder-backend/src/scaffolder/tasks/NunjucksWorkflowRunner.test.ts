@@ -66,7 +66,7 @@ describe('DefaultWorkflowRunner', () => {
   });
 
   beforeEach(() => {
-    winston.format.simple(); // put logform the required cache before mocking fs
+    winston.format.simple(); // put logform in the require.cache before mocking fs
     mockFs({
       '/tmp': mockFs.directory(),
       ...realFiles,
