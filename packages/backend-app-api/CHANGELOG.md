@@ -1,5 +1,18 @@
 # @backstage/backend-app-api
 
+## 0.2.1-next.2
+
+### Patch Changes
+
+- 854ba37357: Updated to support new `ServiceFactory` formats.
+- 409ed984e8: Updated service implementations and backend wiring to support scoped service.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.2-next.2
+  - @backstage/errors@1.1.1-next.0
+  - @backstage/backend-common@0.15.1-next.3
+  - @backstage/backend-tasks@0.3.5-next.1
+  - @backstage/plugin-permission-node@0.6.5-next.3
+
 ## 0.2.1-next.1
 
 ### Patch Changes

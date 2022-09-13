@@ -2814,16 +2814,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/app-defaults@^1.0.6-next.1, @backstage/app-defaults@workspace:packages/app-defaults":
+"@backstage/app-defaults@^1.0.6-next.2, @backstage/app-defaults@workspace:packages/app-defaults":
   version: 0.0.0-use.local
   resolution: "@backstage/app-defaults@workspace:packages/app-defaults"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/core-app-api": ^1.1.0-next.1
-    "@backstage/core-components": ^0.11.1-next.1
-    "@backstage/core-plugin-api": ^1.0.6-next.1
-    "@backstage/plugin-permission-react": ^0.4.5-next.1
-    "@backstage/test-utils": ^1.2.0-next.1
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/plugin-permission-react": ^0.4.5-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -2839,33 +2839,33 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/backend-app-api@^0.2.1-next.0, @backstage/backend-app-api@^0.2.1-next.1, @backstage/backend-app-api@workspace:packages/backend-app-api":
+"@backstage/backend-app-api@^0.2.1-next.2, @backstage/backend-app-api@workspace:packages/backend-app-api":
   version: 0.0.0-use.local
   resolution: "@backstage/backend-app-api@workspace:packages/backend-app-api"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-plugin-api": ^0.1.2-next.1
-    "@backstage/backend-tasks": ^0.3.5-next.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-permission-node": ^0.6.5-next.2
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-plugin-api": ^0.1.2-next.2
+    "@backstage/backend-tasks": ^0.3.5-next.1
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-permission-node": ^0.6.5-next.3
     express: ^4.17.1
     express-promise-router: ^4.1.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
-"@backstage/backend-common@^0.15.1-next.0, @backstage/backend-common@^0.15.1-next.1, @backstage/backend-common@^0.15.1-next.2, @backstage/backend-common@workspace:packages/backend-common":
+"@backstage/backend-common@^0.15.1-next.3, @backstage/backend-common@workspace:packages/backend-common":
   version: 0.0.0-use.local
   resolution: "@backstage/backend-common@workspace:packages/backend-common"
   dependencies:
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/cli-common": ^0.1.9
-    "@backstage/config": ^1.0.1
-    "@backstage/config-loader": ^1.1.4-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/cli-common": ^0.1.10-next.0
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/config-loader": ^1.1.4-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
     "@backstage/types": ^1.0.0
     "@google-cloud/storage": ^6.0.0
     "@keyv/redis": ^2.2.3
@@ -2945,21 +2945,21 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/backend-defaults@workspace:packages/backend-defaults"
   dependencies:
-    "@backstage/backend-app-api": ^0.2.1-next.0
-    "@backstage/backend-plugin-api": ^0.1.2-next.0
-    "@backstage/cli": ^0.19.0-next.1
+    "@backstage/backend-app-api": ^0.2.1-next.2
+    "@backstage/backend-plugin-api": ^0.1.2-next.2
+    "@backstage/cli": ^0.19.0-next.3
   languageName: unknown
   linkType: soft
 
-"@backstage/backend-plugin-api@^0.1.2-next.0, @backstage/backend-plugin-api@^0.1.2-next.1, @backstage/backend-plugin-api@workspace:packages/backend-plugin-api":
+"@backstage/backend-plugin-api@^0.1.2-next.2, @backstage/backend-plugin-api@workspace:packages/backend-plugin-api":
   version: 0.0.0-use.local
   resolution: "@backstage/backend-plugin-api@workspace:packages/backend-plugin-api"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-tasks": ^0.3.5-next.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/plugin-permission-common": ^0.6.4-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-tasks": ^0.3.5-next.1
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/plugin-permission-common": ^0.6.4-next.2
     "@types/express": ^4.17.6
     express: ^4.17.1
     winston: ^3.2.1
@@ -2967,15 +2967,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/backend-tasks@^0.3.5-next.0, @backstage/backend-tasks@workspace:packages/backend-tasks":
+"@backstage/backend-tasks@^0.3.5-next.1, @backstage/backend-tasks@workspace:packages/backend-tasks":
   version: 0.0.0-use.local
   resolution: "@backstage/backend-tasks@workspace:packages/backend-tasks"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.1
-    "@backstage/backend-test-utils": ^0.1.28-next.1
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
     "@backstage/types": ^1.0.0
     "@types/cron": ^2.0.0
     "@types/luxon": ^3.0.0
@@ -2991,15 +2991,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/backend-test-utils@^0.1.28-next.1, @backstage/backend-test-utils@^0.1.28-next.2, @backstage/backend-test-utils@workspace:packages/backend-test-utils":
+"@backstage/backend-test-utils@^0.1.28-next.3, @backstage/backend-test-utils@workspace:packages/backend-test-utils":
   version: 0.0.0-use.local
   resolution: "@backstage/backend-test-utils@workspace:packages/backend-test-utils"
   dependencies:
-    "@backstage/backend-app-api": ^0.2.1-next.1
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-plugin-api": ^0.1.2-next.1
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
+    "@backstage/backend-app-api": ^0.2.1-next.2
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-plugin-api": ^0.1.2-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
     better-sqlite3: ^7.5.0
     knex: ^2.0.0
     msw: ^0.47.0
@@ -3010,13 +3010,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/catalog-client@^1.0.5-next.0, @backstage/catalog-client@^1.0.5-next.1, @backstage/catalog-client@workspace:packages/catalog-client":
+"@backstage/catalog-client@^1.1.0-next.2, @backstage/catalog-client@workspace:packages/catalog-client":
   version: 0.0.0-use.local
   resolution: "@backstage/catalog-client@workspace:packages/catalog-client"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/errors": ^1.1.0
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/errors": ^1.1.1-next.0
     cross-fetch: ^3.1.5
     msw: ^0.47.0
   languageName: unknown
@@ -3033,13 +3033,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/catalog-model@^1.0.0, @backstage/catalog-model@^1.0.1, @backstage/catalog-model@^1.0.3, @backstage/catalog-model@^1.1.0, @backstage/catalog-model@workspace:packages/catalog-model":
+"@backstage/catalog-model@^1.1.1-next.0, @backstage/catalog-model@workspace:packages/catalog-model":
   version: 0.0.0-use.local
   resolution: "@backstage/catalog-model@workspace:packages/catalog-model"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
     "@backstage/types": ^1.0.0
     "@types/json-schema": ^7.0.5
     "@types/lodash": ^4.14.151
@@ -3051,30 +3051,45 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-common@^0.1.9, @backstage/cli-common@^0.1.9-next.0, @backstage/cli-common@workspace:packages/cli-common":
+"@backstage/catalog-model@npm:^1.0.0, @backstage/catalog-model@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@backstage/catalog-model@npm:1.1.0"
+  dependencies:
+    "@backstage/config": ^1.0.1
+    "@backstage/errors": ^1.1.0
+    "@backstage/types": ^1.0.0
+    ajv: ^8.10.0
+    json-schema: ^0.4.0
+    lodash: ^4.17.21
+    uuid: ^8.0.0
+  checksum: 81db2da7f960e6207f2eeab3944d5bc54d739b6172575cf4cb9096a2058835af75534fd5232c450efddc8d656952ebbf130501ac0bba43690a3d742c3e11143d
+  languageName: node
+  linkType: hard
+
+"@backstage/cli-common@^0.1.10-next.0, @backstage/cli-common@workspace:packages/cli-common":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-common@workspace:packages/cli-common"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.1
+    "@backstage/cli": ^0.19.0-next.3
     "@types/node": ^16.0.0
   languageName: unknown
   linkType: soft
 
-"@backstage/cli@^0.19.0-next.1, @backstage/cli@^0.19.0-next.2, @backstage/cli@workspace:*, @backstage/cli@workspace:packages/cli":
+"@backstage/cli@^0.19.0-next.1, @backstage/cli@^0.19.0-next.2, @backstage/cli@^0.19.0-next.3, @backstage/cli@workspace:*, @backstage/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@backstage/cli@workspace:packages/cli"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/cli-common": ^0.1.9
-    "@backstage/config": ^1.0.1
-    "@backstage/config-loader": ^1.1.4-next.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/release-manifests": ^0.0.6-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/cli-common": ^0.1.10-next.0
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/config-loader": ^1.1.4-next.2
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/release-manifests": ^0.0.6-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@backstage/types": ^1.0.0
     "@manypkg/get-packages": ^1.1.3
@@ -3204,8 +3219,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/codemods@workspace:packages/codemods"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/cli-common": ^0.1.9
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/cli-common": ^0.1.10-next.0
     "@types/jscodeshift": ^0.11.0
     "@types/node": ^16.11.26
     chalk: ^4.0.0
@@ -3218,14 +3233,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/config-loader@^1.1.4-next.1, @backstage/config-loader@workspace:packages/config-loader":
+"@backstage/config-loader@^1.1.4-next.2, @backstage/config-loader@workspace:packages/config-loader":
   version: 0.0.0-use.local
   resolution: "@backstage/config-loader@workspace:packages/config-loader"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/cli-common": ^0.1.9
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/cli-common": ^0.1.10-next.0
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
     "@backstage/types": ^1.0.0
     "@types/json-schema": ^7.0.6
     "@types/json-schema-merge-allof": ^0.6.0
@@ -3247,26 +3262,36 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/config@^1.0.0, @backstage/config@^1.0.1, @backstage/config@workspace:packages/config":
+"@backstage/config@^1.0.2-next.0, @backstage/config@workspace:packages/config":
   version: 0.0.0-use.local
   resolution: "@backstage/config@workspace:packages/config"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/test-utils": ^1.2.0-next.1
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/types": ^1.0.0
     "@types/node": ^16.0.0
     lodash: ^4.17.21
   languageName: unknown
   linkType: soft
 
-"@backstage/core-app-api@^1.1.0-next.1, @backstage/core-app-api@^1.1.0-next.2, @backstage/core-app-api@workspace:packages/core-app-api":
+"@backstage/config@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@backstage/config@npm:1.0.1"
+  dependencies:
+    "@backstage/types": ^1.0.0
+    lodash: ^4.17.21
+  checksum: 08ec95a9ddbfc8410c949314c464c63c0723a0681e21607463495454d7b06a9e7884110874efe7a9f7a8c9c864eb20a528a7a407dba7da84516d47d929e7ebc3
+  languageName: node
+  linkType: hard
+
+"@backstage/core-app-api@^1.1.0-next.1, @backstage/core-app-api@^1.1.0-next.2, @backstage/core-app-api@^1.1.0-next.3, @backstage/core-app-api@workspace:packages/core-app-api":
   version: 0.0.0-use.local
   resolution: "@backstage/core-app-api@workspace:packages/core-app-api"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/types": ^1.0.0
     "@backstage/version-bridge": ^1.0.1
     "@testing-library/jest-dom": ^5.10.1
@@ -3293,16 +3318,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-components@^0.11.1-next.1, @backstage/core-components@^0.11.1-next.2, @backstage/core-components@workspace:packages/core-components":
+"@backstage/core-components@^0.11.1-next.1, @backstage/core-components@^0.11.1-next.2, @backstage/core-components@^0.11.1-next.3, @backstage/core-components@workspace:packages/core-components":
   version: 0.0.0-use.local
   resolution: "@backstage/core-components@workspace:packages/core-components"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/errors": ^1.1.0
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@backstage/version-bridge": ^1.0.1
     "@material-table/core": ^3.1.0
@@ -3416,14 +3441,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/core-plugin-api@^1.0.6-next.1, @backstage/core-plugin-api@^1.0.6-next.2, @backstage/core-plugin-api@workspace:packages/core-plugin-api":
+"@backstage/core-plugin-api@^1.0.6-next.1, @backstage/core-plugin-api@^1.0.6-next.2, @backstage/core-plugin-api@^1.0.6-next.3, @backstage/core-plugin-api@workspace:packages/core-plugin-api":
   version: 0.0.0-use.local
   resolution: "@backstage/core-plugin-api@workspace:packages/core-plugin-api"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/types": ^1.0.0
     "@backstage/version-bridge": ^1.0.1
     "@testing-library/jest-dom": ^5.10.1
@@ -3467,8 +3492,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/create-app@workspace:packages/create-app"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/cli-common": ^0.1.9
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/cli-common": ^0.1.10-next.0
     "@types/fs-extra": ^9.0.1
     "@types/inquirer": ^8.1.3
     "@types/node": ^16.11.26
@@ -3487,19 +3512,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/dev-utils@^1.0.6-next.1, @backstage/dev-utils@workspace:packages/dev-utils":
+"@backstage/dev-utils@^1.0.6-next.1, @backstage/dev-utils@^1.0.6-next.2, @backstage/dev-utils@workspace:packages/dev-utils":
   version: 0.0.0-use.local
   resolution: "@backstage/dev-utils@workspace:packages/dev-utils"
   dependencies:
-    "@backstage/app-defaults": ^1.0.6-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/core-app-api": ^1.1.0-next.1
-    "@backstage/core-components": ^0.11.1-next.1
-    "@backstage/core-plugin-api": ^1.0.6-next.1
-    "@backstage/integration-react": ^1.1.4-next.0
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.1
+    "@backstage/app-defaults": ^1.0.6-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/integration-react": ^1.1.4-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -3518,28 +3543,39 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/errors@1.1.0, @backstage/errors@^1.0.0, @backstage/errors@^1.1.0, @backstage/errors@^1.1.0-next.0, @backstage/errors@workspace:packages/errors":
+"@backstage/errors@1.1.1-next.0, @backstage/errors@^1.1.1-next.0, @backstage/errors@workspace:packages/errors":
   version: 0.0.0-use.local
   resolution: "@backstage/errors@workspace:packages/errors"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.1
+    "@backstage/cli": ^0.19.0-next.3
     "@backstage/types": ^1.0.0
     cross-fetch: ^3.1.5
     serialize-error: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@backstage/integration-react@^1.1.4-next.0, @backstage/integration-react@^1.1.4-next.1, @backstage/integration-react@workspace:packages/integration-react":
+"@backstage/errors@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@backstage/errors@npm:1.1.0"
+  dependencies:
+    "@backstage/types": ^1.0.0
+    cross-fetch: ^3.1.5
+    serialize-error: ^8.0.1
+  checksum: b21d35803ce1adf7c7d7219e02636340780dc7f007bdaa966f62120f3607548a5e7a557b364abf54da29081f30efe3df72c5bfefebde335c305034961c6ae620
+  languageName: node
+  linkType: hard
+
+"@backstage/integration-react@^1.1.4-next.2, @backstage/integration-react@workspace:packages/integration-react":
   version: 0.0.0-use.local
   resolution: "@backstage/integration-react@workspace:packages/integration-react"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -3575,15 +3611,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/integration@^1.3.1-next.0, @backstage/integration@^1.3.1-next.1, @backstage/integration@workspace:packages/integration":
+"@backstage/integration@^1.3.1-next.1, @backstage/integration@^1.3.1-next.2, @backstage/integration@workspace:packages/integration":
   version: 0.0.0-use.local
   resolution: "@backstage/integration@workspace:packages/integration"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/config-loader": ^1.1.4-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/config-loader": ^1.1.4-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/test-utils": ^1.2.0-next.3
     "@octokit/auth-app": ^4.0.0
     "@octokit/rest": ^19.0.3
     "@types/luxon": ^3.0.0
@@ -3615,14 +3651,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-adr-backend@workspace:plugins/adr-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/catalog-client": ^1.0.5-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/plugin-adr-common": ^0.2.1-next.0
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/plugin-adr-common": ^0.2.1-next.1
     "@backstage/plugin-search-common": ^1.0.1-next.0
     "@types/marked": ^4.0.0
     "@types/supertest": ^2.0.8
@@ -3636,13 +3672,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-adr-common@^0.2.1-next.0, @backstage/plugin-adr-common@workspace:plugins/adr-common":
+"@backstage/plugin-adr-common@^0.2.1-next.1, @backstage/plugin-adr-common@workspace:plugins/adr-common":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-adr-common@workspace:plugins/adr-common"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/integration": ^1.3.1-next.0
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/integration": ^1.3.1-next.2
     "@backstage/plugin-search-common": ^1.0.1-next.0
   languageName: unknown
   linkType: soft
@@ -3651,18 +3687,18 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-adr@workspace:plugins/adr"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/integration-react": ^1.1.4-next.1
-    "@backstage/plugin-adr-common": ^0.2.1-next.0
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/integration-react": ^1.1.4-next.2
+    "@backstage/plugin-adr-common": ^0.2.1-next.1
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
     "@backstage/plugin-search-common": ^1.0.1-next.0
     "@backstage/plugin-search-react": ^1.1.0-next.2
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -3689,9 +3725,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-airbrake-backend@workspace:plugins/airbrake-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
     "@types/express": "*"
     "@types/http-proxy-middleware": ^0.19.3
     "@types/supertest": ^2.0.8
@@ -3705,18 +3741,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-airbrake@^0.3.9-next.2, @backstage/plugin-airbrake@workspace:plugins/airbrake":
+"@backstage/plugin-airbrake@^0.3.9-next.3, @backstage/plugin-airbrake@workspace:plugins/airbrake":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-airbrake@workspace:plugins/airbrake"
   dependencies:
-    "@backstage/app-defaults": ^1.0.6-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/app-defaults": ^1.0.6-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -3740,14 +3776,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-allure@workspace:plugins/allure"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -3769,13 +3805,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-analytics-module-ga@workspace:plugins/analytics-module-ga"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -3793,16 +3829,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-apache-airflow@^0.2.2-next.2, @backstage/plugin-apache-airflow@workspace:plugins/apache-airflow":
+"@backstage/plugin-apache-airflow@^0.2.2-next.3, @backstage/plugin-apache-airflow@workspace:plugins/apache-airflow":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-apache-airflow@workspace:plugins/apache-airflow"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.57
@@ -3832,20 +3868,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-api-docs@^0.8.9-next.2, @backstage/plugin-api-docs@workspace:plugins/api-docs":
+"@backstage/plugin-api-docs@^0.8.9-next.3, @backstage/plugin-api-docs@workspace:plugins/api-docs":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-api-docs@workspace:plugins/api-docs"
   dependencies:
     "@asyncapi/react-component": 1.0.0-next.40
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog": ^1.5.1-next.2
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog": ^1.5.1-next.3
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -3876,12 +3912,12 @@ __metadata:
   resolution: "@backstage/plugin-apollo-explorer@workspace:plugins/apollo-explorer"
   dependencies:
     "@apollo/explorer": ^1.1.1
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
@@ -3899,15 +3935,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-app-backend@^0.3.36-next.2, @backstage/plugin-app-backend@workspace:plugins/app-backend":
+"@backstage/plugin-app-backend@^0.3.36-next.3, @backstage/plugin-app-backend@workspace:plugins/app-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-app-backend@workspace:plugins/app-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/config-loader": ^1.1.4-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/config-loader": ^1.1.4-next.2
     "@backstage/types": ^1.0.0
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
@@ -3927,18 +3963,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend@^0.16.0-next.2, @backstage/plugin-auth-backend@workspace:plugins/auth-backend":
+"@backstage/plugin-auth-backend@^0.16.0-next.3, @backstage/plugin-auth-backend@workspace:plugins/auth-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend@workspace:plugins/auth-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/catalog-client": ^1.0.5-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-auth-node": ^0.2.5-next.2
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-auth-node": ^0.2.5-next.3
     "@backstage/types": ^1.0.0
     "@davidzemon/passport-okta-oauth": ^0.0.5
     "@google-cloud/firestore": ^6.0.0
@@ -3991,15 +4027,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-node@^0.2.5-next.1, @backstage/plugin-auth-node@^0.2.5-next.2, @backstage/plugin-auth-node@workspace:plugins/auth-node":
+"@backstage/plugin-auth-node@^0.2.5-next.3, @backstage/plugin-auth-node@workspace:plugins/auth-node":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-node@workspace:plugins/auth-node"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
     "@types/express": "*"
     express: ^4.17.1
     jose: ^4.6.0
@@ -4011,13 +4047,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-azure-devops-backend@^0.3.15-next.1, @backstage/plugin-azure-devops-backend@workspace:plugins/azure-devops-backend":
+"@backstage/plugin-azure-devops-backend@^0.3.15-next.2, @backstage/plugin-azure-devops-backend@workspace:plugins/azure-devops-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-azure-devops-backend@workspace:plugins/azure-devops-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
     "@backstage/plugin-azure-devops-common": ^0.3.0-next.0
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
@@ -4041,20 +4077,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-azure-devops@^0.2.0-next.2, @backstage/plugin-azure-devops@workspace:plugins/azure-devops":
+"@backstage/plugin-azure-devops@^0.2.0-next.3, @backstage/plugin-azure-devops@workspace:plugins/azure-devops":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-azure-devops@workspace:plugins/azure-devops"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
     "@backstage/plugin-azure-devops-common": ^0.3.0-next.0
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -4074,16 +4110,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-badges-backend@^0.1.30-next.0, @backstage/plugin-badges-backend@workspace:plugins/badges-backend":
+"@backstage/plugin-badges-backend@^0.1.30-next.1, @backstage/plugin-badges-backend@workspace:plugins/badges-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-badges-backend@workspace:plugins/badges-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.1
-    "@backstage/catalog-client": ^1.0.5-next.0
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     badge-maker: ^3.3.0
@@ -4096,19 +4132,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-badges@^0.2.33-next.2, @backstage/plugin-badges@workspace:plugins/badges":
+"@backstage/plugin-badges@^0.2.33-next.3, @backstage/plugin-badges@workspace:plugins/badges":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-badges@workspace:plugins/badges"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -4130,10 +4166,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-bazaar-backend@workspace:plugins/bazaar-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.1
-    "@backstage/backend-test-utils": ^0.1.28-next.1
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
     "@types/express": ^4.17.6
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -4147,14 +4183,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-bazaar@workspace:plugins/bazaar"
   dependencies:
-    "@backstage/catalog-client": ^1.0.5-next.0
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/core-components": ^0.11.1-next.1
-    "@backstage/core-plugin-api": ^1.0.6-next.1
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog": ^1.5.1-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog": ^1.5.1-next.3
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
     "@date-io/luxon": 1.x
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -4188,14 +4224,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-bitrise@workspace:plugins/bitrise"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -4221,14 +4257,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-aws@workspace:plugins/catalog-backend-module-aws"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.1
-    "@backstage/backend-tasks": ^0.3.5-next.0
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.0
-    "@backstage/plugin-catalog-backend": ^1.4.0-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-tasks": ^0.3.5-next.1
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/plugin-catalog-backend": ^1.4.0-next.3
     "@backstage/types": ^1.0.0
     "@types/lodash": ^4.14.151
     aws-sdk: ^2.840.0
@@ -4245,15 +4281,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-azure@workspace:plugins/catalog-backend-module-azure"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-tasks": ^0.3.5-next.0
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/plugin-catalog-backend": ^1.4.0-next.2
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-tasks": ^0.3.5-next.1
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/plugin-catalog-backend": ^1.4.0-next.3
     "@backstage/types": ^1.0.0
     "@types/lodash": ^4.14.151
     lodash: ^4.17.21
@@ -4268,14 +4304,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-bitbucket-cloud@workspace:plugins/catalog-backend-module-bitbucket-cloud"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-tasks": ^0.3.5-next.0
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/integration": ^1.3.1-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-tasks": ^0.3.5-next.1
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/integration": ^1.3.1-next.2
     "@backstage/plugin-bitbucket-cloud-common": ^0.1.3-next.1
-    "@backstage/plugin-catalog-backend": ^1.4.0-next.2
+    "@backstage/plugin-catalog-backend": ^1.4.0-next.3
     msw: ^0.47.0
     uuid: ^8.0.0
     winston: ^3.2.1
@@ -4286,15 +4322,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-bitbucket-server@workspace:plugins/catalog-backend-module-bitbucket-server"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-tasks": ^0.3.5-next.0
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/catalog-model": ^1.0.1
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.0
-    "@backstage/errors": ^1.0.0
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/plugin-catalog-backend": ^1.4.0-next.2
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-tasks": ^0.3.5-next.1
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/plugin-catalog-backend": ^1.4.0-next.3
     "@types/node-fetch": ^2.5.12
     msw: ^0.47.0
     node-fetch: ^2.6.7
@@ -4307,15 +4343,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-bitbucket@workspace:plugins/catalog-backend-module-bitbucket"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
     "@backstage/plugin-bitbucket-cloud-common": ^0.1.3-next.1
-    "@backstage/plugin-catalog-backend": ^1.4.0-next.2
+    "@backstage/plugin-catalog-backend": ^1.4.0-next.3
     "@backstage/types": ^1.0.0
     "@types/lodash": ^4.14.151
     lodash: ^4.17.21
@@ -4329,15 +4365,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-gerrit@workspace:plugins/catalog-backend-module-gerrit"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-tasks": ^0.3.5-next.0
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/plugin-catalog-backend": ^1.4.0-next.2
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-tasks": ^0.3.5-next.1
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/plugin-catalog-backend": ^1.4.0-next.3
     "@types/fs-extra": ^9.0.1
     fs-extra: 10.1.0
     msw: ^0.47.0
@@ -4351,17 +4387,17 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-github@workspace:plugins/catalog-backend-module-github"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-plugin-api": ^0.1.2-next.1
-    "@backstage/backend-tasks": ^0.3.5-next.0
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/plugin-catalog-backend": ^1.4.0-next.2
-    "@backstage/plugin-catalog-node": ^1.0.2-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-plugin-api": ^0.1.2-next.2
+    "@backstage/backend-tasks": ^0.3.5-next.1
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/plugin-catalog-backend": ^1.4.0-next.3
+    "@backstage/plugin-catalog-node": ^1.1.0-next.2
     "@backstage/types": ^1.0.0
     "@octokit/graphql": ^5.0.0
     "@types/lodash": ^4.14.151
@@ -4377,15 +4413,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-gitlab@workspace:plugins/catalog-backend-module-gitlab"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-tasks": ^0.3.5-next.0
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/plugin-catalog-backend": ^1.4.0-next.2
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-tasks": ^0.3.5-next.1
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/plugin-catalog-backend": ^1.4.0-next.3
     "@backstage/types": ^1.0.0
     "@types/lodash": ^4.14.151
     "@types/uuid": ^8.0.0
@@ -4401,12 +4437,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-ldap@workspace:plugins/catalog-backend-module-ldap"
   dependencies:
-    "@backstage/backend-tasks": ^0.3.5-next.0
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-catalog-backend": ^1.4.0-next.1
+    "@backstage/backend-tasks": ^0.3.5-next.1
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-catalog-backend": ^1.4.0-next.3
     "@backstage/types": ^1.0.0
     "@types/ldapjs": ^2.2.0
     "@types/lodash": ^4.14.151
@@ -4422,13 +4458,13 @@ __metadata:
   resolution: "@backstage/plugin-catalog-backend-module-msgraph@workspace:plugins/catalog-backend-module-msgraph"
   dependencies:
     "@azure/identity": ^2.1.0
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-tasks": ^0.3.5-next.0
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/plugin-catalog-backend": ^1.4.0-next.2
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-tasks": ^0.3.5-next.1
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/plugin-catalog-backend": ^1.4.0-next.3
     "@microsoft/microsoft-graph-types": ^2.6.0
     "@types/lodash": ^4.14.151
     "@types/node-fetch": ^2.5.12
@@ -4447,14 +4483,14 @@ __metadata:
   resolution: "@backstage/plugin-catalog-backend-module-openapi@workspace:plugins/catalog-backend-module-openapi"
   dependencies:
     "@apidevtools/swagger-parser": ^10.1.0
-    "@backstage/backend-common": ^0.15.1-next.1
-    "@backstage/backend-test-utils": ^0.1.28-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
-    "@backstage/integration": ^1.3.1-next.0
-    "@backstage/plugin-catalog-backend": ^1.4.0-next.1
-    "@backstage/plugin-catalog-node": ^1.0.2-next.0
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/plugin-catalog-backend": ^1.4.0-next.3
+    "@backstage/plugin-catalog-node": ^1.1.0-next.2
     "@backstage/types": ^1.0.0
     openapi-types: ^12.0.0
     winston: ^3.2.1
@@ -4462,25 +4498,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-backend@^1.4.0-next.1, @backstage/plugin-catalog-backend@^1.4.0-next.2, @backstage/plugin-catalog-backend@workspace:plugins/catalog-backend":
+"@backstage/plugin-catalog-backend@^1.4.0-next.1, @backstage/plugin-catalog-backend@^1.4.0-next.3, @backstage/plugin-catalog-backend@workspace:plugins/catalog-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend@workspace:plugins/catalog-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-plugin-api": ^0.1.2-next.1
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/catalog-client": ^1.0.5-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-plugin-api": ^0.1.2-next.2
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
     "@backstage/plugin-catalog-common": ^1.0.6-next.0
-    "@backstage/plugin-catalog-node": ^1.0.2-next.1
-    "@backstage/plugin-permission-common": ^0.6.4-next.1
-    "@backstage/plugin-permission-node": ^0.6.5-next.2
-    "@backstage/plugin-scaffolder-common": ^1.2.0-next.0
-    "@backstage/plugin-search-backend-node": 1.0.2-next.1
+    "@backstage/plugin-catalog-node": ^1.1.0-next.2
+    "@backstage/plugin-permission-common": ^0.6.4-next.2
+    "@backstage/plugin-permission-node": ^0.6.5-next.3
+    "@backstage/plugin-scaffolder-common": ^1.2.0-next.1
+    "@backstage/plugin-search-backend-node": 1.0.2-next.2
     "@backstage/plugin-search-common": ^1.0.1-next.0
     "@backstage/types": ^1.0.0
     "@types/core-js": ^2.5.4
@@ -4535,20 +4571,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-catalog-graph@^0.2.21-next.1, @backstage/plugin-catalog-graph@workspace:plugins/catalog-graph":
+"@backstage/plugin-catalog-graph@^0.2.21-next.2, @backstage/plugin-catalog-graph@workspace:plugins/catalog-graph":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-graph@workspace:plugins/catalog-graph"
   dependencies:
-    "@backstage/catalog-client": ^1.0.5-next.0
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/core-app-api": ^1.1.0-next.1
-    "@backstage/core-components": ^0.11.1-next.1
-    "@backstage/core-plugin-api": ^1.0.6-next.1
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog": ^1.5.1-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.1
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog": ^1.5.1-next.3
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@backstage/types": ^1.0.0
     "@material-ui/core": ^4.12.2
@@ -4570,14 +4606,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-graphql@^0.3.13-next.2, @backstage/plugin-catalog-graphql@workspace:plugins/catalog-graphql":
+"@backstage/plugin-catalog-graphql@^0.3.13-next.3, @backstage/plugin-catalog-graphql@workspace:plugins/catalog-graphql":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-graphql@workspace:plugins/catalog-graphql"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/types": ^1.0.0
     "@graphql-codegen/cli": ^2.3.1
     "@graphql-codegen/graphql-modules-preset": ^2.3.2
@@ -4595,23 +4631,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-import@^0.8.12-next.2, @backstage/plugin-catalog-import@workspace:plugins/catalog-import":
+"@backstage/plugin-catalog-import@^0.8.12-next.3, @backstage/plugin-catalog-import@workspace:plugins/catalog-import":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-import@workspace:plugins/catalog-import"
   dependencies:
-    "@backstage/catalog-client": ^1.0.5-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/integration-react": ^1.1.4-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/integration-react": ^1.1.4-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.57
@@ -4635,38 +4671,38 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-node@^1.0.2-next.0, @backstage/plugin-catalog-node@^1.0.2-next.1, @backstage/plugin-catalog-node@workspace:plugins/catalog-node":
+"@backstage/plugin-catalog-node@^1.1.0-next.2, @backstage/plugin-catalog-node@workspace:plugins/catalog-node":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-node@workspace:plugins/catalog-node"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-plugin-api": ^0.1.2-next.1
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/catalog-client": ^1.0.5-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/errors": 1.1.0
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-plugin-api": ^0.1.2-next.2
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/errors": 1.1.1-next.0
     "@backstage/types": ^1.0.0
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-react@^1.1.4-next.0, @backstage/plugin-catalog-react@^1.1.4-next.1, @backstage/plugin-catalog-react@workspace:plugins/catalog-react":
+"@backstage/plugin-catalog-react@^1.1.4-next.0, @backstage/plugin-catalog-react@^1.1.4-next.2, @backstage/plugin-catalog-react@workspace:plugins/catalog-react":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-react@workspace:plugins/catalog-react"
   dependencies:
-    "@backstage/catalog-client": ^1.0.5-next.0
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/core-app-api": ^1.1.0-next.1
-    "@backstage/core-components": ^0.11.1-next.1
-    "@backstage/core-plugin-api": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.0
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
     "@backstage/plugin-catalog-common": ^1.0.6-next.0
-    "@backstage/plugin-permission-common": ^0.6.4-next.0
-    "@backstage/plugin-permission-react": ^0.4.5-next.1
-    "@backstage/plugin-scaffolder-common": ^1.2.0-next.0
-    "@backstage/test-utils": ^1.2.0-next.1
+    "@backstage/plugin-permission-common": ^0.6.4-next.2
+    "@backstage/plugin-permission-react": ^0.4.5-next.2
+    "@backstage/plugin-scaffolder-common": ^1.2.0-next.1
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@backstage/types": ^1.0.0
     "@backstage/version-bridge": ^1.0.1
@@ -4729,25 +4765,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-catalog@^1.5.1-next.0, @backstage/plugin-catalog@^1.5.1-next.1, @backstage/plugin-catalog@^1.5.1-next.2, @backstage/plugin-catalog@workspace:plugins/catalog":
+"@backstage/plugin-catalog@^1.5.1-next.0, @backstage/plugin-catalog@^1.5.1-next.3, @backstage/plugin-catalog@workspace:plugins/catalog":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog@workspace:plugins/catalog"
   dependencies:
-    "@backstage/catalog-client": ^1.0.5-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration-react": ^1.1.4-next.1
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration-react": ^1.1.4-next.2
     "@backstage/plugin-catalog-common": ^1.0.6-next.0
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/plugin-permission-react": ^0.4.5-next.1
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/plugin-permission-react": ^0.4.5-next.2
     "@backstage/plugin-search-common": ^1.0.1-next.0
     "@backstage/plugin-search-react": ^1.1.0-next.2
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@backstage/types": ^1.0.0
     "@material-ui/core": ^4.12.2
@@ -4773,10 +4809,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-cicd-statistics-module-gitlab@workspace:plugins/cicd-statistics-module-gitlab"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/core-plugin-api": ^1.0.6-next.1
-    "@backstage/plugin-cicd-statistics": ^0.1.11-next.1
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/plugin-cicd-statistics": ^0.1.11-next.2
     "@gitbeaker/browser": ^35.6.0
     "@gitbeaker/core": ^35.6.0
     luxon: ^3.0.0
@@ -4784,14 +4820,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-cicd-statistics@^0.1.11-next.1, @backstage/plugin-cicd-statistics@workspace:plugins/cicd-statistics":
+"@backstage/plugin-cicd-statistics@^0.1.11-next.2, @backstage/plugin-cicd-statistics@workspace:plugins/cicd-statistics":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-cicd-statistics@workspace:plugins/cicd-statistics"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/core-plugin-api": ^1.0.6-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
     "@date-io/luxon": ^1.3.13
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.11.2
@@ -4810,18 +4846,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-circleci@^0.3.9-next.2, @backstage/plugin-circleci@workspace:plugins/circleci":
+"@backstage/plugin-circleci@^0.3.9-next.3, @backstage/plugin-circleci@workspace:plugins/circleci":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-circleci@workspace:plugins/circleci"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -4845,18 +4881,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-cloudbuild@^0.3.9-next.2, @backstage/plugin-cloudbuild@workspace:plugins/cloudbuild":
+"@backstage/plugin-cloudbuild@^0.3.9-next.3, @backstage/plugin-cloudbuild@workspace:plugins/cloudbuild":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-cloudbuild@workspace:plugins/cloudbuild"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -4881,13 +4917,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-code-climate@workspace:plugins/code-climate"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -4909,17 +4945,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-code-coverage-backend@^0.2.2-next.1, @backstage/plugin-code-coverage-backend@workspace:plugins/code-coverage-backend":
+"@backstage/plugin-code-coverage-backend@^0.2.2-next.2, @backstage/plugin-code-coverage-backend@workspace:plugins/code-coverage-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-code-coverage-backend@workspace:plugins/code-coverage-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/catalog-client": ^1.0.5-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
     "@types/express": ^4.17.6
     "@types/express-xml-bodyparser": ^0.3.2
     "@types/supertest": ^2.0.8
@@ -4936,20 +4972,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-code-coverage@^0.2.2-next.2, @backstage/plugin-code-coverage@workspace:plugins/code-coverage":
+"@backstage/plugin-code-coverage@^0.2.2-next.3, @backstage/plugin-code-coverage@workspace:plugins/code-coverage":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-code-coverage@workspace:plugins/code-coverage"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -4978,14 +5014,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-codescene@workspace:plugins/codescene"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.9.10
     "@material-ui/icons": ^4.9.1
@@ -5008,14 +5044,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-config-schema@workspace:plugins/config-schema"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@backstage/types": ^1.0.0
     "@material-ui/core": ^4.12.2
@@ -5043,19 +5079,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-cost-insights@^0.11.31-next.2, @backstage/plugin-cost-insights@workspace:plugins/cost-insights":
+"@backstage/plugin-cost-insights@^0.11.31-next.3, @backstage/plugin-cost-insights@workspace:plugins/cost-insights":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-cost-insights@workspace:plugins/cost-insights"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
     "@backstage/plugin-cost-insights-common": ^0.1.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5088,17 +5124,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-dynatrace@^0.2.0-next.2, @backstage/plugin-dynatrace@workspace:plugins/dynatrace":
+"@backstage/plugin-dynatrace@^0.2.0-next.3, @backstage/plugin-dynatrace@workspace:plugins/dynatrace":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-dynatrace@workspace:plugins/dynatrace"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
@@ -5116,14 +5152,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-explore-react@^0.0.21-next.2, @backstage/plugin-explore-react@workspace:plugins/explore-react":
+"@backstage/plugin-explore-react@^0.0.21-next.3, @backstage/plugin-explore-react@workspace:plugins/explore-react":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-explore-react@workspace:plugins/explore-react"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
@@ -5133,19 +5169,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-explore@^0.3.40-next.2, @backstage/plugin-explore@workspace:plugins/explore":
+"@backstage/plugin-explore@^0.3.40-next.3, @backstage/plugin-explore@workspace:plugins/explore":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-explore@workspace:plugins/explore"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/plugin-explore-react": ^0.0.21-next.2
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/plugin-explore-react": ^0.0.21-next.3
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5170,13 +5206,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-firehydrant@workspace:plugins/firehydrant"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5198,15 +5234,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-fossa@workspace:plugins/fossa"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5225,17 +5261,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-gcalendar@^0.3.5-next.2, @backstage/plugin-gcalendar@workspace:plugins/gcalendar":
+"@backstage/plugin-gcalendar@^0.3.5-next.3, @backstage/plugin-gcalendar@workspace:plugins/gcalendar":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-gcalendar@workspace:plugins/gcalendar"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5261,16 +5297,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-gcp-projects@^0.3.28-next.2, @backstage/plugin-gcp-projects@workspace:plugins/gcp-projects":
+"@backstage/plugin-gcp-projects@^0.3.28-next.3, @backstage/plugin-gcp-projects@workspace:plugins/gcp-projects":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-gcp-projects@workspace:plugins/gcp-projects"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5292,13 +5328,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-git-release-manager@workspace:plugins/git-release-manager"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5323,19 +5359,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-github-actions@^0.5.9-next.2, @backstage/plugin-github-actions@workspace:plugins/github-actions":
+"@backstage/plugin-github-actions@^0.5.9-next.3, @backstage/plugin-github-actions@workspace:plugins/github-actions":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-github-actions@workspace:plugins/github-actions"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5360,17 +5396,17 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-github-deployments@workspace:plugins/github-deployments"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/integration-react": ^1.1.4-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/integration-react": ^1.1.4-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5393,16 +5429,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-github-issues@workspace:plugins/github-issues"
   dependencies:
-    "@backstage/catalog-model": ^1.0.3
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.15
     "@material-ui/core": ^4.12.4
     "@material-ui/icons": ^4.9.1
@@ -5427,14 +5463,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-github-pull-requests-board@workspace:plugins/github-pull-requests-board"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5459,12 +5495,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-gitops-profiles@workspace:plugins/gitops-profiles"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5482,19 +5518,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-gocd@^0.1.15-next.1, @backstage/plugin-gocd@workspace:plugins/gocd":
+"@backstage/plugin-gocd@^0.1.15-next.2, @backstage/plugin-gocd@workspace:plugins/gocd":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-gocd@workspace:plugins/gocd"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5516,16 +5552,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-graphiql@^0.2.41-next.2, @backstage/plugin-graphiql@workspace:plugins/graphiql":
+"@backstage/plugin-graphiql@^0.2.41-next.3, @backstage/plugin-graphiql@workspace:plugins/graphiql":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-graphiql@workspace:plugins/graphiql"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5547,14 +5583,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-graphql-backend@^0.1.26-next.2, @backstage/plugin-graphql-backend@workspace:plugins/graphql-backend":
+"@backstage/plugin-graphql-backend@^0.1.26-next.3, @backstage/plugin-graphql-backend@workspace:plugins/graphql-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-graphql-backend@workspace:plugins/graphql-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/plugin-catalog-graphql": ^0.3.13-next.2
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/plugin-catalog-graphql": ^0.3.13-next.3
     "@graphql-tools/schema": ^9.0.0
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
@@ -5573,20 +5609,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-home@^0.4.25-next.2, @backstage/plugin-home@workspace:plugins/home":
+"@backstage/plugin-home@^0.4.25-next.3, @backstage/plugin-home@workspace:plugins/home":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-home@workspace:plugins/home"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/plugin-stack-overflow": ^0.1.5-next.2
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/plugin-stack-overflow": ^0.1.5-next.3
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5634,15 +5670,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-ilert@workspace:plugins/ilert"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@date-io/luxon": 1.x
     "@material-ui/core": ^4.12.2
@@ -5663,19 +5699,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-jenkins-backend@^0.1.26-next.2, @backstage/plugin-jenkins-backend@workspace:plugins/jenkins-backend":
+"@backstage/plugin-jenkins-backend@^0.1.26-next.3, @backstage/plugin-jenkins-backend@workspace:plugins/jenkins-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-jenkins-backend@workspace:plugins/jenkins-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/catalog-client": ^1.0.5-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-auth-node": ^0.2.5-next.2
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-auth-node": ^0.2.5-next.3
     "@backstage/plugin-jenkins-common": ^0.1.8-next.0
-    "@backstage/plugin-permission-common": ^0.6.4-next.1
+    "@backstage/plugin-permission-common": ^0.6.4-next.2
     "@types/express": ^4.17.6
     "@types/jenkins": ^0.23.1
     "@types/supertest": ^2.0.8
@@ -5700,20 +5736,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-jenkins@^0.7.8-next.2, @backstage/plugin-jenkins@workspace:plugins/jenkins":
+"@backstage/plugin-jenkins@^0.7.8-next.3, @backstage/plugin-jenkins@workspace:plugins/jenkins":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-jenkins@workspace:plugins/jenkins"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
     "@backstage/plugin-jenkins-common": ^0.1.8-next.0
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5734,15 +5770,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-kafka-backend@^0.2.29-next.0, @backstage/plugin-kafka-backend@workspace:plugins/kafka-backend":
+"@backstage/plugin-kafka-backend@^0.2.29-next.1, @backstage/plugin-kafka-backend@workspace:plugins/kafka-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-kafka-backend@workspace:plugins/kafka-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
     "@types/express": ^4.17.6
     "@types/jest-when": ^3.5.0
     "@types/lodash": ^4.14.151
@@ -5756,19 +5792,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-kafka@^0.3.9-next.2, @backstage/plugin-kafka@workspace:plugins/kafka":
+"@backstage/plugin-kafka@^0.3.9-next.3, @backstage/plugin-kafka@workspace:plugins/kafka":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-kafka@workspace:plugins/kafka"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5788,19 +5824,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-kubernetes-backend@^0.7.2-next.2, @backstage/plugin-kubernetes-backend@workspace:plugins/kubernetes-backend":
+"@backstage/plugin-kubernetes-backend@^0.7.2-next.3, @backstage/plugin-kubernetes-backend@workspace:plugins/kubernetes-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-kubernetes-backend@workspace:plugins/kubernetes-backend"
   dependencies:
     "@azure/identity": ^2.0.4
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/catalog-client": ^1.0.5-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-auth-node": ^0.2.5-next.2
-    "@backstage/plugin-kubernetes-common": ^0.4.2-next.0
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-auth-node": ^0.2.5-next.3
+    "@backstage/plugin-kubernetes-common": ^0.4.2-next.1
     "@google-cloud/container": ^4.0.0
     "@kubernetes/client-node": ^0.17.0
     "@types/aws4": ^1.5.1
@@ -5825,30 +5861,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-kubernetes-common@^0.4.2-next.0, @backstage/plugin-kubernetes-common@workspace:plugins/kubernetes-common":
+"@backstage/plugin-kubernetes-common@^0.4.2-next.1, @backstage/plugin-kubernetes-common@workspace:plugins/kubernetes-common":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-kubernetes-common@workspace:plugins/kubernetes-common"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.1
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
     "@kubernetes/client-node": ^0.17.0
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-kubernetes@^0.7.2-next.2, @backstage/plugin-kubernetes@workspace:plugins/kubernetes":
+"@backstage/plugin-kubernetes@^0.7.2-next.3, @backstage/plugin-kubernetes@workspace:plugins/kubernetes":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-kubernetes@workspace:plugins/kubernetes"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/plugin-kubernetes-common": ^0.4.2-next.0
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/plugin-kubernetes-common": ^0.4.2-next.1
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@kubernetes/client-node": ^0.17.0
     "@material-ui/core": ^4.12.2
@@ -5873,19 +5909,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-lighthouse@^0.3.9-next.2, @backstage/plugin-lighthouse@workspace:plugins/lighthouse":
+"@backstage/plugin-lighthouse@^0.3.9-next.3, @backstage/plugin-lighthouse@workspace:plugins/lighthouse":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-lighthouse@workspace:plugins/lighthouse"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5905,17 +5941,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-newrelic-dashboard@^0.2.2-next.1, @backstage/plugin-newrelic-dashboard@workspace:plugins/newrelic-dashboard":
+"@backstage/plugin-newrelic-dashboard@^0.2.2-next.2, @backstage/plugin-newrelic-dashboard@workspace:plugins/newrelic-dashboard":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-newrelic-dashboard@workspace:plugins/newrelic-dashboard"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/core-components": ^0.11.1-next.1
-    "@backstage/core-plugin-api": ^1.0.6-next.1
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.57
@@ -5928,16 +5964,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-newrelic@^0.3.27-next.2, @backstage/plugin-newrelic@workspace:plugins/newrelic":
+"@backstage/plugin-newrelic@^0.3.27-next.3, @backstage/plugin-newrelic@workspace:plugins/newrelic":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-newrelic@workspace:plugins/newrelic"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5954,19 +5990,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-org@^0.5.9-next.2, @backstage/plugin-org@workspace:plugins/org":
+"@backstage/plugin-org@^0.5.9-next.3, @backstage/plugin-org@workspace:plugins/org":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-org@workspace:plugins/org"
   dependencies:
-    "@backstage/catalog-client": ^1.0.5-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5988,19 +6024,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-pagerduty@0.5.2-next.2, @backstage/plugin-pagerduty@workspace:plugins/pagerduty":
+"@backstage/plugin-pagerduty@0.5.2-next.3, @backstage/plugin-pagerduty@workspace:plugins/pagerduty":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-pagerduty@workspace:plugins/pagerduty"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -6025,9 +6061,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-periskop-backend@workspace:plugins/periskop-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
     "@types/express": "*"
     "@types/supertest": ^2.0.8
     express: ^4.17.1
@@ -6044,15 +6080,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-periskop@workspace:plugins/periskop"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -6072,17 +6108,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-permission-backend@^0.5.11-next.1, @backstage/plugin-permission-backend@workspace:plugins/permission-backend":
+"@backstage/plugin-permission-backend@^0.5.11-next.2, @backstage/plugin-permission-backend@workspace:plugins/permission-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-permission-backend@workspace:plugins/permission-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-auth-node": ^0.2.5-next.2
-    "@backstage/plugin-permission-common": ^0.6.4-next.1
-    "@backstage/plugin-permission-node": ^0.6.5-next.2
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-auth-node": ^0.2.5-next.3
+    "@backstage/plugin-permission-common": ^0.6.4-next.2
+    "@backstage/plugin-permission-node": ^0.6.5-next.3
     "@types/express": "*"
     "@types/lodash": ^4.14.151
     "@types/supertest": ^2.0.8
@@ -6099,13 +6135,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-permission-common@^0.6.4-next.0, @backstage/plugin-permission-common@^0.6.4-next.1, @backstage/plugin-permission-common@workspace:plugins/permission-common":
+"@backstage/plugin-permission-common@^0.6.4-next.0, @backstage/plugin-permission-common@^0.6.4-next.2, @backstage/plugin-permission-common@workspace:plugins/permission-common":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-permission-common@workspace:plugins/permission-common"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
     cross-fetch: ^3.1.5
     msw: ^0.47.0
     uuid: ^8.0.0
@@ -6126,17 +6162,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-permission-node@^0.6.5-next.1, @backstage/plugin-permission-node@^0.6.5-next.2, @backstage/plugin-permission-node@workspace:plugins/permission-node":
+"@backstage/plugin-permission-node@^0.6.5-next.3, @backstage/plugin-permission-node@workspace:plugins/permission-node":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-permission-node@workspace:plugins/permission-node"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-auth-node": ^0.2.5-next.2
-    "@backstage/plugin-permission-common": ^0.6.4-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-auth-node": ^0.2.5-next.3
+    "@backstage/plugin-permission-common": ^0.6.4-next.2
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     express: ^4.17.1
@@ -6147,15 +6183,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-permission-react@^0.4.5-next.1, @backstage/plugin-permission-react@workspace:plugins/permission-react":
+"@backstage/plugin-permission-react@^0.4.5-next.2, @backstage/plugin-permission-react@workspace:plugins/permission-react":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-permission-react@workspace:plugins/permission-react"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
-    "@backstage/core-plugin-api": ^1.0.6-next.1
-    "@backstage/plugin-permission-common": ^0.6.4-next.0
-    "@backstage/test-utils": ^1.2.0-next.1
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/plugin-permission-common": ^0.6.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     cross-fetch: ^3.1.5
@@ -6186,13 +6222,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-proxy-backend@^0.2.30-next.1, @backstage/plugin-proxy-backend@workspace:plugins/proxy-backend":
+"@backstage/plugin-proxy-backend@^0.2.30-next.2, @backstage/plugin-proxy-backend@workspace:plugins/proxy-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-proxy-backend@workspace:plugins/proxy-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
     "@types/express": ^4.17.6
     "@types/http-proxy-middleware": ^0.19.3
     "@types/supertest": ^2.0.8
@@ -6212,14 +6248,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-rollbar-backend@^0.1.33-next.2, @backstage/plugin-rollbar-backend@workspace:plugins/rollbar-backend":
+"@backstage/plugin-rollbar-backend@^0.1.33-next.3, @backstage/plugin-rollbar-backend@workspace:plugins/rollbar-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-rollbar-backend@workspace:plugins/rollbar-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     camelcase-keys: ^7.0.1
@@ -6238,18 +6274,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-rollbar@^0.4.9-next.2, @backstage/plugin-rollbar@workspace:plugins/rollbar":
+"@backstage/plugin-rollbar@^0.4.9-next.3, @backstage/plugin-rollbar@workspace:plugins/rollbar":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-rollbar@workspace:plugins/rollbar"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -6276,12 +6312,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-cookiecutter@workspace:plugins/scaffolder-backend-module-cookiecutter"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/plugin-scaffolder-backend": ^1.6.0-next.2
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/plugin-scaffolder-backend": ^1.6.0-next.3
     "@backstage/types": ^1.0.0
     "@types/command-exists": ^1.2.0
     "@types/fs-extra": ^9.0.1
@@ -6295,16 +6331,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-backend-module-rails@^0.4.4-next.0, @backstage/plugin-scaffolder-backend-module-rails@workspace:plugins/scaffolder-backend-module-rails":
+"@backstage/plugin-scaffolder-backend-module-rails@^0.4.4-next.1, @backstage/plugin-scaffolder-backend-module-rails@workspace:plugins/scaffolder-backend-module-rails":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-rails@workspace:plugins/scaffolder-backend-module-rails"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.1
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.0
-    "@backstage/plugin-scaffolder-backend": ^1.6.0-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/plugin-scaffolder-backend": ^1.6.0-next.3
     "@backstage/types": ^1.0.0
     "@types/command-exists": ^1.2.0
     "@types/fs-extra": ^9.0.1
@@ -6321,33 +6357,33 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-yeoman@workspace:plugins/scaffolder-backend-module-yeoman"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
-    "@backstage/plugin-scaffolder-backend": ^1.6.0-next.0
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/plugin-scaffolder-backend": ^1.6.0-next.3
     "@backstage/types": ^1.0.0
     winston: ^3.2.1
     yeoman-environment: ^3.9.1
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-backend@^1.6.0-next.0, @backstage/plugin-scaffolder-backend@^1.6.0-next.1, @backstage/plugin-scaffolder-backend@^1.6.0-next.2, @backstage/plugin-scaffolder-backend@workspace:plugins/scaffolder-backend":
+"@backstage/plugin-scaffolder-backend@^1.6.0-next.1, @backstage/plugin-scaffolder-backend@^1.6.0-next.3, @backstage/plugin-scaffolder-backend@workspace:plugins/scaffolder-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend@workspace:plugins/scaffolder-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-plugin-api": ^0.1.2-next.1
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/catalog-client": ^1.0.5-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/plugin-auth-node": ^0.2.5-next.2
-    "@backstage/plugin-catalog-backend": ^1.4.0-next.2
-    "@backstage/plugin-catalog-node": ^1.0.2-next.1
-    "@backstage/plugin-scaffolder-common": ^1.2.0-next.0
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-plugin-api": ^0.1.2-next.2
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/plugin-auth-node": ^0.2.5-next.3
+    "@backstage/plugin-catalog-backend": ^1.4.0-next.3
+    "@backstage/plugin-catalog-node": ^1.1.0-next.2
+    "@backstage/plugin-scaffolder-common": ^1.2.0-next.1
     "@backstage/types": ^1.0.0
     "@gitbeaker/core": ^35.6.0
     "@gitbeaker/node": ^35.1.0
@@ -6395,37 +6431,37 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-common@^1.2.0-next.0, @backstage/plugin-scaffolder-common@workspace:plugins/scaffolder-common":
+"@backstage/plugin-scaffolder-common@^1.2.0-next.1, @backstage/plugin-scaffolder-common@workspace:plugins/scaffolder-common":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-common@workspace:plugins/scaffolder-common"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.1
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
     "@backstage/types": ^1.0.0
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder@^1.6.0-next.2, @backstage/plugin-scaffolder@workspace:plugins/scaffolder":
+"@backstage/plugin-scaffolder@^1.6.0-next.3, @backstage/plugin-scaffolder@workspace:plugins/scaffolder":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder@workspace:plugins/scaffolder"
   dependencies:
-    "@backstage/catalog-client": ^1.0.5-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/integration-react": ^1.1.4-next.1
-    "@backstage/plugin-catalog": ^1.5.1-next.2
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/integration-react": ^1.1.4-next.2
+    "@backstage/plugin-catalog": ^1.5.1-next.3
     "@backstage/plugin-catalog-common": ^1.0.6-next.0
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/plugin-permission-react": ^0.4.5-next.1
-    "@backstage/plugin-scaffolder-common": ^1.2.0-next.0
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/plugin-permission-react": ^0.4.5-next.2
+    "@backstage/plugin-scaffolder-common": ^1.2.0-next.1
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@backstage/types": ^1.0.0
     "@codemirror/language": ^6.0.0
@@ -6469,14 +6505,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-search-backend-module-elasticsearch@^1.0.2-next.1, @backstage/plugin-search-backend-module-elasticsearch@workspace:plugins/search-backend-module-elasticsearch":
+"@backstage/plugin-search-backend-module-elasticsearch@^1.0.2-next.2, @backstage/plugin-search-backend-module-elasticsearch@workspace:plugins/search-backend-module-elasticsearch":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-backend-module-elasticsearch@workspace:plugins/search-backend-module-elasticsearch"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/plugin-search-backend-node": ^1.0.2-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/plugin-search-backend-node": ^1.0.2-next.2
     "@backstage/plugin-search-common": ^1.0.1-next.0
     "@elastic/elasticsearch": ^7.13.0
     "@elastic/elasticsearch-mock": ^1.0.0
@@ -6491,15 +6527,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-search-backend-module-pg@^0.4.0-next.1, @backstage/plugin-search-backend-module-pg@workspace:plugins/search-backend-module-pg":
+"@backstage/plugin-search-backend-module-pg@^0.4.0-next.2, @backstage/plugin-search-backend-module-pg@workspace:plugins/search-backend-module-pg":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-backend-module-pg@workspace:plugins/search-backend-module-pg"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.1
-    "@backstage/backend-test-utils": ^0.1.28-next.1
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
-    "@backstage/plugin-search-backend-node": ^1.0.2-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/plugin-search-backend-node": ^1.0.2-next.2
     "@backstage/plugin-search-common": ^1.0.1-next.0
     knex: ^2.0.0
     lodash: ^4.17.21
@@ -6507,16 +6543,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-search-backend-node@1.0.2-next.1, @backstage/plugin-search-backend-node@^1.0.2-next.1, @backstage/plugin-search-backend-node@workspace:plugins/search-backend-node":
+"@backstage/plugin-search-backend-node@1.0.2-next.2, @backstage/plugin-search-backend-node@^1.0.2-next.2, @backstage/plugin-search-backend-node@workspace:plugins/search-backend-node":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-backend-node@workspace:plugins/search-backend-node"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.1
-    "@backstage/backend-tasks": ^0.3.5-next.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-permission-common": ^0.6.4-next.0
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-tasks": ^0.3.5-next.1
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-permission-common": ^0.6.4-next.2
     "@backstage/plugin-search-common": ^1.0.1-next.0
     "@types/lunr": ^2.3.3
     "@types/ndjson": ^2.0.1
@@ -6529,18 +6565,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-search-backend@^1.0.2-next.0, @backstage/plugin-search-backend@workspace:plugins/search-backend":
+"@backstage/plugin-search-backend@^1.0.2-next.1, @backstage/plugin-search-backend@workspace:plugins/search-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-backend@workspace:plugins/search-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.1
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-auth-node": ^0.2.5-next.1
-    "@backstage/plugin-permission-common": ^0.6.4-next.0
-    "@backstage/plugin-permission-node": ^0.6.5-next.1
-    "@backstage/plugin-search-backend-node": ^1.0.2-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-auth-node": ^0.2.5-next.3
+    "@backstage/plugin-permission-common": ^0.6.4-next.2
+    "@backstage/plugin-permission-node": ^0.6.5-next.3
+    "@backstage/plugin-search-backend-node": ^1.0.2-next.2
     "@backstage/plugin-search-common": ^1.0.1-next.0
     "@backstage/types": ^1.0.0
     "@types/express": ^4.17.6
@@ -6605,22 +6641,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-search@^1.0.2-next.2, @backstage/plugin-search@workspace:plugins/search":
+"@backstage/plugin-search@^1.0.2-next.3, @backstage/plugin-search@workspace:plugins/search":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search@workspace:plugins/search"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
     "@backstage/plugin-search-common": ^1.0.1-next.0
     "@backstage/plugin-search-react": ^1.1.0-next.2
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@backstage/types": ^1.0.0
     "@backstage/version-bridge": ^1.0.1
@@ -6644,18 +6680,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-sentry@^0.4.2-next.2, @backstage/plugin-sentry@workspace:plugins/sentry":
+"@backstage/plugin-sentry@^0.4.2-next.3, @backstage/plugin-sentry@workspace:plugins/sentry":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-sentry@workspace:plugins/sentry"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-table/core": ^3.1.0
     "@material-ui/core": ^4.12.2
@@ -6678,16 +6714,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-shortcuts@^0.3.1-next.2, @backstage/plugin-shortcuts@workspace:plugins/shortcuts":
+"@backstage/plugin-shortcuts@^0.3.1-next.3, @backstage/plugin-shortcuts@workspace:plugins/shortcuts":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-shortcuts@workspace:plugins/shortcuts"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@backstage/types": ^1.0.0
     "@material-ui/core": ^4.12.2
@@ -6714,11 +6750,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-sonarqube-backend@workspace:plugins/sonarqube-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/test-utils": ^1.2.0-next.3
     "@types/express": "*"
     "@types/supertest": ^2.0.12
     express: ^4.18.1
@@ -6735,14 +6771,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-sonarqube@workspace:plugins/sonarqube"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -6765,14 +6801,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-splunk-on-call@workspace:plugins/splunk-on-call"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -6797,8 +6833,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-stack-overflow-backend@workspace:plugins/stack-overflow-backend"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
     "@backstage/plugin-search-common": ^1.0.1-next.0
     node-fetch: ^2.6.7
     qs: ^6.9.4
@@ -6806,19 +6842,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-stack-overflow@^0.1.5-next.2, @backstage/plugin-stack-overflow@workspace:plugins/stack-overflow":
+"@backstage/plugin-stack-overflow@^0.1.5-next.3, @backstage/plugin-stack-overflow@workspace:plugins/stack-overflow":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-stack-overflow@workspace:plugins/stack-overflow"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-home": ^0.4.25-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/plugin-home": ^0.4.25-next.3
     "@backstage/plugin-search-common": ^1.0.1-next.0
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -6861,16 +6897,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-tech-insights-backend-module-jsonfc@^0.1.20-next.0, @backstage/plugin-tech-insights-backend-module-jsonfc@workspace:plugins/tech-insights-backend-module-jsonfc":
+"@backstage/plugin-tech-insights-backend-module-jsonfc@^0.1.20-next.1, @backstage/plugin-tech-insights-backend-module-jsonfc@workspace:plugins/tech-insights-backend-module-jsonfc":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-tech-insights-backend-module-jsonfc@workspace:plugins/tech-insights-backend-module-jsonfc"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.1
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
     "@backstage/plugin-tech-insights-common": ^0.2.6
-    "@backstage/plugin-tech-insights-node": ^0.3.4-next.0
+    "@backstage/plugin-tech-insights-node": ^0.3.4-next.1
     ajv: ^8.10.0
     json-rules-engine: ^6.1.2
     lodash: ^4.17.21
@@ -6879,20 +6915,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-tech-insights-backend@^0.5.2-next.1, @backstage/plugin-tech-insights-backend@workspace:plugins/tech-insights-backend":
+"@backstage/plugin-tech-insights-backend@^0.5.2-next.2, @backstage/plugin-tech-insights-backend@workspace:plugins/tech-insights-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-tech-insights-backend@workspace:plugins/tech-insights-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.1
-    "@backstage/backend-tasks": ^0.3.5-next.0
-    "@backstage/backend-test-utils": ^0.1.28-next.1
-    "@backstage/catalog-client": ^1.0.5-next.0
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-tasks": ^0.3.5-next.1
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
     "@backstage/plugin-tech-insights-common": ^0.2.6
-    "@backstage/plugin-tech-insights-node": ^0.3.4-next.0
+    "@backstage/plugin-tech-insights-node": ^0.3.4-next.1
     "@types/express": ^4.17.6
     "@types/luxon": ^3.0.0
     "@types/semver": ^7.3.8
@@ -6922,14 +6958,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-tech-insights-node@^0.3.4-next.0, @backstage/plugin-tech-insights-node@workspace:plugins/tech-insights-node":
+"@backstage/plugin-tech-insights-node@^0.3.4-next.1, @backstage/plugin-tech-insights-node@workspace:plugins/tech-insights-node":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-tech-insights-node@workspace:plugins/tech-insights-node"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.1
-    "@backstage/backend-tasks": ^0.3.5-next.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-tasks": ^0.3.5-next.1
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
     "@backstage/plugin-tech-insights-common": ^0.2.6
     "@backstage/types": ^1.0.0
     "@types/luxon": ^3.0.0
@@ -6938,20 +6974,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-tech-insights@^0.3.0-next.2, @backstage/plugin-tech-insights@workspace:plugins/tech-insights":
+"@backstage/plugin-tech-insights@^0.3.0-next.3, @backstage/plugin-tech-insights@workspace:plugins/tech-insights":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-tech-insights@workspace:plugins/tech-insights"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
     "@backstage/plugin-tech-insights-common": ^0.2.6
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@backstage/types": ^1.0.0
     "@material-ui/core": ^4.12.2
@@ -6971,16 +7007,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-tech-radar@^0.5.16-next.2, @backstage/plugin-tech-radar@workspace:plugins/tech-radar":
+"@backstage/plugin-tech-radar@^0.5.16-next.3, @backstage/plugin-tech-radar@workspace:plugins/tech-radar":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-tech-radar@workspace:plugins/tech-radar"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -7003,21 +7039,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-techdocs-addons-test-utils@^1.0.4-next.2, @backstage/plugin-techdocs-addons-test-utils@workspace:plugins/techdocs-addons-test-utils":
+"@backstage/plugin-techdocs-addons-test-utils@^1.0.4-next.3, @backstage/plugin-techdocs-addons-test-utils@workspace:plugins/techdocs-addons-test-utils":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-techdocs-addons-test-utils@workspace:plugins/techdocs-addons-test-utils"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/integration-react": ^1.1.4-next.1
-    "@backstage/plugin-catalog": ^1.5.1-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/integration-react": ^1.1.4-next.2
+    "@backstage/plugin-catalog": ^1.5.1-next.3
     "@backstage/plugin-search-react": ^1.1.0-next.2
-    "@backstage/plugin-techdocs": ^1.3.2-next.2
-    "@backstage/plugin-techdocs-react": ^1.0.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/plugin-techdocs": ^1.3.2-next.3
+    "@backstage/plugin-techdocs-react": ^1.0.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
@@ -7038,23 +7074,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-techdocs-backend@^1.3.0-next.1, @backstage/plugin-techdocs-backend@workspace:plugins/techdocs-backend":
+"@backstage/plugin-techdocs-backend@^1.3.0-next.2, @backstage/plugin-techdocs-backend@workspace:plugins/techdocs-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-techdocs-backend@workspace:plugins/techdocs-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/catalog-client": ^1.0.5-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
     "@backstage/plugin-catalog-common": ^1.0.6-next.0
-    "@backstage/plugin-permission-common": ^0.6.4-next.1
-    "@backstage/plugin-search-backend-node": 1.0.2-next.1
+    "@backstage/plugin-permission-common": ^0.6.4-next.2
+    "@backstage/plugin-search-backend-node": 1.0.2-next.2
     "@backstage/plugin-search-common": ^1.0.1-next.0
-    "@backstage/plugin-techdocs-node": ^1.4.0-next.1
+    "@backstage/plugin-techdocs-node": ^1.4.0-next.2
     "@types/dockerode": ^3.3.0
     "@types/express": ^4.17.6
     dockerode: ^3.3.1
@@ -7071,20 +7107,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-techdocs-module-addons-contrib@^1.0.4-next.1, @backstage/plugin-techdocs-module-addons-contrib@workspace:plugins/techdocs-module-addons-contrib":
+"@backstage/plugin-techdocs-module-addons-contrib@^1.0.4-next.2, @backstage/plugin-techdocs-module-addons-contrib@workspace:plugins/techdocs-module-addons-contrib":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-techdocs-module-addons-contrib@workspace:plugins/techdocs-module-addons-contrib"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/integration-react": ^1.1.4-next.1
-    "@backstage/plugin-techdocs-addons-test-utils": ^1.0.4-next.2
-    "@backstage/plugin-techdocs-react": ^1.0.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/integration-react": ^1.1.4-next.2
+    "@backstage/plugin-techdocs-addons-test-utils": ^1.0.4-next.3
+    "@backstage/plugin-techdocs-react": ^1.0.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
@@ -7104,18 +7140,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-techdocs-node@^1.4.0-next.1, @backstage/plugin-techdocs-node@workspace:plugins/techdocs-node":
+"@backstage/plugin-techdocs-node@^1.4.0-next.2, @backstage/plugin-techdocs-node@workspace:plugins/techdocs-node":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-techdocs-node@workspace:plugins/techdocs-node"
   dependencies:
     "@azure/identity": ^2.0.1
     "@azure/storage-blob": ^12.5.0
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
     "@backstage/plugin-search-common": ^1.0.1-next.0
     "@google-cloud/storage": ^6.0.0
     "@trendyol-js/openstack-swift-sdk": ^0.0.5
@@ -7141,16 +7177,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-techdocs-react@^1.0.4-next.1, @backstage/plugin-techdocs-react@workspace:plugins/techdocs-react":
+"@backstage/plugin-techdocs-react@^1.0.4-next.2, @backstage/plugin-techdocs-react@workspace:plugins/techdocs-react":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-techdocs-react@workspace:plugins/techdocs-react"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
-    "@backstage/core-components": ^0.11.1-next.1
-    "@backstage/core-plugin-api": ^1.0.6-next.1
-    "@backstage/test-utils": ^1.2.0-next.1
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@backstage/version-bridge": ^1.0.1
     "@material-ui/core": ^4.12.2
@@ -7170,25 +7206,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-techdocs@^1.3.2-next.1, @backstage/plugin-techdocs@^1.3.2-next.2, @backstage/plugin-techdocs@workspace:plugins/techdocs":
+"@backstage/plugin-techdocs@^1.3.2-next.3, @backstage/plugin-techdocs@workspace:plugins/techdocs":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-techdocs@workspace:plugins/techdocs"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/integration-react": ^1.1.4-next.1
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/integration-react": ^1.1.4-next.2
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
     "@backstage/plugin-search-common": ^1.0.1-next.0
     "@backstage/plugin-search-react": ^1.1.0-next.2
-    "@backstage/plugin-techdocs-react": ^1.0.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/plugin-techdocs-react": ^1.0.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -7220,17 +7256,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-todo-backend@^0.1.33-next.1, @backstage/plugin-todo-backend@workspace:plugins/todo-backend":
+"@backstage/plugin-todo-backend@^0.1.33-next.2, @backstage/plugin-todo-backend@workspace:plugins/todo-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-todo-backend@workspace:plugins/todo-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/catalog-client": ^1.0.5-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/integration": ^1.3.1-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/integration": ^1.3.1-next.2
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     express: ^4.17.1
@@ -7243,19 +7279,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-todo@^0.2.11-next.2, @backstage/plugin-todo@workspace:plugins/todo":
+"@backstage/plugin-todo@^0.2.11-next.3, @backstage/plugin-todo@workspace:plugins/todo":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-todo@workspace:plugins/todo"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -7273,16 +7309,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-user-settings@^0.4.8-next.2, @backstage/plugin-user-settings@workspace:plugins/user-settings":
+"@backstage/plugin-user-settings@^0.4.8-next.3, @backstage/plugin-user-settings@workspace:plugins/user-settings":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-user-settings@workspace:plugins/user-settings"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -7305,12 +7341,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-vault-backend@workspace:plugins/vault-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-tasks": ^0.3.5-next.0
-    "@backstage/backend-test-utils": ^0.1.28-next.2
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-tasks": ^0.3.5-next.1
+    "@backstage/backend-test-utils": ^0.1.28-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
     "@types/compression": ^1.7.2
     "@types/express": "*"
     "@types/supertest": ^2.0.8
@@ -7332,15 +7368,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-vault@workspace:plugins/vault"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -7361,13 +7397,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-xcmetrics@workspace:plugins/xcmetrics"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/dev-utils": ^1.0.6-next.2
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -7388,28 +7424,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/release-manifests@^0.0.6-next.1, @backstage/release-manifests@workspace:packages/release-manifests":
+"@backstage/release-manifests@^0.0.6-next.2, @backstage/release-manifests@workspace:packages/release-manifests":
   version: 0.0.0-use.local
   resolution: "@backstage/release-manifests@workspace:packages/release-manifests"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/test-utils": ^1.2.0-next.3
     "@types/node": ^16.0.0
     cross-fetch: ^3.1.5
     msw: ^0.47.0
   languageName: unknown
   linkType: soft
 
-"@backstage/test-utils@^1.2.0-next.1, @backstage/test-utils@^1.2.0-next.2, @backstage/test-utils@workspace:packages/test-utils":
+"@backstage/test-utils@^1.2.0-next.1, @backstage/test-utils@^1.2.0-next.2, @backstage/test-utils@^1.2.0-next.3, @backstage/test-utils@workspace:packages/test-utils":
   version: 0.0.0-use.local
   resolution: "@backstage/test-utils@workspace:packages/test-utils"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/plugin-permission-common": ^0.6.4-next.1
-    "@backstage/plugin-permission-react": ^0.4.5-next.1
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/plugin-permission-common": ^0.6.4-next.2
+    "@backstage/plugin-permission-react": ^0.4.5-next.2
     "@backstage/theme": ^0.2.16
     "@backstage/types": ^1.0.0
     "@material-ui/core": ^4.12.2
@@ -9105,11 +9141,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@internal/plugin-todo-list-backend@workspace:plugins/example-todo-list-backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.1
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
-    "@backstage/errors": ^1.1.0
-    "@backstage/plugin-auth-node": ^0.2.5-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/errors": ^1.1.1-next.0
+    "@backstage/plugin-auth-node": ^0.2.5-next.3
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     "@types/uuid": ^8.0.0
@@ -13274,12 +13310,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@techdocs/cli@workspace:packages/techdocs-cli"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/cli-common": ^0.1.9
-    "@backstage/config": ^1.0.1
-    "@backstage/plugin-techdocs-node": ^1.4.0-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/cli-common": ^0.1.10-next.0
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/plugin-techdocs-node": ^1.4.0-next.2
     "@types/commander": ^2.12.2
     "@types/dockerode": ^3.3.0
     "@types/fs-extra": ^9.0.6
@@ -21170,9 +21206,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "e2e-test@workspace:packages/e2e-test"
   dependencies:
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/cli-common": ^0.1.9-next.0
-    "@backstage/errors": ^1.1.0-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/cli-common": ^0.1.10-next.0
+    "@backstage/errors": ^1.1.1-next.0
     "@types/fs-extra": ^9.0.1
     "@types/node": ^16.11.26
     "@types/puppeteer": ^5.4.4
@@ -22395,60 +22431,60 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "example-app@workspace:packages/app"
   dependencies:
-    "@backstage/app-defaults": ^1.0.6-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.2
-    "@backstage/core-components": ^0.11.1-next.2
-    "@backstage/core-plugin-api": ^1.0.6-next.2
-    "@backstage/integration-react": ^1.1.4-next.1
-    "@backstage/plugin-airbrake": ^0.3.9-next.2
-    "@backstage/plugin-apache-airflow": ^0.2.2-next.2
-    "@backstage/plugin-api-docs": ^0.8.9-next.2
-    "@backstage/plugin-azure-devops": ^0.2.0-next.2
-    "@backstage/plugin-badges": ^0.2.33-next.2
+    "@backstage/app-defaults": ^1.0.6-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/integration-react": ^1.1.4-next.2
+    "@backstage/plugin-airbrake": ^0.3.9-next.3
+    "@backstage/plugin-apache-airflow": ^0.2.2-next.3
+    "@backstage/plugin-api-docs": ^0.8.9-next.3
+    "@backstage/plugin-azure-devops": ^0.2.0-next.3
+    "@backstage/plugin-badges": ^0.2.33-next.3
     "@backstage/plugin-catalog-common": ^1.0.6-next.0
-    "@backstage/plugin-catalog-graph": ^0.2.21-next.1
-    "@backstage/plugin-catalog-import": ^0.8.12-next.2
-    "@backstage/plugin-catalog-react": ^1.1.4-next.1
-    "@backstage/plugin-circleci": ^0.3.9-next.2
-    "@backstage/plugin-cloudbuild": ^0.3.9-next.2
-    "@backstage/plugin-code-coverage": ^0.2.2-next.2
-    "@backstage/plugin-cost-insights": ^0.11.31-next.2
-    "@backstage/plugin-dynatrace": ^0.2.0-next.2
-    "@backstage/plugin-explore": ^0.3.40-next.2
-    "@backstage/plugin-gcalendar": ^0.3.5-next.2
-    "@backstage/plugin-gcp-projects": ^0.3.28-next.2
-    "@backstage/plugin-github-actions": ^0.5.9-next.2
-    "@backstage/plugin-gocd": ^0.1.15-next.1
-    "@backstage/plugin-graphiql": ^0.2.41-next.2
-    "@backstage/plugin-home": ^0.4.25-next.2
-    "@backstage/plugin-jenkins": ^0.7.8-next.2
-    "@backstage/plugin-kafka": ^0.3.9-next.2
-    "@backstage/plugin-kubernetes": ^0.7.2-next.2
-    "@backstage/plugin-lighthouse": ^0.3.9-next.2
-    "@backstage/plugin-newrelic": ^0.3.27-next.2
-    "@backstage/plugin-newrelic-dashboard": ^0.2.2-next.1
-    "@backstage/plugin-org": ^0.5.9-next.2
-    "@backstage/plugin-pagerduty": 0.5.2-next.2
-    "@backstage/plugin-permission-react": ^0.4.5-next.1
-    "@backstage/plugin-rollbar": ^0.4.9-next.2
-    "@backstage/plugin-scaffolder": ^1.6.0-next.2
-    "@backstage/plugin-search": ^1.0.2-next.2
+    "@backstage/plugin-catalog-graph": ^0.2.21-next.2
+    "@backstage/plugin-catalog-import": ^0.8.12-next.3
+    "@backstage/plugin-catalog-react": ^1.1.4-next.2
+    "@backstage/plugin-circleci": ^0.3.9-next.3
+    "@backstage/plugin-cloudbuild": ^0.3.9-next.3
+    "@backstage/plugin-code-coverage": ^0.2.2-next.3
+    "@backstage/plugin-cost-insights": ^0.11.31-next.3
+    "@backstage/plugin-dynatrace": ^0.2.0-next.3
+    "@backstage/plugin-explore": ^0.3.40-next.3
+    "@backstage/plugin-gcalendar": ^0.3.5-next.3
+    "@backstage/plugin-gcp-projects": ^0.3.28-next.3
+    "@backstage/plugin-github-actions": ^0.5.9-next.3
+    "@backstage/plugin-gocd": ^0.1.15-next.2
+    "@backstage/plugin-graphiql": ^0.2.41-next.3
+    "@backstage/plugin-home": ^0.4.25-next.3
+    "@backstage/plugin-jenkins": ^0.7.8-next.3
+    "@backstage/plugin-kafka": ^0.3.9-next.3
+    "@backstage/plugin-kubernetes": ^0.7.2-next.3
+    "@backstage/plugin-lighthouse": ^0.3.9-next.3
+    "@backstage/plugin-newrelic": ^0.3.27-next.3
+    "@backstage/plugin-newrelic-dashboard": ^0.2.2-next.2
+    "@backstage/plugin-org": ^0.5.9-next.3
+    "@backstage/plugin-pagerduty": 0.5.2-next.3
+    "@backstage/plugin-permission-react": ^0.4.5-next.2
+    "@backstage/plugin-rollbar": ^0.4.9-next.3
+    "@backstage/plugin-scaffolder": ^1.6.0-next.3
+    "@backstage/plugin-search": ^1.0.2-next.3
     "@backstage/plugin-search-common": ^1.0.1-next.0
     "@backstage/plugin-search-react": ^1.1.0-next.2
-    "@backstage/plugin-sentry": ^0.4.2-next.2
-    "@backstage/plugin-shortcuts": ^0.3.1-next.2
-    "@backstage/plugin-stack-overflow": ^0.1.5-next.2
-    "@backstage/plugin-tech-insights": ^0.3.0-next.2
-    "@backstage/plugin-tech-radar": ^0.5.16-next.2
-    "@backstage/plugin-techdocs": ^1.3.2-next.2
-    "@backstage/plugin-techdocs-module-addons-contrib": ^1.0.4-next.1
-    "@backstage/plugin-techdocs-react": ^1.0.4-next.1
-    "@backstage/plugin-todo": ^0.2.11-next.2
-    "@backstage/plugin-user-settings": ^0.4.8-next.2
-    "@backstage/test-utils": ^1.2.0-next.2
+    "@backstage/plugin-sentry": ^0.4.2-next.3
+    "@backstage/plugin-shortcuts": ^0.3.1-next.3
+    "@backstage/plugin-stack-overflow": ^0.1.5-next.3
+    "@backstage/plugin-tech-insights": ^0.3.0-next.3
+    "@backstage/plugin-tech-radar": ^0.5.16-next.3
+    "@backstage/plugin-techdocs": ^1.3.2-next.3
+    "@backstage/plugin-techdocs-module-addons-contrib": ^1.0.4-next.2
+    "@backstage/plugin-techdocs-react": ^1.0.4-next.2
+    "@backstage/plugin-todo": ^0.2.11-next.3
+    "@backstage/plugin-user-settings": ^0.4.8-next.3
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@internal/plugin-catalog-customized": 0.0.2-next.0
     "@material-ui/core": ^4.12.2
@@ -22499,41 +22535,41 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "example-backend@workspace:packages/backend"
   dependencies:
-    "@backstage/backend-common": ^0.15.1-next.2
-    "@backstage/backend-tasks": ^0.3.5-next.0
-    "@backstage/catalog-client": ^1.0.5-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/integration": ^1.3.1-next.1
-    "@backstage/plugin-app-backend": ^0.3.36-next.2
-    "@backstage/plugin-auth-backend": ^0.16.0-next.2
-    "@backstage/plugin-auth-node": ^0.2.5-next.2
-    "@backstage/plugin-azure-devops-backend": ^0.3.15-next.1
-    "@backstage/plugin-badges-backend": ^0.1.30-next.0
-    "@backstage/plugin-catalog-backend": ^1.4.0-next.2
-    "@backstage/plugin-code-coverage-backend": ^0.2.2-next.1
-    "@backstage/plugin-graphql-backend": ^0.1.26-next.2
-    "@backstage/plugin-jenkins-backend": ^0.1.26-next.2
-    "@backstage/plugin-kafka-backend": ^0.2.29-next.0
-    "@backstage/plugin-kubernetes-backend": ^0.7.2-next.2
-    "@backstage/plugin-permission-backend": ^0.5.11-next.1
-    "@backstage/plugin-permission-common": ^0.6.4-next.1
-    "@backstage/plugin-permission-node": ^0.6.5-next.2
-    "@backstage/plugin-proxy-backend": ^0.2.30-next.1
-    "@backstage/plugin-rollbar-backend": ^0.1.33-next.2
-    "@backstage/plugin-scaffolder-backend": ^1.6.0-next.2
-    "@backstage/plugin-scaffolder-backend-module-rails": ^0.4.4-next.0
-    "@backstage/plugin-search-backend": ^1.0.2-next.0
-    "@backstage/plugin-search-backend-module-elasticsearch": ^1.0.2-next.1
-    "@backstage/plugin-search-backend-module-pg": ^0.4.0-next.1
-    "@backstage/plugin-search-backend-node": ^1.0.2-next.1
+    "@backstage/backend-common": ^0.15.1-next.3
+    "@backstage/backend-tasks": ^0.3.5-next.1
+    "@backstage/catalog-client": ^1.1.0-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/integration": ^1.3.1-next.2
+    "@backstage/plugin-app-backend": ^0.3.36-next.3
+    "@backstage/plugin-auth-backend": ^0.16.0-next.3
+    "@backstage/plugin-auth-node": ^0.2.5-next.3
+    "@backstage/plugin-azure-devops-backend": ^0.3.15-next.2
+    "@backstage/plugin-badges-backend": ^0.1.30-next.1
+    "@backstage/plugin-catalog-backend": ^1.4.0-next.3
+    "@backstage/plugin-code-coverage-backend": ^0.2.2-next.2
+    "@backstage/plugin-graphql-backend": ^0.1.26-next.3
+    "@backstage/plugin-jenkins-backend": ^0.1.26-next.3
+    "@backstage/plugin-kafka-backend": ^0.2.29-next.1
+    "@backstage/plugin-kubernetes-backend": ^0.7.2-next.3
+    "@backstage/plugin-permission-backend": ^0.5.11-next.2
+    "@backstage/plugin-permission-common": ^0.6.4-next.2
+    "@backstage/plugin-permission-node": ^0.6.5-next.3
+    "@backstage/plugin-proxy-backend": ^0.2.30-next.2
+    "@backstage/plugin-rollbar-backend": ^0.1.33-next.3
+    "@backstage/plugin-scaffolder-backend": ^1.6.0-next.3
+    "@backstage/plugin-scaffolder-backend-module-rails": ^0.4.4-next.1
+    "@backstage/plugin-search-backend": ^1.0.2-next.1
+    "@backstage/plugin-search-backend-module-elasticsearch": ^1.0.2-next.2
+    "@backstage/plugin-search-backend-module-pg": ^0.4.0-next.2
+    "@backstage/plugin-search-backend-node": ^1.0.2-next.2
     "@backstage/plugin-search-common": ^1.0.1-next.0
-    "@backstage/plugin-tech-insights-backend": ^0.5.2-next.1
-    "@backstage/plugin-tech-insights-backend-module-jsonfc": ^0.1.20-next.0
-    "@backstage/plugin-tech-insights-node": ^0.3.4-next.0
-    "@backstage/plugin-techdocs-backend": ^1.3.0-next.1
-    "@backstage/plugin-todo-backend": ^0.1.33-next.1
+    "@backstage/plugin-tech-insights-backend": ^0.5.2-next.2
+    "@backstage/plugin-tech-insights-backend-module-jsonfc": ^0.1.20-next.1
+    "@backstage/plugin-tech-insights-node": ^0.3.4-next.1
+    "@backstage/plugin-techdocs-backend": ^1.3.0-next.2
+    "@backstage/plugin-todo-backend": ^0.1.33-next.2
     "@gitbeaker/node": ^35.1.0
     "@octokit/rest": ^19.0.3
     "@types/dockerode": ^3.3.0
@@ -38179,18 +38215,18 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "techdocs-cli-embedded-app@workspace:packages/techdocs-cli-embedded-app"
   dependencies:
-    "@backstage/app-defaults": ^1.0.6-next.1
-    "@backstage/catalog-model": ^1.1.0
-    "@backstage/cli": ^0.19.0-next.1
-    "@backstage/config": ^1.0.1
-    "@backstage/core-app-api": ^1.1.0-next.1
-    "@backstage/core-components": ^0.11.1-next.1
-    "@backstage/core-plugin-api": ^1.0.6-next.1
-    "@backstage/integration-react": ^1.1.4-next.0
-    "@backstage/plugin-catalog": ^1.5.1-next.1
-    "@backstage/plugin-techdocs": ^1.3.2-next.1
-    "@backstage/plugin-techdocs-react": ^1.0.4-next.1
-    "@backstage/test-utils": ^1.2.0-next.1
+    "@backstage/app-defaults": ^1.0.6-next.2
+    "@backstage/catalog-model": ^1.1.1-next.0
+    "@backstage/cli": ^0.19.0-next.3
+    "@backstage/config": ^1.0.2-next.0
+    "@backstage/core-app-api": ^1.1.0-next.3
+    "@backstage/core-components": ^0.11.1-next.3
+    "@backstage/core-plugin-api": ^1.0.6-next.3
+    "@backstage/integration-react": ^1.1.4-next.2
+    "@backstage/plugin-catalog": ^1.5.1-next.3
+    "@backstage/plugin-techdocs": ^1.3.2-next.3
+    "@backstage/plugin-techdocs-react": ^1.0.4-next.2
+    "@backstage/test-utils": ^1.2.0-next.3
     "@backstage/theme": ^0.2.16
     "@material-ui/core": ^4.11.0
     "@material-ui/icons": ^4.9.1

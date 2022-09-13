@@ -1,5 +1,25 @@
 # @backstage/plugin-scaffolder
 
+## 1.6.0-next.3
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 6522e459aa: Support displaying and ordering by counts in `EntityTagPicker` field. Add the `showCounts` option to enable this. Also support configuring `helperText`.
+- f0510a20b5: Addition of a dismissible Error Banner in Scaffolder page
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.4-next.2
+  - @backstage/catalog-client@1.1.0-next.2
+  - @backstage/catalog-model@1.1.1-next.0
+  - @backstage/config@1.0.2-next.0
+  - @backstage/core-components@0.11.1-next.3
+  - @backstage/core-plugin-api@1.0.6-next.3
+  - @backstage/errors@1.1.1-next.0
+  - @backstage/integration@1.3.1-next.2
+  - @backstage/integration-react@1.1.4-next.2
+  - @backstage/plugin-permission-react@0.4.5-next.2
+  - @backstage/plugin-scaffolder-common@1.2.0-next.1
+
 ## 1.6.0-next.2
 
 ### Patch Changes
