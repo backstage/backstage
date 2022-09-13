@@ -69,7 +69,3 @@ export const ScaffolderLayouts: React.ComponentType = (): JSX.Element | null =>
 attachComponentData(ScaffolderLayouts, LAYOUTS_WRAPPER_KEY, true);
 
 export type { LayoutOptions, LayoutTemplate } from './types';
-
-export { DEFAULT_SCAFFOLDER_LAYOUT } from './default';
-
-export { resolveStepLayout } from './resolveStepLayout';

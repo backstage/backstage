@@ -36,7 +36,7 @@ import { transformSchemaToProps } from './schema';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
-import { LayoutOptions, resolveStepLayout } from '../../layouts';
+import { LayoutOptions } from '../../layouts';
 
 const Form = withTheme(MuiTheme);
 type Step = {
@@ -193,9 +193,7 @@ export const MultistepJsonForm = (props: Props) => {
     <>
       <Stepper activeStep={activeStep} orientation="vertical">
         {steps.map(({ title, schema, ...formProps }, index) => {
-          const schemaProps = transformSchemaToProps(schema);
-
-          const Layout = resolveStepLayout(schemaProps.uiSchema, layouts);
+          const schemaProps = transformSchemaToProps(schema, layouts);
 
           return (
             <StepUI key={title}>
@@ -210,7 +208,6 @@ export const MultistepJsonForm = (props: Props) => {
               </StepLabel>
               <StepContent key={title}>
                 <Form
-                  ObjectFieldTemplate={Layout}
                   showErrorList={false}
                   fields={{ ...fieldOverrides, ...fields }}
                   widgets={widgets}

@@ -20,7 +20,7 @@ import React, { Component, ReactNode, useMemo, useState } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 import yaml from 'yaml';
 import { FieldExtensionOptions } from '../../extensions';
-import { DEFAULT_SCAFFOLDER_LAYOUT, LayoutOptions } from '../../layouts';
+import { LayoutOptions } from '../../layouts';
 import { TemplateParameterSchema } from '../../types';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { createValidator } from '../TemplatePage';
@@ -101,7 +101,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
     onDryRun,
     setErrorText,
     fieldExtensions = [],
-    layouts = [DEFAULT_SCAFFOLDER_LAYOUT],
+    layouts = [],
   } = props;
   const classes = useStyles();
   const apiHolder = useApiHolder();
