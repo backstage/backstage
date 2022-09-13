@@ -15,69 +15,215 @@
  */
 
 import React from 'react';
+import useAsync, { AsyncState } from 'react-use/lib/useAsync';
 
 import {
   EmptyState,
   Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import { AnalyticsContext } from '@backstage/core-plugin-api';
-import { SearchResult } from '@backstage/plugin-search-common';
+import { AnalyticsContext, useApi } from '@backstage/core-plugin-api';
+import { SearchQuery, SearchResultSet } from '@backstage/plugin-search-common';
 
 import { useSearch } from '../../context';
+import { searchApiRef } from '../../api';
 
 /**
- * Props for {@link SearchResultComponent}
- *
+ * Props for {@link SearchResultContext}
  * @public
  */
-export type SearchResultProps = {
-  children: (results: { results: SearchResult[] }) => JSX.Element;
+export type SearchResultContextProps = {
+  /**
+   * A child function that receives an asynchronous result set and returns a react element.
+   */
+  children: (state: AsyncState<SearchResultSet>) => JSX.Element;
 };
 
 /**
- * A component returning the search result.
- *
+ * Provides context-based results to a child function.
+ * @param props - see {@link SearchResultContextProps}.
+ * @example
+ * ```
+ * <SearchResultContext>
+ *   {({ loading, error, value }) => (
+ *     <List>
+ *       {value?.map(({ document }) => (
+ *         <DefaultSearchResultListItem
+ *           key={document.location}
+ *           result={document}
+ *         />
+ *       ))}
+ *     </List>
+ *   )}
+ * </SearchResultContext>
+ * ```
  * @public
  */
-export const SearchResultComponent = ({ children }: SearchResultProps) => {
-  const {
-    result: { loading, error, value },
-  } = useSearch();
-
-  if (loading) {
-    return <Progress />;
-  }
-  if (error) {
-    return (
-      <ResponseErrorPanel
-        title="Error encountered while fetching search results"
-        error={error}
-      />
-    );
-  }
-
-  if (!value?.results.length) {
-    return <EmptyState missing="data" title="Sorry, no results were found" />;
-  }
-
-  return <>{children({ results: value.results })}</>;
+export const SearchResultContext = (props: SearchResultContextProps) => {
+  const { children } = props;
+  const context = useSearch();
+  const state = context.result;
+  return children(state);
 };
 
 /**
+ * Props for {@link SearchResultApi}
  * @public
  */
-const HigherOrderSearchResult = (props: SearchResultProps) => {
-  return (
-    <AnalyticsContext
-      attributes={{
-        pluginId: 'search',
-        extension: 'SearchResult',
-      }}
-    >
-      <SearchResultComponent {...props} />
-    </AnalyticsContext>
+export type SearchResultApiProps = SearchResultContextProps & {
+  query: Partial<SearchQuery>;
+};
+
+/**
+ * Request results through the search api and provide them to a child function.
+ * @param props - see {@link SearchResultApiProps}.
+ * @example
+ * ```
+ * <SearchResultApi>
+ *   {({ loading, error, value }) => (
+ *     <List>
+ *       {value?.map(({ document }) => (
+ *         <DefaultSearchResultListItem
+ *           key={document.location}
+ *           result={document}
+ *         />
+ *       ))}
+ *     </List>
+ *   )}
+ * </SearchResultApi>
+ * ```
+ * @public
+ */
+export const SearchResultApi = (props: SearchResultApiProps) => {
+  const { query, children } = props;
+  const searchApi = useApi(searchApiRef);
+
+  const state = useAsync(
+    () =>
+      searchApi.query({
+        term: query.term ?? '',
+        types: query.types ?? [],
+        filters: query.filters ?? {},
+        pageCursor: query.pageCursor,
+      }),
+    [query],
+  );
+
+  return children(state);
+};
+
+/**
+ * Props for {@link SearchResultState}
+ * @public
+ */
+export type SearchResultStateProps = SearchResultContextProps &
+  Partial<SearchResultApiProps>;
+
+/**
+ * Call a child render function passing a search state as an argument.
+ * @remarks By default, results are taken from context, but when a "query" prop is set, results are requested from the search api.
+ * @param props - see {@link SearchResultStateProps}.
+ * @example
+ * Consuming results from context:
+ * ```
+ * <SearchResultState>
+ *   {({ loading, error, value }) => (
+ *     <List>
+ *       {value?.map(({ document }) => (
+ *         <DefaultSearchResultListItem
+ *           key={document.location}
+ *           result={document}
+ *         />
+ *       ))}
+ *     </List>
+ *   )}
+ * </SearchResultState>
+ * ```
+ * @example
+ * Requesting results using the search api:
+ * ```
+ * <SearchResultState query={{ term: 'documentation' }}>
+ *   {({ loading, error, value }) => (
+ *     <List>
+ *       {value?.map(({ document }) => (
+ *         <DefaultSearchResultListItem
+ *           key={document.location}
+ *           result={document}
+ *         />
+ *       ))}
+ *     </List>
+ *   )}
+ * </SearchResultState>
+ * ```
+ * @public
+ */
+export const SearchResultState = (props: SearchResultStateProps) => {
+  const { query, children } = props;
+
+  return query ? (
+    <SearchResultApi query={query}>{children}</SearchResultApi>
+  ) : (
+    <SearchResultContext>{children}</SearchResultContext>
   );
 };
 
-export { HigherOrderSearchResult as SearchResult };
+/**
+ * Props for {@link SearchResult}
+ * @public
+ */
+export type SearchResultProps = Pick<SearchResultStateProps, 'query'> & {
+  children: (resultSet: SearchResultSet) => JSX.Element;
+};
+
+/**
+ * Renders results from a parent search context or api.
+ * @remarks default components for loading, error and empty variants are returned.
+ * @param props - see {@link SearchResultProps}.
+ * @public
+ */
+export const SearchResultComponent = (props: SearchResultProps) => {
+  const { query, children } = props;
+
+  return (
+    <SearchResultState query={query}>
+      {({ loading, error, value }) => {
+        if (loading) {
+          return <Progress />;
+        }
+
+        if (error) {
+          return (
+            <ResponseErrorPanel
+              title="Error encountered while fetching search results"
+              error={error}
+            />
+          );
+        }
+
+        if (!value?.results.length) {
+          return (
+            <EmptyState missing="data" title="Sorry, no results were found" />
+          );
+        }
+
+        return children(value);
+      }}
+    </SearchResultState>
+  );
+};
+
+/**
+ * A component returning the search result from a parent search context or api.
+ * @param props - see {@link SearchResultProps}.
+ * @public
+ */
+export const SearchResult = (props: SearchResultProps) => (
+  <AnalyticsContext
+    attributes={{
+      pluginId: 'search',
+      extension: 'SearchResult',
+    }}
+  >
+    <SearchResultComponent {...props} />
+  </AnalyticsContext>
+);
