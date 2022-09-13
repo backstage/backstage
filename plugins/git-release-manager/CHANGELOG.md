@@ -1,5 +1,15 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.22-next.3
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.3
+  - @backstage/core-plugin-api@1.0.6-next.3
+  - @backstage/integration@1.3.1-next.2
+
 ## 0.3.22-next.2
 
 ### Patch Changes

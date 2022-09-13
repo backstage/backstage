@@ -1,5 +1,11 @@
 # @backstage/errors
 
+## 1.1.1-next.0
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+
 ## 1.1.0
 
 ### Minor Changes

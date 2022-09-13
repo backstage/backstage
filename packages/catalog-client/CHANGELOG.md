@@ -1,5 +1,18 @@
 # @backstage/catalog-client
 
+## 1.1.0-next.2
+
+### Minor Changes
+
+- 65d1d4343f: Adding `validateEntity` method that calls `/validate-entity` endpoint.
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.1-next.0
+  - @backstage/errors@1.1.1-next.0
+
 ## 1.0.5-next.1
 
 ### Patch Changes
