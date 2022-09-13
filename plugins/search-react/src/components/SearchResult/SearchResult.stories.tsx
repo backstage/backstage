@@ -18,6 +18,8 @@ import React, { ComponentType } from 'react';
 import { MemoryRouter } from 'react-router';
 
 import { List, ListItem } from '@material-ui/core';
+import DefaultIcon from '@material-ui/icons/InsertDriveFile';
+import CustomIcon from '@material-ui/icons/NoteAdd';
 
 import { Link } from '@backstage/core-components';
 import { TestApiProvider } from '@backstage/test-utils';
@@ -30,6 +32,7 @@ import { DefaultResultListItem } from '../DefaultResultListItem';
 import { SearchResultListLayout } from '../SearchResultList';
 
 import { SearchResult } from './SearchResult';
+import { SearchResultGroupLayout } from '../SearchResultGroup';
 
 const mockResults = {
   results: [
@@ -176,6 +179,41 @@ export const ListLayout = () => {
             }
           }}
         />
+      )}
+    </SearchResult>
+  );
+};
+
+export const GroupLayout = () => {
+  return (
+    <SearchResult>
+      {({ results }) => (
+        <>
+          <SearchResultGroupLayout
+            icon={<CustomIcon />}
+            title="Custom"
+            link="See all custom results"
+            resultItems={results.filter(
+              ({ type }) => type === 'custom-result-item',
+            )}
+            renderResultItem={({ document }) => (
+              <CustomResultListItem key={document.location} result={document} />
+            )}
+          />
+          <SearchResultGroupLayout
+            icon={<DefaultIcon />}
+            title="Default"
+            resultItems={results.filter(
+              ({ type }) => type !== 'custom-result-item',
+            )}
+            renderResultItem={({ document }) => (
+              <DefaultResultListItem
+                key={document.location}
+                result={document}
+              />
+            )}
+          />
+        </>
       )}
     </SearchResult>
   );
