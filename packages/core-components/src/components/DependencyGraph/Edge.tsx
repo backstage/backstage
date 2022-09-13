@@ -25,7 +25,7 @@ import {
   DependencyEdge,
   LabelPosition,
 } from './types';
-import { ARROW_MARKER_ID, EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
+import { EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
 import { DefaultLabel } from './DefaultLabel';
 import dagre from 'dagre';
 
@@ -47,7 +47,7 @@ export type DependencyGraphEdgeClassKey = 'path' | 'label';
 const useStyles = makeStyles(
   (theme: BackstageTheme) => ({
     path: {
-      strokeWidth: 2,
+      strokeWidth: 1,
       stroke: theme.palette.textSubtle,
       fill: 'none',
       transition: `${theme.transitions.duration.shortest}ms`,
@@ -80,7 +80,7 @@ const createPath = d3Shape
   .line<EdgePoint>()
   .x(d => d.x)
   .y(d => d.y)
-  .curve(d3Shape.curveMonotoneX);
+  .curve(d3Shape.curveStepBefore);
 
 export function Edge<EdgeData>({
   render = renderDefault,
@@ -124,12 +124,7 @@ export function Edge<EdgeData>({
   return (
     <>
       {path && (
-        <path
-          data-testid={EDGE_TEST_ID}
-          className={classes.path}
-          markerEnd={`url(#${ARROW_MARKER_ID})`}
-          d={path}
-        />
+        <path data-testid={EDGE_TEST_ID} className={classes.path} d={path} />
       )}
       {labelProps.label ? (
         <g
