@@ -70,3 +70,5 @@ export type { HasResourcesCardProps } from './components/HasResourcesCard';
 export type { HasSubcomponentsCardProps } from './components/HasSubcomponentsCard';
 export type { HasSystemsCardProps } from './components/HasSystemsCard';
 export type { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
+
+export { viewTechDocRouteRef } from "./routes"
