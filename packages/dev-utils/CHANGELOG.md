@@ -1,5 +1,21 @@
 # @backstage/dev-utils
 
+## 1.0.6-next.2
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 329ed2b9c7: Fixed routing when using React Router v6 stable.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.4-next.2
+  - @backstage/app-defaults@1.0.6-next.2
+  - @backstage/catalog-model@1.1.1-next.0
+  - @backstage/core-app-api@1.1.0-next.3
+  - @backstage/core-components@0.11.1-next.3
+  - @backstage/core-plugin-api@1.0.6-next.3
+  - @backstage/integration-react@1.1.4-next.2
+  - @backstage/test-utils@1.2.0-next.3
+
 ## 1.0.6-next.1
 
 ### Patch Changes

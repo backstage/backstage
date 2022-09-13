@@ -1,5 +1,11 @@
 # @backstage/release-manifests
 
+## 0.0.6-next.2
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+
 ## 0.0.6-next.1
 
 ### Patch Changes

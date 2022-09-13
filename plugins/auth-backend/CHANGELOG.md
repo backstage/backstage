@@ -1,5 +1,23 @@
 # @backstage/plugin-auth-backend
 
+## 0.16.0-next.3
+
+### Minor Changes
+
+- 8600855fbf: The auth0 integration is updated to use the `passport-auth0` library. The configuration under `auth.providers.auth0.\*` now supports an optional `audience` parameter; providing that allows you to connect to the correct API to get permissions, access tokens, and full profile information.
+
+  [What is an Audience](https://community.auth0.com/t/what-is-the-audience/71414)
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.1.0-next.2
+  - @backstage/catalog-model@1.1.1-next.0
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+  - @backstage/backend-common@0.15.1-next.3
+  - @backstage/plugin-auth-node@0.2.5-next.3
+
 ## 0.16.0-next.2
 
 ### Patch Changes

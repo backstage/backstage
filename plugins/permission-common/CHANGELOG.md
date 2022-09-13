@@ -1,5 +1,14 @@
 # @backstage/plugin-permission-common
 
+## 0.6.4-next.2
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+
 ## 0.6.4-next.1
 
 ### Patch Changes
