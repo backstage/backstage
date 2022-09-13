@@ -1,5 +1,20 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.4-next.3
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/core-app-api@1.1.0-next.3
+  - @backstage/core-components@0.11.1-next.3
+  - @backstage/core-plugin-api@1.0.6-next.3
+  - @backstage/integration-react@1.1.4-next.2
+  - @backstage/test-utils@1.2.0-next.3
+  - @backstage/plugin-catalog@1.5.1-next.3
+  - @backstage/plugin-techdocs@1.3.2-next.3
+  - @backstage/plugin-techdocs-react@1.0.4-next.2
+
 ## 1.0.4-next.2
 
 ### Patch Changes

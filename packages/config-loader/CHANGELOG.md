@@ -1,5 +1,16 @@
 # @backstage/config-loader
 
+## 1.1.4-next.2
+
+### Patch Changes
+
+- 5ecca7e44b: No longer log when reloading remote config.
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10-next.0
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+
 ## 1.1.4-next.1
 
 ### Patch Changes

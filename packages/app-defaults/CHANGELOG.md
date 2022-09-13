@@ -1,5 +1,17 @@
 # @backstage/app-defaults
 
+## 1.0.6-next.2
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- d9e39544be: Add missing peer dependencies
+- Updated dependencies
+  - @backstage/core-app-api@1.1.0-next.3
+  - @backstage/core-components@0.11.1-next.3
+  - @backstage/core-plugin-api@1.0.6-next.3
+  - @backstage/plugin-permission-react@0.4.5-next.2
+
 ## 1.0.6-next.1
 
 ### Patch Changes

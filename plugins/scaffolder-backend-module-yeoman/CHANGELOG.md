@@ -1,5 +1,14 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.2.9-next.1
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/config@1.0.2-next.0
+  - @backstage/plugin-scaffolder-backend@1.6.0-next.3
+
 ## 0.2.9-next.0
 
 ### Patch Changes

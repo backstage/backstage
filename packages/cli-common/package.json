@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli-common",
   "description": "Common functionality used by cli, backend, and create-app",
-  "version": "0.1.9",
+  "version": "0.1.10-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
@@ -32,7 +32,7 @@
     "start": "backstage-cli package start"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0-next.1",
+    "@backstage/cli": "^0.19.0-next.3",
     "@types/node": "^16.0.0"
   },
   "files": [
