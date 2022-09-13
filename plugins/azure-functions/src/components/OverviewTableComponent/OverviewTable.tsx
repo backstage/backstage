@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Box, Card, Link, LinearProgress } from '@material-ui/core';
-import { FunctionsData } from '../../api/types';
+import { FunctionsData } from '@backstage/plugin-azure-functions-common';
 import { Table, TableColumn } from '@backstage/core-components';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 

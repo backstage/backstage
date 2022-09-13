@@ -15,7 +15,7 @@
  */
 
 import { createApiRef } from '@backstage/core-plugin-api';
-import { FunctionsData } from './types';
+import { FunctionsData } from '@backstage/plugin-azure-functions-common';
 
 /** @public */
 export const azureFunctionsApiRef = createApiRef<AzureFunctionsApi>({

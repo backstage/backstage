@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FunctionsData } from '../api';
+import { FunctionsData } from '@backstage/plugin-azure-functions-common';
 
 export const entityMock = {
   metadata: {

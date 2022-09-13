@@ -18,4 +18,3 @@ export {
   AzureWebManagementApi,
   AzureFunctionsConfig,
 } from './AzureWebManagementApi';
-export * from './types';

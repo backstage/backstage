@@ -9,6 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { FunctionsData } from '@backstage/plugin-azure-functions-common';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
@@ -51,18 +52,6 @@ export const EntityAzureFunctionsOverviewCard: () => JSX.Element;
 
 // @public (undocumented)
 export const entityContentRouteRef: RouteRef<undefined>;
-
-// @public (undocumented)
-export type FunctionsData = {
-  href: string;
-  logstreamHref: string;
-  functionName: string;
-  location: string;
-  state: string;
-  usageState: string;
-  containerSize: number;
-  lastModifiedDate: Date;
-};
 
 // @public (undocumented)
 export const isAzureFunctionsAvailable: (entity: Entity) => string | undefined;

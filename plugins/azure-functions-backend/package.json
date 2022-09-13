@@ -13,6 +13,17 @@
   "backstage": {
     "role": "backend-plugin"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/azure-functions-backend"
+  },
+  "keywords": [
+    "backstage",
+    "functions",
+    "azure"
+  ],
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
@@ -27,6 +38,7 @@
     "@azure/identity": "^2.1.0",
     "@backstage/backend-common": "^0.15.1-next.2",
     "@backstage/config": "^1.0.1",
+    "@backstage/plugin-azure-functions-common": "workspace:^",
     "@types/express": "*",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",

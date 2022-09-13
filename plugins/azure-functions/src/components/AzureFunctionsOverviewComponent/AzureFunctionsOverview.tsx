@@ -21,8 +21,11 @@ import {
   AZURE_FUNCTIONS_ANNOTATION,
   useServiceEntityAnnotations,
 } from '../../hooks/useServiceEntityAnnotations';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
-import ErrorBoundary from '../ErrorBoundary';
+import {
+  ErrorBoundary,
+  MissingAnnotationEmptyState,
+  ResponseErrorPanel,
+} from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { OverviewTable } from '../OverviewTableComponent/OverviewTable';
 
@@ -37,13 +40,19 @@ const AzureFunctionsOverview = ({ entity }: { entity: Entity }) => {
     functionsName,
   });
 
+  if (functionsData.error) {
+    return (
+      <div>
+        <ResponseErrorPanel error={functionsData.error} />
+      </div>
+    );
+  }
+
   return (
-    <>
-      <OverviewTable
-        data={functionsData.data ?? []}
-        loading={functionsData.loading}
-      />
-    </>
+    <OverviewTable
+      data={functionsData.data ?? []}
+      loading={functionsData.loading}
+    />
   );
 };
 

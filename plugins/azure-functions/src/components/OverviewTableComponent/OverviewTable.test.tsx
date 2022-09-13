@@ -58,7 +58,7 @@ describe('AzureFunctionsOverviewWidget', () => {
 
   beforeEach(() => {
     worker.use(
-      rest.post('/list', (_, res, ctx) => {
+      rest.get('/list/func-mock', (_, res, ctx) => {
         res(ctx.json(functionResponseMock));
       }),
     );

@@ -15,7 +15,7 @@
  */
 
 import { AzureFunctionsApi } from './AzureFunctionsApi';
-import { FunctionsData } from './types';
+import { FunctionsData } from '@backstage/plugin-azure-functions-common';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 /** @public */
@@ -38,15 +38,14 @@ export class AzureFunctionsBackendClient implements AzureFunctionsApi {
     try {
       const url = `${await this.discoveryApi.getBaseUrl(
         'azure-functions',
-      )}/list`;
+      )}/list/${functionName}`;
       const { token: idToken } = await this.identityApi.getCredentials();
       const response = await fetch(url, {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           ...(idToken && { Authorization: `Bearer ${idToken}` }),
         },
-        body: JSON.stringify({ functionName: functionName }),
       });
       return await response.json();
     } catch (e: any) {

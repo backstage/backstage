@@ -13,6 +13,17 @@
   "backstage": {
     "role": "frontend-plugin"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/azure-functions"
+  },
+  "keywords": [
+    "backstage",
+    "functions",
+    "azure"
+  ],
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
@@ -26,6 +37,7 @@
     "@backstage/catalog-model": "^1.1.0",
     "@backstage/core-components": "^0.11.1-next.2",
     "@backstage/core-plugin-api": "^1.0.6-next.2",
+    "@backstage/plugin-azure-functions-common": "workspace:^",
     "@backstage/plugin-catalog-react": "^1.1.4-next.1",
     "@backstage/theme": "^0.2.16",
     "@material-ui/core": "^4.9.13",

@@ -16,7 +16,7 @@
 
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { useApi, errorApiRef } from '@backstage/core-plugin-api';
-import { FunctionsData } from '../api/types';
+import { FunctionsData } from '@backstage/plugin-azure-functions-common';
 import { azureFunctionsApiRef } from '../api';
 import { useCallback } from 'react';
 

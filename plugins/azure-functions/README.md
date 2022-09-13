@@ -68,7 +68,3 @@ const serviceEntityPage = (
   </EntityLayout>
 );
 ```
-
-## Roadmap
-
-- [ ] Metrics

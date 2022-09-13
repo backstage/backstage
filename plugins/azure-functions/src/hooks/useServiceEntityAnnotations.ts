@@ -20,11 +20,8 @@ export const AZURE_FUNCTIONS_ANNOTATION = 'portal.azure.com/functions-name';
 export const useServiceEntityAnnotations = (entity: Entity) => {
   const functionsName =
     entity?.metadata.annotations?.[AZURE_FUNCTIONS_ANNOTATION] ?? '';
-  const projectName =
-    entity?.metadata.annotations?.['dev.azure.com/project-repo'] ?? '';
 
   return {
-    projectName,
     functionsName,
   };
 };

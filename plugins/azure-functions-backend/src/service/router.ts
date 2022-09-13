@@ -40,10 +40,11 @@ export async function createRouter(
     logger.info('PONG!');
     response.send({ status: 'ok' });
   });
-  router.post('/list', async (request, response) => {
+  router.get('/list/:functionName', async (request, response) => {
+    const { functionName } = request.params;
     response.json(
       await azureWebManagementApi.list({
-        functionName: request.body.functionName!.toString(),
+        functionName: functionName,
       }),
     );
   });

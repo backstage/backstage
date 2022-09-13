@@ -20,7 +20,7 @@ import { WebSiteManagementClient } from '@azure/arm-appservice';
 import {
   AzureFunctionsAllowedSubscriptionsConfig,
   FunctionsData,
-} from './types';
+} from '@backstage/plugin-azure-functions-common';
 
 /** @public */
 export class AzureFunctionsConfig {

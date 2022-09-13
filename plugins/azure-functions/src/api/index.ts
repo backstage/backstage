@@ -16,4 +16,3 @@
 
 export * from './AzureFunctionsApi';
 export * from './AzureFunctionsBackendClient';
-export * from './types';
