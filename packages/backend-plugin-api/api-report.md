@@ -66,10 +66,10 @@ export interface BackendRegistrationPoints {
 }
 
 // @public (undocumented)
-export const cacheServiceRef: ServiceRef<PluginCacheManager>;
+export const cacheServiceRef: ServiceRef<PluginCacheManager, 'plugin'>;
 
 // @public (undocumented)
-export const configServiceRef: ServiceRef<Config>;
+export const configServiceRef: ServiceRef<Config, 'root'>;
 
 // @public (undocumented)
 export function createBackendModule<
@@ -105,22 +105,25 @@ export function createExtensionPoint<T>(options: {
 // @public (undocumented)
 export function createServiceFactory<
   TService,
+  TScope extends 'root' | 'plugin',
   TImpl extends TService,
   TDeps extends {
-    [name in string]: unknown;
+    [name in string]: ServiceRef<unknown>;
   },
   TOpts extends
     | {
         [name in string]: unknown;
       }
     | undefined = undefined,
->(factory: {
-  service: ServiceRef<TService>;
-  deps: TypesToServiceRef<TDeps>;
+>(config: {
+  service: ServiceRef<TService, TScope>;
+  deps: TDeps;
   factory(
-    deps: DepsToDepFactories<TDeps>,
+    deps: ServiceRefsToInstances<TDeps, 'root'>,
     options: TOpts,
-  ): Promise<FactoryFunc<TImpl>>;
+  ): TScope extends 'root'
+    ? Promise<TImpl>
+    : Promise<(deps: ServiceRefsToInstances<TDeps>) => Promise<TImpl>>;
 }): undefined extends TOpts
   ? (options?: TOpts) => ServiceFactory<TService>
   : (options: TOpts) => ServiceFactory<TService>;
@@ -128,21 +131,26 @@ export function createServiceFactory<
 // @public (undocumented)
 export function createServiceRef<T>(options: {
   id: string;
+  scope?: 'plugin';
   defaultFactory?: (
-    service: ServiceRef<T>,
+    service: ServiceRef<T, 'plugin'>,
   ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
-}): ServiceRef<T>;
+}): ServiceRef<T, 'plugin'>;
 
 // @public (undocumented)
-export const databaseServiceRef: ServiceRef<PluginDatabaseManager>;
+export function createServiceRef<T>(options: {
+  id: string;
+  scope: 'root';
+  defaultFactory?: (
+    service: ServiceRef<T, 'root'>,
+  ) => Promise<ServiceFactory<T> | (() => ServiceFactory<T>)>;
+}): ServiceRef<T, 'root'>;
 
 // @public (undocumented)
-export type DepsToDepFactories<T> = {
-  [key in keyof T]: (pluginId: string) => Promise<T[key]>;
-};
+export const databaseServiceRef: ServiceRef<PluginDatabaseManager, 'plugin'>;
 
 // @public (undocumented)
-export const discoveryServiceRef: ServiceRef<PluginEndpointDiscovery>;
+export const discoveryServiceRef: ServiceRef<PluginEndpointDiscovery, 'plugin'>;
 
 // @public
 export type ExtensionPoint<T> = {
@@ -153,16 +161,13 @@ export type ExtensionPoint<T> = {
 };
 
 // @public (undocumented)
-export type FactoryFunc<Impl> = (pluginId: string) => Promise<Impl>;
-
-// @public (undocumented)
 export interface HttpRouterService {
   // (undocumented)
   use(handler: Handler): void;
 }
 
 // @public (undocumented)
-export const httpRouterServiceRef: ServiceRef<HttpRouterService>;
+export const httpRouterServiceRef: ServiceRef<HttpRouterService, 'plugin'>;
 
 // @public (undocumented)
 export interface Logger {
@@ -173,7 +178,7 @@ export interface Logger {
 }
 
 // @public (undocumented)
-export const loggerServiceRef: ServiceRef<Logger>;
+export const loggerServiceRef: ServiceRef<Logger, 'plugin'>;
 
 // @public (undocumented)
 export function loggerToWinstonLogger(
@@ -183,33 +188,66 @@ export function loggerToWinstonLogger(
 
 // @public (undocumented)
 export const permissionsServiceRef: ServiceRef<
-  PermissionAuthorizer | PermissionEvaluator
+  PermissionAuthorizer | PermissionEvaluator,
+  'plugin'
 >;
 
 // @public (undocumented)
-export const schedulerServiceRef: ServiceRef<PluginTaskScheduler>;
+export interface PluginMetadata {
+  // (undocumented)
+  getId(): string;
+}
 
 // @public (undocumented)
-export type ServiceFactory<TService = unknown> = {
-  service: ServiceRef<TService>;
-  deps: {
-    [key in string]: ServiceRef<unknown>;
-  };
-  factory(deps: {
-    [key in string]: unknown;
-  }): Promise<FactoryFunc<TService>>;
-};
+export const pluginMetadataServiceRef: ServiceRef<PluginMetadata, 'plugin'>;
+
+// @public (undocumented)
+export const rootLoggerServiceRef: ServiceRef<Logger, 'root'>;
+
+// @public (undocumented)
+export const schedulerServiceRef: ServiceRef<PluginTaskScheduler, 'plugin'>;
+
+// @public (undocumented)
+export type ServiceFactory<TService = unknown> =
+  | {
+      scope: 'root';
+      service: ServiceRef<TService, 'root'>;
+      deps: {
+        [key in string]: ServiceRef<unknown>;
+      };
+      factory(deps: {
+        [key in string]: unknown;
+      }): Promise<TService>;
+    }
+  | {
+      scope: 'plugin';
+      service: ServiceRef<TService, 'plugin'>;
+      deps: {
+        [key in string]: ServiceRef<unknown>;
+      };
+      factory(deps: {
+        [key in string]: unknown;
+      }): Promise<
+        (deps: {
+          [key in string]: unknown;
+        }) => Promise<TService>
+      >;
+    };
 
 // @public
-export type ServiceRef<T> = {
+export type ServiceRef<
+  TService,
+  TScope extends 'root' | 'plugin' = 'root' | 'plugin',
+> = {
   id: string;
-  T: T;
+  scope: TScope;
+  T: TService;
   toString(): string;
   $$ref: 'service';
 };
 
 // @public (undocumented)
-export const tokenManagerServiceRef: ServiceRef<TokenManager>;
+export const tokenManagerServiceRef: ServiceRef<TokenManager, 'plugin'>;
 
 // @public (undocumented)
 export type TypesToServiceRef<T> = {
@@ -217,5 +255,5 @@ export type TypesToServiceRef<T> = {
 };
 
 // @public (undocumented)
-export const urlReaderServiceRef: ServiceRef<UrlReader>;
+export const urlReaderServiceRef: ServiceRef<UrlReader, 'plugin'>;
 ```

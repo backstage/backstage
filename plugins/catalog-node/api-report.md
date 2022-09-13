@@ -109,7 +109,7 @@ export type CatalogProcessorResult =
   | CatalogProcessorRefreshKeysResult;
 
 // @alpha
-export const catalogServiceRef: ServiceRef<CatalogApi>;
+export const catalogServiceRef: ServiceRef<CatalogApi, 'plugin'>;
 
 // @public
 export type DeferredEntity = {

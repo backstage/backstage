@@ -1002,6 +1002,12 @@ describe('read microsoft graph', () => {
       };
     }
 
+    async function* getExampleUsersEmail() {
+      yield {
+        mail: 'user.name@example.com',
+      };
+    }
+
     async function getExampleUserProfile(userId: string) {
       return {
         id: userId,
@@ -1104,6 +1110,34 @@ describe('read microsoft graph', () => {
       expect(client.getGroups).toHaveBeenCalledWith(
         {
           filter: 'securityEnabled eq false',
+        },
+        undefined,
+      );
+    });
+
+    it('should read users with userSelect', async () => {
+      client.getOrganization.mockResolvedValue({
+        id: 'tenantid',
+        displayName: 'Organization Name',
+      });
+
+      client.getUsers.mockImplementation(getExampleUsersEmail);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+
+      await readMicrosoftGraphOrg(client, 'tenantid', {
+        logger: getVoidLogger(),
+        userSelect: ['mail'],
+      });
+
+      expect(client.getUsers).toHaveBeenCalledTimes(1);
+      expect(client.getUsers).toHaveBeenCalledWith(
+        {
+          select: ['mail'],
         },
         undefined,
       );

@@ -18,6 +18,7 @@ import {
   createServiceFactory,
   httpRouterServiceRef,
   configServiceRef,
+  pluginMetadataServiceRef,
 } from '@backstage/backend-plugin-api';
 import Router from 'express-promise-router';
 import { Handler } from 'express';
@@ -27,18 +28,20 @@ import { createServiceBuilder } from '@backstage/backend-common';
 export const httpRouterFactory = createServiceFactory({
   service: httpRouterServiceRef,
   deps: {
-    configFactory: configServiceRef,
+    config: configServiceRef,
+    plugin: pluginMetadataServiceRef,
   },
-  factory: async ({ configFactory }) => {
+  async factory({ config }) {
     const rootRouter = Router();
 
     const service = createServiceBuilder(module)
-      .loadConfig(await configFactory('root'))
+      .loadConfig(config)
       .addRouter('', rootRouter);
 
     await service.start();
 
-    return async (pluginId?: string) => {
+    return async ({ plugin }) => {
+      const pluginId = plugin.getId();
       const path = pluginId ? `/api/${pluginId}` : '';
       return {
         use(handler: Handler) {
