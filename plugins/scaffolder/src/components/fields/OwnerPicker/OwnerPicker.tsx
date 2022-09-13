@@ -26,6 +26,7 @@ import { FieldExtensionComponentProps } from '../../../extensions';
 export interface OwnerPickerUiOptions {
   allowedKinds?: string[];
   allowArbitraryValues?: boolean;
+  defaultNamespace?: string | false;
 }
 
 /**
@@ -53,6 +54,7 @@ export const OwnerPicker = (
       defaultKind: 'Group',
       allowArbitraryValues:
         uiSchema['ui:options']?.allowArbitraryValues ?? true,
+      defaultNamespace: uiSchema['ui:options']?.defaultNamespace ?? '',
     },
   };
 
