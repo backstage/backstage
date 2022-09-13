@@ -4150,7 +4150,7 @@ __metadata:
     "@backstage/backend-common": ^0.15.1-next.2
     "@backstage/cli": ^0.19.0-next.2
     "@backstage/config": ^1.0.1
-    "@backstage/plugin-azure-functions-common": "workspace:^"
+    "@backstage/plugin-azure-functions-common": ^0.0.1
     "@types/express": "*"
     "@types/supertest": ^2.0.8
     express: ^4.17.1
@@ -4163,7 +4163,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-azure-functions-common@workspace:^, @backstage/plugin-azure-functions-common@workspace:plugins/azure-functions-common":
+"@backstage/plugin-azure-functions-common@^0.0.1, @backstage/plugin-azure-functions-common@workspace:plugins/azure-functions-common":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-azure-functions-common@workspace:plugins/azure-functions-common"
   dependencies:
@@ -4181,7 +4181,7 @@ __metadata:
     "@backstage/core-components": ^0.11.1-next.2
     "@backstage/core-plugin-api": ^1.0.6-next.2
     "@backstage/dev-utils": ^1.0.6-next.1
-    "@backstage/plugin-azure-functions-common": "workspace:^"
+    "@backstage/plugin-azure-functions-common": ^0.0.1
     "@backstage/plugin-catalog-react": ^1.1.4-next.1
     "@backstage/test-utils": ^1.2.0-next.2
     "@backstage/theme": ^0.2.16
