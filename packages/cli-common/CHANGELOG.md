@@ -1,5 +1,11 @@
 # @backstage/cli-common
 
+## 0.1.10-next.0
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+
 ## 0.1.9
 
 ### Patch Changes

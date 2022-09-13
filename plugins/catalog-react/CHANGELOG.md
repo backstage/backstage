@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-react
 
+## 1.1.4-next.2
+
+### Patch Changes
+
+- f6033d1121: humanizeEntityRef function can now be forced to include default namespace
+- c86741a052: Support showing counts in option labels of the `EntityTagPicker`. You can enable this by adding the `showCounts` property
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/catalog-client@1.1.0-next.2
+  - @backstage/catalog-model@1.1.1-next.0
+  - @backstage/core-components@0.11.1-next.3
+  - @backstage/core-plugin-api@1.0.6-next.3
+  - @backstage/errors@1.1.1-next.0
+  - @backstage/integration@1.3.1-next.2
+  - @backstage/plugin-permission-common@0.6.4-next.2
+  - @backstage/plugin-permission-react@0.4.5-next.2
+
 ## 1.1.4-next.1
 
 ### Patch Changes

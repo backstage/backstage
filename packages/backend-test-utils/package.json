@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-test-utils",
   "description": "Test helpers library for Backstage backends",
-  "version": "0.1.28-next.2",
+  "version": "0.1.28-next.3",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
@@ -34,11 +34,11 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/backend-app-api": "^0.2.1-next.1",
-    "@backstage/backend-common": "^0.15.1-next.2",
-    "@backstage/backend-plugin-api": "^0.1.2-next.1",
-    "@backstage/cli": "^0.19.0-next.2",
-    "@backstage/config": "^1.0.1",
+    "@backstage/backend-app-api": "^0.2.1-next.2",
+    "@backstage/backend-common": "^0.15.1-next.3",
+    "@backstage/backend-plugin-api": "^0.1.2-next.2",
+    "@backstage/cli": "^0.19.0-next.3",
+    "@backstage/config": "^1.0.2-next.0",
     "better-sqlite3": "^7.5.0",
     "knex": "^2.0.0",
     "msw": "^0.47.0",
@@ -48,7 +48,7 @@
     "uuid": "^8.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0-next.2"
+    "@backstage/cli": "^0.19.0-next.3"
   },
   "files": [
     "dist",
