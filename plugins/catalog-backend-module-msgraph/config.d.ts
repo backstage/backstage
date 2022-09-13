@@ -75,6 +75,12 @@ export interface Config {
            */
           groupFilter?: string;
           /**
+           * The fields to be fetched on query.
+           *
+           * E.g. ["id", "displayName", "description"]
+           */
+          userSelect?: string[];
+          /**
            * The search criteria to apply to extract users by groups memberships.
            *
            * E.g. "\"displayName:-team\"" would only match groups which contain '-team'
