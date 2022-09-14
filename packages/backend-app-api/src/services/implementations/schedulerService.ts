@@ -17,6 +17,7 @@
 import {
   configServiceRef,
   createServiceFactory,
+  pluginMetadataServiceRef,
   schedulerServiceRef,
 } from '@backstage/backend-plugin-api';
 import { TaskScheduler } from '@backstage/backend-tasks';
@@ -25,13 +26,13 @@ import { TaskScheduler } from '@backstage/backend-tasks';
 export const schedulerFactory = createServiceFactory({
   service: schedulerServiceRef,
   deps: {
-    configFactory: configServiceRef,
+    config: configServiceRef,
+    plugin: pluginMetadataServiceRef,
   },
-  factory: async ({ configFactory }) => {
-    const config = await configFactory('root');
+  async factory({ config }) {
     const taskScheduler = TaskScheduler.fromConfig(config);
-    return async (pluginId: string) => {
-      return taskScheduler.forPlugin(pluginId);
+    return async ({ plugin }) => {
+      return taskScheduler.forPlugin(plugin.getId());
     };
   },
 });

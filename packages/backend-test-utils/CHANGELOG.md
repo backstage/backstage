@@ -1,5 +1,17 @@
 # @backstage/backend-test-utils
 
+## 0.1.28-next.3
+
+### Patch Changes
+
+- 854ba37357: Updated to support new `ServiceFactory` formats.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.2-next.2
+  - @backstage/config@1.0.2-next.0
+  - @backstage/backend-app-api@0.2.1-next.2
+  - @backstage/cli@0.19.0-next.3
+  - @backstage/backend-common@0.15.1-next.3
+
 ## 0.1.28-next.2
 
 ### Patch Changes

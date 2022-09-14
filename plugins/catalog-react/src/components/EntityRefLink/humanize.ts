@@ -20,10 +20,17 @@ import {
   DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
 
-/** @public */
+/**
+ * @param defaultNamespace - if set to false then namespace is never omitted,
+ * if set to string which matches namespace of entity then omitted
+ *
+ * @public */
 export function humanizeEntityRef(
   entityRef: Entity | CompoundEntityRef,
-  opts?: { defaultKind?: string },
+  opts?: {
+    defaultKind?: string;
+    defaultNamespace?: string | false;
+  },
 ) {
   const defaultKind = opts?.defaultKind;
   let kind;
@@ -40,7 +47,14 @@ export function humanizeEntityRef(
     name = entityRef.name;
   }
 
-  if (namespace === DEFAULT_NAMESPACE) {
+  if (namespace === undefined || namespace === '') {
+    namespace = DEFAULT_NAMESPACE;
+  }
+  if (opts?.defaultNamespace !== undefined) {
+    if (opts?.defaultNamespace === namespace) {
+      namespace = undefined;
+    }
+  } else if (namespace === DEFAULT_NAMESPACE) {
     namespace = undefined;
   }
 

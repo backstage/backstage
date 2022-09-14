@@ -58,6 +58,7 @@ describe('<HeaderTabs />', () => {
     const TextualBadge = React.forwardRef<HTMLSpanElement>((props, ref) => (
       <Badge
         classes={useStyles()}
+        overlap="rectangular"
         color="secondary"
         badgeContent="three new alarms"
       >

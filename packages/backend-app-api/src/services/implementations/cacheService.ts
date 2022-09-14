@@ -18,6 +18,7 @@ import { CacheManager } from '@backstage/backend-common';
 import {
   configServiceRef,
   createServiceFactory,
+  pluginMetadataServiceRef,
   cacheServiceRef,
 } from '@backstage/backend-plugin-api';
 
@@ -25,13 +26,13 @@ import {
 export const cacheFactory = createServiceFactory({
   service: cacheServiceRef,
   deps: {
-    configFactory: configServiceRef,
+    config: configServiceRef,
+    plugin: pluginMetadataServiceRef,
   },
-  factory: async ({ configFactory }) => {
-    const config = await configFactory('root');
+  async factory({ config }) {
     const cacheManager = CacheManager.fromConfig(config);
-    return async (pluginId: string) => {
-      return cacheManager.forPlugin(pluginId);
+    return async ({ plugin }) => {
+      return cacheManager.forPlugin(plugin.getId());
     };
   },
 });

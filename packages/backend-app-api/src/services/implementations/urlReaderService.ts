@@ -27,15 +27,14 @@ import {
 export const urlReaderFactory = createServiceFactory({
   service: urlReaderServiceRef,
   deps: {
-    configFactory: configServiceRef,
-    loggerFactory: loggerServiceRef,
+    config: configServiceRef,
+    logger: loggerServiceRef,
   },
-  factory: async ({ configFactory, loggerFactory }) => {
-    return async (pluginId: string) => {
-      const logger = await loggerFactory(pluginId);
+  async factory() {
+    return async ({ config, logger }) => {
       return UrlReaders.default({
+        config,
         logger: loggerToWinstonLogger(logger),
-        config: await configFactory(pluginId),
       });
     };
   },
