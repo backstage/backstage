@@ -71,4 +71,4 @@ export type { HasSubcomponentsCardProps } from './components/HasSubcomponentsCar
 export type { HasSystemsCardProps } from './components/HasSystemsCard';
 export type { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
 
-export { viewTechDocRouteRef } from "./routes"
+export { viewTechDocRouteRef } from './routes';
