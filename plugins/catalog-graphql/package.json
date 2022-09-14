@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-catalog-graphql",
   "description": "An experimental Backstage catalog GraphQL module",
-  "version": "0.3.13-next.2",
+  "version": "0.3.13-next.3",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -34,8 +34,8 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/catalog-model": "^1.1.0",
-    "@backstage/config": "^1.0.1",
+    "@backstage/catalog-model": "^1.1.1-next.0",
+    "@backstage/config": "^1.0.2-next.0",
     "@backstage/types": "^1.0.0",
     "apollo-server": "^3.0.0",
     "graphql": "^16.0.0",
@@ -46,8 +46,8 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0-next.2",
-    "@backstage/test-utils": "^1.2.0-next.2",
+    "@backstage/cli": "^0.19.0-next.3",
+    "@backstage/test-utils": "^1.2.0-next.3",
     "@graphql-codegen/cli": "^2.3.1",
     "@graphql-codegen/graphql-modules-preset": "^2.3.2",
     "@graphql-codegen/typescript": "^2.4.2",

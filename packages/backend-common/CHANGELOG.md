@@ -1,5 +1,17 @@
 # @backstage/backend-common
 
+## 0.15.1-next.3
+
+### Patch Changes
+
+- 96689fbdcb: Workaround for a rare race condition in tests.
+- Updated dependencies
+  - @backstage/config-loader@1.1.4-next.2
+  - @backstage/cli-common@0.1.10-next.0
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+  - @backstage/integration@1.3.1-next.2
+
 ## 0.15.1-next.2
 
 ### Patch Changes

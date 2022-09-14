@@ -1,5 +1,19 @@
 # @backstage/plugin-bazaar
 
+## 0.1.24-next.2
+
+### Patch Changes
+
+- 1dd12349d1: Fixed broken routing by removing the wrapping `Router` from the `RoutedTabs` children.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.4-next.2
+  - @backstage/catalog-client@1.1.0-next.2
+  - @backstage/catalog-model@1.1.1-next.0
+  - @backstage/core-components@0.11.1-next.3
+  - @backstage/core-plugin-api@1.0.6-next.3
+  - @backstage/plugin-catalog@1.5.1-next.3
+  - @backstage/cli@0.19.0-next.3
+
 ## 0.1.24-next.1
 
 ### Patch Changes
