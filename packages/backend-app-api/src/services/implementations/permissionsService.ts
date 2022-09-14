@@ -27,20 +27,16 @@ import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 export const permissionsFactory = createServiceFactory({
   service: permissionsServiceRef,
   deps: {
-    configFactory: configServiceRef,
-    discoveryFactory: discoveryServiceRef,
-    tokenManagerFactory: tokenManagerServiceRef,
+    config: configServiceRef,
+    discovery: discoveryServiceRef,
+    tokenManager: tokenManagerServiceRef,
   },
-  factory: async ({ configFactory, discoveryFactory, tokenManagerFactory }) => {
-    const config = await configFactory('root');
-    const discovery = await discoveryFactory('root');
-    const tokenManager = await tokenManagerFactory('root');
-    const permissions = ServerPermissionClient.fromConfig(config, {
-      discovery,
-      tokenManager,
-    });
-    return async (_pluginId: string) => {
-      return permissions;
+  async factory({ config }) {
+    return async ({ discovery, tokenManager }) => {
+      return ServerPermissionClient.fromConfig(config, {
+        discovery,
+        tokenManager,
+      });
     };
   },
 });

@@ -155,6 +155,7 @@ describe('GitlabDiscoveryEntityProvider', () => {
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
+      refresh: jest.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -253,6 +254,7 @@ describe('GitlabDiscoveryEntityProvider', () => {
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
+      refresh: jest.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,

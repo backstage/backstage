@@ -28,6 +28,7 @@ import {
 import { YarnInfoInspectData } from '../../lib/versioning/packages';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
+import { NotFoundError } from '@backstage/errors';
 
 // Remove log coloring to simplify log matching
 jest.mock('chalk', () => ({
@@ -54,7 +55,15 @@ jest.mock('ora', () => ({
 jest.mock('../../lib/run', () => {
   return {
     run: jest.fn(),
-    runPlain: jest.fn(),
+  };
+});
+
+const mockFetchPackageInfo = jest.fn();
+jest.mock('../../lib/versioning/packages', () => {
+  const actual = jest.requireActual('../../lib/versioning/packages');
+  return {
+    ...actual,
+    fetchPackageInfo: (name: string) => mockFetchPackageInfo(name),
   };
 });
 
@@ -105,6 +114,14 @@ const lockfileMockResult = `${HEADER}
 `;
 
 describe('bump', () => {
+  beforeEach(() => {
+    mockFetchPackageInfo.mockImplementation(async name => ({
+      name: name,
+      'dist-tags': {
+        latest: REGISTRY_VERSIONS[name],
+      },
+    }));
+  });
   afterEach(() => {
     mockFs.restore();
     jest.resetAllMocks();
@@ -138,17 +155,6 @@ describe('bump', () => {
     jest
       .spyOn(paths, 'resolveTargetRoot')
       .mockImplementation((...path) => resolvePath('/', ...path));
-    jest.spyOn(runObj, 'runPlain').mockImplementation(async (...[, , , name]) =>
-      JSON.stringify({
-        type: 'inspect',
-        data: {
-          name: name,
-          'dist-tags': {
-            latest: REGISTRY_VERSIONS[name],
-          },
-        },
-      }),
-    );
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
       rest.get(
@@ -184,19 +190,10 @@ describe('bump', () => {
       'Version bump complete!',
     ]);
 
-    expect(runObj.runPlain).toHaveBeenCalledTimes(3);
-    expect(runObj.runPlain).toHaveBeenCalledWith(
-      'yarn',
-      'info',
-      '--json',
-      '@backstage/core',
-    );
-    expect(runObj.runPlain).toHaveBeenCalledWith(
-      'yarn',
-      'info',
-      '--json',
-      '@backstage/theme',
-    );
+    expect(mockFetchPackageInfo).toHaveBeenCalledTimes(3);
+    expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core');
+    expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core-api');
+    expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/theme');
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
     expect(runObj.run).toHaveBeenCalledWith(
@@ -251,17 +248,6 @@ describe('bump', () => {
     jest
       .spyOn(paths, 'resolveTargetRoot')
       .mockImplementation((...path) => resolvePath('/', ...path));
-    jest.spyOn(runObj, 'runPlain').mockImplementation(async (...[, , , name]) =>
-      JSON.stringify({
-        type: 'inspect',
-        data: {
-          name: name,
-          'dist-tags': {
-            latest: REGISTRY_VERSIONS[name],
-          },
-        },
-      }),
-    );
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
       rest.get(
@@ -309,19 +295,9 @@ describe('bump', () => {
       'Version bump complete!',
     ]);
 
-    expect(runObj.runPlain).toHaveBeenCalledTimes(2);
-    expect(runObj.runPlain).toHaveBeenCalledWith(
-      'yarn',
-      'info',
-      '--json',
-      '@backstage/core',
-    );
-    expect(runObj.runPlain).not.toHaveBeenCalledWith(
-      'yarn',
-      'info',
-      '--json',
-      '@backstage/theme',
-    );
+    expect(mockFetchPackageInfo).toHaveBeenCalledTimes(2);
+    expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core');
+    expect(mockFetchPackageInfo).not.toHaveBeenCalledWith('@backstage/theme');
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
     expect(runObj.run).toHaveBeenCalledWith(
@@ -372,17 +348,6 @@ describe('bump', () => {
         },
       }),
     });
-    jest.spyOn(runObj, 'runPlain').mockImplementation(async (...[, , , name]) =>
-      JSON.stringify({
-        type: 'inspect',
-        data: {
-          name: name,
-          'dist-tags': {
-            latest: REGISTRY_VERSIONS[name],
-          },
-        },
-      }),
-    );
     jest
       .spyOn(paths, 'resolveTargetRoot')
       .mockImplementation((...path) => resolvePath('/', ...path));
@@ -480,17 +445,6 @@ describe('bump', () => {
     jest
       .spyOn(paths, 'resolveTargetRoot')
       .mockImplementation((...path) => resolvePath('/', ...path));
-    jest.spyOn(runObj, 'runPlain').mockImplementation(async (...[, , , name]) =>
-      JSON.stringify({
-        type: 'inspect',
-        data: {
-          name: name,
-          'dist-tags': {
-            latest: REGISTRY_VERSIONS[name],
-          },
-        },
-      }),
-    );
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
       rest.get(
@@ -614,17 +568,6 @@ describe('bump', () => {
     jest
       .spyOn(paths, 'resolveTargetRoot')
       .mockImplementation((...path) => resolvePath('/', ...path));
-    jest.spyOn(runObj, 'runPlain').mockImplementation(async (...[, , , name]) =>
-      JSON.stringify({
-        type: 'inspect',
-        data: {
-          name: name,
-          'dist-tags': {
-            latest: REGISTRY_VERSIONS[name],
-          },
-        },
-      }),
-    );
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
       rest.get(
@@ -672,19 +615,9 @@ describe('bump', () => {
       'Version bump complete!',
     ]);
 
-    expect(runObj.runPlain).toHaveBeenCalledTimes(5);
-    expect(runObj.runPlain).toHaveBeenCalledWith(
-      'yarn',
-      'info',
-      '--json',
-      '@backstage/core',
-    );
-    expect(runObj.runPlain).toHaveBeenCalledWith(
-      'yarn',
-      'info',
-      '--json',
-      '@backstage/theme',
-    );
+    expect(mockFetchPackageInfo).toHaveBeenCalledTimes(5);
+    expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core');
+    expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/theme');
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
     expect(runObj.run).toHaveBeenCalledWith(
@@ -743,7 +676,7 @@ describe('bump', () => {
     jest
       .spyOn(paths, 'resolveTargetRoot')
       .mockImplementation((...path) => resolvePath('/', ...path));
-    jest.spyOn(runObj, 'runPlain').mockImplementation(async () => '');
+    mockFetchPackageInfo.mockRejectedValue(new NotFoundError('Nope'));
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
       rest.get(

@@ -28,10 +28,12 @@ export interface Backend {
 }
 
 // @public (undocumented)
-export const cacheFactory: ServiceFactory<PluginCacheManager>;
+export const cacheFactory: (
+  options?: undefined,
+) => ServiceFactory<PluginCacheManager>;
 
 // @public (undocumented)
-export const configFactory: ServiceFactory<Config>;
+export const configFactory: (options?: undefined) => ServiceFactory<Config>;
 
 // @public (undocumented)
 export function createSpecializedBackend(
@@ -41,28 +43,36 @@ export function createSpecializedBackend(
 // @public (undocumented)
 export interface CreateSpecializedBackendOptions {
   // (undocumented)
-  services: ServiceFactory[];
+  services: (ServiceFactory | (() => ServiceFactory))[];
 }
 
 // @public (undocumented)
-export const databaseFactory: ServiceFactory<PluginDatabaseManager>;
+export const databaseFactory: (
+  options?: undefined,
+) => ServiceFactory<PluginDatabaseManager>;
 
 // @public (undocumented)
-export const discoveryFactory: ServiceFactory<PluginEndpointDiscovery>;
+export const discoveryFactory: (
+  options?: undefined,
+) => ServiceFactory<PluginEndpointDiscovery>;
 
 // @public (undocumented)
-export const httpRouterFactory: ServiceFactory<HttpRouterService>;
+export const httpRouterFactory: (
+  options?: undefined,
+) => ServiceFactory<HttpRouterService>;
 
 // @public (undocumented)
-export const loggerFactory: ServiceFactory<Logger>;
+export const loggerFactory: (options?: undefined) => ServiceFactory<Logger>;
 
 // @public (undocumented)
-export const permissionsFactory: ServiceFactory<
-  PermissionAuthorizer | PermissionEvaluator
->;
+export const permissionsFactory: (
+  options?: undefined,
+) => ServiceFactory<PermissionAuthorizer | PermissionEvaluator>;
 
 // @public (undocumented)
-export const schedulerFactory: ServiceFactory<PluginTaskScheduler>;
+export const schedulerFactory: (
+  options?: undefined,
+) => ServiceFactory<PluginTaskScheduler>;
 
 // @public (undocumented)
 export type ServiceOrExtensionPoint<T = unknown> =
@@ -70,8 +80,12 @@ export type ServiceOrExtensionPoint<T = unknown> =
   | ServiceRef<T>;
 
 // @public (undocumented)
-export const tokenManagerFactory: ServiceFactory<TokenManager>;
+export const tokenManagerFactory: (
+  options?: undefined,
+) => ServiceFactory<TokenManager>;
 
 // @public (undocumented)
-export const urlReaderFactory: ServiceFactory<UrlReader>;
+export const urlReaderFactory: (
+  options?: undefined,
+) => ServiceFactory<UrlReader>;
 ```

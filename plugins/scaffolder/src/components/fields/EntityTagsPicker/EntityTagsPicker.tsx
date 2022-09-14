@@ -16,8 +16,8 @@
 import React, { useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import useEffectOnce from 'react-use/lib/useEffectOnce';
-import { GetEntitiesRequest } from '@backstage/catalog-client';
-import { Entity, makeValidator } from '@backstage/catalog-model';
+import { GetEntityFacetsRequest } from '@backstage/catalog-client';
+import { makeValidator } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { FormControl, TextField } from '@material-ui/core';
@@ -32,6 +32,8 @@ import { FieldExtensionComponentProps } from '../../../extensions';
  */
 export interface EntityTagsPickerUiOptions {
   kinds?: string[];
+  showCounts?: boolean;
+  helperText?: string;
 }
 
 /**
@@ -45,26 +47,34 @@ export const EntityTagsPicker = (
 ) => {
   const { formData, onChange, uiSchema } = props;
   const catalogApi = useApi(catalogApiRef);
+  const [tagOptions, setTagOptions] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [inputError, setInputError] = useState(false);
   const tagValidator = makeValidator().isValidTag;
   const kinds = uiSchema['ui:options']?.kinds;
+  const showCounts = uiSchema['ui:options']?.showCounts;
+  const helperText = uiSchema['ui:options']?.helperText;
 
   const { loading, value: existingTags } = useAsync(async () => {
-    const tagsRequest: GetEntitiesRequest = { fields: ['metadata.tags'] };
+    const facet = 'metadata.tags';
+    const tagsRequest: GetEntityFacetsRequest = { facets: [facet] };
     if (kinds) {
       tagsRequest.filter = { kind: kinds };
     }
 
-    const entities = await catalogApi.getEntities(tagsRequest);
+    const { facets } = await catalogApi.getEntityFacets(tagsRequest);
 
-    return [
-      ...new Set(
-        entities.items
-          .flatMap((e: Entity) => e.metadata?.tags)
-          .filter(Boolean) as string[],
+    const tagFacets = Object.fromEntries(
+      facets[facet].map(({ value, count }) => [value, count]),
+    );
+
+    setTagOptions(
+      Object.keys(tagFacets).sort((a, b) =>
+        showCounts ? tagFacets[b] - tagFacets[a] : a.localeCompare(b),
       ),
-    ].sort();
+    );
+
+    return tagFacets;
   });
 
   const setTags = (_: React.ChangeEvent<{}>, values: string[] | null) => {
@@ -102,15 +112,21 @@ export const EntityTagsPicker = (
         value={formData || []}
         inputValue={inputValue}
         loading={loading}
-        options={existingTags || []}
+        options={tagOptions}
         ChipProps={{ size: 'small' }}
+        renderOption={option =>
+          showCounts ? `${option} (${existingTags?.[option]})` : option
+        }
         renderInput={params => (
           <TextField
             {...params}
             label="Tags"
             onChange={e => setInputValue(e.target.value)}
             error={inputError}
-            helperText="Add any relevant tags, hit 'Enter' to add new tags. Valid format: [a-z0-9+#] separated by [-], at most 63 characters"
+            helperText={
+              helperText ??
+              "Add any relevant tags, hit 'Enter' to add new tags. Valid format: [a-z0-9+#] separated by [-], at most 63 characters"
+            }
           />
         )}
       />

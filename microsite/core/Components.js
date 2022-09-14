@@ -53,14 +53,23 @@ Block.QuoteContainer = simpleComponent('div', 'Block__QuoteContainer');
 Block.Quote = simpleComponent('p', 'Block__Quote');
 Block.Divider = simpleComponent('p', 'Block__Divider', ['quote']);
 Block.MediaFrame = simpleComponent('div', 'Block__MediaFrame');
-Block.Graphics = ({ padding, children }) => {
+Block.Graphics = ({ padding, children, innerPadding, width }) => {
   const style = {};
+  const innerStyle = {};
   if (padding) {
     style.padding = `${padding}% 0`;
   }
+
+  if (width) {
+    style.width = width;
+  }
+
+  if (innerPadding) {
+    innerStyle.padding = `${innerPadding}% 0`;
+  }
   return (
     <div className="Block__GraphicsContainer" style={style}>
-      <div className="Block__Graphics" children={children} />
+      <div className="Block__Graphics" children={children} style={innerStyle} />
     </div>
   );
 };

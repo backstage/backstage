@@ -49,7 +49,12 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 /** @public */
-export const EntityTagPicker = () => {
+export type EntityTagPickerProps = {
+  showCounts?: boolean;
+};
+
+/** @public */
+export const EntityTagPicker = (props: EntityTagPickerProps) => {
   const classes = useStyles();
   const {
     updateFilters,
@@ -65,7 +70,9 @@ export const EntityTagPicker = () => {
       filter: filters.kind?.getCatalogFilters(),
     });
 
-    return facets[facet].map(({ value }) => value);
+    return Object.fromEntries(
+      facets[facet].map(({ value, count }) => [value, count]),
+    );
   }, [filters.kind]);
 
   const queryParamTags = useMemo(
@@ -91,7 +98,7 @@ export const EntityTagPicker = () => {
     });
   }, [selectedTags, updateFilters]);
 
-  if (!availableTags?.length) return null;
+  if (!Object.keys(availableTags ?? {}).length) return null;
 
   return (
     <Box pb={1} pt={1}>
@@ -99,7 +106,7 @@ export const EntityTagPicker = () => {
         Tags
         <Autocomplete
           multiple
-          options={availableTags}
+          options={Object.keys(availableTags ?? {})}
           value={selectedTags}
           onChange={(_: object, value: string[]) => setSelectedTags(value)}
           renderOption={(option, { selected }) => (
@@ -111,7 +118,11 @@ export const EntityTagPicker = () => {
                   checked={selected}
                 />
               }
-              label={option}
+              label={
+                props.showCounts
+                  ? `${option} (${availableTags?.[option]})`
+                  : option
+              }
             />
           )}
           size="small"

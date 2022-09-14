@@ -50,11 +50,12 @@ export class BackendInitializer {
       if (extensionPoint) {
         result.set(name, extensionPoint);
       } else {
-        const factory = await this.#serviceHolder.get(
+        const impl = await this.#serviceHolder.get(
           ref as ServiceRef<unknown>,
+          pluginId,
         );
-        if (factory) {
-          result.set(name, await factory(pluginId));
+        if (impl) {
+          result.set(name, impl);
         } else {
           missingRefs.add(ref);
         }

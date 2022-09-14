@@ -23,6 +23,11 @@ import createApp from './createApp';
 
 jest.mock('./lib/tasks');
 
+// By mocking this the filesystem mocks won't mess with reading all of the package.jsons
+jest.mock('./lib/versions', () => ({
+  packageVersions: { root: '1.0.0' },
+}));
+
 beforeAll(() => {
   mockFs({
     [`${__dirname}/package.json`]: '', // required by `findPaths(__dirname)`

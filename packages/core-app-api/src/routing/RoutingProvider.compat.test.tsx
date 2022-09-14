@@ -251,7 +251,6 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
 
     await new Promise(r => setTimeout(r, 500));
 
-    rendered.debug();
     await expect(
       rendered.findByText('Path at inside: /foo/bar'),
     ).resolves.toBeInTheDocument();
@@ -344,7 +343,6 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     await expect(
       rendered.findByText('Path at inside: /foo/blob/baz'),
     ).resolves.toBeInTheDocument();
-    rendered.debug();
   });
 
   it('should throw errors for routing to other routeRefs with unsupported parameters', () => {
@@ -352,6 +350,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     const root = (
       <MemoryRouter initialEntries={['/']}>
         <Routes>
+          <Route path="/" element={<div />} />
           <Route path="foo:id" element={<ExtensionPage3 />}>
             <Route
               path="bar"

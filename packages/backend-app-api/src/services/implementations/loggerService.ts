@@ -14,38 +14,23 @@
  * limitations under the License.
  */
 
-import { createRootLogger } from '@backstage/backend-common';
 import {
   createServiceFactory,
-  Logger,
   loggerServiceRef,
+  pluginMetadataServiceRef,
+  rootLoggerServiceRef,
 } from '@backstage/backend-plugin-api';
-import { Logger as WinstonLogger } from 'winston';
-
-class BackstageLogger implements Logger {
-  static fromWinston(logger: WinstonLogger): BackstageLogger {
-    return new BackstageLogger(logger);
-  }
-
-  private constructor(private readonly winston: WinstonLogger) {}
-
-  info(message: string, ...meta: any[]): void {
-    this.winston.info(message, ...meta);
-  }
-
-  child(fields: { [name: string]: string }): Logger {
-    return new BackstageLogger(this.winston.child(fields));
-  }
-}
 
 /** @public */
 export const loggerFactory = createServiceFactory({
   service: loggerServiceRef,
-  deps: {},
-  factory: async () => {
-    const root = BackstageLogger.fromWinston(createRootLogger());
-    return async (pluginId: string) => {
-      return root.child({ pluginId });
+  deps: {
+    rootLogger: rootLoggerServiceRef,
+    plugin: pluginMetadataServiceRef,
+  },
+  async factory({ rootLogger }) {
+    return async ({ plugin }) => {
+      return rootLogger.child({ pluginId: plugin.getId() });
     };
   },
 });

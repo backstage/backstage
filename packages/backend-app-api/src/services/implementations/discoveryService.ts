@@ -25,10 +25,9 @@ import {
 export const discoveryFactory = createServiceFactory({
   service: discoveryServiceRef,
   deps: {
-    configFactory: configServiceRef,
+    config: configServiceRef,
   },
-  factory: async ({ configFactory }) => {
-    const config = await configFactory('root');
+  async factory({ config }) {
     const discovery = SingleHostDiscovery.fromConfig(config);
     return async () => {
       return discovery;

@@ -158,6 +158,14 @@ export interface ProcessingDatabase {
   refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void>;
 
   /**
+   * Schedules a refresh for every entity that has a matching set of refresh key stored for it.
+   */
+  refreshByRefreshKeys(
+    txOpaque: Transaction,
+    options: RefreshByKeyOptions,
+  ): Promise<void>;
+
+  /**
    * Lists all ancestors of a given entityRef.
    *
    * The returned list is ordered from the most immediate ancestor to the most distant one.

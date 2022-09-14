@@ -43,6 +43,7 @@ import {
   AuthResolverContext,
 } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
+import { StateStore } from 'passport-oauth2';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -53,6 +54,7 @@ export type Auth0AuthProviderOptions = OAuthProviderOptions & {
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
   resolverContext: AuthResolverContext;
+  audience?: string;
 };
 
 export class Auth0AuthProvider implements OAuthHandlers {
@@ -60,11 +62,30 @@ export class Auth0AuthProvider implements OAuthHandlers {
   private readonly signInResolver?: SignInResolver<OAuthResult>;
   private readonly authHandler: AuthHandler<OAuthResult>;
   private readonly resolverContext: AuthResolverContext;
+  private readonly audience?: string;
+
+  /**
+   * Due to passport-auth0 forcing options.state = true,
+   * passport-oauth2 requires express-session to be installed
+   * so that the 'state' parameter of the oauth2 flow can be stored.
+   * This implementation of StateStore matches the NullStore found within
+   * passport-oauth2, which is the StateStore implementation used when options.state = false,
+   * allowing us to avoid using express-session in order to integrate with auth0.
+   */
+  private store: StateStore = {
+    store(_req: express.Request, cb: any) {
+      cb(null, null);
+    },
+    verify(_req: express.Request, _state: string, cb: any) {
+      cb(null, true);
+    },
+  };
 
   constructor(options: Auth0AuthProviderOptions) {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
     this.resolverContext = options.resolverContext;
+    this.audience = options.audience;
     this._strategy = new Auth0Strategy(
       {
         clientID: options.clientId,
@@ -74,6 +95,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
         // We need passReqToCallback set to false to get params, but there's
         // no matching type signature for that, so instead behold this beauty
         passReqToCallback: false as true,
+        store: this.store,
       },
       (
         accessToken: any,
@@ -104,6 +126,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
       prompt: 'consent',
       scope: req.scope,
       state: encodeState(req.state),
+      ...(this.audience ? { audience: this.audience } : {}),
     });
   }
 
@@ -111,7 +134,9 @@ export class Auth0AuthProvider implements OAuthHandlers {
     const { result, privateInfo } = await executeFrameHandlerStrategy<
       OAuthResult,
       PrivateInfo
-    >(req, this._strategy);
+    >(req, this._strategy, {
+      ...(this.audience ? { audience: this.audience } : {}),
+    });
 
     return {
       response: await this.handleResult(result),
@@ -198,6 +223,7 @@ export const auth0 = createAuthProviderIntegration({
         const clientSecret = envConfig.getString('clientSecret');
         const domain = envConfig.getString('domain');
         const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const audience = envConfig.getOptionalString('audience');
         const callbackUrl =
           customCallbackUrl ||
           `${globalConfig.baseUrl}/${providerId}/handler/frame`;
@@ -218,6 +244,7 @@ export const auth0 = createAuthProviderIntegration({
           authHandler,
           signInResolver,
           resolverContext,
+          audience,
         });
 
         return OAuthAdapter.fromConfig(globalConfig, provider, {

@@ -71,6 +71,7 @@ describe('AzureDevOpsEntityProvider', () => {
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
+      refresh: jest.fn(),
     };
 
     const provider = AzureDevOpsEntityProvider.fromConfig(config, {

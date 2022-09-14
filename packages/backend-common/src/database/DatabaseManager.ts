@@ -352,7 +352,9 @@ export class DatabaseManager {
     let lastKeepaliveFailed = false;
 
     setInterval(() => {
-      client.raw('select 1').then(
+      // During testing it can happen that the environment is torn down and
+      // this client is `undefined`, but this interval is still run.
+      client?.raw('select 1').then(
         () => {
           lastKeepaliveFailed = false;
         },
