@@ -437,4 +437,14 @@ export type SystemDiagramCardClassKey =
   | 'componentNode'
   | 'apiNode'
   | 'resourceNode';
+
+// @public (undocumented)
+export const viewTechDocRouteRef: ExternalRouteRef<
+  {
+    name: string;
+    kind: string;
+    namespace: string;
+  },
+  true
+>;
 ```
