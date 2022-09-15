@@ -19,8 +19,10 @@ import { Box, Card, Link, LinearProgress } from '@material-ui/core';
 import { FunctionsData } from '@backstage/plugin-azure-functions-common';
 import { Table, TableColumn } from '@backstage/core-components';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
+import { DateTime } from 'luxon';
 
 type States = 'Waiting' | 'Running' | 'Paused' | 'Failed';
+const lang = window.navigator.language;
 
 const State = ({ value }: { value: States }) => {
   const colorMap = {
@@ -74,7 +76,7 @@ const DEFAULT_COLUMNS: TableColumn<FunctionsData>[] = [
   {
     title: 'last modified',
     render: (func: FunctionsData) =>
-      new Date(func.lastModifiedDate).toUTCString(),
+      func.lastModifiedDate.toLocaleString(lang, DateTime.DATETIME_FULL),
   },
   {
     title: 'logs',

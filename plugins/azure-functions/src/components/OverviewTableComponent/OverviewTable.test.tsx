@@ -28,6 +28,7 @@ import {
   TestApiProvider,
 } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
+import { DateTime } from 'luxon';
 import { functionResponseMock } from '../../mocks/mocks';
 import { azureFunctionsApiRef } from '../..';
 import { OverviewTable } from './OverviewTable';
@@ -79,7 +80,10 @@ describe('AzureFunctionsOverviewWidget', () => {
     ).toBeInTheDocument();
     expect(
       await rendered.findByText(
-        new Date(functionResponseMock.lastModifiedDate).toUTCString(),
+        functionResponseMock.lastModifiedDate.toLocaleString(
+          window.navigator.language,
+          DateTime.DATETIME_FULL,
+        ),
       ),
     ).toBeInTheDocument();
   });
