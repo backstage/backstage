@@ -352,9 +352,11 @@ function scaffoldingTracker() {
         await task.emitLog(
           `Starting up task with ${task.spec.steps.length} steps`,
         );
+        const template = task.spec.templateInfo?.entity?.metadata.name || ''
+        const invoker = task.spec.user?.entity?.metadata.name || ''
 
         const taskTimer = taskDuration.startTimer({
-          template: task.spec.templateInfo.entity.metadata.name
+          template
         })
 
         async function skipDryRun(step: TaskStep, action: TemplateAction<JsonObject>) {
@@ -370,8 +372,8 @@ function scaffoldingTracker() {
         function markSuccessful() {
           taskSuccesses.inc(
             {
-              template: task.spec.templateInfo.entity.metadata.name,
-              invoker: task.spec.user.entity.metadata.name
+              template,
+              invoker
             }
            )
            taskTimer({ result: 'ok' });
@@ -384,8 +386,8 @@ function scaffoldingTracker() {
           });
           taskErrors.inc(
             {
-            template: task.spec.templateInfo.entity.metadata.name,
-            invoker: task.spec.user.entity.metadata.name
+            template,
+            invoker
            })
            taskTimer({ result: 'failed' });
         }
