@@ -22,7 +22,6 @@ import FlashOnIcon from '@material-ui/icons/FlashOn';
 import { DateTime } from 'luxon';
 
 type States = 'Waiting' | 'Running' | 'Paused' | 'Failed';
-const lang = window.navigator.language;
 
 const State = ({ value }: { value: States }) => {
   const colorMap = {
