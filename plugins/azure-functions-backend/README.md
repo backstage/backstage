@@ -27,7 +27,7 @@ Configuration Details:
 
 - `domain` can be found by visiting the [Directories + Subscriptions settings page](https://portal.azure.com/#settings/directory). Alternatively you can inspect the [Azure home](https://portal.azure.com/#home) URL - `https://portal.azure.com/#@<Your_Domain>/`.
 - `tenantId` can be found by visiting [Azure Directory Overview page](https://portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade).
-- `clientId` and `clientSecret` can be the same values you used for [Azure DevOps Backend](https://github.com/backstage/backstage/tree/master/plugins/azure-devops-backend) or [Azure Integration](https://backstage.io/docs/integrations/azure/org#app-registration) as long as this App Registration has permissions to read your function apps.
+- (Optional) `clientId` and `clientSecret` can be the same values you used for [Azure DevOps Backend](https://github.com/backstage/backstage/tree/master/plugins/azure-devops-backend) or [Azure Integration](https://backstage.io/docs/integrations/azure/org#app-registration) as long as this App Registration has permissions to read your function apps.
 - `allowedSubscriptions` is an array of `id` and `name` that will be used to iterate over and look for the specified functions' app. `id` and `name` can be found the [Subscriptions page](https://portal.azure.com/#view/Microsoft_Azure_Billing/SubscriptionsBlade).
 
 ### Integrating

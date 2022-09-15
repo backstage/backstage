@@ -24,7 +24,7 @@ To be able to use the Azure Functions plugin you need to add the following annot
 portal.azure.com/functions-name: <function-name>
 ```
 
-`<function-name>` can be an exact or partial name for the functions' app. When using a partial name, it's important that the value here matches the **start** of the functions name.
+`<function-name>` can be an exact or partial name for the functions' app.
 
 Example of Partial Matching:
 

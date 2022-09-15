@@ -39,12 +39,12 @@ export class AzureFunctionsBackendClient implements AzureFunctionsApi {
       const url = `${await this.discoveryApi.getBaseUrl(
         'azure-functions',
       )}/list/${functionName}`;
-      const { token: idToken } = await this.identityApi.getCredentials();
+      const { token: accessToken } = await this.identityApi.getCredentials();
       const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
         },
       });
       return await response.json();

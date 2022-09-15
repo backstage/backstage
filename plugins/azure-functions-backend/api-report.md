@@ -12,18 +12,18 @@ import { Logger } from 'winston';
 // @public (undocumented)
 export class AzureFunctionsConfig {
   constructor(
-    tenantId: string,
-    clientId: string,
-    clientSecret: string,
     domain: string,
     allowedSubscriptions: AzureFunctionsAllowedSubscriptionsConfig[],
+    tenantId: string,
+    clientId?: string | undefined,
+    clientSecret?: string | undefined,
   );
   // (undocumented)
   readonly allowedSubscriptions: AzureFunctionsAllowedSubscriptionsConfig[];
   // (undocumented)
-  readonly clientId: string;
+  readonly clientId?: string | undefined;
   // (undocumented)
-  readonly clientSecret: string;
+  readonly clientSecret?: string | undefined;
   // (undocumented)
   readonly domain: string;
   // (undocumented)

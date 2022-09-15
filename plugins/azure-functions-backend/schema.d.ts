@@ -19,9 +19,9 @@ export interface Config {
     /** @visibility backend  */
     tenantId: string;
     /** @visibility backend  */
-    clientId: string;
+    clientId?: string;
     /** @visibility secret  */
-    clientSecret: string;
+    clientSecret?: string;
     /** @visibility backend  */
     domain: string;
     /** @visibility backend  */

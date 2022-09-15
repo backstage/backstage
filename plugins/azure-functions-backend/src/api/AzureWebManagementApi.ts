@@ -15,8 +15,11 @@
  */
 
 import { Config } from '@backstage/config';
-import { ClientSecretCredential } from '@azure/identity';
-import { WebSiteManagementClient } from '@azure/arm-appservice';
+import {
+  DefaultAzureCredential,
+  ClientSecretCredential,
+} from '@azure/identity';
+import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import {
   AzureFunctionsAllowedSubscriptionsConfig,
   FunctionsListResponse,
@@ -25,20 +28,17 @@ import {
 /** @public */
 export class AzureFunctionsConfig {
   constructor(
-    public readonly tenantId: string,
-    public readonly clientId: string,
-    public readonly clientSecret: string,
     public readonly domain: string,
     public readonly allowedSubscriptions: AzureFunctionsAllowedSubscriptionsConfig[],
+    public readonly tenantId: string,
+    public readonly clientId?: string,
+    public readonly clientSecret?: string,
   ) {}
 
   static fromConfig(config: Config): AzureFunctionsConfig {
     const azfConfig = config.getConfig('azureFunctions');
 
     return new AzureFunctionsConfig(
-      azfConfig.getString('tenantId'),
-      azfConfig.getString('clientId'),
-      azfConfig.getString('clientSecret'),
       azfConfig.getString('domain'),
       azfConfig
         .getConfigArray('allowedSubscriptions')
@@ -46,6 +46,9 @@ export class AzureFunctionsConfig {
           id: as.getString('id'),
           name: as.getString('name'),
         })),
+      azfConfig.getString('tenantId'),
+      azfConfig.getOptionalString('clientId'),
+      azfConfig.getOptionalString('clientSecret'),
     );
   }
 }
@@ -54,19 +57,19 @@ export class AzureFunctionsConfig {
 export class AzureWebManagementApi {
   private readonly baseHref = (domain: string) =>
     `https://portal.azure.com/#@${domain}/resource`;
-  private readonly clients: WebSiteManagementClient[] = [];
+  private readonly resourceGraphClient: ResourceGraphClient;
 
   constructor(private readonly config: AzureFunctionsConfig) {
-    const creds = new ClientSecretCredential(
-      config.tenantId,
-      config.clientId,
-      config.clientSecret,
-    );
-    for (const subscription of config.allowedSubscriptions) {
-      if (!this.clients.some(c => c.subscriptionId === subscription.id)) {
-        this.clients.push(new WebSiteManagementClient(creds, subscription.id));
-      }
-    }
+    const creds =
+      config.clientId && config.clientSecret
+        ? new ClientSecretCredential(
+            config.tenantId,
+            config.clientId,
+            config.clientSecret,
+          )
+        : new DefaultAzureCredential({ tenantId: config.tenantId });
+
+    this.resourceGraphClient = new ResourceGraphClient(creds);
   }
 
   static fromConfig(config: Config): AzureWebManagementApi {
@@ -79,29 +82,27 @@ export class AzureWebManagementApi {
     functionName: string;
   }): Promise<FunctionsListResponse> {
     const items = [];
-    for (const client of this.clients) {
-      try {
-        for await (const webApp of client.webApps.list()) {
-          if (!webApp.name!.startsWith(functionName)) {
-            continue;
-          }
-          const v = webApp!;
-          items.push({
-            href: `${this.baseHref(this.config.domain)}${v.id!}`,
-            logstreamHref: `${this.baseHref(
-              this.config.domain,
-            )}${v.id!}/logStream`,
-            functionName: v.name!,
-            location: v.location!,
-            lastModifiedDate: v.lastModifiedTimeUtc!,
-            usageState: v.usageState!,
-            state: v.state!,
-            containerSize: v.containerSize!,
-          });
-        }
-      } catch (ex) {
-        console.log(ex);
+    try {
+      const result = await this.resourceGraphClient.resources({
+        query: `resources | where type == 'microsoft.web/sites' | where name contains '${functionName}'`,
+        subscriptions: this.config.allowedSubscriptions.map(s => s.id),
+      });
+      for (const v of result.data) {
+        items.push({
+          href: `${this.baseHref(this.config.domain)}${v.id!}`,
+          logstreamHref: `${this.baseHref(
+            this.config.domain,
+          )}${v.id!}/logStream`,
+          functionName: v.name!,
+          location: v.location!,
+          lastModifiedDate: v.properties.lastModifiedTimeUtc!,
+          usageState: v.properties.usageState!,
+          state: v.properties.state!,
+          containerSize: v.properties.containerSize!,
+        });
       }
+    } catch (ex) {
+      console.log(ex);
     }
     return { items: items };
   }
