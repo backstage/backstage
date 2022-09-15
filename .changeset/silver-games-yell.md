@@ -24,6 +24,6 @@ scaffolder_step_success_count: a count that tracks each step run
  - template: the name of the template which was scaffolded
  - invoker: the user which kicked the scaffolding off
  - name: the name of the step that was run
- - result: whether the task was OK or errored out
+ - result: whether the task was OK or failed with an error
 
 You can find a guide for running Prometheus metrics here: https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/prometheus-metrics.md
