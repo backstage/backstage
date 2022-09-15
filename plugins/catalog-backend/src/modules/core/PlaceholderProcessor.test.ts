@@ -389,10 +389,6 @@ describe('PlaceholderProcessor', () => {
   });
 
   it('accepts arbitrary object as value', async () => {
-    read.mockResolvedValue(
-      Buffer.from(JSON.stringify({ a: ['b', 7] }), 'utf-8'),
-    );
-
     const processor = new PlaceholderProcessor({
       resolvers: {
         merge: async ({ value }) => {
