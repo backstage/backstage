@@ -89,7 +89,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
   const [state, setState] = useState({
     open: false,
     vertical: 'top',
-    horizontal:'right'
+    horizontal: 'right',
   });
 
   const { open, vertical, horizontal } = state;
@@ -99,7 +99,9 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(window.location.toString()).then(()=> setState({...state, open:true}));
+    navigator.clipboard
+      .writeText(window.location.toString())
+      .then(() => setState({ ...state, open: true }));
   };
 
   const extraItems = UNSTABLE_extraContextMenuItems && [
