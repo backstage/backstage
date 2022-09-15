@@ -143,7 +143,12 @@ export class TechdocsGenerator implements GeneratorBase {
           );
           break;
         case 'docker':
-          await this.containerRunner!.runContainer({
+          if (this.containerRunner === undefined) {
+            throw new Error(
+              "Invalid state: containerRunner cannot be undefined when runIn is 'docker'",
+            );
+          }
+          await this.containerRunner.runContainer({
             imageName:
               this.options.dockerImage ?? TechdocsGenerator.defaultDockerImage,
             args: ['build', '-d', '/output'],
