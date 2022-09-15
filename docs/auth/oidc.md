@@ -4,7 +4,7 @@ title: OIDC provider from scratch
 description: This section shows how to use an OIDC provider from scrath, same steps apply for custom providers.
 ---
 
-This section shows how to use an OIDC provider from scrath, same steps apply for custom
+This section shows how to use an OIDC provider from scratch, same steps apply for custom
 providers. Please note these steps are for using a provider, not how to implement one.
 
 ## Summary
@@ -46,8 +46,8 @@ export const oidcAuthApiRef: ApiRef<
 ```
 
 Please note a few things, the ID can be anything you want as long as it doesn't conflict
-with other refs, also we're exporting this reference, as well as the typings, we need to
-be able to import this reference anywhere in the app, and the typings will tell typescript
+with other refs, also we're exporting this reference, as well as the `typings`, we need to
+be able to import this reference anywhere in the app, and the `typings` will tell typescript
 what instance we're getting from DI when injecting the API. In this case we are defining
 an API for authentication, so we tell TS that this instance complies with 4 API
 interfaces:
@@ -115,7 +115,7 @@ page, it explains how to write a custom resolver as well as linking the built in
 of backstage.
 
 As an example if you're setting up OIDC provider with Microsoft, you could use the built
-in microsoft resolvers, or create one yourself in `packages/backend/src/plugins/auth.ts`:
+in Microsoft resolvers, or create one yourself in `packages/backend/src/plugins/auth.ts`:
 
 ```diff
 import {
@@ -168,7 +168,7 @@ the OIDC protocol, as such, it depends on the specific wrapper what has to be co
 
 As an example we'll configure OIDC with Microsoft, to do so we need to
 [Create app registration][2] in the Azure console, the only difference is that the
-`http://localhost:7007/api/auth/microsoft/handler/frame` url needs to change to
+`http://localhost:7007/api/auth/microsoft/handler/frame` URL needs to change to
 `http://localhost:7007/api/auth/oidc/handler/frame`.
 
 Then we need to configure the env variables for the provider, based on the provider's code
@@ -203,16 +203,16 @@ Anything enclosed in `${}` can be replaced directly in the yaml, or provided as
 environment variables, the way you obtain all these except `scope` and `prompt` is to
 check the App Registration you created:
 
-- clientId: Grab from the Overview page.
-- clientSecret: Can only be seen when creating the secret, if you lose it you'll need a
+- `clientId`: Grab from the Overview page.
+- `clientSecret`: Can only be seen when creating the secret, if you lose it you'll need a
   new secret.
-- metadataUrl: In Overview > Endpoints tab, grab OpenID Connect metadata document url.
-- authorizationUrl and tokenUrl: Open the metadataUrl in browser, that json will hold
-  these 2 urls somewhere in there.
-- tokenSignedResponseAlg: Don't define it, use the default unless you know what it does.
-- scope: Only used if we didn't specify `defaultScopes` in the provider's factory,
+- `metadataUrl`: In Overview > Endpoints tab, grab OpenID Connect metadata document URL.
+- `authorizationUrl` and `tokenUrl`: Open the `metadataUrl` in a browser, that json will
+  hold these 2 urls somewhere in there.
+- `tokenSignedResponseAlg`: Don't define it, use the default unless you know what it does.
+- `scope`: Only used if we didn't specify `defaultScopes` in the provider's factory,
   basically the same thing.
-- prompt: Recommended to use `auto` so the browser will request login to the IDP if the
+- `prompt`: Recommended to use `auto` so the browser will request login to the IDP if the
   user has no active session.
 
 Note that for the time being, any change in this yaml file requires a restart of the app.
