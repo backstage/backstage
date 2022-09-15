@@ -396,7 +396,6 @@ describe('PlaceholderProcessor', () => {
     const processor = new PlaceholderProcessor({
       resolvers: {
         merge: async ({ value }) => {
-          console.log({ value });
           if (value instanceof Object) {
             return { merged: 'value', ...value };
           }
