@@ -37,7 +37,10 @@ import {
   TaskSpecV1beta3,
   TaskStep,
 } from '@backstage/plugin-scaffolder-common';
-import { createCounterMetric, createHistogramMetric } from '../../../../catalog-backend/src/util/metrics';
+import {
+  createCounterMetric,
+  createHistogramMetric,
+} from '../../../../catalog-backend/src/util/metrics';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -53,8 +56,7 @@ type TemplateContext = {
     [stepName: string]: { output: { [outputName: string]: JsonValue } };
   };
   secrets?: Record<string, string>;
-  user?: {
-  };
+  user?: {};
 };
 
 const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
@@ -201,7 +203,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     let taskTrack;
 
     try {
-      taskTrack = await this.tracker.taskStart(task)
+      taskTrack = await this.tracker.taskStart(task);
       await fs.ensureDir(workspacePath);
 
       const context: TemplateContext = {
@@ -211,7 +213,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       };
 
       for (const step of task.spec.steps) {
-        const stepTrack  = await this.tracker.stepStart(task, step);
+        const stepTrack = await this.tracker.stepStart(task, step);
         try {
           if (step.if) {
             const ifResult = await this.render(
@@ -220,7 +222,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
               renderTemplate,
             );
             if (!isTruthy(ifResult)) {
-              await stepTrack.skipFalsy()
+              await stepTrack.skipFalsy();
               continue;
             }
           }
@@ -316,133 +318,127 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 }
 
 function scaffoldingTracker() {
-      const taskSuccesses = createCounterMetric({
-        name: 'scaffolder_task_success_count',
-        help: 'Count of succesful task runs',
-        labelNames: ['template', 'invoker']
-      })
-      const taskErrors = createCounterMetric({
-        name: 'scaffolder_task_error_count',
-        help: 'Count of failed task runs',
-        labelNames: ['template', 'invoker']
-      })
-      const taskDuration = createHistogramMetric({
-        name: 'scaffolder_task_duration',
-        help: 'Duration of a task run',
-        labelNames: ['template', 'result']
-      })
-      const stepSuccesses = createCounterMetric({
-        name: 'scaffolder_step_success_count',
-        help: 'Count of successful step runs',
-        labelNames: ['name']
-      })
-      const stepErrors = createCounterMetric({
-        name: 'scaffolder_step_error_count',
-        help: 'Count of failed step runs',
-        labelNames: ['name']
-      })
-      const stepDuration = createHistogramMetric({
-        name: 'scaffolder_step_duration',
-        help: 'Duration of a step runs',
-        labelNames: ['name', 'result']
-      })
+  const taskSuccesses = createCounterMetric({
+    name: 'scaffolder_task_success_count',
+    help: 'Count of succesful task runs',
+    labelNames: ['template', 'invoker'],
+  });
+  const taskErrors = createCounterMetric({
+    name: 'scaffolder_task_error_count',
+    help: 'Count of failed task runs',
+    labelNames: ['template', 'invoker'],
+  });
+  const taskDuration = createHistogramMetric({
+    name: 'scaffolder_task_duration',
+    help: 'Duration of a task run',
+    labelNames: ['template', 'result'],
+  });
+  const stepSuccesses = createCounterMetric({
+    name: 'scaffolder_step_success_count',
+    help: 'Count of successful step runs',
+    labelNames: ['name'],
+  });
+  const stepErrors = createCounterMetric({
+    name: 'scaffolder_step_error_count',
+    help: 'Count of failed step runs',
+    labelNames: ['name'],
+  });
+  const stepDuration = createHistogramMetric({
+    name: 'scaffolder_step_duration',
+    help: 'Duration of a step runs',
+    labelNames: ['name', 'result'],
+  });
 
-      async function taskStart(task: TaskContext) {
+  async function taskStart(task: TaskContext) {
+    await task.emitLog(`Starting up task with ${task.spec.steps.length} steps`);
+    const template = task.spec.templateInfo?.entity?.metadata.name || '';
+    const invoker = task.spec.user?.entity?.metadata.name || '';
 
-        await task.emitLog(
-          `Starting up task with ${task.spec.steps.length} steps`,
-        );
-        const template = task.spec.templateInfo?.entity?.metadata.name || ''
-        const invoker = task.spec.user?.entity?.metadata.name || ''
+    const taskTimer = taskDuration.startTimer({
+      template,
+    });
 
-        const taskTimer = taskDuration.startTimer({
-          template
-        })
+    async function skipDryRun(
+      step: TaskStep,
+      action: TemplateAction<JsonObject>,
+    ) {
+      task.emitLog(`Skipping because ${action.id} does not support dry-run`, {
+        stepId: step.id,
+        status: 'skipped',
+      });
+    }
 
-        async function skipDryRun(step: TaskStep, action: TemplateAction<JsonObject>) {
-          task.emitLog(
-            `Skipping because ${action.id} does not support dry-run`,
-            {
-              stepId: step.id,
-              status: 'skipped',
-            },
-          );
-        }
-        
-        function markSuccessful() {
-          taskSuccesses.inc(
-            {
-              template,
-              invoker
-            }
-           )
-           taskTimer({ result: 'ok' });
-        }
+    function markSuccessful() {
+      taskSuccesses.inc({
+        template,
+        invoker,
+      });
+      taskTimer({ result: 'ok' });
+    }
 
-        async function markFailed(step: TaskStep, err: Error) {
-          await task.emitLog(String(err.stack), {
-            stepId: step.id,
-            status: 'failed',
-          });
-          taskErrors.inc(
-            {
-            template,
-            invoker
-           })
-           taskTimer({ result: 'failed' });
-        }
+    async function markFailed(step: TaskStep, err: Error) {
+      await task.emitLog(String(err.stack), {
+        stepId: step.id,
+        status: 'failed',
+      });
+      taskErrors.inc({
+        template,
+        invoker,
+      });
+      taskTimer({ result: 'failed' });
+    }
 
-        return {
-          skipDryRun,
-          markSuccessful,
-          markFailed
-        }
-      }
+    return {
+      skipDryRun,
+      markSuccessful,
+      markFailed,
+    };
+  }
 
-      async function stepStart(task: TaskContext, step: TaskStep) {
-        await task.emitLog(`Beginning step ${step.name}`, {
-          stepId: step.id,
-          status: 'processing',
-        });
+  async function stepStart(task: TaskContext, step: TaskStep) {
+    await task.emitLog(`Beginning step ${step.name}`, {
+      stepId: step.id,
+      status: 'processing',
+    });
 
-        const stepTimer = stepDuration.startTimer({
-          name: step.name
-        })
+    const stepTimer = stepDuration.startTimer({
+      name: step.name,
+    });
 
-        async function markSuccessful() {
-          await task.emitLog(`Finished step ${step.name}`, {
-            stepId: step.id,
-            status: 'completed',
-          });
-          stepSuccesses.inc({
-            name: step.name
-          })
-          stepTimer({ result: 'ok' })
-        }
+    async function markSuccessful() {
+      await task.emitLog(`Finished step ${step.name}`, {
+        stepId: step.id,
+        status: 'completed',
+      });
+      stepSuccesses.inc({
+        name: step.name,
+      });
+      stepTimer({ result: 'ok' });
+    }
 
-        function markFailed() { 
-          stepErrors.inc({
-            name: step.name
-           })
-           stepTimer({ result: 'failed' });
-        }
+    function markFailed() {
+      stepErrors.inc({
+        name: step.name,
+      });
+      stepTimer({ result: 'failed' });
+    }
 
-        async function skipFalsy() {
-          await task.emitLog(
-            `Skipping step ${step.id} because it's if condition was false`,
-            { stepId: step.id, status: 'skipped' },
-          );
-        }
+    async function skipFalsy() {
+      await task.emitLog(
+        `Skipping step ${step.id} because it's if condition was false`,
+        { stepId: step.id, status: 'skipped' },
+      );
+    }
 
-        return {
-          markSuccessful,
-          markFailed,
-          skipFalsy
-        }
-      }
+    return {
+      markSuccessful,
+      markFailed,
+      skipFalsy,
+    };
+  }
 
-      return {
-        taskStart,
-        stepStart
-      }
+  return {
+    taskStart,
+    stepStart,
+  };
 }
