@@ -80,10 +80,9 @@ describe('AzureFunctionsOverviewWidget', () => {
     ).toBeInTheDocument();
     expect(
       await rendered.findByText(
-        functionResponseMock.lastModifiedDate.toLocaleString(
-          window.navigator.language,
-          DateTime.DATETIME_FULL,
-        ),
+        DateTime.fromISO(
+          functionResponseMock.lastModifiedDate.toString(),
+        ).toLocaleString(DateTime.DATETIME_MED),
       ),
     ).toBeInTheDocument();
   });

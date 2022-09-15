@@ -76,7 +76,9 @@ const DEFAULT_COLUMNS: TableColumn<FunctionsData>[] = [
   {
     title: 'last modified',
     render: (func: FunctionsData) =>
-      func.lastModifiedDate.toLocaleString(lang, DateTime.DATETIME_FULL),
+      DateTime.fromISO(func.lastModifiedDate.toString()).toLocaleString(
+        DateTime.DATETIME_MED,
+      ),
   },
   {
     title: 'logs',
