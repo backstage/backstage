@@ -21,6 +21,8 @@ import { CatalogProcessorResult } from '@backstage/plugin-catalog-node';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
+import { Counter } from 'prom-client';
+import { CounterConfiguration } from 'prom-client';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
@@ -29,7 +31,11 @@ import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { EntityProviderMutation } from '@backstage/plugin-catalog-node';
 import { EntityRelationSpec } from '@backstage/plugin-catalog-node';
+import { Gauge } from 'prom-client';
+import { GaugeConfiguration } from 'prom-client';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
+import { Histogram } from 'prom-client';
+import { HistogramConfiguration } from 'prom-client';
 import { JsonValue } from '@backstage/types';
 import { LocationEntityV1alpha1 } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
@@ -47,6 +53,8 @@ import { Readable } from 'stream';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { Summary } from 'prom-client';
+import { SummaryConfiguration } from 'prom-client';
 import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Validators } from '@backstage/catalog-model';
@@ -289,11 +297,31 @@ export const createCatalogPermissionRule: <TParams extends unknown[]>(
   rule: PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>,
 ) => PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
+// @alpha
+export function createCounterMetric<T extends string>(
+  config: CounterConfiguration<T>,
+): Counter<T>;
+
+// @alpha
+export function createGaugeMetric<T extends string>(
+  config: GaugeConfiguration<T>,
+): Gauge<T>;
+
+// @alpha
+export function createHistogramMetric<T extends string>(
+  config: HistogramConfiguration<T>,
+): Histogram<T>;
+
 // @public
 export function createRandomProcessingInterval(options: {
   minSeconds: number;
   maxSeconds: number;
 }): ProcessingIntervalFunction;
+
+// @alpha
+export function createSummaryMetric<T extends string>(
+  config: SummaryConfiguration<T>,
+): Summary<T>;
 
 // @public @deprecated (undocumented)
 export class DefaultCatalogCollator {
