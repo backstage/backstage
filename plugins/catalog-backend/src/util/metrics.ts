@@ -26,6 +26,11 @@ import {
   SummaryConfiguration,
 } from 'prom-client';
 
+/**
+ * Helper method for creating a prometheus counter metric
+ *
+ * @alpha
+ */
 export function createCounterMetric<T extends string>(
   config: CounterConfiguration<T>,
 ): Counter<T> {
@@ -37,6 +42,11 @@ export function createCounterMetric<T extends string>(
   return metric as Counter<T>;
 }
 
+/**
+ * Helper method for creating a prometheus gauge metric
+ *
+ * @alpha
+ */
 export function createGaugeMetric<T extends string>(
   config: GaugeConfiguration<T>,
 ): Gauge<T> {
@@ -48,6 +58,11 @@ export function createGaugeMetric<T extends string>(
   return metric as Gauge<T>;
 }
 
+/**
+ * Helper method for creating a prometheus summary metric
+ *
+ * @alpha
+ */
 export function createSummaryMetric<T extends string>(
   config: SummaryConfiguration<T>,
 ): Summary<T> {
@@ -60,6 +75,11 @@ export function createSummaryMetric<T extends string>(
   return metric as Summary<T>;
 }
 
+/**
+ * Helper method for creating a prometheus histogram metric
+ *
+ * @alpha
+ */
 export function createHistogramMetric<T extends string>(
   config: HistogramConfiguration<T>,
 ): Histogram<T> {
