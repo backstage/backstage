@@ -40,7 +40,7 @@ import {
 import {
   createCounterMetric,
   createHistogramMetric,
-} from '../../../../catalog-backend/src/util/metrics';
+} from '@backstage/plugin-catalog-backend';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;

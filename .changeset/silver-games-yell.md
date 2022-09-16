@@ -45,4 +45,9 @@ name: the name of the step that was run
 
 result: whether the task was OK or failed with an error
 
-You can find a guide for running Prometheus metrics here: https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/prometheus-metrics.md
+You can find a guide for running Prometheus metrics here: https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/prometheus-metrics.md 
+
+---
+'@backstage/plugin-catalog-backend': patch
+---
+Exported Metrics initializers in order to use prometheus metrics in other packages. 
