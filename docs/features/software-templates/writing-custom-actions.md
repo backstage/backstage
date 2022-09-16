@@ -156,15 +156,16 @@ export default async function createPlugin(
 Here is a list of Open Source custom actions that you can add to your Backstage
 scaffolder backend:
 
-| Name                    | Package                                                                                                                                 | Owner                                        |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| Yeoman                  | [plugin-scaffolder-backend-module-yeoman](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-yeoman)             | [Backstage](https://backstage.io)            |
-| Cookiecutter            | [plugin-scaffolder-backend-module-cookiecutter](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-cookiecutter) | [Backstage](https://backstage.io)            |
-| Rails                   | [plugin-scaffolder-backend-module-rails](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-rails)               | [Backstage](https://backstage.io)            |
-| HTTP requests           | [scaffolder-backend-module-http-request](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-http-request)                | [Roadie](https://roadie.io)                  |
-| Utility actions         | [scaffolder-backend-module-utils](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-utils)                              | [Roadie](https://roadie.io)                  |
-| AWS cli actions         | [scaffolder-backend-module-aws](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-aws)                                  | [Roadie](https://roadie.io)                  |
-| Scaffolder .NET Actions | [plugin-scaffolder-dotnet-backend](https://www.npmjs.com/package/@plusultra/plugin-scaffolder-dotnet-backend)                           | [Alef Carlos](https://github.com/alefcarlos) |
-| Scaffolder Git Actions  | [plugin-scaffolder-git-actions](https://www.npmjs.com/package/@mdude2314/backstage-plugin-scaffolder-git-actions)                       | [Drew Hill](https://github.com/arhill05)     |
+| Name                    | Package                                                                                                                                   | Owner                                                        |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Yeoman                  | [plugin-scaffolder-backend-module-yeoman](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-yeoman)               | [Backstage](https://backstage.io)                            |
+| Cookiecutter            | [plugin-scaffolder-backend-module-cookiecutter](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-cookiecutter)   | [Backstage](https://backstage.io)                            |
+| Rails                   | [plugin-scaffolder-backend-module-rails](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-rails)                 | [Backstage](https://backstage.io)                            |
+| HTTP requests           | [scaffolder-backend-module-http-request](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-http-request)                  | [Roadie](https://roadie.io)                                  |
+| Utility actions         | [scaffolder-backend-module-utils](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-utils)                                | [Roadie](https://roadie.io)                                  |
+| AWS cli actions         | [scaffolder-backend-module-aws](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-aws)                                    | [Roadie](https://roadie.io)                                  |
+| Scaffolder .NET Actions | [plugin-scaffolder-dotnet-backend](https://www.npmjs.com/package/@plusultra/plugin-scaffolder-dotnet-backend)                             | [Alef Carlos](https://github.com/alefcarlos)                 |
+| Scaffolder Git Actions  | [plugin-scaffolder-git-actions](https://www.npmjs.com/package/@mdude2314/backstage-plugin-scaffolder-git-actions)                         | [Drew Hill](https://github.com/arhill05)                     |
+| Azure Pipeline Actions  | [scaffolder-backend-module-azure-pipelines](https://www.npmjs.com/package/@parfuemerie-douglas/scaffolder-backend-module-azure-pipelines) | [Parfümerie Douglas](https://github.com/Parfuemerie-Douglas) |
 
 Have fun! 🚀
