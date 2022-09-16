@@ -189,8 +189,6 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* && \
     yarn config set python /usr/bin/python3
 
-# From here on we use the least-privileged `node` user to run the backend.
-USER node
 WORKDIR /app
 
 # This switches many Node.js dependencies to production mode.
@@ -209,6 +207,8 @@ RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
 # Copy any other files that we need at runtime
 COPY --chown=node:node app-config.yaml ./
 
+# From here on we use the least-privileged `node` user to run the backend.
+USER node
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]
 ```
 
