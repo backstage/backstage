@@ -18,6 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import type { JsonObject } from '@backstage/types';
 import type {
+  CustomResourceMatcher,
   FetchResponse,
   KubernetesFetchError,
   KubernetesRequestAuth,
@@ -85,12 +86,6 @@ export interface ObjectToFetch {
 export interface CustomResource extends ObjectToFetch {
   objectType: 'customresources';
 }
-
-/**
- *
- * @alpha
- */
-export type CustomResourceMatcher = Omit<ObjectToFetch, 'objectType'>;
 
 /**
  *

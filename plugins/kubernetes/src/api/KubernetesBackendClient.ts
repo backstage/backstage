@@ -16,10 +16,13 @@
 
 import { KubernetesApi } from './types';
 import {
+  KubernetesRequestAuth,
   KubernetesRequestBody,
   ObjectsByEntityResponse,
+  CustomResourceMatcher,
 } from '@backstage/plugin-kubernetes-common';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 
 export class KubernetesBackendClient implements KubernetesApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -51,10 +54,7 @@ export class KubernetesBackendClient implements KubernetesApi {
     return await response.json();
   }
 
-  private async postRequired(
-    path: string,
-    requestBody: KubernetesRequestBody,
-  ): Promise<any> {
+  private async postRequired(path: string, requestBody: any): Promise<any> {
     const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}${path}`;
     const { token: idToken } = await this.identityApi.getCredentials();
     const response = await fetch(url, {
@@ -76,6 +76,28 @@ export class KubernetesBackendClient implements KubernetesApi {
       `/services/${requestBody.entity.metadata.name}`,
       requestBody,
     );
+  }
+
+  async getWorkloadsByEntity(
+    auth: KubernetesRequestAuth,
+    entity: Entity,
+  ): Promise<ObjectsByEntityResponse> {
+    return await this.postRequired('/resources/workloads/query', {
+      auth,
+      entityRef: stringifyEntityRef(entity),
+    });
+  }
+
+  async getCustomObjectsByEntity(
+    auth: KubernetesRequestAuth,
+    customResources: CustomResourceMatcher[],
+    entity: Entity,
+  ): Promise<ObjectsByEntityResponse> {
+    return await this.postRequired(`/resources/custom/query`, {
+      entityRef: stringifyEntityRef(entity),
+      auth,
+      customResources,
+    });
   }
 
   async getClusters(): Promise<{ name: string; authProvider: string }[]> {
