@@ -70,7 +70,7 @@ class MockKubernetesClient implements KubernetesApi {
   async getCustomObjectsByEntity(
     _auth: KubernetesRequestAuth,
     _customResources: CustomResourceMatcher[],
-    entity: Entity,
+    _entity: Entity,
   ): Promise<ObjectsByEntityResponse> {
     throw new Error('Method not implemented.');
   }
