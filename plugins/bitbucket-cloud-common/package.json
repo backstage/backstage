@@ -21,7 +21,7 @@
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "refresh-schema": "scripts/prepare-schema.js && prettier --check bitbucket-cloud.oas.json -w",
+    "refresh-schema": "scripts/prepare-schema.js && yarn run -T prettier --check bitbucket-cloud.oas.json -w",
     "generate-models": "scripts/generate-models.sh",
     "reduce-models": "scripts/reduce-models.js",
     "update-models": "yarn refresh-schema && yarn generate-models && yarn reduce-models"
