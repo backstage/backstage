@@ -50,4 +50,4 @@ You can find a guide for running Prometheus metrics here: https://github.com/bac
 ---
 '@backstage/plugin-catalog-backend': patch
 ---
-Exported Metrics initializers in order to use prometheus metrics in other packages. 
+Exported Metrics helpers in order to use Prometheus metrics in other packages. 
