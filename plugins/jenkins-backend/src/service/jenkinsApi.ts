@@ -100,7 +100,7 @@ export class JenkinsApiImpl {
         // Filter only be the information we need, instead of loading all fields.
         // Limit to only show the latest build for each job and only load 50 jobs
         // at all.
-        // Whitespaces are only included for readablity here and stripped out
+        // Whitespaces are only included for readability here and stripped out
         // before sending to Jenkins
         tree: JenkinsApiImpl.jobsTreeSpec.replace(/\s/g, ''),
       });
