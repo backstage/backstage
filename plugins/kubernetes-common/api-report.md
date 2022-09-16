@@ -98,6 +98,16 @@ export interface CustomResourceFetchResponse {
 }
 
 // @public (undocumented)
+export interface CustomResourceMatcher {
+  // (undocumented)
+  apiVersion: string;
+  // (undocumented)
+  group: string;
+  // (undocumented)
+  plural: string;
+}
+
+// @public (undocumented)
 export interface DaemonSetsFetchResponse {
   // (undocumented)
   resources: Array<V1DaemonSet>;

@@ -10,10 +10,12 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
 import { ClusterObjects } from '@backstage/plugin-kubernetes-common';
+import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import type { JsonObject } from '@backstage/types';
+import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
@@ -245,8 +247,19 @@ export interface KubernetesApi {
     }[]
   >;
   // (undocumented)
+  getCustomObjectsByEntity(
+    auth: KubernetesRequestAuth,
+    customResources: CustomResourceMatcher[],
+    entity: Entity,
+  ): Promise<ObjectsByEntityResponse>;
+  // (undocumented)
   getObjectsByEntity(
     requestBody: KubernetesRequestBody,
+  ): Promise<ObjectsByEntityResponse>;
+  // (undocumented)
+  getWorkloadsByEntity(
+    auth: KubernetesRequestAuth,
+    entity: Entity,
   ): Promise<ObjectsByEntityResponse>;
 }
 
@@ -304,8 +317,19 @@ export class KubernetesBackendClient implements KubernetesApi {
     }[]
   >;
   // (undocumented)
+  getCustomObjectsByEntity(
+    auth: KubernetesRequestAuth,
+    customResources: CustomResourceMatcher[],
+    entity: Entity,
+  ): Promise<ObjectsByEntityResponse>;
+  // (undocumented)
   getObjectsByEntity(
     requestBody: KubernetesRequestBody,
+  ): Promise<ObjectsByEntityResponse>;
+  // (undocumented)
+  getWorkloadsByEntity(
+    auth: KubernetesRequestAuth,
+    entity: Entity,
   ): Promise<ObjectsByEntityResponse>;
 }
 
