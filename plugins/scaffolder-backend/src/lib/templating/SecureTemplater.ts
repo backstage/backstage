@@ -156,8 +156,6 @@ export class SecureTemplater {
           ]),
       );
     }
-    console.log(sandbox.additionalTemplateGlobals, 'HUH?');
-    console.log(sandbox.additionalTemplateFilters, 'HUH?');
     const vm = new VM({ sandbox });
 
     const nunjucksSource = await fs.readFile(
