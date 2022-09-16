@@ -285,7 +285,6 @@ export type OAuthAdapterOptions = {
   persistScopes?: boolean;
   appOrigin: string;
   baseUrl: string;
-  cookieConfig: ReturnType<CookieConfigurer>;
   cookieConfigurer: CookieConfigurer;
   isOriginAllowed: (origin: string) => boolean;
   callbackUrl: string;

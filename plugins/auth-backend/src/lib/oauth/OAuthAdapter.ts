@@ -51,7 +51,6 @@ export type OAuthAdapterOptions = {
   persistScopes?: boolean;
   appOrigin: string;
   baseUrl: string;
-  cookieConfig: ReturnType<CookieConfigurer>;
   cookieConfigurer: CookieConfigurer;
   isOriginAllowed: (origin: string) => boolean;
   callbackUrl: string;
@@ -71,24 +70,17 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     const { origin: appOrigin } = new URL(appUrl);
 
     const cookieConfigurer = config.cookieConfigurer ?? defaultCookieConfigurer;
-    const cookieConfig = cookieConfigurer({
-      providerId: options.providerId,
-      baseUrl: config.baseUrl,
-      callbackUrl: options.callbackUrl,
-      appOrigin,
-    });
 
     return new OAuthAdapter(handlers, {
       ...options,
       appOrigin,
       baseUrl,
-      cookieConfig,
       cookieConfigurer,
       isOriginAllowed,
     });
   }
 
-  private baseCookieOptions: CookieOptions;
+  private readonly baseCookieOptions: CookieOptions;
 
   constructor(
     private readonly handlers: OAuthHandlers,
@@ -97,7 +89,6 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     this.baseCookieOptions = {
       httpOnly: true,
       sameSite: 'lax',
-      ...this.options.cookieConfig,
     };
   }
 
@@ -111,9 +102,11 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       throw new InputError('No env provided in request query parameters');
     }
 
+    const cookieConfig = this.getCookieConfig();
+
     const nonce = crypto.randomBytes(16).toString('base64');
     // set a nonce cookie before redirecting to oauth provider
-    this.setNonceCookie(res, nonce);
+    this.setNonceCookie(res, nonce, cookieConfig);
 
     const state: OAuthState = { nonce, env, origin };
 
@@ -154,33 +147,23 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
         }
       }
 
-      // Update cookie options to reflect any changes for the appOrigin
-      const updatedCookieOptions = this.options.cookieConfigurer({
-        providerId: this.options.providerId,
-        baseUrl: this.options.baseUrl,
-        callbackUrl: this.options.callbackUrl,
-        appOrigin,
-      });
-      this.baseCookieOptions = {
-        ...this.baseCookieOptions,
-        ...updatedCookieOptions,
-      };
-
       // verify nonce cookie and state cookie on callback
       verifyNonce(req, this.options.providerId);
 
       const { response, refreshToken } = await this.handlers.handler(req);
 
+      const cookieConfig = this.getCookieConfig(appOrigin);
+
       // Store the scope that we have been granted for this session. This is useful if
       // the provider does not return granted scopes on refresh or if they are normalized.
       if (this.options.persistScopes && state.scope) {
-        this.setGrantedScopeCookie(res, state.scope);
+        this.setGrantedScopeCookie(res, state.scope, cookieConfig);
         response.providerInfo.scope = state.scope;
       }
 
       if (refreshToken) {
         // set new refresh token
-        this.setRefreshTokenCookie(res, refreshToken);
+        this.setRefreshTokenCookie(res, refreshToken, cookieConfig);
       }
 
       const identity = await this.populateIdentity(response.backstageIdentity);
@@ -208,7 +191,9 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     }
 
     // remove refresh token cookie if it is set
-    this.removeRefreshTokenCookie(res);
+    const origin = req.get('origin');
+    const cookieConfig = this.getCookieConfig(origin);
+    this.removeRefreshTokenCookie(res, cookieConfig);
 
     res.status(200).end();
   }
@@ -248,7 +233,9 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       );
 
       if (newRefreshToken && newRefreshToken !== refreshToken) {
-        this.setRefreshTokenCookie(res, newRefreshToken);
+        const origin = req.get('origin');
+        const cookieConfig = this.getCookieConfig(origin);
+        this.setRefreshTokenCookie(res, newRefreshToken, cookieConfig);
       }
 
       res.status(200).json({ ...response, backstageIdentity });
@@ -274,18 +261,28 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     return prepareBackstageIdentityResponse(identity);
   }
 
-  private setNonceCookie = (res: express.Response, nonce: string) => {
+  private setNonceCookie = (
+    res: express.Response,
+    nonce: string,
+    cookieConfig: ReturnType<CookieConfigurer>,
+  ) => {
     res.cookie(`${this.options.providerId}-nonce`, nonce, {
       maxAge: TEN_MINUTES_MS,
       ...this.baseCookieOptions,
-      path: `${this.options.cookieConfig.path}/handler`,
+      ...cookieConfig,
+      path: `${cookieConfig.path}/handler`,
     });
   };
 
-  private setGrantedScopeCookie = (res: express.Response, scope: string) => {
+  private setGrantedScopeCookie = (
+    res: express.Response,
+    scope: string,
+    cookieConfig: ReturnType<CookieConfigurer>,
+  ) => {
     res.cookie(`${this.options.providerId}-granted-scope`, scope, {
       maxAge: THOUSAND_DAYS_MS,
       ...this.baseCookieOptions,
+      ...cookieConfig,
     });
   };
 
@@ -296,17 +293,32 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
   private setRefreshTokenCookie = (
     res: express.Response,
     refreshToken: string,
+    cookieConfig: ReturnType<CookieConfigurer>,
   ) => {
     res.cookie(`${this.options.providerId}-refresh-token`, refreshToken, {
       maxAge: THOUSAND_DAYS_MS,
       ...this.baseCookieOptions,
+      ...cookieConfig,
     });
   };
 
-  private removeRefreshTokenCookie = (res: express.Response) => {
+  private removeRefreshTokenCookie = (
+    res: express.Response,
+    cookieConfig: ReturnType<CookieConfigurer>,
+  ) => {
     res.cookie(`${this.options.providerId}-refresh-token`, '', {
       maxAge: 0,
       ...this.baseCookieOptions,
+      ...cookieConfig,
+    });
+  };
+
+  private getCookieConfig = (origin?: string) => {
+    return this.options.cookieConfigurer({
+      providerId: this.options.providerId,
+      baseUrl: this.options.baseUrl,
+      callbackUrl: this.options.callbackUrl,
+      appOrigin: origin ?? this.options.appOrigin,
     });
   };
 }
