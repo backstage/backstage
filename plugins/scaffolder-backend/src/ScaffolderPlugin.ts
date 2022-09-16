@@ -39,6 +39,7 @@ export type ScaffolderPluginOptions = {
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateFilter>;
 };
 
 /**
@@ -101,7 +102,12 @@ export const scaffolderPlugin = createBackendPlugin({
         httpRouter,
         catalogClient,
       }) {
-        const { additionalTemplateFilters, taskBroker, taskWorkers } = options;
+        const {
+          additionalTemplateFilters,
+          taskBroker,
+          taskWorkers,
+          additionalTemplateGlobals,
+        } = options;
         const log = loggerToWinstonLogger(logger);
 
         const actions = options.actions || [
@@ -112,6 +118,7 @@ export const scaffolderPlugin = createBackendPlugin({
             reader,
             config,
             additionalTemplateFilters,
+            additionalTemplateGlobals,
           }),
         ];
 
@@ -130,6 +137,7 @@ export const scaffolderPlugin = createBackendPlugin({
           taskBroker,
           taskWorkers,
           additionalTemplateFilters,
+          additionalTemplateGlobals,
         });
         httpRouter.use(router);
       },

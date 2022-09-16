@@ -46,6 +46,7 @@ export type CreateWorkerOptions = {
   workingDirectory: string;
   logger: Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateFilter>;
 };
 
 /**
@@ -64,6 +65,7 @@ export class TaskWorker {
       integrations,
       workingDirectory,
       additionalTemplateFilters,
+      additionalTemplateGlobals,
     } = options;
 
     const workflowRunner = new NunjucksWorkflowRunner({
@@ -72,6 +74,7 @@ export class TaskWorker {
       logger,
       workingDirectory,
       additionalTemplateFilters,
+      additionalTemplateGlobals,
     });
 
     return new TaskWorker({

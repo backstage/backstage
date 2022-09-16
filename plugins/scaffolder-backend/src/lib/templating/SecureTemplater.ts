@@ -64,6 +64,12 @@ const { render, renderCompat } = (() => {
     }
   }
 
+  if (typeof additionalTemplateGlobals !== 'undefined') {
+    for (const [globalName, globalFn] of Object.entries(additionalTemplateGlobals)) {
+      env.addGlobal(globalName, (...args) => JSON.parse(globalFn(...args)));
+    }
+  }
+
   let uninstallCompat = undefined;
 
   function render(str, values) {
@@ -107,6 +113,7 @@ export interface SecureTemplaterOptions {
 
   /* Extra user-provided nunjucks filters */
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateFilter>;
 }
 
 export type SecureTemplateRenderer = (
@@ -116,8 +123,12 @@ export type SecureTemplateRenderer = (
 
 export class SecureTemplater {
   static async loadRenderer(options: SecureTemplaterOptions = {}) {
-    const { parseRepoUrl, cookiecutterCompat, additionalTemplateFilters } =
-      options;
+    const {
+      parseRepoUrl,
+      cookiecutterCompat,
+      additionalTemplateFilters,
+      additionalTemplateGlobals,
+    } = options;
     const sandbox: Record<string, any> = {};
 
     if (parseRepoUrl) {
@@ -134,7 +145,19 @@ export class SecureTemplater {
           ]),
       );
     }
-
+    if (additionalTemplateGlobals) {
+      console.log(additionalTemplateGlobals, '!!!!!!!!!!!');
+      sandbox.additionalTemplateGlobals = Object.fromEntries(
+        Object.entries(additionalTemplateGlobals)
+          .filter(([_, filterFunction]) => !!filterFunction)
+          .map(([filterName, filterFunction]) => [
+            filterName,
+            (...args: JsonValue[]) => JSON.stringify(filterFunction(...args)),
+          ]),
+      );
+    }
+    console.log(sandbox.additionalTemplateGlobals, 'HUH?');
+    console.log(sandbox.additionalTemplateFilters, 'HUH?');
     const vm = new VM({ sandbox });
 
     const nunjucksSource = await fs.readFile(

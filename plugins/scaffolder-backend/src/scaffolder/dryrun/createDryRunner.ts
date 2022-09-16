@@ -52,6 +52,7 @@ export type TemplateTesterCreateOptions = {
   actionRegistry: TemplateActionRegistry;
   workingDirectory: string;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateFilter>;
 };
 
 /**

@@ -82,6 +82,7 @@ export interface CreateBuiltInActionsOptions {
    * Template Manifests and also template skeleton files when using `fetch:template`.
    */
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateFilter>;
 }
 
 /**
@@ -100,6 +101,7 @@ export const createBuiltinActions = (
     catalogClient,
     config,
     additionalTemplateFilters,
+    additionalTemplateGlobals,
   } = options;
 
   const githubCredentialsProvider: GithubCredentialsProvider =
@@ -114,6 +116,7 @@ export const createBuiltinActions = (
       integrations,
       reader,
       additionalTemplateFilters,
+      additionalTemplateGlobals,
     }),
     createPublishGerritAction({
       integrations,

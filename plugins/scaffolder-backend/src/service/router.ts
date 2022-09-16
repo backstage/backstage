@@ -70,6 +70,7 @@ export interface RouterOptions {
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateFilter>;
   identity?: IdentityApi;
 }
 
@@ -160,6 +161,7 @@ export async function createRouter(
     taskWorkers,
     scheduler,
     additionalTemplateFilters,
+    additionalTemplateGlobals,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
@@ -207,6 +209,7 @@ export async function createRouter(
       logger,
       workingDirectory,
       additionalTemplateFilters,
+      additionalTemplateGlobals,
     });
     workers.push(worker);
   }
@@ -219,6 +222,7 @@ export async function createRouter(
         reader,
         config,
         additionalTemplateFilters,
+        additionalTemplateGlobals,
       });
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
@@ -230,6 +234,7 @@ export async function createRouter(
     logger,
     workingDirectory,
     additionalTemplateFilters,
+    additionalTemplateGlobals,
   });
 
   router
