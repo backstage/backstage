@@ -1,5 +1,6 @@
 ---
 '@backstage/plugin-scaffolder-backend': patch
+'@backstage/plugin-catalog-backend': patch
 ---
 
 Added a set of default Prometheus metrics around scaffolding. See below for a list of metrics and an explanation of their labels:
@@ -45,9 +46,4 @@ name: the name of the step that was run
 
 result: whether the task was OK or failed with an error
 
-You can find a guide for running Prometheus metrics here: https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/prometheus-metrics.md 
-
----
-'@backstage/plugin-catalog-backend': patch
----
-Exported Metrics helpers in order to use Prometheus metrics in other packages. 
+You can find a guide for running Prometheus metrics here: https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/prometheus-metrics.md
