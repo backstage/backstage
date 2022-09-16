@@ -15,16 +15,24 @@
  */
 
 import React, { ComponentType } from 'react';
-import { List, ListItem } from '@material-ui/core';
 import { MemoryRouter } from 'react-router';
+
+import { List, ListItem } from '@material-ui/core';
+import DefaultIcon from '@material-ui/icons/InsertDriveFile';
+import CustomIcon from '@material-ui/icons/NoteAdd';
 
 import { Link } from '@backstage/core-components';
 import { TestApiProvider } from '@backstage/test-utils';
+import { SearchDocument } from '@backstage/plugin-search-common';
 
 import { searchApiRef, MockSearchApi } from '../../api';
 import { SearchContextProvider } from '../../context';
+
 import { DefaultResultListItem } from '../DefaultResultListItem';
+import { SearchResultListLayout } from '../SearchResultList';
+
 import { SearchResult } from './SearchResult';
+import { SearchResultGroupLayout } from '../SearchResultGroup';
 
 const mockResults = {
   results: [
@@ -55,15 +63,15 @@ const mockResults = {
   ],
 };
 
+const searchApiMock = new MockSearchApi(mockResults);
+
 export default {
   title: 'Plugins/Search/SearchResult',
   component: SearchResult,
   decorators: [
     (Story: ComponentType<{}>) => (
       <MemoryRouter>
-        <TestApiProvider
-          apis={[[searchApiRef, new MockSearchApi(mockResults)]]}
-        >
+        <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
           <SearchContextProvider>
             <Story />
           </SearchContextProvider>
@@ -71,6 +79,17 @@ export default {
       </MemoryRouter>
     ),
   ],
+};
+
+const CustomResultListItem = (props: { result: SearchDocument }) => {
+  const { result } = props;
+  return (
+    <ListItem>
+      <Link to={result.location}>
+        {result.title} - {result.text}
+      </Link>
+    </ListItem>
+  );
 };
 
 export const Default = () => {
@@ -82,22 +101,119 @@ export const Default = () => {
             switch (type) {
               case 'custom-result-item':
                 return (
-                  <DefaultResultListItem
+                  <CustomResultListItem
                     key={document.location}
                     result={document}
                   />
                 );
               default:
                 return (
-                  <ListItem>
-                    <Link to={document.location}>
-                      {document.title} - {document.text}
-                    </Link>
-                  </ListItem>
+                  <DefaultResultListItem
+                    key={document.location}
+                    result={document}
+                  />
                 );
             }
           })}
         </List>
+      )}
+    </SearchResult>
+  );
+};
+
+export const WithQuery = () => {
+  const query = {
+    term: 'documentation',
+  };
+
+  return (
+    <SearchResult query={query}>
+      {({ results }) => (
+        <List>
+          {results.map(({ type, document }) => {
+            switch (type) {
+              case 'custom-result-item':
+                return (
+                  <CustomResultListItem
+                    key={document.location}
+                    result={document}
+                  />
+                );
+              default:
+                return (
+                  <DefaultResultListItem
+                    key={document.location}
+                    result={document}
+                  />
+                );
+            }
+          })}
+        </List>
+      )}
+    </SearchResult>
+  );
+};
+
+export const ListLayout = () => {
+  return (
+    <SearchResult>
+      {({ results }) => (
+        <SearchResultListLayout
+          resultItems={results}
+          renderResultItem={({ type, document }) => {
+            switch (type) {
+              case 'custom-result-item':
+                return (
+                  <CustomResultListItem
+                    key={document.location}
+                    result={document}
+                  />
+                );
+              default:
+                return (
+                  <DefaultResultListItem
+                    key={document.location}
+                    result={document}
+                  />
+                );
+            }
+          }}
+        />
+      )}
+    </SearchResult>
+  );
+};
+
+export const GroupLayout = () => {
+  return (
+    <SearchResult>
+      {({ results }) => (
+        <>
+          <SearchResultGroupLayout
+            icon={<CustomIcon />}
+            title="Custom"
+            link="See all custom results"
+            resultItems={results.filter(
+              ({ type }) => type === 'custom-result-item',
+            )}
+            renderResultItem={({ document }) => (
+              <CustomResultListItem key={document.location} result={document} />
+            )}
+          />
+          <SearchResultGroupLayout
+            icon={<DefaultIcon />}
+            title="Default"
+            resultItems={results.filter(
+              ({ type }) => type !== 'custom-result-item',
+            )}
+            renderResultItem={({ document }) => (
+              <DefaultResultListItem
+                key={document.location}
+                result={document}
+              />
+            )}
+          />
+        </>
       )}
     </SearchResult>
   );
