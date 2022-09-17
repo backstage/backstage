@@ -333,6 +333,8 @@ describe('BitbucketCloudEntityProvider', () => {
             annotations: {
               'backstage.io/managed-by-location': `url:${url}`,
               'backstage.io/managed-by-origin-location': `url:${url}`,
+              'bitbucket.org/repo-url':
+                'https://bitbucket.org/test-ws/test-repo2',
             },
             name: 'generated-7c2e6263b6cc2d14e69fd4d029afba601ad6dc3b',
           },
