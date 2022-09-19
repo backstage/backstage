@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,14 @@ import { kubernetesApiRef } from '../api/types';
 import { kubernetesAuthProvidersApiRef } from '../kubernetes-auth-provider/types';
 import { useEffect, useState } from 'react';
 import useInterval from 'react-use/lib/useInterval';
-import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { useApi } from '@backstage/core-plugin-api';
+import { KubernetesObjects } from './useKubernetesObjects';
 import { generateAuth } from './auth';
 
-export interface KubernetesObjects {
-  kubernetesObjects?: ObjectsByEntityResponse;
-  error?: string;
-}
-
-export const useKubernetesObjects = (
+export const useCustomResources = (
   entity: Entity,
+  customResourceMatchers: CustomResourceMatcher[],
   intervalMs: number = 10000,
 ): KubernetesObjects => {
   const kubernetesApi = useApi(kubernetesApiRef);
@@ -46,10 +43,11 @@ export const useKubernetesObjects = (
         kubernetesApi,
         kubernetesAuthProvidersApi,
       );
-      const objects = await kubernetesApi.getObjectsByEntity({
-        auth: auth,
-        entity: entity,
-      });
+      const objects = await kubernetesApi.getCustomObjectsByEntity(
+        auth,
+        customResourceMatchers,
+        entity,
+      );
       setResult({ kubernetesObjects: objects });
     } catch (e) {
       setResult({ error: e.message });

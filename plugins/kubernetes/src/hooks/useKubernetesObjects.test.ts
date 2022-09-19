@@ -155,53 +155,6 @@ describe('useKubernetesObjects', () => {
     expectMocksCalledCorrectly();
   });
 
-  it('should return error when getClusters throws', async () => {
-    (useApi as any).mockReturnValue({
-      getClusters: mockGetClusters.mockRejectedValue({ message: 'some-error' }),
-      getObjectsByEntity: mockGetObjectsByEntity,
-      decorateRequestBodyForAuth: mockDecorateRequestBodyForAuth,
-    });
-    const { result, waitForNextUpdate } = renderHook(() =>
-      useKubernetesObjects(entity),
-    );
-
-    await waitForNextUpdate();
-
-    expect(result.current.error).toBe('some-error');
-    expect(result.current.kubernetesObjects).toBeUndefined();
-
-    expect(mockGetClusters).toHaveBeenCalledTimes(1);
-    expect(mockGetClusters).toHaveBeenLastCalledWith();
-    expect(mockDecorateRequestBodyForAuth).toHaveBeenCalledTimes(0);
-    expect(mockGetObjectsByEntity).toHaveBeenCalledTimes(0);
-  });
-  it('should return error when decorateRequestBodyForAuth throws', async () => {
-    (useApi as any).mockReturnValue({
-      getClusters: mockGetClusters.mockResolvedValue(getClustersResponse),
-      decorateRequestBodyForAuth:
-        mockDecorateRequestBodyForAuth.mockRejectedValue({
-          message: 'some-error',
-        }),
-      getObjectsByEntity: mockGetObjectsByEntity,
-    });
-    const { result, waitForNextUpdate } = renderHook(() =>
-      useKubernetesObjects(entity),
-    );
-
-    await waitForNextUpdate();
-
-    expect(result.current.error).toBe('some-error');
-    expect(result.current.kubernetesObjects).toBeUndefined();
-
-    expect(mockGetClusters).toHaveBeenCalledTimes(1);
-    expect(mockGetClusters).toHaveBeenLastCalledWith();
-    expect(mockDecorateRequestBodyForAuth).toHaveBeenCalledTimes(1);
-    expect(mockDecorateRequestBodyForAuth).toHaveBeenCalledWith('google', {
-      entity,
-    });
-    expect(mockGetObjectsByEntity).toHaveBeenCalledTimes(0);
-  });
-
   describe('when retrying', () => {
     it('should reset error after getClusters has failed and then succeeded', async () => {
       (useApi as any).mockReturnValue({
