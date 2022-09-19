@@ -544,30 +544,6 @@ export class UrlPatternDiscovery implements DiscoveryApi {
 }
 
 // @public
-export class UserSettingsStorage implements StorageApi {
-  // (undocumented)
-  static create(options: {
-    fetchApi: FetchApi;
-    discoveryApi: DiscoveryApi;
-    errorApi: ErrorApi;
-    identityApi: IdentityApi;
-    namespace?: string;
-  }): UserSettingsStorage;
-  // (undocumented)
-  forBucket(name: string): StorageApi;
-  // (undocumented)
-  observe$<T extends JsonValue>(
-    key: string,
-  ): Observable<StorageValueSnapshot<T>>;
-  // (undocumented)
-  remove(key: string): Promise<void>;
-  // (undocumented)
-  set<T extends JsonValue>(key: string, data: T): Promise<void>;
-  // (undocumented)
-  snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
-}
-
-// @public
 export class WebStorage implements StorageApi {
   constructor(namespace: string, errorApi: ErrorApi);
   // (undocumented)

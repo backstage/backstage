@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { WebStorage } from './WebStorage';
+export { UserSettingsStorage } from './UserSettingsStorage';

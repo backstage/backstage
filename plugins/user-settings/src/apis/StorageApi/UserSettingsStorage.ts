@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { WebStorage } from '@backstage/core-app-api';
 import {
   DiscoveryApi,
   ErrorApi,
@@ -25,7 +26,6 @@ import {
 import { ResponseError } from '@backstage/errors';
 import { JsonValue, Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
-import { WebStorage } from './WebStorage';
 
 const JSON_HEADERS = {
   'Content-Type': 'application/json; charset=utf-8',

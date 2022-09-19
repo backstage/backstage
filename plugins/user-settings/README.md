@@ -2,15 +2,17 @@
 
 Welcome to the user-settings plugin!
 
-_This plugin was created through the Backstage CLI_
-
 ## About the plugin
 
-This plugin provides two components, `<UserSettings />` is intended to be used within the [`<Sidebar>`](https://backstage.io/storybook/?path=/story/sidebar--sample-sidebar) and displays the signed-in users profile picture and name.
+This plugin provides two components, `<UserSettings />` is intended to be used within the [`<Sidebar>`](https://backstage.io/storybook/?path=/story/sidebar--sample-sidebar) and displays the signed-in users profile picture and name. The second component is a settings page where the user can control different settings across the App.
 
-The second component is a settings page where the user can control different settings across the App.
+It also provides a `UserSettingsStorage` implementation of the `StorageApi`, to
+be used in the frontend as a persistent alternative to the builtin `WebStorage`.
+Please see [the backend
+README](https://github.com/backstage/backstage/tree/master/plugins/user-settings-backend)
+for installation instructions.
 
-## Usage
+## Components Usage
 
 Add the item to the Sidebar:
 

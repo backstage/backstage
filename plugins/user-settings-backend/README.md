@@ -57,7 +57,7 @@ To make use of the user settings backend, replace the `WebStorage` with the
 +  identityApi,
 +  storageApiRef,
  } from '@backstage/core-plugin-api';
-+import { UserSettingsStorage } from '@backstage/core-app-api';
++import { UserSettingsStorage } from '@backstage/plugin-user-settings';
 
  export const apis: AnyApiFactory[] = [
 +  createApiFactory({
