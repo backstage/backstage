@@ -15,7 +15,7 @@
  */
 
 import type { JenkinsInfo } from './jenkinsInfoProvider';
-import jenkins from 'jenkins';
+import Jenkins from 'jenkins';
 import type {
   BackstageBuild,
   BackstageProject,
@@ -177,12 +177,12 @@ export class JenkinsApiImpl {
 
   private static async getClient(jenkinsInfo: JenkinsInfo) {
     // The typings for the jenkins library are out of date so just cast to any
-    return jenkins({
+    return new (Jenkins as any)({
       baseUrl: jenkinsInfo.baseUrl,
       headers: jenkinsInfo.headers,
       promisify: true,
       crumbIssuer: jenkinsInfo.crumbIssuer,
-    }) as any;
+    });
   }
 
   private augmentProject(project: JenkinsProject): BackstageProject {
