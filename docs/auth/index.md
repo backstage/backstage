@@ -65,7 +65,7 @@ the local `auth.environment` setting will be selected.
 > and access to a Backstage Identity Token, which can be passed to backend
 > plugins.
 
-Using an authentication provide for sign-in is something you need to configure
+Using an authentication provider for sign-in is something you need to configure
 both in the frontend app, as well as the `auth` backend plugin. For information
 on how to configure the backend app, see [Sign-in Identities and Resolvers](./identity-resolver.md).
 The rest of this section will focus on how to configure sign-in for the frontend app.

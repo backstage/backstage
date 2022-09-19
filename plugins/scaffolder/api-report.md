@@ -77,7 +77,11 @@ export const EntityTagsPickerFieldExtension: FieldExtensionComponent<
 // @public
 export interface EntityTagsPickerUiOptions {
   // (undocumented)
+  helperText?: string;
+  // (undocumented)
   kinds?: string[];
+  // (undocumented)
+  showCounts?: boolean;
 }
 
 // @public

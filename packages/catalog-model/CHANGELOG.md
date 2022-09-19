@@ -1,5 +1,14 @@
 # @backstage/catalog-model
 
+## 1.1.1-next.0
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+
 ## 1.1.0
 
 ### Minor Changes
