@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import React from 'react';
 import { EntityRefLink } from './EntityRefLink';
@@ -27,6 +26,7 @@ import { LinkProps } from '@backstage/core-components';
 export type EntityRefLinksProps = {
   entityRefs: (string | Entity | CompoundEntityRef)[];
   defaultKind?: string;
+  titleFn?: (r: string | Entity | CompoundEntityRef) => string;
 } & Omit<LinkProps, 'to'>;
 
 /**
@@ -35,7 +35,7 @@ export type EntityRefLinksProps = {
  * @public
  */
 export function EntityRefLinks(props: EntityRefLinksProps) {
-  const { entityRefs, defaultKind, ...linkProps } = props;
+  const { entityRefs, defaultKind, titleFn, ...linkProps } = props;
   return (
     <>
       {entityRefs.map((r, i) => (
@@ -45,6 +45,7 @@ export function EntityRefLinks(props: EntityRefLinksProps) {
             {...linkProps}
             entityRef={r}
             defaultKind={defaultKind}
+            title={titleFn ? titleFn(r) : undefined}
           />
         </React.Fragment>
       ))}
