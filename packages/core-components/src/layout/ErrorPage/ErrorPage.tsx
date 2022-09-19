@@ -70,7 +70,6 @@ export function ErrorPage(props: IErrorPageProps) {
 
   return (
     <Grid container spacing={0} className={classes.container}>
-      <MicDrop />
       <Grid item xs={12} sm={8} md={4}>
         <Typography
           data-testid="error"
@@ -94,6 +93,7 @@ export function ErrorPage(props: IErrorPageProps) {
           think this is a bug.
         </Typography>
       </Grid>
+      <MicDrop />
     </Grid>
   );
 }
