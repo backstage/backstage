@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/types';
-import { useApi, AnalyticsContext } from '@backstage/core-plugin-api';
-import { SearchResultSet } from '@backstage/plugin-search-common';
-import {
-  createVersionedContext,
-  createVersionedValueMap,
-} from '@backstage/version-bridge';
 import React, {
   PropsWithChildren,
   useCallback,
@@ -30,6 +23,15 @@ import React, {
 } from 'react';
 import useAsync, { AsyncState } from 'react-use/lib/useAsync';
 import usePrevious from 'react-use/lib/usePrevious';
+
+import {
+  createVersionedContext,
+  createVersionedValueMap,
+} from '@backstage/version-bridge';
+import { JsonObject } from '@backstage/types';
+import { AnalyticsContext, useApi } from '@backstage/core-plugin-api';
+import { SearchResultSet } from '@backstage/plugin-search-common';
+
 import { searchApiRef } from '../api';
 
 /**
@@ -104,12 +106,13 @@ const useSearchContextValue = (
   initialValue: SearchContextState = searchInitialState,
 ) => {
   const searchApi = useApi(searchApiRef);
+
+  const [term, setTerm] = useState<string>(initialValue.term);
+  const [types, setTypes] = useState<string[]>(initialValue.types);
+  const [filters, setFilters] = useState<JsonObject>(initialValue.filters);
   const [pageCursor, setPageCursor] = useState<string | undefined>(
     initialValue.pageCursor,
   );
-  const [filters, setFilters] = useState<JsonObject>(initialValue.filters);
-  const [term, setTerm] = useState<string>(initialValue.term);
-  const [types, setTypes] = useState<string[]>(initialValue.types);
 
   const prevTerm = usePrevious(term);
 
@@ -121,7 +124,7 @@ const useSearchContextValue = (
         pageCursor,
         types,
       }),
-    [term, filters, types, pageCursor],
+    [term, types, filters, pageCursor],
   );
 
   const hasNextPage =

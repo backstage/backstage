@@ -40,6 +40,8 @@ export interface Config {
           region?: string;
           /** @visibility frontend */
           skipTLSVerify?: boolean;
+          /** @visibility frontend */
+          skipMetricsLookup?: boolean;
         }
       | {
           /** @visibility frontend */
@@ -62,6 +64,8 @@ export interface Config {
             oidcTokenProvider?: string;
             /** @visibility frontend */
             skipTLSVerify?: boolean;
+            /** @visibility frontend */
+            skipMetricsLookup?: boolean;
           }>;
         }
     >;
