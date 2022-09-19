@@ -20,6 +20,7 @@ export * from './ContentHeader';
 export * from './ErrorBoundary';
 export * from './ErrorPage';
 export * from './Header';
+export * from './HeaderActionMenu';
 export * from './HeaderLabel';
 export * from './HeaderTabs';
 export * from './HomepageTimer';

@@ -46,6 +46,7 @@
     "@backstage/plugin-permission-backend": "^0.5.11-next.2",
     "@backstage/plugin-permission-common": "^0.6.4-next.2",
     "@backstage/plugin-permission-node": "^0.6.5-next.3",
+    "@backstage/plugin-playlist-backend": "^0.0.0",
     "@backstage/plugin-proxy-backend": "^0.2.30-next.2",
     "@backstage/plugin-rollbar-backend": "^0.1.33-next.3",
     "@backstage/plugin-scaffolder-backend": "^1.6.0-next.3",
