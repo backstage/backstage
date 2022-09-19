@@ -16,13 +16,13 @@
 
 import { KubernetesApi } from './types';
 import {
-  KubernetesRequestAuth,
   KubernetesRequestBody,
   ObjectsByEntityResponse,
-  CustomResourceMatcher,
+  WorkloadsByEntityRequest,
+  CustomObjectsByEntityRequest,
 } from '@backstage/plugin-kubernetes-common';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 export class KubernetesBackendClient implements KubernetesApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -79,24 +79,21 @@ export class KubernetesBackendClient implements KubernetesApi {
   }
 
   async getWorkloadsByEntity(
-    auth: KubernetesRequestAuth,
-    entity: Entity,
+    request: WorkloadsByEntityRequest,
   ): Promise<ObjectsByEntityResponse> {
     return await this.postRequired('/resources/workloads/query', {
-      auth,
-      entityRef: stringifyEntityRef(entity),
+      auth: request.auth,
+      entityRef: stringifyEntityRef(request.entity),
     });
   }
 
   async getCustomObjectsByEntity(
-    auth: KubernetesRequestAuth,
-    customResources: CustomResourceMatcher[],
-    entity: Entity,
+    request: CustomObjectsByEntityRequest,
   ): Promise<ObjectsByEntityResponse> {
     return await this.postRequired(`/resources/custom/query`, {
-      entityRef: stringifyEntityRef(entity),
-      auth,
-      customResources,
+      entityRef: stringifyEntityRef(request.entity),
+      auth: request.auth,
+      customResources: request.customResources,
     });
   }
 

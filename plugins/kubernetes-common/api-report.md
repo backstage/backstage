@@ -90,6 +90,16 @@ export interface CronJobsFetchResponse {
 }
 
 // @public (undocumented)
+export interface CustomObjectsByEntityRequest {
+  // (undocumented)
+  auth: KubernetesRequestAuth;
+  // (undocumented)
+  customResources: CustomResourceMatcher[];
+  // (undocumented)
+  entity: Entity;
+}
+
+// @public (undocumented)
 export interface CustomResourceFetchResponse {
   // (undocumented)
   resources: Array<any>;
@@ -242,5 +252,13 @@ export interface StatefulSetsFetchResponse {
   resources: Array<V1StatefulSet>;
   // (undocumented)
   type: 'statefulsets';
+}
+
+// @public (undocumented)
+export interface WorkloadsByEntityRequest {
+  // (undocumented)
+  auth: KubernetesRequestAuth;
+  // (undocumented)
+  entity: Entity;
 }
 ```
