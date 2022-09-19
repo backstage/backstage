@@ -84,7 +84,7 @@ export type AdrCollatorFactoryOptions = {
   /**
    * URL Reader
    */
-  reader: UrlReader;
+  reader?: UrlReader;
   /**
    * Token Manager
    */
