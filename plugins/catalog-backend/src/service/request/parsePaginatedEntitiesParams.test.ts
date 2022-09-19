@@ -28,8 +28,7 @@ describe('parsePaginatedEntitiesParams', () => {
         fields: ['kind'],
         limit: '3',
         filter: ['a=1', 'b=2'],
-        sortField: 'sortField',
-        sortFieldOrder: 'desc',
+        sortField: ['metadata.name,desc'],
         query: 'query',
       };
       const parsedObj = parsePaginatedEntitiesParams(
@@ -37,8 +36,9 @@ describe('parsePaginatedEntitiesParams', () => {
       ) as PaginatedEntitiesInitialRequest;
       expect(parsedObj.limit).toBe(3);
       expect(parsedObj.fields).toBeDefined();
-      expect(parsedObj.sortField).toBe('sortField');
-      expect(parsedObj.sortFieldOrder).toBe('desc');
+      expect(parsedObj.sortFields).toEqual([
+        { field: 'metadata.name', order: 'desc' },
+      ]);
       expect(parsedObj.filter).toBeDefined();
       expect(parsedObj.query).toBe('query');
       expect(parsedObj).not.toHaveProperty('authorizationToken');
@@ -50,8 +50,7 @@ describe('parsePaginatedEntitiesParams', () => {
       ) as PaginatedEntitiesInitialRequest;
       expect(parsedObj.limit).toBeUndefined();
       expect(parsedObj.fields).toBeUndefined();
-      expect(parsedObj.sortField).toBeUndefined();
-      expect(parsedObj.sortFieldOrder).toBeUndefined();
+      expect(parsedObj.sortFields).toBeUndefined();
       expect(parsedObj.filter).toBeUndefined();
       expect(parsedObj.query).toBeUndefined();
       expect(parsedObj).not.toHaveProperty('authorizationToken');
@@ -63,8 +62,7 @@ describe('parsePaginatedEntitiesParams', () => {
         limit: 'asd',
       },
       { filter: 3 },
-      { sortField: [] },
-      { sortFieldOrder: 'something' },
+      { sortField: ['metadata.uid,diagonal'] },
       { fields: [4] },
       { query: [] },
     ])('should throw if some parameter is not valid %p', params => {

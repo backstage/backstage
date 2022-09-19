@@ -308,11 +308,13 @@ describe('CatalogClient', () => {
         fields: ['a', 'b'],
         limit: 100,
         query: 'query',
-        sortField: 'metadata.name',
-        sortFieldOrder: 'asc',
+        sortFields: [
+          { field: 'metadata.name', order: 'asc' },
+          { field: 'metadata.uid', order: 'desc' },
+        ],
       });
       expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
-        '?limit=100&sortField=metadata.name&sortFieldOrder=asc&fields=a,b&query=query',
+        '?limit=100&sortField=metadata.name,asc&sortField=metadata.uid,desc&fields=a,b&query=query',
       );
     });
 
@@ -329,8 +331,7 @@ describe('CatalogClient', () => {
         fields: ['a', 'b'],
         limit: 100,
         query: 'query',
-        sortField: 'metadata.name',
-        sortFieldOrder: 'asc',
+        sortFields: [{ field: 'metadata.name', order: 'asc' }],
         cursor: 'cursor',
       });
       expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(

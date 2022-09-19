@@ -21,6 +21,7 @@ export type {
   CatalogApi,
   CatalogRequestOptions,
   EntitiesFilter,
+  EntitySortField,
   GetEntitiesRequest,
   GetEntitiesResponse,
   GetEntityAncestorsRequest,

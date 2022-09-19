@@ -151,6 +151,12 @@ export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
   'backstage.io/catalog-processing';
 
 // @public
+export type EntitySortField = {
+  field: string;
+  order: 'asc' | 'desc';
+};
+
+// @public
 export interface GetEntitiesRequest {
   after?: string;
   fields?: string[] | undefined;
@@ -212,9 +218,8 @@ export type GetPaginatedEntitiesInitialRequest =
       fields?: string[];
       limit?: number;
       filter?: EntitiesFilter;
-      sortField?: string;
+      sortFields?: EntitySortField[];
       query?: string;
-      sortFieldOrder?: 'asc' | 'desc';
     }
   | undefined;
 

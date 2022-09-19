@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/errors';
 import {
   PaginatedEntitiesCursorRequest,
   PaginatedEntitiesInitialRequest,
@@ -22,6 +21,7 @@ import {
 } from '../../catalog/types';
 import { parseIntegerParam, parseStringParam } from './common';
 import { parseEntityFilterParams } from './parseEntityFilterParams';
+import { parseEntitySortFieldParams } from './parseEntitySortFieldParams';
 import { parseEntityTransformParams } from './parseEntityTransformParams';
 
 export function parsePaginatedEntitiesParams(
@@ -42,33 +42,16 @@ export function parsePaginatedEntitiesParams(
 
   const filter = parseEntityFilterParams(params);
   const query = parseStringParam(params.query, 'query');
-  const sortField = parseStringParam(params.sortField, 'sortField');
-  const sortFieldOrder = parseSortFieldOrder(
-    params.sortFieldOrder,
-    'sortFieldOrder',
-  );
+  const sortFields = parseEntitySortFieldParams(params);
 
   const response: Omit<PaginatedEntitiesInitialRequest, 'authorizationToken'> =
     {
       fields,
       filter,
       limit,
-      sortField,
-      sortFieldOrder,
+      sortFields,
       query,
     };
 
   return response;
-}
-
-function parseSortFieldOrder(sortFieldOrder: unknown, ctx: string) {
-  const isSortFieldOrder =
-    sortFieldOrder === undefined ||
-    sortFieldOrder === 'asc' ||
-    sortFieldOrder === 'desc';
-
-  if (isSortFieldOrder) {
-    return sortFieldOrder;
-  }
-  throw new InputError(`Invalid ${ctx}, not asc or desc`);
 }

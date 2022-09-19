@@ -162,24 +162,16 @@ export class CatalogClient implements CatalogApi {
     const params: string[] = [];
 
     if (isPaginatedEntitiesInitialRequest(request)) {
-      const {
-        fields = [],
-        filter,
-        limit,
-        sortField,
-        sortFieldOrder,
-        query,
-      } = request ?? {};
+      const { fields = [], filter, limit, sortFields, query } = request ?? {};
       params.push(...this.getParams(filter));
 
       if (limit !== undefined) {
         params.push(`limit=${limit}`);
       }
-      if (sortField !== undefined) {
-        params.push(`sortField=${sortField}`);
-      }
-      if (sortFieldOrder !== undefined) {
-        params.push(`sortFieldOrder=${sortFieldOrder}`);
+      if (sortFields !== undefined) {
+        sortFields.forEach(({ field, order }) =>
+          params.push(`sortField=${field},${order}`),
+        );
       }
       if (fields.length) {
         params.push(`fields=${fields.map(encodeURIComponent).join(',')}`);

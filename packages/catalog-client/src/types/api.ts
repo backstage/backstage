@@ -262,6 +262,13 @@ export type EntitiesFilter =
   | undefined;
 
 /**
+ * Used for sorting the entities.
+ *
+ * @public
+ */
+export type EntitySortField = { field: string; order: 'asc' | 'desc' };
+
+/**
  * The response type for {@link CatalogClient.addLocation}.
  *
  * @public
@@ -297,9 +304,8 @@ export type GetPaginatedEntitiesInitialRequest =
       fields?: string[];
       limit?: number;
       filter?: EntitiesFilter;
-      sortField?: string;
+      sortFields?: EntitySortField[];
       query?: string;
-      sortFieldOrder?: 'asc' | 'desc';
     }
   | undefined;
 
