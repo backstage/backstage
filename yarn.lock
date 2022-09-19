@@ -14777,12 +14777,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/passport@npm:*, @types/passport@npm:^1.0.3":
+"@types/passport@npm:*":
   version: 1.0.10
   resolution: "@types/passport@npm:1.0.10"
   dependencies:
     "@types/express": "*"
   checksum: bd9704b64db7a16d53bd547bb436fb5a1cf9747dbe888a10b124603aeccf297f162a5b0854409cd6ee6bff1a8e9cdf989b07738f600f37949abfa8f8e5960deb
+  languageName: node
+  linkType: hard
+
+"@types/passport@npm:^1.0.3":
+  version: 1.0.11
+  resolution: "@types/passport@npm:1.0.11"
+  dependencies:
+    "@types/express": "*"
+  checksum: 7fea92aeb0d05bd872c17deadc1f1219dbdb23bae1b8f50e1c432ef755bce2b5f3fd60af76c38815f1fbaa047960d3638a4144221c4330457091be1f6e492168
   languageName: node
   linkType: hard
 
