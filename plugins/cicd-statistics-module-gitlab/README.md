@@ -14,7 +14,7 @@ This is an extension module to the `cicd-statistics` plugin, providing a `CicdSt
 import { gitlabAuthApiRef } from '@backstage/core-plugin-api';
 
 import { cicdStatisticsApiRef } from '@backstage/plugin-cicd-statistics';
-import { CicdStatisticsApiGitlab } from '@backstage plugin-cicd-statistics-module-gitlab';
+import { CicdStatisticsApiGitlab } from '@backstage/plugin-cicd-statistics-module-gitlab';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
