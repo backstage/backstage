@@ -277,7 +277,7 @@
       },
       "auth/identity-resolver",
       "auth/oauth",
-      "auth/oidc.md",
+      "auth/oidc",
       "auth/add-auth-provider",
       "auth/troubleshooting",
       "auth/glossary"
