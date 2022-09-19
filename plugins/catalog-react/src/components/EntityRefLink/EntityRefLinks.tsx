@@ -26,7 +26,7 @@ import { LinkProps } from '@backstage/core-components';
 export type EntityRefLinksProps = {
   entityRefs: (string | Entity | CompoundEntityRef)[];
   defaultKind?: string;
-  getTitle?: (cer: CompoundEntityRef) => string;
+  getTitle?: (cer: CompoundEntityRef) => string | undefined;
 } & Omit<LinkProps, 'to'>;
 
 /**
