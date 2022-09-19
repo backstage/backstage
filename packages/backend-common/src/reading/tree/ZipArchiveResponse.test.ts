@@ -16,6 +16,8 @@
 
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
+import { Readable } from 'stream';
+import { create as createArchive } from 'archiver';
 import { resolve as resolvePath } from 'path';
 import { ZipArchiveResponse } from './ZipArchiveResponse';
 
@@ -159,6 +161,48 @@ describe('ZipArchiveResponse', () => {
     await expect(
       fs.pathExists(resolvePath(dir, 'docs/index.md')),
     ).resolves.toBe(false);
+  });
+
+  it('should extract a large archive', async () => {
+    const fileCount = 10;
+    const fileSize = 1000 * 1000;
+    const filePath = await new Promise<string>((resolve, reject) => {
+      const outFile = '/large-archive.zip';
+      const archive = createArchive('zip');
+
+      archive.on('error', reject);
+      archive.on('end', () => resolve(outFile));
+      archive.pipe(fs.createWriteStream(outFile));
+      archive.on('warning', w => console.warn('WARN', w));
+
+      for (let i = 0; i < fileCount; i++) {
+        // Workaround for https://github.com/archiverjs/node-archiver/issues/542
+        // TODO(Rugvip): Without this workaround the archive entries end up with an uncompressed size of 0.
+        //               That in turn causes yauzl to hang on extraction, because the internal transform error is ignored.
+        const stream = new Readable();
+        stream.push(Buffer.alloc(fileSize, i));
+        stream.push(null);
+        archive.append(stream, { name: `file-${i}.data` });
+      }
+
+      archive.finalize();
+    });
+
+    const stream = fs.createReadStream(filePath);
+
+    const res = new ZipArchiveResponse(stream, '', '/tmp', 'etag');
+    const dir = await res.dir({
+      targetDir: '/out',
+    });
+
+    expect(dir).toBe('/out');
+    const files = await fs.readdir(dir);
+    expect(files).toHaveLength(fileCount);
+
+    for (const file of files) {
+      const stat = await fs.stat(resolvePath(dir, file));
+      expect(stat.size).toBe(fileSize);
+    }
   });
 
   it('should throw on invalid archive', async () => {
