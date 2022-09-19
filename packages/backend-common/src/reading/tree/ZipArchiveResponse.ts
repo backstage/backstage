@@ -124,9 +124,11 @@ export class ZipArchiveResponse implements ReadTreeResponse {
               }
 
               await callback(entry, readStream);
+              zipfile.readEntry();
             });
+          } else {
+            zipfile.readEntry();
           }
-          zipfile.readEntry();
         });
         zipfile.once('end', () => resolve());
         zipfile.on('error', e => reject(e));
