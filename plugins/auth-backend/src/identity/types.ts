@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { JsonValue } from '@backstage/types';
+
 /** Represents any form of serializable JWK */
 export interface AnyJWK extends Record<string, string> {
   use: 'sig';
@@ -33,14 +35,15 @@ export type TokenParams = {
    * the subject claim, `sub`. It is common to also list entity ownership relations in the
    * `ent` list. Additional claims may also be added at the developer's discretion except
    * for the following list, which will be overwritten by the TokenIssuer: `iss`, `aud`,
-   * `iat`, and `exp`.
+   * `iat`, and `exp`. The Backstage team also maintains the right add new claims in the future
+   * without listing the change as a "breaking change".
    */
   claims: {
     /** The token subject, i.e. User ID */
     sub: string;
     /** A list of entity references that the user claims ownership through */
     ent?: string[];
-  } & Record<string, string | string[]>;
+  } & Record<string, JsonValue>;
 };
 
 /**
