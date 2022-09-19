@@ -40,7 +40,7 @@ export function EntityRefLinks(props: EntityRefLinksProps) {
     <>
       {entityRefs.map((r, i) => {
         const isCompoundEntityRef =
-          getTitle && typeof r !== 'string' && !('metadata' in r && getTitle);
+          getTitle && typeof r !== 'string' && !('metadata' in r);
 
         const title = isCompoundEntityRef
           ? getTitle(r as CompoundEntityRef)
