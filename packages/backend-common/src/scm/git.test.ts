@@ -95,6 +95,22 @@ describe('Git', () => {
     });
   });
 
+  describe('branch', () => {
+    it('should call isomorphic-git with the correct arguments', async () => {
+      const git = Git.fromAuth({});
+      const dir = 'mockdirectory';
+      const ref = 'master';
+
+      await git.branch({ dir, ref });
+
+      expect(isomorphic.branch).toHaveBeenCalledWith({
+        fs,
+        dir,
+        ref,
+      });
+    });
+  });
+
   describe('commit', () => {
     it('should call isomorphic-git with the correct arguments', async () => {
       const git = Git.fromAuth({});

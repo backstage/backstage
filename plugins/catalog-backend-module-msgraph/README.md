@@ -54,6 +54,8 @@ catalog:
           # and for the syntax https://docs.microsoft.com/en-us/graph/query-parameters#filter-parameter
           # This and userGroupMemberFilter are mutually exclusive, only one can be specified
           filter: accountEnabled eq true and userType eq 'member'
+          # See  https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-1.0
+          select: ['id', 'displayName', 'description']
         # Optional configuration block
         userGroupMember:
           # Optional filter for users, use group membership to get users.

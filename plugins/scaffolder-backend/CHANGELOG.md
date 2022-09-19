@@ -1,5 +1,23 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.6.0-next.3
+
+### Patch Changes
+
+- 50467bc15b: The number of task workers used to execute templates now default to 3, rather than 1.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.1.0-next.2
+  - @backstage/backend-plugin-api@0.1.2-next.2
+  - @backstage/catalog-client@1.1.0-next.2
+  - @backstage/catalog-model@1.1.1-next.0
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+  - @backstage/integration@1.3.1-next.2
+  - @backstage/plugin-catalog-backend@1.4.0-next.3
+  - @backstage/backend-common@0.15.1-next.3
+  - @backstage/plugin-scaffolder-common@1.2.0-next.1
+  - @backstage/plugin-auth-node@0.2.5-next.3
+
 ## 1.6.0-next.2
 
 ### Minor Changes

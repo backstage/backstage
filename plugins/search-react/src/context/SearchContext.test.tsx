@@ -160,6 +160,60 @@ describe('SearchContext', () => {
 
       expect(result.current.pageCursor).toBeUndefined();
     });
+
+    it('When filters are cleared', async () => {
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState: {
+            ...initialState,
+            filters: { foo: 'bar' },
+            term: 'first term',
+            pageCursor: 'SOMEPAGE',
+          },
+        },
+      });
+
+      await waitForNextUpdate();
+
+      expect(result.current.filters).toEqual({ foo: 'bar' });
+      expect(result.current.pageCursor).toEqual('SOMEPAGE');
+
+      act(() => {
+        result.current.setFilters({});
+      });
+
+      await waitForNextUpdate();
+
+      expect(result.current.pageCursor).toBeUndefined();
+    });
+
+    it('When filters are set (and different from previous)', async () => {
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState: {
+            ...initialState,
+            filters: { foo: 'bar' },
+            term: 'first term',
+            pageCursor: 'SOMEPAGE',
+          },
+        },
+      });
+
+      await waitForNextUpdate();
+
+      expect(result.current.filters).toEqual({ foo: 'bar' });
+      expect(result.current.pageCursor).toEqual('SOMEPAGE');
+
+      act(() => {
+        result.current.setFilters({ foo: 'test' });
+      });
+
+      await waitForNextUpdate();
+
+      expect(result.current.pageCursor).toBeUndefined();
+    });
   });
 
   describe('Performs search (and sets results)', () => {

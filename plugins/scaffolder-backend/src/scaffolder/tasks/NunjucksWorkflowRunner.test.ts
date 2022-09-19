@@ -56,9 +56,11 @@ describe('DefaultWorkflowRunner', () => {
   const createMockTaskWithSpec = (
     spec: TaskSpec,
     secrets?: TaskSecrets,
+    isDryRun?: boolean,
   ): TaskContext => ({
     spec,
     secrets,
+    isDryRun,
     complete: async () => {},
     done: false,
     emitLog: async () => {},
@@ -66,7 +68,7 @@ describe('DefaultWorkflowRunner', () => {
   });
 
   beforeEach(() => {
-    winston.format.simple(); // put logform the require cache before mocking fs
+    winston.format.simple(); // put logform in the require.cache before mocking fs
     mockFs({
       '/tmp': mockFs.directory(),
       ...realFiles,
@@ -85,6 +87,7 @@ describe('DefaultWorkflowRunner', () => {
     actionRegistry.register({
       id: 'jest-validated-action',
       description: 'Mock action for testing',
+      supportsDryRun: true,
       handler: fakeActionHandler,
       schema: {
         input: {
@@ -169,6 +172,21 @@ describe('DefaultWorkflowRunner', () => {
 
     it('should pass metadata through', async () => {
       const entityRef = `template:default/templateName`;
+
+      const userEntity: UserEntity = {
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'User',
+        metadata: {
+          name: 'user',
+        },
+        spec: {
+          profile: {
+            displayName: 'Bogdan Nechyporenko',
+            email: 'bnechyporenko@company.com',
+          },
+        },
+      };
+
       const task = createMockTaskWithSpec({
         apiVersion: 'scaffolder.backstage.io/v1beta3',
         parameters: {},
@@ -182,12 +200,19 @@ describe('DefaultWorkflowRunner', () => {
           },
         ],
         templateInfo: { entityRef },
+        user: {
+          entity: userEntity,
+        },
       });
 
       await runner.execute(task);
 
       expect(fakeActionHandler.mock.calls[0][0].templateInfo).toEqual({
         entityRef,
+      });
+
+      expect(fakeActionHandler.mock.calls[0][0].user).toEqual({
+        entity: userEntity,
       });
     });
 
@@ -616,6 +641,34 @@ describe('DefaultWorkflowRunner', () => {
         owner: 'owner',
         repo: 'repo',
       });
+    });
+  });
+
+  describe('dry run', () => {
+    it('sets isDryRun flag correctly', async () => {
+      const task = createMockTaskWithSpec(
+        {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          parameters: {},
+          output: {},
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-validated-action',
+              input: { foo: 1 },
+            },
+          ],
+        },
+        {
+          backstageToken: 'secret',
+        },
+        true,
+      );
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler.mock.calls[0][0].isDryRun).toEqual(true);
     });
   });
 });

@@ -1,5 +1,61 @@
 # example-app
 
+## 0.2.75-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.4-next.2
+  - @backstage/app-defaults@1.0.6-next.2
+  - @backstage/catalog-model@1.1.1-next.0
+  - @backstage/config@1.0.2-next.0
+  - @backstage/core-app-api@1.1.0-next.3
+  - @backstage/core-components@0.11.1-next.3
+  - @backstage/core-plugin-api@1.0.6-next.3
+  - @backstage/integration-react@1.1.4-next.2
+  - @backstage/plugin-airbrake@0.3.9-next.3
+  - @backstage/plugin-apache-airflow@0.2.2-next.3
+  - @backstage/plugin-api-docs@0.8.9-next.3
+  - @backstage/plugin-azure-devops@0.2.0-next.3
+  - @backstage/plugin-badges@0.2.33-next.3
+  - @backstage/plugin-catalog-graph@0.2.21-next.2
+  - @backstage/plugin-catalog-import@0.8.12-next.3
+  - @backstage/plugin-circleci@0.3.9-next.3
+  - @backstage/plugin-cloudbuild@0.3.9-next.3
+  - @backstage/plugin-code-coverage@0.2.2-next.3
+  - @backstage/plugin-cost-insights@0.11.31-next.3
+  - @backstage/plugin-dynatrace@0.2.0-next.3
+  - @backstage/plugin-explore@0.3.40-next.3
+  - @backstage/plugin-gcalendar@0.3.5-next.3
+  - @backstage/plugin-gcp-projects@0.3.28-next.3
+  - @backstage/plugin-github-actions@0.5.9-next.3
+  - @backstage/plugin-gocd@0.1.15-next.2
+  - @backstage/plugin-graphiql@0.2.41-next.3
+  - @backstage/plugin-home@0.4.25-next.3
+  - @backstage/plugin-jenkins@0.7.8-next.3
+  - @backstage/plugin-kafka@0.3.9-next.3
+  - @backstage/plugin-kubernetes@0.7.2-next.3
+  - @backstage/plugin-lighthouse@0.3.9-next.3
+  - @backstage/plugin-newrelic@0.3.27-next.3
+  - @backstage/plugin-org@0.5.9-next.3
+  - @backstage/plugin-pagerduty@0.5.2-next.3
+  - @backstage/plugin-permission-react@0.4.5-next.2
+  - @backstage/plugin-rollbar@0.4.9-next.3
+  - @backstage/plugin-scaffolder@1.6.0-next.3
+  - @backstage/plugin-search@1.0.2-next.3
+  - @backstage/plugin-sentry@0.4.2-next.3
+  - @backstage/plugin-shortcuts@0.3.1-next.3
+  - @backstage/plugin-stack-overflow@0.1.5-next.3
+  - @backstage/plugin-tech-insights@0.3.0-next.3
+  - @backstage/plugin-tech-radar@0.5.16-next.3
+  - @backstage/plugin-techdocs@1.3.2-next.3
+  - @backstage/plugin-techdocs-module-addons-contrib@1.0.4-next.2
+  - @backstage/plugin-todo@0.2.11-next.3
+  - @backstage/plugin-user-settings@0.4.8-next.3
+  - @backstage/cli@0.19.0-next.3
+  - @backstage/plugin-newrelic-dashboard@0.2.2-next.2
+  - @backstage/plugin-techdocs-react@1.0.4-next.2
+
 ## 0.2.75-next.2
 
 ### Patch Changes

@@ -89,6 +89,7 @@ export async function readMicrosoftGraphUsers(
     queryMode?: 'basic' | 'advanced';
     userFilter?: string;
     userExpand?: string;
+    userSelect?: string[];
     transformer?: UserTransformer;
     logger: Logger;
   },
@@ -105,6 +106,7 @@ export async function readMicrosoftGraphUsers(
     {
       filter: options.userFilter,
       expand: options.userExpand,
+      select: options.userSelect,
     },
     options.queryMode,
   )) {
@@ -145,6 +147,7 @@ export async function readMicrosoftGraphUsersInGroups(
   options: {
     queryMode?: 'basic' | 'advanced';
     userExpand?: string;
+    userSelect?: string[];
     userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
     groupExpand?: string;
@@ -534,6 +537,7 @@ export async function readMicrosoftGraphOrg(
   options: {
     userExpand?: string;
     userFilter?: string;
+    userSelect?: string[];
     userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
     groupExpand?: string;
@@ -565,6 +569,7 @@ export async function readMicrosoftGraphOrg(
     const { users: usersWithFilter } = await readMicrosoftGraphUsers(client, {
       queryMode: options.queryMode,
       userFilter: options.userFilter,
+      userSelect: options.userSelect,
       userExpand: options.userExpand,
       transformer: options.userTransformer,
       logger: options.logger,

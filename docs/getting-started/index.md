@@ -25,7 +25,7 @@ guide to do a repository-based installation.
   [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
 - An account with elevated rights to install the dependencies
 - `curl` or `wget` installed
-- Node.js [Active LTS Release](https://nodejs.org/en/about/releases/) installed using one of these
+- Node.js [Active LTS Release](https://nodejs.org/en/blog/release/) installed using one of these
   methods:
   - Using `nvm` (recommended)
     - [Installing nvm](https://github.com/nvm-sh/nvm#install--update-script)

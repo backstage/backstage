@@ -342,6 +342,8 @@ export class Git {
     force?: boolean;
   }): Promise<void>;
   // (undocumented)
+  branch(options: { dir: string; ref: string }): Promise<void>;
+  // (undocumented)
   checkout(options: { dir: string; ref: string }): Promise<void>;
   clone(options: {
     url: string;
