@@ -182,7 +182,7 @@ export async function createRouter(
         timeout: { minutes: 15 },
         fn: async () => {
           const { tasks } = await databaseTaskStore.listStaleTasks({
-            timeoutS: 3600,
+            timeoutS: 86400,
           });
 
           for (const task of tasks) {
