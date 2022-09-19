@@ -285,7 +285,7 @@ export function EntityRefLinks(props: EntityRefLinksProps): JSX.Element;
 export type EntityRefLinksProps = {
   entityRefs: (string | Entity | CompoundEntityRef)[];
   defaultKind?: string;
-  titleFn?: (r: string | Entity | CompoundEntityRef) => string;
+  getTitle?: (cer: CompoundEntityRef) => string;
 } & Omit<LinkProps, 'to'>;
 
 // @public

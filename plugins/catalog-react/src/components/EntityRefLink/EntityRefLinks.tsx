@@ -26,7 +26,7 @@ import { LinkProps } from '@backstage/core-components';
 export type EntityRefLinksProps = {
   entityRefs: (string | Entity | CompoundEntityRef)[];
   defaultKind?: string;
-  titleFn?: (r: string | Entity | CompoundEntityRef) => string;
+  getTitle?: (cer: CompoundEntityRef) => string;
 } & Omit<LinkProps, 'to'>;
 
 /**
@@ -35,20 +35,29 @@ export type EntityRefLinksProps = {
  * @public
  */
 export function EntityRefLinks(props: EntityRefLinksProps) {
-  const { entityRefs, defaultKind, titleFn, ...linkProps } = props;
+  const { entityRefs, defaultKind, getTitle, ...linkProps } = props;
   return (
     <>
-      {entityRefs.map((r, i) => (
-        <React.Fragment key={i}>
-          {i > 0 && ', '}
-          <EntityRefLink
-            {...linkProps}
-            entityRef={r}
-            defaultKind={defaultKind}
-            title={titleFn ? titleFn(r) : undefined}
-          />
-        </React.Fragment>
-      ))}
+      {entityRefs.map((r, i) => {
+        const isCompoundEntityRef =
+          getTitle && typeof r !== 'string' && !('metadata' in r && getTitle);
+
+        const title = isCompoundEntityRef
+          ? getTitle(r as CompoundEntityRef)
+          : undefined;
+
+        return (
+          <React.Fragment key={i}>
+            {i > 0 && ', '}
+            <EntityRefLink
+              {...linkProps}
+              entityRef={r}
+              defaultKind={defaultKind}
+              title={title}
+            />
+          </React.Fragment>
+        );
+      })}
     </>
   );
 }
