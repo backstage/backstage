@@ -49,7 +49,7 @@ describe('command entrypoint', () => {
     });
   });
 
-  afterAll(() => {
+  afterEach(() => {
     mockFs.restore();
   });
 
