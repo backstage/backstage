@@ -19032,11 +19032,11 @@ __metadata:
   linkType: hard
 
 "concurrently@npm:^7.0.0":
-  version: 7.3.0
-  resolution: "concurrently@npm:7.3.0"
+  version: 7.4.0
+  resolution: "concurrently@npm:7.4.0"
   dependencies:
     chalk: ^4.1.0
-    date-fns: ^2.16.1
+    date-fns: ^2.29.1
     lodash: ^4.17.21
     rxjs: ^7.0.0
     shell-quote: ^1.7.3
@@ -19045,8 +19045,9 @@ __metadata:
     tree-kill: ^1.2.2
     yargs: ^17.3.1
   bin:
+    conc: dist/bin/concurrently.js
     concurrently: dist/bin/concurrently.js
-  checksum: 5de845e4947c550a6ff74ecc80e1897109abe339fe8a7fa117e7b8978362566ac4ee070e4475bdaa6fc453f780fadb9089739a02606e27e04affaa7dd8905d2d
+  checksum: cc547866ad8d009d184ca3a7115d6636052a5f56f5429d123092d651286043d7233f6429257e30e50f509894cd12798ea831896ac18092d8135f67ffcc8ac3ea
   languageName: node
   linkType: hard
 
@@ -20294,6 +20295,13 @@ __metadata:
   version: 2.19.0
   resolution: "date-fns@npm:2.19.0"
   checksum: c8b727aa10941d76977c48c72bda3b33adeb6a89d67763c95689ef7c18729a564a6e01e87fd5f65ba44b6866e8282d636d5e8bc598f099b925597bb109a0880c
+  languageName: node
+  linkType: hard
+
+"date-fns@npm:^2.29.1":
+  version: 2.29.3
+  resolution: "date-fns@npm:2.29.3"
+  checksum: e01cf5b62af04e05dfff921bb9c9933310ed0e1ae9a81eb8653452e64dc841acf7f6e01e1a5ae5644d0337e9a7f936175fd2cb6819dc122fdd9c5e86c56be484
   languageName: node
   linkType: hard
 
