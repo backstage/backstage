@@ -40,6 +40,26 @@ export interface KubernetesRequestAuth {
 }
 
 /** @public */
+export interface CustomResourceMatcher {
+  group: string;
+  apiVersion: string;
+  plural: string;
+}
+
+/** @public */
+export interface WorkloadsByEntityRequest {
+  auth: KubernetesRequestAuth;
+  entity: Entity;
+}
+
+/** @public */
+export interface CustomObjectsByEntityRequest {
+  auth: KubernetesRequestAuth;
+  customResources: CustomResourceMatcher[];
+  entity: Entity;
+}
+
+/** @public */
 export interface KubernetesRequestBody {
   auth?: KubernetesRequestAuth;
   entity: Entity;

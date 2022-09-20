@@ -8,6 +8,7 @@ import { Config } from '@backstage/config';
 import { CoreV1Api } from '@kubernetes/client-node';
 import { Credentials } from 'aws-sdk';
 import { CustomObjectsApi } from '@kubernetes/client-node';
+import type { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { Duration } from 'luxon';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
@@ -100,9 +101,6 @@ export interface CustomResource extends ObjectToFetch {
   // (undocumented)
   objectType: 'customresources';
 }
-
-// @alpha (undocumented)
-export type CustomResourceMatcher = Omit<ObjectToFetch, 'objectType'>;
 
 // @alpha (undocumented)
 export interface CustomResourcesByEntity extends KubernetesObjectsByEntity {
