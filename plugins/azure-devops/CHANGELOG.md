@@ -1,5 +1,70 @@
 # @backstage/plugin-azure-devops
 
+## 0.2.0
+
+### Minor Changes
+
+- 6c1c59b96e: Added README card `EntityAzureReadmeCard` for Azure Devops.
+
+  To get the README component working you'll need to do the following two steps:
+
+  1. First we need to add the @backstage/plugin-azure-devops package to your frontend app:
+
+     ```bash
+     # From your Backstage root directory
+     yarn add --cwd packages/app @backstage/plugin-azure-devops
+     ```
+
+  2. Second we need to add the `EntityAzureReadmeCard` extension to the entity page in your app:
+
+     ```tsx
+     // In packages/app/src/components/catalog/EntityPage.tsx
+     import {
+       EntityAzureReadmeCard,
+       isAzureDevOpsAvailable,
+     } from '@backstage/plugin-azure-devops';
+
+     // As it is a card, you can customize it the way you prefer
+     // For example in the Service section
+
+     const overviewContent = (
+       <Grid container spacing={3} alignItems="stretch">
+         <EntitySwitch>
+           <EntitySwitch.Case if={isAzureDevOpsAvailable}>
+             <Grid item md={6}>
+               ...
+             </Grid>
+             <Grid item md={6}>
+               <EntityAzureReadmeCard maxHeight={350} />
+             </Grid>
+           </EntitySwitch.Case>
+         </EntitySwitch>
+       </Grid>
+     );
+     ```
+
+  **Notes:**
+
+  - You'll need to add the `EntitySwitch.Case` above from step 2 to all the entity sections you want to see Readme in. For example if you wanted to see Readme when looking at Website entities then you would need to add this to the `websiteEntityPage` section.
+  - The `if` prop is optional on the `EntitySwitch.Case`, you can remove it if you always want to see the tab even if the entity being viewed does not have the needed annotation
+  - The `maxHeight` property on the `EntityAzureReadmeCard` will set the maximum screen size you would like to see, if not set it will default to 100%
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 3f739be9d9: Minor API signatures cleanup
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/plugin-catalog-react@1.1.4
+  - @backstage/plugin-azure-devops-common@0.3.0
+  - @backstage/catalog-model@1.1.1
+  - @backstage/errors@1.1.1
+
 ## 0.2.0-next.3
 
 ### Patch Changes

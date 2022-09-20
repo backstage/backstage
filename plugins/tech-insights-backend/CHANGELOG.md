@@ -1,5 +1,22 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.5.2
+
+### Patch Changes
+
+- 8872cc735d: Fixed a bug where the database option to skip migrations was ignored.
+- 12c6a07c2a: Changed the description of the `techdocsAnnotationFactName` fact.
+- 2e0689e536: Support for timeout in FactRetrieverRegistrationOptions
+- 9e8e9f5243: Modify Tech insight initialization to expose FactRetrieverEngine. Enables users to trigger fact retrieval manually or reschedule retrievers on runtime.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/plugin-tech-insights-node@0.3.4
+  - @backstage/backend-tasks@0.3.5
+  - @backstage/catalog-client@1.1.0
+  - @backstage/catalog-model@1.1.1
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+
 ## 0.5.2-next.2
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-cloud
 
+## 0.1.3
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/integration@1.3.1
+  - @backstage/plugin-catalog-backend@1.4.0
+  - @backstage/backend-tasks@0.3.5
+  - @backstage/config@1.0.2
+  - @backstage/plugin-bitbucket-cloud-common@0.1.3
+
 ## 0.1.3-next.3
 
 ### Patch Changes

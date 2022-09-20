@@ -1,5 +1,16 @@
 # @backstage/backend-tasks
 
+## 0.3.5
+
+### Patch Changes
+
+- 243533ecdc: Added support to mysql on some raw queries
+- 8872cc735d: Fixed a bug where the database option to skip migrations was ignored.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+
 ## 0.3.5-next.1
 
 ### Patch Changes

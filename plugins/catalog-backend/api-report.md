@@ -177,7 +177,7 @@ export const catalogConditions: Conditions<{
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [annotation: string]
+    [annotation: string, value?: string | undefined]
   >;
   hasLabel: PermissionRule<
     Entity,
@@ -448,7 +448,7 @@ export const permissionRules: {
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [annotation: string]
+    [annotation: string, value?: string | undefined]
   >;
   hasLabel: PermissionRule<
     Entity,

@@ -1,5 +1,17 @@
 # @backstage/plugin-rollbar-backend
 
+## 0.1.33
+
+### Patch Changes
+
+- d669d89206: Minor API signatures cleanup
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/config@1.0.2
+
 ## 0.1.33-next.3
 
 ### Patch Changes

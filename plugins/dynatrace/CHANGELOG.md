@@ -1,5 +1,28 @@
 # @backstage/plugin-dynatrace
 
+## 0.2.0
+
+### Minor Changes
+
+- e44c0b3811: New features:
+
+  - Some visual improvements to the table that displays Problems
+  - Added support for viewing recent Synthetics results using
+  - Added some additional linking to the configured Dynatrace instance
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 148568b5c2: Switched to using node-fetch instead of cross-fetch as is standard for our backend packages
+- d669d89206: Minor API signatures cleanup
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/catalog-model@1.1.1
+
 ## 0.2.0-next.3
 
 ### Patch Changes

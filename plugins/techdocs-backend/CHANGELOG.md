@@ -1,5 +1,28 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.3.0
+
+### Minor Changes
+
+- aa524a5377: Add `projectId` config option to GCP Cloud Storage techdocs publisher. This will allow users to override the project ID, instead of implicitly using the same one as found in a credentials bundle.
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/plugin-techdocs-node@1.4.0
+  - @backstage/integration@1.3.1
+  - @backstage/catalog-client@1.1.0
+  - @backstage/catalog-model@1.1.1
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+  - @backstage/plugin-permission-common@0.6.4
+  - @backstage/plugin-catalog-common@1.0.6
+  - @backstage/plugin-search-common@1.0.1
+
 ## 1.3.0-next.2
 
 ### Patch Changes

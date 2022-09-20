@@ -1,5 +1,25 @@
 # @backstage/plugin-user-settings
 
+## 0.4.8
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 3f739be9d9: Minor API signatures cleanup
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- d669d89206: Minor API signatures cleanup
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 8448b53dd6: Added a `UserSettingsStorage` implementation of the `StorageApi` for use as
+  drop-in replacement for the `WebStorage`, in conjunction with the newly created
+  `@backstage/plugin-user-settings-backend`.
+- Updated dependencies
+  - @backstage/core-app-api@1.1.0
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/errors@1.1.1
+
 ## 0.4.8-next.3
 
 ### Patch Changes

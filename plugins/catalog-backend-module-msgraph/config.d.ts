@@ -144,6 +144,15 @@ export interface Config {
              */
             clientSecret?: string;
 
+            /**
+             * By default, the Microsoft Graph API only provides the basic feature set
+             * for querying. Certain features are limited to advanced query capabilities
+             * (see https://docs.microsoft.com/en-us/graph/aad-advanced-queries)
+             * and need to be enabled.
+             *
+             * Some features like `$expand` are not available for advanced queries, though.
+             */
+            queryMode?: string;
             user?: {
               /**
                * The "expand" argument to apply to users.
@@ -230,6 +239,15 @@ export interface Config {
                */
               clientSecret: string;
 
+              /**
+               * By default, the Microsoft Graph API only provides the basic feature set
+               * for querying. Certain features are limited to advanced query capabilities
+               * (see https://docs.microsoft.com/en-us/graph/aad-advanced-queries)
+               * and need to be enabled.
+               *
+               * Some features like `$expand` are not available for advanced queries, though.
+               */
+              queryMode?: string;
               user?: {
                 /**
                  * The filter to apply to extract users.

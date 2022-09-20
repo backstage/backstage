@@ -1,5 +1,16 @@
 # @backstage/plugin-kafka-backend
 
+## 0.2.29
+
+### Patch Changes
+
+- f6be17460d: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/catalog-model@1.1.1
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+
 ## 0.2.29-next.1
 
 ### Patch Changes

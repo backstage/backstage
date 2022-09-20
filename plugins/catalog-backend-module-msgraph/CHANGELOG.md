@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.4.2
+
+### Patch Changes
+
+- c1d32d2b76: Fixed a bug in the `MicrosoftGraphEntityProvider` that ignored the `userExpand` and `groupExpand` configuration parameters
+- d80aab31ae: Added $select attribute to user query
+- a246d5a9b8: Read `queryMode` from the `microsoftGraphOrg` config
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 4c82b955fc: Fix typo
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.4.0
+  - @backstage/backend-tasks@0.3.5
+  - @backstage/catalog-model@1.1.1
+  - @backstage/config@1.0.2
+
 ## 0.4.2-next.3
 
 ### Patch Changes

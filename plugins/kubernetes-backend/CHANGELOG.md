@@ -1,5 +1,28 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.7.2
+
+### Patch Changes
+
+- 8902c2e39d: chore: Exporting KubernetesClientProvider and everything in kubernetes-auth-translator as requested in issue #10457
+- a57d29d572: Adds skipMetricsLookup to the kubernetes-backend schema
+- 0768d6dece: add new kubernetes backend endpoints to kubernetes backend client
+- 60b85d8ade: Updated dependency `helmet` to `^6.0.0`.
+
+  Please note that these policies are no longer applied by default:
+
+  helmet.contentSecurityPolicy no longer sets block-all-mixed-content directive by default
+  helmet.expectCt is no longer set by default. It can, however, be explicitly enabled. It will be removed in Helmet 7.
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/plugin-auth-node@0.2.5
+  - @backstage/catalog-client@1.1.0
+  - @backstage/catalog-model@1.1.1
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+  - @backstage/plugin-kubernetes-common@0.4.2
+
 ## 0.7.2-next.3
 
 ### Patch Changes

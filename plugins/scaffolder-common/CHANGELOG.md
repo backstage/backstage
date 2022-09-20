@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.2.0
+
+### Minor Changes
+
+- 1ff817b3f0: add entity metadata to the template info type
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.1
+
 ## 1.2.0-next.1
 
 ### Patch Changes

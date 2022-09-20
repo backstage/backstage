@@ -1,5 +1,23 @@
 # @backstage/plugin-techdocs-node
 
+## 1.4.0
+
+### Minor Changes
+
+- aa524a5377: Add `projectId` config option to GCP Cloud Storage techdocs publisher. This will allow users to override the project ID, instead of implicitly using the same one as found in a credentials bundle.
+
+### Patch Changes
+
+- 33ac0c0546: Fix Techdocs S3 and GCS publisher to include bucketRootPath in requests
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/integration@1.3.1
+  - @backstage/catalog-model@1.1.1
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+  - @backstage/plugin-search-common@1.0.1
+
 ## 1.4.0-next.2
 
 ### Patch Changes

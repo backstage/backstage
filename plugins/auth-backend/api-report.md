@@ -706,7 +706,7 @@ export type TokenParams = {
   claims: {
     sub: string;
     ent?: string[];
-  };
+  } & Record<string, JsonValue>;
 };
 
 // @public (undocumented)

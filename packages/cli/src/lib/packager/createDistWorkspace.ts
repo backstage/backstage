@@ -22,7 +22,7 @@ import {
   relative as relativePath,
 } from 'path';
 import { tmpdir } from 'os';
-import tar, { CreateOptions } from 'tar';
+import tar, { CreateOptions, FileOptions } from 'tar';
 import partition from 'lodash/partition';
 import { paths } from '../paths';
 import { run } from '../run';
@@ -214,10 +214,12 @@ export async function createDistWorkspace(
   }
 
   if (options.skeleton) {
-    const skeletonFiles = targets.map(target => {
-      const dir = relativePath(paths.targetRoot, target.dir);
-      return joinPath(dir, 'package.json');
-    });
+    const skeletonFiles = targets
+      .map(target => {
+        const dir = relativePath(paths.targetRoot, target.dir);
+        return joinPath(dir, 'package.json');
+      })
+      .sort();
 
     await tar.create(
       {
@@ -226,7 +228,7 @@ export async function createDistWorkspace(
         portable: true,
         noMtime: true,
         gzip: options.skeleton.endsWith('.gz'),
-      } as CreateOptions & { noMtime: boolean },
+      } as CreateOptions & FileOptions & { noMtime: boolean },
       skeletonFiles,
     );
   }

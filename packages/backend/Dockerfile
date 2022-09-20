@@ -19,15 +19,17 @@ RUN apt-get update && \
     yarn config set python /usr/bin/python3
 
 # From here on we use the least-privileged `node` user to run the backend.
-USER node
 WORKDIR /app
+RUN chown node:node /app
+USER node
+
 
 # This switches many Node.js dependencies to production mode.
 ENV NODE_ENV production
 
 # Copy over Yarn 3 configuration, release, and plugins
-COPY .yarn ./.yarn
-COPY .yarnrc.yml ./
+COPY --chown=node:node .yarn ./.yarn
+COPY --chown=node:node .yarnrc.yml ./
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
