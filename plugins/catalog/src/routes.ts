@@ -24,10 +24,6 @@ export const createComponentRouteRef = createExternalRouteRef({
   optional: true,
 });
 
-/**
- * Route ref for linking to Tech docs page
- * @public (undocumented)
- */
 export const viewTechDocRouteRef = createExternalRouteRef({
   id: 'view-techdoc',
   optional: true,
