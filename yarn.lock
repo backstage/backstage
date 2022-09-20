@@ -2994,7 +2994,7 @@ __metadata:
     "@backstage/plugin-permission-node": "workspace:^"
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -3073,7 +3073,7 @@ __metadata:
     supertest: ^6.1.3
     tar: ^6.1.2
     uuid: ^8.3.2
-    winston: ^3.2.1
+    winston: ^3.8.1
     yauzl: ^2.10.0
     yn: ^4.0.0
   peerDependencies:
@@ -3105,7 +3105,7 @@ __metadata:
     "@backstage/plugin-permission-common": "workspace:^"
     "@types/express": ^4.17.6
     express: ^4.17.1
-    winston: ^3.2.1
+    winston: ^3.8.1
     winston-transport: ^4.5.0
   languageName: unknown
   linkType: soft
@@ -3129,7 +3129,7 @@ __metadata:
     node-abort-controller: ^3.0.1
     uuid: ^8.0.0
     wait-for-expect: ^3.0.2
-    winston: ^3.2.1
+    winston: ^3.8.1
     zod: ^3.9.5
   languageName: unknown
   linkType: soft
@@ -3659,7 +3659,7 @@ __metadata:
     msw: ^0.47.0
     node-fetch: ^2.6.5
     supertest: ^6.1.3
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -3728,7 +3728,7 @@ __metadata:
     http-proxy-middleware: ^2.0.0
     msw: ^0.47.0
     supertest: ^6.1.6
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -3950,7 +3950,7 @@ __metadata:
     mock-fs: ^5.1.0
     msw: ^0.47.0
     supertest: ^6.1.3
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -4014,7 +4014,7 @@ __metadata:
     passport-saml: ^3.1.2
     supertest: ^6.1.3
     uuid: ^8.0.0
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -4035,7 +4035,7 @@ __metadata:
     msw: ^0.47.0
     node-fetch: ^2.6.7
     uuid: ^8.0.0
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -4056,7 +4056,7 @@ __metadata:
     msw: ^0.47.0
     p-limit: ^3.1.0
     supertest: ^6.1.6
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -4119,7 +4119,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     supertest: ^6.1.3
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -4166,7 +4166,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     knex: ^2.0.0
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -4264,7 +4264,7 @@ __metadata:
     lodash: ^4.17.21
     p-limit: ^3.0.2
     uuid: ^8.0.0
-    winston: ^3.2.1
+    winston: ^3.8.1
     yaml: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -4288,7 +4288,7 @@ __metadata:
     msw: ^0.47.0
     node-fetch: ^2.6.7
     uuid: ^8.0.0
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -4306,7 +4306,7 @@ __metadata:
     "@backstage/plugin-catalog-backend": "workspace:^"
     msw: ^0.47.0
     uuid: ^8.0.0
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -4327,7 +4327,7 @@ __metadata:
     msw: ^0.47.0
     node-fetch: ^2.6.7
     uuid: ^8.0.0
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -4349,7 +4349,7 @@ __metadata:
     lodash: ^4.17.21
     msw: ^0.47.0
     node-fetch: ^2.6.7
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -4371,7 +4371,7 @@ __metadata:
     msw: ^0.47.0
     node-fetch: ^2.6.7
     uuid: ^8.0.0
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -4397,7 +4397,7 @@ __metadata:
     msw: ^0.47.0
     node-fetch: ^2.6.7
     uuid: ^8.0.0
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -4421,7 +4421,7 @@ __metadata:
     msw: ^0.47.0
     node-fetch: ^2.6.7
     uuid: ^8.0.0
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -4441,7 +4441,7 @@ __metadata:
     ldapjs: ^2.2.0
     lodash: ^4.17.21
     uuid: ^8.0.0
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -4466,7 +4466,7 @@ __metadata:
     p-limit: ^3.0.2
     qs: ^6.9.4
     uuid: ^8.0.0
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -4485,7 +4485,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
     openapi-types: ^12.0.0
-    winston: ^3.2.1
+    winston: ^3.8.1
     yaml: ^2.1.1
   languageName: unknown
   linkType: soft
@@ -4536,7 +4536,7 @@ __metadata:
     supertest: ^6.1.3
     uuid: ^8.0.0
     wait-for-expect: ^3.0.2
-    winston: ^3.2.1
+    winston: ^3.8.1
     yaml: ^2.0.0
     yn: ^4.0.0
     zod: ^3.11.6
@@ -4609,7 +4609,7 @@ __metadata:
     graphql-type-json: ^0.3.2
     msw: ^0.47.0
     node-fetch: ^2.6.7
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -4914,7 +4914,7 @@ __metadata:
     msw: ^0.47.0
     supertest: ^6.1.6
     uuid: ^8.3.2
-    winston: ^3.2.1
+    winston: ^3.8.1
     xml2js: ^0.4.23
     yn: ^4.0.0
   languageName: unknown
@@ -5552,7 +5552,7 @@ __metadata:
     msw: ^0.47.0
     reflect-metadata: ^0.1.13
     supertest: ^6.1.3
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -5645,7 +5645,7 @@ __metadata:
     msw: ^0.47.0
     promise-any-polyfill: ^1.0.1
     supertest: ^6.1.6
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -5712,7 +5712,7 @@ __metadata:
     kafkajs: ^2.0.0
     lodash: ^4.17.21
     supertest: ^6.1.3
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -5780,7 +5780,7 @@ __metadata:
     morgan: ^1.10.0
     stream-buffers: ^3.0.2
     supertest: ^6.1.3
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -5995,7 +5995,7 @@ __metadata:
     msw: ^0.47.0
     node-fetch: ^2.6.7
     supertest: ^6.1.6
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -6053,7 +6053,7 @@ __metadata:
     msw: ^0.47.0
     node-fetch: ^2.6.7
     supertest: ^6.1.6
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
     zod: ^3.11.6
   languageName: unknown
@@ -6139,7 +6139,7 @@ __metadata:
     node-fetch: ^2.6.7
     supertest: ^6.1.3
     uuid: ^8.2.0
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -6213,7 +6213,7 @@ __metadata:
     msw: ^0.47.0
     supertest: ^6.1.3
     uuid: ^8.0.0
-    winston: ^3.2.1
+    winston: ^3.8.1
     yaml: ^2.0.0
     yn: ^4.0.0
     yup: ^0.32.9
@@ -6241,7 +6241,7 @@ __metadata:
     msw: ^0.47.0
     node-fetch: ^2.6.7
     supertest: ^6.1.3
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -6298,7 +6298,7 @@ __metadata:
     fs-extra: 10.1.0
     mock-fs: ^5.1.0
     msw: ^0.47.0
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -6329,12 +6329,21 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-yeoman@workspace:plugins/scaffolder-backend-module-yeoman"
   dependencies:
+<<<<<<< HEAD
     "@backstage/backend-common": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-scaffolder-backend": "workspace:^"
     "@backstage/types": "workspace:^"
     winston: ^3.2.1
+=======
+    "@backstage/backend-common": ^0.15.1
+    "@backstage/cli": ^0.19.0
+    "@backstage/config": ^1.0.2
+    "@backstage/plugin-scaffolder-backend": ^1.6.0
+    "@backstage/types": ^1.0.0
+    winston: ^3.8.1
+>>>>>>> a07ad160c5 (fix(deps): update dependency winston to v3.8.2)
     yeoman-environment: ^3.9.1
   languageName: unknown
   linkType: soft
@@ -6397,7 +6406,7 @@ __metadata:
     supertest: ^6.1.3
     uuid: ^8.2.0
     vm2: ^3.9.11
-    winston: ^3.2.1
+    winston: ^3.8.1
     yaml: ^2.0.0
     zen-observable: ^0.8.15
     zod: ^3.11.6
@@ -6496,7 +6505,7 @@ __metadata:
     elastic-builder: ^2.16.0
     lodash: ^4.17.21
     uuid: ^8.3.2
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -6534,7 +6543,7 @@ __metadata:
     ndjson: ^2.0.0
     node-abort-controller: ^3.0.1
     uuid: ^8.3.2
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -6560,7 +6569,7 @@ __metadata:
     lodash: ^4.17.21
     qs: ^6.10.1
     supertest: ^6.1.3
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
     zod: ^3.11.6
   languageName: unknown
@@ -6803,7 +6812,7 @@ __metadata:
     "@backstage/plugin-search-common": "workspace:^"
     node-fetch: ^2.6.7
     qs: ^6.9.4
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -6852,7 +6861,7 @@ __metadata:
     json-rules-engine: ^6.1.2
     lodash: ^4.17.21
     luxon: ^3.0.0
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -6883,7 +6892,7 @@ __metadata:
     supertest: ^6.1.3
     uuid: ^8.3.2
     wait-for-expect: ^3.0.2
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -6911,7 +6920,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/luxon": ^3.0.0
     luxon: ^3.0.0
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -7044,7 +7053,7 @@ __metadata:
     node-fetch: ^2.6.7
     p-limit: ^3.1.0
     supertest: ^6.1.3
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -7114,7 +7123,7 @@ __metadata:
     p-limit: ^3.1.0
     recursive-readdir: ^2.2.2
     supertest: ^6.1.3
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -7215,7 +7224,7 @@ __metadata:
     leasot: ^12.0.0
     msw: ^0.47.0
     supertest: ^6.1.3
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -7267,7 +7276,7 @@ __metadata:
     express-promise-router: ^4.1.0
     knex: ^2.0.0
     supertest: ^6.1.3
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -7325,7 +7334,7 @@ __metadata:
     node-fetch: ^2.6.7
     p-limit: ^3.1.0
     supertest: ^6.1.6
-    winston: ^3.7.2
+    winston: ^3.8.1
     yn: ^5.0.0
   languageName: unknown
   linkType: soft
@@ -9139,7 +9148,7 @@ __metadata:
     msw: ^0.47.0
     supertest: ^6.1.6
     uuid: ^8.3.2
-    winston: ^3.2.1
+    winston: ^3.8.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -12430,7 +12439,7 @@ __metadata:
     serve-handler: ^6.1.3
     techdocs-cli-embedded-app: "link:../techdocs-cli-embedded-app"
     ts-node: ^10.0.0
-    winston: ^3.2.1
+    winston: ^3.8.1
   bin:
     techdocs-cli: bin/techdocs-cli
   languageName: unknown
@@ -21812,7 +21821,7 @@ __metadata:
     pg: ^8.3.0
     pg-connection-string: ^2.3.0
     prom-client: ^14.0.1
-    winston: ^3.2.1
+    winston: ^3.8.1
   languageName: unknown
   linkType: soft
 
@@ -39038,9 +39047,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+<<<<<<< HEAD
 "winston@npm:^3.2.1, winston@npm:^3.7.2, winston@npm:^3.8.1":
   version: 3.8.2
   resolution: "winston@npm:3.8.2"
+=======
+"winston@npm:^3.8.1":
+  version: 3.8.1
+  resolution: "winston@npm:3.8.1"
+>>>>>>> a07ad160c5 (fix(deps): update dependency winston to v3.8.2)
   dependencies:
     "@colors/colors": 1.5.0
     "@dabh/diagnostics": ^2.0.2
