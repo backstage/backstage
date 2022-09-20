@@ -119,11 +119,6 @@ export class PlaceholderProcessor implements CatalogProcessor {
         return [data, false];
       }
 
-      // if (typeof resolverValue !== 'string') {
-      // treat it as an argument to resolver function
-      // TODO: make this recursive, but it should resolve from bottom up
-      // }
-
       const read = async (url: string): Promise<Buffer> => {
         if (this.options.reader.readUrl) {
           const response = await this.options.reader.readUrl(url);
