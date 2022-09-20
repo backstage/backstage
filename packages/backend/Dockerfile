@@ -19,8 +19,10 @@ RUN apt-get update && \
     yarn config set python /usr/bin/python3
 
 # From here on we use the least-privileged `node` user to run the backend.
-USER node
 WORKDIR /app
+RUN chown node:node /app
+USER node
+
 
 # This switches many Node.js dependencies to production mode.
 ENV NODE_ENV production
