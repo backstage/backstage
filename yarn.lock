@@ -64,11 +64,13 @@ __metadata:
   linkType: hard
 
 "@apollo/explorer@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "@apollo/explorer@npm:1.1.1"
+  version: 1.2.0
+  resolution: "@apollo/explorer@npm:1.2.0"
   dependencies:
+    "@types/whatwg-mimetype": ^3.0.0
     graphql-ws: ^5.9.0
     subscriptions-transport-ws: ^0.11.0
+    whatwg-mimetype: ^3.0.0
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -80,7 +82,7 @@ __metadata:
       optional: true
     use-deep-compare-effect:
       optional: true
-  checksum: f9a22c76c557a50c5a1779dc593dd3de970073558f209808faa8d6678a1469a733b564baeb741c36345d81a782230791443ebc4f2de317d90a10893ef1a18882
+  checksum: 67cf0b5e8a23abb71ad1e68266529b8e8e1ce66652208c9942c554f21148364fd49afa5e619ecfddf611dd19067aa81ab8b2e828944122dfdc81e79a27ccf37c
   languageName: node
   linkType: hard
 
@@ -14404,6 +14406,13 @@ __metadata:
     tapable: ^2.2.0
     webpack: ^5
   checksum: a038d7e12dd109c6a8d2eb744fd32070ef94f1655e730fb1443b370db98864c3a0e408638b02d12ba08269b9c012b3be8b801117ced2d1102e7676203fd663ed
+  languageName: node
+  linkType: hard
+
+"@types/whatwg-mimetype@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@types/whatwg-mimetype@npm:3.0.0"
+  checksum: 98254edcddb5b9580aa41c19e6c96d2bfb178285d5c2560e3a1f321f14da70192adc82950baecd2cad5876098b0677fbe813db1edf9ab9ba0a9996f0bf2bb703
   languageName: node
   linkType: hard
 
