@@ -1,5 +1,17 @@
 # @techdocs/cli
 
+## 1.2.1
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/plugin-techdocs-node@1.4.0
+  - @backstage/catalog-model@1.1.1
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.2
+
 ## 1.2.1-next.2
 
 ### Patch Changes

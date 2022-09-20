@@ -1,5 +1,25 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.4
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-app-api@1.1.0
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/test-utils@1.2.0
+  - @backstage/plugin-catalog@1.5.1
+  - @backstage/plugin-search-react@1.1.0
+  - @backstage/plugin-techdocs-react@1.0.4
+  - @backstage/plugin-techdocs@1.3.2
+  - @backstage/integration-react@1.1.4
+
 ## 1.0.4-next.3
 
 ### Patch Changes

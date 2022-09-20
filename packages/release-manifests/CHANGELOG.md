@@ -1,5 +1,14 @@
 # @backstage/release-manifests
 
+## 0.0.6
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+
 ## 0.0.6-next.2
 
 ### Patch Changes

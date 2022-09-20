@@ -1,5 +1,15 @@
 # @backstage/backend-defaults
 
+## 0.1.1
+
+### Patch Changes
+
+- 854ba37357: Updated to support new `ServiceFactory` formats.
+- de3347ca74: Updated usages of `ServiceFactory`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.2.1
+  - @backstage/backend-plugin-api@0.1.2
+
 ## 0.1.1-next.1
 
 ### Patch Changes

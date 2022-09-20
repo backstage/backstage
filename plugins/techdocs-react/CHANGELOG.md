@@ -1,5 +1,16 @@
 # @backstage/plugin-techdocs-react
 
+## 1.0.4
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- Updated dependencies
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/catalog-model@1.1.1
+  - @backstage/config@1.0.2
+
 ## 1.0.4-next.2
 
 ### Patch Changes
