@@ -27,6 +27,7 @@ import {
 } from '@backstage/plugin-permission-common';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { stringifyEntityRef } from '@backstage/catalog-model';
+import { stringifyError } from '@backstage/errors';
 
 /** @public */
 export interface RouterOptions {
@@ -90,11 +91,25 @@ export async function createRouter(
         },
         backstageToken: token,
       });
-      const projects = await jenkinsApi.getProjects(jenkinsInfo, branches);
 
-      response.json({
-        projects: projects,
-      });
+      try {
+        const projects = await jenkinsApi.getProjects(jenkinsInfo, branches);
+
+        response.json({
+          projects: projects,
+        });
+      } catch (err) {
+        // Promise.any, used in the getProjects call returns an Aggregate error message with a useless error message 'AggregateError: All promises were rejected'
+        // extract useful information ourselves
+        if (err.errors) {
+          throw new Error(
+            `Unable to fetch projects, for ${
+              jenkinsInfo.jobFullName
+            }: ${stringifyError(err.errors)}`,
+          );
+        }
+        throw err;
+      }
     },
   );
 

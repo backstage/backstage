@@ -11,7 +11,10 @@ import { AutocompleteProps } from '@material-ui/lab';
 import { ForwardRefExoticComponent } from 'react';
 import { InputBaseProps } from '@material-ui/core';
 import { JsonObject } from '@backstage/types';
+import { JsonValue } from '@backstage/types';
+import { LinkProps } from '@backstage/core-components';
 import { ListItemTextProps } from '@material-ui/core';
+import { ListProps } from '@material-ui/core';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
@@ -21,6 +24,7 @@ import { SearchDocument } from '@backstage/plugin-search-common';
 import { SearchQuery } from '@backstage/plugin-search-common';
 import { SearchResult as SearchResult_2 } from '@backstage/plugin-search-common';
 import { SearchResultSet } from '@backstage/plugin-search-common';
+import { TypographyProps } from '@material-ui/core';
 
 // @public (undocumented)
 export const AutocompleteFilter: (
@@ -205,21 +209,141 @@ export type SearchFilterWrapperProps = SearchFilterComponentProps & {
   debug?: boolean;
 };
 
-// @public (undocumented)
+// @public
 export const SearchResult: (props: SearchResultProps) => JSX.Element;
 
 // @public
-export const SearchResultComponent: ({
-  children,
-}: SearchResultProps) => JSX.Element;
+export const SearchResultApi: (props: SearchResultApiProps) => JSX.Element;
+
+// @public
+export type SearchResultApiProps = SearchResultContextProps & {
+  query: Partial<SearchQuery>;
+};
+
+// @public
+export const SearchResultComponent: (props: SearchResultProps) => JSX.Element;
+
+// @public
+export const SearchResultContext: (
+  props: SearchResultContextProps,
+) => JSX.Element;
+
+// @public
+export type SearchResultContextProps = {
+  children: (state: AsyncState<SearchResultSet>) => JSX.Element;
+};
+
+// @public
+export function SearchResultGroup<FilterOption>(
+  props: SearchResultGroupProps<FilterOption>,
+): JSX.Element;
+
+// @public
+export const SearchResultGroupFilterFieldLayout: (
+  props: SearchResultGroupFilterFieldLayoutProps,
+) => JSX.Element;
+
+// @public
+export type SearchResultGroupFilterFieldLayoutProps = PropsWithChildren<{
+  label: string;
+  value?: JsonValue;
+  onDelete: () => void;
+}>;
+
+// @public
+export type SearchResultGroupFilterFieldPropsWith<T> = T &
+  SearchResultGroupFilterFieldLayoutProps & {
+    onChange: (value: JsonValue) => void;
+  };
+
+// @public
+export function SearchResultGroupLayout<FilterOption>(
+  props: SearchResultGroupLayoutProps<FilterOption>,
+): JSX.Element;
+
+// @public
+export type SearchResultGroupLayoutProps<FilterOption> = ListProps & {
+  icon: JSX.Element;
+  title: ReactNode;
+  titleProps?: Partial<TypographyProps>;
+  link?: ReactNode;
+  linkProps?: Partial<LinkProps>;
+  filterOptions?: FilterOption[];
+  renderFilterOption?: (filterOption: FilterOption) => JSX.Element;
+  filterFields?: string[];
+  renderFilterField?: (key: string) => JSX.Element | null;
+  resultItems?: SearchResult_2[];
+  renderResultItem?: (resultItem: SearchResult_2) => JSX.Element;
+  error?: Error;
+  loading?: boolean;
+};
+
+// @public
+export type SearchResultGroupProps<FilterOption> = Omit<
+  SearchResultGroupLayoutProps<FilterOption>,
+  'loading' | 'error' | 'resultItems' | 'filterFields'
+> & {
+  query: Partial<SearchQuery>;
+};
+
+// @public
+export const SearchResultGroupSelectFilterField: (
+  props: SearchResultGroupSelectFilterFieldProps,
+) => JSX.Element;
+
+// @public
+export type SearchResultGroupSelectFilterFieldProps =
+  SearchResultGroupFilterFieldPropsWith<{
+    children: ReactNode;
+  }>;
+
+// @public
+export const SearchResultGroupTextFilterField: (
+  props: SearchResultGroupTextFilterFieldProps,
+) => JSX.Element;
+
+// @public
+export type SearchResultGroupTextFilterFieldProps =
+  SearchResultGroupFilterFieldPropsWith<{}>;
+
+// @public
+export const SearchResultList: (props: SearchResultListProps) => JSX.Element;
+
+// @public
+export const SearchResultListLayout: (
+  props: SearchResultListLayoutProps,
+) => JSX.Element;
+
+// @public
+export type SearchResultListLayoutProps = ListProps & {
+  resultItems?: SearchResult_2[];
+  renderResultItem?: (resultItem: SearchResult_2) => JSX.Element;
+  error?: Error;
+  loading?: boolean;
+};
+
+// @public
+export type SearchResultListProps = Omit<
+  SearchResultListLayoutProps,
+  'loading' | 'error' | 'resultItems'
+> & {
+  query: Partial<SearchQuery>;
+};
 
 // @public (undocumented)
 export const SearchResultPager: () => JSX.Element;
 
 // @public
-export type SearchResultProps = {
-  children: (results: { results: SearchResult_2[] }) => JSX.Element;
+export type SearchResultProps = Pick<SearchResultStateProps, 'query'> & {
+  children: (resultSet: SearchResultSet) => JSX.Element;
 };
+
+// @public
+export const SearchResultState: (props: SearchResultStateProps) => JSX.Element;
+
+// @public
+export type SearchResultStateProps = SearchResultContextProps &
+  Partial<SearchResultApiProps>;
 
 // @public (undocumented)
 export const SelectFilter: (props: SearchFilterComponentProps) => JSX.Element;

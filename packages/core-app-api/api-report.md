@@ -556,7 +556,9 @@ export class WebStorage implements StorageApi {
   // (undocumented)
   get<T>(key: string): T | undefined;
   // (undocumented)
-  observe$<T>(key: string): Observable<StorageValueSnapshot<T>>;
+  observe$<T extends JsonValue>(
+    key: string,
+  ): Observable<StorageValueSnapshot<T>>;
   // (undocumented)
   remove(key: string): Promise<void>;
   // (undocumented)

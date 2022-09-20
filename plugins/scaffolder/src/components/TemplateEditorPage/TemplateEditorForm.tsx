@@ -20,6 +20,7 @@ import React, { Component, ReactNode, useMemo, useState } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 import yaml from 'yaml';
 import { FieldExtensionOptions } from '../../extensions';
+import { LayoutOptions } from '../../layouts';
 import { TemplateParameterSchema } from '../../types';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { createValidator } from '../TemplatePage';
@@ -83,6 +84,7 @@ interface TemplateEditorFormProps {
 
   onDryRun?: (data: JsonObject) => Promise<void>;
   fieldExtensions?: FieldExtensionOptions<any, any>[];
+  layouts?: LayoutOptions[];
 }
 
 function isJsonObject(value: JsonValue | undefined): value is JsonObject {
@@ -99,6 +101,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
     onDryRun,
     setErrorText,
     fieldExtensions = [],
+    layouts = [],
   } = props;
   const classes = useStyles();
   const apiHolder = useApiHolder();
@@ -138,6 +141,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
         }
 
         const { parameters } = rootObj;
+
         if (!Array.isArray(parameters)) {
           setErrorText('Template parameters must be an array');
           setSteps(undefined);
@@ -188,6 +192,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
             onReset={() => onUpdate({})}
             finishButtonLabel={onDryRun && 'Try It'}
             onFinish={onDryRun && (() => onDryRun(data))}
+            layouts={layouts}
           />
         </ErrorBoundary>
       </div>
@@ -197,7 +202,10 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
 
 /** A version of the TemplateEditorForm that is connected to the DirectoryEditor and DryRun contexts */
 export function TemplateEditorFormDirectoryEditorDryRun(
-  props: Pick<TemplateEditorFormProps, 'setErrorText' | 'fieldExtensions'>,
+  props: Pick<
+    TemplateEditorFormProps,
+    'setErrorText' | 'fieldExtensions' | 'layouts'
+  >,
 ) {
   const { setErrorText, fieldExtensions = [] } = props;
   const dryRun = useDryRun();

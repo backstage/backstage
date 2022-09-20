@@ -236,25 +236,53 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           const action = this.options.actionRegistry.get(step.action);
           const { taskLogger, streamLogger } = createStepLogger({ task, step });
 
-          if (task.isDryRun && !action.supportsDryRun) {
-            task.emitLog(
-              `Skipping because ${action.id} does not support dry-run`,
-              {
-                stepId: step.id,
-                status: 'skipped',
-              },
+          if (task.isDryRun) {
+            const redactedSecrets = Object.fromEntries(
+              Object.entries(task.secrets ?? {}).map(secret => [
+                secret[0],
+                '[REDACTED]',
+              ]),
             );
-            const outputSchema = action.schema?.output;
-            if (outputSchema) {
-              context.steps[step.id] = {
-                output: generateExampleOutput(outputSchema) as {
-                  [name in string]: JsonValue;
+            const debugInput =
+              (step.input &&
+                this.render(
+                  step.input,
+                  {
+                    ...context,
+                    secrets: redactedSecrets,
+                  },
+                  renderTemplate,
+                )) ??
+              {};
+            taskLogger.info(
+              `Running ${
+                action.id
+              } in dry-run mode with inputs (secrets redacted): ${JSON.stringify(
+                debugInput,
+                undefined,
+                2,
+              )}`,
+            );
+            if (!action.supportsDryRun) {
+              task.emitLog(
+                `Skipping because ${action.id} does not support dry-run`,
+                {
+                  stepId: step.id,
+                  status: 'skipped',
                 },
-              };
-            } else {
-              context.steps[step.id] = { output: {} };
+              );
+              const outputSchema = action.schema?.output;
+              if (outputSchema) {
+                context.steps[step.id] = {
+                  output: generateExampleOutput(outputSchema) as {
+                    [name in string]: JsonValue;
+                  },
+                };
+              } else {
+                context.steps[step.id] = { output: {} };
+              }
+              continue;
             }
-            continue;
           }
 
           // Secrets are only passed when templating the input to actions for security reasons
@@ -300,6 +328,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
               stepOutput[name] = value;
             },
             templateInfo: task.spec.templateInfo,
+            user: task.spec.user,
+            isDryRun: task.isDryRun,
           });
 
           // Remove all temporary directories that were created when executing the action

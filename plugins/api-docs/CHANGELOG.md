@@ -1,5 +1,23 @@
 # @backstage/plugin-api-docs
 
+## 0.8.9
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- ef9ab322de: Minor API signatures cleanup
+- c8bb0ff8ce: Minor cleanup of the public API surface to reduce the number of warnings
+- Updated dependencies
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/plugin-catalog-react@1.1.4
+  - @backstage/plugin-catalog@1.5.1
+  - @backstage/catalog-model@1.1.1
+
 ## 0.8.9-next.3
 
 ### Patch Changes

@@ -43,6 +43,7 @@ export default async function createPlugin(
       config: env.config,
       catalog,
     }),
+    permissions: env.permissions,
   });
 }
 ```

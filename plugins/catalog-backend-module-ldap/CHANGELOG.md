@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.5.3
+
+### Patch Changes
+
+- 7fa54c3c77: Added ae-dir LDAP vendor to correctly extract DN.
+- c54fcea9af: Now the `searchStream` method in LDAP client awaits the callbacks
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.4.0
+  - @backstage/backend-tasks@0.3.5
+  - @backstage/catalog-model@1.1.1
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+
 ## 0.5.3-next.2
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-proxy-backend
 
+## 0.2.30
+
+### Patch Changes
+
+- f6be17460d: Minor API signatures cleanup
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/config@1.0.2
+
 ## 0.2.30-next.2
 
 ### Patch Changes

@@ -15,13 +15,12 @@
  */
 
 import {
-  KubernetesRequestAuth,
   KubernetesRequestBody,
   ObjectsByEntityResponse,
-  CustomResourceMatcher,
+  WorkloadsByEntityRequest,
+  CustomObjectsByEntityRequest,
 } from '@backstage/plugin-kubernetes-common';
 import { createApiRef } from '@backstage/core-plugin-api';
-import { Entity } from '@backstage/catalog-model';
 
 export const kubernetesApiRef = createApiRef<KubernetesApi>({
   id: 'plugin.kubernetes.service',
@@ -39,12 +38,9 @@ export interface KubernetesApi {
     }[]
   >;
   getWorkloadsByEntity(
-    auth: KubernetesRequestAuth,
-    entity: Entity,
+    request: WorkloadsByEntityRequest,
   ): Promise<ObjectsByEntityResponse>;
   getCustomObjectsByEntity(
-    auth: KubernetesRequestAuth,
-    customResources: CustomResourceMatcher[],
-    entity: Entity,
+    request: CustomObjectsByEntityRequest,
   ): Promise<ObjectsByEntityResponse>;
 }

@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog-react
 
+## 1.1.4
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- f6033d1121: humanizeEntityRef function can now be forced to include default namespace
+- c86741a052: Support showing counts in option labels of the `EntityTagPicker`. You can enable this by adding the `showCounts` property
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- a6d551fad9: Properly handle free-text entity filtering in the case of empty tag arrays
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/plugin-permission-react@0.4.5
+  - @backstage/integration@1.3.1
+  - @backstage/catalog-client@1.1.0
+  - @backstage/catalog-model@1.1.1
+  - @backstage/errors@1.1.1
+  - @backstage/plugin-permission-common@0.6.4
+  - @backstage/plugin-catalog-common@1.0.6
+
 ## 1.1.4-next.2
 
 ### Patch Changes

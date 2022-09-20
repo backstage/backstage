@@ -183,10 +183,12 @@ export type CookieConfigurer = (ctx: {
   providerId: string;
   baseUrl: string;
   callbackUrl: string;
+  appOrigin: string;
 }) => {
   domain: string;
   path: string;
   secure: boolean;
+  sameSite?: 'none' | 'lax' | 'strict';
 };
 
 // @public
@@ -280,11 +282,10 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
 // @public (undocumented)
 export type OAuthAdapterOptions = {
   providerId: string;
-  secure: boolean;
   persistScopes?: boolean;
-  cookieDomain: string;
-  cookiePath: string;
   appOrigin: string;
+  baseUrl: string;
+  cookieConfigurer: CookieConfigurer;
   isOriginAllowed: (origin: string) => boolean;
   callbackUrl: string;
 };
@@ -706,7 +707,7 @@ export type TokenParams = {
   claims: {
     sub: string;
     ent?: string[];
-  };
+  } & Record<string, JsonValue>;
 };
 
 // @public (undocumented)

@@ -292,6 +292,9 @@ export function TableToolbar(toolbarProps: {
   );
 }
 
+/**
+ * @public
+ */
 export function Table<T extends object = {}>(props: TableProps<T>) {
   const {
     data,
@@ -519,3 +522,5 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     </div>
   );
 }
+
+Table.icons = Object.freeze(tableIcons);

@@ -1,5 +1,16 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.0.2
+
+### Patch Changes
+
+- 1bea488bd4: Updated dependency `aws-os-connection` to `^0.2.0`.
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.0.2
+  - @backstage/config@1.0.2
+  - @backstage/plugin-search-common@1.0.1
+
 ## 1.0.2-next.2
 
 ### Patch Changes

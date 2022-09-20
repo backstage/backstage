@@ -1,5 +1,31 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.4.0
+
+### Minor Changes
+
+- 8872cc735d: Fixed a bug in search-backend-module-pg where it ignores the skip migration database options when using the database.
+
+  To use this new implementation you need to create the instance of `DatabaseDocumentStore` using the `PluginDatabaseManager` instead of `Knex`;
+
+  ```
+  import { DatabaseManager, getRootLogger, loadBackendConfig } from '@backstage/backend-common';
+  import { DatabaseDocumentStore } from '@backstage/plugin-search-backend-module-pg';
+
+  const config = await loadBackendConfig({ argv: process.argv, logger: getRootLogger() });
+  const databaseManager = DatabaseManager.fromConfig(config, { migrations: { skip: true } });
+  const databaseDocumentStore = await DatabaseDocumentStore.create(databaseManager);
+  ```
+
+### Patch Changes
+
+- d669d89206: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/plugin-search-backend-node@1.0.2
+  - @backstage/config@1.0.2
+  - @backstage/plugin-search-common@1.0.1
+
 ## 0.4.0-next.2
 
 ### Patch Changes

@@ -21,10 +21,12 @@ import { CSSProperties } from 'react';
 import { ElementType } from 'react';
 import { ErrorInfo } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { Icons } from '@material-table/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { LinearProgressProps } from '@material-ui/core/LinearProgress';
 import { LinkProps as LinkProps_2 } from '@material-ui/core/Link';
 import { LinkProps as LinkProps_3 } from 'react-router-dom';
+import { ListItemTextProps } from '@material-ui/core/ListItemText';
 import MaterialBreadcrumbs from '@material-ui/core/Breadcrumbs';
 import { MaterialTableProps } from '@material-table/core';
 import { NavLinkProps } from 'react-router-dom';
@@ -431,6 +433,23 @@ export function GroupIcon(props: IconComponentProps): JSX.Element;
 //
 // @public
 export function Header(props: PropsWithChildren<Props_14>): JSX.Element;
+
+// @public (undocumented)
+export function HeaderActionMenu(props: HeaderActionMenuProps): JSX.Element;
+
+// @public (undocumented)
+export type HeaderActionMenuItem = {
+  label?: ListItemTextProps['primary'];
+  secondaryLabel?: ListItemTextProps['secondary'];
+  icon?: ReactElement;
+  disabled?: boolean;
+  onClick?: (event: React_2.MouseEvent<HTMLElement>) => void;
+};
+
+// @public (undocumented)
+export type HeaderActionMenuProps = {
+  actionItems: HeaderActionMenuItem[];
+};
 
 // @public (undocumented)
 export type HeaderClassKey =
@@ -1332,6 +1351,12 @@ export type TabIconClassKey = 'root';
 //
 // @public (undocumented)
 export function Table<T extends object = {}>(props: TableProps<T>): JSX.Element;
+
+// @public (undocumented)
+export namespace Table {
+  var // (undocumented)
+    icons: Readonly<Icons>;
+}
 
 // Warning: (ae-missing-release-tag) "TableClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

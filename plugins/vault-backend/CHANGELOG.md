@@ -1,5 +1,28 @@
 # @backstage/plugin-vault-backend
 
+## 0.2.2
+
+### Patch Changes
+
+- 3f739be9d9: Minor API signatures cleanup
+- 148568b5c2: Switched to using node-fetch instead of cross-fetch as is standard for our backend packages
+- 60b85d8ade: Updated dependency `helmet` to `^6.0.0`.
+
+  Please note that these policies are no longer applied by default:
+
+  helmet.contentSecurityPolicy no longer sets block-all-mixed-content directive by default
+  helmet.expectCt is no longer set by default. It can, however, be explicitly enabled. It will be removed in Helmet 7.
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/backend-tasks@0.3.5
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+  - @backstage/backend-test-utils@0.1.28
+
 ## 0.2.2-next.3
 
 ### Patch Changes

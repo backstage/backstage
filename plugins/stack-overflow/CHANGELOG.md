@@ -1,5 +1,22 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.5
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- b8190af939: Create a front end API.
+- a720c44070: Support showing HTML entity references from the API response before rendering the question title to the list component.
+- Updated dependencies
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/plugin-home@0.4.25
+  - @backstage/config@1.0.2
+  - @backstage/plugin-search-common@1.0.1
+
 ## 0.1.5-next.3
 
 ### Patch Changes
