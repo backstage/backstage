@@ -16,13 +16,8 @@
  */
 
 const fs = require('fs-extra');
-const semver = require('semver');
 const { getPackages } = require('@manypkg/get-packages');
-const {
-  resolve: resolvePath,
-  relative: relativePath,
-  join: joinPath,
-} = require('path');
+const { resolve: resolvePath, join: joinPath } = require('path');
 
 /**
  * This script checks that all local package dependencies within the repo
@@ -58,21 +53,14 @@ async function main(args) {
           continue;
         }
         const localPackage = pkgMap.get(dep);
-        if (localPackage) {
-          const localVersion = localPackage.packageJson.version;
-          if (!semver.satisfies(localVersion, range)) {
-            const path = joinPath(
-              relativePath(rootPath, pkg.dir),
-              'package.json',
-            );
-            console.log(
-              `${path} depends on the wrong version of ${dep}: ${range} does not satisfy ${localVersion}`,
-            );
-            hadErrors = true;
+        if (localPackage && range !== 'workspace:^') {
+          hadErrors = true;
+          console.log(
+            `Local dependency from ${pkg.packageJson.name} to ${dep} should have a workspace range`,
+          );
 
-            fixed = true;
-            pkg.packageJson[depType][dep] = `^${localVersion}`;
-          }
+          fixed = true;
+          pkg.packageJson[depType][dep] = 'workspace:^';
         }
       }
     }
