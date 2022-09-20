@@ -28,17 +28,6 @@ jest.mock('./lib/versions', () => ({
   packageVersions: { root: '1.0.0' },
 }));
 
-beforeAll(() => {
-  mockFs({
-    [`${__dirname}/package.json`]: '', // required by `findPaths(__dirname)`
-    'templates/': mockFs.load(path.resolve(__dirname, '../templates/')),
-  });
-});
-
-afterAll(() => {
-  mockFs.restore();
-});
-
 const promptMock = jest.spyOn(inquirer, 'prompt');
 const checkPathExistsMock = jest.spyOn(tasks, 'checkPathExistsTask');
 const templatingMock = jest.spyOn(tasks, 'templatingTask');
@@ -51,6 +40,17 @@ const moveAppMock = jest.spyOn(tasks, 'moveAppTask');
 const buildAppMock = jest.spyOn(tasks, 'buildAppTask');
 
 describe('command entrypoint', () => {
+  beforeAll(() => {
+    mockFs({
+      [`${__dirname}/package.json`]: '', // required by `findPaths(__dirname)`
+      'templates/': mockFs.load(path.resolve(__dirname, '../templates/')),
+    });
+  });
+
+  afterAll(() => {
+    mockFs.restore();
+  });
+
   beforeEach(() => {
     promptMock.mockResolvedValueOnce({
       name: 'MyApp',

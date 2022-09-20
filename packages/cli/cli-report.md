@@ -390,6 +390,7 @@ Commands:
   build [options]
   lint [options]
   clean
+  test [options]
   help [command]
 ```
 
@@ -422,6 +423,17 @@ Options:
   --format <format>
   --since <ref>
   --fix
+  -h, --help
+```
+
+### `backstage-cli repo test`
+
+```
+Usage: backstage-cli repo test [options]
+
+Options:
+  --since <ref>
+  --jest-help
   -h, --help
 ```
 
