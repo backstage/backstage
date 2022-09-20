@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * A Backstage plugin that provides various per-user settings functionality.
- *
- * @packageDocumentation
- */
-
-export * from './apis';
-export {
-  userSettingsPlugin,
-  userSettingsPlugin as plugin,
-  UserSettingsPage,
-} from './plugin';
-export * from './components/';
+export { UserSettingsStorage } from './UserSettingsStorage';

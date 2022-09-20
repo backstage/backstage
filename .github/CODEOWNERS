@@ -60,6 +60,7 @@ yarn.lock                                           @backstage/reviewers @backst
 /plugins/stack-overflow-backend                     @backstage/reviewers @backstage/techdocs-core
 /plugins/techdocs                                   @backstage/reviewers @backstage/techdocs-core
 /plugins/techdocs-*                                 @backstage/reviewers @backstage/techdocs-core
+/plugins/user-settings-backend                      @backstage/reviewers @backstage/sda-se-reviewers
 /tech-insights-backend                              @backstage/reviewers @xantier @iain-b
 /tech-insights-backend-module-jsonfc                @backstage/reviewers @xantier @iain-b
 /tech-insights-tech-insights-common                 @backstage/reviewers @xantier @iain-b
