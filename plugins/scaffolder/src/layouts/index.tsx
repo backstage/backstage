@@ -15,8 +15,7 @@
  */
 
 import { attachComponentData, Extension } from '@backstage/core-plugin-api';
-import { ObjectFieldTemplateProps } from '@rjsf/core';
-import type { LayoutOptions, LayoutTemplate } from './types';
+import type { LayoutOptions } from './types';
 
 export const LAYOUTS_KEY = 'scaffolder.layout.v1';
 export const LAYOUTS_WRAPPER_KEY = 'scaffolder.layouts.wrapper.v1';
@@ -29,24 +28,13 @@ export const LAYOUTS_WRAPPER_KEY = 'scaffolder.layouts.wrapper.v1';
 export type LayoutComponent<_TInputProps> = () => null;
 
 /**
- * utility type to extract the component props from the LayoutOptions
- *
- * @public
- */
-export type GetProps<T> = T extends LayoutOptions
-  ? T['component'] extends LayoutTemplate<infer P>
-    ? LayoutComponent<ObjectFieldTemplateProps<P>>
-    : never
-  : never;
-
-/**
  * Method for creating custom Layouts that can be used in the scaffolder frontend form
  *
  * @public
  */
-export function createScaffolderLayout(
+export function createScaffolderLayout<TInputProps = unknown>(
   options: LayoutOptions,
-): Extension<GetProps<typeof options>> {
+): Extension<LayoutComponent<TInputProps>> {
   return {
     expose() {
       const LayoutDataHolder: any = () => null;

@@ -21,7 +21,6 @@ import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
-import { ObjectFieldTemplateProps } from '@rjsf/core';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
@@ -40,9 +39,9 @@ export function createScaffolderFieldExtension<
 ): Extension<FieldExtensionComponent<TReturnValue, TInputProps>>;
 
 // @public
-export function createScaffolderLayout(
+export function createScaffolderLayout<TInputProps = unknown>(
   options: LayoutOptions,
-): Extension<GetProps<typeof options>>;
+): Extension<LayoutComponent<TInputProps>>;
 
 // @public
 export type CustomFieldValidator<TFieldReturnValue> = (
@@ -116,13 +115,6 @@ export type FieldExtensionOptions<
   ) => JSX.Element | null;
   validation?: CustomFieldValidator<TFieldReturnValue>;
 };
-
-// @public
-export type GetProps<T> = T extends LayoutOptions
-  ? T['component'] extends LayoutTemplate<infer P>
-    ? LayoutComponent<ObjectFieldTemplateProps<P>>
-    : never
-  : never;
 
 // @public
 export type LayoutComponent<_TInputProps> = () => null;
