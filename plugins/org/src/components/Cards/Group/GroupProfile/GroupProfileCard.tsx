@@ -149,38 +149,40 @@ export const GroupProfileCard = (props: { variant?: InfoCardVariants }) => {
                 </ListItemText>
               </ListItem>
             )}
-
-            {parentRelations.length ? (
-              <ListItem>
-                <ListItemIcon>
-                  <Tooltip title="Parent Group">
-                    <AccountTreeIcon />
-                  </Tooltip>
-                </ListItemIcon>
-                <ListItemText>
+            <ListItem>
+              <ListItemIcon>
+                <Tooltip title="Parent Group">
+                  <AccountTreeIcon />
+                </Tooltip>
+              </ListItemIcon>
+              <ListItemText>
+                {parentRelations.length ? (
                   <EntityRefLinks
                     entityRefs={parentRelations}
                     defaultKind="Group"
                   />
-                </ListItemText>
-              </ListItem>
-            ) : null}
-
-            {childRelations.length ? (
-              <ListItem>
-                <ListItemIcon>
-                  <Tooltip title="Child Groups">
-                    <GroupIcon />
-                  </Tooltip>
-                </ListItemIcon>
-                <ListItemText>
+                ) : (
+                  '-'
+                )}
+              </ListItemText>
+            </ListItem>
+            <ListItem>
+              <ListItemIcon>
+                <Tooltip title="Child Groups">
+                  <GroupIcon />
+                </Tooltip>
+              </ListItemIcon>
+              <ListItemText>
+                {childRelations.length ? (
                   <EntityRefLinks
                     entityRefs={childRelations}
                     defaultKind="Group"
                   />
-                </ListItemText>
-              </ListItem>
-            ) : null}
+                ) : (
+                  '-'
+                )}
+              </ListItemText>
+            </ListItem>
           </List>
         </Grid>
       </Grid>
