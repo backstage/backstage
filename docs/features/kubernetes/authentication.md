@@ -34,7 +34,7 @@ The Azure server side authentication provider works by authenticating on the ser
 the Azure CLI, please note that [Azure AD Authentication][1] is a requirement and has to
 be enabled in your AKS cluster, then follow these steps:
 
-- [Install the Azure CLI][2] in the device where the backstage application will run.
+- [Install the Azure CLI][2] in the environment where the backstage application will run.
 - Login with your Azure/Microsoft account with `az login` in the server's terminal.
 - Go to your AKS cluster's resource page in Azure Console and follow the steps in the
   `Connect` tab to set the subscription and get your credentials for `kubectl` integration.
