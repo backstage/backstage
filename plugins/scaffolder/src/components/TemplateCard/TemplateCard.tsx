@@ -21,7 +21,17 @@ import {
   RELATION_OWNED_BY,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import {
+  Button,
+  ItemCardHeader,
+  MarkdownContent,
+} from '@backstage/core-components';
+import {
+  IconComponent,
+  useApi,
+  useApp,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import {
   ScmIntegrationIcon,
   scmIntegrationsApiRef,
@@ -32,6 +42,7 @@ import {
   getEntityRelations,
   getEntitySourceLocation,
 } from '@backstage/plugin-catalog-react';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
@@ -47,23 +58,10 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import WarningIcon from '@material-ui/icons/Warning';
 import LanguageIcon from '@material-ui/icons/Language';
+import WarningIcon from '@material-ui/icons/Warning';
 import React from 'react';
-import { selectedTemplateRouteRef } from '../../routes';
-
-import {
-  Button,
-  ItemCardHeader,
-  MarkdownContent,
-} from '@backstage/core-components';
-import {
-  IconComponent,
-  useApi,
-  useApp,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
-import { viewTechDocRouteRef } from '@backstage/plugin-catalog';
+import { selectedTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 
 const useStyles = makeStyles(theme => ({
   cardHeader: {
@@ -191,15 +189,15 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
   const { name, namespace } = parseEntityRef(stringifyEntityRef(template));
   const href = templateRoute({ templateName: name, namespace });
 
-  // TechDocs Links
-  const viewTechDocsRoute = useRouteRef(viewTechDocRouteRef);
+  // TechDocs Link
+  const viewTechDoc = useRouteRef(viewTechDocRouteRef);
   const viewTechDocsAnnotation =
     template.metadata.annotations?.['backstage.io/techdocs-ref'];
   const viewTechDocsLink =
     !!viewTechDocsAnnotation &&
-    !!viewTechDocsRoute &&
-    viewTechDocsRoute({
-      namespace: template.metadata?.namespace || DEFAULT_NAMESPACE,
+    !!viewTechDoc &&
+    viewTechDoc({
+      namespace: template.metadata.namespace || DEFAULT_NAMESPACE,
       kind: template.kind,
       name: template.metadata.name,
     });
