@@ -1,5 +1,40 @@
 # @backstage/plugin-catalog-backend
 
+## 1.4.0
+
+### Minor Changes
+
+- dd395335bc: Allow unknown typed location from being registered via the location service by configuration settings
+- 651c9d6800: The search index now does retain fields that have a very long value, but in the form of just a null. This makes it possible to at least filter for their existence.
+- 6e63bc43f2: Added the `refresh` function to the Connection of the entity providers.
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 07dda0b746: Add optional value to `hasAnnotation` permission rule
+- 243533ecdc: Added support to mysql on some raw queries
+- ce77e78c93: Fixes a bug to be able to utilize refresh keys after the entity is loaded from cache
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 679f7c5e95: Include entity ref into error message when catalog policies fail
+- 06e2b077a1: Limit the length of error messages that get written to the database and logs - to prevent performance issues
+- 62788b2ee8: The experimental `CatalogProcessingExtensionPoint` now accepts multiple providers and processors at once.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.2
+  - @backstage/backend-common@0.15.1
+  - @backstage/plugin-permission-node@0.6.5
+  - @backstage/plugin-catalog-node@1.1.0
+  - @backstage/integration@1.3.1
+  - @backstage/catalog-client@1.1.0
+  - @backstage/catalog-model@1.1.1
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+  - @backstage/plugin-permission-common@0.6.4
+  - @backstage/plugin-scaffolder-common@1.2.0
+  - @backstage/plugin-catalog-common@1.0.6
+  - @backstage/plugin-search-common@1.0.1
+
 ## 1.4.0-next.3
 
 ### Minor Changes

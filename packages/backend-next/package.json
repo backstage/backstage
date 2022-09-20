@@ -1,6 +1,6 @@
 {
   "name": "example-backend-next",
-  "version": "0.0.3-next.1",
+  "version": "0.0.3",
   "main": "dist/index.cjs.js",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -25,12 +25,12 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/backend-defaults": "^0.1.1-next.0",
-    "@backstage/plugin-catalog-backend": "^1.4.0-next.1",
-    "@backstage/plugin-scaffolder-backend": "^1.6.0-next.1"
+    "@backstage/backend-defaults": "^0.1.1",
+    "@backstage/plugin-catalog-backend": "^1.4.0",
+    "@backstage/plugin-scaffolder-backend": "^1.6.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0-next.1"
+    "@backstage/cli": "^0.19.0"
   },
   "files": [
     "dist"

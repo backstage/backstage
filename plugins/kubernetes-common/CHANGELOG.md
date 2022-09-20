@@ -1,5 +1,14 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.4.2
+
+### Patch Changes
+
+- 0768d6dece: add new kubernetes backend endpoints to kubernetes backend client
+- d669d89206: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/catalog-model@1.1.1
+
 ## 0.4.2-next.1
 
 ### Patch Changes
