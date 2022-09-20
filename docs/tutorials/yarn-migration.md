@@ -73,4 +73,23 @@ The `--production` flag to `yarn install` has been removed in Yarn 3, instead yo
 RUN yarn workspaces focus --all --production && rm -rf "$(yarn cache clean)"
 ```
 
+Additionally, `yarn config` has been reworked from being able to store any arbitrary key-value pairs to only supporting a handful of predefined pairs. Previously, we would set our preferred `python3` interpreter to work around [any issues related to node-gyp](https://github.com/backstage/backstage/issues/11583) so we need to provide an appropriate substitute.
+
+```diff
+FROM node:16-bullseye-slim
+
++# Set Python interpreter for `node-gyp` to use
++ENV PYTHON /usr/bin/python3
+
+# Install sqlite3 dependencies. You can skip this if you don't use sqlite3 in the image,
+# in which case you should also move better-sqlite3 to "devDependencies" in package.json.
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libsqlite3-dev python3 build-essential && \
+-   rm -rf /var/lib/apt/lists/* && \
+-   yarn config set python /usr/bin/python3
++   rm -rf /var/lib/apt/lists/*
+```
+
+You'll want to make sure that the `PYTHON` environment variable is declared relatively early, before any instances of `Yarn` are invoked as `node-gyp` is indirectly triggered by some modules during installation.
+
 If you have any internal CLI tools in your project that are exposed through `"bin"` entries in `package.json`, then you'll need to add these packages as dependencies in your project root `package.json`. This is to make sure Yarn picks up the executables and makes them available through `yarn <executable>`.

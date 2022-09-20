@@ -1,5 +1,13 @@
 # @backstage/create-app
 
+## 0.4.31-next.3
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10-next.0
+
 ## 0.4.31-next.2
 
 ### Patch Changes

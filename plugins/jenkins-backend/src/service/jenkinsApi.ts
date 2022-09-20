@@ -15,7 +15,7 @@
  */
 
 import type { JenkinsInfo } from './jenkinsInfoProvider';
-import jenkins from 'jenkins';
+import Jenkins from 'jenkins';
 import type {
   BackstageBuild,
   BackstageProject,
@@ -100,7 +100,7 @@ export class JenkinsApiImpl {
         // Filter only be the information we need, instead of loading all fields.
         // Limit to only show the latest build for each job and only load 50 jobs
         // at all.
-        // Whitespaces are only included for readablity here and stripped out
+        // Whitespaces are only included for readability here and stripped out
         // before sending to Jenkins
         tree: JenkinsApiImpl.jobsTreeSpec.replace(/\s/g, ''),
       });
@@ -177,12 +177,12 @@ export class JenkinsApiImpl {
 
   private static async getClient(jenkinsInfo: JenkinsInfo) {
     // The typings for the jenkins library are out of date so just cast to any
-    return jenkins({
+    return new (Jenkins as any)({
       baseUrl: jenkinsInfo.baseUrl,
       headers: jenkinsInfo.headers,
       promisify: true,
       crumbIssuer: jenkinsInfo.crumbIssuer,
-    }) as any;
+    });
   }
 
   private augmentProject(project: JenkinsProject): BackstageProject {

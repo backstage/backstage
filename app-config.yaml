@@ -444,3 +444,6 @@ apacheAirflow:
 
 gocd:
   baseUrl: https://your.gocd.instance.com
+
+permission:
+  enabled: true

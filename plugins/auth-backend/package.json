@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-auth-backend",
   "description": "A Backstage backend plugin that handles authentication",
-  "version": "0.16.0-next.2",
+  "version": "0.16.0-next.3",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -32,12 +32,12 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.15.1-next.2",
-    "@backstage/catalog-client": "^1.0.5-next.1",
-    "@backstage/catalog-model": "^1.1.0",
-    "@backstage/config": "^1.0.1",
-    "@backstage/errors": "^1.1.0",
-    "@backstage/plugin-auth-node": "^0.2.5-next.2",
+    "@backstage/backend-common": "^0.15.1-next.3",
+    "@backstage/catalog-client": "^1.1.0-next.2",
+    "@backstage/catalog-model": "^1.1.1-next.0",
+    "@backstage/config": "^1.0.2-next.0",
+    "@backstage/errors": "^1.1.1-next.0",
+    "@backstage/plugin-auth-node": "^0.2.5-next.3",
     "@backstage/types": "^1.0.0",
     "@davidzemon/passport-okta-oauth": "^0.0.5",
     "@google-cloud/firestore": "^6.0.0",
@@ -76,8 +76,8 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "^0.1.28-next.2",
-    "@backstage/cli": "^0.19.0-next.2",
+    "@backstage/backend-test-utils": "^0.1.28-next.3",
+    "@backstage/cli": "^0.19.0-next.3",
     "@types/body-parser": "^1.19.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/express-session": "^1.17.2",
