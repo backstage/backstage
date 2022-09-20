@@ -22,6 +22,7 @@ import {
   Task,
   buildAppTask,
   checkAppExistsTask,
+  checkForGitSetup,
   checkPathExistsTask,
   createTemporaryAppFolderTask,
   initGitRepository,
@@ -345,6 +346,33 @@ describe('buildAppTask', () => {
         fs.readFileSync('templatedApp/packages/backend/package.json', 'utf-8'),
       ).toContain('sqlite3"');
     });
+  });
+});
+
+describe('checkForGitSetup', () => {
+  it('should check if git package is installed and configured', async () => {
+    mockExec.mockImplementation((_command, callback) => {
+      callback(null, { stdout: 'main' }, 'standard error');
+    });
+
+    await checkForGitSetup();
+
+    expect(mockExec).toHaveBeenCalledTimes(3);
+    expect(mockExec).toHaveBeenNthCalledWith(
+      1,
+      'which git',
+      expect.any(Function),
+    );
+    expect(mockExec).toHaveBeenNthCalledWith(
+      2,
+      'git config user.name',
+      expect.any(Function),
+    );
+    expect(mockExec).toHaveBeenNthCalledWith(
+      3,
+      'git config user.email',
+      expect.any(Function),
+    );
   });
 });
 

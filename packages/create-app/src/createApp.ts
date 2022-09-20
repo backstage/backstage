@@ -29,37 +29,41 @@ import {
   moveAppTask,
   templatingTask,
   initGitRepository,
+  checkForGitSetup,
 } from './lib/tasks';
 
 export default async (opts: OptionValues): Promise<void> => {
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
 
-  const answers: Answers = await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'name',
-      message: chalk.blue('Enter a name for the app [required]'),
-      validate: (value: any) => {
-        if (!value) {
-          return chalk.red('Please enter a name for the app');
-        } else if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(value)) {
-          return chalk.red(
-            'App name must be lowercase and contain only letters, digits, and dashes.',
-          );
-        }
-        return true;
+  const answers: Answers = await inquirer.prompt(
+    [
+      {
+        type: 'input',
+        name: 'name',
+        message: chalk.blue('Enter a name for the app [required]'),
+        validate: (value: any) => {
+          if (!value) {
+            return chalk.red('Please enter a name for the app');
+          } else if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(value)) {
+            return chalk.red(
+              'App name must be lowercase and contain only letters, digits, and dashes.',
+            );
+          }
+          return true;
+        },
+        when: (a: Answers) => {
+          const envName = process.env.BACKSTAGE_APP_NAME;
+          if (envName) {
+            a.name = envName;
+            return false;
+          }
+          return true;
+        },
       },
-      when: (a: Answers) => {
-        const envName = process.env.BACKSTAGE_APP_NAME;
-        if (envName) {
-          a.name = envName;
-          return false;
-        }
-        return true;
-      },
-    },
-  ]);
+    ],
+    { defaultBranch: 'master' },
+  );
 
   const templateDir = paths.resolveOwn('templates/default-app');
   const tempDir = resolvePath(os.tmpdir(), answers.name);
@@ -74,14 +78,18 @@ export default async (opts: OptionValues): Promise<void> => {
   Task.log('Creating the app...');
 
   try {
+    const isGitConfigured = await checkForGitSetup();
+
     if (opts.path) {
       // Template directly to specified path
 
       Task.section('Checking that supplied path exists');
       await checkPathExistsTask(appDir);
 
-      Task.section('Initializing git repository');
-      await initGitRepository(appDir, answers);
+      if (isGitConfigured) {
+        Task.section('Initializing git repository');
+        await initGitRepository(appDir, answers);
+      }
 
       Task.section('Preparing files');
       await templatingTask(templateDir, opts.path, answers);
@@ -94,8 +102,10 @@ export default async (opts: OptionValues): Promise<void> => {
       Task.section('Creating a temporary app directory');
       await createTemporaryAppFolderTask(tempDir);
 
-      Task.section('Initializing git repository');
-      await initGitRepository(tempDir, answers);
+      if (isGitConfigured) {
+        Task.section('Initializing git repository');
+        await initGitRepository(tempDir, answers);
+      }
 
       Task.section('Preparing files');
       await templatingTask(templateDir, tempDir, answers);

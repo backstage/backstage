@@ -238,6 +238,33 @@ export async function moveAppTask(
 }
 
 /**
+ * Checks if git package is installed and git credentials exists
+ *
+ * @throws if `exec` fails
+ */
+export async function checkForGitSetup(): Promise<boolean> {
+  const runCmd = (cmd: string) =>
+    exec(cmd).catch(error => {
+      process.stdout.write(error.stderr);
+      process.stdout.write(error.stdout);
+      throw new Error(`Could not execute command ${chalk.cyan(cmd)}`);
+    });
+
+  try {
+    await runCmd('which git');
+
+    const [gitUsername, gitEmail] = await Promise.all([
+      runCmd('git config user.name'),
+      runCmd('git config user.email'),
+    ]);
+
+    return Boolean(gitUsername.stdout?.trim() && gitEmail.stdout?.trim());
+  } catch (error) {
+    return false;
+  }
+}
+
+/**
  * Initializes a git repository in the destination folder
  *
  * @param dir - source path to initialize git repository in
@@ -245,25 +272,23 @@ export async function moveAppTask(
  * @throws if `exec` fails
  */
 export async function initGitRepository(dir: string, context: any) {
-  const runCmd = async (cmd: string) => {
-    let cmdResponse = { stdout: '', stderr: '' };
-    await Task.forItem('executing', cmd, async () => {
-      process.chdir(dir);
-      cmdResponse = await exec(cmd).catch(error => {
-        process.stdout.write(error.stderr);
-        process.stdout.write(error.stdout);
-        throw new Error(`Could not execute command ${chalk.cyan(cmd)}`);
-      });
+  const runCmd = (cmd: string) =>
+    exec(cmd).catch(error => {
+      process.stdout.write(error.stderr);
+      process.stdout.write(error.stdout);
+      throw new Error(`Could not execute command ${chalk.cyan(cmd)}`);
     });
-    return cmdResponse;
-  };
 
-  await runCmd('git init');
-  await runCmd('git commit --allow-empty -m "Initial commit"');
+  await Task.forItem('init', 'git repository', async () => {
+    process.chdir(dir);
 
-  const defaultBranch = await runCmd('git branch --format="%(refname:short)"');
+    await runCmd('git init');
+    await runCmd('git commit --allow-empty -m "Initial commit"');
 
-  context.defaultBranch = defaultBranch.stdout
-    ? defaultBranch.stdout.trim()
-    : 'master';
+    const defaultBranch = await runCmd(
+      'git branch --format="%(refname:short)"',
+    );
+
+    context.defaultBranch = defaultBranch.stdout?.trim() || 'master';
+  });
 }
