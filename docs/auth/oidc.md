@@ -23,10 +23,8 @@ We'll explain each step more in detail next.
 
 ### The API reference
 
-An API reference exist for the sake of **Dependency Injection**, it's basically an ID to
-help backstage DI to identify the provider and either create a new instance of the
-class/object/API identified by such ID, or if it has already been created, return the
-existing instance, that way we have a singleton instance of the provider.
+An API reference exist for the sake of **Dependency Injection**, check [Utility APIs][4]
+for extended explanation.
 
 In this OIDC example, we'll create the API reference directly in the
 `packages/app/src/apis.ts` file, it is not a requirement to put the reference in this
@@ -233,3 +231,4 @@ variables.
 [1]: https://backstage.io/docs/auth/identity-resolver
 [2]: https://backstage.io/docs/auth/microsoft/provider#create-an-app-registration-on-azure
 [3]: https://backstage.io/docs/auth/#sign-in-configuration
+[4]: https://backstage.io/docs/api/utility-apis
