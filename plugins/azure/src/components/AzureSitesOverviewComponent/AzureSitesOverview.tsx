@@ -18,7 +18,7 @@ import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { useSites } from '../../hooks/useSites';
 import {
-  AZURE_RESOURCE_NAME_ANNOTATION,
+  AZURE_WEB_SITE_NAME_ANNOTATION,
   useServiceEntityAnnotations,
 } from '../../hooks/useServiceEntityAnnotations';
 import {
@@ -30,14 +30,14 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import { AzureSitesOverviewTable } from '../AzureSitesOverviewTableComponent/AzureSitesOverviewTable';
 
 /** @public */
-export const isAzureResourceNameAvailable = (entity: Entity) =>
-  entity?.metadata.annotations?.[AZURE_RESOURCE_NAME_ANNOTATION];
+export const isAzureWebSiteNameAvailable = (entity: Entity) =>
+  entity?.metadata.annotations?.[AZURE_WEB_SITE_NAME_ANNOTATION];
 
 const AzureSitesOverview = ({ entity }: { entity: Entity }) => {
-  const { resourceName } = useServiceEntityAnnotations(entity);
+  const { webSiteName } = useServiceEntityAnnotations(entity);
 
   const [sites] = useSites({
-    name: resourceName,
+    name: webSiteName,
   });
 
   if (sites.error) {
@@ -60,10 +60,10 @@ const AzureSitesOverview = ({ entity }: { entity: Entity }) => {
 export const AzureSitesOverviewWidget = () => {
   const { entity } = useEntity();
 
-  if (!isAzureResourceNameAvailable(entity)) {
+  if (!isAzureWebSiteNameAvailable(entity)) {
     return (
       <MissingAnnotationEmptyState
-        annotation={AZURE_RESOURCE_NAME_ANNOTATION}
+        annotation={AZURE_WEB_SITE_NAME_ANNOTATION}
       />
     );
   }

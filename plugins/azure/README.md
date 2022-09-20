@@ -10,9 +10,9 @@ _Inspired by [roadie.io AWS Lamda plugin](https://roadie.io/backstage/plugins/aw
 
 ## Plugin Setup
 
-The following sections will help you get the Azure Functions plugin setup and running
+The following sections will help you get the Azure plugin setup and running
 
-### Azure Functions Backend
+### Azure Backend
 
 You need to set up the Azure backend plugin before you move forward with any of these steps if you haven't already.
 
@@ -21,10 +21,10 @@ You need to set up the Azure backend plugin before you move forward with any of 
 To be able to use the Azure plugin you need to add the following annotation to any entities you want to use it with:
 
 ```yaml
-portal.azure.com/resource-name: <resource-name>
+azure.com/microsoft.web/sites: <name>
 ```
 
-`<resource-name>` can be an exact or partial name for the site.
+`<name>` supports case-insensitive exact / partial value.
 
 Example of Partial Matching:
 
@@ -39,7 +39,7 @@ func-testapp-us
 The annotation you will use to have the three functions' app appear in the overview table would look like this:
 
 ```yaml
-portal.azure.com/resource-name: func-testapp
+azure.com/microsoft.web/sites: func-testapp
 ```
 
 ### Install the component
@@ -54,14 +54,14 @@ yarn add @backstage/plugin-azure
 
 ```ts
 // In packages/app/src/components/catalog/EntityPage.tsx
-import { EntityAzureSitesOverviewWidget, isAzureResourceNameAvailable } from '@backstage/plugin-azure';
+import { EntityAzureSitesOverviewWidget, isAzureWebSiteNameAvailable } from '@backstage/plugin-azure';
 
 ...
 
 const serviceEntityPage = (
   <EntityLayout>
     //...
-    <EntityLayout.Route if={e => Boolean(isAzureResourceNameAvailable(e))} path="/azure" title="Azure">
+    <EntityLayout.Route if={e => Boolean(isAzureWebSiteNameAvailable(e))} path="/azure" title="Azure">
       <EntityAzureSitesOverviewWidget />
     </EntityLayout.Route>
     //...

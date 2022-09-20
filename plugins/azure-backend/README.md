@@ -70,9 +70,7 @@ Here's how to get the backend plugin up and running:
    async function main() {
      // ...
      // Add this line under the other lines that follow the useHotMemoize pattern
-     const azureEnv = useHotMemoize(module, () =>
-       createEnv('azure'),
-     );
+     const azureEnv = useHotMemoize(module, () => createEnv('azure'));
 
      // ...
      // Insert this line under the other lines that add their routers to apiRouter in the same way

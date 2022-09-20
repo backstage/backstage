@@ -16,12 +16,12 @@
 
 import { Entity } from '@backstage/catalog-model';
 
-export const AZURE_RESOURCE_NAME_ANNOTATION = 'portal.azure.com/resource-name';
+export const AZURE_WEB_SITE_NAME_ANNOTATION = 'azure.com/microsoft.web/sites';
 export const useServiceEntityAnnotations = (entity: Entity) => {
-  const resourceName =
-    entity?.metadata.annotations?.[AZURE_RESOURCE_NAME_ANNOTATION] ?? '';
+  const webSiteName =
+    entity?.metadata.annotations?.[AZURE_WEB_SITE_NAME_ANNOTATION] ?? '';
 
   return {
-    resourceName,
+    webSiteName,
   };
 };

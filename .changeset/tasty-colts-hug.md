@@ -4,4 +4,4 @@
 '@backstage/plugin-azure-common': minor
 ---
 
-Azure Functions Plugin support based on annotation supplied by the entity.
+Generic azure plugin based on an annotation supplied by a given entity.
