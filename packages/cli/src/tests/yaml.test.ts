@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-import { gitReleaseManagerApiRef } from './serviceApiRef';
+import yaml from './yaml-fixture.yaml';
 
-describe('gitReleaseManagerApiRef', () => {
-  it('should work', () => {
-    const result = gitReleaseManagerApiRef;
-
-    expect(result).toMatchInlineSnapshot(`
-      ApiRefImpl {
-        "config": {
-          "id": "plugin.git-release-manager.service",
-        },
-      }
-    `);
+describe('tests', () => {
+  it('should load yaml', () => {
+    expect(yaml).toEqual({ x: { y: 'z' } });
   });
 });

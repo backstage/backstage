@@ -13,21 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const { createTransformer: createSwcTransformer } = require('@swc/jest');
 
-const ESM_REGEX = /\b(?:import|export)\b/;
+const yaml = require('yaml');
+const crypto = require('crypto');
 
 function createTransformer(config) {
-  const swcTransformer = createSwcTransformer(config);
-  const process = (source, filePath, jestOptions) => {
-    if (filePath.endsWith('.js') && !ESM_REGEX.test(source)) {
-      return { code: source };
-    }
-
-    return swcTransformer.process(source, filePath, jestOptions);
+  const process = source => {
+    const json = JSON.stringify(yaml.parse(source), null, 2);
+    return { code: `module.exports = ${json}`, map: null };
   };
 
-  const getCacheKey = swcTransformer.getCacheKey;
+  const getCacheKey = sourceText => {
+    return crypto
+      .createHash('md5')
+      .update(sourceText)
+      .update(Buffer.alloc(1))
+      .update(JSON.stringify(config))
+      .update(Buffer.alloc(1))
+      .update('1') // increment whenever the transform logic in this file changes
+      .digest('hex');
+  };
 
   return { process, getCacheKey };
 }
