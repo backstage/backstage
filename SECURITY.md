@@ -31,7 +31,7 @@ Backstage uses Snyk vulnerability scans in order to make sure we minimize vulner
 
 There are many situations where a vulnerability does not affect a particular dependency because of how the vulnerable package is used. In that situation the package authors may choose to stay at the current version rather than bumping the dependency, leading to a warning in the vulnerability scans but no actual vulnerability.
 
-To work around this and other similar issues, Snyk provides a method to ignore vulnerabilities. In order to provide the best visibility and most utility to adopters of Backstage, we store these ignore rules in `.snyk` policy files. This allows adopters to rely on our ignore policies if they wish to do so.
+To work around this and other similar issues, Snyk provides a method to ignored vulnerabilities. In order to provide the best visibility and most utility to adopters of Backstage, we store these ignore rules in `.snyk` policy files. This allows adopters to rely on our ignore policies if they wish to do so.
 
 Adding a new ignore policy is done by creating or modifying an existing `.snyk` file within a package root. See the [Snyk Documentation](https://support.snyk.io/hc/en-us/articles/360007487097-The-snyk-file) for details on the syntax. Always include a description, full path, and time limit of the ignore policy.
 
@@ -57,7 +57,7 @@ function writeTemporaryFile(tmpDir: string, name: string, content: string) {
 }
 ```
 
-If the `name` of the file is controlled by the user, they can for example enter `../../../../etc/hosts` as the name of the file. This can lead to a file being written outside the intended directory, which in turn can be used to inject malicious code or other form of attacks.
+If the `name` of the file is controlled by the user, they can for example enter `../../../../etc/hosts` as the name of the file. This can lead to a file being written outside the intended directory, which in turn can be used to inject malicious code or other forms of attacks.
 
 The recommended solution to this is to use `resolveSafeChildPath` from `@backstage/backend-common` to resolve the file path instead. It makes sure that the resolved path does not fall outside the provided directory. If you simply want to validate whether a file path is safe, you can use `isChildPath` instead.
 
@@ -79,7 +79,7 @@ function writeTemporaryFile(tmpDir: string, name: string, content: string) {
 
 When returning a response from an Express route, always use `.json(...)` or `.end()` without any arguments. This ensures that the response can not be interpreted as an HTML document with embedded JavaScript by the browser. Never use `.send(...)` unless you want to send other forms of content, and be sure to always set an explicit content type. If you need to return HTML or other content that may be executed by the browser, be very careful how you handle user input.
 
-If you want to return an error response, simply throw the error or pass it on to the `next(...)` callback. There is a middleware installed that will transform the error into a JSON response. Many of the common HTTP errors are available from `@backstage/errors`, for example `NotFoundError`, which will also set the correct status code.
+If you want to return an error response, simply throw the error or pass it onto the `next(...)` callback. There is a middleware installed that will transform the error into a JSON response. Many of the common HTTP errors are available from `@backstage/errors`, for example `NotFoundError`, which will also set the correct status code.
 
 The following example show how to return an error that contains user input:
 
