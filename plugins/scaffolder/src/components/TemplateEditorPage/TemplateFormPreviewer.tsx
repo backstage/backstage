@@ -33,6 +33,7 @@ import React, { useCallback, useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import yaml from 'yaml';
 import { FieldExtensionOptions } from '../../extensions';
+import { LayoutOptions } from '../../layouts';
 import { TemplateEditorForm } from './TemplateEditorForm';
 import { TemplateEditorTextArea } from './TemplateEditorTextArea';
 
@@ -110,10 +111,12 @@ export const TemplateFormPreviewer = ({
   defaultPreviewTemplate = EXAMPLE_TEMPLATE_PARAMS_YAML,
   customFieldExtensions = [],
   onClose,
+  layouts = [],
 }: {
   defaultPreviewTemplate?: string;
   customFieldExtensions?: FieldExtensionOptions<any, any>[];
   onClose?: () => void;
+  layouts?: LayoutOptions[];
 }) => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
@@ -208,6 +211,7 @@ export const TemplateFormPreviewer = ({
             data={formState}
             onUpdate={setFormState}
             setErrorText={setErrorText}
+            layouts={layouts}
           />
         </div>
       </main>

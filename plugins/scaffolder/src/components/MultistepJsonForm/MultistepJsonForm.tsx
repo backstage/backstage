@@ -36,6 +36,7 @@ import { transformSchemaToProps } from './schema';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
+import { LayoutOptions } from '../../layouts';
 
 const Form = withTheme(MuiTheme);
 type Step = {
@@ -55,6 +56,7 @@ type Props = {
   widgets?: FormProps<any>['widgets'];
   fields?: FormProps<any>['fields'];
   finishButtonLabel?: string;
+  layouts: LayoutOptions[];
 };
 
 export function getUiSchemasFromSteps(steps: Step[]): UiSchema[] {
@@ -119,6 +121,7 @@ export const MultistepJsonForm = (props: Props) => {
     fields,
     widgets,
     finishButtonLabel,
+    layouts,
   } = props;
   const [activeStep, setActiveStep] = useState(0);
   const [disableButtons, setDisableButtons] = useState(false);
@@ -214,7 +217,7 @@ export const MultistepJsonForm = (props: Props) => {
                     if (e.errors.length === 0) handleNext();
                   }}
                   {...formProps}
-                  {...transformSchemaToProps(schema)}
+                  {...transformSchemaToProps(schema, layouts)}
                 >
                   <Button disabled={activeStep === 0} onClick={handleBack}>
                     Back
