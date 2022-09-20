@@ -102,7 +102,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       throw new InputError('No env provided in request query parameters');
     }
 
-    const cookieConfig = this.getCookieConfig();
+    const cookieConfig = this.getCookieConfig(origin);
 
     const nonce = crypto.randomBytes(16).toString('base64');
     // set a nonce cookie before redirecting to oauth provider
