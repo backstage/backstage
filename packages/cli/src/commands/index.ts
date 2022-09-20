@@ -80,7 +80,10 @@ export function registerRepoCommand(program: Command) {
       '--since <ref>',
       'Only test packages that changed since the specified ref',
     )
-    .helpOption(', --backstage-cli-help') // Let Jest handle help
+    .option(
+      '--jest-help',
+      'Show help for Jest CLI options, which are passed through',
+    )
     .description('Run tests, forwarding args to Jest, defaulting to watch mode')
     .action(lazy(() => import('./repo/test').then(m => m.command)));
 }
