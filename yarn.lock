@@ -3281,7 +3281,6 @@ __metadata:
     jest-css-modules: ^2.1.0
     jest-environment-jsdom: ^29.0.2
     jest-runtime: ^29.0.2
-    jest-transform-yaml: ^1.0.0
     json-schema: ^0.4.0
     lodash: ^4.17.21
     mini-css-extract-plugin: ^2.4.2
@@ -27371,15 +27370,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-transform-yaml@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "jest-transform-yaml@npm:1.0.0"
-  dependencies:
-    js-yaml: 4.1.0
-  checksum: 3bb1646c9fd08beb7d9f28a340bc28cebbc1aedb657c5f7809247423bfd39d99eccb8792a689876079133031281e95c56f2fadb93cdf1a142b74e9b9b7584595
-  languageName: node
-  linkType: hard
-
 "jest-util@npm:^29.0.3":
   version: 29.0.3
   resolution: "jest-util@npm:29.0.3"
@@ -27610,7 +27600,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:4.1.0, js-yaml@npm:=4.1.0, js-yaml@npm:^4.0.0, js-yaml@npm:^4.1.0":
+"js-yaml@npm:=4.1.0, js-yaml@npm:^4.0.0, js-yaml@npm:^4.1.0":
   version: 4.1.0
   resolution: "js-yaml@npm:4.1.0"
   dependencies:
