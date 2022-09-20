@@ -19,7 +19,7 @@ import {
   CheckResult,
   BulkCheckResponse,
 } from '@backstage/plugin-tech-insights-common';
-import { Check } from './types';
+import { Check, InsightFact } from './types';
 import { CheckResultRenderer } from '../components/CheckResultRenderer';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 
@@ -48,4 +48,8 @@ export interface TechInsightsApi {
     entities: CompoundEntityRef[],
     checks?: Check[],
   ): Promise<BulkCheckResponse>;
+  getLatestFacts(
+    entity: CompoundEntityRef,
+    facts: string[],
+  ): Promise<InsightFact>;
 }

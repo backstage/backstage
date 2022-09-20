@@ -6936,6 +6936,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
+    luxon: ^3.0.3
     msw: ^0.47.0
     react-use: ^17.2.4
   peerDependencies:
@@ -29337,6 +29338,13 @@ __metadata:
   version: 3.0.1
   resolution: "luxon@npm:3.0.1"
   checksum: aa966eb919bf95b1bd819cda784d1f6f66e3fb65bd9ec7bf68b6a978eeb4e3e14f7e2275021b473f93b15b6b7ba2e5a30471e53add3929a7e695fcfd6dd40ec8
+  languageName: node
+  linkType: hard
+
+"luxon@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "luxon@npm:3.0.3"
+  checksum: 67d143f102f520761c4202086579a5cf30b230ea299da27cacb31e9f9d372cadef90f14cbe7e2621b70825b267fe00128b8176ed8b7172b48f77a403a662d5aa
   languageName: node
   linkType: hard
 

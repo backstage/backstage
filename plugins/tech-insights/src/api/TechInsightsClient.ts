@@ -19,7 +19,7 @@ import {
   BulkCheckResponse,
   CheckResult,
 } from '@backstage/plugin-tech-insights-common';
-import { Check } from './types';
+import { Check, InsightFact } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -45,76 +45,76 @@ export class TechInsightsClient implements TechInsightsApi {
     this.renderers = options.renderers;
   }
 
+  async getLatestFacts(
+    entity: CompoundEntityRef,
+    facts: string[],
+  ): Promise<InsightFact> {
+    const { namespace, kind, name } = entity;
+    const entityQuery = `entity=${encodeURIComponent(
+      kind.toLocaleLowerCase('en-US'),
+    )}:${encodeURIComponent(namespace)}/${encodeURIComponent(name)}`;
+    const idsQuery = facts.map(id => `ids[]=${id}`).join('&');
+    return await this.api<InsightFact>(
+      `/facts/latest?${entityQuery}&${idsQuery}`,
+    );
+  }
+
   getCheckResultRenderers(types: string[]): CheckResultRenderer[] {
     const renderers = this.renderers ?? [jsonRulesEngineCheckResultRenderer];
     return renderers.filter(d => types.includes(d.type));
   }
 
   async getAllChecks(): Promise<Check[]> {
-    const url = await this.discoveryApi.getBaseUrl('tech-insights');
-    const { token } = await this.identityApi.getCredentials();
-    const response = await fetch(`${url}/checks`, {
-      headers: token
-        ? {
-            Authorization: `Bearer ${token}`,
-          }
-        : undefined,
-    });
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-    return await response.json();
+    return this.api('/checks');
   }
 
   async runChecks(
     entityParams: CompoundEntityRef,
     checks?: string[],
   ): Promise<CheckResult[]> {
-    const url = await this.discoveryApi.getBaseUrl('tech-insights');
-    const { token } = await this.identityApi.getCredentials();
     const { namespace, kind, name } = entityParams;
     const requestBody = { checks };
-    const response = await fetch(
-      `${url}/checks/run/${encodeURIComponent(namespace)}/${encodeURIComponent(
+    return this.api(
+      `/checks/run/${encodeURIComponent(namespace)}/${encodeURIComponent(
         kind,
       )}/${encodeURIComponent(name)}`,
       {
         method: 'POST',
         body: JSON.stringify(requestBody),
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
       },
     );
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-    return await response.json();
   }
 
   async runBulkChecks(
     entities: CompoundEntityRef[],
     checks?: Check[],
   ): Promise<BulkCheckResponse> {
-    const url = await this.discoveryApi.getBaseUrl('tech-insights');
-    const { token } = await this.identityApi.getCredentials();
     const checkIds = checks ? checks.map(check => check.id) : [];
     const requestBody = {
       entities,
       checks: checkIds.length > 0 ? checkIds : undefined,
     };
-    const response = await fetch(`${url}/checks/run`, {
+    return this.api('/checks/run', {
       method: 'POST',
       body: JSON.stringify(requestBody),
+    });
+  }
+
+  private async api<T>(path: string, init?: RequestInit): Promise<T> {
+    const url = await this.discoveryApi.getBaseUrl('tech-insights');
+    const { token } = await this.identityApi.getCredentials();
+
+    return fetch(`${url}${path}`, {
+      ...init,
       headers: {
         'Content-Type': 'application/json',
         ...(token && { Authorization: `Bearer ${token}` }),
       },
+    }).then(async response => {
+      if (!response.ok) {
+        throw await ResponseError.fromResponse(response);
+      }
+      return response.json() as Promise<T>;
     });
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-    return await response.json();
   }
 }
