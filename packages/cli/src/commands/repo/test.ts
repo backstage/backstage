@@ -101,6 +101,12 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
         pkg => pkg.allLocalDependents.keys(),
       ),
     );
+
+    if (packageNames.length === 0) {
+      console.log(`No packages changed since ${opts.since}`);
+      return;
+    }
+
     args.push('--selectProjects', ...packageNames);
   }
 
