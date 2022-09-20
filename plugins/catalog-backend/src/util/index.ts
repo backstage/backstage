@@ -15,9 +15,3 @@
  */
 
 export { locationSpecToLocationEntity } from './conversion';
-export {
-  createGaugeMetric,
-  createCounterMetric,
-  createHistogramMetric,
-  createSummaryMetric,
-} from './metrics';

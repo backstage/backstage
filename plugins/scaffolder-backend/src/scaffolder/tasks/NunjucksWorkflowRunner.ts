@@ -40,7 +40,8 @@ import {
 import {
   createCounterMetric,
   createHistogramMetric,
-} from '@backstage/plugin-catalog-backend';
+} from '../../util/metrics';
+import { UserEntity } from '@backstage/catalog-model';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -56,7 +57,10 @@ type TemplateContext = {
     [stepName: string]: { output: { [outputName: string]: JsonValue } };
   };
   secrets?: Record<string, string>;
-  user?: {};
+  user?: {
+    entity?: UserEntity;
+    ref?: string;
+  };
 };
 
 const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
@@ -321,12 +325,12 @@ function scaffoldingTracker() {
   const taskSuccesses = createCounterMetric({
     name: 'scaffolder_task_success_count',
     help: 'Count of succesful task runs',
-    labelNames: ['template', 'invoker'],
+    labelNames: ['template', 'user'],
   });
   const taskErrors = createCounterMetric({
     name: 'scaffolder_task_error_count',
     help: 'Count of failed task runs',
-    labelNames: ['template', 'invoker'],
+    labelNames: ['template', 'user'],
   });
   const taskDuration = createHistogramMetric({
     name: 'scaffolder_task_duration',
@@ -336,23 +340,23 @@ function scaffoldingTracker() {
   const stepSuccesses = createCounterMetric({
     name: 'scaffolder_step_success_count',
     help: 'Count of successful step runs',
-    labelNames: ['name'],
+    labelNames: ['template', 'name'],
   });
   const stepErrors = createCounterMetric({
     name: 'scaffolder_step_error_count',
     help: 'Count of failed step runs',
-    labelNames: ['name'],
+    labelNames: ['template', 'name'],
   });
   const stepDuration = createHistogramMetric({
     name: 'scaffolder_step_duration',
     help: 'Duration of a step runs',
-    labelNames: ['name', 'result'],
+    labelNames: ['template', 'name', 'result'],
   });
 
   async function taskStart(task: TaskContext) {
     await task.emitLog(`Starting up task with ${task.spec.steps.length} steps`);
-    const template = task.spec.templateInfo?.entity?.metadata.name || '';
-    const invoker = task.spec.user?.entity?.metadata.name || '';
+    const template = task.spec.templateInfo?.entityRef || '';
+    const user = task.spec.user?.ref || '';
 
     const taskTimer = taskDuration.startTimer({
       template,
@@ -371,7 +375,7 @@ function scaffoldingTracker() {
     function markSuccessful() {
       taskSuccesses.inc({
         template,
-        invoker,
+        user,
       });
       taskTimer({ result: 'ok' });
     }
@@ -383,7 +387,7 @@ function scaffoldingTracker() {
       });
       taskErrors.inc({
         template,
-        invoker,
+        user,
       });
       taskTimer({ result: 'failed' });
     }
@@ -400,8 +404,10 @@ function scaffoldingTracker() {
       stepId: step.id,
       status: 'processing',
     });
+    const template = task.spec.templateInfo?.entityRef || '';
 
     const stepTimer = stepDuration.startTimer({
+      template,
       name: step.name,
     });
 
@@ -428,6 +434,7 @@ function scaffoldingTracker() {
         `Skipping step ${step.id} because it's if condition was false`,
         { stepId: step.id, status: 'skipped' },
       );
+      stepTimer({ result: 'skipped' })
     }
 
     return {
