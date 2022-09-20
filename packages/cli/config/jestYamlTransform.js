@@ -15,6 +15,7 @@
  */
 
 const yaml = require('yaml');
+const crypto = require('crypto');
 
 function createTransformer(config) {
   const process = source => {
@@ -23,7 +24,8 @@ function createTransformer(config) {
   };
 
   const getCacheKey = sourceText => {
-    return createHash('md5')
+    return crypto
+      .createHash('md5')
       .update(sourceText)
       .update(Buffer.alloc(1))
       .update(JSON.stringify(config))
