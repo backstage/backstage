@@ -18,9 +18,7 @@ The providers currently available are divided into server side and client side.
 ## Server Side Providers
 
 These providers authenticate your _application_ with the cluster, meaning anyone that is
-logged in into your backstage app will be granted the same access to Kubernetes objects,
-to put an example,even guest users would have access to the cluster resources, so be
-careful of using server side providers with guest access enabled.
+logged in into your backstage app will be granted the same access to Kubernetes objects, including guest users.
 
 The providers available as server side are:
 
