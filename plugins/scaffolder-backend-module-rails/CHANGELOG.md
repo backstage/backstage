@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.4.4
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/plugin-scaffolder-backend@1.6.0
+  - @backstage/integration@1.3.1
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+
 ## 0.4.4-next.1
 
 ### Patch Changes

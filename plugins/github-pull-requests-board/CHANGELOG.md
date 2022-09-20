@@ -1,5 +1,23 @@
 # @backstage/plugin-github-pull-requests-board
 
+## 0.1.3
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 2665ee4ed4: Clarified GitHub app permissions required by plugin
+- d669d89206: Minor API signatures cleanup
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 723113296b: Add optional `pullRequestLimit` prop to `EntityTeamPullRequestsCard` and `EntityTeamPullRequestsContent` to limit the number of PRs shown per repository. Excluding this prop will default the number of pull requests shown to 10 per repository (the existing functionality).
+- Updated dependencies
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/plugin-catalog-react@1.1.4
+  - @backstage/integration@1.3.1
+  - @backstage/catalog-model@1.1.1
+
 ## 0.1.3-next.3
 
 ### Patch Changes

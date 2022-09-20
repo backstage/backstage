@@ -1,5 +1,22 @@
 # @backstage/backend-app-api
 
+## 0.2.1
+
+### Patch Changes
+
+- 2c57c0c499: Made `ApiRef.defaultFactory` internal.
+- 854ba37357: Updated to support new `ServiceFactory` formats.
+- af6bb42c68: Updated `ServiceRegistry` to not initialize factories more than once.
+- 409ed984e8: Updated service implementations and backend wiring to support scoped service.
+- de3347ca74: Updated usages of `ServiceFactory`.
+- 1f384c5644: Improved error messaging when failing to instantiate services.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.2
+  - @backstage/backend-common@0.15.1
+  - @backstage/plugin-permission-node@0.6.5
+  - @backstage/backend-tasks@0.3.5
+  - @backstage/errors@1.1.1
+
 ## 0.2.1-next.2
 
 ### Patch Changes

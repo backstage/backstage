@@ -1,5 +1,31 @@
 # @backstage/plugin-auth-backend
 
+## 0.16.0
+
+### Minor Changes
+
+- 2fc41ebf07: Removed the previously deprecated class `AtlassianAuthProvider`. Please use `providers.atlassian.create(...)` instead.
+- a291688bc5: Renamed the `RedirectInfo` type to `OAuthStartResponse`
+- 8600855fbf: The auth0 integration is updated to use the `passport-auth0` library. The configuration under `auth.providers.auth0.\*` now supports an optional `audience` parameter; providing that allows you to connect to the correct API to get permissions, access tokens, and full profile information.
+
+  [What is an Audience](https://community.auth0.com/t/what-is-the-audience/71414)
+
+### Patch Changes
+
+- 5b011fb2e6: Allow adding misc claims to JWT
+- d669d89206: Minor API signatures cleanup
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- e1ebaeb332: Cloudflare Access Provider: Add JWT to CloudflareAccessResult
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/plugin-auth-node@0.2.5
+  - @backstage/catalog-client@1.1.0
+  - @backstage/catalog-model@1.1.1
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+
 ## 0.16.0-next.3
 
 ### Minor Changes

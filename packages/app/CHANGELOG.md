@@ -1,5 +1,66 @@
 # example-app
 
+## 0.2.75
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.19.0
+  - @backstage/app-defaults@1.0.6
+  - @backstage/core-app-api@1.1.0
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/plugin-airbrake@0.3.9
+  - @backstage/plugin-api-docs@0.8.9
+  - @backstage/plugin-azure-devops@0.2.0
+  - @backstage/plugin-badges@0.2.33
+  - @backstage/plugin-catalog-graph@0.2.21
+  - @backstage/plugin-catalog-import@0.8.12
+  - @backstage/plugin-catalog-react@1.1.4
+  - @backstage/plugin-circleci@0.3.9
+  - @backstage/plugin-cloudbuild@0.3.9
+  - @backstage/plugin-code-coverage@0.2.2
+  - @backstage/plugin-cost-insights@0.11.31
+  - @backstage/plugin-explore@0.3.40
+  - @backstage/plugin-gcp-projects@0.3.28
+  - @backstage/plugin-github-actions@0.5.9
+  - @backstage/plugin-graphiql@0.2.41
+  - @backstage/plugin-home@0.4.25
+  - @backstage/plugin-jenkins@0.7.8
+  - @backstage/plugin-kafka@0.3.9
+  - @backstage/plugin-kubernetes@0.7.2
+  - @backstage/plugin-lighthouse@0.3.9
+  - @backstage/plugin-org@0.5.9
+  - @backstage/plugin-pagerduty@0.5.2
+  - @backstage/plugin-permission-react@0.4.5
+  - @backstage/plugin-rollbar@0.4.9
+  - @backstage/plugin-scaffolder@1.6.0
+  - @backstage/plugin-search-react@1.1.0
+  - @backstage/plugin-search@1.0.2
+  - @backstage/plugin-sentry@0.4.2
+  - @backstage/plugin-shortcuts@0.3.1
+  - @backstage/plugin-tech-insights@0.3.0
+  - @backstage/plugin-techdocs-react@1.0.4
+  - @backstage/plugin-techdocs@1.3.2
+  - @backstage/plugin-todo@0.2.11
+  - @backstage/plugin-user-settings@0.4.8
+  - @backstage/plugin-techdocs-module-addons-contrib@1.0.4
+  - @backstage/plugin-newrelic-dashboard@0.2.2
+  - @backstage/plugin-dynatrace@0.2.0
+  - @backstage/catalog-model@1.1.1
+  - @backstage/config@1.0.2
+  - @backstage/integration-react@1.1.4
+  - @backstage/plugin-apache-airflow@0.2.2
+  - @backstage/plugin-gcalendar@0.3.5
+  - @backstage/plugin-gocd@0.1.15
+  - @backstage/plugin-newrelic@0.3.27
+  - @backstage/plugin-stack-overflow@0.1.5
+  - @backstage/plugin-tech-radar@0.5.16
+  - @backstage/plugin-playlist@0.1.0
+  - @backstage/plugin-catalog-common@1.0.6
+  - @internal/plugin-catalog-customized@0.0.2
+  - @backstage/plugin-search-common@1.0.1
+
 ## 0.2.75-next.3
 
 ### Patch Changes
