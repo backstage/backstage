@@ -133,6 +133,7 @@ const app = createApp({
     });
     bind(scaffolderPlugin.externalRoutes, {
       registerComponent: catalogImportPlugin.routes.importPage,
+      viewTechDoc: techdocsPlugin.routes.docRoot,
     });
     bind(orgPlugin.externalRoutes, {
       catalogIndex: catalogPlugin.routes.catalogIndex,
