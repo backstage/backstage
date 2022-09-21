@@ -22961,11 +22961,11 @@ __metadata:
   linkType: hard
 
 "git-url-parse@npm:^13.0.0":
-  version: 13.0.0
-  resolution: "git-url-parse@npm:13.0.0"
+  version: 13.1.0
+  resolution: "git-url-parse@npm:13.1.0"
   dependencies:
     git-up: ^7.0.0
-  checksum: 05a3bf51fc5863d26461a815347929a7432e1ebc6763e6a7ee31f510936266f9a82e0f090d09c2c48cd6dba2f17163fa1d860ba4a3ff157083cca5a5d1961c57
+  checksum: 212a9b0343e9199998b6a532efe2014476a7a1283af393663ca49ac28d4768929aad16d3322e2685236065ee394dbc93e7aa63a48956531e984c56d8b5edb54d
   languageName: node
   linkType: hard
 
