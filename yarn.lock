@@ -8100,14 +8100,14 @@ __metadata:
   linkType: hard
 
 "@google-cloud/firestore@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "@google-cloud/firestore@npm:6.0.0"
+  version: 6.2.0
+  resolution: "@google-cloud/firestore@npm:6.2.0"
   dependencies:
     fast-deep-equal: ^3.1.1
     functional-red-black-tree: ^1.0.1
-    google-gax: ^3.0.1
+    google-gax: ^3.5.1
     protobufjs: ^7.0.0
-  checksum: 4b51ed6da004fe9c699cecde3e663f4b6c94937fdf4dd01c27a22df9845bac202d9869d39d8b4a3b9bd38637762754f925b32e4ea4f8ffb755fcf6528988aadf
+  checksum: fce0d729d63b5722df0dcedb78c8b494b2876de128128de8c8dc7d9add1ff7e00a8df1d04e7e2210a71331e623877e67149593341f714d2b0f92b6fef73dfcbd
   languageName: node
   linkType: hard
 
@@ -8974,7 +8974,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grpc/proto-loader@npm:^0.6.12, @grpc/proto-loader@npm:^0.6.4":
+"@grpc/grpc-js@npm:~1.7.0":
+  version: 1.7.0
+  resolution: "@grpc/grpc-js@npm:1.7.0"
+  dependencies:
+    "@grpc/proto-loader": ^0.7.0
+    "@types/node": ">=12.12.47"
+  checksum: 22eee49f9f5aea1abf9566426d993fe4457c94c2afacd3dfb932cc46dbc06ad6ce8f1422fac357d592dd0c75a5cf03405ea15310064ab3c45e1e418f22c48c2b
+  languageName: node
+  linkType: hard
+
+"@grpc/proto-loader@npm:^0.6.4":
   version: 0.6.12
   resolution: "@grpc/proto-loader@npm:0.6.12"
   dependencies:
@@ -24442,29 +24452,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-gax@npm:^3.0.1":
-  version: 3.0.3
-  resolution: "google-gax@npm:3.0.3"
-  dependencies:
-    "@grpc/grpc-js": ~1.6.0
-    "@grpc/proto-loader": ^0.6.12
-    "@types/long": ^4.0.0
-    abort-controller: ^3.0.0
-    duplexify: ^4.0.0
-    fast-text-encoding: ^1.0.3
-    google-auth-library: ^8.0.2
-    is-stream-ended: ^0.1.4
-    node-fetch: ^2.6.1
-    object-hash: ^3.0.0
-    proto3-json-serializer: ^1.0.0
-    protobufjs: 6.11.3
-    retry-request: ^5.0.0
-  bin:
-    compileProtos: build/tools/compileProtos.js
-  checksum: 4f7f38eb39cba1ee80f9569976d4b43db6803b4ae9ebc4de0c348b129c7d6fdd3f43f9add87c07cb1026de19dd78cf101b1c8427016e7f1dcad17dc9e166acf0
-  languageName: node
-  linkType: hard
-
 "google-gax@npm:^3.3.0":
   version: 3.3.0
   resolution: "google-gax@npm:3.3.0"
@@ -24486,6 +24473,31 @@ __metadata:
   bin:
     compileProtos: build/tools/compileProtos.js
   checksum: 536b27f9970d80192a8de5609e119126d80de3843c8c9ad674191d2f6d7bc4ee12c28b4d074f6f36859459734144c201b1fbf413cb710bc77a419094ce5aa68a
+  languageName: node
+  linkType: hard
+
+"google-gax@npm:^3.5.1":
+  version: 3.5.1
+  resolution: "google-gax@npm:3.5.1"
+  dependencies:
+    "@grpc/grpc-js": ~1.7.0
+    "@grpc/proto-loader": ^0.7.0
+    "@types/long": ^4.0.0
+    abort-controller: ^3.0.0
+    duplexify: ^4.0.0
+    fast-text-encoding: ^1.0.3
+    google-auth-library: ^8.0.2
+    is-stream-ended: ^0.1.4
+    node-fetch: ^2.6.1
+    object-hash: ^3.0.0
+    proto3-json-serializer: ^1.0.0
+    protobufjs: 7.1.1
+    protobufjs-cli: 1.0.2
+    retry-request: ^5.0.0
+  bin:
+    compileProtos: build/tools/compileProtos.js
+    minifyProtoJson: build/tools/minify.js
+  checksum: 81ecd10981554944a117ace753b2fc8f6d82b26b244db005d01fc5e127181571de9a71ec02b28aa2e233c6fe696108617512a8b090c8304e753913f1ca441767
   languageName: node
   linkType: hard
 
@@ -34011,27 +34023,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protobufjs@npm:6.11.3, protobufjs@npm:^6.10.0, protobufjs@npm:^6.11.2":
-  version: 6.11.3
-  resolution: "protobufjs@npm:6.11.3"
+"protobufjs-cli@npm:1.0.2":
+  version: 1.0.2
+  resolution: "protobufjs-cli@npm:1.0.2"
   dependencies:
-    "@protobufjs/aspromise": ^1.1.2
-    "@protobufjs/base64": ^1.1.2
-    "@protobufjs/codegen": ^2.0.4
-    "@protobufjs/eventemitter": ^1.1.0
-    "@protobufjs/fetch": ^1.1.0
-    "@protobufjs/float": ^1.0.2
-    "@protobufjs/inquire": ^1.1.0
-    "@protobufjs/path": ^1.1.2
-    "@protobufjs/pool": ^1.1.0
-    "@protobufjs/utf8": ^1.1.0
-    "@types/long": ^4.0.1
-    "@types/node": ">=13.7.0"
-    long: ^4.0.0
+    chalk: ^4.0.0
+    escodegen: ^1.13.0
+    espree: ^9.0.0
+    estraverse: ^5.1.0
+    glob: ^8.0.0
+    jsdoc: ^3.6.3
+    minimist: ^1.2.0
+    semver: ^7.1.2
+    tmp: ^0.2.1
+    uglify-js: ^3.7.7
+  peerDependencies:
+    protobufjs: ^7.0.0
   bin:
     pbjs: bin/pbjs
     pbts: bin/pbts
-  checksum: 4a6ce1964167e4c45c53fd8a312d7646415c777dd31b4ba346719947b88e61654912326101f927da387d6b6473ab52a7ea4f54d6f15d63b31130ce28e2e15070
+  checksum: 75dfa8bb76ea390c4f4926120439892fce6c730ec56960e85d5f03cac9c390fd7467d1254833542d722616ab4cb64a622e6de2fb7c75e7c42972878ae447b773
   languageName: node
   linkType: hard
 
@@ -34053,6 +34064,50 @@ __metadata:
     "@types/node": ">=13.7.0"
     long: ^5.0.0
   checksum: 84c12ceef34d190bb0e08c7203a4e066c66b67fa788ac18575b5c45a269a515c3921b13116e12fe55ffe1fd4831ce208481d44231b75dbe0a8730ab4ca51c84b
+  languageName: node
+  linkType: hard
+
+"protobufjs@npm:7.1.1":
+  version: 7.1.1
+  resolution: "protobufjs@npm:7.1.1"
+  dependencies:
+    "@protobufjs/aspromise": ^1.1.2
+    "@protobufjs/base64": ^1.1.2
+    "@protobufjs/codegen": ^2.0.4
+    "@protobufjs/eventemitter": ^1.1.0
+    "@protobufjs/fetch": ^1.1.0
+    "@protobufjs/float": ^1.0.2
+    "@protobufjs/inquire": ^1.1.0
+    "@protobufjs/path": ^1.1.2
+    "@protobufjs/pool": ^1.1.0
+    "@protobufjs/utf8": ^1.1.0
+    "@types/node": ">=13.7.0"
+    long: ^5.0.0
+  checksum: f6b0e7cec29056cefb83902009b39d24ac14a6117b52bc9b291b29778dad010e42d5563a20045e4de89b880114f4214f984396c8296a0d1b22f5dc7d9fe6705e
+  languageName: node
+  linkType: hard
+
+"protobufjs@npm:^6.10.0, protobufjs@npm:^6.11.2":
+  version: 6.11.3
+  resolution: "protobufjs@npm:6.11.3"
+  dependencies:
+    "@protobufjs/aspromise": ^1.1.2
+    "@protobufjs/base64": ^1.1.2
+    "@protobufjs/codegen": ^2.0.4
+    "@protobufjs/eventemitter": ^1.1.0
+    "@protobufjs/fetch": ^1.1.0
+    "@protobufjs/float": ^1.0.2
+    "@protobufjs/inquire": ^1.1.0
+    "@protobufjs/path": ^1.1.2
+    "@protobufjs/pool": ^1.1.0
+    "@protobufjs/utf8": ^1.1.0
+    "@types/long": ^4.0.1
+    "@types/node": ">=13.7.0"
+    long: ^4.0.0
+  bin:
+    pbjs: bin/pbjs
+    pbts: bin/pbts
+  checksum: 4a6ce1964167e4c45c53fd8a312d7646415c777dd31b4ba346719947b88e61654912326101f927da387d6b6473ab52a7ea4f54d6f15d63b31130ce28e2e15070
   languageName: node
   linkType: hard
 
