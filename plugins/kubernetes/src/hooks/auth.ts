@@ -24,7 +24,7 @@ export const generateAuth = async (
   kubernetesApi: KubernetesApi,
   kubernetesAuthProvidersApi: KubernetesAuthProvidersApi,
 ) => {
-  let clusters = await kubernetesApi.getClusters();
+  const clusters = await kubernetesApi.getClusters();
 
   const authProviders: string[] = [
     ...new Set(

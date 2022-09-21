@@ -84,36 +84,37 @@ describe('generateAuth', () => {
   });
 
   it('should return error when getClusters throws', async () => {
-
-
-    expect(async () =>  await generateAuth(
-      entity,
-      {
-        getClusters: mockGetClusters.mockRejectedValue('some-error'),
-      } as any,
-      {
-        decorateRequestBodyForAuth: mockDecorateRequestBodyForAuth,
-      } as any,
-    ))
-    .rejects
-    .toThrow()
+    await expect(
+      generateAuth(
+        entity,
+        {
+          getClusters: mockGetClusters.mockRejectedValue('some-cluster-error'),
+        } as any,
+        {
+          decorateRequestBodyForAuth: mockDecorateRequestBodyForAuth,
+        } as any,
+      ),
+    ).rejects.toBe('some-cluster-error');
 
     expect(mockGetClusters).toHaveBeenCalledTimes(1);
     expect(mockGetClusters).toHaveBeenLastCalledWith();
     expect(mockDecorateRequestBodyForAuth).toHaveBeenCalledTimes(0);
   });
   it('should return error when decorateRequestBodyForAuth throws', async () => {
-    expect(async () =>  await generateAuth(
-      entity,
-      {
-        getClusters: mockGetClusters.mockRejectedValue('some-error'),
-      } as any,
-      {
-        decorateRequestBodyForAuth: mockDecorateRequestBodyForAuth,
-      } as any,
-    ))
-    .rejects
-    .toThrow()
+    await expect(
+      generateAuth(
+        entity,
+        {
+          getClusters: mockGetClusters.mockResolvedValue(getClustersResponse),
+        } as any,
+        {
+          decorateRequestBodyForAuth:
+            mockDecorateRequestBodyForAuth.mockRejectedValue(
+              'some-decorate-error',
+            ),
+        } as any,
+      ),
+    ).rejects.toBe('some-decorate-error');
 
     expect(mockGetClusters).toHaveBeenCalledTimes(1);
     expect(mockGetClusters).toHaveBeenLastCalledWith();
