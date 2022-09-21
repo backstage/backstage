@@ -30,6 +30,8 @@ import {
   checkForGitSetup,
 } from './tasks';
 
+const commandExists = jest.fn();
+
 jest.spyOn(Task, 'log').mockReturnValue(undefined);
 jest.spyOn(Task, 'error').mockReturnValue(undefined);
 jest.spyOn(Task, 'section').mockReturnValue(undefined);
@@ -38,6 +40,12 @@ jest
   .mockImplementation((_a, _b, taskFunc) => taskFunc());
 
 jest.mock('child_process');
+jest.mock(
+  'command-exists',
+  () =>
+    (...args: any[]) =>
+      commandExists(...args),
+);
 
 // By mocking this the filesystem mocks won't mess with reading all of the package.jsons
 jest.mock('./versions', () => ({
@@ -279,26 +287,49 @@ describe('tasks', () => {
   });
 
   describe('checkForGitSetup', () => {
-    it('should check if git package is installed and configured', async () => {
+    it('should return true if git package is installed and git credentials are set', async () => {
       mockExec.mockImplementation((_command, callback) => {
         callback(null, { stdout: 'main' }, 'standard error');
       });
 
-      await checkForGitSetup();
+      commandExists.mockResolvedValue(true);
 
-      expect(mockExec).toHaveBeenCalledTimes(3);
-      expect(mockExec).toHaveBeenNthCalledWith(
-        1,
-        'which git',
-        expect.any(Function),
-      );
-      expect(mockExec).toHaveBeenNthCalledWith(
-        2,
+      const isGitConfigured = await checkForGitSetup();
+
+      expect(isGitConfigured).toBe(true);
+      expect(mockExec).toHaveBeenCalledWith(
         'git config user.name',
         expect.any(Function),
       );
-      expect(mockExec).toHaveBeenNthCalledWith(
-        3,
+      expect(mockExec).toHaveBeenCalledWith(
+        'git config user.email',
+        expect.any(Function),
+      );
+    });
+
+    it('should return false if git package is not installed', async () => {
+      commandExists.mockResolvedValue(false);
+
+      const isGitConfigured = await checkForGitSetup();
+
+      expect(isGitConfigured).toBe(false);
+    });
+
+    it('should return false if git package is installed but git credentials are not set', async () => {
+      mockExec.mockImplementation((_command, callback) => {
+        callback(null, { stdout: null }, 'standard error');
+      });
+
+      commandExists.mockResolvedValue(true);
+
+      const isGitConfigured = await checkForGitSetup();
+
+      expect(isGitConfigured).toBe(false);
+      expect(mockExec).toHaveBeenCalledWith(
+        'git config user.name',
+        expect.any(Function),
+      );
+      expect(mockExec).toHaveBeenCalledWith(
         'git config user.email',
         expect.any(Function),
       );

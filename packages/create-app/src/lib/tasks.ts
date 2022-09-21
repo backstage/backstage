@@ -28,6 +28,7 @@ import {
 import { exec as execCb } from 'child_process';
 import { packageVersions } from './versions';
 import { promisify } from 'util';
+import commandExists from 'command-exists';
 
 const TASK_NAME_MAX_LENGTH = 14;
 const exec = promisify(execCb);
@@ -250,18 +251,16 @@ export async function checkForGitSetup(): Promise<boolean> {
       throw new Error(`Could not execute command ${chalk.cyan(cmd)}`);
     });
 
-  try {
-    await runCmd('which git');
+  const gitCommandExists = await commandExists('git');
 
-    const [gitUsername, gitEmail] = await Promise.all([
-      runCmd('git config user.name'),
-      runCmd('git config user.email'),
-    ]);
+  if (!gitCommandExists) return false;
 
-    return Boolean(gitUsername.stdout?.trim() && gitEmail.stdout?.trim());
-  } catch (error) {
-    return false;
-  }
+  const [gitUsername, gitEmail] = await Promise.all([
+    runCmd('git config user.name'),
+    runCmd('git config user.email'),
+  ]);
+
+  return Boolean(gitUsername.stdout?.trim() && gitEmail.stdout?.trim());
 }
 
 /**
