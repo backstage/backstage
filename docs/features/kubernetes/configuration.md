@@ -163,7 +163,7 @@ The following values are supported out-of-the-box by the frontend: `google`, `mi
 `okta`, `onelogin`.
 
 Take note that `oidcTokenProvider` is just the issuer for the token, you can use any
-of these with an OIDC enabled cluster, like using `microsoft` as the issuer for a GKE
+of these with an OIDC enabled cluster, like using `microsoft` as the issuer for a EKS
 cluster.
 
 ##### `clusters.\*.dashboardUrl` (optional)
