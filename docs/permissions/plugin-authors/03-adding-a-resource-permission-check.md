@@ -15,7 +15,7 @@ Let's add a new permission to the file `plugins/todo-list-common/src/permissions
 
 + export const TODO_LIST_RESOURCE_TYPE = 'todo-item';
 +
-  export const todoListCreate = createPermission({
+  export const todoListCreatePermission = createPermission({
     name: 'todo.list.create',
     attributes: { action: 'create' },
   });
@@ -27,15 +27,15 @@ Let's add a new permission to the file `plugins/todo-list-common/src/permissions
 + });
 ```
 
-Notice that unlike `todoListCreate`, the `todoListUpdate` permission contains a `resourceType` field. This field indicates to the permission framework that this permission is intended to be authorized in the context of a resource with type `'todo-item'`. You can use whatever string you like as the resource type, as long as you use the same value consistently for each type of resource.
+Notice that unlike `todoListCreatePermission`, the `todoListUpdate` permission contains a `resourceType` field. This field indicates to the permission framework that this permission is intended to be authorized in the context of a resource with type `'todo-item'`. You can use whatever string you like as the resource type, as long as you use the same value consistently for each type of resource.
 
 ## Setting up authorization for the update permission
 
 To start, let's edit `plugins/todo-list-backend/src/service/router.ts` in the same manner as we did in the previous section:
 
 ```diff
-- import { todoListCreate } from '@internal/plugin-todo-list-common';
-+ import { todoListCreate, todoListUpdate } from '@internal/plugin-todo-list-common';
+- import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
++ import { todoListCreatePermission, todoListUpdate } from '@internal/plugin-todo-list-common';
 
   ...
 
@@ -196,9 +196,9 @@ Let's go back to the permission policy's handle function and try to authorize ou
     PolicyQuery,
   } from '@backstage/plugin-permission-node';
   import { isPermission } from '@backstage/plugin-permission-common';
-- import { todoListCreate } from '@internal/plugin-todo-list-common';
+- import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
 + import {
-+   todoListCreate,
++   todoListCreatePermission,
 +   todoListUpdate,
 +   TODO_LIST_RESOURCE_TYPE,
 + } from '@internal/plugin-todo-list-common';
@@ -209,7 +209,7 @@ Let's go back to the permission policy's handle function and try to authorize ou
 
 ...
 
-    if (isPermission(request.permission, todoListCreate)) {
+    if (isPermission(request.permission, todoListCreatePermission)) {
       return {
         result: AuthorizeResult.ALLOW,
       };

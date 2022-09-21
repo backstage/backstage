@@ -30,7 +30,7 @@ Let's make the following changes in `plugins/todo-list/src/components/TodoListPa
     useApi,
   } from '@backstage/core-plugin-api';
 + import { usePermission } from '@backstage/plugin-permission-react';
-+ import { todoListCreate } from '@internal/plugin-todo-list-common';
++ import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
 ...
 
   export const TodoListPage = () => {
@@ -41,7 +41,7 @@ Let's make the following changes in `plugins/todo-list/src/components/TodoListPa
     const [key, refetchTodos] = useReducer(i => i + 1, 0);
     const [editElement, setEdit] = useState<Todo | undefined>();
 
-+   const { loading: loadingPermission, allowed: canAddTodo } = usePermission({ permission: todoListCreate });
++   const { loading: loadingPermission, allowed: canAddTodo } = usePermission({ permission: todoListCreatePermission });
 ...
 
             <Box
@@ -75,7 +75,7 @@ It's really that simple! Let's change our policy to test the disabled button:
 
 ...
 
-    if (isPermission(request.permission, todoListCreate)) {
+    if (isPermission(request.permission, todoListCreatePermission)) {
       return {
 -       result: AuthorizeResult.ALLOW,
 +       result: AuthorizeResult.DENY,
@@ -103,7 +103,7 @@ Providing a disabled state can be a helpful signal to users, but there may be ca
   } from '@backstage/core-plugin-api';
 - import { usePermission } from '@backstage/plugin-permission-react';
 + import { RequirePermission } from '@backstage/plugin-permission-react';
-  import { todoListCreate } from '@internal/plugin-todo-list-common';
+  import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
 ...
 
   export const TodoListPage = () => {
@@ -114,7 +114,7 @@ Providing a disabled state can be a helpful signal to users, but there may be ca
     const [key, refetchTodos] = useReducer(i => i + 1, 0);
     const [editElement, setEdit] = useState<Todo | undefined>();
 
--   const { loading: loadingPermission, allowed: canAddTodo } = usePermission({ permission: todoListCreate });
+-   const { loading: loadingPermission, allowed: canAddTodo } = usePermission({ permission: todoListCreatePermission });
 ...
 
         <Grid container spacing={3} direction="column">
@@ -137,7 +137,7 @@ Providing a disabled state can be a helpful signal to users, but there may be ca
 -             )}
 -           </Box>
 -         </Grid>
-+         <RequirePermission permission={todoListCreate}>
++         <RequirePermission permission={todoListCreatePermission}>
 +           <Grid item>
 +             <Typography variant="body1">Add todo</Typography>
 +             <Box

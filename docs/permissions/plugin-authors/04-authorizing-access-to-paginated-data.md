@@ -42,7 +42,7 @@ Let's add another permission to the plugin.
 
   export const TODO_LIST_RESOURCE_TYPE = 'todo-item';
 
-  export const todoListCreate = createPermission({
+  export const todoListCreatePermission = createPermission({
     name: 'todo.list.create',
     attributes: { action: 'create' },
   });
@@ -126,7 +126,7 @@ Let's update our permission policy to return a conditional result whenever a `to
 ...
 
 import {
-  todoListCreate,
+  todoListCreatePermission,
   todoListUpdate,
 + todoListRead,
   TODO_LIST_RESOURCE_TYPE,
