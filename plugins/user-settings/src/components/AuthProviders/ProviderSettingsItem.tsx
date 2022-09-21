@@ -60,11 +60,13 @@ export const ProviderSettingsItem = (props: {
           api
             .getProfile({ optional: true })
             .then((profileResponse: ProfileInfo | undefined) => {
-              if (sessionState === SessionState.SignedIn) {
-                setSignedIn(true);
-              }
-              if (profileResponse) {
-                setProfile(profileResponse);
+              if (!didCancel) {
+                if (sessionState === SessionState.SignedIn) {
+                  setSignedIn(true);
+                }
+                if (profileResponse) {
+                  setProfile(profileResponse);
+                }
               }
             });
         }
