@@ -23,8 +23,8 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.15.1",
-    "@backstage/config": "^1.0.2",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/config": "workspace:^",
     "@types/express": "*",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
@@ -33,7 +33,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0",
+    "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
     "msw": "^0.47.0",
     "supertest": "^6.1.6"

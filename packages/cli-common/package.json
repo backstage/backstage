@@ -32,7 +32,7 @@
     "start": "backstage-cli package start"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0",
+    "@backstage/cli": "workspace:^",
     "@types/node": "^16.0.0"
   },
   "files": [

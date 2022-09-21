@@ -33,16 +33,16 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/config": "^1.0.2",
-    "@backstage/errors": "^1.1.1",
-    "@backstage/types": "^1.0.0",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/types": "workspace:^",
     "ajv": "^8.10.0",
     "json-schema": "^0.4.0",
     "lodash": "^4.17.21",
     "uuid": "^8.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0",
+    "@backstage/cli": "workspace:^",
     "@types/json-schema": "^7.0.5",
     "@types/lodash": "^4.14.151",
     "yaml": "^2.0.0"
