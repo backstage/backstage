@@ -60,6 +60,8 @@ export const createBuiltinActions: (
 // @public
 export interface CreateBuiltInActionsOptions {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  // (undocumented)
+  additionalTemplateGlobals?: Record<string, TemplateFilter>;
   catalogClient: CatalogApi;
   config: Config;
   integrations: ScmIntegrations;
@@ -108,6 +110,7 @@ export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateFilter>;
 }): TemplateAction<{
   url: string;
   targetPath?: string | undefined;
@@ -448,6 +451,7 @@ export type CreateWorkerOptions = {
   workingDirectory: string;
   logger: Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateFilter>;
 };
 
 // @public
@@ -538,6 +542,8 @@ export interface RouterOptions {
   // (undocumented)
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   // (undocumented)
+  additionalTemplateGlobals?: Record<string, TemplateFilter>;
+  // (undocumented)
   catalogClient: CatalogApi;
   // (undocumented)
   config: Config;
@@ -593,6 +599,7 @@ export type ScaffolderPluginOptions = {
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateFilter>;
 };
 
 // @public
