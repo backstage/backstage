@@ -20,14 +20,17 @@ Let's add a new permission to the file `plugins/todo-list-common/src/permissions
     attributes: { action: 'create' },
   });
 +
-+ export const todoListUpdate = createPermission({
++ export const todoListUpdatePermission = createPermission({
 +   name: 'todo.list.update',
 +   attributes: { action: 'update' },
 +   resourceType: TODO_LIST_RESOURCE_TYPE,
 + });
+
+- export const todoListPermissions = [todoListCreatePermission];
++ export const todoListPermissions = [todoListCreatePermission, todoListUpdatePermission];
 ```
 
-Notice that unlike `todoListCreatePermission`, the `todoListUpdate` permission contains a `resourceType` field. This field indicates to the permission framework that this permission is intended to be authorized in the context of a resource with type `'todo-item'`. You can use whatever string you like as the resource type, as long as you use the same value consistently for each type of resource.
+Notice that unlike `todoListCreatePermission`, the `todoListUpdatePermission` permission contains a `resourceType` field. This field indicates to the permission framework that this permission is intended to be authorized in the context of a resource with type `'todo-item'`. You can use whatever string you like as the resource type, as long as you use the same value consistently for each type of resource.
 
 ## Setting up authorization for the update permission
 
@@ -35,7 +38,7 @@ To start, let's edit `plugins/todo-list-backend/src/service/router.ts` in the sa
 
 ```diff
 - import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
-+ import { todoListCreatePermission, todoListUpdate } from '@internal/plugin-todo-list-common';
++ import { todoListCreatePermission, todoListUpdatePermission } from '@internal/plugin-todo-list-common';
 
   ...
 
@@ -49,7 +52,7 @@ To start, let's edit `plugins/todo-list-backend/src/service/router.ts` in the sa
       }
 +     const decision = (
 +       await permissions.authorize(
-+         [{ permission: todoListUpdate, resourceRef: req.body.id }],
++         [{ permission: todoListUpdatePermission, resourceRef: req.body.id }],
 +         {
 +           token,
 +         },
@@ -119,6 +122,7 @@ Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/ser
 
 - `getResources`: a function that accepts an array of `resourceRefs` in the same format you expect to be passed to `authorize`, and returns an array of the corresponding resources.
 - `resourceType`: the same value used in the permission rule above.
+- `permissions`: the list of permissions that your plugin accepts.
 - `rules`: an array of all the permission rules you want to support in conditional decisions.
 
 ```diff
@@ -127,7 +131,7 @@ Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/ser
 - import { add, getAll, update } from './todos';
 + import { add, getAll, getTodo, update } from './todos';
 + import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
-+ import { TODO_LIST_RESOURCE_TYPE } from '@internal/plugin-todo-list-common';
++ import { TODO_LIST_RESOURCE_TYPE, todoListPermissions } from '@internal/plugin-todo-list-common';
 + import { rules } from './rules';
 
   export async function createRouter(
@@ -140,6 +144,7 @@ Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/ser
 +       return resourceRefs.map(getTodo);
 +     },
 +     resourceType: TODO_LIST_RESOURCE_TYPE,
++     permissions: todoListPermissions,
 +     rules: Object.values(rules),
 +   });
 
@@ -199,7 +204,7 @@ Let's go back to the permission policy's handle function and try to authorize ou
 - import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
 + import {
 +   todoListCreatePermission,
-+   todoListUpdate,
++   todoListUpdatePermission,
 +   TODO_LIST_RESOURCE_TYPE,
 + } from '@internal/plugin-todo-list-common';
 + import {
@@ -215,7 +220,7 @@ Let's go back to the permission policy's handle function and try to authorize ou
       };
     }
 
-+   if (isPermission(request.permission, todoListUpdate)) {
++   if (isPermission(request.permission, todoListUpdatePermission)) {
 +     return createTodoListConditionalDecision(
 +       request.permission,
 +       todoListConditions.isOwner(user?.identity.userEntityRef),

@@ -24,11 +24,14 @@ Let's navigate to the file `plugins/todo-list-common/src/permissions.ts` and add
 +   name: 'todo.list.create',
 +   attributes: { action: 'create' },
   });
+
+- export const todoListPermissions = [tempExamplePermission];
++ export const todoListPermissions = [todoListCreatePermission];
 ```
 
 For this tutorial, we've automatically exported all permissions from this file (see `plugins/todo-list-common/src/index.ts`).
 
-> Note: All permissions authorized by your plugin should be exported from a ["common-library" package](https://backstage.io/docs/local-dev/cli-build-system#package-roles). This allows Backstage integrators to reference them in frontend components and permission policies.
+> Note: We use a separate `todo-list-common` package since all permissions authorized by your plugin should be exported from a ["common-library" package](https://backstage.io/docs/local-dev/cli-build-system#package-roles). This allows Backstage integrators to reference them in frontend components and permission policies.
 
 ## Authorizing using the new permission
 
