@@ -286,6 +286,7 @@
       "permissions/concepts",
       "permissions/getting-started",
       "permissions/writing-a-policy",
+      "permissions/frontend-integration",
       "permissions/custom-rules",
       {
         "type": "subcategory",
