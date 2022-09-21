@@ -28,6 +28,11 @@ import { KubernetesObjects } from './useKubernetesObjects';
 import { generateAuth } from './auth';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 
+/**
+ * Retrieves the provided custom resources related to the provided entity, refreshes at an interval.
+ *
+ * @public
+ */
 export const useCustomResources = (
   entity: Entity,
   customResourceMatchers: CustomResourceMatcher[],
