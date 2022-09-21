@@ -96,6 +96,7 @@ import {
   RESOURCE_TYPE_CATALOG_ENTITY,
 } from '@backstage/plugin-catalog-common';
 import { AuthorizedLocationService } from './AuthorizedLocationService';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 
 /** @public */
 export type CatalogEnvironment = {
@@ -104,6 +105,7 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
+  discovery: DiscoveryApi;
 };
 
 /**
@@ -478,7 +480,8 @@ export class CatalogBuilder {
     );
 
     const locationAnalyzer =
-      this.locationAnalyzer ?? new RepoLocationAnalyzer(logger, integrations);
+      this.locationAnalyzer ??
+      new RepoLocationAnalyzer(logger, integrations, this.env.discovery);
     const locationService = new AuthorizedLocationService(
       new DefaultLocationService(locationStore, orchestrator, {
         allowedLocationTypes: this.allowedLocationType,

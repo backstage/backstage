@@ -70,6 +70,7 @@ export async function startStandaloneServer(
     config,
     reader,
     permissions,
+    discovery,
   });
   const catalog = await builder.build();
 

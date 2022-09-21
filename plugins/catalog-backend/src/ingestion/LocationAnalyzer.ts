@@ -17,25 +17,40 @@
 import { Logger } from 'winston';
 import parseGitUrl from 'git-url-parse';
 import { Entity } from '@backstage/catalog-model';
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import {
+  GitHubIntegration,
+  ScmIntegrationRegistry,
+} from '@backstage/integration';
 import {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
   LocationAnalyzer,
 } from './types';
+import { DiscoveryApi } from '@backstage/plugin-permission-common';
+import { GitHubLocationAnalyzer } from './GitHubLocationAnalyzer';
 
 export class RepoLocationAnalyzer implements LocationAnalyzer {
   private readonly logger: Logger;
   private readonly scmIntegrations: ScmIntegrationRegistry;
+  private readonly discovery: DiscoveryApi;
 
-  constructor(logger: Logger, scmIntegrations: ScmIntegrationRegistry) {
+  constructor(
+    logger: Logger,
+    scmIntegrations: ScmIntegrationRegistry,
+    discovery: DiscoveryApi,
+  ) {
     this.logger = logger;
     this.scmIntegrations = scmIntegrations;
+    this.discovery = discovery;
   }
   async analyzeLocation(
     request: AnalyzeLocationRequest,
   ): Promise<AnalyzeLocationResponse> {
+    const integration = this.scmIntegrations.byUrl(
+      request.location.target,
+    ) as GitHubIntegration;
     const { owner, name } = parseGitUrl(request.location.target);
+
     const entity: Entity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
@@ -45,8 +60,8 @@ export class RepoLocationAnalyzer implements LocationAnalyzer {
       spec: { type: 'other', lifecycle: 'unknown' },
     };
 
-    const integration = this.scmIntegrations.byUrl(request.location.target);
     let annotationPrefix;
+    let analyzer;
     switch (integration?.type) {
       case 'azure':
         annotationPrefix = 'dev.azure.com';
@@ -56,12 +71,32 @@ export class RepoLocationAnalyzer implements LocationAnalyzer {
         break;
       case 'github':
         annotationPrefix = 'github.com';
+        analyzer = new GitHubLocationAnalyzer({
+          integration,
+          discovery: this.discovery,
+        });
         break;
       case 'gitlab':
         annotationPrefix = 'gitlab.com';
         break;
       default:
         break;
+    }
+    if (analyzer) {
+      const existingEntityFiles = await analyzer.analyze(
+        owner,
+        name,
+        request.location.target,
+      );
+      if (existingEntityFiles.length > 0) {
+        this.logger.debug(
+          `entity for ${request.location.target} already exists.`,
+        );
+        return {
+          existingEntityFiles,
+          generateEntities: [],
+        };
+      }
     }
 
     if (annotationPrefix) {
