@@ -33,5 +33,6 @@ export default async function createPlugin(
     catalogClient: catalogClient,
     reader: env.reader,
     identity: env.identity,
+    scheduler: env.scheduler,
   });
 }
