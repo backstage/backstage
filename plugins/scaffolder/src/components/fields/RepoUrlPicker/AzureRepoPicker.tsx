@@ -24,13 +24,25 @@ import { Select, SelectItem } from '@backstage/core-components';
 
 export const AzureRepoPicker = (props: {
   allowedOrganizations?: string[];
+  allowedOwners?: string[];
   rawErrors: string[];
   state: RepoUrlPickerState;
   onChange: (state: RepoUrlPickerState) => void;
 }) => {
-  const { allowedOrganizations = [], rawErrors, state, onChange } = props;
+  const {
+    allowedOrganizations = [],
+    allowedOwners = [],
+    rawErrors,
+    state,
+    onChange,
+  } = props;
+
   const organizationItems: SelectItem[] = allowedOrganizations
     ? allowedOrganizations.map(i => ({ label: i, value: i }))
+    : [{ label: 'Loading...', value: 'loading' }];
+
+  const ownerItems: SelectItem[] = allowedOwners
+    ? allowedOwners.map(i => ({ label: i, value: i }))
     : [{ label: 'Loading...', value: 'loading' }];
 
   const { organization, owner } = state;
@@ -72,12 +84,27 @@ export const AzureRepoPicker = (props: {
         required
         error={rawErrors?.length > 0 && !owner}
       >
-        <InputLabel htmlFor="ownerInput">Owner</InputLabel>
-        <Input
-          id="ownerInput"
-          onChange={e => onChange({ owner: e.target.value })}
-          value={owner}
-        />
+        {allowedOwners?.length ? (
+          <Select
+            native
+            label="Owner"
+            onChange={s =>
+              onChange({ owner: String(Array.isArray(s) ? s[0] : s) })
+            }
+            disabled={allowedOwners.length === 1}
+            selected={owner}
+            items={ownerItems}
+          />
+        ) : (
+          <>
+            <InputLabel htmlFor="ownerInput">Owner</InputLabel>
+            <Input
+              id="ownerInput"
+              onChange={e => onChange({ owner: e.target.value })}
+              value={owner}
+            />
+          </>
+        )}
         <FormHelperText>The Owner that this repo will belong to</FormHelperText>
       </FormControl>
     </>

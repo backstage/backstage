@@ -198,6 +198,7 @@ export const RepoUrlPicker = (
       {hostType === 'azure' && (
         <AzureRepoPicker
           allowedOrganizations={allowedOrganizations}
+          allowedOwners={allowedOwners}
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
