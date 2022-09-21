@@ -146,7 +146,6 @@ export class SecureTemplater {
       );
     }
     if (additionalTemplateGlobals) {
-      console.log(additionalTemplateGlobals, '!!!!!!!!!!!');
       sandbox.additionalTemplateGlobals = Object.fromEntries(
         Object.entries(additionalTemplateGlobals)
           .filter(([_, filterFunction]) => !!filterFunction)
