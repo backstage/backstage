@@ -64,6 +64,7 @@ nav:
           - Writing Templates: 'features/software-templates/writing-templates.md'
           - Builtin Actions: 'features/software-templates/builtin-actions.md'
           - Writing Custom Actions: 'features/software-templates/writing-custom-actions.md'
+          - Writing Custom Step Layouts: 'features/software-templates/writing-custom-step-layouts.md'
           - Writing Templates (Legacy): 'features/software-templates/legacy.md'
           - Migrating from v1alpha1 to v1beta2 templates: 'features/software-templates/migrating-from-v1alpha1-to-v1beta2.md'
       - Backstage Search:
