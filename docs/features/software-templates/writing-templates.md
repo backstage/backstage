@@ -260,7 +260,7 @@ use `ui:widget: password` or set some properties of `ui:backstage`:
 
 ### Custom step layouts
 
-If you find the default layout of the form in used in a particular step does not meet your needs then you can supply your own [custom step layout](./writing-custom-step-layouts.md).
+If you find that the default layout of the form used in a particular step does not meet your needs then you can supply your own [custom step layout](./writing-custom-step-layouts.md).
 
 ### Remove sections or fields based on feature flags
 
