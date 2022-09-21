@@ -18,10 +18,12 @@ import { CatalogProcessorParser } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorRefreshKeysResult } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorRelationResult } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorResult } from '@backstage/plugin-catalog-node';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
@@ -64,9 +66,9 @@ export type AnalyzeLocationEntityField = {
 
 // @public
 export type AnalyzeLocationExistingEntity = {
-  location: LocationSpec;
-  isRegistered: boolean;
-  entity: Entity;
+  target: string;
+  exists: boolean | undefined;
+  entities: CompoundEntityRef[];
 };
 
 // @public
@@ -218,6 +220,7 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
+  discovery: DiscoveryApi;
 };
 
 // @alpha
