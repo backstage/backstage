@@ -276,7 +276,6 @@
         ]
       },
       "auth/identity-resolver",
-      "auth/auth-backend",
       "auth/oauth",
       "auth/add-auth-provider",
       "auth/troubleshooting",
