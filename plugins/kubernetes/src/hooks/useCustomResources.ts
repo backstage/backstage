@@ -17,12 +17,16 @@
 import { Entity } from '@backstage/catalog-model';
 import { kubernetesApiRef } from '../api/types';
 import { kubernetesAuthProvidersApiRef } from '../kubernetes-auth-provider/types';
-import { useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import useInterval from 'react-use/lib/useInterval';
-import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
+import {
+  CustomResourceMatcher,
+  ObjectsByEntityResponse,
+} from '@backstage/plugin-kubernetes-common';
 import { useApi } from '@backstage/core-plugin-api';
 import { KubernetesObjects } from './useKubernetesObjects';
 import { generateAuth } from './auth';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 
 export const useCustomResources = (
   entity: Entity,
@@ -31,39 +35,36 @@ export const useCustomResources = (
 ): KubernetesObjects => {
   const kubernetesApi = useApi(kubernetesApiRef);
   const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
-  const [result, setResult] = useState<KubernetesObjects>({
-    kubernetesObjects: undefined,
-    error: undefined,
-  });
 
-  const getObjects = async () => {
-    try {
+  const getCustomObjects =
+    useCallback(async (): Promise<ObjectsByEntityResponse> => {
       const auth = await generateAuth(
         entity,
         kubernetesApi,
         kubernetesAuthProvidersApi,
       );
-      const objects = await kubernetesApi.getCustomObjectsByEntity(
+      return await kubernetesApi.getCustomObjectsByEntity({
         auth,
-        customResourceMatchers,
+        customResources: customResourceMatchers,
         entity,
-      );
-      setResult({ kubernetesObjects: objects });
-    } catch (e) {
-      setResult({ error: e.message });
-      return;
-    }
+      });
+    }, [
+      kubernetesApi,
+      entity,
+      kubernetesAuthProvidersApi,
+      customResourceMatchers,
+    ]);
+
+  const { value, loading, error, retry } = useAsyncRetry(
+    () => getCustomObjects(),
+    [getCustomObjects],
+  );
+
+  useInterval(() => retry(), intervalMs);
+
+  return {
+    kubernetesObjects: value,
+    loading,
+    error: error?.message,
   };
-
-  useEffect(() => {
-    getObjects();
-    /* eslint-disable react-hooks/exhaustive-deps */
-  }, [entity.metadata.name, kubernetesApi, generateAuth]);
-  /* eslint-enable react-hooks/exhaustive-deps */
-
-  useInterval(() => {
-    getObjects();
-  }, intervalMs);
-
-  return result;
 };
