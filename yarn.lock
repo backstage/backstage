@@ -6934,6 +6934,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
+    "@types/luxon": ^3.0.1
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     luxon: ^3.0.3
@@ -14472,6 +14473,13 @@ __metadata:
   version: 3.0.0
   resolution: "@types/luxon@npm:3.0.0"
   checksum: 7738d3f4b91097a8139eca966ab53c6b40bb417b2cc2014c3bbd0aee033d6ff54af14c62046c2eb042434923b6bf796874f24b2af90e07ef422e6d841463d4b2
+  languageName: node
+  linkType: hard
+
+"@types/luxon@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@types/luxon@npm:3.0.1"
+  checksum: a81444f9b474ea9b3063ab4cc68b917a2634e38b4e229f86c78c35023a32bf5e8d1044d7c229c011291662c976cb6c4cf109dc3d2077c571790a31779a554178
   languageName: node
   linkType: hard
 
