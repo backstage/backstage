@@ -7751,6 +7751,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@codemirror/commands@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "@codemirror/commands@npm:6.1.0"
+  dependencies:
+    "@codemirror/language": ^6.0.0
+    "@codemirror/state": ^6.0.0
+    "@codemirror/view": ^6.0.0
+    "@lezer/common": ^1.0.0
+  checksum: 0b95ed5b657590adda3171ef8cb1b662078ed1c02109b414bbd71503ae8cac3d5d56a56a159020178a4e8f1e7168bd3c5f5782eb2d90a6e25f067fc8c39dbc87
+  languageName: node
+  linkType: hard
+
 "@codemirror/language@npm:^6.0.0":
   version: 6.2.1
   resolution: "@codemirror/language@npm:6.2.1"
@@ -7800,6 +7812,13 @@ __metadata:
   version: 6.0.1
   resolution: "@codemirror/state@npm:6.0.1"
   checksum: fcb5aa5e1ce455ed1261616beb6cdb9e855f9cf11618a1ef7f61142622a0aba4551605356d381d2fa96f021f932b71323808369bf8edadfa69d745252b7e6ccd
+  languageName: node
+  linkType: hard
+
+"@codemirror/state@npm:^6.1.1":
+  version: 6.1.1
+  resolution: "@codemirror/state@npm:6.1.1"
+  checksum: 26b767af3a3385479d9bb6a31b5d4fb7d2485d4f502c3056aa3117c12ba0b4e80bbbf358d81e81a03d147e404b7ef65cc1449058b2f869f698882d1969b74996
   languageName: node
   linkType: hard
 
@@ -14765,9 +14784,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uiw/codemirror-extensions-basic-setup@npm:4.11.6":
-  version: 4.11.6
-  resolution: "@uiw/codemirror-extensions-basic-setup@npm:4.11.6"
+"@uiw/codemirror-extensions-basic-setup@npm:4.12.3":
+  version: 4.12.3
+  resolution: "@uiw/codemirror-extensions-basic-setup@npm:4.12.3"
   dependencies:
     "@codemirror/autocomplete": ^6.0.0
     "@codemirror/commands": ^6.0.0
@@ -14784,26 +14803,29 @@ __metadata:
     "@codemirror/search": ">=6.0.0"
     "@codemirror/state": ">=6.0.0"
     "@codemirror/view": ">=6.0.0"
-  checksum: 706a64a098380c404499a228ba3e28f472d39b20088ed794c586005d227340e77c5320a09b9574e8ec51f7d13ca1b98816606de0e7f3c9407761493c41c9801f
+  checksum: 14c5c6694b2f5ce34bba2ed3fa7017a268c36f3ba234711580d31243603a14adc2b31ebec7d665cd6687917a8ac617d6ac453861d32bf277f43b65946ac1c656
   languageName: node
   linkType: hard
 
 "@uiw/react-codemirror@npm:^4.9.3":
-  version: 4.11.6
-  resolution: "@uiw/react-codemirror@npm:4.11.6"
+  version: 4.12.3
+  resolution: "@uiw/react-codemirror@npm:4.12.3"
   dependencies:
     "@babel/runtime": ^7.18.6
+    "@codemirror/commands": ^6.1.0
+    "@codemirror/state": ^6.1.1
     "@codemirror/theme-one-dark": ^6.0.0
-    "@uiw/codemirror-extensions-basic-setup": 4.11.6
+    "@uiw/codemirror-extensions-basic-setup": 4.12.3
     codemirror: ^6.0.0
   peerDependencies:
     "@babel/runtime": ">=7.11.0"
+    "@codemirror/state": ">=6.0.0"
     "@codemirror/theme-one-dark": ">=6.0.0"
     "@codemirror/view": ">=6.0.0"
     codemirror: ">=6.0.0"
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
-  checksum: f630400ef57ff1928962244854805acb37f259606bc21967861c9ffaf80168d7c6c5052058299e96f7694635e218c6497ef4c5f3086109b35669b7cf5e2ee297
+  checksum: 504003e6162dbe672072ace980117d1eeb9264282d6ad314de0398e0d29925133bc8d8c484c3aadb91b6ebedb8ebb259307b838cc31d39ab4792af5ab061949c
   languageName: node
   linkType: hard
 
