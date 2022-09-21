@@ -1,5 +1,36 @@
 # @backstage/plugin-techdocs
 
+## 1.3.2
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 3f739be9d9: Minor API signatures cleanup
+- 763fb81e82: Internal refactor to use more type safe code when dealing with route parameters.
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 817f3196f6: Updated the `TechDocsReaderPage` to be compatible with React Router v6 stable.
+- 7a95c705fa: Fixed a bug where addons wouldn't render on sub pages when using React Route v6 stable.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- ca8d5a6eae: Use the new `SearchAutocomplete` component in the `TechDocsSearch` component to maintain consistency across search experiences and avoid code duplication.
+- 829f14a9b0: Always update the title and sub-title when the location changes on a `TechDocs` reader page.
+- e97d616f08: Fixed a bug where scrolling for anchors where the id starts with number didn't work for the current page.
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/plugin-catalog-react@1.1.4
+  - @backstage/plugin-search-react@1.1.0
+  - @backstage/plugin-techdocs-react@1.0.4
+  - @backstage/integration@1.3.1
+  - @backstage/catalog-model@1.1.1
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+  - @backstage/integration-react@1.1.4
+  - @backstage/plugin-search-common@1.0.1
+
 ## 1.3.2-next.3
 
 ### Patch Changes

@@ -1,5 +1,22 @@
 # @backstage/catalog-client
 
+## 1.1.0
+
+### Minor Changes
+
+- 65d1d4343f: Adding `validateEntity` method that calls `/validate-entity` endpoint.
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/catalog-model@1.1.1
+  - @backstage/errors@1.1.1
+
 ## 1.1.0-next.2
 
 ### Minor Changes

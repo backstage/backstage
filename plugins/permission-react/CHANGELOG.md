@@ -1,5 +1,20 @@
 # @backstage/plugin-permission-react
 
+## 0.4.5
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 817f3196f6: **DEPRECATION**: The `PermissionedRoute` component has been deprecated in favor of the new `RequirePermission` component. This is because the usage pattern of `PermissionedRoute` is not compatible with React Router v6 stable.
+
+  Embed the type from `react-router` instead of exporting it directly.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/config@1.0.2
+  - @backstage/plugin-permission-common@0.6.4
+
 ## 0.4.5-next.2
 
 ### Patch Changes

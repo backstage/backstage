@@ -20,4 +20,6 @@ export * from './SearchAutocomplete';
 export * from './SearchFilter';
 export * from './SearchResult';
 export * from './SearchResultPager';
+export * from './SearchResultList';
+export * from './SearchResultGroup';
 export * from './DefaultResultListItem';

@@ -18,6 +18,7 @@ import {
   CicdStatisticsApi,
   CicdState,
   CicdConfiguration,
+  CicdDefaults,
   Build,
   FetchBuildsOptions,
   Stage,
@@ -47,9 +48,14 @@ export type GitlabClient = {
  */
 export class CicdStatisticsApiGitlab implements CicdStatisticsApi {
   readonly #gitLabAuthApi: OAuthApi;
+  readonly #cicdDefaults: Partial<CicdDefaults>;
 
-  constructor(gitLabAuthApi: OAuthApi) {
+  constructor(
+    gitLabAuthApi: OAuthApi,
+    cicdDefaults: Partial<CicdDefaults> = {},
+  ) {
     this.#gitLabAuthApi = gitLabAuthApi;
+    this.#cicdDefaults = cicdDefaults;
   }
 
   public async createGitlabApi(
@@ -154,6 +160,7 @@ export class CicdStatisticsApiGitlab implements CicdStatisticsApi {
         'expired',
         'unknown',
       ] as const,
+      defaults: this.#cicdDefaults,
     };
   }
 }

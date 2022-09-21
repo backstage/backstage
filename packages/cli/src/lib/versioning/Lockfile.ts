@@ -122,7 +122,7 @@ export class Lockfile {
     for (const [key, value] of Object.entries(data)) {
       if (SPECIAL_OBJECT_KEYS.includes(key)) continue;
 
-      const [, name, range] = ENTRY_PATTERN.exec(key) ?? [];
+      const [, name, ranges] = ENTRY_PATTERN.exec(key) ?? [];
       if (!name) {
         throw new Error(`Failed to parse yarn.lock entry '${key}'`);
       }
@@ -132,7 +132,15 @@ export class Lockfile {
         queries = [];
         packages.set(name, queries);
       }
-      queries.push({ range, version: value.version });
+      for (let range of ranges.split(/\s*,\s*/)) {
+        if (range.startsWith(`${name}@`)) {
+          range = range.slice(`${name}@`.length);
+        }
+        if (range.startsWith('npm:')) {
+          range = range.slice('npm:'.length);
+        }
+        queries.push({ range, version: value.version });
+      }
     }
 
     return new Lockfile(path, packages, data, legacy);

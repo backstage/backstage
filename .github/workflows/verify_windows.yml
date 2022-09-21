@@ -46,7 +46,7 @@ jobs:
         run: yarn lint:type-deps
 
       - name: test
-        run: yarn lerna run test
+        run: yarn backstage-cli repo test --maxWorkers=2 --workerIdleMemoryLimit=1300M
         env:
           BACKSTAGE_NEXT_TESTS: 1
           BACKSTAGE_TEST_DISABLE_DOCKER: 1

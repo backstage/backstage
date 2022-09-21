@@ -18,8 +18,9 @@ import { Logger } from 'winston';
 import { Writable } from 'stream';
 import { JsonValue, JsonObject } from '@backstage/types';
 import { Schema } from 'jsonschema';
-import { TaskSecrets } from '../tasks/types';
+import { TaskSecrets } from '../tasks';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
+import { UserEntity } from '@backstage/catalog-model';
 
 /**
  * ActionContext is passed into scaffolder actions.
@@ -45,6 +46,20 @@ export type ActionContext<Input extends JsonObject> = {
    * This will only ever be true if the actions as marked as supporting dry-runs.
    */
   isDryRun?: boolean;
+
+  /**
+   * The user which triggered the action.
+   */
+  user?: {
+    /**
+     * The decorated entity from the Catalog
+     */
+    entity?: UserEntity;
+    /**
+     * An entity ref for the author of the task
+     */
+    ref?: string;
+  };
 };
 
 /** @public */

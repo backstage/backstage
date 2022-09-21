@@ -25,7 +25,6 @@ import {
   FetchResponseWrapper,
   ObjectToFetch,
   CustomResource,
-  CustomResourceMatcher,
   CustomResourcesByEntity,
   KubernetesObjectsByEntity,
 } from '../types/types';
@@ -40,6 +39,7 @@ import {
   ObjectsByEntityResponse,
   PodFetchResponse,
   KubernetesRequestAuth,
+  CustomResourceMatcher,
 } from '@backstage/plugin-kubernetes-common';
 import {
   ContainerStatus,

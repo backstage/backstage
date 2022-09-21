@@ -24,8 +24,10 @@ import {
   KubernetesApi,
 } from '../src';
 import {
+  CustomObjectsByEntityRequest,
   FetchResponse,
   ObjectsByEntityResponse,
+  WorkloadsByEntityRequest,
 } from '@backstage/plugin-kubernetes-common';
 import fixture1 from '../src/__fixtures__/1-deployments.json';
 import fixture2 from '../src/__fixtures__/2-deployments.json';
@@ -58,6 +60,16 @@ class MockKubernetesClient implements KubernetesApi {
       ([type, resources]) =>
         ({ type: type.toLocaleLowerCase('en-US'), resources } as FetchResponse),
     );
+  }
+  async getWorkloadsByEntity(
+    _request: WorkloadsByEntityRequest,
+  ): Promise<ObjectsByEntityResponse> {
+    throw new Error('Method not implemented.');
+  }
+  async getCustomObjectsByEntity(
+    _request: CustomObjectsByEntityRequest,
+  ): Promise<ObjectsByEntityResponse> {
+    throw new Error('Method not implemented.');
   }
 
   async getObjectsByEntity(): Promise<ObjectsByEntityResponse> {

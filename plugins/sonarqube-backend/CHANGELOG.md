@@ -1,5 +1,18 @@
 # @backstage/plugin-sonarqube-backend
 
+## 0.1.1
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+
 ## 0.1.1-next.2
 
 ### Patch Changes

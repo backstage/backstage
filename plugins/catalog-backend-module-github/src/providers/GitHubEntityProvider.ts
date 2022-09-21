@@ -98,7 +98,6 @@ export class GitHubEntityProvider implements EntityProvider {
     this.scheduleFn = this.createScheduleFn(schedule);
     this.githubCredentialsProvider =
       SingleInstanceGithubCredentialsProvider.create(integration.config);
-    this.scheduleFn = this.createScheduleFn(schedule);
   }
 
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */

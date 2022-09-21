@@ -16,6 +16,7 @@
 import { makeStyles } from '@material-ui/core';
 import React, { useState } from 'react';
 import { FieldExtensionOptions } from '../../extensions';
+import type { LayoutOptions } from '../../layouts';
 import { TemplateDirectoryAccess } from '../../lib/filesystem';
 import { DirectoryEditorProvider } from './DirectoryEditorContext';
 import { DryRunProvider } from './DryRunContext';
@@ -57,6 +58,7 @@ const useStyles = makeStyles({
 export const TemplateEditor = (props: {
   directory: TemplateDirectoryAccess;
   fieldExtensions?: FieldExtensionOptions<any, any>[];
+  layouts?: LayoutOptions[];
   onClose?: () => void;
 }) => {
   const classes = useStyles();
@@ -77,6 +79,7 @@ export const TemplateEditor = (props: {
             <TemplateEditorForm.DirectoryEditorDryRun
               setErrorText={setErrorText}
               fieldExtensions={props.fieldExtensions}
+              layouts={props.layouts}
             />
           </section>
           <section className={classes.results}>

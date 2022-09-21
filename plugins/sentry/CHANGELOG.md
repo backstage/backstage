@@ -1,5 +1,22 @@
 # @backstage/plugin-sentry
 
+## 0.4.2
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 3f739be9d9: Minor API signatures cleanup
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- d669d89206: Minor API signatures cleanup
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/plugin-catalog-react@1.1.4
+  - @backstage/catalog-model@1.1.1
+
 ## 0.4.2-next.3
 
 ### Patch Changes

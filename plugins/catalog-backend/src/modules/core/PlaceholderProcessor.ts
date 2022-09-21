@@ -111,12 +111,11 @@ export class PlaceholderProcessor implements CatalogProcessor {
       const resolverValue = data[keys[0]];
 
       const resolver = this.options.resolvers[resolverKey];
-      if (!resolver || typeof resolverValue !== 'string') {
-        // If there was no such placeholder resolver or if the value was not a
-        // string, we err on the side of safety and assume that this is
-        // something that's best left alone. For example, if the input contains
-        // JSONSchema, there may be "$ref": "#/definitions/node" nodes in the
-        // document.
+      if (!resolver) {
+        // If there was no such placeholder resolver, we err on the side of safety
+        // and assume that this is something that's best left alone. For example, if
+        // the input contains JSONSchema, there may be "$ref": "#/definitions/node"
+        // nodes in the document.
         return [data, false];
       }
 

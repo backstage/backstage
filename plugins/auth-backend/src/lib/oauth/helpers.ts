@@ -65,9 +65,19 @@ export const verifyNonce = (req: express.Request, providerId: string) => {
 export const defaultCookieConfigurer: CookieConfigurer = ({
   callbackUrl,
   providerId,
+  appOrigin,
 }) => {
   const { hostname: domain, pathname, protocol } = new URL(callbackUrl);
   const secure = protocol === 'https:';
+
+  // For situations where the auth-backend is running on a
+  // different domain than the app, we set the SameSite attribute
+  // to 'none' to allow third-party access to the cookie, but
+  // only if it's in a secure context (https).
+  let sameSite: ReturnType<CookieConfigurer>['sameSite'] = 'lax';
+  if (new URL(appOrigin).hostname !== domain && secure) {
+    sameSite = 'none';
+  }
 
   // If the provider supports callbackUrls, the pathname will
   // contain the complete path to the frame handler so we need
@@ -76,5 +86,5 @@ export const defaultCookieConfigurer: CookieConfigurer = ({
     ? pathname.slice(0, -'/handler/frame'.length)
     : `${pathname}/${providerId}`;
 
-  return { domain, path, secure };
+  return { domain, path, secure, sameSite };
 };

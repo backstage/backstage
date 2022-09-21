@@ -1,5 +1,21 @@
 # @backstage/plugin-fossa
 
+## 0.2.41
+
+### Patch Changes
+
+- 3f739be9d9: Minor API signatures cleanup
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/plugin-catalog-react@1.1.4
+  - @backstage/catalog-model@1.1.1
+  - @backstage/errors@1.1.1
+
 ## 0.2.41-next.2
 
 ### Patch Changes

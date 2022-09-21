@@ -39,6 +39,7 @@ import {
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
+import { LayoutOptions } from '../../layouts';
 
 const useTemplateParameterSchema = (templateRef: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -51,8 +52,10 @@ const useTemplateParameterSchema = (templateRef: string) => {
 
 export const TemplatePage = ({
   customFieldExtensions = [],
+  layouts = [],
 }: {
   customFieldExtensions?: FieldExtensionOptions<any, any>[];
+  layouts?: LayoutOptions[];
 }) => {
   const apiHolder = useApiHolder();
   const secretsContext = useContext(SecretsContext);
@@ -146,6 +149,7 @@ export const TemplatePage = ({
               onChange={handleChange}
               onReset={handleFormReset}
               onFinish={handleCreate}
+              layouts={layouts}
               steps={schema.steps.map(step => {
                 return {
                   ...step,
