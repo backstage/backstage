@@ -19,7 +19,7 @@ import { GitHubIntegration } from '@backstage/integration';
 import { DiscoveryApi } from '@backstage/plugin-permission-common';
 import { Octokit } from '@octokit/rest';
 import { trimEnd } from 'lodash';
-import { AnalyzeLocationExistingEntity, BaseLocationAnalyzer } from './types';
+import { AnalyzeLocationExistingEntity, ScmLocationAnalyzer } from './types';
 
 export type GitHubLocationAnalyzerOptions = {
   integration: GitHubIntegration;
@@ -27,7 +27,7 @@ export type GitHubLocationAnalyzerOptions = {
 
   discovery: DiscoveryApi;
 };
-export class GitHubLocationAnalyzer implements BaseLocationAnalyzer {
+export class GitHubLocationAnalyzer implements ScmLocationAnalyzer {
   private readonly integration: GitHubIntegration;
   private readonly catalogFilename: string;
   private readonly discovery: DiscoveryApi;

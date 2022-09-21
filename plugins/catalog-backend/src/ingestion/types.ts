@@ -99,7 +99,7 @@ export type AnalyzeLocationEntityField = {
   description: string;
 };
 
-export interface BaseLocationAnalyzer {
+export interface ScmLocationAnalyzer {
   analyze(
     owner: string,
     repo: string,
