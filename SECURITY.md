@@ -31,7 +31,7 @@ Backstage uses Snyk vulnerability scans in order to make sure we minimize vulner
 
 There are many situations where a vulnerability does not affect a particular dependency because of how the vulnerable package is used. In that situation the package authors may choose to stay at the current version rather than bumping the dependency, leading to a warning in the vulnerability scans but no actual vulnerability.
 
-To work around this and other similar issues, Snyk provides a method to ignored vulnerabilities. In order to provide the best visibility and most utility to adopters of Backstage, we store these ignore rules in `.snyk` policy files. This allows adopters to rely on our ignore policies if they wish to do so.
+To work around this and other similar issues, Snyk provides a method to ignore vulnerabilities. In order to provide the best visibility and most utility to adopters of Backstage, we store these ignore rules in `.snyk` policy files. This allows adopters to rely on our ignore policies if they wish to do so.
 
 Adding a new ignore policy is done by creating or modifying an existing `.snyk` file within a package root. See the [Snyk Documentation](https://support.snyk.io/hc/en-us/articles/360007487097-The-snyk-file) for details on the syntax. Always include a description, full path, and time limit of the ignore policy.
 
