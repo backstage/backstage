@@ -36,6 +36,7 @@ import { runParallelWorkers } from '../../lib/parallel';
 import {
   getManifestByReleaseLine,
   getManifestByVersion,
+  getManifestByFile,
   ReleaseManifest,
 } from '@backstage/release-manifests';
 import 'global-agent/bootstrap';
@@ -70,8 +71,14 @@ export default async (opts: OptionValues) => {
 
   let findTargetVersion: (name: string) => Promise<string>;
   let releaseManifest: ReleaseManifest;
-  // Specific release specified. Be strict when resolving versions
-  if (semver.valid(opts.release)) {
+  // Specific manifest.json file
+  if (opts.file) {
+    releaseManifest = await getManifestByFile({ file: opts.file });
+    findTargetVersion = createStrictVersionFinder({
+      releaseManifest,
+    });
+    // Specific release specified. Be strict when resolving versions
+  } else if (semver.valid(opts.release)) {
     releaseManifest = await getManifestByVersion({ version: opts.release });
     findTargetVersion = createStrictVersionFinder({
       releaseManifest,
@@ -96,6 +103,13 @@ export default async (opts: OptionValues) => {
     }
     findTargetVersion = createVersionFinder({
       releaseLine: opts.releaseLine,
+      releaseManifest,
+    });
+  }
+
+  if (opts.file) {
+    releaseManifest = await getManifestByFile({ file: opts.file });
+    findTargetVersion = createStrictVersionFinder({
       releaseManifest,
     });
   }

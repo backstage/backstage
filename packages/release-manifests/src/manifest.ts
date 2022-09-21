@@ -15,6 +15,7 @@
  */
 
 import fetch from 'cross-fetch';
+import { readFileSync } from 'fs';
 
 const VERSIONS_DOMAIN = 'https://versions.backstage.io';
 
@@ -55,6 +56,27 @@ export async function getManifestByVersion(
     );
   }
   return await response.json();
+}
+
+/**
+ * Options for {@link getManifestByFile}.
+ * @public
+ */
+export type GetManifestByFileOptions = {
+  file: string;
+};
+
+/**
+ * Returns a release manifest based on file.
+ * @public
+ */
+export async function getManifestByFile(
+  options: GetManifestByFileOptions,
+): Promise<ReleaseManifest> {
+  const path = options.file;
+  const readedFile = readFileSync(path, 'utf-8');
+  const response = JSON.parse(readedFile);
+  return await response;
 }
 
 /**

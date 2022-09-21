@@ -311,6 +311,7 @@ export function registerCommands(program: Command) {
       '--pattern <glob>',
       'Override glob for matching packages to upgrade',
     )
+    .option('--file <file>', 'Use local manifest file instead of fetching it')
     .option(
       '--release <version|next|main>',
       'Bump to a specific Backstage release line or version',
