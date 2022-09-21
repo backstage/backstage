@@ -37,10 +37,7 @@ import {
   TaskSpecV1beta3,
   TaskStep,
 } from '@backstage/plugin-scaffolder-common';
-import {
-  createCounterMetric,
-  createHistogramMetric,
-} from '../../util/metrics';
+import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { UserEntity } from '@backstage/catalog-model';
 
 type NunjucksWorkflowRunnerOptions = {
@@ -204,10 +201,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       additionalTemplateFilters: this.options.additionalTemplateFilters,
     });
 
-    let taskTrack;
-
     try {
-      taskTrack = await this.tracker.taskStart(task);
+      const taskTrack = await this.tracker.taskStart(task);
       await fs.ensureDir(workspacePath);
 
       const context: TemplateContext = {
@@ -377,17 +372,17 @@ function scaffoldingTracker() {
   const stepSuccesses = createCounterMetric({
     name: 'scaffolder_step_success_count',
     help: 'Count of successful step runs',
-    labelNames: ['template', 'name'],
+    labelNames: ['template', 'step'],
   });
   const stepErrors = createCounterMetric({
     name: 'scaffolder_step_error_count',
     help: 'Count of failed step runs',
-    labelNames: ['template', 'name'],
+    labelNames: ['template', 'step'],
   });
   const stepDuration = createHistogramMetric({
     name: 'scaffolder_step_duration',
     help: 'Duration of a step runs',
-    labelNames: ['template', 'name', 'result'],
+    labelNames: ['template', 'step', 'result'],
   });
 
   async function taskStart(task: TaskContext) {
@@ -445,7 +440,7 @@ function scaffoldingTracker() {
 
     const stepTimer = stepDuration.startTimer({
       template,
-      name: step.name,
+      step: step.name,
     });
 
     async function markSuccessful() {
@@ -454,14 +449,16 @@ function scaffoldingTracker() {
         status: 'completed',
       });
       stepSuccesses.inc({
-        name: step.name,
+        template,
+        step: step.name,
       });
       stepTimer({ result: 'ok' });
     }
 
     function markFailed() {
       stepErrors.inc({
-        name: step.name,
+        template,
+        step: step.name,
       });
       stepTimer({ result: 'failed' });
     }
@@ -471,7 +468,7 @@ function scaffoldingTracker() {
         `Skipping step ${step.id} because it's if condition was false`,
         { stepId: step.id, status: 'skipped' },
       );
-      stepTimer({ result: 'skipped' })
+      stepTimer({ result: 'skipped' });
     }
 
     return {

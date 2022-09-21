@@ -73,7 +73,7 @@
     "luxon": "^3.0.0",
     "pg": "^8.3.0",
     "pg-connection-string": "^2.3.0",
-    "prom-client": "^14.0.1",
+    "prom-client": "14.0.1",
     "winston": "^3.2.1"
   },
   "devDependencies": {

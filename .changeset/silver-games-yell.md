@@ -4,46 +4,48 @@
 ---
 
 Added a set of default Prometheus metrics around scaffolding. See below for a list of metrics and an explanation of their labels:
- 
- - `scaffolder_task_success_count`: Tracks successful task runs.
 
-    Labels:
+- `scaffolder_task_success_count`: Tracks successful task runs.
 
-    - `template`: The entity ref of the scaffolded template
-    - `user`: The entity ref of the user that invoked the template run
+  Labels:
 
- - scaffolder_task_error_count: a count that track how many task runs error out
+  - `template`: The entity ref of the scaffolded template
+  - `user`: The entity ref of the user that invoked the template run
 
-    Labels:
+- scaffolder_task_error_count: a count that track how many task runs error out
 
-    - `template`: The entity ref of the scaffolded template
-    - `user`: The entity ref of the user that invoked the template run
+  Labels:
 
- - scaffolder_task_duration: a histogram which tracks the duration of a task run
- 
-    Labels:
+  - `template`: The entity ref of the scaffolded template
+  - `user`: The entity ref of the user that invoked the template run
 
-    - `template`: The entity ref of the scaffolded template
-    - `result`: A boolean describing whether the task ran successfully
+- scaffolder_task_duration: a histogram which tracks the duration of a task run
 
- - scaffolder_step_success_count: a count that tracks each step run
+  Labels:
 
-    Labels:
+  - `template`: The entity ref of the scaffolded template
+  - `result`: A boolean describing whether the task ran successfully
 
-    - `name`: The name of the step that was run
+- scaffolder_step_success_count: a count that tracks each step run
 
- - scaffolder_step_error_count: a count that tracks how many steps error out
+  Labels:
 
-    Labels:
+  - `template`: The entity ref of the scaffolded template
+  - `step`: The name of the step that was run
 
-    - `name`: The name of the step that was run
+- scaffolder_step_error_count: a count that tracks how many steps error out
 
- - scaffolder_step_duration: a histogram which tracks the duration of each step run
+  Labels:
 
+  - `template`: The entity ref of the scaffolded template
+  - `step`: The name of the step that was run
 
-    Labels:
+- scaffolder_step_duration: a histogram which tracks the duration of each step run
 
-    - `name`: The name of the step that was run
-    - `result`: A boolean describing whether the task ran successfully
+  Labels:
+
+  - `template`: The entity ref of the scaffolded template
+  - `step`: The name of the step that was run
+  - `result`: A boolean describing whether the task ran successfully
 
 You can find a guide for running Prometheus metrics here: https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/prometheus-metrics.md
