@@ -28,6 +28,13 @@ import {
   TestDatabaseProperties,
 } from './types';
 
+const LARGER_POOL_CONFIG = {
+  pool: {
+    min: 0,
+    max: 50,
+  },
+};
+
 /**
  * Encapsulates the creation of ephemeral test database instances for use
  * inside unit or integration tests.
@@ -164,6 +171,9 @@ export class TestDatabases {
             new ConfigReader({
               backend: {
                 database: {
+                  knexConfig: properties.driver.includes('sqlite')
+                    ? {}
+                    : LARGER_POOL_CONFIG,
                   client: properties.driver,
                   connection: connectionString,
                 },
@@ -203,6 +213,7 @@ export class TestDatabases {
       new ConfigReader({
         backend: {
           database: {
+            knexConfig: LARGER_POOL_CONFIG,
             client: 'pg',
             connection: { host, port, user, password },
           },
@@ -228,6 +239,7 @@ export class TestDatabases {
       new ConfigReader({
         backend: {
           database: {
+            knexConfig: LARGER_POOL_CONFIG,
             client: 'mysql2',
             connection: { host, port, user, password },
           },
