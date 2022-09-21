@@ -20,14 +20,21 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import { RepoUrlPickerState } from './types';
+import { Select, SelectItem } from '@backstage/core-components';
 
 export const AzureRepoPicker = (props: {
+  allowedOrganizations?: string[];
+  rawErrors: string[];
   state: RepoUrlPickerState;
   onChange: (state: RepoUrlPickerState) => void;
-  rawErrors: string[];
 }) => {
-  const { rawErrors, state, onChange } = props;
+  const { allowedOrganizations = [], rawErrors, state, onChange } = props;
+  const organizationItems: SelectItem[] = allowedOrganizations
+    ? allowedOrganizations.map(i => ({ label: i, value: i }))
+    : [{ label: 'Loading...', value: 'loading' }];
+
   const { organization, owner } = state;
+
   return (
     <>
       <FormControl
@@ -35,12 +42,27 @@ export const AzureRepoPicker = (props: {
         required
         error={rawErrors?.length > 0 && !organization}
       >
-        <InputLabel htmlFor="orgInput">Organization</InputLabel>
-        <Input
-          id="orgInput"
-          onChange={e => onChange({ organization: e.target.value })}
-          value={organization}
-        />
+        {allowedOrganizations?.length ? (
+          <Select
+            native
+            label="Organization"
+            onChange={s =>
+              onChange({ organization: String(Array.isArray(s) ? s[0] : s) })
+            }
+            disabled={allowedOrganizations.length === 1}
+            selected={organization}
+            items={organizationItems}
+          />
+        ) : (
+          <>
+            <InputLabel htmlFor="orgInput">Organization</InputLabel>
+            <Input
+              id="orgInput"
+              onChange={e => onChange({ organization: e.target.value })}
+              value={organization}
+            />
+          </>
+        )}
         <FormHelperText>
           The organization that this repo will belong to
         </FormHelperText>
