@@ -44,6 +44,8 @@ export const OwnerPicker = (
     ...restProps
   } = props;
 
+  const defaultNamespace = uiSchema['ui:options']?.defaultNamespace;
+
   const ownerUiSchema = {
     ...uiSchema,
     'ui:options': {
@@ -54,7 +56,7 @@ export const OwnerPicker = (
       defaultKind: 'Group',
       allowArbitraryValues:
         uiSchema['ui:options']?.allowArbitraryValues ?? true,
-      defaultNamespace: uiSchema['ui:options']?.defaultNamespace ?? '',
+      ...(defaultNamespace !== undefined ? { defaultNamespace } : {}),
     },
   };
 
