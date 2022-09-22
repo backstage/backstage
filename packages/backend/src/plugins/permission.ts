@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+import { IdentityApiGetIdentityResult } from '@backstage/plugin-auth-node';
 import { createRouter } from '@backstage/plugin-permission-backend';
 import {
   AuthorizeResult,
@@ -36,7 +36,7 @@ class ExamplePermissionPolicy implements PermissionPolicy {
 
   async handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse,
+    user?: IdentityApiGetIdentityResult,
   ): Promise<PolicyDecision> {
     if (isPlaylistPermission(request.permission)) {
       return this.playlistPermissionPolicy.handle(request, user);

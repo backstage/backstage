@@ -16,7 +16,7 @@
 
 import { DatabaseHandler } from './DatabaseHandler';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
-import { BackstageUserIdentity } from '@backstage/plugin-auth-node';
+import { IdentityApiUserIdentity } from '@backstage/plugin-auth-node';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 
@@ -39,7 +39,7 @@ describe('DatabaseHandler', () => {
       const playlist1Id = uuid();
       const playlist2Id = uuid();
       const playlist3Id = uuid();
-      const user: BackstageUserIdentity = {
+      const user: IdentityApiUserIdentity = {
         type: 'user',
         userEntityRef: 'user:default/foo',
         ownershipEntityRefs: ['user:default/foo', 'group:default/foo-group'],

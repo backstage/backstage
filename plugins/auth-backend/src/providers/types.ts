@@ -18,7 +18,7 @@ import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
-  BackstageIdentityResponse,
+  IdentityApiGetIdentityResult,
   BackstageSignInResult,
 } from '@backstage/plugin-auth-node';
 import express from 'express';
@@ -215,7 +215,7 @@ export type AuthProviderFactory = (options: {
 export type AuthResponse<ProviderInfo> = {
   providerInfo: ProviderInfo;
   profile: ProfileInfo;
-  backstageIdentity?: BackstageIdentityResponse;
+  backstageIdentity?: IdentityApiGetIdentityResult;
 };
 
 /**

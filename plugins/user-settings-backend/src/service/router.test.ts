@@ -15,7 +15,7 @@
  */
 
 import {
-  BackstageIdentityResponse,
+  IdentityApiGetIdentityResult,
   IdentityApi,
 } from '@backstage/plugin-auth-node';
 import express from 'express';
@@ -30,7 +30,7 @@ describe('createRouter', () => {
     delete: jest.fn(),
   };
   const getIdentityMock = jest.fn<
-    Promise<BackstageIdentityResponse | undefined>,
+    Promise<IdentityApiGetIdentityResult | undefined>,
     any
   >();
   const identityApi: jest.Mocked<Partial<IdentityApi>> = {

@@ -26,8 +26,14 @@ export { IdentityClient } from './IdentityClient';
 export type { IdentityApi } from './IdentityApi';
 export type { IdentityClientOptions } from './DefaultIdentityClient';
 export type {
-  BackstageIdentityResponse,
-  BackstageSignInResult,
-  BackstageUserIdentity,
+  IdentityApiGetIdentityResult,
+  IdentityApiServerIdentity,
+  IdentityApiUserIdentity,
   IdentityApiGetIdentityRequest,
+  BackstageSignInResult,
 } from './types';
+
+export {
+  isIdentityApiUserIdentityResult,
+  isIdentityApiServerIdentityResult,
+} from './conditions';

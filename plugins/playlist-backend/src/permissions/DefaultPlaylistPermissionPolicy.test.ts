@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+import { IdentityApiGetIdentityResult } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   createPermission,
@@ -29,7 +29,7 @@ import { DefaultPlaylistPermissionPolicy } from './DefaultPlaylistPermissionPoli
 
 describe('DefaultPlaylistPermissionPolicy', () => {
   const policy = new DefaultPlaylistPermissionPolicy();
-  const mockUser: BackstageIdentityResponse = {
+  const mockUser: IdentityApiGetIdentityResult = {
     token: 'token',
     identity: {
       type: 'user',

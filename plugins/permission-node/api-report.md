@@ -7,13 +7,13 @@ import { AllOfCriteria } from '@backstage/plugin-permission-common';
 import { AnyOfCriteria } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
 import { DefinitivePolicyDecision } from '@backstage/plugin-permission-common';
 import { EvaluatorRequestOptions } from '@backstage/plugin-permission-common';
 import express from 'express';
 import { IdentifiedPermissionMessage } from '@backstage/plugin-permission-common';
+import { IdentityApiGetIdentityResult } from '@backstage/plugin-auth-node';
 import { NotCriteria } from '@backstage/plugin-permission-common';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
@@ -156,7 +156,7 @@ export interface PermissionPolicy {
   // (undocumented)
   handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse,
+    user?: IdentityApiGetIdentityResult,
   ): Promise<PolicyDecision>;
 }
 

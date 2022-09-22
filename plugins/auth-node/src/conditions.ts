@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +15,24 @@
  */
 import {
   IdentityApiGetIdentityResult,
-  IdentityApiGetIdentityRequest,
+  IdentityApiUserIdentity,
+  IdentityApiServerIdentity,
 } from './types';
 
 /**
- * An identity client api to authenticate Backstage
- * tokens
- *
- * @experimental This is not a stable API yet
  * @public
  */
-export interface IdentityApi {
-  /**
-   * Verifies the given backstage identity token
-   * Returns a BackstageIdentity (user) matching the token.
-   * The method throws an error if verification fails.
-   */
-  getIdentity(
-    options: IdentityApiGetIdentityRequest,
-  ): Promise<IdentityApiGetIdentityResult | undefined>;
-}
+export const isIdentityApiUserIdentityResult = (
+  result: IdentityApiGetIdentityResult | undefined,
+): result is IdentityApiGetIdentityResult<IdentityApiUserIdentity> => {
+  return result?.identity.type === 'user';
+};
+
+/**
+ * @public
+ */
+export const isIdentityApiServerIdentityResult = (
+  result: IdentityApiGetIdentityResult | undefined,
+): result is IdentityApiGetIdentityResult<IdentityApiServerIdentity> => {
+  return result?.identity.type === 'server';
+};

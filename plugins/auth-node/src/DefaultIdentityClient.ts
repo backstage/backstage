@@ -26,7 +26,7 @@ import {
 import { GetKeyFunction } from 'jose/dist/types/types';
 
 import {
-  BackstageIdentityResponse,
+  IdentityApiGetIdentityResult,
   IdentityApiGetIdentityRequest,
 } from './types';
 import { getBearerTokenFromAuthorizationHeader, IdentityApi } from '.';
@@ -100,7 +100,7 @@ export class DefaultIdentityClient implements IdentityApi {
    */
   async authenticate(
     token: string | undefined,
-  ): Promise<BackstageIdentityResponse> {
+  ): Promise<IdentityApiGetIdentityResult> {
     // Extract token from header
     if (!token) {
       throw new AuthenticationError('No token specified');
@@ -125,7 +125,7 @@ export class DefaultIdentityClient implements IdentityApi {
       throw new AuthenticationError('No user sub found in token');
     }
 
-    const user: BackstageIdentityResponse = {
+    const user: IdentityApiGetIdentityResult = {
       token,
       identity: {
         type: 'user',

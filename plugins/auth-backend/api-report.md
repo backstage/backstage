@@ -5,7 +5,6 @@
 ```ts
 /// <reference types="node" />
 
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
 import { CacheClient } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -13,6 +12,8 @@ import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
+import { IdentityApiGetIdentityResult } from '@backstage/plugin-auth-node';
+import { IdentityApiUserIdentity } from '@backstage/plugin-auth-node';
 import { IncomingHttpHeaders } from 'http';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
@@ -95,7 +96,7 @@ export type AuthResolverContext = {
 export type AuthResponse<ProviderInfo> = {
   providerInfo: ProviderInfo;
   profile: ProfileInfo;
-  backstageIdentity?: BackstageIdentityResponse;
+  backstageIdentity?: IdentityApiGetIdentityResult;
 };
 
 // @public (undocumented)
@@ -398,7 +399,7 @@ export const postMessageResponse: (
 // @public
 export function prepareBackstageIdentityResponse(
   result: BackstageSignInResult,
-): BackstageIdentityResponse;
+): IdentityApiGetIdentityResult<IdentityApiUserIdentity>;
 
 // @public
 export type ProfileInfo = {

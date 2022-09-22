@@ -18,7 +18,7 @@ import {
   DefaultIdentityClient,
   IdentityClientOptions,
 } from './DefaultIdentityClient';
-import { BackstageIdentityResponse } from './types';
+import { IdentityApiGetIdentityResult } from './types';
 
 /**
  * An identity client to interact with auth-backend and authenticate Backstage
@@ -48,7 +48,7 @@ export class IdentityClient {
    */
   async authenticate(
     token: string | undefined,
-  ): Promise<BackstageIdentityResponse> {
+  ): Promise<IdentityApiGetIdentityResult> {
     return await this.defaultIdentityClient.authenticate(token);
   }
 }

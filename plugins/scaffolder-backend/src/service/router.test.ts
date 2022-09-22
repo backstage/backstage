@@ -42,7 +42,7 @@ import { createRouter, DatabaseTaskStore, TaskBroker } from '../index';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import {
   IdentityApiGetIdentityRequest,
-  BackstageIdentityResponse,
+  IdentityApiGetIdentityResult,
 } from '@backstage/plugin-auth-node';
 
 const mockAccess = jest.fn();
@@ -731,7 +731,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         async ({
           request: _request,
         }: IdentityApiGetIdentityRequest): Promise<
-          BackstageIdentityResponse | undefined
+          IdentityApiGetIdentityResult | undefined
         > => {
           return {
             identity: {
@@ -883,7 +883,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             async ({
               request: _request,
             }: IdentityApiGetIdentityRequest): Promise<
-              BackstageIdentityResponse | undefined
+              IdentityApiGetIdentityResult | undefined
             > => {
               throw new Error('whoops!');
             },
@@ -911,7 +911,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             async ({
               request: _request,
             }: IdentityApiGetIdentityRequest): Promise<
-              BackstageIdentityResponse | undefined
+              IdentityApiGetIdentityResult | undefined
             > => {
               return undefined;
             },

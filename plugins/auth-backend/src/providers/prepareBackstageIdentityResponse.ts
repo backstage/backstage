@@ -15,8 +15,9 @@
  */
 
 import {
-  BackstageIdentityResponse,
+  IdentityApiGetIdentityResult,
   BackstageSignInResult,
+  IdentityApiUserIdentity,
 } from '@backstage/plugin-auth-node';
 
 function parseJwtPayload(token: string) {
@@ -33,7 +34,7 @@ function parseJwtPayload(token: string) {
  */
 export function prepareBackstageIdentityResponse(
   result: BackstageSignInResult,
-): BackstageIdentityResponse {
+): IdentityApiGetIdentityResult<IdentityApiUserIdentity> {
   const { sub, ent } = parseJwtPayload(result.token);
 
   return {

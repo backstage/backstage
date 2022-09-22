@@ -19,7 +19,7 @@ import { Request } from 'express';
 /**
  * A representation of a successful Backstage sign-in.
  *
- * Compared to the {@link BackstageIdentityResponse} this type omits
+ * Compared to the {@link IdentityApiGetIdentityResult} this type omits
  * the decoded identity information embedded in the token.
  *
  * @public
@@ -41,24 +41,11 @@ export type IdentityApiGetIdentityRequest = {
 };
 
 /**
- * Response object containing the {@link BackstageUserIdentity} and the token
- * from the authentication provider.
- *
- * @public
- */
-export interface BackstageIdentityResponse extends BackstageSignInResult {
-  /**
-   * A plaintext description of the identity that is encapsulated within the token.
-   */
-  identity: BackstageUserIdentity;
-}
-
-/**
  * User identity information within Backstage.
  *
  * @public
  */
-export type BackstageUserIdentity = {
+export type IdentityApiUserIdentity = {
   /**
    * The type of identity that this structure represents. In the frontend app
    * this will currently always be 'user'.
@@ -75,4 +62,30 @@ export type BackstageUserIdentity = {
    * The user and group entities that the user claims ownership through
    */
   ownershipEntityRefs: string[];
+};
+
+/**
+ * User identity information within Backstage.
+ *
+ * @public
+ */
+export type IdentityApiServerIdentity = {
+  /**
+   * The type of identity that this structure represents. In the frontend app
+   * this will currently always be 'user'.
+   */
+  type: 'server';
+};
+
+/**
+ * A representation of a successful Backstage sign-in.
+ *
+ * This contains details about either the user or the server that is signed in.
+ *
+ * @public
+ */
+export type IdentityApiGetIdentityResult<
+  IdentityApiIdentity = IdentityApiUserIdentity | IdentityApiServerIdentity,
+> = BackstageSignInResult & {
+  identity: IdentityApiIdentity;
 };

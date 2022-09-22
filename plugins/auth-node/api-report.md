@@ -7,32 +7,25 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Request as Request_2 } from 'express';
 
 // @public
-export interface BackstageIdentityResponse extends BackstageSignInResult {
-  identity: BackstageUserIdentity;
-}
-
-// @public
 export interface BackstageSignInResult {
   token: string;
 }
 
 // @public
-export type BackstageUserIdentity = {
-  type: 'user';
-  userEntityRef: string;
-  ownershipEntityRefs: string[];
-};
-
-// @public
 export class DefaultIdentityClient implements IdentityApi {
   // @deprecated
-  authenticate(token: string | undefined): Promise<BackstageIdentityResponse>;
+  authenticate(
+    token: string | undefined,
+  ): Promise<IdentityApiGetIdentityResult>;
   static create(options: IdentityClientOptions): DefaultIdentityClient;
   // (undocumented)
   getIdentity({
     request,
   }: IdentityApiGetIdentityRequest): Promise<
-    BackstageIdentityResponse | undefined
+    | IdentityApiGetIdentityResult<
+        IdentityApiUserIdentity | IdentityApiServerIdentity
+      >
+    | undefined
   >;
 }
 
@@ -45,7 +38,7 @@ export function getBearerTokenFromAuthorizationHeader(
 export interface IdentityApi {
   getIdentity(
     options: IdentityApiGetIdentityRequest,
-  ): Promise<BackstageIdentityResponse | undefined>;
+  ): Promise<IdentityApiGetIdentityResult | undefined>;
 }
 
 // @public
@@ -53,10 +46,31 @@ export type IdentityApiGetIdentityRequest = {
   request: Request_2<unknown>;
 };
 
+// @public
+export type IdentityApiGetIdentityResult<
+  IdentityApiIdentity = IdentityApiUserIdentity | IdentityApiServerIdentity,
+> = BackstageSignInResult & {
+  identity: IdentityApiIdentity;
+};
+
+// @public
+export type IdentityApiServerIdentity = {
+  type: 'server';
+};
+
+// @public
+export type IdentityApiUserIdentity = {
+  type: 'user';
+  userEntityRef: string;
+  ownershipEntityRefs: string[];
+};
+
 // @public @deprecated
 export class IdentityClient {
   // @deprecated
-  authenticate(token: string | undefined): Promise<BackstageIdentityResponse>;
+  authenticate(
+    token: string | undefined,
+  ): Promise<IdentityApiGetIdentityResult>;
   // (undocumented)
   static create(options: IdentityClientOptions): IdentityClient;
 }
@@ -67,4 +81,14 @@ export type IdentityClientOptions = {
   issuer?: string;
   algorithms?: string[];
 };
+
+// @public (undocumented)
+export const isIdentityApiServerIdentityResult: (
+  result: IdentityApiGetIdentityResult | undefined,
+) => result is IdentityApiGetIdentityResult<IdentityApiServerIdentity>;
+
+// @public (undocumented)
+export const isIdentityApiUserIdentityResult: (
+  result: IdentityApiGetIdentityResult | undefined,
+) => result is IdentityApiGetIdentityResult<IdentityApiUserIdentity>;
 ```

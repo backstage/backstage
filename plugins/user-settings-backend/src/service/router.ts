@@ -16,7 +16,10 @@
 
 import { errorHandler, PluginDatabaseManager } from '@backstage/backend-common';
 import { AuthenticationError, InputError } from '@backstage/errors';
-import { IdentityApi } from '@backstage/plugin-auth-node';
+import {
+  IdentityApi,
+  isIdentityApiUserIdentityResult,
+} from '@backstage/plugin-auth-node';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
 import { DatabaseUserSettingsStore } from '../database/DatabaseUserSettingsStore';
@@ -62,6 +65,10 @@ export async function createRouterInternal(options: {
     // throws an AuthenticationError in case the token exists but is invalid
     const identity = await options.identity.getIdentity({ request: req });
     if (!identity) {
+      throw new AuthenticationError(`Missing token in 'authorization' header`);
+    }
+
+    if (!isIdentityApiUserIdentityResult(identity)) {
       throw new AuthenticationError(`Missing token in 'authorization' header`);
     }
 

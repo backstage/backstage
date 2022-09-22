@@ -25,6 +25,7 @@ import { NotAllowedError } from '@backstage/errors';
 import {
   getBearerTokenFromAuthorizationHeader,
   IdentityApi,
+  isIdentityApiUserIdentityResult,
 } from '@backstage/plugin-auth-node';
 import {
   AuthorizePermissionRequest,
@@ -86,7 +87,7 @@ export async function createRouter(
     );
 
     const user = await identity.getIdentity({ request });
-    if (!user) {
+    if (!isIdentityApiUserIdentityResult(user)) {
       throw new NotAllowedError('Unauthorized');
     }
 

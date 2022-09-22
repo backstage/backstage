@@ -20,7 +20,10 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { add, getAll, update } from './todos';
 import { InputError } from '@backstage/errors';
-import { IdentityApi } from '@backstage/plugin-auth-node';
+import {
+  IdentityApi,
+  isIdentityApiUserIdentityResult,
+} from '@backstage/plugin-auth-node';
 
 /**
  * Dependencies of the todo-list router
@@ -62,7 +65,10 @@ export async function createRouter(
     let author: string | undefined = undefined;
 
     const user = await identity.getIdentity({ request: req });
-    author = user?.identity.userEntityRef;
+
+    if (user && isIdentityApiUserIdentityResult(user)) {
+      author = user?.identity.userEntityRef;
+    }
 
     if (!isTodoCreateRequest(req.body)) {
       throw new InputError('Invalid payload');

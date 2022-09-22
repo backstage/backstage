@@ -18,7 +18,7 @@ import express, { CookieOptions } from 'express';
 import crypto from 'crypto';
 import { URL } from 'url';
 import {
-  BackstageIdentityResponse,
+  IdentityApiGetIdentityResult,
   BackstageSignInResult,
 } from '@backstage/plugin-auth-node';
 import {
@@ -250,7 +250,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
    */
   private async populateIdentity(
     identity?: BackstageSignInResult,
-  ): Promise<BackstageIdentityResponse | undefined> {
+  ): Promise<IdentityApiGetIdentityResult | undefined> {
     if (!identity) {
       return undefined;
     }
