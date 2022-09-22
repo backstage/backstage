@@ -3542,6 +3542,7 @@ __metadata:
     handlebars: ^4.7.3
     inquirer: ^8.2.0
     mock-fs: ^5.1.1
+    nodemon: ^2.0.2
     ora: ^5.3.0
     recursive-readdir: ^2.2.2
     ts-node: ^10.0.0

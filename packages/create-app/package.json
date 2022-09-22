@@ -29,7 +29,7 @@
     "clean": "backstage-cli package clean",
     "prepack": "node scripts/prepack.js",
     "postpack": "node scripts/postpack.js",
-    "start": "nodemon --"
+    "start": "yarn nodemon --"
   },
   "dependencies": {
     "@backstage/cli-common": "workspace:^",
@@ -48,6 +48,7 @@
     "@types/node": "^16.11.26",
     "@types/recursive-readdir": "^2.2.0",
     "mock-fs": "^5.1.1",
+    "nodemon": "^2.0.2",
     "ts-node": "^10.0.0"
   },
   "nodemonConfig": {
