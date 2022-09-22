@@ -17,7 +17,7 @@ If your Backstage permission policy may return a `DENY` for users requesting the
 
 ...
 
-+ import { PermissionedRoute } from '@backstage/plugin-permission-react';
++ import { RequirePermission } from '@backstage/plugin-permission-react';
 + import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
 
 ...
