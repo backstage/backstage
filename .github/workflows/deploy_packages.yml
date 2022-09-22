@@ -162,10 +162,11 @@ jobs:
       # Publishes current version of packages that are not already present in the registry
       - name: publish
         run: |
+          yarn config set -H 'npmAuthToken' "${{secrets.NPM_TOKEN}}"
           if [ -f ".changeset/pre.json" ]; then
-              yarn workspaces foreach -v --exclude=root --no-private npm publish --tag next
+              yarn workspaces foreach -v --no-private npm publish --access public --tag next
           else
-              yarn workspaces foreach -v --exclude=root --no-private npm publish
+              yarn workspaces foreach -v --no-private npm publish --access public
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

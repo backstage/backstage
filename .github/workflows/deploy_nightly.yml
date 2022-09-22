@@ -55,7 +55,9 @@ jobs:
       # not flagged as the latest release, which means that people will not get this
       # version of the package unless requested explicitly
       - name: publish nightly release
-        run: yarn workspaces foreach -v --no-private npm publish --tag nightly
+        run: |
+          yarn config set -H 'npmAuthToken' "${{secrets.NPM_TOKEN}}"
+          yarn workspaces foreach -v --no-private npm publish --access public --tag nightly
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

@@ -3542,6 +3542,7 @@ __metadata:
     handlebars: ^4.7.3
     inquirer: ^8.2.0
     mock-fs: ^5.1.1
+    nodemon: ^2.0.2
     ora: ^5.3.0
     recursive-readdir: ^2.2.2
     ts-node: ^10.0.0
@@ -4778,7 +4779,7 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@date-io/luxon": ^1.3.13
     "@material-ui/core": ^4.9.13
-    "@material-ui/icons": ^4.11.2
+    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.57
     "@material-ui/pickers": ^3.3.10
     "@types/luxon": ^3.0.0
@@ -7415,7 +7416,7 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.11.2
+    "@material-ui/icons": ^4.9.1
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
@@ -20200,6 +20201,7 @@ __metadata:
     cross-fetch: ^3.1.5
     fs-extra: 10.1.0
     handlebars: ^4.7.3
+    nodemon: ^2.0.2
     pgtools: ^0.3.0
     puppeteer: ^17.0.0
     tree-kill: ^1.2.2
