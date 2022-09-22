@@ -63,7 +63,6 @@ export type ScaffolderPageProps = {
   customFilters?: Array<{
     name: string;
     filterValue: string;
-    filterKey?: string;
   }>;
 };
 
@@ -129,7 +128,6 @@ export const ScaffolderPageContents = ({
                   key={index}
                   name={filter.name}
                   filterValue={filter.filterValue}
-                  filterKey={filter.filterKey}
                 />
               ))}
           </CatalogFilterLayout.Filters>

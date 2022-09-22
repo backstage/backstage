@@ -18,7 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
-import { EntityGenericFilter } from '../../filters';
+import { EntityFieldFilter } from '../../filters';
 import { EntityGenericPicker } from './EntityGenericPicker';
 
 const mockEntities: Entity[] = [
@@ -109,7 +109,7 @@ describe('<EntityGenericPicker/>', () => {
     fireEvent.click(rendered.getByTestId('domain-picker-expand'));
     fireEvent.click(rendered.getByText('domain1'));
     expect(updateFilters).toHaveBeenLastCalledWith({
-      option: new EntityGenericFilter(['domain1'], 'domain'),
+      option: new EntityFieldFilter(['domain1'], 'metadata.domain'),
     });
   });
 
@@ -130,7 +130,7 @@ describe('<EntityGenericPicker/>', () => {
     );
 
     expect(updateFilters).toHaveBeenLastCalledWith({
-      option: new EntityGenericFilter(['domain2'], 'domain'),
+      option: new EntityFieldFilter(['domain2'], 'metadata.domain'),
     });
   });
 
@@ -154,7 +154,7 @@ describe('<EntityGenericPicker/>', () => {
     fireEvent.click(rendered.getByTestId('domain-picker-expand'));
     fireEvent.click(rendered.getByText('domain1'));
     expect(updateFilters).toHaveBeenLastCalledWith({
-      option: new EntityGenericFilter(['domain1'], 'domain'),
+      option: new EntityFieldFilter(['domain1'], 'metadata.domain'),
     });
   });
 
@@ -166,14 +166,16 @@ describe('<EntityGenericPicker/>', () => {
           entities: mockEntities,
           backendEntities: mockEntities,
           updateFilters,
-          filters: { option: new EntityGenericFilter(['domain1'], 'domain') },
+          filters: {
+            option: new EntityFieldFilter(['domain1'], 'metadata.domain'),
+          },
         }}
       >
         <EntityDomainPicker />
       </MockEntityListContextProvider>,
     );
     expect(updateFilters).toHaveBeenLastCalledWith({
-      option: new EntityGenericFilter(['domain1'], 'domain'),
+      option: new EntityFieldFilter(['domain1'], 'metadata.domain'),
     });
     fireEvent.click(rendered.getByTestId('domain-picker-expand'));
     expect(rendered.getByLabelText('domain1')).toBeChecked();
@@ -197,7 +199,7 @@ describe('<EntityGenericPicker/>', () => {
       </MockEntityListContextProvider>,
     );
     expect(updateFilters).toHaveBeenLastCalledWith({
-      option: new EntityGenericFilter(['domain2'], 'domain'),
+      option: new EntityFieldFilter(['domain2'], 'metadata.domain'),
     });
     rendered.rerender(
       <MockEntityListContextProvider
@@ -210,7 +212,7 @@ describe('<EntityGenericPicker/>', () => {
       </MockEntityListContextProvider>,
     );
     expect(updateFilters).toHaveBeenLastCalledWith({
-      option: new EntityGenericFilter(['domain1'], 'domain'),
+      option: new EntityFieldFilter(['domain1'], 'metadata.domain'),
     });
   });
 });

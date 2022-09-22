@@ -29,7 +29,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { get } from 'lodash';
 import { Entity } from '@backstage/catalog-model';
-import { EntityGenericFilter } from '../../filters';
+import { EntityFieldFilter } from '../../filters';
 
 /** @public */
 export type CatalogReactEntityGenericPickerClassKey = 'input';
@@ -45,12 +45,11 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 export interface EntityGenericPickerProps {
   name: string;
   filterValue: string;
-  filterKey?: string;
 }
 
 /** @public */
 export const EntityGenericPicker = (props: EntityGenericPickerProps) => {
-  const { name, filterValue, filterKey } = props;
+  const { name, filterValue } = props;
   const {
     updateFilters,
     backendEntities,
@@ -77,7 +76,7 @@ export const EntityGenericPicker = (props: EntityGenericPickerProps) => {
   useEffect(() => {
     updateFilters({
       option: selectedOptions.length
-        ? new EntityGenericFilter(selectedOptions, filterKey || name)
+        ? new EntityFieldFilter(selectedOptions, filterValue)
         : undefined,
     });
   }, [selectedOptions, updateFilters]); // eslint-disable-line react-hooks/exhaustive-deps

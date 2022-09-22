@@ -21,6 +21,8 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { AlphaEntity } from '@backstage/catalog-model/alpha';
+import lodash from 'lodash';
+import { humanizeEntityRef } from './components/EntityRefLink';
 import { EntityFilter, UserListFilterKind } from './types';
 import { getEntityRelations } from './utils';
 
@@ -241,11 +243,11 @@ export class EntityErrorFilter implements EntityFilter {
  * Filters entities based on the metadata category (status, domain, capabilities etc) provided.
  * @public
  */
-export class EntityGenericFilter implements EntityFilter {
-  constructor(readonly values: string[], readonly category: string) {}
+export class EntityFieldFilter implements EntityFilter {
+  constructor(readonly values: string[], readonly filterValue: string) {}
   filterEntity(entity: Entity): boolean {
-    return this.values.every(v =>
-      ((entity.metadata[this.category] as string[]) ?? []).includes(v),
-    );
+    return this.values.every(v => {
+      return (lodash.get(entity, this.filterValue) ?? []).includes(v);
+    });
   }
 }
