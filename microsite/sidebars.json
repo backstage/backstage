@@ -295,7 +295,8 @@
           "permissions/plugin-authors/01-setup",
           "permissions/plugin-authors/02-adding-a-basic-permission-check",
           "permissions/plugin-authors/03-adding-a-resource-permission-check",
-          "permissions/plugin-authors/04-authorizing-access-to-paginated-data"
+          "permissions/plugin-authors/04-authorizing-access-to-paginated-data",
+          "permissions/plugin-authors/05-frontend-authorization"
         ]
       }
     ],
