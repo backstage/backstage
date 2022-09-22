@@ -97,7 +97,7 @@ export const AzureRepoPicker = (props: {
           />
         ) : (
           <>
-            <InputLabel htmlFor="ownerInput">Owner</InputLabel>
+            <InputLabel htmlFor="ownerInput">Project</InputLabel>
             <Input
               id="ownerInput"
               onChange={e => onChange({ owner: e.target.value })}
@@ -105,7 +105,9 @@ export const AzureRepoPicker = (props: {
             />
           </>
         )}
-        <FormHelperText>The Owner that this repo will belong to</FormHelperText>
+        <FormHelperText>
+          The project that this repo will belong to
+        </FormHelperText>
       </FormControl>
     </>
   );
