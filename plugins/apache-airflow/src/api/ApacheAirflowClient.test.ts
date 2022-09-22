@@ -165,31 +165,34 @@ describe('ApacheAirflowClient', () => {
         },
       ),
 
-      rest.patch(`${mockBaseUrl}/airflow/dags/:dag_id`, (req, res, ctx) => {
-        const { dag_id } = req.params;
-        const body = JSON.parse(req.body as string);
-        expect(body.is_paused).toBeDefined();
-        return res(
-          ctx.json({
-            dag_id: dag_id,
-            root_dag_id: 'string',
-            is_paused: body.is_paused,
-            is_active: true,
-            is_subdag: true,
-            fileloc: 'string',
-            file_token: 'string',
-            owners: ['string'],
-            description: 'string',
-            schedule_interval: {
-              __type: 'string',
-              days: 0,
-              seconds: 0,
-              microseconds: 0,
-            },
-            tags: [{}],
-          }),
-        );
-      }),
+      rest.patch(
+        `${mockBaseUrl}/airflow/dags/:dag_id`,
+        async (req, res, ctx) => {
+          const { dag_id } = req.params;
+          const body = JSON.parse(await req.text());
+          expect(body.is_paused).toBeDefined();
+          return res(
+            ctx.json({
+              dag_id: dag_id,
+              root_dag_id: 'string',
+              is_paused: body.is_paused,
+              is_active: true,
+              is_subdag: true,
+              fileloc: 'string',
+              file_token: 'string',
+              owners: ['string'],
+              description: 'string',
+              schedule_interval: {
+                __type: 'string',
+                days: 0,
+                seconds: 0,
+                microseconds: 0,
+              },
+              tags: [{}],
+            }),
+          );
+        },
+      ),
     );
   };
 
