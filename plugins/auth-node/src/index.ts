@@ -23,8 +23,13 @@
 export { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';
 export { DefaultIdentityClient } from './DefaultIdentityClient';
 export { IdentityClient } from './IdentityClient';
+export {
+  isIdentityApiUserIdentityResult,
+  isIdentityApiServerIdentityResult,
+} from './conditions';
 export type { IdentityApi } from './IdentityApi';
 export type { IdentityClientOptions } from './DefaultIdentityClient';
+
 export type {
   IdentityApiGetIdentityResult,
   IdentityApiServerIdentity,
@@ -32,8 +37,3 @@ export type {
   IdentityApiGetIdentityRequest,
   BackstageSignInResult,
 } from './types';
-
-export {
-  isIdentityApiUserIdentityResult,
-  isIdentityApiServerIdentityResult,
-} from './conditions';

@@ -23,7 +23,6 @@ import { CatalogClient } from '@backstage/catalog-client';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { NotAllowedError } from '@backstage/errors';
 import {
-  getBearerTokenFromAuthorizationHeader,
   IdentityApi,
   isIdentityApiUserIdentityResult,
 } from '@backstage/plugin-auth-node';
@@ -82,11 +81,8 @@ export async function createRouter(
     permission: AuthorizePermissionRequest | QueryPermissionRequest,
     conditional: boolean = false,
   ) => {
-    const token = getBearerTokenFromAuthorizationHeader(
-      request.header('authorization'),
-    );
-
     const user = await identity.getIdentity({ request });
+
     if (!isIdentityApiUserIdentityResult(user)) {
       throw new NotAllowedError('Unauthorized');
     }
@@ -95,13 +91,13 @@ export async function createRouter(
       ? (
           await permissionEvaluator.authorizeConditional(
             [permission as QueryPermissionRequest],
-            { token },
+            { token: user.token },
           )
         )[0]
       : (
           await permissionEvaluator.authorize(
             [permission as AuthorizePermissionRequest],
-            { token },
+            { token: user.token },
           )
         )[0];
 
@@ -227,9 +223,8 @@ export async function createRouter(
       };
     });
 
-    const token = getBearerTokenFromAuthorizationHeader(
-      req.header('authorization'),
-    );
+    const user = await identity.getIdentity({ request: req });
+    const token = user?.token;
 
     // TODO(kuanpg): entities in this playlist that no longer exist in the catalog will be
     // excluded from this response, we need a way to clean up these orphaned refs potentially

@@ -60,10 +60,6 @@ jest.mock('@backstage/catalog-client', () => ({
     .mockImplementation(() => ({ getEntities: mockGetEntties })),
 }));
 
-jest.mock('@backstage/plugin-auth-node', () => ({
-  getBearerTokenFromAuthorizationHeader: () => 'token',
-}));
-
 const mockConditionFilter = { key: 'test', values: ['test-val'] };
 jest.mock('../permissions', () => ({
   ...jest.requireActual('../permissions'),
@@ -136,7 +132,7 @@ describe('createRouter', () => {
   const mockIdentityClient = {
     getIdentity: jest
       .fn()
-      .mockImplementation(async () => ({ identity: mockUser })),
+      .mockImplementation(async () => ({ identity: mockUser, token: 'token' })),
   } as unknown as IdentityApi;
 
   const discovery: jest.Mocked<PluginEndpointDiscovery> = {
