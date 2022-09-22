@@ -17,20 +17,17 @@
 import concatStream from 'concat-stream';
 import fs from 'fs-extra';
 import platformPath from 'path';
-import { pipeline as pipelineCb, Readable } from 'stream';
+import { Readable } from 'stream';
 import tar, { Parse, ParseStream, ReadEntry } from 'tar';
-import { promisify } from 'util';
 import {
   ReadTreeResponse,
   ReadTreeResponseDirOptions,
   ReadTreeResponseFile,
 } from '../types';
-import { stripFirstDirectoryFromPath } from './util';
+import { pipeStream, stripFirstDirectoryFromPath } from './util';
 
 // Tar types for `Parse` is not a proper constructor, but it should be
 const TarParseStream = Parse as unknown as { new (): ParseStream };
-
-const pipeline = promisify(pipelineCb);
 
 /**
  * Wraps a tar archive stream into a tree response reader.
@@ -99,7 +96,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
       }
 
       const content = new Promise<Buffer>(async resolve => {
-        await pipeline(entry, concatStream(resolve));
+        await pipeStream(entry, concatStream(resolve));
       });
 
       files.push({
@@ -110,7 +107,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
       entry.resume();
     });
 
-    await pipeline(this.stream, parser);
+    await pipeStream(this.stream, parser);
 
     return files;
   }
@@ -128,7 +125,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
 
     try {
       const data = await new Promise<Buffer>(async resolve => {
-        await pipeline(
+        await pipeStream(
           tar.create({ cwd: tmpDir }, ['']),
           concatStream(resolve),
         );
@@ -152,7 +149,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
 
     let filterError: Error | undefined = undefined;
 
-    await pipeline(
+    await pipeStream(
       this.stream,
       tar.extract({
         strip,
