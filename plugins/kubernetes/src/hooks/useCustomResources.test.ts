@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { useKubernetesObjects } from './useKubernetesObjects';
+import { useCustomResources } from './useCustomResources';
 import { Entity } from '@backstage/catalog-model';
 import { renderHook } from '@testing-library/react-hooks';
 import { useApi } from '@backstage/core-plugin-api';
+import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { generateAuth } from './auth';
 
 jest.mock('@backstage/core-plugin-api');
@@ -28,10 +29,19 @@ const entity = {
   },
 } as Entity;
 
+const customResourceMatchers: CustomResourceMatcher[] = [
+  {
+    group: 'myGroup',
+    apiVersion: 'v1',
+    plural: 'thing',
+  },
+];
+
 const entityWithAuthToken = {
   auth: {
     google: 'some-token',
   },
+  customResources: customResourceMatchers,
   entity,
 };
 
@@ -63,8 +73,8 @@ jest.mock('./auth', () => {
   };
 });
 
-describe('useKubernetesObjects', () => {
-  const mockGetObjectsByEntity = jest.fn();
+describe('useCustomResources', () => {
+  const mockGetCustomObjectsByEntity = jest.fn();
   const mockGenerateAuth = generateAuth as jest.Mock;
 
   const expectMocksCalledCorrectly = (numOfCalls: number = 1) => {
@@ -72,8 +82,8 @@ describe('useKubernetesObjects', () => {
     expect(mockGenerateAuth.mock.calls[numOfCalls - 1][0]).toStrictEqual(
       entity,
     );
-    expect(mockGetObjectsByEntity).toHaveBeenCalledTimes(numOfCalls);
-    expect(mockGetObjectsByEntity).toHaveBeenLastCalledWith(
+    expect(mockGetCustomObjectsByEntity).toHaveBeenCalledTimes(numOfCalls);
+    expect(mockGetCustomObjectsByEntity).toHaveBeenLastCalledWith(
       entityWithAuthToken,
     );
   };
@@ -84,11 +94,11 @@ describe('useKubernetesObjects', () => {
   it('should return objects', async () => {
     mockGenerateAuth.mockResolvedValue(entityWithAuthToken.auth);
     (useApi as any).mockReturnValue({
-      getObjectsByEntity:
-        mockGetObjectsByEntity.mockResolvedValue(mockResponse),
+      getCustomObjectsByEntity:
+        mockGetCustomObjectsByEntity.mockResolvedValue(mockResponse),
     });
     const { result, waitForNextUpdate } = renderHook(() =>
-      useKubernetesObjects(entity),
+      useCustomResources(entity, customResourceMatchers),
     );
 
     expect(result.current.loading).toEqual(true);
@@ -104,11 +114,11 @@ describe('useKubernetesObjects', () => {
   it('should update on an interval', async () => {
     mockGenerateAuth.mockResolvedValue(entityWithAuthToken.auth);
     (useApi as any).mockReturnValue({
-      getObjectsByEntity:
-        mockGetObjectsByEntity.mockResolvedValue(mockResponse),
+      getCustomObjectsByEntity:
+        mockGetCustomObjectsByEntity.mockResolvedValue(mockResponse),
     });
     const { result, waitForNextUpdate } = renderHook(() =>
-      useKubernetesObjects(entity, 100),
+      useCustomResources(entity, customResourceMatchers, 100),
     );
 
     await waitForNextUpdate();
@@ -125,12 +135,12 @@ describe('useKubernetesObjects', () => {
   it('should return error when getObjectsByEntity throws', async () => {
     mockGenerateAuth.mockResolvedValue(entityWithAuthToken.auth);
     (useApi as any).mockReturnValue({
-      getObjectsByEntity: mockGetObjectsByEntity.mockRejectedValue({
+      getCustomObjectsByEntity: mockGetCustomObjectsByEntity.mockRejectedValue({
         message: 'some error',
       }),
     });
     const { result, waitForNextUpdate } = renderHook(() =>
-      useKubernetesObjects(entity),
+      useCustomResources(entity, customResourceMatchers),
     );
 
     await waitForNextUpdate();
@@ -148,12 +158,12 @@ describe('useKubernetesObjects', () => {
         generateAuth: mockGenerateAuth
           .mockRejectedValueOnce({ message: 'generateAuth failed' })
           .mockResolvedValue(entityWithAuthToken.auth),
-        getObjectsByEntity:
-          mockGetObjectsByEntity.mockResolvedValue(mockResponse),
+        getCustomObjectsByEntity:
+          mockGetCustomObjectsByEntity.mockResolvedValue(mockResponse),
       });
 
       const { result, waitForNextUpdate } = renderHook(() =>
-        useKubernetesObjects(entity, 100),
+        useCustomResources(entity, customResourceMatchers, 100),
       );
 
       await waitForNextUpdate();
@@ -169,15 +179,15 @@ describe('useKubernetesObjects', () => {
       expect(result.current.kubernetesObjects).not.toBeUndefined();
     });
 
-    it('should reset error after getObjectsByEntity has failed and then succeeded', async () => {
+    it('should reset error after getCustomObjectsByEntity has failed and then succeeded', async () => {
       (useApi as any).mockReturnValue({
-        getObjectsByEntity: mockGetObjectsByEntity
+        getCustomObjectsByEntity: mockGetCustomObjectsByEntity
           .mockRejectedValueOnce({ message: 'failed to fetch' })
           .mockResolvedValue(mockResponse),
       });
 
       const { result, waitForNextUpdate } = renderHook(() =>
-        useKubernetesObjects(entity, 100),
+        useCustomResources(entity, customResourceMatchers, 100),
       );
 
       await waitForNextUpdate();
@@ -198,12 +208,12 @@ describe('useKubernetesObjects', () => {
         generateAuth: mockGenerateAuth
           .mockResolvedValueOnce(entityWithAuthToken.auth)
           .mockRejectedValue({ message: 'generateAuth failed' }),
-        getObjectsByEntity:
-          mockGetObjectsByEntity.mockResolvedValue(mockResponse),
+        getCustomObjectsByEntity:
+          mockGetCustomObjectsByEntity.mockResolvedValue(mockResponse),
       });
 
       const { result, waitForNextUpdate } = renderHook(() =>
-        useKubernetesObjects(entity, 100),
+        useCustomResources(entity, customResourceMatchers, 100),
       );
 
       await waitForNextUpdate();
@@ -219,15 +229,15 @@ describe('useKubernetesObjects', () => {
       expect(result.current.kubernetesObjects).toBeUndefined();
     });
 
-    it('should reset data after getObjectsByEntity succeeded then failed', async () => {
+    it('should reset data after getCustomObjectsByEntity succeeded then failed', async () => {
       (useApi as any).mockReturnValue({
-        getObjectsByEntity: mockGetObjectsByEntity
+        getCustomObjectsByEntity: mockGetCustomObjectsByEntity
           .mockResolvedValueOnce(mockResponse)
           .mockRejectedValue({ message: 'failed to fetch' }),
       });
 
       const { result, waitForNextUpdate } = renderHook(() =>
-        useKubernetesObjects(entity, 100),
+        useCustomResources(entity, customResourceMatchers, 100),
       );
 
       await waitForNextUpdate();

@@ -25,8 +25,6 @@ import {
   PluginTaskSchedulerImpl,
 } from './PluginTaskSchedulerImpl';
 
-jest.useFakeTimers();
-
 function defer() {
   let resolve = () => {};
   const promise = new Promise<void>(_resolve => {
@@ -39,6 +37,15 @@ describe('PluginTaskManagerImpl', () => {
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
+
+  beforeAll(async () => {
+    // Make sure all databases are running before mocking timers, in case of testcontainers
+    await Promise.all(
+      databases.eachSupportedId().map(([id]) => databases.init(id)),
+    );
+
+    jest.useFakeTimers();
+  }, 30_000);
 
   async function init(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);

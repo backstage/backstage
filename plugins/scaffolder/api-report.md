@@ -72,6 +72,8 @@ export interface EntityPickerUiOptions {
   allowedKinds?: string[];
   // (undocumented)
   defaultKind?: string;
+  // (undocumented)
+  defaultNamespace?: string | false;
 }
 
 // @public
@@ -183,6 +185,8 @@ export interface OwnedEntityPickerUiOptions {
   allowedKinds?: string[];
   // (undocumented)
   defaultKind?: string;
+  // (undocumented)
+  defaultNamespace?: string | false;
 }
 
 // @public
@@ -197,6 +201,8 @@ export interface OwnerPickerUiOptions {
   allowArbitraryValues?: boolean;
   // (undocumented)
   allowedKinds?: string[];
+  // (undocumented)
+  defaultNamespace?: string | false;
 }
 
 // @public

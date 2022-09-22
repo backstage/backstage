@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.6.0",
       "releases/v1.5.0",
       "releases/v1.4.0",
       "releases/v1.3.0",
@@ -275,7 +276,6 @@
         ]
       },
       "auth/identity-resolver",
-      "auth/auth-backend",
       "auth/oauth",
       "auth/add-auth-provider",
       "auth/troubleshooting",
@@ -286,6 +286,7 @@
       "permissions/concepts",
       "permissions/getting-started",
       "permissions/writing-a-policy",
+      "permissions/frontend-integration",
       "permissions/custom-rules",
       {
         "type": "subcategory",

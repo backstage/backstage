@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,23 +19,28 @@ import { kubernetesApiRef } from '../api/types';
 import { kubernetesAuthProvidersApiRef } from '../kubernetes-auth-provider/types';
 import { useCallback } from 'react';
 import useInterval from 'react-use/lib/useInterval';
-import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import {
+  CustomResourceMatcher,
+  ObjectsByEntityResponse,
+} from '@backstage/plugin-kubernetes-common';
 import { useApi } from '@backstage/core-plugin-api';
+import { KubernetesObjects } from './useKubernetesObjects';
 import { generateAuth } from './auth';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 
-export interface KubernetesObjects {
-  kubernetesObjects?: ObjectsByEntityResponse;
-  loading: boolean;
-  error?: string;
-}
-
-export const useKubernetesObjects = (
+/**
+ * Retrieves the provided custom resources related to the provided entity, refreshes at an interval.
+ *
+ * @public
+ */
+export const useCustomResources = (
   entity: Entity,
+  customResourceMatchers: CustomResourceMatcher[],
   intervalMs: number = 10000,
 ): KubernetesObjects => {
   const kubernetesApi = useApi(kubernetesApiRef);
   const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
+
   const getCustomObjects =
     useCallback(async (): Promise<ObjectsByEntityResponse> => {
       const auth = await generateAuth(
@@ -43,11 +48,17 @@ export const useKubernetesObjects = (
         kubernetesApi,
         kubernetesAuthProvidersApi,
       );
-      return await kubernetesApi.getObjectsByEntity({
+      return await kubernetesApi.getCustomObjectsByEntity({
         auth,
+        customResources: customResourceMatchers,
         entity,
       });
-    }, [kubernetesApi, entity, kubernetesAuthProvidersApi]);
+    }, [
+      kubernetesApi,
+      entity,
+      kubernetesAuthProvidersApi,
+      customResourceMatchers,
+    ]);
 
   const { value, loading, error, retry } = useAsyncRetry(
     () => getCustomObjects(),

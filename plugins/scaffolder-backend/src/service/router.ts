@@ -15,6 +15,7 @@
  */
 
 import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   Entity,
@@ -63,6 +64,7 @@ export interface RouterOptions {
   reader: UrlReader;
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
+  scheduler?: PluginTaskScheduler;
 
   actions?: TemplateAction<any>[];
   taskWorkers?: number;
@@ -156,6 +158,7 @@ export async function createRouter(
     catalogClient,
     actions,
     taskWorkers,
+    scheduler,
     additionalTemplateFilters,
   } = options;
 
@@ -166,11 +169,29 @@ export async function createRouter(
 
   const workingDirectory = await getWorkingDirectory(config, logger);
   const integrations = ScmIntegrations.fromConfig(config);
-  let taskBroker: TaskBroker;
 
+  let taskBroker: TaskBroker;
   if (!options.taskBroker) {
     const databaseTaskStore = await DatabaseTaskStore.create({ database });
     taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+
+    if (scheduler && databaseTaskStore.listStaleTasks) {
+      await scheduler.scheduleTask({
+        id: 'close_stale_tasks',
+        frequency: { cron: '*/5 * * * *' }, // every 5 minutes, also supports Duration
+        timeout: { minutes: 15 },
+        fn: async () => {
+          const { tasks } = await databaseTaskStore.listStaleTasks({
+            timeoutS: 86400,
+          });
+
+          for (const task of tasks) {
+            await databaseTaskStore.shutdownTask(task);
+            logger.info(`Successfully closed stale task ${task.taskId}`);
+          }
+        },
+      });
+    }
   } else {
     taskBroker = options.taskBroker;
   }
