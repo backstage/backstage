@@ -1,5 +1,5 @@
 ---
-'@backstage/cli': minor
+'@backstage/cli': patch
 ---
 
 Removed `tsx` and `jsx` as supported extensions in backend packages. For most
