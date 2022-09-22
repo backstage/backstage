@@ -6934,11 +6934,10 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/luxon": ^3.0.1
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
-    luxon: ^3.0.3
     msw: ^0.47.0
+    qs: ^6.11.0
     react-use: ^17.2.4
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
@@ -14473,13 +14472,6 @@ __metadata:
   version: 3.0.0
   resolution: "@types/luxon@npm:3.0.0"
   checksum: 7738d3f4b91097a8139eca966ab53c6b40bb417b2cc2014c3bbd0aee033d6ff54af14c62046c2eb042434923b6bf796874f24b2af90e07ef422e6d841463d4b2
-  languageName: node
-  linkType: hard
-
-"@types/luxon@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "@types/luxon@npm:3.0.1"
-  checksum: a81444f9b474ea9b3063ab4cc68b917a2634e38b4e229f86c78c35023a32bf5e8d1044d7c229c011291662c976cb6c4cf109dc3d2077c571790a31779a554178
   languageName: node
   linkType: hard
 
@@ -29349,13 +29341,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "luxon@npm:3.0.3"
-  checksum: 67d143f102f520761c4202086579a5cf30b230ea299da27cacb31e9f9d372cadef90f14cbe7e2621b70825b267fe00128b8176ed8b7172b48f77a403a662d5aa
-  languageName: node
-  linkType: hard
-
 "lz-string@npm:^1.4.4":
   version: 1.4.4
   resolution: "lz-string@npm:1.4.4"
@@ -34241,6 +34226,15 @@ __metadata:
   version: 6.9.7
   resolution: "qs@npm:6.9.7"
   checksum: 5bbd263332ccf320a1f36d04a2019a5834dc20bcb736431eaccde2a39dcba03fb26d2fd00174f5d7bc26aaad1cad86124b18440883ac042ea2a0fca6170c1bf1
+  languageName: node
+  linkType: hard
+
+"qs@npm:^6.11.0":
+  version: 6.11.0
+  resolution: "qs@npm:6.11.0"
+  dependencies:
+    side-channel: ^1.0.4
+  checksum: 6e1f29dd5385f7488ec74ac7b6c92f4d09a90408882d0c208414a34dd33badc1a621019d4c799a3df15ab9b1d0292f97c1dd71dc7c045e69f81a8064e5af7297
   languageName: node
   linkType: hard
 

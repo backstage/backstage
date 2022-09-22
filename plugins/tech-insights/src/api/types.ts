@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { DateTime } from 'luxon';
 import { JsonValue } from '@backstage/types';
 
 /**
@@ -35,21 +34,10 @@ export type Check = {
  *
  * @public
  */
-export interface InsightFact {
+export interface InsightFacts {
   [factId: string]: {
     timestamp: string;
     version: string;
-    facts: Record<
-      string,
-      | number
-      | string
-      | boolean
-      | DateTime
-      | number[]
-      | string[]
-      | boolean[]
-      | DateTime[]
-      | JsonValue
-    >;
+    facts: Record<string, JsonValue>;
   };
 }

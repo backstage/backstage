@@ -10,7 +10,6 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { BulkCheckResponse } from '@backstage/plugin-tech-insights-common';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { DateTime } from 'luxon';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
@@ -54,23 +53,12 @@ export const EntityTechInsightsScorecardContent: (props: {
 }) => JSX.Element;
 
 // @public
-export interface InsightFact {
+export interface InsightFacts {
   // (undocumented)
   [factId: string]: {
     timestamp: string;
     version: string;
-    facts: Record<
-      string,
-      | number
-      | string
-      | boolean
-      | DateTime
-      | number[]
-      | string[]
-      | boolean[]
-      | DateTime[]
-      | JsonValue
-    >;
+    facts: Record<string, JsonValue>;
   };
 }
 
@@ -84,10 +72,7 @@ export interface TechInsightsApi {
   // (undocumented)
   getCheckResultRenderers: (types: string[]) => CheckResultRenderer[];
   // (undocumented)
-  getLatestFacts(
-    entity: CompoundEntityRef,
-    facts: string[],
-  ): Promise<InsightFact>;
+  getFacts(entity: CompoundEntityRef, facts: string[]): Promise<InsightFacts>;
   // (undocumented)
   runBulkChecks(
     entities: CompoundEntityRef[],
@@ -115,10 +100,7 @@ export class TechInsightsClient implements TechInsightsApi {
   // (undocumented)
   getCheckResultRenderers(types: string[]): CheckResultRenderer[];
   // (undocumented)
-  getLatestFacts(
-    entity: CompoundEntityRef,
-    facts: string[],
-  ): Promise<InsightFact>;
+  getFacts(entity: CompoundEntityRef, facts: string[]): Promise<InsightFacts>;
   // (undocumented)
   runBulkChecks(
     entities: CompoundEntityRef[],

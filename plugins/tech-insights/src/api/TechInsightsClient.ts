@@ -19,15 +19,19 @@ import {
   BulkCheckResponse,
   CheckResult,
 } from '@backstage/plugin-tech-insights-common';
-import { Check, InsightFact } from './types';
+import { Check, InsightFacts } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
-import { CompoundEntityRef } from '@backstage/catalog-model';
+import {
+  CompoundEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 
 import {
   CheckResultRenderer,
   jsonRulesEngineCheckResultRenderer,
 } from '../components/CheckResultRenderer';
+import qs from 'qs';
 
 /** @public */
 export class TechInsightsClient implements TechInsightsApi {
@@ -45,18 +49,15 @@ export class TechInsightsClient implements TechInsightsApi {
     this.renderers = options.renderers;
   }
 
-  async getLatestFacts(
+  async getFacts(
     entity: CompoundEntityRef,
     facts: string[],
-  ): Promise<InsightFact> {
-    const { namespace, kind, name } = entity;
-    const entityQuery = `entity=${encodeURIComponent(
-      kind.toLocaleLowerCase('en-US'),
-    )}:${encodeURIComponent(namespace)}/${encodeURIComponent(name)}`;
-    const idsQuery = facts.map(id => `ids[]=${id}`).join('&');
-    return await this.api<InsightFact>(
-      `/facts/latest?${entityQuery}&${idsQuery}`,
-    );
+  ): Promise<InsightFacts> {
+    const query = qs.stringify({
+      entity: stringifyEntityRef(entity),
+      ids: facts,
+    });
+    return await this.api<InsightFacts>(`/facts/latest?${query}`);
   }
 
   getCheckResultRenderers(types: string[]): CheckResultRenderer[] {
@@ -104,13 +105,15 @@ export class TechInsightsClient implements TechInsightsApi {
     const url = await this.discoveryApi.getBaseUrl('tech-insights');
     const { token } = await this.identityApi.getCredentials();
 
-    return fetch(`${url}${path}`, {
-      ...init,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    }).then(async response => {
+    const request = new Request(`${url}${path}`, init);
+    if (!request.headers.has('content-type')) {
+      request.headers.set('content-type', 'application/json');
+    }
+    if (token && !request.headers.has('authorization')) {
+      request.headers.set('authorization', `Bearer ${token}`);
+    }
+
+    return fetch(request).then(async response => {
       if (!response.ok) {
         throw await ResponseError.fromResponse(response);
       }
