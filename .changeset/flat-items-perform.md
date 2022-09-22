@@ -1,6 +1,5 @@
 ---
 '@backstage/plugin-scaffolder-backend': patch
-'@backstage/plugin-catalog-backend': patch
 ---
 
 Added a set of default Prometheus metrics around scaffolding. See below for a list of metrics and an explanation of their labels:
