@@ -69,7 +69,9 @@ export async function createRouterInternal(options: {
     }
 
     if (!isIdentityApiUserIdentityResult(identity)) {
-      throw new AuthenticationError(`Missing token in 'authorization' header`);
+      throw new AuthenticationError(
+        `Cannot retrieve userEntityRef for a ${identity.identity.type} type identity.`,
+      );
     }
 
     return identity.identity.userEntityRef;
