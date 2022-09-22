@@ -42,7 +42,7 @@
     "@backstage/types": "workspace:^",
     "@google-cloud/storage": "^6.0.0",
     "@keyv/redis": "^2.2.3",
-    "@kubernetes/client-node": "^0.17.0",
+    "@kubernetes/client-node": "^0.17.1",
     "@manypkg/get-packages": "^1.1.3",
     "@octokit/rest": "^19.0.3",
     "@types/cors": "^2.8.6",

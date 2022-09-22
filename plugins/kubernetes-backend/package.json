@@ -43,7 +43,7 @@
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-kubernetes-common": "workspace:^",
     "@google-cloud/container": "^4.0.0",
-    "@kubernetes/client-node": "^0.17.0",
+    "@kubernetes/client-node": "^0.17.1",
     "@types/express": "^4.17.6",
     "@types/luxon": "^3.0.0",
     "aws-sdk": "^2.840.0",
