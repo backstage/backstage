@@ -144,9 +144,10 @@ export const GroupProfileCard = (props: { variant?: InfoCardVariants }) => {
                     <EmailIcon />
                   </Tooltip>
                 </ListItemIcon>
-                <ListItemText>
-                  <Link to={emailHref}>{profile.email}</Link>
-                </ListItemText>
+                <ListItemText
+                  primary={<Link to={emailHref}>{profile.email}</Link>}
+                  secondary="Email"
+                />
               </ListItem>
             )}
             <ListItem>
@@ -155,16 +156,19 @@ export const GroupProfileCard = (props: { variant?: InfoCardVariants }) => {
                   <AccountTreeIcon />
                 </Tooltip>
               </ListItemIcon>
-              <ListItemText>
-                {parentRelations.length ? (
-                  <EntityRefLinks
-                    entityRefs={parentRelations}
-                    defaultKind="Group"
-                  />
-                ) : (
-                  '-'
-                )}
-              </ListItemText>
+              <ListItemText
+                primary={
+                  parentRelations.length ? (
+                    <EntityRefLinks
+                      entityRefs={parentRelations}
+                      defaultKind="Group"
+                    />
+                  ) : (
+                    'N/A'
+                  )
+                }
+                secondary="Parent Group"
+              />
             </ListItem>
             <ListItem>
               <ListItemIcon>
@@ -172,16 +176,19 @@ export const GroupProfileCard = (props: { variant?: InfoCardVariants }) => {
                   <GroupIcon />
                 </Tooltip>
               </ListItemIcon>
-              <ListItemText>
-                {childRelations.length ? (
-                  <EntityRefLinks
-                    entityRefs={childRelations}
-                    defaultKind="Group"
-                  />
-                ) : (
-                  '-'
-                )}
-              </ListItemText>
+              <ListItemText
+                primary={
+                  childRelations.length ? (
+                    <EntityRefLinks
+                      entityRefs={childRelations}
+                      defaultKind="Group"
+                    />
+                  ) : (
+                    'N/A'
+                  )
+                }
+                secondary="Child Groups"
+              />
             </ListItem>
           </List>
         </Grid>
