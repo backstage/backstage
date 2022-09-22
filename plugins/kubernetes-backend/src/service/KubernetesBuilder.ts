@@ -302,7 +302,8 @@ export class KubernetesBuilder {
       ]);
 
       if (authorizeResponse[0].result === AuthorizeResult.DENY) {
-        throw new NotAllowedError();
+        res.status(403).json({ error: new NotAllowedError().message });
+        return;
       }
 
       const clusterDetails = await this.fetchClusterDetails(clusterSupplier);
