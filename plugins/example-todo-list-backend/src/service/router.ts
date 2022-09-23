@@ -66,8 +66,8 @@ export async function createRouter(
 
     const user = await identity.getIdentity({ request: req });
 
-    if (user && isIdentityApiUserIdentityResult(user)) {
-      author = user?.identity.userEntityRef;
+    if (isIdentityApiUserIdentityResult(user)) {
+      author = user.identity.userEntityRef;
     }
 
     if (!isTodoCreateRequest(req.body)) {
