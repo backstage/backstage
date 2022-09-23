@@ -33,6 +33,7 @@ describe('fetch:plain', () => {
     }),
   );
   const reader: UrlReader = {
+    readUrl: jest.fn(),
     read: jest.fn(),
     readTree: jest.fn(),
     search: jest.fn(),

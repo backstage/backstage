@@ -27,6 +27,7 @@ import { AbortSignal } from 'node-abort-controller';
 export type UrlReader = {
   /**
    * Reads a single file and return its content.
+   * @deprecated use readUrl instead.
    */
   read(url: string): Promise<Buffer>;
 
@@ -38,10 +39,9 @@ export type UrlReader = {
    * This is a replacement for the read method that supports options and
    * complex responses.
    *
-   * Use this whenever it is available, as the read method will be
-   * deprecated and eventually removed in a future release.
+   * Use this as the read method will be removed in a future release.
    */
-  readUrl?(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
 
   /**
    * Reads a full or partial file tree.
