@@ -14,19 +14,29 @@
  * limitations under the License.
  */
 import React from 'react';
-import type { SerializedWorkflowProps } from './types';
-import { useSerializedWorkflowHref } from './useSerializedWorkflowHref';
+import type { ReactNode } from 'react';
+import type { PrefilledWorkflowProps } from './types';
+import { usePrefilledWorkflowHref } from './usePrefilledWorkflowHref';
 import { Link } from '@backstage/core-components';
+import type { LinkProps } from '@backstage/core-components';
 
-interface SerializedWorkflowLinkProps extends SerializedWorkflowProps {
-  linkText: string;
-}
+type PrefilledWorkflowLinkProps = PrefilledWorkflowProps &
+  Omit<LinkProps, 'to'> & {
+    children: ReactNode;
+  };
 
-export function SerializedWorkflowLink({
-  linkText,
-  ...props
-}: SerializedWorkflowLinkProps): JSX.Element {
-  const href = useSerializedWorkflowHref(props);
+export function PrefilledWorkflowLink({
+  children,
+  templateName,
+  namespace,
+  formData,
+  ...linkProps
+}: PrefilledWorkflowLinkProps): JSX.Element {
+  const href = usePrefilledWorkflowHref({ templateName, namespace, formData });
 
-  return <Link to={href}>{linkText}</Link>;
+  return (
+    <Link {...linkProps} to={href}>
+      {children}
+    </Link>
+  );
 }

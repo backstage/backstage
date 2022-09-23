@@ -13,19 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { selectedTemplateRouteRef } from '../../routes';
-import qs from 'qs';
-import type { SerializedWorkflowProps } from './types';
-
-export function useSerializedWorkflowHref({
-  templateName,
-  namespace,
-  formData,
-}: SerializedWorkflowProps): string {
-  const templateRoute = useRouteRef(selectedTemplateRouteRef);
-
-  return `${templateRoute({ templateName, namespace })}?${qs.stringify({
-    formData: JSON.stringify(formData),
-  })}`;
+export interface PrefilledWorkflowProps {
+  templateName: string;
+  namespace: string;
+  formData: Record<string, any>;
 }

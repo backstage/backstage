@@ -95,8 +95,9 @@ export const ScaffolderPageContents = ({
               owner: 'backstage',
               repoUrl: 'github.com?owner=aaa&repo=aaa',
             }}
-            linkText="Workflow"
-          />
+          >
+            workflow
+          </SerializedWorkflowLink>
         </div>
         <ContentHeader title="Available Templates">
           {allowed && (
