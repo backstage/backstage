@@ -27,8 +27,6 @@ import {
   UrlReaderPredicateTuple,
 } from './types';
 
-const MIN_WARNING_INTERVAL_MS = 1000 * 60 * 15;
-
 function notAllowedMessage(url: string) {
   return (
     `Reading from '${url}' is not allowed. ` +
@@ -43,7 +41,6 @@ function notAllowedMessage(url: string) {
  */
 export class UrlReaderPredicateMux implements UrlReader {
   private readonly readers: UrlReaderPredicateTuple[] = [];
-  private readonly readerWarnings: Map<UrlReader, number> = new Map();
 
   constructor(private readonly logger: Logger) {}
 
@@ -71,23 +68,7 @@ export class UrlReaderPredicateMux implements UrlReader {
 
     for (const { predicate, reader } of this.readers) {
       if (predicate(parsed)) {
-        if (reader.readUrl) {
-          return reader.readUrl(url, options);
-        }
-        const now = Date.now();
-        const lastWarned = this.readerWarnings.get(reader) ?? 0;
-        if (now > lastWarned + MIN_WARNING_INTERVAL_MS) {
-          this.readerWarnings.set(reader, now);
-          this.logger.warn(
-            `No implementation of readUrl found for ${reader}, this method will be required in the ` +
-              `future and will replace the 'read' method. See the changelog for more details here: ` +
-              'https://github.com/backstage/backstage/blob/master/packages/backend-common/CHANGELOG.md#085',
-          );
-        }
-        const buffer = await reader.read(url);
-        return {
-          buffer: async () => buffer,
-        };
+        return reader.readUrl(url, options);
       }
     }
 
