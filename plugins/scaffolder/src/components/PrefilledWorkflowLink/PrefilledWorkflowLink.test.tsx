@@ -1,6 +1,3 @@
-import { renderInTestApp } from '@backstage/test-utils';
-import { PrefilledWorkflowLink } from './PrefilledWorkflowLink';
-
 /*
  * Copyright 2022 The Backstage Authors
  *
@@ -16,6 +13,8 @@ import { PrefilledWorkflowLink } from './PrefilledWorkflowLink';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { renderInTestApp } from '@backstage/test-utils';
+import { PrefilledWorkflowLink } from './PrefilledWorkflowLink';
 import React from 'react';
 import { rootRouteRef } from '../../routes';
 import { screen } from '@testing-library/react';
