@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { ExploreTool, exploreToolsConfigRef } from '@backstage/plugin-explore-react';
+import {
+  ExploreTool,
+  exploreToolsConfigRef,
+} from '@backstage/plugin-explore-react';
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { ToolCard } from '../ToolCard';
@@ -29,9 +32,9 @@ import {
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
-const Body = (props: {exploreTools?: Array<ExploreTool>}) => {
+const Body = (props: { exploreTools?: Array<ExploreTool> }) => {
   var exploreTools;
-  if(!props?.exploreTools){
+  if (!props?.exploreTools) {
     const exploreToolsConfigApi = useApi(exploreToolsConfigRef);
     const {
       value: tools,
@@ -59,7 +62,7 @@ const Body = (props: {exploreTools?: Array<ExploreTool>}) => {
       );
     }
     exploreTools = tools;
-  } else if(props?.exploreTools) {
+  } else if (props?.exploreTools) {
     exploreTools = props?.exploreTools;
     if (!props?.exploreTools?.length) {
       return (
@@ -81,11 +84,14 @@ const Body = (props: {exploreTools?: Array<ExploreTool>}) => {
   );
 };
 
-export const ToolExplorerContent = (props: { title?: string, exploreTools?: Array<ExploreTool>}) => (
+export const ToolExplorerContent = (props: {
+  title?: string;
+  exploreTools?: Array<ExploreTool>;
+}) => (
   <Content noPadding>
     <ContentHeader title={props.title ?? 'Tools'}>
       <SupportButton>Discover the tools in your ecosystem.</SupportButton>
     </ContentHeader>
-    <Body exploreTools={props?.exploreTools}/>
+    <Body exploreTools={props?.exploreTools} />
   </Content>
 );

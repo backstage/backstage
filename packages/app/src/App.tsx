@@ -245,11 +245,7 @@ const routes = (
     </Route>
     <Route
       path="/explore"
-      element={ 
-        <ExplorePage 
-          exploreTools={exploreTools} 
-        />
-      }
+      element={<ExplorePage exploreTools={exploreTools} />}
     />
     <Route
       path="/tech-radar"
