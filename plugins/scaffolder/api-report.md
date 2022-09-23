@@ -21,9 +21,11 @@ import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
+import type { LinkProps } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
+import type { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
@@ -203,6 +205,31 @@ export interface OwnerPickerUiOptions {
   allowedKinds?: string[];
   // (undocumented)
   defaultNamespace?: string | false;
+}
+
+// @public
+export function PrefilledWorkflowLink({
+  children,
+  templateName,
+  namespace,
+  formData,
+  ...linkProps
+}: PrefilledWorkflowLinkProps): JSX.Element;
+
+// @public (undocumented)
+export type PrefilledWorkflowLinkProps = PrefilledWorkflowProps &
+  Omit<LinkProps, 'to'> & {
+    children: ReactNode;
+  };
+
+// @public (undocumented)
+export interface PrefilledWorkflowProps {
+  // (undocumented)
+  formData: Record<string, any>;
+  // (undocumented)
+  namespace: string;
+  // (undocumented)
+  templateName: string;
 }
 
 // @public
@@ -481,6 +508,13 @@ export type TemplateParameterSchema = {
 
 // @public
 export const TemplateTypePicker: () => JSX.Element | null;
+
+// @public
+export function usePrefilledWorkflowHref({
+  templateName,
+  namespace,
+  formData,
+}: PrefilledWorkflowProps): string;
 
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;

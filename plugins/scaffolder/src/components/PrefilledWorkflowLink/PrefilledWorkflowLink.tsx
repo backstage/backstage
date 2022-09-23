@@ -20,11 +20,20 @@ import { usePrefilledWorkflowHref } from './usePrefilledWorkflowHref';
 import { Link } from '@backstage/core-components';
 import type { LinkProps } from '@backstage/core-components';
 
-type PrefilledWorkflowLinkProps = PrefilledWorkflowProps &
+/**
+ *
+ * @public
+ */
+export type PrefilledWorkflowLinkProps = PrefilledWorkflowProps &
   Omit<LinkProps, 'to'> & {
     children: ReactNode;
   };
 
+/**
+ * Component that creates a link to prefilled workflow
+ *
+ * @public
+ */
 export function PrefilledWorkflowLink({
   children,
   templateName,

@@ -63,6 +63,14 @@ export {
 } from './plugin';
 export * from './components';
 export type { TaskPageProps } from './components/TaskPage';
+export {
+  usePrefilledWorkflowHref,
+  PrefilledWorkflowLink,
+} from './components/PrefilledWorkflowLink';
+export type {
+  PrefilledWorkflowProps,
+  PrefilledWorkflowLinkProps,
+} from './components/PrefilledWorkflowLink';
 
 /** next exports */
 export type { NextRouterProps } from './next';

@@ -18,6 +18,11 @@ import { selectedTemplateRouteRef } from '../../routes';
 import qs from 'qs';
 import type { PrefilledWorkflowProps } from './types';
 
+/**
+ * Hook that creates prefilled workflow url that can be used programmatically in something like navigate
+ *
+ * @public
+ */
 export function usePrefilledWorkflowHref({
   templateName,
   namespace,
