@@ -30,7 +30,7 @@ export type PrefilledWorkflowLinkProps = PrefilledWorkflowProps &
   };
 
 /**
- * Component that creates a link to prefilled workflow
+ * Component that creates a link to a prefilled workflow
  *
  * @public
  */

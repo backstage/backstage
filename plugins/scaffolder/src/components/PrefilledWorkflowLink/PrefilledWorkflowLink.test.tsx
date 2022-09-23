@@ -28,10 +28,10 @@ describe('<PrefilledWorkflowLink />', () => {
           templateName="create-react-app"
           namespace="default"
           formData={{
-            component_id: 'aaa',
-            description: 'ddd',
+            component_id: 'component',
+            description: 'description',
             owner: 'backstage',
-            repoUrl: 'github.com?owner=aaa&repo=aaa',
+            repoUrl: 'github.com?owner=component&repo=component',
           }}
         >
           Prefilled Workflow
@@ -51,10 +51,10 @@ describe('<PrefilledWorkflowLink />', () => {
     const formData = qs.parse(url.search.substring(1)).formData as string;
 
     expect(JSON.parse(formData)).toEqual({
-      component_id: 'aaa',
-      description: 'ddd',
+      component_id: 'component',
+      description: 'description',
       owner: 'backstage',
-      repoUrl: 'github.com?owner=aaa&repo=aaa',
+      repoUrl: 'github.com?owner=component&repo=component',
     });
   });
 });
