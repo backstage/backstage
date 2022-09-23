@@ -25,6 +25,9 @@ type Props = {
   bazaarProjects: BazaarProject[];
   fetchBazaarProjects: () => Promise<BazaarProject[]>;
   catalogEntities: Entity[];
+  useTablePagination?: boolean;
+  fullHeight?: boolean;
+  fixedWidth?: boolean;
 };
 
 const useStyles = makeStyles({
@@ -51,6 +54,9 @@ export const ProjectPreview = ({
   bazaarProjects,
   fetchBazaarProjects,
   catalogEntities,
+  useTablePagination = true,
+  fullHeight = true,
+  fixedWidth = false,
 }: Props) => {
   const classes = useStyles();
   const [page, setPage] = useState(1);
@@ -80,31 +86,39 @@ export const ProjectPreview = ({
           .slice((page - 1) * rows, rows * page)
           .map((bazaarProject: BazaarProject, i: number) => {
             return (
-              <Grid key={i} item xs={2}>
+              <Grid
+                key={i}
+                item
+                xs={fixedWidth ? false : 2}
+                style={{ width: '16rem' }}
+              >
                 <ProjectCard
                   project={bazaarProject}
                   key={i}
                   fetchBazaarProjects={fetchBazaarProjects}
                   catalogEntities={catalogEntities}
+                  fullHeight={fullHeight}
                 />
               </Grid>
             );
           })}
       </Grid>
 
-      <TablePagination
-        className={classes.pagination}
-        rowsPerPageOptions={[12, 24, 48, 96]}
-        count={bazaarProjects?.length}
-        page={page - 1}
-        onPageChange={handlePageChange}
-        rowsPerPage={rows}
-        onRowsPerPageChange={handleRowChange}
-        backIconButtonProps={{ disabled: page === 1 }}
-        nextIconButtonProps={{
-          disabled: rows * page >= bazaarProjects.length,
-        }}
-      />
+      {useTablePagination && (
+        <TablePagination
+          className={classes.pagination}
+          rowsPerPageOptions={[12, 24, 48, 96]}
+          count={bazaarProjects?.length}
+          page={page - 1}
+          onPageChange={handlePageChange}
+          rowsPerPage={rows}
+          onRowsPerPageChange={handleRowChange}
+          backIconButtonProps={{ disabled: page === 1 }}
+          nextIconButtonProps={{
+            disabled: rows * page >= bazaarProjects.length,
+          }}
+        />
+      )}
     </Content>
   );
 };

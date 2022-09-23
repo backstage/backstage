@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,5 @@
  * limitations under the License.
  */
 
-export { bazaarPlugin, BazaarPage } from './plugin';
-export { BazaarOverviewCard } from './components/BazaarOverviewCard';
-export type { BazaarOverviewCardProps } from './components/BazaarOverviewCard';
-export { EntityBazaarInfoCard } from './components/EntityBazaarInfoCard';
-export { SortView } from './components/SortView';
+export { BazaarOverviewCard } from './BazaarOverviewCard';
+export type { BazaarOverviewCardProps } from './BazaarOverviewCard';
