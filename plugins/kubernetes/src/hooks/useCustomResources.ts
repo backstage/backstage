@@ -40,9 +40,9 @@ export const useCustomResources = (
 ): KubernetesObjects => {
   const kubernetesApi = useApi(kubernetesApiRef);
   const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
-  const matchersString = JSON.stringify(customResourceMatchers)
-  const getCustomObjects =
-    useCallback(async (): Promise<ObjectsByEntityResponse> => {
+  const matchersString = JSON.stringify(customResourceMatchers);
+  const getCustomObjects = useCallback(
+    async (): Promise<ObjectsByEntityResponse> => {
       const auth = await generateAuth(
         entity,
         kubernetesApi,
@@ -53,14 +53,10 @@ export const useCustomResources = (
         customResources: customResourceMatchers,
         entity,
       });
-    }, 
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      kubernetesApi,
-      entity,
-      kubernetesAuthProvidersApi,
-      matchersString,
-    ]);
+    [kubernetesApi, entity, kubernetesAuthProvidersApi, matchersString],
+  );
 
   const { value, loading, error, retry } = useAsyncRetry(
     () => getCustomObjects(),
