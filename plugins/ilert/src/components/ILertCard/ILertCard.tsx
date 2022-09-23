@@ -13,27 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { Entity } from '@backstage/catalog-model';
+import { ResponseErrorPanel } from '@backstage/core-components';
 import { AuthenticationError } from '@backstage/errors';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
 import { ILERT_INTEGRATION_KEY_ANNOTATION } from '../../constants';
-import { MissingAuthorizationHeaderError } from '../Errors';
-import { useIncidents } from '../../hooks/useIncidents';
-import { IncidentsTable } from '../IncidentsPage';
-import { IncidentNewModal } from '../Incident/IncidentNewModal';
-import { ILertCardActionsHeader } from './ILertCardActionsHeader';
-import { useAlertSource } from '../../hooks/useAlertSource';
 import { useILertEntity } from '../../hooks';
+import { useAlerts } from '../../hooks/useAlerts';
+import { useAlertSource } from '../../hooks/useAlertSource';
+import { AlertNewModal } from '../Alert/AlertNewModal';
+import { AlertsTable } from '../AlertsPage';
+import { MissingAuthorizationHeaderError } from '../Errors';
+import { ILertCardActionsHeader } from './ILertCardActionsHeader';
+import { ILertCardEmptyState } from './ILertCardEmptyState';
 import { ILertCardHeaderStatus } from './ILertCardHeaderStatus';
 import { ILertCardMaintenanceModal } from './ILertCardMaintenanceModal';
-import { ILertCardEmptyState } from './ILertCardEmptyState';
 import { ILertCardOnCall } from './ILertCardOnCall';
-import { ResponseErrorPanel } from '@backstage/core-components';
 
 /** @public */
 export const isPluginApplicableToEntity = (entity: Entity) =>
@@ -60,18 +60,18 @@ export const ILertCard = () => {
     { setAlertSource, refetchAlertSource },
   ] = useAlertSource(integrationKey);
   const [
-    { tableState, states, incidents, incidentsCount, isLoading, error },
+    { tableState, states, alerts, alertsCount, isLoading, error },
     {
-      onIncidentStatesChange,
+      onAlertStatesChange,
       onChangePage,
       onChangeRowsPerPage,
-      onIncidentChanged,
-      refetchIncidents,
+      onAlertChanged,
+      refetchAlerts,
       setIsLoading,
     },
-  ] = useIncidents(false, true, alertSource);
+  ] = useAlerts(false, true, alertSource);
 
-  const [isNewIncidentModalOpened, setIsNewIncidentModalOpened] =
+  const [isNewAlertModalOpened, setIsNewAlertModalOpened] =
     React.useState(false);
   const [isMaintenanceModalOpened, setIsMaintenanceModalOpened] =
     React.useState(false);
@@ -97,7 +97,7 @@ export const ILertCard = () => {
             <ILertCardActionsHeader
               alertSource={alertSource}
               setAlertSource={setAlertSource}
-              setIsNewIncidentModalOpened={setIsNewIncidentModalOpened}
+              setIsNewAlertModalOpened={setIsNewAlertModalOpened}
               setIsMaintenanceModalOpened={setIsMaintenanceModalOpened}
               uptimeMonitor={uptimeMonitor}
             />
@@ -107,13 +107,13 @@ export const ILertCard = () => {
         <Divider />
         <CardContent className={classes.content}>
           <ILertCardOnCall alertSource={alertSource} />
-          <IncidentsTable
-            incidents={incidents}
-            incidentsCount={incidentsCount}
+          <AlertsTable
+            alerts={alerts}
+            alertsCount={alertsCount}
             tableState={tableState}
             states={states}
-            onIncidentChanged={onIncidentChanged}
-            onIncidentStatesChange={onIncidentStatesChange}
+            onAlertChanged={onAlertChanged}
+            onAlertStatesChange={onAlertStatesChange}
             onChangePage={onChangePage}
             onChangeRowsPerPage={onChangeRowsPerPage}
             isLoading={isLoading}
@@ -122,10 +122,10 @@ export const ILertCard = () => {
           />
         </CardContent>
       </Card>
-      <IncidentNewModal
-        isModalOpened={isNewIncidentModalOpened}
-        setIsModalOpened={setIsNewIncidentModalOpened}
-        refetchIncidents={refetchIncidents}
+      <AlertNewModal
+        isModalOpened={isNewAlertModalOpened}
+        setIsModalOpened={setIsNewAlertModalOpened}
+        refetchAlerts={refetchAlerts}
         initialAlertSource={alertSource}
         entityName={name}
       />

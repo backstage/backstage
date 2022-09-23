@@ -13,27 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { DEFAULT_NAMESPACE, parseEntityRef } from '@backstage/catalog-model';
-import { makeStyles } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { useNewIncident } from '../../hooks/useNewIncident';
-import { Typography } from '@material-ui/core';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { ilertApiRef } from '../../api';
-import { AlertSource } from '../../types';
 import {
   alertApiRef,
   identityApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
+import { Typography } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import Alert from '@material-ui/lab/Alert';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import React from 'react';
+import { ilertApiRef } from '../../api';
+import { useNewAlert } from '../../hooks/useNewAlert';
+import { AlertSource } from '../../types';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -61,23 +61,23 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const IncidentNewModal = ({
+export const AlertNewModal = ({
   isModalOpened,
   setIsModalOpened,
-  refetchIncidents,
+  refetchAlerts,
   initialAlertSource,
   entityName,
 }: {
   isModalOpened: boolean;
   setIsModalOpened: (open: boolean) => void;
-  refetchIncidents: () => void;
+  refetchAlerts: () => void;
   initialAlertSource?: AlertSource | null;
   entityName?: string;
 }) => {
   const [
     { alertSources, alertSource, summary, details, isLoading },
     { setAlertSource, setSummary, setDetails, setIsLoading },
-  ] = useNewIncident(isModalOpened, initialAlertSource);
+  ] = useNewAlert(isModalOpened, initialAlertSource);
   const ilertApi = useApi(ilertApiRef);
   const alertApi = useApi(alertApiRef);
   const identityApi = useApi(identityApiRef);
@@ -107,15 +107,15 @@ export const IncidentNewModal = ({
           defaultKind: 'User',
           defaultNamespace: DEFAULT_NAMESPACE,
         });
-        await ilertApi.createIncident({
+        await ilertApi.createAlert({
           integrationKey,
           summary,
           details,
           userName,
           source,
         });
-        alertApi.post({ message: 'Incident created.' });
-        refetchIncidents();
+        alertApi.post({ message: 'Alert created.' });
+        refetchAlerts();
       } catch (err) {
         alertApi.post({ message: err, severity: 'error' });
       }
@@ -129,16 +129,16 @@ export const IncidentNewModal = ({
     <Dialog
       open={isModalOpened}
       onClose={handleClose}
-      aria-labelledby="create-incident-form-title"
+      aria-labelledby="create-alert-form-title"
     >
-      <DialogTitle id="create-incident-form-title">
+      <DialogTitle id="create-alert-form-title">
         {entityName ? (
           <div>
-            This action will trigger an incident for{' '}
+            This action will trigger an alert for{' '}
             <strong>"{entityName}"</strong>.
           </div>
         ) : (
-          'New incident'
+          'New alert'
         )}
       </DialogTitle>
       <DialogContent>

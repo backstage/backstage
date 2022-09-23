@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { GetIncidentsOpts, ilertApiRef, TableState } from '../api';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
+import React from 'react';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
-import {
-  ACCEPTED,
-  PENDING,
-  Incident,
-  IncidentStatus,
-  AlertSource,
-} from '../types';
-import { useApi, errorApiRef } from '@backstage/core-plugin-api';
+import { GetAlertsOpts, ilertApiRef, TableState } from '../api';
+import { ACCEPTED, Alert, AlertSource, AlertStatus, PENDING } from '../types';
 
-export const useIncidents = (
+export const useAlerts = (
   paging: boolean,
   singleSource?: boolean,
   alertSource?: AlertSource | null,
@@ -38,21 +32,21 @@ export const useIncidents = (
     page: 0,
     pageSize: 10,
   });
-  const [states, setStates] = React.useState<IncidentStatus[]>([
+  const [states, setStates] = React.useState<AlertStatus[]>([
     ACCEPTED,
     PENDING,
   ]);
-  const [incidentsList, setIncidentsList] = React.useState<Incident[]>([]);
-  const [incidentsCount, setIncidentsCount] = React.useState(0);
+  const [alertsList, setAlertsList] = React.useState<Alert[]>([]);
+  const [alertsCount, setAlertsCount] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const fetchIncidentsCall = async () => {
+  const fetchAlertsCall = async () => {
     try {
       if (singleSource && !alertSource) {
         return;
       }
       setIsLoading(true);
-      const opts: GetIncidentsOpts = {
+      const opts: GetAlertsOpts = {
         states,
         alertSources: alertSource ? [alertSource.id] : [],
       };
@@ -60,8 +54,8 @@ export const useIncidents = (
         opts.maxResults = tableState.pageSize;
         opts.startIndex = tableState.page * tableState.pageSize;
       }
-      const data = await ilertApi.fetchIncidents(opts);
-      setIncidentsList(data || []);
+      const data = await ilertApi.fetchAlerts(opts);
+      setAlertsList(data || []);
       setIsLoading(false);
     } catch (e) {
       if (!(e instanceof AuthenticationError)) {
@@ -72,10 +66,10 @@ export const useIncidents = (
     }
   };
 
-  const fetchIncidentsCountCall = async () => {
+  const fetchAlertsCountCall = async () => {
     try {
-      const count = await ilertApi.fetchIncidentsCount({ states });
-      setIncidentsCount(count || 0);
+      const count = await ilertApi.fetchAlertsCount({ states });
+      setAlertsCount(count || 0);
     } catch (e) {
       if (!(e instanceof AuthenticationError)) {
         errorApi.post(e);
@@ -83,44 +77,44 @@ export const useIncidents = (
       throw e;
     }
   };
-  const fetchIncidents = useAsyncRetry(fetchIncidentsCall, [
+  const fetchAlerts = useAsyncRetry(fetchAlertsCall, [
     tableState,
     states,
     singleSource,
     alertSource,
   ]);
 
-  const refetchIncidents = () => {
+  const refetchAlerts = () => {
     setTableState({ ...tableState, page: 0 });
-    Promise.all([fetchIncidentsCall(), fetchIncidentsCountCall()]);
+    Promise.all([fetchAlertsCall(), fetchAlertsCountCall()]);
   };
 
-  const fetchIncidentsCount = useAsyncRetry(fetchIncidentsCountCall, [states]);
+  const fetchAlertsCount = useAsyncRetry(fetchAlertsCountCall, [states]);
 
-  const error = fetchIncidents.error || fetchIncidentsCount.error;
+  const error = fetchAlerts.error || fetchAlertsCount.error;
   const retry = () => {
-    fetchIncidents.retry();
-    fetchIncidentsCount.retry();
+    fetchAlerts.retry();
+    fetchAlertsCount.retry();
   };
 
-  const onIncidentChanged = (newIncident: Incident) => {
-    let shouldRefetchIncidents = false;
-    setIncidentsList(
-      incidentsList.reduce((acc: Incident[], incident: Incident) => {
-        if (newIncident.id === incident.id) {
-          if (states.includes(newIncident.status)) {
-            acc.push(newIncident);
+  const onAlertChanged = (newAlert: Alert) => {
+    let shouldRefetchAlerts = false;
+    setAlertsList(
+      alertsList.reduce((acc: Alert[], alert: Alert) => {
+        if (newAlert.id === alert.id) {
+          if (states.includes(newAlert.status)) {
+            acc.push(newAlert);
           } else {
-            shouldRefetchIncidents = true;
+            shouldRefetchAlerts = true;
           }
           return acc;
         }
-        acc.push(incident);
+        acc.push(alert);
         return acc;
       }, []),
     );
-    if (shouldRefetchIncidents) {
-      refetchIncidents();
+    if (shouldRefetchAlerts) {
+      refetchAlerts();
     }
   };
 
@@ -130,7 +124,7 @@ export const useIncidents = (
   const onChangeRowsPerPage = (p: number) => {
     setTableState({ ...tableState, pageSize: p });
   };
-  const onIncidentStatesChange = (s: IncidentStatus[]) => {
+  const onAlertStatesChange = (s: AlertStatus[]) => {
     setStates(s);
   };
 
@@ -138,22 +132,22 @@ export const useIncidents = (
     {
       tableState,
       states,
-      incidents: incidentsList,
-      incidentsCount,
+      alerts: alertsList,
+      alertsCount,
       error,
       isLoading,
     },
     {
       setTableState,
       setStates,
-      setIncidentsList,
+      setAlertsList,
       setIsLoading,
       retry,
-      onIncidentChanged,
-      refetchIncidents,
+      onAlertChanged,
+      refetchAlerts,
       onChangePage,
       onChangeRowsPerPage,
-      onIncidentStatesChange,
+      onAlertStatesChange,
     },
   ] as const;
 };

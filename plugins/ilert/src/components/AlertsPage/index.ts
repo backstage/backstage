@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './IncidentsPage';
-export * from './IncidentsTable';
+export * from './AlertsPage';
+export * from './AlertsTable';

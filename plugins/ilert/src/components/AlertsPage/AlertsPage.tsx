@@ -13,37 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { AuthenticationError } from '@backstage/errors';
-import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/Add';
-import { IncidentsTable } from './IncidentsTable';
-import { MissingAuthorizationHeaderError } from '../Errors';
-import { useIncidents } from '../../hooks/useIncidents';
-import { IncidentNewModal } from '../Incident/IncidentNewModal';
 import {
   Content,
   ContentHeader,
-  SupportButton,
   ResponseErrorPanel,
+  SupportButton,
 } from '@backstage/core-components';
+import { AuthenticationError } from '@backstage/errors';
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
+import React from 'react';
+import { useAlerts } from '../../hooks/useAlerts';
+import { AlertNewModal } from '../Alert/AlertNewModal';
+import { MissingAuthorizationHeaderError } from '../Errors';
+import { AlertsTable } from './AlertsTable';
 
-export const IncidentsPage = () => {
+export const AlertsPage = () => {
   const [
-    { tableState, states, incidents, incidentsCount, isLoading, error },
+    { tableState, states, alerts, alertsCount, isLoading, error },
     {
-      onIncidentStatesChange,
+      onAlertStatesChange,
       onChangePage,
       onChangeRowsPerPage,
-      onIncidentChanged,
-      refetchIncidents,
+      onAlertChanged,
+      refetchAlerts,
       setIsLoading,
     },
-  ] = useIncidents(true);
+  ] = useAlerts(true);
 
   const [isModalOpened, setIsModalOpened] = React.useState(false);
 
-  const handleCreateNewIncidentClick = () => {
+  const handleCreateNewAlertClick = () => {
     setIsModalOpened(true);
   };
 
@@ -65,32 +65,32 @@ export const IncidentsPage = () => {
 
   return (
     <Content>
-      <ContentHeader title="Incidents">
+      <ContentHeader title="Alerts">
         <Button
           variant="contained"
           color="primary"
           size="small"
           startIcon={<AddIcon />}
-          onClick={handleCreateNewIncidentClick}
+          onClick={handleCreateNewAlertClick}
         >
-          Create Incident
+          Create Alert
         </Button>
-        <IncidentNewModal
+        <AlertNewModal
           isModalOpened={isModalOpened}
           setIsModalOpened={setIsModalOpened}
-          refetchIncidents={refetchIncidents}
+          refetchAlerts={refetchAlerts}
         />
         <SupportButton>
           This helps you to bring iLert into your developer portal.
         </SupportButton>
       </ContentHeader>
-      <IncidentsTable
-        incidents={incidents}
-        incidentsCount={incidentsCount}
+      <AlertsTable
+        alerts={alerts}
+        alertsCount={alertsCount}
         tableState={tableState}
         states={states}
-        onIncidentChanged={onIncidentChanged}
-        onIncidentStatesChange={onIncidentStatesChange}
+        onAlertChanged={onAlertChanged}
+        onAlertStatesChange={onAlertStatesChange}
         onChangePage={onChangePage}
         onChangeRowsPerPage={onChangeRowsPerPage}
         isLoading={isLoading}

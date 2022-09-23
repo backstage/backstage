@@ -13,48 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { ilertApiRef } from '../api';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
+import React from 'react';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
-import { Incident, IncidentAction } from '../types';
-import { useApi, errorApiRef } from '@backstage/core-plugin-api';
+import { ilertApiRef } from '../api';
+import { Alert, AlertAction } from '../types';
 
-export const useIncidentActions = (
-  incident: Incident | null,
-  open: boolean,
-) => {
+export const useAlertActions = (alert: Alert | null, open: boolean) => {
   const ilertApi = useApi(ilertApiRef);
   const errorApi = useApi(errorApiRef);
 
-  const [incidentActionsList, setIncidentActionsList] = React.useState<
-    IncidentAction[]
-  >([]);
+  const [alertActionsList, setAlertActionsList] = React.useState<AlertAction[]>(
+    [],
+  );
   const [isLoading, setIsLoading] = React.useState(false);
 
   const { error, retry } = useAsyncRetry(async () => {
     try {
-      if (!incident || !open) {
+      if (!alert || !open) {
         return;
       }
-      const data = await ilertApi.fetchIncidentActions(incident);
-      setIncidentActionsList(data);
+      const data = await ilertApi.fetchAlertActions(alert);
+      setAlertActionsList(data);
     } catch (e) {
       if (!(e instanceof AuthenticationError)) {
         errorApi.post(e);
       }
       throw e;
     }
-  }, [incident, open]);
+  }, [alert, open]);
 
   return [
     {
-      incidentActions: incidentActionsList,
+      alertActions: alertActionsList,
       error,
       isLoading,
     },
     {
-      setIncidentActionsList,
+      setAlertActionsList,
       setIsLoading,
       retry,
     },

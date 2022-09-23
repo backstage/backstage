@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { ilertApiRef, TableState } from '../../api';
-import { Incident, IncidentStatus } from '../../types';
-import { StatusChip } from './StatusChip';
-import { AlertSourceLink } from '../AlertSource/AlertSourceLink';
-import { TableTitle } from './TableTitle';
 import Typography from '@material-ui/core/Typography';
-import { DateTime as dt, Interval } from 'luxon';
 import humanizeDuration from 'humanize-duration';
-import { IncidentActionsMenu } from '../Incident/IncidentActionsMenu';
-import { IncidentLink } from '../Incident/IncidentLink';
+import { DateTime as dt, Interval } from 'luxon';
+import React from 'react';
+import { ilertApiRef, TableState } from '../../api';
+import { Alert, AlertStatus } from '../../types';
+import { AlertActionsMenu } from '../Alert/AlertActionsMenu';
+import { AlertLink } from '../Alert/AlertLink';
+import { AlertSourceLink } from '../AlertSource/AlertSourceLink';
+import { StatusChip } from './StatusChip';
+import { TableTitle } from './TableTitle';
 
 import { Table, TableColumn } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
@@ -37,27 +37,27 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const IncidentsTable = ({
-  incidents,
-  incidentsCount,
+export const AlertsTable = ({
+  alerts,
+  alertsCount,
   tableState,
   states,
   isLoading,
-  onIncidentChanged,
+  onAlertChanged,
   setIsLoading,
-  onIncidentStatesChange,
+  onAlertStatesChange,
   onChangePage,
   onChangeRowsPerPage,
   compact,
 }: {
-  incidents: Incident[];
-  incidentsCount: number;
+  alerts: Alert[];
+  alertsCount: number;
   tableState: TableState;
-  states: IncidentStatus[];
+  states: AlertStatus[];
   isLoading: boolean;
-  onIncidentChanged: (incident: Incident) => void;
+  onAlertChanged: (alert: Alert) => void;
   setIsLoading: (isLoading: boolean) => void;
-  onIncidentStatesChange: (states: IncidentStatus[]) => void;
+  onAlertStatesChange: (states: AlertStatus[]) => void;
   onChangePage: (page: number) => void;
   onChangeRowsPerPage: (pageSize: number) => void;
   compact?: boolean;
@@ -92,14 +92,14 @@ export const IncidentsTable = ({
     highlight: true,
     cellStyle: smColumnStyle,
     headerStyle: smColumnStyle,
-    render: rowData => <IncidentLink incident={rowData as Incident} />,
+    render: rowData => <AlertLink alert={rowData as Alert} />,
   };
   const summaryColumn: TableColumn = {
     title: 'Summary',
     field: 'summary',
     cellStyle: !compact ? xlColumnStyle : undefined,
     headerStyle: !compact ? xlColumnStyle : undefined,
-    render: rowData => <Typography>{(rowData as Incident).summary}</Typography>,
+    render: rowData => <Typography>{(rowData as Alert).summary}</Typography>,
   };
   const sourceColumn: TableColumn = {
     title: 'Source',
@@ -107,7 +107,7 @@ export const IncidentsTable = ({
     cellStyle: mdColumnStyle,
     headerStyle: mdColumnStyle,
     render: rowData => (
-      <AlertSourceLink alertSource={(rowData as Incident).alertSource} />
+      <AlertSourceLink alertSource={(rowData as Alert).alertSource} />
     ),
   };
   const durationColumn: TableColumn = {
@@ -118,10 +118,10 @@ export const IncidentsTable = ({
     headerStyle: smColumnStyle,
     render: rowData => (
       <Typography noWrap>
-        {(rowData as Incident).status !== 'RESOLVED'
+        {(rowData as Alert).status !== 'RESOLVED'
           ? humanizeDuration(
               Interval.fromDateTimes(
-                dt.fromISO((rowData as Incident).reportTime),
+                dt.fromISO((rowData as Alert).reportTime),
                 dt.now(),
               )
                 .toDuration()
@@ -130,8 +130,8 @@ export const IncidentsTable = ({
             )
           : humanizeDuration(
               Interval.fromDateTimes(
-                dt.fromISO((rowData as Incident).reportTime),
-                dt.fromISO((rowData as Incident).resolvedOn),
+                dt.fromISO((rowData as Alert).reportTime),
+                dt.fromISO((rowData as Alert).resolvedOn),
               )
                 .toDuration()
                 .valueOf(),
@@ -147,7 +147,7 @@ export const IncidentsTable = ({
     headerStyle: !compact ? mdColumnStyle : lgColumnStyle,
     render: rowData => (
       <Typography noWrap>
-        {ilertApi.getUserInitials((rowData as Incident).assignedTo)}
+        {ilertApi.getUserInitials((rowData as Alert).assignedTo)}
       </Typography>
     ),
   };
@@ -158,7 +158,7 @@ export const IncidentsTable = ({
     headerStyle: smColumnStyle,
     render: rowData => (
       <Typography noWrap>
-        {(rowData as Incident).priority === 'HIGH' ? 'High' : 'Low'}
+        {(rowData as Alert).priority === 'HIGH' ? 'High' : 'Low'}
       </Typography>
     ),
   };
@@ -167,7 +167,7 @@ export const IncidentsTable = ({
     field: 'status',
     cellStyle: xsColumnStyle,
     headerStyle: xsColumnStyle,
-    render: rowData => <StatusChip incident={rowData as Incident} />,
+    render: rowData => <StatusChip alert={rowData as Alert} />,
   };
   const actionsColumn: TableColumn = {
     title: '',
@@ -175,9 +175,9 @@ export const IncidentsTable = ({
     cellStyle: xsColumnStyle,
     headerStyle: xsColumnStyle,
     render: rowData => (
-      <IncidentActionsMenu
-        incident={rowData as Incident}
-        onIncidentChanged={onIncidentChanged}
+      <AlertActionsMenu
+        alert={rowData as Alert}
+        onAlertChanged={onAlertChanged}
         setIsLoading={setIsLoading}
       />
     ),
@@ -236,14 +236,14 @@ export const IncidentsTable = ({
       }}
       emptyContent={
         <Typography color="textSecondary" className={classes.empty}>
-          No incidents right now
+          No alerts right now
         </Typography>
       }
       title={
         !compact ? (
           <TableTitle
-            incidentStates={states}
-            onIncidentStatesChange={onIncidentStatesChange}
+            alertStates={states}
+            onAlertStatesChange={onAlertStatesChange}
           />
         ) : (
           <Typography variant="button" color="textSecondary">
@@ -252,12 +252,12 @@ export const IncidentsTable = ({
         )
       }
       page={tableState.page}
-      totalCount={incidentsCount}
+      totalCount={alertsCount}
       onPageChange={onChangePage}
       onRowsPerPageChange={onChangeRowsPerPage}
       // localization={{ header: { actions: undefined } }}
       columns={columns}
-      data={incidents}
+      data={alerts}
       isLoading={isLoading}
     />
   );

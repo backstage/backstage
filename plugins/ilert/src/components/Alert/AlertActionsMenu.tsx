@@ -13,42 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import React from 'react';
 import { ilertApiRef } from '../../api';
-import { Incident, IncidentAction } from '../../types';
-import { IncidentAssignModal } from './IncidentAssignModal';
-import { useIncidentActions } from '../../hooks/useIncidentActions';
+import { useAlertActions } from '../../hooks/useAlertActions';
+import { Alert, AlertAction } from '../../types';
+import { AlertAssignModal } from './AlertAssignModal';
 
+import { DEFAULT_NAMESPACE, parseEntityRef } from '@backstage/catalog-model';
+import { Link, Progress } from '@backstage/core-components';
 import {
   alertApiRef,
-  useApi,
   identityApiRef,
+  useApi,
 } from '@backstage/core-plugin-api';
-import { Progress, Link } from '@backstage/core-components';
-import { DEFAULT_NAMESPACE, parseEntityRef } from '@backstage/catalog-model';
 
-export const IncidentActionsMenu = ({
-  incident,
-  onIncidentChanged,
+export const AlertActionsMenu = ({
+  alert,
+  onAlertChanged,
   setIsLoading,
 }: {
-  incident: Incident;
-  onIncidentChanged?: (incident: Incident) => void;
+  alert: Alert;
+  onAlertChanged?: (alert: Alert) => void;
   setIsLoading?: (isLoading: boolean) => void;
 }) => {
   const ilertApi = useApi(ilertApiRef);
   const alertApi = useApi(alertApiRef);
   const identityApi = useApi(identityApiRef);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const callback = onIncidentChanged || ((_: Incident): void => {});
+  const callback = onAlertChanged || ((_: Alert): void => {});
   const setProcessing = setIsLoading || ((_: boolean): void => {});
-  const [isAssignIncidentModalOpened, setIsAssignIncidentModalOpened] =
+  const [isAssignAlertModalOpened, setIsAssignAlertModalOpened] =
     React.useState(false);
 
-  const [{ incidentActions, isLoading }] = useIncidentActions(
-    incident,
+  const [{ alertActions, isLoading }] = useAlertActions(
+    alert,
     Boolean(anchorEl),
   );
 
@@ -70,10 +70,10 @@ export const IncidentActionsMenu = ({
         defaultKind: 'User',
         defaultNamespace: DEFAULT_NAMESPACE,
       });
-      const newIncident = await ilertApi.acceptIncident(incident, userName);
-      alertApi.post({ message: 'Incident accepted.' });
+      const newAlert = await ilertApi.acceptAlert(alert, userName);
+      alertApi.post({ message: 'Alert accepted.' });
 
-      callback(newIncident);
+      callback(newAlert);
       setProcessing(false);
     } catch (err) {
       setProcessing(false);
@@ -90,10 +90,10 @@ export const IncidentActionsMenu = ({
         defaultKind: 'User',
         defaultNamespace: DEFAULT_NAMESPACE,
       });
-      const newIncident = await ilertApi.resolveIncident(incident, userName);
-      alertApi.post({ message: 'Incident resolved.' });
+      const newAlert = await ilertApi.resolveAlert(alert, userName);
+      alertApi.post({ message: 'Alert resolved.' });
 
-      callback(newIncident);
+      callback(newAlert);
       setProcessing(false);
     } catch (err) {
       setProcessing(false);
@@ -103,15 +103,15 @@ export const IncidentActionsMenu = ({
 
   const handleAssign = () => {
     handleCloseMenu();
-    setIsAssignIncidentModalOpened(true);
+    setIsAssignAlertModalOpened(true);
   };
 
-  const handleTriggerAction = (action: IncidentAction) => async () => {
+  const handleTriggerAction = (action: AlertAction) => async () => {
     try {
       handleCloseMenu();
       setProcessing(true);
-      await ilertApi.triggerIncidentAction(incident, action);
-      alertApi.post({ message: 'Incident action triggered.' });
+      await ilertApi.triggerAlertAction(alert, action);
+      alertApi.post({ message: 'Alert action triggered.' });
       setProcessing(false);
     } catch (err) {
       setProcessing(false);
@@ -119,7 +119,7 @@ export const IncidentActionsMenu = ({
     }
   };
 
-  const actions: React.ReactNode[] = incidentActions.map(a => {
+  const actions: React.ReactNode[] = alertActions.map(a => {
     const successTrigger = a.history
       ? a.history.find(h => h.success)
       : undefined;
@@ -152,7 +152,7 @@ export const IncidentActionsMenu = ({
         <MoreVertIcon />
       </IconButton>
       <Menu
-        id={`incident-actions-menu-${incident.id}`}
+        id={`alert-actions-menu-${alert.id}`}
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
@@ -161,7 +161,7 @@ export const IncidentActionsMenu = ({
           style: { maxHeight: 48 * 5.5 },
         }}
       >
-        {incident.status === 'PENDING' ? (
+        {alert.status === 'PENDING' ? (
           <MenuItem key="ack" onClick={handleAccept}>
             <Typography variant="inherit" noWrap>
               Accept
@@ -169,7 +169,7 @@ export const IncidentActionsMenu = ({
           </MenuItem>
         ) : null}
 
-        {incident.status !== 'RESOLVED' ? (
+        {alert.status !== 'RESOLVED' ? (
           <MenuItem key="close" onClick={handleResolve}>
             <Typography variant="inherit" noWrap>
               Resolve
@@ -177,7 +177,7 @@ export const IncidentActionsMenu = ({
           </MenuItem>
         ) : null}
 
-        {incident.status !== 'RESOLVED' ? (
+        {alert.status !== 'RESOLVED' ? (
           <MenuItem key="assign" onClick={handleAssign}>
             <Typography variant="inherit" noWrap>
               Assign
@@ -195,17 +195,15 @@ export const IncidentActionsMenu = ({
 
         <MenuItem key="details" onClick={handleCloseMenu}>
           <Typography variant="inherit" noWrap>
-            <Link to={ilertApi.getIncidentDetailsURL(incident)}>
-              View in iLert
-            </Link>
+            <Link to={ilertApi.getAlertDetailsURL(alert)}>View in iLert</Link>
           </Typography>
         </MenuItem>
       </Menu>
-      <IncidentAssignModal
-        incident={incident}
-        setIsModalOpened={setIsAssignIncidentModalOpened}
-        isModalOpened={isAssignIncidentModalOpened}
-        onIncidentChanged={onIncidentChanged}
+      <AlertAssignModal
+        alert={alert}
+        setIsModalOpened={setIsAssignAlertModalOpened}
+        isModalOpened={isAssignAlertModalOpened}
+        onAlertChanged={onAlertChanged}
       />
     </>
   );

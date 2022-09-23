@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { Chip, withStyles } from '@material-ui/core';
-import { Incident, PENDING, ACCEPTED, RESOLVED } from '../../types';
-import { incidentStatusLabels } from '../Incident/IncidentStatus';
+import React from 'react';
+import { ACCEPTED, Alert, PENDING, RESOLVED } from '../../types';
+import { alertStatusLabels } from '../Alert/AlertStatus';
 
 const ResolvedChip = withStyles({
   root: {
@@ -41,10 +41,10 @@ const PendingChip = withStyles({
   },
 })(Chip);
 
-export const StatusChip = ({ incident }: { incident: Incident }) => {
-  const label = `${incidentStatusLabels[incident.status]}`;
+export const StatusChip = ({ alert }: { alert: Alert }) => {
+  const label = `${alertStatusLabels[alert.status]}`;
 
-  switch (incident.status) {
+  switch (alert.status) {
     case RESOLVED:
       return <ResolvedChip label={label} size="small" />;
     case ACCEPTED:

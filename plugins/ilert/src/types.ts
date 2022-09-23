@@ -15,15 +15,15 @@
  */
 
 /** @public */
-export interface Incident {
+export interface Alert {
   id: number;
   summary: string;
   details: string;
   reportTime: string;
   resolvedOn: string;
-  status: IncidentStatus;
-  priority: IncidentPriority;
-  incidentKey: string;
+  status: AlertStatus;
+  priority: AlertPriority;
+  alertKey: string;
   alertSource: AlertSource | null;
   assignedTo: User | null;
   logEntries: LogEntry[];
@@ -42,10 +42,10 @@ export const ACCEPTED = 'ACCEPTED';
 export const RESOLVED = 'RESOLVED';
 
 /** @public */
-export type IncidentStatus = typeof PENDING | typeof ACCEPTED | typeof RESOLVED;
+export type AlertStatus = typeof PENDING | typeof ACCEPTED | typeof RESOLVED;
 
 /** @public */
-export type IncidentPriority = 'HIGH' | 'LOW';
+export type AlertPriority = 'HIGH' | 'LOW';
 
 /** @public */
 export interface Link {
@@ -76,7 +76,7 @@ export interface LogEntry {
   timestamp: string;
   logEntryType: string;
   text: string;
-  incidentId?: number;
+  alertId?: number;
   iconName?: string;
   iconClass?: string;
   filterTypes?: string[];
@@ -125,8 +125,8 @@ export interface AlertSource {
   iconUrl?: string;
   lightIconUrl?: string;
   darkIconUrl?: string;
-  incidentCreation?: AlertSourceIncidentCreation;
-  incidentPriorityRule?: AlertSourceIncidentPriorityRule;
+  alertCreation?: AlertSourceAlertCreation;
+  alertPriorityRule?: AlertSourceAlertPriorityRule;
   emailFiltered?: boolean;
   emailResolveFiltered?: boolean;
   active?: boolean;
@@ -209,16 +209,16 @@ export type AlertSourceIntegrationType =
   | 'CORTEXXSOAR'
   | string;
 /** @public */
-export type AlertSourceIncidentCreation =
-  | 'ONE_INCIDENT_PER_EMAIL'
-  | 'ONE_INCIDENT_PER_EMAIL_SUBJECT'
-  | 'ONE_PENDING_INCIDENT_ALLOWED'
-  | 'ONE_OPEN_INCIDENT_ALLOWED'
+export type AlertSourceAlertCreation =
+  | 'ONE_ALERT_PER_EMAIL'
+  | 'ONE_ALERT_PER_EMAIL_SUBJECT'
+  | 'ONE_PENDING_ALERT_ALLOWED'
+  | 'ONE_OPEN_ALERT_ALLOWED'
   | 'OPEN_RESOLVE_ON_EXTRACTION';
 /** @public */
 export type AlertSourceFilterOperator = 'AND' | 'OR';
 /** @public */
-export type AlertSourceIncidentPriorityRule =
+export type AlertSourceAlertPriorityRule =
   | 'HIGH'
   | 'LOW'
   | 'HIGH_DURING_SUPPORT_HOURS'
@@ -251,7 +251,7 @@ export interface AlertSourceSupportDay {
 /** @public */
 export interface AlertSourceSupportHours {
   timezone: AlertSourceTimeZone;
-  autoRaiseIncidents: boolean;
+  autoRaiseAlerts: boolean;
   supportDays: {
     MONDAY: AlertSourceSupportDay;
     TUESDAY: AlertSourceSupportDay;
@@ -324,7 +324,7 @@ export interface UptimeMonitor {
   checkParams: UptimeMonitorCheckParams;
   intervalSec: number;
   timeoutMs: number;
-  createIncidentAfterFailedChecks: number;
+  createAlertAfterFailedChecks: number;
   paused: boolean;
   embedUrl: string;
   shareUrl: string;
@@ -342,7 +342,7 @@ export interface UptimeMonitorCheckParams {
 }
 
 /** @public */
-export interface IncidentResponder {
+export interface AlertResponder {
   group: 'SUGGESTED' | 'USER' | 'ESCALATION_POLICY' | 'ON_CALL_SCHEDULE';
   id: number;
   name: string;
@@ -350,19 +350,19 @@ export interface IncidentResponder {
 }
 
 /** @public */
-export interface IncidentAction {
+export interface AlertAction {
   name: string;
   type: string;
   webhookId: string;
   extensionId?: string;
-  history?: IncidentActionHistory[];
+  history?: AlertActionHistory[];
 }
 
 /** @public */
-export interface IncidentActionHistory {
+export interface AlertActionHistory {
   id: string;
   webhookId: string;
-  incidentId: number;
+  alertId: number;
   actor: User;
   success: boolean;
 }

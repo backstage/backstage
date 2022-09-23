@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import Alert from '@material-ui/lab/Alert';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Typography from '@material-ui/core/Typography';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import BuildIcon from '@material-ui/icons/Build';
 import PauseIcon from '@material-ui/icons/Pause';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import WebIcon from '@material-ui/icons/Web';
-import Typography from '@material-ui/core/Typography';
+import Alert from '@material-ui/lab/Alert';
+import React from 'react';
 import { ilertApiRef } from '../../api';
 import { AlertSource, UptimeMonitor } from '../../types';
 
@@ -34,18 +34,18 @@ import {
   HeaderIconLinkRow,
   IconLinkVerticalProps,
 } from '@backstage/core-components';
-import { useApi, alertApiRef } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 
 export const ILertCardActionsHeader = ({
   alertSource,
   setAlertSource,
-  setIsNewIncidentModalOpened,
+  setIsNewAlertModalOpened,
   setIsMaintenanceModalOpened,
   uptimeMonitor,
 }: {
   alertSource: AlertSource | null;
   setAlertSource: (alertSource: AlertSource) => void;
-  setIsNewIncidentModalOpened: (isOpen: boolean) => void;
+  setIsNewAlertModalOpened: (isOpen: boolean) => void;
   setIsMaintenanceModalOpened: (isOpen: boolean) => void;
   uptimeMonitor: UptimeMonitor | null;
 }) => {
@@ -54,8 +54,8 @@ export const ILertCardActionsHeader = ({
   const [isLoading, setIsLoading] = React.useState(false);
   const [isDisableModalOpened, setIsDisableModalOpened] = React.useState(false);
 
-  const handleCreateNewIncident = () => {
-    setIsNewIncidentModalOpened(true);
+  const handleCreateNewAlert = () => {
+    setIsNewAlertModalOpened(true);
   };
 
   const handleEnableAlertSource = async () => {
@@ -108,9 +108,9 @@ export const ILertCardActionsHeader = ({
     icon: <WebIcon />,
   };
 
-  const createIncidentLink: IconLinkVerticalProps = {
-    label: 'Create Incident',
-    onClick: handleCreateNewIncident,
+  const createAlertLink: IconLinkVerticalProps = {
+    label: 'Create Alert',
+    onClick: handleCreateNewAlert,
     icon: <AlarmAddIcon />,
     color: 'secondary',
     disabled:
@@ -149,7 +149,7 @@ export const ILertCardActionsHeader = ({
 
   const links: IconLinkVerticalProps[] = [
     alertSourceLink,
-    createIncidentLink,
+    createAlertLink,
     alertSource && alertSource.active
       ? disableAlertSourceLink
       : enableAlertSourceLink,
@@ -178,7 +178,7 @@ export const ILertCardActionsHeader = ({
           <Alert severity="info">
             <Typography variant="body1" align="justify">
               Do you really want to disable this alert source? A disabled alert
-              source cannot create new incidents.
+              source cannot create new alerts.
             </Typography>
           </Alert>
         </DialogContent>

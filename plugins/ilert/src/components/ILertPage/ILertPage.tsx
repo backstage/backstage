@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { IncidentsPage } from '../IncidentsPage';
-import { UptimeMonitorsPage } from '../UptimeMonitorsPage';
-import { OnCallSchedulesPage } from '../OnCallSchedulesPage';
 import {
-  Page,
-  Header,
-  HeaderTabs,
-  HeaderLabel,
   Content,
+  Header,
+  HeaderLabel,
+  HeaderTabs,
+  Page,
 } from '@backstage/core-components';
+import React from 'react';
+import { AlertsPage } from '../AlertsPage';
+import { OnCallSchedulesPage } from '../OnCallSchedulesPage';
+import { UptimeMonitorsPage } from '../UptimeMonitorsPage';
 
 /** @public */
 export const ILertPage = () => {
   const [selectedTab, setSelectedTab] = React.useState<number>(0);
   const tabs = [
     { label: 'Who is on call?' },
-    { label: 'Incidents' },
+    { label: 'Alerts' },
     { label: 'Uptime Monitors' },
   ];
   const renderTab = () => {
@@ -38,7 +38,7 @@ export const ILertPage = () => {
       case 0:
         return <OnCallSchedulesPage />;
       case 1:
-        return <IncidentsPage />;
+        return <AlertsPage />;
       case 2:
         return <UptimeMonitorsPage />;
       default:

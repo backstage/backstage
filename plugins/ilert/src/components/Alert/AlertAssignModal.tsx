@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import MUIAlert from '@material-ui/lab/Alert';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { useAssignIncident } from '../../hooks/useAssignIncident';
-import { Typography } from '@material-ui/core';
+import React from 'react';
 import { ilertApiRef } from '../../api';
-import { Incident } from '../../types';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useAssignAlert } from '../../hooks/useAssignAlert';
+import { Alert } from '../../types';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -55,45 +55,42 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const IncidentAssignModal = ({
-  incident,
+export const AlertAssignModal = ({
+  alert,
   isModalOpened,
   setIsModalOpened,
-  onIncidentChanged,
+  onAlertChanged,
 }: {
-  incident: Incident | null;
+  alert: Alert | null;
   isModalOpened: boolean;
   setIsModalOpened: (open: boolean) => void;
-  onIncidentChanged?: (incident: Incident) => void;
+  onAlertChanged?: (alert: Alert) => void;
 }) => {
   const [
-    { incidentRespondersList, incidentResponder, isLoading },
-    { setIsLoading, setIncidentResponder, setIncidentRespondersList },
-  ] = useAssignIncident(incident, isModalOpened);
-  const callback = onIncidentChanged || ((_: Incident): void => {});
+    { alertRespondersList, alertResponder, isLoading },
+    { setIsLoading, setAlertResponder, setAlertRespondersList },
+  ] = useAssignAlert(alert, isModalOpened);
+  const callback = onAlertChanged || ((_: Alert): void => {});
   const ilertApi = useApi(ilertApiRef);
   const alertApi = useApi(alertApiRef);
   const classes = useStyles();
 
   const handleClose = () => {
-    setIncidentRespondersList([]);
+    setAlertRespondersList([]);
     setIsModalOpened(false);
   };
 
   const handleAssign = () => {
-    if (!incident || !incidentResponder) {
+    if (!alert || !alertResponder) {
       return;
     }
     setIsLoading(true);
-    setIncidentRespondersList([]);
+    setAlertRespondersList([]);
     setTimeout(async () => {
       try {
-        const newIncident = await ilertApi.assignIncident(
-          incident,
-          incidentResponder,
-        );
-        callback(newIncident);
-        alertApi.post({ message: 'Incident assigned.' });
+        const newAlert = await ilertApi.assignAlert(alert, alertResponder);
+        callback(newAlert);
+        alertApi.post({ message: 'Alert assigned.' });
       } catch (err) {
         alertApi.post({ message: err, severity: 'error' });
       }
@@ -102,33 +99,33 @@ export const IncidentAssignModal = ({
     }, 250);
   };
 
-  const canAssign = !!incidentResponder;
+  const canAssign = !!alertResponder;
 
   return (
     <Dialog
       open={isModalOpened}
       onClose={handleClose}
-      aria-labelledby="assign-incident-form-title"
+      aria-labelledby="assign-alert-form-title"
     >
-      <DialogTitle id="assign-incident-form-title">
+      <DialogTitle id="assign-alert-form-title">
         Select responder to assign
       </DialogTitle>
       <DialogContent>
-        <Alert severity="info">
+        <MUIAlert severity="info">
           <Typography variant="body1" gutterBottom align="justify">
-            This action will assign the incident to the selected responder.
+            This action will assign the alert to the selected responder.
           </Typography>
-        </Alert>
+        </MUIAlert>
         <Autocomplete
           disabled={isLoading}
-          options={incidentRespondersList}
-          value={incidentResponder}
+          options={alertRespondersList}
+          value={alertResponder}
           classes={{
             root: classes.formControl,
             option: classes.option,
           }}
           onChange={(_event: any, newValue: any) => {
-            setIncidentResponder(newValue);
+            setAlertResponder(newValue);
           }}
           autoHighlight
           groupBy={option => {

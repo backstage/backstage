@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Incident } from '../../types';
+import React from 'react';
 import { ilertApiRef } from '../../api';
+import { Alert } from '../../types';
 
-import { useApi } from '@backstage/core-plugin-api';
 import { Link } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles({
   link: {
@@ -27,20 +27,17 @@ const useStyles = makeStyles({
   },
 });
 
-export const IncidentLink = ({ incident }: { incident: Incident | null }) => {
+export const AlertLink = ({ alert }: { alert: Alert | null }) => {
   const ilertApi = useApi(ilertApiRef);
   const classes = useStyles();
 
-  if (!incident) {
+  if (!alert) {
     return null;
   }
 
   return (
-    <Link
-      className={classes.link}
-      to={ilertApi.getIncidentDetailsURL(incident)}
-    >
-      #{incident.id}
+    <Link className={classes.link} to={ilertApi.getAlertDetailsURL(alert)}>
+      #{alert.id}
     </Link>
   );
 };

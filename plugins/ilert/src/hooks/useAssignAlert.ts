@@ -13,64 +13,58 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { ilertApiRef } from '../api';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
+import React from 'react';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
-import { AlertSource } from '../types';
-import { useApi, errorApiRef } from '@backstage/core-plugin-api';
+import { ilertApiRef } from '../api';
+import { Alert, AlertResponder } from '../types';
 
-export const useNewIncident = (
-  open: boolean,
-  initialAlertSource?: AlertSource | null,
-) => {
+export const useAssignAlert = (alert: Alert | null, open: boolean) => {
   const ilertApi = useApi(ilertApiRef);
   const errorApi = useApi(errorApiRef);
 
-  const [alertSourcesList, setAlertSourcesList] = React.useState<AlertSource[]>(
-    [],
-  );
-  const [alertSource, setAlertSource] = React.useState<AlertSource | null>(
-    null,
-  );
-  const [summary, setSummary] = React.useState('');
-  const [details, setDetails] = React.useState('');
+  const [alertRespondersList, setAlertRespondersList] = React.useState<
+    AlertResponder[]
+  >([]);
+  const [alertResponder, setAlertResponder] =
+    React.useState<AlertResponder | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const fetchAlertSources = useAsyncRetry(async () => {
+  const { error, retry } = useAsyncRetry(async () => {
     try {
-      if (!open || initialAlertSource) {
+      if (!alert || !open) {
         return;
       }
-      const count = await ilertApi.fetchAlertSources();
-      setAlertSourcesList(count || 0);
+      const data = await ilertApi.fetchAlertResponders(alert);
+      if (data && Array.isArray(data)) {
+        const groups = [
+          'SUGGESTED',
+          'USER',
+          'ESCALATION_POLICY',
+          'ON_CALL_SCHEDULE',
+        ];
+        data.sort((a, b) => groups.indexOf(a.group) - groups.indexOf(b.group));
+        setAlertRespondersList(data);
+      }
     } catch (e) {
       if (!(e instanceof AuthenticationError)) {
         errorApi.post(e);
       }
       throw e;
     }
-  }, [open]);
-
-  const error = fetchAlertSources.error;
-  const retry = () => {
-    fetchAlertSources.retry();
-  };
+  }, [alert, open]);
 
   return [
     {
-      alertSources: alertSourcesList,
-      alertSource: initialAlertSource ? initialAlertSource : alertSource,
-      summary,
-      details,
+      alertRespondersList,
+      alertResponder,
       error,
       isLoading,
     },
     {
-      setAlertSourcesList,
-      setAlertSource,
-      setSummary,
-      setDetails,
+      setAlertRespondersList,
+      setAlertResponder,
       setIsLoading,
       retry,
     },

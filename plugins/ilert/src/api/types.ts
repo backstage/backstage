@@ -15,16 +15,16 @@
  */
 
 import {
+  Alert,
+  AlertAction,
+  AlertResponder,
   AlertSource,
-  Incident,
-  User,
-  IncidentStatus,
-  UptimeMonitor,
+  AlertStatus,
   EscalationPolicy,
-  Schedule,
-  IncidentResponder,
-  IncidentAction,
   OnCall,
+  Schedule,
+  UptimeMonitor,
+  User,
 } from '../types';
 
 /** @public */
@@ -34,16 +34,16 @@ export type TableState = {
 };
 
 /** @public */
-export type GetIncidentsOpts = {
+export type GetAlertsOpts = {
   maxResults?: number;
   startIndex?: number;
-  states?: IncidentStatus[];
+  states?: AlertStatus[];
   alertSources?: number[];
 };
 
 /** @public */
-export type GetIncidentsCountOpts = {
-  states?: IncidentStatus[];
+export type GetAlertsCountOpts = {
+  states?: AlertStatus[];
 };
 
 /** @public */
@@ -57,22 +57,16 @@ export type EventRequest = {
 
 /** @public */
 export interface ILertApi {
-  fetchIncidents(opts?: GetIncidentsOpts): Promise<Incident[]>;
-  fetchIncidentsCount(opts?: GetIncidentsCountOpts): Promise<number>;
-  fetchIncident(id: number): Promise<Incident>;
-  fetchIncidentResponders(incident: Incident): Promise<IncidentResponder[]>;
-  fetchIncidentActions(incident: Incident): Promise<IncidentAction[]>;
-  acceptIncident(incident: Incident, userName: string): Promise<Incident>;
-  resolveIncident(incident: Incident, userName: string): Promise<Incident>;
-  assignIncident(
-    incident: Incident,
-    responder: IncidentResponder,
-  ): Promise<Incident>;
-  createIncident(eventRequest: EventRequest): Promise<boolean>;
-  triggerIncidentAction(
-    incident: Incident,
-    action: IncidentAction,
-  ): Promise<void>;
+  fetchAlerts(opts?: GetAlertsOpts): Promise<Alert[]>;
+  fetchAlertsCount(opts?: GetAlertsCountOpts): Promise<number>;
+  fetchAlert(id: number): Promise<Alert>;
+  fetchAlertResponders(alert: Alert): Promise<AlertResponder[]>;
+  fetchAlertActions(alert: Alert): Promise<AlertAction[]>;
+  acceptAlert(alert: Alert, userName: string): Promise<Alert>;
+  resolveAlert(alert: Alert, userName: string): Promise<Alert>;
+  assignAlert(alert: Alert, responder: AlertResponder): Promise<Alert>;
+  createAlert(eventRequest: EventRequest): Promise<boolean>;
+  triggerAlertAction(alert: Alert, action: AlertAction): Promise<void>;
 
   fetchUptimeMonitors(): Promise<UptimeMonitor[]>;
   pauseUptimeMonitor(uptimeMonitor: UptimeMonitor): Promise<UptimeMonitor>;
@@ -100,7 +94,7 @@ export interface ILertApi {
     end: string,
   ): Promise<Schedule>;
 
-  getIncidentDetailsURL(incident: Incident): string;
+  getAlertDetailsURL(alert: Alert): string;
   getAlertSourceDetailsURL(alertSource: AlertSource | null): string;
   getEscalationPolicyDetailsURL(escalationPolicy: EscalationPolicy): string;
   getUptimeMonitorDetailsURL(uptimeMonitor: UptimeMonitor): string;

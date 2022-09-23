@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { PENDING, ACCEPTED, RESOLVED, IncidentStatus } from '../../types';
-import { incidentStatusLabels } from '../Incident/IncidentStatus';
+import Checkbox from '@material-ui/core/Checkbox';
 import FormControl from '@material-ui/core/FormControl';
 import ListItemText from '@material-ui/core/ListItemText';
-import Select from '@material-ui/core/Select';
-import Typography from '@material-ui/core/Typography';
 import MenuItem from '@material-ui/core/MenuItem';
-import Checkbox from '@material-ui/core/Checkbox';
+import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import React from 'react';
+import { ACCEPTED, AlertStatus, PENDING, RESOLVED } from '../../types';
+import { alertStatusLabels } from '../Alert/AlertStatus';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -53,15 +53,15 @@ const useStyles = makeStyles({
 });
 
 export const TableTitle = ({
-  incidentStates,
-  onIncidentStatesChange,
+  alertStates,
+  onAlertStatesChange,
 }: {
-  incidentStates: IncidentStatus[];
-  onIncidentStatesChange: (states: IncidentStatus[]) => void;
+  alertStates: AlertStatus[];
+  onAlertStatesChange: (states: AlertStatus[]) => void;
 }) => {
   const classes = useStyles();
-  const handleIncidentStatusSelectChange = (event: any) => {
-    onIncidentStatesChange(event.target.value);
+  const handleAlertStatusSelectChange = (event: any) => {
+    onAlertStatesChange(event.target.value);
   };
 
   return (
@@ -75,19 +75,19 @@ export const TableTitle = ({
         size="small"
       >
         <Select
-          id="incidents-status-select"
+          id="alerts-status-select"
           multiple
-          value={incidentStates}
-          onChange={handleIncidentStatusSelectChange}
+          value={alertStates}
+          onChange={handleAlertStatusSelectChange}
           renderValue={(selected: any) => selected.join(', ')}
           MenuProps={MenuProps}
         >
           {[PENDING, ACCEPTED, RESOLVED].map(state => (
             <MenuItem key={state} value={state}>
               <Checkbox
-                checked={incidentStates.indexOf(state as IncidentStatus) > -1}
+                checked={alertStates.indexOf(state as AlertStatus) > -1}
               />
-              <ListItemText primary={incidentStatusLabels[state]} />
+              <ListItemText primary={alertStatusLabels[state]} />
             </MenuItem>
           ))}
         </Select>

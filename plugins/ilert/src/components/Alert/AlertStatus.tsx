@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { StatusError, StatusOK } from '@backstage/core-components';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
-import { ACCEPTED, Incident, PENDING, RESOLVED } from '../../types';
-import { StatusError, StatusOK } from '@backstage/core-components';
+import React from 'react';
+import { ACCEPTED, Alert, PENDING, RESOLVED } from '../../types';
 
 const useStyles = makeStyles({
   denseListIcon: {
@@ -29,19 +29,19 @@ const useStyles = makeStyles({
   },
 });
 
-export const incidentStatusLabels = {
+export const alertStatusLabels = {
   [RESOLVED]: 'Resolved',
   [ACCEPTED]: 'Accepted',
   [PENDING]: 'Pending',
 } as Record<string, string>;
 
-export const IncidentStatus = ({ incident }: { incident: Incident }) => {
+export const AlertStatus = ({ alert }: { alert: Alert }) => {
   const classes = useStyles();
 
   return (
-    <Tooltip title={incident.status} placement="top">
+    <Tooltip title={alert.status} placement="top">
       <div className={classes.denseListIcon}>
-        {incident.status === 'PENDING' ? <StatusError /> : <StatusOK />}
+        {alert.status === 'PENDING' ? <StatusError /> : <StatusOK />}
       </div>
     </Tooltip>
   );
