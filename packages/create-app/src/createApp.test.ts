@@ -33,7 +33,7 @@ const checkPathExistsMock = jest.spyOn(tasks, 'checkPathExistsTask');
 const templatingMock = jest.spyOn(tasks, 'templatingTask');
 const checkAppExistsMock = jest.spyOn(tasks, 'checkAppExistsTask');
 const initGitRepositoryMock = jest.spyOn(tasks, 'initGitRepository');
-const checkForGitSetup = jest.spyOn(tasks, 'checkForGitSetup');
+const readGitConfig = jest.spyOn(tasks, 'readGitConfig');
 const createTemporaryAppFolderMock = jest.spyOn(
   tasks,
   'createTemporaryAppFolderTask',
@@ -58,7 +58,11 @@ describe('command entrypoint', () => {
       name: 'MyApp',
       dbType: 'PostgreSQL',
     });
-    checkForGitSetup.mockResolvedValue(true);
+    readGitConfig.mockResolvedValue({
+      name: 'git-user',
+      email: 'git-email',
+      defaultBranch: 'git-default-branch',
+    });
   });
 
   afterEach(() => {
@@ -91,9 +95,9 @@ describe('command entrypoint', () => {
     expect(buildAppMock).not.toHaveBeenCalled();
   });
 
-  it('should not call `initGitRepository` when `isGitConfigured` is false', async () => {
+  it('should not call `initGitRepository` when `gitConfig` is undefined', async () => {
     const cmd = {} as unknown as Command;
-    checkForGitSetup.mockResolvedValue(false);
+    readGitConfig.mockResolvedValue(undefined);
     await createApp(cmd);
     expect(initGitRepositoryMock).not.toHaveBeenCalled();
   });

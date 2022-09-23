@@ -29,8 +29,10 @@ import {
   moveAppTask,
   templatingTask,
   initGitRepository,
-  checkForGitSetup,
+  readGitConfig,
 } from './lib/tasks';
+
+const DEFAULT_BRANCH = 'master';
 
 export default async (opts: OptionValues): Promise<void> => {
   /* eslint-disable-next-line no-restricted-syntax */
@@ -78,7 +80,7 @@ export default async (opts: OptionValues): Promise<void> => {
   Task.log('Creating the app...');
 
   try {
-    const isGitConfigured = await checkForGitSetup();
+    const gitConfig = await readGitConfig();
 
     if (opts.path) {
       // Template directly to specified path
@@ -86,13 +88,11 @@ export default async (opts: OptionValues): Promise<void> => {
       Task.section('Checking that supplied path exists');
       await checkPathExistsTask(appDir);
 
-      if (isGitConfigured) {
-        Task.section('Initializing git repository');
-        await initGitRepository(appDir, answers);
-      }
-
       Task.section('Preparing files');
-      await templatingTask(templateDir, opts.path, answers);
+      await templatingTask(templateDir, opts.path, {
+        ...answers,
+        defaultBranch: gitConfig?.defaultBranch ?? DEFAULT_BRANCH,
+      });
     } else {
       // Template to temporary location, and then move files
 
@@ -102,16 +102,19 @@ export default async (opts: OptionValues): Promise<void> => {
       Task.section('Creating a temporary app directory');
       await createTemporaryAppFolderTask(tempDir);
 
-      if (isGitConfigured) {
-        Task.section('Initializing git repository');
-        await initGitRepository(tempDir, answers);
-      }
-
       Task.section('Preparing files');
-      await templatingTask(templateDir, tempDir, answers);
+      await templatingTask(templateDir, tempDir, {
+        ...answers,
+        defaultBranch: gitConfig?.defaultBranch ?? DEFAULT_BRANCH,
+      });
 
       Task.section('Moving to final location');
       await moveAppTask(tempDir, appDir, answers.name);
+    }
+
+    if (gitConfig) {
+      Task.section('Initializing git repository');
+      await initGitRepository(appDir);
     }
 
     if (!opts.skipInstall) {

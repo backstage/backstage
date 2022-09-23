@@ -27,7 +27,7 @@ import {
   moveAppTask,
   templatingTask,
   initGitRepository,
-  checkForGitSetup,
+  readGitConfig,
 } from './tasks';
 
 const commandExists = jest.fn();
@@ -286,17 +286,22 @@ describe('tasks', () => {
     });
   });
 
-  describe('checkForGitSetup', () => {
-    it('should return true if git package is installed and git credentials are set', async () => {
+  describe('readGitConfig', () => {
+    it('should return git config if git package is installed and git credentials are set', async () => {
       mockExec.mockImplementation((_command, callback) => {
         callback(null, { stdout: 'main' }, 'standard error');
       });
 
       commandExists.mockResolvedValue(true);
 
-      const isGitConfigured = await checkForGitSetup();
+      const gitConfig = await readGitConfig();
 
-      expect(isGitConfigured).toBe(true);
+      expect(gitConfig).toBeTruthy();
+      expect(gitConfig).toEqual({
+        name: 'main',
+        email: 'main',
+        defaultBranch: 'main',
+      });
       expect(mockExec).toHaveBeenCalledWith(
         'git config user.name',
         expect.any(Function),
@@ -305,14 +310,19 @@ describe('tasks', () => {
         'git config user.email',
         expect.any(Function),
       );
+      expect(mockExec).toHaveBeenCalledWith('git init', expect.any(Function));
+      expect(mockExec).toHaveBeenCalledWith(
+        'git commit --allow-empty -m "Initial commit"',
+        expect.any(Function),
+      );
     });
 
     it('should return false if git package is not installed', async () => {
       commandExists.mockResolvedValue(false);
 
-      const isGitConfigured = await checkForGitSetup();
+      const gitConfig = await readGitConfig();
 
-      expect(isGitConfigured).toBe(false);
+      expect(gitConfig).toBeUndefined();
     });
 
     it('should return false if git package is installed but git credentials are not set', async () => {
@@ -322,9 +332,9 @@ describe('tasks', () => {
 
       commandExists.mockResolvedValue(true);
 
-      const isGitConfigured = await checkForGitSetup();
+      const gitConfig = await readGitConfig();
 
-      expect(isGitConfigured).toBe(false);
+      expect(gitConfig).toBeUndefined();
       expect(mockExec).toHaveBeenCalledWith(
         'git config user.name',
         expect.any(Function),
@@ -339,18 +349,14 @@ describe('tasks', () => {
   describe('initGitRepository', () => {
     it('should initialize a git repository at the given path', async () => {
       const destinationDir = 'tmp/mockApp/';
-      const context = {
-        defaultBranch: '',
-      };
 
       mockExec.mockImplementation((_command, callback) => {
         callback(null, { stdout: 'main' }, 'standard error');
       });
 
-      await initGitRepository(destinationDir, context);
+      await initGitRepository(destinationDir);
 
-      expect(context.defaultBranch).toBe('main');
-      expect(mockExec).toHaveBeenCalledTimes(3);
+      expect(mockExec).toHaveBeenCalledTimes(2);
       expect(mockExec).toHaveBeenNthCalledWith(
         1,
         'git init',
@@ -359,11 +365,6 @@ describe('tasks', () => {
       expect(mockExec).toHaveBeenNthCalledWith(
         2,
         'git commit --allow-empty -m "Initial commit"',
-        expect.any(Function),
-      );
-      expect(mockExec).toHaveBeenNthCalledWith(
-        3,
-        'git branch --format="%(refname:short)"',
         expect.any(Function),
       );
     });
