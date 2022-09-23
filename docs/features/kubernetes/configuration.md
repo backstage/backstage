@@ -413,6 +413,7 @@ rules:
       - ingresses
       - statefulsets
       - limitranges
+      - daemonsets
     verbs:
       - get
       - list
