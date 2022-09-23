@@ -40,7 +40,6 @@ import { TemplateTypePicker } from '../TemplateTypePicker';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { ScaffolderPageContextMenu } from './ScaffolderPageContextMenu';
-import { SerializedWorkflowLink } from '../SerializedWorkflowLink';
 
 export type ScaffolderPageProps = {
   TemplateCardComponent?:
@@ -85,20 +84,6 @@ export const ScaffolderPageContents = ({
         <ScaffolderPageContextMenu {...contextMenu} />
       </Header>
       <Content>
-        <div>
-          <SerializedWorkflowLink
-            templateName="create-react-app-template"
-            namespace="default"
-            formData={{
-              component_id: 'aaa',
-              description: 'ddd',
-              owner: 'backstage',
-              repoUrl: 'github.com?owner=aaa&repo=aaa',
-            }}
-          >
-            workflow
-          </SerializedWorkflowLink>
-        </div>
         <ContentHeader title="Available Templates">
           {allowed && (
             <CreateButton
