@@ -33,51 +33,37 @@ import {
 import { useApi } from '@backstage/core-plugin-api';
 
 const Body = (props: { exploreTools?: Array<ExploreTool> }) => {
-  var exploreTools;
-  if (!props?.exploreTools) {
-    const exploreToolsConfigApi = useApi(exploreToolsConfigRef);
-    const {
-      value: tools,
-      loading,
-      error,
-    } = useAsync(async () => {
-      return await exploreToolsConfigApi.getTools();
-    }, [exploreToolsConfigApi]);
+  const exploreToolsConfigApi = useApi(exploreToolsConfigRef);
+  const {
+    value: tools,
+    loading,
+    error,
+  } = useAsync(async () => {
+    if (props?.exploreTools) return props?.exploreTools;
+    return await exploreToolsConfigApi.getTools();
+  }, [exploreToolsConfigApi]);
 
-    if (loading) {
-      return <Progress />;
-    }
+  if (loading) {
+    return <Progress />;
+  }
 
-    if (error) {
-      return <WarningPanel title="Failed to load tools" />;
-    }
+  if (error) {
+    return <WarningPanel title="Failed to load tools" />;
+  }
 
-    if (!tools?.length) {
-      return (
-        <EmptyState
-          missing="info"
-          title="No tools to display"
-          description="You haven't added any tools yet."
-        />
-      );
-    }
-    exploreTools = tools;
-  } else if (props?.exploreTools) {
-    exploreTools = props?.exploreTools;
-    if (!props?.exploreTools?.length) {
-      return (
-        <EmptyState
-          missing="info"
-          title="No tools to display"
-          description="You haven't added any tools yet."
-        />
-      );
-    }
+  if (!tools?.length) {
+    return (
+      <EmptyState
+        missing="info"
+        title="No tools to display"
+        description="You haven't added any tools yet."
+      />
+    );
   }
 
   return (
     <ItemCardGrid>
-      {exploreTools?.map((tool, index) => (
+      {tools?.map((tool, index) => (
         <ToolCard key={index} card={tool} />
       ))}
     </ItemCardGrid>

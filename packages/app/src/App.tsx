@@ -106,7 +106,6 @@ import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
 import { PlaylistIndexPage } from '@backstage/plugin-playlist';
 import { TwoColumnLayout } from './components/scaffolder/customScaffolderLayouts';
-import { exploreTools } from './exploreTools';
 
 const app = createApp({
   apis,
@@ -243,10 +242,7 @@ const routes = (
         <DelayingComponentFieldExtension />
       </ScaffolderFieldExtensions>
     </Route>
-    <Route
-      path="/explore"
-      element={<ExplorePage exploreTools={exploreTools} />}
-    />
+    <Route path="/explore" element={<ExplorePage />} />
     <Route
       path="/tech-radar"
       element={<TechRadarPage width={1500} height={800} />}
