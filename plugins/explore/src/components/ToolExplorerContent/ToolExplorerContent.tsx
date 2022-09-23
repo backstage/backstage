@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
+import { ExploreTool, exploreToolsConfigRef } from '@backstage/plugin-explore-react';
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { ToolCard } from '../ToolCard';
@@ -29,48 +29,63 @@ import {
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
-const Body = () => {
-  const exploreToolsConfigApi = useApi(exploreToolsConfigRef);
-  const {
-    value: tools,
-    loading,
-    error,
-  } = useAsync(async () => {
-    return await exploreToolsConfigApi.getTools();
-  }, [exploreToolsConfigApi]);
+const Body = (props: {exploreTools?: Array<ExploreTool>}) => {
+  var exploreTools;
+  if(!props?.exploreTools){
+    const exploreToolsConfigApi = useApi(exploreToolsConfigRef);
+    const {
+      value: tools,
+      loading,
+      error,
+    } = useAsync(async () => {
+      return await exploreToolsConfigApi.getTools();
+    }, [exploreToolsConfigApi]);
 
-  if (loading) {
-    return <Progress />;
-  }
+    if (loading) {
+      return <Progress />;
+    }
 
-  if (error) {
-    return <WarningPanel title="Failed to load tools" />;
-  }
+    if (error) {
+      return <WarningPanel title="Failed to load tools" />;
+    }
 
-  if (!tools?.length) {
-    return (
-      <EmptyState
-        missing="info"
-        title="No tools to display"
-        description="You haven't added any tools yet."
-      />
-    );
+    if (!tools?.length) {
+      return (
+        <EmptyState
+          missing="info"
+          title="No tools to display"
+          description="You haven't added any tools yet."
+        />
+      );
+    }
+    exploreTools = tools;
+  } else if(props?.exploreTools) {
+    exploreTools = props?.exploreTools;
+    if (!props?.exploreTools?.length) {
+      return (
+        <EmptyState
+          missing="info"
+          title="No tools to display"
+          description="You haven't added any tools yet."
+        />
+      );
+    }
   }
 
   return (
     <ItemCardGrid>
-      {tools.map((tool, index) => (
+      {exploreTools?.map((tool, index) => (
         <ToolCard key={index} card={tool} />
       ))}
     </ItemCardGrid>
   );
 };
 
-export const ToolExplorerContent = (props: { title?: string }) => (
+export const ToolExplorerContent = (props: { title?: string, exploreTools?: Array<ExploreTool>}) => (
   <Content noPadding>
     <ContentHeader title={props.title ?? 'Tools'}>
       <SupportButton>Discover the tools in your ecosystem.</SupportButton>
     </ContentHeader>
-    <Body />
+    <Body exploreTools={props?.exploreTools}/>
   </Content>
 );

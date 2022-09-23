@@ -17,9 +17,11 @@
 import React from 'react';
 import { useOutlet } from 'react-router';
 import { DefaultExplorePage } from '../DefaultExplorePage';
+import { ExploreTool } from '@backstage/plugin-explore-react';
 
-export const ExplorePage = () => {
+
+export const ExplorePage = (props: {exploreTools?: Array<ExploreTool>}) => {
   const outlet = useOutlet();
 
-  return <>{outlet || <DefaultExplorePage />}</>;
+  return <>{outlet || <DefaultExplorePage exploreTools={props?.exploreTools} />}</>;
 };
