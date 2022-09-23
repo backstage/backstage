@@ -50,7 +50,7 @@
       ]
     },
     "metadata": {
-      "$ref": "EntityMeta"
+      "$ref": "EntityMeta.schema.json"
     },
     "spec": {
       "type": "object",
@@ -58,13 +58,14 @@
     },
     "relations": {
       "type": "array",
+      "readOnly": true,
       "description": "The relations that this entity has with other entities.",
       "items": {
-        "$ref": "common#relation"
+        "$ref": "shared/common.schema.json#relation"
       }
     },
     "status": {
-      "$ref": "common#status"
+      "$ref": "shared/common.schema.json#status"
     }
   }
 }

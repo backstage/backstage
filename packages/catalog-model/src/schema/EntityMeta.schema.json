@@ -42,7 +42,6 @@
     "namespace": {
       "type": "string",
       "description": "The namespace that the entity belongs to.",
-      "default": "default",
       "examples": ["default", "admin"],
       "minLength": 1
     },

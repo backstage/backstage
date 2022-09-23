@@ -27,7 +27,7 @@
   ],
   "allOf": [
     {
-      "$ref": "Entity"
+      "$ref": "../Entity.schema.json"
     },
     {
       "type": "object",
@@ -37,7 +37,7 @@
           "enum": ["backstage.io/v1alpha1", "backstage.io/v1beta1"]
         },
         "kind": {
-          "enum": ["API"]
+          "const": "API"
         },
         "spec": {
           "type": "object",

@@ -5,7 +5,7 @@
   "description": "Common definitions to import from other schemas",
   "definitions": {
     "reference": {
-      "$id": "#reference",
+      "$id": "reference",
       "type": "object",
       "description": "A reference by name to another entity.",
       "required": ["kind", "namespace", "name"],
@@ -29,7 +29,7 @@
       }
     },
     "relation": {
-      "$id": "#relation",
+      "$id": "relation",
       "type": "object",
       "description": "A directed relation from one entity to another.",
       "required": ["type", "target"],
@@ -52,7 +52,7 @@
       }
     },
     "status": {
-      "$id": "#status",
+      "$id": "status",
       "type": "object",
       "description": "The current status of the entity, as claimed by various sources.",
       "required": [],
@@ -67,7 +67,7 @@
       }
     },
     "statusItem": {
-      "$id": "#statusItem",
+      "$id": "statusItem",
       "type": "object",
       "description": "A specific status item on a well known format.",
       "required": ["type", "level", "message"],
@@ -92,7 +92,7 @@
       }
     },
     "statusLevel": {
-      "$id": "#statusLevel",
+      "$id": "statusLevel",
       "type": "string",
       "description": "A status level / severity.",
       "enum": ["info", "warning", "error"]
