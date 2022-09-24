@@ -189,7 +189,6 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     );
 
     const { integrations } = this.options;
-    console.log(this.options.additionalTemplateGlobals, '@@@%%%%%%%%%%@@@');
     const renderTemplate = await SecureTemplater.loadRenderer({
       // TODO(blam): let's work out how we can deprecate this.
       // We shouldn't really need to be exposing these now we can deal with
