@@ -784,7 +784,10 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       if (!oldRef) {
         // Add any entity that does not exist in the database
         toAdd.push(upsertItem);
-      } else if (oldRef.locationKey !== item.deferred.locationKey) {
+      } else if (
+        (oldRef?.locationKey ?? undefined) !==
+        (item.deferred.locationKey ?? undefined)
+      ) {
         // Remove and then re-add any entity that exists, but with a different location key
         toRemove.push(item.ref);
         toAdd.push(upsertItem);
