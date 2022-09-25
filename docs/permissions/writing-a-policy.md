@@ -37,7 +37,6 @@ As we confirmed in the previous section, we know that this now prevents us from 
 Let's change the policy to the following:
 
 ```diff
-- import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 + import {
 +   BackstageIdentityResponse,
 +   DefaultIdentityClient
