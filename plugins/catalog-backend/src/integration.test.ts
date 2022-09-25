@@ -18,11 +18,7 @@ import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
-import {
-  BuiltinKindsEntityProcessor,
-  CatalogProcessingEngine,
-  EntityProvider,
-} from './index';
+import { CatalogProcessingEngine, EntityProvider } from './index';
 import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { Entity, EntityPolicies } from '@backstage/catalog-model';
@@ -224,6 +220,9 @@ class TestHarness {
       processors: [
         {
           getProcessorName: () => 'test',
+          async validateEntityKind() {
+            return true;
+          },
           async preProcessEntity(
             entity: Entity,
             location: LocationSpec,
@@ -235,7 +234,6 @@ class TestHarness {
             return entity;
           },
         },
-        new BuiltinKindsEntityProcessor(),
       ],
       integrations,
       rulesEnforcer,
@@ -337,7 +335,7 @@ describe('Catalog Backend Integration', () => {
     const harness = await TestHarness.create({
       async processEntity(entity: Entity) {
         if (triggerError) {
-          delete entity.spec;
+          throw new Error('NOPE');
         }
         return entity;
       },
@@ -354,11 +352,6 @@ describe('Catalog Backend Integration', () => {
             'backstage.io/managed-by-origin-location': 'url:.',
           },
         },
-        spec: {
-          type: 'service',
-          owner: 'guest',
-          lifecycle: 'production',
-        },
       },
     ]);
 
@@ -370,14 +363,7 @@ describe('Catalog Backend Integration', () => {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
         metadata: expect.objectContaining({ name: 'test' }),
-        spec: expect.objectContaining({ type: 'service' }),
-        relations: [
-          {
-            target: { kind: 'group', namespace: 'default', name: 'guest' },
-            type: 'ownedBy',
-            targetRef: 'group:default/guest',
-          },
-        ],
+        relations: [],
       },
     ]);
 
@@ -390,24 +376,24 @@ describe('Catalog Backend Integration', () => {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
         metadata: expect.objectContaining({ name: 'test' }),
-        spec: expect.objectContaining({ type: 'service' }),
-        relations: expect.any(Array),
+        relations: [],
         status: {
           items: [
             {
               level: 'error',
               type: 'backstage.io/catalog-processing',
-              message: expect.stringMatching(
-                /InputError: Processor BuiltinKindsEntityProcessor threw an error/,
-              ),
-              error: expect.objectContaining({
-                cause: expect.objectContaining({
-                  message:
-                    "<root> must have required property 'spec' - missingProperty: spec",
-                  name: 'TypeError',
-                }),
+              message:
+                'InputError: Processor Object threw an error while preprocessing; caused by Error: NOPE',
+              error: {
                 name: 'InputError',
-              }),
+                message:
+                  'Processor Object threw an error while preprocessing; caused by Error: NOPE',
+                cause: {
+                  name: 'Error',
+                  message: 'NOPE',
+                  stack: expect.stringMatching(/^Error: NOPE/),
+                },
+              },
             },
           ],
         },
