@@ -540,4 +540,103 @@ describe('Catalog Backend Integration', () => {
 
     await expect(harness.getOutputEntities()).resolves.toEqual(outputEntities);
   });
+
+  it('should delete entities even in case of cycles', async () => {
+    function mkEntity(name: string) {
+      return {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name,
+          annotations: {
+            'backstage.io/managed-by-location': 'url:.',
+            'backstage.io/managed-by-origin-location': 'url:.',
+          },
+        },
+      };
+    }
+
+    const harness = await TestHarness.create({
+      async processEntity(
+        entity: Entity,
+        location: LocationSpec,
+        emit: CatalogProcessorEmit,
+      ) {
+        if (entity.spec?.noEmit) {
+          return entity;
+        }
+        switch (entity.metadata.name) {
+          case 'a':
+            emit(processingResult.entity(location, mkEntity('b')));
+            break;
+          case 'b':
+            emit(processingResult.entity(location, mkEntity('c')));
+            break;
+          case 'c':
+            emit(processingResult.entity(location, mkEntity('d')));
+            break;
+          case 'd':
+            emit(processingResult.entity(location, mkEntity('b')));
+            break;
+          default:
+        }
+        return entity;
+      },
+    });
+
+    await harness.setInputEntities([
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'a',
+          annotations: {
+            'backstage.io/managed-by-location': 'url:.',
+            'backstage.io/managed-by-origin-location': 'url:.',
+          },
+        },
+      },
+    ]);
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({});
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': expect.objectContaining({
+        metadata: expect.objectContaining({ name: 'a' }),
+      }),
+      'component:default/b': expect.objectContaining({
+        metadata: expect.objectContaining({ name: 'b' }),
+      }),
+      'component:default/c': expect.objectContaining({
+        metadata: expect.objectContaining({ name: 'c' }),
+      }),
+      'component:default/d': expect.objectContaining({
+        metadata: expect.objectContaining({ name: 'd' }),
+      }),
+    });
+
+    await harness.setInputEntities([
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'a',
+          annotations: {
+            'backstage.io/managed-by-location': 'url:.',
+            'backstage.io/managed-by-origin-location': 'url:.',
+          },
+        },
+        spec: { noEmit: true },
+      },
+    ]);
+
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': expect.objectContaining({
+        metadata: expect.objectContaining({ name: 'a' }),
+      }),
+    });
+  });
 });
