@@ -40,7 +40,11 @@ import { DefaultRefreshService } from './service/DefaultRefreshService';
 import { connectEntityProviders } from './processing/connectEntityProviders';
 import { EntitiesCatalog } from './catalog/types';
 import { RefreshOptions, RefreshService } from './service/types';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
+import {
+  CatalogProcessorEmit,
+  EntityProviderConnection,
+  LocationSpec,
+} from '@backstage/plugin-catalog-node';
 import { RefreshStateItem } from './database/types';
 
 const voidLogger = getVoidLogger();
@@ -179,7 +183,11 @@ class TestHarness {
     logger?: Logger;
     db?: Knex;
     permissions?: PermissionEvaluator;
-    processEntity?(entity: Entity): Promise<Entity>;
+    processEntity?(
+      entity: Entity,
+      location: LocationSpec,
+      emit: CatalogProcessorEmit,
+    ): Promise<Entity>;
     onProcessingError?(event: {
       unprocessedEntity: Entity;
       errors: Error[];
@@ -216,9 +224,13 @@ class TestHarness {
       processors: [
         {
           getProcessorName: () => 'test',
-          async preProcessEntity(entity: Entity) {
+          async preProcessEntity(
+            entity: Entity,
+            location: LocationSpec,
+            emit: CatalogProcessorEmit,
+          ) {
             if (options?.processEntity) {
-              return options?.processEntity(entity);
+              return options?.processEntity(entity, location, emit);
             }
             return entity;
           },
@@ -246,7 +258,13 @@ class TestHarness {
       () => createHash('sha1'),
       50,
       event => {
-        options?.onProcessingError?.(event);
+        if (options?.onProcessingError) {
+          options.onProcessingError(event);
+        } else {
+          throw new Error(
+            `Catalog processing error, ${event.errors.join(', ')}`,
+          );
+        }
       },
       proxyProgressTracker,
     );
