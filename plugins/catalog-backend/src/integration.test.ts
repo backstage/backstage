@@ -21,7 +21,11 @@ import { JsonObject } from '@backstage/types';
 import { CatalogProcessingEngine, EntityProvider } from './index';
 import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { Entity, EntityPolicies } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityPolicies,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { defaultEntityDataParser } from './modules/util/parse';
 import { DefaultCatalogProcessingOrchestrator } from './processing/DefaultCatalogProcessingOrchestrator';
 import { applyDatabaseMigrations } from './database/migrations';
@@ -318,9 +322,9 @@ class TestHarness {
     });
   }
 
-  async getOutputEntities(): Promise<Entity[]> {
+  async getOutputEntities(): Promise<Record<string, Entity>> {
     const { entities } = await this.#catalog.entities();
-    return entities;
+    return Object.fromEntries(entities.map(e => [stringifyEntityRef(e), e]));
   }
 
   async refresh(options: RefreshOptions) {
@@ -355,24 +359,24 @@ describe('Catalog Backend Integration', () => {
       },
     ]);
 
-    await expect(harness.getOutputEntities()).resolves.toEqual([]);
+    await expect(harness.getOutputEntities()).resolves.toEqual({});
     await expect(harness.process()).resolves.toEqual({});
 
-    await expect(harness.getOutputEntities()).resolves.toEqual([
-      {
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/test': {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
         metadata: expect.objectContaining({ name: 'test' }),
         relations: [],
       },
-    ]);
+    });
 
     triggerError = true;
 
     await expect(harness.process()).resolves.toEqual({});
 
-    await expect(harness.getOutputEntities()).resolves.toEqual([
-      {
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/test': {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
         metadata: expect.objectContaining({ name: 'test' }),
@@ -398,6 +402,6 @@ describe('Catalog Backend Integration', () => {
           ],
         },
       },
-    ]);
+    });
   });
 });
