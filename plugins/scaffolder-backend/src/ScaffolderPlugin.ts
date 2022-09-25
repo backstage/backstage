@@ -26,7 +26,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
-import { TemplateFilter } from './lib';
+import { TemplateFilter, TemplateGlobal } from './lib';
 import { createBuiltinActions, TaskBroker, TemplateAction } from './scaffolder';
 import { createRouter } from './service/router';
 
@@ -39,7 +39,7 @@ export type ScaffolderPluginOptions = {
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
-  additionalTemplateGlobals?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 };
 
 /**

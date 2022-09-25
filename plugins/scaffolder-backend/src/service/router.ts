@@ -36,7 +36,7 @@ import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
 import { Logger } from 'winston';
 import { z } from 'zod';
-import { TemplateFilter } from '../lib';
+import { TemplateFilter, TemplateGlobal } from '../lib';
 import {
   createBuiltinActions,
   DatabaseTaskStore,
@@ -70,7 +70,7 @@ export interface RouterOptions {
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
-  additionalTemplateGlobals?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   identity?: IdentityApi;
 }
 

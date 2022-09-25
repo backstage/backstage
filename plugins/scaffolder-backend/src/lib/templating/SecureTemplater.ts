@@ -65,8 +65,12 @@ const { render, renderCompat } = (() => {
   }
 
   if (typeof additionalTemplateGlobals !== 'undefined') {
-    for (const [globalName, globalFn] of Object.entries(additionalTemplateGlobals)) {
-      env.addGlobal(globalName, (...args) => JSON.parse(globalFn(...args)));
+    for (const [globalName, global] of Object.entries(additionalTemplateGlobals)) {
+      if (typeof global === 'function') {
+        env.addGlobal(globalName, (...args) => JSON.parse(global(...args)));
+      } else {
+        env.addGlobal(globalName, global);
+      }
     }
   }
 
@@ -104,6 +108,11 @@ const { render, renderCompat } = (() => {
 /** @public */
 export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
 
+/** @public */
+export type TemplateGlobal =
+  | ((...args: JsonValue[]) => JsonValue | undefined)
+  | JsonValue;
+
 export interface SecureTemplaterOptions {
   /* Optional implementation of the parseRepoUrl filter */
   parseRepoUrl?(repoUrl: string): RepoSpec;
@@ -113,7 +122,8 @@ export interface SecureTemplaterOptions {
 
   /* Extra user-provided nunjucks filters */
   additionalTemplateFilters?: Record<string, TemplateFilter>;
-  additionalTemplateGlobals?: Record<string, TemplateFilter>;
+  /* Extra user-provided nunjucks globals */
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }
 
 export type SecureTemplateRenderer = (
@@ -148,11 +158,16 @@ export class SecureTemplater {
     if (additionalTemplateGlobals) {
       sandbox.additionalTemplateGlobals = Object.fromEntries(
         Object.entries(additionalTemplateGlobals)
-          .filter(([_, filterFunction]) => !!filterFunction)
-          .map(([filterName, filterFunction]) => [
-            filterName,
-            (...args: JsonValue[]) => JSON.stringify(filterFunction(...args)),
-          ]),
+          .filter(([_, global]) => !!global)
+          .map(([globalName, global]) => {
+            if (typeof global === 'function') {
+              return [
+                globalName,
+                (...args: JsonValue[]) => JSON.stringify(global(...args)),
+              ];
+            }
+            return [globalName, global];
+          }),
       );
     }
     const vm = new VM({ sandbox });

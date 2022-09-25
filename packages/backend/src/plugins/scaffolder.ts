@@ -34,5 +34,11 @@ export default async function createPlugin(
     reader: env.reader,
     identity: env.identity,
     scheduler: env.scheduler,
+    additionalTemplateGlobals: {
+      company: 'RoadieHQ',
+      now: () => {
+        return 'NOW !!!!';
+      },
+    },
   });
 }

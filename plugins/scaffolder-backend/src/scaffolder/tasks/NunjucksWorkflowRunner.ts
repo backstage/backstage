@@ -31,6 +31,7 @@ import {
   TemplateFilter,
   SecureTemplater,
   SecureTemplateRenderer,
+  TemplateGlobal,
 } from '../../lib/templating/SecureTemplater';
 import {
   TaskSpec,
@@ -45,7 +46,7 @@ type NunjucksWorkflowRunnerOptions = {
   integrations: ScmIntegrations;
   logger: winston.Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
-  additionalTemplateGlobals?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 };
 
 type TemplateContext = {

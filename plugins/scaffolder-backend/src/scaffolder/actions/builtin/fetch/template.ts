@@ -26,6 +26,7 @@ import { isBinaryFile } from 'isbinaryfile';
 import {
   TemplateFilter,
   SecureTemplater,
+  TemplateGlobal,
 } from '../../../../lib/templating/SecureTemplater';
 
 /**
@@ -39,7 +40,7 @@ export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
-  additionalTemplateGlobals?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }) {
   const {
     reader,
