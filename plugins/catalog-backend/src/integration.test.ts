@@ -44,6 +44,7 @@ import {
   CatalogProcessorEmit,
   EntityProviderConnection,
   LocationSpec,
+  processingResult,
 } from '@backstage/plugin-catalog-node';
 import { RefreshStateItem } from './database/types';
 
@@ -402,6 +403,93 @@ describe('Catalog Backend Integration', () => {
           ],
         },
       },
+    });
+  });
+
+  it('should orphan entities', async () => {
+    const generatedApis = ['api-1', 'api-2'];
+
+    const harness = await TestHarness.create({
+      async processEntity(
+        entity: Entity,
+        location: LocationSpec,
+        emit: CatalogProcessorEmit,
+      ) {
+        if (entity.metadata.name === 'test') {
+          for (const api of generatedApis) {
+            emit(
+              processingResult.entity(location, {
+                apiVersion: 'backstage.io/v1alpha1',
+                kind: 'API',
+                metadata: {
+                  name: api,
+                  annotations: {
+                    'backstage.io/managed-by-location': 'url:.',
+                    'backstage.io/managed-by-origin-location': 'url:.',
+                  },
+                },
+              }),
+            );
+          }
+        }
+        return entity;
+      },
+    });
+
+    await harness.setInputEntities([
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'test',
+          annotations: {
+            'backstage.io/managed-by-location': 'url:.',
+            'backstage.io/managed-by-origin-location': 'url:.',
+          },
+        },
+      },
+    ]);
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({});
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/test': {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: expect.objectContaining({ name: 'test' }),
+        relations: [],
+      },
+      'api:default/api-1': expect.objectContaining({
+        metadata: expect.objectContaining({ name: 'api-1' }),
+      }),
+      'api:default/api-2': expect.objectContaining({
+        metadata: expect.objectContaining({ name: 'api-2' }),
+      }),
+    });
+
+    generatedApis.pop();
+
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/test': {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: expect.objectContaining({ name: 'test' }),
+        relations: [],
+      },
+      'api:default/api-1': expect.objectContaining({
+        metadata: expect.objectContaining({ name: 'api-1' }),
+      }),
+      'api:default/api-2': expect.objectContaining({
+        metadata: expect.objectContaining({
+          name: 'api-2',
+          annotations: expect.objectContaining({
+            'backstage.io/orphan': 'true',
+          }),
+        }),
+      }),
     });
   });
 });
