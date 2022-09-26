@@ -24,6 +24,7 @@ import { ConfigReader } from '@backstage/config';
 import { TaskScheduler } from '@backstage/backend-tasks';
 import { DefaultFactRetrieverRegistry } from './fact/FactRetrieverRegistry';
 import { Knex } from 'knex';
+import { IdentityApi } from '@backstage/core-plugin-api';
 
 jest.mock('./fact/FactRetrieverRegistry');
 jest.mock('./fact/FactRetrieverEngine', () => ({
@@ -52,6 +53,19 @@ describe('buildTechInsightsContext', () => {
     getBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
     getExternalBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
   };
+  const identityMock: IdentityApi = {
+    async getIdentity({ request }) {
+      const token = request.headers.authorization?.split(' ')[1];
+      return {
+        identity: {
+          type: 'user',
+          ownershipEntityRefs: [],
+          userEntityRef: token || 'user:default/john_doe',
+        },
+        token: token || 'no-token',
+      };
+    },
+  };
   const scheduler = new TaskScheduler(manager, getVoidLogger()).forPlugin(
     'tech-insights',
   );
@@ -68,6 +82,7 @@ describe('buildTechInsightsContext', () => {
       scheduler: scheduler,
       config: ConfigReader.fromConfigs([]),
       discovery: discoveryMock,
+      identity: identityMock,
       tokenManager: ServerTokenManager.noop(),
     });
     expect(DefaultFactRetrieverRegistry).toHaveBeenCalledTimes(1);
@@ -84,6 +99,7 @@ describe('buildTechInsightsContext', () => {
       scheduler: scheduler,
       config: ConfigReader.fromConfigs([]),
       discovery: discoveryMock,
+      identity: identityMock,
       tokenManager: ServerTokenManager.noop(),
     });
     expect(DefaultFactRetrieverRegistry).not.toHaveBeenCalled();
