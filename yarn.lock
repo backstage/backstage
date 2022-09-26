@@ -6909,6 +6909,7 @@ __metadata:
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-tech-insights-common": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/luxon": ^3.0.0

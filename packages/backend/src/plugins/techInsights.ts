@@ -38,6 +38,7 @@ export default async function createPlugin(
     database: env.database,
     scheduler: env.scheduler,
     discovery: env.discovery,
+    identity: env.identity,
     tokenManager: env.tokenManager,
     factRetrievers: [
       createFactRetrieverRegistration({

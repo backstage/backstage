@@ -22,7 +22,7 @@ import {
 } from '@backstage/backend-common';
 import { Logger } from 'winston';
 import { HumanDuration } from '@backstage/backend-tasks';
-import { IdentityApi } from '@backstage/core-plugin-api';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 
 /**
  * A container for facts. The shape of the fact records needs to correspond to the FactSchema with same `ref` value.
@@ -148,7 +148,7 @@ export type FactSchema = {
 export type FactRetrieverContext = {
   config: Config;
   discovery: PluginEndpointDiscovery;
-  identityApi: IdentityApi,
+  identity: IdentityApi,
   logger: Logger;
   tokenManager: TokenManager;
   entityFilter?:

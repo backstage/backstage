@@ -35,6 +35,7 @@
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
     "@backstage/config": "workspace:^",
+    "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-tech-insights-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "@types/luxon": "^3.0.0",

@@ -29,6 +29,7 @@ import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
 import { DateTime } from 'luxon';
 import { Knex } from 'knex';
 import { TaskScheduler } from '@backstage/backend-tasks';
+import {IdentityApi} from '@backstage/plugin-auth-node';
 
 describe('Tech Insights router tests', () => {
   let app: express.Express;
@@ -44,6 +45,17 @@ describe('Tech Insights router tests', () => {
       getLatestSchemas: latestSchemasMock,
     } as unknown as TechInsightsStore,
   };
+
+  const mockUser = {
+    type: 'user',
+    ownershipEntityRefs: ['user:default/me', 'group:default/owner'],
+    userEntityRef: 'user:default/me',
+  };
+  const mockIdentityClient = {
+    getIdentity: jest
+      .fn()
+      .mockImplementation(async () => ({ identity: mockUser })),
+  } as unknown as IdentityApi;
 
   afterEach(() => {
     jest.resetAllMocks();
@@ -75,6 +87,7 @@ describe('Tech Insights router tests', () => {
         getBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
         getExternalBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
       },
+      identity:mockIdentityClient,
       tokenManager: ServerTokenManager.noop(),
     });
 

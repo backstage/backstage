@@ -23,6 +23,7 @@ import {
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { GetEntitiesResponse } from '@backstage/catalog-client';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 
 const getEntitiesMock = jest.fn();
 jest.mock('@backstage/catalog-client', () => {
@@ -35,6 +36,9 @@ jest.mock('@backstage/catalog-client', () => {
 const discovery: jest.Mocked<PluginEndpointDiscovery> = {
   getBaseUrl: jest.fn(),
   getExternalBaseUrl: jest.fn(),
+};
+const identity: jest.Mocked<IdentityApi> = {
+  getIdentity: jest.fn()
 };
 
 const defaultEntityListResponse: GetEntitiesResponse = {
@@ -103,6 +107,7 @@ const defaultEntityListResponse: GetEntitiesResponse = {
 
 const handlerContext = {
   discovery,
+  identity,
   logger: getVoidLogger(),
   config: ConfigReader.fromConfigs([]),
   tokenManager: ServerTokenManager.noop(),
