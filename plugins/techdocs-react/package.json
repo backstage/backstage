@@ -34,11 +34,11 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/catalog-model": "^1.1.1",
-    "@backstage/config": "^1.0.2",
-    "@backstage/core-components": "^0.11.1",
-    "@backstage/core-plugin-api": "^1.0.6",
-    "@backstage/version-bridge": "^1.0.1",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/core-components": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/version-bridge": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/lab": "4.0.0-alpha.57",
     "@material-ui/styles": "^4.11.0",
@@ -53,9 +53,9 @@
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0",
-    "@backstage/test-utils": "^1.2.0",
-    "@backstage/theme": "^0.2.16",
+    "@backstage/cli": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@backstage/theme": "workspace:^",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
     "@testing-library/react-hooks": "^8.0.0"

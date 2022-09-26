@@ -55,7 +55,7 @@ describe('JenkinsConfig', () => {
               baseUrl: 'https://jenkins.example.com',
               username: 'backstage - bot',
               apiKey: '123456789abcdef0123456789abcedf012',
-              headers: {
+              extraRequestHeaders: {
                 myHeader: 'my-value',
               },
             },
@@ -70,7 +70,7 @@ describe('JenkinsConfig', () => {
         baseUrl: 'https://jenkins.example.com',
         username: 'backstage - bot',
         apiKey: '123456789abcdef0123456789abcedf012',
-        headers: {
+        extraRequestHeaders: {
           myHeader: 'my-value',
         },
       },

@@ -23,11 +23,11 @@ describe('useResponseSteps', () => {
     const { result } = renderHook(() => useResponseSteps());
 
     expect(result.current).toMatchInlineSnapshot(`
-      Object {
+      {
         "abortIfError": [Function],
         "addStepToResponseSteps": [Function],
         "asyncCatcher": [Function],
-        "responseSteps": Array [],
+        "responseSteps": [],
       }
     `);
   });
@@ -36,7 +36,7 @@ describe('useResponseSteps', () => {
     it('should add responseSteps to state', async () => {
       const { result } = renderHook(() => useResponseSteps());
 
-      expect(result.current.responseSteps).toMatchInlineSnapshot(`Array []`);
+      expect(result.current.responseSteps).toMatchInlineSnapshot(`[]`);
 
       act(() => {
         result.current.addStepToResponseSteps({
@@ -45,12 +45,12 @@ describe('useResponseSteps', () => {
       });
 
       expect(result.current.responseSteps).toMatchInlineSnapshot(`
-              Array [
-                Object {
-                  "message": "totally added a messaage ✌🏼",
-                },
-              ]
-          `);
+        [
+          {
+            "message": "totally added a messaage ✌🏼",
+          },
+        ]
+      `);
     });
   });
 
@@ -58,7 +58,7 @@ describe('useResponseSteps', () => {
     it('should catch Errors and add as failure step, then throw', async () => {
       const { result } = renderHook(() => useResponseSteps());
 
-      expect(result.current.responseSteps).toMatchInlineSnapshot(`Array []`);
+      expect(result.current.responseSteps).toMatchInlineSnapshot(`[]`);
 
       await act(async () => {
         await new Promise((_, reject) => reject(new Error(':(')))
@@ -69,8 +69,8 @@ describe('useResponseSteps', () => {
       });
 
       expect(result.current.responseSteps).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "icon": "failure",
             "message": <b>
               Something went wrong
@@ -91,7 +91,7 @@ describe('useResponseSteps', () => {
     it('should catch unknown Errors and add as failure step, then throw', async () => {
       const { result } = renderHook(() => useResponseSteps());
 
-      expect(result.current.responseSteps).toMatchInlineSnapshot(`Array []`);
+      expect(result.current.responseSteps).toMatchInlineSnapshot(`[]`);
 
       await act(async () => {
         await new Promise((_, reject) => reject())
@@ -102,8 +102,8 @@ describe('useResponseSteps', () => {
       });
 
       expect(result.current.responseSteps).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "icon": "failure",
             "message": <b>
               Something went wrong
@@ -126,13 +126,13 @@ describe('useResponseSteps', () => {
     it('should do nothing if not Error', async () => {
       const { result } = renderHook(() => useResponseSteps());
 
-      expect(result.current.responseSteps).toMatchInlineSnapshot(`Array []`);
+      expect(result.current.responseSteps).toMatchInlineSnapshot(`[]`);
 
       act(() => {
         result.current.abortIfError(undefined);
       });
 
-      expect(result.current.responseSteps).toMatchInlineSnapshot(`Array []`);
+      expect(result.current.responseSteps).toMatchInlineSnapshot(`[]`);
     });
   });
 });

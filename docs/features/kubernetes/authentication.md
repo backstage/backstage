@@ -18,7 +18,7 @@ The providers currently available are divided into server side and client side.
 ## Server Side Providers
 
 These providers authenticate your _application_ with the cluster, meaning anyone that is
-logged in into your backstage app will be granted the same access to Kubernetes objects.
+logged in into your backstage app will be granted the same access to Kubernetes objects, including guest users.
 
 The providers available as server side are:
 
@@ -27,6 +27,33 @@ The providers available as server side are:
 - `googleServiceAccount`
 - `localKubectlProxy`
 - `serviceAccount`
+
+### Azure
+
+The Azure server side authentication provider works by authenticating on the server with
+the Azure CLI, please note that [Azure AD Authentication][1] is a requirement and has to
+be enabled in your AKS cluster, then follow these steps:
+
+- [Install the Azure CLI][2] in the environment where the backstage application will run.
+- Login with your Azure/Microsoft account with `az login` in the server's terminal.
+- Go to your AKS cluster's resource page in Azure Console and follow the steps in the
+  `Connect` tab to set the subscription and get your credentials for `kubectl` integration.
+- Configure your cluster to use the `azure` auth provider like this:
+
+```yaml
+kubernetes:
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - name: My AKS cluster
+          url: ${AZURE_CLUSTER_API_SERVER_ADDRESS}
+          authProvider: azure
+          skipTLSVerify: true
+```
+
+To get the API server address for your Azure cluster, go to the Azure console page for the
+cluster resource, go to `Overview` > `Properties` tab > `Networking` section and copy paste
+the API server address directly in that `url` field.
 
 ## Client Side Providers
 
@@ -41,3 +68,6 @@ The providers available as client side are:
 
 - `google`
 - `oidc`
+
+[1]: https://docs.microsoft.com/en-us/azure/aks/managed-aad
+[2]: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest

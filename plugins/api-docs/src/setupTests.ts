@@ -15,3 +15,7 @@
  */
 
 import '@testing-library/jest-dom';
+
+Object.defineProperty(global, 'TextDecoder', {
+  value: require('util').TextDecoder,
+});

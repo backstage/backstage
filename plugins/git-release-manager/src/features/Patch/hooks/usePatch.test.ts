@@ -75,91 +75,91 @@ describe('patch', () => {
     expect(result.error).toEqual(undefined);
     expect(result.current.responseSteps).toHaveLength(19);
     expect(result.current).toMatchInlineSnapshot(`
-      Object {
+      {
         "progress": 100,
-        "responseSteps": Array [
-          Object {
+        "responseSteps": [
+          {
             "message": <PatchDryRunMessage
-              message="Fetched latest commit from \\"rc/2020.01.01_1\\""
+              message="Fetched latest commit from "rc/2020.01.01_1""
             />,
           },
-          Object {
+          {
             "message": <PatchDryRunMessage
-              message="Created temporary patch dry run branch \\"rc/2020.01.01_1-backstage-grm-patch-dry-run\\""
+              message="Created temporary patch dry run branch "rc/2020.01.01_1-backstage-grm-patch-dry-run""
             />,
           },
-          Object {
+          {
             "message": <PatchDryRunMessage
-              message="Fetched release branch \\"rc/1.2.3\\""
+              message="Fetched release branch "rc/1.2.3""
             />,
           },
-          Object {
+          {
             "message": <PatchDryRunMessage
               message="Created temporary commit"
             />,
           },
-          Object {
+          {
             "message": <PatchDryRunMessage
-              message="Forced branch \\"rc/2020.01.01_1-backstage-grm-patch-dry-run\\" to temporary commit \\"mock_commit_sha\\""
+              message="Forced branch "rc/2020.01.01_1-backstage-grm-patch-dry-run" to temporary commit "mock_commit_sha""
             />,
           },
-          Object {
+          {
             "message": <PatchDryRunMessage
-              message="Merged temporary commit into \\"rc/2020.01.01_1-backstage-grm-patch-dry-run\\""
+              message="Merged temporary commit into "rc/2020.01.01_1-backstage-grm-patch-dry-run""
             />,
           },
-          Object {
+          {
             "message": <PatchDryRunMessage
-              message="Cherry-picked patch commit to \\"mock_branch_commit_sha\\""
+              message="Cherry-picked patch commit to "mock_branch_commit_sha""
             />,
           },
-          Object {
+          {
             "message": <PatchDryRunMessage
-              message="Updated reference \\"mock_update_ref_ref\\""
+              message="Updated reference "mock_update_ref_ref""
             />,
           },
-          Object {
+          {
             "message": <PatchDryRunMessage
-              message="Deleted temporary patch prep branch \\"rc/2020.01.01_1-backstage-grm-patch-dry-run\\""
+              message="Deleted temporary patch prep branch "rc/2020.01.01_1-backstage-grm-patch-dry-run""
             />,
           },
-          Object {
+          {
             "link": "https://mock_branch_links_html",
-            "message": "Fetched release branch \\"rc/1.2.3\\"",
+            "message": "Fetched release branch "rc/1.2.3"",
           },
-          Object {
+          {
             "message": "Created temporary commit",
-            "secondaryMessage": "with message \\"mock_commit_message\\"",
+            "secondaryMessage": "with message "mock_commit_message"",
           },
-          Object {
-            "message": "Forced branch \\"rc/2020.01.01_1\\" to temporary commit \\"mock_commit_sha\\"",
+          {
+            "message": "Forced branch "rc/2020.01.01_1" to temporary commit "mock_commit_sha"",
           },
-          Object {
+          {
             "link": "https://mock_merge_html_url",
-            "message": "Merged temporary commit into \\"rc/2020.01.01_1\\"",
-            "secondaryMessage": "with message \\"mock_merge_commit_message\\"",
+            "message": "Merged temporary commit into "rc/2020.01.01_1"",
+            "secondaryMessage": "with message "mock_merge_commit_message"",
           },
-          Object {
-            "message": "Cherry-picked patch commit to \\"mock_branch_commit_sha\\"",
-            "secondaryMessage": "with message \\"mock_commit_message\\"",
+          {
+            "message": "Cherry-picked patch commit to "mock_branch_commit_sha"",
+            "secondaryMessage": "with message "mock_commit_message"",
           },
-          Object {
-            "message": "Updated reference \\"mock_update_ref_ref\\"",
+          {
+            "message": "Updated reference "mock_update_ref_ref"",
           },
-          Object {
+          {
             "message": "Created new tag object",
-            "secondaryMessage": "with name \\"mock_tag_object_tag\\"",
+            "secondaryMessage": "with name "mock_tag_object_tag"",
           },
-          Object {
-            "message": "Created new reference \\"mock_createRef_ref\\"",
-            "secondaryMessage": "for tag object \\"mock_tag_object_tag\\"",
+          {
+            "message": "Created new reference "mock_createRef_ref"",
+            "secondaryMessage": "for tag object "mock_tag_object_tag"",
           },
-          Object {
+          {
             "link": "https://mock_update_release_html_url",
-            "message": "Updated release \\"mock_update_release_name\\"",
+            "message": "Updated release "mock_update_release_name"",
             "secondaryMessage": "with tag mock_update_release_tag_name",
           },
-          Object {
+          {
             "icon": "success",
             "message": "Success callback successfully called 🚀",
           },

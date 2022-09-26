@@ -23,6 +23,7 @@ import { Logger } from 'winston';
 import { Observable } from '@backstage/types';
 import { Octokit } from 'octokit';
 import { PluginDatabaseManager } from '@backstage/backend-common';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
@@ -499,6 +500,8 @@ export class DatabaseTaskStore implements TaskStore {
       taskId: string;
     }[];
   }>;
+  // (undocumented)
+  shutdownTask({ taskId }: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
 // @public
@@ -546,6 +549,8 @@ export interface RouterOptions {
   logger: Logger;
   // (undocumented)
   reader: UrlReader;
+  // (undocumented)
+  scheduler?: PluginTaskScheduler;
   // (undocumented)
   taskBroker?: TaskBroker;
   // (undocumented)
@@ -741,6 +746,8 @@ export interface TaskStore {
       taskId: string;
     }[];
   }>;
+  // (undocumented)
+  shutdownTask?({ taskId }: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
 // @public
@@ -765,6 +772,11 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
 export type TaskStoreListEventsOptions = {
   taskId: string;
   after?: number | undefined;
+};
+
+// @public
+export type TaskStoreShutDownTaskOptions = {
+  taskId: string;
 };
 
 // @public

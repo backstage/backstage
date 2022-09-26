@@ -10,7 +10,7 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin"
+    "role": "node-library"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -32,17 +32,17 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.15.1",
-    "@backstage/backend-tasks": "^0.3.5",
-    "@backstage/config": "^1.0.2",
-    "@backstage/plugin-tech-insights-common": "^0.2.6",
-    "@backstage/types": "^1.0.0",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-tasks": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/plugin-tech-insights-common": "workspace:^",
+    "@backstage/types": "workspace:^",
     "@types/luxon": "^3.0.0",
     "luxon": "^3.0.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0"
+    "@backstage/cli": "workspace:^"
   },
   "files": [
     "dist"

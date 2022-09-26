@@ -64,12 +64,30 @@ class MockKubernetesClient implements KubernetesApi {
   async getWorkloadsByEntity(
     _request: WorkloadsByEntityRequest,
   ): Promise<ObjectsByEntityResponse> {
-    throw new Error('Method not implemented.');
+    return {
+      items: [
+        {
+          cluster: { name: 'mock-cluster' },
+          resources: this.resources,
+          podMetrics: [],
+          errors: [],
+        },
+      ],
+    };
   }
   async getCustomObjectsByEntity(
     _request: CustomObjectsByEntityRequest,
   ): Promise<ObjectsByEntityResponse> {
-    throw new Error('Method not implemented.');
+    return {
+      items: [
+        {
+          cluster: { name: 'mock-cluster' },
+          resources: this.resources,
+          podMetrics: [],
+          errors: [],
+        },
+      ],
+    };
   }
 
   async getObjectsByEntity(): Promise<ObjectsByEntityResponse> {

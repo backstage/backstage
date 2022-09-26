@@ -22,16 +22,16 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.15.1",
-    "@backstage/backend-test-utils": "^0.1.28",
-    "@backstage/catalog-client": "1.1.0",
-    "@backstage/catalog-model": "^1.1.1",
-    "@backstage/config": "^1.0.2",
-    "@backstage/errors": "^1.1.1",
-    "@backstage/plugin-auth-node": "^0.2.5",
-    "@backstage/plugin-permission-common": "^0.6.4",
-    "@backstage/plugin-permission-node": "^0.6.5",
-    "@backstage/plugin-playlist-common": "^0.1.0",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-permission-node": "workspace:^",
+    "@backstage/plugin-playlist-common": "workspace:^",
     "@types/express": "*",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
@@ -42,7 +42,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0",
+    "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
     "msw": "^0.47.0",
     "supertest": "^6.1.3"
