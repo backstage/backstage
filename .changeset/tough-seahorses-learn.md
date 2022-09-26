@@ -2,7 +2,7 @@
 '@backstage/plugin-bazaar-backend': minor
 ---
 
-**BREAKING** The bazaar-backend createRouter now requires that the `identityApi` is passed to the router.
+**BREAKING** The bazaar-backend `createRouter` now requires that the `identityApi` is passed to the router.
 
 These changes are **required** to `packages/backend/src/plugins/bazaar.ts`
 
