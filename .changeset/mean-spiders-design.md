@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-search-backend': major
+'@backstage/plugin-search-backend': minor
 ---
 
 Be less restrictive with unknown keys on query endpoint by adding .passthrough() method to parse the `requestSchema`
