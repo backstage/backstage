@@ -41,7 +41,7 @@ import {
 } from './persistence/persistenceContext';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
-import { IdentityApi } from '@backstage/core-plugin-api';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 
 /**
  * @public

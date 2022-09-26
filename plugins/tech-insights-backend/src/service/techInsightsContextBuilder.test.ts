@@ -24,7 +24,7 @@ import { ConfigReader } from '@backstage/config';
 import { TaskScheduler } from '@backstage/backend-tasks';
 import { DefaultFactRetrieverRegistry } from './fact/FactRetrieverRegistry';
 import { Knex } from 'knex';
-import { IdentityApi } from '@backstage/core-plugin-api';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 
 jest.mock('./fact/FactRetrieverRegistry');
 jest.mock('./fact/FactRetrieverEngine', () => ({
