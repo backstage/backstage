@@ -28,7 +28,6 @@ const TwoColumn: LayoutTemplate = ({ properties, description, title }) => {
   return (
     <>
       <h1>{title}</h1>
-      <h2>In two column layout!!</h2>
       <Grid container justifyContent="flex-end">
         {left.map(prop => (
           <Grid item xs={6} key={prop.content.key}>
