@@ -19,6 +19,7 @@ export { configFactory } from './configService';
 export { databaseFactory } from './databaseService';
 export { discoveryFactory } from './discoveryService';
 export { loggerFactory } from './loggerService';
+export { rootLoggerFactory } from './rootLoggerService';
 export { permissionsFactory } from './permissionsService';
 export { schedulerFactory } from './schedulerService';
 export { tokenManagerFactory } from './tokenManagerService';

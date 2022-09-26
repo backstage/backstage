@@ -70,6 +70,9 @@ export const permissionsFactory: (
 ) => ServiceFactory<PermissionAuthorizer | PermissionEvaluator>;
 
 // @public (undocumented)
+export const rootLoggerFactory: (options?: undefined) => ServiceFactory<Logger>;
+
+// @public (undocumented)
 export const schedulerFactory: (
   options?: undefined,
 ) => ServiceFactory<PluginTaskScheduler>;
