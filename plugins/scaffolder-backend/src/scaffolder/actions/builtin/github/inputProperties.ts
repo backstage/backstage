@@ -86,7 +86,7 @@ const allowAutoMerge = {
   title: 'Allow Auto Merges',
   type: 'boolean',
   description: `Allow individual PRs to merge automatically when all merge requirements are met. The default value is 'false'`,
-}
+};
 const collaborators = {
   title: 'Collaborators',
   description: 'Provide additional users or teams with permissions',
