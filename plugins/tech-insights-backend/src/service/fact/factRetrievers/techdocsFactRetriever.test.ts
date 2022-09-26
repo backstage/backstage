@@ -38,7 +38,7 @@ const discovery: jest.Mocked<PluginEndpointDiscovery> = {
   getExternalBaseUrl: jest.fn(),
 };
 const identity: jest.Mocked<IdentityApi> = {
-  getIdentity: jest.fn()
+  getIdentity: jest.fn(),
 };
 
 const defaultEntityListResponse: GetEntitiesResponse = {

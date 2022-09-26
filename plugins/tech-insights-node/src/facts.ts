@@ -148,7 +148,7 @@ export type FactSchema = {
 export type FactRetrieverContext = {
   config: Config;
   discovery: PluginEndpointDiscovery;
-  identity: IdentityApi,
+  identity: IdentityApi;
   logger: Logger;
   tokenManager: TokenManager;
   entityFilter?:

@@ -29,7 +29,7 @@ import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
 import { DateTime } from 'luxon';
 import { Knex } from 'knex';
 import { TaskScheduler } from '@backstage/backend-tasks';
-import {IdentityApi} from '@backstage/plugin-auth-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 
 describe('Tech Insights router tests', () => {
   let app: express.Express;
@@ -87,7 +87,7 @@ describe('Tech Insights router tests', () => {
         getBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
         getExternalBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
       },
-      identity:mockIdentityClient,
+      identity: mockIdentityClient,
       tokenManager: ServerTokenManager.noop(),
     });
 
