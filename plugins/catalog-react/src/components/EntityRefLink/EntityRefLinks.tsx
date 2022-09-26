@@ -17,43 +17,60 @@ import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import React from 'react';
 import { EntityRefLink } from './EntityRefLink';
 import { LinkProps } from '@backstage/core-components';
+import { FetchedEntityRefLinks } from './FetchedEntityRefLinks';
 
 /**
  * Props for {@link EntityRefLink}.
  *
  * @public
  */
-export type EntityRefLinksProps = {
-  entityRefs: (string | Entity | CompoundEntityRef)[];
-  defaultKind?: string;
-  getTitle?: (cer: CompoundEntityRef) => string | undefined;
-} & Omit<LinkProps, 'to'>;
+export type EntityRefLinksProps<
+  TRef extends string | CompoundEntityRef | Entity,
+> =
+  | {
+      defaultKind?: string;
+      entityRefs: TRef[];
+      fetchEntities?: false;
+      getTitle?(entity: TRef): string | undefined;
+    }
+  | ({
+      defaultKind?: string;
+      entityRefs: TRef[];
+      fetchEntities: true;
+      getTitle?(entity: Entity): string | undefined;
+    } & Omit<LinkProps, 'to'>);
 
 /**
  * Shows a list of clickable links to entities.
  *
  * @public
  */
-export function EntityRefLinks(props: EntityRefLinksProps) {
-  const { entityRefs, defaultKind, getTitle, ...linkProps } = props;
+export function EntityRefLinks<
+  TRef extends string | CompoundEntityRef | Entity,
+>(props: EntityRefLinksProps<TRef>) {
+  const { entityRefs, defaultKind, fetchEntities, getTitle, ...linkProps } =
+    props;
+
+  if (fetchEntities) {
+    return (
+      <FetchedEntityRefLinks
+        entityRefs={entityRefs}
+        fetchEntities={fetchEntities}
+      />
+    );
+  }
+
   return (
     <>
-      {entityRefs.map((r, i) => {
-        const isCompoundEntityRef =
-          getTitle && typeof r !== 'string' && !('metadata' in r);
-
-        const title = isCompoundEntityRef
-          ? getTitle(r as CompoundEntityRef)
-          : undefined;
-
+      {entityRefs.map((r: TRef, i: number) => {
         return (
           <React.Fragment key={i}>
             {i > 0 && ', '}
             <EntityRefLink
               {...linkProps}
-              entityRef={r}
               defaultKind={defaultKind}
-              title={title}
+              entityRef={r}
+              title={getTitle ? getTitle(r) : undefined}
             />
           </React.Fragment>
         );
