@@ -33,37 +33,22 @@ export type FilterAndSortOptions = {
 // @public (undocumented)
 export namespace Models {
   export interface Account extends ModelObject {
-    account_status?: string;
     // (undocumented)
     created_on?: string;
     // (undocumented)
     display_name?: string;
     // (undocumented)
-    has_2fa_enabled?: boolean;
-    // (undocumented)
     links?: AccountLinks;
-    nickname?: string;
     // (undocumented)
     username?: string;
     // (undocumented)
     uuid?: string;
-    // (undocumented)
-    website?: string;
   }
-  // (undocumented)
   export interface AccountLinks {
     // (undocumented)
+    [key: string]: unknown;
+    // (undocumented)
     avatar?: Link;
-    // (undocumented)
-    followers?: Link;
-    // (undocumented)
-    following?: Link;
-    // (undocumented)
-    html?: Link;
-    // (undocumented)
-    repositories?: Link;
-    // (undocumented)
-    self?: Link;
   }
   export interface Author extends ModelObject {
     raw?: string;
@@ -176,7 +161,7 @@ export namespace Models {
     // (undocumented)
     state?: ParticipantStateEnum;
     // (undocumented)
-    user?: User;
+    user?: Account;
   }
   const // (undocumented)
     ParticipantRoleEnum: {
@@ -339,11 +324,21 @@ export namespace Models {
     // (undocumented)
     readonly text?: string;
   }
-  export interface Team extends Account {}
-  export interface User extends Account {
-    account_id?: string;
+  export interface Team extends Account {
     // (undocumented)
-    is_staff?: boolean;
+    links?: TeamLinks;
+  }
+  export interface TeamLinks extends AccountLinks {
+    // (undocumented)
+    html?: Link;
+    // (undocumented)
+    members?: Link;
+    // (undocumented)
+    projects?: Link;
+    // (undocumented)
+    repositories?: Link;
+    // (undocumented)
+    self?: Link;
   }
 }
 
