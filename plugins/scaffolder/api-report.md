@@ -396,6 +396,14 @@ export const scaffolderPlugin: BackstagePlugin<
   },
   {
     registerComponent: ExternalRouteRef<undefined, true>;
+    viewTechDoc: ExternalRouteRef<
+      {
+        name: string;
+        kind: string;
+        namespace: string;
+      },
+      true
+    >;
   },
   {}
 >;
