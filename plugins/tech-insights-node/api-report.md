@@ -9,6 +9,7 @@ import { DateTime } from 'luxon';
 import { Duration } from 'luxon';
 import { DurationLike } from 'luxon';
 import { HumanDuration } from '@backstage/backend-tasks';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -62,6 +63,7 @@ export interface FactRetriever {
 export type FactRetrieverContext = {
   config: Config;
   discovery: PluginEndpointDiscovery;
+  identity: IdentityApi;
   logger: Logger;
   tokenManager: TokenManager;
   entityFilter?:

@@ -14,6 +14,7 @@ import { FactRetriever } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistration } from '@backstage/plugin-tech-insights-node';
 import { FactSchema } from '@backstage/plugin-tech-insights-node';
 import { HumanDuration } from '@backstage/backend-tasks';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -119,6 +120,8 @@ export interface TechInsightsOptions<
   factCheckerFactory?: FactCheckerFactory<CheckType, CheckResultType>;
   factRetrieverRegistry?: FactRetrieverRegistry;
   factRetrievers?: FactRetrieverRegistration[];
+  // (undocumented)
+  identity: IdentityApi;
   // (undocumented)
   logger: Logger;
   // (undocumented)
