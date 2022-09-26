@@ -225,6 +225,8 @@ export interface RepoUrlPickerUiOptions {
   // (undocumented)
   allowedHosts?: string[];
   // (undocumented)
+  allowedOrganizations?: string[];
+  // (undocumented)
   allowedOwners?: string[];
   // (undocumented)
   allowedRepos?: string[];
