@@ -57,7 +57,7 @@ jobs:
       - name: publish nightly release
         run: |
           yarn config set -H 'npmAuthToken' "${{secrets.NPM_TOKEN}}"
-          yarn workspaces foreach -v --no-private npm publish --access public --tag nightly
+          yarn workspaces foreach -v --no-private npm publish --access public --tolerate-republish --tag nightly
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
