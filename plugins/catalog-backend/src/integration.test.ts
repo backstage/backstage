@@ -317,10 +317,13 @@ class TestHarness {
     return errors;
   }
 
-  async setInputEntities(entities: Entity[]) {
+  async setInputEntities(entities: (Entity & { locationKey?: string })[]) {
     return this.#provider.getConnection().applyMutation({
       type: 'full',
-      entities: entities.map(entity => ({ entity })),
+      entities: entities.map(({ locationKey, ...entity }) => ({
+        entity,
+        locationKey,
+      })),
     });
   }
 
@@ -492,5 +495,49 @@ describe('Catalog Backend Integration', () => {
         }),
       }),
     });
+  });
+
+  it('should not replace matching provided entities', async () => {
+    const harness = await TestHarness.create();
+
+    const entityA = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'a',
+        annotations: {
+          'backstage.io/managed-by-location': 'url:.',
+          'backstage.io/managed-by-origin-location': 'url:.',
+        },
+      },
+    };
+    const entityB = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'b',
+        annotations: {
+          'backstage.io/managed-by-location': 'url:.',
+          'backstage.io/managed-by-origin-location': 'url:.',
+        },
+      },
+    };
+
+    const entities = [entityA, { locationKey: 'loc', ...entityB }];
+
+    await harness.setInputEntities(entities);
+    await expect(harness.process()).resolves.toEqual({});
+
+    const outputEntities = await harness.getOutputEntities();
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': expect.anything(),
+      'component:default/b': expect.anything(),
+    });
+
+    await harness.setInputEntities(entities);
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual(outputEntities);
   });
 });
