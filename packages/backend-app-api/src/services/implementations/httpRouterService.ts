@@ -42,21 +42,27 @@ export const httpRouterFactory = createServiceFactory({
     plugin: pluginMetadataServiceRef,
   },
   async factory({ config }, options?: HttpRouterFactoryOptions) {
-    const rootRouter = Router();
     const defaultPluginId = options?.indexPlugin ?? 'app';
+
+    const apiRouter = Router();
+    const rootRouter = Router();
 
     const service = createServiceBuilder(module)
       .loadConfig(config)
+      .addRouter('/api', apiRouter)
       .addRouter('', rootRouter);
 
     await service.start();
 
     return async ({ plugin }) => {
       const pluginId = plugin.getId();
-      const path = pluginId === defaultPluginId ? '' : `/api/${pluginId}`;
       return {
         use(handler: Handler) {
-          rootRouter.use(path, handler);
+          if (pluginId === defaultPluginId) {
+            rootRouter.use(handler);
+          } else {
+            apiRouter.use(`/${pluginId}`, handler);
+          }
         },
       };
     };
