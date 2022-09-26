@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-graph
 
+## 0.2.21
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/plugin-catalog-react@1.1.4
+  - @backstage/catalog-client@1.1.0
+  - @backstage/catalog-model@1.1.1
+
 ## 0.2.21-next.2
 
 ### Patch Changes

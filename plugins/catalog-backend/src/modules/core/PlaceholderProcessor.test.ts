@@ -387,6 +387,39 @@ describe('PlaceholderProcessor', () => {
       key: 'url:http://example.com/path-to-file.json',
     });
   });
+
+  it('accepts arbitrary object as value', async () => {
+    const processor = new PlaceholderProcessor({
+      resolvers: {
+        merge: async ({ value }) => {
+          if (value instanceof Object) {
+            return { merged: 'value', ...value };
+          }
+          return value;
+        },
+      },
+      reader,
+      integrations,
+    });
+
+    const result = await processor.preProcessEntity(
+      {
+        apiVersion: 'a',
+        kind: 'k',
+        metadata: { name: 'n' },
+        spec: { a: { $merge: { passed: 'value' } } },
+      },
+      { type: 'fake', target: 'http://example.com' },
+      () => {},
+    );
+
+    expect(result).toMatchObject({
+      apiVersion: 'a',
+      kind: 'k',
+      metadata: { name: 'n' },
+      spec: { a: { passed: 'value', merged: 'value' } },
+    });
+  });
 });
 
 describe('yamlPlaceholderResolver', () => {

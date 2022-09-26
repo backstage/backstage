@@ -162,6 +162,7 @@ describe('readProviderConfigs', () => {
               clientId: 'clientId',
               clientSecret: 'clientSecret',
               authority: 'https://login.example.com/',
+              queryMode: 'advanced',
               user: {
                 expand: 'manager',
                 filter: 'accountEnabled eq true',
@@ -185,6 +186,7 @@ describe('readProviderConfigs', () => {
         clientId: 'clientId',
         clientSecret: 'clientSecret',
         authority: 'https://login.example.com/',
+        queryMode: 'advanced',
         userExpand: 'manager',
         userFilter: 'accountEnabled eq true',
         groupExpand: 'member',

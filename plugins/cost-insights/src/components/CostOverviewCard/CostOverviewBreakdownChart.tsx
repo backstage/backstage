@@ -113,8 +113,8 @@ export const CostOverviewBreakdownChart = ({
     {} as Record<string, Record<string, number>>,
   );
 
-  const chartData: Record<string, number>[] = Object.keys(breakdownsByDate).map(
-    date => {
+  const chartData: Record<string, number>[] = Object.keys(breakdownsByDate)
+    .map(date => {
       const costsForDate = Object.keys(breakdownsByDate[date]).reduce(
         (dateCosts, breakdown) => {
           // Group costs for items that belong to 'Other' in the chart.
@@ -131,8 +131,8 @@ export const CostOverviewBreakdownChart = ({
         ...costsForDate,
         date: Date.parse(date),
       };
-    },
-  );
+    })
+    .sort((a, b) => a.date - b.date);
 
   const sortedBreakdowns = costBreakdown.sort(
     (a, b) => aggregationSum(a.aggregation) - aggregationSum(b.aggregation),

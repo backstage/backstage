@@ -1,5 +1,107 @@
 # @backstage/cli
 
+## 0.19.0
+
+### Minor Changes
+
+- 1fe6823bb5: Updated dependency `eslint-plugin-jest` to `^27.0.0`.
+
+  Note that this major update to the Jest plugin contains some breaking changes.
+  This means that some of your tests may start seeing some new lint errors. [Read
+  about them
+  here](https://github.com/jest-community/eslint-plugin-jest/blob/main/CHANGELOG.md#2700-2022-08-28).
+
+  These are mostly possible to fix automatically. You can try to run `yarn backstage-cli repo lint --fix` in your repo root to have most or all of them
+  corrected.
+
+### Patch Changes
+
+- 8d886dd33e: The `create-plugin` and `create` commands have both been deprecated in favor of a new `new` command. The `new` command is functionally identical to `create`, but the new naming makes it possible to use as yarn script, since `yarn create` is reserved.
+- cc63eb8611: Sort entries in skeleton.tar.gz for better docker layer caching
+- 548053614a: Deprecated the `plugin:diff` command. If you wish to keep running similar checks in your project we recommend using bespoke scripts. A useful utility for such scripts is `@manypkg/get-packages`, which helps you enumerate all packages in a monorepo.
+- 513b4dd4ef: The `versions:bump` command will now update dependency ranges in `package.json`, even if the new version is within the current range.
+- 221e951298: Added support for custom certificate for webpack dev server.
+- 934cc34563: Avoid validating the backend configuration schema when loading static configuration for building the frontend.
+- 3d4f5daadf: Remove use of deprecated trimLeft/trimRight
+- 817f3196f6: Added a new `migrate react-router-deps` command to aid in the migration to React Router v6 stable.
+- 742cb4f3d7: Fix issue when using `.jsx` files inside tests
+- e7600bdb04: Tweaked workspace packaging to not rewrite existing `package.json` files.
+- 6ae0f6a719: Switch out `sucrase` for `swc` for transpilation.
+
+  `sucrase` is a little more relaxed when it comes to supporting the ways of mocking in `jest`. You might have to make some changes to your tests to meet the `jest` standard and spec if your tests seems to start failing.
+
+  Mocks that look like this are invalid, and they will throw a reference error in line with the `jest` documentation [here on example 3](https://jestjs.io/docs/es6-class-mocks#calling-jestmock-with-the-module-factory-parameter)
+
+  ```ts
+  const mockCommandExists = jest.fn();
+  jest.mock('command-exists', () => mockCommandExists);
+  ```
+
+  You might need to update these mocks to look a little like the following to defer the call to the `jest.fn()` spy until the mock is called.
+
+  ```ts
+  const mockCommandExists = jest.fn();
+  jest.mock(
+    'command-exists',
+    () =>
+      (...args: any[]) =>
+        commandExists(...args),
+  );
+  ```
+
+  Also, imports are immutable. So it means that you might get some errors when trying to use `jest.spyOn` with starred imports. You might see an error like this:
+
+  ```log
+  TypeError: Cannot redefine property: executeFrameHandlerStrategy
+          at Function.defineProperty (<anonymous>)
+
+        20 | import { AuthResolverContext } from '../types';
+        21 |
+      > 22 | const mockFrameHandler = jest.spyOn(
+           |                               ^
+        23 |   helpers,
+        24 |   'executeFrameHandlerStrategy',
+        25 | ) as unknown as jest.MockedFunction<
+  ```
+
+  This happens when you try to do `import * as something from './something'` and then `jest.spyOn(something, 'test)`. You will need to add a `jest.mock` call to mock out the required starred import to return `jest.fn()` functions from the start. Something like this fixes the above test:
+
+  ```ts
+  jest.mock('../../helpers', () => ({
+    executeFrameHandlerStrategy: jest.fn(),
+  }));
+  ```
+
+  You can also remove any occurrence of `hot(App)` and any import of `react-hot-loader` if you're using the that package locally, as all this has now been replaced with [React Refresh](https://www.npmjs.com/package/react-refresh) which you will get out of the box with the new CLI.
+
+  **Note** If you're experiencing difficulties with running tests after the migration, please reach out to us on Discord to see if we can help, or raise an issue. But in the meantime you can switch back to the existing behaviour by using the following config in your root `package.json`.
+
+  ```json
+  "jest": {
+    "transform": {
+      "\\.(js|jsx|ts|tsx|mjs|cjs)$": "@backstage/cli/config/jestSucraseTransform.js",
+      "\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg|eot|woff|woff2|ttf)$": "@backstage/cli/config/jestFileTransform.js",
+      "\\.(yaml)$": "jest-transform-yaml"
+    }
+  }
+  ```
+
+- 1cb078ad9f: Fixed a misconfiguration where all modules where treated as ESM by the React Refresh plugin for Webpack.
+- 1fd4f2746f: Removed internal dependencies on Lerna. It is now no longer necessary to have Lerna installed in a project to use all features of the Backstage CLI.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 33fbd9f9a4: Updated dependency `@types/minimatch` to `^5.0.0`.
+- 68c2697077: Added a new `backstage-cli repo clean` command that cleans the repo root and runs the clean script in all packages.
+- 7d47def9c4: Added dependency on `@types/jest` v27. The `@types/jest` dependency has also been removed from the plugin template and should be removed from any of your own internal packages. If you wish to override the version of `@types/jest` or `jest`, use Yarn resolutions.
+- a7e82c9b01: Updated `versions:bump` command to be compatible with Yarn 3.
+- Updated dependencies
+  - @backstage/config-loader@1.1.4
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+  - @backstage/release-manifests@0.0.6
+
 ## 0.19.0-next.3
 
 ### Patch Changes

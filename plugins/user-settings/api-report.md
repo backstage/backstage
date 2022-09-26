@@ -8,11 +8,20 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { BackstageUserIdentity } from '@backstage/core-plugin-api';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { ErrorApi } from '@backstage/core-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { IdentityApi } from '@backstage/core-plugin-api';
+import { JsonValue } from '@backstage/types';
+import { Observable } from '@backstage/types';
 import { ProfileInfo } from '@backstage/core-plugin-api';
+import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
+import { StorageApi } from '@backstage/core-plugin-api';
+import { StorageValueSnapshot } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export const DefaultProviderSettings: (props: {
@@ -24,7 +33,7 @@ export const ProviderSettingsItem: (props: {
   title: string;
   description: string;
   icon: IconComponent;
-  apiRef: ApiRef<SessionApi>;
+  apiRef: ApiRef<ProfileInfoApi & SessionApi>;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -82,6 +91,30 @@ export const UserSettingsProfileCard: () => JSX.Element;
 export const UserSettingsSignInAvatar: (props: {
   size?: number;
 }) => JSX.Element;
+
+// @public
+export class UserSettingsStorage implements StorageApi {
+  // (undocumented)
+  static create(options: {
+    fetchApi: FetchApi;
+    discoveryApi: DiscoveryApi;
+    errorApi: ErrorApi;
+    identityApi: IdentityApi;
+    namespace?: string;
+  }): UserSettingsStorage;
+  // (undocumented)
+  forBucket(name: string): StorageApi;
+  // (undocumented)
+  observe$<T extends JsonValue>(
+    key: string,
+  ): Observable<StorageValueSnapshot<T>>;
+  // (undocumented)
+  remove(key: string): Promise<void>;
+  // (undocumented)
+  set<T extends JsonValue>(key: string, data: T): Promise<void>;
+  // (undocumented)
+  snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
+}
 
 // @public
 export const UserSettingsTab: (props: UserSettingsTabProps) => JSX.Element;

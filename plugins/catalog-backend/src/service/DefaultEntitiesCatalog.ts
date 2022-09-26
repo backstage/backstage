@@ -38,8 +38,10 @@ import {
   DbPageInfo,
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
+  DbRelationsRow,
   DbSearchRow,
 } from '../database/tables';
+import { Stitcher } from '../stitching/Stitcher';
 
 function parsePagination(input?: EntityPagination): {
   limit?: number;
@@ -158,7 +160,10 @@ function parseFilter(
 }
 
 export class DefaultEntitiesCatalog implements EntitiesCatalog {
-  constructor(private readonly database: Knex) {}
+  constructor(
+    private readonly database: Knex,
+    private readonly stitcher: Stitcher,
+  ) {}
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
     const db = this.database;
@@ -244,6 +249,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     await this.database<DbRefreshStateRow>('refresh_state')
       .update({
         result_hash: 'child-was-deleted',
+        next_update_at: this.database.fn.now(),
       })
       .whereIn('entity_ref', function parents(builder) {
         return builder
@@ -256,9 +262,35 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           .select('refresh_state_references.source_entity_ref');
       });
 
+    // Stitch the entities that the deleted one had relations to. If we do not
+    // do this, the entities in the other end of the relations will still look
+    // like they have a relation to the entity that was deleted, despite not
+    // having any corresponding rows in the relations table.
+    const relationPeers = await this.database
+      .from<DbRelationsRow>('relations')
+      .innerJoin<DbRefreshStateReferencesRow>('refresh_state', {
+        'refresh_state.entity_ref': 'relations.target_entity_ref',
+      })
+      .where('relations.originating_entity_id', '=', uid)
+      .andWhere('refresh_state.entity_id', '!=', uid)
+      .select({ ref: 'relations.target_entity_ref' })
+      .union(other =>
+        other
+          .from<DbRelationsRow>('relations')
+          .innerJoin<DbRefreshStateReferencesRow>('refresh_state', {
+            'refresh_state.entity_ref': 'relations.source_entity_ref',
+          })
+          .where('relations.originating_entity_id', '=', uid)
+          .andWhere('refresh_state.entity_id', '!=', uid)
+          .select({ ref: 'relations.source_entity_ref' }),
+      );
+
+    // Perform the actual deletion
     await this.database<DbRefreshStateRow>('refresh_state')
       .where('entity_id', uid)
       .delete();
+
+    await this.stitcher.stitch(new Set(relationPeers.map(p => p.ref)));
   }
 
   async entityAncestry(rootRef: string): Promise<EntityAncestryResponse> {

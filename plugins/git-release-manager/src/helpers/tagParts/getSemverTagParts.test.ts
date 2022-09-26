@@ -28,15 +28,15 @@ describe('getSemverTagParts', () => {
       );
 
       expect(semverTagParts).toMatchInlineSnapshot(`
-              Object {
-                "tagParts": Object {
-                  "major": 1,
-                  "minor": 2,
-                  "patch": 3,
-                  "prefix": "rc",
-                },
-              }
-          `);
+        {
+          "tagParts": {
+            "major": 1,
+            "minor": 2,
+            "patch": 3,
+            "prefix": "rc",
+          },
+        }
+      `);
     });
 
     it('should return tagParts for Version tag', () => {
@@ -45,15 +45,15 @@ describe('getSemverTagParts', () => {
       );
 
       expect(semverTagParts).toMatchInlineSnapshot(`
-              Object {
-                "tagParts": Object {
-                  "major": 1,
-                  "minor": 2,
-                  "patch": 3,
-                  "prefix": "version",
-                },
-              }
-          `);
+        {
+          "tagParts": {
+            "major": 1,
+            "minor": 2,
+            "patch": 3,
+            "prefix": "version",
+          },
+        }
+      `);
     });
   });
 
@@ -62,9 +62,9 @@ describe('getSemverTagParts', () => {
       const semverTagParts = getSemverTagParts('invalid-1.2.3');
 
       expect(semverTagParts).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
-            "subtitle": "Expected semver matching \\"/(rc|version)-([0-9]+)\\\\.([0-9]+)\\\\.([0-9]+)/\\", found \\"invalid-1.2.3\\"",
+        {
+          "error": {
+            "subtitle": "Expected semver matching "/(rc|version)-([0-9]+)\\.([0-9]+)\\.([0-9]+)/", found "invalid-1.2.3"",
             "title": "Invalid tag",
           },
         }
@@ -75,9 +75,9 @@ describe('getSemverTagParts', () => {
       const semverTagParts = getSemverTagParts('rc-1.2');
 
       expect(semverTagParts).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
-            "subtitle": "Expected semver matching \\"/(rc|version)-([0-9]+)\\\\.([0-9]+)\\\\.([0-9]+)/\\", found \\"rc-1.2\\"",
+        {
+          "error": {
+            "subtitle": "Expected semver matching "/(rc|version)-([0-9]+)\\.([0-9]+)\\.([0-9]+)/", found "rc-1.2"",
             "title": "Invalid tag",
           },
         }
@@ -88,9 +88,9 @@ describe('getSemverTagParts', () => {
       const semverTagParts = getSemverTagParts('rc-1337.01.01_1');
 
       expect(semverTagParts).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
-            "subtitle": "Expected semver matching \\"/(rc|version)-([0-9]+)\\\\.([0-9]+)\\\\.([0-9]+)/\\", found calver \\"rc-1337.01.01_1\\"",
+        {
+          "error": {
+            "subtitle": "Expected semver matching "/(rc|version)-([0-9]+)\\.([0-9]+)\\.([0-9]+)/", found calver "rc-1337.01.01_1"",
             "title": "Invalid tag",
           },
         }

@@ -1,5 +1,23 @@
 # @backstage/dev-utils
 
+## 1.0.6
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 329ed2b9c7: Fixed routing when using React Router v6 stable.
+- 4c5e85ddf3: Removed the dependency and setup of `react-hot-loader`, since the `@backstage/cli` now uses `swc` with `React Refresh` instead.
+- Updated dependencies
+  - @backstage/app-defaults@1.0.6
+  - @backstage/core-app-api@1.1.0
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/test-utils@1.2.0
+  - @backstage/plugin-catalog-react@1.1.4
+  - @backstage/catalog-model@1.1.1
+  - @backstage/integration-react@1.1.4
+
 ## 1.0.6-next.2
 
 ### Patch Changes

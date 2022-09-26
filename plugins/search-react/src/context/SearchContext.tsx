@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { isEqual } from 'lodash';
 import React, {
   PropsWithChildren,
   useCallback,
@@ -115,6 +116,7 @@ const useSearchContextValue = (
   );
 
   const prevTerm = usePrevious(term);
+  const prevFilters = usePrevious(filters);
 
   const result = useAsync(
     () =>
@@ -145,6 +147,14 @@ const useSearchContextValue = (
       setPageCursor(undefined);
     }
   }, [term, prevTerm, setPageCursor]);
+
+  useEffect(() => {
+    // Any time filters is reset, we want to start from page 0.
+    // Only reset the page if it has been modified by the user at least once, the initial state must not reset the page.
+    if (prevFilters !== undefined && !isEqual(filters, prevFilters)) {
+      setPageCursor(undefined);
+    }
+  }, [filters, prevFilters, setPageCursor]);
 
   const value: SearchContextValue = {
     result,

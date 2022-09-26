@@ -1,5 +1,21 @@
 # @backstage/backend-test-utils
 
+## 0.1.28
+
+### Patch Changes
+
+- 854ba37357: Updated to support new `ServiceFactory` formats.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- de3347ca74: Updated usages of `ServiceFactory`.
+- Updated dependencies
+  - @backstage/cli@0.19.0
+  - @backstage/backend-app-api@0.2.1
+  - @backstage/backend-plugin-api@0.1.2
+  - @backstage/backend-common@0.15.1
+  - @backstage/config@1.0.2
+
 ## 0.1.28-next.3
 
 ### Patch Changes

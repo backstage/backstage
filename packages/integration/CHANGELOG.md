@@ -1,5 +1,23 @@
 # @backstage/integration
 
+## 1.3.1
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 42918e085c: Fixed bug in the `bitbucketServer` integration where token did not take precedence over supplied username and password which is described in the documentation.
+- f76f22c649: Improved caching around github app tokens.
+  Tokens are now cached for 50 minutes, not 10.
+  Calls to get app installations are also included in this cache.
+  If you have more than one github app configured, consider adding `allowedInstallationOwners` to your apps configuration to gain the most benefit from these performance changes.
+- Updated dependencies
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+
 ## 1.3.1-next.2
 
 ### Patch Changes

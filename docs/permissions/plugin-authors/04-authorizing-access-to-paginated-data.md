@@ -42,12 +42,12 @@ Let's add another permission to the plugin.
 
   export const TODO_LIST_RESOURCE_TYPE = 'todo-item';
 
-  export const todoListCreate = createPermission({
+  export const todoListCreatePermission = createPermission({
     name: 'todo.list.create',
     attributes: { action: 'create' },
   });
 
-  export const todoListUpdate = createPermission({
+  export const todoListUpdatePermission = createPermission({
     name: 'todo.list.update',
     attributes: { action: 'update' },
     resourceType: TODO_LIST_RESOURCE_TYPE,
@@ -58,6 +58,9 @@ Let's add another permission to the plugin.
 +   attributes: { action: 'read' },
 +   resourceType: TODO_LIST_RESOURCE_TYPE,
 + });
+
+- export const todoListPermissions = [todoListCreatePermission, todoListUpdatePermission];
++ export const todoListPermissions = [todoListCreatePermission, todoListUpdatePermission, todoListReadPermission];
 ```
 
 ## Using conditional policy decisions
@@ -126,18 +129,18 @@ Let's update our permission policy to return a conditional result whenever a `to
 ...
 
 import {
-  todoListCreate,
-  todoListUpdate,
-+ todoListRead,
+  todoListCreatePermission,
+  todoListUpdatePermission,
++ todoListReadPermission,
   TODO_LIST_RESOURCE_TYPE,
 } from '@internal/plugin-todo-list-common';
 
 ...
 
--   if (isPermission(request.permission, todoListUpdate)) {
+-   if (isPermission(request.permission, todoListUpdatePermission)) {
 +   if (
-+     isPermission(request.permission, todoListUpdate) ||
-+     isPermission(request.permission, todoListRead)
++     isPermission(request.permission, todoListUpdatePermission) ||
++     isPermission(request.permission, todoListReadPermission)
 +   ) {
       return createTodoListConditionalDecision(
         request.permission,

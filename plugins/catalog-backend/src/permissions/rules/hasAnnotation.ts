@@ -22,6 +22,8 @@ import { createCatalogPermissionRule } from './util';
  * A catalog {@link @backstage/plugin-permission-node#PermissionRule} which
  * filters for the presence of an annotation on a given entity.
  *
+ * If a value is given, it filters for the annotation value, too.
+ *
  * @alpha
  */
 export const hasAnnotation = createCatalogPermissionRule({
@@ -29,9 +31,18 @@ export const hasAnnotation = createCatalogPermissionRule({
   description:
     'Allow entities which are annotated with the specified annotation',
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-  apply: (resource: Entity, annotation: string) =>
-    !!resource.metadata.annotations?.hasOwnProperty(annotation),
-  toQuery: (annotation: string) => ({
-    key: `metadata.annotations.${annotation}`,
-  }),
+  apply: (resource: Entity, annotation: string, value?: string) =>
+    !!resource.metadata.annotations?.hasOwnProperty(annotation) &&
+    (value === undefined
+      ? true
+      : resource.metadata.annotations?.[annotation] === value),
+  toQuery: (annotation: string, value?: string) =>
+    value === undefined
+      ? {
+          key: `metadata.annotations.${annotation}`,
+        }
+      : {
+          key: `metadata.annotations.${annotation}`,
+          values: [value],
+        },
 });

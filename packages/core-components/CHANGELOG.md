@@ -1,5 +1,25 @@
 # @backstage/core-components
 
+## 0.11.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- d3737da337: Export `HeaderActionMenu` and expose default `Table` icons via `Table.icons`
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- b29c44d895: Adds code to generate ids for headers parsed through the MarkdownContent component.
+- 37e8c5e128: The `RoutedTabs` component has been updated to be compatible with React Router v6 stable.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 13f23f6510: Allow custom images in the empty state component
+- 023d14c52b: Fix overflow bug on MicDrop image for 404 page by moving the image and making it relative rather than absolute
+- c8bb0ff8ce: Minor cleanup of the public API surface to reduce the number of warnings
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+
 ## 0.11.1-next.3
 
 ### Patch Changes

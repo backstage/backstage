@@ -276,7 +276,7 @@ Usage: backstage-cli [--config=<pathToConfigFile>] [TestPathPattern]
 
 Options:
   -h, --help
-  -v, --version
+  --version
   --all
   --automock
   -b, --bail
@@ -289,7 +289,6 @@ Options:
   --clearMocks
   --collectCoverage
   --collectCoverageFrom
-  --collectCoverageOnlyFrom
   --color
   --colors
   -c, --config
@@ -312,6 +311,7 @@ Options:
   --globalTeardown
   --globals
   --haste
+  --ignoreProjects
   --init
   --injectGlobals
   --json
@@ -348,6 +348,7 @@ Options:
   --selectProjects
   --setupFiles
   --setupFilesAfterEnv
+  --shard
   --showConfig
   --silent
   --skipFilter
@@ -365,8 +366,6 @@ Options:
   --testRunner
   --testSequencer
   --testTimeout
-  --testURL
-  --timers
   --transform
   --transformIgnorePatterns
   --unmockedModulePathPatterns
@@ -391,6 +390,7 @@ Commands:
   build [options]
   lint [options]
   clean
+  test [options]
   help [command]
 ```
 
@@ -426,6 +426,17 @@ Options:
   -h, --help
 ```
 
+### `backstage-cli repo test`
+
+```
+Usage: backstage-cli repo test [options]
+
+Options:
+  --since <ref>
+  --jest-help
+  -h, --help
+```
+
 ### `backstage-cli test`
 
 ```
@@ -433,7 +444,7 @@ Usage: backstage-cli [--config=<pathToConfigFile>] [TestPathPattern]
 
 Options:
   -h, --help
-  -v, --version
+  --version
   --all
   --automock
   -b, --bail
@@ -446,7 +457,6 @@ Options:
   --clearMocks
   --collectCoverage
   --collectCoverageFrom
-  --collectCoverageOnlyFrom
   --color
   --colors
   -c, --config
@@ -469,6 +479,7 @@ Options:
   --globalTeardown
   --globals
   --haste
+  --ignoreProjects
   --init
   --injectGlobals
   --json
@@ -505,6 +516,7 @@ Options:
   --selectProjects
   --setupFiles
   --setupFilesAfterEnv
+  --shard
   --showConfig
   --silent
   --skipFilter
@@ -522,8 +534,6 @@ Options:
   --testRunner
   --testSequencer
   --testTimeout
-  --testURL
-  --timers
   --transform
   --transformIgnorePatterns
   --unmockedModulePathPatterns

@@ -52,7 +52,7 @@ describe('GitReleaseClient', () => {
         "getRepository": [Function],
         "getTag": [Function],
         "getUser": [Function],
-        "githubAuthApi": Object {
+        "githubAuthApi": {
           "getAccessToken": [MockFunction],
         },
         "host": "github.com",

@@ -1,5 +1,16 @@
 # @backstage/plugin-stack-overflow-backend
 
+## 0.1.5
+
+### Patch Changes
+
+- 79040f73f7: Now requests all questions available using pagination. Default max page is set to 100, with a configurable `maxPage` option on the collator.
+- 148568b5c2: Switched to using node-fetch instead of cross-fetch as is standard for our backend packages
+- Updated dependencies
+  - @backstage/cli@0.19.0
+  - @backstage/config@1.0.2
+  - @backstage/plugin-search-common@1.0.1
+
 ## 0.1.5-next.2
 
 ### Patch Changes

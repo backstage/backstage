@@ -18,6 +18,7 @@ import express from 'express';
 import { THOUSAND_DAYS_MS, TEN_MINUTES_MS, OAuthAdapter } from './OAuthAdapter';
 import { encodeState } from './helpers';
 import { OAuthHandlers, OAuthState } from './types';
+import { CookieConfigurer } from '../../providers/types';
 
 const mockResponseData = {
   providerInfo: {
@@ -36,6 +37,10 @@ const mockResponseData = {
 };
 
 describe('OAuthAdapter', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   class MyAuthProvider implements OAuthHandlers {
     async start() {
       return {
@@ -57,18 +62,24 @@ describe('OAuthAdapter', () => {
     }
   }
   const providerInstance = new MyAuthProvider();
+  const mockCookieConfig: ReturnType<CookieConfigurer> = {
+    domain: 'domain.org',
+    path: '/auth/test-provider',
+    secure: false,
+  };
+  const mockCookieConfigurer = jest.fn().mockReturnValue(mockCookieConfig);
+
   const oAuthProviderOptions = {
     providerId: 'test-provider',
-    secure: false,
     appOrigin: 'http://localhost:3000',
-    cookieDomain: 'example.com',
-    cookiePath: '/auth/test-provider',
+    baseUrl: 'http://domain.org/auth',
+    cookieConfigurer: mockCookieConfigurer,
     tokenIssuer: {
       issueToken: async () => 'my-id-token',
       listPublicKeys: async () => ({ keys: [] }),
     },
     isOriginAllowed: () => false,
-    callbackUrl: 'http://example.com:7007/auth/test-provider/frame/handler',
+    callbackUrl: 'http://domain.org/auth/test-provider/handler/frame',
   };
 
   it('sets the correct headers in start', async () => {
@@ -96,7 +107,14 @@ describe('OAuthAdapter', () => {
     expect(mockResponse.cookie).toHaveBeenCalledWith(
       `${oAuthProviderOptions.providerId}-nonce`,
       expect.any(String),
-      expect.objectContaining({ maxAge: TEN_MINUTES_MS }),
+      expect.objectContaining({
+        httpOnly: true,
+        path: '/auth/test-provider/handler',
+        maxAge: TEN_MINUTES_MS,
+        domain: 'domain.org',
+        sameSite: 'lax',
+        secure: false,
+      }),
     );
     // redirect checks
     expect(mockResponse.setHeader).toHaveBeenCalledTimes(2);
@@ -129,13 +147,18 @@ describe('OAuthAdapter', () => {
     } as unknown as express.Response;
 
     await oauthProvider.frameHandler(mockRequest, mockResponse);
+    expect(mockCookieConfigurer).toHaveBeenCalledTimes(1);
     expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
     expect(mockResponse.cookie).toHaveBeenCalledWith(
       expect.stringContaining('test-provider-refresh-token'),
       expect.stringContaining('token'),
       expect.objectContaining({
+        httpOnly: true,
         path: '/auth/test-provider',
         maxAge: THOUSAND_DAYS_MS,
+        domain: 'domain.org',
+        secure: false,
+        sameSite: 'lax',
       }),
     );
   });
@@ -207,8 +230,12 @@ describe('OAuthAdapter', () => {
       'test-provider-granted-scope',
       'user',
       expect.objectContaining({
+        httpOnly: true,
         path: '/auth/test-provider',
         maxAge: THOUSAND_DAYS_MS,
+        domain: 'domain.org',
+        secure: false,
+        sameSite: 'lax',
       }),
     );
 
@@ -243,6 +270,7 @@ describe('OAuthAdapter', () => {
 
     const mockRequest = {
       header: () => 'XMLHttpRequest',
+      get: jest.fn(),
     } as unknown as express.Request;
 
     const mockResponse = {
@@ -252,6 +280,7 @@ describe('OAuthAdapter', () => {
     } as unknown as express.Response;
 
     await oauthProvider.logout(mockRequest, mockResponse);
+    expect(mockRequest.get).toHaveBeenCalledTimes(1);
     expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
     expect(mockResponse.cookie).toHaveBeenCalledWith(
       expect.stringContaining('test-provider-refresh-token'),
@@ -295,7 +324,46 @@ describe('OAuthAdapter', () => {
     });
   });
 
-  it('sets the correct cookie configuration using a callbackUrl', async () => {
+  it('sets new access-token when old cookie exists', async () => {
+    const oauthProvider = new OAuthAdapter(providerInstance, {
+      ...oAuthProviderOptions,
+      isOriginAllowed: () => false,
+    });
+
+    const mockRequest = {
+      header: () => 'XMLHttpRequest',
+      cookies: {
+        'test-provider-refresh-token': 'old-token',
+      },
+      query: {},
+      get: jest.fn(),
+    } as unknown as express.Request;
+
+    const mockResponse = {
+      json: jest.fn().mockReturnThis(),
+      status: jest.fn().mockReturnThis(),
+      cookie: jest.fn().mockReturnThis(),
+    } as unknown as express.Response;
+
+    await oauthProvider.refresh(mockRequest, mockResponse);
+    expect(mockRequest.get).toHaveBeenCalledTimes(1);
+    expect(mockCookieConfigurer).toHaveBeenCalledTimes(1);
+    expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
+    expect(mockResponse.cookie).toHaveBeenCalledWith(
+      'test-provider-refresh-token',
+      'token',
+      expect.objectContaining({
+        httpOnly: true,
+        path: '/auth/test-provider',
+        maxAge: THOUSAND_DAYS_MS,
+        domain: 'domain.org',
+        secure: false,
+        sameSite: 'lax',
+      }),
+    );
+  });
+
+  it('sets the correct nonce cookie configuration', async () => {
     const config = {
       baseUrl: 'http://domain.org/auth',
       appUrl: 'http://domain.org',
@@ -304,13 +372,13 @@ describe('OAuthAdapter', () => {
 
     const oauthProvider = OAuthAdapter.fromConfig(config, providerInstance, {
       ...oAuthProviderOptions,
-      callbackUrl: 'https://authdomain.org/auth/test-provider/handler/frame',
     });
 
     const mockRequest = {
       query: {
         scope: 'user',
         env: 'development',
+        origin: 'http://domain.org',
       },
     } as unknown as express.Request;
 
@@ -322,15 +390,252 @@ describe('OAuthAdapter', () => {
     } as unknown as express.Response;
 
     await oauthProvider.start(mockRequest, mockResponse);
-
+    expect(mockCookieConfigurer).not.toHaveBeenCalled();
     expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
     expect(mockResponse.cookie).toHaveBeenCalledWith(
       `${oAuthProviderOptions.providerId}-nonce`,
       expect.any(String),
       expect.objectContaining({
-        domain: 'authdomain.org',
+        httpOnly: true,
+        domain: 'domain.org',
+        maxAge: TEN_MINUTES_MS,
+        path: '/auth/test-provider/handler',
+        secure: false,
+        sameSite: 'lax',
+      }),
+    );
+  });
+
+  it('sets the correct nonce cookie configuration using origin from request', async () => {
+    const config = {
+      baseUrl: 'http://domain.org/auth',
+      appUrl: 'http://domain.org',
+      isOriginAllowed: () => false,
+    };
+
+    const oauthProvider = OAuthAdapter.fromConfig(config, providerInstance, {
+      ...oAuthProviderOptions,
+      callbackUrl: 'https://domain.org/auth/test-provider/handler/frame',
+    });
+
+    const mockRequest = {
+      query: {
+        scope: 'user',
+        env: 'development',
+        origin: 'http://other.domain',
+      },
+    } as unknown as express.Request;
+
+    const mockResponse = {
+      cookie: jest.fn().mockReturnThis(),
+      end: jest.fn().mockReturnThis(),
+      setHeader: jest.fn().mockReturnThis(),
+      statusCode: jest.fn().mockReturnThis(),
+    } as unknown as express.Response;
+
+    await oauthProvider.start(mockRequest, mockResponse);
+    expect(mockCookieConfigurer).not.toHaveBeenCalled();
+    expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
+    expect(mockResponse.cookie).toHaveBeenCalledWith(
+      `${oAuthProviderOptions.providerId}-nonce`,
+      expect.any(String),
+      expect.objectContaining({
+        httpOnly: true,
+        domain: 'domain.org',
+        maxAge: TEN_MINUTES_MS,
         path: '/auth/test-provider/handler',
         secure: true,
+        sameSite: 'none',
+      }),
+    );
+  });
+
+  it('sets the correct cookie configuration using an secure callbackUrl', async () => {
+    const config = {
+      baseUrl: 'https://domain.org/auth',
+      appUrl: 'http://domain.org',
+      isOriginAllowed: () => false,
+    };
+
+    const oauthProvider = OAuthAdapter.fromConfig(config, providerInstance, {
+      ...oAuthProviderOptions,
+      callbackUrl: 'https://domain.org/auth/test-provider/handler/frame',
+    });
+
+    const state = {
+      nonce: 'nonce',
+      env: 'development',
+    };
+
+    const mockRequest = {
+      cookies: {
+        'test-provider-nonce': 'nonce',
+      },
+      query: {
+        state: encodeState(state),
+      },
+    } as unknown as express.Request;
+
+    const mockResponse = {
+      cookie: jest.fn().mockReturnThis(),
+      setHeader: jest.fn().mockReturnThis(),
+      end: jest.fn().mockReturnThis(),
+    } as unknown as express.Response;
+
+    await oauthProvider.frameHandler(mockRequest, mockResponse);
+    expect(mockCookieConfigurer).not.toHaveBeenCalled();
+    expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
+    expect(mockResponse.cookie).toHaveBeenCalledWith(
+      expect.stringContaining('test-provider-refresh-token'),
+      expect.stringContaining('token'),
+      expect.objectContaining({
+        httpOnly: true,
+        domain: 'domain.org',
+        path: '/auth/test-provider',
+        secure: true,
+        sameSite: 'lax',
+      }),
+    );
+  });
+
+  it('sets the correct cookie configuration when on different domains and secure', async () => {
+    const config = {
+      baseUrl: 'https://domain.org/auth',
+      appUrl: 'http://domain.org',
+      isOriginAllowed: () => false,
+    };
+
+    const oauthProvider = OAuthAdapter.fromConfig(config, providerInstance, {
+      ...oAuthProviderOptions,
+      callbackUrl: 'https://authdomain.org/auth/test-provider/handler/frame',
+    });
+
+    const state = {
+      nonce: 'nonce',
+      env: 'development',
+    };
+
+    const mockRequest = {
+      cookies: {
+        'test-provider-nonce': 'nonce',
+      },
+      query: {
+        state: encodeState(state),
+      },
+    } as unknown as express.Request;
+
+    const mockResponse = {
+      cookie: jest.fn().mockReturnThis(),
+      setHeader: jest.fn().mockReturnThis(),
+      end: jest.fn().mockReturnThis(),
+    } as unknown as express.Response;
+
+    await oauthProvider.frameHandler(mockRequest, mockResponse);
+    expect(mockCookieConfigurer).not.toHaveBeenCalled();
+    expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
+    expect(mockResponse.cookie).toHaveBeenCalledWith(
+      expect.stringContaining('test-provider-refresh-token'),
+      expect.stringContaining('token'),
+      expect.objectContaining({
+        httpOnly: true,
+        domain: 'authdomain.org',
+        path: '/auth/test-provider',
+        secure: true,
+        sameSite: 'none',
+      }),
+    );
+  });
+
+  it('sets the correct cookie configuration using origin from state', async () => {
+    const config = {
+      baseUrl: 'https://domain.org/auth',
+      appUrl: 'http://domain.org',
+      isOriginAllowed: () => true,
+    };
+
+    const oauthProvider = OAuthAdapter.fromConfig(config, providerInstance, {
+      ...oAuthProviderOptions,
+      callbackUrl: 'https://domain.org/auth/test-provider/handler/frame',
+    });
+
+    const state = {
+      nonce: 'nonce',
+      env: 'development',
+      origin: 'http://other.domain',
+    };
+
+    const mockRequest = {
+      cookies: {
+        'test-provider-nonce': 'nonce',
+      },
+      query: {
+        state: encodeState(state),
+      },
+    } as unknown as express.Request;
+
+    const mockResponse = {
+      cookie: jest.fn().mockReturnThis(),
+      setHeader: jest.fn().mockReturnThis(),
+      end: jest.fn().mockReturnThis(),
+    } as unknown as express.Response;
+
+    await oauthProvider.frameHandler(mockRequest, mockResponse);
+    expect(mockCookieConfigurer).not.toHaveBeenCalled();
+    expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
+    expect(mockResponse.cookie).toHaveBeenCalledWith(
+      expect.stringContaining('test-provider-refresh-token'),
+      expect.stringContaining('token'),
+      expect.objectContaining({
+        httpOnly: true,
+        domain: 'domain.org',
+        path: '/auth/test-provider',
+        secure: true,
+        sameSite: 'none',
+      }),
+    );
+  });
+
+  it('sets the correct cookie configuration using origin from header', async () => {
+    const config = {
+      baseUrl: 'https://domain.org/auth',
+      appUrl: 'http://domain.org',
+      isOriginAllowed: () => false,
+    };
+
+    const oauthProvider = OAuthAdapter.fromConfig(config, providerInstance, {
+      ...oAuthProviderOptions,
+      callbackUrl: 'https://domain.org/auth/test-provider/handler/frame',
+    });
+
+    const mockRequest = {
+      header: () => 'XMLHttpRequest',
+      cookies: {
+        'test-provider-refresh-token': 'old-token',
+      },
+      query: {},
+      get: jest.fn().mockReturnValue('http://other.domain'),
+    } as unknown as express.Request;
+
+    const mockResponse = {
+      json: jest.fn().mockReturnThis(),
+      status: jest.fn().mockReturnThis(),
+      cookie: jest.fn().mockReturnThis(),
+    } as unknown as express.Response;
+
+    await oauthProvider.refresh(mockRequest, mockResponse);
+    expect(mockRequest.get).toHaveBeenCalledTimes(1);
+    expect(mockCookieConfigurer).not.toHaveBeenCalled();
+    expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
+    expect(mockResponse.cookie).toHaveBeenCalledWith(
+      'test-provider-refresh-token',
+      'token',
+      expect.objectContaining({
+        httpOnly: true,
+        path: '/auth/test-provider',
+        maxAge: THOUSAND_DAYS_MS,
+        domain: 'domain.org',
+        secure: true,
+        sameSite: 'none',
       }),
     );
   });

@@ -84,7 +84,7 @@ export class JenkinsConfig {
         baseUrl: c.getString('baseUrl'),
         username: c.getString('username'),
         apiKey: c.getString('apiKey'),
-        headers: c.getOptional('headers'),
+        extraRequestHeaders: c.getOptional('extraRequestHeaders'),
         crumbIssuer: c.getOptionalBoolean('crumbIssuer'),
       })) || [];
 

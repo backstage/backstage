@@ -1,5 +1,21 @@
 # @backstage/backend-plugin-api
 
+## 0.1.2
+
+### Patch Changes
+
+- 2c57c0c499: Made `ApiRef.defaultFactory` internal.
+- 91eed37a39: Updated `createBackendPlugin` and `createBackendModule` to properly forward lack of options.
+- 409ed984e8: Service are now scoped to either `'plugin'` or `'root'` scope. Service factories have been updated to provide dependency instances directly rather than factory functions.
+- eef91a2558: Simplified the `ServiceFactory` type and removed `AnyServiceFactory`.
+- 854ba37357: The `createServiceFactory` method has been updated to return a higher-order factory that can accept options.
+- 68513f169a: When defining a new `ServiceRef` you can now also include a `defaultFactory`, which will be used to construct instances of the service in case there is no explicit factory defined.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/backend-tasks@0.3.5
+  - @backstage/config@1.0.2
+  - @backstage/plugin-permission-common@0.6.4
+
 ## 0.1.2-next.2
 
 ### Patch Changes

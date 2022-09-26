@@ -1,5 +1,20 @@
 # @backstage/plugin-bazaar
 
+## 0.1.24
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 1dd12349d1: Fixed broken routing by removing the wrapping `Router` from the `RoutedTabs` children.
+- Updated dependencies
+  - @backstage/cli@0.19.0
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/plugin-catalog-react@1.1.4
+  - @backstage/plugin-catalog@1.5.1
+  - @backstage/catalog-client@1.1.0
+  - @backstage/catalog-model@1.1.1
+
 ## 0.1.24-next.2
 
 ### Patch Changes

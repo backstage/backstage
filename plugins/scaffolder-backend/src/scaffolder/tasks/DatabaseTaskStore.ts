@@ -32,6 +32,7 @@ import {
   TaskStoreListEventsOptions,
   TaskStoreCreateTaskOptions,
   TaskStoreCreateTaskResult,
+  TaskStoreShutDownTaskOptions,
 } from './types';
 import { DateTime } from 'luxon';
 
@@ -268,8 +269,7 @@ export class DatabaseTaskStore implements TaskStore {
         '<=',
         this.db.client.config.client.includes('sqlite3')
           ? this.db.raw(`datetime('now', ?)`, [`-${timeoutS} seconds`])
-          : this.db.raw(`dateadd('second', ?, ?)`, [
-              `-${timeoutS}`,
+          : this.db.raw(`? - interval '${timeoutS} seconds'`, [
               this.db.fn.now(),
             ]),
       );
@@ -379,5 +379,43 @@ export class DatabaseTaskStore implements TaskStore {
       }
     });
     return { events };
+  }
+
+  async shutdownTask({ taskId }: TaskStoreShutDownTaskOptions): Promise<void> {
+    const message = `This task was marked as stale as it exceeded its timeout`;
+
+    const statusStepEvents = (await this.listEvents({ taskId })).events.filter(
+      ({ body }) => body?.stepId,
+    );
+
+    const completedSteps = statusStepEvents
+      .filter(
+        ({ body: { status } }) => status === 'failed' || status === 'completed',
+      )
+      .map(step => step.body.stepId);
+
+    const hungProcessingSteps = statusStepEvents
+      .filter(({ body: { status } }) => status === 'processing')
+      .map(event => event.body.stepId)
+      .filter(step => !completedSteps.includes(step));
+
+    for (const step of hungProcessingSteps) {
+      await this.emitLogEvent({
+        taskId,
+        body: {
+          message,
+          stepId: step,
+          status: 'failed',
+        },
+      });
+    }
+
+    await this.completeTask({
+      taskId,
+      status: 'failed',
+      eventBody: {
+        message,
+      },
+    });
   }
 }

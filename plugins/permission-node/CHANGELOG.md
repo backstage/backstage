@@ -1,5 +1,20 @@
 # @backstage/plugin-permission-node
 
+## 0.6.5
+
+### Patch Changes
+
+- 9212439d15: Minor update to tests
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/plugin-auth-node@0.2.5
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+  - @backstage/plugin-permission-common@0.6.4
+
 ## 0.6.5-next.3
 
 ### Patch Changes

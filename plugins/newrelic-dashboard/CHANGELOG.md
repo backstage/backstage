@@ -1,5 +1,18 @@
 # @backstage/plugin-newrelic-dashboard
 
+## 0.2.2
+
+### Patch Changes
+
+- 3f739be9d9: Minor API signatures cleanup
+- d669d89206: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/plugin-catalog-react@1.1.4
+  - @backstage/catalog-model@1.1.1
+  - @backstage/errors@1.1.1
+
 ## 0.2.2-next.2
 
 ### Patch Changes

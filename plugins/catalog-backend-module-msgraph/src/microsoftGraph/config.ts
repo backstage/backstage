@@ -261,6 +261,15 @@ export function readProviderConfig(
   const groupSearch = config.getOptionalString('group.search');
   const groupSelect = config.getOptionalStringArray('group.select');
 
+  const queryMode = config.getOptionalString('queryMode');
+  if (
+    queryMode !== undefined &&
+    queryMode !== 'basic' &&
+    queryMode !== 'advanced'
+  ) {
+    throw new Error(`queryMode must be one of: basic, advanced`);
+  }
+
   const userGroupMemberFilter = config.getOptionalString(
     'userGroupMember.filter',
   );
@@ -300,6 +309,7 @@ export function readProviderConfig(
     groupFilter,
     groupSearch,
     groupSelect,
+    queryMode,
     userGroupMemberFilter,
     userGroupMemberSearch,
   };
