@@ -31,7 +31,7 @@ describe('createExtensionPoint', () => {
 });
 
 describe('createBackendPlugin', () => {
-  it('should create an BackendPlugin', () => {
+  it('should create a BackendPlugin', () => {
     const plugin = createBackendPlugin({
       id: 'x',
       register(_reg, _options: { a: string }) {},
@@ -71,7 +71,7 @@ describe('createBackendPlugin', () => {
 });
 
 describe('createBackendModule', () => {
-  it('should create an BackendModule', () => {
+  it('should create a BackendModule', () => {
     const mod = createBackendModule({
       pluginId: 'x',
       moduleId: 'y',
