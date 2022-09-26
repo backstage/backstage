@@ -21756,6 +21756,7 @@ __metadata:
   dependencies:
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/plugin-app-backend": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend": "workspace:^"
   languageName: unknown
