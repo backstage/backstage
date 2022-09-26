@@ -41,6 +41,7 @@ import {
 } from './persistence/persistenceContext';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { IdentityApi } from '@backstage/core-plugin-api';
 
 /**
  * @public
@@ -77,6 +78,7 @@ export interface TechInsightsOptions<
   logger: Logger;
   config: Config;
   discovery: PluginEndpointDiscovery;
+  identity: IdentityApi;
   database: PluginDatabaseManager;
   scheduler: PluginTaskScheduler;
   tokenManager: TokenManager;
@@ -119,6 +121,7 @@ export const buildTechInsightsContext = async <
     factCheckerFactory,
     config,
     discovery,
+    identity,
     database,
     logger,
     scheduler,
@@ -150,6 +153,7 @@ export const buildTechInsightsContext = async <
     factRetrieverContext: {
       config,
       discovery,
+      identity,
       logger,
       tokenManager,
     },
