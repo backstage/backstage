@@ -23,7 +23,6 @@ import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
@@ -220,7 +219,7 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
-  discovery: DiscoveryApi;
+  discovery: PluginEndpointDiscovery;
 };
 
 // @alpha

@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
+import {
+  PluginDatabaseManager,
+  PluginEndpointDiscovery,
+  UrlReader,
+} from '@backstage/backend-common';
 import {
   DefaultNamespaceEntityPolicy,
   Entity,
@@ -96,7 +100,6 @@ import {
   RESOURCE_TYPE_CATALOG_ENTITY,
 } from '@backstage/plugin-catalog-common';
 import { AuthorizedLocationService } from './AuthorizedLocationService';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
 
 /** @public */
 export type CatalogEnvironment = {
@@ -105,7 +108,7 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
-  discovery: DiscoveryApi;
+  discovery: PluginEndpointDiscovery;
 };
 
 /**
