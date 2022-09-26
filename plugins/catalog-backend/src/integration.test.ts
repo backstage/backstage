@@ -131,6 +131,7 @@ class WaitingProgressTracker implements ProgressTracker {
     );
 
     const currentCount = this.#counts.get(item.id) ?? 0;
+    this.#counts.set(item.id, currentCount);
 
     const onDone = () => {
       this.#counts.set(item.id, currentCount + 1);
