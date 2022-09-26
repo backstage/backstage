@@ -76,7 +76,7 @@ export const AzureRepoPicker = (props: {
           </>
         )}
         <FormHelperText>
-          The organization that this repo will belong to
+          The Organization that this repo will belong to
         </FormHelperText>
       </FormControl>
       <FormControl
