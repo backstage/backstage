@@ -37,8 +37,8 @@ The source code is available here:
 2.  Add these packages as dependencies for your Backstage app:
 
     ```
-    $ yarn workspace backend add @internal/plugin-todo-list-backend@^1.0.0 @internal/plugin-todo-list-common@^1.0.0
-    $ yarn workspace app add @internal/plugin-todo-list@^1.0.0
+    $ yarn workspace example-backend add @internal/plugin-todo-list-backend@^1.0.0 @internal/plugin-todo-list-common@^1.0.0
+    $ yarn workspace example-app add @internal/plugin-todo-list@^1.0.0
     ```
 
 3.  Include the backend and frontend plugin in your application:
