@@ -26,18 +26,18 @@ import {
   AnalyzeLocationResponse,
   LocationAnalyzer,
 } from './types';
-import { DiscoveryApi } from '@backstage/plugin-permission-common';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { GitHubLocationAnalyzer } from './GitHubLocationAnalyzer';
 
 export class RepoLocationAnalyzer implements LocationAnalyzer {
   private readonly logger: Logger;
   private readonly scmIntegrations: ScmIntegrationRegistry;
-  private readonly discovery: DiscoveryApi;
+  private readonly discovery: PluginEndpointDiscovery;
 
   constructor(
     logger: Logger,
     scmIntegrations: ScmIntegrationRegistry,
-    discovery: DiscoveryApi,
+    discovery: PluginEndpointDiscovery,
   ) {
     this.logger = logger;
     this.scmIntegrations = scmIntegrations;
@@ -82,6 +82,7 @@ export class RepoLocationAnalyzer implements LocationAnalyzer {
       default:
         break;
     }
+
     if (analyzer) {
       const existingEntityFiles = await analyzer.analyze(
         owner,
