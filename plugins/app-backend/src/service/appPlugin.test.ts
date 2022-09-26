@@ -77,5 +77,8 @@ describe('appPlugin', () => {
         res.text(),
       ),
     ).resolves.toBe('winning');
+    await expect(
+      fetch(`http://localhost:${port}`).then(res => res.text()),
+    ).resolves.toBe('winning');
   });
 });

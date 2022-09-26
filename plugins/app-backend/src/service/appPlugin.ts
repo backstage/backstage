@@ -33,9 +33,9 @@ export type AppPluginOptions = {
    * from. The same app package should be added as a dependency to the backend
    * package in order for it to be accessible at runtime.
    *
-   * In a typical setup with a single app package, this would be set to 'app'.
+   * In a typical setup with a single app package, this will default to 'app'.
    */
-  appPackageName: string;
+  appPackageName?: string;
 
   /**
    * A request handler to handle requests for static content that are not present in the app bundle.
@@ -96,7 +96,7 @@ export const appPlugin = createBackendPlugin({
           logger: winstonLogger,
           config,
           database: disableStaticFallbackCache ? undefined : database,
-          appPackageName,
+          appPackageName: appPackageName ?? 'app',
           staticFallbackHandler,
           disableConfigInjection,
         });

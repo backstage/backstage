@@ -14,7 +14,7 @@ export const appPlugin: (options: AppPluginOptions) => BackendFeature;
 
 // @alpha (undocumented)
 export type AppPluginOptions = {
-  appPackageName: string;
+  appPackageName?: string;
   staticFallbackHandler?: express.Handler;
   disableConfigInjection?: boolean;
   disableStaticFallbackCache?: boolean;
