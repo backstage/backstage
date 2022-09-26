@@ -31,6 +31,7 @@ import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
 import { getGithubIntegrationConfig } from './GitHub';
 import { getBranchName, getCatalogFilename } from '../components/helpers';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-backend';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 
 /**
  * The default implementation of the {@link CatalogImportApi}.
@@ -108,9 +109,35 @@ export class CatalogImportClient implements CatalogImportApi {
     });
 
     if (analyzation.existingEntityFiles.length > 0) {
+      const locations = analyzation.existingEntityFiles.reduce<
+        Record<
+          string,
+          {
+            target: string;
+            exists?: boolean;
+            entities: CompoundEntityRef[];
+          }
+        >
+      >((state, curr) => {
+        state[curr.location.target] = {
+          target: curr.location.target,
+          exists: curr.isRegistered,
+          entities: [
+            ...(curr.location.target in state
+              ? state[curr.location.target].entities
+              : []),
+            {
+              name: curr.entity.metadata.name,
+              namespace: curr.entity.metadata.namespace ?? 'default',
+              kind: curr.entity.kind,
+            },
+          ],
+        };
+        return state;
+      }, {});
       return {
         type: 'locations',
-        locations: analyzation.existingEntityFiles,
+        locations: Object.values(locations),
       };
     }
 

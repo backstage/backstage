@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { RecursivePartial } from '../util/RecursivePartial';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
 
@@ -50,9 +50,9 @@ export type AnalyzeLocationResponse = {
  * @public
  */
 export type AnalyzeLocationExistingEntity = {
-  target: string;
-  exists: boolean | undefined;
-  entities: CompoundEntityRef[];
+  location: LocationSpec;
+  isRegistered: boolean;
+  entity: Entity;
 };
 
 /**

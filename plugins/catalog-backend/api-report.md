@@ -18,7 +18,6 @@ import { CatalogProcessorParser } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorRefreshKeysResult } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorRelationResult } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorResult } from '@backstage/plugin-catalog-node';
-import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
@@ -65,9 +64,9 @@ export type AnalyzeLocationEntityField = {
 
 // @public
 export type AnalyzeLocationExistingEntity = {
-  target: string;
-  exists: boolean | undefined;
-  entities: CompoundEntityRef[];
+  location: LocationSpec;
+  isRegistered: boolean;
+  entity: Entity;
 };
 
 // @public

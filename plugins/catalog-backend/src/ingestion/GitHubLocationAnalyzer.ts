@@ -24,7 +24,6 @@ import { AnalyzeLocationExistingEntity, ScmLocationAnalyzer } from './types';
 export type GitHubLocationAnalyzerOptions = {
   integration: GitHubIntegration;
   catalogFilename?: string;
-
   discovery: DiscoveryApi;
 };
 export class GitHubLocationAnalyzer implements ScmLocationAnalyzer {
@@ -62,26 +61,24 @@ export class GitHubLocationAnalyzer implements ScmLocationAnalyzer {
       });
       const defaultBranch = repoInformation.data.default_branch;
 
-      return await Promise.all(
+      const result = await Promise.all(
         searchResult.data.items
           .map(i => `${trimEnd(url, '/')}/blob/${defaultBranch}/${i.path}`)
           .map(async target => {
-            const result = await catalogClient.addLocation({
+            const addLocationResult = await catalogClient.addLocation({
               type: 'url',
               target,
               dryRun: true,
             });
-            return {
-              target,
-              exists: result.exists,
-              entities: result.entities.map(e => ({
-                kind: e.kind,
-                namespace: e.metadata.namespace ?? 'default',
-                name: e.metadata.name,
-              })),
-            };
+            return addLocationResult.entities.map(e => ({
+              location: { type: 'url', target },
+              isRegistered: !!addLocationResult.exists,
+              entity: e,
+            }));
           }),
       );
+
+      return result.flat();
     }
     return [];
   }
