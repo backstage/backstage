@@ -98,7 +98,7 @@ import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { PermissionedRoute } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
-import { ScoreBoardPage } from '@backstage/plugin-score-card';
+import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
 
 const app = createApp({
   apis,

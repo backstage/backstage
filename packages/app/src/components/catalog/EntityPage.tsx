@@ -141,7 +141,7 @@ import {
   EntityNewRelicDashboardCard,
 } from '@backstage/plugin-newrelic-dashboard';
 import { EntityGoCdContent, isGoCdAvailable } from '@backstage/plugin-gocd';
-import { EntityScoreCardContent } from '@backstage/plugin-score-card';
+import { EntityScoreCardContent } from '@oriflame/backstage-plugin-score-card';
 
 import React, { ReactNode, useMemo, useState } from 'react';
 
