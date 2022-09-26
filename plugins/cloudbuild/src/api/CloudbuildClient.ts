@@ -21,20 +21,18 @@ import {
 } from '../api/types';
 import { OAuthApi } from '@backstage/core-plugin-api';
 
+/** @public */
 export class CloudbuildClient implements CloudbuildApi {
   constructor(private readonly googleAuthApi: OAuthApi) {}
 
-  async reRunWorkflow({
-    projectId,
-    runId,
-  }: {
+  async reRunWorkflow(options: {
     projectId: string;
     runId: string;
   }): Promise<void> {
     await fetch(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
-        projectId,
-      )}/builds/${encodeURIComponent(runId)}:retry`,
+        options.projectId,
+      )}/builds/${encodeURIComponent(options.runId)}:retry`,
       {
         headers: new Headers({
           Accept: '*/*',
@@ -43,14 +41,13 @@ export class CloudbuildClient implements CloudbuildApi {
       },
     );
   }
-  async listWorkflowRuns({
-    projectId,
-  }: {
+
+  async listWorkflowRuns(options: {
     projectId: string;
   }): Promise<ActionsListWorkflowRunsForRepoResponseData> {
     const workflowRuns = await fetch(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
-        projectId,
+        options.projectId,
       )}/builds`,
       {
         headers: new Headers({
@@ -65,17 +62,15 @@ export class CloudbuildClient implements CloudbuildApi {
 
     return builds;
   }
-  async getWorkflow({
-    projectId,
-    id,
-  }: {
+
+  async getWorkflow(options: {
     projectId: string;
     id: string;
   }): Promise<ActionsGetWorkflowResponseData> {
     const workflow = await fetch(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
-        projectId,
-      )}/builds/${encodeURIComponent(id)}`,
+        options.projectId,
+      )}/builds/${encodeURIComponent(options.id)}`,
       {
         headers: new Headers({
           Accept: '*/*',
@@ -88,17 +83,15 @@ export class CloudbuildClient implements CloudbuildApi {
 
     return build;
   }
-  async getWorkflowRun({
-    projectId,
-    id,
-  }: {
+
+  async getWorkflowRun(options: {
     projectId: string;
     id: string;
   }): Promise<ActionsGetWorkflowResponseData> {
     const workflow = await fetch(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
-        projectId,
-      )}/builds/${encodeURIComponent(id)}`,
+        options.projectId,
+      )}/builds/${encodeURIComponent(options.id)}`,
       {
         headers: new Headers({
           Accept: '*/*',

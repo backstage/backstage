@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConfigReader } from '@backstage/config';
-import { ScmIntegrations } from '@backstage/integration';
 import { bundleOpenApiSpecification } from './bundle';
 
 const specification = `
@@ -73,43 +71,21 @@ paths:
 `;
 
 describe('bundleOpenApiSpecification', () => {
-  const readUrl = jest.fn();
-  const reader = {
-    readUrl,
-    read: jest.fn(),
-    readTree: jest.fn(),
-    search: jest.fn(),
-  };
-
-  const scmIntegration = ScmIntegrations.fromConfig(new ConfigReader({})).byUrl(
-    'https://github.com/owner/repo/blob/main/openapi.yaml',
-  );
+  const read = jest.fn();
+  const resolveUrl = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should return undefined if no specification is supplied', async () => {
-    expect(
-      await bundleOpenApiSpecification(
-        undefined,
-        'https://github.com/owner/repo/blob/main/openapi.yaml',
-        reader,
-        scmIntegration as any,
-      ),
-    ).toBeUndefined();
-  });
-
   it('should return the bundled specification', async () => {
-    readUrl.mockResolvedValue({
-      buffer: jest.fn().mockResolvedValue(list),
-    });
+    read.mockResolvedValue(list);
 
     const result = await bundleOpenApiSpecification(
       specification,
-      'https://github.com/owner/repo/blob/main/openapi.yaml',
-      reader,
-      scmIntegration as any,
+      'https://github.com/owner/repo/blob/main/catalog-info.yaml',
+      read,
+      resolveUrl,
     );
 
     expect(result).toEqual(expectedResult.trimStart());

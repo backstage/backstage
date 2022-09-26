@@ -21,6 +21,7 @@ import { NewRelicDashboard } from './components/NewRelicDashboard';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { NEWRELIC_GUID_ANNOTATION } from './constants';
 
+/** @public */
 export const isNewRelicDashboardAvailable = (entity: Entity) =>
   Boolean(entity?.metadata?.annotations?.[NEWRELIC_GUID_ANNOTATION]);
 

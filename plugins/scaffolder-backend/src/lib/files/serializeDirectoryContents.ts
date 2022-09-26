@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
+import { promises as fs } from 'fs';
 import globby from 'globby';
 import limiterFactory from 'p-limit';
-import { join as joinPath } from 'path';
+import { resolveSafeChildPath } from '@backstage/backend-common';
 import { SerializedFile } from './types';
+import { isError } from '@backstage/errors';
 
 const DEFAULT_GLOB_PATTERNS = ['./**', '!.git'];
 
@@ -32,6 +33,14 @@ export const isExecutable = (fileMode: number | undefined) => {
   return res > 0;
 };
 
+async function asyncFilter<T>(
+  array: T[],
+  callback: (value: T, index: number, array: T[]) => Promise<boolean>,
+): Promise<T[]> {
+  const filterMap = await Promise.all(array.map(callback));
+  return array.filter((_value, index) => filterMap[index]);
+}
+
 export async function serializeDirectoryContents(
   sourcePath: string,
   options?: {
@@ -44,19 +53,42 @@ export async function serializeDirectoryContents(
     dot: true,
     gitignore: options?.gitignore,
     followSymbolicLinks: false,
+    // In order to pick up 'broken' symlinks, we oxymoronically request files AND folders yet we filter out folders
+    // This is because broken symlinks aren't classed as files so we need to glob everything
+    onlyFiles: false,
     objectMode: true,
     stats: true,
   });
 
   const limiter = limiterFactory(10);
 
+  const valid = await asyncFilter(paths, async ({ dirent, path }) => {
+    if (dirent.isDirectory()) return false;
+    if (!dirent.isSymbolicLink()) return true;
+
+    const safePath = resolveSafeChildPath(sourcePath, path);
+
+    // we only want files that don't exist
+    try {
+      await fs.stat(safePath);
+      return false;
+    } catch (e) {
+      return isError(e) && e.code === 'ENOENT';
+    }
+  });
+
   return Promise.all(
-    paths.map(async ({ path, stats }) => ({
+    valid.map(async ({ dirent, path, stats }) => ({
       path,
-      content: await limiter(async () =>
-        fs.readFile(joinPath(sourcePath, path)),
-      ),
+      content: await limiter(async () => {
+        const absFilePath = resolveSafeChildPath(sourcePath, path);
+        if (dirent.isSymbolicLink()) {
+          return fs.readlink(absFilePath, 'buffer');
+        }
+        return fs.readFile(absFilePath);
+      }),
       executable: isExecutable(stats?.mode),
+      symlink: dirent.isSymbolicLink(),
     })),
   );
 }

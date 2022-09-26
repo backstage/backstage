@@ -133,6 +133,7 @@ const catalogImportPlugin: BackstagePlugin<
   {
     importPage: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export { catalogImportPlugin };

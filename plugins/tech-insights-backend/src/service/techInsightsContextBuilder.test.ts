@@ -27,7 +27,7 @@ import { Knex } from 'knex';
 
 jest.mock('./fact/FactRetrieverRegistry');
 jest.mock('./fact/FactRetrieverEngine', () => ({
-  FactRetrieverEngine: {
+  DefaultFactRetrieverEngine: {
     create: jest.fn().mockResolvedValue({
       schedule: jest.fn(),
     }),

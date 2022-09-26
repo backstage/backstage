@@ -17,6 +17,7 @@
 export { ILertClient, ilertApiRef } from './client';
 export type {
   ILertApi,
+  EventRequest,
   GetIncidentsCountOpts,
   GetIncidentsOpts,
   TableState,

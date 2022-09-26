@@ -133,16 +133,16 @@ describe('LunrSearchEngine', () => {
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
 
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 100,
         usePipeline: true,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 10,
         usePipeline: false,
         wildcard: lunr.Query.wildcard.TRAILING,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 1,
         usePipeline: false,
         editDistance: 2,
@@ -174,16 +174,16 @@ describe('LunrSearchEngine', () => {
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
 
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 100,
         usePipeline: true,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 10,
         usePipeline: false,
         wildcard: lunr.Query.wildcard.TRAILING,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 1,
         usePipeline: false,
         editDistance: 2,
@@ -215,21 +215,21 @@ describe('LunrSearchEngine', () => {
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
 
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 100,
         usePipeline: true,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 10,
         usePipeline: false,
         wildcard: lunr.Query.wildcard.TRAILING,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 1,
         usePipeline: false,
         editDistance: 2,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testKind'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testKind'), {
         fields: ['kind'],
         presence: lunr.Query.presence.REQUIRED,
       });
@@ -260,7 +260,7 @@ describe('LunrSearchEngine', () => {
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
 
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testKind'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testKind'), {
         fields: ['kind'],
         presence: lunr.Query.presence.REQUIRED,
       });
@@ -291,25 +291,25 @@ describe('LunrSearchEngine', () => {
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
 
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 100,
         usePipeline: true,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 10,
         usePipeline: false,
         wildcard: lunr.Query.wildcard.TRAILING,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 1,
         usePipeline: false,
         editDistance: 2,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testKind'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testKind'), {
         fields: ['kind'],
         presence: lunr.Query.presence.REQUIRED,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testNameSpace'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testNameSpace'), {
         fields: ['namespace'],
         presence: lunr.Query.presence.REQUIRED,
       });
@@ -1089,6 +1089,126 @@ describe('parseHighlightFields', () => {
     ).toEqual({
       foo: '<>abc</> <>def</>',
       bar: 'ghi <>jkl</>',
+    });
+  });
+});
+
+describe('stopword testing', () => {
+  let testLunrSearchEngine: SearchEngine;
+
+  beforeEach(() => {
+    testLunrSearchEngine = new LunrSearchEngine({ logger: getVoidLogger() });
+    jest.clearAllMocks();
+  });
+
+  it('test with stopword in title', async () => {
+    const mockDocuments = [
+      {
+        title: 'a home',
+        text: 'mary had a little lamb at home',
+        location: 'test/location',
+      },
+    ];
+
+    const indexer = await getActualIndexer(testLunrSearchEngine, 'test-index');
+
+    await TestPipeline.withSubject(indexer)
+      .withDocuments(mockDocuments)
+      .execute();
+
+    const mockedSearchResult = await testLunrSearchEngine.query({
+      term: 'mary',
+      filters: {
+        title: 'a home',
+      },
+    });
+
+    expect(mockedSearchResult).toMatchObject({
+      results: [
+        {
+          document: {
+            title: 'a home',
+            text: 'mary had a little lamb at home',
+            location: 'test/location',
+          },
+          rank: 1,
+        },
+      ],
+      nextPageCursor: undefined,
+    });
+  });
+
+  it('test with stopword connected with dash', async () => {
+    const mockDocuments = [
+      {
+        title: 'a-home',
+        text: 'mary had a little lamb at home',
+        location: 'test/location',
+      },
+    ];
+
+    const indexer = await getActualIndexer(testLunrSearchEngine, 'test-index');
+
+    await TestPipeline.withSubject(indexer)
+      .withDocuments(mockDocuments)
+      .execute();
+
+    const mockedSearchResult = await testLunrSearchEngine.query({
+      term: 'mary',
+      filters: {
+        title: 'a-home',
+      },
+    });
+
+    expect(mockedSearchResult).toMatchObject({
+      results: [
+        {
+          document: {
+            title: 'a-home',
+            text: 'mary had a little lamb at home',
+            location: 'test/location',
+          },
+          rank: 1,
+        },
+      ],
+      nextPageCursor: undefined,
+    });
+  });
+
+  it('test with only stop word in title', async () => {
+    const mockDocuments = [
+      {
+        title: 'a',
+        text: 'mary had a little lamb at home',
+        location: 'test/location',
+      },
+    ];
+
+    const indexer = await getActualIndexer(testLunrSearchEngine, 'test-index');
+
+    await TestPipeline.withSubject(indexer)
+      .withDocuments(mockDocuments)
+      .execute();
+
+    const mockedSearchResult = await testLunrSearchEngine.query({
+      term: 'mary',
+      filters: {
+        title: 'a',
+      },
+    });
+
+    expect(mockedSearchResult).toMatchObject({
+      results: [
+        {
+          document: {
+            title: 'a',
+            text: 'mary had a little lamb at home',
+            location: 'test/location',
+          },
+          rank: 1,
+        },
+      ],
+      nextPageCursor: undefined,
     });
   });
 });

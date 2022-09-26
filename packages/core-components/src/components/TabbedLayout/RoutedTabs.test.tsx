@@ -32,7 +32,7 @@ const testRoute2 = {
 
 const testRoute3 = {
   title: 'tabbed-test-title-3',
-  path: '/some-other-path-similar',
+  path: 'some-other-path-similar',
   children: <div>tabbed-test-content-3</div>,
 };
 

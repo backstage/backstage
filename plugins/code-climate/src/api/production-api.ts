@@ -22,7 +22,7 @@ import {
   CodeClimateIssuesData,
 } from './code-climate-data';
 import { CodeClimateApi } from './code-climate-api';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { Duration } from 'luxon';
 import humanizeDuration from 'humanize-duration';
 
@@ -34,8 +34,15 @@ const codeSmellsQuery = `${basicIssuesOptions}&${categoriesFilter}=Complexity`;
 const duplicationQuery = `${basicIssuesOptions}&${categoriesFilter}=Duplication`;
 const otherIssuesQuery = `${basicIssuesOptions}&${categoriesFilter}=Bug%20Risk`;
 
+/** @public */
 export class ProductionCodeClimateApi implements CodeClimateApi {
-  constructor(private readonly discoveryApi: DiscoveryApi) {}
+  private readonly discoveryApi: DiscoveryApi;
+  private readonly fetchApi: FetchApi;
+
+  constructor(options: { discoveryApi: DiscoveryApi; fetchApi: FetchApi }) {
+    this.discoveryApi = options.discoveryApi;
+    this.fetchApi = options.fetchApi;
+  }
 
   async fetchAllData(options: {
     apiUrl: string;
@@ -44,7 +51,6 @@ export class ProductionCodeClimateApi implements CodeClimateApi {
     testReportID: string;
   }): Promise<any> {
     const { apiUrl, repoID, snapshotID, testReportID } = options;
-
     const [
       maintainabilityResponse,
       testCoverageResponse,
@@ -52,15 +58,19 @@ export class ProductionCodeClimateApi implements CodeClimateApi {
       duplicationResponse,
       otherIssuesResponse,
     ] = await Promise.all([
-      await fetch(`${apiUrl}/repos/${repoID}/snapshots/${snapshotID}`),
-      await fetch(`${apiUrl}/repos/${repoID}/test_reports/${testReportID}`),
-      await fetch(
+      await this.fetchApi.fetch(
+        `${apiUrl}/repos/${repoID}/snapshots/${snapshotID}`,
+      ),
+      await this.fetchApi.fetch(
+        `${apiUrl}/repos/${repoID}/test_reports/${testReportID}`,
+      ),
+      await this.fetchApi.fetch(
         `${apiUrl}/repos/${repoID}/snapshots/${snapshotID}/issues?${codeSmellsQuery}`,
       ),
-      await fetch(
+      await this.fetchApi.fetch(
         `${apiUrl}/repos/${repoID}/snapshots/${snapshotID}/issues?${duplicationQuery}`,
       ),
-      await fetch(
+      await this.fetchApi.fetch(
         `${apiUrl}/repos/${repoID}/snapshots/${snapshotID}/issues?${otherIssuesQuery}`,
       ),
     ]);
@@ -109,7 +119,7 @@ export class ProductionCodeClimateApi implements CodeClimateApi {
       'proxy',
     )}/codeclimate/api`;
 
-    const repoResponse = await fetch(`${apiUrl}/repos/${repoID}`);
+    const repoResponse = await this.fetchApi.fetch(`${apiUrl}/repos/${repoID}`);
 
     if (!repoResponse.ok) {
       throw new Error('Failed fetching Code Climate info');

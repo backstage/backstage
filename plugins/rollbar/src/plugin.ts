@@ -29,6 +29,7 @@ export const rootRouteRef = createRouteRef({
   id: 'rollbar',
 });
 
+/** @public */
 export const rollbarPlugin = createPlugin({
   id: 'rollbar',
   apis: [
@@ -44,6 +45,7 @@ export const rollbarPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const EntityRollbarContent = rollbarPlugin.provide(
   createRoutableExtension({
     name: 'EntityRollbarContent',

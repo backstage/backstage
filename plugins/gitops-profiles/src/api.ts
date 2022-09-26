@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createApiRef } from '@backstage/core-plugin-api';
 
+/** @public */
 export interface CloneFromTemplateRequest {
   templateRepository: string;
   secrets: {
@@ -27,6 +29,7 @@ export interface CloneFromTemplateRequest {
   gitHubToken: string;
 }
 
+/** @public */
 export interface ApplyProfileRequest {
   targetOrg: string;
   targetRepo: string;
@@ -35,6 +38,7 @@ export interface ApplyProfileRequest {
   profiles: string[];
 }
 
+/** @public */
 export interface ChangeClusterStateRequest {
   targetOrg: string;
   targetRepo: string;
@@ -43,6 +47,7 @@ export interface ChangeClusterStateRequest {
   clusterState: 'present' | 'absent'; // /api/cluster/state
 }
 
+/** @public */
 export interface PollLogRequest {
   targetOrg: string;
   targetRepo: string;
@@ -50,18 +55,21 @@ export interface PollLogRequest {
   gitHubToken: string;
 }
 
+/** @public */
 export interface Status {
   status: string; // queued, in_progress, or completed
   message: string;
   conclusion: string; // success, failure, neutral, cancelled, skipped, timed_out, or action_required
 }
 
+/** @public */
 export interface StatusResponse {
   result: Status[];
   link: string;
   status: string;
 }
 
+/** @public */
 export interface ClusterStatus {
   name: string;
   link: string;
@@ -70,23 +78,28 @@ export interface ClusterStatus {
   runStatus: Status[];
 }
 
+/** @public */
 export interface ListClusterStatusesResponse {
   result: ClusterStatus[];
 }
 
+/** @public */
 export interface ListClusterRequest {
   gitHubUser: string;
   gitHubToken: string;
 }
 
+/** @public */
 export interface GithubUserInfoRequest {
   accessToken: string;
 }
 
+/** @public */
 export interface GithubUserInfoResponse {
   login: string;
 }
 
+/** @public */
 export class FetchError extends Error {
   get name(): string {
     return this.constructor.name;
@@ -101,6 +114,7 @@ export class FetchError extends Error {
   }
 }
 
+/** @public */
 export type GitOpsApi = {
   url: string;
   fetchLog(req: PollLogRequest): Promise<StatusResponse>;
@@ -111,10 +125,12 @@ export type GitOpsApi = {
   fetchUserInfo(req: GithubUserInfoRequest): Promise<GithubUserInfoResponse>;
 };
 
+/** @public */
 export const gitOpsApiRef = createApiRef<GitOpsApi>({
   id: 'plugin.gitops.service',
 });
 
+/** @public */
 export class GitOpsRestApi implements GitOpsApi {
   constructor(public url: string = '') {}
 

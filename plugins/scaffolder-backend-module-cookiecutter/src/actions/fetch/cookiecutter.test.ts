@@ -13,16 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const executeShellCommand = jest.fn();
-const commandExists = jest.fn();
-const fetchContents = jest.fn();
-
-jest.mock('@backstage/plugin-scaffolder-backend', () => ({
-  ...jest.requireActual('@backstage/plugin-scaffolder-backend'),
-  fetchContents,
-  executeShellCommand,
-}));
-jest.mock('command-exists', () => commandExists);
 
 import {
   getVoidLogger,
@@ -38,6 +28,23 @@ import { PassThrough } from 'stream';
 import { createFetchCookiecutterAction } from './cookiecutter';
 import { join } from 'path';
 import type { ActionContext } from '@backstage/plugin-scaffolder-backend';
+
+const executeShellCommand = jest.fn();
+const commandExists = jest.fn();
+const fetchContents = jest.fn();
+
+jest.mock('@backstage/plugin-scaffolder-backend', () => ({
+  ...jest.requireActual('@backstage/plugin-scaffolder-backend'),
+  fetchContents: (...args: any[]) => fetchContents(...args),
+  executeShellCommand: (...args: any[]) => executeShellCommand(...args),
+}));
+
+jest.mock(
+  'command-exists',
+  () =>
+    (...args: any[]) =>
+      commandExists(...args),
+);
 
 describe('fetch:cookiecutter', () => {
   const integrations = ScmIntegrations.fromConfig(
@@ -132,7 +139,7 @@ describe('fetch:cookiecutter', () => {
   it('should throw an error when copyWithoutRender is not an array', async () => {
     (mockContext.input as any).copyWithoutRender = 'not an array';
 
-    await expect(action.handler(mockContext)).rejects.toThrowError(
+    await expect(action.handler(mockContext)).rejects.toThrow(
       /Fetch action input copyWithoutRender must be an Array/,
     );
   });
@@ -140,7 +147,7 @@ describe('fetch:cookiecutter', () => {
   it('should throw an error when extensions is not an array', async () => {
     (mockContext.input as any).extensions = 'not an array';
 
-    await expect(action.handler(mockContext)).rejects.toThrowError(
+    await expect(action.handler(mockContext)).rejects.toThrow(
       /Fetch action input extensions must be an Array/,
     );
   });

@@ -69,7 +69,6 @@ export function readGitLabIntegrationConfig(
   let apiBaseUrl = config.getOptionalString('apiBaseUrl');
   const token = config.getOptionalString('token');
   let baseUrl = config.getOptionalString('baseUrl');
-
   if (apiBaseUrl) {
     apiBaseUrl = trimEnd(apiBaseUrl, '/');
   } else if (host === GITLAB_HOST) {
@@ -123,4 +122,21 @@ export function readGitLabIntegrationConfigs(
   }
 
   return result;
+}
+
+/**
+ * Reads a GitLab integration config, and returns
+ * relative path.
+ *
+ * @param config - GitLabIntegrationConfig object
+ * @public
+ */
+export function getGitLabIntegrationRelativePath(
+  config: GitLabIntegrationConfig,
+): string {
+  let relativePath = '';
+  if (config.host !== GITLAB_HOST) {
+    relativePath = new URL(config.baseUrl).pathname;
+  }
+  return trimEnd(relativePath, '/');
 }

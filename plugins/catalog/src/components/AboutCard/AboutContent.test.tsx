@@ -411,6 +411,7 @@ describe('<AboutContent />', () => {
         },
         spec: {
           type: 'root',
+          target: 'https://backstage.io',
         },
         relations: [],
       };
@@ -440,6 +441,10 @@ describe('<AboutContent />', () => {
       expect(queryByText('Lifecycle')).not.toBeInTheDocument();
       expect(getByText('Tags')).toBeInTheDocument();
       expect(getByText('Tags').nextSibling).toHaveTextContent('tag-1');
+      expect(getByText('Targets')).toBeInTheDocument();
+      expect(getByText('Targets').nextSibling).toHaveTextContent(
+        'https://backstage.io',
+      );
     });
 
     it('highlights missing required fields', async () => {

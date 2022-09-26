@@ -50,13 +50,13 @@ export interface Config {
           /**
            * The OAuth client ID to use for authenticating requests.
            */
-          clientId: string;
+          clientId?: string;
           /**
            * The OAuth client secret to use for authenticating requests.
            *
            * @visibility secret
            */
-          clientSecret: string;
+          clientSecret?: string;
 
           // TODO: Consider not making these config options and pass them in the
           // constructor instead. They are probably not environment specific, so
@@ -130,13 +130,13 @@ export interface Config {
             /**
              * The OAuth client ID to use for authenticating requests.
              */
-            clientId: string;
+            clientId?: string;
             /**
              * The OAuth client secret to use for authenticating requests.
              *
              * @visibility secret
              */
-            clientSecret: string;
+            clientSecret?: string;
 
             user?: {
               /**

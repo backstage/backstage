@@ -13,5 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/** @public */
 export const KAFKA_CONSUMER_GROUP_ANNOTATION =
   'kafka.apache.org/consumer-groups';
+
+export const KAFKA_DASHBOARD_URL = 'kafka.apache.org/dashboard-urls';

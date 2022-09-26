@@ -24,8 +24,8 @@ import { default as React } from 'react';
 
 // TODO: This layout could be a shared based component if it was possible to create custom TabbedLayouts
 //    A generalized version of createSubRoutesFromChildren, etc. would be required
-
-type SubRoute = {
+/** @public */
+export type SubRoute = {
   path: string;
   title: string;
   children: JSX.Element;
@@ -40,7 +40,8 @@ attachComponentData(Route, dataKey, true);
 // This causes all mount points that are discovered within this route to use the path of the route itself
 attachComponentData(Route, 'core.gatherMountPoints', true);
 
-type ExploreLayoutProps = {
+/** @public */
+export type ExploreLayoutProps = {
   title?: string;
   subtitle?: string;
   children?: React.ReactNode;
@@ -57,12 +58,12 @@ type ExploreLayoutProps = {
  *   </ExploreLayout.Route>
  * </ExploreLayout>
  * ```
+ *
+ * @public
  */
-export const ExploreLayout = ({
-  title,
-  subtitle,
-  children,
-}: ExploreLayoutProps) => {
+export const ExploreLayout = (props: ExploreLayoutProps) => {
+  const { title, subtitle, children } = props;
+
   const routes = useElementFilter(children, elements =>
     elements
       .selectByComponentData({

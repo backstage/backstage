@@ -1,5 +1,111 @@
 # @backstage/plugin-search
 
+## 1.0.2-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- 18f60427f2: Use the new `inheritParentContextIfAvailable` search context property in `SearchModal` instead of manually checking if a parent context exists, this conditional statement was previously duplicated in more than one component like in `SearchBar` as well and is now only done in ` SearchContextProvider`.
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.2
+  - @backstage/core-plugin-api@1.0.6-next.2
+  - @backstage/plugin-search-react@1.1.0-next.2
+
+## 1.0.2-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.1
+  - @backstage/core-plugin-api@1.0.6-next.1
+  - @backstage/plugin-catalog-react@1.1.4-next.1
+  - @backstage/plugin-search-react@1.0.2-next.1
+
+## 1.0.2-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/core-components@0.11.1-next.0
+  - @backstage/plugin-catalog-react@1.1.4-next.0
+  - @backstage/plugin-search-react@1.0.2-next.0
+  - @backstage/plugin-search-common@1.0.1-next.0
+
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-react@1.1.3
+  - @backstage/plugin-search-react@1.0.1
+
+## 1.0.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.3-next.2
+  - @backstage/core-components@0.11.0-next.2
+  - @backstage/plugin-search-react@1.0.1-next.1
+
+## 1.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/plugin-catalog-react@1.1.3-next.0
+  - @backstage/core-components@0.10.1-next.0
+  - @backstage/plugin-search-react@1.0.1-next.0
+
+## 1.0.0
+
+### Major Changes
+
+- 7bd7d336b2: This package has been promoted to 1.0. Read more about what it means in [New release: Backstage Search 1.0 blog](https://backstage.io/blog/2022/07/19/releasing-backstage-search-1.0)
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 509c4092f0: To allow people to use a global search context in the search modal, the code for the search modal has been changed to only create a local search context if there is no parent context already defined.
+
+  If you want to continue using a local context even if you define a global one, you will have to wrap the modal in a new local context manually:
+
+  ```tsx
+  <SearchContextProvider>
+    <SearchModal toggleModal={toggleModal} />
+  </SearchContextProvider>
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-search-react@1.0.0
+  - @backstage/plugin-search-common@1.0.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/theme@0.2.16
+  - @backstage/errors@1.1.0
+
+## 0.9.1-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+  - @backstage/catalog-model@1.1.0-next.3
+  - @backstage/plugin-catalog-react@1.1.2-next.3
+  - @backstage/plugin-search-react@0.2.2-next.3
+
 ## 0.9.1-next.2
 
 ### Patch Changes

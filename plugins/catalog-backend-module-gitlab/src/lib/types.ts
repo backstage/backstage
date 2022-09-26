@@ -35,4 +35,5 @@ export type GitlabProviderConfig = {
   id: string;
   branch: string;
   catalogFile: string;
+  projectPattern: RegExp;
 };

@@ -28,16 +28,25 @@ export type ComponentRenderer = {
   Renderer?: (props: RendererProps) => JSX.Element;
 };
 
-type ComponentParts = {
+/**
+ * @public
+ */
+export type ComponentParts = {
   Content: (props?: any) => JSX.Element;
   Actions?: () => JSX.Element;
   Settings?: () => JSX.Element;
   ContextProvider?: (props: any) => JSX.Element;
 };
 
-type RendererProps = { title: string } & ComponentParts;
+/**
+ * @public
+ */
+export type RendererProps = { title: string } & ComponentParts;
 
-type CardExtensionProps<T> = ComponentRenderer & { title?: string } & T;
+/**
+ * @public
+ */
+export type CardExtensionProps<T> = ComponentRenderer & { title?: string } & T;
 
 /**
  * An extension creator to create card based components for the homepage

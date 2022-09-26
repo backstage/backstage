@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Grid, Typography } from '@material-ui/core';
 import React from 'react';
 import { UserSettingsSignInAvatar } from './UserSettingsSignInAvatar';
@@ -20,6 +21,7 @@ import { UserSettingsMenu } from './UserSettingsMenu';
 import { useUserProfile } from '../useUserProfileInfo';
 import { InfoCard } from '@backstage/core-components';
 
+/** @public */
 export const UserSettingsProfileCard = () => {
   const { profile, displayName } = useUserProfile();
 

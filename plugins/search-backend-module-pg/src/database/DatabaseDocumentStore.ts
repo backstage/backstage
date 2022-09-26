@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { resolvePackagePath } from '@backstage/backend-common';
+import {
+  PluginDatabaseManager,
+  resolvePackagePath,
+} from '@backstage/backend-common';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
 import {
@@ -29,8 +32,12 @@ const migrationsDir = resolvePackagePath(
   'migrations',
 );
 
+/** @public */
 export class DatabaseDocumentStore implements DatabaseStore {
-  static async create(knex: Knex): Promise<DatabaseDocumentStore> {
+  static async create(
+    database: PluginDatabaseManager,
+  ): Promise<DatabaseDocumentStore> {
+    const knex = await database.getClient();
     try {
       const majorVersion = await queryPostgresMajorVersion(knex);
 
@@ -49,9 +56,12 @@ export class DatabaseDocumentStore implements DatabaseStore {
       );
     }
 
-    await knex.migrate.latest({
-      directory: migrationsDir,
-    });
+    if (!database.migrations?.skip) {
+      await knex.migrate.latest({
+        directory: migrationsDir,
+      });
+    }
+
     return new DatabaseDocumentStore(knex);
   }
 

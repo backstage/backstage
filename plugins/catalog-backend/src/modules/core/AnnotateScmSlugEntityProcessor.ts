@@ -21,7 +21,7 @@ import {
 } from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
 import { identity, merge, pickBy } from 'lodash';
-import { CatalogProcessor, LocationSpec } from '../../api';
+import { CatalogProcessor, LocationSpec } from '@backstage/plugin-catalog-node';
 
 const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
 const GITLAB_ACTIONS_ANNOTATION = 'gitlab.com/project-slug';

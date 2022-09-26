@@ -16,6 +16,7 @@
 
 import { DateTime } from 'luxon';
 import { marked } from 'marked';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { MADR_DATE_FORMAT } from '@backstage/plugin-adr-common';
 
 import { AdrParser } from './types';
@@ -101,6 +102,8 @@ export const createMadrParser = (
       text: content,
       status: adrStatus,
       date: adrDate,
+      entityRef: stringifyEntityRef(entity),
+      entityTitle: entity.metadata.title,
       location: applyArgsToFormat(locationTemplate, {
         namespace: entity.metadata.namespace || 'default',
         kind: entity.kind,

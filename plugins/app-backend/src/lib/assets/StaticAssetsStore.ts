@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { resolvePackagePath } from '@backstage/backend-common';
+import {
+  PluginDatabaseManager,
+  resolvePackagePath,
+} from '@backstage/backend-common';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { DateTime } from 'luxon';
@@ -34,7 +37,7 @@ interface StaticAssetRow {
 
 /** @internal */
 export interface StaticAssetsStoreOptions {
-  database: Knex;
+  database: PluginDatabaseManager;
   logger: Logger;
 }
 
@@ -48,15 +51,21 @@ export class StaticAssetsStore implements StaticAssetProvider {
   #logger: Logger;
 
   static async create(options: StaticAssetsStoreOptions) {
-    await options.database.migrate.latest({
-      directory: migrationsDir,
-    });
-    return new StaticAssetsStore(options);
+    const { database } = options;
+    const client = await database.getClient();
+
+    if (!database.migrations?.skip) {
+      await client.migrate.latest({
+        directory: migrationsDir,
+      });
+    }
+
+    return new StaticAssetsStore(client, options.logger);
   }
 
-  private constructor(options: StaticAssetsStoreOptions) {
-    this.#db = options.database;
-    this.#logger = options.logger;
+  private constructor(client: Knex, logger: Logger) {
+    this.#db = client;
+    this.#logger = logger;
   }
 
   /**

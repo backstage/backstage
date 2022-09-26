@@ -44,7 +44,7 @@ export type CustomFieldValidator<TFieldReturnValue> = (
   context: {
     apiHolder: ApiHolder;
   },
-) => void;
+) => void | Promise<void>;
 
 // @public
 export const EntityNamePickerFieldExtension: FieldExtensionComponent<
@@ -170,6 +170,8 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent<
 // @public
 export interface OwnerPickerUiOptions {
   // (undocumented)
+  allowArbitraryValues?: boolean;
+  // (undocumented)
   allowedKinds?: string[];
 }
 
@@ -246,11 +248,7 @@ export interface ScaffolderApi {
   ): Promise<TemplateParameterSchema>;
   listActions(): Promise<ListActionsResponse>;
   // (undocumented)
-  listTasks?({
-    filterByOwnership,
-  }: {
-    filterByOwnership: 'owned' | 'all';
-  }): Promise<{
+  listTasks?(options: { filterByOwnership: 'owned' | 'all' }): Promise<{
     tasks: ScaffolderTask[];
   }>;
   scaffold(
@@ -365,7 +363,8 @@ export const scaffolderPlugin: BackstagePlugin<
   },
   {
     registerComponent: ExternalRouteRef<undefined, true>;
-  }
+  },
+  {}
 >;
 
 // @public
@@ -439,8 +438,10 @@ export type TemplateGroupFilter = {
 // @public
 export type TemplateParameterSchema = {
   title: string;
+  description?: string;
   steps: Array<{
     title: string;
+    description?: string;
     schema: JsonObject;
   }>;
 };

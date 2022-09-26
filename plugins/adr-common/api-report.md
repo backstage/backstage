@@ -10,6 +10,8 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 // @public
 export interface AdrDocument extends IndexableDocument {
   date?: string;
+  entityRef: string;
+  entityTitle?: string;
   status?: string;
 }
 

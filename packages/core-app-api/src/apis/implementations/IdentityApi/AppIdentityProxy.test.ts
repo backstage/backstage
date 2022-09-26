@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { withLogCollector } from '@backstage//test-utils';
+import { withLogCollector } from '@backstage/test-utils';
 import { AppIdentityProxy } from './AppIdentityProxy';
 
 describe('AppIdentityProxy', () => {

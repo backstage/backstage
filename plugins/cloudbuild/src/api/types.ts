@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+/** @public */
 export interface ActionsListWorkflowRunsForRepoResponseData {
   builds: ActionsGetWorkflowResponseData[];
 }
 
+/** @public */
 export type ActionsGetWorkflowResponseData = {
   id: string;
   status: string;
@@ -41,6 +43,7 @@ export type ActionsGetWorkflowResponseData = {
   timing: Timing2;
 };
 
+/** @public */
 export interface Step {
   name: string;
   args: string[];
@@ -54,16 +57,19 @@ export interface Step {
   pullTiming: PullTiming;
 }
 
+/** @public */
 export interface Timing2 {
   BUILD: BUILD;
   FETCHSOURCE: FETCHSOURCE;
 }
 
+/** @public */
 export interface SourceProvenance {
   resolvedStorageSource: {};
   fileHashes: {};
 }
 
+/** @public */
 export interface Options {
   machineType: string;
   substitutionOption: string;
@@ -71,6 +77,7 @@ export interface Options {
   dynamicSubstitutions: boolean;
 }
 
+/** @public */
 export interface Substitutions {
   COMMIT_SHA: string;
   SHORT_SHA: string;
@@ -79,45 +86,54 @@ export interface Substitutions {
   REVISION_ID: string;
 }
 
+/** @public */
 export interface Results {
   buildStepImages: string[];
   buildStepOutputs: string[];
 }
 
+/** @public */
 export interface BUILD {
   startTime: string;
   endTime: string;
 }
 
+/** @public */
 export interface FETCHSOURCE {
   startTime: string;
   endTime: string;
 }
 
+/** @public */
 export interface StorageSource {
   bucket: string;
   object: string;
 }
 
+/** @public */
 export interface Source {
   storageSource: StorageSource;
 }
 
+/** @public */
 export interface Volume {
   name: string;
   path: string;
 }
 
+/** @public */
 export interface Timing {
   startTime: string;
   endTime: string;
 }
 
+/** @public */
 export interface PullTiming {
   startTime: string;
   endTime: string;
 }
 
+/** @public */
 export interface ResolvedStorageSource {
   bucket: string;
   object: string;

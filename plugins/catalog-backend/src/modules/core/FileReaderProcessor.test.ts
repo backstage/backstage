@@ -19,7 +19,7 @@ import {
   CatalogProcessorEntityResult,
   CatalogProcessorErrorResult,
   CatalogProcessorResult,
-} from '../../api';
+} from '@backstage/plugin-catalog-node';
 import path from 'path';
 import { defaultEntityDataParser } from '../util/parse';
 
@@ -43,7 +43,10 @@ describe('FileReaderProcessor', () => {
 
     expect(generated.type).toBe('entity');
     expect(generated.location).toEqual(spec);
-    expect(generated.entity).toEqual({ kind: 'Component' });
+    expect(generated.entity).toEqual({
+      kind: 'Component',
+      metadata: { name: 'component-test' },
+    });
   });
 
   it('should fail load from file with error', async () => {
@@ -77,14 +80,24 @@ describe('FileReaderProcessor', () => {
       defaultEntityDataParser,
     );
 
-    expect(emit).toBeCalledTimes(2);
-    expect(emit.mock.calls[0][0].entity).toEqual({ kind: 'Component' });
+    expect(emit).toHaveBeenCalledTimes(4);
+    expect(emit.mock.calls[0][0].entity).toEqual({
+      kind: 'Component',
+      metadata: { name: 'component-test' },
+    });
     expect(emit.mock.calls[0][0].location).toEqual({
       type: 'file',
       target: expect.stringMatching(/^[^*]*$/),
     });
-    expect(emit.mock.calls[1][0].entity).toEqual({ kind: 'API' });
-    expect(emit.mock.calls[1][0].location).toEqual({
+    expect(emit.mock.calls[1][0].key).toContain('file:');
+    expect(emit.mock.calls[1][0].key).toContain(
+      path.join('fileReaderProcessor', 'component.yaml'),
+    );
+    expect(emit.mock.calls[2][0].entity).toEqual({
+      kind: 'API',
+      metadata: { name: 'api-test' },
+    });
+    expect(emit.mock.calls[2][0].location).toEqual({
       type: 'file',
       target: expect.stringMatching(/^[^*]*$/),
     });

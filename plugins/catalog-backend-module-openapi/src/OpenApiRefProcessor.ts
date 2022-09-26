@@ -24,7 +24,10 @@ import {
 import { bundleOpenApiSpecification } from './lib';
 import { Logger } from 'winston';
 
-/** @public */
+/**
+ * @public
+ * @deprecated replaced by the openApiPlaceholderResolver
+ */
 export class OpenApiRefProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrations;
   private readonly logger: Logger;
@@ -69,17 +72,23 @@ export class OpenApiRefProcessor implements CatalogProcessor {
     }
 
     const scmIntegration = this.integrations.byUrl(location.target);
-    if (!scmIntegration) {
+    const definition = entity.spec!.definition;
+
+    if (!scmIntegration || !definition) {
       return entity;
     }
+
+    const resolveUrl = (url: string, base: string): string => {
+      return scmIntegration.resolveUrl({ url, base });
+    };
 
     this.logger.debug(`Bundling OpenAPI specification from ${location.target}`);
     try {
       const bundledSpec = await bundleOpenApiSpecification(
-        entity.spec!.definition?.toString(),
+        definition.toString(),
         location.target,
-        this.reader,
-        scmIntegration,
+        this.reader.read,
+        resolveUrl,
       );
 
       return {

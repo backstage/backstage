@@ -26,12 +26,17 @@ type ErrorReportingProps = {
 const columns: TableColumn<DetectedError>[] = [
   {
     title: 'cluster',
-    width: '15%',
+    width: '10%',
     render: (detectedError: DetectedError) => detectedError.cluster,
   },
   {
+    title: 'namespace',
+    width: '10%',
+    render: (detectedError: DetectedError) => detectedError.namespace,
+  },
+  {
     title: 'kind',
-    width: '15%',
+    width: '10%',
     render: (detectedError: DetectedError) => detectedError.kind,
   },
   {

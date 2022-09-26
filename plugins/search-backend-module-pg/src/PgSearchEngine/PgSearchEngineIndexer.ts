@@ -19,12 +19,14 @@ import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
 import { DatabaseStore } from '../database';
 
+/** @public */
 export type PgSearchEngineIndexerOptions = {
   batchSize: number;
   type: string;
   databaseStore: DatabaseStore;
 };
 
+/** @public */
 export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
   private store: DatabaseStore;
   private type: string;

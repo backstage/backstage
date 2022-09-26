@@ -23,6 +23,10 @@ import { GoogleServiceAccountAuthTranslator } from './GoogleServiceAccountAuthPr
 import { AzureIdentityKubernetesAuthTranslator } from './AzureIdentityKubernetesAuthTranslator';
 import { OidcKubernetesAuthTranslator } from './OidcKubernetesAuthTranslator';
 
+/**
+ *
+ * @alpha
+ */
 export class KubernetesAuthTranslatorGenerator {
   static getKubernetesAuthTranslatorInstance(
     authProvider: string,
@@ -48,6 +52,9 @@ export class KubernetesAuthTranslatorGenerator {
       }
       case 'oidc': {
         return new OidcKubernetesAuthTranslator();
+      }
+      case 'localKubectlProxy': {
+        return new NoopKubernetesAuthTranslator();
       }
       default: {
         throw new Error(

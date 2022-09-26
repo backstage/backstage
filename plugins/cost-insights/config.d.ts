@@ -21,7 +21,7 @@ export interface Config {
      */
     engineerCost: number;
 
-    products: {
+    products?: {
       [kind: string]: {
         /**
          * @visibility frontend

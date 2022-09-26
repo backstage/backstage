@@ -15,7 +15,10 @@
  */
 
 import { InputError } from '@backstage/errors';
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import {
+  getBitbucketServerRequestOptions,
+  ScmIntegrationRegistry,
+} from '@backstage/integration';
 import fetch, { Response, RequestInit } from 'node-fetch';
 import { initRepoAndPush } from '../helpers';
 import { createTemplateAction } from '../../createTemplateAction';
@@ -77,10 +80,6 @@ const createRepository = async (opts: {
 
   const repoContentsUrl = `${r.links.self[0].href}`;
   return { remoteUrl, repoContentsUrl };
-};
-
-const getAuthorizationHeader = (config: { token: string }) => {
-  return `Bearer ${config.token}`;
 };
 
 const performEnableLFS = async (opts: {
@@ -213,13 +212,18 @@ export function createPublishBitbucketServerAction(options: {
       }
 
       const token = ctx.input.token ?? integrationConfig.config.token;
-      if (!token) {
+
+      const authConfig = {
+        ...integrationConfig.config,
+        ...{ token },
+      };
+      const reqOpts = getBitbucketServerRequestOptions(authConfig);
+      const authorization = reqOpts.headers.Authorization;
+      if (!authorization) {
         throw new Error(
-          `Authorization has not been provided for ${integrationConfig.config.host}. Please add either token to the Integrations config or a user login auth token`,
+          `Authorization has not been provided for ${integrationConfig.config.host}. Please add either (a) a user login auth token, or (b) a token or (c) username + password to the integration config.`,
         );
       }
-
-      const authorization = getAuthorizationHeader({ token });
 
       const apiBaseUrl = integrationConfig.config.apiBaseUrl;
 
@@ -237,10 +241,14 @@ export function createPublishBitbucketServerAction(options: {
         email: config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
-      const auth = {
-        username: 'x-token-auth',
-        password: token,
-      };
+      const auth = authConfig.token
+        ? {
+            token: token!,
+          }
+        : {
+            username: authConfig.username!,
+            password: authConfig.password!,
+          };
 
       await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),

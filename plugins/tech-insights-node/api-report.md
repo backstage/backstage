@@ -8,6 +8,7 @@ import { Config } from '@backstage/config';
 import { DateTime } from 'luxon';
 import { Duration } from 'luxon';
 import { DurationLike } from 'luxon';
+import { HumanDuration } from '@backstage/backend-tasks';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -46,12 +47,14 @@ export type FactLifecycle = TTL | MaxItems;
 
 // @public
 export interface FactRetriever {
+  description?: string;
   entityFilter?:
     | Record<string, string | symbol | (string | symbol)[]>[]
     | Record<string, string | symbol | (string | symbol)[]>;
   handler: (ctx: FactRetrieverContext) => Promise<TechInsightFact[]>;
   id: string;
   schema: FactSchema;
+  title?: string;
   version: string;
 }
 
@@ -70,7 +73,7 @@ export type FactRetrieverContext = {
 export type FactRetrieverRegistration = {
   factRetriever: FactRetriever;
   cadence?: string;
-  timeout?: Duration;
+  timeout?: Duration | HumanDuration;
   lifecycle?: FactLifecycle;
 };
 
@@ -167,11 +170,7 @@ export interface TechInsightsStore {
     [factRef: string]: FlatTechInsightFact;
   }>;
   getLatestSchemas(ids?: string[]): Promise<FactSchema[]>;
-  insertFacts({
-    id,
-    facts,
-    lifecycle,
-  }: {
+  insertFacts(options: {
     id: string;
     facts: TechInsightFact[];
     lifecycle?: FactLifecycle;

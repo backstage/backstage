@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** @public */
 export enum BuildResult {
   /**
    * No result
@@ -37,6 +38,7 @@ export enum BuildResult {
   Canceled = 32,
 }
 
+/** @public */
 export enum BuildStatus {
   /**
    * No status.
@@ -68,6 +70,7 @@ export enum BuildStatus {
   All = 47,
 }
 
+/** @public */
 export type RepoBuild = {
   id?: number;
   title: string;
@@ -81,10 +84,12 @@ export type RepoBuild = {
   uniqueName?: string;
 };
 
+/** @public */
 export type RepoBuildOptions = {
   top?: number;
 };
 
+/** @public */
 export enum PullRequestStatus {
   /**
    * Status not set. Default state.
@@ -108,6 +113,7 @@ export enum PullRequestStatus {
   All = 4,
 }
 
+/** @public */
 export type GitTag = {
   objectId?: string;
   peeledObjectId?: string;
@@ -117,6 +123,7 @@ export type GitTag = {
   commitLink: string;
 };
 
+/** @public */
 export type PullRequest = {
   pullRequestId?: number;
   repoName?: string;
@@ -131,11 +138,13 @@ export type PullRequest = {
   link: string;
 };
 
+/** @public */
 export type PullRequestOptions = {
   top: number;
   status: PullRequestStatus;
 };
 
+/** @public */
 export interface DashboardPullRequest {
   pullRequestId?: number;
   title?: string;
@@ -151,6 +160,7 @@ export interface DashboardPullRequest {
   link?: string;
 }
 
+/** @public */
 export interface Reviewer {
   id?: string;
   displayName?: string;
@@ -161,6 +171,7 @@ export interface Reviewer {
   voteStatus: PullRequestVoteStatus;
 }
 
+/** @public */
 export interface Policy {
   id?: number;
   type: PolicyType;
@@ -169,6 +180,7 @@ export interface Policy {
   link?: string;
 }
 
+/** @public */
 export interface CreatedBy {
   id?: string;
   displayName?: string;
@@ -178,12 +190,14 @@ export interface CreatedBy {
   teamNames?: string[];
 }
 
+/** @public */
 export interface Repository {
   id?: string;
   name?: string;
   url?: string;
 }
 
+/** @public */
 export interface Team {
   id?: string;
   name?: string;
@@ -192,6 +206,19 @@ export interface Team {
   members?: string[];
 }
 
+/** @public */
+export interface ReadmeConfig {
+  project: string;
+  repo: string;
+}
+
+/** @public */
+export interface Readme {
+  url: string;
+  content: string;
+}
+
+/** @public */
 export interface TeamMember {
   id?: string;
   displayName?: string;
@@ -202,6 +229,7 @@ export interface TeamMember {
 /**
  * Status of a policy which is running against a specific pull request.
  */
+/** @public */
 export enum PolicyEvaluationStatus {
   /**
    * The policy is either queued to run, or is waiting for some event before progressing.
@@ -229,6 +257,7 @@ export enum PolicyEvaluationStatus {
   Broken = 5,
 }
 
+/** @public */
 export enum PolicyType {
   Build = 'Build',
   Status = 'Status',
@@ -238,6 +267,7 @@ export enum PolicyType {
   MergeStrategy = 'MergeStrategy',
 }
 
+/** @public */
 export enum PolicyTypeId {
   /**
    * This policy will require a successful build has been performed before updating protected refs.
@@ -265,6 +295,7 @@ export enum PolicyTypeId {
   MergeStrategy = 'fa4e907d-c16b-4a4c-9dfa-4916e5d171ab',
 }
 
+/** @public */
 export enum PullRequestVoteStatus {
   Approved = 10,
   ApprovedWithSuggestions = 5,
@@ -272,6 +303,8 @@ export enum PullRequestVoteStatus {
   WaitingForAuthor = -5,
   Rejected = -10,
 }
+
+/** @public */
 export type BuildRun = {
   id?: number;
   title: string;
@@ -285,6 +318,14 @@ export type BuildRun = {
   uniqueName?: string;
 };
 
+/** @public */
 export type BuildRunOptions = {
   top?: number;
+};
+
+/** @public */
+export type Project = {
+  id?: string;
+  name?: string;
+  description?: string;
 };

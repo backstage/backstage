@@ -26,6 +26,7 @@ export const allureRouteRef = createRouteRef({
   id: 'allure',
 });
 
+/** @public */
 export const allurePlugin = createPlugin({
   id: 'allure',
   apis: [
@@ -42,6 +43,7 @@ export const allurePlugin = createPlugin({
   },
 });
 
+/** @public */
 export const EntityAllureReportContent = allurePlugin.provide(
   createRoutableExtension({
     name: 'EntityAllureReportContent',

@@ -28,6 +28,7 @@ export const bitriseApiRef = createApiRef<BitriseApi>({
   id: 'plugin.bitrise.service',
 });
 
+/** @public */
 export const bitrisePlugin = createPlugin({
   id: 'bitrise',
   apis: [

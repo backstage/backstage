@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   AlertSource,
   Incident,
@@ -25,13 +26,14 @@ import {
   IncidentAction,
   OnCall,
 } from '../types';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
 
+/** @public */
 export type TableState = {
   page: number;
   pageSize: number;
 };
 
+/** @public */
 export type GetIncidentsOpts = {
   maxResults?: number;
   startIndex?: number;
@@ -39,10 +41,12 @@ export type GetIncidentsOpts = {
   alertSources?: number[];
 };
 
+/** @public */
 export type GetIncidentsCountOpts = {
   states?: IncidentStatus[];
 };
 
+/** @public */
 export type EventRequest = {
   integrationKey: string;
   summary: string;
@@ -51,6 +55,7 @@ export type EventRequest = {
   source: string;
 };
 
+/** @public */
 export interface ILertApi {
   fetchIncidents(opts?: GetIncidentsOpts): Promise<Incident[]>;
   fetchIncidentsCount(opts?: GetIncidentsCountOpts): Promise<number>;
@@ -103,18 +108,3 @@ export interface ILertApi {
   getUserPhoneNumber(user: User | null): string;
   getUserInitials(user: User | null): string;
 }
-
-export type Options = {
-  discoveryApi: DiscoveryApi;
-
-  /**
-   * URL used by users to access iLert web UI.
-   * Example: https://my-org.ilert.com/
-   */
-  baseUrl: string;
-
-  /**
-   * Path to use for requests via the proxy, defaults to /ilert/api
-   */
-  proxyPath: string;
-};

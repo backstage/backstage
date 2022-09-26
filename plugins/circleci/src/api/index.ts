@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-export { CircleCIApi, circleCIApiRef, GitType } from './CircleCIApi';
+export type { GitType } from './CircleCIApi';
+export { CircleCIApi, circleCIApiRef } from './CircleCIApi';
 export type {
   BuildWithSteps,
   BuildStepAction,

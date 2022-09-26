@@ -1,5 +1,107 @@
 # @backstage/plugin-tech-insights
 
+## 0.3.0-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.2
+  - @backstage/core-plugin-api@1.0.6-next.2
+
+## 0.3.0-next.1
+
+### Minor Changes
+
+- f7e99ac1d8: Added the possibility to display check results of different types on a single scorecard.
+
+  - **BREAKING** Removed the `getScorecardsDefinition` method from the `TechInsightsApi` interface. Added the `getCheckResultRenderers` method that returns rendering components for given types.
+  - **BREAKING** The `CheckResultRenderer` type now exposes the `component` factory method that creates a React component used to display a result of a provided check result.
+  - The `TechInsightsClient` constructor accepts now the optional `renderers` parameter that can be used to inject a custom renderer.
+  - **BREAKING** The `title` parameter in the `EntityTechInsightsScorecardContent` and `EntityTechInsightsScorecardCard` components is now mandatory.
+  - The `jsonRulesEngineCheckResultRenderer` used to render `json-rules-engine` check results is exported.
+  - The `BooleanCheck` component that can be used to render other check results types is also exported.
+
+  If you were overriding the `getScorecardsDefinition` method to adjust the rendering of check results, you should now provide a custom renderer using `renderers` parameter in the `TechInsightsClient` class.
+
+  See the [README](https://github.com/backstage/backstage/tree/master/plugins/tech-insights/README.md) for more details.
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 763fb81e82: Internal refactor to use more type safe code when dealing with route parameters.
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.1
+  - @backstage/core-plugin-api@1.0.6-next.1
+  - @backstage/plugin-catalog-react@1.1.4-next.1
+
+## 0.2.5-next.0
+
+### Patch Changes
+
+- 3f739be9d9: Minor API signatures cleanup
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/core-components@0.11.1-next.0
+  - @backstage/plugin-catalog-react@1.1.4-next.0
+
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-react@1.1.3
+  - @backstage/plugin-tech-insights-common@0.2.6
+
+## 0.2.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.3-next.2
+  - @backstage/core-components@0.11.0-next.2
+
+## 0.2.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/plugin-tech-insights-common@0.2.6-next.0
+  - @backstage/plugin-catalog-react@1.1.3-next.0
+  - @backstage/core-components@0.10.1-next.0
+
+## 0.2.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/plugin-tech-insights-common@0.2.5
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/theme@0.2.16
+  - @backstage/errors@1.1.0
+
+## 0.2.3-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+  - @backstage/plugin-tech-insights-common@0.2.5-next.0
+  - @backstage/catalog-model@1.1.0-next.3
+  - @backstage/plugin-catalog-react@1.1.2-next.3
+
 ## 0.2.3-next.2
 
 ### Patch Changes

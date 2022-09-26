@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { DomainEntity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
   EntityRefLinks,
@@ -33,13 +34,11 @@ import React from 'react';
 import { Button, ItemCardHeader } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
-type DomainCardProps = {
-  entity: DomainEntity;
-};
+/** @public */
+export const DomainCard = (props: { entity: DomainEntity }) => {
+  const { entity } = props;
 
-export const DomainCard = ({ entity }: DomainCardProps) => {
   const catalogEntityRoute = useRouteRef(entityRouteRef);
-
   const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
   const url = catalogEntityRoute(entityRouteParams(entity));
 

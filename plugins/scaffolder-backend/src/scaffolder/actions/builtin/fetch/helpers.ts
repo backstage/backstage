@@ -26,19 +26,15 @@ import path from 'path';
  *
  * @public
  */
-export async function fetchContents({
-  reader,
-  integrations,
-  baseUrl,
-  fetchUrl = '.',
-  outputPath,
-}: {
+export async function fetchContents(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   baseUrl?: string;
   fetchUrl?: string;
   outputPath: string;
 }) {
+  const { reader, integrations, baseUrl, fetchUrl = '.', outputPath } = options;
+
   let fetchUrlIsAbsolute = false;
   try {
     // eslint-disable-next-line no-new

@@ -98,13 +98,13 @@ describe('helpers', () => {
 
   describe('getRepoUrlFromLocationAnnotation', () => {
     it.each`
-      url                                                                        | repo_url                                    | edit_uri
-      ${'https://github.com/backstage/backstage'}                                | ${'https://github.com/backstage/backstage'} | ${undefined}
-      ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${undefined}                                | ${'https://github.com/backstage/backstage/edit/main/examples/techdocs/docs'}
-      ${'https://github.com/backstage/backstage/tree/main/'}                     | ${undefined}                                | ${'https://github.com/backstage/backstage/edit/main/docs'}
-      ${'https://gitlab.com/backstage/backstage'}                                | ${'https://gitlab.com/backstage/backstage'} | ${undefined}
-      ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${undefined}                                | ${'https://gitlab.com/backstage/backstage/-/edit/main/examples/techdocs/docs'}
-      ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${undefined}                                | ${'https://gitlab.com/backstage/backstage/-/edit/main/docs'}
+      url                                                                        | repo_url                                                                   | edit_uri
+      ${'https://github.com/backstage/backstage'}                                | ${'https://github.com/backstage/backstage'}                                | ${undefined}
+      ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/edit/main/examples/techdocs/docs'}
+      ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/edit/main/docs'}
+      ${'https://gitlab.com/backstage/backstage'}                                | ${'https://gitlab.com/backstage/backstage'}                                | ${undefined}
+      ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/edit/main/examples/techdocs/docs'}
+      ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/edit/main/docs'}
     `('should convert $url', ({ url: target, repo_url, edit_uri }) => {
       const parsedLocationAnnotation: ParsedLocationAnnotation = {
         type: 'url',
@@ -120,14 +120,14 @@ describe('helpers', () => {
     });
 
     it.each`
-      url                                                                        | edit_uri
-      ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/edit/main/examples/techdocs/custom/folder'}
-      ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/edit/main/custom/folder'}
-      ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/edit/main/examples/techdocs/custom/folder'}
-      ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/edit/main/custom/folder'}
+      url                                                                        | repo_url                                                                   | edit_uri
+      ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/edit/main/examples/techdocs/custom/folder'}
+      ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/edit/main/custom/folder'}
+      ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/edit/main/examples/techdocs/custom/folder'}
+      ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/edit/main/custom/folder'}
     `(
       'should convert $url with custom docsFolder',
-      ({ url: target, edit_uri }) => {
+      ({ url: target, repo_url, edit_uri }) => {
         const parsedLocationAnnotation: ParsedLocationAnnotation = {
           type: 'url',
           target,
@@ -139,7 +139,7 @@ describe('helpers', () => {
             scmIntegrations,
             './custom/folder',
           ),
-        ).toEqual({ edit_uri });
+        ).toEqual({ repo_url, edit_uri });
       },
     );
 
@@ -462,7 +462,7 @@ describe('helpers', () => {
       // Check if the file exists
       await expect(
         fs.access(filePath, fs.constants.F_OK),
-      ).resolves.not.toThrowError();
+      ).resolves.not.toThrow();
     });
 
     it('should throw error when the JSON is invalid', async () => {
@@ -470,7 +470,7 @@ describe('helpers', () => {
 
       await expect(
         createOrUpdateMetadata(filePath, mockLogger),
-      ).rejects.toThrowError('Unexpected token d in JSON at position 0');
+      ).rejects.toThrow('Unexpected token d in JSON at position 0');
     });
 
     it('should add build timestamp to the metadata json', async () => {
@@ -511,9 +511,9 @@ describe('helpers', () => {
     it('should throw error when the JSON is invalid', async () => {
       const filePath = path.join(rootDir, 'invalid_techdocs_metadata.json');
 
-      await expect(
-        storeEtagMetadata(filePath, 'etag123abc'),
-      ).rejects.toThrowError('Unexpected token d in JSON at position 0');
+      await expect(storeEtagMetadata(filePath, 'etag123abc')).rejects.toThrow(
+        'Unexpected token d in JSON at position 0',
+      );
     });
 
     it('should add etag to the metadata json', async () => {
@@ -552,7 +552,7 @@ describe('helpers', () => {
 
     it('throws when neither .yml nor .yaml file is present', async () => {
       const invalidInputDir = resolvePath(__filename);
-      await expect(getMkdocsYml(invalidInputDir)).rejects.toThrowError(
+      await expect(getMkdocsYml(invalidInputDir)).rejects.toThrow(
         /Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml for validation/,
       );
     });

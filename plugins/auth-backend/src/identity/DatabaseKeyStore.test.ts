@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
-import Knex from 'knex';
+import Knex, { Knex as KnexType } from 'knex';
 import { DatabaseKeyStore } from './DatabaseKeyStore';
 import { DateTime } from 'luxon';
+
+function createDatabaseManager(
+  client: KnexType,
+  skipMigrations: boolean = false,
+) {
+  return {
+    getClient: async () => client,
+    migrations: {
+      skip: skipMigrations,
+    },
+  };
+}
 
 function createDB() {
   const knex = Knex({
@@ -38,8 +50,10 @@ const keyBase = {
 
 describe('DatabaseKeyStore', () => {
   it('should store a key', async () => {
-    const database = createDB();
-    const store = await DatabaseKeyStore.create({ database });
+    const client = createDB();
+    const store = await DatabaseKeyStore.create({
+      database: createDatabaseManager(client),
+    });
 
     const key = {
       kid: '123',
@@ -59,8 +73,10 @@ describe('DatabaseKeyStore', () => {
   });
 
   it('should remove stored keys', async () => {
-    const database = createDB();
-    const store = await DatabaseKeyStore.create({ database });
+    const client = createDB();
+    const store = await DatabaseKeyStore.create({
+      database: createDatabaseManager(client),
+    });
 
     const key1 = { kid: '1', ...keyBase };
     const key2 = { kid: '2', ...keyBase };

@@ -31,8 +31,11 @@ Here are some samples of badges for the `artists-lookup` service in the Demo Bac
 
 ### Install the package
 
+Install the `@backstage/plugin-badges` package in your frontend app package:
+
 ```bash
-yarn add @backstage/plugin-badges
+# From your Backstage root directory
+yarn add --cwd packages/app @backstage/plugin-badges
 ```
 
 ### Register plugin

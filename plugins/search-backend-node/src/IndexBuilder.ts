@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   DocumentDecoratorFactory,
   DocumentTypeInfo,
@@ -38,12 +39,12 @@ export class IndexBuilder {
   private searchEngine: SearchEngine;
   private logger: Logger;
 
-  constructor({ logger, searchEngine }: IndexBuilderOptions) {
+  constructor(options: IndexBuilderOptions) {
     this.collators = {};
     this.decorators = {};
     this.documentTypes = {};
-    this.logger = logger;
-    this.searchEngine = searchEngine;
+    this.logger = options.logger;
+    this.searchEngine = options.searchEngine;
   }
 
   /**
@@ -64,7 +65,9 @@ export class IndexBuilder {
    * Makes the index builder aware of a collator that should be executed at the
    * given refresh interval.
    */
-  addCollator({ factory, schedule }: RegisterCollatorParameters): void {
+  addCollator(options: RegisterCollatorParameters): void {
+    const { factory, schedule } = options;
+
     this.logger.info(
       `Added ${factory.constructor.name} collator factory for type ${factory.type}`,
     );
@@ -82,7 +85,8 @@ export class IndexBuilder {
    * the decorator, it will be applied to documents from all known collators,
    * otherwise it will only be applied to documents of the given types.
    */
-  addDecorator({ factory }: RegisterDecoratorParameters): void {
+  addDecorator(options: RegisterDecoratorParameters): void {
+    const { factory } = options;
     const types = factory.types || ['*'];
     this.logger.info(
       `Added decorator ${factory.constructor.name} to types ${types.join(

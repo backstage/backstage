@@ -21,7 +21,6 @@ import { render } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter } from 'react-router';
 import { useWorkflowRuns } from '../useWorkflowRuns';
-import type { Props as RecentWorkflowRunsCardProps } from './RecentWorkflowRunsCard';
 import { RecentWorkflowRunsCard } from './RecentWorkflowRunsCard';
 
 import { ConfigReader } from '@backstage/core-app-api';
@@ -75,7 +74,7 @@ describe('<RecentWorkflowRunsCard />', () => {
     jest.resetAllMocks();
   });
 
-  const renderSubject = (props: RecentWorkflowRunsCardProps = {}) =>
+  const renderSubject = (props: any = {}) =>
     render(
       <ThemeProvider theme={lightTheme}>
         <MemoryRouter>

@@ -22,8 +22,8 @@ import { PgSearchEngine } from '@backstage/plugin-search-backend-module-pg';
 import {
   IndexBuilder,
   LunrSearchEngine,
-  SearchEngine,
 } from '@backstage/plugin-search-backend-node';
+import { SearchEngine } from '@backstage/plugin-search-common';
 import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';

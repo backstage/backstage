@@ -22,7 +22,7 @@ export type {
   TechInsightsOptions,
   TechInsightsContext,
 } from './service/techInsightsContextBuilder';
-
+export type { FactRetrieverEngine } from './service/fact/FactRetrieverEngine';
 export type { PersistenceContext } from './service/persistence/persistenceContext';
 export { createFactRetrieverRegistration } from './service/fact/createFactRetriever';
 export type { FactRetrieverRegistry } from './service/fact/FactRetrieverRegistry';

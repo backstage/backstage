@@ -33,7 +33,7 @@ describe('PassportStrategyHelper', () => {
   }
 
   describe('executeRedirectStrategy', () => {
-    it('should call authenticate and resolve with RedirectInfo', async () => {
+    it('should call authenticate and resolve with OAuthStartResponse', async () => {
       const mockStrategy = new MyCustomRedirectStrategy();
       const spyAuthenticate = jest.spyOn(mockStrategy, 'authenticate');
       const redirectStrategyPromise = executeRedirectStrategy(
@@ -41,7 +41,7 @@ describe('PassportStrategyHelper', () => {
         mockStrategy,
         {},
       );
-      expect(spyAuthenticate).toBeCalledTimes(1);
+      expect(spyAuthenticate).toHaveBeenCalledTimes(1);
       await expect(redirectStrategyPromise).resolves.toStrictEqual(
         expect.objectContaining({ url: 'a', status: 302 }),
       );
@@ -84,7 +84,7 @@ describe('PassportStrategyHelper', () => {
         mockRequest,
         mockStrategy,
       );
-      expect(spyAuthenticate).toBeCalledTimes(1);
+      expect(spyAuthenticate).toHaveBeenCalledTimes(1);
       await expect(frameHandlerStrategyPromise).resolves.toStrictEqual(
         expect.objectContaining({
           result: { accessToken: 'ACCESS_TOKEN' },
@@ -100,7 +100,7 @@ describe('PassportStrategyHelper', () => {
         mockRequest,
         mockStrategy,
       );
-      expect(spyAuthenticate).toBeCalledTimes(1);
+      expect(spyAuthenticate).toHaveBeenCalledTimes(1);
       await expect(frameHandlerStrategyPromise).rejects.toThrow(
         'Authentication failed, MyCustomAuth error - Custom message',
       );
@@ -113,7 +113,7 @@ describe('PassportStrategyHelper', () => {
         mockRequest,
         mockStrategy,
       );
-      expect(spyAuthenticate).toBeCalledTimes(1);
+      expect(spyAuthenticate).toHaveBeenCalledTimes(1);
       await expect(frameHandlerStrategyPromise).rejects.toThrow(
         'Unexpected redirect',
       );
@@ -126,7 +126,7 @@ describe('PassportStrategyHelper', () => {
         mockRequest,
         mockStrategy,
       );
-      expect(spyAuthenticate).toBeCalledTimes(1);
+      expect(spyAuthenticate).toHaveBeenCalledTimes(1);
       await expect(frameHandlerStrategyPromise).rejects.toThrow();
     });
   });

@@ -22,11 +22,14 @@ import {
   ConsumerGroupOffsetsResponse,
   KafkaApi,
   kafkaApiRef,
+  KafkaDashboardApi,
+  kafkaDashboardApiRef,
 } from '../../api/types';
 import { useConsumerGroupsOffsetsForEntity } from './useConsumerGroupsOffsetsForEntity';
 import * as data from './__fixtures__/consumer-group-offsets.json';
 
 import { errorApiRef } from '@backstage/core-plugin-api';
+import { configApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
 
 const consumerGroupOffsets = data as ConsumerGroupOffsetsResponse;
@@ -38,6 +41,15 @@ const mockErrorApi: jest.Mocked<typeof errorApiRef.T> = {
 
 const mockKafkaApi: jest.Mocked<KafkaApi> = {
   getConsumerGroupOffsets: jest.fn(),
+};
+
+const mockKafkaDashboardApi: jest.Mocked<KafkaDashboardApi> = {
+  getDashboardUrl: jest.fn(),
+};
+
+// @ts-ignore
+const mockConfigApi: jest.Mocked<typeof configApiRef.T> = {
+  getConfigArray: jest.fn(_ => []),
 };
 
 describe('useConsumerGroupOffsets', () => {
@@ -63,6 +75,8 @@ describe('useConsumerGroupOffsets', () => {
         apis={[
           [errorApiRef, mockErrorApi],
           [kafkaApiRef, mockKafkaApi],
+          [kafkaDashboardApiRef, mockKafkaDashboardApi],
+          [configApiRef, mockConfigApi],
         ]}
       >
         <EntityProvider entity={entity}>{children}</EntityProvider>
@@ -80,6 +94,7 @@ describe('useConsumerGroupOffsets', () => {
     when(mockKafkaApi.getConsumerGroupOffsets)
       .calledWith('prod', consumerGroupOffsets.consumerId)
       .mockResolvedValue(consumerGroupOffsets);
+    when(mockKafkaDashboardApi.getDashboardUrl).mockReturnValue({});
 
     const { result, waitForNextUpdate } = subject();
     await waitForNextUpdate();
@@ -89,6 +104,7 @@ describe('useConsumerGroupOffsets', () => {
       {
         clusterId: 'prod',
         consumerGroup: consumerGroupOffsets.consumerId,
+        dashboardUrl: undefined,
         topics: consumerGroupOffsets.offsets,
       },
     ]);

@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { HumanDuration } from '@backstage/backend-tasks';
 import {
   FactLifecycle,
   FactRetriever,
   FactRetrieverRegistration,
 } from '@backstage/plugin-tech-insights-node';
+import { Duration } from 'luxon';
 
 /**
  * @public
@@ -25,22 +27,24 @@ import {
  * @param cadence - cron expression to indicate when the fact retriever should be triggered
  * @param factRetriever - Implementation of fact retriever consisting of at least id, version, schema and handler
  * @param lifecycle - Optional lifecycle definition indicating the cleanup logic of facts when this retriever is run
+ * @param timeout - Optional duration to determine how long the fact retriever should be allowed to run, defaults to 5 minutes
  *
  */
 export type FactRetrieverRegistrationOptions = {
   cadence: string;
   factRetriever: FactRetriever;
   lifecycle?: FactLifecycle;
+  timeout?: Duration | HumanDuration;
 };
 
 /**
  * @public
  *
  * A helper function to construct fact retriever registrations.
- *
- * @param cadence - cron expression to indicate when the fact retriever should be triggered
+ * @param cadence - Cron expression to indicate when the fact retriever should be triggered
  * @param factRetriever - Implementation of fact retriever consisting of at least id, version, schema and handler
  * @param lifecycle - Optional lifecycle definition indicating the cleanup logic of facts when this retriever is run
+ * @param timeout - Optional duration to determine how long the fact retriever should be allowed to run, defaults to 5 minutes
  *
  *
  * @remarks
@@ -64,10 +68,11 @@ export type FactRetrieverRegistrationOptions = {
 export function createFactRetrieverRegistration(
   options: FactRetrieverRegistrationOptions,
 ): FactRetrieverRegistration {
-  const { cadence, factRetriever, lifecycle } = options;
+  const { cadence, factRetriever, lifecycle, timeout } = options;
   return {
     cadence,
     factRetriever,
     lifecycle,
+    timeout,
   };
 }

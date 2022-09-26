@@ -28,6 +28,7 @@ export const rootRouteRef = createRouteRef({
   id: 'pagerduty',
 });
 
+/** @public */
 export const pagerDutyPlugin = createPlugin({
   id: 'pagerduty',
   apis: [
@@ -44,6 +45,7 @@ export const pagerDutyPlugin = createPlugin({
   ],
 });
 
+/** @public */
 export const EntityPagerDutyCard = pagerDutyPlugin.provide(
   createComponentExtension({
     name: 'EntityPagerDutyCard',

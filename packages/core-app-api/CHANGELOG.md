@@ -1,5 +1,96 @@
 # @backstage/core-app-api
 
+## 1.1.0-next.2
+
+### Patch Changes
+
+- f9ec4e46e3: When using React Router v6 stable, it is now possible for components within the `Route` element tree to have `path` props, although they will be ignored.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- e9d40ebf54: If you'd like to send analytics events to multiple implementations, you may now
+  do so using the `MultipleAnalyticsApi` implementation provided by this package.
+
+  ```tsx
+  import { MultipleAnalyticsApi } from '@backstage/core-app-api';
+  import {
+    analyticsApiRef,
+    configApiRef,
+    storageApiRef,
+    identityApiRef,
+  } from '@internal/backstage/core-plugin-api';
+  import { CustomAnalyticsApi } from '@internal/analytics';
+  import { VendorAnalyticsApi } from '@vendor/analytics';
+
+  createApiFactory({
+    api: analyticsApiRef,
+    deps: { configApi: configApiRef, identityApi: identityApiRef, storageApi: storageApiRef },
+    factory: ({ configApi, identityApi, storageApi }) =>
+      MultipleAnalyticsApi.fromApis([
+        VendorAnalyticsApi.fromConfig(configApi, { identityApi }),
+        CustomAnalyticsApi.fromConfig(configApi, { identityApi, storageApi }),
+      ]),
+  }),
+  ```
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.2
+
+## 1.1.0-next.1
+
+### Minor Changes
+
+- a448fea691: Updated the routing system to be compatible with React Router v6 stable.
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 70299c99d5: Updated `FlatRoutes` to be compatible with React Router v6 stable.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.1
+
+## 1.0.6-next.0
+
+### Patch Changes
+
+- 744fea158b: Added `getSystemIcons()` function to the `AppContext` available through `useApp` that will pull a list of all the icons that have been registered in the App.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+
+## 1.0.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5
+
+## 1.0.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+
+## 1.0.4
+
+### Patch Changes
+
+- 881fc75a75: Internal tweak removing usage of explicit type parameters for the `BackstagePlugin` type.
+- 8fe2357101: The `signOut` method of the `IdentityApi` will now navigate the user back to the base URL of the app as indicated by the `app.baseUrl` config.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4
+
+## 1.0.4-next.1
+
+### Patch Changes
+
+- 881fc75a75: Internal tweak removing usage of explicit type parameters for the `BackstagePlugin` type.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+
 ## 1.0.4-next.0
 
 ### Patch Changes

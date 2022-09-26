@@ -16,6 +16,8 @@
 
 import { RuleOptions } from './types';
 
+const SIDEBAR_WIDTH = '224px';
+
 export default ({ theme, sidebar }: RuleOptions) => `
 /*==================  Layout  ==================*/
 
@@ -47,6 +49,11 @@ export default ({ theme, sidebar }: RuleOptions) => `
   height: 20px !important;
 }
 
+.md-nav__item--active > .md-nav__link, a.md-nav__link--active {
+  text-decoration: underline;
+  color: var(--md-typeset-a-color);
+}
+
 .md-main__inner {
   margin-top: 0;
 }
@@ -61,7 +68,7 @@ export default ({ theme, sidebar }: RuleOptions) => `
   scrollbar-width: thin;
 }
 .md-sidebar .md-sidebar__scrollwrap {
-  width: calc(16rem - 10px);
+  width: calc(12.1rem);
 }
 .md-sidebar--secondary {
   right: ${theme.spacing(3)}px;
@@ -169,7 +176,9 @@ export default ({ theme, sidebar }: RuleOptions) => `
     width: 12.1rem !important;
     z-index: 200;
     left: ${
-      sidebar.isPinned ? 'calc(-12.1rem + 242px)' : 'calc(-12.1rem + 72px)'
+      sidebar.isPinned
+        ? `calc(-12.1rem + ${SIDEBAR_WIDTH})`
+        : 'calc(-12.1rem + 72px)'
     } !important;
   }
   .md-sidebar--secondary:not([hidden]) {

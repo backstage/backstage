@@ -14,6 +14,7 @@ export const codeCoveragePlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 

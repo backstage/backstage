@@ -301,6 +301,7 @@ export default async (opts: OptionValues) => {
         npmRegistry,
       },
       createPackageVersionProvider(lockfile),
+      isMonoRepo,
     );
 
     Task.section('Moving to final location');

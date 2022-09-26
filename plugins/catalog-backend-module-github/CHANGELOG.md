@@ -1,5 +1,121 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.1.7-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- 3a62594a11: Add support for including (or excluding) Github repositories by topic
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.2-next.1
+  - @backstage/plugin-catalog-node@1.0.2-next.1
+  - @backstage/backend-common@0.15.1-next.2
+  - @backstage/integration@1.3.1-next.1
+  - @backstage/plugin-catalog-backend@1.4.0-next.2
+
+## 0.1.7-next.1
+
+### Patch Changes
+
+- 287a64bf97: Added the ability to configure the host for the `GitHubEntityProvider` to use against GitHub Enterprise
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.1
+  - @backstage/plugin-catalog-backend@1.4.0-next.1
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- 3c4a388537: New experimental alpha exports for use with the upcoming backend system.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/backend-tasks@0.3.5-next.0
+  - @backstage/plugin-catalog-backend@1.3.2-next.0
+  - @backstage/backend-plugin-api@0.1.2-next.0
+  - @backstage/integration@1.3.1-next.0
+  - @backstage/plugin-catalog-node@1.0.2-next.0
+
+## 0.1.6
+
+### Patch Changes
+
+- f48950e34b: Github Entity Provider functionality for adding entities to the catalog.
+
+  This provider replaces the GithubDiscoveryProcessor functionality as providers offer more flexibility with scheduling ingestion, removing and preventing orphaned entities.
+
+  More information can be found on the [GitHub Discovery](https://backstage.io/docs/integrations/github/discovery) page.
+
+- c59d1ce487: Fixed bug where repository filter was including all archived repositories
+- 97f0a37378: Improved support for wildcards in `catalogPath`
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/integration@1.3.0
+  - @backstage/backend-tasks@0.3.4
+  - @backstage/plugin-catalog-backend@1.3.1
+
+## 0.1.6-next.2
+
+### Patch Changes
+
+- 97f0a37378: Improved support for wildcards in `catalogPath`
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.3.1-next.2
+
+## 0.1.6-next.1
+
+### Patch Changes
+
+- f48950e34b: Github Entity Provider functionality for adding entities to the catalog.
+
+  This provider replaces the GithubDiscoveryProcessor functionality as providers offer more flexibility with scheduling ingestion, removing and preventing orphaned entities.
+
+  More information can be found on the [GitHub Discovery](https://backstage.io/docs/integrations/github/discovery) page.
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.1
+  - @backstage/integration@1.3.0-next.1
+  - @backstage/plugin-catalog-backend@1.3.1-next.1
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/integration@1.3.0-next.0
+  - @backstage/backend-tasks@0.3.4-next.0
+  - @backstage/plugin-catalog-backend@1.3.1-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 0f25116d28: Updated dependency `@octokit/graphql` to `^5.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.3.0
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/integration@1.2.2
+  - @backstage/backend-tasks@0.3.3
+  - @backstage/errors@1.1.0
+
+## 0.1.5-next.2
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 0f25116d28: Updated dependency `@octokit/graphql` to `^5.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.3.0-next.3
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/integration@1.2.2-next.3
+  - @backstage/backend-tasks@0.3.3-next.3
+  - @backstage/catalog-model@1.1.0-next.3
+
 ## 0.1.5-next.1
 
 ### Patch Changes

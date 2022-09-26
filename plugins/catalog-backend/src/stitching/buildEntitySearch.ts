@@ -137,8 +137,12 @@ export function mapToRows(input: Kv[], entityId: string): DbSearchRow[] {
       result.push({ entity_id: entityId, key, value: null });
     } else {
       const value = String(rawValue).toLocaleLowerCase('en-US');
-      if (key.length <= MAX_KEY_LENGTH && value.length <= MAX_VALUE_LENGTH) {
-        result.push({ entity_id: entityId, key, value });
+      if (key.length <= MAX_KEY_LENGTH) {
+        result.push({
+          entity_id: entityId,
+          key,
+          value: value.length <= MAX_VALUE_LENGTH ? value : null,
+        });
       }
     }
   }

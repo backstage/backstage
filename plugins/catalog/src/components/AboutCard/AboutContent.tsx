@@ -16,6 +16,7 @@
 
 import {
   Entity,
+  getEntitySourceLocation,
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
@@ -23,9 +24,11 @@ import {
   EntityRefLinks,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
+import { JsonArray } from '@backstage/types';
 import { Chip, Grid, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
 import { AboutField } from './AboutField';
+import { LinksGridList } from '../EntityLinksCard/LinksGridList';
 
 const useStyles = makeStyles({
   description: {
@@ -40,6 +43,30 @@ const useStyles = makeStyles({
  */
 export interface AboutContentProps {
   entity: Entity;
+}
+
+function getLocationTargetHref(
+  target: string,
+  type: string,
+  entitySourceLocation: {
+    type: string;
+    target: string;
+  },
+): string {
+  if (type === 'url' || target.includes('://')) {
+    return target;
+  }
+
+  const srcLocationUrl =
+    entitySourceLocation.type === 'file'
+      ? `file://${entitySourceLocation.target}`
+      : entitySourceLocation.target;
+
+  if (type === 'file' || entitySourceLocation.type === 'file') {
+    return new URL(target, srcLocationUrl).href;
+  }
+
+  return srcLocationUrl;
 }
 
 /** @public */
@@ -68,6 +95,18 @@ export function AboutContent(props: AboutContentProps) {
     kind: 'domain',
   });
   const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+
+  let entitySourceLocation:
+    | {
+        type: string;
+        target: string;
+      }
+    | undefined;
+  try {
+    entitySourceLocation = getEntitySourceLocation(entity);
+  } catch (e) {
+    entitySourceLocation = undefined;
+  }
 
   return (
     <Grid container>
@@ -159,6 +198,23 @@ export function AboutContent(props: AboutContentProps) {
           <Chip key={t} size="small" label={t} />
         ))}
       </AboutField>
+      {isLocation && (entity?.spec?.targets || entity?.spec?.target) && (
+        <AboutField label="Targets" gridSizes={{ xs: 12 }}>
+          <LinksGridList
+            cols={1}
+            items={((entity.spec.targets as JsonArray) || [entity.spec.target])
+              .map(target => target as string)
+              .map(target => ({
+                text: target,
+                href: getLocationTargetHref(
+                  target,
+                  (entity?.spec?.type || 'unknown') as string,
+                  entitySourceLocation!,
+                ),
+              }))}
+          />
+        </AboutField>
+      )}
     </Grid>
   );
 }

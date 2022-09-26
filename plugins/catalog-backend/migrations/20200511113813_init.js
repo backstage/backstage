@@ -92,7 +92,9 @@ exports.up = async function up(knex) {
       })
       .alterTable('entities', table => {
         // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#objectmeta-v1-meta
-        table.unique(['kind', 'name', 'namespace'], 'entities_unique_name');
+        table.unique(['kind', 'name', 'namespace'], {
+          indexName: 'entities_unique_name',
+        });
       })
       //
       // entities_search

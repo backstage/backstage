@@ -130,7 +130,6 @@ describe('github-deployments', () => {
   setupRequestMockHandlers(worker);
 
   beforeEach(() => {
-    worker.resetHandlers();
     jest.resetAllMocks();
   });
 

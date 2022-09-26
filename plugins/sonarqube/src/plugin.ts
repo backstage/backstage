@@ -16,7 +16,6 @@
 
 import { sonarQubeApiRef, SonarQubeClient } from './api';
 import {
-  configApiRef,
   createApiFactory,
   createComponentExtension,
   createPlugin,
@@ -24,26 +23,26 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const sonarQubePlugin = createPlugin({
   id: 'sonarqube',
   apis: [
     createApiFactory({
       api: sonarQubeApiRef,
       deps: {
-        configApi: configApiRef,
         discoveryApi: discoveryApiRef,
         identityApi: identityApiRef,
       },
-      factory: ({ configApi, discoveryApi, identityApi }) =>
+      factory: ({ discoveryApi, identityApi }) =>
         new SonarQubeClient({
           discoveryApi,
-          baseUrl: configApi.getOptionalString('sonarQube.baseUrl'),
           identityApi,
         }),
     }),
   ],
 });
 
+/** @public */
 export const EntitySonarQubeCard = sonarQubePlugin.provide(
   createComponentExtension({
     name: 'EntitySonarQubeCard',

@@ -25,6 +25,14 @@ const mockFrameHandler = jest.spyOn(
   () => Promise<{ result: BitbucketOAuthResult; privateInfo: any }>
 >;
 
+jest.mock('../../lib/passport/PassportStrategyHelper', () => {
+  return {
+    executeFrameHandlerStrategy: jest.fn(),
+    executeRefreshTokenStrategy: jest.fn(),
+    executeFetchUserProfileStrategy: jest.fn(),
+  };
+});
+
 describe('createBitbucketProvider', () => {
   it('should auth', async () => {
     const provider = new BitbucketAuthProvider({

@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
+/** @public */
 export const EngineerThreshold = 0.5;
 
+/** @public */
 export enum ChangeThreshold {
   upper = 0.05,
   lower = -0.05,
 }
 
+/** @public */
 export enum GrowthType {
   Negligible,
   Savings,

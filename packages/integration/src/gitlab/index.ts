@@ -17,6 +17,7 @@
 export {
   readGitLabIntegrationConfig,
   readGitLabIntegrationConfigs,
+  getGitLabIntegrationRelativePath,
 } from './config';
 export type { GitLabIntegrationConfig } from './config';
 export { getGitLabFileFetchUrl, getGitLabRequestOptions } from './core';

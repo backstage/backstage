@@ -164,8 +164,8 @@ export const WorkflowRunsTableView = ({
   );
 };
 
-export const WorkflowRunsTable = ({ entity }: { entity: Entity }) => {
-  const { value: projectName, loading } = useProjectName(entity);
+export const WorkflowRunsTable = (props: { entity: Entity }) => {
+  const { value: projectName, loading } = useProjectName(props.entity);
   const [projectId] = (projectName ?? '/').split('/');
 
   const [tableProps, { retry, setPage, setPageSize }] = useWorkflowRuns({

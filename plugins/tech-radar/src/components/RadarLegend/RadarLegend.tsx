@@ -32,15 +32,11 @@ export type Props = {
 };
 
 const useStyles = makeStyles<Theme>(theme => ({
-  quadrantLegend: {
-    overflowY: 'auto',
-    scrollbarWidth: 'thin',
-  },
   quadrant: {
     height: '100%',
     width: '100%',
+    overflowY: 'auto',
     scrollbarWidth: 'thin',
-    pointerEvents: 'none',
   },
   quadrantHeading: {
     pointerEvents: 'none',
@@ -229,7 +225,6 @@ const RadarLegend = (props: Props): JSX.Element => {
         y={quadrant.legendY}
         width={quadrant.legendWidth}
         height={quadrant.legendHeight}
-        className={classes.quadrantLegend}
         data-testid="radar-quadrant"
       >
         <div className={classes.quadrant}>

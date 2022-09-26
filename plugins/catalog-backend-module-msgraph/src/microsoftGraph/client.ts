@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import * as msal from '@azure/msal-node';
+import {
+  TokenCredential,
+  DefaultAzureCredential,
+  ClientSecretCredential,
+} from '@azure/identity';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import fetch, { Response } from 'node-fetch';
 import qs from 'qs';
@@ -77,25 +81,32 @@ export class MicrosoftGraphClient {
    * @param config - Configuration for Interacting with Graph API
    */
   static create(config: MicrosoftGraphProviderConfig): MicrosoftGraphClient {
-    const clientConfig: msal.Configuration = {
-      auth: {
-        clientId: config.clientId,
-        clientSecret: config.clientSecret,
-        authority: `${config.authority}/${config.tenantId}`,
-      },
+    const options = {
+      authorityHost: config.authority,
+      tenantId: config.tenantId,
     };
-    const pca = new msal.ConfidentialClientApplication(clientConfig);
-    return new MicrosoftGraphClient(config.target, pca);
+
+    const credential =
+      config.clientId && config.clientSecret
+        ? new ClientSecretCredential(
+            config.tenantId,
+            config.clientId,
+            config.clientSecret,
+            options,
+          )
+        : new DefaultAzureCredential(options);
+
+    return new MicrosoftGraphClient(config.target, credential);
   }
 
   /**
    * @param baseUrl - baseUrl of Graph API {@link MicrosoftGraphProviderConfig.target}
-   * @param pca - instance of `msal.ConfidentialClientApplication` that is used to acquire token for Graph API calls
+   * @param tokenCredential - instance of `TokenCredential` that is used to acquire token for Graph API calls
    *
    */
   constructor(
     private readonly baseUrl: string,
-    private readonly pca: msal.ConfidentialClientApplication,
+    private readonly tokenCredential: TokenCredential,
   ) {}
 
   /**
@@ -202,18 +213,18 @@ export class MicrosoftGraphClient {
     headers?: Record<string, string>,
   ): Promise<Response> {
     // Make sure that we always have a valid access token (might be cached)
-    const token = await this.pca.acquireTokenByClientCredential({
-      scopes: ['https://graph.microsoft.com/.default'],
-    });
+    const token = await this.tokenCredential.getToken(
+      'https://graph.microsoft.com/.default',
+    );
 
     if (!token) {
-      throw new Error('Error while requesting token for Microsoft Graph');
+      throw new Error('Failed to obtain token from Azure Identity');
     }
 
     return await fetch(url, {
       headers: {
         ...headers,
-        Authorization: `Bearer ${token.accessToken}`,
+        Authorization: `Bearer ${token.token}`,
       },
     });
   }

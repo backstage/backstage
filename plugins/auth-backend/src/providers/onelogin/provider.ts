@@ -37,7 +37,7 @@ import {
   PassportDoneCallback,
 } from '../../lib/passport';
 import {
-  RedirectInfo,
+  OAuthStartResponse,
   AuthHandler,
   SignInResolver,
   AuthResolverContext,
@@ -95,7 +95,7 @@ export class OneLoginProvider implements OAuthHandlers {
       },
     );
   }
-  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     return await executeRedirectStrategy(req, this._strategy, {
       accessType: 'offline',
       prompt: 'consent',

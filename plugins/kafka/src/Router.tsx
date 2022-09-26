@@ -22,12 +22,12 @@ import { KAFKA_CONSUMER_GROUP_ANNOTATION } from './constants';
 import { KafkaTopicsForConsumer } from './components/ConsumerGroupOffsets/ConsumerGroupOffsets';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
+/** @public */
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[KAFKA_CONSUMER_GROUP_ANNOTATION]);
 
-type Props = {};
-
-export const Router = (_props: Props) => {
+/** @public */
+export const Router = () => {
   const { entity } = useEntity();
 
   if (!isPluginApplicableToEntity(entity)) {

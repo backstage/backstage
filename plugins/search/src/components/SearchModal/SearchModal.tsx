@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 import {
   Dialog,
   DialogActions,
@@ -35,7 +35,6 @@ import {
   SearchResult,
   SearchResultPager,
   useSearch,
-  useSearchContextCheck,
 } from '@backstage/plugin-search-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Link, useContent } from '@backstage/core-components';
@@ -171,15 +170,6 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
   );
 };
 
-const Context = ({ children }: PropsWithChildren<{}>) => {
-  // Checks if there is a parent context already defined and, if not, creates a new local context.
-  const hasParentContext = useSearchContextCheck();
-  if (hasParentContext) {
-    return <>{children}</>;
-  }
-  return <SearchContextProvider>{children}</SearchContextProvider>;
-};
-
 /**
  * @public
  */
@@ -204,11 +194,11 @@ export const SearchModal = ({
       hidden={hidden}
     >
       {open && (
-        <Context>
+        <SearchContextProvider inheritParentContextIfAvailable>
           {(children && children({ toggleModal })) ?? (
             <Modal toggleModal={toggleModal} />
           )}
-        </Context>
+        </SearchContextProvider>
       )}
     </Dialog>
   );

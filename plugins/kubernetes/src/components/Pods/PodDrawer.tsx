@@ -25,13 +25,10 @@ import {
 } from '../../utils/pod';
 import { KubernetesDrawer } from '../KubernetesDrawer/KubernetesDrawer';
 
-export const PodDrawer = ({
-  pod,
-  expanded,
-}: {
-  pod: V1Pod;
-  expanded?: boolean;
-}) => {
+/** @public */
+export const PodDrawer = (props: { pod: V1Pod; expanded?: boolean }) => {
+  const { pod, expanded } = props;
+
   return (
     <KubernetesDrawer
       object={pod}

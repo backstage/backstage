@@ -33,12 +33,13 @@ import {
   UpdateEntityCacheOptions,
   ListParentsOptions,
   ListParentsResult,
+  RefreshByKeyOptions,
 } from './types';
-import { DeferredEntity } from '../processing/types';
 import { ProcessingIntervalFunction } from '../processing/refresh';
 import { rethrowError, timestampToDateTime } from './conversion';
 import { initDatabaseMetrics } from './metrics';
 import {
+  DbRefreshKeysRow,
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
   DbRelationsRow,
@@ -46,6 +47,7 @@ import {
 
 import { generateStableHash } from './util';
 import { isDatabaseConflictError } from '@backstage/backend-common';
+import { DeferredEntity } from '@backstage/plugin-catalog-node';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -77,6 +79,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       errors,
       relations,
       deferredEntities,
+      refreshKeys,
       locationKey,
     } = options;
     const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
@@ -100,16 +103,21 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         `Conflicting write of processing result for ${id} with location key '${locationKey}'`,
       );
     }
+    const sourceEntityRef = stringifyEntityRef(processedEntity);
 
     // Schedule all deferred entities for future processing.
     await this.addUnprocessedEntities(tx, {
       entities: deferredEntities,
-      sourceEntityRef: stringifyEntityRef(processedEntity),
+      sourceEntityRef,
     });
 
     // Delete old relations
+    // NOTE(freben): knex implemented support for returning() on update queries for sqlite, but at the current time of writing (Sep 2022) not for delete() queries.
     let previousRelationRows: DbRelationsRow[];
-    if (tx.client.config.client.includes('sqlite3')) {
+    if (
+      tx.client.config.client.includes('sqlite3') ||
+      tx.client.config.client.includes('mysql')
+    ) {
       previousRelationRows = await tx<DbRelationsRow>('relations')
         .select('*')
         .where({ originating_entity_id: id });
@@ -135,6 +143,21 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     await tx.batchInsert(
       'relations',
       this.deduplicateRelations(relationRows),
+      BATCH_SIZE,
+    );
+
+    // Delete old refresh keys
+    await tx<DbRefreshKeysRow>('refresh_keys')
+      .where({ entity_id: id })
+      .delete();
+
+    // Insert the refresh keys for the processed entity
+    await tx.batchInsert(
+      'refresh_keys',
+      refreshKeys.map(k => ({
+        entity_id: id,
+        key: k.key,
+      })),
       BATCH_SIZE,
     );
 
@@ -182,6 +205,13 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
     if (toRemove.length) {
       let removedCount = 0;
+      const rootId = () => {
+        if (tx.client.config.client.includes('mysql')) {
+          return tx.raw('CAST(NULL as UNSIGNED INT)', []);
+        }
+
+        return tx.raw('CAST(NULL as INT)', []);
+      };
       for (const refs of lodash.chunk(toRemove, 1000)) {
         /*
       WITH RECURSIVE
@@ -247,7 +277,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
                 .withRecursive('ancestors', function ancestors(outer) {
                   return outer
                     .select({
-                      root_id: tx.raw('CAST(NULL as INT)', []),
+                      root_id: rootId(),
                       via_entity_ref: 'entity_ref',
                       to_entity_ref: 'entity_ref',
                     })
@@ -416,15 +446,26 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .orderBy('next_update_at', 'asc');
 
     const interval = this.options.refreshInterval();
+
+    const nextUpdateAt = (refreshInterval: number) => {
+      if (tx.client.config.client.includes('sqlite3')) {
+        return tx.raw(`datetime('now', ?)`, [`${refreshInterval} seconds`]);
+      }
+
+      if (tx.client.config.client.includes('mysql')) {
+        return tx.raw(`now() + interval ${refreshInterval} second`);
+      }
+
+      return tx.raw(`now() + interval '${refreshInterval} seconds'`);
+    };
+
     await tx<DbRefreshStateRow>('refresh_state')
       .whereIn(
         'entity_ref',
         items.map(i => i.entity_ref),
       )
       .update({
-        next_update_at: tx.client.config.client.includes('sqlite3')
-          ? tx.raw(`datetime('now', ?)`, [`${interval} seconds`])
-          : tx.raw(`now() + interval '${interval} seconds'`),
+        next_update_at: nextUpdateAt(interval),
       });
 
     return {
@@ -514,6 +555,25 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     if (updateResult === 0) {
       throw new NotFoundError(`Failed to schedule ${entityRef} for refresh`);
     }
+  }
+
+  async refreshByRefreshKeys(
+    txOpaque: Transaction,
+    options: RefreshByKeyOptions,
+  ) {
+    const tx = txOpaque as Knex.Transaction;
+    const { keys } = options;
+
+    await tx<DbRefreshStateRow>('refresh_state')
+      .whereIn('entity_id', function selectEntityRefs(tx2) {
+        tx2
+          .whereIn('key', keys)
+          .select({
+            entity_id: 'refresh_keys.entity_id',
+          })
+          .from('refresh_keys');
+      })
+      .update({ next_update_at: tx.fn.now() });
   }
 
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {

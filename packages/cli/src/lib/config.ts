@@ -96,11 +96,14 @@ export async function loadCliConfig(options: Options) {
     });
     const frontendConfig = ConfigReader.fromConfigs(frontendAppConfigs);
 
+    const fullConfig = ConfigReader.fromConfigs(appConfigs);
+
     return {
       schema,
       appConfigs,
       frontendConfig,
       frontendAppConfigs,
+      fullConfig,
     };
   } catch (error) {
     const maybeSchemaError = error as Error & { messages?: string[] };

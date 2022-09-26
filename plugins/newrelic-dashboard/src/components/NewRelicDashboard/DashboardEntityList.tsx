@@ -28,7 +28,7 @@ import DesktopMac from '@material-ui/icons/DesktopMac';
 import { DashboardEntitySummary } from '../../api/NewRelicDashboardApi';
 import { ResultEntity } from '../../types/DashboardEntity';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { NEWRELIC_GUID_ANNOTATION } from './../../constants';
+import { NEWRELIC_GUID_ANNOTATION } from '../../constants';
 
 const useStyles = makeStyles({
   svgIcon: {

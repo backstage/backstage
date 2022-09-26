@@ -25,6 +25,7 @@ import {
 } from '../types';
 import { createApiRef } from '@backstage/core-plugin-api';
 
+/** @public */
 export type ProductInsightsOptions = {
   /**
    * The product from the cost-insights configuration in app-config.yaml
@@ -47,6 +48,7 @@ export type ProductInsightsOptions = {
   project: Maybe<string>;
 };
 
+/** @public */
 export type CostInsightsApi = {
   /**
    * Get the most current date for which billing data is complete, in YYYY-MM-DD format. This helps
@@ -146,6 +148,7 @@ export type CostInsightsApi = {
   getAlerts(group: string): Promise<Alert[]>;
 };
 
+/** @public */
 export const costInsightsApiRef = createApiRef<CostInsightsApi>({
   id: 'plugin.costinsights.service',
 });

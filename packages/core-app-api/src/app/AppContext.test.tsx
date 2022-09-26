@@ -36,6 +36,7 @@ describe('v1 consumer', () => {
       getPlugins: jest.fn(),
       getComponents: jest.fn(),
       getSystemIcon: jest.fn(),
+      getSystemIcons: jest.fn(),
     };
 
     const renderedHook = renderHook(() => useMockAppV1(), {

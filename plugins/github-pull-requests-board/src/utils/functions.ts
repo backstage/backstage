@@ -42,7 +42,11 @@ export const getChangeRequests = (reviews: Reviews = []): Reviews => {
 };
 
 export const filterSameUser = (users: Author[]): Author[] => {
-  return users.reduce((acc, curr) => {
+  const filterGhostUsers = (usersToFilter: Author[]): Author[] => {
+    return usersToFilter.filter(user => user !== null);
+  };
+
+  return filterGhostUsers(users).reduce((acc, curr) => {
     const containsUser = acc.find(({ login }) => login === curr.login);
 
     if (!containsUser) {

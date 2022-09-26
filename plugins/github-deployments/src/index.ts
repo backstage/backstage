@@ -20,6 +20,10 @@
  * @packageDocumentation
  */
 
+export type { Node, GithubDeployment } from './api';
 export { githubDeploymentsPlugin, EntityGithubDeploymentsCard } from './plugin';
 export { GithubDeploymentsTable } from './components/GithubDeploymentsTable';
-export { isGithubDeploymentsAvailable } from './Router';
+export {
+  isGithubDeploymentsAvailable,
+  GITHUB_PROJECT_SLUG_ANNOTATION,
+} from './Router';

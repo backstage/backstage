@@ -45,9 +45,11 @@ export function createPublishGithubAction(options: {
   return createTemplateAction<{
     repoUrl: string;
     description?: string;
+    homepage?: string;
     access?: string;
     defaultBranch?: string;
     protectDefaultBranch?: boolean;
+    protectEnforceAdmins?: boolean;
     deleteBranchOnMerge?: boolean;
     gitCommitMessage?: string;
     gitAuthorName?: string;
@@ -87,12 +89,14 @@ export function createPublishGithubAction(options: {
         properties: {
           repoUrl: inputProps.repoUrl,
           description: inputProps.description,
+          homepage: inputProps.homepage,
           access: inputProps.access,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
           repoVisibility: inputProps.repoVisibility,
           defaultBranch: inputProps.defaultBranch,
           protectDefaultBranch: inputProps.protectDefaultBranch,
+          protectEnforceAdmins: inputProps.protectEnforceAdmins,
           deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
           gitCommitMessage: inputProps.gitCommitMessage,
           gitAuthorName: inputProps.gitAuthorName,
@@ -118,12 +122,14 @@ export function createPublishGithubAction(options: {
       const {
         repoUrl,
         description,
+        homepage,
         access,
         requireCodeOwnerReviews = false,
         requiredStatusCheckContexts = [],
         repoVisibility = 'private',
         defaultBranch = 'master',
         protectDefaultBranch = true,
+        protectEnforceAdmins = true,
         deleteBranchOnMerge = false,
         gitCommitMessage = 'initial commit',
         gitAuthorName,
@@ -156,6 +162,7 @@ export function createPublishGithubAction(options: {
         owner,
         repoVisibility,
         description,
+        homepage,
         deleteBranchOnMerge,
         allowMergeCommit,
         allowSquashMerge,
@@ -176,6 +183,7 @@ export function createPublishGithubAction(options: {
         ctx.input.sourcePath,
         defaultBranch,
         protectDefaultBranch,
+        protectEnforceAdmins,
         owner,
         client,
         repo,

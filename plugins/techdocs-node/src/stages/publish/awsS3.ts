@@ -49,7 +49,9 @@ const streamToBuffer = (stream: Readable): Promise<Buffer> => {
     try {
       const chunks: any[] = [];
       stream.on('data', chunk => chunks.push(chunk));
-      stream.on('error', reject);
+      stream.on('error', (e: Error) =>
+        reject(new ForwardedError('Unable to read stream', e)),
+      );
       stream.on('end', () => resolve(Buffer.concat(chunks)));
     } catch (e) {
       throw new ForwardedError('Unable to parse the response data', e);
@@ -368,19 +370,14 @@ export class AwsS3Publish implements PublisherBase {
    */
   docsRouter(): express.Handler {
     return async (req, res) => {
-      // Decode and trim the leading forward slash
       const decodedUri = decodeURI(req.path.replace(/^\//, ''));
-
-      // Root path is removed from the Uri so that legacy casing can be applied
-      // to the entity triplet without manipulating the root path
-      const decodedUriNoRoot = path.relative(this.bucketRootPath, decodedUri);
 
       // filePath example - /default/component/documented-component/index.html
       const filePathNoRoot = this.legacyPathCasing
-        ? decodedUriNoRoot
-        : lowerCaseEntityTripletInStoragePath(decodedUriNoRoot);
+        ? decodedUri
+        : lowerCaseEntityTripletInStoragePath(decodedUri);
 
-      // Re-prepend the root path to the relative file path
+      // Prepend the root path to the relative file path
       const filePath = path.posix.join(this.bucketRootPath, filePathNoRoot);
 
       // Files with different extensions (CSS, HTML) need to be served with different headers

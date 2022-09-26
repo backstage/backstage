@@ -23,6 +23,7 @@ import {
   DialogTitle,
 } from '@material-ui/core';
 
+/** @public */
 export const SettingsModal = (props: {
   open: boolean;
   close: Function;

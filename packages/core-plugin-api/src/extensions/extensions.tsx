@@ -15,12 +15,13 @@
  */
 
 import React, { lazy, Suspense } from 'react';
-import { AnalyticsContext } from '../analytics/AnalyticsContext';
+import { AnalyticsContext } from '../analytics';
 import { useApp } from '../app';
 import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
-import { Extension, BackstagePlugin } from '../plugin/types';
+import { Extension, BackstagePlugin } from '../plugin';
 import { PluginErrorBoundary } from './PluginErrorBoundary';
+import { PluginProvider } from '../plugin-options';
 
 /**
  * Lazy or synchronous retrieving of extension components.
@@ -225,7 +226,7 @@ export function createReactExtension<
     'Component';
 
   return {
-    expose(plugin: BackstagePlugin<any, any>) {
+    expose(plugin: BackstagePlugin) {
       const Result: any = (props: any) => {
         const app = useApp();
         const { Progress } = app.getComponents();
@@ -245,7 +246,9 @@ export function createReactExtension<
                   ...(mountPoint && { routeRef: mountPoint.id }),
                 }}
               >
-                <Component {...props} />
+                <PluginProvider plugin={plugin}>
+                  <Component {...props} />
+                </PluginProvider>
               </AnalyticsContext>
             </PluginErrorBoundary>
           </Suspense>

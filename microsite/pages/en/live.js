@@ -34,7 +34,7 @@ const Background = props => {
         <Block.Container style={{ justifyContent: 'flex-start' }}>
           <Block.MediaFrame>
             <iframe
-              src="https://www.youtube.com/embed/4VFNlPxWcx8"
+              src="https://www.youtube.com/embed/qYnvc8ge1kg"
               title="YouTube video player"
               frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -45,7 +45,7 @@ const Background = props => {
             <iframe
               width="300"
               height="500"
-              src="https://www.youtube.com/live_chat?v=4VFNlPxWcx8&embed_domain=backstage.io&dark_theme=1"
+              src="https://www.youtube.com/live_chat?v=qYnvc8ge1kg&embed_domain=backstage.io&dark_theme=1"
             ></iframe>
           </Block.MediaFrame>
         </Block.Container>
@@ -64,7 +64,7 @@ const Background = props => {
                 Good First Issues
               </a>
               <br />- Subscribe to the{' '}
-              <a href="https://mailchi.mp/spotify/backstage-community">
+              <a href="https://info.backstage.spotify.com/newsletter_subscribe">
                 Community newsletter
               </a>
               <br />- Join the{' '}

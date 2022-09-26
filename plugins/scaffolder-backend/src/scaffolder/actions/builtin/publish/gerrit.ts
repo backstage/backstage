@@ -31,7 +31,7 @@ const createGerritProject = async (
   options: {
     projectName: string;
     parent: string;
-    owner: string;
+    owner?: string;
     description: string;
   },
 ): Promise<void> => {
@@ -42,7 +42,7 @@ const createGerritProject = async (
     body: JSON.stringify({
       parent,
       description,
-      owners: [owner],
+      owners: owner ? [owner] : [],
       create_empty_commit: false,
     }),
     headers: {
@@ -92,6 +92,7 @@ export function createPublishGerritAction(options: {
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
+    sourcePath?: string;
   }>({
     id: 'publish:gerrit',
     description:
@@ -129,6 +130,11 @@ export function createPublishGerritAction(options: {
             type: 'string',
             description: `Sets the default author email for the commit.`,
           },
+          sourcePath: {
+            title: 'Source Path',
+            type: 'string',
+            description: `Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.`,
+          },
         },
       },
       output: {
@@ -153,6 +159,7 @@ export function createPublishGerritAction(options: {
         gitAuthorName,
         gitAuthorEmail,
         gitCommitMessage = 'initial commit',
+        sourcePath,
       } = ctx.input;
       const { repo, host, owner, workspace } = parseRepoUrl(
         repoUrl,
@@ -167,11 +174,6 @@ export function createPublishGerritAction(options: {
         );
       }
 
-      if (!owner) {
-        throw new InputError(
-          `Invalid URL provider was included in the repo URL to create ${ctx.input.repoUrl}, missing owner`,
-        );
-      }
       if (!workspace) {
         throw new InputError(
           `Invalid URL provider was included in the repo URL to create ${ctx.input.repoUrl}, missing workspace`,
@@ -199,7 +201,7 @@ export function createPublishGerritAction(options: {
 
       const remoteUrl = `${integrationConfig.config.cloneUrl}/a/${repo}`;
       await initRepoAndPush({
-        dir: getRepoSourceDirectory(ctx.workspacePath, undefined),
+        dir: getRepoSourceDirectory(ctx.workspacePath, sourcePath),
         remoteUrl,
         auth,
         defaultBranch,

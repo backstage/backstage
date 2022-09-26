@@ -24,9 +24,11 @@ import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
+/** @public */
 export const isCircleCIAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[CIRCLECI_ANNOTATION]);
 
+/** @public */
 export const Router = () => {
   const { entity } = useEntity();
 

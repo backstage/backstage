@@ -1,5 +1,63 @@
 # @backstage/core-plugin-api
 
+## 1.0.6-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+
+## 1.0.6-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+
+## 1.0.6-next.0
+
+### Patch Changes
+
+- 744fea158b: Added `getSystemIcons()` function to the `AppContext` available through `useApp` that will pull a list of all the icons that have been registered in the App.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- ef9ab322de: Minor API signatures cleanup
+
+## 1.0.5
+
+### Patch Changes
+
+- 80da5162c7: Introduced a new experimental feature that allows you to declare plugin-wide options for your plugin by defining
+  `__experimentalConfigure` in your `createPlugin` options. See https://backstage.io/docs/plugins/customization.md for more information.
+
+  This is an experimental feature and it will have breaking changes in the future.
+
+- 87649a06bf: Add a note that the `fetchApi` utility should not be used on sign-in page implementations and similar.
+
+## 1.0.5-next.0
+
+### Patch Changes
+
+- 80da5162c7: Introduced a new experimental feature that allows you to declare plugin-wide options for your plugin by defining
+  `__experimentalConfigure` in your `createPlugin` options. See https://backstage.io/docs/plugins/customization.md for more information.
+
+  This is an experimental feature and it will have breaking changes in the future.
+
+## 1.0.4
+
+### Patch Changes
+
+- 881fc75a75: Internal tweak removing usage of explicit type parameters for the `BackstagePlugin` type.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 2990fff4e5: Enabled the `@backstage/core-plugin-api/alpha` entry point.
+
+## 1.0.4-next.0
+
+### Patch Changes
+
+- 881fc75a75: Internal tweak removing usage of explicit type parameters for the `BackstagePlugin` type.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 2990fff4e5: Enabled the `@backstage/core-plugin-api/alpha` entry point.
+
 ## 1.0.3
 
 ### Patch Changes

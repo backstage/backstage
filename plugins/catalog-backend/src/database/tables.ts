@@ -43,6 +43,11 @@ export type DbRefreshStateRow = {
   location_key?: string;
 };
 
+export type DbRefreshKeysRow = {
+  entity_id: string;
+  key: string;
+};
+
 export type DbRefreshStateReferencesRow = {
   source_key?: string;
   source_entity_ref?: string;

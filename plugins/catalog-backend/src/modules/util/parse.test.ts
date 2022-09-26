@@ -15,7 +15,7 @@
  */
 
 import { parseEntityYaml } from './parse';
-import { processingResult } from '../../api';
+import { processingResult } from '@backstage/plugin-catalog-node';
 
 const testLoc = {
   target: 'my-loc-target',
@@ -156,12 +156,16 @@ describe('parseEntityYaml', () => {
     );
 
     // Parse errors are always per document
-    expect(results).toEqual([
-      processingResult.generalError(
-        testLoc,
-        'YAML error at my-loc-type:my-loc-target, YAMLSemanticError: Plain value cannot start with reserved character `',
-      ),
-    ]);
+    expect(results.length).toBe(1);
+    expect(results[0]).toEqual({
+      type: 'error',
+      location: testLoc,
+      error: expect.objectContaining({
+        message: expect.stringMatching(
+          /YAML error at my-loc-type:my-loc-target, YAMLParseError: Plain value cannot start with reserved character ` at line 1, column 1:/,
+        ),
+      }),
+    });
   });
 
   it('should emit parsing errors for individual documents', () => {
@@ -185,7 +189,8 @@ describe('parseEntityYaml', () => {
       ),
     );
 
-    expect(results).toEqual([
+    expect(results.length).toBe(2);
+    expect(results[0]).toEqual(
       processingResult.entity(testLoc, {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -196,11 +201,16 @@ describe('parseEntityYaml', () => {
           type: 'website',
         },
       }),
-      processingResult.generalError(
-        testLoc,
-        'YAML error at my-loc-type:my-loc-target, YAMLSemanticError: Nested mappings are not allowed in compact mappings',
-      ),
-    ]);
+    );
+    expect(results[1]).toEqual({
+      type: 'error',
+      location: testLoc,
+      error: expect.objectContaining({
+        message: expect.stringMatching(
+          /YAML error at my-loc-type:my-loc-target, YAMLParseError: Nested mappings are not allowed in compact mappings at line 9, column 19:\s+apiVersion: backstage.io\/v1alpha1/,
+        ),
+      }),
+    });
   });
 
   it('must be an object at root', () => {

@@ -12,9 +12,9 @@ import { GroupEntity } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
-import * as msal from '@azure/msal-node';
 import { Response as Response_2 } from 'node-fetch';
 import { TaskRunner } from '@backstage/backend-tasks';
+import { TokenCredential } from '@azure/identity';
 import { UserEntity } from '@backstage/catalog-model';
 
 // @public
@@ -65,7 +65,7 @@ export const MICROSOFT_GRAPH_USER_ID_ANNOTATION = 'graph.microsoft.com/user-id';
 
 // @public
 export class MicrosoftGraphClient {
-  constructor(baseUrl: string, pca: msal.ConfidentialClientApplication);
+  constructor(baseUrl: string, tokenCredential: TokenCredential);
   static create(config: MicrosoftGraphProviderConfig): MicrosoftGraphClient;
   getGroupMembers(groupId: string): AsyncIterable<GroupMember>;
   // (undocumented)
@@ -190,8 +190,8 @@ export type MicrosoftGraphProviderConfig = {
   target: string;
   authority?: string;
   tenantId: string;
-  clientId: string;
-  clientSecret: string;
+  clientId?: string;
+  clientSecret?: string;
   userFilter?: string;
   userExpand?: string;
   userGroupMemberFilter?: string;

@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DynatraceProblems, DynatraceApi } from './DynatraceApi';
+import {
+  DynatraceProblems,
+  DynatraceApi,
+  DynatraceSyntheticResults,
+  DynatraceSyntheticLocationInfo,
+} from './DynatraceApi';
 import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 
 export class DynatraceClient implements DynatraceApi {
@@ -52,11 +57,37 @@ export class DynatraceClient implements DynatraceApi {
     );
   }
 
+  async getDynatraceSyntheticFailures(
+    syntheticsId: string,
+  ): Promise<DynatraceSyntheticResults | undefined> {
+    if (!syntheticsId) {
+      throw new Error('Dynatrace syntheticId is required');
+    }
+
+    return this.callApi(
+      `synthetic/execution/${encodeURIComponent(syntheticsId)}/FAILED`,
+      {},
+    );
+  }
+
+  async getDynatraceSyntheticLocationInfo(
+    syntheticLocationId: string,
+  ): Promise<DynatraceSyntheticLocationInfo | undefined> {
+    if (!syntheticLocationId) {
+      throw new Error('Dynatrace syntheticLocationId is required');
+    }
+
+    return this.callApi(
+      `synthetic/locations/${encodeURIComponent(syntheticLocationId)}`,
+      {},
+    );
+  }
+
   async getDynatraceProblems(
     dynatraceEntityId: string,
   ): Promise<DynatraceProblems | undefined> {
     if (!dynatraceEntityId) {
-      throw new Error('Dynatrace entity ID is required');
+      throw new Error('Dynatrace entity id is required');
     }
 
     return this.callApi('problems', {

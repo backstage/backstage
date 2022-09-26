@@ -28,8 +28,8 @@ export const WorkflowRunStatus = ({
   status,
   conclusion,
 }: {
-  status: string | undefined;
-  conclusion: string | undefined;
+  status?: string;
+  conclusion?: string;
 }) => {
   if (status === undefined) return null;
   switch (status.toLocaleLowerCase('en-US')) {

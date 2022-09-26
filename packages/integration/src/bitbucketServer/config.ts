@@ -46,6 +46,24 @@ export type BitbucketServerIntegrationConfig = {
    * If no token is specified, anonymous access is used.
    */
   token?: string;
+
+  /**
+   * The credentials for Basic Authentication for requests to a Bitbucket Server provider.
+   *
+   * If `token` was provided, it will be preferred.
+   *
+   * See https://developer.atlassian.com/server/bitbucket/how-tos/command-line-rest/#authentication
+   */
+  username?: string;
+
+  /**
+   * The credentials for Basic Authentication for requests to a Bitbucket Server provider.
+   *
+   * If `token` was provided, it will be preferred.
+   *
+   * See https://developer.atlassian.com/server/bitbucket/how-tos/command-line-rest/#authentication
+   */
+  password?: string;
 };
 
 /**
@@ -60,6 +78,8 @@ export function readBitbucketServerIntegrationConfig(
   const host = config.getString('host');
   let apiBaseUrl = config.getOptionalString('apiBaseUrl');
   const token = config.getOptionalString('token');
+  const username = config.getOptionalString('username');
+  const password = config.getOptionalString('password');
 
   if (!isValidHost(host)) {
     throw new Error(
@@ -77,6 +97,8 @@ export function readBitbucketServerIntegrationConfig(
     host,
     apiBaseUrl,
     token,
+    username,
+    password,
   };
 }
 

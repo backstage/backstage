@@ -27,12 +27,11 @@ import {
 import { ScrollContext, ScrollContextProps } from '../hooks/useScroll';
 import { Group, Duration } from '../types';
 
-type PartialPropsWithChildren<T> = PropsWithChildren<Partial<T>>;
-
 export const MockGroups: Group[] = [{ id: 'tech' }, { id: 'mock-group' }];
 
-export type MockFilterProviderProps =
-  PartialPropsWithChildren<FilterContextProps>;
+export type MockFilterProviderProps = PropsWithChildren<
+  Partial<FilterContextProps>
+>;
 
 export const MockFilterProvider = ({
   children,
@@ -56,8 +55,9 @@ export const MockFilterProvider = ({
   );
 };
 
-export type MockLoadingProviderProps =
-  PartialPropsWithChildren<LoadingContextProps>;
+export type MockLoadingProviderProps = PropsWithChildren<
+  Partial<LoadingContextProps>
+>;
 
 export const MockLoadingProvider = ({
   children,
@@ -75,13 +75,15 @@ export const MockLoadingProvider = ({
   );
 };
 
-export type MockConfigProviderProps =
-  PartialPropsWithChildren<ConfigContextProps>;
+/** @public */
+export type MockConfigProviderProps = PropsWithChildren<
+  Partial<ConfigContextProps>
+>;
 
-export const MockConfigProvider = ({
-  children,
-  ...context
-}: MockConfigProviderProps) => {
+/** @public */
+export const MockConfigProvider = (props: MockConfigProviderProps) => {
+  const { children, ...context } = props;
+
   const defaultContext: ConfigContextProps = {
     metrics: [],
     products: [],
@@ -89,6 +91,7 @@ export const MockConfigProvider = ({
     engineerCost: 0,
     currencies: [],
   };
+
   return (
     <ConfigContext.Provider value={{ ...defaultContext, ...context }}>
       {children}
@@ -96,13 +99,15 @@ export const MockConfigProvider = ({
   );
 };
 
-export type MockCurrencyProviderProps =
-  PartialPropsWithChildren<CurrencyContextProps>;
+/** @public */
+export type MockCurrencyProviderProps = PropsWithChildren<
+  Partial<CurrencyContextProps>
+>;
 
-export const MockCurrencyProvider = ({
-  children,
-  ...context
-}: MockCurrencyProviderProps) => {
+/** @public */
+export const MockCurrencyProvider = (props: MockCurrencyProviderProps) => {
+  const { children, ...context } = props;
+
   const defaultContext: CurrencyContextProps = {
     currency: {
       kind: null,
@@ -111,6 +116,7 @@ export const MockCurrencyProvider = ({
     },
     setCurrency: jest.fn(),
   };
+
   return (
     <CurrencyContext.Provider value={{ ...defaultContext, ...context }}>
       {children}
@@ -118,8 +124,9 @@ export const MockCurrencyProvider = ({
   );
 };
 
-export type MockBillingDateProviderProps =
-  PartialPropsWithChildren<BillingDateContextProps>;
+export type MockBillingDateProviderProps = PropsWithChildren<
+  Partial<BillingDateContextProps>
+>;
 
 export const MockBillingDateProvider = ({
   children,
@@ -149,8 +156,9 @@ export const MockScrollProvider = ({ children }: MockScrollProviderProps) => {
   );
 };
 
-export type MockGroupsProviderProps =
-  PartialPropsWithChildren<GroupsContextProps>;
+export type MockGroupsProviderProps = PropsWithChildren<
+  Partial<GroupsContextProps>
+>;
 
 export const MockGroupsProvider = ({
   children,

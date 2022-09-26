@@ -154,6 +154,7 @@ describe('detectErrors', () => {
         'container=side-car restarted 38 times',
       ],
       names: ['dice-roller-canary-7d64cd756c-55rfq'],
+      namespace: 'default',
       severity: 4,
     });
 
@@ -165,6 +166,7 @@ describe('detectErrors', () => {
         'containers with unready status: [side-car other-side-car]',
       ],
       names: ['dice-roller-canary-7d64cd756c-55rfq'],
+      namespace: 'default',
       severity: 5,
     });
 
@@ -176,6 +178,7 @@ describe('detectErrors', () => {
         'back-off 5m0s restarting failed container=side-car pod=dice-roller-canary-7d64cd756c-55rfq_default(65ad28e3-5d51-4b4b-9bf8-4cb069803034)',
       ],
       names: ['dice-roller-canary-7d64cd756c-55rfq'],
+      namespace: 'default',
       severity: 6,
     });
 
@@ -187,6 +190,7 @@ describe('detectErrors', () => {
         'container=side-car exited with error code (1)',
       ],
       names: ['dice-roller-canary-7d64cd756c-55rfq'],
+      namespace: 'default',
       severity: 4,
     });
   });
@@ -210,6 +214,7 @@ describe('detectErrors', () => {
         'containers with unready status: [nginx]',
       ],
       names: ['dice-roller-bad-cm-855bf85464-mg6xb'],
+      namespace: 'default',
       severity: 5,
     });
 
@@ -218,6 +223,7 @@ describe('detectErrors', () => {
       kind: 'Pod',
       message: ['configmap "some-cm" not found'],
       names: ['dice-roller-bad-cm-855bf85464-mg6xb'],
+      namespace: 'default',
       severity: 6,
     });
   });
@@ -248,6 +254,7 @@ describe('detectErrors', () => {
       kind: 'Deployment',
       message: ['Deployment does not have minimum availability.'],
       names: ['dice-roller-canary'],
+      namespace: 'default',
       severity: 6,
     });
   });
@@ -280,6 +287,7 @@ describe('detectErrors', () => {
         'Current number of replicas (10) is equal to the configured max number of replicas (10)',
       ],
       names: ['dice-roller'],
+      namespace: 'default',
       severity: 8,
     });
   });

@@ -1,6 +1,8 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.5.0",
+      "releases/v1.4.0",
       "releases/v1.3.0",
       "releases/v1.2.0",
       "releases/v1.1.0",
@@ -16,6 +18,7 @@
       "overview/background",
       "overview/adopting",
       "overview/versioning-policy",
+      "overview/threat-model",
       "overview/support",
       "overview/glossary",
       "overview/logos"
@@ -78,6 +81,7 @@
           "features/kubernetes/overview",
           "features/kubernetes/installation",
           "features/kubernetes/configuration",
+          "features/kubernetes/authentication",
           "features/kubernetes/troubleshooting"
         ]
       },
@@ -149,10 +153,7 @@
       {
         "type": "subcategory",
         "label": "Bitbucket",
-        "ids": [
-          "integrations/bitbucket/locations",
-          "integrations/bitbucket/discovery"
-        ]
+        "ids": ["integrations/bitbucket/discovery"]
       },
       {
         "type": "subcategory",
@@ -160,6 +161,14 @@
         "ids": [
           "integrations/bitbucketCloud/locations",
           "integrations/bitbucketCloud/discovery"
+        ]
+      },
+      {
+        "type": "subcategory",
+        "label": "Bitbucket Server",
+        "ids": [
+          "integrations/bitbucketServer/locations",
+          "integrations/bitbucketServer/discovery"
         ]
       },
       {
@@ -213,6 +222,7 @@
       "plugins/integrating-plugin-into-software-catalog",
       "plugins/integrating-search-into-plugins",
       "plugins/composability",
+      "plugins/customization",
       "plugins/analytics",
       {
         "type": "subcategory",
@@ -290,6 +300,7 @@
     ],
     "Deployment": [
       "deployment/index",
+      "deployment/scaling",
       "deployment/docker",
       "deployment/k8s",
       "deployment/heroku"
@@ -315,12 +326,14 @@
     "Tutorials": [
       "tutorials/journey",
       "tutorials/quickstart-app-plugin",
+      "tutorials/react-router-stable-migration",
       "tutorials/package-role-migration",
       "tutorials/migrating-away-from-core",
       "tutorials/configuring-plugin-databases",
       "tutorials/switching-sqlite-postgres",
       "tutorials/using-backstage-proxy-within-plugin",
-      "tutorials/backend-to-backend-auth"
+      "tutorials/backend-to-backend-auth",
+      "tutorials/yarn-migration"
     ],
     "Architecture Decision Records (ADRs)": [
       "architecture-decisions/adrs-overview",

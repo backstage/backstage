@@ -21,6 +21,7 @@ import {
   TokenManager,
 } from '@backstage/backend-common';
 import { Logger } from 'winston';
+import { HumanDuration } from '@backstage/backend-tasks';
 
 /**
  * A container for facts. The shape of the fact records needs to correspond to the FactSchema with same `ref` value.
@@ -175,6 +176,16 @@ export interface FactRetriever {
   version: string;
 
   /**
+   * A short display title for the fact retriever to be used in the interface
+   */
+  title?: string;
+
+  /**
+   * A short display description for the fact retriever to be used in the interface.
+   */
+  description?: string;
+
+  /**
    * Handler function that needs to be implemented to retrieve fact values for entities.
    *
    * @param ctx - FactRetrieverContext which can be used to retrieve config and contact integrations
@@ -260,7 +271,7 @@ export type FactRetrieverRegistration = {
    * defaults to 5 minutes.
    *
    */
-  timeout?: Duration;
+  timeout?: Duration | HumanDuration;
 
   /**
    * Fact lifecycle definition

@@ -190,6 +190,7 @@ export function CopyTextButton(props: CopyTextButtonProps): JSX.Element;
 
 // @public
 export interface CopyTextButtonProps {
+  'aria-label'?: string;
   text: string;
   tooltipDelay?: number;
   tooltipText?: string;
@@ -612,8 +613,9 @@ export const Link: (props: LinkProps) => JSX.Element;
 // Warning: (ae-missing-release-tag) "LinkProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type LinkProps = LinkProps_2 &
-  LinkProps_3 & {
+export type LinkProps = Omit<LinkProps_2, 'to'> &
+  Omit<LinkProps_3, 'to'> & {
+    to: string;
     component?: ElementType<any>;
     noTrack?: boolean;
   };
@@ -985,13 +987,10 @@ export type SidebarOpenState = {
 };
 
 // @public
-export const SidebarOpenStateProvider: ({
-  children,
-  value,
-}: {
+export function SidebarOpenStateProvider(props: {
   children: ReactNode;
   value: SidebarOpenState;
-}) => JSX.Element;
+}): JSX.Element;
 
 // @public (undocumented)
 export type SidebarOptions = {
@@ -1032,13 +1031,10 @@ export type SidebarPinStateContextType = {
 };
 
 // @public
-export const SidebarPinStateProvider: ({
-  children,
-  value,
-}: {
+export function SidebarPinStateProvider(props: {
   children: ReactNode;
   value: SidebarPinStateContextType;
-}) => JSX.Element;
+}): JSX.Element;
 
 // @public (undocumented)
 export type SidebarProps = {

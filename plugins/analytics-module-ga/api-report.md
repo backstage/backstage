@@ -10,7 +10,7 @@ import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/core-plugin-api';
 
 // @public @deprecated (undocumented)
-export const analyticsModuleGA: BackstagePlugin<{}, {}>;
+export const analyticsModuleGA: BackstagePlugin<{}, {}, {}>;
 
 // @public
 export class GoogleAnalytics implements AnalyticsApi {

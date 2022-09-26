@@ -38,11 +38,7 @@ export interface TechInsightsStore {
    * @param facts - A collection of TechInsightFacts
    * @param lifecycle - (Optional) Fact lifecycle object indicating the expiration logic for these items
    */
-  insertFacts({
-    id,
-    facts,
-    lifecycle,
-  }: {
+  insertFacts(options: {
     id: string;
     facts: TechInsightFact[];
     lifecycle?: FactLifecycle;

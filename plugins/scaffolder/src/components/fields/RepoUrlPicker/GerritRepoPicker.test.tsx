@@ -18,7 +18,7 @@ import React from 'react';
 import { GerritRepoPicker } from './GerritRepoPicker';
 import { render, fireEvent } from '@testing-library/react';
 
-describe('BitbucketRepoPicker', () => {
+describe('GerritRepoPicker', () => {
   describe('owner input field', () => {
     it('calls onChange when the owner input changes', () => {
       const onChange = jest.fn();

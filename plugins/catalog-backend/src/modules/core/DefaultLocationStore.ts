@@ -20,7 +20,10 @@ import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import { DbLocationsRow } from '../../database/tables';
 import { getEntityLocationRef } from '../../processing/util';
-import { EntityProvider, EntityProviderConnection } from '../../api';
+import {
+  EntityProvider,
+  EntityProviderConnection,
+} from '@backstage/plugin-catalog-node';
 import { locationSpecToLocationEntity } from '../../util/conversion';
 import { LocationInput, LocationStore } from '../../service/types';
 

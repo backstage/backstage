@@ -21,10 +21,12 @@ import {
 } from './types';
 import { createApiRef } from '@backstage/core-plugin-api';
 
+/** @public */
 export const rollbarApiRef = createApiRef<RollbarApi>({
   id: 'plugin.rollbar.service',
 });
 
+/** @public */
 export interface RollbarApi {
   getAllProjects(): Promise<RollbarProject[]>;
   getProject(projectName: string): Promise<RollbarProject>;

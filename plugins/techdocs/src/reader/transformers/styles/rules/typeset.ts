@@ -47,7 +47,8 @@ ${headings.reduce<string>((style, heading) => {
     let factor: number | string = 1;
     if (typeof value === 'number') {
       // convert px to rem
-      factor = value / htmlFontSize;
+      // 60% of the size defined because it is too big
+      factor = (value / htmlFontSize) * 0.6;
     }
     if (typeof value === 'string') {
       factor = value.replace('rem', '');

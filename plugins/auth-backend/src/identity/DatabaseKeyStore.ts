@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { resolvePackagePath } from '@backstage/backend-common';
+import {
+  PluginDatabaseManager,
+  resolvePackagePath,
+} from '@backstage/backend-common';
 import { Knex } from 'knex';
 import { DateTime } from 'luxon';
 import { AnyJWK, KeyStore, StoredKey } from './types';
@@ -33,7 +36,7 @@ type Row = {
 };
 
 type Options = {
-  database: Knex;
+  database: PluginDatabaseManager;
 };
 
 const parseDate = (date: string | Date) => {
@@ -54,29 +57,32 @@ const parseDate = (date: string | Date) => {
 export class DatabaseKeyStore implements KeyStore {
   static async create(options: Options): Promise<DatabaseKeyStore> {
     const { database } = options;
+    const client = await database.getClient();
 
-    await database.migrate.latest({
-      directory: migrationsDir,
-    });
+    if (!database.migrations?.skip) {
+      await client.migrate.latest({
+        directory: migrationsDir,
+      });
+    }
 
-    return new DatabaseKeyStore(options);
+    return new DatabaseKeyStore(client);
   }
 
-  private readonly database: Knex;
+  private readonly client: Knex;
 
-  private constructor(options: Options) {
-    this.database = options.database;
+  private constructor(client: Knex) {
+    this.client = client;
   }
 
   async addKey(key: AnyJWK): Promise<void> {
-    await this.database<Row>(TABLE).insert({
+    await this.client<Row>(TABLE).insert({
       kid: key.kid,
       key: JSON.stringify(key),
     });
   }
 
   async listKeys(): Promise<{ items: StoredKey[] }> {
-    const rows = await this.database<Row>(TABLE).select();
+    const rows = await this.client<Row>(TABLE).select();
 
     return {
       items: rows.map(row => ({
@@ -87,6 +93,6 @@ export class DatabaseKeyStore implements KeyStore {
   }
 
   async removeKeys(kids: string[]): Promise<void> {
-    await this.database(TABLE).delete().whereIn('kid', kids);
+    await this.client(TABLE).delete().whereIn('kid', kids);
   }
 }

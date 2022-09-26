@@ -26,8 +26,8 @@ import {
 import { useApi } from '@backstage/core-plugin-api';
 
 export interface KubernetesObjects {
-  kubernetesObjects: ObjectsByEntityResponse | undefined;
-  error: string | undefined;
+  kubernetesObjects?: ObjectsByEntityResponse;
+  error?: string;
 }
 
 export const useKubernetesObjects = (
@@ -36,11 +36,10 @@ export const useKubernetesObjects = (
 ): KubernetesObjects => {
   const kubernetesApi = useApi(kubernetesApiRef);
   const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
-  const [kubernetesObjects, setKubernetesObjects] = useState<
-    ObjectsByEntityResponse | undefined
-  >(undefined);
-
-  const [error, setError] = useState<string | undefined>(undefined);
+  const [result, setResult] = useState<KubernetesObjects>({
+    kubernetesObjects: undefined,
+    error: undefined,
+  });
 
   const getObjects = async () => {
     let clusters = [];
@@ -48,7 +47,7 @@ export const useKubernetesObjects = (
     try {
       clusters = await kubernetesApi.getClusters();
     } catch (e) {
-      setError(e.message);
+      setResult({ error: e.message });
       return;
     }
 
@@ -76,15 +75,16 @@ export const useKubernetesObjects = (
             requestBody,
           );
       } catch (e) {
-        setError(e.message);
+        setResult({ error: e.message });
         return;
       }
     }
 
     try {
-      setKubernetesObjects(await kubernetesApi.getObjectsByEntity(requestBody));
+      const objects = await kubernetesApi.getObjectsByEntity(requestBody);
+      setResult({ kubernetesObjects: objects });
     } catch (e) {
-      setError(e.message);
+      setResult({ error: e.message });
       return;
     }
   };
@@ -99,8 +99,5 @@ export const useKubernetesObjects = (
     getObjects();
   }, intervalMs);
 
-  return {
-    kubernetesObjects,
-    error,
-  };
+  return result;
 };

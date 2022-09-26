@@ -25,6 +25,7 @@ import {
   Content,
 } from '@backstage/core-components';
 
+/** @public */
 export const ILertPage = () => {
   const [selectedTab, setSelectedTab] = React.useState<number>(0);
   const tabs = [

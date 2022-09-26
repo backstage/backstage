@@ -30,6 +30,9 @@ import isEmpty from 'lodash/isEmpty';
 export const entityMetadataFactRetriever: FactRetriever = {
   id: 'entityMetadataFactRetriever',
   version: '0.0.1',
+  title: 'Entity Metadata',
+  description:
+    'Generates facts which indicate the completeness of entity metadata',
   schema: {
     hasTitle: {
       type: 'boolean',

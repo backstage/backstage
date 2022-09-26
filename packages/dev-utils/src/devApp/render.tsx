@@ -46,7 +46,6 @@ import { Box } from '@material-ui/core';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import React, { ComponentType, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
-import { hot } from 'react-hot-loader';
 import { Route } from 'react-router';
 import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
 
@@ -224,12 +223,7 @@ export class DevAppBuilder {
    * Build and render directory to #root element, with react hot loading.
    */
   render(): void {
-    const hotModule =
-      require.cache['./dev/index.tsx'] ??
-      require.cache['./dev/index.ts'] ??
-      module;
-
-    const DevApp = hot(hotModule)(this.build());
+    const DevApp = this.build();
 
     if (
       window.location.pathname === '/' &&

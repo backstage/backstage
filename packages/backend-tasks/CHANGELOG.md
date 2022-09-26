@@ -1,5 +1,48 @@
 # @backstage/backend-tasks
 
+## 0.3.5-next.0
+
+### Patch Changes
+
+- 243533ecdc: Added support to mysql on some raw queries
+- 8872cc735d: Fixed a bug where the database option to skip migrations was ignored.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+
+## 0.3.4
+
+### Patch Changes
+
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+
+## 0.3.4-next.0
+
+### Patch Changes
+
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+
+## 0.3.3
+
+### Patch Changes
+
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/errors@1.1.0
+
+## 0.3.3-next.3
+
+### Patch Changes
+
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+
 ## 0.3.3-next.2
 
 ### Patch Changes

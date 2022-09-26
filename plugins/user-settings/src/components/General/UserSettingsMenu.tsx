@@ -20,6 +20,7 @@ import SignOutIcon from '@material-ui/icons/MeetingRoom';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 
+/** @public */
 export const UserSettingsMenu = () => {
   const identityApi = useApi(identityApiRef);
   const [open, setOpen] = React.useState(false);

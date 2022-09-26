@@ -76,27 +76,3 @@ builder.addEntityProvider(
   }),
 );
 ```
-
-## Alternative Processor
-
-As alternative to the entity provider `AwsS3EntityProvider`
-you can still use the `AwsS3DiscoveryProcessor`.
-
-```yaml
-# app-config.yaml
-
-catalog:
-  locations:
-    - type: s3-discovery
-      target: https://sample-bucket.s3.us-east-2.amazonaws.com/prefix/
-```
-
-```ts
-/* packages/backend/src/plugins/catalog.ts */
-
-import { AwsS3DiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-aws';
-
-const builder = await CatalogBuilder.create(env);
-/** ... other processors ... */
-builder.addProcessor(new AwsS3DiscoveryProcessor(env.reader));
-```

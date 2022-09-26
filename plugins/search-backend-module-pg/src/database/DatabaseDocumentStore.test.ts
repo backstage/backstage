@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { Knex as KnexType } from 'knex';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { PgSearchHighlightOptions } from '../PgSearchEngine';
@@ -29,6 +31,18 @@ const highlightOptions: PgSearchHighlightOptions = {
   maxFragments: 0,
   fragmentDelimiter: ' ... ',
 };
+
+function createDatabaseManager(
+  client: KnexType,
+  skipMigrations: boolean = false,
+) {
+  return {
+    getClient: async () => client,
+    migrations: {
+      skip: skipMigrations,
+    },
+  };
+}
 
 describe('DatabaseDocumentStore', () => {
   describe('unsupported', () => {
@@ -51,9 +65,10 @@ describe('DatabaseDocumentStore', () => {
       'should fail to create, %p',
       async databaseId => {
         const knex = await databases.init(databaseId);
+        const databaseManager = createDatabaseManager(knex);
 
         await expect(
-          async () => await DatabaseDocumentStore.create(knex),
+          async () => await DatabaseDocumentStore.create(databaseManager),
         ).rejects.toThrow();
       },
       60_000,
@@ -67,7 +82,9 @@ describe('DatabaseDocumentStore', () => {
 
     async function createStore(databaseId: TestDatabaseId) {
       const knex = await databases.init(databaseId);
-      const store = await DatabaseDocumentStore.create(knex);
+      const databaseManager = createDatabaseManager(knex);
+      const store = await DatabaseDocumentStore.create(databaseManager);
+
       return { store, knex };
     }
 

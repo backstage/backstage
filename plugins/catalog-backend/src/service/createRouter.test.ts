@@ -409,6 +409,7 @@ describe('createRouter readonly disabled', () => {
           state: {},
           completedEntity: entity,
           deferredEntities: [],
+          refreshKeys: [],
           relations: [],
           errors: [],
         });

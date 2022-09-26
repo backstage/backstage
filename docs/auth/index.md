@@ -18,6 +18,7 @@ Backstage comes with many common authentication providers in the core library:
 - [Auth0](auth0/provider.md)
 - [Azure](microsoft/provider.md)
 - [Bitbucket](bitbucket/provider.md)
+- [Cloudflare Access](cloudflare/access.md)
 - [GitHub](github/provider.md)
 - [GitLab](gitlab/provider.md)
 - [Google](google/provider.md)
@@ -131,7 +132,7 @@ allows allowing guest access:
 
 Some auth providers are so-called "proxy" providers, meaning they're meant to be used
 behind an authentication proxy. Examples of these are
-[AWS ALB](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/aws-alb-aad-oidc-auth.md),
+[AWS ALB](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/aws-alb-aad-oidc-auth.md), [Cloudflare Access](./cloudflare/access.md),
 [GCP IAP](./google/gcp-iap-auth.md), and [OAuth2 Proxy](./oauth2-proxy/provider.md).
 
 When using a proxy provider, you'll end up wanting to use a different sign-in page, as

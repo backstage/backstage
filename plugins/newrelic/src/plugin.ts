@@ -27,6 +27,7 @@ export const rootRouteRef = createRouteRef({
   id: 'newrelic',
 });
 
+/** @public */
 export const newRelicPlugin = createPlugin({
   id: 'newrelic',
   apis: [
@@ -41,6 +42,7 @@ export const newRelicPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const NewRelicPage = newRelicPlugin.provide(
   createRoutableExtension({
     name: 'NewRelicPage',

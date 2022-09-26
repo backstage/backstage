@@ -109,20 +109,13 @@ export const columnFactories: Readonly<{
   createEntityRefColumn<T extends Entity>(options: {
     defaultKind?: string;
   }): TableColumn<T>;
-  createEntityRelationColumn<T_1 extends Entity>({
-    title,
-    relation,
-    defaultKind,
-    filter: entityFilter,
-  }: {
+  createEntityRelationColumn<T_1 extends Entity>(options: {
     title: string;
     relation: string;
-    defaultKind?: string | undefined;
-    filter?:
-      | {
-          kind: string;
-        }
-      | undefined;
+    defaultKind?: string;
+    filter?: {
+      kind: string;
+    };
   }): TableColumn<T_1>;
   createOwnerColumn<T_2 extends Entity>(): TableColumn<T_2>;
   createDomainColumn<T_3 extends Entity>(): TableColumn<T_3>;
@@ -324,12 +317,7 @@ export const EntityTable: {
     createEntityRefColumn<T_1 extends Entity>(options: {
       defaultKind?: string | undefined;
     }): TableColumn<T_1>;
-    createEntityRelationColumn<T_2 extends Entity>({
-      title,
-      relation,
-      defaultKind,
-      filter: entityFilter,
-    }: {
+    createEntityRelationColumn<T_2 extends Entity>(options: {
       title: string;
       relation: string;
       defaultKind?: string | undefined;

@@ -33,7 +33,7 @@ import {
   IndexableResultSet,
   SearchResultSet,
 } from '@backstage/plugin-search-common';
-import { SearchEngine } from '@backstage/plugin-search-backend-node';
+import { SearchEngine } from '@backstage/plugin-search-common';
 import { AuthorizedSearchEngine } from './AuthorizedSearchEngine';
 
 const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {

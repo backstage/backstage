@@ -18,6 +18,7 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { RollbarProject } from '../RollbarProject/RollbarProject';
 
+/** @public */
 export const EntityPageRollbar = () => {
   const { entity } = useEntity();
 

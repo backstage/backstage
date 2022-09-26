@@ -26,14 +26,12 @@ export type ReportIssueTemplate = {
 };
 
 // @public
-export type ReportIssueTemplateBuilder = ({
-  selection,
-}: {
+export type ReportIssueTemplateBuilder = (options: {
   selection: Selection;
 }) => ReportIssueTemplate;
 
 // @public
-export const techdocsModuleAddonsContribPlugin: BackstagePlugin<{}, {}>;
+export const techdocsModuleAddonsContribPlugin: BackstagePlugin<{}, {}, {}>;
 
 // @public
 export const TextSize: () => JSX.Element | null;

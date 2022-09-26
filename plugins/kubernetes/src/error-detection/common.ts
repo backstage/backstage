@@ -45,6 +45,7 @@ export const detectErrorsInObjects = <T extends ErrorDetectable>(
         const value = errors.get(dedupKey);
 
         const name = object.metadata?.name ?? 'unknown';
+        const namespace = object.metadata?.namespace ?? 'unknown';
 
         if (value !== undefined) {
           // This gets translated into the Chip "+5 others"
@@ -60,6 +61,7 @@ export const detectErrorsInObjects = <T extends ErrorDetectable>(
             names: [name],
             message: message,
             severity: errorMapper.severity,
+            namespace,
           });
         }
       }

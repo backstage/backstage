@@ -1,5 +1,101 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.3.0-next.1
+
+### Minor Changes
+
+- aa524a5377: Add `projectId` config option to GCP Cloud Storage techdocs publisher. This will allow users to override the project ID, instead of implicitly using the same one as found in a credentials bundle.
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.4.0-next.1
+  - @backstage/backend-common@0.15.1-next.2
+  - @backstage/integration@1.3.1-next.1
+  - @backstage/catalog-client@1.0.5-next.1
+  - @backstage/plugin-permission-common@0.6.4-next.1
+
+## 1.2.2-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/catalog-client@1.0.5-next.0
+  - @backstage/integration@1.3.1-next.0
+  - @backstage/plugin-permission-common@0.6.4-next.0
+  - @backstage/plugin-techdocs-node@1.3.1-next.0
+  - @backstage/plugin-catalog-common@1.0.6-next.0
+  - @backstage/plugin-search-common@1.0.1-next.0
+
+## 1.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/integration@1.3.0
+  - @backstage/plugin-techdocs-node@1.3.0
+  - @backstage/plugin-catalog-common@1.0.5
+
+## 1.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.0.5-next.0
+  - @backstage/backend-common@0.15.0-next.1
+  - @backstage/integration@1.3.0-next.1
+  - @backstage/plugin-techdocs-node@1.3.0-next.1
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/integration@1.3.0-next.0
+  - @backstage/plugin-techdocs-node@1.2.1-next.0
+
+## 1.2.0
+
+### Minor Changes
+
+- 860765ff45: Added local publishing target directory `config`: `techdocs.publisher.local.publishDirectory`
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- 726577958f: Add sample headings on the documented component homepage.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.2.0
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-search-common@1.0.0
+  - @backstage/integration@1.2.2
+  - @backstage/catalog-client@1.0.4
+  - @backstage/plugin-permission-common@0.6.3
+  - @backstage/errors@1.1.0
+  - @backstage/plugin-catalog-common@1.0.4
+
+## 1.2.0-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/plugin-techdocs-node@1.2.0-next.3
+  - @backstage/catalog-client@1.0.4-next.2
+  - @backstage/integration@1.2.2-next.3
+  - @backstage/plugin-permission-common@0.6.3-next.1
+  - @backstage/catalog-model@1.1.0-next.3
+
 ## 1.2.0-next.2
 
 ### Patch Changes

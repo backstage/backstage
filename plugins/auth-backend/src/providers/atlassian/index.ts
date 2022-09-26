@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { atlassian, AtlassianAuthProvider } from './provider';
+export { atlassian } from './provider';

@@ -54,7 +54,7 @@ describe('ComponentContextMenu', () => {
     expect(unregister).toBeInTheDocument();
     fireEvent.click(unregister);
 
-    expect(mockCallback).toBeCalled();
+    expect(mockCallback).toHaveBeenCalled();
   });
 
   it('check Unregister entity button is disabled', async () => {

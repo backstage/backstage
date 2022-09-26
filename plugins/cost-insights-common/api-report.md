@@ -44,6 +44,7 @@ export interface Entity {
 // @public (undocumented)
 export type Group = {
   id: string;
+  name?: string;
 };
 
 // @public (undocumented)

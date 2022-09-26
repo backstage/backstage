@@ -20,7 +20,7 @@ import {
 } from '@backstage/plugin-search-common';
 import { Config } from '@backstage/config';
 import { Readable } from 'stream';
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
 import qs from 'qs';
 import { Logger } from 'winston';
 
@@ -50,6 +50,8 @@ export type StackOverflowQuestionsRequestParams = {
  */
 export type StackOverflowQuestionsCollatorFactoryOptions = {
   baseUrl?: string;
+  maxPage?: number;
+  apiKey?: string;
   requestParams: StackOverflowQuestionsRequestParams;
   logger: Logger;
 };
@@ -64,11 +66,15 @@ export class StackOverflowQuestionsCollatorFactory
 {
   protected requestParams: StackOverflowQuestionsRequestParams;
   private readonly baseUrl: string | undefined;
+  private readonly apiKey: string | undefined;
+  private readonly maxPage: number | undefined;
   private readonly logger: Logger;
   public readonly type: string = 'stack-overflow';
 
   private constructor(options: StackOverflowQuestionsCollatorFactoryOptions) {
     this.baseUrl = options.baseUrl;
+    this.apiKey = options.apiKey;
+    this.maxPage = options.maxPage;
     this.requestParams = options.requestParams;
     this.logger = options.logger;
   }
@@ -77,10 +83,17 @@ export class StackOverflowQuestionsCollatorFactory
     config: Config,
     options: StackOverflowQuestionsCollatorFactoryOptions,
   ) {
+    const apiKey = config.getOptionalString('stackoverflow.apiKey');
     const baseUrl =
       config.getOptionalString('stackoverflow.baseUrl') ||
       'https://api.stackexchange.com/2.2';
-    return new StackOverflowQuestionsCollatorFactory({ ...options, baseUrl });
+    const maxPage = options.maxPage || 100;
+    return new StackOverflowQuestionsCollatorFactory({
+      ...options,
+      baseUrl,
+      maxPage,
+      apiKey,
+    });
   }
 
   async getCollator() {
@@ -93,22 +106,52 @@ export class StackOverflowQuestionsCollatorFactory
         `No stackoverflow.baseUrl configured in your app-config.yaml`,
       );
     }
+
+    try {
+      if (Object.keys(this.requestParams).indexOf('key') >= 0) {
+        this.logger.warn(
+          'The API Key should be passed as a seperate param to bypass encoding',
+        );
+        delete this.requestParams.key;
+      }
+    } catch (e) {
+      this.logger.error(`Caught ${e}`);
+    }
+
     const params = qs.stringify(this.requestParams, {
       arrayFormat: 'comma',
       addQueryPrefix: true,
     });
 
-    const res = await fetch(`${this.baseUrl}/questions${params}`);
-    const data = await res.json();
+    const apiKeyParam = this.apiKey
+      ? `${params ? '&' : '?'}key=${this.apiKey}`
+      : '';
 
-    for (const question of data.items) {
-      yield {
-        title: question.title,
-        location: question.link,
-        text: question.owner.display_name,
-        tags: question.tags,
-        answers: question.answer_count,
-      };
+    let hasMorePages = true;
+    let page = 1;
+    while (hasMorePages) {
+      if (page === this.maxPage) {
+        this.logger.warn(
+          `Over ${this.maxPage} requests to the Stack Overflow API have been made, which may not have been intended. Either specify requestParams that limit the questions returned, or configure a higher maxPage if necessary.`,
+        );
+        break;
+      }
+      const res = await fetch(
+        `${this.baseUrl}/questions${params}${apiKeyParam}&page=${page}`,
+      );
+
+      const data = await res.json();
+      for (const question of data.items) {
+        yield {
+          title: question.title,
+          location: question.link,
+          text: question.owner.display_name,
+          tags: question.tags,
+          answers: question.answer_count,
+        };
+      }
+      hasMorePages = data.has_more;
+      page = page + 1;
     }
   }
 }

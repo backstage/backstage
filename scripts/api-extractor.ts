@@ -20,6 +20,7 @@
 import {
   resolve as resolvePath,
   relative as relativePath,
+  basename,
   dirname,
   join,
 } from 'path';
@@ -199,65 +200,11 @@ const PACKAGE_ROOTS = ['packages', 'plugins'];
 
 const ALLOW_WARNINGS = [
   'packages/core-components',
-  'plugins/allure',
-  'plugins/apache-airflow',
-  'plugins/api-docs',
-  'plugins/app-backend',
-  'plugins/auth-backend',
-  'plugins/azure-devops',
-  'plugins/azure-devops-backend',
-  'plugins/azure-devops-common',
-  'plugins/badges',
-  'plugins/badges-backend',
-  'plugins/bazaar',
-  'plugins/bazaar-backend',
-  'plugins/bitrise',
   'plugins/catalog',
-  'plugins/catalog-graphql',
   'plugins/catalog-import',
-  'plugins/cicd-statistics',
-  'plugins/circleci',
-  'plugins/cloudbuild',
-  'plugins/code-climate',
-  'plugins/config-schema',
-  'plugins/cost-insights',
-  'plugins/dynatrace',
-  'plugins/explore',
-  'plugins/explore-react',
-  'plugins/firehydrant',
-  'plugins/fossa',
-  'plugins/gcalendar',
-  'plugins/gcp-projects',
   'plugins/git-release-manager',
-  'plugins/github-actions',
-  'plugins/github-deployments',
-  'plugins/github-pull-requests-board',
-  'plugins/gitops-profiles',
-  'plugins/graphql-backend',
-  'plugins/home',
-  'plugins/ilert',
   'plugins/jenkins',
-  'plugins/jenkins-backend',
-  'plugins/kafka',
-  'plugins/kafka-backend',
   'plugins/kubernetes',
-  'plugins/kubernetes-backend',
-  'plugins/kubernetes-common',
-  'plugins/lighthouse',
-  'plugins/newrelic',
-  'plugins/newrelic-dashboard',
-  'plugins/pagerduty',
-  'plugins/proxy-backend',
-  'plugins/rollbar',
-  'plugins/rollbar-backend',
-  'plugins/search-backend-module-pg',
-  'plugins/sentry',
-  'plugins/shortcuts',
-  'plugins/sonarqube',
-  'plugins/splunk-on-call',
-  'plugins/tech-radar',
-  'plugins/user-settings',
-  'plugins/xcmetrics',
 ];
 
 async function resolvePackagePath(
@@ -564,6 +511,11 @@ async function runApiExtraction({
     if (warningCountAfter > 0 && !ALLOW_WARNINGS.includes(packageDir)) {
       throw new Error(
         `The API Report for ${packageDir} is not allowed to have warnings`,
+      );
+    }
+    if (warningCountAfter === 0 && ALLOW_WARNINGS.includes(packageDir)) {
+      console.log(
+        `No need to allow warnings for ${packageDir}, it does not have any`,
       );
     }
     if (warningCountAfter > warningCountBefore) {
@@ -1246,11 +1198,18 @@ async function runCliExtraction({
     if (!pkgJson.bin) {
       throw new Error(`CLI Package in ${packageDir} has no bin field`);
     }
+
     const models = new Array<CliModel>();
-    for (const [name, path] of Object.entries<string>(pkgJson.bin)) {
-      const run = createBinRunner(fullDir, path);
+    if (typeof pkgJson.bin === 'string') {
+      const run = createBinRunner(fullDir, pkgJson.bin);
       const helpPages = await exploreCliHelpPages(run);
-      models.push({ name, helpPages });
+      models.push({ name: basename(pkgJson.bin), helpPages });
+    } else {
+      for (const [name, path] of Object.entries<string>(pkgJson.bin)) {
+        const run = createBinRunner(fullDir, path);
+        const helpPages = await exploreCliHelpPages(run);
+        models.push({ name, helpPages });
+      }
     }
 
     const report = generateCliReport(pkgJson.name, models);

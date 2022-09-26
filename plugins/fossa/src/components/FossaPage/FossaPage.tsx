@@ -167,6 +167,7 @@ const filters: TableFilter[] = [
   { column: 'Branch', type: 'select' },
 ];
 
+/** @public */
 export type FossaPageProps = {
   entitiesFilter?:
     | Record<string, string | symbol | (string | symbol)[]>[]
@@ -174,9 +175,8 @@ export type FossaPageProps = {
     | undefined;
 };
 
-export const FossaPage = ({
-  entitiesFilter = { kind: 'Component' },
-}: FossaPageProps) => {
+export const FossaPage = (props: FossaPageProps) => {
+  const { entitiesFilter = { kind: 'Component' } } = props;
   const catalogApi = useApi(catalogApiRef);
   const fossaApi = useApi(fossaApiRef);
   const [filter, setFilter] = useState(entitiesFilter);

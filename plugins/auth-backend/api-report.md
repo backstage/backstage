@@ -7,6 +7,7 @@
 
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
+import { CacheClient } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
@@ -22,26 +23,6 @@ import { TokenManager } from '@backstage/backend-common';
 import { TokenSet } from 'openid-client';
 import { UserEntity } from '@backstage/catalog-model';
 import { UserinfoResponse } from 'openid-client';
-
-// @public @deprecated (undocumented)
-export class AtlassianAuthProvider implements OAuthHandlers {
-  // Warning: (ae-forgotten-export) The symbol "AtlassianAuthProviderOptions" needs to be exported by the entry point index.d.ts
-  constructor(options: AtlassianAuthProviderOptions);
-  // (undocumented)
-  handler(req: express.Request): Promise<{
-    response: OAuthResponse;
-    refreshToken: string | undefined;
-  }>;
-  // (undocumented)
-  refresh(req: OAuthRefreshRequest): Promise<{
-    response: OAuthResponse;
-    refreshToken: string | undefined;
-  }>;
-  // Warning: (ae-forgotten-export) The symbol "RedirectInfo" needs to be exported by the entry point index.d.ts
-  //
-  // (undocumented)
-  start(req: OAuthStartRequest): Promise<RedirectInfo>;
-}
 
 // @public
 export type AuthHandler<TAuthResult> = (
@@ -62,8 +43,6 @@ export type AuthProviderConfig = {
   cookieConfigurer?: CookieConfigurer;
 };
 
-// Warning: (ae-missing-release-tag) "AuthProviderFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type AuthProviderFactory = (options: {
   providerId: string;
@@ -73,8 +52,6 @@ export type AuthProviderFactory = (options: {
   resolverContext: AuthResolverContext;
 }) => AuthProviderRouteHandlers;
 
-// Warning: (ae-missing-release-tag) "AuthProviderRouteHandlers" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface AuthProviderRouteHandlers {
   frameHandler(req: express.Request, res: express.Response): Promise<void>;
@@ -128,8 +105,6 @@ export type AwsAlbResult = {
   accessToken: string;
 };
 
-// Warning: (ae-missing-release-tag) "BitbucketOAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type BitbucketOAuthResult = {
   fullProfile: BitbucketPassportProfile;
@@ -142,8 +117,6 @@ export type BitbucketOAuthResult = {
   refreshToken?: string;
 };
 
-// Warning: (ae-missing-release-tag) "BitbucketPassportProfile" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type BitbucketPassportProfile = Profile & {
   id?: string;
@@ -159,16 +132,51 @@ export type BitbucketPassportProfile = Profile & {
   };
 };
 
-// Warning: (ae-missing-release-tag) "CatalogIdentityClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class CatalogIdentityClient {
   constructor(options: { catalogApi: CatalogApi; tokenManager: TokenManager });
-  // Warning: (ae-forgotten-export) The symbol "UserQuery" needs to be exported by the entry point index.d.ts
-  findUser(query: UserQuery): Promise<UserEntity>;
-  // Warning: (ae-forgotten-export) The symbol "MemberClaimQuery" needs to be exported by the entry point index.d.ts
-  resolveCatalogMembership(query: MemberClaimQuery): Promise<string[]>;
+  findUser(query: { annotations: Record<string, string> }): Promise<UserEntity>;
+  resolveCatalogMembership(query: {
+    entityRefs: string[];
+    logger?: Logger;
+  }): Promise<string[]>;
 }
+
+// @public
+export type CloudflareAccessClaims = {
+  aud: string[];
+  email: string;
+  exp: number;
+  iat: number;
+  nonce: string;
+  identity_nonce: string;
+  sub: string;
+  iss: string;
+  custom: string;
+};
+
+// @public
+export type CloudflareAccessGroup = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+// @public
+export type CloudflareAccessIdentityProfile = {
+  id: string;
+  name: string;
+  email: string;
+  groups: CloudflareAccessGroup[];
+};
+
+// @public (undocumented)
+export type CloudflareAccessResult = {
+  claims: CloudflareAccessClaims;
+  cfIdentity: CloudflareAccessIdentityProfile;
+  expiresInSeconds?: number;
+  token: string;
+};
 
 // @public
 export type CookieConfigurer = (ctx: {
@@ -181,8 +189,6 @@ export type CookieConfigurer = (ctx: {
   secure: boolean;
 };
 
-// Warning: (ae-missing-release-tag) "createAuthProviderIntegration" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function createAuthProviderIntegration<
   TCreateOptions extends unknown[],
@@ -197,13 +203,9 @@ export function createAuthProviderIntegration<
   resolvers: Readonly<string extends keyof TResolvers ? never : TResolvers>;
 }>;
 
-// Warning: (ae-missing-release-tag) "createOriginFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function createOriginFilter(config: Config): (origin: string) => boolean;
 
-// Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
@@ -212,13 +214,9 @@ export const defaultAuthProviderFactories: {
   [providerId: string]: AuthProviderFactory;
 };
 
-// Warning: (ae-missing-release-tag) "encodeState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const encodeState: (state: OAuthState) => string;
 
-// Warning: (ae-missing-release-tag) "ensuresXRequestedWith" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const ensuresXRequestedWith: (req: express.Request) => boolean;
 
@@ -237,8 +235,6 @@ export type GcpIapTokenInfo = {
 // @public
 export function getDefaultOwnershipEntityRefs(entity: Entity): string[];
 
-// Warning: (ae-missing-release-tag) "GithubOAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type GithubOAuthResult = {
   fullProfile: Profile;
@@ -259,20 +255,19 @@ export type OAuth2ProxyResult<JWTPayload = {}> = {
   getHeader(name: string): string | undefined;
 };
 
-// Warning: (ae-missing-release-tag) "OAuthAdapter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class OAuthAdapter implements AuthProviderRouteHandlers {
-  constructor(handlers: OAuthHandlers, options: Options);
+  constructor(handlers: OAuthHandlers, options: OAuthAdapterOptions);
   // (undocumented)
   frameHandler(req: express.Request, res: express.Response): Promise<void>;
-  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static fromConfig(
     config: AuthProviderConfig,
     handlers: OAuthHandlers,
-    options: Pick<Options, 'providerId' | 'persistScopes' | 'callbackUrl'>,
+    options: Pick<
+      OAuthAdapterOptions,
+      'providerId' | 'persistScopes' | 'callbackUrl'
+    >,
   ): OAuthAdapter;
   // (undocumented)
   logout(req: express.Request, res: express.Response): Promise<void>;
@@ -282,8 +277,18 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
   start(req: express.Request, res: express.Response): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "OAuthEnvironmentHandler" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type OAuthAdapterOptions = {
+  providerId: string;
+  secure: boolean;
+  persistScopes?: boolean;
+  cookieDomain: string;
+  cookiePath: string;
+  appOrigin: string;
+  isOriginAllowed: (origin: string) => boolean;
+  callbackUrl: string;
+};
+
 // @public (undocumented)
 export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {
   constructor(handlers: Map<string, AuthProviderRouteHandlers>);
@@ -313,11 +318,9 @@ export interface OAuthHandlers {
     response: OAuthResponse;
     refreshToken?: string;
   }>;
-  start(req: OAuthStartRequest): Promise<RedirectInfo>;
+  start(req: OAuthStartRequest): Promise<OAuthStartResponse>;
 }
 
-// Warning: (ae-missing-release-tag) "OAuthProviderInfo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type OAuthProviderInfo = {
   accessToken: string;
@@ -326,8 +329,6 @@ export type OAuthProviderInfo = {
   scope: string;
 };
 
-// Warning: (ae-missing-release-tag) "OAuthProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type OAuthProviderOptions = {
   clientId: string;
@@ -335,8 +336,6 @@ export type OAuthProviderOptions = {
   callbackUrl: string;
 };
 
-// Warning: (ae-missing-release-tag) "OAuthRefreshRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type OAuthRefreshRequest = express.Request<{}> & {
   scope: string;
@@ -350,8 +349,6 @@ export type OAuthResponse = {
   backstageIdentity?: BackstageSignInResult;
 };
 
-// Warning: (ae-missing-release-tag) "OAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type OAuthResult = {
   fullProfile: Profile;
@@ -364,16 +361,18 @@ export type OAuthResult = {
   refreshToken?: string;
 };
 
-// Warning: (ae-missing-release-tag) "OAuthStartRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type OAuthStartRequest = express.Request<{}> & {
   scope: string;
   state: OAuthState;
 };
 
-// Warning: (ae-missing-release-tag) "OAuthState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type OAuthStartResponse = {
+  url: string;
+  status?: number;
+};
+
 // @public (undocumented)
 export type OAuthState = {
   nonce: string;
@@ -388,8 +387,6 @@ export type OidcAuthResult = {
   userinfo: UserinfoResponse;
 };
 
-// Warning: (ae-missing-release-tag) "postMessageResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const postMessageResponse: (
   res: express.Response,
@@ -407,6 +404,11 @@ export type ProfileInfo = {
   email?: string;
   displayName?: string;
   picture?: string;
+};
+
+// @public (undocumented)
+export type ProviderFactories = {
+  [s: string]: AuthProviderFactory;
 };
 
 // @public
@@ -470,6 +472,18 @@ export const providers: Readonly<{
     resolvers: Readonly<{
       usernameMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
       userIdMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
+    }>;
+  }>;
+  cfAccess: Readonly<{
+    create: (options: {
+      authHandler?: AuthHandler<CloudflareAccessResult> | undefined;
+      signIn: {
+        resolver: SignInResolver<CloudflareAccessResult>;
+      };
+      cache?: CacheClient | undefined;
+    }) => AuthProviderFactory;
+    resolvers: Readonly<{
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
     }>;
   }>;
   gcpIap: Readonly<{
@@ -644,13 +658,9 @@ export const providers: Readonly<{
   }>;
 }>;
 
-// Warning: (ae-missing-release-tag) "readState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const readState: (stateString: string) => OAuthState;
 
-// Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface RouterOptions {
   // (undocumented)
@@ -661,8 +671,6 @@ export interface RouterOptions {
   discovery: PluginEndpointDiscovery;
   // (undocumented)
   logger: Logger;
-  // Warning: (ae-forgotten-export) The symbol "ProviderFactories" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   providerFactories?: ProviderFactories;
   // (undocumented)
@@ -701,13 +709,9 @@ export type TokenParams = {
   };
 };
 
-// Warning: (ae-missing-release-tag) "verifyNonce" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const verifyNonce: (req: express.Request, providerId: string) => void;
 
-// Warning: (ae-missing-release-tag) "WebMessageResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type WebMessageResponse =
   | {

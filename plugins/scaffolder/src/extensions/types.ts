@@ -25,7 +25,7 @@ export type CustomFieldValidator<TFieldReturnValue> = (
   data: TFieldReturnValue,
   field: FieldValidation,
   context: { apiHolder: ApiHolder },
-) => void;
+) => void | Promise<void>;
 
 /**
  * Type for the Custom Field Extension with the

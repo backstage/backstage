@@ -52,6 +52,7 @@ describe('config', () => {
         branch: 'master',
         host: 'host',
         catalogFile: 'catalog-info.yaml',
+        projectPattern: /[\s\S]*/,
       }),
     );
   });
@@ -81,6 +82,7 @@ describe('config', () => {
         branch: 'not-master',
         host: 'host',
         catalogFile: 'custom-file.yaml',
+        projectPattern: /[\s\S]*/,
       }),
     );
   });

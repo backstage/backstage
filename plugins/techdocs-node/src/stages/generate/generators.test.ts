@@ -37,7 +37,7 @@ describe('generators', () => {
   it('should return error if no generator is registered', async () => {
     const generators = new Generators();
 
-    expect(() => generators.get(mockEntity)).toThrowError(
+    expect(() => generators.get(mockEntity)).toThrow(
       'No generator registered for entity: "techdocs"',
     );
   });

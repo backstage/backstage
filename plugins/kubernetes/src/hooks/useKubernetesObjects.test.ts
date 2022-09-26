@@ -72,9 +72,11 @@ describe('useKubernetesObjects', () => {
   const mockDecorateRequestBodyForAuth = jest.fn();
 
   const expectMocksCalledCorrectly = (numOfCalls: number = 1) => {
-    expect(mockGetClusters).toBeCalledTimes(numOfCalls);
+    expect(mockGetClusters).toHaveBeenCalledTimes(numOfCalls);
     expect(mockGetClusters).toHaveBeenLastCalledWith();
-    expect(mockDecorateRequestBodyForAuth).toBeCalledTimes(numOfCalls * 2);
+    expect(mockDecorateRequestBodyForAuth).toHaveBeenCalledTimes(
+      numOfCalls * 2,
+    );
     expect(mockDecorateRequestBodyForAuth).toHaveBeenCalledWith('google', {
       entity,
     });
@@ -82,7 +84,7 @@ describe('useKubernetesObjects', () => {
       'authprovider2',
       entityWithAuthToken,
     );
-    expect(mockGetObjectsByEntity).toBeCalledTimes(numOfCalls);
+    expect(mockGetObjectsByEntity).toHaveBeenCalledTimes(numOfCalls);
     expect(mockGetObjectsByEntity).toHaveBeenLastCalledWith(
       entityWithAuthToken,
     );
@@ -123,6 +125,8 @@ describe('useKubernetesObjects', () => {
     );
 
     await waitForNextUpdate();
+    expect(result.current.error).toBeUndefined();
+
     await waitForNextUpdate();
 
     expect(result.current.error).toBeUndefined();
@@ -166,10 +170,10 @@ describe('useKubernetesObjects', () => {
     expect(result.current.error).toBe('some-error');
     expect(result.current.kubernetesObjects).toBeUndefined();
 
-    expect(mockGetClusters).toBeCalledTimes(1);
+    expect(mockGetClusters).toHaveBeenCalledTimes(1);
     expect(mockGetClusters).toHaveBeenLastCalledWith();
-    expect(mockDecorateRequestBodyForAuth).toBeCalledTimes(0);
-    expect(mockGetObjectsByEntity).toBeCalledTimes(0);
+    expect(mockDecorateRequestBodyForAuth).toHaveBeenCalledTimes(0);
+    expect(mockGetObjectsByEntity).toHaveBeenCalledTimes(0);
   });
   it('should return error when decorateRequestBodyForAuth throws', async () => {
     (useApi as any).mockReturnValue({
@@ -189,12 +193,167 @@ describe('useKubernetesObjects', () => {
     expect(result.current.error).toBe('some-error');
     expect(result.current.kubernetesObjects).toBeUndefined();
 
-    expect(mockGetClusters).toBeCalledTimes(1);
+    expect(mockGetClusters).toHaveBeenCalledTimes(1);
     expect(mockGetClusters).toHaveBeenLastCalledWith();
-    expect(mockDecorateRequestBodyForAuth).toBeCalledTimes(1);
+    expect(mockDecorateRequestBodyForAuth).toHaveBeenCalledTimes(1);
     expect(mockDecorateRequestBodyForAuth).toHaveBeenCalledWith('google', {
       entity,
     });
-    expect(mockGetObjectsByEntity).toBeCalledTimes(0);
+    expect(mockGetObjectsByEntity).toHaveBeenCalledTimes(0);
+  });
+
+  describe('when retrying', () => {
+    it('should reset error after getClusters has failed and then succeeded', async () => {
+      (useApi as any).mockReturnValue({
+        getClusters: mockGetClusters
+          .mockRejectedValueOnce({ message: 'some-error' })
+          .mockResolvedValue(getClustersResponse),
+        decorateRequestBodyForAuth:
+          mockDecorateRequestBodyForAuth.mockResolvedValue(entityWithAuthToken),
+        getObjectsByEntity:
+          mockGetObjectsByEntity.mockResolvedValue(mockResponse),
+      });
+
+      const { result, waitForNextUpdate } = renderHook(() =>
+        useKubernetesObjects(entity, 100),
+      );
+
+      await waitForNextUpdate();
+
+      expect(result.current.error).toBe('some-error');
+      expect(result.current.kubernetesObjects).toBeUndefined();
+
+      await waitForNextUpdate();
+
+      expect(result.current.error).toBeUndefined();
+      expect(result.current.kubernetesObjects).not.toBeUndefined();
+    });
+
+    it('should reset error after decorateRequestBodyForAuth has failed and then succeeded', async () => {
+      (useApi as any).mockReturnValue({
+        getClusters: mockGetClusters.mockResolvedValue(getClustersResponse),
+        decorateRequestBodyForAuth: mockDecorateRequestBodyForAuth
+          .mockRejectedValueOnce({ message: 'decoration failed' })
+          .mockResolvedValue(entityWithAuthToken),
+        getObjectsByEntity:
+          mockGetObjectsByEntity.mockResolvedValue(mockResponse),
+      });
+
+      const { result, waitForNextUpdate } = renderHook(() =>
+        useKubernetesObjects(entity, 100),
+      );
+
+      await waitForNextUpdate();
+
+      expect(result.current.error).toBe('decoration failed');
+      expect(result.current.kubernetesObjects).toBeUndefined();
+
+      await waitForNextUpdate();
+
+      expect(result.current.error).toBeUndefined();
+      expect(result.current.kubernetesObjects).not.toBeUndefined();
+    });
+
+    it('should reset error after getObjectsByEntity has failed and then succeeded', async () => {
+      (useApi as any).mockReturnValue({
+        getClusters: mockGetClusters.mockResolvedValue(getClustersResponse),
+        decorateRequestBodyForAuth:
+          mockDecorateRequestBodyForAuth.mockResolvedValue(entityWithAuthToken),
+        getObjectsByEntity: mockGetObjectsByEntity
+          .mockRejectedValueOnce({ message: 'failed to fetch' })
+          .mockResolvedValue(mockResponse),
+      });
+
+      const { result, waitForNextUpdate } = renderHook(() =>
+        useKubernetesObjects(entity, 100),
+      );
+
+      await waitForNextUpdate();
+
+      expect(result.current.error).toBe('failed to fetch');
+      expect(result.current.kubernetesObjects).toBeUndefined();
+
+      await waitForNextUpdate();
+
+      expect(result.current.error).toBeUndefined();
+      expect(result.current.kubernetesObjects).not.toBeUndefined();
+    });
+
+    it('should reset data after getClusters succeeded then failed', async () => {
+      (useApi as any).mockReturnValue({
+        getClusters: mockGetClusters
+          .mockResolvedValueOnce(getClustersResponse)
+          .mockRejectedValue({ message: 'fetch clusters failed' }),
+        decorateRequestBodyForAuth:
+          mockDecorateRequestBodyForAuth.mockResolvedValue(entityWithAuthToken),
+        getObjectsByEntity:
+          mockGetObjectsByEntity.mockResolvedValue(mockResponse),
+      });
+      const { result, waitForNextUpdate } = renderHook(() =>
+        useKubernetesObjects(entity, 100),
+      );
+
+      await waitForNextUpdate();
+
+      expect(result.current.error).toBeUndefined();
+      expect(result.current.kubernetesObjects).not.toBeUndefined();
+
+      await waitForNextUpdate();
+
+      expect(result.current.error).toBe('fetch clusters failed');
+      expect(result.current.kubernetesObjects).toBeUndefined();
+    });
+
+    it('should reset data after decorateBodyForAuth succeeded then failed', async () => {
+      (useApi as any).mockReturnValue({
+        getClusters: mockGetClusters.mockResolvedValue(getClustersResponse),
+        decorateRequestBodyForAuth: mockDecorateRequestBodyForAuth
+          // this call happens twice per successful hook render
+          .mockResolvedValueOnce(entityWithAuthToken)
+          .mockResolvedValueOnce(entityWithAuthToken)
+          .mockRejectedValue({ message: 'decorate failed' }),
+        getObjectsByEntity:
+          mockGetObjectsByEntity.mockResolvedValue(mockResponse),
+      });
+
+      const { result, waitForNextUpdate } = renderHook(() =>
+        useKubernetesObjects(entity, 100),
+      );
+
+      await waitForNextUpdate();
+
+      expect(result.current.error).toBeUndefined();
+      expect(result.current.kubernetesObjects).not.toBeUndefined();
+
+      await waitForNextUpdate();
+
+      expect(result.current.error).toBe('decorate failed');
+      expect(result.current.kubernetesObjects).toBeUndefined();
+    });
+
+    it('should reset data after getObjectsByEntity succeeded then failed', async () => {
+      (useApi as any).mockReturnValue({
+        getClusters: mockGetClusters.mockResolvedValue(getClustersResponse),
+        decorateRequestBodyForAuth:
+          mockDecorateRequestBodyForAuth.mockResolvedValue(entityWithAuthToken),
+        getObjectsByEntity: mockGetObjectsByEntity
+          .mockResolvedValueOnce(mockResponse)
+          .mockRejectedValue({ message: 'failed to fetch' }),
+      });
+
+      const { result, waitForNextUpdate } = renderHook(() =>
+        useKubernetesObjects(entity, 100),
+      );
+
+      await waitForNextUpdate();
+
+      expect(result.current.error).toBeUndefined();
+      expect(result.current.kubernetesObjects).not.toBeUndefined();
+
+      await waitForNextUpdate();
+
+      expect(result.current.error).toBe('failed to fetch');
+      expect(result.current.kubernetesObjects).toBeUndefined();
+    });
   });
 });

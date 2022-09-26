@@ -1,5 +1,81 @@
 # @backstage/plugin-fossa
 
+## 0.2.41-next.1
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.2
+  - @backstage/core-plugin-api@1.0.6-next.2
+
+## 0.2.41-next.0
+
+### Patch Changes
+
+- 3f739be9d9: Minor API signatures cleanup
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/core-components@0.11.1-next.0
+  - @backstage/plugin-catalog-react@1.1.4-next.0
+
+## 0.2.40
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-react@1.1.3
+
+## 0.2.40-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.3-next.2
+  - @backstage/core-components@0.11.0-next.2
+
+## 0.2.40-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/plugin-catalog-react@1.1.3-next.0
+  - @backstage/core-components@0.10.1-next.0
+
+## 0.2.39
+
+### Patch Changes
+
+- 322d1ceeba: Allow configuration of base URL for Fossa links
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/theme@0.2.16
+  - @backstage/errors@1.1.0
+
+## 0.2.39-next.3
+
+### Patch Changes
+
+- 322d1ceeba: Allow configuration of base URL for Fossa links
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+  - @backstage/catalog-model@1.1.0-next.3
+  - @backstage/plugin-catalog-react@1.1.2-next.3
+
 ## 0.2.39-next.2
 
 ### Patch Changes

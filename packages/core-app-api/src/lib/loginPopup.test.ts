@@ -35,13 +35,13 @@ describe('showLoginPopup', () => {
       origin: 'my-origin',
     });
 
-    expect(openSpy).toBeCalledTimes(1);
+    expect(openSpy).toHaveBeenCalledTimes(1);
     expect(openSpy.mock.calls[0][0]).toBe(
       'my-origin/api/backend/auth/start?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fa%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fb',
     );
     expect(openSpy.mock.calls[0][1]).toBe('test-popup');
-    expect(addEventListenerSpy).toBeCalledTimes(1);
-    expect(removeEventListenerSpy).toBeCalledTimes(0);
+    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(0);
 
     const listener = addEventListenerSpy.mock.calls[0][1] as EventListener;
 
@@ -88,9 +88,9 @@ describe('showLoginPopup', () => {
 
     await expect(payloadPromise).resolves.toBe(myResponse);
 
-    expect(openSpy).toBeCalledTimes(1);
-    expect(addEventListenerSpy).toBeCalledTimes(1);
-    expect(removeEventListenerSpy).toBeCalledTimes(1);
+    expect(openSpy).toHaveBeenCalledTimes(1);
+    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should fail if popup returns error', async () => {
@@ -107,9 +107,9 @@ describe('showLoginPopup', () => {
       origin: 'my-origin',
     });
 
-    expect(openSpy).toBeCalledTimes(1);
-    expect(addEventListenerSpy).toBeCalledTimes(1);
-    expect(removeEventListenerSpy).toBeCalledTimes(0);
+    expect(openSpy).toHaveBeenCalledTimes(1);
+    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(0);
 
     const listener = addEventListenerSpy.mock.calls[0][1] as EventListener;
 
@@ -130,9 +130,9 @@ describe('showLoginPopup', () => {
       message: 'NOPE',
     });
 
-    expect(openSpy).toBeCalledTimes(1);
-    expect(addEventListenerSpy).toBeCalledTimes(1);
-    expect(removeEventListenerSpy).toBeCalledTimes(1);
+    expect(openSpy).toHaveBeenCalledTimes(1);
+    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should fail if popup is closed', async () => {
@@ -151,9 +151,9 @@ describe('showLoginPopup', () => {
       origin: 'origin',
     });
 
-    expect(openSpy).toBeCalledTimes(1);
-    expect(addEventListenerSpy).toBeCalledTimes(1);
-    expect(removeEventListenerSpy).toBeCalledTimes(0);
+    expect(openSpy).toHaveBeenCalledTimes(1);
+    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(0);
 
     const listener = addEventListenerSpy.mock.calls[0][1] as EventListener;
     listener({
@@ -172,9 +172,9 @@ describe('showLoginPopup', () => {
       'Login failed, popup was closed',
     );
 
-    expect(openSpy).toBeCalledTimes(1);
-    expect(addEventListenerSpy).toBeCalledTimes(1);
-    expect(removeEventListenerSpy).toBeCalledTimes(1);
+    expect(openSpy).toHaveBeenCalledTimes(1);
+    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should indicate if origin does not match', async () => {
@@ -210,8 +210,8 @@ describe('showLoginPopup', () => {
       'Login failed, Incorrect app origin, expected http://differenthost',
     );
 
-    expect(openSpy).toBeCalledTimes(1);
-    expect(addEventListenerSpy).toBeCalledTimes(1);
-    expect(removeEventListenerSpy).toBeCalledTimes(1);
+    expect(openSpy).toHaveBeenCalledTimes(1);
+    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
   });
 });

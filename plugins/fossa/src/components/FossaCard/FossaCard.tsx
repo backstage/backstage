@@ -100,7 +100,9 @@ const Card = ({
     </InfoCard>
   );
 };
-export const FossaCard = ({ variant }: { variant?: InfoCardVariants }) => {
+
+export const FossaCard = (props: { variant?: InfoCardVariants }) => {
+  const { variant } = props;
   const { entity } = useEntity();
   const fossaApi = useApi(fossaApiRef);
 

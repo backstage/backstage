@@ -15,7 +15,7 @@
  */
 
 import os from 'os';
-import { join as joinPath } from 'path';
+import { join as joinPath, sep as pathSep } from 'path';
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import {
@@ -117,7 +117,7 @@ describe('fetch:template', () => {
     it('throws if output directory is outside the workspace', async () => {
       await expect(() =>
         action.handler(mockContext({ targetPath: '../' })),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         /relative path is not allowed to refer to a directory outside its parent/i,
       );
     });
@@ -127,7 +127,22 @@ describe('fetch:template', () => {
         action.handler(
           mockContext({ copyWithoutRender: 'abc' as unknown as string[] }),
         ),
-      ).rejects.toThrowError(/copyWithoutRender must be an array/i);
+      ).rejects.toThrow(
+        /copyWithoutRender\/copyWithoutTemplating must be an array/i,
+      );
+    });
+
+    it('throws if both copyWithoutRender and copyWithoutTemplating are used', async () => {
+      await expect(() =>
+        action.handler(
+          mockContext({
+            copyWithoutRender: 'abc' as unknown as string[],
+            copyWithoutTemplating: 'def' as unknown as string[],
+          }),
+        ),
+      ).rejects.toThrow(
+        /copyWithoutRender and copyWithoutTemplating can not be used at the same time/i,
+      );
     });
 
     it('throws if copyWithoutRender is used with extension', async () => {
@@ -138,8 +153,8 @@ describe('fetch:template', () => {
             templateFileExtension: true,
           }),
         ),
-      ).rejects.toThrowError(
-        /input extension incompatible with copyWithoutRender and cookiecutterCompat/,
+      ).rejects.toThrow(
+        /input extension incompatible with copyWithoutRender\/copyWithoutTemplating and cookiecutterCompat/,
       );
     });
 
@@ -151,9 +166,102 @@ describe('fetch:template', () => {
             templateFileExtension: true,
           }),
         ),
-      ).rejects.toThrowError(
-        /input extension incompatible with copyWithoutRender and cookiecutterCompat/,
+      ).rejects.toThrow(
+        /input extension incompatible with copyWithoutRender\/copyWithoutTemplating and cookiecutterCompat/,
       );
+    });
+
+    describe('with optional directories / files', () => {
+      let context: ActionContext<FetchTemplateInput>;
+
+      beforeEach(async () => {
+        context = mockContext({
+          values: {
+            showDummyFile: false,
+            skipRootDirectory: true,
+            skipSubdirectory: true,
+            skipMultiplesDirectories: true,
+            skipFileInsideDirectory: true,
+          },
+        });
+
+        mockFetchContents.mockImplementation(({ outputPath }) => {
+          mockFs({
+            ...realFiles,
+            [outputPath]: {
+              '{% if values.showDummyFile %}dummy-file.txt{% else %}{% endif %}':
+                'dummy file',
+              '${{ "dummy-file2.txt" if values.showDummyFile else "" }}':
+                'some dummy file',
+              '${{ "dummy-dir" if not values.skipRootDirectory else "" }}': {
+                'file.txt': 'file inside optional directory',
+                subdir: {
+                  '${{ "dummy-subdir" if not values.skipSubdirectory else "" }}':
+                    'file inside optional subdirectory',
+                },
+              },
+              subdir2: {
+                '${{ "dummy-subdir" if not values.skipMultiplesDirectories else "" }}':
+                  {
+                    '${{ "dummy-subdir" if not values.skipMultiplesDirectories else "" }}':
+                      {
+                        'multipleDirectorySkippedFile.txt':
+                          'file inside multiple optional subdirectories',
+                      },
+                  },
+              },
+              subdir3: {
+                '${{ "fileSkippedInsideDirectory.txt" if not values.skipFileInsideDirectory else "" }}':
+                  'skipped file inside directory',
+              },
+            },
+          });
+
+          return Promise.resolve();
+        });
+
+        await action.handler(context);
+      });
+
+      it('skips empty filename', async () => {
+        await expect(
+          fs.pathExists(`${workspacePath}/target/dummy-file.txt`),
+        ).resolves.toEqual(false);
+      });
+
+      it('skips empty filename syntax #2', async () => {
+        await expect(
+          fs.pathExists(`${workspacePath}/target/dummy-file2.txt`),
+        ).resolves.toEqual(false);
+      });
+
+      it('skips empty directory', async () => {
+        await expect(
+          fs.pathExists(`${workspacePath}/target/dummy-dir/dummy-file3.txt`),
+        ).resolves.toEqual(false);
+      });
+
+      it('skips empty filename inside directory', async () => {
+        await expect(
+          fs.pathExists(
+            `${workspacePath}/target/subdir3/fileSkippedInsideDirectory.txt`,
+          ),
+        ).resolves.toEqual(false);
+      });
+
+      it('skips content of empty subdirectory', async () => {
+        await expect(
+          fs.pathExists(
+            `${workspacePath}/target/subdir2/multipleDirectorySkippedFile.txt`,
+          ),
+        ).resolves.toEqual(false);
+
+        await expect(
+          fs.pathExists(
+            `${workspacePath}/target/subdir2/dummy-subdir/dummy-subdir/multipleDirectorySkippedFile.txt`,
+          ),
+        ).resolves.toEqual(false);
+      });
     });
 
     describe('with valid input', () => {
@@ -186,10 +294,12 @@ describe('fetch:template', () => {
               },
               '.${{ values.name }}': '${{ values.itemList | dump }}',
               'a-binary-file.png': aBinaryFile,
-              '{% if values.showDummyFile %}dummy-file.txt{% else %}{% endif %}':
-                'dummy file',
-              '${{ "dummy-file2.txt" if values.showDummyFile else "" }}':
-                'some dummy file',
+              symlink: mockFs.symlink({
+                path: 'a-binary-file.png',
+              }),
+              brokenSymlink: mockFs.symlink({
+                path: './not-a-real-file.txt',
+              }),
             },
           });
 
@@ -206,18 +316,6 @@ describe('fetch:template', () => {
             fetchUrl: context.input.url,
           }),
         );
-      });
-
-      it('skips empty filename', async () => {
-        await expect(
-          fs.pathExists(`${workspacePath}/target/dummy-file.txt`),
-        ).resolves.toEqual(false);
-      });
-
-      it('skips empty filename syntax #2', async () => {
-        await expect(
-          fs.pathExists(`${workspacePath}/target/dummy-file2.txt`),
-        ).resolves.toEqual(false);
       });
 
       it('copies files with no templating in names or content successfully', async () => {
@@ -258,6 +356,7 @@ describe('fetch:template', () => {
           fs.readFile(`${workspacePath}/target/a-binary-file.png`),
         ).resolves.toEqual(aBinaryFile);
       });
+
       it('copies files and maintains the original file permissions', async () => {
         await expect(
           fs
@@ -265,58 +364,130 @@ describe('fetch:template', () => {
             .then(fObj => fObj.mode),
         ).resolves.toEqual(parseInt('100755', 8));
       });
+
+      it('copies file symlinks as-is without processing them', async () => {
+        await expect(
+          fs
+            .lstat(`${workspacePath}/target/symlink`)
+            .then(i => i.isSymbolicLink()),
+        ).resolves.toBe(true);
+
+        await expect(
+          fs.realpath(`${workspacePath}/target/symlink`),
+        ).resolves.toBe(joinPath(workspacePath, 'target', 'a-binary-file.png'));
+      });
+
+      it('copies broken symlinks as-is without processing them', async () => {
+        await expect(
+          fs
+            .lstat(`${workspacePath}/target/brokenSymlink`)
+            .then(i => i.isSymbolicLink()),
+        ).resolves.toBe(true);
+
+        await expect(
+          fs.readlink(`${workspacePath}/target/brokenSymlink`),
+        ).resolves.toEqual(`.${pathSep}not-a-real-file.txt`);
+      });
+    });
+  });
+
+  describe('copyWithoutRender', () => {
+    let context: ActionContext<FetchTemplateInput>;
+
+    beforeEach(async () => {
+      context = mockContext({
+        values: {
+          name: 'test-project',
+          count: 1234,
+        },
+        copyWithoutRender: ['.unprocessed'],
+      });
+
+      mockFetchContents.mockImplementation(({ outputPath }) => {
+        mockFs({
+          ...realFiles,
+          [outputPath]: {
+            processed: {
+              'templated-content-${{ values.name }}.txt': '${{ values.count }}',
+            },
+            '.unprocessed': {
+              'templated-content-${{ values.name }}.txt': '${{ values.count }}',
+            },
+          },
+        });
+
+        return Promise.resolve();
+      });
+
+      await action.handler(context);
     });
 
-    describe('copyWithoutRender', () => {
-      let context: ActionContext<FetchTemplateInput>;
+    it('ignores template syntax in files matched in copyWithoutRender', async () => {
+      await expect(
+        fs.readFile(
+          `${workspacePath}/target/.unprocessed/templated-content-\${{ values.name }}.txt`,
+          'utf-8',
+        ),
+      ).resolves.toEqual('${{ values.count }}');
+    });
 
-      beforeEach(async () => {
-        context = mockContext({
-          values: {
-            name: 'test-project',
-            count: 1234,
-          },
-          copyWithoutRender: ['.unprocessed'],
-        });
+    it('processes files not matched in copyWithoutRender', async () => {
+      await expect(
+        fs.readFile(
+          `${workspacePath}/target/processed/templated-content-test-project.txt`,
+          'utf-8',
+        ),
+      ).resolves.toEqual('1234');
+    });
+  });
 
-        mockFetchContents.mockImplementation(({ outputPath }) => {
-          mockFs({
-            ...realFiles,
-            [outputPath]: {
-              processed: {
-                'templated-content-${{ values.name }}.txt':
-                  '${{ values.count }}',
-              },
-              '.unprocessed': {
-                'templated-content-${{ values.name }}.txt':
-                  '${{ values.count }}',
-              },
+  describe('copyWithoutTemplating', () => {
+    let context: ActionContext<FetchTemplateInput>;
+
+    beforeEach(async () => {
+      context = mockContext({
+        values: {
+          name: 'test-project',
+          count: 1234,
+        },
+        copyWithoutTemplating: ['.unprocessed'],
+      });
+
+      mockFetchContents.mockImplementation(({ outputPath }) => {
+        mockFs({
+          ...realFiles,
+          [outputPath]: {
+            processed: {
+              'templated-content-${{ values.name }}.txt': '${{ values.count }}',
             },
-          });
-
-          return Promise.resolve();
+            '.unprocessed': {
+              'templated-content-${{ values.name }}.txt': '${{ values.count }}',
+            },
+          },
         });
 
-        await action.handler(context);
+        return Promise.resolve();
       });
 
-      it('ignores template syntax in files matched in copyWithoutRender', async () => {
-        await expect(
-          fs.readFile(
-            `${workspacePath}/target/.unprocessed/templated-content-\${{ values.name }}.txt`,
-            'utf-8',
-          ),
-        ).resolves.toEqual('${{ values.count }}');
-      });
+      await action.handler(context);
+    });
 
-      it('processes files not matched in copyWithoutRender', async () => {
-        await expect(
-          fs.readFile(
-            `${workspacePath}/target/processed/templated-content-test-project.txt`,
-            'utf-8',
-          ),
-        ).resolves.toEqual('1234');
-      });
+    it('renders path template and ignores content template in files matched in copyWithoutTemplating', async () => {
+      await expect(
+        fs.readFile(
+          `${workspacePath}/target/.unprocessed/templated-content-test-project.txt`,
+          'utf-8',
+        ),
+      ).resolves.toEqual('${{ values.count }}');
+    });
+
+    it('processes files not matched in copyWithoutTemplating', async () => {
+      await expect(
+        fs.readFile(
+          `${workspacePath}/target/processed/templated-content-test-project.txt`,
+          'utf-8',
+        ),
+      ).resolves.toEqual('1234');
     });
   });
 

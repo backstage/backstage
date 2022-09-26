@@ -48,7 +48,7 @@ export type VaultBuilderReturn = {
 
 // @public
 export class VaultClient implements VaultApi {
-  constructor({ config }: { config: Config });
+  constructor(options: { config: Config });
   // (undocumented)
   getFrontendSecretsUrl(): string;
   // (undocumented)

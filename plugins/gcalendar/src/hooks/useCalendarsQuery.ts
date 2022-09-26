@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 

@@ -35,45 +35,56 @@ import * as common from '@backstage/plugin-cost-insights-common';
 
 /**
  * @deprecated use the same type from `@backstage/plugin-cost-insights-common` instead
+ * @public
  */
 export type ChangeStatistic = common.ChangeStatistic;
 /**
  * @deprecated use the same type from `@backstage/plugin-cost-insights-common` instead
+ * @public
  */
 export type Cost = common.Cost;
 /**
  * @deprecated use the same type from `@backstage/plugin-cost-insights-common` instead
+ * @public
  */
 export type DateAggregation = common.DateAggregation;
 /**
  * @deprecated use the same type from `@backstage/plugin-cost-insights-common` instead
+ * @public
  */
 export type Entity = common.Entity;
 /**
  * @deprecated use the same type from `@backstage/plugin-cost-insights-common` instead
+ * @public
  */
 export type Group = common.Group;
 /**
  * @deprecated use the same type from `@backstage/plugin-cost-insights-common` instead
+ * @public
  */
 export type Maybe<T> = common.Maybe<T>;
 /**
  * @deprecated use the same type from `@backstage/plugin-cost-insights-common` instead
+ * @public
  */
 export type Metric = common.Metric;
 /**
  * @deprecated use the same type from `@backstage/plugin-cost-insights-common` instead
+ * @public
  */
 export type MetricData = common.MetricData;
 /**
  * @deprecated use the same type from `@backstage/plugin-cost-insights-common` instead
+ * @public
  */
 export type Product = common.Product;
 /**
  * @deprecated use the same type from `@backstage/plugin-cost-insights-common` instead
+ * @public
  */
 export type Project = common.Project;
 /**
  * @deprecated use the same type from `@backstage/plugin-cost-insights-common` instead
+ * @public
  */
 export type Trendline = common.Trendline;

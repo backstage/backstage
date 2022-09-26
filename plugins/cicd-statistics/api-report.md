@@ -10,13 +10,9 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "AbortError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class AbortError extends Error {}
 
-// Warning: (ae-missing-release-tag) "Build" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface Build {
   branchType: FilterBranchType;
@@ -30,25 +26,17 @@ export interface Build {
   triggeredBy?: TriggerReason;
 }
 
-// Warning: (ae-missing-release-tag) "BuildWithRaw" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type BuildWithRaw<T = any> = Build & {
   raw: T;
 };
 
-// Warning: (ae-missing-release-tag) "ChartType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type ChartType = 'duration' | 'count';
 
-// Warning: (ae-missing-release-tag) "ChartTypes" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type ChartTypes = Array<ChartType>;
 
-// Warning: (ae-missing-release-tag) "CicdConfiguration" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface CicdConfiguration {
   availableStatuses: ReadonlyArray<FilterStatusType>;
@@ -56,8 +44,6 @@ export interface CicdConfiguration {
   formatStageName: (parentNames: Array<string>, stageName: string) => string;
 }
 
-// Warning: (ae-missing-release-tag) "CicdDefaults" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface CicdDefaults {
   chartTypes: Record<FilterStatusType, ChartTypes>;
@@ -75,16 +61,12 @@ export interface CicdDefaults {
   timeTo: Date;
 }
 
-// Warning: (ae-missing-release-tag) "CicdState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface CicdState {
   // (undocumented)
   builds: Array<Build>;
 }
 
-// Warning: (ae-missing-release-tag) "CicdStatisticsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface CicdStatisticsApi {
   // (undocumented)
@@ -95,33 +77,24 @@ export interface CicdStatisticsApi {
   ): Promise<Partial<CicdConfiguration>>;
 }
 
-// Warning: (ae-missing-release-tag) "cicdStatisticsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const cicdStatisticsApiRef: ApiRef<CicdStatisticsApi>;
 
-// Warning: (ae-missing-release-tag) "cicdStatisticsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const cicdStatisticsPlugin: BackstagePlugin<
   {
     entityContent: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 
-// Warning: (ae-missing-release-tag) "EntityCicdStatisticsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EntityCicdStatisticsContent: EntityPageCicdCharts;
 
-// Warning: (ae-missing-release-tag) "EntityPageCicdCharts" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function EntityPageCicdCharts(): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "FetchBuildsOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface FetchBuildsOptions {
   // (undocumented)
@@ -140,13 +113,9 @@ export interface FetchBuildsOptions {
   updateProgress: UpdateProgress;
 }
 
-// Warning: (ae-missing-release-tag) "FilterBranchType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type FilterBranchType = 'master' | 'branch';
 
-// Warning: (ae-missing-release-tag) "FilterStatusType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type FilterStatusType =
   | 'unknown'
@@ -159,16 +128,12 @@ export type FilterStatusType =
   | 'stalled'
   | 'expired';
 
-// Warning: (ae-missing-release-tag) "GetConfigurationOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface GetConfigurationOptions {
   // (undocumented)
   entity: Entity;
 }
 
-// Warning: (ae-missing-release-tag) "Stage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface Stage {
   duration: number;
@@ -178,13 +143,9 @@ export interface Stage {
   status: FilterStatusType;
 }
 
-// Warning: (ae-missing-release-tag) "statusTypes" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const statusTypes: Array<FilterStatusType>;
 
-// Warning: (ae-missing-release-tag) "TriggerReason" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type TriggerReason =
   /** Triggered by source code management, e.g. a Github hook */
@@ -196,13 +157,9 @@ export type TriggerReason =
   /** Triggered for some other reason */
   | 'other';
 
-// Warning: (ae-missing-release-tag) "triggerReasons" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const triggerReasons: Array<TriggerReason>;
 
-// Warning: (ae-missing-release-tag) "UpdateProgress" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface UpdateProgress {
   // (undocumented)

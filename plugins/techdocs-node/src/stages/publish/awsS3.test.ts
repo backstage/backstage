@@ -478,7 +478,7 @@ describe('AwsS3Publish', () => {
 
       await expect(fails).rejects.toMatchObject({
         message: expect.stringMatching(
-          /TechDocs metadata fetch failed; caused by Error: The file .* does not exist/i,
+          'TechDocs metadata fetch failed; caused by Error: Unable to read stream; caused by Error: The file invalid/triplet/path/techdocs_metadata.json does not exist',
         ),
       });
     });
@@ -537,13 +537,13 @@ describe('AwsS3Publish', () => {
       app = express().use(publisher.docsRouter());
 
       const pngResponse = await request(app).get(
-        `/${rootPath}/${entityTripletPath}/img/with%20spaces.png`,
+        `/${entityTripletPath}/img/with%20spaces.png`,
       );
       expect(Buffer.from(pngResponse.body).toString('utf8')).toEqual(
         'found it',
       );
       const jsResponse = await request(app).get(
-        `/${rootPath}/${entityTripletPath}/some%20folder/also%20with%20spaces.js`,
+        `/${entityTripletPath}/some%20folder/also%20with%20spaces.js`,
       );
       expect(jsResponse.text).toEqual('found it too');
     });
@@ -558,13 +558,13 @@ describe('AwsS3Publish', () => {
       app = express().use(publisher.docsRouter());
 
       const pngResponse = await request(app).get(
-        `/${rootPath}/${entityTripletPath}/img/with%20spaces.png`,
+        `/${entityTripletPath}/img/with%20spaces.png`,
       );
       expect(Buffer.from(pngResponse.body).toString('utf8')).toEqual(
         'found it',
       );
       const jsResponse = await request(app).get(
-        `/${rootPath}/${entityTripletPath}/some%20folder/also%20with%20spaces.js`,
+        `/${entityTripletPath}/some%20folder/also%20with%20spaces.js`,
       );
       expect(jsResponse.text).toEqual('found it too');
     });

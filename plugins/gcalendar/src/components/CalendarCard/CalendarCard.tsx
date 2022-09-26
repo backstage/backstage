@@ -15,7 +15,7 @@
  */
 import { sortBy } from 'lodash';
 import { DateTime } from 'luxon';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import { InfoCard, Progress } from '@backstage/core-components';
 import { useAnalytics } from '@backstage/core-plugin-api';
@@ -35,6 +35,7 @@ import { CalendarEvent } from './CalendarEvent';
 import { CalendarSelect } from './CalendarSelect';
 import { SignInContent } from './SignInContent';
 import { getStartDate } from './util';
+import useAsync from 'react-use/lib/useAsync';
 
 export const CalendarCard = () => {
   const [date, setDate] = useState(DateTime.now());
@@ -47,9 +48,7 @@ export const CalendarCard = () => {
 
   const { isSignedIn, isInitialized, signIn } = useSignIn();
 
-  useEffect(() => {
-    signIn(true);
-  }, [signIn]);
+  useAsync(async () => signIn(true), [signIn]);
 
   const { isLoading: isCalendarLoading, data: calendars = [] } =
     useCalendarsQuery({

@@ -1,5 +1,100 @@
 # @backstage/core-components
 
+## 0.11.1-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- 13f23f6510: Allow custom images in the empty state component
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.2
+
+## 0.11.1-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 37e8c5e128: The `RoutedTabs` component has been updated to be compatible with React Router v6 stable.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.1
+
+## 0.11.1-next.0
+
+### Patch Changes
+
+- b29c44d895: Adds code to generate ids for headers parsed through the MarkdownContent component.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- c8bb0ff8ce: Minor cleanup of the public API surface to reduce the number of warnings
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+
+## 0.11.0
+
+### Minor Changes
+
+- d0eefc499a: Made the `to` prop of `Button` and `Link` more strict, only supporting plain strings. It used to be the case that this prop was unexpectedly too liberal, making it look like we supported the complex `react-router-dom` object form of the parameter as well, which led to unexpected results at runtime.
+
+### Patch Changes
+
+- a22af3edc8: Adding a `className` prop to the `MarkdownContent` component
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5
+
+## 0.11.0-next.2
+
+### Minor Changes
+
+- d0eefc499a: Made the `to` prop of `Button` and `Link` more strict, only supporting plain strings. It used to be the case that this prop was unexpectedly too liberal, making it look like we supported the complex `react-router-dom` object form of the parameter as well, which led to unexpected results at runtime.
+
+## 0.10.1-next.1
+
+### Patch Changes
+
+- a22af3edc8: Adding a `className` prop to the `MarkdownContent` component
+
+## 0.10.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+
+## 0.10.0
+
+### Minor Changes
+
+- 32204fa794: Add `transformLinkUri` and `transformImageUri` to `MarkdownContent`
+
+### Patch Changes
+
+- 3c440ea77e: Change BackstageIconLinkVertical style to use pallette instead of explicit color
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+- b4b711bcc2: Fix the EntityLayout header style so that EntityContextMenu button can display in correct shape when user hover on it
+- 944af7f2a8: Work around a bug calling `onChange` twice in `mui` for `RoutedTab` so you don't have to press back twice to navigate through tabs
+- 7f5e79961d: Fix relative `sub-paths` by concatenating the app's base path with them.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 693990d4fe: Updated dependency `@react-hookz/web` to `^15.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 15201b1032: Updated dependency `rc-progress` to `3.4.0`.
+- 7e115d42f9: Support displaying subtitle text in `SidebarSubmenuItem`
+- ae746946f7: Improve accessibility for CopyTextButton
+- 385389d23c: Updated to remove usage of the `bursts` object in the theme palette
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/theme@0.2.16
+  - @backstage/errors@1.1.0
+
+## 0.10.0-next.3
+
+### Patch Changes
+
+- 7f5e79961d: Fix relative `sub-paths` by concatenating the app's base path with them.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 693990d4fe: Updated dependency `@react-hookz/web` to `^15.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+
 ## 0.10.0-next.2
 
 ### Minor Changes

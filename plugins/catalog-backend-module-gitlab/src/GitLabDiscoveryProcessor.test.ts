@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { rest, RestRequest } from 'msw';
@@ -149,14 +150,14 @@ function getProcessor({
 }
 
 describe('GitlabDiscoveryProcessor', () => {
+  setupRequestMockHandlers(server);
+
   beforeAll(() => {
-    server.listen();
     jest.useFakeTimers('modern');
     jest.setSystemTime(new Date(SERVER_TIME));
   });
-  afterEach(() => server.resetHandlers());
+
   afterAll(() => {
-    server.close();
     jest.useRealTimers();
   });
 

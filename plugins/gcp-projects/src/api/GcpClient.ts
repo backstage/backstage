@@ -21,6 +21,7 @@ import { OAuthApi } from '@backstage/core-plugin-api';
 const BASE_URL =
   'https://content-cloudresourcemanager.googleapis.com/v1/projects';
 
+/** @public */
 export class GcpClient implements GcpApi {
   constructor(private readonly googleAuthApi: OAuthApi) {}
 

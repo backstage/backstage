@@ -21,6 +21,7 @@ import {
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const EntityFossaCard = fossaPlugin.provide(
   createComponentExtension({
     name: 'EntityFossaCard',
@@ -30,6 +31,7 @@ export const EntityFossaCard = fossaPlugin.provide(
   }),
 );
 
+/** @public */
 export const FossaPage = fossaPlugin.provide(
   createRoutableExtension({
     name: 'FossaPage',

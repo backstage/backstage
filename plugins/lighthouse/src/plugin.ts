@@ -40,6 +40,7 @@ export const entityContentRouteRef = createRouteRef({
   id: 'lighthouse:entity-content',
 });
 
+/** @public */
 export const lighthousePlugin = createPlugin({
   id: 'lighthouse',
   apis: [
@@ -55,6 +56,7 @@ export const lighthousePlugin = createPlugin({
   },
 });
 
+/** @public */
 export const LighthousePage = lighthousePlugin.provide(
   createRoutableExtension({
     name: 'LighthousePage',
@@ -63,6 +65,7 @@ export const LighthousePage = lighthousePlugin.provide(
   }),
 );
 
+/** @public */
 export const EntityLighthouseContent = lighthousePlugin.provide(
   createRoutableExtension({
     name: 'EntityLighthouseContent',
@@ -71,6 +74,7 @@ export const EntityLighthouseContent = lighthousePlugin.provide(
   }),
 );
 
+/** @public */
 export const EntityLastLighthouseAuditCard = lighthousePlugin.provide(
   createComponentExtension({
     name: 'EntityLastLighthouseAuditCard',

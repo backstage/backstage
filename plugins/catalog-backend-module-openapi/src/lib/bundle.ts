@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UrlReader } from '@backstage/backend-common';
-import { ScmIntegration } from '@backstage/integration';
 import SwaggerParser from '@apidevtools/swagger-parser';
 import { parse, stringify } from 'yaml';
 import * as path from 'path';
@@ -28,12 +26,16 @@ const getProtocol = (refPath: string) => {
   return undefined;
 };
 
+export type BundlerRead = (url: string) => Promise<Buffer>;
+
+export type BundlerResolveUrl = (url: string, base: string) => string;
+
 export async function bundleOpenApiSpecification(
-  specification: string | undefined,
-  targetUrl: string,
-  reader: UrlReader,
-  scmIntegration: ScmIntegration,
-): Promise<string | undefined> {
+  specification: string,
+  baseUrl: string,
+  read: BundlerRead,
+  resolveUrl: BundlerResolveUrl,
+): Promise<string> {
   const fileUrlReaderResolver: SwaggerParser.ResolverOptions = {
     canRead: file => {
       const protocol = getProtocol(file.url);
@@ -41,21 +43,10 @@ export async function bundleOpenApiSpecification(
     },
     read: async file => {
       const relativePath = path.relative('.', file.url);
-      const url = scmIntegration.resolveUrl({
-        base: targetUrl,
-        url: relativePath,
-      });
-      if (reader.readUrl) {
-        const data = await reader.readUrl(url);
-        return data.buffer();
-      }
-      throw new Error('UrlReader has no readUrl method defined');
+      const url = resolveUrl(relativePath, baseUrl);
+      return await read(url);
     },
   };
-
-  if (!specification) {
-    return undefined;
-  }
 
   const options: SwaggerParser.Options = {
     resolve: {

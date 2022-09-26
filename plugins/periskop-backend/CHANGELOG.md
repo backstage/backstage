@@ -1,5 +1,61 @@
 # @backstage/plugin-periskop-backend
 
+## 0.1.7-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.2
+
+## 0.1.7-next.1
+
+### Patch Changes
+
+- 148568b5c2: Switched to using node-fetch instead of cross-fetch as is standard for our backend packages
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.1
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+
 ## 0.1.5-next.0
 
 ### Patch Changes

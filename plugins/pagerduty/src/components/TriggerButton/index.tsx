@@ -20,10 +20,6 @@ import { BackstageTheme } from '@backstage/theme';
 import { usePagerdutyEntity } from '../../hooks';
 import { TriggerDialog } from '../TriggerDialog';
 
-export type TriggerButtonProps = {
-  children?: ReactNode;
-};
-
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   buttonStyle: {
     backgroundColor: theme.palette.error.main,
@@ -34,7 +30,8 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export function TriggerButton(props: TriggerButtonProps) {
+/** @public */
+export function TriggerButton(props: { children?: ReactNode }) {
   const { buttonStyle } = useStyles();
   const { integrationKey } = usePagerdutyEntity();
   const [dialogShown, setDialogShown] = useState<boolean>(false);

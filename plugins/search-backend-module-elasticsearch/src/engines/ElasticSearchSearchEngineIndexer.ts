@@ -31,6 +31,7 @@ export type ElasticSearchSearchEngineIndexerOptions = {
   alias: string;
   logger: Logger;
   elasticSearchClientWrapper: ElasticSearchClientWrapper;
+  batchSize: number;
 };
 
 function duration(startTimestamp: [number, number]): string {
@@ -61,7 +62,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
   private bulkResult: Promise<any>;
 
   constructor(options: ElasticSearchSearchEngineIndexerOptions) {
-    super({ batchSize: 1000 });
+    super({ batchSize: options.batchSize });
     this.logger = options.logger;
     this.startTimestamp = process.hrtime();
     this.type = options.type;

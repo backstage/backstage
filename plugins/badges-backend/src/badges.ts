@@ -31,6 +31,7 @@ function entityUrl(context: BadgeContext): string {
   return `${catalogUrl}/${entityUri}`.toLowerCase();
 }
 
+/** @public */
 export const createDefaultBadgeFactories = (): BadgeFactories => ({
   pingback: {
     createBadge: (context: BadgeContext): Badge => {

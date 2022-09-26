@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+export { MultipleAnalyticsApi } from './MultipleAnalyticsApi';
 export { NoOpAnalyticsApi } from './NoOpAnalyticsApi';

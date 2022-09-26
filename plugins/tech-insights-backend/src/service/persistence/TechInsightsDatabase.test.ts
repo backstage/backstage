@@ -15,7 +15,7 @@
  */
 import { DateTime, Duration } from 'luxon';
 import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
-import { Knex } from 'knex';
+import { Knex as KnexType, Knex } from 'knex';
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { getVoidLogger } from '@backstage/backend-common';
 import { initializePersistenceContext } from './persistenceContext';
@@ -165,15 +165,28 @@ const multipleSameFacts = [
   },
 ];
 
+function createDatabaseManager(
+  client: KnexType,
+  skipMigrations: boolean = false,
+) {
+  return {
+    getClient: async () => client,
+    migrations: {
+      skip: skipMigrations,
+    },
+  };
+}
+
 describe('Tech Insights database', () => {
   const databases = TestDatabases.create();
   let store: TechInsightsStore;
   let testDbClient: Knex<any, unknown[]>;
   beforeAll(async () => {
     testDbClient = await databases.init('SQLITE_3');
+    const database = createDatabaseManager(testDbClient);
 
     store = (
-      await initializePersistenceContext(testDbClient, {
+      await initializePersistenceContext(database, {
         logger: getVoidLogger(),
       })
     ).techInsightsStore;

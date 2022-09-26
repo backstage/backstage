@@ -21,6 +21,7 @@ import {
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const ExplorePage = explorePlugin.provide(
   createRoutableExtension({
     name: 'ExplorePage',
@@ -30,6 +31,7 @@ export const ExplorePage = explorePlugin.provide(
   }),
 );
 
+/** @public */
 export const DomainExplorerContent = explorePlugin.provide(
   createComponentExtension({
     name: 'DomainExplorerContent',
@@ -42,6 +44,7 @@ export const DomainExplorerContent = explorePlugin.provide(
   }),
 );
 
+/** @public */
 export const GroupsExplorerContent = explorePlugin.provide(
   createComponentExtension({
     name: 'GroupsExplorerContent',
@@ -54,6 +57,7 @@ export const GroupsExplorerContent = explorePlugin.provide(
   }),
 );
 
+/** @public */
 export const ToolExplorerContent = explorePlugin.provide(
   createComponentExtension({
     name: 'ToolExplorerContent',

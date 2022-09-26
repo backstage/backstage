@@ -23,7 +23,7 @@ import {
   LogViewer,
   Progress,
 } from '@backstage/core-components';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { useRouteRef, useRouteRefParams } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import {
   Button,
@@ -45,9 +45,13 @@ import classNames from 'classnames';
 import { DateTime, Interval } from 'luxon';
 import qs from 'qs';
 import React, { memo, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate } from 'react-router';
 import useInterval from 'react-use/lib/useInterval';
-import { rootRouteRef, selectedTemplateRouteRef } from '../../routes';
+import {
+  rootRouteRef,
+  scaffolderTaskRouteRef,
+  selectedTemplateRouteRef,
+} from '../../routes';
 import { ScaffolderTaskStatus, ScaffolderTaskOutput } from '../../types';
 import { useTaskEventStream } from '../hooks/useEventStream';
 import { TaskPageLinks } from './TaskPageLinks';
@@ -246,7 +250,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
   const [lastActiveStepId, setLastActiveStepId] = useState<string | undefined>(
     undefined,
   );
-  const { taskId } = useParams();
+  const { taskId } = useRouteRefParams(scaffolderTaskRouteRef);
   const taskStream = useTaskEventStream(taskId);
   const completed = taskStream.completed;
   const steps = useMemo(

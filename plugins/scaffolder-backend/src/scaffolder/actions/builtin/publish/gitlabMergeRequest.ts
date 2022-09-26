@@ -40,9 +40,11 @@ export const createPublishGitlabMergeRequestAction = (options: {
     branchName: string;
     targetPath: string;
     token?: string;
+    commitAction?: 'create' | 'delete' | 'update';
     /** @deprecated Use projectPath instead */
     projectid?: string;
     removeSourceBranch?: boolean;
+    assignee?: string;
   }>({
     id: 'publish:gitlab:merge-request',
     schema: {
@@ -86,11 +88,23 @@ export const createPublishGitlabMergeRequestAction = (options: {
             type: 'string',
             description: 'The token to use for authorization to GitLab',
           },
+          commitAction: {
+            title: 'Commit action',
+            type: 'string',
+            enum: ['create', 'update', 'delete'],
+            description:
+              'The action to be used for git commit. Defaults to create.',
+          },
           removeSourceBranch: {
             title: 'Delete source branch',
             type: 'boolean',
             description:
               'Option to delete source branch once the MR has been merged. Default: false',
+          },
+          assignee: {
+            title: 'Merge Request Assignee',
+            type: 'string',
+            description: 'User this merge request will be assigned to',
           },
         },
       },
@@ -146,6 +160,21 @@ export const createPublishGitlabMergeRequestAction = (options: {
         [tokenType]: token,
       });
 
+      const assignee = ctx.input.assignee;
+
+      let assigneeId = undefined;
+
+      if (assignee !== undefined) {
+        try {
+          const assigneeUser = await api.Users.username(assignee);
+          assigneeId = assigneeUser[0].id;
+        } catch (e) {
+          ctx.logger.warn(
+            `Failed to find gitlab user id for ${assignee}: ${e}. Proceeding with MR creation without an assignee.`,
+          );
+        }
+      }
+
       const targetPath = resolveSafeChildPath(
         ctx.workspacePath,
         ctx.input.targetPath,
@@ -155,7 +184,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
       });
 
       const actions: Types.CommitAction[] = fileContents.map(file => ({
-        action: 'create',
+        action: ctx.input.commitAction ?? 'create',
         filePath: path.posix.join(ctx.input.targetPath, file.path),
         encoding: 'base64',
         content: file.content.toString('base64'),
@@ -199,6 +228,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
             removeSourceBranch: ctx.input.removeSourceBranch
               ? ctx.input.removeSourceBranch
               : false,
+            assigneeId: assigneeId,
           },
         ).then((mergeRequest: { web_url: string }) => {
           return mergeRequest.web_url;

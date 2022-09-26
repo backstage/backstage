@@ -18,14 +18,16 @@ import { Grid } from '@material-ui/core';
 import {
   Page,
   Content,
-  ContentHeader,
-  SupportButton,
   MissingAnnotationEmptyState,
 } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { ProblemsList } from '../Problems/ProblemsList';
+import { SyntheticsCard } from '../Synthetics/SyntheticsCard';
 import { isDynatraceAvailable } from '../../plugin';
-import { DYNATRACE_ID_ANNOTATION } from '../../constants';
+import {
+  DYNATRACE_ID_ANNOTATION,
+  DYNATRACE_SYNTHETICS_ANNOTATION,
+} from '../../constants';
 
 export const DynatraceTab = () => {
   const { entity } = useEntity();
@@ -37,18 +39,30 @@ export const DynatraceTab = () => {
   const dynatraceEntityId: string =
     entity?.metadata.annotations?.[DYNATRACE_ID_ANNOTATION]!;
 
+  const syntheticsIds: string =
+    entity?.metadata.annotations?.[DYNATRACE_SYNTHETICS_ANNOTATION]!;
+
   return (
     <Page themeId="tool">
       <Content>
-        <ContentHeader title="Dynatrace">
-          <SupportButton>
-            Plugin to show information from Dynatrace
-          </SupportButton>
-        </ContentHeader>
         <Grid container spacing={2}>
-          <Grid item xs={12} lg={12}>
-            <ProblemsList dynatraceEntityId={dynatraceEntityId} />
-          </Grid>
+          {dynatraceEntityId ? (
+            <Grid item xs={12} lg={12}>
+              <ProblemsList dynatraceEntityId={dynatraceEntityId} />
+            </Grid>
+          ) : (
+            ''
+          )}
+          {syntheticsIds
+            ?.split(/[ ,]/)
+            .filter(Boolean)
+            .map(id => {
+              return (
+                <Grid item xs={12} lg={12}>
+                  <SyntheticsCard syntheticsId={id} />
+                </Grid>
+              );
+            })}
         </Grid>
       </Content>
     </Page>

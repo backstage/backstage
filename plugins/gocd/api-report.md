@@ -15,7 +15,7 @@ export const EntityGoCdContent: () => JSX.Element;
 export const GOCD_PIPELINES_ANNOTATION = 'gocd.org/pipelines';
 
 // @public
-export const gocdPlugin: BackstagePlugin<{}, {}>;
+export const gocdPlugin: BackstagePlugin<{}, {}, {}>;
 
 // @public
 export const isGoCdAvailable: (entity: Entity) => boolean;

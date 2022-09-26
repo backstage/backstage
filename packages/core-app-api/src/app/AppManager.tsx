@@ -58,6 +58,7 @@ import { pluginCollector } from '../plugins/collectors';
 import {
   featureFlagCollector,
   routingV1Collector,
+  routingV2Collector,
 } from '../routing/collectors';
 import { RoutingProvider } from '../routing/RoutingProvider';
 import { RouteTracker } from '../routing/RouteTracker';
@@ -80,10 +81,11 @@ import { defaultConfigLoader } from './defaultConfigLoader';
 import { ApiRegistry } from '../apis/system/ApiRegistry';
 import { resolveRouteBindings } from './resolveRouteBindings';
 import { BackstageRouteObject } from '../routing/types';
+import { isReactRouterBeta } from './isReactRouterBeta';
 
 type CompatiblePlugin =
-  | BackstagePlugin<any, any>
-  | (Omit<BackstagePlugin<any, any>, 'getFeatureFlags'> & {
+  | BackstagePlugin
+  | (Omit<BackstagePlugin, 'getFeatureFlags'> & {
       output(): Array<{ type: 'feature-flag'; name: string }>;
     });
 
@@ -145,12 +147,16 @@ function useConfigLoader(
 class AppContextImpl implements AppContext {
   constructor(private readonly app: AppManager) {}
 
-  getPlugins(): BackstagePlugin<any, any>[] {
+  getPlugins(): BackstagePlugin[] {
     return this.app.getPlugins();
   }
 
   getSystemIcon(key: string): IconComponent | undefined {
     return this.app.getSystemIcon(key);
+  }
+
+  getSystemIcons(): Record<string, IconComponent> {
+    return this.app.getSystemIcons();
   }
 
   getComponents(): AppComponents {
@@ -186,12 +192,16 @@ export class AppManager implements BackstageApp {
     this.apiFactoryRegistry = new ApiFactoryRegistry();
   }
 
-  getPlugins(): BackstagePlugin<any, any>[] {
-    return Array.from(this.plugins) as BackstagePlugin<any, any>[];
+  getPlugins(): BackstagePlugin[] {
+    return Array.from(this.plugins) as BackstagePlugin[];
   }
 
   getSystemIcon(key: string): IconComponent | undefined {
     return this.icons[key];
+  }
+
+  getSystemIcons(): Record<string, IconComponent> {
+    return this.icons;
   }
 
   getComponents(): AppComponents {
@@ -215,7 +225,9 @@ export class AppManager implements BackstageApp {
           root: children,
           discoverers: [childDiscoverer, routeElementDiscoverer],
           collectors: {
-            routing: routingV1Collector,
+            routing: isReactRouterBeta()
+              ? routingV1Collector
+              : routingV2Collector,
             collectedPlugins: pluginCollector,
             featureFlags: featureFlagCollector,
           },
@@ -241,7 +253,7 @@ export class AppManager implements BackstageApp {
         validateRouteParameters(routing.paths, routing.parents);
         validateRouteBindings(
           routeBindings,
-          this.plugins as Iterable<BackstagePlugin<any, any>>,
+          this.plugins as Iterable<BackstagePlugin>,
         );
       }
 

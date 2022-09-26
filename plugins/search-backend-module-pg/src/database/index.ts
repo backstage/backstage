@@ -13,5 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 export { DatabaseDocumentStore } from './DatabaseDocumentStore';
-export type { DatabaseStore, PgSearchQuery, RawDocumentRow } from './types';
+export type {
+  DatabaseStore,
+  DocumentResultRow,
+  PgSearchQuery,
+  RawDocumentRow,
+} from './types';

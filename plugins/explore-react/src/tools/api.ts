@@ -16,10 +16,12 @@
 
 import { createApiRef } from '@backstage/core-plugin-api';
 
+/** @public */
 export const exploreToolsConfigRef = createApiRef<ExploreToolsConfig>({
   id: 'plugin.explore.toolsconfig',
 });
 
+/** @public */
 export type ExploreTool = {
   title: string;
   description?: string;
@@ -29,6 +31,7 @@ export type ExploreTool = {
   lifecycle?: string;
 };
 
+/** @public */
 export interface ExploreToolsConfig {
   getTools: () => Promise<ExploreTool[]>;
 }

@@ -150,6 +150,8 @@ export type BitbucketServerIntegrationConfig = {
   host: string;
   apiBaseUrl: string;
   token?: string;
+  username?: string;
+  password?: string;
 };
 
 // @public
@@ -341,6 +343,11 @@ export function getGitLabFileFetchUrl(
   url: string,
   config: GitLabIntegrationConfig,
 ): Promise<string>;
+
+// @public
+export function getGitLabIntegrationRelativePath(
+  config: GitLabIntegrationConfig,
+): string;
 
 // @public
 export function getGitLabRequestOptions(config: GitLabIntegrationConfig): {

@@ -15,25 +15,23 @@
  */
 
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import { Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { ScorecardInfo } from '../ScorecardsInfo';
 import Alert from '@material-ui/lab/Alert';
 import { techInsightsApiRef } from '../../api/TechInsightsApi';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { getCompoundEntityRef } from '@backstage/catalog-model';
 
-export const ScorecardsCard = ({
-  title,
-  description,
-  checksId,
-}: {
-  title?: string;
+export const ScorecardsCard = (props: {
+  title: string;
   description?: string;
   checksId?: string[];
 }) => {
+  const { title, description, checksId } = props;
   const api = useApi(techInsightsApiRef);
-  const { namespace, kind, name } = useParams();
+  const { namespace, kind, name } = getCompoundEntityRef(useEntity().entity);
   const { value, loading, error } = useAsync(
     async () => await api.runChecks({ namespace, kind, name }, checksId),
   );
@@ -48,7 +46,7 @@ export const ScorecardsCard = ({
     <ScorecardInfo
       title={title}
       description={description}
-      checks={value || []}
+      checkResults={value || []}
     />
   );
 };

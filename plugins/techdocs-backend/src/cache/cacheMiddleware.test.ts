@@ -23,17 +23,20 @@ import { createCacheMiddleware, TechDocsCache } from '.';
  * Mocks cached HTTP response.
  */
 const getMockHttpResponseFor = (content: string): Buffer => {
-  return Buffer.concat([
-    Buffer.from(`HTTP/1.1 200 OK
-Content-Type: text/plain; charset=utf-8
-Accept-Ranges: bytes
-Cache-Control: public, max-age=0
-Last-Modified: Sat, 1 Jul 2021 12:00:00 GMT
-Date: Sat, 1 Jul 2021 12:00:00 GMT
-Connection: close
-Content-Length: ${content.length}\n\n`),
-    Buffer.from(content),
-  ]);
+  return Buffer.from(
+    [
+      'HTTP/1.1 200 OK',
+      'Content-Type: text/plain; charset=utf-8',
+      'Accept-Ranges: bytes',
+      'Cache-Control: public, max-age=0',
+      'Last-Modified: Sat, 1 Jul 2021 12:00:00 GMT',
+      'Date: Sat, 1 Jul 2021 12:00:00 GMT',
+      'Connection: close',
+      `Content-Length: ${content.length}`,
+      '',
+      content,
+    ].join('\r\n'),
+  );
 };
 
 /**

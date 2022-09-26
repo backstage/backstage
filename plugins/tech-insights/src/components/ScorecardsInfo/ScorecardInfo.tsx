@@ -16,12 +16,11 @@
 
 import React from 'react';
 import { makeStyles, Grid, Typography } from '@material-ui/core';
-import { useApi } from '@backstage/core-plugin-api';
 import { InfoCard } from '@backstage/core-components';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
-import { techInsightsApiRef } from '../../api/TechInsightsApi';
 import { BackstageTheme } from '@backstage/theme';
 import { Alert } from '@material-ui/lab';
+import { ScorecardsList } from '../ScorecardsList';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   subheader: {
@@ -30,23 +29,19 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
   },
 }));
 
-type Checks = {
-  checks: CheckResult[];
-  title?: string;
-  description?: string;
-};
-
 const infoCard = (
-  title: Checks['title'],
-  description: Checks['description'],
+  title: string,
+  description: string | undefined,
   className: string,
   element: JSX.Element,
 ) => (
   <Grid item xs={12}>
     <InfoCard title={title}>
-      <Typography className={className} variant="body1" gutterBottom>
-        {description}
-      </Typography>
+      {description && (
+        <Typography className={className} variant="body1" gutterBottom>
+          {description}
+        </Typography>
+      )}
       <Grid item xs={12}>
         {element}
       </Grid>
@@ -54,11 +49,15 @@ const infoCard = (
   </Grid>
 );
 
-export const ScorecardInfo = ({ checks, title, description }: Checks) => {
+export const ScorecardInfo = (props: {
+  checkResults: CheckResult[];
+  title: string;
+  description?: string;
+}) => {
+  const { checkResults, title, description } = props;
   const classes = useStyles();
-  const api = useApi(techInsightsApiRef);
 
-  if (!checks.length) {
+  if (!checkResults.length) {
     return infoCard(
       title,
       description,
@@ -67,21 +66,10 @@ export const ScorecardInfo = ({ checks, title, description }: Checks) => {
     );
   }
 
-  const checkRenderType = api.getScorecardsDefinition(
-    checks[0].check.type,
-    checks,
+  return infoCard(
     title,
     description,
+    classes.subheader,
+    <ScorecardsList checkResults={checkResults} />,
   );
-
-  if (checkRenderType) {
-    return infoCard(
-      checkRenderType.title,
-      checkRenderType.description,
-      classes.subheader,
-      checkRenderType.component,
-    );
-  }
-
-  return <></>;
 };

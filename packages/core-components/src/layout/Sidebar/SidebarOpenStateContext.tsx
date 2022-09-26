@@ -74,21 +74,21 @@ const VersionedSidebarContext = createVersionedContext<{
  *
  * @public
  */
-export const SidebarOpenStateProvider = ({
-  children,
-  value,
-}: {
+export function SidebarOpenStateProvider(props: {
   children: ReactNode;
   value: SidebarOpenState;
-}) => (
-  <LegacySidebarContext.Provider value={value}>
-    <VersionedSidebarContext.Provider
-      value={createVersionedValueMap({ 1: value })}
-    >
-      {children}
-    </VersionedSidebarContext.Provider>
-  </LegacySidebarContext.Provider>
-);
+}) {
+  const { children, value } = props;
+  return (
+    <LegacySidebarContext.Provider value={value}>
+      <VersionedSidebarContext.Provider
+        value={createVersionedValueMap({ 1: value })}
+      >
+        {children}
+      </VersionedSidebarContext.Provider>
+    </LegacySidebarContext.Provider>
+  );
+}
 
 /**
  * Hook to read and update the sidebar's open state, which controls whether or

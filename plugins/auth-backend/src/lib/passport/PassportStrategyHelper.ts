@@ -20,7 +20,7 @@ import jwtDecoder from 'jwt-decode';
 import { InternalOAuthError } from 'passport-oauth2';
 
 import { PassportProfile } from './types';
-import { ProfileInfo, RedirectInfo } from '../../providers/types';
+import { ProfileInfo, OAuthStartResponse } from '../../providers/types';
 
 export type PassportDoneCallback<Res, Private = never> = (
   err?: Error,
@@ -77,7 +77,7 @@ export const executeRedirectStrategy = async (
   req: express.Request,
   providerStrategy: passport.Strategy,
   options: Record<string, string>,
-): Promise<RedirectInfo> => {
+): Promise<OAuthStartResponse> => {
   return new Promise(resolve => {
     const strategy = Object.create(providerStrategy);
     strategy.redirect = (url: string, status?: number) => {

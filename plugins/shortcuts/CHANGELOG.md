@@ -1,5 +1,103 @@
 # @backstage/plugin-shortcuts
 
+## 0.3.1-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.2
+  - @backstage/core-plugin-api@1.0.6-next.2
+
+## 0.3.1-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- d669d89206: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.1
+  - @backstage/core-plugin-api@1.0.6-next.1
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/core-components@0.11.1-next.0
+
+## 0.3.0
+
+### Minor Changes
+
+- 5b769fddb5: Internal observable replaced with a mapping from the storage API. This fixes shortcuts initialization when using firestore.
+
+  `ShortcutApi.get` method, that returns an immediate snapshot of shortcuts, made public.
+
+  Example of how to get and observe `shortcuts`:
+
+  ```typescript
+  const shortcutApi = useApi(shortcutsApiRef);
+  const shortcuts = useObservable(shortcutApi.shortcut$(), shortcutApi.get());
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+
+## 0.3.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.0-next.2
+
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 5b769fddb5: Internal observable replaced with a mapping from the storage API. This fixes shortcuts initialization when using firestore.
+
+  `ShortcutApi.get` method, that returns an immediate snapshot of shortcuts, made public.
+
+  Example of how to get and observe `shortcuts`:
+
+  ```typescript
+  const shortcutApi = useApi(shortcutsApiRef);
+  const shortcuts = useObservable(shortcutApi.shortcut$(), shortcutApi.get());
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/core-components@0.10.1-next.0
+
+## 0.2.8
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/theme@0.2.16
+
+## 0.2.8-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+
 ## 0.2.8-next.2
 
 ### Patch Changes

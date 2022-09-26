@@ -42,6 +42,7 @@ export function createGithubRepoCreateAction(options: {
   return createTemplateAction<{
     repoUrl: string;
     description?: string;
+    homepage?: string;
     access?: string;
     deleteBranchOnMerge?: boolean;
     gitAuthorName?: string;
@@ -79,6 +80,7 @@ export function createGithubRepoCreateAction(options: {
         properties: {
           repoUrl: inputProps.repoUrl,
           description: inputProps.description,
+          homepage: inputProps.homepage,
           access: inputProps.access,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
@@ -104,6 +106,7 @@ export function createGithubRepoCreateAction(options: {
       const {
         repoUrl,
         description,
+        homepage,
         access,
         repoVisibility = 'private',
         deleteBranchOnMerge = false,
@@ -135,6 +138,7 @@ export function createGithubRepoCreateAction(options: {
         owner,
         repoVisibility,
         description,
+        homepage,
         deleteBranchOnMerge,
         allowMergeCommit,
         allowSquashMerge,

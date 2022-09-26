@@ -85,6 +85,14 @@ export const madrFilePathFilter: AdrFilePathFilterFn = (path: string) =>
  */
 export interface AdrDocument extends IndexableDocument {
   /**
+   * Ref of the entity associated with this ADR
+   */
+  entityRef: string;
+  /**
+   * Title of the entity associated with this ADR
+   */
+  entityTitle?: string;
+  /**
    * ADR status label
    */
   status?: string;

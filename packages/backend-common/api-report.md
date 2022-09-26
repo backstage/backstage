@@ -8,6 +8,7 @@
 
 import { AbortController as AbortController_2 } from 'node-abort-controller';
 import { AbortSignal as AbortSignal_2 } from 'node-abort-controller';
+import aws from 'aws-sdk';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BitbucketCloudIntegration } from '@backstage/integration';
@@ -34,7 +35,6 @@ import { Readable } from 'stream';
 import { ReadCommitResult } from 'isomorphic-git';
 import { RequestHandler } from 'express';
 import { Router } from 'express';
-import { S3 } from 'aws-sdk';
 import { Server } from 'http';
 import * as winston from 'winston';
 import { Writable } from 'stream';
@@ -44,7 +44,7 @@ export class AwsS3UrlReader implements UrlReader {
   constructor(
     integration: AwsS3Integration,
     deps: {
-      s3: S3;
+      s3: aws.S3;
       treeResponseFactory: ReadTreeResponseFactory;
     },
   );
@@ -252,6 +252,7 @@ export class DatabaseManager {
 // @public
 export type DatabaseManagerOptions = {
   migrations?: PluginDatabaseManager['migrations'];
+  logger?: Logger;
 };
 
 // @public
@@ -338,7 +339,10 @@ export class Git {
     dir: string;
     remote: string;
     url: string;
+    force?: boolean;
   }): Promise<void>;
+  // (undocumented)
+  checkout(options: { dir: string; ref: string }): Promise<void>;
   clone(options: {
     url: string;
     dir: string;
@@ -363,11 +367,14 @@ export class Git {
     dir: string;
     fullName?: boolean;
   }): Promise<string | undefined>;
+  // (undocumented)
+  deleteRemote(options: { dir: string; remote: string }): Promise<void>;
   fetch(options: { dir: string; remote?: string }): Promise<void>;
   // (undocumented)
   static fromAuth: (options: {
     username?: string;
     password?: string;
+    token?: string;
     logger?: Logger;
   }) => Git;
   // (undocumented)
@@ -387,7 +394,12 @@ export class Git {
     };
   }): Promise<MergeResult>;
   // (undocumented)
-  push(options: { dir: string; remote: string }): Promise<PushResult>;
+  push(options: {
+    dir: string;
+    remote: string;
+    remoteRef?: string;
+    force?: boolean;
+  }): Promise<PushResult>;
   readCommit(options: { dir: string; sha: string }): Promise<ReadCommitResult>;
   resolveRef(options: { dir: string; ref: string }): Promise<string>;
 }
@@ -567,6 +579,11 @@ export class ReadUrlResponseFactory {
 export type ReadUrlResponseFactoryFromStreamOptions = {
   etag?: string;
 };
+
+// @public
+export function redactWinstonLogLine(
+  info: winston.Logform.TransformableInfo,
+): winston.Logform.TransformableInfo;
 
 // @public
 export function requestLoggingHandler(logger?: Logger): RequestHandler;

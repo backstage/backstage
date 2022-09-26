@@ -96,6 +96,7 @@ Usage: techdocs-cli serve [options]
 Options:
   -i, --docker-image <DOCKER_IMAGE>
   --docker-entrypoint <DOCKER_ENTRYPOINT>
+  --docker-option <DOCKER_OPTION...>
   --no-docker
   --mkdocs-port <PORT>
   -v --verbose
@@ -110,6 +111,7 @@ Usage: techdocs-cli serve:mkdocs [options]
 Options:
   -i, --docker-image <DOCKER_IMAGE>
   --docker-entrypoint <DOCKER_ENTRYPOINT>
+  --docker-option <DOCKER_OPTION...>
   --no-docker
   -p, --port <PORT>
   -v --verbose

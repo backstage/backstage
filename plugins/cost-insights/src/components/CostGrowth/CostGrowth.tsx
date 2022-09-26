@@ -31,12 +31,16 @@ import { indefiniteArticleOf } from '../../utils/grammar';
 import { useConfig, useCurrency } from '../../hooks';
 import { notEmpty } from '../../utils/assert';
 
+/** @public */
 export type CostGrowthProps = {
   change: ChangeStatistic;
   duration: Duration;
 };
 
-export const CostGrowth = ({ change, duration }: CostGrowthProps) => {
+/** @public */
+export const CostGrowth = (props: CostGrowthProps) => {
+  const { change, duration } = props;
+
   const styles = useStyles();
   const { engineerCost } = useConfig();
   const [currency] = useCurrency();

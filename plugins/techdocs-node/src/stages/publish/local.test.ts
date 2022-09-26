@@ -131,7 +131,7 @@ describe('local publisher', () => {
 
       await expect(() =>
         publisher.publish({ entity: mockEntity, directory: tmpDir }),
-      ).rejects.toThrowError('Unable to publish TechDocs site');
+      ).rejects.toThrow('Unable to publish TechDocs site');
     });
 
     it('should throw with unsafe name', async () => {
@@ -154,7 +154,7 @@ describe('local publisher', () => {
 
       await expect(() =>
         publisher.publish({ entity: mockEntity, directory: tmpDir }),
-      ).rejects.toThrowError('Unable to publish TechDocs site');
+      ).rejects.toThrow('Unable to publish TechDocs site');
     });
   });
 

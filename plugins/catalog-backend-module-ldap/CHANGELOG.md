@@ -1,5 +1,60 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.5.3-next.1
+
+### Patch Changes
+
+- 7fa54c3c77: Added ae-dir LDAP vendor to correctly extract DN.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.4.0-next.1
+
+## 0.5.3-next.0
+
+### Patch Changes
+
+- c54fcea9af: Now the `searchStream` method in LDAP client awaits the callbacks
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.5-next.0
+  - @backstage/plugin-catalog-backend@1.3.2-next.0
+
+## 0.5.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.4
+  - @backstage/plugin-catalog-backend@1.3.1
+
+## 0.5.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.4-next.0
+  - @backstage/plugin-catalog-backend@1.3.1-next.0
+
+## 0.5.1
+
+### Patch Changes
+
+- ddfd566606: Fix mapping between users and groups for FreeIPA when using the LdapOrgProcessor
+- fbfbff6bf7: Add possibility to resolve relations by RDN, in addition to UUID and DN
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.3.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/backend-tasks@0.3.3
+  - @backstage/errors@1.1.0
+
+## 0.5.1-next.2
+
+### Patch Changes
+
+- ddfd566606: Fix mapping between users and groups for FreeIPA when using the LdapOrgProcessor
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.3.0-next.3
+  - @backstage/backend-tasks@0.3.3-next.3
+  - @backstage/catalog-model@1.1.0-next.3
+
 ## 0.5.1-next.1
 
 ### Patch Changes

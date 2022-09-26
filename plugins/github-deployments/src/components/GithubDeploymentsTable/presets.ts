@@ -13,20 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { GithubDeployment } from '../../api';
-import {
-  createEnvironmentColumn,
-  createStatusColumn,
-  createCommitColumn,
-  createLastUpdatedColumn,
-  createCreatorColumn,
-} from './columns';
+import { columnFactories } from './columns';
 import { TableColumn } from '@backstage/core-components';
 
 export const defaultDeploymentColumns: TableColumn<GithubDeployment>[] = [
-  createEnvironmentColumn(),
-  createStatusColumn(),
-  createCommitColumn(),
-  createCreatorColumn(),
-  createLastUpdatedColumn(),
+  columnFactories.createEnvironmentColumn(),
+  columnFactories.createStatusColumn(),
+  columnFactories.createCommitColumn(),
+  columnFactories.createCreatorColumn(),
+  columnFactories.createLastUpdatedColumn(),
 ];

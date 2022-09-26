@@ -55,7 +55,7 @@ describe('readBitbucketServerIntegrationConfig', () => {
     );
   }
 
-  it('reads all values', () => {
+  it('reads all values, token', () => {
     const output = readBitbucketServerIntegrationConfig(
       buildConfig({
         host: 'a.com',
@@ -67,6 +67,23 @@ describe('readBitbucketServerIntegrationConfig', () => {
       host: 'a.com',
       apiBaseUrl: 'https://a.com/api',
       token: 't',
+    });
+  });
+
+  it('reads all values, basic auth', () => {
+    const output = readBitbucketServerIntegrationConfig(
+      buildConfig({
+        host: 'a.com',
+        apiBaseUrl: 'https://a.com/api',
+        username: 'u',
+        password: 'p',
+      }),
+    );
+    expect(output).toEqual({
+      host: 'a.com',
+      apiBaseUrl: 'https://a.com/api',
+      username: 'u',
+      password: 'p',
     });
   });
 

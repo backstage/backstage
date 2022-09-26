@@ -155,8 +155,9 @@ export type AppConfigLoader = () => Promise<AppConfig[]>;
 
 // @public
 export type AppContext = {
-  getPlugins(): BackstagePlugin<any, any>[];
+  getPlugins(): BackstagePlugin[];
   getSystemIcon(key: string): IconComponent | undefined;
+  getSystemIcons(): Record<string, IconComponent>;
   getComponents(): AppComponents;
 };
 
@@ -193,7 +194,7 @@ export type AppOptions = {
     [key in string]: IconComponent;
   };
   plugins?: Array<
-    BackstagePlugin<any, any> & {
+    BackstagePlugin & {
       output?(): Array<
         | {
             type: 'feature-flag';
@@ -254,7 +255,7 @@ export type AuthApiCreateOptions = {
 
 // @public
 export type BackstageApp = {
-  getPlugins(): BackstagePlugin<any, any>[];
+  getPlugins(): BackstagePlugin[];
   getSystemIcon(key: string): IconComponent | undefined;
   getProvider(): ComponentType<{}>;
   getRouter(): ComponentType<{}>;
@@ -406,6 +407,12 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
 export class MicrosoftAuth {
   // (undocumented)
   static create(options: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T;
+}
+
+// @public
+export class MultipleAnalyticsApi implements AnalyticsApi {
+  captureEvent(event: AnalyticsEvent): void;
+  static fromApis(actualApis: AnalyticsApi[]): MultipleAnalyticsApi;
 }
 
 // @public

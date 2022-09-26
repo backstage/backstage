@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** @public */
 export type Shortcut = {
   id: string;
   url: string;

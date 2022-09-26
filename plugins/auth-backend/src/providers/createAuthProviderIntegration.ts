@@ -22,6 +22,8 @@ import { AuthProviderFactory, SignInResolver } from './types';
  *
  * The returned object facilitates the creation of provider instances, and
  * supplies built-in sign-in resolvers for the specific provider.
+ *
+ * @public
  */
 export function createAuthProviderIntegration<
   TCreateOptions extends unknown[],

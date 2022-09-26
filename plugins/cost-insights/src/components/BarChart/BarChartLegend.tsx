@@ -21,6 +21,7 @@ import { currencyFormatter } from '../../utils/formatters';
 import { CostInsightsTheme } from '../../types';
 import { useBarChartLayoutStyles as useStyles } from '../../utils/styles';
 
+/** @public */
 export type BarChartLegendOptions = {
   previousName: string;
   previousFill: string;
@@ -29,18 +30,19 @@ export type BarChartLegendOptions = {
   hideMarker?: boolean;
 };
 
+/** @public */
 export type BarChartLegendProps = {
   costStart: number;
   costEnd: number;
   options?: Partial<BarChartLegendOptions>;
 };
 
-export const BarChartLegend = ({
-  costStart,
-  costEnd,
-  options = {},
-  children,
-}: PropsWithChildren<BarChartLegendProps>) => {
+/** @public */
+export const BarChartLegend = (
+  props: PropsWithChildren<BarChartLegendProps>,
+) => {
+  const { costStart, costEnd, options = {}, children } = props;
+
   const theme = useTheme<CostInsightsTheme>();
   const classes = useStyles();
 

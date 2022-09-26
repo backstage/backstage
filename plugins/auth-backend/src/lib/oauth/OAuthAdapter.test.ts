@@ -92,8 +92,8 @@ describe('OAuthAdapter', () => {
 
     await oauthProvider.start(mockRequest, mockResponse);
     // nonce cookie checks
-    expect(mockResponse.cookie).toBeCalledTimes(1);
-    expect(mockResponse.cookie).toBeCalledWith(
+    expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
+    expect(mockResponse.cookie).toHaveBeenCalledWith(
       `${oAuthProviderOptions.providerId}-nonce`,
       expect.any(String),
       expect.objectContaining({ maxAge: TEN_MINUTES_MS }),
@@ -323,8 +323,8 @@ describe('OAuthAdapter', () => {
 
     await oauthProvider.start(mockRequest, mockResponse);
 
-    expect(mockResponse.cookie).toBeCalledTimes(1);
-    expect(mockResponse.cookie).toBeCalledWith(
+    expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
+    expect(mockResponse.cookie).toHaveBeenCalledWith(
       `${oAuthProviderOptions.providerId}-nonce`,
       expect.any(String),
       expect.objectContaining({

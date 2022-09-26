@@ -20,6 +20,7 @@ import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { getProjectSlug, getOrganization } from './annotations';
 
+/** @public */
 export class ProductionSentryApi implements SentryApi {
   constructor(
     private readonly discoveryApi: DiscoveryApi,

@@ -54,8 +54,8 @@ export const repoPickerValidation = (
           );
         }
       }
-      // For anything other than bitbucket
-      else {
+      // For anything other than bitbucket and gerrit
+      else if (integrationApi?.byHost(host)?.type !== 'gerrit') {
         if (!searchParams.get('owner')) {
           validation.addError(
             'Incomplete repository location provided, owner not provided',

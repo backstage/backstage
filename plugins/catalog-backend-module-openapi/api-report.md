@@ -6,12 +6,19 @@
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
+import { JsonValue } from '@backstage/types';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
+import { PlaceholderResolverParams } from '@backstage/plugin-catalog-backend';
 import { ScmIntegrations } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
 
 // @public (undocumented)
+export function openApiPlaceholderResolver(
+  params: PlaceholderResolverParams,
+): Promise<JsonValue>;
+
+// @public @deprecated (undocumented)
 export class OpenApiRefProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrations;

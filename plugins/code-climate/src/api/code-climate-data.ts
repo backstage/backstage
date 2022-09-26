@@ -164,6 +164,7 @@ export type CodeClimateIssuesData = {
   meta: { current_page: number; total_pages: number; total_count: number };
 };
 
+/** @public */
 export type CodeClimateData = {
   repoID: string;
   maintainability: {

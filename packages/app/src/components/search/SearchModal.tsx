@@ -33,7 +33,7 @@ import {
   useContent,
 } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
+import { CatalogSearchResultListItem } from '@internal/plugin-catalog-customized';
 import {
   catalogApiRef,
   CATALOG_FILTER_EXISTS,

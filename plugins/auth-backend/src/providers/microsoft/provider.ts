@@ -38,7 +38,7 @@ import {
 } from '../../lib/passport';
 import {
   AuthHandler,
-  RedirectInfo,
+  OAuthStartResponse,
   SignInResolver,
   AuthResolverContext,
 } from '../types';
@@ -97,7 +97,7 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
     );
   }
 
-  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     return await executeRedirectStrategy(req, this._strategy, {
       scope: req.scope,
       state: encodeState(req.state),

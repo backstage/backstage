@@ -27,22 +27,27 @@ export type PagerDutyServicesResponse = {
   services: PagerDutyService[];
 };
 
+/** @public */
 export type PagerDutyServiceResponse = {
   service: PagerDutyService;
 };
 
+/** @public */
 export type PagerDutyIncidentsResponse = {
   incidents: PagerDutyIncident[];
 };
 
+/** @public */
 export type PagerDutyChangeEventsResponse = {
   change_events: PagerDutyChangeEvent[];
 };
 
+/** @public */
 export type PagerDutyOnCallsResponse = {
   oncalls: PagerDutyOnCall[];
 };
 
+/** @public */
 export type PagerDutyTriggerAlarmRequest = {
   integrationKey: string;
   source: string;
@@ -50,6 +55,7 @@ export type PagerDutyTriggerAlarmRequest = {
   userName: string;
 };
 
+/** @public */
 export interface PagerDutyApi {
   /**
    * Fetches the service for the provided Entity.
@@ -85,11 +91,13 @@ export interface PagerDutyApi {
   triggerAlarm(request: PagerDutyTriggerAlarmRequest): Promise<Response>;
 }
 
+/** @public */
 export type PagerDutyClientApiDependencies = {
   discoveryApi: DiscoveryApi;
   fetchApi: FetchApi;
 };
 
+/** @public */
 export type PagerDutyClientApiConfig = PagerDutyClientApiDependencies & {
   eventsBaseUrl?: string;
 };

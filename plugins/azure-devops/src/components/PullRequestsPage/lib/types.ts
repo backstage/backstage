@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
+import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
 import { Filter, PullRequestFilter } from './filters';
 
-import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
-
+/** @public */
 export interface PullRequestColumnConfig {
   title: string;
   filters: Filter[];
   simplified?: boolean;
 }
 
+/** @public */
 export interface PullRequestGroupConfig {
   title: string;
   filter: PullRequestFilter;
   simplified?: boolean;
 }
 
+/** @public */
 export interface PullRequestGroup {
   title: string;
   pullRequests: DashboardPullRequest[];

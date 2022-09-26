@@ -93,6 +93,16 @@ export interface Config {
        */
       token?: string;
       /**
+       * Username used to authenticate requests with Basic Auth.
+       * @visibility secret
+       */
+      username?: string;
+      /**
+       * Password (or token as password) used to authenticate requests with Basic Auth.
+       * @visibility secret
+       */
+      password?: string;
+      /**
        * The base url for the Bitbucket Server API, for example https://<host>/rest/api/1.0
        * @visibility frontend
        */

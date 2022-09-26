@@ -1,5 +1,175 @@
 # @backstage/plugin-scaffolder
 
+## 1.6.0-next.2
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- de336de9cd: fix uiSchema generation when using complex dependencies
+- Updated dependencies
+  - @backstage/integration@1.3.1-next.1
+  - @backstage/catalog-client@1.0.5-next.1
+  - @backstage/core-components@0.11.1-next.2
+  - @backstage/core-plugin-api@1.0.6-next.2
+  - @backstage/integration-react@1.1.4-next.1
+
+## 1.6.0-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 763fb81e82: Internal refactor to use more type safe code when dealing with route parameters.
+- a66d44b72b: Fixing bug when the workspace would not be automatically saved when using `allowedOwners`
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.1
+  - @backstage/core-plugin-api@1.0.6-next.1
+  - @backstage/plugin-catalog-react@1.1.4-next.1
+  - @backstage/plugin-permission-react@0.4.5-next.1
+
+## 1.6.0-next.0
+
+### Minor Changes
+
+- 3424a8075d: Added support for `async` validation for the `next` version of the plugin
+- 192d856495: Implementing review step for the scaffolder under `create/next`
+
+### Patch Changes
+
+- 9ffb75616d: Fix bug with empty strings in `EntityPicker`
+- 3f739be9d9: Minor API signatures cleanup
+- 9097278df2: Updated dependency `json-schema-library` to `^7.0.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/core-components@0.11.1-next.0
+  - @backstage/catalog-client@1.0.5-next.0
+  - @backstage/integration-react@1.1.4-next.0
+  - @backstage/integration@1.3.1-next.0
+  - @backstage/plugin-scaffolder-common@1.2.0-next.0
+  - @backstage/plugin-catalog-react@1.1.4-next.0
+  - @backstage/plugin-permission-react@0.4.5-next.0
+  - @backstage/plugin-catalog-common@1.0.6-next.0
+
+## 1.5.0
+
+### Minor Changes
+
+- c4b452e16a: Starting the implementation of the Wizard page for the `next` scaffolder plugin
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.3.0
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-react@1.1.3
+  - @backstage/plugin-catalog-common@1.0.5
+  - @backstage/integration-react@1.1.3
+  - @backstage/plugin-permission-react@0.4.4
+
+## 1.5.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.3-next.2
+  - @backstage/core-components@0.11.0-next.2
+  - @backstage/integration-react@1.1.3-next.1
+
+## 1.5.0-next.1
+
+### Minor Changes
+
+- c4b452e16a: Starting the implementation of the Wizard page for the `next` scaffolder plugin
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.10.1-next.1
+  - @backstage/plugin-catalog-common@1.0.5-next.0
+  - @backstage/integration@1.3.0-next.1
+  - @backstage/plugin-catalog-react@1.1.3-next.1
+
+## 1.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.3.0-next.0
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/integration-react@1.1.3-next.0
+  - @backstage/plugin-catalog-react@1.1.3-next.0
+  - @backstage/core-components@0.10.1-next.0
+  - @backstage/plugin-permission-react@0.4.4-next.0
+
+## 1.4.0
+
+### Minor Changes
+
+- d8eb82f447: Add `allowedRepos` `ui:option` to `RepoUrlPicker` component, and move `repoName` field to own component
+- 9a96199f86: Add support for `allowedOwners` to the `BitbucketRepoPicker` used for the workspace value.
+
+### Patch Changes
+
+- 37539e29d8: The template editor now shows the cause of request errors that happen during a dry-run.
+- b557e6c58d: Fixed that adding more than one `allowedOwner` or `allowedRepo` in the template config will now still set the first value as default in the initial form state of `RepoUrlPicker`.
+- 842282ecf9: Bumped `codemirror` dependencies to `v6.0.0`.
+- 11a5ca35f3: Add allowArbitraryValues for <OwnerPicker /> to provide input validation. This makes it a better experience of users, as they can now expect the values they enter to correspond to a valid owner. This is set to the default behavior by default.
+- d600cb2ab6: contextMenu prop passed through to <ScaffolderPageContents /> from the <ScaffolderPage /> component
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- 693990d4fe: Updated dependency `@react-hookz/web` to `^15.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- 464bb0e6c8: The max content size for dry-run files has been reduced from 256k to 64k.
+- 14146703e5: Add `allowArbitraryValues` to `ui:options` in `OwnedEntityPicker`, similar to `allowArbitraryValues` in `EntityPicker`
+- a7c0b34d70: Swap usage of `MaterialTable` with `Table` from `core-components`
+- 1764296a68: Allow to create Gerrit project using default owner
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/integration@1.2.2
+  - @backstage/catalog-client@1.0.4
+  - @backstage/integration-react@1.1.2
+  - @backstage/plugin-catalog-react@1.1.2
+  - @backstage/theme@0.2.16
+  - @backstage/errors@1.1.0
+  - @backstage/plugin-catalog-common@1.0.4
+  - @backstage/plugin-permission-react@0.4.3
+  - @backstage/plugin-scaffolder-common@1.1.2
+
+## 1.4.0-next.3
+
+### Patch Changes
+
+- b557e6c58d: Fixed that adding more than one `allowedOwner` or `allowedRepo` in the template config will now still set the first value as default in the initial form state of `RepoUrlPicker`.
+- d600cb2ab6: contextMenu prop passed through to <ScaffolderPageContents /> from the <ScaffolderPage /> component
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- 693990d4fe: Updated dependency `@react-hookz/web` to `^15.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+  - @backstage/catalog-client@1.0.4-next.2
+  - @backstage/integration-react@1.1.2-next.3
+  - @backstage/integration@1.2.2-next.3
+  - @backstage/catalog-model@1.1.0-next.3
+  - @backstage/plugin-catalog-react@1.1.2-next.3
+  - @backstage/plugin-permission-react@0.4.3-next.1
+
 ## 1.4.0-next.2
 
 ### Minor Changes
@@ -44,12 +214,6 @@
 
 ## 1.4.0-next.0
 
-### Minor Changes
-
-- 3500c13a33: A new template editor has been added which is accessible via the context menu on the top right hand corner of the Create page. It allows you to load a template from a local directory, edit it with a preview, execute it in dry-run mode, and view the results. Note that the [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API) must be supported by your browser for this to be available.
-
-  To support the new template editor the `ScaffolderApi` now has an optional `dryRun` method, which is implemented by the default `ScaffolderClient`.
-
 ### Patch Changes
 
 - 37539e29d8: The template editor now shows the cause of request errors that happen during a dry-run.
@@ -92,6 +256,9 @@
 
 - 72dfcbc8bf: Gerrit Integration: Implemented a `RepoUrlPicker` for Gerrit.
 - f93af969cd: Added the ability to support running of templates that are not in the `default` namespace
+- 3500c13a33: A new template editor has been added which is accessible via the context menu on the top right hand corner of the Create page. It allows you to load a template from a local directory, edit it with a preview, execute it in dry-run mode, and view the results. Note that the [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API) must be supported by your browser for this to be available.
+
+  To support the new template editor the `ScaffolderApi` now has an optional `dryRun` method, which is implemented by the default `ScaffolderClient`.
 
 ### Patch Changes
 

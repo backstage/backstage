@@ -61,8 +61,8 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
-  const { value: projectName, loading, error } = useProjectName(entity);
+export const WorkflowRunDetails = (props: { entity: Entity }) => {
+  const { value: projectName, loading, error } = useProjectName(props.entity);
   const [projectId] = (projectName ?? '/').split('/');
 
   const details = useWorkflowRunsDetails(projectId);

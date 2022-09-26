@@ -17,6 +17,7 @@
 import { RestEndpointMethodTypes } from '@octokit/rest';
 import { createApiRef } from '@backstage/core-plugin-api';
 
+/** @public */
 export const githubActionsApiRef = createApiRef<GithubActionsApi>({
   id: 'plugin.githubactions.service',
 });

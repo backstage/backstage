@@ -35,8 +35,10 @@ const useStyles = makeStyles(theme => ({
   },
   label: {
     marginTop: theme.spacing(1),
+    width: '72px',
     fontSize: '0.9em',
     lineHeight: '1.25',
+    overflowWrap: 'break-word',
     color: theme.palette.text.secondary,
   },
   icon: {
@@ -49,15 +51,6 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.background.default,
   },
 }));
-
-/**
- * Props for Toolkit content component {@link Content}.
- *
- * @public
- */
-export type ToolkitContentProps = {
-  tools: Tool[];
-};
 
 /**
  * A component to display a list of tools for the user.
@@ -82,4 +75,13 @@ export const Content = (props: ToolkitContentProps) => {
       ))}
     </List>
   );
+};
+
+/**
+ * Props for Toolkit Content component.
+ *
+ * @public
+ */
+export type ToolkitContentProps = {
+  tools: Tool[];
 };

@@ -11,13 +11,9 @@ import { Logger } from 'winston';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
-// Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// Warning: (ae-missing-release-tag) "DefaultJenkinsInfoProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
   // (undocumented)
@@ -37,8 +33,6 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
   static readonly OLD_JENKINS_ANNOTATION = 'jenkins.io/github-folder';
 }
 
-// Warning: (ae-missing-release-tag) "JenkinsConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class JenkinsConfig {
   constructor(instances: JenkinsInstanceConfig[]);
@@ -48,8 +42,6 @@ export class JenkinsConfig {
   readonly instances: JenkinsInstanceConfig[];
 }
 
-// Warning: (ae-missing-release-tag) "JenkinsInfo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface JenkinsInfo {
   // (undocumented)
@@ -62,8 +54,6 @@ export interface JenkinsInfo {
   jobFullName: string;
 }
 
-// Warning: (ae-missing-release-tag) "JenkinsInfoProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface JenkinsInfoProvider {
   // (undocumented)
@@ -74,8 +64,6 @@ export interface JenkinsInfoProvider {
   }): Promise<JenkinsInfo>;
 }
 
-// Warning: (ae-missing-release-tag) "JenkinsInstanceConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface JenkinsInstanceConfig {
   // (undocumented)
@@ -84,14 +72,13 @@ export interface JenkinsInstanceConfig {
   baseUrl: string;
   // (undocumented)
   crumbIssuer?: boolean;
+  extraRequestHeaders?: Record<string, string>;
   // (undocumented)
   name: string;
   // (undocumented)
   username: string;
 }
 
-// Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface RouterOptions {
   // (undocumented)

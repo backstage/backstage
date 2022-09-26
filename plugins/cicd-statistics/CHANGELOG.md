@@ -1,5 +1,60 @@
 # @backstage/plugin-cicd-statistics
 
+## 0.1.11-next.1
+
+### Patch Changes
+
+- d669d89206: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.1
+  - @backstage/plugin-catalog-react@1.1.4-next.1
+
+## 0.1.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/plugin-catalog-react@1.1.4-next.0
+
+## 0.1.10
+
+### Patch Changes
+
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-react@1.1.3
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/plugin-catalog-react@1.1.3-next.0
+
+## 0.1.9
+
+### Patch Changes
+
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/plugin-catalog-react@1.1.2
+
+## 0.1.9-next.1
+
+### Patch Changes
+
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/catalog-model@1.1.0-next.3
+  - @backstage/plugin-catalog-react@1.1.2-next.3
+
 ## 0.1.9-next.0
 
 ### Patch Changes

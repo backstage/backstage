@@ -27,8 +27,8 @@ import {
   StructuredMetadataTable,
 } from '@backstage/core-components';
 
-const LighthouseCategoryScoreStatus = ({ score }: { score: number }) => {
-  const scoreAsPercentage = Math.round(score * 100);
+const LighthouseCategoryScoreStatus = (props: { score: number }) => {
+  const scoreAsPercentage = Math.round(props.score * 100);
   switch (true) {
     case scoreAsPercentage >= 90:
       return (
@@ -56,20 +56,15 @@ const LighthouseCategoryScoreStatus = ({ score }: { score: number }) => {
   }
 };
 
-const LighthouseAuditStatus = ({ audit }: { audit: Audit }) => (
+const LighthouseAuditStatus = (props: { audit: Audit }) => (
   <>
-    <AuditStatusIcon audit={audit} />
-    {audit.status.toLocaleUpperCase('en-US')}
+    <AuditStatusIcon audit={props.audit} />
+    {props.audit.status.toLocaleUpperCase('en-US')}
   </>
 );
 
-const LighthouseAuditSummary = ({
-  audit,
-  dense = false,
-}: {
-  audit: Audit;
-  dense?: boolean;
-}) => {
+const LighthouseAuditSummary = (props: { audit: Audit; dense?: boolean }) => {
+  const { audit, dense = false } = props;
   const { url } = audit;
   const flattenedCategoryData: Record<string, React.ReactNode> = {};
   if (audit.status === 'COMPLETED') {
@@ -92,13 +87,12 @@ const LighthouseAuditSummary = ({
   return <StructuredMetadataTable metadata={tableData} dense={dense} />;
 };
 
-export const LastLighthouseAuditCard = ({
-  dense = false,
-  variant,
-}: {
+/** @public */
+export const LastLighthouseAuditCard = (props: {
   dense?: boolean;
   variant?: InfoCardVariants;
 }) => {
+  const { dense = false, variant } = props;
   const { value: website, loading, error } = useWebsiteForEntity();
 
   let content;

@@ -34,7 +34,7 @@ import {
   DefaultResultListItem,
   SearchFilter,
 } from '@backstage/plugin-search-react';
-import { CatalogResultListItem } from '@backstage/plugin-catalog';
+import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
 
 export const searchPage = (
   <Page themeId="home">

@@ -22,6 +22,12 @@ import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 
+jest.mock('../loginPopup', () => {
+  return {
+    showLoginPopup: jest.fn(),
+  };
+});
+
 const defaultOptions = {
   discoveryApi: UrlPatternDiscovery.compile('http://my-host/api/{{pluginId}}'),
   environment: 'production',
@@ -123,7 +129,7 @@ describe('DefaultAuthConnector', () => {
 
     await mockOauth.triggerAll();
 
-    expect(popupSpy).toBeCalledTimes(1);
+    expect(popupSpy).toHaveBeenCalledTimes(1);
     expect(popupSpy.mock.calls[0][0]).toMatchObject({
       url: 'http://my-host/api/auth/my-provider/start?scope=a%20b&origin=http%3A%2F%2Flocalhost&env=production',
     });
@@ -153,7 +159,7 @@ describe('DefaultAuthConnector', () => {
 
     await expect(sessionPromise).resolves.toBe('my-session');
 
-    expect(popupSpy).toBeCalledTimes(1);
+    expect(popupSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should use join func to join scopes', async () => {
@@ -171,7 +177,7 @@ describe('DefaultAuthConnector', () => {
 
     await mockOauth.triggerAll();
 
-    expect(popupSpy).toBeCalledTimes(1);
+    expect(popupSpy).toHaveBeenCalledTimes(1);
     expect(popupSpy.mock.calls[0][0]).toMatchObject({
       url: 'http://my-host/api/auth/my-provider/start?scope=-ab-&origin=http%3A%2F%2Flocalhost&env=production',
     });

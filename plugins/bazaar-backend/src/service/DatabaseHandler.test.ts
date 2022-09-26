@@ -16,6 +16,7 @@
 
 import { DatabaseHandler } from './DatabaseHandler';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import { Knex as KnexType } from 'knex';
 
 const bazaarProject: any = {
   name: 'n1',
@@ -35,11 +36,24 @@ describe('DatabaseHandler', () => {
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
 
+  function createDatabaseManager(
+    client: KnexType,
+    skipMigrations: boolean = false,
+  ) {
+    return {
+      getClient: async () => client,
+      migrations: {
+        skip: skipMigrations,
+      },
+    };
+  }
+
   async function createDatabaseHandler(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);
+    const databaseManager = createDatabaseManager(knex);
     return {
       knex,
-      dbHandler: await DatabaseHandler.create({ database: knex }),
+      dbHandler: await DatabaseHandler.create({ database: databaseManager }),
     };
   }
 

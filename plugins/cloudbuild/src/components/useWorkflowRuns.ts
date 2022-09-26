@@ -33,7 +33,8 @@ export type WorkflowRun = {
   rerun: () => void;
 };
 
-export function useWorkflowRuns({ projectId }: { projectId: string }) {
+export function useWorkflowRuns(options: { projectId: string }) {
+  const { projectId } = options;
   const api = useApi(cloudbuildApiRef);
   const errorApi = useApi(errorApiRef);
 

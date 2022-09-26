@@ -45,15 +45,11 @@ export type ContentStateTypes =
 
 // @public
 export const DefaultTechDocsHome: (
-  props: DefaultTechDocsHomeProps,
+  props: TechDocsIndexPageProps,
 ) => JSX.Element;
 
-// @public
-export type DefaultTechDocsHomeProps = {
-  initialFilter?: UserListFilterKind;
-  columns?: TableColumn<DocsTableRow>[];
-  actions?: TableProps<DocsTableRow>['actions'];
-};
+// @public @deprecated
+export type DefaultTechDocsHomeProps = TechDocsIndexPageProps;
 
 // @public
 export const DocsCardGrid: (props: DocsCardGridProps) => JSX.Element | null;
@@ -256,7 +252,14 @@ export type TechDocsCustomHomeProps = {
 export type TechDocsEntityMetadata = TechDocsEntityMetadata_2;
 
 // @public
-export const TechDocsIndexPage: () => JSX.Element;
+export const TechDocsIndexPage: (props: TechDocsIndexPageProps) => JSX.Element;
+
+// @public
+export type TechDocsIndexPageProps = {
+  initialFilter?: UserListFilterKind;
+  columns?: TableColumn<DocsTableRow>[];
+  actions?: TableProps<DocsTableRow>['actions'];
+};
 
 // @public @deprecated (undocumented)
 export type TechDocsMetadata = TechDocsMetadata_2;
@@ -288,6 +291,7 @@ const techdocsPlugin: BackstagePlugin<
     }>;
     entityContent: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export { techdocsPlugin as plugin };
@@ -341,11 +345,7 @@ export type TechDocsReaderPageProps = {
 };
 
 // @public
-export type TechDocsReaderPageRenderFunction = ({
-  techdocsMetadataValue,
-  entityMetadataValue,
-  entityRef,
-}: {
+export type TechDocsReaderPageRenderFunction = (options: {
   techdocsMetadataValue?: TechDocsMetadata_2 | undefined;
   entityMetadataValue?: TechDocsEntityMetadata_2 | undefined;
   entityRef: CompoundEntityRef;
@@ -353,10 +353,8 @@ export type TechDocsReaderPageRenderFunction = ({
 }) => JSX.Element;
 
 // @public
-export const TechDocsReaderPageSubheader: ({
-  toolbarProps,
-}: {
-  toolbarProps?: ToolbarProps<'div', {}> | undefined;
+export const TechDocsReaderPageSubheader: (props: {
+  toolbarProps?: ToolbarProps;
 }) => JSX.Element | null;
 
 // @public

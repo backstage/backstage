@@ -25,8 +25,6 @@ describe('readMicrosoftGraphConfig', () => {
           id: 'target',
           target: 'target',
           tenantId: 'tenantId',
-          clientId: 'clientId',
-          clientSecret: 'clientSecret',
         },
       ],
     };
@@ -36,11 +34,6 @@ describe('readMicrosoftGraphConfig', () => {
         id: 'target',
         target: 'target',
         tenantId: 'tenantId',
-        clientId: 'clientId',
-        clientSecret: 'clientSecret',
-        authority: 'https://login.microsoftonline.com',
-        userFilter: undefined,
-        groupFilter: undefined,
       },
     ];
     expect(actual).toEqual(expected);
@@ -72,7 +65,7 @@ describe('readMicrosoftGraphConfig', () => {
         tenantId: 'tenantId',
         clientId: 'clientId',
         clientSecret: 'clientSecret',
-        authority: 'https://login.example.com',
+        authority: 'https://login.example.com/',
         userExpand: 'manager',
         userFilter: 'accountEnabled eq true',
         groupExpand: 'member',
@@ -87,12 +80,7 @@ describe('readMicrosoftGraphConfig', () => {
     const config = {
       providers: [
         {
-          id: 'target',
-          target: 'target',
           tenantId: 'tenantId',
-          clientId: 'clientId',
-          clientSecret: 'clientSecret',
-          authority: 'https://login.example.com/',
           userFilter: 'accountEnabled eq true',
           userGroupMemberFilter: 'any',
         },
@@ -105,14 +93,33 @@ describe('readMicrosoftGraphConfig', () => {
     const config = {
       providers: [
         {
-          id: 'target',
-          target: 'target',
           tenantId: 'tenantId',
-          clientId: 'clientId',
-          clientSecret: 'clientSecret',
-          authority: 'https://login.example.com/',
           userFilter: 'accountEnabled eq true',
           userGroupMemberSearch: 'any',
+        },
+      ],
+    };
+    expect(() => readMicrosoftGraphConfig(new ConfigReader(config))).toThrow();
+  });
+
+  it('should fail if clientId is set without clientSecret', () => {
+    const config = {
+      providers: [
+        {
+          tenantId: 'tenantId',
+          clientId: 'clientId',
+        },
+      ],
+    };
+    expect(() => readMicrosoftGraphConfig(new ConfigReader(config))).toThrow();
+  });
+
+  it('should fail if clientSecret is set without clientId', () => {
+    const config = {
+      providers: [
+        {
+          tenantId: 'tenantId',
+          clientSecret: 'clientId',
         },
       ],
     };
@@ -127,10 +134,7 @@ describe('readProviderConfigs', () => {
         providers: {
           microsoftGraphOrg: {
             customProviderId: {
-              target: 'target',
               tenantId: 'tenantId',
-              clientId: 'clientId',
-              clientSecret: 'clientSecret',
             },
           },
         },
@@ -140,11 +144,8 @@ describe('readProviderConfigs', () => {
     const expected = [
       {
         id: 'customProviderId',
-        target: 'target',
+        target: 'https://graph.microsoft.com/v1.0',
         tenantId: 'tenantId',
-        clientId: 'clientId',
-        clientSecret: 'clientSecret',
-        authority: 'https://login.microsoftonline.com',
       },
     ];
     expect(actual).toEqual(expected);
@@ -183,7 +184,7 @@ describe('readProviderConfigs', () => {
         tenantId: 'tenantId',
         clientId: 'clientId',
         clientSecret: 'clientSecret',
-        authority: 'https://login.example.com',
+        authority: 'https://login.example.com/',
         userExpand: 'manager',
         userFilter: 'accountEnabled eq true',
         groupExpand: 'member',
@@ -200,11 +201,7 @@ describe('readProviderConfigs', () => {
         providers: {
           microsoftGraphOrg: {
             customProviderId: {
-              target: 'target',
               tenantId: 'tenantId',
-              clientId: 'clientId',
-              clientSecret: 'clientSecret',
-              authority: 'https://login.example.com/',
               user: {
                 filter: 'accountEnabled eq true',
               },
@@ -225,17 +222,45 @@ describe('readProviderConfigs', () => {
         providers: {
           microsoftGraphOrg: {
             customProviderId: {
-              target: 'target',
               tenantId: 'tenantId',
-              clientId: 'clientId',
-              clientSecret: 'clientSecret',
-              authority: 'https://login.example.com/',
               user: {
                 filter: 'accountEnabled eq true',
               },
               userGroupMember: {
                 search: 'any',
               },
+            },
+          },
+        },
+      },
+    };
+    expect(() => readProviderConfigs(new ConfigReader(config))).toThrow();
+  });
+
+  it('should fail if clientId is set without clientSecret', () => {
+    const config = {
+      catalog: {
+        providers: {
+          microsoftGraphOrg: {
+            customProviderId: {
+              tenantId: 'tenantId',
+              clientId: 'id',
+            },
+          },
+        },
+      },
+    };
+    expect(() => readProviderConfigs(new ConfigReader(config))).toThrow();
+  });
+
+  it('should fail if clientSecret is set without clientId', () => {
+    const config = {
+      catalog: {
+        providers: {
+          microsoftGraphOrg: {
+            customProviderId: {
+              tenantId: 'tenantId',
+              clientSecret: 'clientSecret',
             },
           },
         },

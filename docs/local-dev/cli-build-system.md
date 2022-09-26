@@ -38,7 +38,7 @@ In addition, there are a number of hard and soft requirements:
 - Scale - It should scale to hundreds of large packages without excessive wait
   times
 - Reloads - The development flow should support quick on-save hot reloads
-- Simple - Usage should simple and configuration should be kept minimal
+- Simple - Usage should be simple and configuration should be kept minimal
 - Universal - Development towards both web applications, isomorphic packages,
   and Node.js
 - Modern - The build system targets modern environments
@@ -95,7 +95,7 @@ These are the available roles that are currently supported by the Backstage buil
 
 | Role                   | Description                                  | Example                                      |
 | ---------------------- | -------------------------------------------- | -------------------------------------------- |
-| frontend               | Bundled frontend application                 | `package/app`                                |
+| frontend               | Bundled frontend application                 | `packages/app`                               |
 | backend                | Bundled backend application                  | `packages/backend`                           |
 | cli                    | Package used as a command-line interface     | `@backstage/cli`, `@backstage/codemods`      |
 | web-library            | Web library for use by other packages        | `@backstage/plugin-catalog-react`            |

@@ -37,7 +37,7 @@ import {
   CatalogProcessorParser,
   LocationSpec,
   processingResult,
-} from '../api';
+} from '@backstage/plugin-catalog-node';
 import {
   CatalogProcessingOrchestrator,
   EntityProcessingRequest,
@@ -211,11 +211,18 @@ export class DefaultCatalogProcessingOrchestrator
     try {
       policyEnforcedEntity = await this.options.policy.enforce(entity);
     } catch (e) {
-      throw new InputError('Policy check failed', e);
+      throw new InputError(
+        `Policy check failed for ${stringifyEntityRef(entity)}`,
+        e,
+      );
     }
 
     if (!policyEnforcedEntity) {
-      throw new Error('Policy unexpectedly returned no data');
+      throw new Error(
+        `Policy unexpectedly returned no data for ${stringifyEntityRef(
+          entity,
+        )}`,
+      );
     }
 
     return policyEnforcedEntity;

@@ -14,31 +14,35 @@
  * limitations under the License.
  */
 
+/** @public */
 export type Step = {
   name: string;
   status: string;
   conclusion?: string;
   number: number; // starts from 1
-  started_at: string;
-  completed_at: string;
+  started_at?: string;
+  completed_at?: string;
 };
 
+/** @public */
 export type Job = {
-  html_url: string;
+  html_url?: string;
   status: string;
-  conclusion: string;
+  conclusion?: string;
   started_at: string;
-  completed_at: string;
+  completed_at?: string;
   id: number;
   name: string;
-  steps: Step[];
+  steps?: Step[];
 };
 
+/** @public */
 export type Jobs = {
   total_count: number;
   jobs: Job[];
 };
 
+/** @public */
 export enum BuildStatus {
   'success',
   'failure',

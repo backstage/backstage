@@ -25,6 +25,7 @@ import { FieldExtensionComponentProps } from '../../../extensions';
  */
 export interface OwnerPickerUiOptions {
   allowedKinds?: string[];
+  allowArbitraryValues?: boolean;
 }
 
 /**
@@ -50,6 +51,8 @@ export const OwnerPicker = (
         'User',
       ]) as string[],
       defaultKind: 'Group',
+      allowArbitraryValues:
+        uiSchema['ui:options']?.allowArbitraryValues ?? true,
     },
   };
 

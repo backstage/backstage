@@ -13,6 +13,7 @@ yarn.lock                                           @backstage/reviewers @backst
 /docs/assets/search                                 @backstage/reviewers @backstage/techdocs-core
 /docs/features/search                               @backstage/reviewers @backstage/techdocs-core
 /docs/features/techdocs                             @backstage/reviewers @backstage/techdocs-core
+/docs/plugins/integrating-search-into-plugins.md    @backstage/reviewers @backstage/techdocs-core
 /packages/techdocs-cli                              @backstage/reviewers @backstage/techdocs-core
 /packages/techdocs-cli-embedded-app                 @backstage/reviewers @backstage/techdocs-core
 /plugins/allure                                     @backstage/reviewers @deepak-bhardwaj-ps
@@ -21,7 +22,11 @@ yarn.lock                                           @backstage/reviewers @backst
 /plugins/azure-devops                               @backstage/reviewers @marleypowell @awanlin
 /plugins/azure-devops-backend                       @backstage/reviewers @marleypowell @awanlin
 /plugins/azure-devops-common                        @backstage/reviewers @marleypowell @awanlin
+/plugins/bitbucket-cloud-common                     @backstage/reviewers @pjungermann
 /plugins/bitrise                                    @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/catalog-backend-module-aws                 @backstage/reviewers @pjungermann
+/plugins/catalog-backend-module-bitbucket-cloud     @backstage/reviewers @pjungermann
+/plugins/catalog-backend-module-msgraph             @backstage/reviewers @pjungermann
 /plugins/catalog-graph                              @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/circleci                                   @backstage/reviewers @adamdmharvey
 /plugins/cloudbuild                                 @backstage/reviewers @trivago/ebarrios

@@ -17,10 +17,12 @@
 import { CodeClimateData } from './code-climate-data';
 import { createApiRef } from '@backstage/core-plugin-api';
 
+/** @public */
 export const codeClimateApiRef = createApiRef<CodeClimateApi>({
   id: 'plugin.code-climate.service',
 });
 
+/** @public */
 export interface CodeClimateApi {
   fetchData(repoID: string): Promise<CodeClimateData>;
 }

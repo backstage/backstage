@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Knex as KnexType } from 'knex';
 import { DatabaseManager } from '@backstage/backend-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
@@ -95,12 +96,24 @@ const coverage: Array<JsonCodeCoverage> = [
     ],
   },
 ];
-
+function createDatabaseManager(
+  client: KnexType,
+  skipMigrations: boolean = false,
+) {
+  return {
+    getClient: async () => client,
+    migrations: {
+      skip: skipMigrations,
+    },
+  };
+}
 let database: CodeCoverageStore;
 describe('CodeCoverageDatabase', () => {
   beforeAll(async () => {
     const client = await db.getClient();
-    database = await CodeCoverageDatabase.create(client);
+    const databaseManager = createDatabaseManager(client);
+    database = await CodeCoverageDatabase.create(databaseManager);
+
     await database.insertCodeCoverage(coverage[0]);
     await database.insertCodeCoverage(coverage[1]);
   });

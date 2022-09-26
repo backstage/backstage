@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { InfoCard, useSidebarPinState } from '@backstage/core-components';
 import { List } from '@material-ui/core';
 import React from 'react';
 import { UserSettingsPinToggle } from './UserSettingsPinToggle';
 import { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
 
+/** @public */
 export const UserSettingsAppearanceCard = () => {
   const { isMobile } = useSidebarPinState();
 

@@ -1,5 +1,75 @@
 # @backstage/plugin-graphql-backend
 
+## 0.1.26-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.2
+  - @backstage/plugin-catalog-graphql@0.3.13-next.2
+
+## 0.1.26-next.1
+
+### Patch Changes
+
+- d669d89206: Minor API signatures cleanup
+- 60b85d8ade: Updated dependency `helmet` to `^6.0.0`.
+
+  Please note that these policies are no longer applied by default:
+
+  helmet.contentSecurityPolicy no longer sets block-all-mixed-content directive by default
+  helmet.expectCt is no longer set by default. It can, however, be explicitly enabled. It will be removed in Helmet 7.
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.1
+  - @backstage/plugin-catalog-graphql@0.3.13-next.1
+
+## 0.1.26-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/plugin-catalog-graphql@0.3.13-next.0
+
+## 0.1.25
+
+### Patch Changes
+
+- fa3eeee92d: Updated dependency `@graphql-tools/schema` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/plugin-catalog-graphql@0.3.12
+
+## 0.1.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+
+## 0.1.24
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/plugin-catalog-graphql@0.3.11
+
+## 0.1.24-next.1
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/plugin-catalog-graphql@0.3.11-next.1
+
 ## 0.1.24-next.0
 
 ### Patch Changes

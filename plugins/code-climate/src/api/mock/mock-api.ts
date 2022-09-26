@@ -47,6 +47,7 @@ export const mockData: CodeClimateData = {
   numberOfOtherIssues: 26,
 };
 
+/** @public */
 export class MockCodeClimateApi implements CodeClimateApi {
   fetchData(): Promise<CodeClimateData> {
     return new Promise(resolve => {

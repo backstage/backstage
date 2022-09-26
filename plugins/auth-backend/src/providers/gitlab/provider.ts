@@ -25,7 +25,7 @@ import {
   PassportDoneCallback,
 } from '../../lib/passport';
 import {
-  RedirectInfo,
+  OAuthStartResponse,
   SignInResolver,
   AuthHandler,
   AuthResolverContext,
@@ -110,7 +110,7 @@ export class GitlabAuthProvider implements OAuthHandlers {
     );
   }
 
-  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     return await executeRedirectStrategy(req, this._strategy, {
       scope: req.scope,
       state: encodeState(req.state),

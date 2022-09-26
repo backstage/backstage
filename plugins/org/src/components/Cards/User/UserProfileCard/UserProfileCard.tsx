@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { RELATION_MEMBER_OF, UserEntity } from '@backstage/catalog-model';
+import {
+  RELATION_MEMBER_OF,
+  UserEntity,
+  ANNOTATION_EDIT_URL,
+} from '@backstage/catalog-model';
 import {
   EntityRefLinks,
   getEntityRelations,
@@ -23,12 +27,14 @@ import {
 import {
   Box,
   Grid,
+  IconButton,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
   Tooltip,
 } from '@material-ui/core';
+import EditIcon from '@material-ui/icons/Edit';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
 import PersonIcon from '@material-ui/icons/Person';
@@ -56,6 +62,9 @@ export const UserProfileCard = (props: { variant?: InfoCardVariants }) => {
     return <Alert severity="error">User not found</Alert>;
   }
 
+  const entityMetadataEditUrl =
+    user.metadata.annotations?.[ANNOTATION_EDIT_URL];
+
   const {
     metadata: { name: metaName, description },
     spec: { profile },
@@ -71,6 +80,20 @@ export const UserProfileCard = (props: { variant?: InfoCardVariants }) => {
       title={<CardTitle title={displayName} />}
       subheader={description}
       variant={props.variant}
+      action={
+        <>
+          {entityMetadataEditUrl && (
+            <IconButton
+              aria-label="Edit"
+              title="Edit Metadata"
+              component={Link}
+              to={entityMetadataEditUrl}
+            >
+              <EditIcon />
+            </IconButton>
+          )}
+        </>
+      }
     >
       <Grid container spacing={3} alignItems="flex-start">
         <Grid item xs={12} sm={2} xl={1}>

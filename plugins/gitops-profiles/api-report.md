@@ -9,8 +9,6 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "ApplyProfileRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface ApplyProfileRequest {
   // (undocumented)
@@ -25,8 +23,6 @@ export interface ApplyProfileRequest {
   targetRepo: string;
 }
 
-// Warning: (ae-missing-release-tag) "ChangeClusterStateRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface ChangeClusterStateRequest {
   // (undocumented)
@@ -41,8 +37,6 @@ export interface ChangeClusterStateRequest {
   targetRepo: string;
 }
 
-// Warning: (ae-missing-release-tag) "CloneFromTemplateRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface CloneFromTemplateRequest {
   // (undocumented)
@@ -62,8 +56,6 @@ export interface CloneFromTemplateRequest {
   templateRepository: string;
 }
 
-// Warning: (ae-missing-release-tag) "ClusterStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface ClusterStatus {
   // (undocumented)
@@ -78,8 +70,6 @@ export interface ClusterStatus {
   status: string;
 }
 
-// Warning: (ae-missing-release-tag) "FetchError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class FetchError extends Error {
   // (undocumented)
@@ -88,24 +78,18 @@ export class FetchError extends Error {
   get name(): string;
 }
 
-// Warning: (ae-missing-release-tag) "GithubUserInfoRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface GithubUserInfoRequest {
   // (undocumented)
   accessToken: string;
 }
 
-// Warning: (ae-missing-release-tag) "GithubUserInfoResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface GithubUserInfoResponse {
   // (undocumented)
   login: string;
 }
 
-// Warning: (ae-missing-release-tag) "GitOpsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type GitOpsApi = {
   url: string;
@@ -117,28 +101,18 @@ export type GitOpsApi = {
   fetchUserInfo(req: GithubUserInfoRequest): Promise<GithubUserInfoResponse>;
 };
 
-// Warning: (ae-missing-release-tag) "gitOpsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const gitOpsApiRef: ApiRef<GitOpsApi>;
 
-// Warning: (ae-missing-release-tag) "GitopsProfilesClusterListPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const GitopsProfilesClusterListPage: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "GitopsProfilesClusterPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const GitopsProfilesClusterPage: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "GitopsProfilesCreatePage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const GitopsProfilesCreatePage: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "gitopsProfilesPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 const gitopsProfilesPlugin: BackstagePlugin<
   {
@@ -149,13 +123,12 @@ const gitopsProfilesPlugin: BackstagePlugin<
     }>;
     createPage: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export { gitopsProfilesPlugin };
 export { gitopsProfilesPlugin as plugin };
 
-// Warning: (ae-missing-release-tag) "GitOpsRestApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class GitOpsRestApi implements GitOpsApi {
   constructor(url?: string);
@@ -175,8 +148,6 @@ export class GitOpsRestApi implements GitOpsApi {
   url: string;
 }
 
-// Warning: (ae-missing-release-tag) "ListClusterRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface ListClusterRequest {
   // (undocumented)
@@ -185,16 +156,12 @@ export interface ListClusterRequest {
   gitHubUser: string;
 }
 
-// Warning: (ae-missing-release-tag) "ListClusterStatusesResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface ListClusterStatusesResponse {
   // (undocumented)
   result: ClusterStatus[];
 }
 
-// Warning: (ae-missing-release-tag) "PollLogRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface PollLogRequest {
   // (undocumented)
@@ -207,8 +174,6 @@ export interface PollLogRequest {
   targetRepo: string;
 }
 
-// Warning: (ae-missing-release-tag) "Status" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface Status {
   // (undocumented)
@@ -219,8 +184,6 @@ export interface Status {
   status: string;
 }
 
-// Warning: (ae-missing-release-tag) "StatusResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface StatusResponse {
   // (undocumented)

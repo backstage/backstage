@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="node" />
 
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
@@ -13,12 +14,14 @@ import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GithubCredentialsProvider } from '@backstage/integration';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import { Observable } from '@backstage/types';
+import { Octokit } from 'octokit';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -105,6 +108,7 @@ export function createFetchTemplateAction(options: {
   values: any;
   templateFileExtension?: string | boolean | undefined;
   copyWithoutRender?: string[] | undefined;
+  copyWithoutTemplating?: string[] | undefined;
   cookiecutterCompat?: boolean | undefined;
 }>;
 
@@ -175,6 +179,7 @@ export function createGithubRepoCreateAction(options: {
 }): TemplateAction<{
   repoUrl: string;
   description?: string | undefined;
+  homepage?: string | undefined;
   access?: string | undefined;
   deleteBranchOnMerge?: boolean | undefined;
   gitAuthorName?: string | undefined;
@@ -215,6 +220,7 @@ export function createGithubRepoPushAction(options: {
   description?: string | undefined;
   defaultBranch?: string | undefined;
   protectDefaultBranch?: boolean | undefined;
+  protectEnforceAdmins?: boolean | undefined;
   gitCommitMessage?: string | undefined;
   gitAuthorName?: string | undefined;
   gitAuthorEmail?: string | undefined;
@@ -300,11 +306,6 @@ export function createPublishBitbucketServerAction(options: {
 }>;
 
 // @public
-export function createPublishFileAction(): TemplateAction<{
-  path: string;
-}>;
-
-// @public
 export function createPublishGerritAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
@@ -312,6 +313,20 @@ export function createPublishGerritAction(options: {
   repoUrl: string;
   description: string;
   defaultBranch?: string | undefined;
+  gitCommitMessage?: string | undefined;
+  gitAuthorName?: string | undefined;
+  gitAuthorEmail?: string | undefined;
+  sourcePath?: string | undefined;
+}>;
+
+// @public
+export function createPublishGerritReviewAction(options: {
+  integrations: ScmIntegrationRegistry;
+  config: Config;
+}): TemplateAction<{
+  repoUrl: string;
+  branch?: string | undefined;
+  sourcePath?: string | undefined;
   gitCommitMessage?: string | undefined;
   gitAuthorName?: string | undefined;
   gitAuthorEmail?: string | undefined;
@@ -325,9 +340,11 @@ export function createPublishGithubAction(options: {
 }): TemplateAction<{
   repoUrl: string;
   description?: string | undefined;
+  homepage?: string | undefined;
   access?: string | undefined;
   defaultBranch?: string | undefined;
   protectDefaultBranch?: boolean | undefined;
+  protectEnforceAdmins?: boolean | undefined;
   deleteBranchOnMerge?: boolean | undefined;
   gitCommitMessage?: string | undefined;
   gitAuthorName?: string | undefined;
@@ -373,6 +390,8 @@ export const createPublishGithubPullRequestAction: ({
   targetPath?: string | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
+  reviewers?: string[] | undefined;
+  teamReviewers?: string[] | undefined;
 }>;
 
 // @public
@@ -401,8 +420,10 @@ export const createPublishGitlabMergeRequestAction: (options: {
   branchName: string;
   targetPath: string;
   token?: string | undefined;
+  commitAction?: 'update' | 'create' | 'delete' | undefined;
   projectid?: string | undefined;
   removeSourceBranch?: boolean | undefined;
+  assignee?: string | undefined;
 }>;
 
 // @public
@@ -436,11 +457,7 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   claimTask(): Promise<SerializedTask | undefined>;
   // (undocumented)
-  completeTask({
-    taskId,
-    status,
-    eventBody,
-  }: {
+  completeTask(options: {
     taskId: string;
     status: TaskStatus;
     eventBody: JsonObject;
@@ -468,11 +485,11 @@ export class DatabaseTaskStore implements TaskStore {
     tasks: SerializedTask[];
   }>;
   // (undocumented)
-  listEvents({ taskId, after }: TaskStoreListEventsOptions): Promise<{
+  listEvents(options: TaskStoreListEventsOptions): Promise<{
     events: SerializedTaskEvent[];
   }>;
   // (undocumented)
-  listStaleTasks({ timeoutS }: { timeoutS: number }): Promise<{
+  listStaleTasks(options: { timeoutS: number }): Promise<{
     tasks: {
       taskId: string;
     }[];
@@ -481,20 +498,14 @@ export class DatabaseTaskStore implements TaskStore {
 
 // @public
 export type DatabaseTaskStoreOptions = {
-  database: Knex;
+  database: PluginDatabaseManager | Knex;
 };
 
 // @public
 export const executeShellCommand: (options: RunCommandOptions) => Promise<void>;
 
 // @public
-export function fetchContents({
-  reader,
-  integrations,
-  baseUrl,
-  fetchUrl,
-  outputPath,
-}: {
+export function fetchContents(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   baseUrl?: string;
@@ -503,15 +514,14 @@ export function fetchContents({
 }): Promise<void>;
 
 // @public (undocumented)
-export interface OctokitWithPullRequestPluginClient {
-  // (undocumented)
+export type OctokitWithPullRequestPluginClient = Octokit & {
   createPullRequest(options: createPullRequest.Options): Promise<{
     data: {
       html_url: string;
       number: number;
     };
   } | null>;
-}
+};
 
 // @public
 export interface RouterOptions {
@@ -525,6 +535,8 @@ export interface RouterOptions {
   config: Config;
   // (undocumented)
   database: PluginDatabaseManager;
+  // (undocumented)
+  identity?: IdentityApi;
   // (undocumented)
   logger: Logger;
   // (undocumented)
@@ -543,6 +555,9 @@ export type RunCommandOptions = {
   logStream?: Writable;
 };
 
+// @alpha
+export const scaffolderCatalogModule: (options?: undefined) => BackendFeature;
+
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
   // (undocumented)
@@ -556,6 +571,19 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
   // (undocumented)
   validateEntityKind(entity: Entity): Promise<boolean>;
 }
+
+// @alpha
+export const scaffolderPlugin: (
+  options: ScaffolderPluginOptions,
+) => BackendFeature;
+
+// @alpha
+export type ScaffolderPluginOptions = {
+  actions?: TemplateAction<any>[];
+  taskWorkers?: number;
+  taskBroker?: TaskBroker;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
+};
 
 // @public
 export type SerializedTask = {

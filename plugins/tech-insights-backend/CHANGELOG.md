@@ -1,5 +1,90 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.5.2-next.1
+
+### Patch Changes
+
+- 12c6a07c2a: Changed the description of the `techdocsAnnotationFactName` fact.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.1
+
+## 0.5.2-next.0
+
+### Patch Changes
+
+- 8872cc735d: Fixed a bug where the database option to skip migrations was ignored.
+- 2e0689e536: Support for timeout in FactRetrieverRegistrationOptions
+- 9e8e9f5243: Modify Tech insight initialization to expose FactRetrieverEngine. Enables users to trigger fact retrieval manually or reschedule retrievers on runtime.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/plugin-tech-insights-node@0.3.4-next.0
+  - @backstage/backend-tasks@0.3.5-next.0
+  - @backstage/catalog-client@1.0.5-next.0
+
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/backend-tasks@0.3.4
+  - @backstage/plugin-tech-insights-common@0.2.6
+  - @backstage/plugin-tech-insights-node@0.3.3
+
+## 0.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/backend-tasks@0.3.4-next.0
+  - @backstage/plugin-tech-insights-common@0.2.6-next.0
+  - @backstage/plugin-tech-insights-node@0.3.3-next.0
+
+## 0.5.0
+
+### Minor Changes
+
+- 818fa28d71: Allow FactRetrieverRegistry to be injected into buildTechInsightsContext so that we can override default registry implementation.
+- 46cfda58aa: **BREAKING**: Update FactRetrieverRegistry interface to be async so that db backed implementations can be passed through to the FactRetrieverEngine.
+
+  If you have existing custom `FactRetrieverRegistry` implementations, you'll need to remove the `retrievers` member and make all the methods async.
+
+### Patch Changes
+
+- 2ef58ab539: TechInsightsBackend: Added missing 'scheduler' to code examples
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- bcc122c46d: The `FactRetriever` model has been extended by adding optional title and description fields, allowing you to display them in the UI.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/catalog-client@1.0.4
+  - @backstage/backend-tasks@0.3.3
+  - @backstage/plugin-tech-insights-common@0.2.5
+  - @backstage/plugin-tech-insights-node@0.3.2
+  - @backstage/errors@1.1.0
+
+## 0.5.0-next.3
+
+### Minor Changes
+
+- 46cfda58aa: **BREAKING**: Update FactRetrieverRegistry interface to be async so that db backed implementations can be passed through to the FactRetrieverEngine.
+
+  If you have existing custom `FactRetrieverRegistry` implementations, you'll need to remove the `retrievers` member and make all the methods async.
+
+### Patch Changes
+
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- bcc122c46d: The `FactRetriever` model has been extended by adding optional title and description fields, allowing you to display them in the UI.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/catalog-client@1.0.4-next.2
+  - @backstage/backend-tasks@0.3.3-next.3
+  - @backstage/plugin-tech-insights-common@0.2.5-next.0
+  - @backstage/plugin-tech-insights-node@0.3.2-next.1
+  - @backstage/catalog-model@1.1.0-next.3
+
 ## 0.5.0-next.2
 
 ### Minor Changes

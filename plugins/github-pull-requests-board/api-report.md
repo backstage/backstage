@@ -5,17 +5,27 @@
 ```ts
 /// <reference types="react" />
 
-import { FunctionComponent } from 'react';
-
-// Warning: (ae-missing-release-tag) "EntityTeamPullRequestsCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const EntityTeamPullRequestsCard: FunctionComponent<{}>;
+export const EntityTeamPullRequestsCard: (
+  props: EntityTeamPullRequestsCardProps,
+) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "EntityTeamPullRequestsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const EntityTeamPullRequestsContent: FunctionComponent<{}>;
+export interface EntityTeamPullRequestsCardProps {
+  // (undocumented)
+  pullRequestLimit?: number;
+}
+
+// @public (undocumented)
+export const EntityTeamPullRequestsContent: (
+  props: EntityTeamPullRequestsContentProps,
+) => JSX.Element;
+
+// @public (undocumented)
+export interface EntityTeamPullRequestsContentProps {
+  // (undocumented)
+  pullRequestLimit?: number;
+}
 
 // (No @packageDocumentation comment for this package)
 ```

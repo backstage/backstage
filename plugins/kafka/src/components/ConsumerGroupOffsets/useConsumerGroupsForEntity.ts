@@ -23,7 +23,7 @@ export const useConsumerGroupsForEntity = () => {
   const annotation =
     entity.metadata.annotations?.[KAFKA_CONSUMER_GROUP_ANNOTATION] ?? '';
 
-  const consumerList = useMemo(() => {
+  return useMemo(() => {
     return annotation.split(',').map(consumer => {
       const [clusterId, consumerGroup] = consumer.split('/');
 
@@ -32,12 +32,11 @@ export const useConsumerGroupsForEntity = () => {
           `Failed to parse kafka consumer group annotation: got "${annotation}"`,
         );
       }
+
       return {
         clusterId: clusterId.trim(),
         consumerGroup: consumerGroup.trim(),
       };
     });
   }, [annotation]);
-
-  return consumerList;
 };

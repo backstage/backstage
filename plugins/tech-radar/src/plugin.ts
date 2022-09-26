@@ -15,7 +15,6 @@
  */
 
 import { techRadarApiRef } from './api';
-
 import { SampleTechRadarApi } from './sample';
 import {
   createPlugin,
@@ -30,6 +29,8 @@ const rootRouteRef = createRouteRef({
 
 /**
  * Tech Radar plugin instance
+ *
+ * @public
  */
 export const techRadarPlugin = createPlugin({
   id: 'tech-radar',
@@ -45,6 +46,8 @@ export const techRadarPlugin = createPlugin({
  * @remarks
  *
  * Uses {@link TechRadarPageProps} as props
+ *
+ * @public
  */
 export const TechRadarPage = techRadarPlugin.provide(
   createRoutableExtension({

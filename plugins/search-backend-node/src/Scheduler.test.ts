@@ -55,7 +55,7 @@ describe('Scheduler', () => {
           task: mockTask2,
           scheduledRunner: mockScheduledTaskRunner2,
         }),
-      ).toThrowError();
+      ).toThrow();
 
       expect(mockScheduledTaskRunner1.run).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -95,7 +95,7 @@ describe('Scheduler', () => {
           task: mockTask2,
           scheduledRunner: mockScheduledTaskRunner2,
         }),
-      ).toThrowError();
+      ).toThrow();
 
       // Starts scheduling process
       testScheduler.start();
@@ -144,7 +144,7 @@ describe('Scheduler', () => {
           task: mockTask2,
           scheduledRunner: mockScheduledTaskRunner2,
         }),
-      ).not.toThrowError();
+      ).not.toThrow();
 
       // Starts scheduling process
       testScheduler.start();

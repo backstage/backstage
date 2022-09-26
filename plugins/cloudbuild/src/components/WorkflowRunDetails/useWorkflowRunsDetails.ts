@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useParams } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import { cloudbuildApiRef } from '../../api';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, useRouteRefParams } from '@backstage/core-plugin-api';
+import { buildRouteRef } from '../../routes';
 
 export const useWorkflowRunsDetails = (projectId: string) => {
   const api = useApi(cloudbuildApiRef);
-  const { id } = useParams();
+  const { id } = useRouteRefParams(buildRouteRef);
   const details = useAsync(async () => {
     return projectId
       ? api.getWorkflowRun({

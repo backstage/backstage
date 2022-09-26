@@ -224,6 +224,9 @@ describe('ElasticSearchClientWrapper', () => {
       osOptions = {
         provider: 'aws',
         node: 'https://my-es-cluster.eu-west-1.es.amazonaws.com',
+        // todo(backstage/techdocs-core): Remove the following ts-ignore when
+        // @short.io/opensearch-mock is updated to work w/opensearch >= 2.0.0
+        // @ts-ignore
         connection: mock.getConnection(),
       };
 

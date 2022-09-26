@@ -28,17 +28,9 @@ describe('ProblemsTable', () => {
   it('renders the table with some problem data', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <ProblemsTable problems={problems} />,
+        <ProblemsTable problems={problems} dynatraceBaseUrl="__dynatrace__" />,
       </ApiProvider>,
     );
-    expect(await rendered.findByText('example-service')).toBeInTheDocument();
-  });
-  it('renders an empty table when no data is provided', async () => {
-    const rendered = await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <ProblemsTable problems={[]} />
-      </ApiProvider>,
-    );
-    expect(await rendered.findByText('Problems')).toBeInTheDocument();
+    expect(await rendered.findByTitle('Search')).toBeInTheDocument();
   });
 });

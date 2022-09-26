@@ -21,12 +21,12 @@ import {
 } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
 import {
+  EntityKindFilter,
   entityRouteRef,
   MockEntityListContextProvider,
+  MockStarredEntitiesApi,
   starredEntitiesApiRef,
   UserListFilter,
-  EntityKindFilter,
-  MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
@@ -215,7 +215,14 @@ describe('CatalogTable component', () => {
     },
     {
       kind: 'location',
-      expectedColumns: ['Name', 'Type', 'Description', 'Tags', 'Actions'],
+      expectedColumns: [
+        'Name',
+        'Type',
+        'Targets',
+        'Description',
+        'Tags',
+        'Actions',
+      ],
     },
     {
       kind: 'resource',
@@ -299,4 +306,29 @@ describe('CatalogTable component', () => {
     },
     20_000,
   );
+  it('should render the subtitle when it is specified', async () => {
+    const entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'component1',
+        annotations: { [ANNOTATION_EDIT_URL]: 'https://other.place' },
+      },
+    };
+
+    const { getByText } = await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider value={{ entities: [entity] }}>
+          <CatalogTable subtitle="Should be rendered" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(getByText('Should be rendered')).toBeInTheDocument();
+  });
 });

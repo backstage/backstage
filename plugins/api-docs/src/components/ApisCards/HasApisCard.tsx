@@ -33,10 +33,6 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 
-type Props = {
-  variant?: InfoCardVariants;
-};
-
 const columns: TableColumn<ApiEntity>[] = [
   EntityTable.columns.createEntityRefColumn({ defaultKind: 'API' }),
   EntityTable.columns.createOwnerColumn(),
@@ -45,7 +41,11 @@ const columns: TableColumn<ApiEntity>[] = [
   EntityTable.columns.createMetadataDescriptionColumn(),
 ];
 
-export const HasApisCard = ({ variant = 'gridItem' }: Props) => {
+/**
+ * @public
+ */
+export const HasApisCard = (props: { variant?: InfoCardVariants }) => {
+  const { variant = 'gridItem' } = props;
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: RELATION_HAS_PART,

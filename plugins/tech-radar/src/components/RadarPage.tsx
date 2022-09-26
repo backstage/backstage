@@ -34,6 +34,8 @@ const useStyles = makeStyles(() => ({
 
 /**
  * Properties for {@link TechRadarPage}
+ *
+ * @public
  */
 export interface TechRadarPageProps extends TechRadarComponentProps {
   /**
@@ -52,6 +54,8 @@ export interface TechRadarPageProps extends TechRadarComponentProps {
 
 /**
  * Main Page of Tech Radar
+ *
+ * @public
  */
 export function RadarPage(props: TechRadarPageProps) {
   const {

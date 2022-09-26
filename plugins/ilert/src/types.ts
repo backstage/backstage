@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** @public */
 export interface Incident {
   id: number;
   summary: string;
@@ -33,31 +34,43 @@ export interface Incident {
   commentPublishToSubscribers: boolean;
 }
 
+/** @public */
 export const PENDING = 'PENDING';
+/** @public */
 export const ACCEPTED = 'ACCEPTED';
+/** @public */
 export const RESOLVED = 'RESOLVED';
+
+/** @public */
 export type IncidentStatus = typeof PENDING | typeof ACCEPTED | typeof RESOLVED;
+
+/** @public */
 export type IncidentPriority = 'HIGH' | 'LOW';
 
+/** @public */
 export interface Link {
   href: string;
   text: string;
 }
 
+/** @public */
 export interface Image {
   src: string;
   href: string;
   alt: string;
 }
 
+/** @public */
 export type SubscriberType = 'TEAM' | 'USER';
 
+/** @public */
 export interface Subscriber {
   id: number;
   name: string;
   type: SubscriberType;
 }
 
+/** @public */
 export interface LogEntry {
   id: number;
   timestamp: string;
@@ -69,6 +82,7 @@ export interface LogEntry {
   filterTypes?: string[];
 }
 
+/** @public */
 export interface User {
   id: number;
   username: string;
@@ -85,18 +99,22 @@ export interface User {
   department: string;
 }
 
+/** @public */
 export type UserRole =
   | 'USER'
   | 'ADMIN'
   | 'STAKEHOLDER'
   | 'ACCOUNT_OWNER'
   | 'RESPONDER';
+/** @public */
 export type Language = 'de' | 'en';
+/** @public */
 export interface Phone {
   regionCode: string;
   number: string;
 }
 
+/** @public */
 export interface AlertSource {
   id: number;
   name: string;
@@ -123,22 +141,26 @@ export interface AlertSource {
   teams: TeamShort[];
 }
 
+/** @public */
 export interface TeamShort {
   id: number;
   name: string;
 }
 
+/** @public */
 export interface TeamMember {
   user: User;
   role: 'STAKEHOLDER' | 'RESPONDER' | 'USER' | 'ADMIN';
 }
 
+/** @public */
 export type AlertSourceStatus =
   | 'PENDING'
   | 'ALL_ACCEPTED'
   | 'ALL_RESOLVED'
   | 'IN_MAINTENANCE'
   | 'DISABLED';
+/** @public */
 export type AlertSourceIntegrationType =
   | 'NAGIOS'
   | 'ICINGA'
@@ -186,18 +208,22 @@ export type AlertSourceIntegrationType =
   | 'KAPACITOR'
   | 'CORTEXXSOAR'
   | string;
+/** @public */
 export type AlertSourceIncidentCreation =
   | 'ONE_INCIDENT_PER_EMAIL'
   | 'ONE_INCIDENT_PER_EMAIL_SUBJECT'
   | 'ONE_PENDING_INCIDENT_ALLOWED'
   | 'ONE_OPEN_INCIDENT_ALLOWED'
   | 'OPEN_RESOLVE_ON_EXTRACTION';
+/** @public */
 export type AlertSourceFilterOperator = 'AND' | 'OR';
+/** @public */
 export type AlertSourceIncidentPriorityRule =
   | 'HIGH'
   | 'LOW'
   | 'HIGH_DURING_SUPPORT_HOURS'
   | 'LOW_DURING_SUPPORT_HOURS';
+/** @public */
 export interface AlertSourceEmailPredicate {
   field: 'EMAIL_FROM' | 'EMAIL_SUBJECT' | 'EMAIL_BODY';
   criteria:
@@ -211,15 +237,18 @@ export interface AlertSourceEmailPredicate {
     | 'MATCHES_NOT_REGEX';
   value: string;
 }
+/** @public */
 export type AlertSourceTimeZone =
   | 'Europe/Berlin'
   | 'America/New_York'
   | 'America/Los_Angeles'
   | 'Asia/Istanbul';
+/** @public */
 export interface AlertSourceSupportDay {
   start: string;
   end: string;
 }
+/** @public */
 export interface AlertSourceSupportHours {
   timezone: AlertSourceTimeZone;
   autoRaiseIncidents: boolean;
@@ -233,12 +262,14 @@ export interface AlertSourceSupportHours {
     SUNDAY: AlertSourceSupportDay;
   };
 }
+/** @public */
 export interface AlertSourceHeartbeat {
   summary: string;
   intervalSec: number;
   status: 'OVERDUE' | 'ON_TIME' | 'NEVER_RECEIVED';
 }
 
+/** @public */
 export interface AlertSourceAutotaskMetadata {
   userName: string;
   secret: string;
@@ -246,6 +277,7 @@ export interface AlertSourceAutotaskMetadata {
   webServer: string;
 }
 
+/** @public */
 export interface EscalationPolicy {
   id: number;
   name: string;
@@ -256,12 +288,14 @@ export interface EscalationPolicy {
   teams: TeamShort[];
 }
 
+/** @public */
 export interface EscalationRule {
   user: User | null;
   schedule: Schedule | null;
   escalationTimeout: number;
 }
 
+/** @public */
 export interface Schedule {
   id: number;
   name: string;
@@ -274,12 +308,14 @@ export interface Schedule {
   teams: TeamShort[];
 }
 
+/** @public */
 export interface Shift {
   user: User;
   start: string;
   end: string;
 }
 
+/** @public */
 export interface UptimeMonitor {
   id: number;
   name: string;
@@ -298,12 +334,14 @@ export interface UptimeMonitor {
   teams: TeamShort[];
 }
 
+/** @public */
 export interface UptimeMonitorCheckParams {
   host?: string;
   port?: number;
   url?: string;
 }
 
+/** @public */
 export interface IncidentResponder {
   group: 'SUGGESTED' | 'USER' | 'ESCALATION_POLICY' | 'ON_CALL_SCHEDULE';
   id: number;
@@ -311,6 +349,7 @@ export interface IncidentResponder {
   disabled: boolean;
 }
 
+/** @public */
 export interface IncidentAction {
   name: string;
   type: string;
@@ -319,6 +358,7 @@ export interface IncidentAction {
   history?: IncidentActionHistory[];
 }
 
+/** @public */
 export interface IncidentActionHistory {
   id: string;
   webhookId: string;
@@ -327,6 +367,7 @@ export interface IncidentActionHistory {
   success: boolean;
 }
 
+/** @public */
 export interface OnCall {
   user: User;
   escalationPolicy: EscalationPolicy;

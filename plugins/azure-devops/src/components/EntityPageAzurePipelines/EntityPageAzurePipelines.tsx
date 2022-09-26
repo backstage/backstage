@@ -20,18 +20,14 @@ import { getAnnotationFromEntity } from '../../utils/getAnnotationFromEntity';
 import { useBuildRuns } from '../../hooks/useBuildRuns';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
-export const EntityPageAzurePipelines = ({
-  defaultLimit,
-}: {
-  defaultLimit?: number;
-}) => {
+export const EntityPageAzurePipelines = (props: { defaultLimit?: number }) => {
   const { entity } = useEntity();
 
   const { project, repo, definition } = getAnnotationFromEntity(entity);
 
   const { items, loading, error } = useBuildRuns(
     project,
-    defaultLimit,
+    props.defaultLimit,
     repo,
     definition,
   );

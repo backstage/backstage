@@ -100,7 +100,9 @@ export async function getBitbucketDownloadUrl(
   // path will limit the downloaded content
   // /docs will only download the docs folder and everything below it
   // /docs/index.md will download the docs folder and everything below it
-  const path = filepath ? `&path=${encodeURIComponent(filepath)}` : '';
+  const path = filepath
+    ? `&path=${encodeURIComponent(decodeURIComponent(filepath))}`
+    : '';
   const archiveUrl = isHosted
     ? `${protocol}://${resource}/${project}/${repoName}/get/${branch}.tar.gz`
     : `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/archive?format=tgz&at=${branch}&prefix=${project}-${repoName}${path}`;

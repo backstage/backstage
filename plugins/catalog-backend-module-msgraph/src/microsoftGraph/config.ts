@@ -17,7 +17,6 @@
 import { Config } from '@backstage/config';
 import { trimEnd } from 'lodash';
 
-const DEFAULT_AUTHORITY = 'https://login.microsoftonline.com';
 const DEFAULT_PROVIDER_ID = 'default';
 const DEFAULT_TARGET = 'https://graph.microsoft.com/v1.0';
 
@@ -49,12 +48,14 @@ export type MicrosoftGraphProviderConfig = {
   tenantId: string;
   /**
    * The OAuth client ID to use for authenticating requests.
+   * If specified, ClientSecret must also be specified
    */
-  clientId: string;
+  clientId?: string;
   /**
    * The OAuth client secret to use for authenticating requests.
+   * If specified, ClientId must also be specified
    */
-  clientSecret: string;
+  clientSecret?: string;
   /**
    * The filter to apply to extract users.
    *
@@ -131,14 +132,15 @@ export function readMicrosoftGraphConfig(
   const providerConfigs = config.getOptionalConfigArray('providers') ?? [];
 
   for (const providerConfig of providerConfigs) {
-    const target = trimEnd(providerConfig.getString('target'), '/');
+    const target = trimEnd(
+      providerConfig.getOptionalString('target') ?? DEFAULT_TARGET,
+      '/',
+    );
+    const authority = providerConfig.getOptionalString('authority');
 
-    const authority = providerConfig.getOptionalString('authority')
-      ? trimEnd(providerConfig.getOptionalString('authority'), '/')
-      : DEFAULT_AUTHORITY;
     const tenantId = providerConfig.getString('tenantId');
-    const clientId = providerConfig.getString('clientId');
-    const clientSecret = providerConfig.getString('clientSecret');
+    const clientId = providerConfig.getOptionalString('clientId');
+    const clientSecret = providerConfig.getOptionalString('clientSecret');
 
     const userExpand = providerConfig.getOptionalString('userExpand');
     const userFilter = providerConfig.getOptionalString('userFilter');
@@ -171,6 +173,18 @@ export function readMicrosoftGraphConfig(
       queryMode !== 'advanced'
     ) {
       throw new Error(`queryMode must be one of: basic, advanced`);
+    }
+
+    if (clientId && !clientSecret) {
+      throw new Error(
+        `clientSecret must be provided when clientId is defined.`,
+      );
+    }
+
+    if (clientSecret && !clientId) {
+      throw new Error(
+        `clientId must be provided when clientSecret is defined.`,
+      );
     }
 
     providers.push({
@@ -225,14 +239,11 @@ export function readProviderConfig(
     config.getOptionalString('target') ?? DEFAULT_TARGET,
     '/',
   );
-  const authority = trimEnd(
-    config.getOptionalString('authority') ?? DEFAULT_AUTHORITY,
-    '/',
-  );
+  const authority = config.getOptionalString('authority');
 
-  const clientId = config.getString('clientId');
-  const clientSecret = config.getString('clientSecret');
   const tenantId = config.getString('tenantId');
+  const clientId = config.getOptionalString('clientId');
+  const clientSecret = config.getOptionalString('clientSecret');
 
   const userExpand = config.getOptionalString('user.expand');
   const userFilter = config.getOptionalString('user.filter');
@@ -258,6 +269,14 @@ export function readProviderConfig(
     throw new Error(
       `userGroupMemberSearch cannot be specified when userFilter is defined.`,
     );
+  }
+
+  if (clientId && !clientSecret) {
+    throw new Error(`clientSecret must be provided when clientId is defined.`);
+  }
+
+  if (clientSecret && !clientId) {
+    throw new Error(`clientId must be provided when clientSecret is defined.`);
   }
 
   return {

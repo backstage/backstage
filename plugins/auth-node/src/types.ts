@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Request } from 'express';
+
 /**
  * A representation of a successful Backstage sign-in.
  *
@@ -28,6 +30,15 @@ export interface BackstageSignInResult {
    */
   token: string;
 }
+
+/**
+ * Options to request the identity from a Backstage backend request
+ *
+ * @public
+ */
+export type IdentityApiGetIdentityRequest = {
+  request: Request<unknown>;
+};
 
 /**
  * Response object containing the {@link BackstageUserIdentity} and the token

@@ -16,7 +16,6 @@
 import { renderInTestApp, withLogCollector } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
-import { Route, Routes } from 'react-router';
 import { TabbedLayout } from './TabbedLayout';
 
 describe('TabbedLayout', () => {
@@ -59,24 +58,14 @@ describe('TabbedLayout', () => {
 
   it('navigates when user clicks different tab', async () => {
     const { getByText, queryByText, queryAllByRole } = await renderInTestApp(
-      <Routes>
-        <Route
-          path="/*"
-          element={
-            <TabbedLayout>
-              <TabbedLayout.Route path="/" title="tabbed-test-title">
-                <div>tabbed-test-content</div>
-              </TabbedLayout.Route>
-              <TabbedLayout.Route
-                path="/some-other-path"
-                title="tabbed-test-title-2"
-              >
-                <div>tabbed-test-content-2</div>
-              </TabbedLayout.Route>
-            </TabbedLayout>
-          }
-        />
-      </Routes>,
+      <TabbedLayout>
+        <TabbedLayout.Route path="/" title="tabbed-test-title">
+          <div>tabbed-test-content</div>
+        </TabbedLayout.Route>
+        <TabbedLayout.Route path="/some-other-path" title="tabbed-test-title-2">
+          <div>tabbed-test-content-2</div>
+        </TabbedLayout.Route>
+      </TabbedLayout>,
     );
 
     const secondTab = queryAllByRole('tab')[1];

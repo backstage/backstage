@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Box, Grid, Typography } from '@material-ui/core';
+import { Box, Grid, Typography, Link } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import React from 'react';
 import { useConsumerGroupsOffsetsForEntity } from './useConsumerGroupsOffsetsForEntity';
@@ -74,6 +74,7 @@ type Props = {
   loading: boolean;
   retry: () => void;
   clusterId: string;
+  dashboardUrl?: string;
   consumerGroup: string;
   topics?: TopicPartitionInfo[];
 };
@@ -82,6 +83,7 @@ export const ConsumerGroupOffsets = ({
   loading,
   topics,
   clusterId,
+  dashboardUrl,
   consumerGroup,
   retry,
 }: Props) => {
@@ -100,7 +102,14 @@ export const ConsumerGroupOffsets = ({
       title={
         <Box display="flex" alignItems="center">
           <Typography variant="h6">
-            Consumed Topics for {consumerGroup} ({clusterId})
+            Consumed Topics for {consumerGroup} (
+            {(dashboardUrl && (
+              <Link href={dashboardUrl} target="_blank">
+                {clusterId}
+              </Link>
+            )) ||
+              clusterId}
+            )
           </Typography>
         </Box>
       }
@@ -112,13 +121,15 @@ export const ConsumerGroupOffsets = ({
 export const KafkaTopicsForConsumer = () => {
   const [tableProps, { retry }] = useConsumerGroupsOffsetsForEntity();
   return (
-    <Grid>
+    <Grid container spacing={3}>
       {tableProps.consumerGroupsTopics?.map(consumerGroup => (
-        <ConsumerGroupOffsets
-          {...consumerGroup}
-          loading={tableProps.loading}
-          retry={retry}
-        />
+        <Grid item xs={12} key={consumerGroup.clusterId}>
+          <ConsumerGroupOffsets
+            {...consumerGroup}
+            loading={tableProps.loading}
+            retry={retry}
+          />
+        </Grid>
       ))}
     </Grid>
   );

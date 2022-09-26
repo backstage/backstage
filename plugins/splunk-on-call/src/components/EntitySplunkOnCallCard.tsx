@@ -99,6 +99,7 @@ export const MissingEventsRestEndpoint = () => (
   </CardContent>
 );
 
+/** @public */
 export const isSplunkOnCallAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[SPLUNK_ON_CALL_TEAM]) ||
   Boolean(entity.metadata.annotations?.[SPLUNK_ON_CALL_ROUTING_KEY]);

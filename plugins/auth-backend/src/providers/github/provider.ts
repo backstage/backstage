@@ -26,7 +26,7 @@ import {
   PassportDoneCallback,
 } from '../../lib/passport';
 import {
-  RedirectInfo,
+  OAuthStartResponse,
   AuthHandler,
   SignInResolver,
   StateEncoder,
@@ -52,6 +52,7 @@ type PrivateInfo = {
   refreshToken?: string;
 };
 
+/** @public */
 export type GithubOAuthResult = {
   fullProfile: PassportProfile;
   params: {
@@ -106,7 +107,7 @@ export class GithubAuthProvider implements OAuthHandlers {
     );
   }
 
-  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     return await executeRedirectStrategy(req, this._strategy, {
       scope: req.scope,
       state: (await this.stateEncoder(req)).encodedState,

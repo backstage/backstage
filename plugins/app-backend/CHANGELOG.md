@@ -1,5 +1,76 @@
 # @backstage/plugin-app-backend
 
+## 0.3.36-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.2
+  - @backstage/config-loader@1.1.4-next.1
+
+## 0.3.36-next.1
+
+### Patch Changes
+
+- d669d89206: Minor API signatures cleanup
+- 60b85d8ade: Updated dependency `helmet` to `^6.0.0`.
+
+  Please note that these policies are no longer applied by default:
+
+  helmet.contentSecurityPolicy no longer sets block-all-mixed-content directive by default
+  helmet.expectCt is no longer set by default. It can, however, be explicitly enabled. It will be removed in Helmet 7.
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.1
+
+## 0.3.36-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 8872cc735d: Fixed a bug where the database option to skip migrations was ignored.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/config-loader@1.1.4-next.0
+
+## 0.3.35
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+
+## 0.3.35-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+
+## 0.3.34
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/config-loader@1.1.3
+
+## 0.3.34-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/config-loader@1.1.3-next.1
+
 ## 0.3.34-next.2
 
 ### Patch Changes

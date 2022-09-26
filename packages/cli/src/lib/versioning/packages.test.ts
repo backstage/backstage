@@ -20,6 +20,13 @@ import * as runObj from '../run';
 import { fetchPackageInfo, mapDependencies } from './packages';
 import { NotFoundError } from '../errors';
 
+jest.mock('../run', () => {
+  return {
+    run: jest.fn(),
+    runPlain: jest.fn(),
+  };
+});
+
 describe('fetchPackageInfo', () => {
   afterEach(() => {
     jest.resetAllMocks();

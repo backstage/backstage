@@ -6,6 +6,7 @@
 /// <reference types="node" />
 
 import { ApiResponse } from '@opensearch-project/opensearch';
+import { ApiResponse as ApiResponse_2 } from '@elastic/elasticsearch';
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
 import { BulkHelper } from '@opensearch-project/opensearch/lib/Helpers';
 import { BulkStats } from '@opensearch-project/opensearch/lib/Helpers';
@@ -18,6 +19,7 @@ import { Readable } from 'stream';
 import { SearchEngine } from '@backstage/plugin-search-common';
 import { SearchQuery } from '@backstage/plugin-search-common';
 import { TransportRequestPromise } from '@opensearch-project/opensearch/lib/Transport';
+import { TransportRequestPromise as TransportRequestPromise_2 } from '@elastic/elasticsearch/lib/Transport';
 
 // @public
 export interface BaseElasticSearchClientOptions {
@@ -130,51 +132,52 @@ export class ElasticSearchClientWrapper {
     refreshOnCompletion?: string | boolean;
   }): BulkHelper<BulkStats>;
   // (undocumented)
-  createIndex({
-    index,
-  }: {
+  createIndex(options: {
     index: string;
-  }): TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>;
+  }):
+    | TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>
+    | TransportRequestPromise_2<ApiResponse_2<Record<string, any>, unknown>>;
   // (undocumented)
-  deleteIndex({
-    index,
-  }: {
+  deleteIndex(options: {
     index: string | string[];
-  }): TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>;
+  }):
+    | TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>
+    | TransportRequestPromise_2<ApiResponse_2<Record<string, any>, unknown>>;
   // (undocumented)
   static fromClientOptions(
     options: ElasticSearchClientOptions,
   ): ElasticSearchClientWrapper;
   // (undocumented)
-  getAliases({
-    aliases,
-  }: {
+  getAliases(options: {
     aliases: string[];
-  }): TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>;
+  }):
+    | TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>
+    | TransportRequestPromise_2<ApiResponse_2<Record<string, any>, unknown>>;
   // (undocumented)
-  indexExists({
-    index,
-  }: {
+  indexExists(options: {
     index: string | string[];
-  }): TransportRequestPromise<ApiResponse<boolean, unknown>>;
+  }):
+    | TransportRequestPromise<ApiResponse<boolean, unknown>>
+    | TransportRequestPromise_2<ApiResponse_2<boolean, unknown>>;
   // (undocumented)
   putIndexTemplate(
     template: ElasticSearchCustomIndexTemplate,
-  ): TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>;
+  ):
+    | TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>
+    | TransportRequestPromise_2<ApiResponse_2<Record<string, any>, unknown>>;
   // (undocumented)
-  search({
-    index,
-    body,
-  }: {
+  search(options: {
     index: string | string[];
     body: Object;
-  }): TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>;
+  }):
+    | TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>
+    | TransportRequestPromise_2<ApiResponse_2<Record<string, any>, unknown>>;
   // (undocumented)
-  updateAliases({
-    actions,
-  }: {
+  updateAliases(options: {
     actions: ElasticSearchAliasAction[];
-  }): TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>;
+  }):
+    | TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>
+    | TransportRequestPromise_2<ApiResponse_2<Record<string, any>, unknown>>;
 }
 
 // @public
@@ -315,6 +318,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     aliasPostfix: string,
     indexPrefix: string,
     logger: Logger,
+    batchSize: number,
     highlightOptions?: ElasticSearchHighlightOptions,
   );
   // (undocumented)
@@ -361,6 +365,7 @@ export type ElasticSearchSearchEngineIndexerOptions = {
   alias: string;
   logger: Logger;
   elasticSearchClientWrapper: ElasticSearchClientWrapper;
+  batchSize: number;
 };
 
 // @public (undocumented)

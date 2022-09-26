@@ -19,6 +19,7 @@ import { catalogEntityRouteRef, exploreRouteRef } from './routes';
 import { exampleTools } from './util/examples';
 import { createApiFactory, createPlugin } from '@backstage/core-plugin-api';
 
+/** @public */
 export const explorePlugin = createPlugin({
   id: 'explore',
   apis: [

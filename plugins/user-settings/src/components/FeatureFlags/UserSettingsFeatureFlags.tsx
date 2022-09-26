@@ -24,7 +24,6 @@ import {
 } from '@material-ui/core';
 import { EmptyFlags } from './EmptyFlags';
 import { FlagItem } from './FeatureFlagsItem';
-
 import {
   featureFlagsApiRef,
   FeatureFlagState,
@@ -33,6 +32,7 @@ import {
 import { InfoCard } from '@backstage/core-components';
 import ClearIcon from '@material-ui/icons/Clear';
 
+/** @public */
 export const UserSettingsFeatureFlags = () => {
   const featureFlagsApi = useApi(featureFlagsApiRef);
   const featureFlags = featureFlagsApi.getRegisteredFlags();

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { BaseFilter, FilterType, PullRequestFilter } from './types';
-
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
+import { BaseFilter, FilterType, PullRequestFilter } from './types';
 import { equalsIgnoreCase } from '../../../../utils';
 
+/** @public */
 export type CreatedByUserFilter = BaseFilter &
   (
     | {

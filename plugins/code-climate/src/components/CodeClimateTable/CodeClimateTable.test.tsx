@@ -17,7 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { CodeClimateTable } from './CodeClimateTable';
-import { mockData } from '../../api/mock';
+import { mockData } from '../../api/mock/mock-api';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 

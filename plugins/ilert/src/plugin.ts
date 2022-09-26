@@ -25,6 +25,7 @@ import {
   createComponentExtension,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const ilertPlugin = createPlugin({
   id: 'ilert',
   apis: [
@@ -44,6 +45,7 @@ export const ilertPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const ILertPage = ilertPlugin.provide(
   createRoutableExtension({
     name: 'ILertPage',
@@ -52,6 +54,7 @@ export const ILertPage = ilertPlugin.provide(
   }),
 );
 
+/** @public */
 export const EntityILertCard = ilertPlugin.provide(
   createComponentExtension({
     name: 'EntityILertCard',

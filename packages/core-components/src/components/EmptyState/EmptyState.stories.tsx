@@ -76,3 +76,19 @@ export const WithAction = () => (
     />
   </div>
 );
+
+export const CustomImage = () => (
+  <div style={containerStyle}>
+    <EmptyState
+      title="Custom image example"
+      missing={{
+        customImage: (
+          <img
+            src="https://backstage.io/animations/backstage-software-catalog-icon-1.gif"
+            alt="Backstage example"
+          />
+        ),
+      }}
+    />
+  </div>
+);

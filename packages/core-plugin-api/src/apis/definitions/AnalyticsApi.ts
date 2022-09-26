@@ -21,7 +21,7 @@ import { AnalyticsContextValue } from '../../analytics/types';
  * Represents an event worth tracking in an analytics system that could inform
  * how users of a Backstage instance are using its features.
  *
- * @alpha
+ * @public
  */
 export type AnalyticsEvent = {
   /**
@@ -79,7 +79,7 @@ export type AnalyticsEvent = {
  * A structure allowing other arbitrary metadata to be provided by analytics
  * event emitters.
  *
- * @alpha
+ * @public
  */
 export type AnalyticsEventAttributes = {
   [attribute in string]: string | boolean | number;
@@ -89,7 +89,7 @@ export type AnalyticsEventAttributes = {
  * Represents a tracker with methods that can be called to track events in a
  * configured analytics service.
  *
- * @alpha
+ * @public
  */
 export type AnalyticsTracker = {
   captureEvent: (
@@ -103,8 +103,6 @@ export type AnalyticsTracker = {
 };
 
 /**
- * **EXPERIMENTAL**
- *
  * The Analytics API is used to track user behavior in a Backstage instance.
  *
  * @remarks
@@ -113,7 +111,7 @@ export type AnalyticsTracker = {
  * useAnalytics() hook. This will return a pre-configured AnalyticsTracker
  * with relevant methods for instrumentation.
  *
- * @alpha
+ * @public
  */
 export type AnalyticsApi = {
   /**
@@ -124,11 +122,9 @@ export type AnalyticsApi = {
 };
 
 /**
- * **EXPERIMENTAL**
- *
  * The {@link ApiRef} of {@link AnalyticsApi}.
  *
- * @alpha
+ * @public
  */
 export const analyticsApiRef: ApiRef<AnalyticsApi> = createApiRef({
   id: 'core.analytics',

@@ -28,21 +28,25 @@ describe('serializeDirectoryContents', () => {
         {
           path: 'index.ts',
           executable: false,
+          symlink: false,
           content: expect.any(Buffer),
         },
         {
           path: 'types.ts',
           executable: false,
+          symlink: false,
           content: expect.any(Buffer),
         },
         {
           path: 'serializeDirectoryContents.ts',
           executable: false,
+          symlink: false,
           content: expect.any(Buffer),
         },
         {
           path: 'serializeDirectoryContents.test.ts',
           executable: false,
+          symlink: false,
           content: expect.any(Buffer),
         },
       ]),
@@ -72,27 +76,100 @@ describe('serializeDirectoryContents', () => {
       {
         path: 'a.txt',
         executable: false,
+        symlink: false,
         content: Buffer.from('a', 'utf8'),
       },
       {
         path: 'b/b1.txt',
         executable: false,
+        symlink: false,
         content: Buffer.from('b1', 'utf8'),
       },
       {
         path: 'b/b2.txt',
         executable: false,
+        symlink: false,
         content: Buffer.from('b2', 'utf8'),
       },
       {
         path: 'c/c1/c11.txt',
         executable: false,
+        symlink: false,
         content: Buffer.from('c11', 'utf8'),
       },
       {
         path: 'c/c1/c11/c111.txt',
         executable: false,
+        symlink: false,
         content: Buffer.from('c111', 'utf8'),
+      },
+    ]);
+  });
+
+  it('should ignore symlinked files', async () => {
+    mockFs({
+      root: {
+        'a.txt': 'some text',
+        sym: mockFs.symlink({
+          path: './a.txt',
+        }),
+      },
+    });
+
+    await expect(serializeDirectoryContents('root')).resolves.toEqual([
+      {
+        path: 'a.txt',
+        executable: false,
+        symlink: false,
+        content: Buffer.from('some text', 'utf8'),
+      },
+    ]);
+  });
+
+  it('should pick up broken symlinks', async () => {
+    mockFs({
+      root: {
+        'b.txt': mockFs.symlink({
+          path: './a.txt',
+        }),
+      },
+    });
+
+    await expect(serializeDirectoryContents('root')).resolves.toEqual([
+      {
+        path: 'b.txt',
+        executable: false,
+        symlink: true,
+        content: Buffer.from('./a.txt', 'utf8'),
+      },
+    ]);
+  });
+
+  it('should ignore symlinked folder files', async () => {
+    mockFs({
+      root: {
+        'a.txt': 'some text',
+        linkme: {
+          'b.txt': 'lols',
+        },
+        sym: mockFs.symlink({
+          path: './linkme',
+        }),
+      },
+    });
+
+    await expect(serializeDirectoryContents('root')).resolves.toEqual([
+      {
+        path: 'a.txt',
+        executable: false,
+        symlink: false,
+        content: Buffer.from('some text', 'utf8'),
+      },
+      {
+        path: 'linkme/b.txt',
+        executable: false,
+        symlink: false,
+        content: Buffer.from('lols', 'utf8'),
       },
     ]);
   });
@@ -114,11 +191,13 @@ describe('serializeDirectoryContents', () => {
       {
         path: '.gitignore',
         executable: false,
+        symlink: false,
         content: Buffer.from('*.txt', 'utf8'),
       },
       {
         path: 'a.log',
         executable: false,
+        symlink: false,
         content: Buffer.from('a', 'utf8'),
       },
     ]);
@@ -152,26 +231,31 @@ describe('serializeDirectoryContents', () => {
       {
         path: 'a.txt',
         executable: false,
+        symlink: false,
         content: Buffer.from('a', 'utf8'),
       },
       {
         path: 'b/.b',
         executable: false,
+        symlink: false,
         content: Buffer.from('b', 'utf8'),
       },
       {
         path: 'b/b.txt',
         executable: false,
+        symlink: false,
         content: Buffer.from('b', 'utf8'),
       },
       {
         path: 'c/c.log',
         executable: false,
+        symlink: false,
         content: Buffer.from('c', 'utf8'),
       },
       {
         path: 'c/c.txt',
         executable: false,
+        symlink: false,
         content: Buffer.from('c', 'utf8'),
       },
     ]);

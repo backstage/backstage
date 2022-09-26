@@ -93,6 +93,7 @@ export default async function serve(opts: OptionValues) {
     port: opts.mkdocsPort,
     dockerImage: opts.dockerImage,
     dockerEntrypoint: opts.dockerEntrypoint,
+    dockerOptions: opts.dockerOption,
     useDocker: opts.docker,
     stdoutLogFunc: mkdocsLogFunc,
     stderrLogFunc: mkdocsLogFunc,

@@ -43,7 +43,7 @@ type LunrResultEnvelope = {
 };
 
 /**
- * Translator repsonsible for translating search term and filters to a query that the Lunr Search Engine understands.
+ * Translator responsible for translating search term and filters to a query that the Lunr Search Engine understands.
  * @public
  */
 export type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
@@ -59,8 +59,8 @@ export class LunrSearchEngine implements SearchEngine {
   protected highlightPreTag: string;
   protected highlightPostTag: string;
 
-  constructor({ logger }: { logger: Logger }) {
-    this.logger = logger;
+  constructor(options: { logger: Logger }) {
+    this.logger = options.logger;
     this.docStore = {};
     const uuidTag = uuid();
     this.highlightPreTag = `<${uuidTag}>`;
@@ -114,10 +114,16 @@ export class LunrSearchEngine implements SearchEngine {
 
             // Require that the given field has the given value
             if (['string', 'number', 'boolean'].includes(typeof value)) {
-              q.term(lunr.tokenizer(value?.toString()), {
-                presence: lunr.Query.presence.REQUIRED,
-                fields: [field],
-              });
+              q.term(
+                lunr
+                  .tokenizer(value?.toString())
+                  .map(lunr.stopWordFilter)
+                  .filter(element => element !== undefined),
+                {
+                  presence: lunr.Query.presence.REQUIRED,
+                  fields: [field],
+                },
+              );
             } else if (Array.isArray(value)) {
               // Illustrate how multi-value filters could work.
               // But warn that Lurn supports this poorly.

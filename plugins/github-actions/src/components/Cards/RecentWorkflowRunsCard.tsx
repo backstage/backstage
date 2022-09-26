@@ -18,7 +18,7 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import React, { useEffect } from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { GITHUB_ACTIONS_ANNOTATION } from '../getProjectNameFromEntity';
-import { useWorkflowRuns } from '../useWorkflowRuns';
+import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { Typography } from '@material-ui/core';
 
@@ -32,29 +32,28 @@ import {
 
 const firstLine = (message: string): string => message.split('\n')[0];
 
-export type Props = {
+/** @public */
+export const RecentWorkflowRunsCard = (props: {
   branch?: string;
   dense?: boolean;
   limit?: number;
   variant?: InfoCardVariants;
-};
+}) => {
+  const { branch, dense = false, limit = 5, variant } = props;
 
-export const RecentWorkflowRunsCard = ({
-  branch,
-  dense = false,
-  limit = 5,
-  variant,
-}: Props) => {
   const { entity } = useEntity();
   const config = useApi(configApiRef);
   const errorApi = useApi(errorApiRef);
+
   // TODO: Get github hostname from metadata annotation
   const hostname = readGitHubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
   )[0].host;
+
   const [owner, repo] = (
     entity?.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] ?? '/'
   ).split('/');
+
   const [{ runs = [], loading, error }] = useWorkflowRuns({
     hostname,
     owner,
@@ -62,6 +61,7 @@ export const RecentWorkflowRunsCard = ({
     branch,
     initialPageSize: limit,
   });
+
   useEffect(() => {
     if (error) {
       errorApi.post(error);
@@ -90,7 +90,7 @@ export const RecentWorkflowRunsCard = ({
           </Typography>
         </div>
       ) : (
-        <Table
+        <Table<WorkflowRun>
           isLoading={loading}
           options={{
             search: false,
@@ -107,7 +107,7 @@ export const RecentWorkflowRunsCard = ({
                   component={RouterLink}
                   to={generatePath('./ci-cd/:id', { id: data.id! })}
                 >
-                  {firstLine(data.message)}
+                  {firstLine(data.message ?? '')}
                 </Link>
               ),
             },

@@ -9,7 +9,7 @@ import express from 'express';
 import { Logger } from 'winston';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { SearchEngine } from '@backstage/plugin-search-backend-node';
+import { SearchEngine } from '@backstage/plugin-search-common';
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;

@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-export interface ComponentWrapper {
-  component: Component;
+export interface InstanceUrlWrapper {
+  instanceUrl: string;
 }
 
-export interface Component {
+export interface FindingsWrapper {
   analysisDate: string;
-}
-
-export interface MeasuresWrapper {
   measures: Measure[];
 }
 
@@ -55,7 +52,6 @@ export type MetricKey =
 export interface Measure {
   metric: MetricKey;
   value: string;
-  component: string;
 }
 
 export type SonarUrlProcessorFunc = (identifier: string) => string;

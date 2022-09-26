@@ -1,5 +1,103 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.3.15-next.1
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.2
+
+## 0.3.15-next.0
+
+### Patch Changes
+
+- 3f739be9d9: Minor API signatures cleanup
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- cb1cfc018b: `createRouter` now requires an additional reader: `UrlReader` argument
+
+  ```diff
+  export default async function createPlugin(
+    env: PluginEnvironment,
+  ): Promise<Router> {
+    return createRouter({
+      logger: env.logger,
+      config: env.config,
+  +   reader: env.reader,
+    });
+  }
+  ```
+
+  Remember to check if you have already provided these settings previously.
+
+  #### [Azure DevOps]
+
+  ```yaml
+  # app-config.yaml
+  azureDevOps:
+    host: dev.azure.com
+    token: my-token
+    organization: my-company
+  ```
+
+  #### [Azure Integrations]
+
+  ```yaml
+  # app-config.yaml
+  integrations:
+    azure:
+      - host: dev.azure.com
+        token: ${AZURE_TOKEN}
+  ```
+
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/plugin-azure-devops-common@0.3.0-next.0
+
+## 0.3.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+
+## 0.3.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+
+## 0.3.13
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 13a232ec22: Added comments to example to help avoid confusion as to where lines need to be added
+- e67c4b7d5a: Adding getProjects endpoint to list out all projects associated with the Azure DevOps organization.
+
+  It can be accessed by using this endpoint `{backendUrl}/api/azure-devops/projects`
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/plugin-azure-devops-common@0.2.4
+
+## 0.3.13-next.1
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- e67c4b7d5a: Adding getProjects endpoint to list out all projects associated with the Azure DevOps organization.
+
+  It can be accessed by using this endpoint `{backendUrl}/api/azure-devops/projects`
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/plugin-azure-devops-common@0.2.4-next.0
+
 ## 0.3.13-next.0
 
 ### Patch Changes

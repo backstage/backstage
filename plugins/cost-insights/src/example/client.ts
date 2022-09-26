@@ -39,6 +39,7 @@ import {
   trendlineOf,
 } from '../testUtils';
 
+/** @public */
 export class ExampleCostInsightsClient implements CostInsightsApi {
   private request(_: any, res: any): Promise<any> {
     return new Promise(resolve => setTimeout(resolve, 0, res));
@@ -52,7 +53,8 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
 
   async getUserGroups(userId: string): Promise<Group[]> {
     const groups: Group[] = await this.request({ userId }, [
-      { id: 'pied-piper' },
+      { id: 'group-a', name: 'Group A' },
+      { id: 'group-b', name: 'Group B' },
     ]);
 
     return groups;

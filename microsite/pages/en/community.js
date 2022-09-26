@@ -76,7 +76,7 @@ const Background = props => {
                 <li>
                   <Block.Paragraph style={{ marginBottom: '0' }}>
                     Subscribe to the{' '}
-                    <a href="https://mailchi.mp/spotify/backstage-community">
+                    <a href="https://info.backstage.spotify.com/newsletter_subscribe">
                       Community newsletter
                     </a>
                   </Block.Paragraph>
@@ -122,7 +122,7 @@ const Background = props => {
                 The official monthly Backstage newsletter. Don't miss the latest
                 news from your favorite project!
               </Block.Paragraph>
-              <Block.LinkButton href="https://mailchi.mp/spotify/backstage-community">
+              <Block.LinkButton href="https://info.backstage.spotify.com/newsletter_subscribe">
                 Subscribe
               </Block.LinkButton>
             </Block.TextBox>

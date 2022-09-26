@@ -73,7 +73,7 @@ export function createIncludeTransform(
       case '$file':
         try {
           const value = await readFile(resolvePath(baseDir, includeValue));
-          return { applied: true, value };
+          return { applied: true, value: value.trimEnd() };
         } catch (error) {
           throw new Error(`failed to read file ${includeValue}, ${error}`);
         }

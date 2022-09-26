@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { resolvePackagePath } from '@backstage/backend-common';
+import {
+  PluginDatabaseManager,
+  resolvePackagePath,
+} from '@backstage/backend-common';
 import { Knex } from 'knex';
 
 const migrationsDir = resolvePackagePath(
@@ -23,24 +26,27 @@ const migrationsDir = resolvePackagePath(
 );
 
 type Options = {
-  database: Knex;
+  database: PluginDatabaseManager;
 };
 
 export class DatabaseHandler {
   static async create(options: Options): Promise<DatabaseHandler> {
     const { database } = options;
+    const client = await database.getClient();
 
-    await database.migrate.latest({
-      directory: migrationsDir,
-    });
+    if (!database.migrations?.skip) {
+      await client.migrate.latest({
+        directory: migrationsDir,
+      });
+    }
 
-    return new DatabaseHandler(options);
+    return new DatabaseHandler(client);
   }
 
-  private readonly database: Knex;
+  private readonly client: Knex;
 
-  private constructor(options: Options) {
-    this.database = options.database;
+  private constructor(client: Knex) {
+    this.client = client;
   }
 
   private columns = [
@@ -58,14 +64,11 @@ export class DatabaseHandler {
   ];
 
   async getMembers(id: string) {
-    return await this.database
-      .select('*')
-      .from('members')
-      .where({ item_id: id });
+    return await this.client.select('*').from('members').where({ item_id: id });
   }
 
   async addMember(id: number, userId: string, picture?: string) {
-    await this.database
+    await this.client
       .insert({
         item_id: id,
         user_id: userId,
@@ -75,18 +78,18 @@ export class DatabaseHandler {
   }
 
   async deleteMember(id: number, userId: string) {
-    return await this.database('members')
+    return await this.client('members')
       .where({ item_id: id })
       .andWhere('user_id', userId)
       .del();
   }
 
   async getMetadataById(id: number) {
-    const coalesce = this.database.raw(
+    const coalesce = this.client.raw(
       'coalesce(count(members.item_id), 0) as members_count',
     );
 
-    return await this.database('metadata')
+    return await this.client('metadata')
       .select([...this.columns, coalesce])
       .where({ 'metadata.id': id })
       .groupBy(this.columns)
@@ -94,11 +97,11 @@ export class DatabaseHandler {
   }
 
   async getMetadataByRef(entityRef: string) {
-    const coalesce = this.database.raw(
+    const coalesce = this.client.raw(
       'coalesce(count(members.item_id), 0) as members_count',
     );
 
-    return await this.database('metadata')
+    return await this.client('metadata')
       .select([...this.columns, coalesce])
       .where({ 'metadata.entity_ref': entityRef })
       .groupBy(this.columns)
@@ -118,7 +121,7 @@ export class DatabaseHandler {
       responsible,
     } = bazaarProject;
 
-    await this.database
+    await this.client
       .insert({
         name,
         entity_ref: entityRef,
@@ -148,7 +151,7 @@ export class DatabaseHandler {
       responsible,
     } = bazaarProject;
 
-    return await this.database('metadata').where({ id: id }).update({
+    return await this.client('metadata').where({ id: id }).update({
       name,
       entity_ref: entityRef,
       description,
@@ -163,15 +166,15 @@ export class DatabaseHandler {
   }
 
   async deleteMetadata(id: number) {
-    return await this.database('metadata').where({ id: id }).del();
+    return await this.client('metadata').where({ id: id }).del();
   }
 
   async getProjects() {
-    const coalesce = this.database.raw(
+    const coalesce = this.client.raw(
       'coalesce(count(members.item_id), 0) as members_count',
     );
 
-    return await this.database('metadata')
+    return await this.client('metadata')
       .select([...this.columns, coalesce])
       .groupBy(this.columns)
       .leftJoin('members', 'metadata.id', '=', 'members.item_id');

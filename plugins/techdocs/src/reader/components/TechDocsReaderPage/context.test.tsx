@@ -22,6 +22,7 @@ import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import { TestApiProvider } from '@backstage/test-utils';
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
+import { configApiRef } from '@backstage/core-plugin-api';
 import {
   techdocsApiRef,
   TechDocsMetadata,
@@ -52,6 +53,10 @@ const techdocsApiMock = {
   getTechDocsMetadata: jest.fn().mockResolvedValue(mockTechDocsMetadata),
 };
 
+const configApiMock = {
+  getOptionalBoolean: jest.fn().mockReturnValue(undefined),
+};
+
 const wrapper = ({
   entityRef = {
     kind: mockEntityMetadata.kind,
@@ -64,7 +69,12 @@ const wrapper = ({
   children: React.ReactNode;
 }) => (
   <ThemeProvider theme={lightTheme}>
-    <TestApiProvider apis={[[techdocsApiRef, techdocsApiMock]]}>
+    <TestApiProvider
+      apis={[
+        [techdocsApiRef, techdocsApiMock],
+        [configApiRef, configApiMock],
+      ]}
+    >
       <TechDocsReaderPageProvider entityRef={entityRef}>
         {children}
       </TechDocsReaderPageProvider>

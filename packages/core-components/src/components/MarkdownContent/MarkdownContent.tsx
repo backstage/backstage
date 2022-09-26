@@ -20,6 +20,7 @@ import gfm from 'remark-gfm';
 import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { CodeSnippet } from '../CodeSnippet';
+import { HeadingProps } from 'react-markdown/lib/ast-to-react';
 
 export type MarkdownContentClassKey = 'markdown';
 
@@ -70,6 +71,22 @@ type Props = {
   linkTarget?: Options['linkTarget'];
   transformLinkUri?: (href: string) => string;
   transformImageUri?: (href: string) => string;
+  className?: string;
+};
+
+const flatten = (text: string, child: any): string => {
+  if (!child) return text;
+
+  return typeof child === 'string'
+    ? text + child
+    : React.Children.toArray(child.props.children).reduce(flatten, text);
+};
+
+const headingRenderer = ({ level, children }: HeadingProps) => {
+  const childrenArray = React.Children.toArray(children);
+  const text = childrenArray.reduce(flatten, '');
+  const slug = text.toLocaleLowerCase('en-US').replace(/\W/g, '-');
+  return React.createElement(`h${level}`, { id: slug }, children);
 };
 
 const components: Options['components'] = {
@@ -84,6 +101,12 @@ const components: Options['components'] = {
       </code>
     );
   },
+  h1: headingRenderer,
+  h2: headingRenderer,
+  h3: headingRenderer,
+  h4: headingRenderer,
+  h5: headingRenderer,
+  h6: headingRenderer,
 };
 
 /**
@@ -99,12 +122,13 @@ export function MarkdownContent(props: Props) {
     linkTarget,
     transformLinkUri,
     transformImageUri,
+    className,
   } = props;
   const classes = useStyles();
   return (
     <ReactMarkdown
       remarkPlugins={dialect === 'gfm' ? [gfm] : []}
-      className={classes.markdown}
+      className={`${classes.markdown} ${className}`}
       children={content}
       components={components}
       linkTarget={linkTarget}

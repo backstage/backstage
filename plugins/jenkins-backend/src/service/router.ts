@@ -28,12 +28,14 @@ import {
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 
+/** @public */
 export interface RouterOptions {
   logger: Logger;
   jenkinsInfoProvider: JenkinsInfoProvider;
   permissions?: PermissionEvaluator | PermissionAuthorizer;
 }
 
+/** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

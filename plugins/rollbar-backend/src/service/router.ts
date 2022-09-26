@@ -21,12 +21,14 @@ import { errorHandler } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { RollbarApi } from '../api';
 
+/** @public */
 export interface RouterOptions {
   rollbarApi?: RollbarApi;
   logger: Logger;
   config: Config;
 }
 
+/** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

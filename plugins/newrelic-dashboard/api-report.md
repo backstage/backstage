@@ -10,40 +10,27 @@ import { Entity } from '@backstage/catalog-model';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
-export const DashboardSnapshotComponent: ({
-  guid,
-  name,
-  permalink,
-  duration,
-}: {
+export const DashboardSnapshotComponent: (props: {
   guid: string;
   name: string;
   permalink: string;
-  duration: number;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "EntityNewRelicDashboardCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EntityNewRelicDashboardCard: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "EntityNewRelicDashboardContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EntityNewRelicDashboardContent: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "isNewRelicDashboardAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const isNewRelicDashboardAvailable: (entity: Entity) => boolean;
 
-// Warning: (ae-missing-release-tag) "newRelicDashboardPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const newRelicDashboardPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 

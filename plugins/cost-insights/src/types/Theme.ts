@@ -13,15 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { BackstagePalette, BackstageTheme } from '@backstage/theme';
 import { PaletteOptions } from '@material-ui/core/styles/createPalette';
 
-type CostInsightsTooltipOptions = {
+/** @public */
+export type CostInsightsTooltipOptions = {
   background: string;
   color: string;
 };
 
-type CostInsightsPaletteAdditions = {
+/** @public */
+export type CostInsightsPaletteAdditions = {
   blue: string;
   lightBlue: string;
   darkBlue: string;
@@ -33,16 +36,20 @@ type CostInsightsPaletteAdditions = {
   dataViz: string[];
 };
 
+/** @public */
 export type CostInsightsPalette = BackstagePalette &
   CostInsightsPaletteAdditions;
 
+/** @public */
 export type CostInsightsPaletteOptions = PaletteOptions &
   CostInsightsPaletteAdditions;
 
+/** @public */
 export interface CostInsightsThemeOptions extends PaletteOptions {
   palette: CostInsightsPaletteOptions;
 }
 
+/** @public */
 export interface CostInsightsTheme extends BackstageTheme {
   palette: CostInsightsPalette;
 }

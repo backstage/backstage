@@ -20,11 +20,8 @@ import { settingsRouteRef } from '../plugin';
 import { SidebarItem } from '@backstage/core-components';
 import { useRouteRef, IconComponent } from '@backstage/core-plugin-api';
 
-type SettingsProps = {
-  icon?: IconComponent;
-};
-
-export const Settings = (props: SettingsProps) => {
+/** @public */
+export const Settings = (props: { icon?: IconComponent }) => {
   const routePath = useRouteRef(settingsRouteRef);
   const Icon = props.icon ? props.icon : SettingsIcon;
   return <SidebarItem text="Settings" to={routePath()} icon={Icon} />;

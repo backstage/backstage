@@ -53,6 +53,7 @@ describe('templatingTask', () => {
         pluginVersion: '0.0.0',
       },
       () => '^0.1.2',
+      true,
     );
 
     await expect(

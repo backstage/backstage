@@ -33,6 +33,7 @@ import classnames from 'classnames';
 import React, {
   ComponentProps,
   ComponentType,
+  CSSProperties,
   forwardRef,
   KeyboardEventHandler,
   ReactNode,
@@ -303,7 +304,7 @@ const sidebarSubmenuType = React.createElement(SidebarSubmenu).type;
 //               properly yet, matching for example /foobar with /foo.
 export const WorkaroundNavLink = React.forwardRef<
   HTMLAnchorElement,
-  NavLinkProps
+  NavLinkProps & { activeStyle?: CSSProperties; activeClassName?: string }
 >(function WorkaroundNavLinkWithRef(
   {
     to,
