@@ -51,6 +51,7 @@ import {
 import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import GroupIcon from '@material-ui/icons/People';
 import { SearchModal } from '../search/SearchModal';
+import Score from '@material-ui/icons/Score';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -120,6 +121,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
             text="Cost Insights"
           />
           <SidebarItem icon={GraphiQLIcon} to="graphiql" text="GraphiQL" />
+          <SidebarItem icon={Score} to="score-board" text="Score board" />
         </SidebarScrollWrapper>
         <SidebarDivider />
         <Shortcuts />
