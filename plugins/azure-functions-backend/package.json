@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-azure-backend",
+  "name": "@backstage/plugin-azure-functions-backend",
   "version": "0.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -17,7 +17,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/azure-backend"
+    "directory": "plugins/azure-functions-backend"
   },
   "keywords": [
     "backstage",
@@ -37,7 +37,7 @@
     "@azure/identity": "^2.1.0",
     "@backstage/backend-common": "^0.15.1",
     "@backstage/config": "^1.0.2",
-    "@backstage/plugin-azure-common": "^0.0.0",
+    "@backstage/plugin-azure-functions-common": "^0.0.0",
     "@types/express": "^4.17.6",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",

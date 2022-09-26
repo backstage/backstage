@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-export interface Config {
-  azure: {
-    /** @visibility backend  */
-    domain: string;
-    /** @visibility backend  */
-    tenantId: string;
-    /** @visibility backend  */
-    subscriptions?: [
-      {
-        id: string;
-      },
-    ];
-    /** @visibility backend  */
-    clientId?: string;
-    /** @visibility secret  */
-    clientSecret?: string;
-  };
-}
+import { createApiRef } from '@backstage/core-plugin-api';
+import {
+  AzureSiteListRequest,
+  AzureSiteListResponse,
+} from '@backstage/plugin-azure-functions-common';
+
+/** @public */
+export const azureSiteApiRef = createApiRef<AzureSitesApi>({
+  id: 'plugin.azure.service',
+});
+
+/** @public */
+export type AzureSitesApi = {
+  list: (request: AzureSiteListRequest) => Promise<AzureSiteListResponse>;
+};

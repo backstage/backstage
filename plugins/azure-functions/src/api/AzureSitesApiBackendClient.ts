@@ -15,7 +15,10 @@
  */
 
 import { AzureSitesApi } from './AzureSitesApi';
-import { SiteList } from '@backstage/plugin-azure-common';
+import {
+  AzureSiteListRequest,
+  AzureSiteListResponse,
+} from '@backstage/plugin-azure-functions-common';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 /** @public */
@@ -30,9 +33,11 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
     this.identityApi = options.identityApi;
   }
 
-  async list({ name }: { name: string }): Promise<SiteList> {
+  async list(request: AzureSiteListRequest): Promise<AzureSiteListResponse> {
     try {
-      const url = `${await this.discoveryApi.getBaseUrl('azure')}/list/${name}`;
+      const url = `${await this.discoveryApi.getBaseUrl('azure')}/list/${
+        request.name
+      }`;
       const { token: accessToken } = await this.identityApi.getCredentials();
       const response = await fetch(url, {
         method: 'GET',
@@ -43,7 +48,7 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
       });
       return await response.json();
     } catch (e: any) {
-      throw new Error('MissingAzureBackendException');
+      throw new Error(e);
     }
   }
 }

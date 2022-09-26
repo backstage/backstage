@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Box, Card, Link, LinearProgress } from '@material-ui/core';
-import { Site } from '@backstage/plugin-azure-common';
+import { AzureSite } from '@backstage/plugin-azure-functions-common';
 import { Table, TableColumn } from '@backstage/core-components';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import { DateTime } from 'luxon';
@@ -48,15 +48,15 @@ const State = ({ value }: { value: States }) => {
 };
 
 type TableProps = {
-  data: Site[];
+  data: AzureSite[];
   loading: boolean;
 };
 
-const DEFAULT_COLUMNS: TableColumn<Site>[] = [
+const DEFAULT_COLUMNS: TableColumn<AzureSite>[] = [
   {
     title: 'name',
     highlight: true,
-    render: (func: Site) => {
+    render: (func: AzureSite) => {
       return (
         <Link href={func.href} target="_blank">
           {func.name}
@@ -66,19 +66,19 @@ const DEFAULT_COLUMNS: TableColumn<Site>[] = [
   },
   {
     title: 'kind',
-    render: (func: Site) => func.kind ?? 'unknown',
+    render: (func: AzureSite) => func.kind ?? 'unknown',
   },
   {
     title: 'location',
-    render: (func: Site) => func.location ?? 'unknown',
+    render: (func: AzureSite) => func.location ?? 'unknown',
   },
   {
     title: 'status',
-    render: (func: Site) => <State value={func.state as States} />,
+    render: (func: AzureSite) => <State value={func.state as States} />,
   },
   {
     title: 'last modified',
-    render: (func: Site) =>
+    render: (func: AzureSite) =>
       DateTime.fromISO(func.lastModifiedDate).toLocaleString(
         DateTime.DATETIME_MED,
       ),
@@ -86,7 +86,7 @@ const DEFAULT_COLUMNS: TableColumn<Site>[] = [
   {
     title: 'logs',
     align: 'right',
-    render: (func: Site) => {
+    render: (func: AzureSite) => {
       return (
         <Link href={func.logstreamHref} target="_blank">
           View Logs
@@ -98,7 +98,7 @@ const DEFAULT_COLUMNS: TableColumn<Site>[] = [
 
 /** @public */
 export const AzureSitesOverviewTable = ({ data, loading }: TableProps) => {
-  const columns: TableColumn<Site>[] = [...DEFAULT_COLUMNS];
+  const columns: TableColumn<AzureSite>[] = [...DEFAULT_COLUMNS];
   const tableStyle = {
     minWidth: '0',
     width: '100%',

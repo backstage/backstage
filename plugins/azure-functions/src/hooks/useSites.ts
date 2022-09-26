@@ -16,7 +16,7 @@
 
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { useApi, errorApiRef } from '@backstage/core-plugin-api';
-import { SiteList } from '@backstage/plugin-azure-common';
+import { AzureSiteListResponse } from '@backstage/plugin-azure-functions-common';
 import { azureSiteApiRef } from '../api';
 import { useCallback } from 'react';
 
@@ -37,15 +37,18 @@ export function useSites({ name }: { name: string }) {
     value: data,
     error,
     retry,
-  } = useAsyncRetry<SiteList | null>(async () => {
+  } = useAsyncRetry<AzureSiteListResponse | null>(async () => {
     try {
       const sites = await list();
       return sites;
     } catch (e) {
       if (e instanceof Error) {
-        if (e?.message === 'MissingAzureBackendException') {
-          errorApi.post(new Error('Please add azure-backend plugin'));
-          return null;
+        if (e?.message === 'AbortError') {
+          errorApi.post(
+            new Error(
+              'Timeout reaching backend plugin, please add azure-backend plugin',
+            ),
+          );
         }
         errorApi.post(e);
       }

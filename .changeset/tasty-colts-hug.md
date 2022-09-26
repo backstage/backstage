@@ -1,7 +1,7 @@
 ---
-'@backstage/plugin-azure': minor
-'@backstage/plugin-azure-backend': minor
-'@backstage/plugin-azure-common': minor
+'@backstage/plugin-azure-functions': minor
+'@backstage/plugin-azure-functions-backend': minor
+'@backstage/plugin-azure-functions-common': minor
 ---
 
-Generic azure plugin based on an annotation supplied by a given entity.
+Basic Azure Functions support for a given entity. View the current status of the function app, quickly jump to Function's Overview page, or Log Stream page.

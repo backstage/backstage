@@ -47,14 +47,14 @@ azure.com/microsoft.web/sites: func-testapp
 1. Install the plugin in the `packages/app` directory
 
 ```sh
-yarn add @backstage/plugin-azure
+yarn add @backstage/plugin-azure-functions
 ```
 
 2. Add widget component to your Backstage instance:
 
 ```ts
 // In packages/app/src/components/catalog/EntityPage.tsx
-import { EntityAzureSitesOverviewWidget, isAzureWebSiteNameAvailable } from '@backstage/plugin-azure';
+import { EntityAzureSitesOverviewWidget, isAzureWebSiteNameAvailable } from '@backstage/plugin-azure-functions';
 
 ...
 

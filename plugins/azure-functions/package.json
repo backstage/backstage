@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-azure",
+  "name": "@backstage/plugin-azure-functions",
   "version": "0.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -17,7 +17,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/azure"
+    "directory": "plugins/azure-functions"
   },
   "keywords": [
     "backstage",
@@ -36,7 +36,7 @@
     "@backstage/catalog-model": "^1.1.1",
     "@backstage/core-components": "^0.11.1",
     "@backstage/core-plugin-api": "^1.0.6",
-    "@backstage/plugin-azure-common": "^0.0.0",
+    "@backstage/plugin-azure-functions-common": "^0.0.0",
     "@backstage/plugin-catalog-react": "^1.1.4",
     "@backstage/theme": "^0.2.16",
     "@material-ui/core": "^4.12.2",

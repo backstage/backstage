@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Site } from '@backstage/plugin-azure-common';
+import { AzureSite } from '@backstage/plugin-azure-functions-common';
 
 export const entityMock = {
   metadata: {
@@ -36,7 +36,7 @@ export const entityMock = {
 };
 
 // https://management.azure.com/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroup}}/providers/Microsoft.Web/sites/{{functionsName}}?api-version=2022-03-01
-export const siteMock: Site = {
+export const siteMock: AzureSite = {
   name: 'func-mock',
   kind: 'functionapp',
   resourceGroup: 'mock-resourcegroup',

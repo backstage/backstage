@@ -15,7 +15,7 @@
  */
 
 /** @public */
-export type Site = {
+export type AzureSite = {
   href: string;
   logstreamHref: string;
   name: string;
@@ -30,6 +30,11 @@ export type Site = {
 };
 
 /** @public */
-export type SiteList = {
-  items: Site[];
+export type AzureSiteListRequest = {
+  name: string;
+};
+
+/** @public */
+export type AzureSiteListResponse = {
+  items: AzureSite[];
 };

@@ -20,8 +20,12 @@ import {
   ClientSecretCredential,
 } from '@azure/identity';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
-import { Site, SiteList } from '@backstage/plugin-azure-common';
-import { AzureConfig } from '../config';
+import {
+  AzureSite,
+  AzureSiteListRequest,
+  AzureSiteListResponse,
+} from '@backstage/plugin-azure-functions-common';
+import { AzureFunctionsConfig } from '../config';
 
 /** @public */
 export class AzureSitesApi {
@@ -29,7 +33,7 @@ export class AzureSitesApi {
     `https://portal.azure.com/#@${domain}/resource`;
   private readonly client: ResourceGraphClient;
 
-  constructor(private readonly config: AzureConfig) {
+  constructor(private readonly config: AzureFunctionsConfig) {
     const creds =
       config.clientId && config.clientSecret
         ? new ClientSecretCredential(
@@ -43,14 +47,14 @@ export class AzureSitesApi {
   }
 
   static fromConfig(config: Config): AzureSitesApi {
-    return new AzureSitesApi(AzureConfig.fromConfig(config));
+    return new AzureSitesApi(AzureFunctionsConfig.fromConfig(config));
   }
 
-  async list({ name }: { name: string }): Promise<SiteList> {
-    const items: Site[] = [];
+  async list(request: AzureSiteListRequest): Promise<AzureSiteListResponse> {
+    const items: AzureSite[] = [];
     try {
       const result = await this.client.resources({
-        query: `resources | where type == 'microsoft.web/sites' | where name contains '${name}'`,
+        query: `resources | where type == 'microsoft.web/sites' | where name contains '${request.name}'`,
         subscriptions: this.config.subscriptions,
       });
       for (const v of result.data) {
@@ -70,8 +74,8 @@ export class AzureSitesApi {
           tags: v.properties.tags!,
         });
       }
-    } catch (ex) {
-      console.log(ex);
+    } catch (ex: any) {
+      throw ex;
     }
     return { items: items };
   }

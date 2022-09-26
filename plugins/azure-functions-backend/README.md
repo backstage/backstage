@@ -33,11 +33,11 @@ Configuration Details:
 
 Here's how to get the backend plugin up and running:
 
-1. First we need to add the `@backstage/plugin-azure-backend` package to your backend:
+1. First we need to add the `@backstage/plugin-azure-functions-backend` package to your backend:
 
    ```sh
    # From the Backstage root directory
-   yarn add --cwd packages/backend @backstage/plugin-azure-backend
+   yarn add --cwd packages/backend @backstage/plugin-azure-functions-backend
    ```
 
 2. Then we will create a new file named `packages/backend/src/plugins/azure.ts`, and add the following to it:
@@ -46,7 +46,7 @@ Here's how to get the backend plugin up and running:
    import {
      createRouter,
      AzureSitesApi,
-   } from '@backstage/plugin-azure-backend';
+   } from '@backstage/plugin-azure-functions-backend';
    import { Router } from 'express';
    import { PluginEnvironment } from '../types';
 

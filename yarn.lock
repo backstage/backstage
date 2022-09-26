@@ -3946,35 +3946,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-azure-backend@^0.0.0, @backstage/plugin-azure-backend@workspace:plugins/azure-backend":
-  version: 0.0.0-use.local
-  resolution: "@backstage/plugin-azure-backend@workspace:plugins/azure-backend"
-  dependencies:
-    "@azure/arm-resourcegraph": ^4.2.1
-    "@azure/identity": ^2.1.0
-    "@backstage/backend-common": ^0.15.1
-    "@backstage/cli": ^0.19.0
-    "@backstage/config": ^1.0.2
-    "@backstage/plugin-azure-common": ^0.0.0
-    "@types/express": ^4.17.6
-    "@types/supertest": ^2.0.8
-    express: ^4.17.1
-    express-promise-router: ^4.1.0
-    msw: ^0.47.0
-    node-fetch: ^2.6.7
-    winston: ^3.2.1
-    yn: ^4.0.0
-  languageName: unknown
-  linkType: soft
-
-"@backstage/plugin-azure-common@^0.0.0, @backstage/plugin-azure-common@workspace:plugins/azure-common":
-  version: 0.0.0-use.local
-  resolution: "@backstage/plugin-azure-common@workspace:plugins/azure-common"
-  dependencies:
-    "@backstage/cli": ^0.19.0
-  languageName: unknown
-  linkType: soft
-
 "@backstage/plugin-azure-devops-backend@^0.3.15, @backstage/plugin-azure-devops-backend@workspace:plugins/azure-devops-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-azure-devops-backend@workspace:plugins/azure-devops-backend"
@@ -4038,9 +4009,38 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-azure@^0.0.0, @backstage/plugin-azure@workspace:plugins/azure":
+"@backstage/plugin-azure-functions-backend@^0.0.0, @backstage/plugin-azure-functions-backend@workspace:plugins/azure-functions-backend":
   version: 0.0.0-use.local
-  resolution: "@backstage/plugin-azure@workspace:plugins/azure"
+  resolution: "@backstage/plugin-azure-functions-backend@workspace:plugins/azure-functions-backend"
+  dependencies:
+    "@azure/arm-resourcegraph": ^4.2.1
+    "@azure/identity": ^2.1.0
+    "@backstage/backend-common": ^0.15.1
+    "@backstage/cli": ^0.19.0
+    "@backstage/config": ^1.0.2
+    "@backstage/plugin-azure-functions-common": ^0.0.0
+    "@types/express": ^4.17.6
+    "@types/supertest": ^2.0.8
+    express: ^4.17.1
+    express-promise-router: ^4.1.0
+    msw: ^0.47.0
+    node-fetch: ^2.6.7
+    winston: ^3.2.1
+    yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-azure-functions-common@^0.0.0, @backstage/plugin-azure-functions-common@workspace:plugins/azure-functions-common":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-azure-functions-common@workspace:plugins/azure-functions-common"
+  dependencies:
+    "@backstage/cli": ^0.19.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-azure-functions@^0.0.0, @backstage/plugin-azure-functions@workspace:plugins/azure-functions":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-azure-functions@workspace:plugins/azure-functions"
   dependencies:
     "@backstage/catalog-model": ^1.1.1
     "@backstage/cli": ^0.19.0
@@ -4048,7 +4048,7 @@ __metadata:
     "@backstage/core-components": ^0.11.1
     "@backstage/core-plugin-api": ^1.0.6
     "@backstage/dev-utils": ^1.0.6
-    "@backstage/plugin-azure-common": ^0.0.0
+    "@backstage/plugin-azure-functions-common": ^0.0.0
     "@backstage/plugin-catalog-react": ^1.1.4
     "@backstage/test-utils": ^1.2.0
     "@backstage/theme": ^0.2.16
@@ -22401,8 +22401,8 @@ __metadata:
     "@backstage/plugin-airbrake": ^0.3.9
     "@backstage/plugin-apache-airflow": ^0.2.2
     "@backstage/plugin-api-docs": ^0.8.9
-    "@backstage/plugin-azure": ^0.0.0
     "@backstage/plugin-azure-devops": ^0.2.0
+    "@backstage/plugin-azure-functions": ^0.0.0
     "@backstage/plugin-badges": ^0.2.33
     "@backstage/plugin-catalog-common": ^1.0.6
     "@backstage/plugin-catalog-graph": ^0.2.21
@@ -22506,8 +22506,8 @@ __metadata:
     "@backstage/plugin-app-backend": ^0.3.36
     "@backstage/plugin-auth-backend": ^0.16.0
     "@backstage/plugin-auth-node": ^0.2.5
-    "@backstage/plugin-azure-backend": ^0.0.0
     "@backstage/plugin-azure-devops-backend": ^0.3.15
+    "@backstage/plugin-azure-functions-backend": ^0.0.0
     "@backstage/plugin-badges-backend": ^0.1.30
     "@backstage/plugin-catalog-backend": ^1.4.0
     "@backstage/plugin-code-coverage-backend": ^0.2.2
