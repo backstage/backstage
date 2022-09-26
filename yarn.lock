@@ -3048,7 +3048,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/backend-common@^0.15.1, @backstage/backend-common@workspace:^, @backstage/backend-common@workspace:packages/backend-common":
+"@backstage/backend-common@workspace:^, @backstage/backend-common@workspace:packages/backend-common":
   version: 0.0.0-use.local
   resolution: "@backstage/backend-common@workspace:packages/backend-common"
   dependencies:
@@ -3215,7 +3215,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/catalog-model@^1.0.0, @backstage/catalog-model@^1.1.1, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
+"@backstage/catalog-model@^1.0.0, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
   version: 0.0.0-use.local
   resolution: "@backstage/catalog-model@workspace:packages/catalog-model"
   dependencies:
@@ -3242,7 +3242,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli@^0.19.0, @backstage/cli@workspace:*, @backstage/cli@workspace:^, @backstage/cli@workspace:packages/cli":
+"@backstage/cli@workspace:*, @backstage/cli@workspace:^, @backstage/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@backstage/cli@workspace:packages/cli"
   dependencies:
@@ -3429,7 +3429,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/config@^1.0.2, @backstage/config@workspace:^, @backstage/config@workspace:packages/config":
+"@backstage/config@workspace:^, @backstage/config@workspace:packages/config":
   version: 0.0.0-use.local
   resolution: "@backstage/config@workspace:packages/config"
   dependencies:
@@ -3441,7 +3441,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-app-api@^1.1.0, @backstage/core-app-api@workspace:^, @backstage/core-app-api@workspace:packages/core-app-api":
+"@backstage/core-app-api@workspace:^, @backstage/core-app-api@workspace:packages/core-app-api":
   version: 0.0.0-use.local
   resolution: "@backstage/core-app-api@workspace:packages/core-app-api"
   dependencies:
@@ -3475,7 +3475,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-components@^0.11.0, @backstage/core-components@^0.11.1, @backstage/core-components@workspace:^, @backstage/core-components@workspace:packages/core-components":
+"@backstage/core-components@^0.11.0, @backstage/core-components@workspace:^, @backstage/core-components@workspace:packages/core-components":
   version: 0.0.0-use.local
   resolution: "@backstage/core-components@workspace:packages/core-components"
   dependencies:
@@ -3547,7 +3547,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-plugin-api@^1.0.0, @backstage/core-plugin-api@^1.0.6, @backstage/core-plugin-api@workspace:^, @backstage/core-plugin-api@workspace:packages/core-plugin-api":
+"@backstage/core-plugin-api@^1.0.0, @backstage/core-plugin-api@workspace:^, @backstage/core-plugin-api@workspace:packages/core-plugin-api":
   version: 0.0.0-use.local
   resolution: "@backstage/core-plugin-api@workspace:packages/core-plugin-api"
   dependencies:
@@ -3601,7 +3601,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/dev-utils@^1.0.6, @backstage/dev-utils@workspace:^, @backstage/dev-utils@workspace:packages/dev-utils":
+"@backstage/dev-utils@workspace:^, @backstage/dev-utils@workspace:packages/dev-utils":
   version: 0.0.0-use.local
   resolution: "@backstage/dev-utils@workspace:packages/dev-utils"
   dependencies:
@@ -4159,10 +4159,10 @@ __metadata:
   dependencies:
     "@azure/arm-resourcegraph": ^4.2.1
     "@azure/identity": ^2.1.0
-    "@backstage/backend-common": ^0.15.1
-    "@backstage/cli": ^0.19.0
-    "@backstage/config": ^1.0.2
-    "@backstage/plugin-azure-functions-common": ^0.0.0
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-azure-functions-common": "workspace:^"
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     express: ^4.17.1
@@ -4174,11 +4174,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-azure-functions-common@^0.0.0, @backstage/plugin-azure-functions-common@workspace:plugins/azure-functions-common":
+"@backstage/plugin-azure-functions-common@workspace:^, @backstage/plugin-azure-functions-common@workspace:plugins/azure-functions-common":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-azure-functions-common@workspace:plugins/azure-functions-common"
   dependencies:
-    "@backstage/cli": ^0.19.0
+    "@backstage/cli": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -4186,16 +4186,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-azure-functions@workspace:plugins/azure-functions"
   dependencies:
-    "@backstage/catalog-model": ^1.1.1
-    "@backstage/cli": ^0.19.0
-    "@backstage/core-app-api": ^1.1.0
-    "@backstage/core-components": ^0.11.1
-    "@backstage/core-plugin-api": ^1.0.6
-    "@backstage/dev-utils": ^1.0.6
-    "@backstage/plugin-azure-functions-common": ^0.0.0
-    "@backstage/plugin-catalog-react": ^1.1.4
-    "@backstage/test-utils": ^1.2.0
-    "@backstage/theme": ^0.2.16
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/dev-utils": "workspace:^"
+    "@backstage/plugin-azure-functions-common": "workspace:^"
+    "@backstage/plugin-catalog-react": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.57
@@ -4778,7 +4778,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-react@^1.0.0, @backstage/plugin-catalog-react@^1.1.4, @backstage/plugin-catalog-react@workspace:^, @backstage/plugin-catalog-react@workspace:plugins/catalog-react":
+"@backstage/plugin-catalog-react@^1.0.0, @backstage/plugin-catalog-react@workspace:^, @backstage/plugin-catalog-react@workspace:plugins/catalog-react":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-react@workspace:plugins/catalog-react"
   dependencies:
@@ -7512,7 +7512,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/test-utils@^1.2.0, @backstage/test-utils@workspace:^, @backstage/test-utils@workspace:packages/test-utils":
+"@backstage/test-utils@workspace:^, @backstage/test-utils@workspace:packages/test-utils":
   version: 0.0.0-use.local
   resolution: "@backstage/test-utils@workspace:packages/test-utils"
   dependencies:
@@ -7542,7 +7542,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/theme@^0.2.16, @backstage/theme@^0.2.6, @backstage/theme@^0.2.7, @backstage/theme@^0.2.9, @backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
+"@backstage/theme@^0.2.6, @backstage/theme@^0.2.7, @backstage/theme@^0.2.9, @backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
   version: 0.0.0-use.local
   resolution: "@backstage/theme@workspace:packages/theme"
   dependencies:

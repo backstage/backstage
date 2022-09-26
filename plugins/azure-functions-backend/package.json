@@ -35,9 +35,9 @@
   "dependencies": {
     "@azure/arm-resourcegraph": "^4.2.1",
     "@azure/identity": "^2.1.0",
-    "@backstage/backend-common": "^0.15.1",
-    "@backstage/config": "^1.0.2",
-    "@backstage/plugin-azure-functions-common": "^0.0.0",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/plugin-azure-functions-common": "workspace:^",
     "@types/express": "^4.17.6",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
@@ -46,7 +46,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.19.0",
+    "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
     "msw": "^0.47.0"
   },
