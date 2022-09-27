@@ -32,7 +32,7 @@
     "@date-io/luxon": "1.x",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/lab": "4.0.0-alpha.61",
     "@material-ui/pickers": "^3.3.10",
     "humanize-duration": "^3.26.0",
     "luxon": "^3.0.0",

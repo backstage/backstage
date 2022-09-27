@@ -47,7 +47,7 @@
     "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/lab": "4.0.0-alpha.61",
     "@material-ui/styles": "^4.10.0",
     "dompurify": "^2.2.9",
     "event-source-polyfill": "1.0.25",
