@@ -54,8 +54,10 @@ export function EntityRefLinks<
   if (fetchEntities) {
     return (
       <FetchedEntityRefLinks
+        {...linkProps}
+        defaultKind={defaultKind}
         entityRefs={entityRefs}
-        fetchEntities={fetchEntities}
+        getTitle={getTitle}
       />
     );
   }

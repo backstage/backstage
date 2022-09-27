@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  CompoundEntityRef,
+  parseEntityRef,
+} from '@backstage/catalog-model';
 import React from 'react';
 import { EntityRefLink } from './EntityRefLink';
 import { ErrorPanel, LinkProps, Progress } from '@backstage/core-components';
@@ -31,7 +35,6 @@ export type FetchedEntityRefLinksProps<
 > = {
   defaultKind?: string;
   entityRefs: TRef[];
-  fetchEntities: true;
   getTitle?(entity: Entity): string | undefined;
 } & Omit<LinkProps, 'to'>;
 
@@ -44,60 +47,35 @@ export type FetchedEntityRefLinksProps<
 export function FetchedEntityRefLinks<
   TRef extends string | CompoundEntityRef | Entity,
 >(props: FetchedEntityRefLinksProps<TRef>) {
-  const { entityRefs, defaultKind, fetchEntities, getTitle, ...linkProps } =
-    props;
+  const { entityRefs, defaultKind, getTitle, ...linkProps } = props;
 
   const catalogApi = useApi(catalogApiRef);
 
   const {
-    value: refToEntity = new Map<TRef, Entity>(),
+    value: entities = new Array<Entity>(),
     loading,
     error,
-  } = useAsync(
-    () =>
-      entityRefs.reduce(
-        async (promisedAcc: Promise<Map<TRef, Entity>>, entityRef: TRef) => {
-          const acc = await promisedAcc;
-          const entity: Entity | undefined =
-            'metadata' in entityRef
-              ? (entityRef as Entity)
-              : await catalogApi.getEntityByRef(
-                  entityRef as string | CompoundEntityRef,
-                );
-          if (entity) {
-            acc.set(entityRef, entity);
-          }
-          return acc;
-        },
-        Promise.resolve(new Map<TRef, Entity>()),
-      ),
-    [catalogApi, entityRefs],
-  );
+  } = useAsync(async () => {
+    const refs = entityRefs.reduce((acc, current) => {
+      return 'metadata' in current ? acc : [...acc, parseEntityRef(current)];
+    }, new Array<CompoundEntityRef>());
+
+    return refs
+      ? (await catalogApi.getEntities({ filter: refs })).items
+      : (entityRefs as Array<Entity>);
+  }, [entityRefs]);
 
   if (loading) {
     return <Progress />;
   }
 
   if (error) {
-    return (
-      <>
-        <ErrorPanel error={error} />
-      </>
-    );
+    return <ErrorPanel error={error} />;
   }
 
   return (
     <>
-      {entityRefs.map((r: TRef, i) => {
-        let title: string | undefined;
-
-        if (typeof r === 'string' || !('metadata' in r)) {
-          const entity = refToEntity.get(r);
-          title = getTitle && entity ? getTitle(entity) : undefined;
-        } else {
-          title = getTitle ? getTitle(r as Entity) : undefined;
-        }
-
+      {entities.map((r: Entity, i) => {
         return (
           <React.Fragment key={i}>
             {i > 0 && ', '}
@@ -105,7 +83,7 @@ export function FetchedEntityRefLinks<
               {...linkProps}
               defaultKind={defaultKind}
               entityRef={r}
-              title={title}
+              title={getTitle ? getTitle(r as Entity) : undefined}
             />
           </React.Fragment>
         );
