@@ -33,6 +33,7 @@ export const useGetPullRequestDetails = () => {
                 id
                 repository {
                   name
+                  isArchived
                 }
                 title
                 url

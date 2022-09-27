@@ -31,6 +31,7 @@ type Props = {
   url: string;
   reviews: Reviews;
   repositoryName: string;
+  repositoryIsArchived: boolean;
   isDraft: boolean;
 };
 
@@ -43,6 +44,7 @@ const PullRequestCard: FunctionComponent<Props> = (props: Props) => {
     url,
     reviews,
     repositoryName,
+    repositoryIsArchived,
     isDraft,
   } = props;
 
@@ -50,7 +52,8 @@ const PullRequestCard: FunctionComponent<Props> = (props: Props) => {
   const commentsReviews = getCommentedReviews(reviews);
   const changeRequests = getChangeRequests(reviews);
 
-  const cardTitle = isDraft ? `🔧 DRAFT - ${title}` : title;
+  const cardTitle1 = isDraft ? `🔧 DRAFT - ${title}` : title;
+  const cardTitle = repositoryIsArchived ? `💀 ${cardTitle1}` : cardTitle1;
 
   return (
     <Card

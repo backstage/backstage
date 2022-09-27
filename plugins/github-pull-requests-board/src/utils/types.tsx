@@ -61,6 +61,7 @@ export type PullRequest = {
   id: string;
   repository: {
     name: string;
+    isArchived: boolean;
   };
   title: string;
   url: string;
@@ -83,6 +84,10 @@ export type PullRequestsColumn = {
   content: PullRequests;
 };
 
-export type PRCardFormating = 'compacted' | 'fullscreen' | 'draft';
+export type PRCardFormating =
+  | 'compacted'
+  | 'fullscreen'
+  | 'draft'
+  | 'archivedRepo';
 
 export type ReviewDecision = 'IN_PROGRESS' | 'APPROVED' | 'REVIEW_REQUIRED';
