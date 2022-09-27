@@ -37,7 +37,7 @@ export type EntityRefLinksProps<
       defaultKind?: string;
       entityRefs: TRef[];
       fetchEntities: true;
-      getTitle?(entity: Entity): string | undefined;
+      getTitle(entity: Entity): string | undefined;
     } & Omit<LinkProps, 'to'>);
 
 /**

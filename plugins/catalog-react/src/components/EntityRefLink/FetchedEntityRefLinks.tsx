@@ -35,7 +35,7 @@ export type FetchedEntityRefLinksProps<
 > = {
   defaultKind?: string;
   entityRefs: TRef[];
-  getTitle?(entity: Entity): string | undefined;
+  getTitle(entity: Entity): string | undefined;
 } & Omit<LinkProps, 'to'>;
 
 /**
@@ -83,7 +83,7 @@ export function FetchedEntityRefLinks<
               {...linkProps}
               defaultKind={defaultKind}
               entityRef={r}
-              title={getTitle ? getTitle(r as Entity) : undefined}
+              title={getTitle(r as Entity)}
             />
           </React.Fragment>
         );
