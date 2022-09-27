@@ -150,6 +150,17 @@ export class EntityErrorFilter implements EntityFilter {
   readonly value: boolean;
 }
 
+// @public
+export class EntityFieldFilter implements EntityFilter {
+  constructor(values: string[], filterValue: string);
+  // (undocumented)
+  filterEntity(entity: Entity): boolean;
+  // (undocumented)
+  readonly filterValue: string;
+  // (undocumented)
+  readonly values: string[];
+}
+
 // @public (undocumented)
 export type EntityFilter = {
   getCatalogFilters?: () => Record<
@@ -160,17 +171,6 @@ export type EntityFilter = {
   toQueryValue?: () => string | string[];
 };
 
-// @public
-export class EntityGenericFilter implements EntityFilter {
-  constructor(values: string[], category: string);
-  // (undocumented)
-  readonly category: string;
-  // (undocumented)
-  filterEntity(entity: Entity): boolean;
-  // (undocumented)
-  readonly values: string[];
-}
-
 // @public (undocumented)
 export const EntityGenericPicker: (
   props: EntityGenericPickerProps,
@@ -178,8 +178,6 @@ export const EntityGenericPicker: (
 
 // @public
 export interface EntityGenericPickerProps {
-  // (undocumented)
-  filterKey?: string;
   // (undocumented)
   filterValue: string;
   // (undocumented)

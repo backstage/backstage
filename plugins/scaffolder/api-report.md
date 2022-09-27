@@ -402,7 +402,6 @@ export type RouterProps = {
   customFilters?: Array<{
     name: string;
     filterValue: string;
-    filterKey?: string;
   }>;
 };
 
