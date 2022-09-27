@@ -1,11 +1,14 @@
 ---
 id: oidc
 title: OIDC provider from scratch
-description: This section shows how to use an OIDC provider from scrath, same steps apply for custom providers.
+description: This section shows how to use an OIDC provider from scratch, same steps apply for custom providers.
 ---
 
 This section shows how to use an OIDC provider from scratch, same steps apply for custom
-providers. Please note these steps are for using a provider, not how to implement one.
+providers. Please note these steps are for using a provider, not how to implement one,
+and Backstage recommends creating custom providers specific to the IDP, so we'll use a
+`azureOIDC` provider throughout this example, feel free to change any of those refs
+to your provider name.
 
 ## Summary
 
@@ -36,10 +39,10 @@ An example of such would be when you use an auth provider from a library install
 NPM, or any other library repository, you would import the API ref from the library.
 
 ```ts
-export const oidcAuthApiRef: ApiRef<
+export const azureOIDCAuthApiRef: ApiRef<
   OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 > = createApiRef({
-  id: 'core.auth.oidc',
+  id: 'core.auth.azureOIDC',
 });
 ```
 
@@ -74,7 +77,7 @@ Let's add our OIDC factory to the APIs array in the `packages/app/src/apis.ts` f
 
 export const apis: AnyApiFactory[] = [
 +   createApiFactory({
-+    api: oidcAuthApiRef,
++    api: azureOIDCAuthApiRef,
 +    deps: {
 +      discoveryApi: discoveryApiRef,
 +      oauthRequestApi: oauthRequestApiRef,
@@ -85,7 +88,7 @@ export const apis: AnyApiFactory[] = [
 +        discoveryApi,
 +        oauthRequestApi,
 +        provider: {
-+          id: 'oidc',
++          id: 'oidc', // This has to be 'oidc' or OAuth2 will not use oidc protocol
 +          title: 'OIDC provider',
 +          icon: () => null,
 +        },
@@ -107,13 +110,13 @@ request ID, profile, email and user read permissions.
 
 ### The Resolver
 
-Resolvers exist to map user identity from the 3rd party (in this case OIDC provider) to
-the backstage user identity, for a detailed explanation check the [Identity Resolver][1]
-page, it explains how to write a custom resolver as well as linking the built in resolvers
-of backstage.
+Resolvers exist to map user identity from the 3rd party (in this case an azure IDP
+provider) to the backstage user identity, for a detailed explanation check the
+[Identity Resolver][1] page, it explains how to write a custom resolver as well as
+linking the built in resolvers of backstage.
 
-As an example if you're setting up OIDC provider with Microsoft, you could use the built
-in Microsoft resolvers, or create one yourself in `packages/backend/src/plugins/auth.ts`:
+As an example if you're setting up OIDC provider with Azure IDP, you could reuse
+the built in resolvers, or create one yourself in `packages/backend/src/plugins/auth.ts`:
 
 ```diff
 import {
@@ -132,7 +135,7 @@ export default async function createPlugin(
     tokenManager: env.tokenManager,
     providerFactories: {
       ...defaultAuthProviderFactories,
-+     oidc: providers.oidc.create({
++     azureOIDC: providers.oidc.create({
 +       signIn: {
 +         resolver(info, ctx) {
 +           const userRef = stringifyEntityRef({
@@ -158,7 +161,7 @@ export default async function createPlugin(
 We are using the `OAuth2` wrapper to delegate the authentication to the 3rd party using
 the OIDC protocol, as such, it depends on the specific wrapper what has to be configured.
 
-As an example we'll configure OIDC with Microsoft, to do so we need to
+As an example we'll configure OIDC with `azureOIDC`, to do so we need to
 [Create app registration][2] in the Azure console, the only difference is that the
 `http://localhost:7007/api/auth/microsoft/handler/frame` URL needs to change to
 `http://localhost:7007/api/auth/oidc/handler/frame`.
@@ -174,7 +177,7 @@ auth:
   session:
     secret: ${SESSION_SECRET}
   providers:
-    oidc:
+    azureOIDC:
       # Note that you must define a session secret (see above) since the oidc provider requires session support.
       # Note that by default, this provider will use the 'none' prompt which assumes that your are already logged on in the IDP.
       # You should set prompt to:
