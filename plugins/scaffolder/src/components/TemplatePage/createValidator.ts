@@ -15,7 +15,7 @@
  */
 
 import { CustomFieldValidator } from '../../extensions';
-import { FormValidation } from '@rjsf/utils';
+import { FormValidation } from '@rjsf/core';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
 
@@ -62,7 +62,7 @@ export const createValidator = (
           if (fieldName && typeof validators[fieldName] === 'function') {
             validators[fieldName]!(
               propData as JsonValue,
-              propValidation as FormValidation,
+              propValidation,
               context,
             );
           }

@@ -17,7 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { FieldProps } from '@rjsf/utils';
+import { FieldProps } from '@rjsf/core';
 import React from 'react';
 import { OwnerPicker } from './OwnerPicker';
 
@@ -36,7 +36,7 @@ describe('<OwnerPicker />', () => {
   const rawErrors: string[] = [];
   const formData = undefined;
 
-  let props: FieldProps<string | undefined>;
+  let props: FieldProps;
 
   const catalogApi: jest.Mocked<CatalogApi> = {
     getLocationById: jest.fn(),

@@ -36,7 +36,7 @@ export interface OwnerPickerUiOptions {
  * @public
  */
 export const OwnerPicker = (
-  props: FieldExtensionComponentProps<string | undefined, OwnerPickerUiOptions>,
+  props: FieldExtensionComponentProps<string, OwnerPickerUiOptions>,
 ) => {
   const {
     schema: { title = 'Owner', description = 'The owner of the component' },
@@ -44,18 +44,18 @@ export const OwnerPicker = (
     ...restProps
   } = props;
 
-  const defaultNamespace = uiSchema?.['ui:options']?.defaultNamespace;
+  const defaultNamespace = uiSchema['ui:options']?.defaultNamespace;
 
   const ownerUiSchema = {
     ...uiSchema,
     'ui:options': {
-      allowedKinds: (uiSchema?.['ui:options']?.allowedKinds || [
+      allowedKinds: (uiSchema['ui:options']?.allowedKinds || [
         'Group',
         'User',
       ]) as string[],
       defaultKind: 'Group',
       allowArbitraryValues:
-        uiSchema?.['ui:options']?.allowArbitraryValues ?? true,
+        uiSchema['ui:options']?.allowArbitraryValues ?? true,
       ...(defaultNamespace !== undefined ? { defaultNamespace } : {}),
     },
   };

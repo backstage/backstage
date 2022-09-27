@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FieldValidation } from '@rjsf/utils';
+import { FieldValidation } from '@rjsf/core';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
@@ -26,7 +26,7 @@ import { scmIntegrationsApiRef } from '@backstage/integration-react';
  * @public
  */
 export const repoPickerValidation = (
-  value: string | undefined,
+  value: string,
   validation: FieldValidation,
   context: { apiHolder: ApiHolder },
 ) => {

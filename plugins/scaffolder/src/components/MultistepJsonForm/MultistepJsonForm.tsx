@@ -29,9 +29,8 @@ import {
   useApi,
   featureFlagsApiRef,
 } from '@backstage/core-plugin-api';
-import { UiSchema } from '@rjsf/utils';
-import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
-import { Theme } from '@rjsf/material-ui';
+import { FormProps, IChangeEvent, UiSchema, withTheme } from '@rjsf/core';
+import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useState } from 'react';
 import { transformSchemaToProps } from './schema';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
@@ -39,6 +38,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
 import { LayoutOptions } from '../../layouts';
 
+const Form = withTheme(MuiTheme);
 type Step = {
   schema: JsonObject;
   title: string;
@@ -123,7 +123,6 @@ export const MultistepJsonForm = (props: Props) => {
     finishButtonLabel,
     layouts,
   } = props;
-  const Form = withTheme(Theme);
   const [activeStep, setActiveStep] = useState(0);
   const [disableButtons, setDisableButtons] = useState(false);
   const errorApi = useApi(errorApiRef);
@@ -214,7 +213,7 @@ export const MultistepJsonForm = (props: Props) => {
                   formData={formData}
                   formContext={{ formData }}
                   onChange={onChange}
-                  onSubmit={(e: any) => {
+                  onSubmit={e => {
                     if (e.errors.length === 0) handleNext();
                   }}
                   {...formProps}

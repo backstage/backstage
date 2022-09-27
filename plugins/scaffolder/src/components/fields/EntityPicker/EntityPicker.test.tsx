@@ -17,7 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { FieldProps } from '@rjsf/utils';
+import { FieldProps } from '@rjsf/core';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
 import { EntityPicker } from './EntityPicker';
@@ -39,7 +39,7 @@ describe('<EntityPicker />', () => {
   const rawErrors: string[] = [];
   const formData = undefined;
 
-  let props: FieldProps<string | undefined>;
+  let props: FieldProps;
 
   const catalogApi: jest.Mocked<CatalogApi> = {
     getLocationById: jest.fn(),
@@ -76,7 +76,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as any;
+      } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -117,7 +117,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as any;
+      } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });

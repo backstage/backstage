@@ -26,12 +26,12 @@ import { withTheme } from '@rjsf/core';
 import { ErrorSchema, FieldValidation } from '@rjsf/utils';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useMemo, useState } from 'react';
-import { FieldExtensionOptions } from '../../../extensions';
+import { NextFieldExtensionOptions } from '../../../extensions';
 import { TemplateParameterSchema } from '../../../types';
 import { createAsyncValidators } from './createAsyncValidators';
 import { useTemplateSchema } from './useTemplateSchema';
 import { ReviewState } from './ReviewState';
-import validator from '@rjsf/validator-ajv6';
+import validator from '@rjsf/validator-ajv8';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -50,7 +50,7 @@ const useStyles = makeStyles(theme => ({
 
 export interface StepperProps {
   manifest: TemplateParameterSchema;
-  extensions: FieldExtensionOptions<any, any>[];
+  extensions: NextFieldExtensionOptions<any, any>[];
 }
 
 const Form = withTheme(MuiTheme);

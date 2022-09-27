@@ -15,8 +15,7 @@
  */
 import React, { useContext } from 'react';
 import { RepoUrlPicker } from './RepoUrlPicker';
-import { withTheme } from '@rjsf/core';
-import { Theme } from '@rjsf/material-ui';
+import Form from '@rjsf/core';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
   scmIntegrationsApiRef,
@@ -26,12 +25,12 @@ import {
 } from '@backstage/integration-react';
 import { scaffolderApiRef } from '../../../api';
 import { ScaffolderApi } from '../../../types';
+
 import {
   SecretsContextProvider,
   SecretsContext,
 } from '../../secrets/SecretsContext';
 import { act, fireEvent } from '@testing-library/react';
-import { Field } from '@rjsf/utils';
 
 describe('RepoUrlPicker', () => {
   const mockScaffolderApi: Partial<ScaffolderApi> = {
@@ -51,8 +50,6 @@ describe('RepoUrlPicker', () => {
     getCredentials: jest.fn().mockResolvedValue({ token: 'abc123' }),
   };
 
-  const Form = withTheme(Theme);
-
   describe('happy path rendering', () => {
     it('should render the repo url picker with minimal props', async () => {
       const onSubmit = jest.fn();
@@ -68,7 +65,7 @@ describe('RepoUrlPicker', () => {
             <Form
               schema={{ type: 'string' }}
               uiSchema={{ 'ui:field': 'RepoUrlPicker' }}
-              fields={{ RepoUrlPicker: RepoUrlPicker as Field<unknown> }}
+              fields={{ RepoUrlPicker: RepoUrlPicker }}
               onSubmit={onSubmit}
             />
           </SecretsContextProvider>
@@ -102,13 +99,12 @@ describe('RepoUrlPicker', () => {
         >
           <SecretsContextProvider>
             <Form
-              validator={validator}
               schema={{ type: 'string' }}
               uiSchema={{
                 'ui:field': 'RepoUrlPicker',
                 'ui:options': { allowedHosts: ['dev.azure.com'] },
               }}
-              fields={{ RepoUrlPicker: RepoUrlPicker as Field<unknown> }}
+              fields={{ RepoUrlPicker: RepoUrlPicker }}
             />
           </SecretsContextProvider>
         </TestApiProvider>,
@@ -136,7 +132,6 @@ describe('RepoUrlPicker', () => {
         >
           <SecretsContextProvider>
             <Form
-              validator={validator}
               schema={{ type: 'string' }}
               uiSchema={{
                 'ui:field': 'RepoUrlPicker',
@@ -147,7 +142,7 @@ describe('RepoUrlPicker', () => {
                   },
                 },
               }}
-              fields={{ RepoUrlPicker: RepoUrlPicker as Field<unknown> }}
+              fields={{ RepoUrlPicker: RepoUrlPicker }}
             />
             <SecretsComponent />
           </SecretsContextProvider>
