@@ -132,12 +132,6 @@ export default async function createPlugin(
     tokenManager: env.tokenManager,
     providerFactories: {
       ...defaultAuthProviderFactories,
-+     // oidc: providers.oidc.create({
-+     //   signIn: {
-+     //     resolver:
-+     //       providers.microsoft.resolvers.emailMatchingUserEntityAnnotation() as any,
-+     //   },
-+     // }),
 +     oidc: providers.oidc.create({
 +       signIn: {
 +         resolver(info, ctx) {
