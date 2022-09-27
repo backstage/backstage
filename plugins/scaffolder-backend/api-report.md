@@ -60,6 +60,8 @@ export const createBuiltinActions: (
 // @public
 export interface CreateBuiltInActionsOptions {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  // (undocumented)
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   catalogClient: CatalogApi;
   config: Config;
   integrations: ScmIntegrations;
@@ -108,6 +110,7 @@ export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }): TemplateAction<{
   url: string;
   targetPath?: string | undefined;
@@ -450,6 +453,7 @@ export type CreateWorkerOptions = {
   workingDirectory: string;
   logger: Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 };
 
 // @public
@@ -540,6 +544,8 @@ export interface RouterOptions {
   // (undocumented)
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   // (undocumented)
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  // (undocumented)
   catalogClient: CatalogApi;
   // (undocumented)
   config: Config;
@@ -595,6 +601,7 @@ export type ScaffolderPluginOptions = {
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 };
 
 // @public
@@ -815,4 +822,9 @@ export class TemplateActionRegistry {
 
 // @public (undocumented)
 export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
+
+// @public (undocumented)
+export type TemplateGlobal =
+  | ((...args: JsonValue[]) => JsonValue | undefined)
+  | JsonValue;
 ```
