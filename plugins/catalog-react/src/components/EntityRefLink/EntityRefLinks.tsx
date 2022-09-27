@@ -26,19 +26,21 @@ import { FetchedEntityRefLinks } from './FetchedEntityRefLinks';
  */
 export type EntityRefLinksProps<
   TRef extends string | CompoundEntityRef | Entity,
-> =
+> = (
   | {
       defaultKind?: string;
       entityRefs: TRef[];
       fetchEntities?: false;
       getTitle?(entity: TRef): string | undefined;
     }
-  | ({
+  | {
       defaultKind?: string;
       entityRefs: TRef[];
       fetchEntities: true;
       getTitle(entity: Entity): string | undefined;
-    } & Omit<LinkProps, 'to'>);
+    }
+) &
+  Omit<LinkProps, 'to'>;
 
 /**
  * Shows a list of clickable links to entities.
