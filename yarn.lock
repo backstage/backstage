@@ -3174,7 +3174,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/json-schema": ^7.0.5
-    "@types/lodash": ^4.14.173
+    "@types/lodash": ^4.14.151
     ajv: ^8.10.0
     json-schema: ^0.4.0
     lodash: ^4.17.21
@@ -4263,7 +4263,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@types/lodash": ^4.14.173
+    "@types/lodash": ^4.14.151
     aws-sdk: ^2.840.0
     aws-sdk-mock: ^5.2.1
     lodash: ^4.17.21
@@ -4288,7 +4288,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@types/lodash": ^4.14.173
+    "@types/lodash": ^4.14.151
     lodash: ^4.17.21
     msw: ^0.47.0
     node-fetch: ^2.6.7
@@ -4350,7 +4350,7 @@ __metadata:
     "@backstage/plugin-bitbucket-cloud-common": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@types/lodash": ^4.14.173
+    "@types/lodash": ^4.14.151
     lodash: ^4.17.21
     msw: ^0.47.0
     node-fetch: ^2.6.7
@@ -4397,7 +4397,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@octokit/graphql": ^5.0.0
-    "@types/lodash": ^4.14.173
+    "@types/lodash": ^4.14.151
     lodash: ^4.17.21
     msw: ^0.47.0
     node-fetch: ^2.6.7
@@ -4420,7 +4420,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@types/lodash": ^4.14.173
+    "@types/lodash": ^4.14.151
     "@types/uuid": ^8.0.0
     lodash: ^4.17.21
     msw: ^0.47.0
@@ -4442,7 +4442,7 @@ __metadata:
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/ldapjs": ^2.2.0
-    "@types/lodash": ^4.14.173
+    "@types/lodash": ^4.14.151
     ldapjs: ^2.2.0
     lodash: ^4.17.21
     uuid: ^8.0.0
@@ -4463,7 +4463,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@microsoft/microsoft-graph-types": ^2.6.0
-    "@types/lodash": ^4.14.173
+    "@types/lodash": ^4.14.151
     "@types/node-fetch": ^2.5.12
     lodash: ^4.17.21
     msw: ^0.47.0
@@ -4519,7 +4519,7 @@ __metadata:
     "@types/core-js": ^2.5.4
     "@types/express": ^4.17.6
     "@types/git-url-parse": ^9.0.0
-    "@types/lodash": ^4.14.173
+    "@types/lodash": ^4.14.151
     "@types/supertest": ^2.0.8
     "@types/uuid": ^8.0.0
     better-sqlite3: ^7.5.0
@@ -5710,7 +5710,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@types/express": ^4.17.6
     "@types/jest-when": ^3.5.0
-    "@types/lodash": ^4.14.173
+    "@types/lodash": ^4.14.151
     express: ^4.17.1
     express-promise-router: ^4.1.0
     jest-when: ^3.1.0
@@ -6049,7 +6049,7 @@ __metadata:
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@types/express": "*"
-    "@types/lodash": ^4.14.173
+    "@types/lodash": ^4.14.151
     "@types/supertest": ^2.0.8
     dataloader: ^2.0.0
     express: ^4.17.1
@@ -13527,10 +13527,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:^4.14.173, @types/lodash@npm:^4.14.175":
-  version: 4.14.184
-  resolution: "@types/lodash@npm:4.14.184"
-  checksum: 6d9a4d67f7f9d0ec3fd21174f3dd3d00629dc1227eb469450eace53adbc1f7e2330699c28d0fe093e5f0fef0f0e763098be1f779268857213224af082b62be21
+"@types/lodash@npm:^4.14.151, @types/lodash@npm:^4.14.173, @types/lodash@npm:^4.14.175":
+  version: 4.14.185
+  resolution: "@types/lodash@npm:4.14.185"
+  checksum: f81d13da5ecab110ca9c5c7cc2bedc3c9802a6acf668576aecd1b8f4b134ed81d06c15f1e600fb08f05975098280a0d97d30cddfc2cb39ec1c6b56e971ca53b3
   languageName: node
   linkType: hard
 
