@@ -8,6 +8,7 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { default as default_2 } from 'react';
 import { DomainEntity } from '@backstage/catalog-model';
+import { ExploreTool } from '@backstage/plugin-explore-react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TabProps } from '@material-ui/core';
@@ -44,7 +45,9 @@ export type ExploreLayoutProps = {
 };
 
 // @public (undocumented)
-export const ExplorePage: () => JSX.Element;
+export const ExplorePage: (props: {
+  exploreTools?: ExploreTool[] | undefined;
+}) => JSX.Element;
 
 // @public (undocumented)
 const explorePlugin: BackstagePlugin<
@@ -90,5 +93,6 @@ export type SubRoute = {
 // @public (undocumented)
 export const ToolExplorerContent: (props: {
   title?: string | undefined;
+  exploreTools?: ExploreTool[] | undefined;
 }) => JSX.Element;
 ```
