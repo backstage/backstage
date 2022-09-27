@@ -51,15 +51,6 @@ export class RepoLocationAnalyzer implements LocationAnalyzer {
     ) as GitHubIntegration;
     const { owner, name } = parseGitUrl(request.location.target);
 
-    const entity: Entity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Component',
-      metadata: {
-        name: name,
-      },
-      spec: { type: 'other', lifecycle: 'unknown' },
-    };
-
     let annotationPrefix;
     let analyzer;
     switch (integration?.type) {
@@ -97,6 +88,15 @@ export class RepoLocationAnalyzer implements LocationAnalyzer {
         };
       }
     }
+
+    const entity: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: name,
+      },
+      spec: { type: 'other', lifecycle: 'unknown' },
+    };
 
     if (annotationPrefix) {
       entity.metadata.annotations = {
