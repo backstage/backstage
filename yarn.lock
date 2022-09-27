@@ -8503,8 +8503,8 @@ __metadata:
   linkType: hard
 
 "@graphql-codegen/cli@npm:^2.3.1":
-  version: 2.12.1
-  resolution: "@graphql-codegen/cli@npm:2.12.1"
+  version: 2.12.2
+  resolution: "@graphql-codegen/cli@npm:2.12.2"
   dependencies:
     "@graphql-codegen/core": 2.6.2
     "@graphql-codegen/plugin-helpers": ^2.7.1
@@ -8545,7 +8545,7 @@ __metadata:
     graphql-code-generator: cjs/bin.js
     graphql-codegen: cjs/bin.js
     graphql-codegen-esm: esm/bin.js
-  checksum: c3e3772f1bd7d6a35ecc42a0fcb96d7e417e184170254ef89286f029a31eba688465179d572897f52197199757edf16e5a7442e4e7fb2612cd79530ea33572a3
+  checksum: 38262533b4bfcdacab25a3ce874082895ca3da164313466c531ac012d868f748c2f764f50dd4e98f03d3d5a5253c397488dde7c164b59677659eb8838459e518
   languageName: node
   linkType: hard
 
