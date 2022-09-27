@@ -32,7 +32,6 @@ import {
 import { UiSchema } from '@rjsf/utils';
 import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
 import { Theme } from '@rjsf/material-ui';
-import validator from '@rjsf/validator-ajv6';
 import React, { useState } from 'react';
 import { transformSchemaToProps } from './schema';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
@@ -208,7 +207,6 @@ export const MultistepJsonForm = (props: Props) => {
               </StepLabel>
               <StepContent key={title}>
                 <Form
-                  validator={validator}
                   showErrorList={false}
                   fields={{ ...fieldOverrides, ...fields }}
                   widgets={widgets}
