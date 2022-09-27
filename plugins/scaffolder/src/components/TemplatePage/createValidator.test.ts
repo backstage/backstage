@@ -17,7 +17,7 @@
 import { createValidator } from './createValidator';
 import { CustomFieldValidator } from '../../extensions';
 import { ApiHolder } from '@backstage/core-plugin-api';
-import { FormValidation } from '@rjsf/utils';
+import { FormValidation } from '@rjsf/core';
 
 describe('createValidator', () => {
   const validators: Record<string, undefined | CustomFieldValidator<unknown>> =
@@ -68,6 +68,6 @@ describe('createValidator', () => {
 
     /* THEN */
     expect(result).not.toBeNull();
-    expect(result.p1?.addError).toHaveBeenCalledTimes(1);
+    expect(result.p1.addError).toHaveBeenCalledTimes(1);
   });
 });

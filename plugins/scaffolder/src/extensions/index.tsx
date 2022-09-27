@@ -19,6 +19,9 @@ import {
   CustomFieldValidator,
   FieldExtensionOptions,
   FieldExtensionComponentProps,
+  NextCustomFieldValidator,
+  NextFieldExtensionOptions,
+  NextFieldExtensionComponentProps,
 } from './types';
 import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 import { UIOptionsType } from '@rjsf/utils';
@@ -40,10 +43,36 @@ export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
  */
 export function createScaffolderFieldExtension<
   TReturnValue = unknown,
-  TInputProps extends UIOptionsType = {},
+  TInputProps = unknown,
 >(
   options: FieldExtensionOptions<TReturnValue, TInputProps>,
 ): Extension<FieldExtensionComponent<TReturnValue, TInputProps>> {
+  return {
+    expose() {
+      const FieldExtensionDataHolder: any = () => null;
+
+      attachComponentData(
+        FieldExtensionDataHolder,
+        FIELD_EXTENSION_KEY,
+        options,
+      );
+
+      return FieldExtensionDataHolder;
+    },
+  };
+}
+
+/**
+ * Method for creating field extensions that can be used in the scaffolder
+ * frontend form.
+ * @alpha
+ */
+export function createNextScaffolderFieldExtension<
+  TReturnValue = unknown,
+  TInputProps extends UIOptionsType = {},
+>(
+  options: FieldExtensionOptions<TReturnValue, TInputProps>,
+): Extension<NextFieldExtensionComponentProps<TReturnValue, TInputProps>> {
   return {
     expose() {
       const FieldExtensionDataHolder: any = () => null;
@@ -77,6 +106,9 @@ export type {
   CustomFieldValidator,
   FieldExtensionOptions,
   FieldExtensionComponentProps,
+  NextCustomFieldValidator,
+  NextFieldExtensionOptions,
+  NextFieldExtensionComponentProps,
 };
 
 export { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from './default';
