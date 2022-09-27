@@ -31,6 +31,11 @@ export interface PluginTaskScheduler {
 }
 
 // @public
+export function readTaskScheduleDefinitionFromConfig(
+  config: Config,
+): TaskScheduleDefinition;
+
+// @public
 export type TaskFunction =
   | ((abortSignal: AbortSignal_2) => void | Promise<void>)
   | (() => void | Promise<void>);
@@ -58,6 +63,19 @@ export interface TaskScheduleDefinition {
   initialDelay?: Duration | HumanDuration;
   scope?: 'global' | 'local';
   timeout: Duration | HumanDuration;
+}
+
+// @public
+export interface TaskScheduleDefinitionConfig {
+  frequency:
+    | {
+        cron: string;
+      }
+    | string
+    | HumanDuration;
+  initialDelay?: string | HumanDuration;
+  scope?: 'global' | 'local';
+  timeout: string | HumanDuration;
 }
 
 // @public
