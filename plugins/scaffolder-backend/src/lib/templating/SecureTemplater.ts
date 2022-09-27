@@ -69,7 +69,7 @@ const { render, renderCompat } = (() => {
       if (typeof global === 'function') {
         env.addGlobal(globalName, (...args) => JSON.parse(global(...args)));
       } else {
-        env.addGlobal(globalName, global);
+        env.addGlobal(globalName, JSON.parse(global));
       }
     }
   }
@@ -166,7 +166,7 @@ export class SecureTemplater {
                 (...args: JsonValue[]) => JSON.stringify(global(...args)),
               ];
             }
-            return [globalName, global];
+            return [globalName, JSON.stringify(global)];
           }),
       );
     }
