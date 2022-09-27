@@ -106,3 +106,9 @@ There are some custom metrics that have been added to Backstage will be output f
 - `catalog_processing_duration_seconds`: Time spent executing the full processing flow
 - `catalog_processors_duration_seconds`: Time spent executing catalog processors
 - `catalog_processing_queue_delay_seconds`: The amount of delay between being scheduled for processing, and the start of actually being processed
+- `scaffolder_task_success_count`: Tracks successful task runs.
+- `scaffolder_task_error_count`: a count that track how many task runs error out
+- `scaffolder_task_duration`: a histogram which tracks the duration of a task run
+- `scaffolder_step_success_count`: a count that tracks each step run
+- `scaffolder_step_error_count`: a count that tracks how many steps error out
+- `scaffolder_step_duration`: a histogram which tracks the duration of each step run
