@@ -26,6 +26,7 @@ import {
   DbSearchRow,
 } from '../database/tables';
 import { Stitcher } from '../stitching/Stitcher';
+import { buildEntitySearch } from '../stitching/buildEntitySearch';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 
 describe('DefaultEntitiesCatalog', () => {
@@ -100,29 +101,14 @@ describe('DefaultEntitiesCatalog', () => {
       stitch_ticket: '',
     });
 
-    await insertSearchRow(knex, id, null, entity);
-  }
-
-  async function insertSearchRow(
-    knex: Knex,
-    id: string,
-    previousKey: string | null,
-    previousValue: Object,
-  ) {
-    return Promise.all(
-      Object.entries(previousValue).map(async ([key, value]) => {
-        const currentKey = `${previousKey ? `${previousKey}.` : ``}${key}`;
-        if (typeof value === 'object') {
-          await insertSearchRow(knex, id, currentKey, value);
-        } else {
-          await knex<DbSearchRow>('search').insert({
-            entity_id: id,
-            key: currentKey,
-            value: value,
-          });
-        }
-      }),
-    );
+    for (const row of buildEntitySearch(id, entity)) {
+      await knex<DbSearchRow>('search').insert({
+        entity_id: id,
+        key: row.key,
+        value: row.value,
+        original_value: row.original_value,
+      });
+    }
   }
 
   afterEach(() => {
@@ -792,8 +778,8 @@ describe('DefaultEntitiesCatalog', () => {
           facets: {
             'metadata.tags': expect.arrayContaining([
               { value: 'java', count: 2 },
-              { value: 'rust', count: 1 },
               { value: 'node', count: 1 },
+              { value: 'rust', count: 1 },
             ]),
           },
         });
