@@ -193,6 +193,7 @@ export function createGithubRepoCreateAction(options: {
   allowRebaseMerge?: boolean | undefined;
   allowSquashMerge?: boolean | undefined;
   allowMergeCommit?: boolean | undefined;
+  allowAutoMerge?: boolean | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
@@ -358,6 +359,7 @@ export function createPublishGithubAction(options: {
   allowRebaseMerge?: boolean | undefined;
   allowSquashMerge?: boolean | undefined;
   allowMergeCommit?: boolean | undefined;
+  allowAutoMerge?: boolean | undefined;
   sourcePath?: string | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
