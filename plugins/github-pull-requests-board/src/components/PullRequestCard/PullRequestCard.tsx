@@ -31,6 +31,7 @@ type Props = {
   url: string;
   reviews: Reviews;
   repositoryName: string;
+  repositoryIsArchived: boolean;
   isDraft: boolean;
 };
 
@@ -43,6 +44,7 @@ const PullRequestCard: FunctionComponent<Props> = (props: Props) => {
     url,
     reviews,
     repositoryName,
+    repositoryIsArchived,
     isDraft,
   } = props;
 
@@ -50,7 +52,11 @@ const PullRequestCard: FunctionComponent<Props> = (props: Props) => {
   const commentsReviews = getCommentedReviews(reviews);
   const changeRequests = getChangeRequests(reviews);
 
-  const cardTitle = isDraft ? `🔧 DRAFT - ${title}` : title;
+  // Resolved in this way to satisfy merge - Author: tylerhekman-procore
+  // This information should probably be moved into dedicated CardHeader fields
+  // instead of title prefixes
+  const cardTitleModifiers = [isDraft && '🔧 DRAFT', repositoryIsArchived && '📁 ARCHIVED'].filter(Boolean);
+  const cardTitle = cardTitleModifiers.length > 0 ? `(${cardTitleModifiers.join(' | ')}) - ${title}` : title;
 
   return (
     <Card

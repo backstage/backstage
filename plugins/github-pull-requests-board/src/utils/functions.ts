@@ -137,6 +137,11 @@ export const shouldDisplayCard = (
     return false;
   }
 
+  // hide PRs from archived repositories unless "archivedRepo" filter is toggled
+  if (infoCardFormat.includes('archivedRepo') !== repository.isArchived) {
+    return false
+  }
+
   // when "team" filter is toggled on, only shows PR from team members
   if (infoCardFormat.includes('team')) {
     return teamMembers.includes(author.login);
