@@ -7229,6 +7229,7 @@ __metadata:
     "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.47.0
+    qs: ^6.9.4
     react-use: ^17.2.4
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
