@@ -57,7 +57,7 @@ describe('GitHubLocationAnalyzer', () => {
 
   beforeEach(() => {
     server.use(
-      rest.post('http://localhost:7007/locations', async (req, res, ctx) => {
+      rest.post('http://localhost:7007/locations', async (_, res, ctx) => {
         return res(
           ctx.status(201),
           ctx.json({
@@ -123,4 +123,5 @@ describe('GitHubLocationAnalyzer', () => {
         'https://github.com/foo/bar/blob/my_default_branch/catalog-info.yaml',
     });
   });
+  it('should');
 });
