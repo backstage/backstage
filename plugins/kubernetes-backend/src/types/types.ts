@@ -120,6 +120,9 @@ export interface KubernetesClustersSupplier {
   getClusters(): Promise<ClusterDetails[]>;
 }
 
+/**
+ * @alpha
+ */
 export interface ServiceLocatorRequestContext {
   objectTypesToFetch: Set<ObjectToFetch>;
   customResources: CustomResourceMatcher[];
