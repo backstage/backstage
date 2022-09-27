@@ -61,7 +61,15 @@ export function FetchedEntityRefLinks<
     }, new Array<CompoundEntityRef>());
 
     return refs
-      ? (await catalogApi.getEntities({ filter: refs })).items
+      ? (
+          await catalogApi.getEntities({
+            filter: refs.map(ref => ({
+              kind: ref.kind,
+              'metadata.namespace': ref.namespace,
+              'metadata.name': ref.name,
+            })),
+          })
+        ).items
       : (entityRefs as Array<Entity>);
   }, [entityRefs]);
 
