@@ -26,7 +26,7 @@ import { catalogApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
 
 /**
- * Props for {@link EntityRefLink}.
+ * Props for {@link FetchedEntityRefLinks}.
  *
  * @public
  */
