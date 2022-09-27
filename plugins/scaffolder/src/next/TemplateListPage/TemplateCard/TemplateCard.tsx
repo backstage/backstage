@@ -13,8 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import {
+  DEFAULT_NAMESPACE,
+  parseEntityRef,
+  RELATION_OWNED_BY,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import { Button, MarkdownContent, UserIcon } from '@backstage/core-components';
+import { IconComponent, useApp, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  EntityRefLinks,
+  getEntityRelations,
+} from '@backstage/plugin-catalog-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
   Card,
@@ -22,22 +34,17 @@ import {
   CardContent,
   Chip,
   Divider,
+  Grid,
   makeStyles,
 } from '@material-ui/core';
+import LanguageIcon from '@material-ui/icons/Language';
+import React from 'react';
+import {
+  nextSelectedTemplateRouteRef,
+  viewTechDocRouteRef,
+} from '../../../routes';
 import { CardHeader } from './CardHeader';
-import { MarkdownContent, UserIcon, Button } from '@backstage/core-components';
-import {
-  parseEntityRef,
-  RELATION_OWNED_BY,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
-import {
-  EntityRefLinks,
-  getEntityRelations,
-} from '@backstage/plugin-catalog-react';
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { nextSelectedTemplateRouteRef } from '../../../routes';
-import { BackstageTheme } from '@backstage/theme';
+import { CardLink } from './CardLink';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   box: {
@@ -50,7 +57,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   markdown: {
     /** to make the styles for React Markdown not leak into the description */
     '& :first-child': {
-      marginTop: 0,
+      margin: 0,
     },
   },
   label: {
@@ -60,9 +67,6 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     letterSpacing: 0.5,
     lineHeight: 1,
     fontSize: '0.75rem',
-  },
-  margin: {
-    marginBottom: theme.spacing(2),
   },
   footer: {
     display: 'flex',
@@ -104,34 +108,96 @@ export const TemplateCard = (props: TemplateCardProps) => {
     namespace: namespace,
   });
 
+  const app = useApp();
+  const iconResolver = (key?: string): IconComponent =>
+    key ? app.getSystemIcon(key) ?? LanguageIcon : LanguageIcon;
+
+  // TechDocs Link
+  const viewTechDoc = useRouteRef(viewTechDocRouteRef);
+  const viewTechDocsAnnotation =
+    template.metadata.annotations?.['backstage.io/techdocs-ref'];
+  const viewTechDocsLink =
+    !!viewTechDocsAnnotation &&
+    !!viewTechDoc &&
+    viewTechDoc({
+      namespace: template.metadata.namespace || DEFAULT_NAMESPACE,
+      kind: template.kind,
+      name: template.metadata.name,
+    });
+
   return (
     <Card>
       <CardHeader template={template} />
       <CardContent>
-        <Box className={styles.box}>
-          <MarkdownContent
-            className={styles.markdown}
-            content={template.metadata.description ?? 'No description'}
-          />
-        </Box>
-        {(template.metadata.tags?.length ?? 0) > 0 && (
-          <>
-            <Divider className={styles.margin} />
-            <Box>
-              {template.metadata.tags?.map(tag => (
-                <Chip size="small" label={tag} key={tag} />
-              ))}
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Box className={styles.box}>
+              <MarkdownContent
+                className={styles.markdown}
+                content={template.metadata.description ?? 'No description'}
+              />
             </Box>
-          </>
-        )}
+          </Grid>
+          {(template.metadata.tags?.length ?? 0) > 0 && (
+            <>
+              <Grid item xs={12}>
+                <Divider />
+              </Grid>
+              <Grid item xs={12}>
+                <Grid container spacing={2}>
+                  {template.metadata.tags?.map(tag => (
+                    <Grid item>
+                      <Chip
+                        style={{ margin: 0 }}
+                        size="small"
+                        label={tag}
+                        key={tag}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </Grid>
+            </>
+          )}
+          {(!!viewTechDocsLink || template.metadata.links?.length) && (
+            <>
+              <Grid item xs={12}>
+                <Divider />
+              </Grid>
+              <Grid item xs={12}>
+                <Grid container spacing={2}>
+                  {viewTechDocsLink && (
+                    <Grid className={styles.linkText} item xs={6}>
+                      <CardLink
+                        icon={iconResolver('docs')}
+                        text="View TechDocs"
+                        url={viewTechDocsLink}
+                      />
+                    </Grid>
+                  )}
+                  {template.metadata.links?.map(({ url, icon, title }) => (
+                    <Grid className={styles.linkText} item xs={6}>
+                      <CardLink
+                        icon={iconResolver(icon)}
+                        text={title || url}
+                        url={url}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </Grid>
+            </>
+          )}
+        </Grid>
       </CardContent>
-      <CardActions>
+      <CardActions style={{ padding: '16px' }}>
         <div className={styles.footer}>
           <div className={styles.ownedBy}>
             {ownedByRelations.length > 0 && (
               <>
-                <UserIcon />
+                <UserIcon fontSize="small" />
                 <EntityRefLinks
+                  style={{ marginLeft: '8px' }}
                   entityRefs={ownedByRelations}
                   defaultKind="Group"
                 />

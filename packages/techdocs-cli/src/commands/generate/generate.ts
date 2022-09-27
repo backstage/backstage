@@ -22,7 +22,10 @@ import {
   TechdocsGenerator,
   ParsedLocationAnnotation,
 } from '@backstage/plugin-techdocs-node';
-import { DockerContainerRunner } from '@backstage/backend-common';
+import {
+  ContainerRunner,
+  DockerContainerRunner,
+} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
   convertTechDocsRefToLocationAnnotation,
@@ -66,8 +69,12 @@ export default async function generate(opts: OptionValues) {
   });
 
   // Docker client (conditionally) used by the generators, based on techdocs.generators config.
-  const dockerClient = new Docker();
-  const containerRunner = new DockerContainerRunner({ dockerClient });
+  let containerRunner: ContainerRunner | undefined;
+
+  if (opts.docker) {
+    const dockerClient = new Docker();
+    containerRunner = new DockerContainerRunner({ dockerClient });
+  }
 
   let parsedLocationAnnotation = {} as ParsedLocationAnnotation;
   if (opts.techdocsRef) {

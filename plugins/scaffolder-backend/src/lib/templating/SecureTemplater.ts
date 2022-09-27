@@ -64,6 +64,16 @@ const { render, renderCompat } = (() => {
     }
   }
 
+  if (typeof additionalTemplateGlobals !== 'undefined') {
+    for (const [globalName, global] of Object.entries(additionalTemplateGlobals)) {
+      if (typeof global === 'function') {
+        env.addGlobal(globalName, (...args) => JSON.parse(global(...args)));
+      } else {
+        env.addGlobal(globalName, JSON.parse(global));
+      }
+    }
+  }
+
   let uninstallCompat = undefined;
 
   function render(str, values) {
@@ -98,6 +108,11 @@ const { render, renderCompat } = (() => {
 /** @public */
 export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
 
+/** @public */
+export type TemplateGlobal =
+  | ((...args: JsonValue[]) => JsonValue | undefined)
+  | JsonValue;
+
 export interface SecureTemplaterOptions {
   /* Optional implementation of the parseRepoUrl filter */
   parseRepoUrl?(repoUrl: string): RepoSpec;
@@ -107,6 +122,8 @@ export interface SecureTemplaterOptions {
 
   /* Extra user-provided nunjucks filters */
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  /* Extra user-provided nunjucks globals */
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }
 
 export type SecureTemplateRenderer = (
@@ -116,8 +133,12 @@ export type SecureTemplateRenderer = (
 
 export class SecureTemplater {
   static async loadRenderer(options: SecureTemplaterOptions = {}) {
-    const { parseRepoUrl, cookiecutterCompat, additionalTemplateFilters } =
-      options;
+    const {
+      parseRepoUrl,
+      cookiecutterCompat,
+      additionalTemplateFilters,
+      additionalTemplateGlobals,
+    } = options;
     const sandbox: Record<string, any> = {};
 
     if (parseRepoUrl) {
@@ -134,7 +155,21 @@ export class SecureTemplater {
           ]),
       );
     }
-
+    if (additionalTemplateGlobals) {
+      sandbox.additionalTemplateGlobals = Object.fromEntries(
+        Object.entries(additionalTemplateGlobals)
+          .filter(([_, global]) => !!global)
+          .map(([globalName, global]) => {
+            if (typeof global === 'function') {
+              return [
+                globalName,
+                (...args: JsonValue[]) => JSON.stringify(global(...args)),
+              ];
+            }
+            return [globalName, JSON.stringify(global)];
+          }),
+      );
+    }
     const vm = new VM({ sandbox });
 
     const nunjucksSource = await fs.readFile(

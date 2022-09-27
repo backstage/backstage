@@ -36,22 +36,21 @@ export const useKubernetesObjects = (
 ): KubernetesObjects => {
   const kubernetesApi = useApi(kubernetesApiRef);
   const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
-  const getCustomObjects =
-    useCallback(async (): Promise<ObjectsByEntityResponse> => {
-      const auth = await generateAuth(
-        entity,
-        kubernetesApi,
-        kubernetesAuthProvidersApi,
-      );
-      return await kubernetesApi.getObjectsByEntity({
-        auth,
-        entity,
-      });
-    }, [kubernetesApi, entity, kubernetesAuthProvidersApi]);
+  const getObjects = useCallback(async (): Promise<ObjectsByEntityResponse> => {
+    const auth = await generateAuth(
+      entity,
+      kubernetesApi,
+      kubernetesAuthProvidersApi,
+    );
+    return await kubernetesApi.getObjectsByEntity({
+      auth,
+      entity,
+    });
+  }, [kubernetesApi, entity, kubernetesAuthProvidersApi]);
 
   const { value, loading, error, retry } = useAsyncRetry(
-    () => getCustomObjects(),
-    [getCustomObjects],
+    () => getObjects(),
+    [getObjects],
   );
 
   useInterval(() => retry(), intervalMs);

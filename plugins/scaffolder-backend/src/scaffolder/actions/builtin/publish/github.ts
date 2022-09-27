@@ -57,6 +57,7 @@ export function createPublishGithubAction(options: {
     allowRebaseMerge?: boolean;
     allowSquashMerge?: boolean;
     allowMergeCommit?: boolean;
+    allowAutoMerge?: boolean;
     sourcePath?: string;
     requireCodeOwnerReviews?: boolean;
     requiredStatusCheckContexts?: string[];
@@ -104,6 +105,7 @@ export function createPublishGithubAction(options: {
           allowMergeCommit: inputProps.allowMergeCommit,
           allowSquashMerge: inputProps.allowSquashMerge,
           allowRebaseMerge: inputProps.allowRebaseMerge,
+          allowAutoMerge: inputProps.allowAutoMerge,
           sourcePath: inputProps.sourcePath,
           collaborators: inputProps.collaborators,
           token: inputProps.token,
@@ -137,6 +139,7 @@ export function createPublishGithubAction(options: {
         allowMergeCommit = true,
         allowSquashMerge = true,
         allowRebaseMerge = true,
+        allowAutoMerge = false,
         collaborators,
         topics,
         token: providedToken,
@@ -167,6 +170,7 @@ export function createPublishGithubAction(options: {
         allowMergeCommit,
         allowSquashMerge,
         allowRebaseMerge,
+        allowAutoMerge,
         access,
         collaborators,
         topics,

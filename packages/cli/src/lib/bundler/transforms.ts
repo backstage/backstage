@@ -55,7 +55,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       exclude: /node_modules/,
       use: [
         {
-          loader: 'swc-loader',
+          loader: require.resolve('swc-loader'),
           options: {
             jsc: {
               target: 'es2019',
@@ -81,7 +81,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       exclude: /node_modules/,
       use: [
         {
-          loader: 'swc-loader',
+          loader: require.resolve('swc-loader'),
           options: {
             jsc: {
               target: 'es2019',
@@ -112,7 +112,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       test: [/\.icon\.svg$/],
       use: [
         {
-          loader: 'swc-loader',
+          loader: require.resolve('swc-loader'),
           options: {
             jsc: {
               target: 'es2019',

@@ -1,5 +1,17 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- 82ac9bcfe5: Fix wrong import statement in `README.md`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.0
+  - @backstage/backend-common@0.15.2-next.0
+  - @backstage/plugin-auth-node@0.2.6-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/types@1.0.0
+
 ## 0.1.0
 
 ### Minor Changes

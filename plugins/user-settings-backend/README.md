@@ -54,7 +54,7 @@ To make use of the user settings backend, replace the `WebStorage` with the
 +  discoveryApiRef,
 +  fetchApiRef,
    errorApiRef,
-+  identityApi,
++  identityApiRef,
 +  storageApiRef,
  } from '@backstage/core-plugin-api';
 +import { UserSettingsStorage } from '@backstage/plugin-user-settings';

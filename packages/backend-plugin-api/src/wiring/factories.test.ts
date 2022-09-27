@@ -31,7 +31,7 @@ describe('createExtensionPoint', () => {
 });
 
 describe('createBackendPlugin', () => {
-  it('should create an BackendPlugin', () => {
+  it('should create a BackendPlugin', () => {
     const plugin = createBackendPlugin({
       id: 'x',
       register(_reg, _options: { a: string }) {},
@@ -68,10 +68,42 @@ describe('createBackendPlugin', () => {
     // @ts-expect-error
     expect(plugin({})).toBeDefined();
   });
+
+  it('should create a BackendPlugin with options as interface', () => {
+    interface TestOptions {
+      a: string;
+    }
+    const plugin = createBackendPlugin({
+      id: 'x',
+      register(_reg, _options: TestOptions) {},
+    });
+    expect(plugin).toBeDefined();
+    expect(plugin({ a: 'a' })).toBeDefined();
+    expect(plugin({ a: 'a' }).id).toBe('x');
+    // @ts-expect-error
+    expect(plugin()).toBeDefined();
+    // @ts-expect-error
+    expect(plugin({ b: 'b' })).toBeDefined();
+  });
+
+  it('should create plugins with optional options as interface', () => {
+    interface TestOptions {
+      a: string;
+    }
+    const plugin = createBackendPlugin({
+      id: 'x',
+      register(_reg, _options?: TestOptions) {},
+    });
+    expect(plugin).toBeDefined();
+    expect(plugin({ a: 'a' })).toBeDefined();
+    expect(plugin()).toBeDefined();
+    // @ts-expect-error
+    expect(plugin({ b: 'b' })).toBeDefined();
+  });
 });
 
 describe('createBackendModule', () => {
-  it('should create an BackendModule', () => {
+  it('should create a BackendModule', () => {
     const mod = createBackendModule({
       pluginId: 'x',
       moduleId: 'y',
@@ -110,5 +142,39 @@ describe('createBackendModule', () => {
     expect(mod({ a: 'a' })).toBeDefined();
     // @ts-expect-error
     expect(mod({})).toBeDefined();
+  });
+
+  it('should create a BackendModule as interface', () => {
+    interface TestOptions {
+      a: string;
+    }
+    const mod = createBackendModule({
+      pluginId: 'x',
+      moduleId: 'y',
+      register(_reg, _options: TestOptions) {},
+    });
+    expect(mod).toBeDefined();
+    expect(mod({ a: 'a' })).toBeDefined();
+    expect(mod({ a: 'a' }).id).toBe('x.y');
+    // @ts-expect-error
+    expect(mod()).toBeDefined();
+    // @ts-expect-error
+    expect(mod({ b: 'b' })).toBeDefined();
+  });
+
+  it('should create modules with optional options as interface', () => {
+    interface TestOptions {
+      a: string;
+    }
+    const mod = createBackendModule({
+      pluginId: 'x',
+      moduleId: 'y',
+      register(_reg, _options?: TestOptions) {},
+    });
+    expect(mod).toBeDefined();
+    expect(mod({ a: 'a' })).toBeDefined();
+    expect(mod()).toBeDefined();
+    // @ts-expect-error
+    expect(mod({ b: 'b' })).toBeDefined();
   });
 });
