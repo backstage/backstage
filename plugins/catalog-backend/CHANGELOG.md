@@ -1,5 +1,28 @@
 # @backstage/plugin-catalog-backend
 
+## 1.4.1-next.0
+
+### Patch Changes
+
+- 8cb6e10105: Fixed a bug where entities provided without a location key would always replace existing entities, rather than updating them.
+- 63296ebcd4: Allow Placeholder value to be any value, not only string.
+- 74022e0163: Make sure to stitch entities correctly after deletion, to ensure that their relations are updated.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.0
+  - @backstage/backend-plugin-api@0.1.3-next.0
+  - @backstage/catalog-client@1.1.1-next.0
+  - @backstage/plugin-catalog-node@1.1.1-next.0
+  - @backstage/plugin-scaffolder-common@1.2.1-next.0
+  - @backstage/backend-common@0.15.2-next.0
+  - @backstage/plugin-permission-node@0.6.6-next.0
+  - @backstage/config@1.0.3-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/integration@1.3.2-next.0
+  - @backstage/types@1.0.0
+  - @backstage/plugin-catalog-common@1.0.7-next.0
+  - @backstage/plugin-permission-common@0.6.5-next.0
+  - @backstage/plugin-search-common@1.0.2-next.0
+
 ## 1.4.0
 
 ### Minor Changes

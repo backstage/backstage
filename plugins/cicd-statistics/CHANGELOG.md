@@ -1,5 +1,15 @@
 # @backstage/plugin-cicd-statistics
 
+## 0.1.12-next.0
+
+### Patch Changes
+
+- e05e0f021b: Align on the version of `@material-ui/icons` used, to `^4.9.1` like other packages in the main repo
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.0
+  - @backstage/plugin-catalog-react@1.1.5-next.0
+  - @backstage/core-plugin-api@1.0.7-next.0
+
 ## 0.1.11
 
 ### Patch Changes
