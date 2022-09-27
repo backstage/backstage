@@ -2,4 +2,4 @@
 '@backstage/plugin-auth-backend': patch
 ---
 
-oauth callbacks to consider installations with relative URL.
+Fix GitLab provider setup so that it supports GitLab installations with a path in the URL.
