@@ -1,0 +1,126 @@
+/*
+ * Copyright 2022 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+const octokit = {
+  search: {
+    code: jest.fn(),
+  },
+  repos: {
+    get: jest.fn(),
+  },
+};
+
+jest.mock('@octokit/rest', () => {
+  class Octokit {
+    constructor() {
+      return octokit;
+    }
+  }
+  return { Octokit };
+});
+
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { GitHubLocationAnalyzer } from './GitHubLocationAnalyzer';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { setupServer } from 'msw/node';
+import { rest } from 'msw';
+import { GitHubIntegration } from '@backstage/integration';
+
+const server = setupServer();
+
+describe('GitHubLocationAnalyzer', () => {
+  const mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery> = {
+    getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007'),
+    getExternalBaseUrl: jest.fn(),
+  };
+  const integration = new GitHubIntegration({
+    host: 'h.com',
+    apiBaseUrl: 'a',
+    rawBaseUrl: 'r',
+    token: 't',
+  });
+
+  setupRequestMockHandlers(server);
+
+  beforeEach(() => {
+    server.use(
+      rest.post('http://localhost:7007/locations', async (req, res, ctx) => {
+        return res(
+          ctx.status(201),
+          ctx.json({
+            location: 'test',
+            exists: false,
+            entities: [
+              {
+                apiVersion: 'backstage.io/v1alpha1',
+                kind: 'Location',
+                metadata: {
+                  name: 'test-entity',
+                },
+                spec: {
+                  type: 'url',
+                  target: 'whatever',
+                },
+              },
+              {
+                apiVersion: 'backstage.io/v1alpha1',
+                kind: 'Component',
+                metadata: {
+                  title: 'Test Entity',
+                  name: 'test-entity-2',
+                  description: 'The expected description 2',
+                },
+                spec: {
+                  type: 'some-type',
+                  lifecycle: 'experimental',
+                  owner: 'someone',
+                },
+              },
+            ],
+          }),
+        );
+      }),
+    );
+  });
+
+  it('should analyze', async () => {
+    octokit.search.code.mockImplementation((opts: { q: string }) => {
+      if (opts.q === 'filename:catalog-info.yaml repo:foo/bar') {
+        return Promise.resolve({
+          data: { items: [{ path: 'catalog-info.yaml' }], total_count: 1 },
+        });
+      }
+      return Promise.reject();
+    });
+
+    octokit.repos.get.mockResolvedValue({
+      data: { default_branch: 'my_default_branch' },
+    });
+
+    const analyzer = new GitHubLocationAnalyzer({
+      discovery: mockDiscoveryApi,
+      integration,
+    });
+    const result = await analyzer.analyze('https://github.com/foo/bar');
+
+    expect(result[0].isRegistered).toBeFalsy();
+    expect(result[0].location).toEqual({
+      type: 'url',
+      target:
+        'https://github.com/foo/bar/blob/my_default_branch/catalog-info.yaml',
+    });
+  });
+});

@@ -27,7 +27,7 @@ import {
   LocationAnalyzer,
 } from './types';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { GitHubLocationAnalyzer } from './GitHubLocationAnalyzer';
+import { GitHubLocationAnalyzer } from './analyzers/GitHubLocationAnalyzer';
 
 export class RepoLocationAnalyzer implements LocationAnalyzer {
   private readonly logger: Logger;
@@ -85,8 +85,6 @@ export class RepoLocationAnalyzer implements LocationAnalyzer {
 
     if (analyzer) {
       const existingEntityFiles = await analyzer.analyze(
-        owner,
-        name,
         request.location.target,
       );
       if (existingEntityFiles.length > 0) {
