@@ -207,7 +207,7 @@ class TestHarness {
     );
     const logger = options?.logger ?? getVoidLogger();
     const db =
-      options?.db /* (await TestDatabases.create().init('SQLITE_3')); */ ??
+      options?.db ??
       (await DatabaseManager.fromConfig(config, { logger })
         .forPlugin('catalog')
         .getClient());
@@ -245,7 +245,6 @@ class TestHarness {
       rulesEnforcer,
       logger,
       parser: defaultEntityDataParser,
-      // policy: new SchemaValidEntityPolicy(),
       policy: EntityPolicies.allOf([]),
     });
     const stitcher = new Stitcher(db, logger);
@@ -303,10 +302,11 @@ class TestHarness {
   }
 
   async process(entityRefs?: Set<string>) {
-    this.#engine.start();
-
     const tracker = new WaitingProgressTracker(entityRefs);
     this.#proxyProgressTracker.setTracker(tracker);
+
+    this.#engine.start();
+
     const errors = await tracker.wait();
 
     this.#engine.stop();
