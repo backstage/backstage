@@ -94,6 +94,10 @@ describe('GitHubLocationAnalyzer', () => {
         );
       }),
     );
+
+    octokit.repos.get.mockResolvedValue({
+      data: { default_branch: 'my_default_branch' },
+    });
   });
 
   it('should analyze', async () => {
@@ -104,10 +108,6 @@ describe('GitHubLocationAnalyzer', () => {
         });
       }
       return Promise.reject();
-    });
-
-    octokit.repos.get.mockResolvedValue({
-      data: { default_branch: 'my_default_branch' },
     });
 
     const analyzer = new GitHubLocationAnalyzer({
@@ -123,5 +123,26 @@ describe('GitHubLocationAnalyzer', () => {
         'https://github.com/foo/bar/blob/my_default_branch/catalog-info.yaml',
     });
   });
-  it('should');
+  it('should use the provided entity filename for search', async () => {
+    octokit.search.code.mockImplementation((opts: { q: string }) => {
+      if (opts.q === 'filename:anvil.yaml repo:foo/bar') {
+        return Promise.resolve({
+          data: { items: [{ path: 'anvil.yaml' }], total_count: 1 },
+        });
+      }
+      return Promise.reject();
+    });
+
+    const analyzer = new GitHubLocationAnalyzer({
+      discovery: mockDiscoveryApi,
+      integration,
+      catalogFilename: 'anvil.yaml',
+    });
+    const result = await analyzer.analyze('https://github.com/foo/bar');
+
+    expect(result[0].location).toEqual({
+      type: 'url',
+      target: 'https://github.com/foo/bar/blob/my_default_branch/anvil.yaml',
+    });
+  });
 });

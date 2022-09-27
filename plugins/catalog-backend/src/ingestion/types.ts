@@ -34,6 +34,7 @@ export type LocationAnalyzer = {
 /** @public */
 export type AnalyzeLocationRequest = {
   location: LocationSpec;
+  catalogFilename?: string;
 };
 
 /** @public */

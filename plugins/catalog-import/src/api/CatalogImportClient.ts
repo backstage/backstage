@@ -209,6 +209,13 @@ the component will become available.\n\nFor more information, read an \
         method: 'POST',
         body: JSON.stringify({
           location: { type: 'url', target: options.repo },
+          ...(this.configApi.getOptionalString(
+            'catalog.import.entityFilename',
+          ) && {
+            catalogFilename: this.configApi.getOptionalString(
+              'catalog.import.entityFilename',
+            ),
+          }),
         }),
       },
     ).catch(e => {

@@ -78,6 +78,7 @@ export type AnalyzeLocationGenerateEntity = {
 // @public (undocumented)
 export type AnalyzeLocationRequest = {
   location: LocationSpec;
+  catalogFilename?: string;
 };
 
 // @public (undocumented)

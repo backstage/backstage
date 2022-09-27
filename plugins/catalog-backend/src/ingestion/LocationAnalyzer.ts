@@ -65,6 +65,7 @@ export class RepoLocationAnalyzer implements LocationAnalyzer {
         analyzer = new GitHubLocationAnalyzer({
           integration,
           discovery: this.discovery,
+          catalogFilename: request.catalogFilename,
         });
         break;
       case 'gitlab':
