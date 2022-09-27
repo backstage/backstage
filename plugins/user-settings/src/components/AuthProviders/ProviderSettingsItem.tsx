@@ -32,6 +32,7 @@ import {
   ProfileInfoApi,
   ProfileInfo,
   useApi,
+  errorApiRef,
   IconComponent,
 } from '@backstage/core-plugin-api';
 import { ProviderSettingsAvatar } from './ProviderSettingsAvatar';
@@ -46,6 +47,7 @@ export const ProviderSettingsItem = (props: {
   const { title, description, icon: Icon, apiRef } = props;
 
   const api = useApi(apiRef);
+  const errorApi = useApi(errorApiRef);
   const [signedIn, setSignedIn] = useState(false);
   const emptyProfile: ProfileInfo = {};
   const [profile, setProfile] = useState(emptyProfile);
@@ -126,7 +128,10 @@ export const ProviderSettingsItem = (props: {
           <Button
             variant="outlined"
             color="primary"
-            onClick={() => (signedIn ? api.signOut() : api.signIn())}
+            onClick={() => {
+              const action = signedIn ? api.signOut() : api.signIn();
+              action.catch(error => errorApi.post(error));
+            }}
           >
             {signedIn ? `Sign out` : `Sign in`}
           </Button>
