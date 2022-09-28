@@ -97,7 +97,7 @@ describe('command entrypoint', () => {
 
   it('should not call `initGitRepository` when `gitConfig` is undefined', async () => {
     const cmd = {} as unknown as Command;
-    readGitConfig.mockResolvedValue(undefined);
+    readGitConfig.mockResolvedValue({});
     await createApp(cmd);
     expect(initGitRepositoryMock).not.toHaveBeenCalled();
   });
