@@ -24,10 +24,12 @@ import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
+import { PathParams } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { SubRouteRef } from '@backstage/core-plugin-api';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
@@ -41,6 +43,11 @@ export function createNextScaffolderFieldExtension<
 >(
   options: NextFieldExtensionOptions<TReturnValue, TInputProps>,
 ): Extension<NextFieldExtensionComponentProps<TReturnValue, TInputProps>>;
+
+// Warning: (ae-missing-release-tag) "actionsRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const actionsRouteRef: SubRouteRef<undefined>;
 
 // @public
 export function createScaffolderFieldExtension<
@@ -63,6 +70,11 @@ export type CustomFieldValidator<TFieldReturnValue> = (
     apiHolder: ApiHolder;
   },
 ) => void | Promise<void>;
+
+// Warning: (ae-missing-release-tag) "editRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const editRouteRef: SubRouteRef<undefined>;
 
 // @public
 export const EntityNamePickerFieldExtension: FieldExtensionComponent<
@@ -144,6 +156,13 @@ export interface LayoutOptions<P = any> {
 // @public
 export type LayoutTemplate<T = any> = FormProps<T>['ObjectFieldTemplate'];
 
+// Warning: (ae-missing-release-tag) "legacySelectedTemplateRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public @deprecated (undocumented)
+export const legacySelectedTemplateRouteRef: SubRouteRef<
+  PathParams<'/templates/:templateName'>
+>;
+
 // @public
 export type ListActionsResponse = Array<{
   id: string;
@@ -166,6 +185,11 @@ export type LogEvent = {
   id: string;
   taskId: string;
 };
+
+// Warning: (ae-missing-release-tag) "nextRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const nextRouteRef: RouteRef<undefined>;
 
 // @alpha
 export type NextCustomFieldValidator<TFieldReturnValue> = (
@@ -215,6 +239,13 @@ export const NextScaffolderPage: (
   props: PropsWithChildren<NextRouterProps>,
 ) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "nextSelectedTemplateRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const nextSelectedTemplateRouteRef: SubRouteRef<
+  PathParams<'/templates/:namespace/:templateName'>
+>;
+
 // @public
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent<
   string,
@@ -248,6 +279,11 @@ export interface OwnerPickerUiOptions {
   // (undocumented)
   defaultNamespace?: string | false;
 }
+
+// Warning: (ae-missing-release-tag) "registerComponentRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const registerComponentRouteRef: ExternalRouteRef<undefined, true>;
 
 // @public
 export const repoPickerValidation: (
@@ -287,6 +323,11 @@ export interface RepoUrlPickerUiOptions {
   };
 }
 
+// Warning: (ae-missing-release-tag) "rootRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const rootRouteRef: RouteRef<undefined>;
+
 // @public
 export type RouterProps = {
   components?: {
@@ -302,6 +343,11 @@ export type RouterProps = {
     filter: (entity: Entity) => boolean;
   }>;
   defaultPreviewTemplate?: string;
+  headerOptions?: {
+    pageTitleOverride?: string;
+    title?: string;
+    subtitle?: string;
+  };
   contextMenu?: {
     editor?: boolean;
     actions?: boolean;
@@ -424,6 +470,11 @@ export interface ScaffolderGetIntegrationsListResponse {
 // @public
 export const ScaffolderLayouts: React.ComponentType;
 
+// Warning: (ae-missing-release-tag) "scaffolderListTaskRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const scaffolderListTaskRouteRef: SubRouteRef<undefined>;
+
 // @public (undocumented)
 export type ScaffolderOutputLink = {
   title?: string;
@@ -494,6 +545,11 @@ export type ScaffolderTaskOutput = {
   [key: string]: unknown;
 };
 
+// Warning: (ae-missing-release-tag) "scaffolderTaskRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const scaffolderTaskRouteRef: SubRouteRef<PathParams<'/tasks/:taskId'>>;
+
 // @public
 export type ScaffolderTaskStatus =
   | 'open'
@@ -507,6 +563,13 @@ export interface ScaffolderUseTemplateSecrets {
   // (undocumented)
   setSecrets: (input: Record<string, string>) => void;
 }
+
+// Warning: (ae-missing-release-tag) "selectedTemplateRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const selectedTemplateRouteRef: SubRouteRef<
+  PathParams<'/templates/:namespace/:templateName'>
+>;
 
 // @public
 export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;
@@ -538,4 +601,16 @@ export const TemplateTypePicker: () => JSX.Element | null;
 
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
+
+// Warning: (ae-missing-release-tag) "viewTechDocRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const viewTechDocRouteRef: ExternalRouteRef<
+  {
+    name: string;
+    kind: string;
+    namespace: string;
+  },
+  true
+>;
 ```
