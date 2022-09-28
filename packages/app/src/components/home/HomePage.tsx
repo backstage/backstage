@@ -30,7 +30,6 @@ import { HomePageSearchBar } from '@backstage/plugin-search';
 import { HomePageCalendar } from '@backstage/plugin-gcalendar';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
-import Button from '@material-ui/core/Button';
 
 const clockConfigs: ClockConfig[] = [
   {
