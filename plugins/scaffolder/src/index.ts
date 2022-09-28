@@ -61,6 +61,7 @@ export {
   scaffolderPlugin,
 } from './plugin';
 export * from './components';
+export * from './routes';
 export type { TaskPageProps } from './components/TaskPage';
 
 /** next exports */
