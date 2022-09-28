@@ -3872,7 +3872,7 @@ __metadata:
     "@backstage/backend-common": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@types/express": "*"
+    "@types/express": ^4.17.6
     "@types/http-proxy-middleware": ^0.19.3
     "@types/supertest": ^2.0.8
     express: ^4.17.1
@@ -4184,7 +4184,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
-    "@types/express": "*"
+    "@types/express": ^4.17.6
     express: ^4.17.1
     jose: ^4.6.0
     lodash: ^4.17.21
@@ -6212,7 +6212,7 @@ __metadata:
     "@backstage/backend-common": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@types/express": "*"
+    "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -6267,7 +6267,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
-    "@types/express": "*"
+    "@types/express": ^4.17.6
     "@types/lodash": ^4.14.151
     "@types/supertest": ^2.0.8
     dataloader: ^2.0.0
@@ -6385,7 +6385,7 @@ __metadata:
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/plugin-playlist-common": "workspace:^"
-    "@types/express": "*"
+    "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -6985,7 +6985,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@types/express": "*"
+    "@types/express": ^4.17.6
     "@types/supertest": ^2.0.12
     express: ^4.18.1
     express-promise-router: ^4.1.0
@@ -7604,7 +7604,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@types/compression": ^1.7.2
-    "@types/express": "*"
+    "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     compression: ^1.7.4
     cors: ^2.8.5
@@ -13463,7 +13463,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:*, @types/express@npm:4.17.13, @types/express@npm:^4.17.13, @types/express@npm:^4.17.6":
+"@types/express@npm:*, @types/express@npm:4.17.13, @types/express@npm:^4.17.13":
   version: 4.17.13
   resolution: "@types/express@npm:4.17.13"
   dependencies:
@@ -13472,6 +13472,18 @@ __metadata:
     "@types/qs": "*"
     "@types/serve-static": "*"
   checksum: 12a2a0e6c4b993fc0854bec665906788aea0d8ee4392389d7a98a5de1eefdd33c9e1e40a91f3afd274011119c506f7b4126acb97fae62ae20b654974d44cba12
+  languageName: node
+  linkType: hard
+
+"@types/express@npm:^4.17.6":
+  version: 4.17.14
+  resolution: "@types/express@npm:4.17.14"
+  dependencies:
+    "@types/body-parser": "*"
+    "@types/express-serve-static-core": ^4.17.18
+    "@types/qs": "*"
+    "@types/serve-static": "*"
+  checksum: 15c1af46d02de834e4a225eccaa9d85c0370fdbb3ed4e1bc2d323d24872309961542b993ae236335aeb3e278630224a6ea002078d39e651d78a3b0356b1eaa79
   languageName: node
   linkType: hard
 
