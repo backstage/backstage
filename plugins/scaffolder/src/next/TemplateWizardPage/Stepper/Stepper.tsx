@@ -22,9 +22,9 @@ import {
   Button,
   makeStyles,
 } from '@material-ui/core';
-import { withTheme } from '@rjsf/core';
+import { withTheme } from '@rjsf/core-v5';
 import { ErrorSchema, FieldValidation } from '@rjsf/utils';
-import { Theme as MuiTheme } from '@rjsf/material-ui';
+import { Theme as MuiTheme } from '@rjsf/material-ui-v5';
 import React, { useMemo, useState } from 'react';
 import { NextFieldExtensionOptions } from '../../../extensions';
 import { TemplateParameterSchema } from '../../../types';
@@ -53,7 +53,8 @@ export interface StepperProps {
   extensions: NextFieldExtensionOptions<any, any>[];
 }
 
-const Form = withTheme(MuiTheme);
+// This needs an any for some reason, think it coul
+const Form = withTheme(MuiTheme as any);
 
 export const Stepper = (props: StepperProps) => {
   const { steps } = useTemplateSchema(props.manifest);
