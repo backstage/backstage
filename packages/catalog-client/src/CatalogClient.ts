@@ -359,7 +359,7 @@ export class CatalogClient implements CatalogApi {
    */
   async validateEntity(
     entity: Entity,
-    location: string,
+    locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<ValidateEntityResponse> {
     const response = await this.fetchApi.fetch(
@@ -370,7 +370,7 @@ export class CatalogClient implements CatalogApi {
           ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
         },
         method: 'POST',
-        body: JSON.stringify({ entity, location }),
+        body: JSON.stringify({ entity, location: locationRef }),
       },
     );
 

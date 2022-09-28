@@ -322,7 +322,7 @@ describe('CatalogClient', () => {
               name: '',
             },
           },
-          'http://example.com',
+          'url:http://example.com',
         ),
       ).toMatchObject({
         valid: false,
@@ -350,7 +350,7 @@ describe('CatalogClient', () => {
               name: 'good',
             },
           },
-          'http://example.com',
+          'url:http://example.com',
         ),
       ).toMatchObject({
         valid: true,
@@ -373,7 +373,7 @@ describe('CatalogClient', () => {
               name: 'good',
             },
           },
-          'http://example.com',
+          'url:http://example.com',
         ),
       ).rejects.toThrow(/Request failed with 500 Error/);
     });
