@@ -148,6 +148,25 @@ describe('createRouter', () => {
       });
     });
 
+    it('is less restrictive with unknown keys on query endpoint', async () => {
+      const queryString =
+        'term=test&%5BdocType%5D%5B0%5D=Service&filters%5BdocType%5D%5B0%5D=filter1&unknownKey1%5B2%5D=unknownValue1&unknownKey1%5B3%5D=unknownValue2&unknownKey2=unknownValue1&pageCursor';
+      const response = await request(app).get(`/query?${queryString}`);
+      const firstArg: Object = {
+        docType: ['Service'],
+        filters: { docType: ['filter1'] },
+        pageCursor: '',
+        term: 'test',
+        unknownKey1: ['unknownValue1', 'unknownValue2'],
+        unknownKey2: 'unknownValue1',
+      };
+      const secondArg = {
+        token: undefined,
+      };
+      expect(response.status).toEqual(200);
+      expect(mockSearchEngine.query).toHaveBeenCalledWith(firstArg, secondArg);
+    });
+
     describe('search result filtering', () => {
       beforeAll(async () => {
         const logger = getVoidLogger();
