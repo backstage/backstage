@@ -18,6 +18,7 @@ import {
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
+import { z } from 'zod';
 import { createConditionTransformer } from './createConditionTransformer';
 import { createPermissionRule } from './createPermissionRule';
 
@@ -26,6 +27,7 @@ const transformConditions = createConditionTransformer([
     name: 'test-rule-1',
     description: 'Test rule 1',
     resourceType: 'test-resource',
+    schema: z.tuple([]),
     apply: jest.fn(),
     toQuery: jest.fn(
       (firstParam: string, secondParam: number) =>
@@ -36,6 +38,7 @@ const transformConditions = createConditionTransformer([
     name: 'test-rule-2',
     description: 'Test rule 2',
     resourceType: 'test-resource',
+    schema: z.tuple([]),
     apply: jest.fn(),
     toQuery: jest.fn(
       (firstParam: object) => `test-rule-2:${JSON.stringify(firstParam)}`,

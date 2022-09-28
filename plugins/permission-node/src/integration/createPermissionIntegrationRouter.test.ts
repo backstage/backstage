@@ -21,6 +21,7 @@ import {
 } from '@backstage/plugin-permission-common';
 import express, { Express, Router } from 'express';
 import request, { Response } from 'supertest';
+import { z } from 'zod';
 import { createPermissionIntegrationRouter } from './createPermissionIntegrationRouter';
 import { createPermissionRule } from './createPermissionRule';
 
@@ -39,6 +40,7 @@ const testRule1 = createPermissionRule({
   name: 'test-rule-1',
   description: 'Test rule 1',
   resourceType: 'test-resource',
+  schema: z.tuple([z.string(), z.number()]),
   apply: (_resource: any, _firstParam: string, _secondParam: number) => true,
   toQuery: (_firstParam: string, _secondParam: number) => ({}),
 });
@@ -47,6 +49,7 @@ const testRule2 = createPermissionRule({
   name: 'test-rule-2',
   description: 'Test rule 2',
   resourceType: 'test-resource',
+  schema: z.tuple([z.object({})]),
   apply: (_resource: any, _firstParam: object) => false,
   toQuery: (_firstParam: object) => ({}),
 });

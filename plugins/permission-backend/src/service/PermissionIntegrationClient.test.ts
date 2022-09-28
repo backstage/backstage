@@ -30,6 +30,7 @@ import {
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
+import { z } from 'zod';
 
 describe('PermissionIntegrationClient', () => {
   describe('applyConditions', () => {
@@ -279,6 +280,7 @@ describe('PermissionIntegrationClient', () => {
               name: 'RULE_1',
               description: 'Test rule 1',
               resourceType: 'test-resource',
+              schema: z.tuple([z.enum(['yes', 'no'])]),
               apply: (_resource: any, input: 'yes' | 'no') => input === 'yes',
               toQuery: () => {
                 throw new Error('Not implemented');
@@ -288,6 +290,7 @@ describe('PermissionIntegrationClient', () => {
               name: 'RULE_2',
               description: 'Test rule 2',
               resourceType: 'test-resource',
+              schema: z.tuple([z.enum(['yes', 'no'])]),
               apply: (_resource: any, input: 'yes' | 'no') => input === 'yes',
               toQuery: () => {
                 throw new Error('Not implemented');

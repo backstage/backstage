@@ -15,6 +15,7 @@
  */
 
 import type { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { z } from 'zod';
 
 /**
  * A conditional rule that can be provided in an
@@ -41,6 +42,11 @@ export type PermissionRule<
   name: string;
   description: string;
   resourceType: TResourceType;
+
+  /**
+   * A ZodSchema that documents the parameters that this rule accepts.
+   */
+  schema: z.ZodSchema<TParams>;
 
   /**
    * Apply this rule to a resource already loaded from a backing data source. The params are

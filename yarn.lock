@@ -6427,6 +6427,7 @@ __metadata:
     uuid: ^8.2.0
     winston: ^3.2.1
     yn: ^4.0.0
+    zod: ^3.11.6
   languageName: unknown
   linkType: soft
 

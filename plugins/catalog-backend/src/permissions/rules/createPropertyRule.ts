@@ -18,12 +18,17 @@ import { get } from 'lodash';
 import { Entity } from '@backstage/catalog-model';
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 import { createCatalogPermissionRule } from './util';
+import { z } from 'zod';
 
 export const createPropertyRule = (propertyType: 'metadata' | 'spec') =>
   createCatalogPermissionRule({
     name: `HAS_${propertyType.toUpperCase()}`,
     description: `Allow entities which have the specified ${propertyType} subfield.`,
     resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+    schema: z.tuple([
+      z.string().describe('Property name'),
+      z.string().optional().describe('Property value'),
+    ]),
     apply: (resource: Entity, key: string, value?: string) => {
       const foundValue = get(resource[propertyType], key);
 

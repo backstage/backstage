@@ -16,6 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
+import { z } from 'zod';
 import { createCatalogPermissionRule } from './util';
 
 /**
@@ -31,6 +32,10 @@ export const hasAnnotation = createCatalogPermissionRule({
   description:
     'Allow entities which are annotated with the specified annotation',
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+  schema: z.tuple([
+    z.string().describe('Annotation name'),
+    z.string().optional().describe('Annotation value'),
+  ]),
   apply: (resource: Entity, annotation: string, value?: string) =>
     !!resource.metadata.annotations?.hasOwnProperty(annotation) &&
     (value === undefined

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { z } from 'zod';
 import { createConditionFactory } from './createConditionFactory';
 import { createPermissionRule } from './createPermissionRule';
 
@@ -22,6 +23,7 @@ describe('createConditionFactory', () => {
     name: 'test-rule',
     description: 'test-description',
     resourceType: 'test-resource',
+    schema: z.tuple([]),
     apply: jest.fn(),
     toQuery: jest.fn(),
   });

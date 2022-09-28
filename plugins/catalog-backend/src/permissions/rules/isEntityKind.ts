@@ -15,6 +15,7 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
+import { z } from 'zod';
 import { EntitiesSearchFilter } from '../../catalog/types';
 import { createCatalogPermissionRule } from './util';
 
@@ -27,6 +28,7 @@ export const isEntityKind = createCatalogPermissionRule({
   name: 'IS_ENTITY_KIND',
   description: 'Allow entities with the specified kind',
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+  schema: z.tuple([z.array(z.string().describe('List of entity kinds'))]),
   apply(resource: Entity, kinds: string[]) {
     const resourceKind = resource.kind.toLocaleLowerCase('en-US');
     return kinds.some(kind => kind.toLocaleLowerCase('en-US') === resourceKind);

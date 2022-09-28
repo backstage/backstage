@@ -18,6 +18,7 @@ import {
   AuthorizeResult,
   createPermission,
 } from '@backstage/plugin-permission-common';
+import { z } from 'zod';
 import { createConditionExports } from './createConditionExports';
 import { createPermissionRule } from './createPermissionRule';
 
@@ -30,6 +31,7 @@ const testIntegration = () =>
         name: 'testRule1',
         description: 'Test rule 1',
         resourceType: 'test-resource',
+        schema: z.tuple([z.string(), z.number()]),
         apply: jest.fn(
           (_resource: any, _firstParam: string, _secondParam: number) => true,
         ),
@@ -42,6 +44,7 @@ const testIntegration = () =>
         name: 'testRule2',
         description: 'Test rule 2',
         resourceType: 'test-resource',
+        schema: z.tuple([z.object({})]),
         apply: jest.fn((_resource: any, _firstParam: object) => false),
         toQuery: jest.fn((firstParam: object) => ({
           query: 'testRule2',
