@@ -27,13 +27,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import BugReportIcon from '@material-ui/icons/BugReport';
 import MoreVert from '@material-ui/icons/MoreVert';
 import FileCopyTwoToneIcon from '@material-ui/icons/FileCopyTwoTone';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { useEntityPermission } from '@backstage/plugin-catalog-react';
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common';
 import { BackstageTheme } from '@backstage/theme';
 import { UnregisterEntity, UnregisterEntityOptions } from './UnregisterEntity';
-import Snackbar from '@material-ui/core/Snackbar';
+import { useApi, alertApiRef } from '@backstage/core-plugin-api';
 
 /** @public */
 export type EntityContextMenuClassKey = 'button';
@@ -86,23 +86,13 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
     setAnchorEl(undefined);
   };
 
-  const [state, setState] = useState({
-    open: false,
-    vertical: 'top',
-    horizontal: 'right',
-  });
+  const alertApi = useApi(alertApiRef);
 
-  const { open, vertical, horizontal } = state;
-
-  const handleClose = () => {
-    setState({ ...state, open: false });
-  };
-
-  const copyToClipboard = () => {
+  const copyToClipboard = useCallback(() => {
     navigator.clipboard
       .writeText(window.location.toString())
-      .then(() => setState({ ...state, open: true }));
-  };
+      .then(() => alertApi.post({ message: 'Copied!', severity: 'info' }));
+  }, []);
 
   const extraItems = UNSTABLE_extraContextMenuItems && [
     ...UNSTABLE_extraContextMenuItems.map(item => (
@@ -174,14 +164,6 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
             </ListItemIcon>
             <ListItemText primary="Copy entity url" />
           </MenuItem>
-          <Snackbar
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            autoHideDuration={1000}
-            open={open}
-            onClose={handleClose}
-            message="copied!"
-            key={vertical + horizontal}
-          />
         </MenuList>
       </Popover>
     </>
