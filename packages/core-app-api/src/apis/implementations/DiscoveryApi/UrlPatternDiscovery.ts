@@ -38,7 +38,7 @@ export class UrlPatternDiscovery implements DiscoveryApi {
 
     let url;
     try {
-      url = new URL(urlStr, document.location.origin);
+      url = new URL(urlStr);
     } catch {
       throw new Error(`${ERROR_PREFIX} URL '${urlStr}' is invalid`);
     }

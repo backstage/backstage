@@ -39,7 +39,7 @@ import pickBy from 'lodash/pickBy';
 export function resolveBaseUrl(config: Config): URL {
   const baseUrl = config.getString('app.baseUrl');
   try {
-    return new URL(baseUrl);
+    return new URL(baseUrl, 'http://dummyurl.com');
   } catch (error) {
     throw new Error(`Invalid app.baseUrl, ${error}`);
   }
@@ -88,7 +88,7 @@ export async function createConfig(
   const externalPkgs = packages.filter(p => !isChildPath(paths.root, p.dir));
 
   const baseUrl = frontendConfig.getString('app.baseUrl');
-  const validBaseUrl = new URL(baseUrl);
+  const validBaseUrl = new URL(baseUrl, 'http://locahost');
   const publicPath = validBaseUrl.pathname.replace(/\/$/, '');
   if (checksEnabled) {
     plugins.push(

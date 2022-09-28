@@ -64,10 +64,18 @@ export const apis = [
   createApiFactory({
     api: discoveryApiRef,
     deps: { configApi: configApiRef },
-    factory: ({ configApi }) =>
-      UrlPatternDiscovery.compile(
-        `${configApi.getString('backend.baseUrl')}/api/{{ pluginId }}`,
-      ),
+    factory: ({ configApi }) => {
+      let baseUrl;
+      try {
+        baseUrl = new URL(
+          configApi.getString('backend.baseUrl'),
+          document.location.origin,
+        ).href;
+      } catch (err) {
+        baseUrl = configApi.getString('backend.baseUrl');
+      }
+      return UrlPatternDiscovery.compile(`${baseUrl}/api/{{ pluginId }}`);
+    },
   }),
   createApiFactory({
     api: alertApiRef,
