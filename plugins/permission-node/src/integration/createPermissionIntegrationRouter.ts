@@ -124,7 +124,14 @@ const applyConditions = <TResourceType extends string, TResource>(
     return !applyConditions(criteria.not, resource, getRule);
   }
 
-  return getRule(criteria.rule).apply(resource, ...criteria.params);
+  const rule = getRule(criteria.rule);
+  const result = rule.schema.safeParse(criteria.params);
+
+  if (rule.schema && !result.success) {
+    throw new InputError(`Parameters to rule are invalid`, result.error);
+  }
+
+  return rule.apply(resource, ...criteria.params);
 };
 
 /**

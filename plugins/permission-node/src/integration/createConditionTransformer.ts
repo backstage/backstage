@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { InputError } from '@backstage/errors';
 import {
   AllOfCriteria,
   AnyOfCriteria,
@@ -45,7 +46,14 @@ const mapConditions = <TQuery>(
     };
   }
 
-  return getRule(criteria.rule).toQuery(...criteria.params);
+  const rule = getRule(criteria.rule);
+  const result = rule.schema.safeParse(criteria.params);
+
+  if (rule.schema && !result.success) {
+    throw new InputError(`Parameters to rule are invalid`, result.error);
+  }
+
+  return rule.toQuery(...criteria.params);
 };
 
 /**

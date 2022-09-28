@@ -27,7 +27,7 @@ const transformConditions = createConditionTransformer([
     name: 'test-rule-1',
     description: 'Test rule 1',
     resourceType: 'test-resource',
-    schema: z.tuple([]),
+    schema: z.tuple([z.string(), z.number()]),
     apply: jest.fn(),
     toQuery: jest.fn(
       (firstParam: string, secondParam: number) =>
@@ -38,7 +38,7 @@ const transformConditions = createConditionTransformer([
     name: 'test-rule-2',
     description: 'Test rule 2',
     resourceType: 'test-resource',
-    schema: z.tuple([]),
+    schema: z.tuple([z.object({})]),
     apply: jest.fn(),
     toQuery: jest.fn(
       (firstParam: object) => `test-rule-2:${JSON.stringify(firstParam)}`,
