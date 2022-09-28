@@ -17,7 +17,8 @@
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import child_process from 'child_process';
-import path from 'path';
+import path, { resolve as resolvePath } from 'path';
+import os from 'os';
 import {
   Task,
   buildAppTask,
@@ -100,6 +101,7 @@ describe('tasks', () => {
   const mockExec = child_process.exec as unknown as jest.MockedFunction<
     (
       command: string,
+      options: any,
       callback: (error: null, stdout: any, stderr: any) => void,
     ) => void
   >;
@@ -287,8 +289,10 @@ describe('tasks', () => {
   });
 
   describe('readGitConfig', () => {
+    const tmpDir = resolvePath(os.tmpdir(), 'git-temp-dir');
+
     it('should return git config if git package is installed and git credentials are set', async () => {
-      mockExec.mockImplementation((_command, callback) => {
+      mockExec.mockImplementation((_command, _options, callback) => {
         callback(null, { stdout: 'main' }, 'standard error');
       });
 
@@ -304,15 +308,22 @@ describe('tasks', () => {
       });
       expect(mockExec).toHaveBeenCalledWith(
         'git config user.name',
+        { cwd: tmpDir },
         expect.any(Function),
       );
       expect(mockExec).toHaveBeenCalledWith(
         'git config user.email',
+        { cwd: tmpDir },
         expect.any(Function),
       );
-      expect(mockExec).toHaveBeenCalledWith('git init', expect.any(Function));
+      expect(mockExec).toHaveBeenCalledWith(
+        'git init',
+        { cwd: tmpDir },
+        expect.any(Function),
+      );
       expect(mockExec).toHaveBeenCalledWith(
         'git commit --allow-empty -m "Initial commit"',
+        { cwd: tmpDir },
         expect.any(Function),
       );
     });
@@ -326,7 +337,7 @@ describe('tasks', () => {
     });
 
     it('should return false if git package is installed but git credentials are not set', async () => {
-      mockExec.mockImplementation((_command, callback) => {
+      mockExec.mockImplementation((_command, _options, callback) => {
         callback(null, { stdout: null }, 'standard error');
       });
 
@@ -337,10 +348,12 @@ describe('tasks', () => {
       expect(gitConfig).toBeUndefined();
       expect(mockExec).toHaveBeenCalledWith(
         'git config user.name',
+        { cwd: tmpDir },
         expect.any(Function),
       );
       expect(mockExec).toHaveBeenCalledWith(
         'git config user.email',
+        { cwd: tmpDir },
         expect.any(Function),
       );
     });

@@ -254,7 +254,7 @@ export async function readGitConfig(): Promise<GitConfig | undefined> {
   const tempDir = resolvePath(os.tmpdir(), 'git-temp-dir');
 
   const runCmd = (cmd: string) =>
-    exec(cmd).catch(error => {
+    exec(cmd, { cwd: tempDir }).catch(error => {
       process.stdout.write(error.stderr);
       process.stdout.write(error.stdout);
       throw new Error(`Could not execute command ${chalk.cyan(cmd)}`);
@@ -266,8 +266,6 @@ export async function readGitConfig(): Promise<GitConfig | undefined> {
 
   try {
     await fs.mkdir(tempDir);
-
-    process.chdir(tempDir);
 
     const [gitUsername, gitEmail] = await Promise.all([
       runCmd('git config user.name'),

@@ -38,34 +38,31 @@ export default async (opts: OptionValues): Promise<void> => {
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
 
-  const answers: Answers = await inquirer.prompt(
-    [
-      {
-        type: 'input',
-        name: 'name',
-        message: chalk.blue('Enter a name for the app [required]'),
-        validate: (value: any) => {
-          if (!value) {
-            return chalk.red('Please enter a name for the app');
-          } else if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(value)) {
-            return chalk.red(
-              'App name must be lowercase and contain only letters, digits, and dashes.',
-            );
-          }
-          return true;
-        },
-        when: (a: Answers) => {
-          const envName = process.env.BACKSTAGE_APP_NAME;
-          if (envName) {
-            a.name = envName;
-            return false;
-          }
-          return true;
-        },
+  const answers: Answers = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'name',
+      message: chalk.blue('Enter a name for the app [required]'),
+      validate: (value: any) => {
+        if (!value) {
+          return chalk.red('Please enter a name for the app');
+        } else if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(value)) {
+          return chalk.red(
+            'App name must be lowercase and contain only letters, digits, and dashes.',
+          );
+        }
+        return true;
       },
-    ],
-    { defaultBranch: 'master' },
-  );
+      when: (a: Answers) => {
+        const envName = process.env.BACKSTAGE_APP_NAME;
+        if (envName) {
+          a.name = envName;
+          return false;
+        }
+        return true;
+      },
+    },
+  ]);
 
   const templateDir = paths.resolveOwn('templates/default-app');
   const tempDir = resolvePath(os.tmpdir(), answers.name);
@@ -112,7 +109,7 @@ export default async (opts: OptionValues): Promise<void> => {
       await moveAppTask(tempDir, appDir, answers.name);
     }
 
-    if (gitConfig) {
+    if (gitConfig?.name && gitConfig?.email) {
       Task.section('Initializing git repository');
       await initGitRepository(appDir);
     }
