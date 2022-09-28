@@ -405,11 +405,11 @@ export interface CatalogApi {
    * Validate entity and its location.
    *
    * @param entity - Entity to validate
-   * @param location - URL location of the entity
+   * @param locationRef - Location ref in format `url:http://example.com/file`
    */
   validateEntity(
     entity: Entity,
-    location: string,
+    locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<ValidateEntityResponse>;
 }
