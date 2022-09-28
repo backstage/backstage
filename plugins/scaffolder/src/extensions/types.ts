@@ -104,7 +104,7 @@ export type NextFieldExtensionOptions<
 > = {
   name: string;
   component: (
-    props: FieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
+    props: NextFieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
   ) => JSX.Element | null;
   validation?: NextCustomFieldValidator<TFieldReturnValue>;
 };

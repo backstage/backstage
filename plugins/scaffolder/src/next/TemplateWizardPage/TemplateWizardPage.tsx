@@ -22,7 +22,7 @@ import {
   InfoCard,
   MarkdownContent,
 } from '@backstage/core-components';
-import { FieldExtensionOptions } from '../../extensions';
+import { NextFieldExtensionOptions } from '../../extensions';
 import { Navigate } from 'react-router';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
@@ -39,7 +39,7 @@ import { BackstageTheme } from '@backstage/theme';
 import { nextRouteRef, selectedTemplateRouteRef } from '../../routes';
 
 export interface TemplateWizardPageProps {
-  customFieldExtensions: FieldExtensionOptions<any, any>[];
+  customFieldExtensions: NextFieldExtensionOptions<any, any>[];
 }
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
