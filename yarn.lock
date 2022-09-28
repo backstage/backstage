@@ -6037,8 +6037,10 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    classnames: ^2.3.2
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
+    luxon: ^3.0.4
     msw: ^0.47.0
     react-use: ^17.2.4
   peerDependencies:
@@ -18225,6 +18227,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"classnames@npm:^2.3.2":
+  version: 2.3.2
+  resolution: "classnames@npm:2.3.2"
+  checksum: 2c62199789618d95545c872787137262e741f9db13328e216b093eea91c85ef2bfb152c1f9e63027204e2559a006a92eb74147d46c800a9f96297ae1d9f96f4e
+  languageName: node
+  linkType: hard
+
 "clean-css@npm:^5.2.2":
   version: 5.2.2
   resolution: "clean-css@npm:5.2.2"
@@ -28774,6 +28783,13 @@ __metadata:
   linkType: hard
 
 "luxon@npm:^3.0.0":
+  version: 3.0.4
+  resolution: "luxon@npm:3.0.4"
+  checksum: d0908c3951da2a10ccf23040210ead23b0da5366a9d0954e7d5db3560189a7bd703d8af1e00084f197effc9cd7158d1bddf32886d98a70d59ce9bc3fe88bbce0
+  languageName: node
+  linkType: hard
+
+"luxon@npm:^3.0.4":
   version: 3.0.4
   resolution: "luxon@npm:3.0.4"
   checksum: d0908c3951da2a10ccf23040210ead23b0da5366a9d0954e7d5db3560189a7bd703d8af1e00084f197effc9cd7158d1bddf32886d98a70d59ce9bc3fe88bbce0

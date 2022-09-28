@@ -24,9 +24,15 @@ import { DateTime } from 'luxon';
 type BannerProps = {
   startTime: string;
   endTime: string;
-  info: string;
+  info: React.ReactNode;
+  action?: React.ReactNode;
+  image?: string;
+  isOpen?: boolean;
 };
-const useStyles = makeStyles(
+const useStyles = makeStyles<
+  BackstageTheme,
+  { backgroundImage: string | undefined }
+>(
   (theme: BackstageTheme) => ({
     root: {
       padding: theme.spacing(0),
@@ -35,7 +41,6 @@ const useStyles = makeStyles(
       display: 'flex',
       flexFlow: 'row nowrap',
     },
-    // showing on top
     topPosition: {
       position: 'relative',
       marginBottom: theme.spacing(6),
@@ -55,22 +60,27 @@ const useStyles = makeStyles(
       alignItems: 'center',
       color: theme.palette.text.primary,
       fontWeight: Number(theme.typography.fontWeightBold),
-      '& a': {
-        color: theme.palette.banner.link,
-      },
     },
     info: {
-      backgroundColor: '#015A4A',
+      backgroundColor: '#18a888',
+      backgroundImage: ({ backgroundImage }) => `url(${backgroundImage})`,
     },
   }),
   { name: 'BackstageHomepageBanner' },
 );
 
 export const Banner = (props: BannerProps) => {
-  const classes = useStyles();
-  const isOpen =
+  const classes = useStyles({
+    backgroundImage: props.image,
+  });
+  const shouldRenderByDate =
     DateTime.fromISO(props.startTime) < DateTime.now() &&
     DateTime.now() < DateTime.fromISO(props.endTime);
+
+  const isOpen =
+    typeof props.isOpen === 'undefined'
+      ? shouldRenderByDate
+      : props.isOpen && shouldRenderByDate;
   return (
     <Snackbar
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
@@ -79,27 +89,15 @@ export const Banner = (props: BannerProps) => {
         root: classNames(classes.root, !false && classes.topPosition),
       }}
     >
-      <DefaultBannerContent
+      <SnackbarContent
         message={props.info}
         color="primary"
+        action={props.action}
         classes={{
           root: classNames(classes.content, classes.info),
           message: classes.message,
         }}
       />
     </Snackbar>
-  );
-};
-const DefaultBannerContent = props => {
-  const classes = useStyles();
-  return (
-    <SnackbarContent
-      message={props.info}
-      color="primary"
-      classes={{
-        root: classNames(classes.content, classes.info),
-        message: classes.message,
-      }}
-    />
   );
 };

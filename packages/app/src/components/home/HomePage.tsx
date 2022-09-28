@@ -30,6 +30,7 @@ import { HomePageSearchBar } from '@backstage/plugin-search';
 import { HomePageCalendar } from '@backstage/plugin-gcalendar';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
+import Button from '@material-ui/core/Button';
 
 const clockConfigs: ClockConfig[] = [
   {
@@ -66,9 +67,9 @@ export const homePage = (
     </Header>
     <Content>
       <Banner
-        info="Helloooo world!!!"
-        startTime={'2022-03-19T19:00:00'}
-        endTime={'2023-03-19T19:16:50'}
+        info="Welcome Welcome"
+        startTime="2022-03-19T19:00:00"
+        endTime="2023-03-19T19:16:50"
       />
       <Grid container spacing={3}>
         <Grid item xs={12}>
