@@ -33,7 +33,7 @@ import { UserSettingsPage } from '@backstage/plugin-user-settings';
 
 const AppRoutes = () => (
   <Routes>
-    <Route path="/settings" element={<UserSettingsPage />}>
+    <Route path="/settings" element={<UserSettingsPage />} />
   </Routes>
 );
 ```
