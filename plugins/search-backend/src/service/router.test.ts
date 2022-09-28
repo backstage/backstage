@@ -18,9 +18,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { IndexBuilder } from '@backstage/plugin-search-backend-node';
-import {
-  SearchEngine,
-} from '@backstage/plugin-search-common';
+import { SearchEngine } from '@backstage/plugin-search-common';
 import express from 'express';
 import request from 'supertest';
 
