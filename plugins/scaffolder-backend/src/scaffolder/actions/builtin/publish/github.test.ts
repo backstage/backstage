@@ -113,6 +113,7 @@ describe('publish:github', () => {
       allow_squash_merge: true,
       allow_merge_commit: true,
       allow_rebase_merge: true,
+      allow_auto_merge: false,
       visibility: 'private',
     });
 
@@ -132,6 +133,7 @@ describe('publish:github', () => {
       allow_squash_merge: true,
       allow_merge_commit: true,
       allow_rebase_merge: true,
+      allow_auto_merge: false,
       visibility: 'public',
     });
 
@@ -152,6 +154,7 @@ describe('publish:github', () => {
       allow_squash_merge: true,
       allow_merge_commit: true,
       allow_rebase_merge: true,
+      allow_auto_merge: false,
       visibility: 'private',
     });
   });
@@ -176,6 +179,7 @@ describe('publish:github', () => {
       allow_squash_merge: true,
       allow_merge_commit: true,
       allow_rebase_merge: true,
+      allow_auto_merge: false,
     });
 
     await action.handler({
@@ -195,6 +199,7 @@ describe('publish:github', () => {
       allow_squash_merge: true,
       allow_merge_commit: true,
       allow_rebase_merge: true,
+      allow_auto_merge: false,
     });
 
     await action.handler({
@@ -215,6 +220,7 @@ describe('publish:github', () => {
       allow_squash_merge: true,
       allow_merge_commit: true,
       allow_rebase_merge: true,
+      allow_auto_merge: false,
     });
   });
 

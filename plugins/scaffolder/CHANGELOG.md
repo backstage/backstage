@@ -1,5 +1,33 @@
 # @backstage/plugin-scaffolder
 
+## 1.7.0-next.0
+
+### Minor Changes
+
+- f13d5f3f06: Add support for link to TechDocs and other links defined in template entity specification metadata on TemplateCard
+- 05f22193c5: EntityPickers now support flags to control when to include default namespace
+  in result
+
+### Patch Changes
+
+- 8960d83013: Add support for `allowedOrganizations` and `allowedOwners` to the `AzureRepoPicker`.
+- b681275e69: Ignore .git directories in Template Editor, increase upload limit for dry-runs to 10MB.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.0
+  - @backstage/core-components@0.11.2-next.0
+  - @backstage/catalog-client@1.1.1-next.0
+  - @backstage/plugin-catalog-react@1.1.5-next.0
+  - @backstage/plugin-scaffolder-common@1.2.1-next.0
+  - @backstage/integration-react@1.1.5-next.0
+  - @backstage/config@1.0.3-next.0
+  - @backstage/core-plugin-api@1.0.7-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/integration@1.3.2-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+  - @backstage/plugin-catalog-common@1.0.7-next.0
+  - @backstage/plugin-permission-react@0.4.6-next.0
+
 ## 1.6.0
 
 ### Minor Changes

@@ -1,5 +1,28 @@
 # @backstage/plugin-auth-backend
 
+## 0.17.0-next.0
+
+### Minor Changes
+
+- 5fa831ce55: CookieConfigurer can optionally return the `SameSite` cookie attribute.
+  CookieConfigurer now requires an additional argument `appOrigin` - the origin URL of the app - which is used to calculate the `SameSite` attribute.
+  defaultCookieConfigurer returns the `SameSite` attribute which defaults to `Lax`. In cases where an auth-backend is running on a different domain than the App, `SameSite=None` is used - but only for secure contexts. This is so that cookies can be included in third-party requests.
+
+  OAuthAdapterOptions has been modified to require additional arguments, `baseUrl`, and `cookieConfigurer`.
+  OAuthAdapter now resolves cookie configuration using its supplied CookieConfigurer for each request to make sure that the proper attributes always are set.
+
+### Patch Changes
+
+- 8c6ec175bf: Fix GitLab provider setup so that it supports GitLab installations with a path in the URL.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.0
+  - @backstage/catalog-client@1.1.1-next.0
+  - @backstage/backend-common@0.15.2-next.0
+  - @backstage/plugin-auth-node@0.2.6-next.0
+  - @backstage/config@1.0.3-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/types@1.0.0
+
 ## 0.16.0
 
 ### Minor Changes

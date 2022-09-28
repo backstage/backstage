@@ -40,6 +40,7 @@ import { useTemplateSecrets } from '../../secrets';
  */
 export interface RepoUrlPickerUiOptions {
   allowedHosts?: string[];
+  allowedOrganizations?: string[];
   allowedOwners?: string[];
   allowedRepos?: string[];
   requestUserCredentials?: {
@@ -74,6 +75,10 @@ export const RepoUrlPicker = (
     () => uiSchema?.['ui:options']?.allowedHosts ?? [],
     [uiSchema],
   );
+  const allowedOrganizations = useMemo(
+    () => uiSchema?.['ui:options']?.allowedOrganizations ?? [],
+    [uiSchema],
+  );
   const allowedOwners = useMemo(
     () => uiSchema?.['ui:options']?.allowedOwners ?? [],
     [uiSchema],
@@ -88,6 +93,15 @@ export const RepoUrlPicker = (
   }, [state, onChange]);
 
   /* we deal with calling the repo setting here instead of in each components for ease */
+  useEffect(() => {
+    if (allowedOrganizations.length > 0) {
+      setState(prevState => ({
+        ...prevState,
+        organization: allowedOrganizations[0],
+      }));
+    }
+  }, [setState, allowedOrganizations]);
+
   useEffect(() => {
     if (allowedOwners.length > 0) {
       setState(prevState => ({
@@ -183,6 +197,8 @@ export const RepoUrlPicker = (
       )}
       {hostType === 'azure' && (
         <AzureRepoPicker
+          allowedOrganizations={allowedOrganizations}
+          allowedOwners={allowedOwners}
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}

@@ -21,3 +21,5 @@
  */
 
 export * from './service/router';
+export { appPlugin } from './service/appPlugin';
+export type { AppPluginOptions } from './service/appPlugin';

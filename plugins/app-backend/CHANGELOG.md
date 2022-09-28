@@ -1,5 +1,17 @@
 # @backstage/plugin-app-backend
 
+## 0.3.37-next.0
+
+### Patch Changes
+
+- 11c9e0ad33: Added alpha plugin implementation for the new backend system. Available at `@backstage/plugin-app-backend/alpha`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.3-next.0
+  - @backstage/backend-common@0.15.2-next.0
+  - @backstage/config@1.0.3-next.0
+  - @backstage/config-loader@1.1.5-next.0
+  - @backstage/types@1.0.0
+
 ## 0.3.36
 
 ### Patch Changes

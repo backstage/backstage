@@ -164,9 +164,9 @@ jobs:
         run: |
           yarn config set -H 'npmAuthToken' "${{secrets.NPM_TOKEN}}"
           if [ -f ".changeset/pre.json" ]; then
-              yarn workspaces foreach -v --no-private npm publish --access public --tag next
+              yarn workspaces foreach -v --no-private npm publish --access public --tolerate-republish --tag next
           else
-              yarn workspaces foreach -v --no-private npm publish --access public
+              yarn workspaces foreach -v --no-private npm publish --access public --tolerate-republish
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

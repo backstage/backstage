@@ -149,3 +149,6 @@ cypress/cypress/*
 
 # Possible leftover from build:api-reports
 tsconfig.tmp.json
+
+# vscode database functionality support files
+*.session.sql

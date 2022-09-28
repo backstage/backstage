@@ -1,5 +1,27 @@
 # @backstage/plugin-user-settings
 
+## 0.5.0-next.0
+
+### Minor Changes
+
+- 5543e86660: **BREAKING**: The `apiRef` passed to `ProviderSettingsItem` now needs to
+  implement `ProfileInfoApi & SessionApi`, rather than just the latter. This is
+  unlikely to have an effect on most users though, since the builtin auth
+  providers generally implement both.
+
+  Fixed settings page showing providers as logged out when the user is using more
+  than one provider, and displayed some additional login information.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.2-next.0
+  - @backstage/core-app-api@1.1.1-next.0
+  - @backstage/core-plugin-api@1.0.7-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+
 ## 0.4.8
 
 ### Patch Changes

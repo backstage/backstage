@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.11.2-next.0
+
+### Patch Changes
+
+- 882101cd9b: Deep-import LightAsync component to improve module-import speed
+- Updated dependencies
+  - @backstage/config@1.0.3-next.0
+  - @backstage/core-plugin-api@1.0.7-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.1
+
 ## 0.11.1
 
 ### Patch Changes

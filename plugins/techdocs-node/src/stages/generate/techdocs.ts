@@ -55,7 +55,7 @@ export class TechdocsGenerator implements GeneratorBase {
    */
   public static readonly defaultDockerImage = 'spotify/techdocs:v1.1.0';
   private readonly logger: Logger;
-  private readonly containerRunner: ContainerRunner;
+  private readonly containerRunner?: ContainerRunner;
   private readonly options: GeneratorConfig;
   private readonly scmIntegrations: ScmIntegrationRegistry;
 
@@ -77,7 +77,7 @@ export class TechdocsGenerator implements GeneratorBase {
 
   constructor(options: {
     logger: Logger;
-    containerRunner: ContainerRunner;
+    containerRunner?: ContainerRunner;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
   }) {
@@ -143,6 +143,11 @@ export class TechdocsGenerator implements GeneratorBase {
           );
           break;
         case 'docker':
+          if (this.containerRunner === undefined) {
+            throw new Error(
+              "Invalid state: containerRunner cannot be undefined when runIn is 'docker'",
+            );
+          }
           await this.containerRunner.runContainer({
             imageName:
               this.options.dockerImage ?? TechdocsGenerator.defaultDockerImage,

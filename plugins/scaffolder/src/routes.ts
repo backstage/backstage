@@ -24,6 +24,12 @@ export const registerComponentRouteRef = createExternalRouteRef({
   optional: true,
 });
 
+export const viewTechDocRouteRef = createExternalRouteRef({
+  id: 'view-techdoc',
+  optional: true,
+  params: ['namespace', 'kind', 'name'],
+});
+
 export const rootRouteRef = createRouteRef({
   id: 'scaffolder',
 });

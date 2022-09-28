@@ -27,6 +27,7 @@ import {
   nextRouteRef,
   registerComponentRouteRef,
   rootRouteRef,
+  viewTechDocRouteRef,
 } from './routes';
 import {
   createApiFactory,
@@ -68,6 +69,7 @@ export const scaffolderPlugin = createPlugin({
   },
   externalRoutes: {
     registerComponent: registerComponentRouteRef,
+    viewTechDoc: viewTechDocRouteRef,
   },
 });
 
