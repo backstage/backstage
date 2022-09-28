@@ -15319,12 +15319,12 @@ __metadata:
   linkType: hard
 
 "@yarnpkg/parsers@npm:^3.0.0-rc.4":
-  version: 3.0.0-rc.20
-  resolution: "@yarnpkg/parsers@npm:3.0.0-rc.20"
+  version: 3.0.0-rc.21
+  resolution: "@yarnpkg/parsers@npm:3.0.0-rc.21"
   dependencies:
     js-yaml: ^3.10.0
     tslib: ^2.4.0
-  checksum: a0dfc2d4d824322ae779363870ad7705b42161ad5e90c992404bf5dc0454a046a6f04144303c9bb047239e480b882b4105272127f2ba080b865180276c46deda
+  checksum: c0741ef01089a7d452dfb75b8c24a82ddcc3e218dac22b794a06f2e50c7070378c460f63f63fb7ed0f62f634114e448e3d85a75ccd4db84e1526242ae9b4a7d5
   languageName: node
   linkType: hard
 
