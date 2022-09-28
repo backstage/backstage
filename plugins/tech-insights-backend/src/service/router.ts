@@ -138,9 +138,7 @@ export async function createRouter<
         .status(422)
         .send({ error: 'Failed to parse ids from request' });
     }
-    const ids = Array.isArray(req.query.ids)
-      ? (req.query.ids as string[])
-      : ([req.query.ids] as string[]);
+    const ids = [req.query.ids].flat() as string[];
     return res.send(
       await techInsightsStore.getLatestFactsByIds(
         ids,
@@ -161,9 +159,7 @@ export async function createRouter<
         .status(422)
         .send({ error: 'Failed to parse ids from request' });
     }
-    const ids = Array.isArray(req.query.ids)
-      ? (req.query.ids as string[])
-      : ([req.query.ids] as string[]);
+    const ids = [req.query.ids].flat() as string[];
     const startDatetime = DateTime.fromISO(req.query.startDatetime as string);
     const endDatetime = DateTime.fromISO(req.query.endDatetime as string);
     if (!startDatetime.isValid || !endDatetime.isValid) {
