@@ -132,7 +132,13 @@ export async function createRouter<
   router.get('/facts/latest', async (req, res) => {
     const { entity } = req.query;
     const { namespace, kind, name } = parseEntityRef(entity as string);
-    const ids = req.query.ids as string[];
+
+    if (!req.query.ids) {
+      return res
+        .status(422)
+        .send({ error: 'Failed to parse ids from request' });
+    }
+    const ids = [req.query.ids].flat() as string[];
     return res.send(
       await techInsightsStore.getLatestFactsByIds(
         ids,
@@ -148,7 +154,12 @@ export async function createRouter<
     const { entity } = req.query;
     const { namespace, kind, name } = parseEntityRef(entity as string);
 
-    const ids = req.query.ids as string[];
+    if (!req.query.ids) {
+      return res
+        .status(422)
+        .send({ error: 'Failed to parse ids from request' });
+    }
+    const ids = [req.query.ids].flat() as string[];
     const startDatetime = DateTime.fromISO(req.query.startDatetime as string);
     const endDatetime = DateTime.fromISO(req.query.endDatetime as string);
     if (!startDatetime.isValid || !endDatetime.isValid) {
