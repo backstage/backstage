@@ -100,7 +100,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
           ];
       }
     }
-  }, [filters.kind?.value]);
+  }, [filters.kind]);
 
   const showTypeColumn = filters.type === undefined;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
