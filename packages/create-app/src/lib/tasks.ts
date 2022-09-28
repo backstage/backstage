@@ -250,7 +250,7 @@ export async function moveAppTask(
  *
  * @throws if `exec` fails
  */
-export async function readGitConfig(): Promise<GitConfig | undefined> {
+export async function readGitConfig(): Promise<GitConfig> {
   const tempDir = resolvePath(os.tmpdir(), 'git-temp-dir');
 
   const runCmd = (cmd: string) =>
@@ -262,7 +262,7 @@ export async function readGitConfig(): Promise<GitConfig | undefined> {
 
   const isGitAvailable = await commandExists('git').catch(() => false);
 
-  if (!isGitAvailable) return;
+  if (!isGitAvailable) return {};
 
   try {
     await fs.mkdir(tempDir);
@@ -276,7 +276,7 @@ export async function readGitConfig(): Promise<GitConfig | undefined> {
       gitUsername.stdout?.trim() && gitEmail.stdout?.trim(),
     );
 
-    if (!gitCredentials) return;
+    if (!gitCredentials) return {};
 
     await runCmd('git init');
     await runCmd('git commit --allow-empty -m "Initial commit"');

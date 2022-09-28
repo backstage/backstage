@@ -333,7 +333,7 @@ describe('tasks', () => {
 
       const gitConfig = await readGitConfig();
 
-      expect(gitConfig).toBeUndefined();
+      expect(gitConfig).toEqual({});
     });
 
     it('should return false if git package is installed but git credentials are not set', async () => {
@@ -345,7 +345,7 @@ describe('tasks', () => {
 
       const gitConfig = await readGitConfig();
 
-      expect(gitConfig).toBeUndefined();
+      expect(gitConfig).toEqual({});
       expect(mockExec).toHaveBeenCalledWith(
         'git config user.name',
         { cwd: tmpDir },
