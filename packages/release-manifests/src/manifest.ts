@@ -73,7 +73,25 @@ export async function withFallback<T>(
       return res;
     });
 
-  return Promise.any([promise1, promise2]).catch(() => promise1);
+  // TODO(Rugvip): Replace with this once we no longer support Node 14
+  // return Promise.any([promise1, promise2]).catch(() => promise1);
+  return new Promise((resolve, reject) => {
+    let rejection: Error | undefined = undefined;
+    promise1.then(resolve, e => {
+      if (rejection) {
+        reject(e);
+      } else {
+        rejection = e;
+      }
+    });
+    promise2.then(resolve, e => {
+      if (rejection) {
+        reject(rejection);
+      } else {
+        rejection = e;
+      }
+    });
+  });
 }
 
 /**
