@@ -18,7 +18,7 @@ jobs:
     if: github.repository == 'backstage/backstage' && ( github.event.pull_request || github.event.issue.pull_request )
     steps:
       - name: PR sync
-        uses: backstage/actions/pr-sync@v0.5.5
+        uses: backstage/actions/pr-sync@v0.5.6
         with:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN  }}
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
