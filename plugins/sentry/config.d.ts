@@ -16,7 +16,7 @@
 
 export interface Config {
   /** Configuration options for the sentry plugin */
-  sentry: {
+  sentry?: {
     /**
      * The 'organization' attribute
      * @visibility frontend

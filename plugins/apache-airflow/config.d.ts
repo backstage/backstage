@@ -16,7 +16,7 @@
 
 export interface Config {
   /** Configurations for the Apache Airflow plugin */
-  apacheAirflow: {
+  apacheAirflow?: {
     /**
      * The base url of the Apache Airflow installation.
      * @visibility frontend

@@ -15,7 +15,7 @@
  */
 export interface Config {
   /** Configurations for the GoCD plugin */
-  gocd: {
+  gocd?: {
     /**
      * The base url of the GoCD installation.
      * @visibility frontend

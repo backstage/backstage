@@ -15,7 +15,7 @@
  */
 
 export interface Config {
-  costInsights: {
+  costInsights?: {
     /**
      * @visibility frontend
      */
