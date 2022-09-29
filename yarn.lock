@@ -286,12 +286,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asyncapi/parser@npm:^1.15.0":
-  version: 1.15.0
-  resolution: "@asyncapi/parser@npm:1.15.0"
+"@asyncapi/parser@npm:^1.17.0":
+  version: 1.17.0
+  resolution: "@asyncapi/parser@npm:1.17.0"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^9.0.6
-    "@asyncapi/specs": ^2.14.0
+    "@asyncapi/specs": ^3.2.0
     "@fmvilas/pseudo-yaml-ast": ^0.3.1
     ajv: ^6.10.1
     js-yaml: ^3.13.1
@@ -299,17 +299,17 @@ __metadata:
     lodash.clonedeep: ^4.5.0
     node-fetch: ^2.6.0
     tiny-merge-patch: ^0.1.2
-  checksum: e9435265b4671f6a4c2451e054751ea637dd466b1f6b6848622781fbf6fa9fc93c292ed8791bf38816f63cd9c352f09727ab2d34f76d62f8f21c084b0125445b
+  checksum: 6ac0bd3c9c90abf331cfdfb054dab047cf0324ee803633c2abc6dad96b12c64d033e4fb94907906adfb521ba16e9b23083b2a6acc7719ccd22154a7867046a95
   languageName: node
   linkType: hard
 
-"@asyncapi/react-component@npm:1.0.0-next.42":
-  version: 1.0.0-next.42
-  resolution: "@asyncapi/react-component@npm:1.0.0-next.42"
+"@asyncapi/react-component@npm:1.0.0-next.43":
+  version: 1.0.0-next.43
+  resolution: "@asyncapi/react-component@npm:1.0.0-next.43"
   dependencies:
     "@asyncapi/avro-schema-parser": ^0.3.0
     "@asyncapi/openapi-schema-parser": ^2.0.0
-    "@asyncapi/parser": ^1.15.0
+    "@asyncapi/parser": ^1.17.0
     highlight.js: ^10.7.2
     isomorphic-dompurify: ^0.13.0
     marked: ^4.0.14
@@ -319,14 +319,14 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
-  checksum: eba4aaf344aabc1889085df7f94d14d51e2449db06cabc70c60b9d5b0b2fb9ccec6aa89cbedf9d45c28deca99e1e4ab2d4399b0a2756e9969d4691f304088a77
+  checksum: d19adc2b6e674633457da28d38636df4cf9891f4038827b52f2737699d064bcf0d3be707e9f3284852d1bb507f3f36df9ec3bb02fd6f901cfda7a1f49ea9c5da
   languageName: node
   linkType: hard
 
-"@asyncapi/specs@npm:^2.14.0":
-  version: 2.14.0
-  resolution: "@asyncapi/specs@npm:2.14.0"
-  checksum: 066c23c493df54c44c319433bdcf8482a3acd584e32c0073e6a9f5b167d61bde23a252621be2b28bbaf1466636f6cafaab570795de403f0c671358784d4b12ed
+"@asyncapi/specs@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@asyncapi/specs@npm:3.2.0"
+  checksum: 09971262aefc8844ab3e7c0c3652711862ac562dd5d614f23b496185690430a81df8e50eddba657f4141e0fd9548ef622fe6c20f4e3dec8054be23f774798335
   languageName: node
   linkType: hard
 
@@ -3687,11 +3687,13 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
+    "@types/command-exists": ^1.2.0
     "@types/fs-extra": ^9.0.1
     "@types/inquirer": ^8.1.3
     "@types/node": ^16.11.26
     "@types/recursive-readdir": ^2.2.0
     chalk: ^4.0.0
+    command-exists: ^1.2.9
     commander: ^9.1.0
     fs-extra: 10.1.0
     handlebars: ^4.7.3
@@ -4066,7 +4068,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-api-docs@workspace:plugins/api-docs"
   dependencies:
-    "@asyncapi/react-component": 1.0.0-next.42
+    "@asyncapi/react-component": 1.0.0-next.43
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
@@ -8554,8 +8556,8 @@ __metadata:
   linkType: hard
 
 "@google-cloud/storage@npm:^6.0.0":
-  version: 6.5.1
-  resolution: "@google-cloud/storage@npm:6.5.1"
+  version: 6.5.2
+  resolution: "@google-cloud/storage@npm:6.5.2"
   dependencies:
     "@google-cloud/paginator": ^3.0.7
     "@google-cloud/projectify": ^3.0.0
@@ -8575,7 +8577,7 @@ __metadata:
     retry-request: ^5.0.0
     teeny-request: ^8.0.0
     uuid: ^8.0.0
-  checksum: 5ae81ae5e00afeb73ae07a00772af5d5fa8f2ceacc4723d4e6e24f05ca9bc7cd22885acee3cb75c15068fe85f20b81719c1634b2c2ac0d05552172a229b34ea5
+  checksum: 31e8abea01e5160434a23c11c7219c83469c97a0c3bed9dc29d5ff1441ba1f42aa75a99df6e0b95db1501cf4b7f4c896c79b13bb597a35ddd2924408b584f802
   languageName: node
   linkType: hard
 
@@ -11249,8 +11251,8 @@ __metadata:
   linkType: hard
 
 "@octokit/auth-app@npm:^4.0.0":
-  version: 4.0.5
-  resolution: "@octokit/auth-app@npm:4.0.5"
+  version: 4.0.6
+  resolution: "@octokit/auth-app@npm:4.0.6"
   dependencies:
     "@octokit/auth-oauth-app": ^5.0.0
     "@octokit/auth-oauth-user": ^2.0.0
@@ -11262,7 +11264,7 @@ __metadata:
     lru-cache: ^6.0.0
     universal-github-app-jwt: ^1.0.1
     universal-user-agent: ^6.0.0
-  checksum: 26da7c1b279be68be17572897652091257a5ef7666fa5ac4c79dd42f2717aed560b117089c44ad766b4f90a87348572356ac3571c417fef385fdf31794281023
+  checksum: 342fece6db4470ee489e710af8aa14ffd3a89e666815a15fadbabe3a382932a714d5bece24375f0ca39f3310f9d10bd28bc348210282cbc6701d27dd9b2ff7ed
   languageName: node
   linkType: hard
 
@@ -13710,11 +13712,11 @@ __metadata:
   linkType: hard
 
 "@types/inquirer@npm:^8.1.3":
-  version: 8.2.3
-  resolution: "@types/inquirer@npm:8.2.3"
+  version: 8.2.4
+  resolution: "@types/inquirer@npm:8.2.4"
   dependencies:
     "@types/through": "*"
-  checksum: 2978e749fbda061b85a56331a267f6c7f40380c17bce1b0f8b0bd1d86c88820e3bd7df4985c633647652b571f7ffd6b97b929cabe8b7d61259d354229e4c6c5b
+  checksum: 3a46231faac1e5df4863a2d501617b3f25e9481ea8a966a9b866bafef01fcc151606d9f25cb66f90492dd0d1d7af7c675a2314f50db85a7f2aeed265d93eb412
   languageName: node
   linkType: hard
 
@@ -13906,11 +13908,11 @@ __metadata:
   linkType: hard
 
 "@types/ldapjs@npm:^2.2.0":
-  version: 2.2.2
-  resolution: "@types/ldapjs@npm:2.2.2"
+  version: 2.2.4
+  resolution: "@types/ldapjs@npm:2.2.4"
   dependencies:
     "@types/node": "*"
-  checksum: e5da993f06240251dad1e095564c722124ed08d915781fb3046f7933cde94b5d2681030ab9f48d4aa5d72b655b501bfd6f2ad4ea41d557d0e1a08d574ed058bf
+  checksum: 3f240809927e1292380e5977579d7edffb6e5e41b35510c7091b51da19e7387d4ebff0f254c0b145f3cf5d5485b6bb39c77335d857d092e6f4e9ce5a6682a872
   languageName: node
   linkType: hard
 
@@ -15428,12 +15430,12 @@ __metadata:
   linkType: hard
 
 "@yarnpkg/parsers@npm:^3.0.0-rc.4":
-  version: 3.0.0-rc.20
-  resolution: "@yarnpkg/parsers@npm:3.0.0-rc.20"
+  version: 3.0.0-rc.21
+  resolution: "@yarnpkg/parsers@npm:3.0.0-rc.21"
   dependencies:
     js-yaml: ^3.10.0
     tslib: ^2.4.0
-  checksum: a0dfc2d4d824322ae779363870ad7705b42161ad5e90c992404bf5dc0454a046a6f04144303c9bb047239e480b882b4105272127f2ba080b865180276c46deda
+  checksum: c0741ef01089a7d452dfb75b8c24a82ddcc3e218dac22b794a06f2e50c7070378c460f63f63fb7ed0f62f634114e448e3d85a75ccd4db84e1526242ae9b4a7d5
   languageName: node
   linkType: hard
 
@@ -18862,9 +18864,9 @@ __metadata:
   linkType: hard
 
 "core-js@npm:^3.6.5":
-  version: 3.25.2
-  resolution: "core-js@npm:3.25.2"
-  checksum: e93c6c645d44d98973efb07750975552ad405f080f5a563a99972ff6b2c5c6ee25705f55accd363f5dccd51e9e5f56be25e2be6c14a7294da65763e0e5659c02
+  version: 3.25.3
+  resolution: "core-js@npm:3.25.3"
+  checksum: 26ca0a5e575e6da03dc30099f48bc00db50a1c0a3f81299165f111cb163869ae453de5e345f2cb7bc8be85a9adcee11fca94f0fbdbdf6d483c68e1c55a9efc5a
   languageName: node
   linkType: hard
 
@@ -23821,8 +23823,8 @@ __metadata:
   linkType: hard
 
 "google-auth-library@npm:^8.0.0":
-  version: 8.5.1
-  resolution: "google-auth-library@npm:8.5.1"
+  version: 8.5.2
+  resolution: "google-auth-library@npm:8.5.2"
   dependencies:
     arrify: ^2.0.0
     base64-js: ^1.3.0
@@ -23833,7 +23835,7 @@ __metadata:
     gtoken: ^6.1.0
     jws: ^4.0.0
     lru-cache: ^6.0.0
-  checksum: 0d80d7e136e672055e44fdb44f9e13843a554cc531a01deb1b0da6b78427778785faa7377ed85d840208bb61878cd7d69902172886476bd49ea67e645729570a
+  checksum: 5ab2904f5da3c119a7c241a1d5a11640468a7da58dfcec8a9cad181cc2723e6662b3c65997906069852d9fa066ba3e4b7f14e11cbb80d541e320b66ead6777dc
   languageName: node
   linkType: hard
 
@@ -27840,8 +27842,8 @@ __metadata:
   linkType: hard
 
 "ldapjs@npm:^2.2.0":
-  version: 2.3.2
-  resolution: "ldapjs@npm:2.3.2"
+  version: 2.3.3
+  resolution: "ldapjs@npm:2.3.3"
   dependencies:
     abstract-logging: ^2.0.0
     asn1: ^0.2.4
@@ -27851,7 +27853,7 @@ __metadata:
     once: ^1.4.0
     vasync: ^2.2.0
     verror: ^1.8.1
-  checksum: 4eb7b18839d8fe1d8acc0ba5d2aa71aefcb25ecb6f4f9582299d73faf546984326590c44366f8b148d3a4276707006b1aaffffdc548b3c4ca753e720403da4a5
+  checksum: 791cf22812805db3888dfc8aa8e4db8337e67387b318522c9965d40e678ecdb64950a6ea5930083590ec3377038620a3e63f90e985173ae6aca40e7f485290e0
   languageName: node
   linkType: hard
 
