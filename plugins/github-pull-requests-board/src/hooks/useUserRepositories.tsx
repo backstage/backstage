@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
-import {
-  catalogApiRef,
-  humanizeEntityRef,
-  useEntity,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef, useEntity } from '@backstage/plugin-catalog-react';
 import { useCallback, useEffect, useState } from 'react';
 import { getProjectNameFromEntity } from '../utils/functions';
 
@@ -29,9 +27,7 @@ export function useUserRepositories() {
 
   const getRepositoriesNames = useCallback(async () => {
     const entitiesList = await catalogApi.getEntities({
-      filter: {
-        'spec.owner': humanizeEntityRef(teamEntity, { defaultKind: 'group' }),
-      },
+      filter: { 'relations.ownedBy': stringifyEntityRef(teamEntity) },
     });
 
     const entitiesNames: string[] = entitiesList.items.map(componentEntity =>
