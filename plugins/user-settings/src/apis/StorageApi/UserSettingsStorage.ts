@@ -118,6 +118,7 @@ export class UserSettingsStorage implements StorageApi {
     if (!(await this.isSignedIn())) {
       await this.fallback.set(key, data);
       this.notifyChanges({ key, presence: 'present', value: data });
+      return;
     }
 
     const fetchUrl = await this.getFetchUrl(key);
