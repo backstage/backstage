@@ -60,7 +60,7 @@ import {
   yamlPlaceholderResolver,
 } from '../modules/core/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../modules/util/parse';
-import { LocationAnalyzer } from '../ingestion/types';
+import { LocationAnalyzer, ScmLocationAnalyzer } from '../ingestion/types';
 import { CatalogProcessingEngine } from '../processing';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { applyDatabaseMigrations } from '../database/migrations';
@@ -120,6 +120,9 @@ export type CatalogEnvironment = {
  *   after the processors' pre-processing steps. All policies are given the
  *   chance to inspect the entity, and all of them have to pass in order for
  *   the entity to be considered valid from an overall point of view.
+ * - Location analyzers can be added. These are responsible to analyze the
+ *   the existence of a catalog-info.yaml file int he provided git repository
+ *   when you use the /catalog-import page with a repository url.
  * - Placeholder resolvers can be replaced or added. These run on the raw
  *   structured data between the parsing and pre-processing steps, to replace
  *   dollar-prefixed entries with their actual values (like $file).
@@ -140,6 +143,7 @@ export class CatalogBuilder {
   private fieldFormatValidators: Partial<Validators>;
   private entityProviders: EntityProvider[];
   private processors: CatalogProcessor[];
+  private locationAnalyzers: ScmLocationAnalyzer[];
   private processorsReplace: boolean;
   private parser: CatalogProcessorParser | undefined;
   private onProcessingError?: (event: {
@@ -170,6 +174,7 @@ export class CatalogBuilder {
     this.fieldFormatValidators = {};
     this.entityProviders = [];
     this.processors = [];
+    this.locationAnalyzers = [];
     this.processorsReplace = false;
     this.parser = undefined;
     this.permissionRules = Object.values(catalogPermissionRules);
@@ -341,6 +346,20 @@ export class CatalogBuilder {
   }
 
   /**
+   * Adds Location Analyzers. These are responsible for figuring out
+   * if the repository already contains a catalog-info.yaml file when
+   * you register a repostiroy in the /catalog-import page
+   *
+   * @param locationAnalyzers - One or more location analyzers
+   */
+  addLocationAnalyzers(
+    ...analyzers: Array<ScmLocationAnalyzer | Array<ScmLocationAnalyzer>>
+  ): CatalogBuilder {
+    this.locationAnalyzers.push(...analyzers.flat());
+    return this;
+  }
+
+  /**
    * Sets up the catalog to use a custom parser for entity data.
    *
    * This is the function that gets called immediately after some raw entity
@@ -484,7 +503,7 @@ export class CatalogBuilder {
 
     const locationAnalyzer =
       this.locationAnalyzer ??
-      new RepoLocationAnalyzer(logger, integrations, this.env.discovery);
+      new RepoLocationAnalyzer(logger, integrations, this.locationAnalyzers);
     const locationService = new AuthorizedLocationService(
       new DefaultLocationService(locationStore, orchestrator, {
         allowedLocationTypes: this.allowedLocationType,

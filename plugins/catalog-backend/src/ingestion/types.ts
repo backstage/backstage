@@ -100,10 +100,14 @@ export type AnalyzeLocationEntityField = {
   description: string;
 };
 
-export interface ScmLocationAnalyzer {
-  analyze(
-    owner: string,
-    repo: string,
-    url: string,
-  ): Promise<AnalyzeLocationExistingEntity[]>;
-}
+export type AnalyzeOptions = {
+  url: string;
+  catalogFilename?: string;
+};
+/** @public */
+export type ScmLocationAnalyzer = {
+  /** The integration type this location analyzer can work with */
+  getIntegrationType(): string;
+  /** This function is responsible to figure out if the catalog file is already present in the repository */
+  analyze(options: AnalyzeOptions): Promise<AnalyzeLocationExistingEntity[]>;
+};

@@ -15,39 +15,57 @@
  */
 
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
-import { GitHubIntegration } from '@backstage/integration';
-import { DiscoveryApi } from '@backstage/plugin-permission-common';
+import {
+  GitHubIntegration,
+  ScmIntegrationsGroup,
+} from '@backstage/integration';
 import { Octokit } from '@octokit/rest';
 import { trimEnd } from 'lodash';
 import parseGitUrl from 'git-url-parse';
-import { AnalyzeLocationExistingEntity, ScmLocationAnalyzer } from '../types';
+import {
+  AnalyzeLocationExistingEntity,
+  AnalyzeOptions,
+  ScmLocationAnalyzer,
+} from '@backstage/plugin-catalog-backend';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
 export type GitHubLocationAnalyzerOptions = {
-  integration: GitHubIntegration;
+  integrations: ScmIntegrationsGroup<GitHubIntegration>;
   catalogFilename?: string;
-  discovery: DiscoveryApi;
+  discovery: PluginEndpointDiscovery;
 };
 export class GitHubLocationAnalyzer implements ScmLocationAnalyzer {
-  private readonly catalogFilename: string;
-  private readonly discovery: DiscoveryApi;
-  private readonly octokitClient: Octokit;
   private readonly catalogClient: CatalogApi;
+  private readonly integrations: ScmIntegrationsGroup<GitHubIntegration>;
 
   constructor(options: GitHubLocationAnalyzerOptions) {
-    this.catalogFilename = options.catalogFilename || 'catalog-info.yaml';
-    this.discovery = options.discovery;
-    this.octokitClient = new Octokit({
-      auth: options.integration.config.token,
-      baseUrl: options.integration.config.apiBaseUrl,
-    });
-    this.catalogClient = new CatalogClient({ discoveryApi: this.discovery });
+    this.integrations = options.integrations;
+    this.catalogClient = new CatalogClient({ discoveryApi: options.discovery });
   }
-
-  async analyze(url: string): Promise<AnalyzeLocationExistingEntity[]> {
+  getIntegrationType() {
+    return 'github';
+  }
+  async analyze({
+    url,
+    catalogFilename,
+  }: AnalyzeOptions): Promise<AnalyzeLocationExistingEntity[]> {
     const { owner, name: repo } = parseGitUrl(url);
-    const query = `filename:${this.catalogFilename} repo:${owner}/${repo}`;
 
-    const searchResult = await this.octokitClient.search
+    const catalogFile = catalogFilename || 'catalog-info.yaml';
+
+    const query = `filename:${catalogFile} repo:${owner}/${repo}`;
+
+    const integration = this.integrations.byUrl(url);
+    if (!integration) {
+      throw new Error('Make sure you have a GitHub integration configured');
+    }
+
+    const octokitClient = new Octokit({
+      auth: integration.config.token,
+      baseUrl: integration.config.apiBaseUrl,
+    });
+
+    const searchResult = await octokitClient.search
       .code({ q: query })
       .catch(e => {
         throw new Error(`Couldn't search repository for metadata file, ${e}`);
@@ -55,7 +73,7 @@ export class GitHubLocationAnalyzer implements ScmLocationAnalyzer {
 
     const exists = searchResult.data.total_count > 0;
     if (exists) {
-      const repoInformation = await this.octokitClient.repos
+      const repoInformation = await octokitClient.repos
         .get({ owner, repo })
         .catch(e => {
           throw new Error(`Couldn't fetch repo data, ${e}`);

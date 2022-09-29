@@ -25,23 +25,22 @@ import {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
   LocationAnalyzer,
+  ScmLocationAnalyzer,
 } from './types';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { GitHubLocationAnalyzer } from './analyzers/GitHubLocationAnalyzer';
 
 export class RepoLocationAnalyzer implements LocationAnalyzer {
   private readonly logger: Logger;
   private readonly scmIntegrations: ScmIntegrationRegistry;
-  private readonly discovery: PluginEndpointDiscovery;
+  private readonly analyzers: ScmLocationAnalyzer[];
 
   constructor(
     logger: Logger,
     scmIntegrations: ScmIntegrationRegistry,
-    discovery: PluginEndpointDiscovery,
+    analyzers: ScmLocationAnalyzer[],
   ) {
     this.logger = logger;
     this.scmIntegrations = scmIntegrations;
-    this.discovery = discovery;
+    this.analyzers = analyzers;
   }
   async analyzeLocation(
     request: AnalyzeLocationRequest,
@@ -52,7 +51,6 @@ export class RepoLocationAnalyzer implements LocationAnalyzer {
     const { owner, name } = parseGitUrl(request.location.target);
 
     let annotationPrefix;
-    let analyzer;
     switch (integration?.type) {
       case 'azure':
         annotationPrefix = 'dev.azure.com';
@@ -62,11 +60,6 @@ export class RepoLocationAnalyzer implements LocationAnalyzer {
         break;
       case 'github':
         annotationPrefix = 'github.com';
-        analyzer = new GitHubLocationAnalyzer({
-          integration,
-          discovery: this.discovery,
-          catalogFilename: request.catalogFilename,
-        });
         break;
       case 'gitlab':
         annotationPrefix = 'gitlab.com';
@@ -75,10 +68,13 @@ export class RepoLocationAnalyzer implements LocationAnalyzer {
         break;
     }
 
+    const analyzer = this.analyzers.find(
+      a => a.getIntegrationType() === integration.type,
+    );
     if (analyzer) {
-      const existingEntityFiles = await analyzer.analyze(
-        request.location.target,
-      );
+      const existingEntityFiles = await analyzer.analyze({
+        url: request.location.target,
+      });
       if (existingEntityFiles.length > 0) {
         this.logger.debug(
           `entity for ${request.location.target} already exists.`,

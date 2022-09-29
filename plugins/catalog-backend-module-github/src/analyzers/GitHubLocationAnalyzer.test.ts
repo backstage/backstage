@@ -46,12 +46,17 @@ describe('GitHubLocationAnalyzer', () => {
     getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007'),
     getExternalBaseUrl: jest.fn(),
   };
-  const integration = new GitHubIntegration({
-    host: 'h.com',
-    apiBaseUrl: 'a',
-    rawBaseUrl: 'r',
-    token: 't',
-  });
+  const integrations = {
+    list: jest.fn(),
+    byHost: jest.fn(),
+    byUrl: () =>
+      new GitHubIntegration({
+        host: 'h.com',
+        apiBaseUrl: 'a',
+        rawBaseUrl: 'r',
+        token: 't',
+      }),
+  };
 
   setupRequestMockHandlers(server);
 
@@ -112,9 +117,11 @@ describe('GitHubLocationAnalyzer', () => {
 
     const analyzer = new GitHubLocationAnalyzer({
       discovery: mockDiscoveryApi,
-      integration,
+      integrations,
     });
-    const result = await analyzer.analyze('https://github.com/foo/bar');
+    const result = await analyzer.analyze({
+      url: 'https://github.com/foo/bar',
+    });
 
     expect(result[0].isRegistered).toBeFalsy();
     expect(result[0].location).toEqual({
@@ -135,10 +142,12 @@ describe('GitHubLocationAnalyzer', () => {
 
     const analyzer = new GitHubLocationAnalyzer({
       discovery: mockDiscoveryApi,
-      integration,
+      integrations,
+    });
+    const result = await analyzer.analyze({
+      url: 'https://github.com/foo/bar',
       catalogFilename: 'anvil.yaml',
     });
-    const result = await analyzer.analyze('https://github.com/foo/bar');
 
     expect(result[0].location).toEqual({
       type: 'url',

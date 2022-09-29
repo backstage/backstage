@@ -20,6 +20,7 @@ export {
   getOrganizationRepositories,
   getOrganizationTeams,
   getOrganizationUsers,
+  getRepository,
 } from './github';
 export { assignGroupsToUsers, buildOrgHierarchy } from './org';
 export { parseGitHubOrgUrl } from './util';
