@@ -17,7 +17,8 @@
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import child_process from 'child_process';
-import path from 'path';
+import path, { resolve as resolvePath } from 'path';
+import os from 'os';
 import {
   Task,
   buildAppTask,
@@ -26,7 +27,11 @@ import {
   createTemporaryAppFolderTask,
   moveAppTask,
   templatingTask,
+  initGitRepository,
+  readGitConfig,
 } from './tasks';
+
+const commandExists = jest.fn();
 
 jest.spyOn(Task, 'log').mockReturnValue(undefined);
 jest.spyOn(Task, 'error').mockReturnValue(undefined);
@@ -36,6 +41,12 @@ jest
   .mockImplementation((_a, _b, taskFunc) => taskFunc());
 
 jest.mock('child_process');
+jest.mock(
+  'command-exists',
+  () =>
+    (...args: any[]) =>
+      commandExists(...args),
+);
 
 // By mocking this the filesystem mocks won't mess with reading all of the package.jsons
 jest.mock('./versions', () => ({
@@ -87,6 +98,14 @@ jest.mock('./versions', () => ({
 }));
 
 describe('tasks', () => {
+  const mockExec = child_process.exec as unknown as jest.MockedFunction<
+    (
+      command: string,
+      options: any,
+      callback: (error: null, stdout: any, stderr: any) => void,
+    ) => void
+  >;
+
   beforeEach(() => {
     mockFs({
       'projects/my-module.ts': '',
@@ -100,6 +119,7 @@ describe('tasks', () => {
   });
 
   afterEach(() => {
+    mockExec.mockRestore();
     mockFs.restore();
   });
 
@@ -174,12 +194,6 @@ describe('tasks', () => {
   describe('buildAppTask', () => {
     it('should change to `appDir` and run `yarn install` and `yarn tsc`', async () => {
       const mockChdir = jest.spyOn(process, 'chdir');
-      const mockExec = child_process.exec as unknown as jest.MockedFunction<
-        (
-          command: string,
-          callback: (error: null, stdout: string, stderr: string) => void,
-        ) => void
-      >;
 
       // requires callback implementation to support `promisify` wrapper
       // https://stackoverflow.com/a/60579617/10044859
@@ -271,6 +285,101 @@ describe('tasks', () => {
       expect(
         fs.readFileSync('templatedApp/packages/backend/package.json', 'utf-8'),
       ).toContain('sqlite3"');
+    });
+  });
+
+  describe('readGitConfig', () => {
+    const tmpDir = resolvePath(os.tmpdir(), 'git-temp-dir');
+
+    it('should return git config if git package is installed and git credentials are set', async () => {
+      mockExec.mockImplementation((_command, _options, callback) => {
+        callback(null, { stdout: 'main' }, 'standard error');
+      });
+
+      commandExists.mockResolvedValue(true);
+
+      const gitConfig = await readGitConfig();
+
+      expect(gitConfig).toBeTruthy();
+      expect(gitConfig).toEqual({
+        name: 'main',
+        email: 'main',
+        defaultBranch: 'main',
+      });
+      expect(mockExec).toHaveBeenCalledWith(
+        'git config user.name',
+        { cwd: tmpDir },
+        expect.any(Function),
+      );
+      expect(mockExec).toHaveBeenCalledWith(
+        'git config user.email',
+        { cwd: tmpDir },
+        expect.any(Function),
+      );
+      expect(mockExec).toHaveBeenCalledWith(
+        'git init',
+        { cwd: tmpDir },
+        expect.any(Function),
+      );
+      expect(mockExec).toHaveBeenCalledWith(
+        'git commit --allow-empty -m "Initial commit"',
+        { cwd: tmpDir },
+        expect.any(Function),
+      );
+    });
+
+    it('should return false if git package is not installed', async () => {
+      commandExists.mockResolvedValue(false);
+
+      const gitConfig = await readGitConfig();
+
+      expect(gitConfig).toEqual({});
+    });
+
+    it('should return false if git package is installed but git credentials are not set', async () => {
+      mockExec.mockImplementation((_command, _options, callback) => {
+        callback(null, { stdout: null }, 'standard error');
+      });
+
+      commandExists.mockResolvedValue(true);
+
+      const gitConfig = await readGitConfig();
+
+      expect(gitConfig).toEqual({});
+      expect(mockExec).toHaveBeenCalledWith(
+        'git config user.name',
+        { cwd: tmpDir },
+        expect.any(Function),
+      );
+      expect(mockExec).toHaveBeenCalledWith(
+        'git config user.email',
+        { cwd: tmpDir },
+        expect.any(Function),
+      );
+    });
+  });
+
+  describe('initGitRepository', () => {
+    it('should initialize a git repository at the given path', async () => {
+      const destinationDir = 'tmp/mockApp/';
+
+      mockExec.mockImplementation((_command, callback) => {
+        callback(null, { stdout: 'main' }, 'standard error');
+      });
+
+      await initGitRepository(destinationDir);
+
+      expect(mockExec).toHaveBeenCalledTimes(2);
+      expect(mockExec).toHaveBeenNthCalledWith(
+        1,
+        'git init',
+        expect.any(Function),
+      );
+      expect(mockExec).toHaveBeenNthCalledWith(
+        2,
+        'git commit --allow-empty -m "Initial commit"',
+        expect.any(Function),
+      );
     });
   });
 });
