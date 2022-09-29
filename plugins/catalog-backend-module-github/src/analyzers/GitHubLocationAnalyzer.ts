@@ -15,10 +15,7 @@
  */
 
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
-import {
-  GitHubIntegration,
-  ScmIntegrationsGroup,
-} from '@backstage/integration';
+import { ScmIntegrations } from '@backstage/integration';
 import { Octokit } from '@octokit/rest';
 import { trimEnd } from 'lodash';
 import parseGitUrl from 'git-url-parse';
@@ -28,18 +25,18 @@ import {
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-backend';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
 
 export type GitHubLocationAnalyzerOptions = {
-  integrations: ScmIntegrationsGroup<GitHubIntegration>;
-  catalogFilename?: string;
+  config: Config;
   discovery: PluginEndpointDiscovery;
 };
 export class GitHubLocationAnalyzer implements ScmLocationAnalyzer {
   private readonly catalogClient: CatalogApi;
-  private readonly integrations: ScmIntegrationsGroup<GitHubIntegration>;
+  private readonly config: Config;
 
   constructor(options: GitHubLocationAnalyzerOptions) {
-    this.integrations = options.integrations;
+    this.config = options.config;
     this.catalogClient = new CatalogClient({ discoveryApi: options.discovery });
   }
   getIntegrationType() {
@@ -55,7 +52,9 @@ export class GitHubLocationAnalyzer implements ScmLocationAnalyzer {
 
     const query = `filename:${catalogFile} repo:${owner}/${repo}`;
 
-    const integration = this.integrations.byUrl(url);
+    const integration = ScmIntegrations.fromConfig(this.config).github.byUrl(
+      url,
+    );
     if (!integration) {
       throw new Error('Make sure you have a GitHub integration configured');
     }
