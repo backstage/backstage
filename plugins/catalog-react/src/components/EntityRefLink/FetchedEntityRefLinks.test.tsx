@@ -132,4 +132,87 @@ describe('<FetchedEntityRefLinks />', () => {
       '/catalog/default/api/implementation',
     );
   });
+
+  it('should handle heterogeneous array of values to render the custom display text', async () => {
+    const entityRefs = [
+      ...[
+        {
+          kind: 'Component',
+          namespace: 'default',
+          name: 'tool',
+        },
+        {
+          kind: 'API',
+          namespace: 'default',
+          name: 'implementation',
+        },
+      ].map(ref => ({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: ref.kind,
+        metadata: {
+          name: ref.name,
+          namespace: ref.namespace,
+        },
+        spec: {
+          profile: {
+            displayName: ref.name.toLocaleUpperCase('en-US'),
+          },
+          type: 'organization',
+        },
+      })),
+      {
+        kind: 'Component',
+        namespace: 'default',
+        name: 'interface',
+      },
+    ];
+
+    const catalogApi: Partial<CatalogApi> = {
+      getEntities: () =>
+        Promise.resolve({
+          items: [
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Component',
+              metadata: {
+                name: 'interface',
+                namespace: 'default',
+              },
+              spec: {
+                profile: {
+                  displayName: 'INTERFACE',
+                },
+                type: 'organization',
+              },
+            },
+          ],
+        }),
+    };
+
+    const rendered = await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <FetchedEntityRefLinks entityRefs={entityRefs} getTitle={getTitle} />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
+
+    expect(rendered.getByText('TOOL')).toHaveAttribute(
+      'href',
+      '/catalog/default/component/tool',
+    );
+
+    expect(rendered.getByText('IMPLEMENTATION')).toHaveAttribute(
+      'href',
+      '/catalog/default/api/implementation',
+    );
+
+    expect(rendered.getByText('INTERFACE')).toHaveAttribute(
+      'href',
+      '/catalog/default/component/interface',
+    );
+  });
 });

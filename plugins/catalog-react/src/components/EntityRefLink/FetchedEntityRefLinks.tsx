@@ -60,17 +60,24 @@ export function FetchedEntityRefLinks<
       return 'metadata' in current ? acc : [...acc, parseEntityRef(current)];
     }, new Array<CompoundEntityRef>());
 
+    const pureEntities = entityRefs.filter(
+      ref => 'metadata' in ref,
+    ) as Array<Entity>;
+
     return refs.length > 0
-      ? (
-          await catalogApi.getEntities({
-            filter: refs.map(ref => ({
-              kind: ref.kind,
-              'metadata.namespace': ref.namespace,
-              'metadata.name': ref.name,
-            })),
-          })
-        ).items
-      : (entityRefs as Array<Entity>);
+      ? [
+          ...(
+            await catalogApi.getEntities({
+              filter: refs.map(ref => ({
+                kind: ref.kind,
+                'metadata.namespace': ref.namespace,
+                'metadata.name': ref.name,
+              })),
+            })
+          ).items,
+          ...pureEntities,
+        ]
+      : pureEntities;
   }, [entityRefs]);
 
   if (loading) {
