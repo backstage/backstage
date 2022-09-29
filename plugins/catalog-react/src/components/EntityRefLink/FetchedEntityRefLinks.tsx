@@ -60,7 +60,7 @@ export function FetchedEntityRefLinks<
       return 'metadata' in current ? acc : [...acc, parseEntityRef(current)];
     }, new Array<CompoundEntityRef>());
 
-    return refs
+    return refs.length > 0
       ? (
           await catalogApi.getEntities({
             filter: refs.map(ref => ({
