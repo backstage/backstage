@@ -286,12 +286,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asyncapi/parser@npm:^1.15.0":
-  version: 1.15.0
-  resolution: "@asyncapi/parser@npm:1.15.0"
+"@asyncapi/parser@npm:^1.17.0":
+  version: 1.17.0
+  resolution: "@asyncapi/parser@npm:1.17.0"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^9.0.6
-    "@asyncapi/specs": ^2.14.0
+    "@asyncapi/specs": ^3.2.0
     "@fmvilas/pseudo-yaml-ast": ^0.3.1
     ajv: ^6.10.1
     js-yaml: ^3.13.1
@@ -299,17 +299,17 @@ __metadata:
     lodash.clonedeep: ^4.5.0
     node-fetch: ^2.6.0
     tiny-merge-patch: ^0.1.2
-  checksum: e9435265b4671f6a4c2451e054751ea637dd466b1f6b6848622781fbf6fa9fc93c292ed8791bf38816f63cd9c352f09727ab2d34f76d62f8f21c084b0125445b
+  checksum: 6ac0bd3c9c90abf331cfdfb054dab047cf0324ee803633c2abc6dad96b12c64d033e4fb94907906adfb521ba16e9b23083b2a6acc7719ccd22154a7867046a95
   languageName: node
   linkType: hard
 
-"@asyncapi/react-component@npm:1.0.0-next.42":
-  version: 1.0.0-next.42
-  resolution: "@asyncapi/react-component@npm:1.0.0-next.42"
+"@asyncapi/react-component@npm:1.0.0-next.43":
+  version: 1.0.0-next.43
+  resolution: "@asyncapi/react-component@npm:1.0.0-next.43"
   dependencies:
     "@asyncapi/avro-schema-parser": ^0.3.0
     "@asyncapi/openapi-schema-parser": ^2.0.0
-    "@asyncapi/parser": ^1.15.0
+    "@asyncapi/parser": ^1.17.0
     highlight.js: ^10.7.2
     isomorphic-dompurify: ^0.13.0
     marked: ^4.0.14
@@ -319,14 +319,14 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
-  checksum: eba4aaf344aabc1889085df7f94d14d51e2449db06cabc70c60b9d5b0b2fb9ccec6aa89cbedf9d45c28deca99e1e4ab2d4399b0a2756e9969d4691f304088a77
+  checksum: d19adc2b6e674633457da28d38636df4cf9891f4038827b52f2737699d064bcf0d3be707e9f3284852d1bb507f3f36df9ec3bb02fd6f901cfda7a1f49ea9c5da
   languageName: node
   linkType: hard
 
-"@asyncapi/specs@npm:^2.14.0":
-  version: 2.14.0
-  resolution: "@asyncapi/specs@npm:2.14.0"
-  checksum: 066c23c493df54c44c319433bdcf8482a3acd584e32c0073e6a9f5b167d61bde23a252621be2b28bbaf1466636f6cafaab570795de403f0c671358784d4b12ed
+"@asyncapi/specs@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@asyncapi/specs@npm:3.2.0"
+  checksum: 09971262aefc8844ab3e7c0c3652711862ac562dd5d614f23b496185690430a81df8e50eddba657f4141e0fd9548ef622fe6c20f4e3dec8054be23f774798335
   languageName: node
   linkType: hard
 
@@ -4016,7 +4016,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-api-docs@workspace:plugins/api-docs"
   dependencies:
-    "@asyncapi/react-component": 1.0.0-next.42
+    "@asyncapi/react-component": 1.0.0-next.43
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
