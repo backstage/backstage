@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity } from '@backstage/catalog-model';
+
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
-import {
-  catalogApiRef,
-  humanizeEntityRef,
-  useEntity,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef, useEntity } from '@backstage/plugin-catalog-react';
 import { useCallback, useEffect, useState } from 'react';
 
 const GITHUB_PROJECT_SLUG_ANNOTATION = 'github.com/project-slug';
@@ -48,7 +45,7 @@ export function useEntityGitHubRepositories() {
     const entitiesList = await catalogApi.getEntities({
       filter: {
         kind: ['Component', 'API'],
-        'spec.owner': humanizeEntityRef(entity, { defaultKind: 'group' }),
+        'relations.ownedBy': stringifyEntityRef(entity),
       },
     });
 

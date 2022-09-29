@@ -38,6 +38,10 @@ describe('Persistent Storage API', () => {
   const mockIdentityApi: Partial<IdentityApi> = {
     getCredentials: async () => ({ token: 'a-token' }),
   };
+  const mockIdentityApiFallback: Partial<IdentityApi> = {
+    // This API recreates the guest mode, where the WebStorage is used as fallback
+    getCredentials: async () => ({}),
+  };
 
   const createPersistentStorage = (
     args?: Partial<{
@@ -52,6 +56,23 @@ describe('Persistent Storage API', () => {
       fetchApi: new MockFetchApi(),
       discoveryApi: mockDiscoveryApi,
       identityApi: mockIdentityApi as IdentityApi,
+      ...args,
+    });
+  };
+
+  const createPersistentStorageFallback = (
+    args?: Partial<{
+      fetchApi: FetchApi;
+      discoveryApi: DiscoveryApi;
+      errorApi: ErrorApi;
+      namespace?: string;
+    }>,
+  ): StorageApi => {
+    return UserSettingsStorage.create({
+      errorApi: mockErrorApi,
+      fetchApi: new MockFetchApi(),
+      discoveryApi: mockDiscoveryApi,
+      identityApi: mockIdentityApiFallback as IdentityApi,
       ...args,
     });
   };
@@ -122,6 +143,33 @@ describe('Persistent Storage API', () => {
     );
 
     await storage.set('my-key', dummyValue);
+  });
+
+  it('should fallback set when user not logged in', async () => {
+    const storage = createPersistentStorageFallback();
+
+    const selectedKeyNextHandler = jest.fn();
+    const dummyValue = 'my-value';
+
+    await new Promise<void>(resolve => {
+      storage.observe$<typeof dummyValue>('my-key').subscribe({
+        next: snapshot => {
+          selectedKeyNextHandler(snapshot);
+          if (snapshot.presence === 'present') {
+            resolve();
+          }
+        },
+      });
+
+      storage.set('my-key', dummyValue);
+    });
+
+    expect(selectedKeyNextHandler).toHaveBeenCalledTimes(1);
+    expect(selectedKeyNextHandler).toHaveBeenCalledWith({
+      key: 'my-key',
+      value: dummyValue,
+      presence: 'present',
+    });
   });
 
   it('should subscribe to key changes when setting a new value', async () => {

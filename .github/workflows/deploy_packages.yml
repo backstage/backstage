@@ -67,7 +67,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.5
+        uses: backstage/actions/yarn-install@v0.5.6
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -145,7 +145,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.5
+        uses: backstage/actions/yarn-install@v0.5.6
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -164,9 +164,9 @@ jobs:
         run: |
           yarn config set -H 'npmAuthToken' "${{secrets.NPM_TOKEN}}"
           if [ -f ".changeset/pre.json" ]; then
-              yarn workspaces foreach -v --no-private npm publish --access public --tag next
+              yarn workspaces foreach -v --no-private npm publish --access public --tolerate-republish --tag next
           else
-              yarn workspaces foreach -v --no-private npm publish --access public
+              yarn workspaces foreach -v --no-private npm publish --access public --tolerate-republish
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

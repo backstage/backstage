@@ -33,33 +33,20 @@ export namespace Models {
    * @public
    */
   export interface Account extends ModelObject {
-    /**
-     * The status of the account. Currently the only possible value is "active", but more values may be added in the future.
-     */
-    account_status?: string;
     created_on?: string;
     display_name?: string;
-    has_2fa_enabled?: boolean;
     links?: AccountLinks;
-    /**
-     * Account name defined by the owner. Should be used instead of the "username" field. Note that "nickname" cannot be used in place of "username" in URLs and queries, as "nickname" is not guaranteed to be unique.
-     */
-    nickname?: string;
     username?: string;
     uuid?: string;
-    website?: string;
   }
 
   /**
+   * Links related to an Account.
    * @public
    */
   export interface AccountLinks {
+    [key: string]: unknown;
     avatar?: Link;
-    followers?: Link;
-    following?: Link;
-    html?: Link;
-    repositories?: Link;
-    self?: Link;
   }
 
   /**
@@ -278,7 +265,7 @@ export namespace Models {
     participated_on?: string;
     role?: ParticipantRoleEnum;
     state?: ParticipantStateEnum;
-    user?: User;
+    user?: Account;
   }
 
   /**
@@ -516,17 +503,19 @@ export namespace Models {
    * A team object.
    * @public
    */
-  export interface Team extends Account {}
+  export interface Team extends Account {
+    links?: TeamLinks;
+  }
 
   /**
-   * A user object.
+   * Links related to a Team.
    * @public
    */
-  export interface User extends Account {
-    /**
-     * The user's Atlassian account ID.
-     */
-    account_id?: string;
-    is_staff?: boolean;
+  export interface TeamLinks extends AccountLinks {
+    html?: Link;
+    members?: Link;
+    projects?: Link;
+    repositories?: Link;
+    self?: Link;
   }
 }

@@ -214,19 +214,6 @@ const preventHardToDetectDuplicateInterfacesDueToAllOf = json => {
   return json;
 };
 
-const removeBuggyDescription = json => {
-  const valueProp =
-    json.components.schemas.branchrestriction.allOf[1].properties.value;
-  if (!valueProp.description.startsWith('<staticmethod')) {
-    // eslint-disable-next-line no-console
-    console.log('[WARN] "removeBuggyDescription" is not necessary anymore.');
-    return json;
-  }
-
-  delete valueProp.description;
-  return json;
-};
-
 const resolveConflictingInheritance = json => {
   const schema = json.components.schemas.pipeline_selector;
   const extension = schema.allOf[1];
@@ -269,7 +256,6 @@ fetch(SCHEMA_SOURCE)
   .then(addPaginatedDefinition)
   .then(paginatedDefinitionsExtendPaginated)
   .then(preventHardToDetectDuplicateInterfacesDueToAllOf)
-  .then(removeBuggyDescription)
   .then(resolveConflictingInheritance)
   .then(escapeTsdocInDescription)
   .then(relativeToAbsoluteUrls)

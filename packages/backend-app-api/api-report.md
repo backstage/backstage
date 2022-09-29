@@ -58,8 +58,13 @@ export const discoveryFactory: (
 
 // @public (undocumented)
 export const httpRouterFactory: (
-  options?: undefined,
+  options?: HttpRouterFactoryOptions | undefined,
 ) => ServiceFactory<HttpRouterService>;
+
+// @public (undocumented)
+export type HttpRouterFactoryOptions = {
+  indexPlugin?: string;
+};
 
 // @public (undocumented)
 export const loggerFactory: (options?: undefined) => ServiceFactory<Logger>;
@@ -68,6 +73,9 @@ export const loggerFactory: (options?: undefined) => ServiceFactory<Logger>;
 export const permissionsFactory: (
   options?: undefined,
 ) => ServiceFactory<PermissionAuthorizer | PermissionEvaluator>;
+
+// @public (undocumented)
+export const rootLoggerFactory: (options?: undefined) => ServiceFactory<Logger>;
 
 // @public (undocumented)
 export const schedulerFactory: (
