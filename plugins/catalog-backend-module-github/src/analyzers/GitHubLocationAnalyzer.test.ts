@@ -37,7 +37,7 @@ import { GitHubLocationAnalyzer } from './GitHubLocationAnalyzer';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
-import { GitHubIntegration } from '@backstage/integration';
+import { ConfigReader } from '@backstage/config';
 
 const server = setupServer();
 
@@ -46,17 +46,14 @@ describe('GitHubLocationAnalyzer', () => {
     getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007'),
     getExternalBaseUrl: jest.fn(),
   };
-  const integrations = {
-    list: jest.fn(),
-    byHost: jest.fn(),
-    byUrl: () =>
-      new GitHubIntegration({
+  const config = new ConfigReader({
+    integrations: {
+      github: {
         host: 'h.com',
-        apiBaseUrl: 'a',
-        rawBaseUrl: 'r',
         token: 't',
-      }),
-  };
+      },
+    },
+  });
 
   setupRequestMockHandlers(server);
 
@@ -117,7 +114,7 @@ describe('GitHubLocationAnalyzer', () => {
 
     const analyzer = new GitHubLocationAnalyzer({
       discovery: mockDiscoveryApi,
-      integrations,
+      config,
     });
     const result = await analyzer.analyze({
       url: 'https://github.com/foo/bar',
@@ -142,7 +139,7 @@ describe('GitHubLocationAnalyzer', () => {
 
     const analyzer = new GitHubLocationAnalyzer({
       discovery: mockDiscoveryApi,
-      integrations,
+      config,
     });
     const result = await analyzer.analyze({
       url: 'https://github.com/foo/bar',
