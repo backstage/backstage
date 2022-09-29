@@ -308,39 +308,6 @@ export async function getOrganizationRepositories(
   return { repositories };
 }
 
-export async function getRepository(
-  client: typeof graphql,
-  org: string,
-  name: string,
-): Promise<Repository> {
-  const query = `
-  query repositories($org: String!, $name: String!) {
-    repository(name: $name, owner: $org) {
-      name
-      url
-      isArchived
-      repositoryTopics(first: 100) {
-        nodes {
-          ... on RepositoryTopic {
-            topic {
-              name
-            }
-          }
-        }
-      }
-      defaultBranchRef {
-        name
-      }
-    }
-  }`;
-
-  const repository: Repository = await client(query, {
-    org,
-    name,
-  });
-  return repository;
-}
-
 /**
  * Gets all the users out of a GitHub organization.
  *
