@@ -23,6 +23,9 @@ import { catalogApiRef } from '../../api';
 import { CatalogApi } from '@backstage/catalog-client';
 
 describe('<FetchedEntityRefLinks />', () => {
+  const getTitle = (e: Entity): string =>
+    (e.spec?.profile!! as JsonObject).displayName!!.toString()!!;
+
   it('should fetch entities and render the custom display text', async () => {
     const entityRefs = [
       {
@@ -57,9 +60,6 @@ describe('<FetchedEntityRefLinks />', () => {
         }),
     };
 
-    const getTitle = (e: Entity): string =>
-      (e.spec?.profile!! as JsonObject).displayName!!.toString()!!;
-
     const rendered = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <FetchedEntityRefLinks entityRefs={entityRefs} getTitle={getTitle} />
@@ -79,6 +79,57 @@ describe('<FetchedEntityRefLinks />', () => {
     expect(rendered.getByText('INTERFACE')).toHaveAttribute(
       'href',
       '/catalog/default/api/interface',
+    );
+  });
+
+  it('should use entities as they are provided and render the custom display text', async () => {
+    const entityRefs = [
+      {
+        kind: 'Component',
+        namespace: 'default',
+        name: 'tool',
+      },
+      {
+        kind: 'API',
+        namespace: 'default',
+        name: 'implementation',
+      },
+    ].map(ref => ({
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: ref.kind,
+      metadata: {
+        name: ref.name,
+        namespace: ref.namespace,
+      },
+      spec: {
+        profile: {
+          displayName: ref.name.toLocaleUpperCase('en-US'),
+        },
+        type: 'organization',
+      },
+    }));
+
+    const catalogApi: Partial<CatalogApi> = {};
+
+    const rendered = await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <FetchedEntityRefLinks entityRefs={entityRefs} getTitle={getTitle} />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
+
+    expect(rendered.getByText('TOOL')).toHaveAttribute(
+      'href',
+      '/catalog/default/component/tool',
+    );
+
+    expect(rendered.getByText('IMPLEMENTATION')).toHaveAttribute(
+      'href',
+      '/catalog/default/api/implementation',
     );
   });
 });
