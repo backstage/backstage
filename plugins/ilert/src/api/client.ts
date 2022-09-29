@@ -521,7 +521,7 @@ export class ILertClient implements ILertApi {
     if (!user.firstName && !user.lastName) {
       return user.username;
     }
-    return `${user.firstName} ${user.lastName} (${user.username})`;
+    return `${user.firstName} ${user.lastName}`;
   }
 
   private async apiUrl() {

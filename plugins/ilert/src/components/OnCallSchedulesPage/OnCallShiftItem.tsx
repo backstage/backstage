@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import RepeatIcon from '@material-ui/icons/Repeat';
-import { Shift } from '../../types';
 import { DateTime as dt } from 'luxon';
-import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+import { Shift } from '../../types';
 import { ShiftOverrideModal } from '../Shift/ShiftOverrideModal';
 
 const useStyles = makeStyles({
@@ -71,7 +71,7 @@ export const OnCallShiftItem = ({
       {shift && shift.user ? (
         <Grid item sm={12}>
           <Typography variant="subtitle1" noWrap>
-            {`${shift.user.firstName} ${shift.user.lastName} (${shift.user.username})`}
+            {`${shift.user.firstName} ${shift.user.lastName}`}
           </Typography>
         </Grid>
       ) : null}
