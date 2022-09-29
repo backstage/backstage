@@ -13797,11 +13797,11 @@ __metadata:
   linkType: hard
 
 "@types/ldapjs@npm:^2.2.0":
-  version: 2.2.2
-  resolution: "@types/ldapjs@npm:2.2.2"
+  version: 2.2.4
+  resolution: "@types/ldapjs@npm:2.2.4"
   dependencies:
     "@types/node": "*"
-  checksum: e5da993f06240251dad1e095564c722124ed08d915781fb3046f7933cde94b5d2681030ab9f48d4aa5d72b655b501bfd6f2ad4ea41d557d0e1a08d574ed058bf
+  checksum: 3f240809927e1292380e5977579d7edffb6e5e41b35510c7091b51da19e7387d4ebff0f254c0b145f3cf5d5485b6bb39c77335d857d092e6f4e9ce5a6682a872
   languageName: node
   linkType: hard
 
@@ -27722,8 +27722,8 @@ __metadata:
   linkType: hard
 
 "ldapjs@npm:^2.2.0":
-  version: 2.3.2
-  resolution: "ldapjs@npm:2.3.2"
+  version: 2.3.3
+  resolution: "ldapjs@npm:2.3.3"
   dependencies:
     abstract-logging: ^2.0.0
     asn1: ^0.2.4
@@ -27733,7 +27733,7 @@ __metadata:
     once: ^1.4.0
     vasync: ^2.2.0
     verror: ^1.8.1
-  checksum: 4eb7b18839d8fe1d8acc0ba5d2aa71aefcb25ecb6f4f9582299d73faf546984326590c44366f8b148d3a4276707006b1aaffffdc548b3c4ca753e720403da4a5
+  checksum: 791cf22812805db3888dfc8aa8e4db8337e67387b318522c9965d40e678ecdb64950a6ea5930083590ec3377038620a3e63f90e985173ae6aca40e7f485290e0
   languageName: node
   linkType: hard
 
