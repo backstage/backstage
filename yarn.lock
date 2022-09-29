@@ -8402,11 +8402,11 @@ __metadata:
   linkType: hard
 
 "@google-cloud/container@npm:^4.0.0":
-  version: 4.1.3
-  resolution: "@google-cloud/container@npm:4.1.3"
+  version: 4.2.0
+  resolution: "@google-cloud/container@npm:4.2.0"
   dependencies:
     google-gax: ^3.3.0
-  checksum: d9554ed344e065ec16b9d281eeecd2796bf5c90149358e724596c6e2bc97c6b9ea16a9dbcf4805e29003e4bcaf3aaa85c70609b7b9b1db0fbae6c9018e55b6d8
+  checksum: edda8a4801deca937f975d02a2fce245b07d51f28b455dc604f5b97f3c75865549218a684c0046fd512ee81c178724a335c41e53d421961268b3c8136ed2079c
   languageName: node
   linkType: hard
 
