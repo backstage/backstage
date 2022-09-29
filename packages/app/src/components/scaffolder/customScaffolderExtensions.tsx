@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import type { FieldValidation } from '@rjsf/utils';
+import type { FieldValidation } from '@rjsf/core';
 import {
   createScaffolderFieldExtension,
   FieldExtensionComponentProps,
@@ -30,7 +30,7 @@ const TextValuePicker = (props: FieldExtensionComponentProps<string>) => {
     schema: { title, description },
     rawErrors,
     formData,
-    uiSchema: { 'ui:autofocus': autoFocus } = {},
+    uiSchema: { 'ui:autofocus': autoFocus },
     idSchema,
     placeholder,
   } = props;
