@@ -24,7 +24,6 @@ import {
 } from '@material-ui/core';
 import { withTheme } from '@rjsf/core-v5';
 import { ErrorSchema, FieldValidation } from '@rjsf/utils';
-import { Theme as MuiTheme } from '@rjsf/material-ui-v5';
 import React, { useMemo, useState } from 'react';
 import { NextFieldExtensionOptions } from '../../../extensions';
 import { TemplateParameterSchema } from '../../../types';
@@ -53,8 +52,10 @@ export interface StepperProps {
   extensions: NextFieldExtensionOptions<any, any>[];
 }
 
-// This needs an any for some reason, think it coul
-const Form = withTheme(MuiTheme as any);
+// TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
+// which is what we're using here as the default types, it needs to depend on @rjsf/core-v5 because
+// of the re-writing we're doing. Once we've migrated, we can import this the exact same as before.
+const Form = withTheme(require('@rjsf/material-ui-v5').Theme);
 
 export const Stepper = (props: StepperProps) => {
   const { steps } = useTemplateSchema(props.manifest);
