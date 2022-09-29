@@ -24,6 +24,7 @@ import { PolicyDecision } from '@backstage/plugin-permission-common';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TokenManager } from '@backstage/backend-common';
+import { z } from 'zod';
 
 // @public
 export type ApplyConditionsRequest = {
@@ -170,6 +171,7 @@ export type PermissionRule<
   name: string;
   description: string;
   resourceType: TResourceType;
+  schema: z.ZodSchema<TParams>;
   apply(resource: TResource, ...params: TParams): boolean;
   toQuery(...params: TParams): PermissionCriteria<TQuery>;
 };
