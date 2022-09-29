@@ -3637,11 +3637,13 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
+    "@types/command-exists": ^1.2.0
     "@types/fs-extra": ^9.0.1
     "@types/inquirer": ^8.1.3
     "@types/node": ^16.11.26
     "@types/recursive-readdir": ^2.2.0
     chalk: ^4.0.0
+    command-exists: ^1.2.9
     commander: ^9.1.0
     fs-extra: 10.1.0
     handlebars: ^4.7.3
@@ -11140,8 +11142,8 @@ __metadata:
   linkType: hard
 
 "@octokit/auth-app@npm:^4.0.0":
-  version: 4.0.5
-  resolution: "@octokit/auth-app@npm:4.0.5"
+  version: 4.0.6
+  resolution: "@octokit/auth-app@npm:4.0.6"
   dependencies:
     "@octokit/auth-oauth-app": ^5.0.0
     "@octokit/auth-oauth-user": ^2.0.0
@@ -11153,7 +11155,7 @@ __metadata:
     lru-cache: ^6.0.0
     universal-github-app-jwt: ^1.0.1
     universal-user-agent: ^6.0.0
-  checksum: 26da7c1b279be68be17572897652091257a5ef7666fa5ac4c79dd42f2717aed560b117089c44ad766b4f90a87348572356ac3571c417fef385fdf31794281023
+  checksum: 342fece6db4470ee489e710af8aa14ffd3a89e666815a15fadbabe3a382932a714d5bece24375f0ca39f3310f9d10bd28bc348210282cbc6701d27dd9b2ff7ed
   languageName: node
   linkType: hard
 
@@ -13797,11 +13799,11 @@ __metadata:
   linkType: hard
 
 "@types/ldapjs@npm:^2.2.0":
-  version: 2.2.2
-  resolution: "@types/ldapjs@npm:2.2.2"
+  version: 2.2.4
+  resolution: "@types/ldapjs@npm:2.2.4"
   dependencies:
     "@types/node": "*"
-  checksum: e5da993f06240251dad1e095564c722124ed08d915781fb3046f7933cde94b5d2681030ab9f48d4aa5d72b655b501bfd6f2ad4ea41d557d0e1a08d574ed058bf
+  checksum: 3f240809927e1292380e5977579d7edffb6e5e41b35510c7091b51da19e7387d4ebff0f254c0b145f3cf5d5485b6bb39c77335d857d092e6f4e9ce5a6682a872
   languageName: node
   linkType: hard
 
@@ -15319,12 +15321,12 @@ __metadata:
   linkType: hard
 
 "@yarnpkg/parsers@npm:^3.0.0-rc.4":
-  version: 3.0.0-rc.20
-  resolution: "@yarnpkg/parsers@npm:3.0.0-rc.20"
+  version: 3.0.0-rc.21
+  resolution: "@yarnpkg/parsers@npm:3.0.0-rc.21"
   dependencies:
     js-yaml: ^3.10.0
     tslib: ^2.4.0
-  checksum: a0dfc2d4d824322ae779363870ad7705b42161ad5e90c992404bf5dc0454a046a6f04144303c9bb047239e480b882b4105272127f2ba080b865180276c46deda
+  checksum: c0741ef01089a7d452dfb75b8c24a82ddcc3e218dac22b794a06f2e50c7070378c460f63f63fb7ed0f62f634114e448e3d85a75ccd4db84e1526242ae9b4a7d5
   languageName: node
   linkType: hard
 
@@ -18753,9 +18755,9 @@ __metadata:
   linkType: hard
 
 "core-js@npm:^3.6.5":
-  version: 3.25.2
-  resolution: "core-js@npm:3.25.2"
-  checksum: e93c6c645d44d98973efb07750975552ad405f080f5a563a99972ff6b2c5c6ee25705f55accd363f5dccd51e9e5f56be25e2be6c14a7294da65763e0e5659c02
+  version: 3.25.3
+  resolution: "core-js@npm:3.25.3"
+  checksum: 26ca0a5e575e6da03dc30099f48bc00db50a1c0a3f81299165f111cb163869ae453de5e345f2cb7bc8be85a9adcee11fca94f0fbdbdf6d483c68e1c55a9efc5a
   languageName: node
   linkType: hard
 
@@ -23710,8 +23712,8 @@ __metadata:
   linkType: hard
 
 "google-auth-library@npm:^8.0.0":
-  version: 8.5.1
-  resolution: "google-auth-library@npm:8.5.1"
+  version: 8.5.2
+  resolution: "google-auth-library@npm:8.5.2"
   dependencies:
     arrify: ^2.0.0
     base64-js: ^1.3.0
@@ -23722,7 +23724,7 @@ __metadata:
     gtoken: ^6.1.0
     jws: ^4.0.0
     lru-cache: ^6.0.0
-  checksum: 0d80d7e136e672055e44fdb44f9e13843a554cc531a01deb1b0da6b78427778785faa7377ed85d840208bb61878cd7d69902172886476bd49ea67e645729570a
+  checksum: 5ab2904f5da3c119a7c241a1d5a11640468a7da58dfcec8a9cad181cc2723e6662b3c65997906069852d9fa066ba3e4b7f14e11cbb80d541e320b66ead6777dc
   languageName: node
   linkType: hard
 
@@ -27722,8 +27724,8 @@ __metadata:
   linkType: hard
 
 "ldapjs@npm:^2.2.0":
-  version: 2.3.2
-  resolution: "ldapjs@npm:2.3.2"
+  version: 2.3.3
+  resolution: "ldapjs@npm:2.3.3"
   dependencies:
     abstract-logging: ^2.0.0
     asn1: ^0.2.4
@@ -27733,7 +27735,7 @@ __metadata:
     once: ^1.4.0
     vasync: ^2.2.0
     verror: ^1.8.1
-  checksum: 4eb7b18839d8fe1d8acc0ba5d2aa71aefcb25ecb6f4f9582299d73faf546984326590c44366f8b148d3a4276707006b1aaffffdc548b3c4ca753e720403da4a5
+  checksum: 791cf22812805db3888dfc8aa8e4db8337e67387b318522c9965d40e678ecdb64950a6ea5930083590ec3377038620a3e63f90e985173ae6aca40e7f485290e0
   languageName: node
   linkType: hard
 
