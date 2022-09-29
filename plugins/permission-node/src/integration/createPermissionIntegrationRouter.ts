@@ -17,6 +17,7 @@
 import express, { Response } from 'express';
 import Router from 'express-promise-router';
 import { z } from 'zod';
+import zodToJsonSchema from 'zod-to-json-schema';
 import { InputError } from '@backstage/errors';
 import { errorHandler } from '@backstage/backend-common';
 import {
@@ -201,6 +202,7 @@ export const createPermissionIntegrationRouter = <
       name: rule.name,
       description: rule.description,
       resourceType: rule.resourceType,
+      schema: zodToJsonSchema(rule.schema),
       parameters: {
         count: rule.toQuery.length,
       },

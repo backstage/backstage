@@ -530,12 +530,42 @@ describe('createPermissionIntegrationRouter', () => {
             name: testRule1.name,
             description: testRule1.description,
             resourceType: testRule1.resourceType,
+            schema: {
+              $schema: 'http://json-schema.org/draft-07/schema#',
+              items: [
+                {
+                  description: 'firstParam',
+                  type: 'string',
+                },
+                {
+                  description: 'secondParam',
+                  type: 'number',
+                },
+              ],
+              maxItems: 2,
+              minItems: 2,
+              type: 'array',
+            },
             parameters: { count: 2 },
           },
           {
             name: testRule2.name,
             description: testRule2.description,
             resourceType: testRule2.resourceType,
+            schema: {
+              $schema: 'http://json-schema.org/draft-07/schema#',
+              items: [
+                {
+                  additionalProperties: false,
+                  description: 'firstParam',
+                  properties: {},
+                  type: 'object',
+                },
+              ],
+              maxItems: 1,
+              minItems: 1,
+              type: 'array',
+            },
             parameters: { count: 1 },
           },
         ],

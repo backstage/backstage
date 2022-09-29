@@ -6359,6 +6359,7 @@ __metadata:
     msw: ^0.47.0
     supertest: ^6.1.3
     zod: ^3.11.6
+    zod-to-json-schema: ^3.18.1
   languageName: unknown
   linkType: soft
 
@@ -40074,6 +40075,15 @@ __metadata:
     compress-commons: ^4.1.0
     readable-stream: ^3.6.0
   checksum: 4a73da856738b0634700b52f4ab3fe0bf0a532bea6820ad962d0bda0163d2d5525df4859f89a7238e204a378384e12551985049790c1894c3ac191866e85887f
+  languageName: node
+  linkType: hard
+
+"zod-to-json-schema@npm:^3.18.1":
+  version: 3.18.1
+  resolution: "zod-to-json-schema@npm:3.18.1"
+  peerDependencies:
+    zod: ^3.18.0
+  checksum: e55d0de83b50fbd1caa7541d037858815964477b52a9e6495496e447107386cf16e2c08b007fcfbffd7fbe069ca2c19018425a53eaee36aff5dda942d3db71f4
   languageName: node
   linkType: hard
 
