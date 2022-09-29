@@ -13603,11 +13603,11 @@ __metadata:
   linkType: hard
 
 "@types/inquirer@npm:^8.1.3":
-  version: 8.2.3
-  resolution: "@types/inquirer@npm:8.2.3"
+  version: 8.2.4
+  resolution: "@types/inquirer@npm:8.2.4"
   dependencies:
     "@types/through": "*"
-  checksum: 2978e749fbda061b85a56331a267f6c7f40380c17bce1b0f8b0bd1d86c88820e3bd7df4985c633647652b571f7ffd6b97b929cabe8b7d61259d354229e4c6c5b
+  checksum: 3a46231faac1e5df4863a2d501617b3f25e9481ea8a966a9b866bafef01fcc151606d9f25cb66f90492dd0d1d7af7c675a2314f50db85a7f2aeed265d93eb412
   languageName: node
   linkType: hard
 
