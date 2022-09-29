@@ -10,4 +10,4 @@ jobs:
     if: github.repository == 'backstage/backstage'
     steps:
       - name: Issue sync
-        uses: backstage/actions/issue-sync@v0.5.5
+        uses: backstage/actions/issue-sync@v0.5.6
