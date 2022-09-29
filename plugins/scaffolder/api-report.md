@@ -44,8 +44,6 @@ export function createNextScaffolderFieldExtension<
   options: NextFieldExtensionOptions<TReturnValue, TInputProps>,
 ): Extension<NextFieldExtensionComponentProps<TReturnValue, TInputProps>>;
 
-// Warning: (ae-missing-release-tag) "actionsRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const actionsRouteRef: SubRouteRef<undefined>;
 
@@ -71,8 +69,6 @@ export type CustomFieldValidator<TFieldReturnValue> = (
   },
 ) => void | Promise<void>;
 
-// Warning: (ae-missing-release-tag) "editRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const editRouteRef: SubRouteRef<undefined>;
 
@@ -156,9 +152,7 @@ export interface LayoutOptions<P = any> {
 // @public
 export type LayoutTemplate<T = any> = FormProps<T>['ObjectFieldTemplate'];
 
-// Warning: (ae-missing-release-tag) "legacySelectedTemplateRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
+// @public (undocumented)
 export const legacySelectedTemplateRouteRef: SubRouteRef<
   PathParams<'/templates/:templateName'>
 >;
@@ -186,8 +180,6 @@ export type LogEvent = {
   taskId: string;
 };
 
-// Warning: (ae-missing-release-tag) "nextRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const nextRouteRef: RouteRef<undefined>;
 
@@ -239,8 +231,6 @@ export const NextScaffolderPage: (
   props: PropsWithChildren<NextRouterProps>,
 ) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "nextSelectedTemplateRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const nextSelectedTemplateRouteRef: SubRouteRef<
   PathParams<'/templates/:namespace/:templateName'>
@@ -280,8 +270,6 @@ export interface OwnerPickerUiOptions {
   defaultNamespace?: string | false;
 }
 
-// Warning: (ae-missing-release-tag) "registerComponentRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const registerComponentRouteRef: ExternalRouteRef<undefined, true>;
 
@@ -323,8 +311,6 @@ export interface RepoUrlPickerUiOptions {
   };
 }
 
-// Warning: (ae-missing-release-tag) "rootRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const rootRouteRef: RouteRef<undefined>;
 
@@ -470,8 +456,6 @@ export interface ScaffolderGetIntegrationsListResponse {
 // @public
 export const ScaffolderLayouts: React.ComponentType;
 
-// Warning: (ae-missing-release-tag) "scaffolderListTaskRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const scaffolderListTaskRouteRef: SubRouteRef<undefined>;
 
@@ -545,8 +529,6 @@ export type ScaffolderTaskOutput = {
   [key: string]: unknown;
 };
 
-// Warning: (ae-missing-release-tag) "scaffolderTaskRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const scaffolderTaskRouteRef: SubRouteRef<PathParams<'/tasks/:taskId'>>;
 
@@ -564,8 +546,6 @@ export interface ScaffolderUseTemplateSecrets {
   setSecrets: (input: Record<string, string>) => void;
 }
 
-// Warning: (ae-missing-release-tag) "selectedTemplateRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const selectedTemplateRouteRef: SubRouteRef<
   PathParams<'/templates/:namespace/:templateName'>
@@ -602,8 +582,6 @@ export const TemplateTypePicker: () => JSX.Element | null;
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
 
-// Warning: (ae-missing-release-tag) "viewTechDocRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const viewTechDocRouteRef: ExternalRouteRef<
   {
