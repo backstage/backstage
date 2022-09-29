@@ -31,6 +31,8 @@ import { startTaskPipeline } from './TaskPipeline';
 
 const CACHE_TTL = 5;
 
+export type ProgressTracker = ReturnType<typeof progressTracker>;
+
 export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
   private stopFunc?: () => void;
 
@@ -45,7 +47,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       unprocessedEntity: Entity;
       errors: Error[];
     }) => Promise<void> | void,
-    private readonly tracker = progressTracker(),
+    private readonly tracker: ProgressTracker = progressTracker(),
   ) {}
 
   async start() {
