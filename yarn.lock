@@ -10349,11 +10349,11 @@ __metadata:
   linkType: hard
 
 "@keyv/redis@npm:^2.2.3":
-  version: 2.3.8
-  resolution: "@keyv/redis@npm:2.3.8"
+  version: 2.5.1
+  resolution: "@keyv/redis@npm:2.5.1"
   dependencies:
-    ioredis: ^5.1.0
-  checksum: 7927d870094161db5bf90677008f6a584235162a0981f875a8616d244d2ba1da525858f656f434aea2a923fb39c5ce0cf88fd9720061e5f025c9db59146e6f48
+    ioredis: ^5.2.3
+  checksum: 1e61ad21a2ec1c21bbc47b686ace86f2e663bd96299a45e041b392a49f73a2bc12f58fc1683ac25ab543c5761cab8051447aa4ab450db44d1519790269be3bd9
   languageName: node
   linkType: hard
 
@@ -25159,9 +25159,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ioredis@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "ioredis@npm:5.1.0"
+"ioredis@npm:^5.2.3":
+  version: 5.2.3
+  resolution: "ioredis@npm:5.2.3"
   dependencies:
     "@ioredis/commands": ^1.1.1
     cluster-key-slot: ^1.1.0
@@ -25172,7 +25172,7 @@ __metadata:
     redis-errors: ^1.2.0
     redis-parser: ^3.0.0
     standard-as-callback: ^2.1.0
-  checksum: 7b1c137836ee136a634926df4ec68cc2393772a32ecda8e30dd305d7b9182af02d600456e661f96a6ceada17560ce7b6458948fd09b8adc277a1d287325777dd
+  checksum: 2cb7f0f4217e6774accad3620af1b7114722721c1d1824be2c9f0c2a77ab9629f2e0848d18b1a7208bc37796ae1207cb3e0898fce61900cfe797da0382724ad1
   languageName: node
   linkType: hard
 
