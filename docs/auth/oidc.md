@@ -18,7 +18,8 @@ sign in through the provider. In simple steps here's how you enable the provider
 
 - Create an API reference to identify the provider.
 - Create the API factory that will handle the authentication.
-- Add a resolver so you can handle the result from the authentication.
+- Add or reuse an auth provider so you can authenticate.
+- Add or reuse a resolver to handle the result from the authentication.
 - Configure the provider to access your 3rd party auth solution.
 - Add the provider to sign in page so users can login with it.
 
@@ -42,12 +43,16 @@ NPM, or any other library repository, you would import the API ref from the libr
 export const azureOIDCAuthApiRef: ApiRef<
   OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 > = createApiRef({
-  id: 'core.auth.azureOIDC',
+  id: 'auth.my-custom-provider',
 });
 ```
 
 Please note a few things, the ID can be anything you want as long as it doesn't conflict
-with other refs, also we're exporting this reference, as well as the `typings`, we need to
+with other refs, backstage recommends to use a custom name that references your custom
+provider, for example we are using OIDC protocol with Azure, so we could use something
+like `auth.azure.oidc` as well.
+
+Also we're exporting this reference, as well as the `typings`, we need to
 be able to import this reference anywhere in the app, and the `typings` will tell typescript
 what instance we're getting from DI when injecting the API. In this case we are defining
 an API for authentication, so we tell TS that this instance complies with 4 API
@@ -62,7 +67,7 @@ interfaces:
 
 A factory is a function that can take some parameters or dependencies and return an
 instance of something, in our case it will be a function that requests some backstage
-APIs and use them to create an instance of an OIDC provider.
+APIs and use them to create an instance of an OIDC API provider.
 
 Please note that this function only runs (creates the instance) when somewhere else in
 the app you request the DI to give you an instance of the OIDC provider using the API ref
@@ -70,7 +75,7 @@ defined above, and the DI will only run this function the first time, from then 
 other DI injection will just receive the same instance created the first time, basically
 the instance is cached by the DI library, a singleton.
 
-Let's add our OIDC factory to the APIs array in the `packages/app/src/apis.ts` file:
+Let's add our OIDC API factory to the APIs array in the `packages/app/src/apis.ts` file:
 
 ```diff
 + import { OAuth2 } from '@backstage/core-app-api';
@@ -88,8 +93,8 @@ export const apis: AnyApiFactory[] = [
 +        discoveryApi,
 +        oauthRequestApi,
 +        provider: {
-+          id: 'oidc', // This has to be 'oidc' or OAuth2 will not use oidc protocol
-+          title: 'OIDC provider',
++          id: 'my-auth-provider',
++          title: 'My custom auth provider',
 +          icon: () => null,
 +        },
 +        environment: configApi.getOptionalString('auth.environment'),
@@ -104,9 +109,38 @@ export const apis: AnyApiFactory[] = [
 ```
 
 Please note we're importing the `OAuth2` class from `@backstage/core-app-api` effectively
-delegating the authentication to it (yes it can handle OIDC as well). Also we're using
-the `oidc` ID to tell `OAuth2` to use the OIDC protocol, and added the default scopes to
-request ID, profile, email and user read permissions.
+delegating the authentication to it. Also we're using the `my-auth-provider` ID to tell
+`OAuth2` to use the auth provider we'll define in the next section, and added the default
+scopes to request ID, profile, email and user read permissions.
+
+## The Auth Provider
+
+The Auth Provider is responsible for authenticating with the 3rd party service, and give
+us back the credentials, here's where you pick which protocol to use, be it Auth0, OAuth2,
+OIDC, SAML or any other that your 3rd party IDP provider supports.
+
+For this example we'll use OIDC, we pass a factory to the `providerFactories` object with
+the ID you picked to represent the Auth provider, this ID has to match with the provider's
+`id` inside the API factory, the yaml config provider key under `auth.providers`, and the
+callback URI provider segment (you'll have to configure your IDP to handle the callback
+URI properly).
+
+```diff
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter({
+    logger: env.logger,
+    config: env.config,
+    database: env.database,
+    discovery: env.discovery,
+    tokenManager: env.tokenManager,
+    providerFactories: {
+      ...defaultAuthProviderFactories,
++     'my-auth-provider': providers.oidc.create({
++     }),
+    }
+```
 
 ### The Resolver
 
@@ -115,8 +149,15 @@ provider) to the backstage user identity, for a detailed explanation check the
 [Identity Resolver][1] page, it explains how to write a custom resolver as well as
 linking the built in resolvers of backstage.
 
+The default OIDC provider does not support SignIn, we need to add such support by
+adding a resolver for a SignIn request.
+
 As an example if you're setting up OIDC provider with Azure IDP, you could reuse
-the built in resolvers, or create one yourself in `packages/backend/src/plugins/auth.ts`:
+the built in resolvers, or create one yourself in `packages/backend/src/plugins/auth.ts`.
+
+At the time of writing the default OIDC provider doesn't have resolvers, we could reuse
+one from the Microsoft Auth provider, but we'll create one from scratch to ilustrate the
+scenario where the existing resolvers from other providers don't match what we want:
 
 ```diff
 import {
@@ -135,7 +176,7 @@ export default async function createPlugin(
     tokenManager: env.tokenManager,
     providerFactories: {
       ...defaultAuthProviderFactories,
-+     azureOIDC: providers.oidc.create({
+     'my-auth-provider': providers.oidc.create({
 +       signIn: {
 +         resolver(info, ctx) {
 +           const userRef = stringifyEntityRef({
@@ -143,7 +184,6 @@ export default async function createPlugin(
 +             name: info.profile.email!,
 +             namespace: DEFAULT_NAMESPACE,
 +           });
-+           console.log(info, userRef);
 +           return ctx.issueToken({
 +             claims: {
 +               sub: userRef, // The user's own identity
@@ -152,19 +192,26 @@ export default async function createPlugin(
 +           });
 +         },
 +       },
-+     }),
+     }),
     }
 ```
 
+We could replace the whole `signIn` object with
+`providers.microsoft.resolvers.emailLocalPartMatchingUserEntityName() as any` and as long
+as you have the correct user configured in the catalog it should work, note the `as any`
+part, TS will error out because of typings, so we type cast it to any, it should still
+work given the response of an OIDC or OAuth2 request to microsoft is very similar.
+
 ### The configuration
 
-We are using the `OAuth2` wrapper to delegate the authentication to the 3rd party using
-the OIDC protocol, as such, it depends on the specific wrapper what has to be configured.
+Since we are using our custom OIDC Auth Provider, we need to add a configuration based
+on the provider used, in this case based on OIDC protocol (remember the 3rd party has to
+support the protocol).
 
-As an example we'll configure OIDC with `azureOIDC`, to do so we need to
+In this example we'll configure OIDC with `my-auth-provider`, to do so we need to
 [Create app registration][2] in the Azure console, the only difference is that the
 `http://localhost:7007/api/auth/microsoft/handler/frame` URL needs to change to
-`http://localhost:7007/api/auth/oidc/handler/frame`.
+`http://localhost:7007/api/auth/my-auth-provider/handler/frame`.
 
 Then we need to configure the env variables for the provider, based on the provider's code
 in `plugins/auth-backend/src/providers/oidc/provider.ts` we need the following variables
@@ -177,7 +224,7 @@ auth:
   session:
     secret: ${SESSION_SECRET}
   providers:
-    azureOIDC:
+    my-auth-provider:
       # Note that you must define a session secret (see above) since the oidc provider requires session support.
       # Note that by default, this provider will use the 'none' prompt which assumes that your are already logged on in the IDP.
       # You should set prompt to:
@@ -210,7 +257,9 @@ check the App Registration you created:
 - `prompt`: Recommended to use `auto` so the browser will request login to the IDP if the
   user has no active session.
 
-Note that for the time being, any change in this yaml file requires a restart of the app.
+Note that for the time being, any change in this yaml file requires a restart of the app,
+also you need to have the `session.secret` part to use OIDC (some other providers might
+need this as well) to support user sessions.
 
 ### The Sign In provider
 
@@ -221,9 +270,9 @@ and use the API ref we defined earlier.
 ## Note
 
 These steps apply to most if not all the providers, including custom providers, the main
-difference between different providers will be the contents of the factory, the code in
-the resolver, and the different variables each provider needs in the YAML config or env
-variables.
+difference between different providers will be the contents of the API factory, the code
+in the Auth Provider Factory, the resolver, and the different variables each provider
+needs in the YAML config or env variables.
 
 [1]: https://backstage.io/docs/auth/identity-resolver
 [2]: https://backstage.io/docs/auth/microsoft/provider#create-an-app-registration-on-azure
