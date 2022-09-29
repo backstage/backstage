@@ -134,7 +134,9 @@ export class Auth0AuthProvider implements OAuthHandlers {
       state: encodeState(req.state),
       ...(this.audience ? { audience: this.audience } : {}),
       ...(this.connection ? { connection: this.connection } : {}),
-      ...(this.connectionScope ? { connection_scope: this.connectionScope } : {}),
+      ...(this.connectionScope
+        ? { connection_scope: this.connectionScope }
+        : {}),
     });
   }
 
@@ -145,7 +147,9 @@ export class Auth0AuthProvider implements OAuthHandlers {
     >(req, this._strategy, {
       ...(this.audience ? { audience: this.audience } : {}),
       ...(this.connection ? { connection: this.connection } : {}),
-      ...(this.connectionScope ? { connection_scope: this.connectionScope } : {}),
+      ...(this.connectionScope
+        ? { connection_scope: this.connectionScope }
+        : {}),
     });
 
     return {
