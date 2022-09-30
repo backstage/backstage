@@ -36,7 +36,7 @@ export type SearchResultContextProps = {
   /**
    * A child function that receives an asynchronous result set and returns a react element.
    */
-  children: (state: AsyncState<SearchResultSet>) => JSX.Element;
+  children: (state: AsyncState<SearchResultSet>) => JSX.Element | null;
 };
 
 /**

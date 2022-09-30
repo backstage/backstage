@@ -283,6 +283,10 @@ export type SearchResultGroupLayoutProps<FilterOption> = ListProps & {
    */
   icon: JSX.Element;
   /**
+   * Optional component to render when no results. Default to <EmptyState /> component.
+   */
+  noResultsComponent?: React.ReactNode;
+  /**
    * The results group title content, it could be a text or an element.
    */
   title: ReactNode;
@@ -347,6 +351,9 @@ export function SearchResultGroupLayout<FilterOption>(
   const {
     loading,
     error,
+    noResultsComponent = (
+      <EmptyState missing="data" title="Sorry, no results were found" />
+    ),
     icon,
     title,
     titleProps = {},
@@ -438,9 +445,7 @@ export function SearchResultGroupLayout<FilterOption>(
         ? resultItems.map(resultItem => renderResultItem?.(resultItem) ?? null)
         : null}
       {!loading && !error && !resultItems?.length ? (
-        <ListItem>
-          <EmptyState missing="data" title="Sorry, no results were found" />
-        </ListItem>
+        <ListItem>{noResultsComponent}</ListItem>
       ) : null}
     </List>
   );
@@ -458,6 +463,10 @@ export type SearchResultGroupProps<FilterOption> = Omit<
    * A search query used for requesting the results to be grouped.
    */
   query: Partial<SearchQuery>;
+  /**
+   * Optional property to provide if component should not render the group when no results are found.
+   */
+  disableRenderingWithNoResults?: boolean;
 };
 
 /**
@@ -474,6 +483,7 @@ export function SearchResultGroup<FilterOption>(
     renderResultItem = ({ document }) => (
       <DefaultResultListItem key={document.location} result={document} />
     ),
+    disableRenderingWithNoResults,
     ...rest
   } = props;
 
@@ -495,17 +505,22 @@ export function SearchResultGroup<FilterOption>(
       }}
     >
       <SearchResultState query={query}>
-        {({ loading, error, value }) => (
-          <SearchResultGroupLayout
-            {...rest}
-            loading={loading}
-            error={error}
-            linkProps={{ to, ...linkProps }}
-            resultItems={value?.results}
-            renderResultItem={renderResultItem}
-            filterFields={Object.keys(query.filters ?? {})}
-          />
-        )}
+        {({ loading, error, value }) => {
+          if (disableRenderingWithNoResults && value?.results.length === 0)
+            return null;
+
+          return (
+            <SearchResultGroupLayout
+              {...rest}
+              loading={loading}
+              error={error}
+              linkProps={{ to, ...linkProps }}
+              resultItems={value?.results}
+              renderResultItem={renderResultItem}
+              filterFields={Object.keys(query.filters ?? {})}
+            />
+          );
+        }}
       </SearchResultState>
     </AnalyticsContext>
   );
