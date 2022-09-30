@@ -62,6 +62,7 @@ export type RouterOptions = {
   logger: Logger;
 };
 
+const maxPageLimit = 100;
 const allowedLocationProtocols = ['http:', 'https:'];
 
 /**
@@ -71,7 +72,6 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const { engine: inputEngine, types, permissions, config, logger } = options;
-  const MAX_RESULT_PER_PAGE = 100
 
   const requestSchema = z.object({
     term: z.string().default(''),
@@ -80,14 +80,19 @@ export async function createRouter(
       .array(z.string().refine(type => Object.keys(types).includes(type)))
       .optional(),
     pageCursor: z.string().optional(),
-    resultsPerPage: z
+    pageLimit: z
       .string()
-      .transform((resultsPerPage) => parseInt(resultsPerPage))
+      .transform(pageLimit => parseInt(pageLimit, 10))
       .refine(
-        resultsPerPage => resultsPerPage <= MAX_RESULT_PER_PAGE,
-        resultsPerPage => ({
-          message:
-            `The maximum value of the resultsPerPage param is ${MAX_RESULT_PER_PAGE}, you provided ${resultsPerPage}, please update and make a new request`,
+        pageLimit => !isNaN(pageLimit),
+        pageLimit => ({
+          message: `The page limit "${pageLimit}" is not a number`,
+        }),
+      )
+      .refine(
+        pageLimit => pageLimit <= maxPageLimit,
+        pageLimit => ({
+          message: `The page limit "${pageLimit}" is greater than "${maxPageLimit}"`,
         }),
       )
       .optional(),
