@@ -44,9 +44,6 @@ export function createNextScaffolderFieldExtension<
   options: NextFieldExtensionOptions<TReturnValue, TInputProps>,
 ): Extension<NextFieldExtensionComponentProps<TReturnValue, TInputProps>>;
 
-// @public (undocumented)
-export const actionsRouteRef: SubRouteRef<undefined>;
-
 // @public
 export function createScaffolderFieldExtension<
   TReturnValue = unknown,
@@ -68,9 +65,6 @@ export type CustomFieldValidator<TFieldReturnValue> = (
     apiHolder: ApiHolder;
   },
 ) => void | Promise<void>;
-
-// @public (undocumented)
-export const editRouteRef: SubRouteRef<undefined>;
 
 // @public
 export const EntityNamePickerFieldExtension: FieldExtensionComponent<
@@ -152,11 +146,6 @@ export interface LayoutOptions<P = any> {
 // @public
 export type LayoutTemplate<T = any> = FormProps<T>['ObjectFieldTemplate'];
 
-// @public (undocumented)
-export const legacySelectedTemplateRouteRef: SubRouteRef<
-  PathParams<'/templates/:templateName'>
->;
-
 // @public
 export type ListActionsResponse = Array<{
   id: string;
@@ -180,7 +169,7 @@ export type LogEvent = {
   taskId: string;
 };
 
-// @public (undocumented)
+// @alpha (undocumented)
 export const nextRouteRef: RouteRef<undefined>;
 
 // @alpha
@@ -231,7 +220,7 @@ export const NextScaffolderPage: (
   props: PropsWithChildren<NextRouterProps>,
 ) => JSX.Element;
 
-// @public (undocumented)
+// @alpha (undocumented)
 export const nextSelectedTemplateRouteRef: SubRouteRef<
   PathParams<'/templates/:namespace/:templateName'>
 >;
@@ -269,9 +258,6 @@ export interface OwnerPickerUiOptions {
   // (undocumented)
   defaultNamespace?: string | false;
 }
-
-// @public (undocumented)
-export const registerComponentRouteRef: ExternalRouteRef<undefined, true>;
 
 // @public
 export const repoPickerValidation: (
@@ -457,9 +443,6 @@ export interface ScaffolderGetIntegrationsListResponse {
 export const ScaffolderLayouts: React.ComponentType;
 
 // @public (undocumented)
-export const scaffolderListTaskRouteRef: SubRouteRef<undefined>;
-
-// @public (undocumented)
 export type ScaffolderOutputLink = {
   title?: string;
   icon?: string;
@@ -529,9 +512,6 @@ export type ScaffolderTaskOutput = {
   [key: string]: unknown;
 };
 
-// @public (undocumented)
-export const scaffolderTaskRouteRef: SubRouteRef<PathParams<'/tasks/:taskId'>>;
-
 // @public
 export type ScaffolderTaskStatus =
   | 'open'
@@ -581,14 +561,4 @@ export const TemplateTypePicker: () => JSX.Element | null;
 
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
-
-// @public (undocumented)
-export const viewTechDocRouteRef: ExternalRouteRef<
-  {
-    name: string;
-    kind: string;
-    namespace: string;
-  },
-  true
->;
 ```
