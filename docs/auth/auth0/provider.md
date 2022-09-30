@@ -49,7 +49,7 @@ The Auth0 provider is a structure with three configuration keys:
 ## Optional Configuration
 
 - `audience`: The intended recipients of the token
-- `connection`: Social identity provider name
+- `connection`: Social identity provider name. To check the available social connections, please visit [Auth0 Social Connections](https://marketplace.auth0.com/features/social-connections).
 - `connectionScope`: Additional scopes in the interactive token request. It should always be used in combination with the `connection` parameter
 
 ## Adding the provider to the Backstage frontend
