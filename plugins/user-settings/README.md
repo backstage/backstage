@@ -29,11 +29,11 @@ import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
 Add the page to the App routing:
 
 ```ts
-import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
+import { UserSettingsPage } from '@backstage/plugin-user-settings';
 
 const AppRoutes = () => (
   <Routes>
-    <Route path="/settings" element={<SettingsRouter />} />
+    <Route path="/settings" element={<UserSettingsPage />} />
   </Routes>
 );
 ```

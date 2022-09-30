@@ -35,7 +35,7 @@ jobs:
             const prNumber = artifact.name.slice('pr_number-'.length)
             console.log(`::set-output name=pr-number::${prNumber}`);
 
-      - uses: backstage/actions/re-review@v0.5.5
+      - uses: backstage/actions/re-review@v0.5.6
         with:
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
           private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}

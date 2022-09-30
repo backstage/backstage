@@ -225,6 +225,8 @@ export interface RepoUrlPickerUiOptions {
   // (undocumented)
   allowedHosts?: string[];
   // (undocumented)
+  allowedOrganizations?: string[];
+  // (undocumented)
   allowedOwners?: string[];
   // (undocumented)
   allowedRepos?: string[];
@@ -396,6 +398,14 @@ export const scaffolderPlugin: BackstagePlugin<
   },
   {
     registerComponent: ExternalRouteRef<undefined, true>;
+    viewTechDoc: ExternalRouteRef<
+      {
+        name: string;
+        kind: string;
+        namespace: string;
+      },
+      true
+    >;
   },
   {}
 >;

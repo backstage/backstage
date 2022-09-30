@@ -133,7 +133,7 @@ export async function createRouter(
       req: express.Request,
       res: express.Response<SearchResultSet | ErrorResponseBody>,
     ) => {
-      const parseResult = requestSchema.safeParse(req.query);
+      const parseResult = requestSchema.passthrough().safeParse(req.query);
 
       if (!parseResult.success) {
         throw new InputError(`Invalid query string: ${parseResult.error}`);

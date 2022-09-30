@@ -1,5 +1,41 @@
 # @backstage/cli
 
+## 0.20.0-next.0
+
+### Minor Changes
+
+- f368ad7279: **BREAKING**: Bumped `jest`, `jest-runtime`, and `jest-environment-jsdom` to v29. This is up from v27, so check out both the [v28](https://jestjs.io/docs/28.x/upgrading-to-jest28) and [v29](https://jestjs.io/docs/upgrading-to-jest29) (later [here](https://jestjs.io/docs/29.x/upgrading-to-jest29)) migration guides.
+
+  Particular changes that where encountered in the main Backstage repo are:
+
+  - The updated snapshot format.
+  - `jest.useFakeTimers('legacy')` is now `jest.useFakeTimers({ legacyFakeTimers: true })`.
+  - Error objects collected by `withLogCollector` from `@backstage/test-utils` are now objects with a `detail` property rather than a string.
+
+### Patch Changes
+
+- 3e309107ca: Updated fallback versions of dependencies in all templates.
+- 292a088807: Added a new `repo test` command.
+- ba63cae41c: Updated lockfile parsing to have better support for Yarn 3.
+- 2dddb32fea: Switched the Jest transform for YAML files to use a custom one available at `@backstage/cli/config/jestYamlTransform.js`.
+- a541a3a78a: Switch to upfront resolution of `swc-loader` in Webpack config.
+- cfb3598410: Removed `tsx` and `jsx` as supported extensions in backend packages. For most
+  repos, this will not have any effect. But if you inadvertently had added some
+  `tsx`/`jsx` files to your backend package, you may now start to see `code: 'MODULE_NOT_FOUND'` errors when launching the backend locally. The reason for
+  this is that the offending files get ignored during transpilation. Hence, the
+  importing file can no longer find anything to import.
+
+  The fix is to rename any `.tsx` files in your backend packages to `.ts` instead,
+  or `.jsx` to `.js`.
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.0
+  - @backstage/config-loader@1.1.5-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/release-manifests@0.0.6
+  - @backstage/types@1.0.0
+
 ## 0.19.0
 
 ### Minor Changes

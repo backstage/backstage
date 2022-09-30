@@ -44,10 +44,11 @@ export interface BackendPluginConfig<TOptions> {
 
 /** @public */
 export function createBackendPlugin<
-  TOptions extends { [name: string]: unknown } | undefined = undefined,
->(
-  config: BackendPluginConfig<TOptions>,
-): undefined extends TOptions
+  TOptions extends object | undefined = undefined,
+>(config: {
+  id: string;
+  register(reg: BackendRegistrationPoints, options: TOptions): void;
+}): undefined extends TOptions
   ? (options?: TOptions) => BackendFeature
   : (options: TOptions) => BackendFeature {
   return (options?: TOptions) => ({
@@ -70,7 +71,7 @@ export interface BackendModuleConfig<TOptions> {
 
 /** @public */
 export function createBackendModule<
-  TOptions extends { [name: string]: unknown } | undefined = undefined,
+  TOptions extends object | undefined = undefined,
 >(
   config: BackendModuleConfig<TOptions>,
 ): undefined extends TOptions
