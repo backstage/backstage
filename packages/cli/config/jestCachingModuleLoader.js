@@ -21,6 +21,7 @@ const fileTransformCache = new Map();
 const scriptTransformCache = new Map();
 
 let runtimeGeneration = 0;
+let isWatchMode;
 
 module.exports = class CachingJestRuntime extends JestRuntime {
   // Each Jest run creates a new runtime, including when rerunning tests in
@@ -28,6 +29,10 @@ module.exports = class CachingJestRuntime extends JestRuntime {
   __runtimeGeneration = runtimeGeneration++;
 
   transformFile(filename, options) {
+    if (!isWatchMode) {
+      return super.transformFile(filename, options);
+    }
+
     const entry = fileTransformCache.get(filename);
     if (entry) {
       // Only check modification time if it's from a different runtime generation
@@ -78,4 +83,12 @@ module.exports = class CachingJestRuntime extends JestRuntime {
     }
     return script;
   }
+};
+
+// Inject hook into createHasteMap, as it's the only way that we can
+// determine (from our scope here) if we're in "watch mode" or not.
+const originalCreateHasteMap = JestRuntime.createHasteMap;
+JestRuntime.createHasteMap = (config, options = undefined) => {
+  isWatchMode = options && options.watch;
+  return originalCreateHasteMap(config, options);
 };
