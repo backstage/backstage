@@ -71,6 +71,7 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const { engine: inputEngine, types, permissions, config, logger } = options;
+  const MAX_RESULT_PER_PAGE = 100
 
   const requestSchema = z.object({
     term: z.string().default(''),
@@ -79,6 +80,17 @@ export async function createRouter(
       .array(z.string().refine(type => Object.keys(types).includes(type)))
       .optional(),
     pageCursor: z.string().optional(),
+    resultsPerPage: z
+      .string()
+      .transform((resultsPerPage) => parseInt(resultsPerPage))
+      .refine(
+        resultsPerPage => resultsPerPage <= MAX_RESULT_PER_PAGE,
+        resultsPerPage => ({
+          message:
+            `The maximum value of the resultsPerPage param is ${MAX_RESULT_PER_PAGE}, you provided ${resultsPerPage}, please update and make a new request`,
+        }),
+      )
+      .optional(),
   });
 
   let permissionEvaluator: PermissionEvaluator;

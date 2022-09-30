@@ -26,6 +26,7 @@ export interface SearchQuery {
   filters?: JsonObject;
   types?: string[];
   pageCursor?: string;
+  resultsPerPage?: number;
 }
 
 /**
