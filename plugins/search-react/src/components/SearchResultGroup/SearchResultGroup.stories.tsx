@@ -269,7 +269,7 @@ export const WithFilters = () => {
   );
 };
 
-export const WithNoResults = () => {
+export const WithDefaultNoResultsComponent = () => {
   const [query] = useState<Partial<SearchQuery>>({
     types: ['techdocs'],
   });
@@ -280,6 +280,40 @@ export const WithNoResults = () => {
         query={query}
         icon={<DocsIcon />}
         title="Documentation"
+      />
+    </TestApiProvider>
+  );
+};
+
+export const WithCustomNoResultsComponent = () => {
+  const [query] = useState<Partial<SearchQuery>>({
+    types: ['techdocs'],
+  });
+
+  return (
+    <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
+      <SearchResultGroup
+        query={query}
+        icon={<DocsIcon />}
+        title="Documentation"
+        noResultsComponent="No results were found"
+      />
+    </TestApiProvider>
+  );
+};
+
+export const DisableRenderingWithNoResults = () => {
+  const [query] = useState<Partial<SearchQuery>>({
+    types: ['techdocs'],
+  });
+
+  return (
+    <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
+      <SearchResultGroup
+        query={query}
+        icon={<DocsIcon />}
+        title="Documentation"
+        disableRenderingWithNoResults
       />
     </TestApiProvider>
   );
