@@ -2,13 +2,10 @@
 '@backstage/plugin-catalog': patch
 ---
 
----
+Added new column `Label` to `CatalogTable.columns`, this new column allows you make use of labels from metadata.
+For example: category and visibility are type of labels associated with API entity illustrated below.
 
-This change would allow consumers of plugin catalog to make use of labels just like tags from metadata.
-
-The intent of change is to show customised columns based on selected label with which entity is associated.
-For example: In example below category and visibility are type of labels associated with API entity.
-YAML for API entity
+YAML code snippet for API entity
 
 ```yaml
 apiVersion: backstage.io/v1alpha1

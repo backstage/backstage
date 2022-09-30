@@ -25,31 +25,6 @@ import { OverflowTooltip, TableColumn } from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
 import { JsonArray } from '@backstage/types';
 
-/**
- * Renders label if exists in entities or default
- * @param labels - Key value pairs of labels specified in entity metadata
- * @param key - specified label key to be extracted from all labels
- * @param defaultValue - shows default in case label key does not exist
- * @returns Chip style component when label value exists undefined otherwise.
- */
-const renderLabel = (
-  labels: Record<string, string> | undefined,
-  key: string,
-  defaultValue?: string,
-) => {
-  const specifiedLabelValue = (labels && labels[key]) || defaultValue;
-  return (
-    specifiedLabelValue && (
-      <Chip
-        key={specifiedLabelValue}
-        label={specifiedLabelValue}
-        size="small"
-        variant="outlined"
-      />
-    )
-  );
-};
-
 // The columnFactories symbol is not directly exported, but through the
 // CatalogTable.columns field.
 /** @public */
@@ -197,9 +172,24 @@ export const columnFactories = Object.freeze({
       cellStyle: {
         padding: '0px 16px 0px 20px',
       },
-      render: ({ entity }: { entity: Entity }) => (
-        <>{renderLabel(entity.metadata?.labels, key, options?.defaultValue)}</>
-      ),
+      render: ({ entity }: { entity: Entity }) => {
+        const labels: Record<string, string> | undefined =
+          entity.metadata?.labels;
+        const specifiedLabelValue =
+          (labels && labels[key]) || options?.defaultValue;
+        return (
+          <>
+            {specifiedLabelValue && (
+              <Chip
+                key={specifiedLabelValue}
+                label={specifiedLabelValue}
+                size="small"
+                variant="outlined"
+              />
+            )}
+          </>
+        );
+      },
       width: 'auto',
     };
   },
