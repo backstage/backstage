@@ -213,7 +213,9 @@ export type SearchFilterWrapperProps = SearchFilterComponentProps & {
 export const SearchResult: (props: SearchResultProps) => JSX.Element;
 
 // @public
-export const SearchResultApi: (props: SearchResultApiProps) => JSX.Element;
+export const SearchResultApi: (
+  props: SearchResultApiProps,
+) => JSX.Element | null;
 
 // @public
 export type SearchResultApiProps = SearchResultContextProps & {
@@ -226,11 +228,11 @@ export const SearchResultComponent: (props: SearchResultProps) => JSX.Element;
 // @public
 export const SearchResultContext: (
   props: SearchResultContextProps,
-) => JSX.Element;
+) => JSX.Element | null;
 
 // @public
 export type SearchResultContextProps = {
-  children: (state: AsyncState<SearchResultSet>) => JSX.Element;
+  children: (state: AsyncState<SearchResultSet>) => JSX.Element | null;
 };
 
 // @public
@@ -269,13 +271,22 @@ export type SearchResultGroupLayoutProps<FilterOption> = ListProps & {
   link?: ReactNode;
   linkProps?: Partial<LinkProps>;
   filterOptions?: FilterOption[];
-  renderFilterOption?: (filterOption: FilterOption) => JSX.Element;
+  renderFilterOption?: (
+    value: FilterOption,
+    index: number,
+    array: FilterOption[],
+  ) => JSX.Element | null;
   filterFields?: string[];
   renderFilterField?: (key: string) => JSX.Element | null;
   resultItems?: SearchResult_2[];
-  renderResultItem?: (resultItem: SearchResult_2) => JSX.Element;
+  renderResultItem?: (
+    value: SearchResult_2,
+    index: number,
+    array: SearchResult_2[],
+  ) => JSX.Element | null;
   error?: Error;
   loading?: boolean;
+  noResultsComponent?: ReactNode;
 };
 
 // @public
@@ -284,6 +295,7 @@ export type SearchResultGroupProps<FilterOption> = Omit<
   'loading' | 'error' | 'resultItems' | 'filterFields'
 > & {
   query: Partial<SearchQuery>;
+  disableRenderingWithNoResults?: boolean;
 };
 
 // @public
