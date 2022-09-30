@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  PluginDatabaseManager,
-  PluginEndpointDiscovery,
-  UrlReader,
-} from '@backstage/backend-common';
+import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import {
   DefaultNamespaceEntityPolicy,
   Entity,
@@ -108,7 +104,6 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
-  discovery: PluginEndpointDiscovery;
 };
 
 /**

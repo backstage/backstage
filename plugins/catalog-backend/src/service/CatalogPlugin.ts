@@ -22,7 +22,6 @@ import {
   permissionsServiceRef,
   urlReaderServiceRef,
   httpRouterServiceRef,
-  discoveryServiceRef,
 } from '@backstage/backend-plugin-api';
 import { CatalogBuilder } from './CatalogBuilder';
 import {
@@ -79,7 +78,6 @@ export const catalogPlugin = createBackendPlugin({
         permissions: permissionsServiceRef,
         database: databaseServiceRef,
         httpRouter: httpRouterServiceRef,
-        discovery: discoveryServiceRef,
       },
       async init({
         logger,
@@ -88,7 +86,6 @@ export const catalogPlugin = createBackendPlugin({
         database,
         permissions,
         httpRouter,
-        discovery,
       }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         const builder = await CatalogBuilder.create({
@@ -97,7 +94,6 @@ export const catalogPlugin = createBackendPlugin({
           permissions,
           database,
           logger: winstonLogger,
-          discovery,
         });
         builder.addProcessor(...processingExtensions.processors);
         builder.addEntityProvider(...processingExtensions.entityProviders);

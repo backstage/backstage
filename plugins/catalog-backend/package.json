@@ -47,7 +47,6 @@
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@octokit/rest": "^19.0.4",
     "@types/express": "^4.17.6",
     "codeowners-utils": "^1.0.2",
     "core-js": "^3.6.5",

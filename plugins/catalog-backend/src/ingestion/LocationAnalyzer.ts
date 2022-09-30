@@ -17,10 +17,7 @@
 import { Logger } from 'winston';
 import parseGitUrl from 'git-url-parse';
 import { Entity } from '@backstage/catalog-model';
-import {
-  GitHubIntegration,
-  ScmIntegrationRegistry,
-} from '@backstage/integration';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
@@ -45,9 +42,7 @@ export class RepoLocationAnalyzer implements LocationAnalyzer {
   async analyzeLocation(
     request: AnalyzeLocationRequest,
   ): Promise<AnalyzeLocationResponse> {
-    const integration = this.scmIntegrations.byUrl(
-      request.location.target,
-    ) as GitHubIntegration;
+    const integration = this.scmIntegrations.byUrl(request.location.target);
     const { owner, name } = parseGitUrl(request.location.target);
 
     let annotationPrefix;
@@ -69,7 +64,7 @@ export class RepoLocationAnalyzer implements LocationAnalyzer {
     }
 
     const analyzer = this.analyzers.find(
-      a => a.getIntegrationType() === integration.type,
+      a => a.getIntegrationType() === integration?.type,
     );
     if (analyzer) {
       const existingEntityFiles = await analyzer.analyze({

@@ -100,10 +100,12 @@ export type AnalyzeLocationEntityField = {
   description: string;
 };
 
+/** @public */
 export type AnalyzeOptions = {
   url: string;
   catalogFilename?: string;
 };
+
 /** @public */
 export type ScmLocationAnalyzer = {
   /** The integration type this location analyzer can work with */

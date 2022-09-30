@@ -88,6 +88,12 @@ export type AnalyzeLocationResponse = {
 };
 
 // @public (undocumented)
+export type AnalyzeOptions = {
+  url: string;
+  catalogFilename?: string;
+};
+
+// @public (undocumented)
 export class AnnotateLocationEntityProcessor implements CatalogProcessor {
   constructor(options: { integrations: ScmIntegrationRegistry });
   // (undocumented)
@@ -133,6 +139,9 @@ export class CatalogBuilder {
   ): CatalogBuilder;
   addEntityProvider(
     ...providers: Array<EntityProvider | Array<EntityProvider>>
+  ): CatalogBuilder;
+  addLocationAnalyzers(
+    ...analyzers: Array<ScmLocationAnalyzer | Array<ScmLocationAnalyzer>>
   ): CatalogBuilder;
   // @alpha
   addPermissionRules(
@@ -219,7 +228,6 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
-  discovery: PluginEndpointDiscovery;
 };
 
 // @alpha
@@ -532,6 +540,12 @@ export type PlaceholderResolverResolveUrl = (
 export type ProcessingIntervalFunction = () => number;
 
 export { processingResult };
+
+// @public (undocumented)
+export type ScmLocationAnalyzer = {
+  getIntegrationType(): string;
+  analyze(options: AnalyzeOptions): Promise<AnalyzeLocationExistingEntity[]>;
+};
 
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor {

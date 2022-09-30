@@ -27,10 +27,12 @@ import {
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 
+/** @public */
 export type GitHubLocationAnalyzerOptions = {
   config: Config;
   discovery: PluginEndpointDiscovery;
 };
+/** @public */
 export class GitHubLocationAnalyzer implements ScmLocationAnalyzer {
   private readonly catalogClient: CatalogApi;
   private readonly config: Config;
