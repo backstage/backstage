@@ -13,7 +13,7 @@ The following sections will help you get the Azure Backend plugin setup and runn
 The Azure plugin requires the following YAML to be added to your app-config.yaml:
 
 ```yaml
-azure:
+azureFunctions:
   domain:
   tenantId:
   clientId:

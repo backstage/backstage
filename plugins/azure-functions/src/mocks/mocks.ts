@@ -20,7 +20,7 @@ export const entityMock = {
   metadata: {
     namespace: 'default',
     annotations: {
-      'azure.com/microsoft.web/sites': 'func-mock',
+      'azure.com/microsoft-web-sites': 'func-mock',
     },
     name: 'sample-azure-service',
     description: 'A service for testing Backstage functionality.',

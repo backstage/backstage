@@ -21,7 +21,7 @@ You need to set up the Azure backend plugin before you move forward with any of 
 To be able to use the Azure plugin you need to add the following annotation to any entities you want to use it with:
 
 ```yaml
-azure.com/microsoft.web/sites: <name>
+azure.com/microsoft-web-sites: <name>
 ```
 
 `<name>` supports case-insensitive exact / partial value.
@@ -39,7 +39,7 @@ func-testapp-us
 The annotation you will use to have the three functions' app appear in the overview table would look like this:
 
 ```yaml
-azure.com/microsoft.web/sites: func-testapp
+azure.com/microsoft-web-sites: func-testapp
 ```
 
 ### Install the component
