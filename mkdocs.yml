@@ -164,6 +164,7 @@ nav:
       - Sign in resolvers: 'auth/identity-resolver.md'
       - OAuth and OpenID Connect: 'auth/oauth.md'
       - Contributing New Providers: 'auth/add-auth-provider.md'
+      - Service to Service Auth: 'auth/service-to-service-auth.md'
       - Troubleshooting Auth: 'auth/troubleshooting.md'
       - Glossary: 'auth/glossary.md'
   - Deployment:
