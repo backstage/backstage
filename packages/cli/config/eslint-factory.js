@@ -16,13 +16,22 @@
 
 const { join: joinPath } = require('path');
 
+const transformPatternsToAbsolute = (patterns, dir) =>
+  patterns.map(pattern => {
+    const [, prefix, path] = /^(!?)(.*)/.exec(pattern);
+
+    return `${prefix}${joinPath(dir, path)}`;
+  });
+
 /**
  * Creates a ESLint configuration that extends the base Backstage configuration.
  * In addition to the standard ESLint configuration options, the `extraConfig`
  * parameter also accepts the following keys:
  *
+ * - `testFilePatterns`: Customize list of patterns to which to test config
+ *   overrides are applied. Defaults to
+ *   ['**\/*.test.*', '**\/*.stories.*', 'src/setupTests.*', '!src/**',]
  * - `tsRules`: Additional ESLint rules to apply to TypeScript
- * - `testFilePatterns`: Additional patterns to which to apply test overrides
  * - `testRules`: Additional ESLint rules to apply to tests
  * - `restrictedImports`: Additional paths to add to no-restricted-imports
  * - `restrictedSrcImports`: Additional paths to add to no-restricted-imports in src files
@@ -38,7 +47,12 @@ function createConfig(dir, extraConfig = {}) {
     env,
     parserOptions,
     ignorePatterns,
-    testFilePatterns,
+    testFilePatterns = [
+      '**/*.test.*',
+      '**/*.stories.*',
+      'src/setupTests.*',
+      '!src/**',
+    ],
     overrides,
 
     rules,
@@ -94,15 +108,7 @@ function createConfig(dir, extraConfig = {}) {
         'error',
         {
           devDependencies: dir
-            ? [
-                `!${joinPath(dir, 'src/**')}`,
-                joinPath(dir, 'src/**/*.test.*'),
-                joinPath(dir, 'src/**/*.stories.*'),
-                joinPath(dir, 'src/setupTests.*'),
-                ...(testFilePatterns || []).map(pattern =>
-                  joinPath(dir, pattern),
-                ),
-              ]
+            ? transformPatternsToAbsolute(testFilePatterns, dir)
             : [
                 // Legacy config for packages that don't provide a dir
                 '**/*.test.*',
@@ -164,13 +170,7 @@ function createConfig(dir, extraConfig = {}) {
         },
       },
       {
-        files: [
-          '**/*.test.*',
-          '**/*.stories.*',
-          'src/setupTests.*',
-          '!src/**',
-          ...(testFilePatterns || []),
-        ],
+        files: testFilePatterns,
         rules: {
           ...testRules,
           'no-restricted-syntax': [
