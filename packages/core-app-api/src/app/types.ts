@@ -355,7 +355,7 @@ export type AppContext = {
 };
 
 /**
- * @private
+ * @public (undocumented)
  */
 export type CompatiblePlugin =
   | BackstagePlugin<any, any>

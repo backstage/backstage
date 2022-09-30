@@ -50,6 +50,7 @@ import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
+import { PluginInfo } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
@@ -208,6 +209,8 @@ export type AppOptions = {
       >;
     }
   >;
+  pluginOwners?: Record<string, string>[];
+  pluginInfoDecorator?: (plugin: PluginInfo, id: string) => void;
   components: AppComponents;
   themes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
   configLoader?: AppConfigLoader;
@@ -285,6 +288,16 @@ export type BootErrorPageProps = {
   step: 'load-config' | 'load-chunk';
   error: Error;
 };
+
+// @public
+export type CompatiblePlugin =
+  | BackstagePlugin<any, any>
+  | (Omit<BackstagePlugin<any, any>, 'getFeatureFlags'> & {
+      output(): Array<{
+        type: 'feature-flag';
+        name: string;
+      }>;
+    });
 
 export { ConfigReader };
 

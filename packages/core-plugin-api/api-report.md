@@ -222,6 +222,8 @@ export type BackstagePlugin<
   getId(): string;
   getApis(): Iterable<AnyApiFactory>;
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
+  getInfo(): Promise<PluginInfo>;
+  setMetadataExtender(extender: ExtendMetadata): void;
   provide<T>(extension: Extension<T>): T;
   routes: Routes;
   externalRoutes: ExternalRoutes;
@@ -406,6 +408,12 @@ export type ErrorBoundaryFallbackProps = {
 };
 
 // @public
+export type ExtendMetadata = (
+  info: PluginInfo,
+  pluginId: string,
+) => void | Promise<void | undefined>;
+
+// @public
 export type Extension<T> = {
   expose(plugin: BackstagePlugin): T;
 };
@@ -504,6 +512,11 @@ export type IdentityApi = {
 
 // @public
 export const identityApiRef: ApiRef<IdentityApi>;
+
+// @public
+export type LazyLoadedPackageJson = () => Promise<{
+  default: Record<string, unknown>;
+}>;
 
 // @public
 export type MakeSubRouteRef<
@@ -634,12 +647,37 @@ export type PluginConfig<
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
+  info?: PluginConfigInfo;
   __experimentalConfigure?(options?: PluginInputOptions): {};
 };
 
 // @public
+export type PluginConfigInfo =
+  | Partial<PluginInfo>
+  | (Omit<Partial<PluginInfo>, 'packageJson'> & {
+      packageJson: LazyLoadedPackageJson;
+    })
+  | LazyLoadedPackageJson;
+
+// @public
 export type PluginFeatureFlagConfig = {
   name: string;
+};
+
+// @public
+export type PluginInfo = {
+  packageJson?: Record<string, unknown>;
+  description?: string;
+  version?: string;
+  ownerEntityRef?: string;
+  links: PluginInfoLink[];
+  role?: string;
+};
+
+// @public
+export type PluginInfoLink = {
+  url: string;
+  title?: string;
 };
 
 // @alpha

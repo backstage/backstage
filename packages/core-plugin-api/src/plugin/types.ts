@@ -46,6 +46,8 @@ export type AnyExternalRoutes = { [name: string]: ExternalRouteRef };
 
 /**
  * Extend metadata for a plugin
+ *
+ * @public
  */
 export type ExtendMetadata = (
   info: PluginInfo,
@@ -86,6 +88,12 @@ export type PluginFeatureFlagConfig = {
   name: string;
 };
 
+/**
+ * A link to a package (can be to documentation, source code or anything else
+ * related).
+ *
+ * @public
+ */
 export type PluginInfoLink = {
   /**
    * The url to the external site, document, etc.
@@ -138,10 +146,16 @@ export type PluginInfo = {
   role?: string;
 };
 
+/**
+ * @public (undocumented)
+ */
 export type LazyLoadedPackageJson = () => Promise<{
   default: Record<string, unknown>;
 }>;
 
+/**
+ * @public (undocumented)
+ */
 export type PluginConfigInfo =
   | Partial<PluginInfo>
   | (Omit<Partial<PluginInfo>, 'packageJson'> & {
