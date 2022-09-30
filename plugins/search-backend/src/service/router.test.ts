@@ -112,6 +112,24 @@ describe('createRouter', () => {
       });
     });
 
+    it('should accept per page value under or equal to 100', async () => {
+      const response = await request(app).get(`/query?resultsPerPage=30`);
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toMatchObject({
+        results: [],
+      });
+    });
+
+    it('should reject per page value over 100', async () => {
+      const response = await request(app).get(`/query?resultsPerPage=200`);
+
+      expect(response.status).toEqual(400);
+      expect(response.body).toMatchObject({
+        error: { message: /The maximum value of the resultsPerPage param is 100, please update and make a new request/i },
+      });
+    });
+
     it('removes backend-only properties from search documents', async () => {
       mockSearchEngine.query.mockResolvedValue({
         results: [
