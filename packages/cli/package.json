@@ -161,7 +161,9 @@
     "type-fest": "^2.0.0"
   },
   "peerDependencies": {
-    "@microsoft/api-extractor": "^7.21.2"
+    "@microsoft/api-extractor": "^7.21.2",
+    "jest-resolve": "*",
+    "resolve": "1.*"
   },
   "peerDependenciesMeta": {
     "@microsoft/api-extractor": {

@@ -3379,6 +3379,8 @@ __metadata:
     zod: ^3.11.6
   peerDependencies:
     "@microsoft/api-extractor": ^7.21.2
+    jest-resolve: "*"
+    resolve: 1.*
   peerDependenciesMeta:
     "@microsoft/api-extractor":
       optional: true

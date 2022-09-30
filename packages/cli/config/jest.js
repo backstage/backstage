@@ -25,6 +25,10 @@ const envOptions = {
   enableSourceMaps: Boolean(process.env.ENABLE_SOURCE_MAPS),
 };
 
+if (envOptions.nextTests) {
+  require('./jestSimpleResolver');
+}
+
 const transformIgnorePattern = [
   '@material-ui',
   'ajv',
@@ -194,6 +198,9 @@ async function getProjectConfig(targetPath, displayName) {
     // A bit more opinionated
     testMatch: ['**/*.test.{js,jsx,ts,tsx,mjs,cjs}'],
 
+    resolver: envOptions.nextTests
+      ? require.resolve('./jestSimpleResolver')
+      : undefined,
     runtime: envOptions.nextTests
       ? require.resolve('./jestCachingModuleLoader')
       : undefined,
