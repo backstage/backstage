@@ -113,7 +113,7 @@ describe('createRouter', () => {
     });
 
     it('should accept per page value under or equal to 100', async () => {
-      const response = await request(app).get(`/query?resultsPerPage=30`);
+      const response = await request(app).get(`/query?pageLimit=30`);
 
       expect(response.status).toEqual(200);
       expect(response.body).toMatchObject({
@@ -122,11 +122,24 @@ describe('createRouter', () => {
     });
 
     it('should reject per page value over 100', async () => {
-      const response = await request(app).get(`/query?resultsPerPage=200`);
+      const response = await request(app).get(`/query?pageLimit=200`);
 
       expect(response.status).toEqual(400);
       expect(response.body).toMatchObject({
-        error: { message: /The maximum value of the resultsPerPage param is 100, please update and make a new request/i },
+        error: {
+          message: /The page limit "200" is greater than "100"/i,
+        },
+      });
+    });
+
+    it('should reject a non number per page value', async () => {
+      const response = await request(app).get(`/query?pageLimit=twohundred`);
+
+      expect(response.status).toEqual(400);
+      expect(response.body).toMatchObject({
+        error: {
+          message: /The page limit "twohundred" is not a number"/i,
+        },
       });
     });
 
