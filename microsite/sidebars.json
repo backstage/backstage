@@ -279,6 +279,7 @@
       "auth/identity-resolver",
       "auth/oauth",
       "auth/add-auth-provider",
+      "auth/service-to-service-auth",
       "auth/troubleshooting",
       "auth/glossary"
     ],
@@ -335,7 +336,6 @@
       "tutorials/configuring-plugin-databases",
       "tutorials/switching-sqlite-postgres",
       "tutorials/using-backstage-proxy-within-plugin",
-      "tutorials/backend-to-backend-auth",
       "tutorials/yarn-migration"
     ],
     "Architecture Decision Records (ADRs)": [
