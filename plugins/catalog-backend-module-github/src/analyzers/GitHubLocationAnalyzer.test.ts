@@ -48,10 +48,12 @@ describe('GitHubLocationAnalyzer', () => {
   };
   const config = new ConfigReader({
     integrations: {
-      github: {
-        host: 'h.com',
-        token: 't',
-      },
+      github: [
+        {
+          host: 'h.com',
+          token: 't',
+        },
+      ],
     },
   });
 
