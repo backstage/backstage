@@ -31,7 +31,7 @@ export const entityContentRouteRef = createRouteRef({
 
 /** @public */
 export const azureSitesPlugin = createPlugin({
-  id: 'azure',
+  id: 'azureFunctions',
   apis: [
     createApiFactory({
       api: azureSiteApiRef,

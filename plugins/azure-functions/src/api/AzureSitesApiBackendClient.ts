@@ -35,7 +35,7 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
 
   async list(request: AzureSiteListRequest): Promise<AzureSiteListResponse> {
     try {
-      const url = `${await this.discoveryApi.getBaseUrl('azure')}/list/${
+      const url = `${await this.discoveryApi.getBaseUrl('azure-functions')}/list/${
         request.name
       }`;
       const { token: accessToken } = await this.identityApi.getCredentials();

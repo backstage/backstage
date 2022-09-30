@@ -22,7 +22,7 @@ import {
 
 /** @public */
 export const azureSiteApiRef = createApiRef<AzureSitesApi>({
-  id: 'plugin.azure.service',
+  id: 'plugin.azure-functions.service',
 });
 
 /** @public */
