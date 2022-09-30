@@ -296,24 +296,7 @@ export const WithCustomNoResultsComponent = () => {
         query={query}
         icon={<DocsIcon />}
         title="Documentation"
-        noResultsComponent="No results were found"
-      />
-    </TestApiProvider>
-  );
-};
-
-export const DisableRenderingWithNoResults = () => {
-  const [query] = useState<Partial<SearchQuery>>({
-    types: ['techdocs'],
-  });
-
-  return (
-    <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
-      <SearchResultGroup
-        query={query}
-        icon={<DocsIcon />}
-        title="Documentation"
-        disableRenderingWithNoResults
+        noResultsComponent={<ListItemText primary="No results were found" />}
       />
     </TestApiProvider>
   );
