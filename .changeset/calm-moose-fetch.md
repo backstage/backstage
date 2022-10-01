@@ -3,6 +3,4 @@
 '@backstage/plugin-catalog': patch
 ---
 
-Implement `EntityKindPicker` which allows users to filter the catalog kinds much like the `CatalogKindHeader`.
-
-The new picker is more accessible though listed as any other filter options in the catalog.
+Implemented the visual parts of `EntityKindPicker` so that it can be shown alongside the other filters on the left side of your catalog pages.
