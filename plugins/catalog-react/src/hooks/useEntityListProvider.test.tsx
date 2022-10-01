@@ -92,12 +92,7 @@ const wrapper = ({
           [identityApiRef, mockIdentityApi],
           [storageApiRef, MockStorageApi.create()],
           [starredEntitiesApiRef, new MockStarredEntitiesApi()],
-          [
-            alertApiRef,
-            {
-              post: jest.fn(),
-            },
-          ],
+          [alertApiRef, { post: jest.fn() }],
         ]}
       >
         <EntityListProvider>

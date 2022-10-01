@@ -30,7 +30,7 @@ import { getEntityRelations } from './utils';
 export class EntityKindFilter implements EntityFilter {
   constructor(readonly value: string) {}
 
-  getCatalogFilters(): Record<string, string> {
+  getCatalogFilters(): Record<string, string | string[]> {
     return { kind: this.value };
   }
 

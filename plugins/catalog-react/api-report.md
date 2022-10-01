@@ -161,7 +161,7 @@ export type EntityFilter = {
 export class EntityKindFilter implements EntityFilter {
   constructor(value: string);
   // (undocumented)
-  getCatalogFilters(): Record<string, string>;
+  getCatalogFilters(): Record<string, string | string[]>;
   // (undocumented)
   toQueryValue(): string;
   // (undocumented)
