@@ -20,6 +20,19 @@ import { BuildTimeline } from './BuildTimeline';
 jest.mock('../../api/XcmetricsClient');
 const client = require('../../api/XcmetricsClient');
 
+jest.mock('recharts', () => {
+  const OriginalModule = jest.requireActual('recharts');
+
+  return {
+      ...OriginalModule,
+      ResponsiveContainer: ({ children }: any) => (
+          <OriginalModule.ResponsiveContainer width={100} aspect={1}>
+              {children}
+          </OriginalModule.ResponsiveContainer>
+      ),
+  };
+});
+
 describe('BuildTimeline', () => {
   const { ResizeObserver } = window;
 
@@ -42,9 +55,10 @@ describe('BuildTimeline', () => {
     const rendered = await renderInTestApp(
       <BuildTimeline targets={[client.mockTarget]} height={100} width={100} />,
     );
-    expect(
-      await rendered.findByText(client.mockTarget.name),
-    ).toBeInTheDocument();
+
+    const [element] = await rendered.findAllByText(client.mockTarget.name);
+
+    expect(element).toBeInTheDocument();
   });
 
   it('should render a message if no targets are provided', async () => {
