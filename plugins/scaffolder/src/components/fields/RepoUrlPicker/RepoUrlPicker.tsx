@@ -106,7 +106,7 @@ export const RepoUrlPicker = (
     if (allowedOwners.length > 0) {
       setState(prevState => ({
         ...prevState,
-        owner: allowedOwners[0],
+        allowedOwners,
       }));
     }
   }, [setState, allowedOwners]);
@@ -174,9 +174,9 @@ export const RepoUrlPicker = (
       {hostType === 'github' && (
         <GithubRepoPicker
           allowedOwners={allowedOwners}
+          onChange={updateLocalState}
           rawErrors={rawErrors}
           state={state}
-          onChange={updateLocalState}
         />
       )}
       {hostType === 'gitlab' && (
