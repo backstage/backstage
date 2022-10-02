@@ -20,7 +20,7 @@ import { EntityPicker } from './components/fields/EntityPicker/EntityPicker';
 import { entityNamePickerValidation } from './components/fields/EntityNamePicker';
 import { EntityNamePicker } from './components/fields/EntityNamePicker/EntityNamePicker';
 import { OwnerPicker } from './components/fields/OwnerPicker/OwnerPicker';
-import { repoPickerValidation } from './components/fields/RepoUrlPicker';
+import { repoPickerValidation } from './components';
 import { RepoUrlPicker } from './components/fields/RepoUrlPicker/RepoUrlPicker';
 import { createScaffolderFieldExtension } from './extensions';
 import {
@@ -30,6 +30,7 @@ import {
   viewTechDocRouteRef,
 } from './routes';
 import {
+  configApiRef,
   createApiFactory,
   createPlugin,
   createRoutableExtension,
@@ -50,17 +51,27 @@ export const scaffolderPlugin = createPlugin({
     createApiFactory({
       api: scaffolderApiRef,
       deps: {
+        configApi: configApiRef,
         discoveryApi: discoveryApiRef,
         scmIntegrationsApi: scmIntegrationsApiRef,
         fetchApi: fetchApiRef,
         identityApi: identityApiRef,
       },
-      factory: ({ discoveryApi, scmIntegrationsApi, fetchApi, identityApi }) =>
+      factory: ({
+        configApi,
+        discoveryApi,
+        scmIntegrationsApi,
+        fetchApi,
+        identityApi,
+      }) =>
         new ScaffolderClient({
           discoveryApi,
           scmIntegrationsApi,
           fetchApi,
           identityApi,
+          useLongPollingLogs:
+            configApi.getOptionalBoolean('scaffolder.useLongPollingLogs') ??
+            false,
         }),
     }),
   ],
