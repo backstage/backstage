@@ -11,4 +11,4 @@ scaffolder:
   useLongPollingLogs: true
 ```
 
-By default, the value is falsy.
+By default, the value is `false`.
