@@ -213,7 +213,9 @@ export type SearchFilterWrapperProps = SearchFilterComponentProps & {
 export const SearchResult: (props: SearchResultProps) => JSX.Element;
 
 // @public
-export const SearchResultApi: (props: SearchResultApiProps) => JSX.Element;
+export const SearchResultApi: (
+  props: SearchResultApiProps,
+) => JSX.Element | null;
 
 // @public
 export type SearchResultApiProps = SearchResultContextProps & {
@@ -226,11 +228,11 @@ export const SearchResultComponent: (props: SearchResultProps) => JSX.Element;
 // @public
 export const SearchResultContext: (
   props: SearchResultContextProps,
-) => JSX.Element;
+) => JSX.Element | null;
 
 // @public
 export type SearchResultContextProps = {
-  children: (state: AsyncState<SearchResultSet>) => JSX.Element;
+  children: (state: AsyncState<SearchResultSet>) => JSX.Element | null;
 };
 
 // @public
@@ -317,9 +319,14 @@ export const SearchResultListLayout: (
 // @public
 export type SearchResultListLayoutProps = ListProps & {
   resultItems?: SearchResult_2[];
-  renderResultItem?: (resultItem: SearchResult_2) => JSX.Element;
+  renderResultItem?: (
+    value: SearchResult_2,
+    index: number,
+    array: SearchResult_2[],
+  ) => JSX.Element | null;
   error?: Error;
   loading?: boolean;
+  noResultsComponent?: ReactNode;
 };
 
 // @public
@@ -328,6 +335,7 @@ export type SearchResultListProps = Omit<
   'loading' | 'error' | 'resultItems'
 > & {
   query: Partial<SearchQuery>;
+  disableRenderingWithNoResults?: boolean;
 };
 
 // @public (undocumented)
