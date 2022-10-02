@@ -326,7 +326,10 @@ export type KubernetesObjectTypes =
 // @alpha
 export interface KubernetesServiceLocator {
   // (undocumented)
-  getClustersByEntity(entity: Entity): Promise<{
+  getClustersByEntity(
+    entity: Entity,
+    requestContext: ServiceLocatorRequestContext,
+  ): Promise<{
     clusters: ClusterDetails[];
   }>;
 }
@@ -402,6 +405,14 @@ export interface ServiceAccountClusterDetails extends ClusterDetails {}
 
 // @alpha (undocumented)
 export type ServiceLocatorMethod = 'multiTenant' | 'http';
+
+// @alpha (undocumented)
+export interface ServiceLocatorRequestContext {
+  // (undocumented)
+  customResources: CustomResourceMatcher[];
+  // (undocumented)
+  objectTypesToFetch: Set<ObjectToFetch>;
+}
 
 // @alpha (undocumented)
 export type SigningCreds = {
