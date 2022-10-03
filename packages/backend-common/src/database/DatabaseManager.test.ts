@@ -345,9 +345,10 @@ describe('DatabaseManager', () => {
     });
 
     it('returns the same client for the same pluginId', async () => {
-      const client1 = await manager.forPlugin('plugin1').getClient();
-      const client2 = await manager.forPlugin('plugin1').getClient();
-
+      const [client1, client2] = await Promise.all([
+        manager.forPlugin('plugin1').getClient(),
+        manager.forPlugin('plugin1').getClient(),
+      ]);
       expect(mocked(createDatabaseClient)).toHaveBeenCalledTimes(1);
 
       expect(client1).toBe(client2);
