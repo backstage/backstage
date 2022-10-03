@@ -215,14 +215,9 @@ auth:
   providers:
     my-auth-provider:
       development:
-        metadataUrl: ${AUTH_OIDC_METADATA_URL}
-        clientId: ${AUTH_OIDC_CLIENT_ID}
-        clientSecret: ${AUTH_OIDC_CLIENT_SECRET}
-        authorizationUrl: ${AUTH_OIDC_AUTH_URL}
-        tokenUrl: ${AUTH_OIDC_TOKEN_URL}
-        tokenSignedResponseAlg: ${AUTH_OIDC_TOKEN_SIGNED_RESPONSE_ALG} # default='RS256'
-        scope: ${AUTH_OIDC_SCOPE} # default='openid profile email'
-        prompt: ${AUTH_OIDC_PROMPT} # default=none (allowed values: auto, none, consent, login)
+        metadataUrl: https://example.com/.well-known/openid-configuration
+        clientId: ${AUTH_MY_CLIENT_ID}
+        clientSecret: ${AUTH_MY_CLIENT_SECRET}
 ```
 
 Anything enclosed in `${}` can be replaced directly in the yaml, or provided as
