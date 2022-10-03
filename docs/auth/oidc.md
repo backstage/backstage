@@ -152,12 +152,7 @@ linking the built in resolvers of backstage.
 The default OIDC provider does not support SignIn, we need to add such support by
 adding a resolver for a SignIn request.
 
-As an example if you're setting up OIDC provider with Azure IDP, you could reuse
-the built in resolvers, or create one yourself in `packages/backend/src/plugins/auth.ts`.
-
-At the time of writing the default OIDC provider doesn't have resolvers, we could reuse
-one from the Microsoft Auth provider, but we'll create one from scratch to ilustrate the
-scenario where the existing resolvers from other providers don't match what we want:
+The OIDC provider doesn't provide any build-in resolvers, so we'll need to define our own:
 
 ```diff
 import {
