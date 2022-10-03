@@ -198,7 +198,7 @@ export class AppManager implements BackstageApp {
     this.icons = options.icons;
     this.plugins = new Set(
       ((options.plugins as CompatiblePlugin[]) ?? []).map(plugin => {
-        plugin.setMetadataExtender(this.pluginMetadataExtender.extend);
+        plugin.setMetadataExtender?.(this.pluginMetadataExtender.extend);
         return plugin;
       }),
     );
@@ -257,7 +257,7 @@ export class AppManager implements BackstageApp {
         //               For now we need to push the additional plugins we find during
         //               collection and then make sure we initialize things afterwards.
         result.collectedPlugins.forEach(plugin => {
-          plugin.setMetadataExtender(this.pluginMetadataExtender.extend);
+          plugin.setMetadataExtender?.(this.pluginMetadataExtender.extend);
           this.plugins.add(plugin);
         });
         this.verifyPlugins(this.plugins);
