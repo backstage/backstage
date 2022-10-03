@@ -543,8 +543,10 @@ export { processingResult };
 
 // @public (undocumented)
 export type ScmLocationAnalyzer = {
-  getIntegrationType(): string;
-  analyze(options: AnalyzeOptions): Promise<AnalyzeLocationExistingEntity[]>;
+  supports(url: string): boolean;
+  analyze(options: AnalyzeOptions): Promise<{
+    existing: AnalyzeLocationExistingEntity[];
+  }>;
 };
 
 // @public (undocumented)
