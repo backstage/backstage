@@ -176,7 +176,7 @@ export default async function createPlugin(
 +         resolver(info, ctx) {
 +           const userRef = stringifyEntityRef({
 +             kind: 'User',
-+             name: info.profile.email!,
++             name: info.result.userinfo.sub,
 +             namespace: DEFAULT_NAMESPACE,
 +           });
 +           return ctx.issueToken({
@@ -190,7 +190,6 @@ export default async function createPlugin(
      }),
     }
 ```
-
 
 ### The configuration
 
