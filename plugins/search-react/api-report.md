@@ -165,6 +165,7 @@ export type SearchContextState = {
   term: string;
   types: string[];
   filters: JsonObject;
+  pageLimit?: number;
   pageCursor?: string;
 };
 
@@ -174,6 +175,7 @@ export type SearchContextValue = {
   setTerm: React_2.Dispatch<React_2.SetStateAction<string>>;
   setTypes: React_2.Dispatch<React_2.SetStateAction<string[]>>;
   setFilters: React_2.Dispatch<React_2.SetStateAction<JsonObject>>;
+  setPageLimit: React_2.Dispatch<React_2.SetStateAction<number | undefined>>;
   setPageCursor: React_2.Dispatch<React_2.SetStateAction<string | undefined>>;
   fetchNextPage?: React_2.DispatchWithoutAction;
   fetchPreviousPage?: React_2.DispatchWithoutAction;
