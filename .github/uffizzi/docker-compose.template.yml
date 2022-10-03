@@ -1,0 +1,35 @@
+version: "3"
+
+x-uffizzi:
+  ingress:
+    service: backstage
+    port: 7007
+
+services:
+  backstage:
+    image: "${BACKSTAGE_IMAGE}"
+    environment:
+      POSTGRES_HOST: localhost
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      GITHUB_TOKEN: abc
+      NODE_ENV: production
+    restart: unless-stopped
+    ports:
+      - "7007:7007"
+    deploy:
+      resources:
+        limits:
+          memory: 500M
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example

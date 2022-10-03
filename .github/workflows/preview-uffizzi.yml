@@ -1,0 +1,74 @@
+name: Deploy Uffizzi Preview
+
+on:
+  workflow_run:
+    workflows:
+      - Build PR Image
+    types:
+      - completed
+
+jobs:
+  cache-compose-file:
+    name: Cache Compose File
+    runs-on: ubuntu-latest
+    outputs:
+      compose-file-cache-key: ${{ steps.hash.outputs.hash }}
+    steps:
+      - name: 'Download artifacts'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: context.payload.workflow_run.id,
+            });
+            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "docker-compose"
+            })[0];
+            let download = await github.rest.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            let fs = require('fs');
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/docker-compose.zip`, Buffer.from(download.data));
+      - name: 'Unzip artifact'
+        run: unzip docker-compose.zip
+      - name: Hash Rendered Compose File
+        id: hash
+        run: echo "::set-output name=hash::$(md5sum docker-compose.rendered.yml | awk '{ print $1 }')"
+      - name: Cache Rendered Compose File
+        uses: actions/cache@v3
+        with:
+          path: docker-compose.rendered.yml
+          key: ${{ steps.hash.outputs.hash }}
+
+  deploy-uffizzi-preview:
+    name: Use Remote Workflow to Preview on Uffizzi
+    needs:
+      - cache-compose-file
+    uses: UffizziCloud/preview-action/.github/workflows/reusable.yaml@v2
+    #if: ${{ github.event.workflow_run.event.action != 'closed' }}
+    with:
+      compose-file-cache-key: ${{ needs.cache-compose-file.outputs.compose-file-cache-key }}
+      compose-file-cache-path: docker-compose.rendered.yml
+      server: https://app.uffizzi.com/
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+
+#  delete-uffizzi-preview:
+#    name: Use Remote Workflow to Delete an Existing Preview
+#    uses: UffizziCloud/preview-action/.github/workflows/reusable.yaml@v2
+#    if: ${{ github.event.workflow_run.event.action == 'closed' }}
+#    with:
+#      compose-file-cache-key: ''
+#      compose-file-cache-path: docker-compose.rendered.yml
+#      server: https://app.uffizzi.com/
+#    permissions:
+#      contents: read
+#      pull-requests: write
+#      id-token: write
