@@ -343,7 +343,7 @@ export class CatalogBuilder {
   /**
    * Adds Location Analyzers. These are responsible for figuring out
    * if the repository already contains a catalog-info.yaml file when
-   * you register a repostiroy in the /catalog-import page
+   * you register a repository in the /catalog-import page
    *
    * @param locationAnalyzers - One or more location analyzers
    */

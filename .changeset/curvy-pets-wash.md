@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-backend': patch
+'@backstage/plugin-catalog-backend': minor
 ---
 
-Moved the code search for the existing catalog-info.yaml files to the backend from the frontend. It means it will use the configured GitHub integration's credentials
+Added a new method `addLocationAnalyzers` to the `CatalogBuilder`. With this you can add location analyzers to your catalog. These analyzers will be used by the /analyze-location endpoint to decide if the provided URL contains any catalog-info.yaml files already or not.
