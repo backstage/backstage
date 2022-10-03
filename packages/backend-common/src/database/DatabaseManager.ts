@@ -312,52 +312,48 @@ export class DatabaseManager {
       return this.databaseCache.get(pluginId)!;
     }
 
-    const clientPromise = new Promise<Knex>(async (resolve, reject) => {
-      try {
-        const pluginConfig = new ConfigReader(
-          this.getConfigForPlugin(pluginId) as JsonObject,
-        );
+    const clientPromise = Promise.resolve().then(async () => {
+      const pluginConfig = new ConfigReader(
+        this.getConfigForPlugin(pluginId) as JsonObject,
+      );
 
-        const databaseName = this.getDatabaseName(pluginId);
-        if (databaseName && this.getEnsureExistsConfig(pluginId)) {
+      const databaseName = this.getDatabaseName(pluginId);
+      if (databaseName && this.getEnsureExistsConfig(pluginId)) {
+        try {
+          await ensureDatabaseExists(pluginConfig, databaseName);
+        } catch (error) {
+          throw new Error(
+            `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,
+          );
+        }
+      }
+
+      let schemaOverrides;
+      if (this.getPluginDivisionModeConfig() === 'schema') {
+        schemaOverrides = this.getSchemaOverrides(pluginId);
+        if (this.getEnsureExistsConfig(pluginId)) {
           try {
-            await ensureDatabaseExists(pluginConfig, databaseName);
+            await ensureSchemaExists(pluginConfig, pluginId);
           } catch (error) {
             throw new Error(
-              `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,
+              `Failed to connect to the database to make sure that schema for plugin '${pluginId}' exists, ${error}`,
             );
           }
         }
-
-        let schemaOverrides;
-        if (this.getPluginDivisionModeConfig() === 'schema') {
-          schemaOverrides = this.getSchemaOverrides(pluginId);
-          if (this.getEnsureExistsConfig(pluginId)) {
-            try {
-              await ensureSchemaExists(pluginConfig, pluginId);
-            } catch (error) {
-              throw new Error(
-                `Failed to connect to the database to make sure that schema for plugin '${pluginId}' exists, ${error}`,
-              );
-            }
-          }
-        }
-
-        const databaseClientOverrides = mergeDatabaseConfig(
-          {},
-          this.getDatabaseOverrides(pluginId),
-          schemaOverrides,
-        );
-
-        const client = createDatabaseClient(
-          pluginConfig,
-          databaseClientOverrides,
-        );
-        this.startKeepaliveLoop(pluginId, client);
-        resolve(client);
-      } catch (e) {
-        reject(e);
       }
+
+      const databaseClientOverrides = mergeDatabaseConfig(
+        {},
+        this.getDatabaseOverrides(pluginId),
+        schemaOverrides,
+      );
+
+      const client = createDatabaseClient(
+        pluginConfig,
+        databaseClientOverrides,
+      );
+      this.startKeepaliveLoop(pluginId, client);
+      return client;
     });
 
     this.databaseCache.set(pluginId, clientPromise);
