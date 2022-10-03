@@ -215,10 +215,6 @@ auth:
     secret: ${SESSION_SECRET}
   providers:
     my-auth-provider:
-      # Note that by default, this provider will use the 'none' prompt which assumes that your are already logged on in the IDP.
-      # You should set prompt to:
-      # - auto: will let the IDP decide if you need to log on or if you can skip login when you have an active SSO session
-      # - login: will force the IDP to always present a login form to the user
       development:
         metadataUrl: ${AUTH_OIDC_METADATA_URL}
         clientId: ${AUTH_OIDC_CLIENT_ID}
