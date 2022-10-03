@@ -6,7 +6,7 @@
 '@backstage/plugin-playlist-backend': minor
 ---
 
-**BREAKING**: When defining permission rules, they must now also include a ZodSchema that details the parameters the rule expects. This has been added to help better describe the parameters in the response of the metadata endpoint and to validate the parameters before a rule is executed.
+**BREAKING**: When defining permission rules, it's now necessary to provide a ZodSchema that specifies the parameters the rule expects. This has been added to help better describe the parameters in the response of the metadata endpoint and to validate the parameters before a rule is executed.
 
 To help with this, we have also made a change to the API of permission rules. Before, the permission rules `toQuery` and `apply` signature expected parameters to be seprate arguments, like so...
 
