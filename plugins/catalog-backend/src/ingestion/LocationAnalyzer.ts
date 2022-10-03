@@ -67,15 +67,15 @@ export class RepoLocationAnalyzer implements LocationAnalyzer {
       a => a.getIntegrationType() === integration?.type,
     );
     if (analyzer) {
-      const existingEntityFiles = await analyzer.analyze({
+      const analyzerResult = await analyzer.analyze({
         url: request.location.target,
       });
-      if (existingEntityFiles.length > 0) {
+      if (analyzerResult.existing.length > 0) {
         this.logger.debug(
           `entity for ${request.location.target} already exists.`,
         );
         return {
-          existingEntityFiles,
+          existingEntityFiles: analyzerResult.existing,
           generateEntities: [],
         };
       }

@@ -122,8 +122,8 @@ describe('GitHubLocationAnalyzer', () => {
       url: 'https://github.com/foo/bar',
     });
 
-    expect(result[0].isRegistered).toBeFalsy();
-    expect(result[0].location).toEqual({
+    expect(result.existing[0].isRegistered).toBeFalsy();
+    expect(result.existing[0].location).toEqual({
       type: 'url',
       target:
         'https://github.com/foo/bar/blob/my_default_branch/catalog-info.yaml',
@@ -148,7 +148,7 @@ describe('GitHubLocationAnalyzer', () => {
       catalogFilename: 'anvil.yaml',
     });
 
-    expect(result[0].location).toEqual({
+    expect(result.existing[0].location).toEqual({
       type: 'url',
       target: 'https://github.com/foo/bar/blob/my_default_branch/anvil.yaml',
     });

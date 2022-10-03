@@ -44,10 +44,7 @@ export class GitHubLocationAnalyzer implements ScmLocationAnalyzer {
   getIntegrationType() {
     return 'github';
   }
-  async analyze({
-    url,
-    catalogFilename,
-  }: AnalyzeOptions): Promise<AnalyzeLocationExistingEntity[]> {
+  async analyze({ url, catalogFilename }: AnalyzeOptions) {
     const { owner, name: repo } = parseGitUrl(url);
 
     const catalogFile = catalogFilename || 'catalog-info.yaml';
@@ -98,8 +95,8 @@ export class GitHubLocationAnalyzer implements ScmLocationAnalyzer {
           }),
       );
 
-      return result.flat();
+      return { existing: result.flat() };
     }
-    return [];
+    return { existing: [] };
   }
 }

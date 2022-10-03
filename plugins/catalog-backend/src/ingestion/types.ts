@@ -110,6 +110,8 @@ export type AnalyzeOptions = {
 export type ScmLocationAnalyzer = {
   /** The integration type this location analyzer can work with */
   getIntegrationType(): string;
-  /** This function is responsible to figure out if the catalog file is already present in the repository */
-  analyze(options: AnalyzeOptions): Promise<AnalyzeLocationExistingEntity[]>;
+  /** This function can return an array of already existing entities */
+  analyze(options: AnalyzeOptions): Promise<{
+    existing: AnalyzeLocationExistingEntity[];
+  }>;
 };
