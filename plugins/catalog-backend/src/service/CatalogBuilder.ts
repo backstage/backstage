@@ -116,7 +116,7 @@ export type CatalogEnvironment = {
  *   chance to inspect the entity, and all of them have to pass in order for
  *   the entity to be considered valid from an overall point of view.
  * - Location analyzers can be added. These are responsible to analyze the
- *   the existence of a catalog-info.yaml file int he provided git repository
+ *   the existence of a catalog-info.yaml file in the provided git repository
  *   when you use the /catalog-import page with a repository url.
  * - Placeholder resolvers can be replaced or added. These run on the raw
  *   structured data between the parsing and pre-processing steps, to replace
