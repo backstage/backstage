@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 import { z } from 'zod';
 import { createCatalogPermissionRule } from './util';
@@ -29,8 +29,10 @@ export const isEntityOwner = createCatalogPermissionRule({
   name: 'IS_ENTITY_OWNER',
   description: 'Allow entities owned by the current user',
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-  schema: z.tuple([z.array(z.string().describe('List of owners'))]),
-  apply: (resource: Entity, claims: string[]) => {
+  schema: z.object({
+    claims: z.array(z.string()),
+  }),
+  apply: (resource, { claims }) => {
     if (!resource.relations) {
       return false;
     }
@@ -39,7 +41,7 @@ export const isEntityOwner = createCatalogPermissionRule({
       .filter(relation => relation.type === RELATION_OWNED_BY)
       .some(relation => claims.includes(relation.targetRef));
   },
-  toQuery: (claims: string[]) => ({
+  toQuery: ({ claims }) => ({
     key: 'relations.ownedBy',
     values: claims,
   }),

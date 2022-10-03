@@ -29,16 +29,19 @@ const createPlaylistPermissionRule = makeCreatePermissionRule<
   typeof PLAYLIST_LIST_RESOURCE_TYPE
 >();
 
-const isOwner = createPlaylistPermissionRule({
+const isOwner = createPlaylistPermissionRule<{
+  owners: string[];
+}>({
   name: 'IS_OWNER',
   description: 'Should allow only if the playlist belongs to the user',
   resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
-  schema: z.tuple([z.array(z.string().describe('List of owners'))]),
-  apply: (list: PlaylistMetadata, userOwnershipRefs: string[]) =>
-    userOwnershipRefs.includes(list.owner),
-  toQuery: (userOwnershipRefs: string[]) => ({
+  schema: z.object({
+    owners: z.array(z.string().describe('List of owner entity refs')),
+  }),
+  apply: (list: PlaylistMetadata, { owners }) => owners.includes(list.owner),
+  toQuery: ({ owners }) => ({
     key: 'owner',
-    values: userOwnershipRefs,
+    values: owners,
   }),
 });
 
@@ -46,7 +49,7 @@ const isPublic = createPlaylistPermissionRule({
   name: 'IS_PUBLIC',
   description: 'Should allow only if the playlist is public',
   resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
-  schema: z.tuple([]),
+  schema: z.object({}),
   apply: (list: PlaylistMetadata) => list.public,
   toQuery: () => ({ key: 'public', values: [true] }),
 });

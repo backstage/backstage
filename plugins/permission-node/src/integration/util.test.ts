@@ -31,7 +31,7 @@ describe('permission integration utils', () => {
       name: 'test-rule-1',
       description: 'Test rule 1',
       resourceType: 'test-resource',
-      schema: z.tuple([]),
+      schema: z.object({}),
       apply: jest.fn(),
       toQuery: jest.fn(),
     });
@@ -40,7 +40,7 @@ describe('permission integration utils', () => {
       name: 'test-rule-2',
       description: 'Test rule 2',
       resourceType: 'test-resource',
-      schema: z.tuple([]),
+      schema: z.object({}),
       apply: jest.fn(),
       toQuery: jest.fn(),
     });

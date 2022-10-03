@@ -101,7 +101,7 @@ export type PolicyDecision =
  */
 export type PermissionCondition<
   TResourceType extends string = string,
-  TParams extends unknown[] = unknown[],
+  TParams extends Record<string, unknown> = Record<string, unknown>,
 > = {
   resourceType: TResourceType;
   rule: string;

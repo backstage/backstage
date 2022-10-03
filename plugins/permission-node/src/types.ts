@@ -37,7 +37,7 @@ export type PermissionRule<
   TResource,
   TQuery,
   TResourceType extends string,
-  TParams extends unknown[] = unknown[],
+  TParams extends Record<string, unknown> = Record<string, unknown>,
 > = {
   name: string;
   description: string;
@@ -46,19 +46,23 @@ export type PermissionRule<
   /**
    * A ZodSchema that documents the parameters that this rule accepts.
    */
-  schema: z.ZodSchema<TParams>;
+  schema: z.ZodObject<{
+    [P in keyof TParams]-?: TParams[P] extends undefined
+      ? z.ZodOptionalType<z.ZodType<TParams[P]>>
+      : z.ZodType<TParams[P], any, any>;
+  }>;
 
   /**
    * Apply this rule to a resource already loaded from a backing data source. The params are
    * arguments supplied for the rule; for example, a rule could be `isOwner` with entityRefs as the
    * params.
    */
-  apply(resource: TResource, ...params: TParams): boolean;
+  apply(resource: TResource, params: TParams): boolean;
 
   /**
    * Translate this rule to criteria suitable for use in querying a backing data store. The criteria
    * can be used for loading a collection of resources efficiently with conditional criteria already
    * applied.
    */
-  toQuery(...params: TParams): PermissionCriteria<TQuery>;
+  toQuery(params: TParams): PermissionCriteria<TQuery>;
 };

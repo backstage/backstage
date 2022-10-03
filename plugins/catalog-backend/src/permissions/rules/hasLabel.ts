@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 import { z } from 'zod';
 import { createCatalogPermissionRule } from './util';
@@ -28,10 +27,12 @@ export const hasLabel = createCatalogPermissionRule({
   name: 'HAS_LABEL',
   description: 'Allow entities which have the specified label metadata.',
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-  schema: z.tuple([z.string().describe('Label name')]),
-  apply: (resource: Entity, label: string) =>
+  schema: z.object({
+    label: z.string().describe('Name of the label'),
+  }),
+  apply: (resource, { label }) =>
     !!resource.metadata.labels?.hasOwnProperty(label),
-  toQuery: (label: string) => ({
+  toQuery: ({ label }) => ({
     key: `metadata.labels.${label}`,
   }),
 });

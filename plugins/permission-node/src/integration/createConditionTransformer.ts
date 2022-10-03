@@ -53,7 +53,7 @@ const mapConditions = <TQuery>(
     throw new InputError(`Parameters to rule are invalid`, result.error);
   }
 
-  return rule.toQuery(...criteria.params);
+  return rule.toQuery(criteria.params);
 };
 
 /**

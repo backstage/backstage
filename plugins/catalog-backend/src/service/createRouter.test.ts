@@ -696,7 +696,9 @@ describe('NextRouter permissioning', () => {
     name: 'FAKE_RULE',
     description: 'fake rule',
     resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-    schema: z.tuple([]),
+    schema: z.object({
+      foo: z.string(),
+    }),
     apply: () => true,
     toQuery: () => ({ key: '', values: [] }),
   });
@@ -760,7 +762,9 @@ describe('NextRouter permissioning', () => {
           conditions: {
             rule: 'FAKE_RULE',
             resourceType: 'catalog-entity',
-            params: ['user:default/spiderman'],
+            params: {
+              foo: 'user:default/spiderman',
+            },
           },
         },
       ],

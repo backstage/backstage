@@ -34,10 +34,10 @@ import { PermissionRule } from '../types';
  * @public
  */
 export const createConditionFactory =
-  <TResourceType extends string, TParams extends any[]>(
+  <TResourceType extends string, TParams extends Record<string, unknown>>(
     rule: PermissionRule<unknown, unknown, TResourceType, TParams>,
   ) =>
-  (...params: TParams): PermissionCondition<TResourceType, TParams> => ({
+  (params: TParams): PermissionCondition<TResourceType, TParams> => ({
     rule: rule.name,
     resourceType: rule.resourceType,
     params,

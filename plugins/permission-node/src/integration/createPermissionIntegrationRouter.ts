@@ -46,7 +46,7 @@ const permissionCriteriaSchema: z.ZodSchema<
     z.object({
       rule: z.string(),
       resourceType: z.string(),
-      params: z.array(z.unknown()),
+      params: z.record(z.unknown()),
     }),
   ]),
 );
@@ -132,7 +132,7 @@ const applyConditions = <TResourceType extends string, TResource>(
     throw new InputError(`Parameters to rule are invalid`, result.error);
   }
 
-  return rule.apply(resource, ...criteria.params);
+  return rule.apply(resource, criteria.params);
 };
 
 /**

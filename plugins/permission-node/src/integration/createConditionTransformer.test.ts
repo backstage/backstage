@@ -27,22 +27,22 @@ const transformConditions = createConditionTransformer([
     name: 'test-rule-1',
     description: 'Test rule 1',
     resourceType: 'test-resource',
-    schema: z.tuple([z.string(), z.number()]),
+    schema: z.object({
+      foo: z.string(),
+      bar: z.number(),
+    }),
     apply: jest.fn(),
-    toQuery: jest.fn(
-      (firstParam: string, secondParam: number) =>
-        `test-rule-1:${firstParam}/${secondParam}`,
-    ),
+    toQuery: jest.fn(({ foo, bar }) => `test-rule-1:${foo}/${bar}`),
   }),
   createPermissionRule({
     name: 'test-rule-2',
     description: 'Test rule 2',
     resourceType: 'test-resource',
-    schema: z.tuple([z.object({})]),
+    schema: z.object({
+      foo: z.object({}),
+    }),
     apply: jest.fn(),
-    toQuery: jest.fn(
-      (firstParam: object) => `test-rule-2:${JSON.stringify(firstParam)}`,
-    ),
+    toQuery: jest.fn(({ foo }) => `test-rule-2:${JSON.stringify(foo)}`),
   }),
 ]);
 
@@ -55,7 +55,10 @@ describe('createConditionTransformer', () => {
       conditions: {
         rule: 'test-rule-1',
         resourceType: 'test-resource',
-        params: ['abc', 123],
+        params: {
+          foo: 'abc',
+          bar: 123,
+        },
       },
       expectedResult: 'test-rule-1:abc/123',
     },
@@ -63,7 +66,9 @@ describe('createConditionTransformer', () => {
       conditions: {
         rule: 'test-rule-2',
         resourceType: 'test-resource',
-        params: [{ foo: 0 }],
+        params: {
+          foo: { foo: 0 },
+        },
       },
       expectedResult: 'test-rule-2:{"foo":0}',
     },
@@ -73,9 +78,18 @@ describe('createConditionTransformer', () => {
           {
             rule: 'test-rule-1',
             resourceType: 'test-resource',
-            params: ['a', 1],
+            params: {
+              foo: 'a',
+              bar: 1,
+            },
           },
-          { rule: 'test-rule-2', resourceType: 'test-resource', params: [{}] },
+          {
+            rule: 'test-rule-2',
+            resourceType: 'test-resource',
+            params: {
+              foo: {},
+            },
+          },
         ],
       },
       expectedResult: {
@@ -88,9 +102,18 @@ describe('createConditionTransformer', () => {
           {
             rule: 'test-rule-1',
             resourceType: 'test-resource',
-            params: ['a', 1],
+            params: {
+              foo: 'a',
+              bar: 1,
+            },
           },
-          { rule: 'test-rule-2', resourceType: 'test-resource', params: [{}] },
+          {
+            rule: 'test-rule-2',
+            resourceType: 'test-resource',
+            params: {
+              foo: {},
+            },
+          },
         ],
       },
       expectedResult: {
@@ -102,7 +125,9 @@ describe('createConditionTransformer', () => {
         not: {
           rule: 'test-rule-2',
           resourceType: 'test-resource',
-          params: [{}],
+          params: {
+            foo: {},
+          },
         },
       },
       expectedResult: {
@@ -117,12 +142,17 @@ describe('createConditionTransformer', () => {
               {
                 rule: 'test-rule-1',
                 resourceType: 'test-resource',
-                params: ['a', 1],
+                params: {
+                  foo: 'a',
+                  bar: 1,
+                },
               },
               {
                 rule: 'test-rule-2',
                 resourceType: 'test-resource',
-                params: [{}],
+                params: {
+                  foo: {},
+                },
               },
             ],
           },
@@ -132,12 +162,19 @@ describe('createConditionTransformer', () => {
                 {
                   rule: 'test-rule-1',
                   resourceType: 'test-resource',
-                  params: ['b', 2],
+                  params: {
+                    foo: 'b',
+                    bar: 2,
+                  },
                 },
                 {
                   rule: 'test-rule-2',
                   resourceType: 'test-resource',
-                  params: [{ c: 3 }],
+                  params: {
+                    foo: {
+                      c: 3,
+                    },
+                  },
                 },
               ],
             },
@@ -165,12 +202,19 @@ describe('createConditionTransformer', () => {
               {
                 rule: 'test-rule-1',
                 resourceType: 'test-resource',
-                params: ['a', 1],
+                params: {
+                  foo: 'a',
+                  bar: 1,
+                },
               },
               {
                 rule: 'test-rule-2',
                 resourceType: 'test-resource',
-                params: [{ b: 2 }],
+                params: {
+                  foo: {
+                    b: 2,
+                  },
+                },
               },
             ],
           },
@@ -180,13 +224,20 @@ describe('createConditionTransformer', () => {
                 {
                   rule: 'test-rule-1',
                   resourceType: 'test-resource',
-                  params: ['c', 3],
+                  params: {
+                    foo: 'c',
+                    bar: 3,
+                  },
                 },
                 {
                   not: {
                     rule: 'test-rule-2',
                     resourceType: 'test-resource',
-                    params: [{ d: 4 }],
+                    params: {
+                      foo: {
+                        d: 4,
+                      },
+                    },
                   },
                 },
               ],

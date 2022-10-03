@@ -39,8 +39,12 @@ describe('PermissionIntegrationClient', () => {
     const mockConditions: PermissionCriteria<PermissionCondition> = {
       not: {
         allOf: [
-          { rule: 'RULE_1', resourceType: 'test-resource', params: [] },
-          { rule: 'RULE_2', resourceType: 'test-resource', params: ['abc'] },
+          { rule: 'RULE_1', resourceType: 'test-resource', params: {} },
+          {
+            rule: 'RULE_2',
+            resourceType: 'test-resource',
+            params: { foo: 'abc' },
+          },
         ],
       },
     };
@@ -280,8 +284,10 @@ describe('PermissionIntegrationClient', () => {
               name: 'RULE_1',
               description: 'Test rule 1',
               resourceType: 'test-resource',
-              schema: z.tuple([z.enum(['yes', 'no'])]),
-              apply: (_resource: any, input: 'yes' | 'no') => input === 'yes',
+              schema: z.object({
+                input: z.enum(['yes', 'no']),
+              }),
+              apply: (_resource, { input }) => input === 'yes',
               toQuery: () => {
                 throw new Error('Not implemented');
               },
@@ -290,8 +296,11 @@ describe('PermissionIntegrationClient', () => {
               name: 'RULE_2',
               description: 'Test rule 2',
               resourceType: 'test-resource',
-              schema: z.tuple([z.enum(['yes', 'no'])]),
-              apply: (_resource: any, input: 'yes' | 'no') => input === 'yes',
+
+              schema: z.object({
+                input: z.enum(['yes', 'no']),
+              }),
+              apply: (_resource, { input }) => input === 'yes',
               toQuery: () => {
                 throw new Error('Not implemented');
               },
@@ -347,7 +356,9 @@ describe('PermissionIntegrationClient', () => {
             conditions: {
               rule: 'RULE_1',
               resourceType: 'test-resource',
-              params: ['no'],
+              params: {
+                input: 'no',
+              },
             },
           },
         ]),
@@ -368,13 +379,17 @@ describe('PermissionIntegrationClient', () => {
                     {
                       rule: 'RULE_1',
                       resourceType: 'test-resource',
-                      params: ['yes'],
+                      params: {
+                        input: 'yes',
+                      },
                     },
                     {
                       not: {
                         rule: 'RULE_2',
                         resourceType: 'test-resource',
-                        params: ['no'],
+                        params: {
+                          input: 'no',
+                        },
                       },
                     },
                   ],
@@ -385,12 +400,16 @@ describe('PermissionIntegrationClient', () => {
                       {
                         rule: 'RULE_1',
                         resourceType: 'test-resource',
-                        params: ['no'],
+                        params: {
+                          input: 'no',
+                        },
                       },
                       {
                         rule: 'RULE_2',
                         resourceType: 'test-resource',
-                        params: ['yes'],
+                        params: {
+                          input: 'yes',
+                        },
                       },
                     ],
                   },
