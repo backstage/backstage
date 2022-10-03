@@ -84,6 +84,7 @@ export class DatabaseManager {
     private readonly config: Config,
     private readonly prefix: string = 'backstage_plugin_',
     private readonly options?: DatabaseManagerOptions,
+    private readonly databaseCache: Map<string, Promise<Knex>> = new Map(),
   ) {}
 
   /**
@@ -307,45 +308,61 @@ export class DatabaseManager {
    *          plugin
    */
   private async getDatabase(pluginId: string): Promise<Knex> {
-    const pluginConfig = new ConfigReader(
-      this.getConfigForPlugin(pluginId) as JsonObject,
-    );
+    if (this.databaseCache.has(pluginId)) {
+      return this.databaseCache.get(pluginId)!;
+    }
 
-    const databaseName = this.getDatabaseName(pluginId);
-    if (databaseName && this.getEnsureExistsConfig(pluginId)) {
+    const clientPromise = new Promise<Knex>(async (resolve, reject) => {
       try {
-        await ensureDatabaseExists(pluginConfig, databaseName);
-      } catch (error) {
-        throw new Error(
-          `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,
+        const pluginConfig = new ConfigReader(
+          this.getConfigForPlugin(pluginId) as JsonObject,
         );
-      }
-    }
 
-    let schemaOverrides;
-    if (this.getPluginDivisionModeConfig() === 'schema') {
-      schemaOverrides = this.getSchemaOverrides(pluginId);
-      if (this.getEnsureExistsConfig(pluginId)) {
-        try {
-          await ensureSchemaExists(pluginConfig, pluginId);
-        } catch (error) {
-          throw new Error(
-            `Failed to connect to the database to make sure that schema for plugin '${pluginId}' exists, ${error}`,
-          );
+        const databaseName = this.getDatabaseName(pluginId);
+        if (databaseName && this.getEnsureExistsConfig(pluginId)) {
+          try {
+            await ensureDatabaseExists(pluginConfig, databaseName);
+          } catch (error) {
+            throw new Error(
+              `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,
+            );
+          }
         }
+
+        let schemaOverrides;
+        if (this.getPluginDivisionModeConfig() === 'schema') {
+          schemaOverrides = this.getSchemaOverrides(pluginId);
+          if (this.getEnsureExistsConfig(pluginId)) {
+            try {
+              await ensureSchemaExists(pluginConfig, pluginId);
+            } catch (error) {
+              throw new Error(
+                `Failed to connect to the database to make sure that schema for plugin '${pluginId}' exists, ${error}`,
+              );
+            }
+          }
+        }
+
+        const databaseClientOverrides = mergeDatabaseConfig(
+          {},
+          this.getDatabaseOverrides(pluginId),
+          schemaOverrides,
+        );
+
+        const client = createDatabaseClient(
+          pluginConfig,
+          databaseClientOverrides,
+        );
+        this.startKeepaliveLoop(pluginId, client);
+        resolve(client);
+      } catch (e) {
+        reject(e);
       }
-    }
+    });
 
-    const databaseClientOverrides = mergeDatabaseConfig(
-      {},
-      this.getDatabaseOverrides(pluginId),
-      schemaOverrides,
-    );
+    this.databaseCache.set(pluginId, clientPromise);
 
-    const client = createDatabaseClient(pluginConfig, databaseClientOverrides);
-    this.startKeepaliveLoop(pluginId, client);
-
-    return client;
+    return clientPromise;
   }
 
   private startKeepaliveLoop(pluginId: string, client: Knex): void {
