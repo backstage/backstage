@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog': patch
+'@backstage/plugin-catalog': minor
 ---
 
 Added new column `Label` to `CatalogTable.columns`, this new column allows you make use of labels from metadata.
