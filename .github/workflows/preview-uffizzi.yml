@@ -49,7 +49,7 @@ jobs:
     name: Use Remote Workflow to Preview on Uffizzi
     needs:
       - cache-compose-file
-    uses: UffizziCloud/preview-action/.github/workflows/reusable.yaml@v2
+    uses: UffizziCloud/preview-action/.github/workflows/reusable.yaml@contexts
     #if: ${{ github.event.workflow_run.event.action != 'closed' }}
     with:
       compose-file-cache-key: ${{ needs.cache-compose-file.outputs.compose-file-cache-key }}
