@@ -196,11 +196,6 @@ export default async function createPlugin(
     }
 ```
 
-We could replace the whole `signIn` object with
-`providers.microsoft.resolvers.emailLocalPartMatchingUserEntityName() as any` and as long
-as you have the correct user configured in the catalog it should work, note the `as any`
-part, TS will error out because of typings, so we type cast it to any, it should still
-work given the response of an OIDC or OAuth2 request to microsoft is very similar.
 
 ### The configuration
 
