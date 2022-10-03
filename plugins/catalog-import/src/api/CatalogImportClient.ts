@@ -145,7 +145,7 @@ export class CatalogImportClient implements CatalogImportApi {
       type: 'repository',
       integrationType: 'github',
       url: url,
-      generatedEntities: analyzation.generateEntities.map((x: any) => x.entity),
+      generatedEntities: analyzation.generateEntities.map(x => x.entity),
     };
   }
 
