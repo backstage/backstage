@@ -140,14 +140,19 @@ export const AlertsTable = ({
       </Typography>
     ),
   };
-  const assignedToColumn: TableColumn = {
-    title: 'Assigned to',
-    field: 'assignedTo',
+  const respondersColumn: TableColumn = {
+    title: 'Responders',
+    field: 'responders',
     cellStyle: !compact ? mdColumnStyle : lgColumnStyle,
     headerStyle: !compact ? mdColumnStyle : lgColumnStyle,
     render: rowData => (
-      <Typography noWrap>
-        {ilertApi.getUserInitials((rowData as Alert).assignedTo)}
+      <Typography>
+        {(rowData as Alert).responders.map((value, i, arr) => {
+          return (
+            ilertApi.getUserInitials(value.user) +
+            (arr.length - 1 !== i ? ', ' : '')
+          );
+        })}
       </Typography>
     ),
   };
@@ -187,7 +192,7 @@ export const AlertsTable = ({
     ? [
         summaryColumn,
         durationColumn,
-        assignedToColumn,
+        respondersColumn,
         statusColumn,
         actionsColumn,
       ]
@@ -196,7 +201,7 @@ export const AlertsTable = ({
         summaryColumn,
         sourceColumn,
         durationColumn,
-        assignedToColumn,
+        respondersColumn,
         priorityColumn,
         statusColumn,
         actionsColumn,
@@ -247,7 +252,7 @@ export const AlertsTable = ({
           />
         ) : (
           <Typography variant="button" color="textSecondary">
-            INCIDENTS
+            ALERTS
           </Typography>
         )
       }

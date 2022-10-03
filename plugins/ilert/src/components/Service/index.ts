@@ -13,13 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { ilertApiRef, ILertClient } from './client';
-export type {
-  AlertEventRequest as EventRequest,
-  GetAlertsCountOpts,
-  GetAlertsOpts,
-  GetServicesOpts,
-  ILertApi,
-  TableState,
-} from './types';
+export * from './ServiceActionsMenu';
+export * from './ServiceStatus';

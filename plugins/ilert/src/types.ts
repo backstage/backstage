@@ -26,6 +26,7 @@ export interface Alert {
   alertKey: string;
   alertSource: AlertSource | null;
   assignedTo: User | null;
+  responders: Responder[];
   logEntries: LogEntry[];
   links: Link[];
   images: Image[];
@@ -97,6 +98,13 @@ export interface User {
   notificationPreferences?: any[];
   position: string;
   department: string;
+}
+
+/** @public */
+export interface Responder {
+  acceptedAt?: string;
+  status: string;
+  user: User;
 }
 
 /** @public */
@@ -223,6 +231,26 @@ export type AlertSourceAlertPriorityRule =
   | 'LOW'
   | 'HIGH_DURING_SUPPORT_HOURS'
   | 'LOW_DURING_SUPPORT_HOURS';
+
+/** @public */
+export const OPERATIONAL = 'OPERATIONAL';
+/** @public */
+export const UNDER_MAINTENANCE = 'UNDER_MAINTENANCE';
+/** @public */
+export const DEGRADED = 'DEGRADED';
+/** @public */
+export const PARTIAL_OUTAGE = 'PARTIAL_OUTAGE';
+/** @public */
+export const MAJOR_OUTAGE = 'MAJOR_OUTAGE';
+
+/** @public */
+export type ServiceStatus =
+  | typeof OPERATIONAL
+  | typeof UNDER_MAINTENANCE
+  | typeof DEGRADED
+  | typeof PARTIAL_OUTAGE
+  | typeof MAJOR_OUTAGE;
+
 /** @public */
 export interface AlertSourceEmailPredicate {
   field: 'EMAIL_FROM' | 'EMAIL_SUBJECT' | 'EMAIL_BODY';
@@ -375,4 +403,22 @@ export interface OnCall {
   start: string;
   end: string;
   escalationLevel: number;
+}
+
+/** @public */
+export interface Service {
+  id: number;
+  name: string;
+  status: ServiceStatus;
+  uptime: Uptime;
+}
+
+/** @public */
+export interface Uptime {
+  uptimePercentage: UptimePercentage;
+}
+
+/** @public */
+export interface UptimePercentage {
+  p90: number;
 }

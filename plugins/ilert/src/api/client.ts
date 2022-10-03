@@ -28,6 +28,7 @@ import {
   EscalationPolicy,
   OnCall,
   Schedule,
+  Service,
   UptimeMonitor,
   User,
 } from '../types';
@@ -35,7 +36,9 @@ import {
   EventRequest,
   GetAlertsCountOpts,
   GetAlertsOpts,
+  GetServicesOpts,
   ILertApi,
+  ServiceRequest,
 } from './types';
 
 /** @public */
@@ -127,7 +130,6 @@ export class ILertClient implements ILertApi {
       });
     }
     const response = await this.fetch(`/api/alerts?${query.toString()}`, init);
-
     return response;
   }
 
@@ -444,7 +446,10 @@ export class ILertClient implements ILertApi {
       headers: JSON_HEADERS,
     };
 
-    const response = await this.fetch('/api/schedules', init);
+    const response = await this.fetch(
+      '/api/schedules?include=currentShift&include=nextShift',
+      init,
+    );
 
     return response;
   }
@@ -479,6 +484,41 @@ export class ILertClient implements ILertApi {
     return response;
   }
 
+  async fetchServices(opts?: GetServicesOpts): Promise<Service[]> {
+    const init = {
+      headers: JSON_HEADERS,
+    };
+    const query = new URLSearchParams();
+    if (opts?.maxResults !== undefined) {
+      query.append('max-results', String(opts.maxResults));
+    }
+    if (opts?.startIndex !== undefined) {
+      query.append('start-index', String(opts.startIndex));
+    }
+
+    query.append('include', 'uptime');
+
+    const response = await this.fetch(
+      `/api/services?${query.toString()}`,
+      init,
+    );
+    return response;
+  }
+
+  async createService(serviceRequest: ServiceRequest): Promise<boolean> {
+    const init = {
+      method: 'POST',
+      headers: JSON_HEADERS,
+      body: JSON.stringify({
+        // apiKey: eventRequest.integrationKey,
+        name: serviceRequest.name,
+      }),
+    };
+
+    const response = await this.fetch('/api/services', init);
+    return response;
+  }
+
   getAlertDetailsURL(alert: Alert): string {
     return `${this.baseUrl}/alert/view.jsf?id=${encodeURIComponent(alert.id)}`;
   }
@@ -507,6 +547,12 @@ export class ILertClient implements ILertApi {
   getScheduleDetailsURL(schedule: Schedule): string {
     return `${this.baseUrl}/schedule/view.jsf?id=${encodeURIComponent(
       schedule.id,
+    )}`;
+  }
+
+  getServiceDetailsURL(service: Service): string {
+    return `${this.baseUrl}/service/view.jsf?id=${encodeURIComponent(
+      service.id,
     )}`;
   }
 

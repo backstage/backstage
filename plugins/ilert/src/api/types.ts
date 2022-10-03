@@ -23,6 +23,7 @@ import {
   EscalationPolicy,
   OnCall,
   Schedule,
+  Service,
   UptimeMonitor,
   User,
 } from '../types';
@@ -47,12 +48,23 @@ export type GetAlertsCountOpts = {
 };
 
 /** @public */
+export type GetServicesOpts = {
+  maxResults?: number;
+  startIndex?: number;
+};
+
+/** @public */
 export type EventRequest = {
   integrationKey: string;
   summary: string;
   details: string;
   userName: string;
   source: string;
+};
+
+/** @public */
+export type ServiceRequest = {
+  name: string;
 };
 
 /** @public */
@@ -94,11 +106,15 @@ export interface ILertApi {
     end: string,
   ): Promise<Schedule>;
 
+  fetchServices(opts?: GetServicesOpts): Promise<Service[]>;
+  createService(eventRequest: ServiceRequest): Promise<boolean>;
+
   getAlertDetailsURL(alert: Alert): string;
   getAlertSourceDetailsURL(alertSource: AlertSource | null): string;
   getEscalationPolicyDetailsURL(escalationPolicy: EscalationPolicy): string;
   getUptimeMonitorDetailsURL(uptimeMonitor: UptimeMonitor): string;
   getScheduleDetailsURL(schedule: Schedule): string;
+  getServiceDetailsURL(service: Service): string;
   getUserPhoneNumber(user: User | null): string;
   getUserInitials(user: User | null): string;
 }
