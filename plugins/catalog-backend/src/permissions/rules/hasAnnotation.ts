@@ -26,7 +26,10 @@ import { createCatalogPermissionRule } from './util';
  *
  * @alpha
  */
-export const hasAnnotation = createCatalogPermissionRule({
+export const hasAnnotation = createCatalogPermissionRule<{
+  annotation: string;
+  value?: string;
+}>({
   name: 'HAS_ANNOTATION',
   description:
     'Allow entities which are annotated with the specified annotation',
