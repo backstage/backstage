@@ -16,6 +16,7 @@
 
 import '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
+import { ServiceLocatorRequestContext } from '../types/types';
 import { MultiTenantServiceLocator } from './MultiTenantServiceLocator';
 
 describe('MultiTenantConfigClusterLocator', () => {
@@ -24,7 +25,10 @@ describe('MultiTenantConfigClusterLocator', () => {
       getClusters: async () => [],
     });
 
-    const result = await sut.getClustersByEntity({} as Entity);
+    const result = await sut.getClustersByEntity(
+      {} as Entity,
+      {} as ServiceLocatorRequestContext,
+    );
 
     expect(result).toStrictEqual({ clusters: [] });
   });
@@ -43,7 +47,10 @@ describe('MultiTenantConfigClusterLocator', () => {
       },
     });
 
-    const result = await sut.getClustersByEntity({} as Entity);
+    const result = await sut.getClustersByEntity(
+      {} as Entity,
+      {} as ServiceLocatorRequestContext,
+    );
 
     expect(result).toStrictEqual({
       clusters: [
@@ -76,7 +83,10 @@ describe('MultiTenantConfigClusterLocator', () => {
       },
     });
 
-    const result = await sut.getClustersByEntity({} as Entity);
+    const result = await sut.getClustersByEntity(
+      {} as Entity,
+      {} as ServiceLocatorRequestContext,
+    );
 
     expect(result).toStrictEqual({
       clusters: [

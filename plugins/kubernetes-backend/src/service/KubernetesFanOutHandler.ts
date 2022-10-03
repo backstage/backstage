@@ -27,6 +27,7 @@ import {
   CustomResource,
   CustomResourcesByEntity,
   KubernetesObjectsByEntity,
+  ServiceLocatorRequestContext,
 } from '../types/types';
 import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
 import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
@@ -231,7 +232,10 @@ export class KubernetesFanOutHandler {
       entity.metadata?.name;
 
     const clusterDetailsDecoratedForAuth: ClusterDetails[] =
-      await this.decorateClusterDetailsWithAuth(entity, auth);
+      await this.decorateClusterDetailsWithAuth(entity, auth, {
+        objectTypesToFetch: objectTypesToFetch,
+        customResources: customResources ?? [],
+      });
 
     this.logger.info(
       `entity.metadata.name=${entityName} clusterDetails=[${clusterDetailsDecoratedForAuth
@@ -274,9 +278,10 @@ export class KubernetesFanOutHandler {
   private async decorateClusterDetailsWithAuth(
     entity: Entity,
     auth: KubernetesRequestAuth,
+    requestContext: ServiceLocatorRequestContext,
   ) {
     const clusterDetails: ClusterDetails[] = await (
-      await this.serviceLocator.getClustersByEntity(entity)
+      await this.serviceLocator.getClustersByEntity(entity, requestContext)
     ).clusters;
 
     // Execute all of these async actions simultaneously/without blocking sequentially as no common object is modified by them
