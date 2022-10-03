@@ -4551,9 +4551,9 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@octokit/graphql": ^5.0.0
-    "@octokit/rest": ^19.0.4
+    "@octokit/rest": ^19.0.3
     "@types/lodash": ^4.14.151
-    git-url-parse: ^13.1.0
+    git-url-parse: ^13.0.0
     lodash: ^4.17.21
     msw: ^0.47.0
     node-fetch: ^2.6.7
@@ -11580,7 +11580,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/rest@npm:^19.0.3, @octokit/rest@npm:^19.0.4":
+"@octokit/rest@npm:^19.0.3":
   version: 19.0.4
   resolution: "@octokit/rest@npm:19.0.4"
   dependencies:
@@ -23513,7 +23513,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"git-url-parse@npm:^13.0.0, git-url-parse@npm:^13.1.0":
+"git-url-parse@npm:^13.0.0":
   version: 13.1.0
   resolution: "git-url-parse@npm:13.1.0"
   dependencies:
