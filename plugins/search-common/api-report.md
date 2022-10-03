@@ -102,6 +102,8 @@ export interface SearchQuery {
   // (undocumented)
   pageCursor?: string;
   // (undocumented)
+  pageLimit?: number;
+  // (undocumented)
   term: string;
   // (undocumented)
   types?: string[];
