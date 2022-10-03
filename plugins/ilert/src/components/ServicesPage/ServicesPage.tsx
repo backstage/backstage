@@ -20,25 +20,16 @@ import {
   SupportButton,
 } from '@backstage/core-components';
 import { AuthenticationError } from '@backstage/errors';
-import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/Add';
 import React from 'react';
 import { useServices } from '../../hooks/useServices';
 import { MissingAuthorizationHeaderError } from '../Errors';
-import { ServiceNewModal } from '../Service/ServiceNewModal';
 import { ServicesTable } from './ServicesTable';
 
 export const ServicesPage = () => {
   const [
     { tableState, services, isLoading, error },
-    { onChangePage, onChangeRowsPerPage, refetchServices, setIsLoading },
+    { onChangePage, onChangeRowsPerPage, setIsLoading },
   ] = useServices(true);
-
-  const [isModalOpened, setIsModalOpened] = React.useState(false);
-
-  const handleCreateNewServiceClick = () => {
-    setIsModalOpened(true);
-  };
 
   if (error) {
     if (error instanceof AuthenticationError) {
@@ -59,20 +50,6 @@ export const ServicesPage = () => {
   return (
     <Content>
       <ContentHeader title="Services">
-        <Button
-          variant="contained"
-          color="primary"
-          size="small"
-          startIcon={<AddIcon />}
-          onClick={handleCreateNewServiceClick}
-        >
-          Create Service
-        </Button>
-        <ServiceNewModal
-          isModalOpened={isModalOpened}
-          setIsModalOpened={setIsModalOpened}
-          refetchServices={refetchServices}
-        />
         <SupportButton>
           This helps you to bring iLert into your developer portal.
         </SupportButton>

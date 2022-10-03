@@ -16,12 +16,11 @@
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
-import { ilertApiRef, TableState } from '../../api';
+import { TableState } from '../../api';
 import { Service } from '../../types';
 import { StatusChip } from './StatusChip';
 
 import { Table, TableColumn } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
 import { ServiceActionsMenu } from '../Service/ServiceActionsMenu';
 import { ServiceLink } from '../Service/ServiceLink';
 
@@ -49,25 +48,24 @@ export const ServicesTable = ({
   onChangeRowsPerPage: (pageSize: number) => void;
   compact?: boolean;
 }) => {
-  const ilertApi = useApi(ilertApiRef);
   const classes = useStyles();
 
-  const xsColumnStyle = {
-    width: '5%',
-    maxWidth: '5%',
-  };
+  // const xsColumnStyle = {
+  //   width: '5%',
+  //   maxWidth: '5%',
+  // };
   const smColumnStyle = {
     width: '10%',
     maxWidth: '10%',
   };
-  const mdColumnStyle = {
-    width: '15%',
-    maxWidth: '15%',
-  };
-  const lgColumnStyle = {
-    width: '20%',
-    maxWidth: '20%',
-  };
+  // const mdColumnStyle = {
+  //   width: '15%',
+  //   maxWidth: '15%',
+  // };
+  // const lgColumnStyle = {
+  //   width: '20%',
+  //   maxWidth: '20%',
+  // };
   const xlColumnStyle = {
     width: '30%',
     maxWidth: '30%',
@@ -91,8 +89,8 @@ export const ServicesTable = ({
   const statusColumn: TableColumn = {
     title: 'Status',
     field: 'status',
-    cellStyle: xsColumnStyle,
-    headerStyle: xsColumnStyle,
+    cellStyle: smColumnStyle,
+    headerStyle: smColumnStyle,
     render: rowData => <StatusChip service={rowData as Service} />,
   };
   const uptimeColumn: TableColumn = {
@@ -109,8 +107,8 @@ export const ServicesTable = ({
   const actionsColumn: TableColumn = {
     title: '',
     field: '',
-    cellStyle: xsColumnStyle,
-    headerStyle: xsColumnStyle,
+    cellStyle: smColumnStyle,
+    headerStyle: smColumnStyle,
     render: rowData => <ServiceActionsMenu service={rowData as Service} />,
   };
 
