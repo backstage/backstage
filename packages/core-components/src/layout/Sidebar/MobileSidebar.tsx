@@ -85,20 +85,21 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
 
     overlayHeader: {
       display: 'flex',
-      color: theme.palette.text.primary,
+      color: theme.palette.navigation.selectedColor,
       alignItems: 'center',
       justifyContent: 'space-between',
       padding: theme.spacing(2, 3),
     },
 
     overlayHeaderClose: {
-      color: theme.palette.text.primary,
+      color: theme.palette.navigation.selectedColor,
     },
 
     marginMobileSidebar: props => ({
       marginBottom: `${props.sidebarConfig.mobileSidebarHeight}px`,
     }),
   }),
+  { name: 'BackstageMobileSidebar' },
 );
 
 const sortSidebarGroupsForPriority = (children: React.ReactElement[]) =>
