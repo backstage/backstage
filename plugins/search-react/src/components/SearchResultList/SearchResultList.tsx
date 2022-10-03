@@ -114,7 +114,7 @@ export type SearchResultListProps = Omit<
    */
   query: Partial<SearchQuery>;
   /**
-   * Optional property to provide if component should not render the group when no results are found.
+   * Optional property to provide if component should not render the component when no results are found.
    */
   disableRenderingWithNoResults?: boolean;
 };
