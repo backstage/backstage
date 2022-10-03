@@ -29,9 +29,9 @@ import {
   FetchResponse,
   KubernetesFetchError,
   KubernetesErrorTypes,
+  PodStatusFetchResponse,
 } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
-import { PodStatus } from '@kubernetes/client-node/dist/top';
 
 export interface Clients {
   core: CoreV1Api;
@@ -104,10 +104,10 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
   }
 
-  fetchPodMetricsByNamespace(
+  fetchPodMetricsByNamespaces(
     clusterDetails: ClusterDetails,
-    namespace: string,
-  ): Promise<PodStatus[]> {
+    namespaces: Set<string>,
+  ): Promise<FetchResponseWrapper> {
     const metricsClient =
       this.kubernetesClientProvider.getMetricsClient(clusterDetails);
     const coreApi =
@@ -115,7 +115,18 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
         clusterDetails,
       );
 
-    return topPods(coreApi, metricsClient, namespace);
+    const fetchResults = Array.from(namespaces).map(ns =>
+      topPods(coreApi, metricsClient, ns)
+        .then(r => {
+          return {
+            type: 'podstatus',
+            resources: r,
+          } as PodStatusFetchResponse;
+        })
+        .catch(this.captureKubernetesErrorsRethrowOthers.bind(this)),
+    );
+
+    return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
   }
 
   private captureKubernetesErrorsRethrowOthers(e: any): KubernetesFetchError {

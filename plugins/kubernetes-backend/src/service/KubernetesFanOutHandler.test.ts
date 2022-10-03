@@ -18,13 +18,13 @@ import { getVoidLogger } from '@backstage/backend-common';
 import {
   ClusterDetails,
   CustomResource,
+  FetchResponseWrapper,
   ObjectFetchParams,
 } from '../types/types';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
-import { PodStatus } from '@kubernetes/client-node/dist/top';
 
 const fetchObjectsForService = jest.fn();
-const fetchPodMetricsByNamespace = jest.fn();
+const fetchPodMetricsByNamespaces = jest.fn();
 
 const getClustersByEntity = jest.fn();
 
@@ -55,8 +55,9 @@ const mockFetch = (mock: jest.Mock) => {
 };
 
 const mockMetrics = (mock: jest.Mock) => {
-  mock.mockImplementation((clusterDetails: ClusterDetails, namespace: string) =>
-    Promise.resolve(generatePodStatus(clusterDetails.name, namespace)),
+  mock.mockImplementation(
+    (clusterDetails: ClusterDetails, namespaces: Set<string>) =>
+      Promise.resolve(generatePodStatus(clusterDetails.name, namespaces)),
   );
 };
 
@@ -143,7 +144,7 @@ function mockFetchAndGetKubernetesFanOutHandler(
   customResources: CustomResource[],
 ) {
   mockFetch(fetchObjectsForService);
-  mockMetrics(fetchPodMetricsByNamespace);
+  mockMetrics(fetchPodMetricsByNamespaces);
 
   return getKubernetesFanOutHandler(customResources);
 }
@@ -153,7 +154,7 @@ function getKubernetesFanOutHandler(customResources: CustomResource[]) {
     logger: getVoidLogger(),
     fetcher: {
       fetchObjectsForService,
-      fetchPodMetricsByNamespace,
+      fetchPodMetricsByNamespaces,
     },
     serviceLocator: {
       getClustersByEntity,
@@ -164,24 +165,32 @@ function getKubernetesFanOutHandler(customResources: CustomResource[]) {
 
 function generatePodStatus(
   _clusterName: string,
-  _namespace: string,
-): PodStatus[] {
-  return [
-    {
-      Pod: {},
-      CPU: {
-        CurrentUsage: 100,
-        RequestTotal: 101,
-        LimitTotal: 102,
-      },
-      Memory: {
-        CurrentUsage: BigInt('1000'),
-        RequestTotal: BigInt('1001'),
-        LimitTotal: BigInt('1002'),
-      },
-      Containers: [],
-    },
-  ] as any;
+  _namespaces: Set<string>,
+): FetchResponseWrapper {
+  return {
+    errors: [],
+    responses: Array.from(_namespaces).map(() => {
+      return {
+        type: 'podstatus',
+        resources: [
+          {
+            Pod: {},
+            CPU: {
+              CurrentUsage: 100,
+              RequestTotal: 101,
+              LimitTotal: 102,
+            },
+            Memory: {
+              CurrentUsage: BigInt('1000'),
+              RequestTotal: BigInt('1001'),
+              LimitTotal: BigInt('1002'),
+            },
+            Containers: [],
+          },
+        ],
+      };
+    }),
+  };
 }
 
 function generateMockResourcesAndErrors(
@@ -292,9 +301,9 @@ describe('getKubernetesObjectsByEntity', () => {
 
     expect(getClustersByEntity.mock.calls.length).toBe(1);
     expect(fetchObjectsForService.mock.calls.length).toBe(1);
-    expect(fetchPodMetricsByNamespace.mock.calls.length).toBe(1);
-    expect(fetchPodMetricsByNamespace.mock.calls[0][1]).toBe(
-      'ns-test-component-test-cluster',
+    expect(fetchPodMetricsByNamespaces.mock.calls.length).toBe(1);
+    expect(fetchPodMetricsByNamespaces.mock.calls[0][1]).toStrictEqual(
+      new Set(['ns-test-component-test-cluster']),
     );
 
     expect(result).toStrictEqual({
@@ -433,7 +442,7 @@ describe('getKubernetesObjectsByEntity', () => {
       }),
     );
 
-    mockMetrics(fetchPodMetricsByNamespace);
+    mockMetrics(fetchPodMetricsByNamespaces);
 
     const sut = getKubernetesFanOutHandler([]);
 
@@ -444,9 +453,10 @@ describe('getKubernetesObjectsByEntity', () => {
 
     expect(getClustersByEntity.mock.calls.length).toBe(1);
     expect(fetchObjectsForService.mock.calls.length).toBe(1);
-    expect(fetchPodMetricsByNamespace.mock.calls.length).toBe(2);
-    expect(fetchPodMetricsByNamespace.mock.calls[0][1]).toBe('ns-a');
-    expect(fetchPodMetricsByNamespace.mock.calls[1][1]).toBe('ns-b');
+    expect(fetchPodMetricsByNamespaces.mock.calls.length).toBe(1);
+    expect(fetchPodMetricsByNamespaces.mock.calls[0][1]).toStrictEqual(
+      new Set(['ns-a', 'ns-b']),
+    );
 
     expect(result).toStrictEqual({
       items: [

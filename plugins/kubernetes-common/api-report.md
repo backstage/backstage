@@ -5,6 +5,7 @@
 ```ts
 import { Entity } from '@backstage/catalog-model';
 import type { JsonObject } from '@backstage/types';
+import { PodStatus } from '@kubernetes/client-node';
 import { V1ConfigMap } from '@kubernetes/client-node';
 import { V1CronJob } from '@kubernetes/client-node';
 import { V1DaemonSet } from '@kubernetes/client-node';
@@ -147,7 +148,8 @@ export type FetchResponse =
   | IngressesFetchResponse
   | CustomResourceFetchResponse
   | StatefulSetsFetchResponse
-  | DaemonSetsFetchResponse;
+  | DaemonSetsFetchResponse
+  | PodStatusFetchResponse;
 
 // @public (undocumented)
 export interface HorizontalPodAutoscalersFetchResponse {
@@ -228,6 +230,14 @@ export interface PodFetchResponse {
   resources: Array<V1Pod>;
   // (undocumented)
   type: 'pods';
+}
+
+// @public (undocumented)
+export interface PodStatusFetchResponse {
+  // (undocumented)
+  resources: Array<PodStatus>;
+  // (undocumented)
+  type: 'podstatus';
 }
 
 // @public (undocumented)

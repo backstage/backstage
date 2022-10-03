@@ -16,6 +16,7 @@
 
 import type { JsonObject } from '@backstage/types';
 import {
+  PodStatus,
   V1ConfigMap,
   V1CronJob,
   V1DaemonSet,
@@ -134,7 +135,8 @@ export type FetchResponse =
   | IngressesFetchResponse
   | CustomResourceFetchResponse
   | StatefulSetsFetchResponse
-  | DaemonSetsFetchResponse;
+  | DaemonSetsFetchResponse
+  | PodStatusFetchResponse;
 
 /** @public */
 export interface PodFetchResponse {
@@ -212,6 +214,12 @@ export interface StatefulSetsFetchResponse {
 export interface DaemonSetsFetchResponse {
   type: 'daemonsets';
   resources: Array<V1DaemonSet>;
+}
+
+/** @public */
+export interface PodStatusFetchResponse {
+  type: 'podstatus';
+  resources: Array<PodStatus>;
 }
 
 /** @public */

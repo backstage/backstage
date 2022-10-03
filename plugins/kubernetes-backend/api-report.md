@@ -22,7 +22,6 @@ import { Logger } from 'winston';
 import { Metrics } from '@kubernetes/client-node';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { PodStatus } from '@kubernetes/client-node/dist/top';
 import { TokenCredential } from '@azure/identity';
 
 // @alpha (undocumented)
@@ -267,10 +266,10 @@ export interface KubernetesFetcher {
     params: ObjectFetchParams,
   ): Promise<FetchResponseWrapper>;
   // (undocumented)
-  fetchPodMetricsByNamespace(
+  fetchPodMetricsByNamespaces(
     clusterDetails: ClusterDetails,
-    namespace: string,
-  ): Promise<PodStatus[]>;
+    namespaces: Set<string>,
+  ): Promise<FetchResponseWrapper>;
 }
 
 // @alpha (undocumented)
