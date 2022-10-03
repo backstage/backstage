@@ -84,6 +84,7 @@ export class DatabaseManager {
     private readonly config: Config,
     private readonly prefix: string = 'backstage_plugin_',
     private readonly options?: DatabaseManagerOptions,
+    private readonly databaseCache: Map<string, Knex> = new Map(),
   ) {}
 
   /**
@@ -307,6 +308,9 @@ export class DatabaseManager {
    *          plugin
    */
   private async getDatabase(pluginId: string): Promise<Knex> {
+    if (this.databaseCache.has(pluginId)) {
+      return this.databaseCache.get(pluginId)!;
+    }
     const pluginConfig = new ConfigReader(
       this.getConfigForPlugin(pluginId) as JsonObject,
     );
@@ -344,7 +348,7 @@ export class DatabaseManager {
 
     const client = createDatabaseClient(pluginConfig, databaseClientOverrides);
     this.startKeepaliveLoop(pluginId, client);
-
+    this.databaseCache.set(pluginId, client);
     return client;
   }
 

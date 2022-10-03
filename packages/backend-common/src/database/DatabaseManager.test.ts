@@ -113,7 +113,11 @@ describe('DatabaseManager', () => {
         },
       },
     };
-    const manager = DatabaseManager.fromConfig(new ConfigReader(config));
+    let manager: DatabaseManager;
+
+    beforeEach(() => {
+      manager = DatabaseManager.fromConfig(new ConfigReader(config));
+    });
 
     it('connects to a plugin database using default config', async () => {
       const pluginId = 'pluginwithoutconfig';
@@ -338,6 +342,15 @@ describe('DatabaseManager', () => {
       expect(plugin1CallArgs[1].connection.database).not.toEqual(
         plugin2CallArgs[1].connection.database,
       );
+    });
+
+    it('returns the same client for the same pluginId', async () => {
+      const client1 = await manager.forPlugin('plugin1').getClient();
+      const client2 = await manager.forPlugin('plugin1').getClient();
+
+      expect(mocked(createDatabaseClient)).toHaveBeenCalledTimes(1);
+
+      expect(client1).toBe(client2);
     });
 
     it('uses plugin connection as base if default client is different from plugin client', async () => {
