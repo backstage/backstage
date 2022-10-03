@@ -225,7 +225,6 @@ auth:
     secret: ${SESSION_SECRET}
   providers:
     my-auth-provider:
-      # Note that you must define a session secret (see above) since the oidc provider requires session support.
       # Note that by default, this provider will use the 'none' prompt which assumes that your are already logged on in the IDP.
       # You should set prompt to:
       # - auto: will let the IDP decide if you need to log on or if you can skip login when you have an active SSO session
