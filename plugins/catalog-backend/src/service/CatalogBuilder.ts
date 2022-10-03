@@ -115,9 +115,10 @@ export type CatalogEnvironment = {
  *   after the processors' pre-processing steps. All policies are given the
  *   chance to inspect the entity, and all of them have to pass in order for
  *   the entity to be considered valid from an overall point of view.
- * - Location analyzers can be added. These are responsible to analyze the
- *   the existence of a catalog-info.yaml file in the provided git repository
- *   when you use the /catalog-import page with a repository url.
+ * - Location analyzers can be added. These are responsible for analyzing
+ *   repositories when onboarding them into the catalog, by finding
+ *   catalog-info.yaml files and other artifacts that can help automatically
+ *   register or create catalog data on the user's behalf.
  * - Placeholder resolvers can be replaced or added. These run on the raw
  *   structured data between the parsing and pre-processing steps, to replace
  *   dollar-prefixed entries with their actual values (like $file).
@@ -341,9 +342,10 @@ export class CatalogBuilder {
   }
 
   /**
-   * Adds Location Analyzers. These are responsible for figuring out
-   * if the repository already contains a catalog-info.yaml file when
-   * you register a repository in the /catalog-import page
+   * Adds Location Analyzers. These are responsible for analyzing
+   * repositories when onboarding them into the catalog, by finding
+   * catalog-info.yaml files and other artifacts that can help automatically
+   * register or create catalog data on the user's behalf.
    *
    * @param locationAnalyzers - One or more location analyzers
    */
