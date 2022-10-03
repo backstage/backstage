@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-import': patch
+'@backstage/plugin-catalog-import': minor
 ---
 
 **Breaking**
