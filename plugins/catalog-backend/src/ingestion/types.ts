@@ -108,8 +108,8 @@ export type AnalyzeOptions = {
 
 /** @public */
 export type ScmLocationAnalyzer = {
-  /** The integration type this location analyzer can work with */
-  getIntegrationType(): string;
+  /** The method that decides if this analyzer can work with the provided url */
+  supports(url: string): boolean;
   /** This function can return an array of already existing entities */
   analyze(options: AnalyzeOptions): Promise<{
     existing: AnalyzeLocationExistingEntity[];

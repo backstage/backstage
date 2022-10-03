@@ -20,7 +20,6 @@ import { Octokit } from '@octokit/rest';
 import { trimEnd } from 'lodash';
 import parseGitUrl from 'git-url-parse';
 import {
-  AnalyzeLocationExistingEntity,
   AnalyzeOptions,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-backend';
@@ -41,8 +40,10 @@ export class GitHubLocationAnalyzer implements ScmLocationAnalyzer {
     this.config = options.config;
     this.catalogClient = new CatalogClient({ discoveryApi: options.discovery });
   }
-  getIntegrationType() {
-    return 'github';
+  supports(url: string) {
+    const integrations = ScmIntegrations.fromConfig(this.config);
+    const integration = integrations.byUrl(url);
+    return integration?.type === 'github';
   }
   async analyze({ url, catalogFilename }: AnalyzeOptions) {
     const { owner, name: repo } = parseGitUrl(url);

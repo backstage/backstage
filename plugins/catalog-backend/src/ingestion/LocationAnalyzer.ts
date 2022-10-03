@@ -63,8 +63,8 @@ export class RepoLocationAnalyzer implements LocationAnalyzer {
         break;
     }
 
-    const analyzer = this.analyzers.find(
-      a => a.getIntegrationType() === integration?.type,
+    const analyzer = this.analyzers.find(a =>
+      a.supports(request.location.target),
     );
     if (analyzer) {
       const analyzerResult = await analyzer.analyze({
