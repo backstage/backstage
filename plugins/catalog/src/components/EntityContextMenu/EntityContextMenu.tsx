@@ -92,7 +92,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
     navigator.clipboard
       .writeText(window.location.toString())
       .then(() => alertApi.post({ message: 'Copied!', severity: 'info' }));
-  }, []);
+  }, [alertApi]);
 
   const extraItems = UNSTABLE_extraContextMenuItems && [
     ...UNSTABLE_extraContextMenuItems.map(item => (
@@ -156,13 +156,14 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
           </MenuItem>
           <MenuItem
             onClick={() => {
+              onClose();
               copyToClipboard();
             }}
           >
             <ListItemIcon>
               <FileCopyTwoToneIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary="Copy entity url" />
+            <ListItemText primary="Copy entity URL" />
           </MenuItem>
         </MenuList>
       </Popover>
