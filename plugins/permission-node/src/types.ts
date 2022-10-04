@@ -18,6 +18,14 @@ import type { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { z } from 'zod';
 
 /**
+ * Prevent use of type parameter from contributing to type inference.
+ *
+ * https://github.com/Microsoft/TypeScript/issues/14829#issuecomment-980401795
+ * @ignore
+ */
+export type NoInfer<T> = T extends infer S ? S : never;
+
+/**
  * A conditional rule that can be provided in an
  * {@link @backstage/permission-common#AuthorizeDecision} response to an authorization request.
  *
@@ -57,12 +65,12 @@ export type PermissionRule<
    * arguments supplied for the rule; for example, a rule could be `isOwner` with entityRefs as the
    * params.
    */
-  apply(resource: TResource, params: TParams): boolean;
+  apply(resource: TResource, params: NoInfer<TParams>): boolean;
 
   /**
    * Translate this rule to criteria suitable for use in querying a backing data store. The criteria
    * can be used for loading a collection of resources efficiently with conditional criteria already
    * applied.
    */
-  toQuery(params: TParams): PermissionCriteria<TQuery>;
+  toQuery(params: NoInfer<TParams>): PermissionCriteria<TQuery>;
 };

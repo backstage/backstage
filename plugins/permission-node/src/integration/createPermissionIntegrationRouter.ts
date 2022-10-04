@@ -28,7 +28,7 @@ import {
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
-import { PermissionRule } from '../types';
+import { NoInfer, PermissionRule } from '../types';
 import {
   createGetRule,
   isAndCriteria,
@@ -134,14 +134,6 @@ const applyConditions = <TResourceType extends string, TResource>(
 
   return rule.apply(resource, criteria.params);
 };
-
-/**
- * Prevent use of type parameter from contributing to type inference.
- *
- * https://github.com/Microsoft/TypeScript/issues/14829#issuecomment-980401795
- * @ignore
- */
-type NoInfer<T> = T extends infer S ? S : never;
 
 /**
  * Create an express Router which provides an authorization route to allow
