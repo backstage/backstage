@@ -15,7 +15,9 @@
  */
 
 import {
+  configServiceRef,
   createBackendPlugin,
+  httpRouterServiceRef,
   loggerServiceRef,
   loggerToWinstonLogger,
 } from '@backstage/backend-plugin-api';
@@ -25,11 +27,15 @@ import {
   EventSubscriber,
   eventsExtensionPoint,
   EventsExtensionPoint,
+  HttpPostIngressOptions,
 } from '@backstage/plugin-events-node';
 import { InMemoryEventBroker } from './InMemoryEventBroker';
+import Router from 'express-promise-router';
+import { HttpPostIngressEventPublisher } from './http';
 
 class EventsExtensionPointImpl implements EventsExtensionPoint {
   #eventBroker: EventBroker | undefined;
+  #httpPostIngresses: HttpPostIngressOptions[] = [];
   #publishers: EventPublisher[] = [];
   #subscribers: EventSubscriber[] = [];
 
@@ -49,6 +55,10 @@ class EventsExtensionPointImpl implements EventsExtensionPoint {
     this.#subscribers.push(...subscribers.flat());
   }
 
+  addHttpPostIngress(options: HttpPostIngressOptions) {
+    this.#httpPostIngresses.push(options);
+  }
+
   get eventBroker() {
     return this.#eventBroker;
   }
@@ -59,6 +69,10 @@ class EventsExtensionPointImpl implements EventsExtensionPoint {
 
   get subscribers() {
     return this.#subscribers;
+  }
+
+  get httpPostIngresses() {
+    return this.#httpPostIngresses;
   }
 }
 
@@ -75,18 +89,42 @@ export const eventsPlugin = createBackendPlugin({
 
     env.registerInit({
       deps: {
+        config: configServiceRef,
+        httpRouter: httpRouterServiceRef,
         logger: loggerServiceRef,
       },
-      async init({ logger }) {
+      async init({ config, httpRouter, logger }) {
+        const winstonLogger = loggerToWinstonLogger(logger);
+        const eventsRouter = Router();
+        const router = Router();
+        eventsRouter.use('/http', router);
+
+        const ingresses = Object.fromEntries(
+          extensionPoint.httpPostIngresses.map(ingress => [
+            ingress.topic,
+            ingress as Omit<HttpPostIngressOptions, 'topic'>,
+          ]),
+        );
+
+        const http = HttpPostIngressEventPublisher.fromConfig({
+          config,
+          logger: winstonLogger,
+          router,
+          ingresses,
+        });
+
         if (!extensionPoint.eventBroker) {
-          const winstonLogger = loggerToWinstonLogger(logger);
           extensionPoint.setEventBroker(new InMemoryEventBroker(winstonLogger));
         }
 
         extensionPoint.eventBroker!.subscribe(extensionPoint.subscribers);
-        extensionPoint.publishers.forEach(publisher =>
-          publisher.setEventBroker(extensionPoint.eventBroker!),
-        );
+        [extensionPoint.publishers, http]
+          .flat()
+          .forEach(publisher =>
+            publisher.setEventBroker(extensionPoint.eventBroker!),
+          );
+
+        httpRouter.use(eventsRouter);
       },
     });
   },

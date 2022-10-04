@@ -4,9 +4,12 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { EventPublisher } from '@backstage/plugin-events-node';
 import { EventSubscriber } from '@backstage/plugin-events-node';
+import express from 'express';
+import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
 
 // @public
@@ -27,4 +30,19 @@ export class EventsBackend {
 
 // @alpha
 export const eventsPlugin: (options?: undefined) => BackendFeature;
+
+// @public
+export class HttpPostIngressEventPublisher implements EventPublisher {
+  // (undocumented)
+  static fromConfig(env: {
+    config: Config;
+    ingresses?: {
+      [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
+    };
+    logger: Logger;
+    router: express.Router;
+  }): HttpPostIngressEventPublisher;
+  // (undocumented)
+  setEventBroker(eventBroker: EventBroker): Promise<void>;
+}
 ```

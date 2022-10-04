@@ -13,6 +13,10 @@ implementation of your choice as you need (e.g., via module).
 Some of these (non-exhaustive) may provide added persistence,
 or use external systems like AWS EventBridge, AWS SNS, Kafka, etc.
 
+By default, the plugin ships with support to receive events via HTTP endpoints
+`POST /api/events/http/{topic}` and will publish these
+to the used event broker.
+
 ## Installation
 
 ```bash
@@ -81,6 +85,36 @@ yarn add --cwd packages/backend @backstage/plugin-events-backend
  }
 ```
 
+## Configuration
+
+In order to create HTTP endpoints to receive events for a certain
+topic, you need to add them at your configuration:
+
+```yaml
+events:
+  http:
+    topics:
+      - bitbucketCloud
+      - github
+      - whatever
+```
+
+Only those topics added to the configuration will result in
+available endpoints.
+
+The example above would result in the following endpoints:
+
+```
+POST /api/events/http/bitbucketCloud
+POST /api/events/http/github
+POST /api/events/http/whatever
+```
+
+You may want to use these for webhooks by SCM providers
+in combination with suitable event subscribers.
+
+However, it is not limited to these use cases.
+
 ## Use Cases
 
 ### Custom Event Broker
@@ -117,6 +151,58 @@ export const yourModuleEventsModule = createBackendModule({
         const yourEventBroker = new YourEventBroker();
         // [...]
         events.setEventBroker(yourEventBroker);
+      },
+    });
+  },
+});
+```
+
+### Request Validator
+
+Example using the `EventsBackend`:
+
+```ts
+const http = HttpPostIngressEventPublisher.fromConfig({
+  config: env.config,
+  ingresses: {
+    yourTopic: {
+      validator: yourValidator,
+    },
+  },
+  logger: env.logger,
+  router: httpRouter,
+});
+
+await new EventsBackend(env.logger)
+  .addPublishers(http)
+  // [...]
+  .start();
+```
+
+Example using a module:
+
+```ts
+import { eventsExtensionPoint } from '@backstage/plugin-events-node';
+
+// [...]
+
+export const yourModuleEventsModule = createBackendModule({
+  pluginId: 'events',
+  moduleId: 'yourModule',
+  register(env) {
+    // [...]
+    env.registerInit({
+      deps: {
+        // [...]
+        events: eventsExtensionPoint,
+        // [...]
+      },
+      async init({ /* ... */ events /*, ... */ }) {
+        // [...]
+        events.addHttpPostIngress({
+          topic: 'your-topic',
+          validator: yourValidator,
+        });
       },
     });
   },

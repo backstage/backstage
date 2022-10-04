@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-/**
- * The Backstage backend plugin "events" that provides the event management.
- *
- * @packageDocumentation
- */
-
-export { EventsBackend } from './service/EventsBackend';
-export { eventsPlugin } from './service/EventsPlugin';
-export { HttpPostIngressEventPublisher } from './service/http';
+export interface Config {
+  events?: {
+    http?: {
+      /**
+       * Topics for which a route has to be registered
+       * at which we can receive events via HTTP POST requests
+       * (i.e. received from webhooks).
+       */
+      topics?: string[];
+    };
+  };
+}

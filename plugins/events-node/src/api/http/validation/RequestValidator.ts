@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-/**
- * The Backstage backend plugin "events" that provides the event management.
- *
- * @packageDocumentation
- */
+import { Request } from 'express';
+import { RequestValidationContext } from './RequestValidationContext';
 
-export { EventsBackend } from './service/EventsBackend';
-export { eventsPlugin } from './service/EventsPlugin';
-export { HttpPostIngressEventPublisher } from './service/http';
+/**
+ * Validator used to check the received HTTP request
+ * transmitting an event payload.
+ *
+ * E.g., it can be used for signature verification like
+ * for GitHub webhook events
+ * (https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks#secret)
+ * or other kinds of checks.
+ *
+ * @public
+ */
+export type RequestValidator = (
+  request: Request,
+  context: RequestValidationContext,
+) => Promise<void>;

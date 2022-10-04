@@ -19,4 +19,5 @@ export type { EventParams } from './EventParams';
 export type { EventPublisher } from './EventPublisher';
 export { EventRouter } from './EventRouter';
 export type { EventSubscriber } from './EventSubscriber';
+export * from './http';
 export { SubTopicEventRouter } from './SubTopicEventRouter';

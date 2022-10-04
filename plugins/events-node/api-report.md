@@ -4,6 +4,7 @@
 
 ```ts
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { Request as Request_2 } from 'express';
 
 // @public
 export interface EventBroker {
@@ -43,6 +44,8 @@ export abstract class EventRouter implements EventPublisher, EventSubscriber {
 // @alpha (undocumented)
 export interface EventsExtensionPoint {
   // (undocumented)
+  addHttpPostIngress(options: HttpPostIngressOptions): void;
+  // (undocumented)
   addPublishers(
     ...publishers: Array<EventPublisher | Array<EventPublisher>>
   ): void;
@@ -62,6 +65,33 @@ export interface EventSubscriber {
   onEvent(params: EventParams): Promise<void>;
   supportsEventTopics(): string[];
 }
+
+// @public (undocumented)
+export interface HttpPostIngressOptions {
+  // (undocumented)
+  topic: string;
+  // (undocumented)
+  validator?: RequestValidator;
+}
+
+// @public
+export interface RequestRejectionDetails {
+  // (undocumented)
+  payload: unknown;
+  // (undocumented)
+  status: number;
+}
+
+// @public
+export interface RequestValidationContext {
+  reject(details?: Partial<RequestRejectionDetails>): void;
+}
+
+// @public
+export type RequestValidator = (
+  request: Request_2,
+  context: RequestValidationContext,
+) => Promise<void>;
 
 // @public
 export abstract class SubTopicEventRouter extends EventRouter {

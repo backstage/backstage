@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * The Backstage backend plugin "events" that provides the event management.
- *
- * @packageDocumentation
- */
+import { RequestRejectionDetails } from './RequestRejectionDetails';
 
-export { EventsBackend } from './service/EventsBackend';
-export { eventsPlugin } from './service/EventsPlugin';
-export { HttpPostIngressEventPublisher } from './service/http';
+/**
+ * Passed context for the validation
+ * at which rejections can be expressed.
+ *
+ * @public
+ */
+export interface RequestValidationContext {
+  /**
+   * Rejects the validated request
+   *
+   * @param details - Optional details about the rejection which will be provided to the sender.
+   */
+  reject(details?: Partial<RequestRejectionDetails>): void;
+}

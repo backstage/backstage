@@ -15,11 +15,12 @@
  */
 
 /**
- * The Backstage backend plugin "events" that provides the event management.
+ * Details for how to respond to the rejection
+ * of the received HTTP request transmitting an event payload.
  *
- * @packageDocumentation
+ * @public
  */
-
-export { EventsBackend } from './service/EventsBackend';
-export { eventsPlugin } from './service/EventsPlugin';
-export { HttpPostIngressEventPublisher } from './service/http';
+export interface RequestRejectionDetails {
+  status: number;
+  payload: unknown;
+}

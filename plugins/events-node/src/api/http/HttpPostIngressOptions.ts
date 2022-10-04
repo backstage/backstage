@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-/**
- * The Backstage backend plugin "events" that provides the event management.
- *
- * @packageDocumentation
- */
+import { RequestValidator } from './validation';
 
-export { EventsBackend } from './service/EventsBackend';
-export { eventsPlugin } from './service/EventsPlugin';
-export { HttpPostIngressEventPublisher } from './service/http';
+/**
+ * @public
+ */
+export interface HttpPostIngressOptions {
+  topic: string;
+  validator?: RequestValidator;
+}
