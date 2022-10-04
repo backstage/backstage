@@ -71,7 +71,7 @@ export const cacheServiceRef: ServiceRef<PluginCacheManager, 'plugin'>;
 // @public (undocumented)
 export const configServiceRef: ServiceRef<Config, 'root'>;
 
-// @public (undocumented)
+// @public
 export function createBackendModule<
   TOptions extends object | undefined = undefined,
 >(

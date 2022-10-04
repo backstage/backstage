@@ -69,7 +69,18 @@ export interface BackendModuleConfig<TOptions> {
   ): void;
 }
 
-/** @public */
+/**
+ * @public
+ *
+ * Creates a new backend module for a given plugin.
+ *
+ * The `moduleId` should be equal to the module-specific prefix of the exported name, such
+ * that the full name is `moduleId + PluginId + "Module"`. For example, a GitHub entity
+ * provider module for the `catalog` plugin might have the module ID `'githubEntityProvider'`,
+ * and the full exported name would be `githubEntityProviderCatalogModule`.
+ *
+ * The `pluginId` should exactly match the `id` of the plugin that the module extends.
+ */
 export function createBackendModule<
   TOptions extends object | undefined = undefined,
 >(
