@@ -1,5 +1,16 @@
 # @backstage/backend-plugin-api
 
+## 0.1.3-next.1
+
+### Patch Changes
+
+- a35a27df70: Added documentation for `createBackendModule`, with guidelines for choosing a module ID.
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.1
+  - @backstage/backend-tasks@0.3.6-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/plugin-permission-common@0.6.5-next.1
+
 ## 0.1.3-next.0
 
 ### Patch Changes

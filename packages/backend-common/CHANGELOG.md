@@ -1,5 +1,18 @@
 # @backstage/backend-common
 
+## 0.15.2-next.1
+
+### Patch Changes
+
+- c31f7cdfbc: Fixed an issue where `getClient()` for a `pluginId` would return different clients and not share them
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.1
+  - @backstage/config-loader@1.1.5-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/integration@1.3.2-next.1
+  - @backstage/types@1.0.0
+
 ## 0.15.2-next.0
 
 ### Patch Changes

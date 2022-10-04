@@ -1,5 +1,13 @@
 # @backstage/create-app
 
+## 0.4.32-next.1
+
+### Patch Changes
+
+- 7c6306fc8a: Initializes a git repository when creating an app using @packages/create-app
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
 ## 0.4.32-next.0
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-node
 
+## 1.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.1.1-next.1
+  - @backstage/backend-plugin-api@0.1.3-next.1
+  - @backstage/catalog-model@1.1.2-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/types@1.0.0
+
 ## 1.1.1-next.0
 
 ### Patch Changes
