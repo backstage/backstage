@@ -329,9 +329,14 @@ export const SearchResultListLayout: (
 // @public
 export type SearchResultListLayoutProps = ListProps & {
   resultItems?: SearchResult_2[];
-  renderResultItem?: (resultItem: SearchResult_2) => JSX.Element;
+  renderResultItem?: (
+    value: SearchResult_2,
+    index: number,
+    array: SearchResult_2[],
+  ) => JSX.Element | null;
   error?: Error;
   loading?: boolean;
+  noResultsComponent?: ReactNode;
 };
 
 // @public
@@ -340,6 +345,7 @@ export type SearchResultListProps = Omit<
   'loading' | 'error' | 'resultItems'
 > & {
   query: Partial<SearchQuery>;
+  disableRenderingWithNoResults?: boolean;
 };
 
 // @public (undocumented)
