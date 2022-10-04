@@ -43,6 +43,7 @@ import auth from './plugins/auth';
 import azureDevOps from './plugins/azure-devops';
 import catalog from './plugins/catalog';
 import codeCoverage from './plugins/codecoverage';
+import events from './plugins/events';
 import kubernetes from './plugins/kubernetes';
 import kafka from './plugins/kafka';
 import rollbar from './plugins/rollbar';
@@ -141,10 +142,12 @@ async function main() {
   );
   const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
   const playlistEnv = useHotMemoize(module, () => createEnv('playlist'));
+  const eventsEnv = useHotMemoize(module, () => createEnv('events'));
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
   apiRouter.use('/code-coverage', await codeCoverage(codeCoverageEnv));
+  apiRouter.use('/events', await events(eventsEnv, []));
   apiRouter.use('/rollbar', await rollbar(rollbarEnv));
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
   apiRouter.use('/tech-insights', await techInsights(techInsightsEnv));
