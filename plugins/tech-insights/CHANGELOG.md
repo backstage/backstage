@@ -1,5 +1,20 @@
 # @backstage/plugin-tech-insights
 
+## 0.3.1-next.1
+
+### Patch Changes
+
+- a60a6807bd: making available the search for the last FACTS executed
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.0-next.1
+  - @backstage/core-components@0.11.2-next.1
+  - @backstage/core-plugin-api@1.0.7-next.1
+  - @backstage/catalog-model@1.1.2-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+  - @backstage/plugin-tech-insights-common@0.2.7-next.1
+
 ## 0.3.1-next.0
 
 ### Patch Changes

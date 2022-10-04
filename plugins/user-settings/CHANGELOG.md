@@ -1,5 +1,20 @@
 # @backstage/plugin-user-settings
 
+## 0.5.0-next.1
+
+### Patch Changes
+
+- 06d61d1266: Handle errors that may occur when the user logs out
+- 44c9a95dcf: Prevent `.set()` to execute a request to the StorageClient if the user is `guest`
+- 174f02a00a: Update installation instructions
+- Updated dependencies
+  - @backstage/core-app-api@1.1.1-next.1
+  - @backstage/core-components@0.11.2-next.1
+  - @backstage/core-plugin-api@1.0.7-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+
 ## 0.5.0-next.0
 
 ### Minor Changes
