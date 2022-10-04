@@ -19,14 +19,23 @@ import type {
   PermissionRuleParams,
 } from '@backstage/plugin-permission-common';
 import { z } from 'zod';
+import { NoInfer } from './integration/util';
 
 /**
- * Prevent use of type parameter from contributing to type inference.
+ * A ZodSchema that reflects the structure of the parameters that are passed to
+ * into a {@link PermissionRule}.
  *
- * https://github.com/Microsoft/TypeScript/issues/14829#issuecomment-980401795
- * @ignore
+ * @public
  */
-export type NoInfer<T> = T extends infer S ? S : never;
+export type PermissionRuleSchema<TParams> = z.ZodObject<{
+  // Parameters can be optional, however we we want to make sure that the
+  // parameters are always present in the schema, even if they are undefined.
+  // We remove the optional flag from the schema, and then add it back in
+  // with an optional zod type.
+  [P in keyof TParams]-?: TParams[P] extends undefined
+    ? z.ZodOptionalType<z.ZodType<TParams[P]>>
+    : z.ZodType<TParams[P]>;
+}>;
 
 /**
  * A conditional rule that can be provided in an
@@ -49,15 +58,6 @@ export type PermissionRule<
   TQuery,
   TResourceType extends string,
   TParams extends PermissionRuleParams = PermissionRuleParams,
-  TSchema extends z.ZodType = z.ZodObject<{
-    // Parameters can be optional, however we we want to make sure that the
-    // parameters are always present in the schema, even if they are undefined.
-    // We remove the optional flag from the schema, and then add it back in
-    // with an optional zod type.
-    [P in keyof TParams]-?: TParams[P] extends undefined
-      ? z.ZodOptionalType<z.ZodType<TParams[P]>>
-      : z.ZodType<TParams[P]>;
-  }>,
 > = {
   name: string;
   description: string;
@@ -66,19 +66,24 @@ export type PermissionRule<
   /**
    * A ZodSchema that documents the parameters that this rule accepts.
    */
-  schema: TSchema;
+  schema: PermissionRuleSchema<TParams>;
 
   /**
    * Apply this rule to a resource already loaded from a backing data source. The params are
    * arguments supplied for the rule; for example, a rule could be `isOwner` with entityRefs as the
    * params.
    */
-  apply(resource: TResource, params: NoInfer<z.input<TSchema>>): boolean;
+  apply(
+    resource: TResource,
+    params: NoInfer<z.input<PermissionRuleSchema<TParams>>>,
+  ): boolean;
 
   /**
    * Translate this rule to criteria suitable for use in querying a backing data store. The criteria
    * can be used for loading a collection of resources efficiently with conditional criteria already
    * applied.
    */
-  toQuery(params: NoInfer<z.input<TSchema>>): PermissionCriteria<TQuery>;
+  toQuery(
+    params: NoInfer<z.input<PermissionRuleSchema<TParams>>>,
+  ): PermissionCriteria<TQuery>;
 };

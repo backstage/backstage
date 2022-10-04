@@ -28,8 +28,9 @@ import {
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
-import { NoInfer, PermissionRule } from '../types';
+import { PermissionRule } from '../types';
 import {
+  NoInfer,
   createGetRule,
   isAndCriteria,
   isNotCriteria,

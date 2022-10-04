@@ -40,6 +40,7 @@ import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { processingResult } from '@backstage/plugin-catalog-node';
@@ -177,37 +178,52 @@ export const catalogConditions: Conditions<{
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [annotation: string, value?: string | undefined]
+    {
+      annotation: string;
+      value: string | undefined;
+    }
   >;
   hasLabel: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [label: string]
+    {
+      label: string;
+    }
   >;
   hasMetadata: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [key: string, value?: string | undefined]
+    {
+      key: string;
+      value: string | undefined;
+    }
   >;
   hasSpec: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [key: string, value?: string | undefined]
+    {
+      key: string;
+      value: string | undefined;
+    }
   >;
   isEntityKind: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [kinds: string[]]
+    {
+      kinds: string[];
+    }
   >;
   isEntityOwner: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [claims: string[]]
+    {
+      claims: string[];
+    }
   >;
 }>;
 
@@ -221,8 +237,9 @@ export type CatalogEnvironment = {
 };
 
 // @alpha
-export type CatalogPermissionRule<TParams extends unknown[] = unknown[]> =
-  PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
+export type CatalogPermissionRule<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 // @alpha
 export const catalogPlugin: (options?: undefined) => BackendFeature;
@@ -280,12 +297,14 @@ export class CodeOwnersProcessor implements CatalogProcessor {
 export const createCatalogConditionalDecision: (
   permission: ResourcePermission<'catalog-entity'>,
   conditions: PermissionCriteria<
-    PermissionCondition<'catalog-entity', unknown[]>
+    PermissionCondition<'catalog-entity', PermissionRuleParams>
   >,
 ) => ConditionalPolicyDecision;
 
 // @alpha
-export const createCatalogPermissionRule: <TParams extends unknown[]>(
+export const createCatalogPermissionRule: <
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+>(
   rule: PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>,
 ) => PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
@@ -448,37 +467,52 @@ export const permissionRules: {
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [annotation: string, value?: string | undefined]
+    {
+      annotation: string;
+      value: string | undefined;
+    }
   >;
   hasLabel: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [label: string]
+    {
+      label: string;
+    }
   >;
   hasMetadata: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [key: string, value?: string | undefined]
+    {
+      key: string;
+      value: string | undefined;
+    }
   >;
   hasSpec: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [key: string, value?: string | undefined]
+    {
+      key: string;
+      value: string | undefined;
+    }
   >;
   isEntityKind: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [kinds: string[]]
+    {
+      kinds: string[];
+    }
   >;
   isEntityOwner: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [claims: string[]]
+    {
+      claims: string[];
+    }
   >;
 };
 
