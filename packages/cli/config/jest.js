@@ -25,6 +25,11 @@ const envOptions = {
   enableSourceMaps: Boolean(process.env.ENABLE_SOURCE_MAPS),
 };
 
+if (envOptions.nextTests) {
+  // Needed so that, at import-time, it can hook into Jest's internals.
+  require('./jestCachingModuleLoader');
+}
+
 const transformIgnorePattern = [
   '@material-ui',
   'ajv',
