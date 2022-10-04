@@ -1,6 +1,5 @@
 ---
 '@backstage/plugin-catalog-backend': minor
-'@backstage/plugin-permission-backend': minor
 '@backstage/plugin-permission-common': minor
 '@backstage/plugin-permission-node': minor
 '@backstage/plugin-playlist-backend': minor
