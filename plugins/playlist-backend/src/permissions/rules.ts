@@ -36,7 +36,7 @@ const isOwner = createPlaylistPermissionRule<{
   description: 'Should allow only if the playlist belongs to the user',
   resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
   schema: z.object({
-    owners: z.array(z.string().describe('List of owner entity refs')),
+    owners: z.array(z.string()).describe('List of owner entity refs'),
   }),
   apply: (list: PlaylistMetadata, { owners }) => owners.includes(list.owner),
   toQuery: ({ owners }) => ({

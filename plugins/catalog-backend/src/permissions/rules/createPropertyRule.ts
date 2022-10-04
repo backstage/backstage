@@ -28,11 +28,13 @@ export const createPropertyRule = (propertyType: 'metadata' | 'spec') =>
     description: `Allow entities which have the specified ${propertyType} subfield.`,
     resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
     schema: z.object({
-      key: z.string().describe(`The key of the ${propertyType} to match on`),
+      key: z
+        .string()
+        .describe(`Property within the entities ${propertyType} to match on`),
       value: z
         .string()
         .optional()
-        .describe(`Optional value of the ${propertyType} to match on`),
+        .describe(`Value of the given property to match on`),
     }),
     apply: (resource, { key, value }) => {
       const foundValue = get(resource[propertyType], key);

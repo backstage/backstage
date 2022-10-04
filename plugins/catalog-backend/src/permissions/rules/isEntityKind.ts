@@ -28,7 +28,9 @@ export const isEntityKind = createCatalogPermissionRule({
   description: 'Allow entities with the specified kind',
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
   schema: z.object({
-    kinds: z.array(z.string()),
+    kinds: z
+      .array(z.string())
+      .describe('List of kinds to match at least one of'),
   }),
   apply(resource, { kinds }) {
     const resourceKind = resource.kind.toLocaleLowerCase('en-US');

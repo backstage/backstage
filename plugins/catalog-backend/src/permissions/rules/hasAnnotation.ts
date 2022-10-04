@@ -35,11 +35,11 @@ export const hasAnnotation = createCatalogPermissionRule<{
     'Allow entities which are annotated with the specified annotation',
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
   schema: z.object({
-    annotation: z.string().describe('The name of the annotation to match on'),
+    annotation: z.string().describe('Name of the annotation to match on'),
     value: z
       .string()
       .optional()
-      .describe('Optional value of the annotation to match on'),
+      .describe('Value of the annotation to match on'),
   }),
   apply: (resource, { annotation, value }) =>
     !!resource.metadata.annotations?.hasOwnProperty(annotation) &&

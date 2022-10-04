@@ -61,7 +61,7 @@ export type PermissionRule<
     // with an optional zod type.
     [P in keyof TParams]-?: TParams[P] extends undefined
       ? z.ZodOptionalType<z.ZodType<TParams[P]>>
-      : z.ZodType<TParams[P], any, any>;
+      : z.ZodType<TParams[P]>;
   }>;
 
   /**
