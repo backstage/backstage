@@ -42,7 +42,7 @@ export type GeneratorBuilder = {
 
 // @public
 export type GeneratorOptions = {
-  containerRunner: ContainerRunner;
+  containerRunner?: ContainerRunner;
   logger: Logger;
 };
 
@@ -213,7 +213,7 @@ export interface TechDocsDocument extends IndexableDocument {
 export class TechdocsGenerator implements GeneratorBase {
   constructor(options: {
     logger: Logger;
-    containerRunner: ContainerRunner;
+    containerRunner?: ContainerRunner;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
   });

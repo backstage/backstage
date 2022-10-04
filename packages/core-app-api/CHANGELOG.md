@@ -1,5 +1,26 @@
 # @backstage/core-app-api
 
+## 1.1.1-next.1
+
+### Patch Changes
+
+- 27e6404aba: Fixed a bug where gathered index routes would fail to bind routable extensions. This would typically show up when placing a routable extension in the entity page overview tab.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.7-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.0
+  - @backstage/core-plugin-api@1.0.7-next.0
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
 ## 1.1.0
 
 ### Minor Changes

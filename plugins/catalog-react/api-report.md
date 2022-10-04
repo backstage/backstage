@@ -176,7 +176,7 @@ export const EntityKindPicker: (
 // @public
 export interface EntityKindPickerProps {
   // (undocumented)
-  hidden: boolean;
+  hidden?: boolean;
   // (undocumented)
   initialFilter?: string;
 }
@@ -279,13 +279,28 @@ export type EntityRefLinkProps = {
 } & Omit<LinkProps, 'to'>;
 
 // @public
-export function EntityRefLinks(props: EntityRefLinksProps): JSX.Element;
+export function EntityRefLinks<
+  TRef extends string | CompoundEntityRef | Entity,
+>(props: EntityRefLinksProps<TRef>): JSX.Element;
 
 // @public
-export type EntityRefLinksProps = {
-  entityRefs: (string | Entity | CompoundEntityRef)[];
-  defaultKind?: string;
-} & Omit<LinkProps, 'to'>;
+export type EntityRefLinksProps<
+  TRef extends string | CompoundEntityRef | Entity,
+> = (
+  | {
+      defaultKind?: string;
+      entityRefs: TRef[];
+      fetchEntities?: false;
+      getTitle?(entity: TRef): string | undefined;
+    }
+  | {
+      defaultKind?: string;
+      entityRefs: TRef[];
+      fetchEntities: true;
+      getTitle(entity: Entity): string | undefined;
+    }
+) &
+  Omit<LinkProps, 'to'>;
 
 // @public
 export function entityRouteParams(entity: Entity): {

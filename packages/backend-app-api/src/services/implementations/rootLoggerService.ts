@@ -39,7 +39,7 @@ class BackstageLogger implements Logger {
 }
 
 /** @public */
-export const loggerFactory = createServiceFactory({
+export const rootLoggerFactory = createServiceFactory({
   service: rootLoggerServiceRef,
   deps: {},
   async factory() {

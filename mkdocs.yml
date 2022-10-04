@@ -64,6 +64,7 @@ nav:
           - Writing Templates: 'features/software-templates/writing-templates.md'
           - Builtin Actions: 'features/software-templates/builtin-actions.md'
           - Writing Custom Actions: 'features/software-templates/writing-custom-actions.md'
+          - Writing Custom Step Layouts: 'features/software-templates/writing-custom-step-layouts.md'
           - Writing Templates (Legacy): 'features/software-templates/legacy.md'
           - Migrating from v1alpha1 to v1beta2 templates: 'features/software-templates/migrating-from-v1alpha1-to-v1beta2.md'
       - Backstage Search:
@@ -163,6 +164,7 @@ nav:
       - Sign in resolvers: 'auth/identity-resolver.md'
       - OAuth and OpenID Connect: 'auth/oauth.md'
       - Contributing New Providers: 'auth/add-auth-provider.md'
+      - Service to Service Auth: 'auth/service-to-service-auth.md'
       - Troubleshooting Auth: 'auth/troubleshooting.md'
       - Glossary: 'auth/glossary.md'
   - Deployment:

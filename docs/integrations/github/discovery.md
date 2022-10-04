@@ -96,6 +96,10 @@ catalog:
           topic:
             include: ['backstage-include'] # optional array of strings
             exclude: ['experiments'] # optional array of strings
+      enterpriseProviderId:
+        host: ghe.example.net
+        organization: 'backstage' # string
+        catalogPath: '/catalog-info.yaml' # string
 ```
 
 This provider supports multiple organizations via unique provider IDs.
@@ -125,6 +129,8 @@ This provider supports multiple organizations via unique provider IDs.
 - **organization**:
   Name of your organization account/workspace.
   If you want to add multiple organizations, you need to add one provider config each.
+- **host** _(optional)_:
+  The hostname of your GitHub Enterprise instance. It must match a host defined in [integrations.github](locations.md).
 
 ## GitHub API Rate Limits
 

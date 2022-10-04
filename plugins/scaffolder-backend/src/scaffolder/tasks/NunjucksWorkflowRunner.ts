@@ -31,6 +31,7 @@ import {
   TemplateFilter,
   SecureTemplater,
   SecureTemplateRenderer,
+  TemplateGlobal,
 } from '../../lib/templating/SecureTemplater';
 import {
   TaskSpec,
@@ -45,6 +46,7 @@ type NunjucksWorkflowRunnerOptions = {
   integrations: ScmIntegrations;
   logger: winston.Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 };
 
 type TemplateContext = {
@@ -75,7 +77,6 @@ const createStepLogger = ({
     level: process.env.LOG_LEVEL || 'info',
     format: winston.format.combine(
       winston.format.colorize(),
-      winston.format.timestamp(),
       winston.format.simple(),
     ),
     defaultMeta: {},
@@ -197,6 +198,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         return parseRepoUrl(url, integrations);
       },
       additionalTemplateFilters: this.options.additionalTemplateFilters,
+      additionalTemplateGlobals: this.options.additionalTemplateGlobals,
     });
 
     try {

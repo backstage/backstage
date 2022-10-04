@@ -26,6 +26,7 @@ import { isBinaryFile } from 'isbinaryfile';
 import {
   TemplateFilter,
   SecureTemplater,
+  TemplateGlobal,
 } from '../../../../lib/templating/SecureTemplater';
 
 /**
@@ -39,8 +40,14 @@ export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }) {
-  const { reader, integrations, additionalTemplateFilters } = options;
+  const {
+    reader,
+    integrations,
+    additionalTemplateFilters,
+    additionalTemplateGlobals,
+  } = options;
 
   return createTemplateAction<{
     url: string;
@@ -218,6 +225,7 @@ export function createFetchTemplateAction(options: {
       const renderTemplate = await SecureTemplater.loadRenderer({
         cookiecutterCompat: ctx.input.cookiecutterCompat,
         additionalTemplateFilters,
+        additionalTemplateGlobals,
       });
 
       for (const location of allEntriesInTemplate) {

@@ -68,7 +68,7 @@ export interface CatalogApi {
   ): Promise<void>;
   validateEntity(
     entity: Entity,
-    location: string,
+    locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<ValidateEntityResponse>;
 }
@@ -130,7 +130,7 @@ export class CatalogClient implements CatalogApi {
   ): Promise<void>;
   validateEntity(
     entity: Entity,
-    location: string,
+    locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<ValidateEntityResponse>;
 }

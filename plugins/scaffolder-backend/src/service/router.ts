@@ -36,7 +36,7 @@ import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
 import { Logger } from 'winston';
 import { z } from 'zod';
-import { TemplateFilter } from '../lib';
+import { TemplateFilter, TemplateGlobal } from '../lib';
 import {
   createBuiltinActions,
   DatabaseTaskStore,
@@ -70,6 +70,7 @@ export interface RouterOptions {
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   identity?: IdentityApi;
 }
 
@@ -148,7 +149,8 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
-  router.use(express.json());
+  // Be generous in upload size to support a wide range of templates in dry-run mode.
+  router.use(express.json({ limit: '10MB' }));
 
   const {
     logger: parentLogger,
@@ -160,6 +162,7 @@ export async function createRouter(
     taskWorkers,
     scheduler,
     additionalTemplateFilters,
+    additionalTemplateGlobals,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
@@ -207,6 +210,7 @@ export async function createRouter(
       logger,
       workingDirectory,
       additionalTemplateFilters,
+      additionalTemplateGlobals,
     });
     workers.push(worker);
   }
@@ -219,6 +223,7 @@ export async function createRouter(
         reader,
         config,
         additionalTemplateFilters,
+        additionalTemplateGlobals,
       });
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
@@ -230,6 +235,7 @@ export async function createRouter(
     logger,
     workingDirectory,
     additionalTemplateFilters,
+    additionalTemplateGlobals,
   });
 
   router

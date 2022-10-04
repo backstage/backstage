@@ -60,6 +60,8 @@ export const createBuiltinActions: (
 // @public
 export interface CreateBuiltInActionsOptions {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  // (undocumented)
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   catalogClient: CatalogApi;
   config: Config;
   integrations: ScmIntegrations;
@@ -108,6 +110,7 @@ export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }): TemplateAction<{
   url: string;
   targetPath?: string | undefined;
@@ -193,6 +196,7 @@ export function createGithubRepoCreateAction(options: {
   allowRebaseMerge?: boolean | undefined;
   allowSquashMerge?: boolean | undefined;
   allowMergeCommit?: boolean | undefined;
+  allowAutoMerge?: boolean | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
@@ -358,6 +362,7 @@ export function createPublishGithubAction(options: {
   allowRebaseMerge?: boolean | undefined;
   allowSquashMerge?: boolean | undefined;
   allowMergeCommit?: boolean | undefined;
+  allowAutoMerge?: boolean | undefined;
   sourcePath?: string | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
@@ -449,6 +454,7 @@ export type CreateWorkerOptions = {
   logger: Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   concurrentTasksLimit?: number;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 };
 
 // @public
@@ -539,6 +545,8 @@ export interface RouterOptions {
   // (undocumented)
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   // (undocumented)
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  // (undocumented)
   catalogClient: CatalogApi;
   // (undocumented)
   config: Config;
@@ -594,6 +602,7 @@ export type ScaffolderPluginOptions = {
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 };
 
 // @public
@@ -814,4 +823,9 @@ export class TemplateActionRegistry {
 
 // @public (undocumented)
 export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
+
+// @public (undocumented)
+export type TemplateGlobal =
+  | ((...args: JsonValue[]) => JsonValue | undefined)
+  | JsonValue;
 ```

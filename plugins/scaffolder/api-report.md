@@ -72,6 +72,8 @@ export interface EntityPickerUiOptions {
   allowedKinds?: string[];
   // (undocumented)
   defaultKind?: string;
+  // (undocumented)
+  defaultNamespace?: string | false;
 }
 
 // @public
@@ -183,6 +185,8 @@ export interface OwnedEntityPickerUiOptions {
   allowedKinds?: string[];
   // (undocumented)
   defaultKind?: string;
+  // (undocumented)
+  defaultNamespace?: string | false;
 }
 
 // @public
@@ -197,6 +201,8 @@ export interface OwnerPickerUiOptions {
   allowArbitraryValues?: boolean;
   // (undocumented)
   allowedKinds?: string[];
+  // (undocumented)
+  defaultNamespace?: string | false;
 }
 
 // @public
@@ -218,6 +224,8 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent<
 export interface RepoUrlPickerUiOptions {
   // (undocumented)
   allowedHosts?: string[];
+  // (undocumented)
+  allowedOrganizations?: string[];
   // (undocumented)
   allowedOwners?: string[];
   // (undocumented)
@@ -390,6 +398,14 @@ export const scaffolderPlugin: BackstagePlugin<
   },
   {
     registerComponent: ExternalRouteRef<undefined, true>;
+    viewTechDoc: ExternalRouteRef<
+      {
+        name: string;
+        kind: string;
+        namespace: string;
+      },
+      true
+    >;
   },
   {}
 >;

@@ -38,6 +38,7 @@ export interface OwnedEntityPickerUiOptions {
   allowedKinds?: string[];
   defaultKind?: string;
   allowArbitraryValues?: boolean;
+  defaultNamespace?: string | false;
 }
 
 /**
@@ -61,12 +62,13 @@ export const OwnedEntityPicker = (
 
   const allowedKinds = uiSchema['ui:options']?.allowedKinds;
   const defaultKind = uiSchema['ui:options']?.defaultKind;
+  const defaultNamespace = uiSchema['ui:options']?.defaultNamespace;
   const allowArbitraryValues =
     uiSchema['ui:options']?.allowArbitraryValues ?? true;
   const { ownedEntities, loading } = useOwnedEntities(allowedKinds);
 
   const entityRefs = ownedEntities?.items
-    .map(e => humanizeEntityRef(e, { defaultKind }))
+    .map(e => humanizeEntityRef(e, { defaultKind, defaultNamespace }))
     .filter(n => n);
 
   const onSelect = (_: any, value: string | null) => {

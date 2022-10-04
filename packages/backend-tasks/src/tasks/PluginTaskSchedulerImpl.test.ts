@@ -45,7 +45,7 @@ describe('PluginTaskManagerImpl', () => {
     );
 
     jest.useFakeTimers();
-  }, 30_000);
+  }, 60_000);
 
   async function init(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);

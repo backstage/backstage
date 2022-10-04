@@ -20,7 +20,10 @@ import { Logger } from 'winston';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { assertError } from '@backstage/errors';
-import { TemplateFilter } from '../../lib/templating/SecureTemplater';
+import {
+  TemplateFilter,
+  TemplateGlobal,
+} from '../../lib/templating/SecureTemplater';
 
 /**
  * TaskWorkerOptions
@@ -48,6 +51,7 @@ export type CreateWorkerOptions = {
   logger: Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   concurrentTasksLimit?: number;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 };
 
 // Same implementation as StorageTaskBroker
@@ -99,6 +103,7 @@ export class TaskWorker {
       workingDirectory,
       additionalTemplateFilters,
       concurrentTasksLimit = 10, // Or Infinity
+      additionalTemplateGlobals,
     } = options;
 
     const workflowRunner = new NunjucksWorkflowRunner({
@@ -107,6 +112,7 @@ export class TaskWorker {
       logger,
       workingDirectory,
       additionalTemplateFilters,
+      additionalTemplateGlobals,
     });
 
     return new TaskWorker({

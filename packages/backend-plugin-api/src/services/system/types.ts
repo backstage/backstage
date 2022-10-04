@@ -133,7 +133,7 @@ export function createServiceFactory<
   TScope extends 'root' | 'plugin',
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },
-  TOpts extends { [name in string]: unknown } | undefined = undefined,
+  TOpts extends object | undefined = undefined,
 >(config: {
   service: ServiceRef<TService, TScope>;
   deps: TDeps;

@@ -14,12 +14,24 @@
  * limitations under the License.
  */
 import {
+  DEFAULT_NAMESPACE,
   Entity,
+  EntityLink,
   parseEntityRef,
   RELATION_OWNED_BY,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import {
+  Button,
+  ItemCardHeader,
+  MarkdownContent,
+} from '@backstage/core-components';
+import {
+  IconComponent,
+  useApi,
+  useApp,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import {
   ScmIntegrationIcon,
   scmIntegrationsApiRef,
@@ -30,6 +42,7 @@ import {
   getEntityRelations,
   getEntitySourceLocation,
 } from '@backstage/plugin-catalog-react';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
@@ -45,16 +58,10 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
+import LanguageIcon from '@material-ui/icons/Language';
 import WarningIcon from '@material-ui/icons/Warning';
 import React from 'react';
-import { selectedTemplateRouteRef } from '../../routes';
-
-import {
-  Button,
-  ItemCardHeader,
-  MarkdownContent,
-} from '@backstage/core-components';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { selectedTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 
 const useStyles = makeStyles(theme => ({
   cardHeader: {
@@ -69,7 +76,6 @@ const useStyles = makeStyles(theme => ({
     display: '-webkit-box',
     '-webkit-line-clamp': 10,
     '-webkit-box-orient': 'vertical',
-    paddingBottom: '0.8em',
   },
   label: {
     color: theme.palette.text.secondary,
@@ -79,6 +85,14 @@ const useStyles = makeStyles(theme => ({
     letterSpacing: 0.5,
     lineHeight: 1,
     paddingBottom: '0.2rem',
+  },
+  linksLabel: {
+    padding: '0 16px',
+  },
+  description: {
+    '& p': {
+      margin: '0px',
+    },
   },
   leftButton: {
     marginRight: 'auto',
@@ -91,6 +105,8 @@ const useStyles = makeStyles(theme => ({
     color: '#fff',
   },
 }));
+
+const MuiIcon = ({ icon: Icon }: { icon: IconComponent }) => <Icon />;
 
 const useDeprecationStyles = makeStyles(theme => ({
   deprecationIcon: {
@@ -115,6 +131,7 @@ type TemplateProps = {
   title: string;
   type: string;
   name: string;
+  links: EntityLink[];
 };
 
 const getTemplateCardProps = (
@@ -127,6 +144,7 @@ const getTemplateCardProps = (
     type: template.spec.type ?? '',
     description: template.metadata.description ?? '-',
     tags: (template.metadata?.tags as string[]) ?? [],
+    links: template.metadata.links ?? [],
   };
 };
 
@@ -155,6 +173,7 @@ const DeprecationWarning = () => {
 };
 
 export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
+  const app = useApp();
   const backstageTheme = useTheme<BackstageTheme>();
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
   const templateProps = getTemplateCardProps(template);
@@ -170,6 +189,22 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
   const { name, namespace } = parseEntityRef(stringifyEntityRef(template));
   const href = templateRoute({ templateName: name, namespace });
 
+  // TechDocs Link
+  const viewTechDoc = useRouteRef(viewTechDocRouteRef);
+  const viewTechDocsAnnotation =
+    template.metadata.annotations?.['backstage.io/techdocs-ref'];
+  const viewTechDocsLink =
+    !!viewTechDocsAnnotation &&
+    !!viewTechDoc &&
+    viewTechDoc({
+      namespace: template.metadata.namespace || DEFAULT_NAMESPACE,
+      kind: template.kind,
+      name: template.metadata.name,
+    });
+
+  const iconResolver = (key?: string): IconComponent =>
+    key ? app.getSystemIcon(key) ?? LanguageIcon : LanguageIcon;
+
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
   const sourceLocation = getEntitySourceLocation(template, scmIntegrationsApi);
 
@@ -184,12 +219,17 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
           classes={{ root: classes.title }}
         />
       </CardMedia>
-      <CardContent style={{ display: 'grid' }}>
+      <CardContent
+        style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+      >
         <Box className={classes.box}>
           <Typography variant="body2" className={classes.label}>
             Description
           </Typography>
-          <MarkdownContent content={templateProps.description} />
+          <MarkdownContent
+            className={classes.description}
+            content={templateProps.description}
+          />
         </Box>
         <Box className={classes.box}>
           <Typography variant="body2" className={classes.label}>
@@ -198,7 +238,11 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
           <EntityRefLinks entityRefs={ownedByRelations} defaultKind="Group" />
         </Box>
         <Box>
-          <Typography variant="body2" className={classes.label}>
+          <Typography
+            style={{ marginBottom: '4px' }}
+            variant="body2"
+            className={classes.label}
+          >
             Tags
           </Typography>
           {templateProps.tags?.map(tag => (
@@ -206,15 +250,47 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
           ))}
         </Box>
       </CardContent>
+      <Typography
+        variant="body2"
+        className={[classes.label, classes.linksLabel].join(' ')}
+      >
+        Links
+      </Typography>
       <CardActions>
-        {sourceLocation && (
-          <IconButton
-            className={classes.leftButton}
-            href={sourceLocation.locationTargetUrl}
-          >
-            <ScmIntegrationIcon type={sourceLocation.integrationType} />
-          </IconButton>
-        )}
+        <div className={classes.leftButton}>
+          {sourceLocation && (
+            <Tooltip
+              title={
+                sourceLocation.integrationType ||
+                sourceLocation.locationTargetUrl
+              }
+            >
+              <IconButton
+                className={classes.leftButton}
+                href={sourceLocation.locationTargetUrl}
+              >
+                <ScmIntegrationIcon type={sourceLocation.integrationType} />
+              </IconButton>
+            </Tooltip>
+          )}
+          {viewTechDocsLink && (
+            <Tooltip title="View TechDocs">
+              <IconButton
+                className={classes.leftButton}
+                href={viewTechDocsLink}
+              >
+                <MuiIcon icon={iconResolver('docs')} />
+              </IconButton>
+            </Tooltip>
+          )}
+          {templateProps.links?.map((link, i) => (
+            <Tooltip key={`${link.url}_${i}`} title={link.title || link.url}>
+              <IconButton size="medium" href={link.url}>
+                <MuiIcon icon={iconResolver(link.icon)} />
+              </IconButton>
+            </Tooltip>
+          ))}
+        </div>
         <Button
           color="primary"
           to={href}

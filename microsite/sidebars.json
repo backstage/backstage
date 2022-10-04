@@ -97,6 +97,7 @@
           "features/software-templates/builtin-actions",
           "features/software-templates/writing-custom-actions",
           "features/software-templates/writing-custom-field-extensions",
+          "features/software-templates/writing-custom-step-layouts",
           "features/software-templates/migrating-from-v1beta2-to-v1beta3"
         ]
       },
@@ -278,6 +279,7 @@
       "auth/identity-resolver",
       "auth/oauth",
       "auth/add-auth-provider",
+      "auth/service-to-service-auth",
       "auth/troubleshooting",
       "auth/glossary"
     ],
@@ -295,7 +297,8 @@
           "permissions/plugin-authors/01-setup",
           "permissions/plugin-authors/02-adding-a-basic-permission-check",
           "permissions/plugin-authors/03-adding-a-resource-permission-check",
-          "permissions/plugin-authors/04-authorizing-access-to-paginated-data"
+          "permissions/plugin-authors/04-authorizing-access-to-paginated-data",
+          "permissions/plugin-authors/05-frontend-authorization"
         ]
       }
     ],
@@ -333,7 +336,6 @@
       "tutorials/configuring-plugin-databases",
       "tutorials/switching-sqlite-postgres",
       "tutorials/using-backstage-proxy-within-plugin",
-      "tutorials/backend-to-backend-auth",
       "tutorials/yarn-migration"
     ],
     "Architecture Decision Records (ADRs)": [

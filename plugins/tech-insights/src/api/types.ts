@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { JsonValue } from '@backstage/types';
+
 /**
  * Represents a single check defined on the TechInsights backend.
  *
@@ -26,3 +28,16 @@ export type Check = {
   description: string;
   factIds: string[];
 };
+
+/**
+ * Represents a Fact defined on the TechInsights backend.
+ *
+ * @public
+ */
+export interface InsightFacts {
+  [factId: string]: {
+    timestamp: string;
+    version: string;
+    facts: Record<string, JsonValue>;
+  };
+}

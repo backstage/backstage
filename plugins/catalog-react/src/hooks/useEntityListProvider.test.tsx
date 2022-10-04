@@ -17,6 +17,7 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
+  alertApiRef,
   ConfigApi,
   configApiRef,
   IdentityApi,
@@ -91,6 +92,7 @@ const wrapper = ({
           [identityApiRef, mockIdentityApi],
           [storageApiRef, MockStorageApi.create()],
           [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+          [alertApiRef, { post: jest.fn() }],
         ]}
       >
         <EntityListProvider>

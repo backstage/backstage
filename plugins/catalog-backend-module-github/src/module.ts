@@ -41,7 +41,7 @@ export type GithubEntityProviderCatalogModuleOptions = {
  */
 export const githubEntityProviderCatalogModule = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'github-entity-provider',
+  moduleId: 'githubEntityProvider',
   register(env, options?: GithubEntityProviderCatalogModuleOptions) {
     env.registerInit({
       deps: {
