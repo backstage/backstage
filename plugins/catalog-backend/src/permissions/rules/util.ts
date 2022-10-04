@@ -16,6 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import {
   makeCreatePermissionRule,
   PermissionRule,
@@ -30,7 +31,7 @@ import { EntitiesSearchFilter } from '../../catalog/types';
  * @alpha
  */
 export type CatalogPermissionRule<
-  TParams extends Record<string, unknown> = Record<string, unknown>,
+  TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 /**

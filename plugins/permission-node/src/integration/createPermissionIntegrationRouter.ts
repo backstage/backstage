@@ -46,7 +46,7 @@ const permissionCriteriaSchema: z.ZodSchema<
     z.object({
       rule: z.string(),
       resourceType: z.string(),
-      params: z.record(z.unknown()),
+      params: z.record(z.any()),
     }),
   ]),
 );

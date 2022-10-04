@@ -39,10 +39,10 @@ const transformConditions = createConditionTransformer([
     description: 'Test rule 2',
     resourceType: 'test-resource',
     schema: z.object({
-      foo: z.object({}),
+      foo: z.string(),
     }),
     apply: jest.fn(),
-    toQuery: jest.fn(({ foo }) => `test-rule-2:${JSON.stringify(foo)}`),
+    toQuery: jest.fn(({ foo }) => `test-rule-2:${foo}`),
   }),
 ]);
 
@@ -67,10 +67,10 @@ describe('createConditionTransformer', () => {
         rule: 'test-rule-2',
         resourceType: 'test-resource',
         params: {
-          foo: { foo: 0 },
+          foo: '0',
         },
       },
-      expectedResult: 'test-rule-2:{"foo":0}',
+      expectedResult: 'test-rule-2:0',
     },
     {
       conditions: {
@@ -87,13 +87,13 @@ describe('createConditionTransformer', () => {
             rule: 'test-rule-2',
             resourceType: 'test-resource',
             params: {
-              foo: {},
+              foo: 'b',
             },
           },
         ],
       },
       expectedResult: {
-        anyOf: ['test-rule-1:a/1', 'test-rule-2:{}'],
+        anyOf: ['test-rule-1:a/1', 'test-rule-2:b'],
       },
     },
     {
@@ -111,13 +111,13 @@ describe('createConditionTransformer', () => {
             rule: 'test-rule-2',
             resourceType: 'test-resource',
             params: {
-              foo: {},
+              foo: 'b',
             },
           },
         ],
       },
       expectedResult: {
-        allOf: ['test-rule-1:a/1', 'test-rule-2:{}'],
+        allOf: ['test-rule-1:a/1', 'test-rule-2:b'],
       },
     },
     {
@@ -126,12 +126,12 @@ describe('createConditionTransformer', () => {
           rule: 'test-rule-2',
           resourceType: 'test-resource',
           params: {
-            foo: {},
+            foo: 'a',
           },
         },
       },
       expectedResult: {
-        not: 'test-rule-2:{}',
+        not: 'test-rule-2:a',
       },
     },
     {
@@ -151,7 +151,7 @@ describe('createConditionTransformer', () => {
                 rule: 'test-rule-2',
                 resourceType: 'test-resource',
                 params: {
-                  foo: {},
+                  foo: 'b',
                 },
               },
             ],
@@ -171,9 +171,7 @@ describe('createConditionTransformer', () => {
                   rule: 'test-rule-2',
                   resourceType: 'test-resource',
                   params: {
-                    foo: {
-                      c: 3,
-                    },
+                    foo: 'c',
                   },
                 },
               ],
@@ -184,11 +182,11 @@ describe('createConditionTransformer', () => {
       expectedResult: {
         allOf: [
           {
-            anyOf: ['test-rule-1:a/1', 'test-rule-2:{}'],
+            anyOf: ['test-rule-1:a/1', 'test-rule-2:b'],
           },
           {
             not: {
-              allOf: ['test-rule-1:b/2', 'test-rule-2:{"c":3}'],
+              allOf: ['test-rule-1:b/2', 'test-rule-2:c'],
             },
           },
         ],
@@ -211,9 +209,7 @@ describe('createConditionTransformer', () => {
                 rule: 'test-rule-2',
                 resourceType: 'test-resource',
                 params: {
-                  foo: {
-                    b: 2,
-                  },
+                  foo: 'b',
                 },
               },
             ],
@@ -234,9 +230,7 @@ describe('createConditionTransformer', () => {
                     rule: 'test-rule-2',
                     resourceType: 'test-resource',
                     params: {
-                      foo: {
-                        d: 4,
-                      },
+                      foo: 'd',
                     },
                   },
                 },
@@ -248,11 +242,11 @@ describe('createConditionTransformer', () => {
       expectedResult: {
         allOf: [
           {
-            anyOf: ['test-rule-1:a/1', 'test-rule-2:{"b":2}'],
+            anyOf: ['test-rule-1:a/1', 'test-rule-2:b'],
           },
           {
             not: {
-              allOf: ['test-rule-1:c/3', { not: 'test-rule-2:{"d":4}' }],
+              allOf: ['test-rule-1:c/3', { not: 'test-rule-2:d' }],
             },
           },
         ],

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { PermissionCriteria } from '@backstage/plugin-permission-common';
+import type {
+  PermissionCriteria,
+  PermissionRuleParams,
+} from '@backstage/plugin-permission-common';
 import { z } from 'zod';
 
 /**
@@ -45,7 +48,7 @@ export type PermissionRule<
   TResource,
   TQuery,
   TResourceType extends string,
-  TParams extends Record<string, unknown> = Record<string, unknown>,
+  TParams extends PermissionRuleParams = PermissionRuleParams,
   TSchema extends z.ZodType = z.ZodObject<{
     // Parameters can be optional, however we we want to make sure that the
     // parameters are always present in the schema, even if they are undefined.

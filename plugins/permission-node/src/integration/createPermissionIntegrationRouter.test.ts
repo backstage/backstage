@@ -53,7 +53,7 @@ const testRule2 = createPermissionRule({
   description: 'Test rule 2',
   resourceType: 'test-resource',
   schema: z.object({
-    foo: z.object({}).describe('foo'),
+    foo: z.string().describe('foo'),
   }),
   apply: (_resource: any, _foo) => false,
   toQuery: _foo => ({}),
@@ -105,7 +105,7 @@ describe('createPermissionIntegrationRouter', () => {
           {
             rule: 'test-rule-2',
             resourceType: 'test-resource',
-            params: { foo: {} },
+            params: { foo: 'b' },
           },
         ],
       },
@@ -114,7 +114,7 @@ describe('createPermissionIntegrationRouter', () => {
           rule: 'test-rule-2',
           resourceType: 'test-resource',
           params: {
-            foo: {},
+            foo: 'c',
           },
         },
       },
@@ -134,7 +134,7 @@ describe('createPermissionIntegrationRouter', () => {
                 rule: 'test-rule-2',
                 resourceType: 'test-resource',
                 params: {
-                  foo: {},
+                  foo: 'b',
                 },
               },
             ],
@@ -154,7 +154,7 @@ describe('createPermissionIntegrationRouter', () => {
                   rule: 'test-rule-2',
                   resourceType: 'test-resource',
                   params: {
-                    foo: { c: 3 },
+                    foo: 'c',
                   },
                 },
               ],
@@ -192,7 +192,7 @@ describe('createPermissionIntegrationRouter', () => {
         rule: 'test-rule-2',
         resourceType: 'test-resource',
         params: {
-          foo: { foo: 0 },
+          foo: 'a',
         },
       },
       {
@@ -208,7 +208,7 @@ describe('createPermissionIntegrationRouter', () => {
           {
             rule: 'test-rule-2',
             resourceType: 'test-resource',
-            params: { foo: {} },
+            params: { foo: 'b' },
           },
         ],
       },
@@ -228,7 +228,7 @@ describe('createPermissionIntegrationRouter', () => {
                 rule: 'test-rule-2',
                 resourceType: 'test-resource',
                 params: {
-                  foo: { b: 2 },
+                  foo: 'b',
                 },
               },
             ],
@@ -249,7 +249,7 @@ describe('createPermissionIntegrationRouter', () => {
                     rule: 'test-rule-2',
                     resourceType: 'test-resource',
                     params: {
-                      foo: { d: 4 },
+                      foo: 'd',
                     },
                   },
                 },
@@ -310,7 +310,7 @@ describe('createPermissionIntegrationRouter', () => {
                   rule: 'test-rule-2',
                   resourceType: 'test-resource',
                   params: {
-                    foo: {},
+                    foo: 'b',
                   },
                 },
               },
@@ -338,7 +338,7 @@ describe('createPermissionIntegrationRouter', () => {
                     rule: 'test-rule-2',
                     resourceType: 'test-resource',
                     params: {
-                      foo: {},
+                      foo: 'c',
                     },
                   },
                 },
@@ -361,7 +361,7 @@ describe('createPermissionIntegrationRouter', () => {
                       rule: 'test-rule-2',
                       resourceType: 'test-resource',
                       params: {
-                        foo: {},
+                        foo: 'd',
                       },
                     },
                   ],
@@ -628,10 +628,8 @@ describe('createPermissionIntegrationRouter', () => {
               additionalProperties: false,
               properties: {
                 foo: {
-                  additionalProperties: false,
                   description: 'foo',
-                  properties: {},
-                  type: 'object',
+                  type: 'string',
                 },
               },
               required: ['foo'],
