@@ -17,7 +17,7 @@
 import express from 'express';
 import { THOUSAND_DAYS_MS, TEN_MINUTES_MS, OAuthAdapter } from './OAuthAdapter';
 import { encodeState } from './helpers';
-import { OAuthHandlers, OAuthState } from './types';
+import { OAuthHandlers, OAuthLogoutRequest, OAuthState } from './types';
 import { CookieConfigurer } from '../../providers/types';
 
 const mockResponseData = {
@@ -60,6 +60,7 @@ describe('OAuthAdapter', () => {
         refreshToken: 'token',
       };
     }
+    async logout(_: OAuthLogoutRequest) {}
   }
   const providerInstance = new MyAuthProvider();
   const mockCookieConfig: ReturnType<CookieConfigurer> = {
@@ -262,13 +263,17 @@ describe('OAuthAdapter', () => {
     );
   });
 
-  it('removes refresh cookie when logging out', async () => {
+  it('removes refresh cookie and calls logout handler when logging out', async () => {
+    const logoutSpy = jest.spyOn(providerInstance, 'logout');
     const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       isOriginAllowed: () => false,
     });
 
     const mockRequest = {
+      cookies: {
+        'test-provider-refresh-token': 'token',
+      },
       header: () => 'XMLHttpRequest',
       get: jest.fn(),
     } as unknown as express.Request;
@@ -281,6 +286,7 @@ describe('OAuthAdapter', () => {
 
     await oauthProvider.logout(mockRequest, mockResponse);
     expect(mockRequest.get).toHaveBeenCalledTimes(1);
+    expect(logoutSpy).toHaveBeenCalledTimes(1);
     expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
     expect(mockResponse.cookie).toHaveBeenCalledWith(
       expect.stringContaining('test-provider-refresh-token'),

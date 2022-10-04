@@ -39,6 +39,7 @@ import {
   OAuthStartRequest,
   OAuthRefreshRequest,
   OAuthState,
+  OAuthLogoutRequest,
 } from './types';
 import { prepareBackstageIdentityResponse } from '../../providers/prepareBackstageIdentityResponse';
 
@@ -190,6 +191,14 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       throw new AuthenticationError('Invalid X-Requested-With header');
     }
 
+    if (this.handlers.logout) {
+      const refreshToken = this.getRefreshTokenFromCookie(req);
+      const revokeRequest: OAuthLogoutRequest = Object.assign(req, {
+        refreshToken,
+      });
+      await this.handlers.logout(revokeRequest);
+    }
+
     // remove refresh token cookie if it is set
     const origin = req.get('origin');
     const cookieConfig = this.getCookieConfig(origin);
@@ -210,8 +219,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     }
 
     try {
-      const refreshToken =
-        req.cookies[`${this.options.providerId}-refresh-token`];
+      const refreshToken = this.getRefreshTokenFromCookie(req);
 
       // throw error if refresh token is missing in the request
       if (!refreshToken) {
@@ -284,6 +292,10 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       ...this.baseCookieOptions,
       ...cookieConfig,
     });
+  };
+
+  private getRefreshTokenFromCookie = (req: express.Request) => {
+    return req.cookies[`${this.options.providerId}-refresh-token`];
   };
 
   private getGrantedScopeFromCookie = (req: express.Request) => {
