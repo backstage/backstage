@@ -24,6 +24,7 @@ import {
   OnCall,
   Schedule,
   Service,
+  StatusPage,
   UptimeMonitor,
   User,
 } from '../types';
@@ -49,6 +50,12 @@ export type GetAlertsCountOpts = {
 
 /** @public */
 export type GetServicesOpts = {
+  maxResults?: number;
+  startIndex?: number;
+};
+
+/** @public */
+export type GetStatusPagesOpts = {
   maxResults?: number;
   startIndex?: number;
 };
@@ -109,12 +116,16 @@ export interface ILertApi {
   fetchServices(opts?: GetServicesOpts): Promise<Service[]>;
   createService(eventRequest: ServiceRequest): Promise<boolean>;
 
+  fetchStatusPages(opts?: GetStatusPagesOpts): Promise<StatusPage[]>;
+
   getAlertDetailsURL(alert: Alert): string;
   getAlertSourceDetailsURL(alertSource: AlertSource | null): string;
   getEscalationPolicyDetailsURL(escalationPolicy: EscalationPolicy): string;
   getUptimeMonitorDetailsURL(uptimeMonitor: UptimeMonitor): string;
   getScheduleDetailsURL(schedule: Schedule): string;
   getServiceDetailsURL(service: Service): string;
+  getStatusPageDetailsURL(statusPage: StatusPage): string;
+  getStatusPageURL(statusPage: StatusPage): string;
   getUserPhoneNumber(user: User | null): string;
   getUserInitials(user: User | null): string;
 }

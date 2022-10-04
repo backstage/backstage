@@ -13,20 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-
-export const useNewService = () => {
-  const [name, setName] = React.useState('');
-  const [isLoading, setIsLoading] = React.useState(false);
-
-  return [
-    {
-      name,
-      isLoading,
-    },
-    {
-      setName,
-      setIsLoading,
-    },
-  ] as const;
-};
+export * from './StatusPagesPage';
+export * from './StatusPagesTable';

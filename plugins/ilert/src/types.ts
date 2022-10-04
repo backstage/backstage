@@ -252,6 +252,14 @@ export type ServiceStatus =
   | typeof MAJOR_OUTAGE;
 
 /** @public */
+export const PRIVATE = 'PRIVATE';
+/** @public */
+export const PUBLIC = 'PUBLIC';
+
+/** @public */
+export type StatusPageVisibility = typeof PRIVATE | typeof PUBLIC;
+
+/** @public */
 export interface AlertSourceEmailPredicate {
   field: 'EMAIL_FROM' | 'EMAIL_SUBJECT' | 'EMAIL_BODY';
   criteria:
@@ -421,4 +429,14 @@ export interface Uptime {
 /** @public */
 export interface UptimePercentage {
   p90: number;
+}
+
+/** @public */
+export interface StatusPage {
+  id: number;
+  name: string;
+  domain: string;
+  subdomain: string;
+  visibility: StatusPageVisibility;
+  status: ServiceStatus;
 }

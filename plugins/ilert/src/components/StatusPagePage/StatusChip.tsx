@@ -20,10 +20,10 @@ import {
   MAJOR_OUTAGE,
   OPERATIONAL,
   PARTIAL_OUTAGE,
-  Service,
+  StatusPage,
   UNDER_MAINTENANCE,
 } from '../../types';
-import { serviceStatusLabels } from '../Service/ServiceStatus';
+import { statusPageStatusLabels } from '../StatusPage/StatusPageStatus';
 
 const OperationalChip = withStyles({
   root: {
@@ -62,10 +62,10 @@ const MajorOutageChip = withStyles({
   },
 })(Chip);
 
-export const StatusChip = ({ service }: { service: Service }) => {
-  const label = `${serviceStatusLabels[service.status]}`;
+export const StatusChip = ({ statusPage }: { statusPage: StatusPage }) => {
+  const label = `${statusPageStatusLabels[statusPage.status]}`;
 
-  switch (service.status) {
+  switch (statusPage.status) {
     case OPERATIONAL:
       return <OperationalChip label={label} size="small" />;
     case UNDER_MAINTENANCE:

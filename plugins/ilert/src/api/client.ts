@@ -29,6 +29,7 @@ import {
   OnCall,
   Schedule,
   Service,
+  StatusPage,
   UptimeMonitor,
   User,
 } from '../types';
@@ -37,6 +38,7 @@ import {
   GetAlertsCountOpts,
   GetAlertsOpts,
   GetServicesOpts,
+  GetStatusPagesOpts,
   ILertApi,
   ServiceRequest,
 } from './types';
@@ -519,6 +521,27 @@ export class ILertClient implements ILertApi {
     return response;
   }
 
+  async fetchStatusPages(opts?: GetStatusPagesOpts): Promise<StatusPage[]> {
+    const init = {
+      headers: JSON_HEADERS,
+    };
+    const query = new URLSearchParams();
+    if (opts?.maxResults !== undefined) {
+      query.append('max-results', String(opts.maxResults));
+    }
+    if (opts?.startIndex !== undefined) {
+      query.append('start-index', String(opts.startIndex));
+    }
+
+    query.append('include', 'subscribed');
+
+    const response = await this.fetch(
+      `/api/status-pages?${query.toString()}`,
+      init,
+    );
+    return response;
+  }
+
   getAlertDetailsURL(alert: Alert): string {
     return `${this.baseUrl}/alert/view.jsf?id=${encodeURIComponent(alert.id)}`;
   }
@@ -554,6 +577,16 @@ export class ILertClient implements ILertApi {
     return `${this.baseUrl}/service/view.jsf?id=${encodeURIComponent(
       service.id,
     )}`;
+  }
+
+  getStatusPageDetailsURL(statusPage: StatusPage): string {
+    return `${this.baseUrl}/status-page/view.jsf?id=${encodeURIComponent(
+      statusPage.id,
+    )}`;
+  }
+
+  getStatusPageURL(statusPage: StatusPage): string {
+    return statusPage.domain ? statusPage.domain : statusPage.subdomain;
   }
 
   getUserPhoneNumber(user: User | null) {
