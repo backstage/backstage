@@ -195,9 +195,6 @@ export const createPermissionIntegrationRouter = <
       description: rule.description,
       resourceType: rule.resourceType,
       schema: zodToJsonSchema(rule.schema),
-      parameters: {
-        count: rule.toQuery.length,
-      },
     }));
 
     return res.json({ permissions, rules: serializableRules });

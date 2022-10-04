@@ -618,7 +618,6 @@ describe('createPermissionIntegrationRouter', () => {
               required: ['foo', 'bar'],
               type: 'object',
             },
-            parameters: { count: 1 },
           },
           {
             name: testRule2.name,
@@ -638,7 +637,6 @@ describe('createPermissionIntegrationRouter', () => {
               required: ['foo'],
               type: 'object',
             },
-            parameters: { count: 1 },
           },
         ],
       });
