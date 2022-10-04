@@ -62,6 +62,7 @@ export type RouterOptions = {
   logger: Logger;
 };
 
+const maxPageLimit = 100;
 const allowedLocationProtocols = ['http:', 'https:'];
 
 /**
@@ -79,6 +80,22 @@ export async function createRouter(
       .array(z.string().refine(type => Object.keys(types).includes(type)))
       .optional(),
     pageCursor: z.string().optional(),
+    pageLimit: z
+      .string()
+      .transform(pageLimit => parseInt(pageLimit, 10))
+      .refine(
+        pageLimit => !isNaN(pageLimit),
+        pageLimit => ({
+          message: `The page limit "${pageLimit}" is not a number`,
+        }),
+      )
+      .refine(
+        pageLimit => pageLimit <= maxPageLimit,
+        pageLimit => ({
+          message: `The page limit "${pageLimit}" is greater than "${maxPageLimit}"`,
+        }),
+      )
+      .optional(),
   });
 
   let permissionEvaluator: PermissionEvaluator;

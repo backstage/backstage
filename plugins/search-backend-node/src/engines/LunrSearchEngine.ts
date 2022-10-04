@@ -71,8 +71,9 @@ export class LunrSearchEngine implements SearchEngine {
     term,
     filters,
     types,
+    pageLimit,
   }: SearchQuery): ConcreteLunrQuery => {
-    const pageSize = 25;
+    const pageSize = pageLimit || 25;
 
     return {
       lunrQueryBuilder: q => {
