@@ -29,3 +29,5 @@ createPermissionRule({
   toQuery: ({ foo, bar }) => {},
 });
 ```
+
+One final change made is to limit the possible values for a parameter to primitives and arrays of primitives.
