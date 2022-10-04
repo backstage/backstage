@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-Added props to override default Scaffolder page title, subtitle and pageTitleOverride.
+Added props to override default Scaffolder page `title`, `subtitle` and `pageTitleOverride`.
