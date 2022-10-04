@@ -4,7 +4,7 @@
 
 Scaffolder templates support anything that backstage.io and custom actions can do, so testing them is hard without actually running the instance of Backstage that they're designed for.
 
-The [commandline script](template-testing-dry-run.md) might offer a way for you to do so using the dry-run API used for the Template Editor. Run it against a running instance, either locally or remote, and use it like
+The [command line script](template-testing-dry-run.md) might offer a way for you to do so using the dry-run API used for the Template Editor. Run it against a running instance, either locally or remote, and use it like
 
 ```sh
 scaffolder-dry http://localhost:7007/ template-directory values.yml output-directory
