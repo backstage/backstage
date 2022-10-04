@@ -29,9 +29,7 @@ const createPlaylistPermissionRule = makeCreatePermissionRule<
   typeof PLAYLIST_LIST_RESOURCE_TYPE
 >();
 
-const isOwner = createPlaylistPermissionRule<{
-  owners: string[];
-}>({
+const isOwner = createPlaylistPermissionRule({
   name: 'IS_OWNER',
   description: 'Should allow only if the playlist belongs to the user',
   resourceType: PLAYLIST_LIST_RESOURCE_TYPE,

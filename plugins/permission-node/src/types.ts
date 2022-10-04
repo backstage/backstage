@@ -46,6 +46,15 @@ export type PermissionRule<
   TQuery,
   TResourceType extends string,
   TParams extends Record<string, unknown> = Record<string, unknown>,
+  TSchema extends z.ZodType = z.ZodObject<{
+    // Parameters can be optional, however we we want to make sure that the
+    // parameters are always present in the schema, even if they are undefined.
+    // We remove the optional flag from the schema, and then add it back in
+    // with an optional zod type.
+    [P in keyof TParams]-?: TParams[P] extends undefined
+      ? z.ZodOptionalType<z.ZodType<TParams[P]>>
+      : z.ZodType<TParams[P]>;
+  }>,
 > = {
   name: string;
   description: string;
@@ -54,27 +63,19 @@ export type PermissionRule<
   /**
    * A ZodSchema that documents the parameters that this rule accepts.
    */
-  schema: z.ZodObject<{
-    // Parameters can be optional, however we we want to make sure that the
-    // parameters are always present in the schema, even if they are undefined.
-    // We remove the optional flag from the schema, and then add it back in
-    // with an optional zod type.
-    [P in keyof TParams]-?: TParams[P] extends undefined
-      ? z.ZodOptionalType<z.ZodType<TParams[P]>>
-      : z.ZodType<TParams[P]>;
-  }>;
+  schema: TSchema;
 
   /**
    * Apply this rule to a resource already loaded from a backing data source. The params are
    * arguments supplied for the rule; for example, a rule could be `isOwner` with entityRefs as the
    * params.
    */
-  apply(resource: TResource, params: NoInfer<TParams>): boolean;
+  apply(resource: TResource, params: NoInfer<z.input<TSchema>>): boolean;
 
   /**
    * Translate this rule to criteria suitable for use in querying a backing data store. The criteria
    * can be used for loading a collection of resources efficiently with conditional criteria already
    * applied.
    */
-  toQuery(params: NoInfer<TParams>): PermissionCriteria<TQuery>;
+  toQuery(params: NoInfer<z.input<TSchema>>): PermissionCriteria<TQuery>;
 };
