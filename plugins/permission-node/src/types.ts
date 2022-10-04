@@ -55,6 +55,10 @@ export type PermissionRule<
    * A ZodSchema that documents the parameters that this rule accepts.
    */
   schema: z.ZodObject<{
+    // Parameters can be optional, however we we want to make sure that the
+    // parameters are always present in the schema, even if they are undefined.
+    // We remove the optional flag from the schema, and then add it back in
+    // with an optional zod type.
     [P in keyof TParams]-?: TParams[P] extends undefined
       ? z.ZodOptionalType<z.ZodType<TParams[P]>>
       : z.ZodType<TParams[P], any, any>;
