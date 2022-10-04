@@ -32,6 +32,7 @@ export type TaskWorkerOptions = {
   runners: {
     workflowRunner: WorkflowRunner;
   };
+  concurrentTasksLimit: number;
 };
 
 /**
@@ -46,7 +47,17 @@ export type CreateWorkerOptions = {
   workingDirectory: string;
   logger: Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  concurrentTasksLimit?: number;
 };
+
+// Same implementation as StorageTaskBroker
+function makeLock() {
+  let unlock = () => {};
+  const promise = new Promise<void>(_ => {
+    unlock = _;
+  });
+  return { promise, unlock };
+}
 
 /**
  * TaskWorker
@@ -56,6 +67,29 @@ export type CreateWorkerOptions = {
 export class TaskWorker {
   private constructor(private readonly options: TaskWorkerOptions) {}
 
+  private runningTasks: number = 0;
+
+  private workerLock = makeLock();
+
+  private get isWorkerAvailable() {
+    return this.runningTasks < this.options.concurrentTasksLimit;
+  }
+
+  private completeTask() {
+    this.runningTasks--;
+    if (this.runningTasks === this.options.concurrentTasksLimit - 1) {
+      this.workerLock.unlock();
+      this.workerLock = makeLock();
+    }
+  }
+
+  private async waitWorkerToBeAvailable() {
+    if (this.isWorkerAvailable) {
+      return;
+    }
+    await this.workerLock.promise;
+  }
+
   static async create(options: CreateWorkerOptions): Promise<TaskWorker> {
     const {
       taskBroker,
@@ -64,6 +98,7 @@ export class TaskWorker {
       integrations,
       workingDirectory,
       additionalTemplateFilters,
+      concurrentTasksLimit = 10, // Or Infinity
     } = options;
 
     const workflowRunner = new NunjucksWorkflowRunner({
@@ -77,14 +112,17 @@ export class TaskWorker {
     return new TaskWorker({
       taskBroker: taskBroker,
       runners: { workflowRunner },
+      concurrentTasksLimit,
     });
   }
 
   start() {
     (async () => {
       for (;;) {
+        await this.waitWorkerToBeAvailable();
         const task = await this.options.taskBroker.claim();
-        await this.runOneTask(task);
+        this.runningTasks++;
+        this.runOneTask(task);
       }
     })();
   }
@@ -107,6 +145,8 @@ export class TaskWorker {
       await task.complete('failed', {
         error: { name: error.name, message: error.message },
       });
+    } finally {
+      this.completeTask();
     }
   }
 }
