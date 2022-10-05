@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-export type {
-  LocationAnalyzer,
-  ScmLocationAnalyzer,
-  AnalyzeOptions,
-} from './types';
+import { RecursivePartial } from './RecursivePartial';
+
+describe('RecursivePartial', () => {
+  it('is recursive', () => {
+    type X = {
+      required: {
+        required: string;
+      };
+    };
+    const x: RecursivePartial<X> = {
+      required: {},
+    };
+    expect(x).toEqual({ required: {} });
+  });
+});

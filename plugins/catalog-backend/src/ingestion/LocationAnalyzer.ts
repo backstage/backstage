@@ -18,12 +18,11 @@ import { Logger } from 'winston';
 import parseGitUrl from 'git-url-parse';
 import { Entity } from '@backstage/catalog-model';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { LocationAnalyzer, ScmLocationAnalyzer } from './types';
 import {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
-  LocationAnalyzer,
-  ScmLocationAnalyzer,
-} from './types';
+} from '@backstage/plugin-catalog-common';
 
 export class RepoLocationAnalyzer implements LocationAnalyzer {
   private readonly logger: Logger;

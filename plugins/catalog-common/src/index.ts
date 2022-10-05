@@ -35,3 +35,4 @@ export {
 export type { CatalogEntityPermission } from './permissions';
 
 export * from './search';
+export * from './ingestion';

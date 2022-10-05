@@ -30,7 +30,7 @@ import { Base64 } from 'js-base64';
 import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
 import { getGithubIntegrationConfig } from './GitHub';
 import { getBranchName, getCatalogFilename } from '../components/helpers';
-import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-backend';
+import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 
 /**
