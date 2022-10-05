@@ -32,18 +32,22 @@ import { IssuesByRepoOptions } from '../../types';
 export type GitHubIssuesProps = {
   itemsPerPage?: number;
   itemsPerRepo?: number;
-  queryOptions?: IssuesByRepoOptions;
+  filterBy?: IssuesByRepoOptions['filterBy'];
+  orderBy?: IssuesByRepoOptions['orderBy'];
 };
 
 export const GitHubIssues = (props: GitHubIssuesProps) => {
-  const { itemsPerPage = 10, itemsPerRepo = 40, queryOptions } = props;
+  const { itemsPerPage = 10, itemsPerRepo = 40, filterBy, orderBy } = props;
 
   const { repositories } = useEntityGitHubRepositories();
   const {
     isLoading,
     gitHubIssuesByRepo: issuesByRepository,
     retry,
-  } = useGetIssuesByRepoFromGitHub(repositories, itemsPerRepo, queryOptions);
+  } = useGetIssuesByRepoFromGitHub(repositories, itemsPerRepo, {
+    filterBy,
+    orderBy,
+  });
 
   if (!repositories.length) {
     return <NoRepositoriesInfo />;

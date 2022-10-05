@@ -345,7 +345,15 @@ const overviewContent = (
     </Grid>
 
     <Grid item md={6} xs={12}>
-      <GitHubIssuesCard />
+      <GitHubIssuesCard
+        filterBy={{
+          labels: ['bug', 'enhancement'],
+        }}
+        orderBy={{
+          field: 'COMMENTS',
+          direction: 'ASC',
+        }}
+      />
     </Grid>
 
     <EntitySwitch>

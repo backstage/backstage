@@ -29,6 +29,6 @@ export interface IssuesByRepoOptions {
   filterBy?: IssuesFilters;
   orderBy?: {
     field: 'CREATED_AT' | 'UPDATED_AT' | 'COMMENTS';
-    direction: 'ASC' | 'DESC';
+    direction?: 'ASC' | 'DESC';
   };
 }

@@ -110,7 +110,7 @@ export const gitHubIssuesApi = (
         field: 'UPDATED_AT',
         direction: 'DESC',
       },
-    }: IssuesByRepoOptions = {},
+    }: IssuesByRepoOptions,
   ): Promise<IssuesByRepo> => {
     const graphql = await getOctokit();
     const safeNames: Array<string> = [];
@@ -137,14 +137,17 @@ export const gitHubIssuesApi = (
     // eslint-disable-next-line no-console
     console.log(`
     ---------------------------------------------------
-    ${createIssueByRepoQuery(repositories, itemsPerRepo, { filterBy })}
+    ${createIssueByRepoQuery(repositories, itemsPerRepo, { filterBy, orderBy })}
     ---------------------------------------------------
     `);
 
     let issuesByRepo: IssuesByRepo = {};
     try {
       issuesByRepo = await graphql(
-        createIssueByRepoQuery(repositories, itemsPerRepo, { filterBy }),
+        createIssueByRepoQuery(repositories, itemsPerRepo, {
+          filterBy,
+          orderBy,
+        }),
       );
     } catch (e) {
       if (e.data) {
@@ -168,7 +171,7 @@ export const gitHubIssuesApi = (
 
 function formatFilterValue(value: IssuesFilters[keyof IssuesFilters]): string {
   if (Array.isArray(value)) {
-    return `[ ${value.map(formatFilterValue).join(', ')}`;
+    return `[ ${value.map(formatFilterValue).join(', ')}]`;
   }
 
   return typeof value === 'string' ? `\"${value}\"` : `${value}`;
@@ -189,9 +192,9 @@ function createFilterByClause(filterBy?: IssuesFilters): string {
         return [`${field}: ${value.join(', ')}`];
       }
 
-      return [`${field}: ${formatFilterValue}`];
+      return [`${field}: ${formatFilterValue(value)}`];
     })
-    .join(',  ');
+    .join(', ');
 }
 
 function createIssueByRepoQuery(
