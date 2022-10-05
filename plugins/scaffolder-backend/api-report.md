@@ -429,6 +429,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   title: string;
   description: string;
   branchName: string;
+  sourcePath: string;
   targetPath: string;
   token?: string | undefined;
   commitAction?: 'update' | 'create' | 'delete' | undefined;
