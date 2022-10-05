@@ -94,28 +94,31 @@ export const RepoUrlPicker = (
 
   /* we deal with calling the repo setting here instead of in each components for ease */
   useEffect(() => {
-    if (allowedOrganizations.length > 0) {
+    if (allowedOrganizations.length > 0 && !state.organization) {
       setState(prevState => ({
         ...prevState,
         organization: allowedOrganizations[0],
       }));
     }
-  }, [setState, allowedOrganizations]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setState, allowedOrganizations, state.organization]);
 
   useEffect(() => {
-    if (allowedOwners.length > 0) {
+    if (allowedOwners.length > 0 && !state.owner) {
       setState(prevState => ({
         ...prevState,
-        allowedOwners,
+        owner: allowedOwners[0],
       }));
     }
-  }, [setState, allowedOwners]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setState, allowedOwners, state.owner]);
 
   useEffect(() => {
-    if (allowedRepos.length > 0) {
+    if (allowedRepos.length > 0 && !state.repoName) {
       setState(prevState => ({ ...prevState, repoName: allowedRepos[0] }));
     }
-  }, [setState, allowedRepos]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setState, allowedRepos, state.repoName]);
 
   const updateLocalState = useCallback(
     (newState: RepoUrlPickerState) => {
