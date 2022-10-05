@@ -16,6 +16,7 @@
 
 import React from 'react';
 import {
+  CustomFieldExtensionSchema,
   CustomFieldValidator,
   FieldExtensionOptions,
   FieldExtensionComponentProps,
@@ -103,6 +104,7 @@ attachComponentData(
 );
 
 export type {
+  CustomFieldExtensionSchema,
   CustomFieldValidator,
   FieldExtensionOptions,
   FieldExtensionComponentProps,

@@ -23,18 +23,12 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { FormControl, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import { FieldExtensionComponentProps } from '../../../extensions';
+import {
+  EntityTagsPickerReturnValue,
+  EntityTagsPickerUiOptions,
+} from './schema';
 
-/**
- * The input props that can be specified under `ui:options` for the
- * `EntityTagsPicker` field extension.
- *
- * @public
- */
-export interface EntityTagsPickerUiOptions {
-  kinds?: string[];
-  showCounts?: boolean;
-  helperText?: string;
-}
+export { EntityTagsPickerSchema } from './schema';
 
 /**
  * The underlying component that is rendered in the form for the `EntityTagsPicker`
@@ -43,7 +37,10 @@ export interface EntityTagsPickerUiOptions {
  * @public
  */
 export const EntityTagsPicker = (
-  props: FieldExtensionComponentProps<string[], EntityTagsPickerUiOptions>,
+  props: FieldExtensionComponentProps<
+    EntityTagsPickerReturnValue,
+    EntityTagsPickerUiOptions
+  >,
 ) => {
   const { formData, onChange, uiSchema } = props;
   const catalogApi = useApi(catalogApiRef);

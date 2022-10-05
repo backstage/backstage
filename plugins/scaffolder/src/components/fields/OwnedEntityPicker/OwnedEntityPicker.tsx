@@ -27,20 +27,12 @@ import React, { useMemo } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 
 import { FieldExtensionComponentProps } from '../../../extensions';
+import {
+  OwnedEntityPickerReturnValue,
+  OwnedEntityPickerUiOptions,
+} from './schema';
 
-/**
- * The input props that can be specified under `ui:options` for the
- * `OwnedEntityPicker` field extension.
- *
- * @public
- */
-export interface OwnedEntityPickerUiOptions {
-  allowedKinds?: string[];
-  defaultKind?: string;
-  allowArbitraryValues?: boolean;
-  defaultNamespace?: string | false;
-}
-
+export { OwnedEntityPickerSchema } from './schema';
 /**
  * The underlying component that is rendered in the form for the `OwnedEntityPicker`
  * field extension.
@@ -48,7 +40,10 @@ export interface OwnedEntityPickerUiOptions {
  * @public
  */
 export const OwnedEntityPicker = (
-  props: FieldExtensionComponentProps<string, OwnedEntityPickerUiOptions>,
+  props: FieldExtensionComponentProps<
+    OwnedEntityPickerReturnValue,
+    OwnedEntityPickerUiOptions
+  >,
 ) => {
   const {
     onChange,

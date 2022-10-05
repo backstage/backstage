@@ -35,6 +35,7 @@ import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UIOptionsType } from '@rjsf/utils';
 import { UiSchema } from '@rjsf/utils';
+import { z } from 'zod';
 
 // @alpha
 export function createNextScaffolderFieldExtension<
@@ -58,6 +59,12 @@ export function createScaffolderLayout<TInputProps = unknown>(
 ): Extension<LayoutComponent<TInputProps>>;
 
 // @public
+export type CustomFieldExtensionSchema = {
+  uiOptions?: JSONSchema7;
+  returnValue?: JSONSchema7;
+};
+
+// @public
 export type CustomFieldValidator<TFieldReturnValue> = (
   data: TFieldReturnValue,
   field: FieldValidation,
@@ -75,36 +82,78 @@ export const EntityNamePickerFieldExtension: FieldExtensionComponent<
 // @public
 export const EntityPickerFieldExtension: FieldExtensionComponent<
   string,
-  EntityPickerUiOptions
+  {
+    defaultKind?: string | undefined;
+    defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
+  }
 >;
 
 // @public
-export interface EntityPickerUiOptions {
-  // (undocumented)
-  allowArbitraryValues?: boolean;
-  // (undocumented)
-  allowedKinds?: string[];
-  // (undocumented)
-  defaultKind?: string;
-  // (undocumented)
-  defaultNamespace?: string | false;
-}
+export type EntityPickerUiOptions = z.infer<typeof EntityPickerUiOptionsSchema>;
+
+// @public (undocumented)
+export const EntityPickerUiOptionsSchema: z.ZodObject<
+  {
+    allowedKinds: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
+    defaultKind: z.ZodOptional<z.ZodString>;
+    allowArbitraryValues: z.ZodOptional<z.ZodBoolean>;
+    defaultNamespace: z.ZodOptional<
+      z.ZodUnion<[z.ZodString, z.ZodLiteral<false>]>
+    >;
+  },
+  'strip',
+  z.ZodTypeAny,
+  {
+    defaultKind?: string | undefined;
+    defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
+  },
+  {
+    defaultKind?: string | undefined;
+    defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
+  }
+>;
 
 // @public
 export const EntityTagsPickerFieldExtension: FieldExtensionComponent<
   string[],
-  EntityTagsPickerUiOptions
+  {
+    showCounts?: boolean | undefined;
+    kinds?: string[] | undefined;
+    helperText?: string | undefined;
+  }
 >;
 
 // @public
-export interface EntityTagsPickerUiOptions {
-  // (undocumented)
-  helperText?: string;
-  // (undocumented)
-  kinds?: string[];
-  // (undocumented)
-  showCounts?: boolean;
-}
+export type EntityTagsPickerUiOptions = z.infer<
+  typeof EntityTagsPickerUiOptionsSchema
+>;
+
+// @public (undocumented)
+export const EntityTagsPickerUiOptionsSchema: z.ZodObject<
+  {
+    kinds: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
+    showCounts: z.ZodOptional<z.ZodBoolean>;
+    helperText: z.ZodOptional<z.ZodString>;
+  },
+  'strip',
+  z.ZodTypeAny,
+  {
+    showCounts?: boolean | undefined;
+    kinds?: string[] | undefined;
+    helperText?: string | undefined;
+  },
+  {
+    showCounts?: boolean | undefined;
+    kinds?: string[] | undefined;
+    helperText?: string | undefined;
+  }
+>;
 
 // @public
 export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
@@ -130,6 +179,7 @@ export type FieldExtensionOptions<
     props: FieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
   ) => JSX.Element | null;
   validation?: CustomFieldValidator<TFieldReturnValue>;
+  schema?: CustomFieldExtensionSchema;
 };
 
 // @public
@@ -199,6 +249,7 @@ export type NextFieldExtensionOptions<
     props: NextFieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
   ) => JSX.Element | null;
   validation?: NextCustomFieldValidator<TFieldReturnValue>;
+  schema?: CustomFieldExtensionSchema;
 };
 
 // @alpha (undocumented)
@@ -228,36 +279,80 @@ export const nextSelectedTemplateRouteRef: SubRouteRef<
 // @public
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent<
   string,
-  OwnedEntityPickerUiOptions
+  {
+    defaultKind?: string | undefined;
+    defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
+  }
 >;
 
 // @public
-export interface OwnedEntityPickerUiOptions {
-  // (undocumented)
-  allowArbitraryValues?: boolean;
-  // (undocumented)
-  allowedKinds?: string[];
-  // (undocumented)
-  defaultKind?: string;
-  // (undocumented)
-  defaultNamespace?: string | false;
-}
+export type OwnedEntityPickerUiOptions = z.infer<
+  typeof OwnedEntityPickerUiOptionsSchema
+>;
+
+// @public (undocumented)
+export const OwnedEntityPickerUiOptionsSchema: z.ZodObject<
+  {
+    allowedKinds: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
+    defaultKind: z.ZodOptional<z.ZodString>;
+    allowArbitraryValues: z.ZodOptional<z.ZodBoolean>;
+    defaultNamespace: z.ZodOptional<
+      z.ZodUnion<[z.ZodString, z.ZodLiteral<false>]>
+    >;
+  },
+  'strip',
+  z.ZodTypeAny,
+  {
+    defaultKind?: string | undefined;
+    defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
+  },
+  {
+    defaultKind?: string | undefined;
+    defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
+  }
+>;
 
 // @public
 export const OwnerPickerFieldExtension: FieldExtensionComponent<
   string,
-  OwnerPickerUiOptions
+  {
+    defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
+  }
 >;
 
 // @public
-export interface OwnerPickerUiOptions {
-  // (undocumented)
-  allowArbitraryValues?: boolean;
-  // (undocumented)
-  allowedKinds?: string[];
-  // (undocumented)
-  defaultNamespace?: string | false;
-}
+export type OwnerPickerUiOptions = z.infer<typeof OwnerPickerUiOptionsSchema>;
+
+// @public (undocumented)
+export const OwnerPickerUiOptionsSchema: z.ZodObject<
+  {
+    allowedKinds: z.ZodOptional<z.ZodDefault<z.ZodArray<z.ZodString, 'many'>>>;
+    allowArbitraryValues: z.ZodOptional<z.ZodBoolean>;
+    defaultNamespace: z.ZodOptional<
+      z.ZodUnion<[z.ZodString, z.ZodLiteral<false>]>
+    >;
+  },
+  'strip',
+  z.ZodTypeAny,
+  {
+    defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
+  },
+  {
+    defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
+  }
+>;
 
 // @public
 export const repoPickerValidation: (
@@ -271,31 +366,144 @@ export const repoPickerValidation: (
 // @public
 export const RepoUrlPickerFieldExtension: FieldExtensionComponent<
   string,
-  RepoUrlPickerUiOptions
+  {
+    allowedOwners?: string[] | undefined;
+    allowedOrganizations?: string[] | undefined;
+    allowedRepos?: string[] | undefined;
+    allowedHosts?: string[] | undefined;
+    requestUserCredentials?:
+      | {
+          additionalScopes?:
+            | {
+                azure?: string[] | undefined;
+                github?: string[] | undefined;
+                gitlab?: string[] | undefined;
+                bitbucket?: string[] | undefined;
+                gerrit?: string[] | undefined;
+              }
+            | undefined;
+          secretsKey: string;
+        }
+      | undefined;
+  }
 >;
 
 // @public
-export interface RepoUrlPickerUiOptions {
-  // (undocumented)
-  allowedHosts?: string[];
-  // (undocumented)
-  allowedOrganizations?: string[];
-  // (undocumented)
-  allowedOwners?: string[];
-  // (undocumented)
-  allowedRepos?: string[];
-  // (undocumented)
-  requestUserCredentials?: {
-    secretsKey: string;
-    additionalScopes?: {
-      gerrit?: string[];
-      github?: string[];
-      gitlab?: string[];
-      bitbucket?: string[];
-      azure?: string[];
-    };
-  };
-}
+export type RepoUrlPickerUiOptions = z.infer<
+  typeof RepoUrlPickerUiOptionsSchema
+>;
+
+// @public (undocumented)
+export const RepoUrlPickerUiOptionsSchema: z.ZodObject<
+  {
+    allowedHosts: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
+    allowedOrganizations: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
+    allowedOwners: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
+    allowedRepos: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
+    requestUserCredentials: z.ZodOptional<
+      z.ZodObject<
+        {
+          secretsKey: z.ZodString;
+          additionalScopes: z.ZodOptional<
+            z.ZodObject<
+              {
+                gerrit: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
+                github: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
+                gitlab: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
+                bitbucket: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
+                azure: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
+              },
+              'strip',
+              z.ZodTypeAny,
+              {
+                azure?: string[] | undefined;
+                github?: string[] | undefined;
+                gitlab?: string[] | undefined;
+                bitbucket?: string[] | undefined;
+                gerrit?: string[] | undefined;
+              },
+              {
+                azure?: string[] | undefined;
+                github?: string[] | undefined;
+                gitlab?: string[] | undefined;
+                bitbucket?: string[] | undefined;
+                gerrit?: string[] | undefined;
+              }
+            >
+          >;
+        },
+        'strip',
+        z.ZodTypeAny,
+        {
+          additionalScopes?:
+            | {
+                azure?: string[] | undefined;
+                github?: string[] | undefined;
+                gitlab?: string[] | undefined;
+                bitbucket?: string[] | undefined;
+                gerrit?: string[] | undefined;
+              }
+            | undefined;
+          secretsKey: string;
+        },
+        {
+          additionalScopes?:
+            | {
+                azure?: string[] | undefined;
+                github?: string[] | undefined;
+                gitlab?: string[] | undefined;
+                bitbucket?: string[] | undefined;
+                gerrit?: string[] | undefined;
+              }
+            | undefined;
+          secretsKey: string;
+        }
+      >
+    >;
+  },
+  'strip',
+  z.ZodTypeAny,
+  {
+    allowedOwners?: string[] | undefined;
+    allowedOrganizations?: string[] | undefined;
+    allowedRepos?: string[] | undefined;
+    allowedHosts?: string[] | undefined;
+    requestUserCredentials?:
+      | {
+          additionalScopes?:
+            | {
+                azure?: string[] | undefined;
+                github?: string[] | undefined;
+                gitlab?: string[] | undefined;
+                bitbucket?: string[] | undefined;
+                gerrit?: string[] | undefined;
+              }
+            | undefined;
+          secretsKey: string;
+        }
+      | undefined;
+  },
+  {
+    allowedOwners?: string[] | undefined;
+    allowedOrganizations?: string[] | undefined;
+    allowedRepos?: string[] | undefined;
+    allowedHosts?: string[] | undefined;
+    requestUserCredentials?:
+      | {
+          additionalScopes?:
+            | {
+                azure?: string[] | undefined;
+                github?: string[] | undefined;
+                gitlab?: string[] | undefined;
+                bitbucket?: string[] | undefined;
+                gerrit?: string[] | undefined;
+              }
+            | undefined;
+          secretsKey: string;
+        }
+      | undefined;
+  }
+>;
 
 // @public (undocumented)
 export const rootRouteRef: RouteRef<undefined>;

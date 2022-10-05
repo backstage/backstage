@@ -16,18 +16,9 @@
 import React from 'react';
 import { EntityPicker } from '../EntityPicker/EntityPicker';
 import { FieldExtensionComponentProps } from '../../../extensions';
+import { OwnerPickerReturnValue, OwnerPickerUiOptions } from './schema';
 
-/**
- * The input props that can be specified under `ui:options` for the
- * `OwnerPicker` field extension.
- *
- * @public
- */
-export interface OwnerPickerUiOptions {
-  allowedKinds?: string[];
-  allowArbitraryValues?: boolean;
-  defaultNamespace?: string | false;
-}
+export { OwnerPickerSchema } from './schema';
 
 /**
  * The underlying component that is rendered in the form for the `OwnerPicker`
@@ -36,7 +27,10 @@ export interface OwnerPickerUiOptions {
  * @public
  */
 export const OwnerPicker = (
-  props: FieldExtensionComponentProps<string, OwnerPickerUiOptions>,
+  props: FieldExtensionComponentProps<
+    OwnerPickerReturnValue,
+    OwnerPickerUiOptions
+  >,
 ) => {
   const {
     schema: { title = 'Owner', description = 'The owner of the component' },

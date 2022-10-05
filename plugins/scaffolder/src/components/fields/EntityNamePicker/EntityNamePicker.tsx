@@ -15,13 +15,16 @@
  */
 import React from 'react';
 import { FieldExtensionComponentProps } from '../../../extensions';
+import { EntityNamePickerReturnValue } from './schema';
 import { TextField } from '@material-ui/core';
+
+export { EntityNamePickerSchema } from './schema';
 
 /**
  * EntityName Picker
  */
 export const EntityNamePicker = (
-  props: FieldExtensionComponentProps<string>,
+  props: FieldExtensionComponentProps<EntityNamePickerReturnValue>,
 ) => {
   const {
     onChange,

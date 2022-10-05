@@ -28,32 +28,12 @@ import { FieldExtensionComponentProps } from '../../../extensions';
 import { RepoUrlPickerHost } from './RepoUrlPickerHost';
 import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
 import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
+import { RepoUrlPickerReturnValue, RepoUrlPickerUiOptions } from './schema';
 import { RepoUrlPickerState } from './types';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useTemplateSecrets } from '../../secrets';
 
-/**
- * The input props that can be specified under `ui:options` for the
- * `RepoUrlPicker` field extension.
- *
- * @public
- */
-export interface RepoUrlPickerUiOptions {
-  allowedHosts?: string[];
-  allowedOrganizations?: string[];
-  allowedOwners?: string[];
-  allowedRepos?: string[];
-  requestUserCredentials?: {
-    secretsKey: string;
-    additionalScopes?: {
-      gerrit?: string[];
-      github?: string[];
-      gitlab?: string[];
-      bitbucket?: string[];
-      azure?: string[];
-    };
-  };
-}
+export { RepoUrlPickerSchema } from './schema';
 
 /**
  * The underlying component that is rendered in the form for the `RepoUrlPicker`
@@ -62,7 +42,10 @@ export interface RepoUrlPickerUiOptions {
  * @public
  */
 export const RepoUrlPicker = (
-  props: FieldExtensionComponentProps<string, RepoUrlPickerUiOptions>,
+  props: FieldExtensionComponentProps<
+    RepoUrlPickerReturnValue,
+    RepoUrlPickerUiOptions
+  >,
 ) => {
   const { uiSchema, onChange, rawErrors, formData } = props;
   const [state, setState] = useState<RepoUrlPickerState>(

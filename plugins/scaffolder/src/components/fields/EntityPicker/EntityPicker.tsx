@@ -24,19 +24,9 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useCallback, useEffect } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { FieldExtensionComponentProps } from '../../../extensions';
+import { EntityPickerReturnValue, EntityPickerUiOptions } from './schema';
 
-/**
- * The input props that can be specified under `ui:options` for the
- * `EntityPicker` field extension.
- *
- * @public
- */
-export interface EntityPickerUiOptions {
-  allowedKinds?: string[];
-  defaultKind?: string;
-  allowArbitraryValues?: boolean;
-  defaultNamespace?: string | false;
-}
+export { EntityPickerSchema } from './schema';
 
 /**
  * The underlying component that is rendered in the form for the `EntityPicker`
@@ -45,7 +35,10 @@ export interface EntityPickerUiOptions {
  * @public
  */
 export const EntityPicker = (
-  props: FieldExtensionComponentProps<string, EntityPickerUiOptions>,
+  props: FieldExtensionComponentProps<
+    EntityPickerReturnValue,
+    EntityPickerUiOptions
+  >,
 ) => {
   const {
     onChange,
