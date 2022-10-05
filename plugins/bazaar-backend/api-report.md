@@ -5,6 +5,7 @@
 ```ts
 import { Config } from '@backstage/config';
 import express from 'express';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 
@@ -17,6 +18,8 @@ export interface RouterOptions {
   config: Config;
   // (undocumented)
   database: PluginDatabaseManager;
+  // (undocumented)
+  identity: IdentityApi;
   // (undocumented)
   logger: Logger;
 }
