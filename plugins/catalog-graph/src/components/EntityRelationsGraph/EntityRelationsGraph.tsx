@@ -29,7 +29,7 @@ import React, { MouseEvent, useEffect, useMemo } from 'react';
 import { CustomLabel } from './CustomLabel';
 import { CustomNode } from './CustomNode';
 import { ALL_RELATION_PAIRS, RelationPairs } from './relations';
-import { Direction, EntityEdge, EntityNode } from './types';
+import { Curve, Direction, EntityEdge, EntityNode } from './types';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
 
 const useStyles = makeStyles(theme => ({
@@ -82,6 +82,7 @@ export const EntityRelationsGraph = (props: {
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';
   renderNode?: DependencyGraphTypes.RenderNodeFunction<EntityNode>;
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
+  curve?: Curve;
 }) => {
   const {
     rootEntityNames,
@@ -97,6 +98,7 @@ export const EntityRelationsGraph = (props: {
     zoom = 'enabled',
     renderNode,
     renderLabel,
+    curve,
   } = props;
 
   const theme = useTheme();
@@ -143,6 +145,7 @@ export const EntityRelationsGraph = (props: {
           labelPosition={DependencyGraphTypes.LabelPosition.RIGHT}
           labelOffset={theme.spacing(1)}
           zoom={zoom}
+          curve={curve}
         />
       )}
     </div>

@@ -108,3 +108,9 @@ export enum Direction {
    */
   RIGHT_LEFT = 'RL',
 }
+
+/**
+ * @see {@link @types/d3-shape/index.d.ts#curveMonotoneX}
+ * @see {@link @types/d3-shape/index.d.ts#curveStepBefore}
+ */
+export type Curve = 'curveStepBefore' | 'curveMonotoneX';

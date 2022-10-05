@@ -29,7 +29,7 @@ import {
 } from 'react';
 import { useLocation } from 'react-router';
 import usePrevious from 'react-use/lib/usePrevious';
-import { Direction } from '../EntityRelationsGraph';
+import { Direction, Curve } from '../EntityRelationsGraph';
 
 export type CatalogGraphPageValue = {
   rootEntityNames: CompoundEntityRef[];
@@ -46,6 +46,8 @@ export type CatalogGraphPageValue = {
   setMergeRelations: Dispatch<React.SetStateAction<boolean>>;
   direction: Direction;
   setDirection: Dispatch<React.SetStateAction<Direction>>;
+  curve: Curve;
+  setCurve: Dispatch<React.SetStateAction<Curve>>;
   showFilters: boolean;
   toggleShowFilters: DispatchWithoutAction;
 };
@@ -62,6 +64,7 @@ export function useCatalogGraphPage({
     mergeRelations?: boolean;
     direction?: Direction;
     showFilters?: boolean;
+    curve?: Curve;
   };
 }): CatalogGraphPageValue {
   const location = useLocation();
@@ -77,6 +80,7 @@ export function useCatalogGraphPage({
         mergeRelations?: string[] | string;
         direction?: string[] | Direction;
         showFilters?: string[] | string;
+        curve?: string[] | Curve;
       },
     [location.search],
   );
@@ -121,6 +125,11 @@ export function useCatalogGraphPage({
     typeof query.direction === 'string'
       ? query.direction
       : initialState?.direction ?? Direction.LEFT_RIGHT,
+  );
+  const [curve, setCurve] = useState<Curve>(() =>
+    typeof query.curve === 'string'
+      ? query.curve
+      : initialState?.curve ?? 'curveMonotoneX',
   );
   const [showFilters, setShowFilters] = useState<boolean>(() =>
     typeof query.showFilters === 'string'
@@ -249,6 +258,8 @@ export function useCatalogGraphPage({
     setMergeRelations,
     direction,
     setDirection,
+    curve,
+    setCurve,
     showFilters,
     toggleShowFilters,
   };

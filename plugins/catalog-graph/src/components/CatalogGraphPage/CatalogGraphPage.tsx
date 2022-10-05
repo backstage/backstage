@@ -35,11 +35,13 @@ import React, { MouseEvent, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import {
   ALL_RELATION_PAIRS,
+  Curve,
   Direction,
   EntityNode,
   EntityRelationsGraph,
   RelationPairs,
 } from '../EntityRelationsGraph';
+import { CurveFilter } from './CurveFilter';
 import { DirectionFilter } from './DirectionFilter';
 import { MaxDepthFilter } from './MaxDepthFilter';
 import { SelectedKindsFilter } from './SelectedKindsFilter';
@@ -110,6 +112,7 @@ export const CatalogGraphPage = (props: {
     mergeRelations?: boolean;
     direction?: Direction;
     showFilters?: boolean;
+    curve?: Curve;
   };
 }) => {
   const { relationPairs = ALL_RELATION_PAIRS, initialState } = props;
@@ -130,6 +133,8 @@ export const CatalogGraphPage = (props: {
     setMergeRelations,
     direction,
     setDirection,
+    curve,
+    setCurve,
     rootEntityNames,
     setRootEntityNames,
     showFilters,
@@ -201,6 +206,7 @@ export const CatalogGraphPage = (props: {
                 relationPairs={relationPairs}
               />
               <DirectionFilter value={direction} onChange={setDirection} />
+              <CurveFilter value={curve} onChange={setCurve} />
               <SwitchFilter
                 value={unidirectional}
                 onChange={setUnidirectional}
@@ -245,6 +251,7 @@ export const CatalogGraphPage = (props: {
                 relationPairs={relationPairs}
                 className={classes.graph}
                 zoom="enabled"
+                curve={curve}
               />
             </Paper>
           </Grid>

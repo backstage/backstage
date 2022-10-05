@@ -24,6 +24,7 @@ import {
   RenderLabelFunction,
   DependencyEdge,
   LabelPosition,
+  Curve,
 } from './types';
 import { EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
 import { DefaultLabel } from './DefaultLabel';
@@ -70,23 +71,19 @@ export type EdgeComponentProps<T = unknown> = {
     id: dagre.Edge,
     edge: DependencyEdge<T>,
   ) => dagre.graphlib.Graph<{}>;
+  curve: Curve;
 };
 
 const renderDefault = (props: RenderLabelProps<unknown>) => (
   <DefaultLabel {...props} />
 );
 
-const createPath = d3Shape
-  .line<EdgePoint>()
-  .x(d => d.x)
-  .y(d => d.y)
-  .curve(d3Shape.curveStepBefore);
-
 export function Edge<EdgeData>({
   render = renderDefault,
   setEdge,
   id,
   edge,
+  curve,
 }: EdgeComponentProps<EdgeData>) {
   const { x = 0, y = 0, width, height, points } = edge;
   const labelProps: DependencyEdge<EdgeData> = edge;
@@ -113,6 +110,16 @@ export function Edge<EdgeData>({
   }, [edge, height, width, setEdge, id]);
 
   let path: string = '';
+
+  const createPath = React.useMemo(
+    () =>
+      d3Shape
+        .line<EdgePoint>()
+        .x(d => d.x)
+        .y(d => d.y)
+        .curve(d3Shape[curve]),
+    [curve],
+  );
 
   if (points) {
     const finitePoints = points.filter(
