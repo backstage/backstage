@@ -185,6 +185,7 @@ type BranchProtectionOptions = {
   logger: Logger;
   requireCodeOwnerReviews: boolean;
   requiredStatusCheckContexts?: string[];
+  requireBranchesToBeUpToDate?: boolean;
   defaultBranch?: string;
   enforceAdmins?: boolean;
 };
@@ -196,6 +197,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
   logger,
   requireCodeOwnerReviews,
   requiredStatusCheckContexts = [],
+  requireBranchesToBeUpToDate = true,
   defaultBranch = 'master',
   enforceAdmins = true,
 }: BranchProtectionOptions): Promise<void> => {
@@ -216,7 +218,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
         repo: repoName,
         branch: defaultBranch,
         required_status_checks: {
-          strict: true,
+          strict: requireBranchesToBeUpToDate,
           contexts: requiredStatusCheckContexts,
         },
         restrictions: null,

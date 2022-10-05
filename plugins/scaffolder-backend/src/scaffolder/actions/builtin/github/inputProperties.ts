@@ -47,6 +47,11 @@ const requiredStatusCheckContexts = {
     type: 'string',
   },
 };
+const requireBranchesToBeUpToDate = {
+  title: 'Require Branches To Be Up To Date?',
+  description: `Require branches to be up to date before merging. The default value is 'true'`,
+  type: 'boolean',
+};
 const repoVisibility = {
   title: 'Repository Visibility',
   type: 'string',
@@ -173,6 +178,7 @@ export { repoUrl };
 export { repoVisibility };
 export { requireCodeOwnerReviews };
 export { requiredStatusCheckContexts };
+export { requireBranchesToBeUpToDate };
 export { sourcePath };
 export { token };
 export { topics };
