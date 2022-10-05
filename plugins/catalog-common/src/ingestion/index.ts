@@ -18,4 +18,6 @@ export type {
   AnalyzeLocationResponse,
   AnalyzeLocationRequest,
   AnalyzeLocationExistingEntity,
+  AnalyzeLocationGenerateEntity,
+  AnalyzeLocationEntityField,
 } from './LocationAnalyzer';

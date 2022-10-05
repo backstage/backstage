@@ -4,8 +4,46 @@
 
 ```ts
 import { BasicPermission } from '@backstage/plugin-permission-common';
+import { Entity } from '@backstage/catalog-model';
 import { IndexableDocument } from '@backstage/plugin-search-common';
+import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
+
+// @public (undocumented)
+export type AnalyzeLocationEntityField = {
+  field: string;
+  state:
+    | 'analysisSuggestedValue'
+    | 'analysisSuggestedNoValue'
+    | 'needsUserInput';
+  value: string | null;
+  description: string;
+};
+
+// @public
+export type AnalyzeLocationExistingEntity = {
+  location: LocationSpec;
+  isRegistered: boolean;
+  entity: Entity;
+};
+
+// @public
+export type AnalyzeLocationGenerateEntity = {
+  entity: RecursivePartial<Entity>;
+  fields: AnalyzeLocationEntityField[];
+};
+
+// @public (undocumented)
+export type AnalyzeLocationRequest = {
+  location: LocationSpec;
+  catalogFilename?: string;
+};
+
+// @public (undocumented)
+export type AnalyzeLocationResponse = {
+  existingEntityFiles: AnalyzeLocationExistingEntity[];
+  generateEntities: AnalyzeLocationGenerateEntity[];
+};
 
 // @alpha
 export const catalogEntityCreatePermission: BasicPermission;

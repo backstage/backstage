@@ -5,6 +5,9 @@
 ```ts
 /// <reference types="node" />
 
+import { AnalyzeLocationExistingEntity } from '@backstage/plugin-catalog-common';
+import { AnalyzeLocationRequest } from '@backstage/plugin-catalog-common';
+import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
@@ -50,42 +53,6 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Validators } from '@backstage/catalog-model';
-
-// @public (undocumented)
-export type AnalyzeLocationEntityField = {
-  field: string;
-  state:
-    | 'analysisSuggestedValue'
-    | 'analysisSuggestedNoValue'
-    | 'needsUserInput';
-  value: string | null;
-  description: string;
-};
-
-// @public
-export type AnalyzeLocationExistingEntity = {
-  location: LocationSpec;
-  isRegistered: boolean;
-  entity: Entity;
-};
-
-// @public
-export type AnalyzeLocationGenerateEntity = {
-  entity: RecursivePartial<Entity>;
-  fields: AnalyzeLocationEntityField[];
-};
-
-// @public (undocumented)
-export type AnalyzeLocationRequest = {
-  location: LocationSpec;
-  catalogFilename?: string;
-};
-
-// @public (undocumented)
-export type AnalyzeLocationResponse = {
-  existingEntityFiles: AnalyzeLocationExistingEntity[];
-  generateEntities: AnalyzeLocationGenerateEntity[];
-};
 
 // @public (undocumented)
 export type AnalyzeOptions = {
