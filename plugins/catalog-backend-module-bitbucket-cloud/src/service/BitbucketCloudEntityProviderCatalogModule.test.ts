@@ -27,8 +27,8 @@ import {
 } from '@backstage/backend-tasks';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
-import { bitbucketCloudEntityProviderCatalogModule } from './BitbucketCloudEntityProviderCatalogModule';
 import { Duration } from 'luxon';
+import { bitbucketCloudEntityProviderCatalogModule } from './BitbucketCloudEntityProviderCatalogModule';
 import { BitbucketCloudEntityProvider } from '../BitbucketCloudEntityProvider';
 
 describe('bitbucketCloudEntityProviderCatalogModule', () => {
