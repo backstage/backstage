@@ -14,8 +14,7 @@ appropriate source code repository for your organization.
 
 > Note: Integrations may already be set up as part of your `app-config.yaml`.
 
-The next step is to add
-[add templates](http://backstage.io/docs/features/software-templates/adding-templates)
+The next step is to [add templates](http://backstage.io/docs/features/software-templates/adding-templates)
 to your Backstage app.
 
 ## Publishing defaults
