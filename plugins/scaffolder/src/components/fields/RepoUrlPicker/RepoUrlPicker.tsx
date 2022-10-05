@@ -88,37 +88,36 @@ export const RepoUrlPicker = (
     [uiSchema],
   );
 
+  const { owner, organization } = state;
+
   useEffect(() => {
     onChange(serializeRepoPickerUrl(state));
   }, [state, onChange]);
 
   /* we deal with calling the repo setting here instead of in each components for ease */
   useEffect(() => {
-    if (allowedOrganizations.length > 0 && !state.organization) {
+    if (allowedOrganizations.length > 0 && !organization) {
       setState(prevState => ({
         ...prevState,
         organization: allowedOrganizations[0],
       }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setState, allowedOrganizations, state.organization]);
+  }, [setState, allowedOrganizations, organization]);
 
   useEffect(() => {
-    if (allowedOwners.length > 0 && !state.owner) {
+    if (allowedOwners.length > 0 && !owner) {
       setState(prevState => ({
         ...prevState,
         owner: allowedOwners[0],
       }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setState, allowedOwners, state.owner]);
+  }, [setState, allowedOwners, owner]);
 
   useEffect(() => {
-    if (allowedRepos.length > 0 && !state.repoName) {
+    if (allowedRepos.length > 0) {
       setState(prevState => ({ ...prevState, repoName: allowedRepos[0] }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setState, allowedRepos, state.repoName]);
+  }, [setState, allowedRepos]);
 
   const updateLocalState = useCallback(
     (newState: RepoUrlPickerState) => {
@@ -138,7 +137,7 @@ export const RepoUrlPicker = (
         return;
       }
 
-      const [host, owner, repoName] = [
+      const [encodedHost, encodedOwner, encodedRepoName] = [
         state.host,
         state.owner,
         state.repoName,
@@ -148,7 +147,7 @@ export const RepoUrlPicker = (
       // so lets grab them using the scmAuthApi and pass through
       // any additional scopes from the ui:options
       const { token } = await scmAuthApi.getCredentials({
-        url: `https://${host}/${owner}/${repoName}`,
+        url: `https://${encodedHost}/${encodedOwner}/${encodedRepoName}`,
         additionalScope: {
           repoWrite: true,
           customScopes: requestUserCredentials.additionalScopes,
