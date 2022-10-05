@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   Page,
   Header,
@@ -23,7 +23,7 @@ import {
   MarkdownContent,
 } from '@backstage/core-components';
 import { NextFieldExtensionOptions } from '../../extensions';
-import { Navigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   errorApiRef,
@@ -36,7 +36,13 @@ import useAsync from 'react-use/lib/useAsync';
 import { makeStyles } from '@material-ui/core';
 import { Stepper } from './Stepper';
 import { BackstageTheme } from '@backstage/theme';
-import { nextRouteRef, selectedTemplateRouteRef } from '../../routes';
+import {
+  nextRouteRef,
+  nextScaffolderTaskRouteRef,
+  selectedTemplateRouteRef,
+} from '../../routes';
+import { SecretsContext } from '../../components/secrets/SecretsContext';
+import { JsonValue } from '@backstage/types';
 
 export interface TemplateWizardPageProps {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
@@ -67,17 +73,31 @@ const useTemplateParameterSchema = (templateRef: string) => {
 export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const styles = useStyles();
   const rootRef = useRouteRef(nextRouteRef);
+  const nextTemplateRef = useRouteRef(nextScaffolderTaskRouteRef);
+  const { secrets } = useContext(SecretsContext) ?? {};
+  const scaffolderApi = useApi(scaffolderApiRef);
+  const navigate = useNavigate();
   const { templateName, namespace } = useRouteRefParams(
     selectedTemplateRouteRef,
   );
+  const templateRef = stringifyEntityRef({
+    kind: 'Template',
+    namespace,
+    name: templateName,
+  });
+
   const errorApi = useApi(errorApiRef);
-  const { loading, manifest, error } = useTemplateParameterSchema(
-    stringifyEntityRef({
-      kind: 'Template',
-      namespace,
-      name: templateName,
-    }),
-  );
+  const { loading, manifest, error } = useTemplateParameterSchema(templateRef);
+
+  const onComplete = async (values: Record<string, JsonValue>) => {
+    const { taskId } = await scaffolderApi.scaffold({
+      templateRef,
+      values,
+      secrets,
+    });
+
+    navigate(nextTemplateRef({ taskId }));
+  };
 
   useEffect(() => {
     if (error) {
@@ -113,6 +133,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
             <Stepper
               manifest={manifest}
               extensions={props.customFieldExtensions}
+              onComplete={onComplete}
             />
           </InfoCard>
         )}
