@@ -73,7 +73,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
           customFieldExtension => customFieldExtension.name === name,
         ),
     ),
-  ] as NextFieldExtensionOptions[]; // here just to coerce the default extensions to the correct type
+  ] as NextFieldExtensionOptions[];
 
   return (
     <Routes>
