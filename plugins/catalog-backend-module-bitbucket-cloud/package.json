@@ -7,6 +7,7 @@
   "license": "Apache-2.0",
   "publishConfig": {
     "access": "public",
+    "alphaTypes": "dist/index.alpha.d.ts",
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
@@ -23,20 +24,22 @@
     "backstage"
   ],
   "scripts": {
-    "build": "backstage-cli package build",
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build --experimental-type-build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean",
-    "start": "backstage-cli package start"
+    "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-bitbucket-cloud-common": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
     "uuid": "^8.0.0",
     "winston": "^3.2.1"
   },
@@ -44,11 +47,13 @@
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
+    "luxon": "^3.0.0",
     "msw": "^0.47.0"
   },
   "files": [
-    "dist",
-    "config.d.ts"
+    "alpha",
+    "config.d.ts",
+    "dist"
   ],
   "configSchema": "config.d.ts"
 }

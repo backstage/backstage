@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TaskRunner } from '@backstage/backend-tasks';
+import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import {
   BitbucketCloudIntegration,
@@ -58,7 +58,8 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     config: Config,
     options: {
       logger: Logger;
-      schedule: TaskRunner;
+      schedule?: TaskRunner;
+      scheduler?: PluginTaskScheduler;
     },
   ): BitbucketCloudEntityProvider[] {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -69,29 +70,42 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
       throw new Error('No integration for bitbucket.org available');
     }
 
-    return readProviderConfigs(config).map(
-      providerConfig =>
-        new BitbucketCloudEntityProvider(
-          providerConfig,
-          integration,
-          options.logger,
-          options.schedule,
-        ),
-    );
+    if (!options.schedule && !options.scheduler) {
+      throw new Error('Either schedule or scheduler must be provided.');
+    }
+
+    return readProviderConfigs(config).map(providerConfig => {
+      if (!options.schedule && !providerConfig.schedule) {
+        throw new Error(
+          `No schedule provided neither via code nor config for bitbucketCloud-provider:${providerConfig.id}.`,
+        );
+      }
+
+      const taskRunner =
+        options.schedule ??
+        options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
+
+      return new BitbucketCloudEntityProvider(
+        providerConfig,
+        integration,
+        options.logger,
+        taskRunner,
+      );
+    });
   }
 
   private constructor(
     config: BitbucketCloudEntityProviderConfig,
     integration: BitbucketCloudIntegration,
     logger: Logger,
-    schedule: TaskRunner,
+    taskRunner: TaskRunner,
   ) {
     this.client = BitbucketCloudClient.fromConfig(integration.config);
     this.config = config;
     this.logger = logger.child({
       target: this.getProviderName(),
     });
-    this.scheduleFn = this.createScheduleFn(schedule);
+    this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 
   private createScheduleFn(schedule: TaskRunner): () => Promise<void> {

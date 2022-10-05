@@ -4484,6 +4484,7 @@ __metadata:
   resolution: "@backstage/plugin-catalog-backend-module-bitbucket-cloud@workspace:plugins/catalog-backend-module-bitbucket-cloud"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -4491,6 +4492,8 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-bitbucket-cloud-common": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+    luxon: ^3.0.0
     msw: ^0.47.0
     uuid: ^8.0.0
     winston: ^3.2.1
