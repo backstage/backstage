@@ -22,6 +22,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import { ForwardedError } from '@backstage/errors';
+import { IssuesByRepoOptions, IssuesFilters } from '../types';
 
 /** @internal */
 export type Assignee = {
@@ -103,6 +104,13 @@ export const gitHubIssuesApi = (
   const fetchIssuesByRepoFromGitHub = async (
     repos: Array<string>,
     itemsPerRepo: number,
+    {
+      filterBy,
+      orderBy = {
+        field: 'UPDATED_AT',
+        direction: 'DESC',
+      },
+    }: IssuesByRepoOptions = {},
   ): Promise<IssuesByRepo> => {
     const graphql = await getOctokit();
     const safeNames: Array<string> = [];
@@ -126,10 +134,17 @@ export const gitHubIssuesApi = (
       };
     });
 
+    // eslint-disable-next-line no-console
+    console.log(`
+    ---------------------------------------------------
+    ${createIssueByRepoQuery(repositories, itemsPerRepo, { filterBy })}
+    ---------------------------------------------------
+    `);
+
     let issuesByRepo: IssuesByRepo = {};
     try {
       issuesByRepo = await graphql(
-        createIssueByRepoQuery(repositories, itemsPerRepo),
+        createIssueByRepoQuery(repositories, itemsPerRepo, { filterBy }),
       );
     } catch (e) {
       if (e.data) {
@@ -151,6 +166,34 @@ export const gitHubIssuesApi = (
   return { fetchIssuesByRepoFromGitHub };
 };
 
+function formatFilterValue(value: IssuesFilters[keyof IssuesFilters]): string {
+  if (Array.isArray(value)) {
+    return `[ ${value.map(formatFilterValue).join(', ')}`;
+  }
+
+  return typeof value === 'string' ? `\"${value}\"` : `${value}`;
+}
+
+function createFilterByClause(filterBy?: IssuesFilters): string {
+  if (typeof filterBy === 'undefined') {
+    return '';
+  }
+
+  return Object.entries(filterBy)
+    .flatMap(([field, value]) => {
+      if (typeof value === 'undefined') {
+        return [];
+      }
+
+      if (field === 'states') {
+        return [`${field}: ${value.join(', ')}`];
+      }
+
+      return [`${field}: ${formatFilterValue}`];
+    })
+    .join(',  ');
+}
+
 function createIssueByRepoQuery(
   repositories: Array<{
     safeName: string;
@@ -158,13 +201,15 @@ function createIssueByRepoQuery(
     owner: string;
   }>,
   itemsPerRepo: number,
+  { filterBy, orderBy }: IssuesByRepoOptions,
 ): string {
   const fragment = `
     fragment issues on Repository {
       issues(
         states: OPEN
         first: ${itemsPerRepo}
-        orderBy: { field: UPDATED_AT, direction: DESC }
+        filterBy: { ${createFilterByClause(filterBy)} }
+        orderBy: { field: ${orderBy?.field}, direction: ${orderBy?.direction} }
       ) {
         totalCount
         edges {

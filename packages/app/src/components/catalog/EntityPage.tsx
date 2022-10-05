@@ -153,6 +153,8 @@ import {
   ReportIssue,
 } from '@backstage/plugin-techdocs-module-addons-contrib';
 
+import { GitHubIssuesCard } from '@backstage/plugin-github-issues';
+
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
@@ -340,6 +342,10 @@ const overviewContent = (
 
     <Grid item md={6} xs={12}>
       <EntityCatalogGraphCard variant="gridItem" height={400} />
+    </Grid>
+
+    <Grid item md={6} xs={12}>
+      <GitHubIssuesCard />
     </Grid>
 
     <EntitySwitch>

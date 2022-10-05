@@ -17,10 +17,12 @@ import { useApi } from '@backstage/core-plugin-api';
 
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { gitHubIssuesApiRef } from '../api';
+import { IssuesByRepoOptions } from '../types';
 
 export const useGetIssuesByRepoFromGitHub = (
   repos: Array<string>,
   itemsPerRepo: number,
+  options?: IssuesByRepoOptions,
 ) => {
   const gitHubIssuesApi = useApi(gitHubIssuesApiRef);
 
@@ -33,6 +35,7 @@ export const useGetIssuesByRepoFromGitHub = (
       return await gitHubIssuesApi.fetchIssuesByRepoFromGitHub(
         repos,
         itemsPerRepo,
+        options,
       );
     }
 
