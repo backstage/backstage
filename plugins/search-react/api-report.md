@@ -321,6 +321,32 @@ export type SearchResultGroupTextFilterFieldProps =
   SearchResultGroupFilterFieldPropsWith<{}>;
 
 // @public
+export const SearchResultLimiter: (
+  props: SearchResultLimiterProps,
+) => JSX.Element;
+
+// @public
+export const SearchResultLimiterBase: (
+  props: SearchResultLimiterBaseProps,
+) => JSX.Element;
+
+// @public
+export type SearchResultLimiterBaseProps = {
+  id?: string;
+  className?: string;
+  label?: ReactNode;
+  options?: number[];
+  value?: number;
+  onChange?: (value: number) => void;
+};
+
+// @public
+export type SearchResultLimiterProps = Omit<
+  SearchResultLimiterBaseProps,
+  'value' | 'onChange'
+>;
+
+// @public
 export const SearchResultList: (props: SearchResultListProps) => JSX.Element;
 
 // @public
