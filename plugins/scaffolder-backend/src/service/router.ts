@@ -201,20 +201,6 @@ export async function createRouter(
 
   const actionRegistry = new TemplateActionRegistry();
 
-  const workers = [];
-  for (let i = 0; i < (taskWorkers || 1); i++) {
-    const worker = await TaskWorker.create({
-      taskBroker,
-      actionRegistry,
-      integrations,
-      logger,
-      workingDirectory,
-      additionalTemplateFilters,
-      additionalTemplateGlobals,
-    });
-    workers.push(worker);
-  }
-
   const actionsToRegister = Array.isArray(actions)
     ? actions
     : createBuiltinActions({
@@ -227,7 +213,17 @@ export async function createRouter(
       });
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
-  workers.forEach(worker => worker.start());
+
+  const worker = await TaskWorker.create({
+    taskBroker,
+    actionRegistry,
+    integrations,
+    logger,
+    workingDirectory,
+    additionalTemplateFilters,
+    additionalTemplateGlobals,
+  });
+  worker.start();
 
   const dryRunner = createDryRunner({
     actionRegistry,
