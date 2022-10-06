@@ -203,6 +203,9 @@ export type CreateButtonProps = {
   title: string;
 } & Partial<Pick<LinkProps_3, 'to'>>;
 
+// @public
+type Curve = 'curveStepBefore' | 'curveMonotoneX';
+
 // @public (undocumented)
 export type CustomProviderClassKey = 'form' | 'button';
 
@@ -239,6 +242,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   acyclicer?: 'greedy';
   // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
   align?: Alignment;
+  curve?: Curve;
   defs?: SVGDefsElement | SVGDefsElement[];
   // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
   direction?: Direction;
@@ -269,6 +273,7 @@ declare namespace DependencyGraphTypes {
     DependencyNode,
     RenderNodeProps,
     RenderNodeFunction,
+    Curve,
     Direction,
     Alignment,
     Ranker,

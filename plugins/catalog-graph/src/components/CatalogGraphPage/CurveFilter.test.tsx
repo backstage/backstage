@@ -41,7 +41,7 @@ describe('<CurveFilter/>', () => {
 
     await waitFor(() => {
       expect(getByText('Monotone X')).toBeInTheDocument();
-      expect(onChange).toBeCalledWith('curveMonotoneX');
+      expect(onChange).toHaveBeenCalledWith('curveMonotoneX');
     });
   });
 });

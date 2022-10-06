@@ -110,6 +110,10 @@ export enum Direction {
 }
 
 /**
+ *  Graph curve factory
+ *
+ * @public
+ *
  * @see {@link @types/d3-shape/index.d.ts#curveMonotoneX}
  * @see {@link @types/d3-shape/index.d.ts#curveStepBefore}
  */
