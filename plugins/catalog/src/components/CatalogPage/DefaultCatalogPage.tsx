@@ -35,7 +35,6 @@ import {
   UserListFilterKind,
   UserListPicker,
   EntityKindPicker,
-  GroupListPicker,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { createComponentRouteRef } from '../../routes';
