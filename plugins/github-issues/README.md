@@ -61,3 +61,20 @@ However, you can configure the plugin with props:
 
 - `itemsPerPage: number = 10` - Issues in the list are paginated, number of issues on a single page is controlled with this prop
 - `itemsPerRepo: number = 40` - the plugin doesn't download all Issues available on GitHub. By default, it will get at most 40 Issues - this prop controls this behaviour
+- `filterBy: object` - the plugin can be configured to filter the query by `assignee`, `createdBy`, `labels`, `states`, `mentioned` or `milestone`.
+- `orderBy: object = { field: 'UPDATED_AT', direction: 'DESC' }` - The ordering that the issues are returned can be configured by the `orderBy` field.
+
+### `filterBy` and `orderBy` example
+
+```ts
+<GitHubIssuesCard
+  filterBy={{
+    labels: ['bug', 'enhancement'],
+    states: ['OPEN'],
+  }}
+  orderBy={{
+    field: 'COMMENTS',
+    direction: 'ASC',
+  }}
+/>
+```
