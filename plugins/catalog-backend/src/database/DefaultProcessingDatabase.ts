@@ -15,7 +15,7 @@
  */
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { ConflictError, isError, NotFoundError } from '@backstage/errors';
+import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import lodash from 'lodash';
 import { v4 as uuid } from 'uuid';
