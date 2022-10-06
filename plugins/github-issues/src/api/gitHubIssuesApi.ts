@@ -22,7 +22,6 @@ import {
 } from '@backstage/core-plugin-api';
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import { ForwardedError } from '@backstage/errors';
-import { IssuesByRepoOptions, IssuesFilters } from '../types';
 
 /** @internal */
 export type Assignee = {
@@ -73,6 +72,34 @@ export type IssuesByRepo = Record<string, RepoIssues>;
 
 /** @internal */
 export type GitHubIssuesApi = ReturnType<typeof gitHubIssuesApi>;
+
+/**
+ * @public
+ */
+export interface IssuesFilters {
+  assignee?: string;
+  createdBy?: string;
+  labels?: string[];
+  mentioned?: string;
+  milestone?: string;
+  states?: ('OPEN' | 'CLOSED')[];
+}
+
+/**
+ * @public
+ */
+export interface IssuesOrdering {
+  field: 'CREATED_AT' | 'UPDATED_AT' | 'COMMENTS';
+  direction?: 'ASC' | 'DESC';
+}
+
+/**
+ * @public
+ */
+export interface IssuesByRepoOptions {
+  filterBy?: IssuesFilters;
+  orderBy?: IssuesOrdering;
+}
 
 /** @internal */
 export const gitHubIssuesApiRef = createApiRef<GitHubIssuesApi>({

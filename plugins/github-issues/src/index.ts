@@ -20,3 +20,8 @@ export {
 } from './plugin';
 
 export type { GitHubIssuesProps } from './components/GitHubIssues';
+export type {
+  IssuesFilters,
+  IssuesOrdering,
+  IssuesByRepoOptions,
+} from './api/gitHubIssuesApi';

@@ -27,7 +27,41 @@ export const gitHubIssuesPlugin: BackstagePlugin<
 export type GitHubIssuesProps = {
   itemsPerPage?: number;
   itemsPerRepo?: number;
+  filterBy?: IssuesFilters;
+  orderBy?: IssuesOrdering;
 };
+
+// @public (undocumented)
+export interface IssuesByRepoOptions {
+  // (undocumented)
+  filterBy?: IssuesFilters;
+  // (undocumented)
+  orderBy?: IssuesOrdering;
+}
+
+// @public (undocumented)
+export interface IssuesFilters {
+  // (undocumented)
+  assignee?: string;
+  // (undocumented)
+  createdBy?: string;
+  // (undocumented)
+  labels?: string[];
+  // (undocumented)
+  mentioned?: string;
+  // (undocumented)
+  milestone?: string;
+  // (undocumented)
+  states?: ('OPEN' | 'CLOSED')[];
+}
+
+// @public (undocumented)
+export interface IssuesOrdering {
+  // (undocumented)
+  direction?: 'ASC' | 'DESC';
+  // (undocumented)
+  field: 'CREATED_AT' | 'UPDATED_AT' | 'COMMENTS';
+}
 
 // (No @packageDocumentation comment for this package)
 ```

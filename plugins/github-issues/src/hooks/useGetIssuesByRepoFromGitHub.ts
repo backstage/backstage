@@ -16,8 +16,7 @@
 import { useApi } from '@backstage/core-plugin-api';
 
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
-import { gitHubIssuesApiRef } from '../api';
-import { IssuesByRepoOptions } from '../types';
+import { gitHubIssuesApiRef, IssuesByRepoOptions } from '../api';
 
 export const useGetIssuesByRepoFromGitHub = (
   repos: Array<string>,

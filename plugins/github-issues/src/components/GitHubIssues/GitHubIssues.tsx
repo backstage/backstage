@@ -24,7 +24,7 @@ import { useGetIssuesByRepoFromGitHub } from '../../hooks/useGetIssuesByRepoFrom
 
 import { IssuesList } from './IssuesList';
 import { NoRepositoriesInfo } from './NoRepositoriesInfo';
-import { IssuesByRepoOptions } from '../../types';
+import type { IssuesFilters, IssuesOrdering } from '../../api/gitHubIssuesApi';
 
 /**
  * @public
@@ -32,8 +32,8 @@ import { IssuesByRepoOptions } from '../../types';
 export type GitHubIssuesProps = {
   itemsPerPage?: number;
   itemsPerRepo?: number;
-  filterBy?: IssuesByRepoOptions['filterBy'];
-  orderBy?: IssuesByRepoOptions['orderBy'];
+  filterBy?: IssuesFilters;
+  orderBy?: IssuesOrdering;
 };
 
 export const GitHubIssues = (props: GitHubIssuesProps) => {
