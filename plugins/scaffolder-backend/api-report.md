@@ -562,8 +562,6 @@ export interface RouterOptions {
   scheduler?: PluginTaskScheduler;
   // (undocumented)
   taskBroker?: TaskBroker;
-  // (undocumented)
-  taskWorkers?: number;
 }
 
 // @public (undocumented)
@@ -599,7 +597,6 @@ export const scaffolderPlugin: (
 // @alpha
 export type ScaffolderPluginOptions = {
   actions?: TemplateAction<any>[];
-  taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;

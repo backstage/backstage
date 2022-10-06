@@ -36,7 +36,6 @@ import { createRouter } from './service/router';
  */
 export type ScaffolderPluginOptions = {
   actions?: TemplateAction<any>[];
-  taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
@@ -105,7 +104,6 @@ export const scaffolderPlugin = createBackendPlugin({
         const {
           additionalTemplateFilters,
           taskBroker,
-          taskWorkers,
           additionalTemplateGlobals,
         } = options;
         const log = loggerToWinstonLogger(logger);
@@ -135,7 +133,6 @@ export const scaffolderPlugin = createBackendPlugin({
           reader,
           actions,
           taskBroker,
-          taskWorkers,
           additionalTemplateFilters,
           additionalTemplateGlobals,
         });
