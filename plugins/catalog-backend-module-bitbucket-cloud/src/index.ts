@@ -21,3 +21,4 @@
  */
 
 export { BitbucketCloudEntityProvider } from './BitbucketCloudEntityProvider';
+export { bitbucketCloudEntityProviderCatalogModule } from './service/BitbucketCloudEntityProviderCatalogModule';

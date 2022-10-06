@@ -1,5 +1,91 @@
 # @backstage/plugin-search-react
 
+## 1.2.0-next.1
+
+### Minor Changes
+
+- 4ed1fa2480: The search query state now has an optional `pageLimit` property that determines how many results will be requested per page, it defaults to 25.
+
+  Examples:
+  _Basic_
+
+  ```jsx
+  <SearchResults query={{ pageLimit: 30 }}>
+    {results => {
+      // Item rendering logic is omitted
+    }}
+  </SearchResults>
+  ```
+
+  _With context_
+
+  ```jsx
+  <SearchContextProvider initialState={{ pageLimit: 30 }}>
+    <SearchResults>
+      {results => {
+        // Item rendering logic is omitted
+      }}
+    </SearchResults>
+  </SearchContextProvider>
+  ```
+
+- bed5a1dc6e: The `<SearchResultList />` component now accepts an optional property `disableRenderingWithNoResults` to disable rendering when no results are returned.
+  Possibility to provide a custom no results component if needed through the `noResultsComponent` property.
+
+  Examples:
+
+  _Rendering a custom no results component_
+
+  ```jsx
+  <SearchResultList
+    query={query}
+    noResultsComponent={<ListItemText primary="No results were found" />}
+  />
+  ```
+
+  _Disable rendering when there are no results_
+
+  ```jsx
+  <SearchResultList query={query} disableRenderingWithNoResults />
+  ```
+
+- 6faaa05626: The `<SearchResultGroup />` component now accepts an optional property `disableRenderingWithNoResults` to disable rendering when no results are returned.
+  Possibility to provide a custom no results component if needed through the `noResultsComponent` property.
+
+  Examples:
+
+  _Rendering a custom no results component_
+
+  ```jsx
+  <SearchResultGroup
+    query={query}
+    icon={<DocsIcon />}
+    title="Documentation"
+    noResultsComponent={<ListItemText primary="No results were found" />}
+  />
+  ```
+
+  _Disable rendering when there are no results_
+
+  ```jsx
+  <SearchResultGroup
+    query={query}
+    icon={<DocsIcon />}
+    title="Documentation"
+    disableRenderingWithNoResults
+  />
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-common@1.1.0-next.1
+  - @backstage/core-components@0.11.2-next.1
+  - @backstage/core-plugin-api@1.0.7-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
 ## 1.1.1-next.0
 
 ### Patch Changes
