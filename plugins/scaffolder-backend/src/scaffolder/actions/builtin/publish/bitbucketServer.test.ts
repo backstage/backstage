@@ -123,7 +123,11 @@ describe('publish:bitbucketServer', () => {
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({ public: false, name: 'repo' });
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'master',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
@@ -165,7 +169,11 @@ describe('publish:bitbucketServer', () => {
           expect(req.headers.get('Authorization')).toBe(
             'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
-          expect(req.body).toEqual({ public: false, name: 'repo' });
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'master',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
@@ -206,7 +214,11 @@ describe('publish:bitbucketServer', () => {
         'https://no-credentials.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(`Bearer ${token}`);
-          expect(req.body).toEqual({ public: false, name: 'repo' });
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'master',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
@@ -327,7 +339,11 @@ describe('publish:bitbucketServer', () => {
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({ public: false, name: 'repo' });
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'master',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
@@ -371,7 +387,11 @@ describe('publish:bitbucketServer', () => {
           expect(req.headers.get('Authorization')).toBe(
             'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
-          expect(req.body).toEqual({ public: false, name: 'repo' });
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'master',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
@@ -419,7 +439,11 @@ describe('publish:bitbucketServer', () => {
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({ public: false, name: 'repo' });
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'main',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
@@ -495,7 +519,11 @@ describe('publish:bitbucketServer', () => {
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({ public: false, name: 'repo' });
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'master',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
@@ -562,7 +590,11 @@ describe('publish:bitbucketServer', () => {
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({ public: false, name: 'repo' });
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'master',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
@@ -605,7 +637,11 @@ describe('publish:bitbucketServer', () => {
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({ public: false, name: 'repo' });
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'master',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
@@ -647,7 +683,11 @@ describe('publish:bitbucketServer', () => {
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({ public: false, name: 'repo' });
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'main',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
