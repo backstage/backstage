@@ -15,3 +15,4 @@
  */
 
 export { GroupListPicker } from './GroupListPicker';
+export type { GroupListPickerProps } from './GroupListPicker';

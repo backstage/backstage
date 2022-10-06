@@ -43,11 +43,18 @@ const useStyles = makeStyles({
   },
 });
 
-type GroupListPickerProps = {
+/**
+ * Props for {@link GroupListPicker}.
+ *
+ * @public
+ */
+export type GroupListPickerProps = {
   label: string;
   groupTypes: Array<string>;
   defaultGroup?: string;
 };
+
+/** @public */
 export const GroupListPicker = (props: GroupListPickerProps) => {
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
