@@ -43,16 +43,14 @@ export async function startStandaloneServer(
 
   logger.debug('Starting application server...');
 
-  const identityMock: IdentityApi = {
-    async getIdentity({ request }) {
+  const identityMock: Partial<IdentityApi> = {
+    async getUserIdentity({ request }) {
       const token = request.headers.authorization?.split(' ')[1];
       return {
-        identity: {
-          type: 'user',
-          ownershipEntityRefs: [],
-          userEntityRef: token || 'user:default/john_doe',
-        },
+        type: 'user',
         token: token || 'no-token',
+        ownershipEntityRefs: [],
+        userEntityRef: token || 'user:default/john_doe',
       };
     },
   };
@@ -61,7 +59,7 @@ export async function startStandaloneServer(
     userSettingsStore: await DatabaseUserSettingsStore.create({
       database: { getClient: async () => database },
     }),
-    identity: identityMock,
+    identity: identityMock as IdentityApi,
   });
 
   let service = createServiceBuilder(module)

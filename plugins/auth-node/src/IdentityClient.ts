@@ -18,7 +18,7 @@ import {
   DefaultIdentityClient,
   IdentityClientOptions,
 } from './DefaultIdentityClient';
-import { BackstageIdentityResponse } from './types';
+import { BackstageIdentityResponse } from './signInTypes';
 
 /**
  * An identity client to interact with auth-backend and authenticate Backstage
@@ -30,6 +30,7 @@ import { BackstageIdentityResponse } from './types';
  */
 export class IdentityClient {
   private readonly defaultIdentityClient: DefaultIdentityClient;
+
   static create(options: IdentityClientOptions): IdentityClient {
     return new IdentityClient(DefaultIdentityClient.create(options));
   }

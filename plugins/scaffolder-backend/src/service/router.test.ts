@@ -43,6 +43,7 @@ import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import {
   IdentityApiGetIdentityRequest,
   BackstageIdentityResponse,
+  UserTokenIdentity,
 } from '@backstage/plugin-auth-node';
 
 const mockAccess = jest.fn();
@@ -78,7 +79,7 @@ const mockUrlReader = UrlReaders.default({
   config: new ConfigReader({}),
 });
 
-const getIdentity = jest.fn();
+const getUserIdentity = jest.fn();
 
 describe('createRouter', () => {
   let app: express.Express;
@@ -727,19 +728,17 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       jest.spyOn(taskBroker, 'event$');
       loggerSpy = jest.spyOn(logger, 'info');
 
-      getIdentity.mockImplementation(
+      getUserIdentity.mockImplementation(
         async ({
           request: _request,
         }: IdentityApiGetIdentityRequest): Promise<
-          BackstageIdentityResponse | undefined
+          UserTokenIdentity | undefined
         > => {
           return {
-            identity: {
-              userEntityRef: 'user:default/guest',
-              ownershipEntityRefs: [],
-              type: 'user',
-            },
+            type: 'user',
             token: 'token',
+            userEntityRef: 'user:default/guest',
+            ownershipEntityRefs: [],
           };
         },
       );
@@ -751,7 +750,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         catalogClient,
         reader: mockUrlReader,
         taskBroker,
-        identity: { getIdentity },
+        identity: { getUserIdentity } as any,
       });
       app = express().use(router);
 
@@ -879,7 +878,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
       describe('when the identity api throws an error', () => {
         beforeEach(() => {
-          getIdentity.mockImplementation(
+          getUserIdentity.mockImplementation(
             async ({
               request: _request,
             }: IdentityApiGetIdentityRequest): Promise<
@@ -907,7 +906,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
       describe('no auth is provided', () => {
         beforeEach(() => {
-          getIdentity.mockImplementation(
+          getUserIdentity.mockImplementation(
             async ({
               request: _request,
             }: IdentityApiGetIdentityRequest): Promise<

@@ -23,7 +23,7 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { Config, JsonObject, JsonValue } from '@backstage/config';
+import { Config } from '@backstage/config';
 import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -31,6 +31,7 @@ import {
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
+import { JsonObject, JsonValue } from '@backstage/types';
 import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
@@ -78,7 +79,7 @@ function isSupportedTemplate(entity: TemplateEntityV1beta3) {
   return entity.apiVersion === 'scaffolder.backstage.io/v1beta3';
 }
 
-/*
+/**
  * @deprecated This function remains as the DefaultIdentityClient behaves slightly differently to the pre-existing
  * scaffolder behaviour. Specifically if the token fails to parse, the DefaultIdentityClient will raise an error.
  * The scaffolder did not raise an error in this case. As such we chose to allow it to behave as it did previously
@@ -91,9 +92,11 @@ function buildDefaultIdentityClient({
   logger: Logger;
 }): IdentityApi {
   return {
-    getIdentity: async ({ request }: IdentityApiGetIdentityRequest) => {
-      const header = request.headers.authorization;
-
+    async getIdentity(_) {
+      throw new Error('Not implemented');
+    },
+    async getUserIdentity(options: IdentityApiGetIdentityRequest) {
+      const header = options.request.headers.authorization;
       if (!header) {
         return undefined;
       }
@@ -126,12 +129,10 @@ function buildDefaultIdentityClient({
         parseEntityRef(sub);
 
         return {
-          identity: {
-            userEntityRef: sub,
-            ownershipEntityRefs: [],
-            type: 'user',
-          },
+          type: 'user',
           token,
+          userEntityRef: sub,
+          ownershipEntityRefs: [],
         };
       } catch (e) {
         logger.error(`Invalid authorization header: ${stringifyError(e)}`);
@@ -244,7 +245,7 @@ export async function createRouter(
       async (req, res) => {
         const { namespace, kind, name } = req.params;
 
-        const userIdentity = await identity.getIdentity({
+        const userIdentity = await identity.getUserIdentity({
           request: req,
         });
         const token = userIdentity?.token;
@@ -290,11 +291,11 @@ export async function createRouter(
         defaultKind: 'template',
       });
 
-      const callerIdentity = await identity.getIdentity({
+      const callerIdentity = await identity.getUserIdentity({
         request: req,
       });
       const token = callerIdentity?.token;
-      const userEntityRef = callerIdentity?.identity.userEntityRef;
+      const userEntityRef = callerIdentity?.userEntityRef;
 
       const userEntity = userEntityRef
         ? await catalogClient.getEntityByRef(userEntityRef, { token })
@@ -498,7 +499,7 @@ export async function createRouter(
       }
 
       const token = (
-        await identity.getIdentity({
+        await identity.getUserIdentity({
           request: req,
         })
       )?.token;

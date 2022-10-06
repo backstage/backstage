@@ -188,7 +188,7 @@ export async function createRouter(
       req: Request<EvaluatePermissionRequestBatch>,
       res: Response<EvaluatePermissionResponseBatch>,
     ) => {
-      const user = await identity.getIdentity({ request: req });
+      const user = await identity.getUserIdentity({ request: req });
 
       const parseResult = evaluatePermissionRequestBatchSchema.safeParse(
         req.body,
@@ -203,7 +203,14 @@ export async function createRouter(
       res.json({
         items: await handleRequest(
           body.items,
-          user,
+          user && {
+            token: user.token,
+            identity: {
+              type: 'user',
+              userEntityRef: user.userEntityRef,
+              ownershipEntityRefs: user.ownershipEntityRefs,
+            },
+          },
           policy,
           permissionIntegrationClient,
           req.header('authorization'),

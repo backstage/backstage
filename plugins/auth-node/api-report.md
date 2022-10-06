@@ -28,12 +28,12 @@ export class DefaultIdentityClient implements IdentityApi {
   // @deprecated
   authenticate(token: string | undefined): Promise<BackstageIdentityResponse>;
   static create(options: IdentityClientOptions): DefaultIdentityClient;
-  // (undocumented)
-  getIdentity({
-    request,
-  }: IdentityApiGetIdentityRequest): Promise<
-    BackstageIdentityResponse | undefined
-  >;
+  getIdentity(
+    options: IdentityApiGetIdentityRequest,
+  ): Promise<BackstageIdentityResponse | undefined>;
+  getUserIdentity(
+    options: IdentityApiGetIdentityRequest,
+  ): Promise<UserTokenIdentity | undefined>;
 }
 
 // @public
@@ -43,9 +43,13 @@ export function getBearerTokenFromAuthorizationHeader(
 
 // @public
 export interface IdentityApi {
+  // @deprecated
   getIdentity(
     options: IdentityApiGetIdentityRequest,
   ): Promise<BackstageIdentityResponse | undefined>;
+  getUserIdentity(
+    options: IdentityApiGetIdentityRequest,
+  ): Promise<UserTokenIdentity | undefined>;
 }
 
 // @public
@@ -67,4 +71,13 @@ export type IdentityClientOptions = {
   issuer?: string;
   algorithms?: string[];
 };
+
+// @public
+export interface UserTokenIdentity {
+  ownershipEntityRefs: string[];
+  token: string;
+  // (undocumented)
+  type: 'user';
+  userEntityRef: string;
+}
 ```

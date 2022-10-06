@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  BackstageIdentityResponse,
-  IdentityApi,
-} from '@backstage/plugin-auth-node';
+import { IdentityApi, UserTokenIdentity } from '@backstage/plugin-auth-node';
 import express from 'express';
 import request from 'supertest';
 import { UserSettingsStore } from '../database/UserSettingsStore';
@@ -29,12 +26,12 @@ describe('createRouter', () => {
     set: jest.fn(),
     delete: jest.fn(),
   };
-  const getIdentityMock = jest.fn<
-    Promise<BackstageIdentityResponse | undefined>,
+  const getUserIdentityMock = jest.fn<
+    Promise<UserTokenIdentity | undefined>,
     any
   >();
   const identityApi: jest.Mocked<Partial<IdentityApi>> = {
-    getIdentity: getIdentityMock,
+    getUserIdentity: getUserIdentityMock,
   };
 
   let app: express.Express;
@@ -55,13 +52,11 @@ describe('createRouter', () => {
   describe('GET /buckets/:bucket/keys/:key', () => {
     it('returns ok', async () => {
       const setting = { bucket: 'my-bucket', key: 'my-key', value: 'a' };
-      getIdentityMock.mockResolvedValue({
+      getUserIdentityMock.mockResolvedValue({
+        type: 'user',
         token: 'a',
-        identity: {
-          type: 'user',
-          ownershipEntityRefs: [],
-          userEntityRef: 'user-1',
-        },
+        ownershipEntityRefs: [],
+        userEntityRef: 'user-1',
       });
 
       userSettingsStore.get.mockResolvedValue(setting);
@@ -73,7 +68,7 @@ describe('createRouter', () => {
       expect(responses.status).toEqual(200);
       expect(responses.body).toEqual(setting);
 
-      expect(getIdentityMock).toHaveBeenCalledTimes(1);
+      expect(getUserIdentityMock).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.get).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.get).toHaveBeenCalledWith({
         userEntityRef: 'user-1',
@@ -94,13 +89,11 @@ describe('createRouter', () => {
 
   describe('DELETE /buckets/:bucket/keys/:key', () => {
     it('returns ok', async () => {
-      getIdentityMock.mockResolvedValue({
+      getUserIdentityMock.mockResolvedValue({
+        type: 'user',
         token: 'a',
-        identity: {
-          type: 'user',
-          ownershipEntityRefs: [],
-          userEntityRef: 'user-1',
-        },
+        ownershipEntityRefs: [],
+        userEntityRef: 'user-1',
       });
 
       userSettingsStore.delete.mockResolvedValue();
@@ -111,7 +104,7 @@ describe('createRouter', () => {
 
       expect(responses.status).toEqual(204);
 
-      expect(getIdentityMock).toHaveBeenCalledTimes(1);
+      expect(getUserIdentityMock).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.delete).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.delete).toHaveBeenCalledWith({
         userEntityRef: 'user-1',
@@ -133,13 +126,11 @@ describe('createRouter', () => {
   describe('PUT /buckets/:bucket/keys/:key', () => {
     it('returns ok', async () => {
       const setting = { bucket: 'my-bucket', key: 'my-key', value: 'a' };
-      getIdentityMock.mockResolvedValue({
+      getUserIdentityMock.mockResolvedValue({
+        type: 'user',
         token: 'a',
-        identity: {
-          type: 'user',
-          ownershipEntityRefs: [],
-          userEntityRef: 'user-1',
-        },
+        ownershipEntityRefs: [],
+        userEntityRef: 'user-1',
       });
 
       userSettingsStore.set.mockResolvedValue();
@@ -153,7 +144,7 @@ describe('createRouter', () => {
       expect(responses.status).toEqual(200);
       expect(responses.body).toEqual(setting);
 
-      expect(getIdentityMock).toHaveBeenCalledTimes(1);
+      expect(getUserIdentityMock).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.set).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.set).toHaveBeenCalledWith({
         userEntityRef: 'user-1',
@@ -170,13 +161,11 @@ describe('createRouter', () => {
     });
 
     it('returns an error if the value is not given', async () => {
-      getIdentityMock.mockResolvedValue({
+      getUserIdentityMock.mockResolvedValue({
+        type: 'user',
         token: 'a',
-        identity: {
-          type: 'user',
-          ownershipEntityRefs: [],
-          userEntityRef: 'user-1',
-        },
+        ownershipEntityRefs: [],
+        userEntityRef: 'user-1',
       });
 
       const responses = await request(app)
@@ -186,7 +175,7 @@ describe('createRouter', () => {
 
       expect(responses.status).toEqual(400);
 
-      expect(getIdentityMock).toHaveBeenCalledTimes(1);
+      expect(getUserIdentityMock).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.set).not.toHaveBeenCalled();
     });
 

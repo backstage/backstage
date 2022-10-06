@@ -25,7 +25,6 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { permissions } from '@backstage/plugin-playlist-common';
 import express from 'express';
 import request from 'supertest';
-
 import { createRouter } from './router';
 
 const sampleEntities = [
@@ -51,13 +50,13 @@ const sampleEntities = [
     },
   },
 ];
-const mockGetEntties = jest
+const mockGetEntities = jest
   .fn()
   .mockImplementation(async () => ({ items: sampleEntities }));
 jest.mock('@backstage/catalog-client', () => ({
   CatalogClient: jest
     .fn()
-    .mockImplementation(() => ({ getEntities: mockGetEntties })),
+    .mockImplementation(() => ({ getEntities: mockGetEntities })),
 }));
 
 jest.mock('@backstage/plugin-auth-node', () => ({
@@ -130,13 +129,12 @@ describe('createRouter', () => {
 
   const mockUser = {
     type: 'user',
+    token: 'mock-token',
     ownershipEntityRefs: ['user:default/me', 'group:default/owner'],
     userEntityRef: 'user:default/me',
   };
   const mockIdentityClient = {
-    getIdentity: jest
-      .fn()
-      .mockImplementation(async () => ({ identity: mockUser })),
+    getUserIdentity: jest.fn().mockImplementation(async () => mockUser),
   } as unknown as IdentityApi;
 
   const discovery: jest.Mocked<PluginEndpointDiscovery> = {
@@ -439,7 +437,7 @@ describe('createRouter', () => {
         { token: 'token' },
       );
       expect(mockDbHandler.getPlaylistEntities).not.toHaveBeenCalled();
-      expect(mockGetEntties).not.toHaveBeenCalled();
+      expect(mockGetEntities).not.toHaveBeenCalled();
       expect(response.status).toEqual(403);
     });
 
@@ -448,7 +446,7 @@ describe('createRouter', () => {
       expect(mockDbHandler.getPlaylistEntities).toHaveBeenCalledWith(
         'playlist-id',
       );
-      expect(mockGetEntties).toHaveBeenCalledWith(
+      expect(mockGetEntities).toHaveBeenCalledWith(
         {
           filter: [
             {

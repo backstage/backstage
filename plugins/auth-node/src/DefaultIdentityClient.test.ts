@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import {
   decodeProtectedHeader,
   exportJWK,
@@ -24,9 +26,8 @@ import { cloneDeep } from 'lodash';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { v4 as uuid } from 'uuid';
-
 import { DefaultIdentityClient } from './DefaultIdentityClient';
-import { IdentityApiGetIdentityRequest } from './types';
+import { IdentityApiGetIdentityRequest } from './IdentityApi';
 
 interface AnyJWK extends Record<string, string> {
   use: 'sig';
@@ -101,9 +102,7 @@ describe('DefaultIdentityClient', () => {
   let factory: FakeTokenFactory;
   const keyDurationSeconds = 5;
 
-  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterAll(() => server.close());
-  afterEach(() => server.resetHandlers());
+  setupRequestMockHandlers(server);
 
   beforeEach(() => {
     client = DefaultIdentityClient.create({ discovery, issuer: mockBaseUrl });
@@ -398,7 +397,7 @@ describe('DefaultIdentityClient', () => {
       });
     });
 
-    it('given a corrupt the identity', async () => {
+    it('given a corrupt identity', async () => {
       await expect(
         client.getIdentity({
           request: { headers: { authorization: `Bearer bad-token` } },
@@ -409,6 +408,51 @@ describe('DefaultIdentityClient', () => {
     it('given no authorization header', async () => {
       expect(
         await client.getIdentity({
+          request: { headers: {} },
+        } as IdentityApiGetIdentityRequest),
+      ).toEqual(undefined);
+    });
+  });
+
+  describe('getUserIdentity', () => {
+    beforeEach(() => {
+      server.use(
+        rest.get(
+          `${mockBaseUrl}/.well-known/jwks.json`,
+          async (_, res, ctx) => {
+            const keys = await factory.listPublicKeys();
+            return res(ctx.json(keys));
+          },
+        ),
+      );
+    });
+
+    it('returns the identity', async () => {
+      const token = await factory.issueToken({
+        claims: { sub: 'foo', ent: ['entity1', 'entity2'] },
+      });
+      const response = await client.getUserIdentity({
+        request: { headers: { authorization: `Bearer ${token}` } },
+      } as IdentityApiGetIdentityRequest);
+      expect(response).toEqual({
+        type: 'user',
+        token: token,
+        userEntityRef: 'foo',
+        ownershipEntityRefs: ['entity1', 'entity2'],
+      });
+    });
+
+    it('given a corrupt the identity', async () => {
+      await expect(
+        client.getUserIdentity({
+          request: { headers: { authorization: `Bearer bad-token` } },
+        } as IdentityApiGetIdentityRequest),
+      ).rejects.toThrow('Invalid JWT');
+    });
+
+    it('given no authorization header', async () => {
+      expect(
+        await client.getUserIdentity({
           request: { headers: {} },
         } as IdentityApiGetIdentityRequest),
       ).toEqual(undefined);

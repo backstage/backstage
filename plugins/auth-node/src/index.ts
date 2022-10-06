@@ -20,14 +20,17 @@
  * @packageDocumentation
  */
 
-export { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';
 export { DefaultIdentityClient } from './DefaultIdentityClient';
-export { IdentityClient } from './IdentityClient';
-export type { IdentityApi } from './IdentityApi';
 export type { IdentityClientOptions } from './DefaultIdentityClient';
+export { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';
+export type {
+  IdentityApi,
+  IdentityApiGetIdentityRequest,
+  UserTokenIdentity,
+} from './IdentityApi';
+export { IdentityClient } from './IdentityClient';
 export type {
   BackstageIdentityResponse,
   BackstageSignInResult,
   BackstageUserIdentity,
-  IdentityApiGetIdentityRequest,
-} from './types';
+} from './signInTypes';

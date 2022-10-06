@@ -15,11 +15,10 @@
  */
 
 import { resolvePackagePath } from '@backstage/backend-common';
-import { BackstageUserIdentity } from '@backstage/plugin-auth-node';
+import { UserTokenIdentity } from '@backstage/plugin-auth-node';
 import { Playlist, PlaylistMetadata } from '@backstage/plugin-playlist-common';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
-
 import {
   ListPlaylistsFilter,
   ListPlaylistsMatchFilter,
@@ -108,7 +107,7 @@ export class DatabaseHandler {
   private playlistColumns = ['id', 'name', 'description', 'owner', 'public'];
 
   async listPlaylists(
-    user: BackstageUserIdentity,
+    user: UserTokenIdentity,
     filter?: ListPlaylistsFilter,
   ): Promise<Playlist[]> {
     let playlistQuery = this.database<Omit<Playlist, 'isFollowing'>>(
@@ -177,7 +176,7 @@ export class DatabaseHandler {
 
   async getPlaylist(
     id: string,
-    user?: BackstageUserIdentity,
+    user?: UserTokenIdentity,
   ): Promise<Playlist | undefined> {
     const playlist = await this.database<Omit<Playlist, 'isFollowing'>>(
       'playlists',
@@ -263,14 +262,14 @@ export class DatabaseHandler {
       .del();
   }
 
-  async followPlaylist(playlistId: string, user: BackstageUserIdentity) {
+  async followPlaylist(playlistId: string, user: UserTokenIdentity) {
     await this.database('followers')
       .insert({ playlist_id: playlistId, user_ref: user.userEntityRef })
       .onConflict(['playlist_id', 'user_ref'])
       .ignore();
   }
 
-  async unfollowPlaylist(playlistId: string, user: BackstageUserIdentity) {
+  async unfollowPlaylist(playlistId: string, user: UserTokenIdentity) {
     await this.database('followers')
       .where({ playlist_id: playlistId, user_ref: user.userEntityRef })
       .del();

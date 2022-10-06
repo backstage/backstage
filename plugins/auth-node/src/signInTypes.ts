@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-import { Request } from 'express';
-
 /**
  * A representation of a successful Backstage sign-in.
  *
- * Compared to the {@link BackstageIdentityResponse} this type omits
- * the decoded identity information embedded in the token.
+ * @remarks
+ *
+ * Compared to the {@link BackstageIdentityResponse} this type omits the decoded
+ * identity information embedded in the token.
+ *
+ * Note that this type is primarily meant to be used for the sign-in flows. It
+ * is what the sign in resolvers return and ultimately gets sent to the calling
+ * clients. These types should not be reused for other purposes.
  *
  * @public
  */
@@ -32,17 +36,14 @@ export interface BackstageSignInResult {
 }
 
 /**
- * Options to request the identity from a Backstage backend request
- *
- * @public
- */
-export type IdentityApiGetIdentityRequest = {
-  request: Request<unknown>;
-};
-
-/**
  * Response object containing the {@link BackstageUserIdentity} and the token
  * from the authentication provider.
+ *
+ * @remarks
+ *
+ * Note that this type is primarily meant to be used for the sign-in flows. It
+ * is what the sign in resolvers return and ultimately gets sent to the calling
+ * clients. These types should not be reused for other purposes.
  *
  * @public
  */
@@ -56,6 +57,12 @@ export interface BackstageIdentityResponse extends BackstageSignInResult {
 /**
  * User identity information within Backstage.
  *
+ * @remarks
+ *
+ * Note that this type is primarily meant to be used for the sign-in flows. It
+ * is what the sign in resolvers return and ultimately gets sent to the calling
+ * clients. These types should not be reused for other purposes.
+ *
  * @public
  */
 export type BackstageUserIdentity = {
@@ -66,13 +73,17 @@ export type BackstageUserIdentity = {
   type: 'user';
 
   /**
-   * The entityRef of the user in the catalog.
-   * For example User:default/sandra
+   * The entityRef of the user in the catalog, as extracted from the token.
+   *
+   * @example user:default/sandra
    */
   userEntityRef: string;
 
   /**
-   * The user and group entities that the user claims ownership through
+   * The user and group entities that the user claims ownership through, as
+   * extracted from the token.
+   *
+   * @example ["user:default/sandra", "group:default/team-a"]
    */
   ownershipEntityRefs: string[];
 };

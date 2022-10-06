@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { AuthenticationError, NotAllowedError } from '@backstage/errors';
 import {
@@ -24,12 +25,13 @@ import {
   jwtVerify,
 } from 'jose';
 import { GetKeyFunction } from 'jose/dist/types/types';
-
+import { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';
 import {
-  BackstageIdentityResponse,
+  IdentityApi,
   IdentityApiGetIdentityRequest,
-} from './types';
-import { getBearerTokenFromAuthorizationHeader, IdentityApi } from '.';
+  UserTokenIdentity,
+} from './IdentityApi';
+import { BackstageIdentityResponse } from './signInTypes';
 
 const CLOCK_MARGIN_S = 10;
 
@@ -77,14 +79,39 @@ export class DefaultIdentityClient implements IdentityApi {
       : ['ES256'];
   }
 
-  async getIdentity({ request }: IdentityApiGetIdentityRequest) {
-    if (!request.headers.authorization) {
-      return undefined;
-    }
+  /** {@inheritdoc IdentityApi.getIdentity} */
+  async getIdentity(
+    options: IdentityApiGetIdentityRequest,
+  ): Promise<BackstageIdentityResponse | undefined> {
     try {
-      return await this.authenticate(
-        getBearerTokenFromAuthorizationHeader(request.headers.authorization),
-      );
+      const header = options.request.headers.authorization;
+      const token = getBearerTokenFromAuthorizationHeader(header);
+      if (!token) {
+        return undefined;
+      }
+      return await this.authenticate(token);
+    } catch (e) {
+      throw new NotAllowedError(e.message);
+    }
+  }
+
+  /** {@inheritdoc IdentityApi.getUserIdentity} */
+  async getUserIdentity(
+    options: IdentityApiGetIdentityRequest,
+  ): Promise<UserTokenIdentity | undefined> {
+    try {
+      const header = options.request.headers.authorization;
+      const token = getBearerTokenFromAuthorizationHeader(header);
+      if (!token) {
+        return undefined;
+      }
+      const response = await this.authenticate(token);
+      return {
+        type: 'user',
+        token: response.token,
+        userEntityRef: response.identity.userEntityRef,
+        ownershipEntityRefs: response.identity.ownershipEntityRefs,
+      };
     } catch (e) {
       throw new NotAllowedError(e.message);
     }
@@ -95,8 +122,7 @@ export class DefaultIdentityClient implements IdentityApi {
    * Returns a BackstageIdentity (user) matching the token.
    * The method throws an error if verification fails.
    *
-   * @deprecated You should start to use getIdentity instead of authenticate to retrieve the user
-   * identity.
+   * @deprecated You should start to use getUserIdentity instead of authenticate to retrieve the user identity.
    */
   async authenticate(
     token: string | undefined,

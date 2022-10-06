@@ -70,22 +70,22 @@ describe('createRouter', () => {
         getExternalBaseUrl: jest.fn(),
       },
       identity: {
-        getIdentity: jest.fn(({ request: req }) => {
+        getIdentity: async () => {
+          throw new Error('Not implemented');
+        },
+        getUserIdentity: async ({ request: req }) => {
           const token = req.headers.authorization?.replace(/^Bearer[ ]+/, '');
-
           if (!token) {
-            return Promise.resolve(undefined);
+            return undefined;
           }
 
-          return Promise.resolve({
-            identity: {
-              type: 'user',
-              userEntityRef: 'test-user',
-              ownershipEntityRefs: ['blah'],
-            },
+          return {
+            type: 'user' as const,
             token,
-          });
-        }),
+            userEntityRef: 'test-user',
+            ownershipEntityRefs: ['blah'],
+          };
+        },
       },
       policy,
     });
