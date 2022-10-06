@@ -37,6 +37,7 @@ export const parseMember = (member: any): Member => {
   return {
     itemId: member.item_id,
     userId: member.user_id,
+    userRef: member.user_ref,
     joinDate: member.join_date,
     picture: member.picture,
   } as Member;

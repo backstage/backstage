@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-export { readTaskScheduleDefinitionFromConfig } from './readTaskScheduleDefinitionFromConfig';
-export { TaskScheduler } from './TaskScheduler';
-export type {
-  PluginTaskScheduler,
-  TaskFunction,
-  TaskInvocationDefinition,
-  TaskRunner,
-  TaskScheduleDefinition,
-  TaskScheduleDefinitionConfig,
-  HumanDuration,
-} from './types';
+exports.up = async function up(knex) {
+  await knex.schema.alterTable('members', table => {
+    table.string('user_ref').nullable();
+  });
+};
+
+exports.down = async function down(knex) {
+  return knex.schema.table('members', table => {
+    table.dropColumn('user_ref');
+  });
+};
