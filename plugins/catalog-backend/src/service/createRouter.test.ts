@@ -696,7 +696,7 @@ describe('NextRouter permissioning', () => {
     name: 'FAKE_RULE',
     description: 'fake rule',
     resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-    schema: z.object({
+    paramsSchema: z.object({
       foo: z.string(),
     }),
     apply: () => true,

@@ -24,7 +24,7 @@ export const createPropertyRule = (propertyType: 'metadata' | 'spec') =>
     name: `HAS_${propertyType.toUpperCase()}`,
     description: `Allow entities which have the specified ${propertyType} subfield.`,
     resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-    schema: z.object({
+    paramsSchema: z.object({
       key: z
         .string()
         .describe(`Property within the entities ${propertyType} to match on`),

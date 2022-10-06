@@ -66,7 +66,7 @@ export type PermissionRule<
   /**
    * A ZodSchema that documents the parameters that this rule accepts.
    */
-  schema: PermissionRuleSchema<TParams>;
+  paramsSchema: PermissionRuleSchema<TParams>;
 
   /**
    * Apply this rule to a resource already loaded from a backing data source. The params are

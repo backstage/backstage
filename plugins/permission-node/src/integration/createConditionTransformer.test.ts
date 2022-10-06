@@ -27,7 +27,7 @@ const transformConditions = createConditionTransformer([
     name: 'test-rule-1',
     description: 'Test rule 1',
     resourceType: 'test-resource',
-    schema: z.object({
+    paramsSchema: z.object({
       foo: z.string(),
       bar: z.number(),
     }),
@@ -38,7 +38,7 @@ const transformConditions = createConditionTransformer([
     name: 'test-rule-2',
     description: 'Test rule 2',
     resourceType: 'test-resource',
-    schema: z.object({
+    paramsSchema: z.object({
       foo: z.string(),
     }),
     apply: jest.fn(),

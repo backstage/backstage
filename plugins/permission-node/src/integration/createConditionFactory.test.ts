@@ -23,7 +23,7 @@ describe('createConditionFactory', () => {
     name: 'test-rule',
     description: 'test-description',
     resourceType: 'test-resource',
-    schema: z.object({
+    paramsSchema: z.object({
       foo: z.string(),
     }),
     apply: (_resource, _params) => true,

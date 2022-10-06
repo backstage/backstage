@@ -31,7 +31,7 @@ const testIntegration = () =>
         name: 'testRule1',
         description: 'Test rule 1',
         resourceType: 'test-resource',
-        schema: z.object({
+        paramsSchema: z.object({
           foo: z.string(),
           bar: z.number(),
         }),
@@ -45,7 +45,7 @@ const testIntegration = () =>
         name: 'testRule2',
         description: 'Test rule 2',
         resourceType: 'test-resource',
-        schema: z.object({
+        paramsSchema: z.object({
           foo: z.string(),
         }),
         apply: (_resource: any) => false,

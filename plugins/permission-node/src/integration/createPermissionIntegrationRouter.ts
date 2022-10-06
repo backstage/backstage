@@ -127,9 +127,9 @@ const applyConditions = <TResourceType extends string, TResource>(
   }
 
   const rule = getRule(criteria.rule);
-  const result = rule.schema.safeParse(criteria.params);
+  const result = rule.paramsSchema.safeParse(criteria.params);
 
-  if (rule.schema && !result.success) {
+  if (rule.paramsSchema && !result.success) {
     throw new InputError(`Parameters to rule are invalid`, result.error);
   }
 
@@ -195,7 +195,7 @@ export const createPermissionIntegrationRouter = <
       name: rule.name,
       description: rule.description,
       resourceType: rule.resourceType,
-      schema: zodToJsonSchema(rule.schema),
+      paramsSchema: zodToJsonSchema(rule.paramsSchema),
     }));
 
     return res.json({ permissions, rules: serializableRules });

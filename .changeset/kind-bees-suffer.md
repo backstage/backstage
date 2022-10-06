@@ -20,7 +20,7 @@ The API has now changed to expect the parameters as a single object
 
 ```ts
 createPermissionRule({
-  schema: z.object({
+  paramSchema: z.object({
     foo: z.string().describe('Foo value to match'),
     bar: z.string().describe('Bar value to match'),
   }),

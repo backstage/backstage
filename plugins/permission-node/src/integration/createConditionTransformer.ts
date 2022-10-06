@@ -47,9 +47,9 @@ const mapConditions = <TQuery>(
   }
 
   const rule = getRule(criteria.rule);
-  const result = rule.schema.safeParse(criteria.params);
+  const result = rule.paramsSchema.safeParse(criteria.params);
 
-  if (rule.schema && !result.success) {
+  if (rule.paramsSchema && !result.success) {
     throw new InputError(`Parameters to rule are invalid`, result.error);
   }
 

@@ -40,7 +40,7 @@ const testRule1 = createPermissionRule({
   name: 'test-rule-1',
   description: 'Test rule 1',
   resourceType: 'test-resource',
-  schema: z.object({
+  paramsSchema: z.object({
     foo: z.string(),
     bar: z.number().describe('bar'),
   }),
@@ -52,7 +52,7 @@ const testRule2 = createPermissionRule({
   name: 'test-rule-2',
   description: 'Test rule 2',
   resourceType: 'test-resource',
-  schema: z.object({
+  paramsSchema: z.object({
     foo: z.string().describe('foo'),
   }),
   apply: (_resource: any, _foo) => false,
@@ -603,7 +603,7 @@ describe('createPermissionIntegrationRouter', () => {
             name: testRule1.name,
             description: testRule1.description,
             resourceType: testRule1.resourceType,
-            schema: {
+            paramsSchema: {
               $schema: 'http://json-schema.org/draft-07/schema#',
               additionalProperties: false,
               properties: {
@@ -623,7 +623,7 @@ describe('createPermissionIntegrationRouter', () => {
             name: testRule2.name,
             description: testRule2.description,
             resourceType: testRule2.resourceType,
-            schema: {
+            paramsSchema: {
               $schema: 'http://json-schema.org/draft-07/schema#',
               additionalProperties: false,
               properties: {

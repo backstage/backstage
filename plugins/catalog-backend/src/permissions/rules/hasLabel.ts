@@ -27,7 +27,7 @@ export const hasLabel = createCatalogPermissionRule({
   name: 'HAS_LABEL',
   description: 'Allow entities which have the specified label metadata.',
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-  schema: z.object({
+  paramsSchema: z.object({
     label: z.string().describe('Name of the label to match one'),
   }),
   apply: (resource, { label }) =>

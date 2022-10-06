@@ -29,7 +29,7 @@ export const isEntityOwner = createCatalogPermissionRule({
   name: 'IS_ENTITY_OWNER',
   description: 'Allow entities owned by the current user',
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-  schema: z.object({
+  paramsSchema: z.object({
     claims: z
       .array(z.string())
       .describe(

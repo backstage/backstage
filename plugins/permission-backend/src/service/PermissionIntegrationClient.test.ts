@@ -284,7 +284,7 @@ describe('PermissionIntegrationClient', () => {
               name: 'RULE_1',
               description: 'Test rule 1',
               resourceType: 'test-resource',
-              schema: z.object({
+              paramsSchema: z.object({
                 input: z.enum(['yes', 'no']),
               }),
               apply: (_resource, { input }) => input === 'yes',
@@ -297,7 +297,7 @@ describe('PermissionIntegrationClient', () => {
               description: 'Test rule 2',
               resourceType: 'test-resource',
 
-              schema: z.object({
+              paramsSchema: z.object({
                 input: z.enum(['yes', 'no']),
               }),
               apply: (_resource, { input }) => input === 'yes',
