@@ -12,6 +12,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TaskRunner } from '@backstage/backend-tasks';
 import { UrlReader } from '@backstage/backend-common';
 
@@ -77,7 +78,8 @@ export class AwsS3EntityProvider implements EntityProvider {
     configRoot: Config,
     options: {
       logger: Logger;
-      schedule: TaskRunner;
+      schedule?: TaskRunner;
+      scheduler?: PluginTaskScheduler;
     },
   ): AwsS3EntityProvider[];
   // (undocumented)
