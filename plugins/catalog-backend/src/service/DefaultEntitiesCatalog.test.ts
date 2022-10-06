@@ -239,10 +239,7 @@ describe('DefaultEntitiesCatalog', () => {
           expect.arrayContaining([
             {
               entity: expect.objectContaining({ metadata: { name: 'root' } }),
-              parentEntityRefs: expect.arrayContaining([
-                'k:default/parent1',
-                'k:default/parent2',
-              ]),
+              parentEntityRefs: ['k:default/parent1', 'k:default/parent2'],
             },
             {
               entity: expect.objectContaining({

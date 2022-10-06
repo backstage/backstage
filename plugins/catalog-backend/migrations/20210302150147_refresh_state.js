@@ -20,6 +20,11 @@
  * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
+  let STRING_TEXT = 'text';
+  if (knex.client.config.client.includes('mysql')) {
+    STRING_TEXT = 'string';
+  }
+
   await knex.schema.createTable('refresh_state', table => {
     table.comment('Location refresh states');
     table
@@ -55,7 +60,9 @@ exports.up = async function up(knex) {
       .dateTime('last_discovery_at') // TODO: timezone or change to epoch-millis or similar
       .notNullable()
       .comment('The last timestamp that this entity was discovered');
-    table.unique(['entity_ref'], 'refresh_state_entity_ref_uniq');
+    table.unique(['entity_ref'], {
+      indexName: 'refresh_state_entity_ref_uniq',
+    });
     table.index('entity_id', 'refresh_state_entity_id_idx');
     table.index('entity_ref', 'refresh_state_entity_ref_idx');
     table.index('next_update_at', 'refresh_state_next_update_at_idx');
@@ -71,9 +78,12 @@ exports.up = async function up(knex) {
       .inTable('refresh_state')
       .onDelete('CASCADE')
       .comment('Entity ID -> refresh_state table');
-    table.text('hash').notNullable().comment('Stable hash of the entity data');
     table
-      .string('stitch_ticket')
+      .string('hash')
+      .notNullable()
+      .comment('Stable hash of the entity data');
+    table
+      .text('stitch_ticket')
       .notNullable()
       .comment('Random value representing a unique stitch attempt ticket');
     table
@@ -88,19 +98,19 @@ exports.up = async function up(knex) {
     table
       .increments('id')
       .comment('Primary key to distinguish unique lines from each other');
-    table
-      .string('source_key')
+    // @ts-ignore
+    table[STRING_TEXT]('source_key')
       .nullable()
       .comment('Opaque identifier for non-entity sources');
-    table
-      .string('source_entity_ref')
+    // @ts-ignore
+    table[STRING_TEXT]('source_entity_ref')
       .nullable()
       .references('entity_ref')
       .inTable('refresh_state')
       .onDelete('CASCADE')
       .comment('EntityRef of entity sources');
-    table
-      .string('target_entity_ref')
+    // @ts-ignore
+    table[STRING_TEXT]('target_entity_ref')
       .notNullable()
       .references('entity_ref')
       .inTable('refresh_state')

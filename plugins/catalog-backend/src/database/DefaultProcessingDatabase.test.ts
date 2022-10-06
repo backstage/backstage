@@ -1447,12 +1447,10 @@ describe('Default Processing Database', () => {
         const result1 = await db.transaction(async tx =>
           db.listParents(tx, { entityRef: 'component:default/foobar' }),
         );
-        expect(result1.entityRefs).toEqual(
-          expect.arrayContaining([
-            'location:default/root-1',
-            'location:default/root-2',
-          ]),
-        );
+        expect(result1.entityRefs).toEqual([
+          'location:default/root-1',
+          'location:default/root-2',
+        ]);
 
         const result2 = await db.transaction(async tx =>
           db.listParents(tx, { entityRef: 'location:default/root-1' }),

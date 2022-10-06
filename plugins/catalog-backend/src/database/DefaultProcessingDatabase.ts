@@ -674,14 +674,14 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       return result.rowCount === 1 || result.length === 1;
     } catch (error) {
       // SQLite, or MySQL reached this rather than the rowCount check above
-      if (
-        isError(error) &&
-        (error.message.includes('UNIQUE constraint failed') ||
-          error.message.includes('Duplicate entry')) // MySQL failure
-      ) {
+      if (!isDatabaseConflictError(error)) {
+        throw error;
+      } else {
+        this.options.logger.debug(
+          `Unable to insert a new refresh state row, ${error}`,
+        );
         return false;
       }
-      throw error;
     }
   }
 
