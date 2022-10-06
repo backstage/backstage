@@ -110,7 +110,7 @@ export const gitHubIssuesApi = (
         field: 'UPDATED_AT',
         direction: 'DESC',
       },
-    }: IssuesByRepoOptions,
+    }: IssuesByRepoOptions = {},
   ): Promise<IssuesByRepo> => {
     const graphql = await getOctokit();
     const safeNames: Array<string> = [];
@@ -133,13 +133,6 @@ export const gitHubIssuesApi = (
         owner,
       };
     });
-
-    // eslint-disable-next-line no-console
-    console.log(`
-    ---------------------------------------------------
-    ${createIssueByRepoQuery(repositories, itemsPerRepo, { filterBy, orderBy })}
-    ---------------------------------------------------
-    `);
 
     let issuesByRepo: IssuesByRepo = {};
     try {
