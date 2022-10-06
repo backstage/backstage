@@ -50,6 +50,7 @@ export function createGithubRepoPushAction(options: {
     gitAuthorEmail?: string;
     requireCodeOwnerReviews?: boolean;
     requiredStatusCheckContexts?: string[];
+    requireBranchesToBeUpToDate?: boolean;
     sourcePath?: string;
     token?: string;
   }>({
@@ -64,6 +65,7 @@ export function createGithubRepoPushAction(options: {
           repoUrl: inputProps.repoUrl,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+          requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
           defaultBranch: inputProps.defaultBranch,
           protectDefaultBranch: inputProps.protectDefaultBranch,
           protectEnforceAdmins: inputProps.protectEnforceAdmins,
@@ -93,6 +95,7 @@ export function createGithubRepoPushAction(options: {
         gitAuthorEmail,
         requireCodeOwnerReviews = false,
         requiredStatusCheckContexts = [],
+        requireBranchesToBeUpToDate = true,
         token: providedToken,
       } = ctx.input;
 
@@ -129,6 +132,7 @@ export function createGithubRepoPushAction(options: {
         repo,
         requireCodeOwnerReviews,
         requiredStatusCheckContexts,
+        requireBranchesToBeUpToDate,
         config,
         ctx.logger,
         gitCommitMessage,
