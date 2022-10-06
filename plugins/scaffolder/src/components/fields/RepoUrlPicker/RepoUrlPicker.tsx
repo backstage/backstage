@@ -88,7 +88,7 @@ export const RepoUrlPicker = (
     [uiSchema],
   );
 
-  const { owner, organization } = state;
+  const { owner, organization, repoName } = state;
 
   useEffect(() => {
     onChange(serializeRepoPickerUrl(state));
@@ -114,10 +114,10 @@ export const RepoUrlPicker = (
   }, [setState, allowedOwners, owner]);
 
   useEffect(() => {
-    if (allowedRepos.length > 0) {
+    if (allowedRepos.length > 0 && !repoName) {
       setState(prevState => ({ ...prevState, repoName: allowedRepos[0] }));
     }
-  }, [setState, allowedRepos]);
+  }, [setState, allowedRepos, repoName]);
 
   const updateLocalState = useCallback(
     (newState: RepoUrlPickerState) => {
@@ -216,8 +216,8 @@ export const RepoUrlPicker = (
       <RepoUrlPickerRepoName
         repoName={state.repoName}
         allowedRepos={allowedRepos}
-        onChange={repoName =>
-          setState(prevState => ({ ...prevState, repoName }))
+        onChange={repo =>
+          setState(prevState => ({ ...prevState, repoName: repo }))
         }
         rawErrors={rawErrors}
       />
