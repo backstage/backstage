@@ -126,6 +126,9 @@ export class DefaultFactRetrieverEngine implements FactRetrieverEngine {
             frequency: { cron: cronExpression },
             fn: this.createFactRetrieverHandler(factRetriever, lifecycle),
             timeout: timeLimit,
+            // We add a delay in order to prevent errors due to the
+            // fact that the backend is not yet online in a cold-start scenario
+            initialDelay: Duration.fromObject({ seconds: 5 }),
           });
           newRegs.push(factRetriever.id);
         } catch (e) {
