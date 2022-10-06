@@ -67,7 +67,7 @@ describe('<GroupListPicker />', () => {
     const { queryByText } = render(
       <ApiProvider apis={apis}>
         <GroupListPicker
-          label="Search"
+          placeholder="Search"
           groupTypes={['org', 'department']}
           defaultGroup="test"
         />
@@ -77,25 +77,11 @@ describe('<GroupListPicker />', () => {
     expect(queryByText('test')).toBeInTheDocument();
   });
 
-  it('open group list picker', () => {
-    const { getByTestId, getAllByText } = render(
-      <ApiProvider apis={apis}>
-        <GroupListPicker
-          label="Search unique"
-          groupTypes={['org', 'department']}
-        />
-      </ApiProvider>,
-    );
-
-    fireEvent.click(getByTestId('group-list-picker-button'));
-    expect(getAllByText('Search unique').length).toBeGreaterThan(0);
-  });
-
   it('can choose a group', async () => {
     const { getByText, queryByText, getByTestId } = render(
       <ApiProvider apis={apis}>
         <GroupListPicker
-          label="Search unique"
+          placeholder="Search"
           groupTypes={['org', 'department']}
         />
       </ApiProvider>,

@@ -51,7 +51,7 @@ const useStyles = makeStyles({
  * @public
  */
 export type GroupListPickerProps = {
-  label: string;
+  placeholder: string;
   groupTypes: Array<string>;
   defaultGroup?: string;
 };
@@ -61,7 +61,7 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
 
-  const { label, groupTypes, defaultGroup = '' } = props;
+  const { placeholder, groupTypes, defaultGroup = '' } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [inputValue, setInputValue] = React.useState('');
   const [group, setGroup] = React.useState(defaultGroup);
@@ -121,7 +121,11 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
           }}
           style={{ width: '200px' }}
           renderInput={params => (
-            <TextField {...params} placeholder={label} variant="outlined" />
+            <TextField
+              {...params}
+              placeholder={placeholder}
+              variant="outlined"
+            />
           )}
         />
       </Popover>
