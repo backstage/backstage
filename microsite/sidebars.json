@@ -278,6 +278,7 @@
       },
       "auth/identity-resolver",
       "auth/oauth",
+      "auth/oidc",
       "auth/add-auth-provider",
       "auth/service-to-service-auth",
       "auth/troubleshooting",
