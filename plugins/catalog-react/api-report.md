@@ -447,6 +447,16 @@ export function getEntitySourceLocation(
 ): EntitySourceLocation | undefined;
 
 // @public (undocumented)
+export const GroupListPicker: (props: GroupListPickerProps) => JSX.Element;
+
+// @public
+export type GroupListPickerProps = {
+  label: string;
+  groupTypes: Array<string>;
+  defaultGroup?: string;
+};
+
+// @public (undocumented)
 export function humanizeEntityRef(
   entityRef: Entity | CompoundEntityRef,
   opts?: {
