@@ -15,6 +15,7 @@
  */
 
 import { TaskContext, TaskBroker, WorkflowRunner } from './types';
+import PQueue from 'p-queue';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { Logger } from 'winston';
 import { TemplateActionRegistry } from '../actions';
@@ -54,15 +55,6 @@ export type CreateWorkerOptions = {
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 };
 
-// Same implementation as StorageTaskBroker
-function makeLock() {
-  let unlock = () => {};
-  const promise = new Promise<void>(_ => {
-    unlock = _;
-  });
-  return { promise, unlock };
-}
-
 /**
  * TaskWorker
  *
@@ -71,28 +63,9 @@ function makeLock() {
 export class TaskWorker {
   private constructor(private readonly options: TaskWorkerOptions) {}
 
-  private runningTasks: number = 0;
-
-  private workerLock = makeLock();
-
-  private get isWorkerAvailable() {
-    return this.runningTasks < this.options.concurrentTasksLimit;
-  }
-
-  private completeTask() {
-    this.runningTasks--;
-    if (this.runningTasks === this.options.concurrentTasksLimit - 1) {
-      this.workerLock.unlock();
-      this.workerLock = makeLock();
-    }
-  }
-
-  private async waitWorkerToBeAvailable() {
-    if (this.isWorkerAvailable) {
-      return;
-    }
-    await this.workerLock.promise;
-  }
+  private taskQueue: PQueue = new PQueue({
+    concurrency: this.options.concurrentTasksLimit,
+  });
 
   static async create(options: CreateWorkerOptions): Promise<TaskWorker> {
     const {
@@ -125,10 +98,8 @@ export class TaskWorker {
   start() {
     (async () => {
       for (;;) {
-        await this.waitWorkerToBeAvailable();
         const task = await this.options.taskBroker.claim();
-        this.runningTasks++;
-        this.runOneTask(task);
+        this.taskQueue.add(() => this.runOneTask(task));
       }
     })();
   }
@@ -151,8 +122,6 @@ export class TaskWorker {
       await task.complete('failed', {
         error: { name: error.name, message: error.message },
       });
-    } finally {
-      this.completeTask();
     }
   }
 }
