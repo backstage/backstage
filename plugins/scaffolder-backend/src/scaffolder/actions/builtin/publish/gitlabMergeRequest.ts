@@ -38,8 +38,8 @@ export const createPublishGitlabMergeRequestAction = (options: {
     title: string;
     description: string;
     branchName: string;
-    sourcePath: string;
-    targetPath: string;
+    sourcePath?: string;
+    targetPath?: string;
     token?: string;
     commitAction?: 'create' | 'delete' | 'update';
     /** @deprecated Use projectPath instead */
