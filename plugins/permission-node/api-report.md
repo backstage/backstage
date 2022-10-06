@@ -177,7 +177,7 @@ export type PermissionRule<
   name: string;
   description: string;
   resourceType: TResourceType;
-  schema: PermissionRuleSchema<TParams>;
+  paramsSchema: PermissionRuleSchema<TParams>;
   apply(
     resource: TResource,
     params: NoInfer<z.input<PermissionRuleSchema<TParams>>>,
