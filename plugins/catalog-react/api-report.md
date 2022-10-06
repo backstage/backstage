@@ -451,7 +451,7 @@ export const GroupListPicker: (props: GroupListPickerProps) => JSX.Element;
 
 // @public
 export type GroupListPickerProps = {
-  label: string;
+  placeholder: string;
   groupTypes: Array<string>;
   defaultGroup?: string;
 };
