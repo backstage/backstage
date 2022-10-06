@@ -33,13 +33,15 @@ const useStyles = makeStyles({
     border: 'none',
     margin: 0,
     padding: 0,
+    width: '100%',
   },
   title: {
+    fontSize: '24px',
     fontStyle: 'normal',
     fontWeight: 700,
-    fontSize: '24px',
-    lineHeight: '32px',
     letterSpacing: '-0.25px',
+    lineHeight: '32px',
+    marginBottom: 0,
   },
 });
 
@@ -51,6 +53,7 @@ type GroupListPickerProps = {
 export const GroupListPicker = (props: GroupListPickerProps) => {
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
+
   const { label, groupTypes, defaultGroup = '' } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [inputValue, setInputValue] = React.useState('');
@@ -109,9 +112,9 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
             }
             setInputValue('');
           }}
-          style={{ width: '200px', margin: '8px' }}
+          style={{ width: '200px' }}
           renderInput={params => (
-            <TextField {...params} label={label} variant="outlined" />
+            <TextField {...params} placeholder={label} variant="outlined" />
           )}
         />
       </Popover>
@@ -122,17 +125,15 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
         className={classes.btn}
         data-testid="group-list-picker-button"
       >
-        <Box
-          display="flex"
-          flexDirection="row"
-          alignItems="center"
-          style={{ gap: '4px' }}
-        >
-          <PeopleIcon fontSize="large" />
+        <Box display="flex" flexDirection="row" alignItems="center">
+          <PeopleIcon fontSize="large" style={{ marginRight: '8px' }} />
           <Typography variant="h3" className={classes.title}>
             {group}
           </Typography>
-          <KeyboardArrowDownIcon fontSize="large" />
+          <KeyboardArrowDownIcon
+            fontSize="large"
+            style={{ marginLeft: 'auto' }}
+          />
         </Box>
       </button>
     </>

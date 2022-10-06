@@ -35,6 +35,7 @@ import {
   UserListFilterKind,
   UserListPicker,
   EntityKindPicker,
+  GroupListPicker,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { createComponentRouteRef } from '../../routes';
@@ -84,6 +85,11 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
           </ContentHeader>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
+              <GroupListPicker
+                label="Search for your future"
+                groupTypes={['team', 'org', 'department']}
+                defaultGroup="This"
+              />
               <EntityKindPicker initialFilter={initialKind} />
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
