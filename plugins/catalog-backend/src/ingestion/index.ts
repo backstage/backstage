@@ -15,6 +15,11 @@
  */
 
 export type {
+  AnalyzeLocationEntityField,
+  AnalyzeLocationExistingEntity,
+  AnalyzeLocationGenerateEntity,
+  AnalyzeLocationRequest,
+  AnalyzeLocationResponse,
   LocationAnalyzer,
   ScmLocationAnalyzer,
   AnalyzeOptions,

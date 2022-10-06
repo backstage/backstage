@@ -5,9 +5,11 @@
 ```ts
 /// <reference types="node" />
 
-import { AnalyzeLocationExistingEntity } from '@backstage/plugin-catalog-common';
-import { AnalyzeLocationRequest } from '@backstage/plugin-catalog-common';
-import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
+import { AnalyzeLocationEntityField as AnalyzeLocationEntityField_2 } from '@backstage/plugin-catalog-common';
+import { AnalyzeLocationExistingEntity as AnalyzeLocationExistingEntity_2 } from '@backstage/plugin-catalog-common';
+import { AnalyzeLocationGenerateEntity as AnalyzeLocationGenerateEntity_2 } from '@backstage/plugin-catalog-common';
+import { AnalyzeLocationRequest as AnalyzeLocationRequest_2 } from '@backstage/plugin-catalog-common';
+import { AnalyzeLocationResponse as AnalyzeLocationResponse_2 } from '@backstage/plugin-catalog-common';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
@@ -53,6 +55,21 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Validators } from '@backstage/catalog-model';
+
+// @public @deprecated
+export type AnalyzeLocationEntityField = AnalyzeLocationEntityField_2;
+
+// @public @deprecated
+export type AnalyzeLocationExistingEntity = AnalyzeLocationExistingEntity_2;
+
+// @public @deprecated
+export type AnalyzeLocationGenerateEntity = AnalyzeLocationGenerateEntity_2;
+
+// @public @deprecated (undocumented)
+export type AnalyzeLocationRequest = AnalyzeLocationRequest_2;
+
+// @public @deprecated (undocumented)
+export type AnalyzeLocationResponse = AnalyzeLocationResponse_2;
 
 // @public (undocumented)
 export type AnalyzeOptions = {

@@ -13,11 +13,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
-  AnalyzeLocationResponse,
-  AnalyzeLocationRequest,
-  AnalyzeLocationExistingEntity,
+  AnalyzeLocationRequest as ExaltedAnalyzeLocationRequest,
+  AnalyzeLocationResponse as ExaltedAnalyzeLocationResponse,
+  AnalyzeLocationExistingEntity as ExaltedAnalyzeLocationExistingEntity,
+  AnalyzeLocationGenerateEntity as ExaltedAnalyzeLocationGenerateEntity,
+  AnalyzeLocationEntityField as ExaltedAnalyzeLocationEntityField,
 } from '@backstage/plugin-catalog-common';
+
+/**
+ * @public
+ * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
+ */
+export type AnalyzeLocationRequest = ExaltedAnalyzeLocationRequest;
+/**
+ * @public
+ * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
+ */
+export type AnalyzeLocationResponse = ExaltedAnalyzeLocationResponse;
+
+/**
+ * If the folder pointed to already contained catalog info yaml files, they are
+ * read and emitted like this so that the frontend can inform the user that it
+ * located them and can make sure to register them as well if they weren't
+ * already
+ * @public
+ * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
+ */
+export type AnalyzeLocationExistingEntity =
+  ExaltedAnalyzeLocationExistingEntity;
+/**
+ * This is some form of representation of what the analyzer could deduce.
+ * We should probably have a chat about how this can best be conveyed to
+ * the frontend. It'll probably contain a (possibly incomplete) entity, plus
+ * enough info for the frontend to know what form data to show to the user
+ * for overriding/completing the info.
+ * @public
+ * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
+ */
+export type AnalyzeLocationGenerateEntity =
+  ExaltedAnalyzeLocationGenerateEntity;
+
+/**
+ *
+ * This is where I get really vague. Something like this perhaps? Or it could be
+ * something like a json-schema that contains enough info for the frontend to
+ * be able to present a form and explanations
+ * @public
+ * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
+ */
+export type AnalyzeLocationEntityField = ExaltedAnalyzeLocationEntityField;
 
 /** @public */
 export type LocationAnalyzer = {
@@ -31,7 +77,6 @@ export type LocationAnalyzer = {
     location: AnalyzeLocationRequest,
   ): Promise<AnalyzeLocationResponse>;
 };
-
 /** @public */
 export type AnalyzeOptions = {
   url: string;
