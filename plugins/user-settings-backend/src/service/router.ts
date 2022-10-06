@@ -114,7 +114,7 @@ export async function createRouterInternal(options: {
 
     await options.userSettingsStore.delete({ userEntityRef, bucket, key });
 
-    res.send(204).end();
+    res.status(204).end();
   });
 
   router.use(errorHandler());

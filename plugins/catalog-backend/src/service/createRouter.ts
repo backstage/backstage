@@ -98,7 +98,7 @@ export async function createRouter(
       );
 
       await refreshService.refresh(refreshOptions);
-      res.status(200).send();
+      res.status(200).end();
     });
   }
 
