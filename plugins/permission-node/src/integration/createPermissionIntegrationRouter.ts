@@ -47,7 +47,7 @@ const permissionCriteriaSchema: z.ZodSchema<
     z.object({
       rule: z.string(),
       resourceType: z.string(),
-      params: z.record(z.any()),
+      params: z.record(z.any()).optional(),
     }),
   ]),
 );
@@ -127,13 +127,13 @@ const applyConditions = <TResourceType extends string, TResource>(
   }
 
   const rule = getRule(criteria.rule);
-  const result = rule.paramsSchema.safeParse(criteria.params);
+  const result = rule.paramsSchema?.safeParse(criteria.params);
 
-  if (rule.paramsSchema && !result.success) {
+  if (result && !result.success) {
     throw new InputError(`Parameters to rule are invalid`, result.error);
   }
 
-  return rule.apply(resource, criteria.params);
+  return rule.apply(resource, criteria.params ?? {});
 };
 
 /**
@@ -195,7 +195,7 @@ export const createPermissionIntegrationRouter = <
       name: rule.name,
       description: rule.description,
       resourceType: rule.resourceType,
-      paramsSchema: zodToJsonSchema(rule.paramsSchema),
+      paramsSchema: zodToJsonSchema(rule.paramsSchema ?? z.object({})),
     }));
 
     return res.json({ permissions, rules: serializableRules });

@@ -303,7 +303,7 @@ export const createCatalogConditionalDecision: (
 
 // @alpha
 export const createCatalogPermissionRule: <
-  TParams extends PermissionRuleParams = PermissionRuleParams,
+  TParams extends PermissionRuleParams = undefined,
 >(
   rule: PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>,
 ) => PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;

@@ -79,7 +79,7 @@ export const playlistConditions: Conditions<{
     PlaylistMetadata,
     ListPlaylistsFilter,
     'playlist-list',
-    PermissionRuleParams
+    undefined
   >;
 }>;
 

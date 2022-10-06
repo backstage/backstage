@@ -26,7 +26,7 @@ export const createPermissionRule = <
   TResource,
   TQuery,
   TResourceType extends string,
-  TParams extends PermissionRuleParams = PermissionRuleParams,
+  TParams extends PermissionRuleParams = undefined,
 >(
   rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
 ) => rule;
@@ -41,7 +41,7 @@ export const createPermissionRule = <
  */
 export const makeCreatePermissionRule =
   <TResource, TQuery, TResourceType extends string>() =>
-  <TParams extends PermissionRuleParams = PermissionRuleParams>(
+  <TParams extends PermissionRuleParams = undefined>(
     rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
   ) =>
     createPermissionRule(rule);

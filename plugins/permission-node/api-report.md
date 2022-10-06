@@ -55,7 +55,9 @@ export type Condition<TRule> = TRule extends PermissionRule<
   infer TResourceType,
   infer TParams
 >
-  ? (params: TParams) => PermissionCondition<TResourceType, TParams>
+  ? undefined extends TParams
+    ? () => PermissionCondition<TResourceType, TParams>
+    : (params: TParams) => PermissionCondition<TResourceType, TParams>
   : never;
 
 // @public
@@ -98,7 +100,7 @@ export const createConditionFactory: <
   TParams extends PermissionRuleParams = PermissionRuleParams,
 >(
   rule: PermissionRule<unknown, unknown, TResourceType, TParams>,
-) => (params: TParams) => PermissionCondition<TResourceType, TParams>;
+) => (args_0: TParams) => PermissionCondition<TResourceType, TParams>;
 
 // @public
 export const createConditionTransformer: <
@@ -129,7 +131,7 @@ export const createPermissionRule: <
   TResource,
   TQuery,
   TResourceType extends string,
-  TParams extends PermissionRuleParams = PermissionRuleParams,
+  TParams extends PermissionRuleParams = undefined,
 >(
   rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
 ) => PermissionRule<TResource, TQuery, TResourceType, TParams>;
@@ -154,7 +156,7 @@ export const makeCreatePermissionRule: <
   TResource,
   TQuery,
   TResourceType extends string,
->() => <TParams extends PermissionRuleParams = PermissionRuleParams>(
+>() => <TParams extends PermissionRuleParams = undefined>(
   rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
 ) => PermissionRule<TResource, TQuery, TResourceType, TParams>;
 
@@ -177,7 +179,7 @@ export type PermissionRule<
   name: string;
   description: string;
   resourceType: TResourceType;
-  paramsSchema: PermissionRuleSchema<TParams>;
+  paramsSchema?: PermissionRuleSchema<TParams>;
   apply(
     resource: TResource,
     params: NoInfer<z.input<PermissionRuleSchema<TParams>>>,

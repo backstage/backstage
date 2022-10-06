@@ -37,6 +37,7 @@ describe('createConditionFactory', () => {
   describe('return value', () => {
     it('constructs a condition with the rule name and supplied params', () => {
       const conditionFactory = createConditionFactory(testRule);
+
       expect(
         conditionFactory({
           foo: 'bar',

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { z } from 'zod';
 import { createPermissionRule } from './createPermissionRule';
 import {
   createGetRule,
@@ -31,7 +30,6 @@ describe('permission integration utils', () => {
       name: 'test-rule-1',
       description: 'Test rule 1',
       resourceType: 'test-resource',
-      paramsSchema: z.object({}),
       apply: jest.fn(),
       toQuery: jest.fn(),
     });
@@ -40,7 +38,6 @@ describe('permission integration utils', () => {
       name: 'test-rule-2',
       description: 'Test rule 2',
       resourceType: 'test-resource',
-      paramsSchema: z.object({}),
       apply: jest.fn(),
       toQuery: jest.fn(),
     });

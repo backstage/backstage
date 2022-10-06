@@ -52,11 +52,8 @@ const testRule2 = createPermissionRule({
   name: 'test-rule-2',
   description: 'Test rule 2',
   resourceType: 'test-resource',
-  paramsSchema: z.object({
-    foo: z.string().describe('foo'),
-  }),
-  apply: (_resource: any, _foo) => false,
-  toQuery: _foo => ({}),
+  apply: (_resource: any) => false,
+  toQuery: () => ({}),
 });
 
 describe('createPermissionIntegrationRouter', () => {
@@ -105,7 +102,6 @@ describe('createPermissionIntegrationRouter', () => {
           {
             rule: 'test-rule-2',
             resourceType: 'test-resource',
-            params: { foo: 'b' },
           },
         ],
       },
@@ -113,9 +109,6 @@ describe('createPermissionIntegrationRouter', () => {
         not: {
           rule: 'test-rule-2',
           resourceType: 'test-resource',
-          params: {
-            foo: 'c',
-          },
         },
       },
       {
@@ -133,9 +126,6 @@ describe('createPermissionIntegrationRouter', () => {
               {
                 rule: 'test-rule-2',
                 resourceType: 'test-resource',
-                params: {
-                  foo: 'b',
-                },
               },
             ],
           },
@@ -153,9 +143,6 @@ describe('createPermissionIntegrationRouter', () => {
                 {
                   rule: 'test-rule-2',
                   resourceType: 'test-resource',
-                  params: {
-                    foo: 'c',
-                  },
                 },
               ],
             },
@@ -191,9 +178,6 @@ describe('createPermissionIntegrationRouter', () => {
       {
         rule: 'test-rule-2',
         resourceType: 'test-resource',
-        params: {
-          foo: 'a',
-        },
       },
       {
         allOf: [
@@ -208,7 +192,6 @@ describe('createPermissionIntegrationRouter', () => {
           {
             rule: 'test-rule-2',
             resourceType: 'test-resource',
-            params: { foo: 'b' },
           },
         ],
       },
@@ -227,9 +210,6 @@ describe('createPermissionIntegrationRouter', () => {
               {
                 rule: 'test-rule-2',
                 resourceType: 'test-resource',
-                params: {
-                  foo: 'b',
-                },
               },
             ],
           },
@@ -248,9 +228,6 @@ describe('createPermissionIntegrationRouter', () => {
                   not: {
                     rule: 'test-rule-2',
                     resourceType: 'test-resource',
-                    params: {
-                      foo: 'd',
-                    },
                   },
                 },
               ],
@@ -309,9 +286,6 @@ describe('createPermissionIntegrationRouter', () => {
                 conditions: {
                   rule: 'test-rule-2',
                   resourceType: 'test-resource',
-                  params: {
-                    foo: 'b',
-                  },
                 },
               },
               {
@@ -337,9 +311,6 @@ describe('createPermissionIntegrationRouter', () => {
                   not: {
                     rule: 'test-rule-2',
                     resourceType: 'test-resource',
-                    params: {
-                      foo: 'c',
-                    },
                   },
                 },
               },
@@ -360,9 +331,6 @@ describe('createPermissionIntegrationRouter', () => {
                     {
                       rule: 'test-rule-2',
                       resourceType: 'test-resource',
-                      params: {
-                        foo: 'd',
-                      },
                     },
                   ],
                 },
@@ -626,13 +594,7 @@ describe('createPermissionIntegrationRouter', () => {
             paramsSchema: {
               $schema: 'http://json-schema.org/draft-07/schema#',
               additionalProperties: false,
-              properties: {
-                foo: {
-                  description: 'foo',
-                  type: 'string',
-                },
-              },
-              required: ['foo'],
+              properties: {},
               type: 'object',
             },
           },

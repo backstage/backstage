@@ -106,7 +106,7 @@ export type PermissionCondition<
 > = {
   resourceType: TResourceType;
   rule: string;
-  params: TParams;
+  params?: TParams;
 };
 
 /**
@@ -161,7 +161,9 @@ export type PermissionRuleParam = undefined | JsonPrimitive | JsonPrimitive[];
  *
  * @public
  */
-export type PermissionRuleParams = Record<string, PermissionRuleParam>;
+export type PermissionRuleParams =
+  | undefined
+  | Record<string, PermissionRuleParam>;
 
 /**
  * An individual request sent to the permission backend.

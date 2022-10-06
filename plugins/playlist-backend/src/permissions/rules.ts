@@ -47,7 +47,6 @@ const isPublic = createPlaylistPermissionRule({
   name: 'IS_PUBLIC',
   description: 'Should allow only if the playlist is public',
   resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
-  paramsSchema: z.object({}),
   apply: (list: PlaylistMetadata) => list.public,
   toQuery: () => ({ key: 'public', values: [true] }),
 });

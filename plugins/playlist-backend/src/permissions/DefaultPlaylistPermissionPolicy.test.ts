@@ -70,7 +70,7 @@ describe('DefaultPlaylistPermissionPolicy', () => {
           playlistConditions.isOwner({
             owners: ['user:default/me', 'group:default/owner'],
           }),
-          playlistConditions.isPublic({}),
+          playlistConditions.isPublic(),
         ],
       },
     });
@@ -91,7 +91,7 @@ describe('DefaultPlaylistPermissionPolicy', () => {
           playlistConditions.isOwner({
             owners: ['user:default/me', 'group:default/owner'],
           }),
-          playlistConditions.isPublic({}),
+          playlistConditions.isPublic(),
         ],
       },
     });

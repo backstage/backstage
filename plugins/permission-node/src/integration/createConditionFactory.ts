@@ -36,15 +36,17 @@ import { PermissionRule } from '../types';
  *
  * @public
  */
-export const createConditionFactory =
-  <
-    TResourceType extends string,
-    TParams extends PermissionRuleParams = PermissionRuleParams,
-  >(
-    rule: PermissionRule<unknown, unknown, TResourceType, TParams>,
-  ) =>
-  (params: TParams): PermissionCondition<TResourceType, TParams> => ({
-    rule: rule.name,
-    resourceType: rule.resourceType,
-    params,
-  });
+export const createConditionFactory = <
+  TResourceType extends string,
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+>(
+  rule: PermissionRule<unknown, unknown, TResourceType, TParams>,
+) => {
+  return (...args: [TParams]): PermissionCondition<TResourceType, TParams> => {
+    return {
+      rule: rule.name,
+      resourceType: rule.resourceType,
+      params: args[0],
+    };
+  };
+};

@@ -71,7 +71,7 @@ export class DefaultPlaylistPermissionPolicy implements PermissionPolicy {
           playlistConditions.isOwner({
             owners: user?.identity.ownershipEntityRefs ?? [],
           }),
-          playlistConditions.isPublic({}),
+          playlistConditions.isPublic(),
         ],
       });
     }
