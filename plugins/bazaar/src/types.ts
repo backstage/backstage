@@ -19,6 +19,7 @@ export type Member = {
   userId: string;
   joinDate?: string;
   picture?: string;
+  userRef?: string;
 };
 
 export type Status = 'ongoing' | 'proposed';
