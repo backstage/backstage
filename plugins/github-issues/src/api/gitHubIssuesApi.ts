@@ -198,7 +198,7 @@ function formatFilterValue(value: IssuesFilters[keyof IssuesFilters]): string {
 }
 
 function createFilterByClause(filterBy?: IssuesFilters): string {
-  if (typeof filterBy === 'undefined') {
+  if (!filterBy) {
     return '';
   }
 
