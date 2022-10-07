@@ -199,22 +199,20 @@ function formatFilterValue(
   return typeof value === 'string' ? `\"${value}\"` : `${value}`;
 }
 
-function createFilterByClause(filterBy?: GithubIssuesFilters): string {
+/** @internal */
+export function createFilterByClause(filterBy?: GithubIssuesFilters): string {
   if (!filterBy) {
     return '';
   }
 
   return Object.entries(filterBy)
-    .flatMap(([field, value]) => {
-      if (!value) {
-        return [];
-      }
-
+    .filter(value => value)
+    .map(([field, value]) => {
       if (field === 'states') {
-        return [`${field}: ${value.join(', ')}`];
+        return `${field}: ${value.join(', ')}`;
       }
 
-      return [`${field}: ${formatFilterValue(value)}`];
+      return `${field}: ${formatFilterValue(value)}`;
     })
     .join(', ');
 }

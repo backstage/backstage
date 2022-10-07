@@ -20,7 +20,8 @@ jest.mock('octokit', () => ({
 
 import { ConfigApi, ErrorApi } from '@backstage/core-plugin-api';
 import { ForwardedError } from '@backstage/errors';
-import { gitHubIssuesApi } from './gitHubIssuesApi';
+import { createFilterByClause, gitHubIssuesApi } from './gitHubIssuesApi';
+import type { GithubIssuesFilters } from './gitHubIssuesApi';
 
 function getFragment(
   filterBy = '',
@@ -140,6 +141,30 @@ describe('gitHubIssuesApi', () => {
       expect(mockGraphQLQuery).toHaveBeenCalledWith(
         getFragment(expectedFilterBy, expectedOrderBy),
       );
+    });
+
+    describe('filterBy', () => {
+      const cases: [GithubIssuesFilters | undefined, string][] = [
+        [{}, ''],
+        [undefined, ''],
+        [{ states: ['OPEN'] }, 'states: OPEN'],
+        [
+          { labels: ['bug', 'enhancement'], assignee: 'someone' },
+          `labels: [ \"bug\", \"enhancement\"], assignee: "someone"`,
+        ],
+        [
+          {
+            createdBy: 'someone',
+            mentioned: 'someone else',
+            milestone: 'milestone',
+          },
+          `createdBy: \"someone\", mentioned: \"someone else\", milestone: \"milestone\"`,
+        ],
+      ];
+
+      test.each(cases)('filterBy(%s) should be %s', (filterBy, expected) => {
+        expect(createFilterByClause(filterBy)).toEqual(expected);
+      });
     });
   });
 
