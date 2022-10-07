@@ -12,7 +12,7 @@ The GitHub integration has a discovery provider for discovering catalog
 entities within a GitHub organization. The provider will crawl the GitHub
 organization and register entities matching the configured path. This can be
 useful as an alternative to static locations or manually adding things to the
-catalog. This is the prefered method for ingesting entities into the catalog.
+catalog. This is the preferred method for ingesting entities into the catalog.
 
 ## Installation
 
@@ -55,7 +55,7 @@ And then add the entity provider to your catalog builder:
 To use the discovery provider, you'll need a GitHub integration
 [set up](locations.md) with either a [Personal Access Token](../../getting-started/configuration.md#setting-up-a-github-integration) or [GitHub Apps](./github-apps.md).
 
-Then you can add a github config to the catalog providers configuration:
+Then you can add a `github` config to the catalog providers configuration:
 
 ```yaml
 catalog:
@@ -121,10 +121,10 @@ This provider supports multiple organizations via unique provider IDs.
     In the example above, a repository with the `backstage-include` topic would still be excluded
     if it were also carrying the `experiments` topic.
     - **include** _(optional)_:
-      An array of strings used to filter in results based on their associated Github topics.
+      An array of strings used to filter in results based on their associated GitHub topics.
       If configured, only repositories with one (or more) topic(s) present in the inclusion filter will be ingested
     - **exclude** _(optional)_:
-      An array of strings used to filter out results based on their associated Github topics.
+      An array of strings used to filter out results based on their associated GitHub topics.
       If configured, all repositories _except_ those with one (or more) topics(s) present in the exclusion filter will be ingested.
 - **organization**:
   Name of your organization account/workspace.
