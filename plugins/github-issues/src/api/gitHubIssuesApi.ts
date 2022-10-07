@@ -73,6 +73,34 @@ export type IssuesByRepo = Record<string, RepoIssues>;
 /** @internal */
 export type GitHubIssuesApi = ReturnType<typeof gitHubIssuesApi>;
 
+/**
+ * @public
+ */
+export interface GithubIssuesFilters {
+  assignee?: string;
+  createdBy?: string;
+  labels?: string[];
+  mentioned?: string;
+  milestone?: string;
+  states?: ('OPEN' | 'CLOSED')[];
+}
+
+/**
+ * @public
+ */
+export interface GithubIssuesOrdering {
+  field: 'CREATED_AT' | 'UPDATED_AT' | 'COMMENTS';
+  direction?: 'ASC' | 'DESC';
+}
+
+/**
+ * @public
+ */
+export interface GitubIssuesByRepoOptions {
+  filterBy?: GithubIssuesFilters;
+  orderBy?: GithubIssuesOrdering;
+}
+
 /** @internal */
 export const gitHubIssuesApiRef = createApiRef<GitHubIssuesApi>({
   id: 'plugin.githubissues.service',
@@ -103,6 +131,13 @@ export const gitHubIssuesApi = (
   const fetchIssuesByRepoFromGitHub = async (
     repos: Array<string>,
     itemsPerRepo: number,
+    {
+      filterBy,
+      orderBy = {
+        field: 'UPDATED_AT',
+        direction: 'DESC',
+      },
+    }: GitubIssuesByRepoOptions = {},
   ): Promise<IssuesByRepo> => {
     const graphql = await getOctokit();
     const safeNames: Array<string> = [];
@@ -129,7 +164,10 @@ export const gitHubIssuesApi = (
     let issuesByRepo: IssuesByRepo = {};
     try {
       issuesByRepo = await graphql(
-        createIssueByRepoQuery(repositories, itemsPerRepo),
+        createIssueByRepoQuery(repositories, itemsPerRepo, {
+          filterBy,
+          orderBy,
+        }),
       );
     } catch (e) {
       if (e.data) {
@@ -151,6 +189,34 @@ export const gitHubIssuesApi = (
   return { fetchIssuesByRepoFromGitHub };
 };
 
+function formatFilterValue(
+  value: GithubIssuesFilters[keyof GithubIssuesFilters],
+): string {
+  if (Array.isArray(value)) {
+    return `[ ${value.map(formatFilterValue).join(', ')}]`;
+  }
+
+  return typeof value === 'string' ? `\"${value}\"` : `${value}`;
+}
+
+/** @internal */
+export function createFilterByClause(filterBy?: GithubIssuesFilters): string {
+  if (!filterBy) {
+    return '';
+  }
+
+  return Object.entries(filterBy)
+    .filter(value => value)
+    .map(([field, value]) => {
+      if (field === 'states') {
+        return `${field}: ${value.join(', ')}`;
+      }
+
+      return `${field}: ${formatFilterValue(value)}`;
+    })
+    .join(', ');
+}
+
 function createIssueByRepoQuery(
   repositories: Array<{
     safeName: string;
@@ -158,13 +224,15 @@ function createIssueByRepoQuery(
     owner: string;
   }>,
   itemsPerRepo: number,
+  { filterBy, orderBy }: GitubIssuesByRepoOptions,
 ): string {
   const fragment = `
     fragment issues on Repository {
       issues(
         states: OPEN
         first: ${itemsPerRepo}
-        orderBy: { field: UPDATED_AT, direction: DESC }
+        filterBy: { ${createFilterByClause(filterBy)} }
+        orderBy: { field: ${orderBy?.field}, direction: ${orderBy?.direction} }
       ) {
         totalCount
         edges {
