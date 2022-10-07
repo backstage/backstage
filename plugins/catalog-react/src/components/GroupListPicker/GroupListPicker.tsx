@@ -23,27 +23,7 @@ import Popover from '@material-ui/core/Popover';
 import { useApi } from '@backstage/core-plugin-api';
 import { ResponseErrorPanel } from '@backstage/core-components';
 import { GroupEntity } from '@backstage/catalog-model';
-import { makeStyles, Box, Typography } from '@material-ui/core';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import PeopleIcon from '@material-ui/icons/People';
-
-const useStyles = makeStyles({
-  btn: {
-    backgroundColor: 'transparent',
-    border: 'none',
-    margin: 0,
-    padding: 0,
-    width: '100%',
-  },
-  title: {
-    fontSize: '24px',
-    fontStyle: 'normal',
-    fontWeight: 700,
-    letterSpacing: '-0.25px',
-    lineHeight: '32px',
-    marginBottom: 0,
-  },
-});
+import { GroupListPickerButton } from './GroupListPickerButton';
 
 /**
  * Props for {@link GroupListPicker}.
@@ -51,22 +31,21 @@ const useStyles = makeStyles({
  * @public
  */
 export type GroupListPickerProps = {
-  placeholder: string;
+  placeholder?: string;
   groupTypes: Array<string>;
   defaultGroup?: string;
 };
 
 /** @public */
 export const GroupListPicker = (props: GroupListPickerProps) => {
-  const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
 
-  const { placeholder, groupTypes, defaultGroup = '' } = props;
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const { groupTypes, defaultGroup = '', placeholder = '' } = props;
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const [inputValue, setInputValue] = React.useState('');
   const [group, setGroup] = React.useState(defaultGroup);
 
-  const handleClick = (event: React.MouseEvent<any, MouseEvent>) => {
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -110,12 +89,16 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
           loading={loading}
           options={groups ?? []}
           groupBy={option => option.spec.type}
-          getOptionLabel={option => option.spec.profile?.displayName ?? ''}
+          getOptionLabel={option =>
+            option.spec.profile?.displayName ?? option.metadata.name
+          }
           inputValue={inputValue}
           onInputChange={(_, value) => setInputValue(value)}
           onChange={(_, newValue) => {
             if (newValue) {
-              setGroup(newValue.spec.profile?.displayName ?? '');
+              setGroup(
+                newValue.spec.profile?.displayName ?? newValue.metadata.name,
+              );
             }
             setInputValue('');
           }}
@@ -129,24 +112,7 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
           )}
         />
       </Popover>
-      <button
-        id={id}
-        style={{ cursor: 'pointer' }}
-        onClick={handleClick}
-        className={classes.btn}
-        data-testid="group-list-picker-button"
-      >
-        <Box display="flex" flexDirection="row" alignItems="center">
-          <PeopleIcon fontSize="large" style={(theme: BackstageTheme) => ({ marginRight: theme.spacing(1) }) } />
-          <Typography variant="h3" className={classes.title}>
-            {group}
-          </Typography>
-          <KeyboardArrowDownIcon
-            fontSize="large"
-            style={{ marginLeft: 'auto' }}
-          />
-        </Box>
-      </button>
+      <GroupListPickerButton handleClick={handleClick} group={group} />
     </>
   );
 };

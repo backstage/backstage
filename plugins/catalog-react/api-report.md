@@ -449,9 +449,20 @@ export function getEntitySourceLocation(
 // @public (undocumented)
 export const GroupListPicker: (props: GroupListPickerProps) => JSX.Element;
 
+// @public (undocumented)
+export const GroupListPickerButton: (
+  props: GroupListPickerButtonProps,
+) => JSX.Element;
+
+// @public
+export type GroupListPickerButtonProps = {
+  handleClick: (event: React_2.MouseEvent<HTMLElement>) => void;
+  group: string;
+};
+
 // @public
 export type GroupListPickerProps = {
-  placeholder: string;
+  placeholder?: string;
   groupTypes: Array<string>;
   defaultGroup?: string;
 };

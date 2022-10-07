@@ -15,4 +15,6 @@
  */
 
 export { GroupListPicker } from './GroupListPicker';
+export { GroupListPickerButton } from './GroupListPickerButton';
 export type { GroupListPickerProps } from './GroupListPicker';
+export type { GroupListPickerButtonProps } from './GroupListPickerButton';
