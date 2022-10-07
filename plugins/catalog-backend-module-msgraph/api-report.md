@@ -12,8 +12,10 @@ import { GroupEntity } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Response as Response_2 } from 'node-fetch';
 import { TaskRunner } from '@backstage/backend-tasks';
+import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { TokenCredential } from '@azure/identity';
 import { UserEntity } from '@backstage/catalog-model';
 
@@ -147,7 +149,8 @@ export type MicrosoftGraphOrgEntityProviderOptions =
   | MicrosoftGraphOrgEntityProviderLegacyOptions
   | {
       logger: Logger;
-      schedule: 'manual' | TaskRunner;
+      schedule?: 'manual' | TaskRunner;
+      scheduler?: PluginTaskScheduler;
       userTransformer?: UserTransformer | Record<string, UserTransformer>;
       groupTransformer?: GroupTransformer | Record<string, GroupTransformer>;
       organizationTransformer?:
@@ -202,6 +205,7 @@ export type MicrosoftGraphProviderConfig = {
   groupSearch?: string;
   groupSelect?: string[];
   queryMode?: 'basic' | 'advanced';
+  schedule?: TaskScheduleDefinition;
 };
 
 // @public
