@@ -4720,7 +4720,6 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
   languageName: unknown
