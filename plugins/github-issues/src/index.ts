@@ -21,7 +21,7 @@ export {
 
 export type { GitHubIssuesProps } from './components/GitHubIssues';
 export type {
-  IssuesFilters,
-  IssuesOrdering,
+  GithubIssuesFilters,
+  GithubIssuesOrdering,
   IssuesByRepoOptions,
 } from './api/gitHubIssuesApi';

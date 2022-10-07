@@ -76,7 +76,7 @@ export type GitHubIssuesApi = ReturnType<typeof gitHubIssuesApi>;
 /**
  * @public
  */
-export interface IssuesFilters {
+export interface GithubIssuesFilters {
   assignee?: string;
   createdBy?: string;
   labels?: string[];
@@ -88,7 +88,7 @@ export interface IssuesFilters {
 /**
  * @public
  */
-export interface IssuesOrdering {
+export interface GithubIssuesOrdering {
   field: 'CREATED_AT' | 'UPDATED_AT' | 'COMMENTS';
   direction?: 'ASC' | 'DESC';
 }
@@ -97,8 +97,8 @@ export interface IssuesOrdering {
  * @public
  */
 export interface IssuesByRepoOptions {
-  filterBy?: IssuesFilters;
-  orderBy?: IssuesOrdering;
+  filterBy?: GithubIssuesFilters;
+  orderBy?: GithubIssuesOrdering;
 }
 
 /** @internal */
@@ -189,7 +189,9 @@ export const gitHubIssuesApi = (
   return { fetchIssuesByRepoFromGitHub };
 };
 
-function formatFilterValue(value: IssuesFilters[keyof IssuesFilters]): string {
+function formatFilterValue(
+  value: GithubIssuesFilters[keyof GithubIssuesFilters],
+): string {
   if (Array.isArray(value)) {
     return `[ ${value.map(formatFilterValue).join(', ')}]`;
   }
@@ -197,7 +199,7 @@ function formatFilterValue(value: IssuesFilters[keyof IssuesFilters]): string {
   return typeof value === 'string' ? `\"${value}\"` : `${value}`;
 }
 
-function createFilterByClause(filterBy?: IssuesFilters): string {
+function createFilterByClause(filterBy?: GithubIssuesFilters): string {
   if (!filterBy) {
     return '';
   }
