@@ -96,7 +96,7 @@ export interface GithubIssuesOrdering {
 /**
  * @public
  */
-export interface IssuesByRepoOptions {
+export interface GitubIssuesByRepoOptions {
   filterBy?: GithubIssuesFilters;
   orderBy?: GithubIssuesOrdering;
 }
@@ -137,7 +137,7 @@ export const gitHubIssuesApi = (
         field: 'UPDATED_AT',
         direction: 'DESC',
       },
-    }: IssuesByRepoOptions = {},
+    }: GitubIssuesByRepoOptions = {},
   ): Promise<IssuesByRepo> => {
     const graphql = await getOctokit();
     const safeNames: Array<string> = [];
@@ -224,7 +224,7 @@ function createIssueByRepoQuery(
     owner: string;
   }>,
   itemsPerRepo: number,
-  { filterBy, orderBy }: IssuesByRepoOptions,
+  { filterBy, orderBy }: GitubIssuesByRepoOptions,
 ): string {
   const fragment = `
     fragment issues on Repository {
