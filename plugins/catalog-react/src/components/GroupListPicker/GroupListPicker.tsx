@@ -137,7 +137,7 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
         data-testid="group-list-picker-button"
       >
         <Box display="flex" flexDirection="row" alignItems="center">
-          <PeopleIcon fontSize="large" style={{ marginRight: '8px' }} />
+          <PeopleIcon fontSize="large" style={(theme: BackstageTheme) => ({ marginRight: theme.spacing(1) }) } />
           <Typography variant="h3" className={classes.title}>
             {group}
           </Typography>
