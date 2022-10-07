@@ -15,23 +15,23 @@
  */
 
 import {
-  AnalyzeLocationRequest as ExaltedAnalyzeLocationRequest,
-  AnalyzeLocationResponse as ExaltedAnalyzeLocationResponse,
-  AnalyzeLocationExistingEntity as ExaltedAnalyzeLocationExistingEntity,
-  AnalyzeLocationGenerateEntity as ExaltedAnalyzeLocationGenerateEntity,
-  AnalyzeLocationEntityField as ExaltedAnalyzeLocationEntityField,
+  AnalyzeLocationRequest as NonDeprecatedAnalyzeLocationRequest,
+  AnalyzeLocationResponse as NonDeprecatedAnalyzeLocationResponse,
+  AnalyzeLocationExistingEntity as NonDeprecatedAnalyzeLocationExistingEntity,
+  AnalyzeLocationGenerateEntity as NonDeprecatedAnalyzeLocationGenerateEntity,
+  AnalyzeLocationEntityField as NonDeprecatedAnalyzeLocationEntityField,
 } from '@backstage/plugin-catalog-common';
 
 /**
  * @public
  * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
  */
-export type AnalyzeLocationRequest = ExaltedAnalyzeLocationRequest;
+export type AnalyzeLocationRequest = NonDeprecatedAnalyzeLocationRequest;
 /**
  * @public
  * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
  */
-export type AnalyzeLocationResponse = ExaltedAnalyzeLocationResponse;
+export type AnalyzeLocationResponse = NonDeprecatedAnalyzeLocationResponse;
 
 /**
  * If the folder pointed to already contained catalog info yaml files, they are
@@ -42,7 +42,7 @@ export type AnalyzeLocationResponse = ExaltedAnalyzeLocationResponse;
  * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
  */
 export type AnalyzeLocationExistingEntity =
-  ExaltedAnalyzeLocationExistingEntity;
+  NonDeprecatedAnalyzeLocationExistingEntity;
 /**
  * This is some form of representation of what the analyzer could deduce.
  * We should probably have a chat about how this can best be conveyed to
@@ -53,7 +53,7 @@ export type AnalyzeLocationExistingEntity =
  * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
  */
 export type AnalyzeLocationGenerateEntity =
-  ExaltedAnalyzeLocationGenerateEntity;
+  NonDeprecatedAnalyzeLocationGenerateEntity;
 
 /**
  *
@@ -63,7 +63,8 @@ export type AnalyzeLocationGenerateEntity =
  * @public
  * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
  */
-export type AnalyzeLocationEntityField = ExaltedAnalyzeLocationEntityField;
+export type AnalyzeLocationEntityField =
+  NonDeprecatedAnalyzeLocationEntityField;
 
 /** @public */
 export type LocationAnalyzer = {

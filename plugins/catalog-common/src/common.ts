@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import { CompoundEntityRef } from '@backstage/catalog-model';
-import { LocationSpec as NonDeprecatedLocationSpec } from '@backstage/plugin-catalog-common';
-
 /**
  * Holds the entity location information.
  *
@@ -27,28 +24,9 @@ import { LocationSpec as NonDeprecatedLocationSpec } from '@backstage/plugin-cat
  *  default value: 'required'.
  *
  * @public
- * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
  */
-export type LocationSpec = NonDeprecatedLocationSpec;
-
-/**
- * Holds the relation data for entities.
- *
- * @public
- */
-export type EntityRelationSpec = {
-  /**
-   * The source entity of this relation.
-   */
-  source: CompoundEntityRef;
-
-  /**
-   * The type of the relation.
-   */
+export type LocationSpec = {
   type: string;
-
-  /**
-   * The target entity of this relation.
-   */
-  target: CompoundEntityRef;
+  target: string;
+  presence?: 'optional' | 'required';
 };

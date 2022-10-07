@@ -6,7 +6,6 @@
 import { BasicPermission } from '@backstage/plugin-permission-common';
 import { Entity } from '@backstage/catalog-model';
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 
 // @public (undocumented)
@@ -92,6 +91,13 @@ export const catalogPermissions: (
   | BasicPermission
   | ResourcePermission<'catalog-entity'>
 )[];
+
+// @public
+export type LocationSpec = {
+  type: string;
+  target: string;
+  presence?: 'optional' | 'required';
+};
 
 // @alpha
 export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';

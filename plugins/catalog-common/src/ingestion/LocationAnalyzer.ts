@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '../common';
 import { Entity } from '@backstage/catalog-model';
 import { RecursivePartial } from './RecursivePartial';
 
