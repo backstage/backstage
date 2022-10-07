@@ -42,11 +42,11 @@ export const createConditionFactory = <
 >(
   rule: PermissionRule<unknown, unknown, TResourceType, TParams>,
 ) => {
-  return (...args: [TParams]): PermissionCondition<TResourceType, TParams> => {
+  return (params: TParams): PermissionCondition<TResourceType, TParams> => {
     return {
       rule: rule.name,
       resourceType: rule.resourceType,
-      params: args[0],
+      params,
     };
   };
 };
