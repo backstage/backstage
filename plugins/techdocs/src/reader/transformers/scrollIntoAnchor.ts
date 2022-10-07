@@ -25,7 +25,7 @@ export const scrollIntoAnchor = (): Transformer => {
         // fix invalid selector error for anchor starting with number
         dom?.querySelector(`[id="${hash}"]`)?.scrollIntoView();
       }
-    }, 200);
+    }, 500);
     return dom;
   };
 };

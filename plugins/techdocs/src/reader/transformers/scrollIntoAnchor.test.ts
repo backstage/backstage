@@ -28,7 +28,7 @@ describe('scrollIntoAnchor', () => {
 
   it('does nothing if there is no anchor element', async () => {
     transformer(dom as unknown as Element);
-    jest.advanceTimersByTime(200);
+    jest.advanceTimersByTime(500);
     expect(dom.querySelector).not.toHaveBeenCalled();
   });
 
@@ -37,7 +37,7 @@ describe('scrollIntoAnchor', () => {
     dom.querySelector.mockReturnValue({ scrollIntoView });
     window.location.hash = '#hash';
     transformer(dom as unknown as Element);
-    jest.advanceTimersByTime(200);
+    jest.advanceTimersByTime(500);
     expect(dom.querySelector).toHaveBeenCalledWith(
       expect.stringMatching('[id="hash"]'),
     );
@@ -50,7 +50,7 @@ describe('scrollIntoAnchor', () => {
     dom.querySelector.mockReturnValue({ scrollIntoView });
     window.location.hash = '#1-hash';
     transformer(dom as unknown as Element);
-    jest.advanceTimersByTime(200);
+    jest.advanceTimersByTime(500);
     expect(dom.querySelector).toHaveBeenCalledWith(
       expect.stringMatching('[id="1-hash"]'),
     );
