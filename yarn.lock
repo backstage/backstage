@@ -4522,6 +4522,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@types/node-fetch": ^2.5.12
+    luxon: ^3.0.0
     msw: ^0.47.0
     node-fetch: ^2.6.7
     uuid: ^8.0.0
