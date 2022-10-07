@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import type { Entry, Quadrant, Ring } from '../../utils/types';
 import RadarPlot from '../RadarPlot';
-import type { Ring, Quadrant, Entry } from '../../utils/types';
-import { adjustQuadrants, adjustRings, adjustEntries } from './utils';
+import { adjustEntries, adjustQuadrants, adjustRings } from './utils';
 
 export type Props = {
   width: number;
@@ -28,17 +28,27 @@ export type Props = {
   svgProps?: object;
 };
 
-const Radar = (props: Props): JSX.Element => {
-  const { width, height, quadrants, rings, entries } = props;
+const Radar = ({ width, height, quadrants, rings, entries, ...props }: Props): JSX.Element => {
+  const [adjustedQuadrants, setAdjustedQuadrants] = useState<Array<Quadrant>>(quadrants);
+  const [adjustedRings, setAdjustedRings] = useState<Array<Ring>>(rings);
+  const [adjustedEntries, setAdjustedEntries] = useState<Array<Entry>>(entries);
+
   const radius = Math.min(width, height) / 2;
 
   const [activeEntry, setActiveEntry] = useState<Entry>();
   const node = useRef<SVGSVGElement>(null);
 
-  // TODO(dflemstr): most of this can be heavily memoized if performance becomes a problem
-  adjustQuadrants(quadrants, radius, width, height);
-  adjustRings(rings, radius);
-  adjustEntries(entries, quadrants, rings, radius, activeEntry);
+  useEffect(() => {
+    setAdjustedQuadrants(adjustQuadrants(quadrants, radius, width, height));
+  }, [quadrants, radius, width, height])
+
+  useEffect(() => {
+    setAdjustedRings(adjustRings(rings, radius));
+  }, [radius, rings])
+
+  useEffect(() => {
+    setAdjustedEntries(adjustEntries(entries, adjustedQuadrants, adjustedRings, radius, activeEntry));
+  }, [entries, adjustedQuadrants, adjustedRings, radius, activeEntry])
 
   return (
     <svg ref={node} width={width} height={height} {...props.svgProps}>
@@ -46,9 +56,9 @@ const Radar = (props: Props): JSX.Element => {
         width={width}
         height={height}
         radius={radius}
-        entries={entries}
-        quadrants={quadrants}
-        rings={rings}
+        entries={adjustedEntries}
+        quadrants={adjustedQuadrants}
+        rings={adjustedRings}
         activeEntry={activeEntry}
         onEntryMouseEnter={entry => setActiveEntry(entry)}
         onEntryMouseLeave={() => setActiveEntry(undefined)}

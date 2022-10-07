@@ -17,7 +17,7 @@
 import color from 'color';
 import { forceCollide, forceSimulation } from 'd3-force';
 import Segment from '../../utils/segment';
-import type { Ring, Quadrant, Entry } from '../../utils/types';
+import type { Entry, Quadrant, Ring } from '../../utils/types';
 
 export const adjustQuadrants = (
   quadrants: Quadrant[],
@@ -81,30 +81,33 @@ export const adjustQuadrants = (
     },
   ];
 
-  quadrants.forEach((quadrant, index) => {
+  return quadrants.slice().map((quadrant, index) => {
     const legendParam = legendParams[index % 4];
 
-    quadrant.index = index;
-    quadrant.radialMin = (index * Math.PI) / 2;
-    quadrant.radialMax = ((index + 1) * Math.PI) / 2;
-    quadrant.offsetX = index % 4 === 0 || index % 4 === 3 ? 1 : -1;
-    quadrant.offsetY = index % 4 === 0 || index % 4 === 1 ? 1 : -1;
-    quadrant.legendX = legendParam.x;
-    quadrant.legendY = legendParam.y;
-    quadrant.legendWidth = legendParam.width;
-    quadrant.legendHeight = legendParam.height;
+    return ({
+      ...quadrant,
+      index,
+      radialMin: (index * Math.PI) / 2,
+      radialMax: ((index + 1) * Math.PI) / 2,
+      offsetX: index % 4 === 0 || index % 4 === 3 ? 1 : -1,
+      offsetY: index % 4 === 0 || index % 4 === 1 ? 1 : -1,
+      legendX: legendParam.x,
+      legendY: legendParam.y,
+      legendWidth: legendParam.width,
+      legendHeight: legendParam.height
+    })
   });
 };
 
 export const adjustEntries = (
-  entries: Entry[],
+  _entries: Entry[],
   quadrants: Quadrant[],
   rings: Ring[],
   radius: number,
   activeEntry?: Entry,
 ) => {
   let seed = 42;
-  entries.forEach((entry, index) => {
+  const entries = _entries.map((entry, index) => {
     const quadrant = quadrants.find(q => {
       const match =
         typeof entry.quadrant === 'object' ? entry.quadrant.id : entry.quadrant;
@@ -123,18 +126,21 @@ export const adjustEntries = (
     if (!ring) {
       throw new Error(`Unknown ring ${entry.ring} for entry ${entry.id}!`);
     }
+    const segment = new Segment(quadrant, ring, radius, () => seed++)
+    const point = segment?.random();
 
-    entry.index = index;
-    entry.quadrant = quadrant;
-    entry.ring = ring;
-    entry.segment = new Segment(quadrant, ring, radius, () => seed++);
-    const point = entry.segment.random();
-    entry.x = point.x;
-    entry.y = point.y;
-    entry.active = activeEntry ? entry.id === activeEntry.id : false;
-    entry.color = entry.active
-      ? entry.ring.color
-      : color(entry.ring.color).desaturate(0.5).lighten(0.1).string();
+    return ({
+      ...entry,
+      index: index,
+      quadrant: quadrant,
+      ring: ring,
+      segment,
+      x: point.x,
+      y: point.y,
+      color: activeEntry && entry.id === activeEntry?.id
+        ? entry.ring.color
+        : color(entry.ring.color).desaturate(0.5).lighten(0.1).string(),
+    })
   });
 
   const simulation = forceSimulation()
@@ -145,9 +151,9 @@ export const adjustEntries = (
 
   for (
     let i = 0,
-      n = Math.ceil(
-        Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay()),
-      );
+    n = Math.ceil(
+      Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay()),
+    );
     i < n;
     ++i
   ) {
@@ -160,13 +166,13 @@ export const adjustEntries = (
       }
     }
   }
+
+  return entries
 };
 
-export const adjustRings = (rings: Ring[], radius: number) => {
-  rings.forEach((ring, index) => {
-    ring.index = index;
-    ring.outerRadius = ((index + 2) / (rings.length + 1)) * radius;
-    ring.innerRadius =
-      ((index === 0 ? 0 : index + 1) / (rings.length + 1)) * radius;
-  });
-};
+export const adjustRings = (rings: Ring[], radius: number) => rings.slice().map((ring, index) => ({
+  ...ring,
+  index,
+  outerRadius: ((index + 2) / (rings.length + 1)) * radius,
+  innerRadius: ((index === 0 ? 0 : index + 1) / (rings.length + 1)) * radius
+}))
