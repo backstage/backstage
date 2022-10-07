@@ -4559,6 +4559,7 @@ __metadata:
   resolution: "@backstage/plugin-catalog-backend-module-gerrit@workspace:plugins/catalog-backend-module-gerrit"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
@@ -4567,6 +4568,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
     "@types/fs-extra": ^9.0.1
     fs-extra: 10.1.0
     luxon: ^3.0.0
