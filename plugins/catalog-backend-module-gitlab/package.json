@@ -53,6 +53,8 @@
     "@types/uuid": "^8.0.0"
   },
   "files": [
+    "config.d.ts",
     "dist"
-  ]
+  ],
+  "configSchema": "config.d.ts"
 }
