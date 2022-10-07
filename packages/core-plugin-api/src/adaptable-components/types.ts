@@ -14,42 +14,67 @@
  * limitations under the License.
  */
 
-import { RefAttributes } from 'react';
+import { ComponentClass, RefAttributes } from 'react';
 
 import { ComponentType } from '@backstage/types';
 
 import { BackstagePlugin } from '../plugin';
 
-/** @public */
-export type OpaqueComponentProps<TContext extends {}> = { value: TContext };
+type OptionalKeys<T> = Exclude<
+  {
+    [K in keyof T]-?: {} extends { [P in K]: T[K] } ? K : never;
+  }[keyof T],
+  symbol | number
+>;
 
 /** @public */
-export type ComponentRootProviderProps<Props extends {}, Context> = {
+export type OpaqueComponentProps<TAdaptableProps extends {}> = {
   /**
-   * An opaque component representing the _inner_ component (or the next
-   * adaptation) with the default context value.
+   * Set particular props (those that are adaptable)
    */
-  Component: ComponentType<OpaqueComponentProps<Context>>;
+  set?: Partial<TAdaptableProps>;
 
   /**
-   * Component props
-   * @readonly
+   * Unset props (or a single prop) that are adaptable and optional.
+   *
+   * This is specified by the _name_ of the prop(s).
    */
-  props: Readonly<Props>;
+  unset?: OptionalKeys<TAdaptableProps> | OptionalKeys<TAdaptableProps>[];
 };
 
 /** @public */
-export type ComponentAdaptationProps<Props extends {}, Context extends {}> = {
+export type ComponentRootProviderProps<
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+> = {
   /**
-   * The context value
+   * An opaque component representing the _inner_ component (or the next
+   * adaptation).
    */
-  value: Context;
+  Component: ComponentType<OpaqueComponentProps<Pick<TProps, TAdaptableKeys>>>;
 
   /**
    * Component props
    * @readonly
    */
-  props: Readonly<Props>;
+  props: Readonly<TProps>;
+};
+
+/** @public */
+export type ComponentAdaptationProps<
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+> = {
+  /**
+   * The adaptable props
+   */
+  origProps: Readonly<TProps>;
+
+  /**
+   * Component props
+   * @readonly
+   */
+  props: Readonly<TProps>;
 
   /**
    * An opaque component representing the _inner_ component (or the next
@@ -58,21 +83,36 @@ export type ComponentAdaptationProps<Props extends {}, Context extends {}> = {
    * The prop `value` is optional. If set, it'll provide a new context value
    * downstream.
    */
-  Component: ComponentType<Partial<OpaqueComponentProps<Context>>>;
+  Component: ComponentType<
+    Partial<OpaqueComponentProps<Pick<TProps, TAdaptableKeys>>>
+  >;
 };
 
-/** @public */
-export type AdaptableComponentProps<Props extends {}, Context extends {}> = {
+/**
+ * The props of the final _inner_ component.
+ *
+ * The `props` prop is the merged final version of the props, after adapatations
+ * has adapted the adaptable props. This is the most useful way of reading
+ * props.
+ *
+ * If neessary, the original (untouched) props provided by the user of the
+ * component can be read from `origProps`, and the sole adaptable props are
+ * provided in `adaptableProps`.
+ *
+ * @public
+ */
+export type AdaptableComponentProps<TProps extends {}> = {
   /**
    * The component props as provided by the user (potentially modified by props
    * interceptors).
    */
-  props: Props;
+  origProps: Readonly<TProps>;
 
   /**
-   * The context value
+   * The merged props, i.e. the original props provided by the user of the
+   * component, merged with the adaptations.
    */
-  value: Context;
+  props: Readonly<TProps>;
 };
 
 /** @public */
@@ -84,23 +124,23 @@ export type AdaptableComponentExtraProps<ExtraProps extends {}> = {
 };
 
 /** @public */
-export interface AdaptableComponentConfigSyncProvider<
-  Props extends {},
-  Context extends {},
+export interface AdaptableComponentConfigSyncPrepare<
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
 > {
   /**
    * The 'Provider' part of an extendable component. This component should build
    * up a context object, and forward this to the inner Component using the
    * provided props `ComponentProvider` and `Component`.
    */
-  Provider: ComponentType<ComponentRootProviderProps<Props, Context>>;
-  asyncProvider?: never;
+  Prepare?: ComponentType<ComponentRootProviderProps<TProps, TAdaptableKeys>>;
+  asyncPrepare?: never;
 }
 
 /** @public */
-export interface AdaptableComponentConfigAsyncProvider<
-  Props extends {},
-  Context extends {},
+export interface AdaptableComponentConfigAsyncPrepare<
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
 > {
   /**
    * The 'Provider' part of an extendable component. This component should build
@@ -110,17 +150,16 @@ export interface AdaptableComponentConfigAsyncProvider<
    * An `asyncProvider` is a lazy-loaded component, i.e. a function that returns
    * a promise to the Provider component.
    */
-  asyncProvider: () => Promise<
-    ComponentType<ComponentRootProviderProps<Props, Context>>
+  asyncPrepare: () => Promise<
+    ComponentType<ComponentRootProviderProps<TProps, TAdaptableKeys>>
   >;
-  Provider?: never;
+  Prepare?: never;
 }
 
 /** @public */
 export interface AdaptableComponentConfigSyncComponent<
-  Props extends {},
-  Context extends {},
-  ExtraProps extends {},
+  TProps extends {},
+  TExtraProps extends {},
 > {
   /**
    * The inner 'Component' part of an extendable component. This component
@@ -128,17 +167,15 @@ export interface AdaptableComponentConfigSyncComponent<
    * perhaps also the props.
    */
   Component: ComponentType<
-    AdaptableComponentProps<Props, Context> &
-      AdaptableComponentExtraProps<ExtraProps>
+    AdaptableComponentProps<TProps> & AdaptableComponentExtraProps<TExtraProps>
   >;
   asyncComponent?: never;
 }
 
 /** @public */
 export interface AdaptableComponentConfigAsyncComponent<
-  Props extends {},
-  Context extends {},
-  ExtraProps extends {},
+  TProps extends {},
+  TExtraProps extends {},
 > {
   /**
    * The inner 'Component' part of an extendable component. This component
@@ -150,8 +187,8 @@ export interface AdaptableComponentConfigAsyncComponent<
    */
   asyncComponent: () => Promise<
     ComponentType<
-      AdaptableComponentProps<Props, Context> &
-        AdaptableComponentExtraProps<ExtraProps>
+      AdaptableComponentProps<TProps> &
+        AdaptableComponentExtraProps<TExtraProps>
     >
   >;
   Component?: never;
@@ -159,16 +196,16 @@ export interface AdaptableComponentConfigAsyncComponent<
 
 /** @public */
 export type AdaptableComponentConfig<
-  Props extends {},
-  Context extends {},
-  ExtraProps extends {} = {},
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+  TExtraProps extends {} = {},
 > = (
-  | AdaptableComponentConfigSyncProvider<Props, Context>
-  | AdaptableComponentConfigAsyncProvider<Props, Context>
+  | AdaptableComponentConfigSyncPrepare<TProps, TAdaptableKeys>
+  | AdaptableComponentConfigAsyncPrepare<TProps, TAdaptableKeys>
 ) &
   (
-    | AdaptableComponentConfigSyncComponent<Props, Context, ExtraProps>
-    | AdaptableComponentConfigAsyncComponent<Props, Context, ExtraProps>
+    | AdaptableComponentConfigSyncComponent<TProps, TExtraProps>
+    | AdaptableComponentConfigAsyncComponent<TProps, TExtraProps>
   ) & {
     /**
      * A unique id of this component
@@ -178,17 +215,21 @@ export type AdaptableComponentConfig<
 
 /** @public */
 export type AdaptableComponentRef<
-  Props extends {},
-  Context extends {},
-  ExtraProps extends {} = {},
-> = Pick<AdaptableComponentConfig<Props, Context, ExtraProps>, 'id'> &
-  AdaptableComponentConfigSyncProvider<Props, Context> &
-  AdaptableComponentConfigSyncComponent<Props, Context, ExtraProps> & {
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+  TExtraProps extends {} = {},
+  Forwardable extends boolean = boolean,
+> = Pick<AdaptableComponentConfig<TProps, TAdaptableKeys, TExtraProps>, 'id'> &
+  Pick<
+    Required<AdaptableComponentConfigSyncPrepare<TProps, TAdaptableKeys>>,
+    'Prepare'
+  > &
+  AdaptableComponentConfigSyncComponent<TProps, TExtraProps> & {
     /**
      * @private
      * @readonly
      */
-    forwardable: boolean;
+    forwardable: Forwardable;
   };
 
 /**
@@ -202,12 +243,31 @@ export type AdaptableComponentRef<
  * @public
  */
 export interface AdaptableComponentDescriptor<
-  Props extends {},
-  Context extends {},
-  ExtraProps extends {} = {},
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+  TExtraProps extends {} = {},
 > {
-  componentRef: AdaptableComponentRef<Props, Context, ExtraProps>;
-  Component: ComponentType<Props & ExtraProps>;
+  componentRef: AdaptableComponentRef<TProps, TAdaptableKeys, TExtraProps>;
+  Component: ComponentType<TProps & TExtraProps>;
+}
+
+/**
+ * The result of createAdaptableForwardableComponent(). This object contains a
+ * `componentRef` and a `Component` which should both be re-exported with
+ * different names.
+ *
+ * The `componentRef` is used when _extending_ this component, and `Component`
+ * is what the users use to render the component.
+ *
+ * @public
+ */
+export interface AdaptableForwardableComponentDescriptor<
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+  TExtraProps extends {} = {},
+> {
+  componentRef: AdaptableComponentRef<TProps, TAdaptableKeys, TExtraProps>;
+  Component: ComponentClass<TProps & TExtraProps>;
 }
 
 /** @public */
@@ -230,18 +290,20 @@ export type AdaptableComponentPropsInterceptor<Props extends {}> = (
 ) => Props;
 
 /**
- * A props interceptor function. It takes props and returns the same props or a
- * new props object of the same type.
+ * An adaptation component.
  *
  * @public
  */
 export type AdaptableComponentAdaptation<
-  Props extends {},
-  Context extends {},
-> = ComponentType<ComponentAdaptationProps<Props, Context>>;
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+> = ComponentType<ComponentAdaptationProps<TProps, TAdaptableKeys>>;
 
 /** @public */
-export type ComponentAdaptationSpec<Props extends {}, Context extends {}> = {
+export type ComponentAdaptationSpec<
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+> = {
   /**
    * A unique id for the extension.
    */
@@ -250,18 +312,22 @@ export type ComponentAdaptationSpec<Props extends {}, Context extends {}> = {
   /**
    * Intercept the props, to e.g. rewrite some of them
    */
-  interceptProps?: AdaptableComponentPropsInterceptor<Props>;
+  interceptProps?: AdaptableComponentPropsInterceptor<
+    Pick<TProps, TAdaptableKeys>
+  >;
 
   /**
    * A context provider component to intercept the adaptable component context
    */
-  Adaptation?: AdaptableComponentAdaptation<Props, Context>;
+  Adaptation?: AdaptableComponentAdaptation<TProps, TAdaptableKeys>;
 
   /**
    * A lazy-loaded context provider component to intercept the adaptable
    * component context
    */
-  asyncAdaptation?: () => Promise<AdaptableComponentAdaptation<Props, Context>>;
+  asyncAdaptation?: () => Promise<
+    AdaptableComponentAdaptation<TProps, TAdaptableKeys>
+  >;
 };
 
 /**
@@ -271,11 +337,14 @@ export type ComponentAdaptationSpec<Props extends {}, Context extends {}> = {
  * @public
  */
 export type ComponentAdaptation<
-  Props extends {} = any,
-  Context extends {} = any,
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
 > = {
-  ref: AdaptableComponentRef<Props, Context>;
-  spec: Omit<ComponentAdaptationSpec<Props, Context>, 'asyncAdaptation'>;
+  ref: AdaptableComponentRef<TProps, TAdaptableKeys>;
+  spec: Omit<
+    ComponentAdaptationSpec<TProps, TAdaptableKeys>,
+    'asyncAdaptation'
+  >;
   key: string;
   plugin?: BackstagePlugin<any, any>;
 };

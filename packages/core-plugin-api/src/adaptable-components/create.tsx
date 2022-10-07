@@ -20,6 +20,7 @@ import React, {
   useMemo,
   forwardRef,
   ComponentProps,
+  ComponentClass,
 } from 'react';
 import { useAsync } from 'react-use';
 
@@ -32,14 +33,19 @@ import {
   AdaptableComponentAdaptation,
   AdaptableComponentRef,
   AdaptableComponentConfig,
-  AdaptableComponentConfigSyncProvider,
-  AdaptableComponentConfigAsyncProvider,
+  AdaptableComponentConfigSyncPrepare,
+  AdaptableComponentConfigAsyncPrepare,
   AdaptableComponentConfigSyncComponent,
   AdaptableComponentConfigAsyncComponent,
   OpaqueComponentProps,
   RefInfoProps,
   UnimplementedAdaptableComponentRefConfig,
+  AdaptableForwardableComponentDescriptor,
+  // AdaptableForwardableComponentDescriptor,
+  // AdaptableForwardableComponentRef,
 } from './types';
+import { ensureArray } from '../utils/array';
+import { useReusedObjectReference } from '../hooks';
 
 /**
  * Creates a reference to an unimplemented component.
@@ -51,17 +57,17 @@ import {
  * @public
  */
 export function createAdaptableComponentRef<
-  Props extends {},
-  Context extends {},
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
 >(
   config: UnimplementedAdaptableComponentRefConfig,
-): AdaptableComponentRef<Props, Context> {
+): AdaptableComponentRef<TProps, TAdaptableKeys> {
   ensureValidId(config.id, `Invalid adaptable component id "${config.id}"`);
 
   return {
     id: config.id,
     forwardable: false,
-    Provider: undefined as any,
+    Prepare: undefined as any,
     Component: undefined as any,
   };
 }
@@ -78,58 +84,65 @@ export function createAdaptableComponentRef<
  * @public
  */
 export function createAdaptableForwardableComponentRef<
-  Props extends {},
-  Context extends {},
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
 >(
   config: UnimplementedAdaptableComponentRefConfig,
-): AdaptableComponentRef<Props, Context, RefInfoProps> {
+): AdaptableComponentRef<TProps, TAdaptableKeys, RefInfoProps, true> {
   const ref = createAdaptableComponentRef(config) as AdaptableComponentRef<
-    Props,
-    Context,
+    TProps,
+    TAdaptableKeys,
     RefInfoProps
+  > as unknown as AdaptableComponentRef<
+    TProps,
+    TAdaptableKeys,
+    RefInfoProps,
+    true
   >;
   ref.forwardable = true;
   return ref;
 }
 
-// Makes sure we have a sync Provider (or turns the asyncProvider into a sync component), and the same for Component
+// Makes sure we have a sync Prepare (or turns the asyncPrepare into a sync
+// component), and the same for Component
 function handleAsyncComponents<
-  Props extends {},
-  Context extends {},
-  ExtraProps extends {},
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+  TExtraProps extends {},
 >(
-  config: Omit<AdaptableComponentConfig<Props, Context, ExtraProps>, 'id'>,
+  config: Omit<
+    AdaptableComponentConfig<TProps, TAdaptableKeys, TExtraProps>,
+    'id'
+  >,
   id: string,
 ): Pick<
-  AdaptableComponentRef<Props, Context, ExtraProps>,
-  'Provider' | 'Component'
+  AdaptableComponentRef<TProps, TAdaptableKeys, TExtraProps>,
+  'Prepare' | 'Component'
 > {
-  const configSyncProvider = config as AdaptableComponentConfigSyncProvider<
-    Props,
-    Context
+  const configSyncPrepare = config as AdaptableComponentConfigSyncPrepare<
+    TProps,
+    TAdaptableKeys
   >;
 
-  const configAsyncProvider = config as AdaptableComponentConfigAsyncProvider<
-    Props,
-    Context
+  const configAsyncPrepare = config as AdaptableComponentConfigAsyncPrepare<
+    TProps,
+    TAdaptableKeys
   >;
 
   const configSyncComponent = config as AdaptableComponentConfigSyncComponent<
-    Props,
-    Context,
-    ExtraProps
+    TProps,
+    TExtraProps
   >;
 
   const configAsyncComponent = config as AdaptableComponentConfigAsyncComponent<
-    Props,
-    Context,
-    ExtraProps
+    TProps,
+    TExtraProps
   >;
 
-  if (configSyncProvider.Provider && !!configAsyncProvider.asyncProvider) {
+  if (configSyncPrepare.Prepare && !!configAsyncPrepare.asyncPrepare) {
     throw new Error(
       `Cannot implement adaptable component "${id}": ` +
-        `Both Provider and asyncProvider are specified`,
+        `Both Prepare and asyncPrepare are specified`,
     );
   }
   if (configSyncComponent.Component && !!configAsyncComponent.asyncComponent) {
@@ -139,17 +152,21 @@ function handleAsyncComponents<
     );
   }
 
-  const LazyProvider: typeof configSyncProvider.Provider = props => {
-    const { error, value: AsyncProvider } = useAsync(() =>
-      configAsyncProvider.asyncProvider(),
+  const DefaultPrepare: typeof configSyncPrepare.Prepare = ({ Component }) => {
+    return <Component />;
+  };
+
+  const LazyPrepare: typeof configSyncPrepare.Prepare = props => {
+    const { error, value: AsyncPrepare } = useAsync(() =>
+      configAsyncPrepare.asyncPrepare(),
     );
 
     if (error) {
       throw error;
-    } else if (!AsyncProvider) {
+    } else if (!AsyncPrepare) {
       return null;
     }
-    return <AsyncProvider {...props} />;
+    return <AsyncPrepare {...props} />;
   };
 
   const LazyComponent: typeof configSyncComponent.Component = props => {
@@ -165,24 +182,91 @@ function handleAsyncComponents<
     return <AsyncComponent {...props} />;
   };
 
-  const Provider = configSyncProvider.Provider ?? LazyProvider;
+  const Prepare =
+    configSyncPrepare.Prepare ??
+    (config.asyncPrepare ? LazyPrepare : DefaultPrepare);
   const Component = configSyncComponent.Component ?? LazyComponent;
 
   return {
-    Provider,
+    Prepare,
     Component,
   };
 }
 
-interface AdaptableContext<
-  Props extends {},
-  Context extends {},
-  ExtraProps extends {},
-> {
-  userContext: Context;
-  props: Props;
-  extraProps: ExtraProps;
+interface AdaptableContext<TProps extends {}, TExtraProps extends {}> {
+  props: TProps;
+  curProps: TProps;
+  extraProps: TExtraProps;
 }
+
+/**
+ * Hook used in the outer Prepare component, and in each intermediate adaptation.
+ *
+ * It figures out whether or not to update the context based on set/unset props.
+ */
+function useNewContext<
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+  TExtraProps extends {},
+>(
+  ctx: React.Context<AdaptableContext<TProps, TExtraProps> | undefined>,
+  intermediateProps: OpaqueComponentProps<Pick<TProps, TAdaptableKeys>>,
+) {
+  const context = useContext(ctx)!;
+
+  const set = useReusedObjectReference(intermediateProps.set);
+
+  const unsetArray = useMemo(
+    () => ensureArray(intermediateProps.unset),
+    [intermediateProps.unset],
+  );
+  const setLength = useMemo(() => (!set ? 0 : Object.keys(set).length), [set]);
+
+  const newContext = useMemo(() => {
+    let curProps = context.curProps;
+    if (unsetArray.length === 0 && setLength === 0) {
+      // This adaptation doesn't remove or add/set any props
+      return context;
+    }
+
+    curProps = { ...curProps };
+
+    unsetArray.forEach(prop => {
+      delete curProps[prop as TAdaptableKeys];
+    });
+
+    if (set) {
+      Object.assign(curProps, set);
+    }
+
+    const anyChanged = (
+      [
+        ...new Set([...(set ? Object.keys(set) : []), ...unsetArray]),
+      ] as (keyof TProps)[]
+    ).some(prop => curProps[prop] !== context.curProps[prop]);
+
+    if (!anyChanged) {
+      // This adaptation sets/unsets props, but the result is the same
+      // value as from before the adaptation, just flow through with the
+      // (referentially) same context value
+      return context;
+    }
+
+    return {
+      ...context,
+      curProps,
+    };
+  }, [context, unsetArray, set, setLength]);
+
+  const unchanged = unsetArray.length === 0 && setLength === 0;
+
+  return { newContext, unchanged };
+}
+
+type ImplementedAdaptableComponent<
+  TClassBased extends boolean,
+  TProps,
+> = TClassBased extends true ? ComponentClass<TProps> : ComponentType<TProps>;
 
 /**
  * Implement an adaptable component given an unimplemented component ref.
@@ -190,27 +274,35 @@ interface AdaptableContext<
  * @returns AdaptableComponentDescriptor
  */
 export function implementAdaptableComponent<
-  Props extends {},
-  Context extends {},
-  ExtraProps extends {},
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+  TExtraProps extends {} = {},
+  TForwardable extends boolean = boolean,
 >(
-  componentRef: AdaptableComponentRef<Props, Context, ExtraProps>,
-  config: Omit<AdaptableComponentConfig<Props, Context, ExtraProps>, 'id'>,
-): ComponentType<Props & ExtraProps> {
-  if (componentRef.Component || componentRef.Provider) {
+  componentRef: AdaptableComponentRef<
+    TProps,
+    TAdaptableKeys,
+    TExtraProps,
+    TForwardable
+  >,
+  config: Omit<
+    AdaptableComponentConfig<TProps, TAdaptableKeys, TExtraProps>,
+    'id'
+  >,
+): ImplementedAdaptableComponent<TForwardable, TProps & TExtraProps> {
+  if (componentRef.Component || componentRef.Prepare) {
     throw new Error(`Component ref "${componentRef.id}" already implemented`);
   }
 
   const handled = handleAsyncComponents(config, componentRef.id);
 
   componentRef.Component = React.memo(handled.Component);
-  componentRef.Provider = React.memo(handled.Provider);
+  componentRef.Prepare = React.memo(handled.Prepare);
 
   const useRef = componentRef.forwardable;
 
-  // This context is shared with the outer Provider, the inner Component and all
-  // adaptations inbetween. Adaptations will only have access to the userContext
-  // part of it.
+  // This context is shared with the outer Prepare, the inner Component and all
+  // adaptations inbetween.
   //
   // By e.g. moving the props into this context, means we don't need to depend
   // on props when constructing the component tree, and so the component tree
@@ -218,18 +310,18 @@ export function implementAdaptableComponent<
   // reset) when props change. Only when the adaptation setup changes (which it
   // likely never will).
   type InfoType = ComponentProps<typeof componentRef.Component>['info'];
-  type AdaptableContextType = AdaptableContext<Props, Context, InfoType>;
+  type AdaptableContextType = AdaptableContext<TProps, InfoType>;
   const ctx = createContext<AdaptableContextType | undefined>(undefined);
 
   const ComponentProvider = ctx.Provider;
 
-  const Component = (props: Props, ref: any) => {
+  const Component = (props: TProps, ref: any) => {
     const { components, propsInterceptors } =
       useComponentAdaptations(componentRef);
 
     const { props: newProps } = useMemo(
       () => ({
-        props: ((p: Props) =>
+        props: ((p: TProps) =>
           propsInterceptors.reduce(
             (prev, cur) => cur.propsInterceptor(prev),
             p,
@@ -244,30 +336,35 @@ export function implementAdaptableComponent<
       function InnerMostComponent() {
         const value = useContext(ctx)!;
 
+        const refProps: any = !useRef
+          ? {}
+          : {
+              ref: (value.extraProps as RefInfoProps).ref,
+            };
+
         return (
           <componentRef.Component
+            origProps={value.props}
             info={value.extraProps}
-            props={value.props}
-            value={value.userContext}
+            props={value.curProps}
+            {...refProps}
           />
         );
       }
 
       function makeIntermediateComponent(
         Inner: React.ComponentType<{}>,
-        Adaptation: AdaptableComponentAdaptation<any, any>,
+        Adaptation: AdaptableComponentAdaptation<TProps, TAdaptableKeys>,
       ): ComponentType<{}> {
-        const OpaqueComponent = React.memo(function OpaqueComponent({
-          value,
-        }: Partial<OpaqueComponentProps<Context>>) {
-          const context = useContext(ctx)!;
-
-          const newContext = useMemo(
-            () => ({ ...context, userContext: value ?? context.userContext }),
-            [context, value],
+        const OpaqueComponent = React.memo(function OpaqueComponent(
+          intermediateProps: OpaqueComponentProps<Pick<TProps, TAdaptableKeys>>,
+        ) {
+          const { newContext, unchanged } = useNewContext(
+            ctx,
+            intermediateProps,
           );
 
-          if (value === undefined) {
+          if (unchanged) {
             return <Inner />;
           }
 
@@ -284,8 +381,8 @@ export function implementAdaptableComponent<
           return (
             <Adaptation
               Component={OpaqueComponent}
-              props={currentValue.props}
-              value={currentValue.userContext}
+              props={currentValue.curProps}
+              origProps={currentValue.props}
             />
           );
         });
@@ -303,21 +400,17 @@ export function implementAdaptableComponent<
 
     const { OuterComponent } = useMemo(
       () => ({
-        OuterComponent: React.memo(function Outer({
-          value,
-        }: OpaqueComponentProps<Context>) {
-          const context = useContext(ctx)!;
-
-          if (!value) {
-            throw new Error(
-              `Invalid adaptable component. No context value provided.`,
-            );
-          }
-
-          const newContext = useMemo(
-            () => ({ ...context, userContext: value }),
-            [context, value],
+        OuterComponent: React.memo(function Outer(
+          intermediateProps: OpaqueComponentProps<Pick<TProps, TAdaptableKeys>>,
+        ) {
+          const { newContext, unchanged } = useNewContext(
+            ctx,
+            intermediateProps,
           );
+
+          if (unchanged) {
+            return <AdaptedComponent />;
+          }
 
           return (
             <ComponentProvider value={newContext}>
@@ -331,36 +424,46 @@ export function implementAdaptableComponent<
 
     const initialContext: AdaptableContextType = useMemo(
       () => ({
+        curProps: newProps,
         extraProps: (useRef ? { ref } : {}) as InfoType,
         props: newProps,
-        userContext: undefined as any, // Is set in OuterComponent
       }),
       [newProps, ref],
     );
 
     return (
       <ComponentProvider value={initialContext}>
-        <componentRef.Provider props={newProps} Component={OuterComponent} />
+        <componentRef.Prepare props={newProps} Component={OuterComponent} />
       </ComponentProvider>
     );
   };
 
-  return useRef
-    ? (forwardRef(Component) as any as typeof Component)
-    : Component;
+  return (
+    useRef
+      ? (forwardRef(Component) as unknown as ComponentType<
+          TProps & TExtraProps
+        >)
+      : Component
+  ) as ImplementedAdaptableComponent<TForwardable, TProps & TExtraProps>;
 }
 
-function _createAdaptableComponent<Props extends {}, Context extends {}>(
-  config: AdaptableComponentConfig<Props, Context>,
+function _createAdaptableComponent<
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+>(
+  config: AdaptableComponentConfig<TProps, TAdaptableKeys>,
   useRef: boolean,
-): AdaptableComponentDescriptor<Props, Context> {
+): AdaptableComponentDescriptor<TProps, TAdaptableKeys> {
   const componentRef = useRef
-    ? createAdaptableForwardableComponentRef<Props, Context>(config)
-    : createAdaptableComponentRef<Props, Context>(config);
+    ? createAdaptableForwardableComponentRef<TProps, TAdaptableKeys>(config)
+    : createAdaptableComponentRef<TProps, TAdaptableKeys>(config);
 
   const Component = implementAdaptableComponent(componentRef, config);
 
-  return { Component, componentRef };
+  return {
+    Component,
+    componentRef,
+  };
 }
 
 /**
@@ -369,9 +472,12 @@ function _createAdaptableComponent<Props extends {}, Context extends {}>(
  *
  * @returns AdaptableComponentDescriptor
  */
-export function createAdaptableComponent<Props extends {}, Context>(
-  config: AdaptableComponentConfig<Props, Context>,
-): AdaptableComponentDescriptor<Props, Context> {
+export function createAdaptableComponent<
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+>(
+  config: AdaptableComponentConfig<TProps, TAdaptableKeys>,
+): AdaptableComponentDescriptor<TProps, TAdaptableKeys> {
   return _createAdaptableComponent(config, false);
 }
 
@@ -382,8 +488,22 @@ export function createAdaptableComponent<Props extends {}, Context>(
  *
  * @returns AdaptableComponentDescriptor
  */
-export function createAdaptableForwardableComponent<Props extends {}, Context>(
-  config: AdaptableComponentConfig<Props, Context, RefInfoProps>,
-): AdaptableComponentDescriptor<Props, Context, RefInfoProps> {
-  return _createAdaptableComponent(config, true);
+export function createAdaptableForwardableComponent<
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+>(
+  config: AdaptableComponentConfig<TProps, TAdaptableKeys, RefInfoProps>,
+): AdaptableForwardableComponentDescriptor<
+  TProps,
+  TAdaptableKeys,
+  RefInfoProps
+> {
+  return _createAdaptableComponent(
+    config,
+    true,
+  ) as AdaptableForwardableComponentDescriptor<
+    TProps,
+    TAdaptableKeys,
+    RefInfoProps
+  >;
 }

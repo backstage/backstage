@@ -31,7 +31,6 @@
     "postpack": "backstage-cli package postpack",
     "clean": "backstage-cli package clean"
   },
-  "dependencies": {},
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0"

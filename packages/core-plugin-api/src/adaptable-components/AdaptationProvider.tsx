@@ -50,8 +50,11 @@ type PropsInterceptor<Props extends {}> = WrapAdaptation<{
   propsInterceptor: AdaptableComponentPropsInterceptor<Props>;
 }>;
 
-type Adaptation<Props extends {}, Context extends {}> = WrapAdaptation<{
-  component: AdaptableComponentAdaptation<Props, Context>;
+type Adaptation<
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+> = WrapAdaptation<{
+  component: AdaptableComponentAdaptation<TProps, TAdaptableKeys>;
 }>;
 
 /** The component ref provider key is its id */
@@ -60,9 +63,12 @@ type AdaptationMapKey = string;
  * The component ref provider value is a pre-flattened list of props
  * interceptors and adaptation components
  * */
-type AdaptationMapValue<Props extends {}, Context extends {}> = {
-  propsInterceptors: PropsInterceptor<Props>[];
-  components: Adaptation<Props, Context>[];
+type AdaptationMapValue<
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+> = {
+  propsInterceptors: PropsInterceptor<TProps>[];
+  components: Adaptation<TProps, TAdaptableKeys>[];
 };
 
 /**
@@ -176,8 +182,11 @@ const noAdaptations: AdaptationMapValue<any, any> = {
   components: [],
 };
 
-export function useComponentAdaptations<Props extends {} = any, Context = any>(
-  componentRef: AdaptableComponentRef<Props, Context, any>,
+export function useComponentAdaptations<
+  TProps extends {} = any,
+  TAdaptableKeys extends keyof TProps = any,
+>(
+  componentRef: AdaptableComponentRef<TProps, TAdaptableKeys, any>,
 ): AdaptationMapValue<any, any> {
   const { adaptationMap } = useContext(VersionedContext)?.atVersion(1) ?? {};
 

@@ -28,10 +28,13 @@ import {
   ComponentAdaptationSpec,
 } from './types';
 
-function handleAsyncAdaptation<Props extends {}, Context extends {}>(
-  adaptation: ComponentAdaptation<Props, Context>,
-  spec: ComponentAdaptationSpec<Props, Context>,
-): ComponentAdaptation<Props, Context> {
+function handleAsyncAdaptation<
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+>(
+  adaptation: ComponentAdaptation<TProps, TAdaptableKeys>,
+  spec: ComponentAdaptationSpec<TProps, TAdaptableKeys>,
+): ComponentAdaptation<TProps, TAdaptableKeys> {
   if (spec.Adaptation && spec.asyncAdaptation) {
     throw new Error(
       `Invalid adaptation ("${spec.id}"): ` +
@@ -42,8 +45,8 @@ function handleAsyncAdaptation<Props extends {}, Context extends {}>(
   const { Adaptation, asyncAdaptation, ...rest } = spec;
 
   const LazyAdaptation: AdaptableComponentAdaptation<
-    Props,
-    Context
+    TProps,
+    TAdaptableKeys
   > = props => {
     const errorApi = useApi(errorApiRef);
 
@@ -87,13 +90,16 @@ function handleAsyncAdaptation<Props extends {}, Context extends {}>(
   };
 }
 
-export function adaptComponent<Props extends {}, Context extends {}>(
-  componentRef: AdaptableComponentRef<Props, Context>,
-  adaptation: ComponentAdaptationSpec<Props, Context>,
-): ComponentAdaptation<Props, Context> {
+export function adaptComponent<
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+>(
+  componentRef: AdaptableComponentRef<TProps, TAdaptableKeys>,
+  adaptation: ComponentAdaptationSpec<TProps, TAdaptableKeys>,
+): ComponentAdaptation<TProps, TAdaptableKeys> {
   ensureValidId(adaptation.id, `Invalid adaptation id "${adaptation.id}"`);
 
-  const ret: ComponentAdaptation<Props, Context> = {
+  const ret: ComponentAdaptation<TProps, TAdaptableKeys> = {
     ref: componentRef,
     spec: adaptation,
     key: `${componentRef.id} ${adaptation.id}`,
@@ -103,12 +109,12 @@ export function adaptComponent<Props extends {}, Context extends {}>(
 }
 
 export function createComponentAdaptationExtension<
-  Props extends {},
-  Context extends {},
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
 >(
-  componentRef: AdaptableComponentRef<Props, Context>,
-  adaptation: ComponentAdaptationSpec<Props, Context>,
-): Extension<ComponentAdaptation<Props, Context>> {
+  componentRef: AdaptableComponentRef<TProps, TAdaptableKeys>,
+  adaptation: ComponentAdaptationSpec<TProps, TAdaptableKeys>,
+): Extension<ComponentAdaptation<TProps, TAdaptableKeys>> {
   return {
     expose(plugin) {
       const extension = adaptComponent(componentRef, adaptation);
@@ -118,11 +124,14 @@ export function createComponentAdaptationExtension<
   };
 }
 
-export function useAdaptComponent<Props extends {}, Context extends {}>(
-  componentRef: AdaptableComponentRef<Props, Context>,
-  adaptation: ComponentAdaptationSpec<Props, Context>,
+export function useAdaptComponent<
+  TProps extends {},
+  TAdaptableKeys extends keyof TProps,
+>(
+  componentRef: AdaptableComponentRef<TProps, TAdaptableKeys>,
+  adaptation: ComponentAdaptationSpec<TProps, TAdaptableKeys>,
   deps: DependencyList,
-): ComponentAdaptation<Props, Context> {
+): ComponentAdaptation<TProps, TAdaptableKeys> {
   return useMemo(
     () => adaptComponent(componentRef, adaptation),
     // eslint-disable-next-line react-hooks/exhaustive-deps

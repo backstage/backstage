@@ -7630,6 +7630,9 @@ __metadata:
     "@types/zen-observable": ^0.8.0
     luxon: ^3.0.0
     zen-observable: ^0.9.0
+  peerDependencies:
+    "@types/react": ^16.13.1 || ^17.0.0
+    react: ^16.13.1 || ^17.0.0
   languageName: unknown
   linkType: soft
 

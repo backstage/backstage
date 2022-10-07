@@ -121,7 +121,7 @@ const getNodeText = (node: React.ReactNode): string => {
   }
 
   // Base case: the node is just text. Return it.
-  if (['string', 'number'].includes(typeof node)) {
+  if (typeof node === 'string' || typeof node === 'number') {
     return String(node);
   }
 
@@ -129,33 +129,12 @@ const getNodeText = (node: React.ReactNode): string => {
   return '';
 };
 
-export interface LinkContext {
-  to: string;
-  children: React.ReactNode;
-}
-
-export const {
-  componentRef: linkComponentRef,
-  /**
-   * This is a Link
-   */
-  Component: Link,
-} = createAdaptableForwardableComponent<LinkProps, LinkContext>({
+const adaptableLink = createAdaptableForwardableComponent<
+  LinkProps,
+  'to' | 'children'
+>({
   id: 'link:v1',
-  Provider: ({ props, Component }) => {
-    const to = String(props.to);
-    const value: LinkContext = { to, children: props.children };
-
-    return <Component value={value} />;
-  },
-  /**
-   * Thin wrapper on top of material-ui's Link component, which...
-   * - Makes the Link use react-router
-   * - Captures Link clicks as analytics events.
-   */
-  Component: ({ props: { onClick, noTrack, ...props }, info }) => {
-    const { ref } = info;
-
+  Component: ({ props: { onClick, noTrack, ...props }, info: { ref } }) => {
     const classes = useStyles();
     const analytics = useAnalytics();
 
@@ -200,3 +179,12 @@ export const {
     );
   },
 });
+
+export const linkComponentRef = adaptableLink.componentRef;
+
+/**
+ * Thin wrapper on top of material-ui's Link component, which...
+ * - Makes the Link use react-router
+ * - Captures Link clicks as analytics events.
+ */
+export const Link = adaptableLink.Component;
