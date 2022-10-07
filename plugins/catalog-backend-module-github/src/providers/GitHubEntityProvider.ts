@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TaskRunner } from '@backstage/backend-tasks';
+import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import {
   GithubCredentialsProvider,
@@ -60,9 +60,14 @@ export class GitHubEntityProvider implements EntityProvider {
     config: Config,
     options: {
       logger: Logger;
-      schedule: TaskRunner;
+      schedule?: TaskRunner;
+      scheduler?: PluginTaskScheduler;
     },
   ): GitHubEntityProvider[] {
+    if (!options.schedule && !options.scheduler) {
+      throw new Error('Either schedule or scheduler must be provided.');
+    }
+
     const integrations = ScmIntegrations.fromConfig(config);
 
     return readProviderConfigs(config).map(providerConfig => {
@@ -75,11 +80,21 @@ export class GitHubEntityProvider implements EntityProvider {
         );
       }
 
+      if (!options.schedule && !providerConfig.schedule) {
+        throw new Error(
+          `No schedule provided neither via code nor config for github-provider:${providerConfig.id}.`,
+        );
+      }
+
+      const taskRunner =
+        options.schedule ??
+        options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
+
       return new GitHubEntityProvider(
         providerConfig,
         integration,
         options.logger,
-        options.schedule,
+        taskRunner,
       );
     });
   }
@@ -88,14 +103,14 @@ export class GitHubEntityProvider implements EntityProvider {
     config: GitHubEntityProviderConfig,
     integration: GitHubIntegration,
     logger: Logger,
-    schedule: TaskRunner,
+    taskRunner: TaskRunner,
   ) {
     this.config = config;
     this.integration = integration.config;
     this.logger = logger.child({
       target: this.getProviderName(),
     });
-    this.scheduleFn = this.createScheduleFn(schedule);
+    this.scheduleFn = this.createScheduleFn(taskRunner);
     this.githubCredentialsProvider =
       SingleInstanceGithubCredentialsProvider.create(integration.config);
   }
@@ -111,10 +126,10 @@ export class GitHubEntityProvider implements EntityProvider {
     return await this.scheduleFn();
   }
 
-  private createScheduleFn(schedule: TaskRunner): () => Promise<void> {
+  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:refresh`;
-      return schedule.run({
+      return taskRunner.run({
         id: taskId,
         fn: async () => {
           const logger = this.logger.child({
