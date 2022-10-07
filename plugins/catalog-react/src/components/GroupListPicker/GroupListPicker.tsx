@@ -54,7 +54,6 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
   };
 
   const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
 
   const {
     loading,
@@ -85,7 +84,6 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
       >
         <Autocomplete
           data-testid="group-list-picker-input"
-          area-aria-describedby={id}
           loading={loading}
           options={groups ?? []}
           groupBy={option => option.spec.type}

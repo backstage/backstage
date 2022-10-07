@@ -65,6 +65,7 @@ export const GroupListPickerButton = (props: GroupListPickerButtonProps) => {
       onClick={handleClick}
       className={classes.btn}
       data-testid="group-list-picker-button"
+      aria-describedby="group-list-popover"
     >
       <Box display="flex" flexDirection="row" alignItems="center">
         <PeopleIcon fontSize="large" className={classes.peopleIcon} />
