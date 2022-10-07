@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-import { ClassNameMap } from "@material-ui/core/styles/withStyles";
-import React from "react";
-import { Quadrant, Ring } from "../../utils/types";
-import { RadarLegendRing } from "./RadarLegendRing";
-import { RadarLegendProps, Segments } from "./types";
-import { getSegment } from "./utils";
-
-
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import React from 'react';
+import { Quadrant, Ring } from '../../utils/types';
+import { RadarLegendRing } from './RadarLegendRing';
+import { RadarLegendProps, Segments } from './types';
+import { getSegment } from './utils';
 
 type RadarLegendQuadrantProps = {
   segments: Segments;
   quadrant: Quadrant;
   rings: Ring[];
-  classes: ClassNameMap<string>,
+  classes: ClassNameMap<string>;
   onEntryMouseEnter: RadarLegendProps['onEntryMouseEnter'];
   onEntryMouseLeave: RadarLegendProps['onEntryMouseLeave'];
 };

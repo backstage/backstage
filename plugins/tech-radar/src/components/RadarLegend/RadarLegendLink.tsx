@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ClassNameMap } from "@material-ui/core/styles/withStyles";
-import React from "react";
-import { WithLink } from "../../utils/components";
-import { RadarDescription } from "../RadarDescription";
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import React from 'react';
+import { WithLink } from '../../utils/components';
+import { RadarDescription } from '../RadarDescription';
 
 type RadarLegendLinkProps = {
   url?: string;
   description?: string;
   title?: string;
-  classes: ClassNameMap<string>
+  classes: ClassNameMap<string>;
 };
 
 export const RadarLegendLink = ({
   url,
   description,
   title,
-  classes
+  classes,
 }: RadarLegendLinkProps) => {
   const [open, setOpen] = React.useState(false);
 

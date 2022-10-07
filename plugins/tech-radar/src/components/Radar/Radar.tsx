@@ -28,8 +28,16 @@ export type Props = {
   svgProps?: object;
 };
 
-const Radar = ({ width, height, quadrants, rings, entries, ...props }: Props): JSX.Element => {
-  const [adjustedQuadrants, setAdjustedQuadrants] = useState<Array<Quadrant>>(quadrants);
+const Radar = ({
+  width,
+  height,
+  quadrants,
+  rings,
+  entries,
+  ...props
+}: Props): JSX.Element => {
+  const [adjustedQuadrants, setAdjustedQuadrants] =
+    useState<Array<Quadrant>>(quadrants);
   const [adjustedRings, setAdjustedRings] = useState<Array<Ring>>(rings);
   const [adjustedEntries, setAdjustedEntries] = useState<Array<Entry>>(entries);
 
@@ -40,15 +48,23 @@ const Radar = ({ width, height, quadrants, rings, entries, ...props }: Props): J
 
   useEffect(() => {
     setAdjustedQuadrants(adjustQuadrants(quadrants, radius, width, height));
-  }, [quadrants, radius, width, height])
+  }, [quadrants, radius, width, height]);
 
   useEffect(() => {
     setAdjustedRings(adjustRings(rings, radius));
-  }, [radius, rings])
+  }, [radius, rings]);
 
   useEffect(() => {
-    setAdjustedEntries(adjustEntries(entries, adjustedQuadrants, adjustedRings, radius, activeEntry));
-  }, [entries, adjustedQuadrants, adjustedRings, radius, activeEntry])
+    setAdjustedEntries(
+      adjustEntries(
+        entries,
+        adjustedQuadrants,
+        adjustedRings,
+        radius,
+        activeEntry,
+      ),
+    );
+  }, [entries, adjustedQuadrants, adjustedRings, radius, activeEntry]);
 
   return (
     <svg ref={node} width={width} height={height} {...props.svgProps}>

@@ -19,7 +19,6 @@ import { RadarLegendQuadrant } from './RadarLegendQuadrant';
 import { RadarLegendProps } from './types';
 import { setupSegments } from './utils';
 
-
 const useStyles = makeStyles<Theme>(theme => ({
   quadrant: {
     height: '100%',
@@ -81,8 +80,7 @@ const RadarLegend = ({
   onEntryMouseEnter,
   onEntryMouseLeave,
   ...props
-}: RadarLegendProps
-): JSX.Element => {
+}: RadarLegendProps): JSX.Element => {
   const classes = useStyles(props);
 
   return (

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entry, Quadrant, Ring } from "../../utils/types";
+import { Entry, Quadrant, Ring } from '../../utils/types';
 
 export type Segments = {
   [k: number]: { [k: number]: Entry[] };

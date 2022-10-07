@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ClassNameMap } from "@material-ui/core/styles/withStyles";
-import React from "react";
-import { Entry, Ring } from "../../utils/types";
-import { RadarLegendLink } from "./RadarLegendLink";
-import { RadarLegendProps } from "./types";
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import React from 'react';
+import { Entry, Ring } from '../../utils/types';
+import { RadarLegendLink } from './RadarLegendLink';
+import { RadarLegendProps } from './types';
 
 type RadarLegendRingProps = {
   ring: Ring;

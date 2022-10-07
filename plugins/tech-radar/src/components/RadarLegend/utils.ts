@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Entry, Quadrant, Ring } from "../../utils/types";
-import { Segments } from "./types";
+import { Entry, Quadrant, Ring } from '../../utils/types';
+import { Segments } from './types';
 
 export const setupSegments = (entries: Entry[]) => {
   const segments: Segments = {};

@@ -84,7 +84,7 @@ export const adjustQuadrants = (
   return quadrants.slice().map((quadrant, index) => {
     const legendParam = legendParams[index % 4];
 
-    return ({
+    return {
       ...quadrant,
       index,
       radialMin: (index * Math.PI) / 2,
@@ -94,8 +94,8 @@ export const adjustQuadrants = (
       legendX: legendParam.x,
       legendY: legendParam.y,
       legendWidth: legendParam.width,
-      legendHeight: legendParam.height
-    })
+      legendHeight: legendParam.height,
+    };
   });
 };
 
@@ -126,10 +126,10 @@ export const adjustEntries = (
     if (!ring) {
       throw new Error(`Unknown ring ${entry.ring} for entry ${entry.id}!`);
     }
-    const segment = new Segment(quadrant, ring, radius, () => seed++)
+    const segment = new Segment(quadrant, ring, radius, () => seed++);
     const point = segment?.random();
 
-    return ({
+    return {
       ...entry,
       index: index,
       quadrant: quadrant,
@@ -137,10 +137,11 @@ export const adjustEntries = (
       segment,
       x: point.x,
       y: point.y,
-      color: activeEntry && entry.id === activeEntry?.id
-        ? entry.ring.color
-        : color(entry.ring.color).desaturate(0.5).lighten(0.1).string(),
-    })
+      color:
+        activeEntry && entry.id === activeEntry?.id
+          ? entry.ring.color
+          : color(entry.ring.color).desaturate(0.5).lighten(0.1).string(),
+    };
   });
 
   const simulation = forceSimulation()
@@ -151,9 +152,9 @@ export const adjustEntries = (
 
   for (
     let i = 0,
-    n = Math.ceil(
-      Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay()),
-    );
+      n = Math.ceil(
+        Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay()),
+      );
     i < n;
     ++i
   ) {
@@ -167,12 +168,13 @@ export const adjustEntries = (
     }
   }
 
-  return entries
+  return entries;
 };
 
-export const adjustRings = (rings: Ring[], radius: number) => rings.slice().map((ring, index) => ({
-  ...ring,
-  index,
-  outerRadius: ((index + 2) / (rings.length + 1)) * radius,
-  innerRadius: ((index === 0 ? 0 : index + 1) / (rings.length + 1)) * radius
-}))
+export const adjustRings = (rings: Ring[], radius: number) =>
+  rings.slice().map((ring, index) => ({
+    ...ring,
+    index,
+    outerRadius: ((index + 2) / (rings.length + 1)) * radius,
+    innerRadius: ((index === 0 ? 0 : index + 1) / (rings.length + 1)) * radius,
+  }));
