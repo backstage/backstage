@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-backend-module-bitbucket-cloud': minor
+'@backstage/plugin-catalog-backend-module-bitbucket-cloud': patch
 ---
 
 Bitbucket Cloud provider: Add option to configure schedule via `app-config.yaml` instead of in code.
