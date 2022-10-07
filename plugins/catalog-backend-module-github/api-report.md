@@ -20,7 +20,6 @@ import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmLocationAnalyzer } from '@backstage/plugin-catalog-backend';
 import { TaskRunner } from '@backstage/backend-tasks';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 
 // @public
 export class GithubDiscoveryProcessor implements CatalogProcessor {
@@ -68,13 +67,8 @@ export class GitHubEntityProvider implements EntityProvider {
 
 // @alpha
 export const githubEntityProviderCatalogModule: (
-  options?: GithubEntityProviderCatalogModuleOptions | undefined,
+  options?: undefined,
 ) => BackendFeature;
-
-// @alpha
-export type GithubEntityProviderCatalogModuleOptions = {
-  schedule?: TaskScheduleDefinition;
-};
 
 // @public (undocumented)
 export class GitHubLocationAnalyzer implements ScmLocationAnalyzer {
