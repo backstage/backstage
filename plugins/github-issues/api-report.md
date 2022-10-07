@@ -12,35 +12,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 export const GitHubIssuesCard: (props: GitHubIssuesProps) => JSX.Element;
 
 // @public (undocumented)
-export const GitHubIssuesPage: (props: GitHubIssuesProps) => JSX.Element;
-
-// @public (undocumented)
-export const gitHubIssuesPlugin: BackstagePlugin<
-  {
-    root: RouteRef<undefined>;
-  },
-  {},
-  {}
->;
-
-// @public (undocumented)
-export type GitHubIssuesProps = {
-  itemsPerPage?: number;
-  itemsPerRepo?: number;
-  filterBy?: IssuesFilters;
-  orderBy?: IssuesOrdering;
-};
-
-// @public (undocumented)
-export interface IssuesByRepoOptions {
-  // (undocumented)
-  filterBy?: IssuesFilters;
-  // (undocumented)
-  orderBy?: IssuesOrdering;
-}
-
-// @public (undocumented)
-export interface IssuesFilters {
+export interface GithubIssuesFilters {
   // (undocumented)
   assignee?: string;
   // (undocumented)
@@ -56,11 +28,39 @@ export interface IssuesFilters {
 }
 
 // @public (undocumented)
-export interface IssuesOrdering {
+export interface GithubIssuesOrdering {
   // (undocumented)
   direction?: 'ASC' | 'DESC';
   // (undocumented)
   field: 'CREATED_AT' | 'UPDATED_AT' | 'COMMENTS';
+}
+
+// @public (undocumented)
+export const GitHubIssuesPage: (props: GitHubIssuesProps) => JSX.Element;
+
+// @public (undocumented)
+export const gitHubIssuesPlugin: BackstagePlugin<
+  {
+    root: RouteRef<undefined>;
+  },
+  {},
+  {}
+>;
+
+// @public (undocumented)
+export type GitHubIssuesProps = {
+  itemsPerPage?: number;
+  itemsPerRepo?: number;
+  filterBy?: GithubIssuesFilters;
+  orderBy?: GithubIssuesOrdering;
+};
+
+// @public (undocumented)
+export interface IssuesByRepoOptions {
+  // (undocumented)
+  filterBy?: GithubIssuesFilters;
+  // (undocumented)
+  orderBy?: GithubIssuesOrdering;
 }
 
 // (No @packageDocumentation comment for this package)
