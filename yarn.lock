@@ -4610,6 +4610,7 @@ __metadata:
   resolution: "@backstage/plugin-catalog-backend-module-gitlab@workspace:plugins/catalog-backend-module-gitlab"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
@@ -4618,6 +4619,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/lodash": ^4.14.151
     "@types/uuid": ^8.0.0
