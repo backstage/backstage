@@ -56,7 +56,7 @@ export type GitHubIssuesProps = {
 };
 
 // @public (undocumented)
-export interface IssuesByRepoOptions {
+export interface GithubIssuesByRepoOptions {
   // (undocumented)
   filterBy?: GithubIssuesFilters;
   // (undocumented)
