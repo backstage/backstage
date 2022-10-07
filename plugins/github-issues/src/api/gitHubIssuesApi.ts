@@ -204,7 +204,7 @@ function createFilterByClause(filterBy?: IssuesFilters): string {
 
   return Object.entries(filterBy)
     .flatMap(([field, value]) => {
-      if (typeof value === 'undefined') {
+      if (!value) {
         return [];
       }
 
