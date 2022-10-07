@@ -16,10 +16,9 @@
 
 import React from 'react';
 
-import { ComponentAdaptationOf } from '@backstage/core-plugin-api';
 import { linkComponentRef } from '@backstage/core-components';
 
-export const Provider: ComponentAdaptationOf<typeof linkComponentRef> = ({
+export const Adaptation: typeof linkComponentRef.TAdaptation = ({
   props,
   Component,
 }) => {

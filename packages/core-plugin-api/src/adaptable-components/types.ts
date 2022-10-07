@@ -230,6 +230,8 @@ export type AdaptableComponentRef<
      * @readonly
      */
     forwardable: Forwardable;
+  } & {
+    TAdaptation: AdaptableComponentAdaptation<TProps, TAdaptableKeys>;
   };
 
 /**
@@ -354,6 +356,9 @@ export type ComponentAdaptation<
  */
 export type ComponentAdaptationOf<
   ComponentRef extends AdaptableComponentRef<any, any>,
-> = ComponentRef extends AdaptableComponentRef<infer Props, infer Context>
-  ? AdaptableComponentAdaptation<Props, Context>
+> = ComponentRef extends AdaptableComponentRef<
+  infer TProps,
+  infer TAdaptableKeys
+>
+  ? AdaptableComponentAdaptation<TProps, TAdaptableKeys>
   : never;

@@ -69,6 +69,8 @@ export function createAdaptableComponentRef<
     forwardable: false,
     Prepare: undefined as any,
     Component: undefined as any,
+    // This is a type helper:
+    TAdaptation: undefined as any,
   };
 }
 

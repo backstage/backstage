@@ -33,7 +33,8 @@ export const githubActionsPlugin = createPlugin({
   adaptations: {
     link: createComponentAdaptationExtension(linkComponentRef, {
       id: 'github-actions-link-adaptation',
-      asyncAdaptation: () => import('./extensions/link').then(m => m.Provider),
+      asyncAdaptation: () =>
+        import('./extensions/link').then(m => m.Adaptation),
     }),
   },
   apis: [
