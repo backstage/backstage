@@ -44,7 +44,8 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@types/fs-extra": "^9.0.1"
+    "@types/fs-extra": "^9.0.1",
+    "luxon": "^3.0.0"
   },
   "files": [
     "dist",
