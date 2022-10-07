@@ -90,6 +90,7 @@ export type ScmLocationAnalyzer = {
   supports(url: string): boolean;
   /** This function can return an array of already existing entities */
   analyze(options: AnalyzeOptions): Promise<{
+    /** Existing entities in the analyzed location */
     existing: AnalyzeLocationExistingEntity[];
   }>;
 };
