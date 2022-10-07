@@ -26,6 +26,17 @@ import {
 import { useSearch } from '../../context';
 
 /**
+ * A page limit option, this value must not be greater than 100.
+ * @public
+ */
+export type SearchResultLimiterOption<
+  Current extends number = 101,
+  Accumulator extends number[] = [],
+> = Accumulator['length'] extends Current
+  ? Accumulator[number]
+  : SearchResultLimiterOption<Current, [...Accumulator, Accumulator['length']]>;
+
+/**
  * Props for {@link SearchResultLimiterBase}.
  * @public
  */
@@ -39,7 +50,7 @@ export type SearchResultLimiterBaseProps = {
   /**
    * The combobox labels, defaults to 10, 25, 50 and 100.
    */
-  options?: number[];
+  options?: SearchResultLimiterOption[];
   /**
    * Combobox selected option, defaults to 25;
    */
@@ -129,18 +140,11 @@ export type SearchResultLimiterProps = Omit<
 export const SearchResultLimiter = (props: SearchResultLimiterProps) => {
   const { pageLimit, setPageLimit } = useSearch();
 
-  const handleChange = useCallback(
-    (newPageLimit: number) => {
-      setPageLimit(newPageLimit);
-    },
-    [setPageLimit],
-  );
-
   return (
     <SearchResultLimiterBase
       {...props}
       value={pageLimit}
-      onChange={handleChange}
+      onChange={setPageLimit}
     />
   );
 };

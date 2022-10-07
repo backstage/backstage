@@ -335,10 +335,18 @@ export type SearchResultLimiterBaseProps = {
   id?: string;
   className?: string;
   label?: ReactNode;
-  options?: number[];
+  options?: SearchResultLimiterOption[];
   value?: number;
   onChange?: (value: number) => void;
 };
+
+// @public
+export type SearchResultLimiterOption<
+  Current extends number = 101,
+  Accumulator extends number[] = [],
+> = Accumulator['length'] extends Current
+  ? Accumulator[number]
+  : SearchResultLimiterOption<Current, [...Accumulator, Accumulator['length']]>;
 
 // @public
 export type SearchResultLimiterProps = Omit<
