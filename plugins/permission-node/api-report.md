@@ -100,7 +100,7 @@ export const createConditionFactory: <
   TParams extends PermissionRuleParams = PermissionRuleParams,
 >(
   rule: PermissionRule<unknown, unknown, TResourceType, TParams>,
-) => (args_0: TParams) => PermissionCondition<TResourceType, TParams>;
+) => (params: TParams) => PermissionCondition<TResourceType, TParams>;
 
 // @public
 export const createConditionTransformer: <
