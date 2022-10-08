@@ -212,6 +212,50 @@ export type SearchFilterWrapperProps = SearchFilterComponentProps & {
 };
 
 // @public
+export const SearchPagination: (props: SearchPaginationProps) => JSX.Element;
+
+// @public
+export const SearchPaginationBase: (
+  props: SearchPaginationBaseProps,
+) => JSX.Element;
+
+// @public
+export type SearchPaginationBaseProps = {
+  className?: string;
+  pageCursor?: string;
+  onPageCursorChange?: (pageCursor: string) => void;
+  pageLimit?: number;
+  pageLimitLabel?: ReactNode;
+  pageLimitText?: SearchPaginationLimitText;
+  pageLimitOptions?: SearchPaginationLimitOption[];
+  onPageLimitChange?: (value: number) => void;
+};
+
+// @public
+export type SearchPaginationLimitOption<
+  Current extends number = 101,
+  Accumulator extends number[] = [],
+> = Accumulator['length'] extends Current
+  ? Accumulator[number]
+  : SearchPaginationLimitOption<
+      Current,
+      [...Accumulator, Accumulator['length']]
+    >;
+
+// @public
+export type SearchPaginationLimitText = (params: {
+  from: number;
+  to: number;
+  page: number;
+}) => ReactNode;
+
+// @public
+export type SearchPaginationProps = Omit<
+  SearchPaginationBaseProps,
+  'pageLimit' | 'onPageLimitChange' | 'pageCursor' | 'onPageCursorChange'
+>;
+
+// @public
 export const SearchResult: (props: SearchResultProps) => JSX.Element;
 
 // @public
@@ -319,40 +363,6 @@ export const SearchResultGroupTextFilterField: (
 // @public
 export type SearchResultGroupTextFilterFieldProps =
   SearchResultGroupFilterFieldPropsWith<{}>;
-
-// @public
-export const SearchResultLimiter: (
-  props: SearchResultLimiterProps,
-) => JSX.Element;
-
-// @public
-export const SearchResultLimiterBase: (
-  props: SearchResultLimiterBaseProps,
-) => JSX.Element;
-
-// @public
-export type SearchResultLimiterBaseProps = {
-  id?: string;
-  className?: string;
-  label?: ReactNode;
-  options?: SearchResultLimiterOption[];
-  value?: number;
-  onChange?: (value: number) => void;
-};
-
-// @public
-export type SearchResultLimiterOption<
-  Current extends number = 101,
-  Accumulator extends number[] = [],
-> = Accumulator['length'] extends Current
-  ? Accumulator[number]
-  : SearchResultLimiterOption<Current, [...Accumulator, Accumulator['length']]>;
-
-// @public
-export type SearchResultLimiterProps = Omit<
-  SearchResultLimiterBaseProps,
-  'value' | 'onChange'
->;
 
 // @public
 export const SearchResultList: (props: SearchResultListProps) => JSX.Element;

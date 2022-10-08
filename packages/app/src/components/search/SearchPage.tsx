@@ -35,7 +35,7 @@ import {
   SearchBar,
   SearchFilter,
   SearchResult,
-  SearchResultLimiter,
+  SearchPagination,
   SearchResultPager,
   useSearch,
 } from '@backstage/plugin-search-react';
@@ -55,10 +55,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   filters: {
     padding: theme.spacing(2),
     marginTop: theme.spacing(2),
-  },
-  limiter: {
-    width: '100%',
-    justifyContent: 'flex-end',
   },
 }));
 
@@ -134,7 +130,7 @@ const SearchPage = () => {
             </Grid>
           )}
           <Grid item xs>
-            <SearchResultLimiter className={classes.limiter} />
+            <SearchPagination />
             <SearchResult>
               {({ results }) => (
                 <List>

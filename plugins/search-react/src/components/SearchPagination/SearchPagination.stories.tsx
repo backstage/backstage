@@ -22,11 +22,11 @@ import { TestApiProvider } from '@backstage/test-utils';
 import { searchApiRef, MockSearchApi } from '../../api';
 import { SearchContextProvider } from '../../context';
 
-import { SearchResultLimiter } from './SearchResultLimiter';
+import { SearchPagination } from './SearchPagination';
 
 export default {
-  title: 'Plugins/Search/SearchResultLimiter',
-  component: SearchResultLimiter,
+  title: 'Plugins/Search/SearchPagination',
+  component: SearchPagination,
   decorators: [
     (Story: ComponentType<{}>) => (
       <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
@@ -43,13 +43,17 @@ export default {
 };
 
 export const Default = () => {
-  return <SearchResultLimiter />;
+  return <SearchPagination />;
 };
 
-export const CustomLabel = () => {
-  return <SearchResultLimiter label="Results limit:" />;
+export const CustomPageLimitLabel = () => {
+  return <SearchPagination pageLimitLabel="Page limit:" />;
 };
 
-export const CustomOptions = () => {
-  return <SearchResultLimiter options={[5, 10, 20]} />;
+export const CustomPageLimitText = () => {
+  return <SearchPagination pageLimitText={({ from, to }) => `${from}-${to}`} />;
+};
+
+export const CustomPageLimitOptions = () => {
+  return <SearchPagination pageLimitOptions={[5, 10, 20]} />;
 };

@@ -2,9 +2,7 @@
 '@backstage/plugin-search-react': minor
 ---
 
-A `<SearchResultLimiter />` component was created for limiting the number of results shown per search page.
-Use this new component to give users a combination of options to define how many search results they want to display per page.
-The default options are 10, 25, 50, 100.
+A `<SearchPagination />` component was created for limiting the number of results shown per search page. Use this new component to give users options to select how many search results they want to display per page. The default options are 10, 25, 50, 100.
 
 See examples below:
 
@@ -16,13 +14,14 @@ import { Grid } from '@material-ui/core';
 import { Page, Header, Content, Lifecycle } from '@backstage/core-components';
 import {
   SearchBarBase,
-  SearchResultLimiterBase,
+  SearchPaginationBase,
   SearchResultList,
 } from '@backstage/plugin-search-react';
 
 const SearchPage = () => {
   const [term, setTerm] = useState('');
   const [pageLimit, setPageLimit] = useState(25);
+  const [pageCursor, setPageCursor] = useState<string>();
 
   return (
     <Page themeId="home">
@@ -33,9 +32,11 @@ const SearchPage = () => {
             <SearchBarBase value={term} onChange={setTerm} />
           </Grid>
           <Grid item xs={12}>
-            <SearchResultLimiterBase
-              value={pageLimit}
-              onChange={setPageLimit}
+            <SearchPaginationBase
+              pageLimit={pageLimit}
+              onPageLimitChange={setPageLimit}
+              pageCursor={pageCursor}
+              onPageCursorChange={setPageCursor}
             />
           </Grid>
           <Grid item xs={12}>
@@ -57,7 +58,7 @@ import { Page, Header, Content, Lifecycle } from '@backstage/core-components';
 import {
   SearchBar,
   SearchResult,
-  SearchResultLimiter,
+  SearchPagination,
   SearchResultListLayout,
   SearchContextProvider,
   DefaultResultListItem,
@@ -73,7 +74,7 @@ const SearchPage = () => (
             <SearchBar />
           </Grid>
           <Grid item xs={12}>
-            <SearchResultLimiter />
+            <SearchPagination />
           </Grid>
           <Grid item xs={12}>
             <SearchResult>

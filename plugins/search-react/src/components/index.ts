@@ -20,7 +20,7 @@ export * from './SearchAutocomplete';
 export * from './SearchFilter';
 export * from './SearchResult';
 export * from './SearchResultPager';
-export * from './SearchResultLimiter';
+export * from './SearchPagination';
 export * from './SearchResultList';
 export * from './SearchResultGroup';
 export * from './DefaultResultListItem';

@@ -23,11 +23,15 @@ import { renderWithEffects, TestApiProvider } from '@backstage/test-utils';
 import { searchApiRef } from '../../api';
 import { SearchContextProvider } from '../../context';
 
-import { SearchResultLimiter } from './SearchResultLimiter';
+import { SearchPagination } from './SearchPagination';
 
-const query = jest.fn().mockResolvedValue({ results: [] });
+const query = jest.fn().mockResolvedValue({
+  results: [],
+  nextPageCursor: 'Mg==',
+  previousPageCursor: 'MA==',
+});
 
-describe('SearchResultLimiter', () => {
+describe('SearchPagination', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -36,20 +40,23 @@ describe('SearchResultLimiter', () => {
     await renderWithEffects(
       <TestApiProvider apis={[[searchApiRef, { query }]]}>
         <SearchContextProvider>
-          <SearchResultLimiter />
+          <SearchPagination />
         </SearchContextProvider>
       </TestApiProvider>,
     );
 
     expect(screen.getByText('Results per page:')).toBeInTheDocument();
     expect(screen.getByText('25')).toBeInTheDocument();
+    expect(screen.getByText('1-25 of more than 25')).toBeInTheDocument();
+    expect(screen.getByLabelText('Next page')).toBeEnabled();
+    expect(screen.getByLabelText('Previous page')).toBeDisabled();
   });
 
-  it('Define default options', async () => {
+  it('Define default page limit options', async () => {
     await renderWithEffects(
       <TestApiProvider apis={[[searchApiRef, { query }]]}>
         <SearchContextProvider>
-          <SearchResultLimiter />
+          <SearchPagination />
         </SearchContextProvider>
       </TestApiProvider>,
     );
@@ -64,11 +71,55 @@ describe('SearchResultLimiter', () => {
     expect(options[3]).toHaveTextContent('100');
   });
 
+  it('Accept custom page limit label', async () => {
+    const label = 'Page limit:';
+    await renderWithEffects(
+      <TestApiProvider apis={[[searchApiRef, { query }]]}>
+        <SearchContextProvider>
+          <SearchPagination pageLimitLabel={label} />
+        </SearchContextProvider>
+      </TestApiProvider>,
+    );
+
+    expect(screen.getByText(label)).toBeInTheDocument();
+  });
+
+  it('Accept custom page limit text', async () => {
+    await renderWithEffects(
+      <TestApiProvider apis={[[searchApiRef, { query }]]}>
+        <SearchContextProvider>
+          <SearchPagination pageLimitText={({ from, to }) => `${from}-${to}`} />
+        </SearchContextProvider>
+      </TestApiProvider>,
+    );
+
+    expect(screen.getByText('1-25')).toBeInTheDocument();
+  });
+
+  it('Accept custom page limit options', async () => {
+    await renderWithEffects(
+      <TestApiProvider apis={[[searchApiRef, { query }]]}>
+        <SearchContextProvider>
+          <SearchPagination pageLimitOptions={[5, 10, 20, 25]} />
+        </SearchContextProvider>
+      </TestApiProvider>,
+    );
+
+    await userEvent.click(screen.getByText('25'));
+
+    const options = screen.getAllByRole('option');
+    expect(options).toHaveLength(4);
+    expect(options[0]).toHaveTextContent('5');
+    expect(options[1]).toHaveTextContent('10');
+    expect(options[2]).toHaveTextContent('20');
+    expect(options[3]).toHaveTextContent('25');
+  });
+
   it('Set page limit in the context', async () => {
     await renderWithEffects(
       <TestApiProvider apis={[[searchApiRef, { query }]]}>
         <SearchContextProvider>
-          <SearchResultLimiter />
+          <SearchPagination />
         </SearchContextProvider>
       </TestApiProvider>,
     );
@@ -84,35 +135,40 @@ describe('SearchResultLimiter', () => {
     );
   });
 
-  it('Accept custom label', async () => {
-    const label = 'Custom label';
+  it('Set page cursor in the context', async () => {
+    const initialState = {
+      term: '',
+      types: [],
+      filters: {},
+      pageCursor: 'MQ==', // page: 1
+    };
+
     await renderWithEffects(
       <TestApiProvider apis={[[searchApiRef, { query }]]}>
-        <SearchContextProvider>
-          <SearchResultLimiter label={label} />
+        <SearchContextProvider initialState={initialState}>
+          <SearchPagination />
         </SearchContextProvider>
       </TestApiProvider>,
     );
 
-    expect(screen.getByText(label)).toBeInTheDocument();
-  });
+    await userEvent.click(screen.getByLabelText('Next page'));
 
-  it('Accept custom options', async () => {
-    await renderWithEffects(
-      <TestApiProvider apis={[[searchApiRef, { query }]]}>
-        <SearchContextProvider>
-          <SearchResultLimiter options={[5, 10, 20, 25]} />
-        </SearchContextProvider>
-      </TestApiProvider>,
+    expect(screen.getByText('51-75 of more than 75')).toBeInTheDocument();
+
+    expect(query).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        pageCursor: 'Mg==', // page: 2
+      }),
     );
 
-    await userEvent.click(screen.getByText('25'));
+    await userEvent.click(screen.getByLabelText('Previous page'));
 
-    const options = screen.getAllByRole('option');
-    expect(options).toHaveLength(4);
-    expect(options[0]).toHaveTextContent('5');
-    expect(options[1]).toHaveTextContent('10');
-    expect(options[2]).toHaveTextContent('20');
-    expect(options[3]).toHaveTextContent('25');
+    expect(screen.getByText('26-50 of more than 50')).toBeInTheDocument();
+
+    expect(query).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        pageCursor: 'MQ==', // page: 1
+      }),
+    );
   });
 });
