@@ -16,9 +16,8 @@
 import React from 'react';
 import classnames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
-import Link from '@material-ui/core/Link';
 import LinkIcon from '@material-ui/icons/Link';
-import { Link as RouterLink } from '../Link';
+import { Link } from '../Link';
 
 export type IconLinkVerticalProps = {
   color?: 'primary' | 'secondary';
@@ -80,14 +79,10 @@ export function IconLinkVertical({
 
   if (disabled) {
     return (
-      <Link
-        title={title}
-        className={classnames(classes.link, classes.disabled)}
-        underline="none"
-      >
+      <div title={title} className={classnames(classes.link, classes.disabled)}>
         {icon}
         <span className={classes.label}>{label}</span>
-      </Link>
+      </div>
     );
   }
 
@@ -96,7 +91,6 @@ export function IconLinkVertical({
       title={title}
       className={classnames(classes.link, classes[color])}
       to={href}
-      component={RouterLink}
       onClick={onClick}
     >
       {icon}
