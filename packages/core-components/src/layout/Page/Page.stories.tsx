@@ -18,7 +18,6 @@ import { wrapInTestApp } from '@backstage/test-utils';
 import Box from '@material-ui/core/Box';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import React, { useState } from 'react';
 import {
@@ -28,6 +27,7 @@ import {
   Table,
   TableColumn,
   TrendLine,
+  Link,
 } from '../../components';
 import { Content } from '../Content';
 import { ContentHeader } from '../ContentHeader';
@@ -75,7 +75,7 @@ const columns: TableColumn[] = [
     highlight: true,
     render: (row: Partial<TableData>) => (
       <>
-        <Link>{row.branch}</Link>
+        <Link to="#message-source">{row.branch}</Link>
         <Typography variant="body2">{row.hash}</Typography>
       </>
     ),
@@ -169,7 +169,8 @@ const DataGrid = () => (
           able to function.
         </Typography>
         <Typography paragraph>
-          Contact <Link>#cost-awareness</Link> for information and support.
+          Contact <Link to="#cost-awareness">#cost-awareness</Link> for
+          information and support.
         </Typography>
       </InfoCard>
     </Grid>

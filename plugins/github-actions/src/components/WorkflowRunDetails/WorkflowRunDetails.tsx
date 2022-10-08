@@ -22,7 +22,6 @@ import {
   Box,
   CircularProgress,
   LinearProgress,
-  Link as MaterialLink,
   ListItemText,
   makeStyles,
   Paper,
@@ -246,10 +245,10 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
               </TableCell>
               <TableCell>
                 {details.value?.html_url && (
-                  <MaterialLink target="_blank" href={details.value.html_url}>
+                  <Link to={details.value.html_url}>
                     Workflow runs on GitHub{' '}
                     <ExternalLinkIcon className={classes.externalLinkIcon} />
-                  </MaterialLink>
+                  </Link>
                 )}
               </TableCell>
             </TableRow>

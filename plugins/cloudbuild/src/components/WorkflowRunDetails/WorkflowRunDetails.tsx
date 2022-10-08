@@ -17,7 +17,6 @@ import { Entity } from '@backstage/catalog-model';
 import {
   Box,
   LinearProgress,
-  Link as MaterialLink,
   makeStyles,
   Paper,
   Table,
@@ -135,10 +134,10 @@ export const WorkflowRunDetails = (props: { entity: Entity }) => {
               </TableCell>
               <TableCell>
                 {details.value?.logUrl && (
-                  <MaterialLink target="_blank" href={details.value.logUrl}>
+                  <Link to={details.value.logUrl}>
                     Workflow runs on Google{' '}
                     <ExternalLinkIcon className={classes.externalLinkIcon} />
-                  </MaterialLink>
+                  </Link>
                 )}
               </TableCell>
             </TableRow>

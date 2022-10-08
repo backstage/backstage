@@ -15,7 +15,6 @@
  */
 import React, { useEffect, useState } from 'react';
 
-import { Link } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
 import { gitOpsApiRef, Status } from '../../api';
 import { transformRunStatus } from '../ProfileCatalog';
@@ -27,6 +26,7 @@ import {
   Table,
   Progress,
   HeaderLabel,
+  Link,
 } from '@backstage/core-components';
 import { useApi, githubAuthApiRef } from '@backstage/core-plugin-api';
 
@@ -94,12 +94,7 @@ const ClusterPage = () => {
           data={transformRunStatus(runStatus)}
           columns={columns}
         />
-        <Link
-          hidden={runLink === ''}
-          rel="noopener noreferrer"
-          href={`${runLink}?check_suite_focus=true`}
-          target="_blank"
-        >
+        <Link hidden={runLink === ''} to={`${runLink}?check_suite_focus=true`}>
           Details
         </Link>
       </Content>
