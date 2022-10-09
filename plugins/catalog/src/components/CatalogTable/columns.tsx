@@ -162,4 +162,35 @@ export const columnFactories = Object.freeze({
       searchable: true,
     };
   },
+  createLabelColumn(
+    key: string,
+    options?: { title?: string; defaultValue?: string },
+  ): TableColumn<CatalogTableRow> {
+    return {
+      title: options?.title || 'Label',
+      field: 'entity.metadata.labels',
+      cellStyle: {
+        padding: '0px 16px 0px 20px',
+      },
+      render: ({ entity }: { entity: Entity }) => {
+        const labels: Record<string, string> | undefined =
+          entity.metadata?.labels;
+        const specifiedLabelValue =
+          (labels && labels[key]) || options?.defaultValue;
+        return (
+          <>
+            {specifiedLabelValue && (
+              <Chip
+                key={specifiedLabelValue}
+                label={specifiedLabelValue}
+                size="small"
+                variant="outlined"
+              />
+            )}
+          </>
+        );
+      },
+      width: 'auto',
+    };
+  },
 });

@@ -34,7 +34,10 @@ import { ScmIntegrations } from '@backstage/integration';
 import { DefaultCatalogRulesEnforcer } from './ingestion/CatalogRules';
 import { Stitcher } from './stitching/Stitcher';
 import { DefaultEntitiesCatalog } from './service/DefaultEntitiesCatalog';
-import { DefaultCatalogProcessingEngine } from './processing/DefaultCatalogProcessingEngine';
+import {
+  DefaultCatalogProcessingEngine,
+  ProgressTracker,
+} from './processing/DefaultCatalogProcessingEngine';
 import { createHash } from 'crypto';
 import { DefaultRefreshService } from './service/DefaultRefreshService';
 import { connectEntityProviders } from './processing/connectEntityProviders';
@@ -68,10 +71,6 @@ class TestProvider implements EntityProvider {
     return this.#connection;
   }
 }
-
-type ProgressTracker = NonNullable<
-  ConstructorParameters<typeof DefaultCatalogProcessingEngine>[7]
->;
 
 class ProxyProgressTracker implements ProgressTracker {
   #inner: ProgressTracker;
@@ -539,5 +538,140 @@ describe('Catalog Backend Integration', () => {
     await expect(harness.process()).resolves.toEqual({});
 
     await expect(harness.getOutputEntities()).resolves.toEqual(outputEntities);
+  });
+
+  // NOTE(freben): This test documents existing behavior, but it would be more correct to mark the cycle as orphans
+  it('leaves behind orphaned cycles without orphan markers', async () => {
+    function mkEntity(name: string) {
+      return {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name,
+          annotations: {
+            'backstage.io/managed-by-location': 'url:.',
+            'backstage.io/managed-by-origin-location': 'url:.',
+          },
+        },
+      };
+    }
+
+    const harness = await TestHarness.create({
+      async processEntity(
+        entity: Entity,
+        location: LocationSpec,
+        emit: CatalogProcessorEmit,
+      ) {
+        if (entity.spec?.noEmit) {
+          return entity;
+        }
+        switch (entity.metadata.name) {
+          case 'a':
+            emit(processingResult.entity(location, mkEntity('b')));
+            break;
+          case 'b':
+            emit(processingResult.entity(location, mkEntity('c')));
+            break;
+          case 'c':
+            emit(processingResult.entity(location, mkEntity('d')));
+            break;
+          case 'd':
+            emit(processingResult.entity(location, mkEntity('b')));
+            break;
+          default:
+        }
+        return entity;
+      },
+    });
+
+    await harness.setInputEntities([
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'a',
+          annotations: {
+            'backstage.io/managed-by-location': 'url:.',
+            'backstage.io/managed-by-origin-location': 'url:.',
+          },
+        },
+      },
+    ]);
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({});
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': expect.objectContaining({
+        metadata: expect.objectContaining({ name: 'a' }),
+      }),
+      'component:default/b': expect.objectContaining({
+        metadata: expect.objectContaining({ name: 'b' }),
+      }),
+      'component:default/c': expect.objectContaining({
+        metadata: expect.objectContaining({ name: 'c' }),
+      }),
+      'component:default/d': expect.objectContaining({
+        metadata: expect.objectContaining({ name: 'd' }),
+      }),
+    });
+    // NOTE(freben): Avoid .toHaveProperty here, since it treats dots as path separators
+    expect(
+      (await harness.getOutputEntities())['component:default/b'].metadata
+        .annotations!['backstage.io/orphan'],
+    ).toBeUndefined();
+    expect(
+      (await harness.getOutputEntities())['component:default/c'].metadata
+        .annotations!['backstage.io/orphan'],
+    ).toBeUndefined();
+    expect(
+      (await harness.getOutputEntities())['component:default/d'].metadata
+        .annotations!['backstage.io/orphan'],
+    ).toBeUndefined();
+
+    await harness.setInputEntities([
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'a',
+          annotations: {
+            'backstage.io/managed-by-location': 'url:.',
+            'backstage.io/managed-by-origin-location': 'url:.',
+          },
+        },
+        spec: { noEmit: true },
+      },
+    ]);
+
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': expect.objectContaining({
+        metadata: expect.objectContaining({ name: 'a' }),
+      }),
+      'component:default/b': expect.objectContaining({
+        metadata: expect.objectContaining({ name: 'b' }),
+      }),
+      'component:default/c': expect.objectContaining({
+        metadata: expect.objectContaining({ name: 'c' }),
+      }),
+      'component:default/d': expect.objectContaining({
+        metadata: expect.objectContaining({ name: 'd' }),
+      }),
+    });
+    // TODO(freben): Ideally these should be orphaned now
+    expect(
+      (await harness.getOutputEntities())['component:default/b'].metadata
+        .annotations!['backstage.io/orphan'],
+    ).toBeUndefined();
+    expect(
+      (await harness.getOutputEntities())['component:default/c'].metadata
+        .annotations!['backstage.io/orphan'],
+    ).toBeUndefined();
+    expect(
+      (await harness.getOutputEntities())['component:default/d'].metadata
+        .annotations!['backstage.io/orphan'],
+    ).toBeUndefined();
   });
 });
