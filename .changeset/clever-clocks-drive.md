@@ -3,4 +3,4 @@
 '@backstage/plugin-catalog-graph': patch
 ---
 
-Added select to toggle the curve factory of the dependency graph
+Added `curve` prop to the `DependencyGraph` component to select the type of layout
