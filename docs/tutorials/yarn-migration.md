@@ -67,6 +67,13 @@ COPY .yarn ./.yarn
 COPY .yarnrc.yml ./
 ```
 
+In a multi-stage `Dockerfile`, each stage that runs a `yarn` command will also need the Yarn 3 installation. For example, in the final stage you may need to add the following:
+
+```Dockerfile
+COPY --from=build --chown=node:node /app/.yarn ./.yarn
+COPY --from=build --chown=node:node /app/.yarnrc.yml  ./
+```
+
 The `--production` flag to `yarn install` has been removed in Yarn 3, instead you need to use `yarn workspaces focus --all --production` to avoid installing development dependencies in your production deployment. A tradeoff of this is that `yarn workspaces focus` does not support the `--immutable` flag.
 
 ```Dockerfile
