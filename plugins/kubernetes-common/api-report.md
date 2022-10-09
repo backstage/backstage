@@ -179,6 +179,7 @@ export interface JobsFetchResponse {
 export type KubernetesErrorTypes =
   | 'BAD_REQUEST'
   | 'UNAUTHORIZED_ERROR'
+  | 'NOT_FOUND'
   | 'SYSTEM_ERROR'
   | 'UNKNOWN_ERROR';
 

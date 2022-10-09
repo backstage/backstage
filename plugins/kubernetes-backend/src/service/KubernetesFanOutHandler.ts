@@ -358,7 +358,7 @@ export class KubernetesFanOutHandler {
       namespaces,
     );
 
-    result.errors.concat(podMetrics.errors);
+    result.errors.push(...podMetrics.errors);
     return [result, podMetrics.responses as PodStatusFetchResponse[]];
   }
 

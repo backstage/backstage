@@ -675,6 +675,82 @@ describe('getKubernetesObjectsByEntity', () => {
       ],
     });
   });
+  it('retrieve objects for two clusters, one fails to fetch pod metrics', async () => {
+    getClustersByEntity.mockImplementation(() =>
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'test-cluster',
+            authProvider: 'serviceAccount',
+            dashboardUrl: 'https://k8s.foo.coom',
+          },
+          {
+            name: 'other-cluster',
+            authProvider: 'google',
+          },
+        ],
+      }),
+    );
+
+    mockFetch(fetchObjectsForService);
+
+    // To simulate the partial failure, return a valid response for the first call,
+    // and an error for the second call.
+    fetchPodMetricsByNamespaces
+      .mockImplementationOnce(
+        (clusterDetails: ClusterDetails, namespaces: Set<string>) =>
+          Promise.resolve(generatePodStatus(clusterDetails.name, namespaces)),
+      )
+      .mockResolvedValueOnce({
+        errors: [
+          {
+            errorType: 'NOT_FOUND',
+            resourcePath: '/some/path',
+            statusCode: 404,
+          },
+        ],
+        responses: [],
+      });
+
+    const sut = getKubernetesFanOutHandler([]);
+
+    const result = await sut.getKubernetesObjectsByEntity({
+      entity,
+      auth: {
+        google: 'google_token_123',
+      },
+    });
+
+    expect(getClustersByEntity.mock.calls.length).toBe(1);
+    expect(fetchObjectsForService.mock.calls.length).toBe(2);
+    expect(result).toStrictEqual({
+      items: [
+        {
+          cluster: {
+            dashboardUrl: 'https://k8s.foo.coom',
+            name: 'test-cluster',
+          },
+          errors: [],
+          podMetrics: [POD_METRICS_FIXTURE],
+          resources: resourcesByCluster('test-cluster'),
+        },
+        {
+          cluster: {
+            name: 'other-cluster',
+          },
+          errors: [
+            {
+              errorType: 'NOT_FOUND',
+              resourcePath: '/some/path',
+              statusCode: 404,
+            },
+          ],
+          podMetrics: [],
+          resources: resourcesByCluster('other-cluster'),
+        },
+      ],
+    });
+  });
 });
 
 describe('getCustomResourcesByEntity', () => {

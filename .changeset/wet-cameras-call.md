@@ -1,8 +1,10 @@
 ---
 '@backstage/plugin-kubernetes-backend': minor
-'@backstage/plugin-kubernetes-common': minor
+'@backstage/plugin-kubernetes-common': patch
 ---
 
 The Kubernetes errors when fetching pod metrics are now captured and returned to the frontend.
 
-Include the `PodStatusFetchResponse` into the `FetchResponse` union type. Now the method `fetchPodMetricsByNamespaces` accepts a set of namespaces and returns a `FetchResponseWrapper`, just like other public fetch methods in the fetcher.
+- **BREAKING** The method `fetchPodMetricsByNamespace` in the interface `KubernetesFetcher` is changed to `fetchPodMetricsByNamespaces`. It now accepts a set of namespace strings and returns `Promise<FetchResponseWrapper>`.
+- Add the `PodStatusFetchResponse` to the `FetchResponse` union type.
+- Add `NOT_FOUND` to the `KubernetesErrorTypes` union type, the HTTP error with status code 404 will be mapped to this error.

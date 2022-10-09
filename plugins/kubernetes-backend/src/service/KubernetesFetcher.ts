@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CoreV1Api, topPods } from '@kubernetes/client-node';
+import { topPods } from '@kubernetes/client-node';
 import lodash, { Dictionary } from 'lodash';
 import { Logger } from 'winston';
 import {
@@ -32,10 +32,6 @@ import {
   PodStatusFetchResponse,
 } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
-
-export interface Clients {
-  core: CoreV1Api;
-}
 
 export interface KubernetesClientBasedFetcherOptions {
   kubernetesClientProvider: KubernetesClientProvider;
@@ -66,6 +62,8 @@ const statusCodeToErrorType = (statusCode: number): KubernetesErrorTypes => {
       return 'BAD_REQUEST';
     case 401:
       return 'UNAUTHORIZED_ERROR';
+    case 404:
+      return 'NOT_FOUND';
     case 500:
       return 'SYSTEM_ERROR';
     default:
