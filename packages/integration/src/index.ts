@@ -26,6 +26,7 @@ export * from './bitbucket';
 export * from './bitbucketCloud';
 export * from './bitbucketServer';
 export * from './gerrit';
+export * from './gitea';
 export * from './github';
 export * from './gitlab';
 export * from './googleGcs';
