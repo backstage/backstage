@@ -39,6 +39,7 @@ import { BackstageTheme } from '@backstage/theme';
 import {
   nextRouteRef,
   nextScaffolderTaskRouteRef,
+  scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../../routes';
 import { SecretsContext } from '../../components/secrets/SecretsContext';
@@ -73,13 +74,14 @@ const useTemplateParameterSchema = (templateRef: string) => {
 export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const styles = useStyles();
   const rootRef = useRouteRef(nextRouteRef);
-  const nextTemplateRef = useRouteRef(nextScaffolderTaskRouteRef);
+  const taskRoute = useRouteRef(scaffolderTaskRouteRef);
   const { secrets } = useContext(SecretsContext) ?? {};
   const scaffolderApi = useApi(scaffolderApiRef);
   const navigate = useNavigate();
   const { templateName, namespace } = useRouteRefParams(
     selectedTemplateRouteRef,
   );
+
   const templateRef = stringifyEntityRef({
     kind: 'Template',
     namespace,
@@ -96,7 +98,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
       secrets,
     });
 
-    navigate(nextTemplateRef({ taskId }));
+    navigate(taskRoute({ taskId }));
   };
 
   useEffect(() => {
