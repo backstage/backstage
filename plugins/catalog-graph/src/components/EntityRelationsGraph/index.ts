@@ -22,5 +22,4 @@ export type {
   EntityEdge,
   EntityNodeData,
   EntityNode,
-  Curve,
 } from './types';

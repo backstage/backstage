@@ -35,7 +35,6 @@ import React, { MouseEvent, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import {
   ALL_RELATION_PAIRS,
-  Curve,
   Direction,
   EntityNode,
   EntityRelationsGraph,
@@ -112,7 +111,7 @@ export const CatalogGraphPage = (props: {
     mergeRelations?: boolean;
     direction?: Direction;
     showFilters?: boolean;
-    curve?: Curve;
+    curve?: 'curveStepBefore' | 'curveMonotoneX';
   };
 }) => {
   const { relationPairs = ALL_RELATION_PAIRS, initialState } = props;

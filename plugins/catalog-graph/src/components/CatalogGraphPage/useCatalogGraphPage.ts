@@ -29,7 +29,7 @@ import {
 } from 'react';
 import { useLocation } from 'react-router';
 import usePrevious from 'react-use/lib/usePrevious';
-import { Direction, Curve } from '../EntityRelationsGraph';
+import { Direction } from '../EntityRelationsGraph';
 
 export type CatalogGraphPageValue = {
   rootEntityNames: CompoundEntityRef[];
@@ -46,8 +46,10 @@ export type CatalogGraphPageValue = {
   setMergeRelations: Dispatch<React.SetStateAction<boolean>>;
   direction: Direction;
   setDirection: Dispatch<React.SetStateAction<Direction>>;
-  curve: Curve;
-  setCurve: Dispatch<React.SetStateAction<Curve>>;
+  curve: 'curveStepBefore' | 'curveMonotoneX';
+  setCurve: Dispatch<
+    React.SetStateAction<'curveStepBefore' | 'curveMonotoneX'>
+  >;
   showFilters: boolean;
   toggleShowFilters: DispatchWithoutAction;
 };
@@ -64,7 +66,7 @@ export function useCatalogGraphPage({
     mergeRelations?: boolean;
     direction?: Direction;
     showFilters?: boolean;
-    curve?: Curve;
+    curve?: 'curveStepBefore' | 'curveMonotoneX';
   };
 }): CatalogGraphPageValue {
   const location = useLocation();
@@ -80,7 +82,7 @@ export function useCatalogGraphPage({
         mergeRelations?: string[] | string;
         direction?: string[] | Direction;
         showFilters?: string[] | string;
-        curve?: string[] | Curve;
+        curve?: string[] | 'curveStepBefore' | 'curveMonotoneX';
       },
     [location.search],
   );
@@ -126,7 +128,7 @@ export function useCatalogGraphPage({
       ? query.direction
       : initialState?.direction ?? Direction.LEFT_RIGHT,
   );
-  const [curve, setCurve] = useState<Curve>(() =>
+  const [curve, setCurve] = useState<'curveStepBefore' | 'curveMonotoneX'>(() =>
     typeof query.curve === 'string'
       ? query.curve
       : initialState?.curve ?? 'curveMonotoneX',

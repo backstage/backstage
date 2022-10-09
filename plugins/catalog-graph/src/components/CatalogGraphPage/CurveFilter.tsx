@@ -16,8 +16,8 @@
 import { Select } from '@backstage/core-components';
 import { Box } from '@material-ui/core';
 import React, { useCallback } from 'react';
-import { Curve } from '../EntityRelationsGraph';
 
+type Curve = 'curveStepBefore' | 'curveMonotoneX';
 const CURVE_DISPLAY_NAMES: Record<Curve, string> = {
   curveMonotoneX: 'Monotone X',
   curveStepBefore: 'Step Before',
@@ -25,10 +25,10 @@ const CURVE_DISPLAY_NAMES: Record<Curve, string> = {
 
 export type Props = {
   value: Curve;
-  onChange: (value: Curve) => void;
+  onChange: (value: 'curveStepBefore' | 'curveMonotoneX') => void;
 };
 
-const curves: Curve[] = ['curveMonotoneX', 'curveStepBefore'];
+const curves: Array<Curve> = ['curveMonotoneX', 'curveStepBefore'];
 
 export const CurveFilter = ({ value, onChange }: Props) => {
   const handleChange = useCallback(v => onChange(v as Curve), [onChange]);
