@@ -83,11 +83,23 @@ describe('BitbucketServerUrlReader', () => {
             ),
         ),
         rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits/*',
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches',
           (_, res, ctx) =>
             res(
               ctx.status(200),
-              ctx.json({ id: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }),
+              ctx.json({
+                size: 2,
+                values: [
+                  {
+                    displayId: 'some-branch-that-should-be-ignored',
+                    latestCommit: 'bogus hash',
+                  },
+                  {
+                    displayId: 'some-branch',
+                    latestCommit: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st',
+                  },
+                ],
+              }),
             ),
         ),
       );
@@ -130,12 +142,22 @@ describe('BitbucketServerUrlReader', () => {
             ),
         ),
         rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits/*',
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches',
           (_, res, ctx) =>
             res(
               ctx.status(200),
               ctx.json({
-                values: [{ id: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }],
+                size: 2,
+                values: [
+                  {
+                    displayId: 'some-branch-that-should-be-ignored',
+                    latestCommit: 'bogus hash',
+                  },
+                  {
+                    displayId: 'some-branch',
+                    latestCommit: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st',
+                  },
+                ],
               }),
             ),
         ),
@@ -179,11 +201,23 @@ describe('BitbucketServerUrlReader', () => {
             ),
         ),
         rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits/*',
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches',
           (_, res, ctx) =>
             res(
               ctx.status(200),
-              ctx.json({ id: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }),
+              ctx.json({
+                size: 2,
+                values: [
+                  {
+                    displayId: 'master-of-none',
+                    latestCommit: 'bogus hash',
+                  },
+                  {
+                    displayId: 'master',
+                    latestCommit: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st',
+                  },
+                ],
+              }),
             ),
         ),
       );
