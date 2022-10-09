@@ -76,16 +76,6 @@ export type RenderNodeFunction<T = {}> = (
 ) => React.ReactNode;
 
 /**
- *  Graph curve factory
- *
- * @public
- *
- * @see {@link @types/d3-shape/index.d.ts#curveMonotoneX}
- * @see {@link @types/d3-shape/index.d.ts#curveStepBefore}
- */
-export type Curve = 'curveStepBefore' | 'curveMonotoneX';
-
-/**
  * Graph direction
  *
  * @public

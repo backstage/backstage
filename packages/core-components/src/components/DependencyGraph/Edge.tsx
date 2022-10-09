@@ -24,7 +24,6 @@ import {
   RenderLabelFunction,
   DependencyEdge,
   LabelPosition,
-  Curve,
 } from './types';
 import { EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
 import { DefaultLabel } from './DefaultLabel';
@@ -71,7 +70,7 @@ export type EdgeComponentProps<T = unknown> = {
     id: dagre.Edge,
     edge: DependencyEdge<T>,
   ) => dagre.graphlib.Graph<{}>;
-  curve: Curve;
+  curve: 'curveStepBefore' | 'curveMonotoneX';
 };
 
 const renderDefault = (props: RenderLabelProps<unknown>) => (

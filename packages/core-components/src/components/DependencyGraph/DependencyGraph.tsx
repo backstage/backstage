@@ -30,7 +30,6 @@ import {
   RenderNodeFunction,
   RenderLabelFunction,
   LabelPosition,
-  Curve,
 } from './types';
 import { Node } from './Node';
 import { Edge, GraphEdge } from './Edge';
@@ -170,7 +169,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
    *
    * Default: 'curveMonotoneX'
    */
-  curve?: Curve;
+  curve?: 'curveStepBefore' | 'curveMonotoneX';
 }
 
 const WORKSPACE_ID = 'workspace';

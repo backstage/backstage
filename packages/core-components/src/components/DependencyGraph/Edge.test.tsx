@@ -17,11 +17,11 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { Edge } from './Edge';
-import { Curve, RenderLabelProps } from './types';
+import { RenderLabelProps } from './types';
 
 const fromNode = 'node';
 const toNode = 'other-node';
-const curve: Curve = 'curveMonotoneX';
+const curve: 'curveStepBefore' | 'curveMonotoneX' = 'curveMonotoneX';
 
 const edge = {
   points: [
