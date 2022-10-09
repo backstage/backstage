@@ -16,8 +16,14 @@
 
 import React from 'react';
 import { Page, Header, Content } from '@backstage/core-components';
+import { useTaskEventStream } from '../../components/hooks/useEventStream';
+import { useParams } from 'react-router';
 
 export const TaskPage = () => {
+  const { taskId } = useParams();
+  // check that task Id actually exists, and that it's valid. otherwise redirect to something more useful.
+
+  const taskStream = useTaskEventStream(taskId!);
   return (
     <Page themeId="website">
       <Header
