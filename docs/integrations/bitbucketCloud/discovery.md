@@ -37,6 +37,7 @@ And then add the entity provider to your catalog builder:
 +   builder.addEntityProvider(
 +     BitbucketCloudEntityProvider.fromConfig(env.config, {
 +       logger: env.logger,
++       // optional: alternatively, configure via app-config.yaml
 +       schedule: env.scheduler.createScheduledTaskRunner({
 +         frequency: { minutes: 30 },
 +         timeout: { minutes: 3 },
@@ -67,24 +68,38 @@ catalog:
         filters: # optional
           projectKey: '^apis-.*$' # optional; RegExp
           repoSlug: '^service-.*$' # optional; RegExp
+        schedule: # optional; same options as in TaskScheduleDefinition
+          # supports cron, ISO duration, "human duration" as used in code
+          frequency: { minutes: 30 }
+          # supports ISO duration, "human duration" as used in code
+          timeout: { minutes: 3 }
         workspace: workspace-name
 ```
 
 > **Note:** It is possible but certainly not recommended to skip the provider ID level.
 > If you do so, `default` will be used as provider ID.
 
-- **catalogPath** _(optional)_:
+- **`catalogPath`** _(optional)_:
   Default: `/catalog-info.yaml`.
   Path where to look for `catalog-info.yaml` files.
   When started with `/`, it is an absolute path from the repo root.
   It supports values as allowed by the `path` filter/modifier
   [at Bitbucket Cloud's code search](https://confluence.atlassian.com/bitbucket/code-search-in-bitbucket-873876782.html#Search-Pathmodifier).
-- **filters** _(optional)_:
-  - **projectKey** _(optional)_:
+- **`filters`** _(optional)_:
+  - **`projectKey`** _(optional)_:
     Regular expression used to filter results based on the project key.
-  - **repoSlug** _(optional)_:
+  - **`repoSlug`** _(optional)_:
     Regular expression used to filter results based on the repo slug.
-- **workspace**:
+- **`schedule`** _(optional)_:
+  - **`frequency`**:
+    How often you want the task to run. The system does its best to avoid overlapping invocations.
+  - **`timeout`**:
+    The maximum amount of time that a single task invocation can take.
+  - **`initialDelay`** _(optional)_:
+    The amount of time that should pass before the first invocation happens.
+  - **`scope`** _(optional)_:
+    `'global'` or `'local'`. Sets the scope of concurrency control.
+- **`workspace`**:
   Name of your organization account/workspace.
   If you want to add multiple workspaces, you need to add one provider config each.
 

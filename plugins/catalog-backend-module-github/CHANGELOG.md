@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.1.8-next.1
+
+### Patch Changes
+
+- a35a27df70: Updated the `moduleId` of the experimental module export.
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.1
+  - @backstage/backend-plugin-api@0.1.3-next.1
+  - @backstage/backend-tasks@0.3.6-next.1
+  - @backstage/catalog-model@1.1.2-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/integration@1.3.2-next.1
+  - @backstage/types@1.0.0
+  - @backstage/plugin-catalog-backend@1.4.1-next.1
+  - @backstage/plugin-catalog-node@1.1.1-next.1
+
 ## 0.1.8-next.0
 
 ### Patch Changes

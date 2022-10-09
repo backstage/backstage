@@ -106,6 +106,7 @@ import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
 import { PlaylistIndexPage } from '@backstage/plugin-playlist';
 import { TwoColumnLayout } from './components/scaffolder/customScaffolderLayouts';
+import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
 
 const app = createApp({
   apis,
@@ -273,6 +274,7 @@ const routes = (
     <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
     <Route path="/apache-airflow" element={<ApacheAirflowPage />} />
     <Route path="/playlist" element={<PlaylistIndexPage />} />
+    <Route path="/score-board" element={<ScoreBoardPage />} />
   </FlatRoutes>
 );
 

@@ -44,6 +44,7 @@ export type SearchContextValue = {
   setTerm: React.Dispatch<React.SetStateAction<string>>;
   setTypes: React.Dispatch<React.SetStateAction<string[]>>;
   setFilters: React.Dispatch<React.SetStateAction<JsonObject>>;
+  setPageLimit: React.Dispatch<React.SetStateAction<number | undefined>>;
   setPageCursor: React.Dispatch<React.SetStateAction<string | undefined>>;
   fetchNextPage?: React.DispatchWithoutAction;
   fetchPreviousPage?: React.DispatchWithoutAction;
@@ -57,6 +58,7 @@ export type SearchContextState = {
   term: string;
   types: string[];
   filters: JsonObject;
+  pageLimit?: number;
   pageCursor?: string;
 };
 
@@ -98,9 +100,10 @@ export const useSearchContextCheck = () => {
  */
 const searchInitialState: SearchContextState = {
   term: '',
-  pageCursor: undefined,
-  filters: {},
   types: [],
+  filters: {},
+  pageLimit: undefined,
+  pageCursor: undefined,
 };
 
 const useSearchContextValue = (
@@ -111,6 +114,9 @@ const useSearchContextValue = (
   const [term, setTerm] = useState<string>(initialValue.term);
   const [types, setTypes] = useState<string[]>(initialValue.types);
   const [filters, setFilters] = useState<JsonObject>(initialValue.filters);
+  const [pageLimit, setPageLimit] = useState<number | undefined>(
+    initialValue.pageLimit,
+  );
   const [pageCursor, setPageCursor] = useState<string | undefined>(
     initialValue.pageCursor,
   );
@@ -122,20 +128,23 @@ const useSearchContextValue = (
     () =>
       searchApi.query({
         term,
-        filters,
-        pageCursor,
         types,
+        filters,
+        pageLimit,
+        pageCursor,
       }),
-    [term, types, filters, pageCursor],
+    [term, types, filters, pageLimit, pageCursor],
   );
 
   const hasNextPage =
     !result.loading && !result.error && result.value?.nextPageCursor;
   const hasPreviousPage =
     !result.loading && !result.error && result.value?.previousPageCursor;
+
   const fetchNextPage = useCallback(() => {
     setPageCursor(result.value?.nextPageCursor);
   }, [result.value?.nextPageCursor]);
+
   const fetchPreviousPage = useCallback(() => {
     setPageCursor(result.value?.previousPageCursor);
   }, [result.value?.previousPageCursor]);
@@ -158,12 +167,14 @@ const useSearchContextValue = (
 
   const value: SearchContextValue = {
     result,
-    filters,
-    setFilters,
     term,
     setTerm,
     types,
     setTypes,
+    filters,
+    setFilters,
+    pageLimit,
+    setPageLimit,
     pageCursor,
     setPageCursor,
     fetchNextPage: hasNextPage ? fetchNextPage : undefined,

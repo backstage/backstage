@@ -1,5 +1,18 @@
 # @backstage/cli
 
+## 0.20.0-next.1
+
+### Patch Changes
+
+- 78d5eb299e: Tweak the Jest Caching loader to only operate when in `watch` mode
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.1
+  - @backstage/config-loader@1.1.5-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/release-manifests@0.0.6
+  - @backstage/types@1.0.0
+
 ## 0.20.0-next.0
 
 ### Minor Changes

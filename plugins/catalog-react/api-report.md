@@ -176,7 +176,7 @@ export const EntityKindPicker: (
 // @public
 export interface EntityKindPickerProps {
   // (undocumented)
-  hidden: boolean;
+  hidden?: boolean;
   // (undocumented)
   initialFilter?: string;
 }

@@ -34,6 +34,7 @@ import {
   EntityTypePicker,
   UserListFilterKind,
   UserListPicker,
+  EntityKindPicker,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { createComponentRouteRef } from '../../routes';
@@ -83,6 +84,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
           </ContentHeader>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
+              <EntityKindPicker initialFilter={initialKind} />
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityOwnerPicker />

@@ -24,6 +24,10 @@ import { useGetIssuesByRepoFromGitHub } from '../../hooks/useGetIssuesByRepoFrom
 
 import { IssuesList } from './IssuesList';
 import { NoRepositoriesInfo } from './NoRepositoriesInfo';
+import type {
+  GithubIssuesFilters,
+  GithubIssuesOrdering,
+} from '../../api/gitHubIssuesApi';
 
 /**
  * @public
@@ -31,17 +35,22 @@ import { NoRepositoriesInfo } from './NoRepositoriesInfo';
 export type GitHubIssuesProps = {
   itemsPerPage?: number;
   itemsPerRepo?: number;
+  filterBy?: GithubIssuesFilters;
+  orderBy?: GithubIssuesOrdering;
 };
 
 export const GitHubIssues = (props: GitHubIssuesProps) => {
-  const { itemsPerPage = 10, itemsPerRepo = 40 } = props;
+  const { itemsPerPage = 10, itemsPerRepo = 40, filterBy, orderBy } = props;
 
   const { repositories } = useEntityGitHubRepositories();
   const {
     isLoading,
     gitHubIssuesByRepo: issuesByRepository,
     retry,
-  } = useGetIssuesByRepoFromGitHub(repositories, itemsPerRepo);
+  } = useGetIssuesByRepoFromGitHub(repositories, itemsPerRepo, {
+    filterBy,
+    orderBy,
+  });
 
   if (!repositories.length) {
     return <NoRepositoriesInfo />;

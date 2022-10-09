@@ -210,7 +210,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
           .multiMatchQuery(['*'], term)
           .fuzziness('auto')
           .minimumShouldMatch(1);
-    const pageSize = 25;
+    const pageSize = query.pageLimit || 25;
     const { page } = decodePageCursor(pageCursor);
 
     let esbRequestBodySearch = esb

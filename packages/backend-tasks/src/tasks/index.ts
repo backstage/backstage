@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { readTaskScheduleDefinitionFromConfig } from './readTaskScheduleDefinitionFromConfig';
 export { TaskScheduler } from './TaskScheduler';
 export type {
   PluginTaskScheduler,
@@ -21,5 +22,6 @@ export type {
   TaskInvocationDefinition,
   TaskRunner,
   TaskScheduleDefinition,
+  TaskScheduleDefinitionConfig,
   HumanDuration,
 } from './types';

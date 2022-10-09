@@ -75,6 +75,13 @@ describe('DatabaseHandler', () => {
         responsible: bazaarProject.responsible,
       });
 
+      // Add a member to the project
+      await knex('members').insert({
+        item_id: 1,
+        user_ref: 'user:default/thehulk',
+        user_id: 'Bruce Banner',
+      });
+
       const res = await dbHandler.getMetadataByRef('ref1');
 
       expect(res).toHaveLength(1);
@@ -85,6 +92,9 @@ describe('DatabaseHandler', () => {
       expect(res[0].end_date).toEqual(null);
       expect(res[0].size).toEqual('small');
       expect(res[0].responsible).toEqual('r');
+      expect(
+        res[0].members_count === '1' || res[0].members_count === 1,
+      ).toBeTruthy();
     },
     60_000,
   );

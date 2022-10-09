@@ -137,7 +137,7 @@ export class PgSearchEngine implements SearchEngine {
     query: SearchQuery,
     options: PgSearchQueryTranslatorOptions,
   ): ConcretePgSearchQuery {
-    const pageSize = 25;
+    const pageSize = query.pageLimit || 25;
     const { page } = decodePageCursor(query.pageCursor);
     const offset = page * pageSize;
     // We request more result to know whether there is another page

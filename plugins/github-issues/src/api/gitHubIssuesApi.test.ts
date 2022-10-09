@@ -20,83 +20,151 @@ jest.mock('octokit', () => ({
 
 import { ConfigApi, ErrorApi } from '@backstage/core-plugin-api';
 import { ForwardedError } from '@backstage/errors';
-import { gitHubIssuesApi } from './gitHubIssuesApi';
+import { createFilterByClause, gitHubIssuesApi } from './gitHubIssuesApi';
+import type { GithubIssuesFilters } from './gitHubIssuesApi';
+
+function getFragment(
+  filterBy = '',
+  orderBy = 'field: UPDATED_AT, direction: DESC',
+) {
+  return (
+    '\n' +
+    '    \n' +
+    '    fragment issues on Repository {\n' +
+    '      issues(\n' +
+    '        states: OPEN\n' +
+    '        first: 10\n' +
+    `        filterBy: { ${filterBy} }\n` +
+    `        orderBy: { ${orderBy} }\n` +
+    '      ) {\n' +
+    '        totalCount\n' +
+    '        edges {\n' +
+    '          node {\n' +
+    '            assignees(first: 10) {\n' +
+    '              edges {\n' +
+    '                node {\n' +
+    '                  avatarUrl\n' +
+    '                  login\n' +
+    '                }\n' +
+    '              }\n' +
+    '            }\n' +
+    '            author {\n' +
+    '              login\n' +
+    '            }\n' +
+    '            repository {\n' +
+    '              nameWithOwner\n' +
+    '            }\n' +
+    '            title\n' +
+    '            url\n' +
+    '            participants {\n' +
+    '              totalCount\n' +
+    '            }\n' +
+    '            updatedAt\n' +
+    '            createdAt\n' +
+    '            comments(last: 1) {\n' +
+    '              totalCount\n' +
+    '            }\n' +
+    '          }\n' +
+    '        }\n' +
+    '      }\n' +
+    '    }\n' +
+    '  \n' +
+    '\n' +
+    '    query {\n' +
+    '      \n' +
+    '        yoyo: repository(name: "yo-yo", owner: "mrwolny") {\n' +
+    '          ...issues\n' +
+    '        }\n' +
+    '      ,\n' +
+    '        yoyox: repository(name: "yoyo", owner: "mrwolny") {\n' +
+    '          ...issues\n' +
+    '        }\n' +
+    '      ,\n' +
+    '        yoyoxx: repository(name: "yo.yo", owner: "mrwolny") {\n' +
+    '          ...issues\n' +
+    '        }\n' +
+    '      \n' +
+    '    }    \n' +
+    '  '
+  );
+}
 
 describe('gitHubIssuesApi', () => {
   describe('fetchIssuesByRepoFromGitHub', () => {
-    it('should call GitHub API with correct query with fragment for each repo', async () => {
-      const api = gitHubIssuesApi(
+    let api: ReturnType<typeof gitHubIssuesApi>;
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    beforeEach(() => {
+      api = gitHubIssuesApi(
         { getAccessToken: jest.fn() },
         {
           getOptionalConfigArray: jest.fn(),
         } as unknown as ConfigApi,
         { post: jest.fn() } as unknown as ErrorApi,
       );
+    });
 
+    it('should call GitHub API with correct query with fragment for each repo', async () => {
       await api.fetchIssuesByRepoFromGitHub(
         ['mrwolny/yo-yo', 'mrwolny/yoyo', 'mrwolny/yo.yo'],
         10,
       );
+
+      expect(mockGraphQLQuery).toHaveBeenCalledTimes(1);
+      expect(mockGraphQLQuery).toHaveBeenCalledWith(getFragment());
+    });
+
+    it('should call Github API with the correct filterBy and orderBy clauses', async () => {
+      await api.fetchIssuesByRepoFromGitHub(
+        ['mrwolny/yo-yo', 'mrwolny/yoyo', 'mrwolny/yo.yo'],
+        10,
+        {
+          filterBy: {
+            labels: ['bug'],
+            states: ['OPEN'],
+            assignee: 'someone',
+          },
+          orderBy: {
+            field: 'COMMENTS',
+            direction: 'ASC',
+          },
+        },
+      );
+
+      const expectedFilterBy = `labels: [ "bug"], states: OPEN, assignee: "someone"`;
+      const expectedOrderBy = 'field: COMMENTS, direction: ASC';
+
       expect(mockGraphQLQuery).toHaveBeenCalledTimes(1);
       expect(mockGraphQLQuery).toHaveBeenCalledWith(
-        '\n' +
-          '    \n' +
-          '    fragment issues on Repository {\n' +
-          '      issues(\n' +
-          '        states: OPEN\n' +
-          '        first: 10\n' +
-          '        orderBy: { field: UPDATED_AT, direction: DESC }\n' +
-          '      ) {\n' +
-          '        totalCount\n' +
-          '        edges {\n' +
-          '          node {\n' +
-          '            assignees(first: 10) {\n' +
-          '              edges {\n' +
-          '                node {\n' +
-          '                  avatarUrl\n' +
-          '                  login\n' +
-          '                }\n' +
-          '              }\n' +
-          '            }\n' +
-          '            author {\n' +
-          '              login\n' +
-          '            }\n' +
-          '            repository {\n' +
-          '              nameWithOwner\n' +
-          '            }\n' +
-          '            title\n' +
-          '            url\n' +
-          '            participants {\n' +
-          '              totalCount\n' +
-          '            }\n' +
-          '            updatedAt\n' +
-          '            createdAt\n' +
-          '            comments(last: 1) {\n' +
-          '              totalCount\n' +
-          '            }\n' +
-          '          }\n' +
-          '        }\n' +
-          '      }\n' +
-          '    }\n' +
-          '  \n' +
-          '\n' +
-          '    query {\n' +
-          '      \n' +
-          '        yoyo: repository(name: "yo-yo", owner: "mrwolny") {\n' +
-          '          ...issues\n' +
-          '        }\n' +
-          '      ,\n' +
-          '        yoyox: repository(name: "yoyo", owner: "mrwolny") {\n' +
-          '          ...issues\n' +
-          '        }\n' +
-          '      ,\n' +
-          '        yoyoxx: repository(name: "yo.yo", owner: "mrwolny") {\n' +
-          '          ...issues\n' +
-          '        }\n' +
-          '      \n' +
-          '    }    \n' +
-          '  ',
+        getFragment(expectedFilterBy, expectedOrderBy),
       );
+    });
+
+    describe('filterBy', () => {
+      const cases: [GithubIssuesFilters | undefined, string][] = [
+        [{}, ''],
+        [undefined, ''],
+        [{ states: ['OPEN'] }, 'states: OPEN'],
+        [
+          { labels: ['bug', 'enhancement'], assignee: 'someone' },
+          `labels: [ \"bug\", \"enhancement\"], assignee: "someone"`,
+        ],
+        [
+          {
+            createdBy: 'someone',
+            mentioned: 'someone else',
+            milestone: 'milestone',
+          },
+          `createdBy: \"someone\", mentioned: \"someone else\", milestone: \"milestone\"`,
+        ],
+      ];
+
+      test.each(cases)('filterBy(%s) should be %s', (filterBy, expected) => {
+        expect(createFilterByClause(filterBy)).toEqual(expected);
+      });
     });
   });
 
