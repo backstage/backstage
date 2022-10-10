@@ -306,7 +306,11 @@ export type SearchResultGroupLayoutProps<FilterOption> = ListProps & {
    * Function to customize how filter options are rendered.
    * @remarks Defaults to a menu item where its value and label bounds to the option string.
    */
-  renderFilterOption?: (filterOption: FilterOption) => JSX.Element;
+  renderFilterOption?: (
+    value: FilterOption,
+    index: number,
+    array: FilterOption[],
+  ) => JSX.Element | null;
   /**
    * A list of search filter keys, also known as filter field names.
    */
@@ -322,7 +326,11 @@ export type SearchResultGroupLayoutProps<FilterOption> = ListProps & {
   /**
    * Function to customize how result items are rendered.
    */
-  renderResultItem?: (resultItem: SearchResult) => JSX.Element;
+  renderResultItem?: (
+    value: SearchResult,
+    index: number,
+    array: SearchResult[],
+  ) => JSX.Element | null;
   /**
    * If defined, will render a default error panel.
    */
@@ -331,6 +339,10 @@ export type SearchResultGroupLayoutProps<FilterOption> = ListProps & {
    * If defined, will render a default loading progress.
    */
   loading?: boolean;
+  /**
+   * Optional component to render when no results. Default to <EmptyState /> component.
+   */
+  noResultsComponent?: ReactNode;
 };
 
 /**
@@ -350,14 +362,31 @@ export function SearchResultGroupLayout<FilterOption>(
     icon,
     title,
     titleProps = {},
-    link,
+    link = (
+      <>
+        See all
+        <ArrowRightIcon className={classes.listSubheaderLinkIcon} />
+      </>
+    ),
     linkProps = {},
     filterOptions,
-    renderFilterOption,
+    renderFilterOption = filterOption => (
+      <MenuItem key={String(filterOption)} value={String(filterOption)}>
+        {filterOption}
+      </MenuItem>
+    ),
     filterFields,
     renderFilterField,
     resultItems,
-    renderResultItem,
+    renderResultItem = resultItem => (
+      <DefaultResultListItem
+        key={resultItem.document.location}
+        result={resultItem.document}
+      />
+    ),
+    noResultsComponent = (
+      <EmptyState missing="data" title="Sorry, no results were found" />
+    ),
     ...rest
   } = props;
 
@@ -401,30 +430,14 @@ export function SearchResultGroupLayout<FilterOption>(
             onClick={handleClose}
             keepMounted
           >
-            {filterOptions.map(filterOption =>
-              renderFilterOption ? (
-                renderFilterOption(filterOption)
-              ) : (
-                <MenuItem
-                  key={String(filterOption)}
-                  value={String(filterOption)}
-                >
-                  {filterOption}
-                </MenuItem>
-              ),
-            )}
+            {filterOptions.map(renderFilterOption)}
           </Menu>
         ) : null}
         {filterFields?.map(
           filterField => renderFilterField?.(filterField) ?? null,
         )}
         <Link className={classes.listSubheaderLink} to="/search" {...linkProps}>
-          {link ?? (
-            <>
-              See all
-              <ArrowRightIcon className={classes.listSubheaderLinkIcon} />
-            </>
-          )}
+          {link}
         </Link>
       </ListSubheader>
       {loading ? <Progress /> : null}
@@ -435,12 +448,10 @@ export function SearchResultGroupLayout<FilterOption>(
         />
       ) : null}
       {!loading && !error && resultItems?.length
-        ? resultItems.map(resultItem => renderResultItem?.(resultItem) ?? null)
+        ? resultItems.map(renderResultItem)
         : null}
       {!loading && !error && !resultItems?.length ? (
-        <ListItem>
-          <EmptyState missing="data" title="Sorry, no results were found" />
-        </ListItem>
+        <ListItem>{noResultsComponent}</ListItem>
       ) : null}
     </List>
   );
@@ -458,6 +469,10 @@ export type SearchResultGroupProps<FilterOption> = Omit<
    * A search query used for requesting the results to be grouped.
    */
   query: Partial<SearchQuery>;
+  /**
+   * Optional property to provide if component should not render the group when no results are found.
+   */
+  disableRenderingWithNoResults?: boolean;
 };
 
 /**
@@ -471,9 +486,7 @@ export function SearchResultGroup<FilterOption>(
   const {
     query,
     linkProps = {},
-    renderResultItem = ({ document }) => (
-      <DefaultResultListItem key={document.location} result={document} />
-    ),
+    disableRenderingWithNoResults,
     ...rest
   } = props;
 
@@ -495,17 +508,22 @@ export function SearchResultGroup<FilterOption>(
       }}
     >
       <SearchResultState query={query}>
-        {({ loading, error, value }) => (
-          <SearchResultGroupLayout
-            {...rest}
-            loading={loading}
-            error={error}
-            linkProps={{ to, ...linkProps }}
-            resultItems={value?.results}
-            renderResultItem={renderResultItem}
-            filterFields={Object.keys(query.filters ?? {})}
-          />
-        )}
+        {({ loading, error, value }) => {
+          if (!value?.results?.length && disableRenderingWithNoResults) {
+            return null;
+          }
+
+          return (
+            <SearchResultGroupLayout
+              {...rest}
+              loading={loading}
+              error={error}
+              linkProps={{ to, ...linkProps }}
+              resultItems={value?.results}
+              filterFields={Object.keys(query.filters ?? {})}
+            />
+          );
+        }}
       </SearchResultState>
     </AnalyticsContext>
   );

@@ -36,7 +36,7 @@ export type SearchResultContextProps = {
   /**
    * A child function that receives an asynchronous result set and returns a react element.
    */
-  children: (state: AsyncState<SearchResultSet>) => JSX.Element;
+  children: (state: AsyncState<SearchResultSet>) => JSX.Element | null;
 };
 
 /**
@@ -98,16 +98,10 @@ export const SearchResultApi = (props: SearchResultApiProps) => {
   const { query, children } = props;
   const searchApi = useApi(searchApiRef);
 
-  const state = useAsync(
-    () =>
-      searchApi.query({
-        term: query.term ?? '',
-        types: query.types ?? [],
-        filters: query.filters ?? {},
-        pageCursor: query.pageCursor,
-      }),
-    [query],
-  );
+  const state = useAsync(() => {
+    const { term = '', types = [], filters = {}, ...rest } = query;
+    return searchApi.query({ ...rest, term, types, filters });
+  }, [query]);
 
   return children(state);
 };

@@ -132,7 +132,7 @@ router.use('/summary', async (req, res) => {
   ]).then(async ([frobs, flerps, thunk]) => {
     return computeAggregate(await frobs.json(), await flerps.json(), thunk);
   });
-  res.status(200).send(agg);
+  res.status(200).json(agg);
 });
 ```
 

@@ -21,7 +21,7 @@ import { notFoundHandler } from './notFoundHandler';
 describe('notFoundHandler', () => {
   it('handles only missing routes', async () => {
     const app = express();
-    app.use('/exists', (_, res) => res.status(200).send());
+    app.use('/exists', (_, res) => res.status(200).end());
     app.use(notFoundHandler());
 
     const existsResponse = await request(app).get('/exists');

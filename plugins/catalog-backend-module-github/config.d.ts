@@ -45,5 +45,119 @@ export interface Config {
         }>;
       };
     };
+
+    providers?: {
+      /**
+       * GitHubEntityProvider configuration
+       *
+       * Uses "default" as default id for the single config variant.
+       */
+      github?:
+        | {
+            /**
+             * (Optional) The hostname of your GitHub Enterprise instance.
+             * Default: `github.com`.
+             */
+            host?: string;
+            /**
+             * (Required) Name of your organization account/workspace.
+             */
+            organization: string;
+            /**
+             * (Optional) Path where to look for `catalog-info.yaml` files.
+             * You can use wildcards - `*` or `**` - to search the path and/or the filename
+             * Default: `/catalog-info.yaml`.
+             */
+            catalogPath?: string;
+            /**
+             * (Optional) Filter configuration.
+             */
+            filters?: {
+              /**
+               * (Optional) String used to filter results based on the branch name.
+               */
+              branch?: string;
+              /**
+               * (Optional) Regular expression used to filter results based on the repository name.
+               */
+              repository?: string;
+              /**
+               * (Optional) GitHub topic-based filters.
+               */
+              topic?: {
+                /**
+                 * (Optional) An array of strings used to filter in results based on their associated GitHub topics.
+                 * If configured, only repositories with one (or more) topic(s) present in the inclusion
+                 * filter will be ingested.
+                 *
+                 * If `include` and `exclude` are used, `exclude` has higher priority.
+                 */
+                include?: string[];
+                /**
+                 * (Optional) An array of strings used to filter out results based on their associated GitHub topics.
+                 * If configured, all repositories _except_ those with one (or more) topics(s) present in
+                 * the exclusion filter will be ingested.
+                 *
+                 * If `include` and `exclude` are used, `exclude` has higher priority.
+                 */
+                exclude?: string[];
+              };
+            };
+          }
+        | Record<
+            string,
+            {
+              /**
+               * (Optional) The hostname of your GitHub Enterprise instance.
+               * Default: `github.com`.
+               */
+              host?: string;
+              /**
+               * (Required) Name of your organization account/workspace.
+               */
+              organization: string;
+              /**
+               * (Optional) Path where to look for `catalog-info.yaml` files.
+               * You can use wildcards - `*` or `**` - to search the path and/or the filename
+               * Default: `/catalog-info.yaml`.
+               */
+              catalogPath?: string;
+              /**
+               * (Optional) Filter configuration.
+               */
+              filters?: {
+                /**
+                 * (Optional) String used to filter results based on the branch name.
+                 */
+                branch?: string;
+                /**
+                 * (Optional) Regular expression used to filter results based on the repository name.
+                 */
+                repository?: string;
+                /**
+                 * (Optional) GitHub topic-based filters.
+                 */
+                topic?: {
+                  /**
+                   * (Optional) An array of strings used to filter in results based on their associated GitHub topics.
+                   * If configured, only repositories with one (or more) topic(s) present in the inclusion
+                   * filter will be ingested.
+                   *
+                   * If `include` and `exclude` are used, `exclude` has higher priority.
+                   */
+                  include?: string[];
+                  /**
+                   * (Optional) An array of strings used to filter out results based on their associated GitHub topics.
+                   * If configured, all repositories _except_ those with one (or more) topics(s) present in
+                   * the exclusion filter will be ingested.
+                   *
+                   * If `include` and `exclude` are used, `exclude` has higher priority.
+                   */
+                  exclude?: string[];
+                };
+              };
+            }
+          >;
+    };
   };
 }

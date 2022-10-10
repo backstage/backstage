@@ -1,5 +1,20 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.5.3-next.1
+
+### Patch Changes
+
+- f7cbfb97ed: Modify router endpoint to handle singular and collections of request parameters similarly.
+- Updated dependencies
+  - @backstage/catalog-client@1.1.1-next.1
+  - @backstage/backend-common@0.15.2-next.1
+  - @backstage/backend-tasks@0.3.6-next.1
+  - @backstage/catalog-model@1.1.2-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/plugin-tech-insights-common@0.2.7-next.1
+  - @backstage/plugin-tech-insights-node@0.3.5-next.1
+
 ## 0.5.3-next.0
 
 ### Patch Changes

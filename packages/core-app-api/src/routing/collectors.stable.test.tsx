@@ -301,7 +301,7 @@ describe('discovery', () => {
             HELLO
           </AggregationComponent>
           <Route path="bar" element={<Extension3 />}>
-            <AggregationComponent path="baz">
+            <AggregationComponent path="">
               <Extension4>
                 <Extension5 />
               </Extension4>
@@ -322,8 +322,8 @@ describe('discovery', () => {
       [ref1, 'foo'],
       [ref2, 'foo'],
       [ref3, 'bar'],
-      [ref4, 'baz'],
-      [ref5, 'baz'],
+      [ref4, ''],
+      [ref5, ''],
     ]);
     expect(sortedEntries(routing.parents)).toEqual([
       [ref1, undefined],
@@ -337,7 +337,7 @@ describe('discovery', () => {
       routeObj(
         'bar',
         [ref3],
-        [routeObj('baz', [ref4, ref5], [], 'gathered')],
+        [routeObj('', [ref4, ref5], [], 'gathered')],
         undefined,
         plugin,
       ),

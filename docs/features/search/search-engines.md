@@ -101,7 +101,7 @@ Similarly to Lunr above, ElasticSearch can be set up like this:
 
 ```typescript
 // app/backend/src/plugins/search.ts
-const searchEngine = await ElasticSearchSearchEngine.initialize({
+const searchEngine = await ElasticSearchSearchEngine.fromConfig({
   logger: env.logger,
   config: env.config,
 });

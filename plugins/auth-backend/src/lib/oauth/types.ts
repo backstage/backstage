@@ -104,6 +104,11 @@ export type OAuthRefreshRequest = express.Request<{}> & {
   refreshToken: string;
 };
 
+/** @public */
+export type OAuthLogoutRequest = express.Request<{}> & {
+  refreshToken: string;
+};
+
 /**
  * Any OAuth provider needs to implement this interface which has provider specific
  * handlers for different methods to perform authentication, get access tokens,
@@ -136,5 +141,5 @@ export interface OAuthHandlers {
   /**
    * (Optional) Sign out of the auth provider.
    */
-  logout?(): Promise<void>;
+  logout?(req: OAuthLogoutRequest): Promise<void>;
 }

@@ -88,34 +88,36 @@ export const RepoUrlPicker = (
     [uiSchema],
   );
 
+  const { owner, organization, repoName } = state;
+
   useEffect(() => {
     onChange(serializeRepoPickerUrl(state));
   }, [state, onChange]);
 
   /* we deal with calling the repo setting here instead of in each components for ease */
   useEffect(() => {
-    if (allowedOrganizations.length > 0) {
+    if (allowedOrganizations.length > 0 && !organization) {
       setState(prevState => ({
         ...prevState,
         organization: allowedOrganizations[0],
       }));
     }
-  }, [setState, allowedOrganizations]);
+  }, [setState, allowedOrganizations, organization]);
 
   useEffect(() => {
-    if (allowedOwners.length > 0) {
+    if (allowedOwners.length > 0 && !owner) {
       setState(prevState => ({
         ...prevState,
         owner: allowedOwners[0],
       }));
     }
-  }, [setState, allowedOwners]);
+  }, [setState, allowedOwners, owner]);
 
   useEffect(() => {
-    if (allowedRepos.length > 0) {
+    if (allowedRepos.length > 0 && !repoName) {
       setState(prevState => ({ ...prevState, repoName: allowedRepos[0] }));
     }
-  }, [setState, allowedRepos]);
+  }, [setState, allowedRepos, repoName]);
 
   const updateLocalState = useCallback(
     (newState: RepoUrlPickerState) => {
@@ -135,7 +137,7 @@ export const RepoUrlPicker = (
         return;
       }
 
-      const [host, owner, repoName] = [
+      const [encodedHost, encodedOwner, encodedRepoName] = [
         state.host,
         state.owner,
         state.repoName,
@@ -145,7 +147,7 @@ export const RepoUrlPicker = (
       // so lets grab them using the scmAuthApi and pass through
       // any additional scopes from the ui:options
       const { token } = await scmAuthApi.getCredentials({
-        url: `https://${host}/${owner}/${repoName}`,
+        url: `https://${encodedHost}/${encodedOwner}/${encodedRepoName}`,
         additionalScope: {
           repoWrite: true,
           customScopes: requestUserCredentials.additionalScopes,
@@ -174,9 +176,9 @@ export const RepoUrlPicker = (
       {hostType === 'github' && (
         <GithubRepoPicker
           allowedOwners={allowedOwners}
+          onChange={updateLocalState}
           rawErrors={rawErrors}
           state={state}
-          onChange={updateLocalState}
         />
       )}
       {hostType === 'gitlab' && (
@@ -214,8 +216,8 @@ export const RepoUrlPicker = (
       <RepoUrlPickerRepoName
         repoName={state.repoName}
         allowedRepos={allowedRepos}
-        onChange={repoName =>
-          setState(prevState => ({ ...prevState, repoName }))
+        onChange={repo =>
+          setState(prevState => ({ ...prevState, repoName: repo }))
         }
         rawErrors={rawErrors}
       />

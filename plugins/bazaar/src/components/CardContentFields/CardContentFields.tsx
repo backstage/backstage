@@ -23,8 +23,11 @@ import {
   Typography,
   GridSize,
 } from '@material-ui/core';
+import { parseEntityRef } from '@backstage/catalog-model';
 import { Avatar, Link } from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
 import { AboutField } from '@backstage/plugin-catalog';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { StatusTag } from '../StatusTag';
 import { Member, BazaarProject } from '../../types';
 
@@ -49,6 +52,7 @@ export const CardContentFields = ({
   membersSize,
 }: Props) => {
   const classes = useStyles();
+  const catalogEntityRoute = useRouteRef(entityRouteRef);
 
   return (
     <div>
@@ -111,8 +115,14 @@ export const CardContentFields = ({
                         />
                         <Link
                           className={classes.break}
-                          to={`http://github.com/${member.userId}`}
                           target="_blank"
+                          to={
+                            member.userRef
+                              ? `${catalogEntityRoute(
+                                  parseEntityRef(member.userRef),
+                                )}`
+                              : `http://github.com/${member.userId}`
+                          }
                         >
                           {member?.userId}
                         </Link>

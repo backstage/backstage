@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { Duration } from 'luxon';
 import { readProviderConfigs } from './BitbucketCloudEntityProviderConfig';
 
 describe('readProviderConfigs', () => {
@@ -68,13 +69,22 @@ describe('readProviderConfigs', () => {
                 repoSlug: 'repoSlug.*filter',
               },
             },
+            providerWithSchedule: {
+              workspace: 'test-ws5',
+              schedule: {
+                frequency: 'PT30M',
+                timeout: {
+                  minutes: 3,
+                },
+              },
+            },
           },
         },
       },
     });
     const providerConfigs = readProviderConfigs(config);
 
-    expect(providerConfigs).toHaveLength(4);
+    expect(providerConfigs).toHaveLength(5);
     expect(providerConfigs[0]).toEqual({
       id: 'providerWorkspaceOnly',
       workspace: 'test-ws1',
@@ -109,6 +119,21 @@ describe('readProviderConfigs', () => {
       filters: {
         projectKey: undefined,
         repoSlug: /^repoSlug.*filter$/,
+      },
+    });
+    expect(providerConfigs[4]).toEqual({
+      id: 'providerWithSchedule',
+      workspace: 'test-ws5',
+      catalogPath: '/catalog-info.yaml',
+      filters: {
+        projectKey: undefined,
+        repoSlug: undefined,
+      },
+      schedule: {
+        frequency: Duration.fromISO('PT30M'),
+        timeout: {
+          minutes: 3,
+        },
       },
     });
   });

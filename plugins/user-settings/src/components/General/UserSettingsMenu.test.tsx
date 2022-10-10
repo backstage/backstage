@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
-import { fireEvent } from '@testing-library/react';
+import {
+  MockErrorApi,
+  renderInTestApp,
+  TestApiProvider,
+  renderWithEffects,
+  wrapInTestApp,
+} from '@backstage/test-utils';
+import { errorApiRef, identityApiRef } from '@backstage/core-plugin-api';
+import { fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import { UserSettingsMenu } from './UserSettingsMenu';
 
@@ -29,5 +36,30 @@ describe('<UserSettingsMenu />', () => {
     fireEvent.click(menuButton);
 
     expect(rendered.getByText('Sign Out')).toBeInTheDocument();
+  });
+
+  it('handles errors that occur when signing out', async () => {
+    const failingIdentityApi = {
+      signOut: jest.fn().mockRejectedValue(new Error('Logout error')),
+    };
+    const mockErrorApi = new MockErrorApi({ collect: true });
+    const rendered = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [errorApiRef, mockErrorApi],
+          [identityApiRef, failingIdentityApi],
+        ]}
+      >
+        <UserSettingsMenu />
+      </TestApiProvider>,
+    );
+
+    const menuButton = rendered.getByLabelText('more');
+    fireEvent.click(menuButton);
+    fireEvent.click(rendered.getByText('Sign Out'));
+
+    await waitFor(() => {
+      expect(mockErrorApi.getErrors()).toHaveLength(1);
+    });
   });
 });

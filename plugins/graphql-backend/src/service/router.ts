@@ -58,7 +58,7 @@ export async function createRouter(
   const router = Router();
 
   router.get('/health', (_, response) => {
-    response.send({ status: 'ok' });
+    response.json({ status: 'ok' });
   });
 
   const apolloMiddleware = server.getMiddleware({ path: '/' });

@@ -148,6 +148,15 @@ export const CatalogTable: {
           }
         | undefined,
     ): TableColumn<CatalogTableRow>;
+    createLabelColumn(
+      key: string,
+      options?:
+        | {
+            title?: string | undefined;
+            defaultValue?: string | undefined;
+          }
+        | undefined,
+    ): TableColumn<CatalogTableRow>;
   }>;
 };
 

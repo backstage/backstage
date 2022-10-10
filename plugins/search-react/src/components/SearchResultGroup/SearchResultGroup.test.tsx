@@ -291,6 +291,46 @@ describe('SearchResultGroup', () => {
     });
   });
 
+  it('Does not render result group if no results returned and disableRenderingWithNoResults prop is provided', async () => {
+    query.mockResolvedValueOnce({ results: [] });
+    await renderWithEffects(
+      wrapInTestApp(
+        <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
+          <SearchResultGroup
+            query={{ types: ['techdocs'] }}
+            icon={<DocsIcon titleAccess="Docs icon" />}
+            title="Documentation"
+            disableRenderingWithNoResults
+          />
+        </TestApiProvider>,
+      ),
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByText('Documentation')).not.toBeInTheDocument();
+    });
+  });
+
+  it('Should render custom component when no results returned', async () => {
+    query.mockResolvedValueOnce({ results: [] });
+    await renderWithEffects(
+      wrapInTestApp(
+        <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
+          <SearchResultGroup
+            query={{ types: ['techdocs'] }}
+            icon={<DocsIcon titleAccess="Docs icon" />}
+            title="Documentation"
+            noResultsComponent="No results were found"
+          />
+        </TestApiProvider>,
+      ),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('No results were found')).toBeInTheDocument();
+    });
+  });
+
   it('Shows an error panel when results rendering fails', async () => {
     query.mockRejectedValueOnce(new Error());
     await renderWithEffects(
