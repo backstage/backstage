@@ -30,6 +30,8 @@ import {
   EntitiesRequest,
   EntitiesResponse,
   EntityAncestryResponse,
+  EntityChangesRequest,
+  EntityChangesResponse,
   EntityFacetsRequest,
   EntityFacetsResponse,
   EntityFilter,
@@ -180,6 +182,10 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     }
 
     return this.entitiesCatalog.facets(request);
+  }
+
+  changes(request: EntityChangesRequest): Promise<EntityChangesResponse> {
+    return this.entitiesCatalog.changes(request);
   }
 
   private findParents(

@@ -28,6 +28,8 @@ import {
   EntitiesResponse,
   EntitiesSearchFilter,
   EntityAncestryResponse,
+  EntityChangesRequest,
+  EntityChangesResponse,
   EntityFacetsRequest,
   EntityFacetsResponse,
   EntityFilter,
@@ -42,6 +44,8 @@ import {
   DbSearchRow,
 } from '../database/tables';
 import { Stitcher } from '../stitching/Stitcher';
+
+const MAX_CHANGES_PER_RESPONSE = 100;
 
 function parsePagination(input?: EntityPagination): {
   limit?: number;
@@ -400,5 +404,28 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     }
 
     return { facets };
+  }
+
+  async changes(request: EntityChangesRequest): Promise<EntityChangesResponse> {
+    let query = this.database('final_entities')
+      .orderBy('change_index', 'asc')
+      .limit(MAX_CHANGES_PER_RESPONSE)
+      .select('entity_id', 'entity_ref', 'change_index', 'deleted_at');
+
+    if (request.offset) {
+      query = query.where('change_index', '>', request.offset);
+    }
+
+    const changes = await query;
+
+    const items = changes.map(row => ({
+      offset: row.change_index,
+      entityId: row.entity_id,
+      entityRef: row.entity_ref,
+    }));
+
+    return {
+      items,
+    };
   }
 }

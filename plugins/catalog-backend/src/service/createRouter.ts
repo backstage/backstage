@@ -23,7 +23,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { NotFoundError, serializeError } from '@backstage/errors';
+import { NotFoundError, serializeError, InputError } from '@backstage/errors';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
@@ -181,6 +181,21 @@ export async function createRouter(
         });
         res.status(200).json(response);
       });
+
+    router.get('/events', async (req, res) => {
+      let offset: number | undefined = undefined;
+      if (typeof req.query.offset === 'string') {
+        offset = parseInt(req.query.offset, 10);
+        if (Number.isNaN(offset)) {
+          throw new InputError(`Invalid offset`);
+        }
+      } else if (offset) {
+        throw new InputError(`Invalid offset`);
+      }
+
+      const changes = await entitiesCatalog.changes({ offset });
+      res.json(changes);
+    });
   }
 
   if (locationService) {

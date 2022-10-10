@@ -56,6 +56,57 @@ export class Stitcher {
     }
   }
 
+  async pruneDeletedEntities() {
+    const ticket = uuid();
+    // This selects all entities that have been deleted but not yet fully marked
+    // as deleted within the final_entities table.
+    //
+    // Stitching of processed entities will always take precedence over this,
+    // because when the stitch ticket is added it also atomically adds the
+    // entity_id back in, meaning we won't select that entity here.
+    let pendingDeletions = await this.database<DbFinalEntitiesRow>(
+      'final_entities',
+    )
+      .whereNull('entity_id')
+      .whereNull('deleted_at')
+      .update('stitch_ticket', ticket)
+      .returning(['entity_ref']);
+
+    // Returning is not supported by sqlite3
+    if (this.database.client.config.client.includes('sqlite3')) {
+      pendingDeletions = await this.database<DbFinalEntitiesRow>(
+        'final_entities',
+      )
+        .whereNull('entity_id')
+        .whereNull('deleted_at')
+        .andWhere('stitch_ticket', ticket)
+        .select(['entity_ref']);
+    }
+
+    for (const { entity_ref: entityRef } of pendingDeletions) {
+      try {
+        const count = await this.database<DbFinalEntitiesRow>('final_entities')
+          .where('entity_ref', entityRef)
+          .andWhere('stitch_ticket', ticket)
+          .update({
+            deleted_at: this.database.fn.now(),
+            final_entity: null,
+            hash: '',
+            change_index: this.nextChangeIndex(),
+          });
+        if (count === 1) {
+          this.logger.debug(`Entity ${entityRef} marked as deleted`);
+        }
+      } catch (error) {
+        this.logger.error(
+          `Failed to prune deleted entity ${entityRef}, ${stringifyError(
+            error,
+          )}`,
+        );
+      }
+    }
+  }
+
   private async stitchOne(entityRef: string): Promise<void> {
     const entityResult = await this.database<DbRefreshStateRow>('refresh_state')
       .where({ entity_ref: entityRef })
@@ -71,11 +122,12 @@ export class Stitcher {
     await this.database<DbFinalEntitiesRow>('final_entities')
       .insert({
         entity_id: entityResult[0].entity_id,
+        entity_ref: entityRef,
         hash: '',
         stitch_ticket: ticket,
       })
-      .onConflict('entity_id')
-      .merge(['stitch_ticket']);
+      .onConflict('entity_ref')
+      .merge(['stitch_ticket', 'entity_id']);
 
     // Selecting from refresh_state and final_entities should yield exactly
     // one row (except in abnormal cases where the stitch was invoked for
@@ -219,11 +271,11 @@ export class Stitcher {
       .update({
         final_entity: JSON.stringify(entity),
         hash,
+        deleted_at: null,
+        change_index: this.nextChangeIndex(),
       })
       .where('entity_id', entityId)
-      .where('stitch_ticket', ticket)
-      .onConflict('entity_id')
-      .merge(['final_entity', 'hash']);
+      .where('stitch_ticket', ticket);
 
     if (amountOfRowsChanged === 0) {
       this.logger.debug(
@@ -243,5 +295,14 @@ export class Stitcher {
       .where({ entity_id: entityId })
       .delete();
     await this.database.batchInsert('search', searchEntries, BATCH_SIZE);
+  }
+
+  private nextChangeIndex() {
+    if (this.database.client.config.client.includes('sqlite3')) {
+      return this.database.raw(
+        'COALESCE((SELECT MAX(change_index) FROM final_entities), 0) + 1',
+      );
+    }
+    return this.database.raw(`nextval('final_entities_change_index_seq')`);
   }
 }

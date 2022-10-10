@@ -35,6 +35,7 @@ export type ProgressTracker = ReturnType<typeof progressTracker>;
 
 export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
   private stopFunc?: () => void;
+  private pruneDeletionsTimeout?: NodeJS.Timeout;
 
   constructor(
     private readonly logger: Logger,
@@ -48,6 +49,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       errors: Error[];
     }) => Promise<void> | void,
     private readonly tracker: ProgressTracker = progressTracker(),
+    private readonly pruneDeletionsDelayMs: number = 1000,
   ) {}
 
   async start() {
@@ -240,12 +242,37 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
         }
       },
     });
+
+    const pruneDeletions = () => {
+      this.stitcher
+        .pruneDeletedEntities()
+        .catch(error => {
+          this.logger.warn('Failed to prune deleted entities', error);
+        })
+        .finally(() => {
+          if (this.pruneDeletionsTimeout) {
+            this.pruneDeletionsTimeout = setTimeout(
+              pruneDeletions,
+              this.pruneDeletionsDelayMs,
+            );
+          }
+        });
+    };
+
+    this.pruneDeletionsTimeout = setTimeout(
+      pruneDeletions,
+      this.pruneDeletionsDelayMs,
+    );
   }
 
   async stop() {
     if (this.stopFunc) {
       this.stopFunc();
       this.stopFunc = undefined;
+    }
+    if (this.pruneDeletionsTimeout) {
+      clearTimeout(this.pruneDeletionsTimeout);
+      delete this.pruneDeletionsTimeout;
     }
   }
 }
