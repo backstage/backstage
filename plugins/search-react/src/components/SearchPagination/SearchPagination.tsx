@@ -110,7 +110,7 @@ export const SearchPaginationBase = (props: SearchPaginationBaseProps) => {
     onPageCursorChange,
     pageLimit: rowsPerPage = 25,
     pageLimitLabel: labelRowsPerPage = 'Results per page:',
-    pageLimitText: labelDisplayedRows,
+    pageLimitText: labelDisplayedRows = ({ from, to }) => `${from}-${to}`,
     pageLimitOptions: rowsPerPageOptions,
     onPageLimitChange,
     ...rest

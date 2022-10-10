@@ -47,11 +47,15 @@ export const Default = () => {
 };
 
 export const CustomPageLimitLabel = () => {
-  return <SearchPagination pageLimitLabel="Page limit:" />;
+  return <SearchPagination pageLimitLabel="PRows per page:" />;
 };
 
 export const CustomPageLimitText = () => {
-  return <SearchPagination pageLimitText={({ from, to }) => `${from}-${to}`} />;
+  return (
+    <SearchPagination
+      pageLimitText={({ from, to }) => `${from}-${to} of more than ${to}`}
+    />
+  );
 };
 
 export const CustomPageLimitOptions = () => {

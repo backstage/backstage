@@ -47,7 +47,7 @@ describe('SearchPagination', () => {
 
     expect(screen.getByText('Results per page:')).toBeInTheDocument();
     expect(screen.getByText('25')).toBeInTheDocument();
-    expect(screen.getByText('1-25 of more than 25')).toBeInTheDocument();
+    expect(screen.getByText('1-25')).toBeInTheDocument();
     expect(screen.getByLabelText('Next page')).toBeEnabled();
     expect(screen.getByLabelText('Previous page')).toBeDisabled();
   });
@@ -88,12 +88,14 @@ describe('SearchPagination', () => {
     await renderWithEffects(
       <TestApiProvider apis={[[searchApiRef, { query }]]}>
         <SearchContextProvider>
-          <SearchPagination pageLimitText={({ from, to }) => `${from}-${to}`} />
+          <SearchPagination
+            pageLimitText={({ from, to }) => `${from}-${to} of more than ${to}`}
+          />
         </SearchContextProvider>
       </TestApiProvider>,
     );
 
-    expect(screen.getByText('1-25')).toBeInTheDocument();
+    expect(screen.getByText('1-25 of more than 25')).toBeInTheDocument();
   });
 
   it('Accept custom page limit options', async () => {
@@ -153,7 +155,7 @@ describe('SearchPagination', () => {
 
     await userEvent.click(screen.getByLabelText('Next page'));
 
-    expect(screen.getByText('51-75 of more than 75')).toBeInTheDocument();
+    expect(screen.getByText('51-75')).toBeInTheDocument();
 
     expect(query).toHaveBeenLastCalledWith(
       expect.objectContaining({
@@ -163,7 +165,7 @@ describe('SearchPagination', () => {
 
     await userEvent.click(screen.getByLabelText('Previous page'));
 
-    expect(screen.getByText('26-50 of more than 50')).toBeInTheDocument();
+    expect(screen.getByText('26-50')).toBeInTheDocument();
 
     expect(query).toHaveBeenLastCalledWith(
       expect.objectContaining({
