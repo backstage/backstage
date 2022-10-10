@@ -19,22 +19,33 @@ export type GraphQlPullRequest<T> = {
   };
 };
 
+export type Connection<T> = {
+  nodes: T;
+  pageInfo: {
+    hasNextPage: boolean;
+    endCursor?: string;
+  };
+};
+
 export type GraphQlPullRequests<T> = {
   repository: {
-    pullRequests: {
-      edges: T;
-      pageInfo: {
-        hasNextPage: boolean;
-        endCursor?: string;
-      };
-    };
+    pullRequests: Connection<T>;
+  };
+};
+
+export type GraphQlUserPullRequests<T> = {
+  user: {
+    pullRequests: Connection<T>;
   };
 };
 
 export type PullRequestsNumber = {
-  node: {
-    number: number;
-  };
+  number: number;
+};
+
+export type PullRequestsNumberAndOwner = {
+  number: number;
+  repository: Repository;
 };
 
 export type Review = {
@@ -57,11 +68,16 @@ export type Author = {
   name: string;
 };
 
+export type Repository = {
+  name: string;
+  owner: {
+    login: string;
+  };
+};
+
 export type PullRequest = {
   id: string;
-  repository: {
-    name: string;
-  };
+  repository: Repository;
   title: string;
   url: string;
   lastEditedAt: string;
@@ -83,6 +99,8 @@ export type PullRequestsColumn = {
   content: PullRequests;
 };
 
-export type PRCardFormating = 'compacted' | 'fullscreen' | 'draft';
+export type PRCardFormating = 'compacted' | 'fullscreen' | 'draft' | 'team';
 
 export type ReviewDecision = 'IN_PROGRESS' | 'APPROVED' | 'REVIEW_REQUIRED';
+
+export type PullRequestsSourceType = 'TeamRepositories' | 'TeamMembers';
