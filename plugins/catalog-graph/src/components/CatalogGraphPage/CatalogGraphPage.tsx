@@ -19,7 +19,6 @@ import {
   Content,
   ContentHeader,
   Header,
-  Link,
   Page,
   SupportButton,
 } from '@backstage/core-components';
@@ -103,19 +102,24 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const HeaderTitle = () => {
-  const showBackButton = document.referrer
-  const onBackClick = () => window.history.back()
+  const showBackButton = document.referrer;
+  const onBackClick = () => window.history.back();
 
-  return ( <>
-    {showBackButton && 
-      <IconButton size='small' onClick={onBackClick} data-testid="header-back-button">
-        <ArrowBackIcon  />
-      </IconButton>
-    }
-    Catalog Graph
-  </>
- )
-}
+  return (
+    <>
+      {showBackButton && (
+        <IconButton
+          size="small"
+          onClick={onBackClick}
+          data-testid="header-back-button"
+        >
+          <ArrowBackIcon />
+        </IconButton>
+      )}
+      Catalog Graph
+    </>
+  );
+};
 
 export const CatalogGraphPage = (props: {
   relationPairs?: RelationPairs;

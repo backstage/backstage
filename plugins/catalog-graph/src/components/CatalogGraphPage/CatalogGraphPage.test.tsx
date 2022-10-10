@@ -111,14 +111,12 @@ describe('<CatalogGraphPage/>', () => {
   afterEach(() => jest.resetAllMocks());
 
   test('should render without exploding', async () => {
-    const { getByText, findByText, findAllByTestId, queryByTestId } = await renderInTestApp(
-      wrapper,
-      {
+    const { getByText, findByText, findAllByTestId, queryByTestId } =
+      await renderInTestApp(wrapper, {
         mountedRoutes: {
           '/entity/{kind}/{namespace}/{name}': entityRouteRef,
         },
-      },
-    );
+      });
 
     expect(getByText('Catalog Graph')).toBeInTheDocument();
     expect(await findByText('b:d/c')).toBeInTheDocument();
@@ -229,24 +227,21 @@ describe('<CatalogGraphPage/>', () => {
   });
 
   test('should have back button when opened from another backstage page', async () => {
-    Object.defineProperty(document, 'referrer', {value: 'mockreferrer'})
-    window.history.back = jest.fn()
+    Object.defineProperty(document, 'referrer', { value: 'mockreferrer' });
+    window.history.back = jest.fn();
 
-    const { getByText, findByTestId } = await renderInTestApp(
-      wrapper,
-      {
-        mountedRoutes: {
-          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
-        },
+    const { getByText, findByTestId } = await renderInTestApp(wrapper, {
+      mountedRoutes: {
+        '/entity/{kind}/{namespace}/{name}': entityRouteRef,
       },
-    );
+    });
 
-    const backButton = await findByTestId('header-back-button')
+    const backButton = await findByTestId('header-back-button');
 
-    backButton.click()
+    backButton.click();
 
     expect(getByText('Catalog Graph')).toBeInTheDocument();
     expect(backButton).toBeInTheDocument();
-    expect(window.history.back).toHaveBeenCalledTimes(1)
+    expect(window.history.back).toHaveBeenCalledTimes(1);
   });
-})
+});
