@@ -143,7 +143,7 @@ This provider supports multiple organizations via unique provider IDs.
   Whether to validate locations that exist before emitting them.
   This option avoids generating locations for catalog info files that do not exist in the source repository.
   Defaults to `false`.
-  Due to limitations in the GitHub API's ability to query for repository objects, this option cannot be used in 
+  Due to limitations in the GitHub API's ability to query for repository objects, this option cannot be used in
   conjunction with wildcards in the `catalogPath`.
 
 ## GitHub API Rate Limits
