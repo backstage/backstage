@@ -27,6 +27,7 @@ describe('AuthorizedEntitiesCatalog', () => {
     removeEntityByUid: jest.fn(),
     entityAncestry: jest.fn(),
     facets: jest.fn(),
+    changes: jest.fn(),
   };
   const fakePermissionApi = {
     authorize: jest.fn(),
