@@ -34,6 +34,7 @@ export type GithubEntityProviderConfig = {
     topic?: GithubTopicFilters;
   };
   schedule?: TaskScheduleDefinition;
+  validateLocationsExist: boolean;
 };
 
 export type GithubTopicFilters = {
@@ -77,6 +78,16 @@ function readProviderConfig(
   const topicFilterExclude = config?.getOptionalStringArray(
     'filters.topic.exclude',
   );
+  const validateLocationsExist =
+    config?.getOptionalBoolean('validateLocationsExist') ?? false;
+
+  const catalogPathContainsWildcard = catalogPath.includes('*');
+
+  if (validateLocationsExist && catalogPathContainsWildcard) {
+    throw Error(
+      `Error while processing GitHub provider config. The catalog path ${catalogPath} contains a wildcard, which is incompatible with validation of locations existing before emitting them. Ensure that validateLocationsExist is set to false.`,
+    );
+  }
 
   const schedule = config.has('schedule')
     ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
@@ -98,6 +109,7 @@ function readProviderConfig(
       },
     },
     schedule,
+    validateLocationsExist,
   };
 }
 
