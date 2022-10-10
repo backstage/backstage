@@ -46,6 +46,7 @@
   },
   "version": "1.7.0-next.1",
   "dependencies": {
+    "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
     "@microsoft/api-documenter": "^7.17.11",
     "@microsoft/api-extractor": "^7.23.0",

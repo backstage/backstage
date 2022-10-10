@@ -64,6 +64,30 @@ const overviewContent = (
     {/* ...other entity-cards */}
 ```
 
+Add a **Bazaar overview card** to the homepage that displays either the latest projects or random projects. In `packages/app/src/components/home/HomePage.tsx` add:
+
+```diff
++ import { BazaarOverviewCard } from '@backstage/plugin-bazaar';
+
+export const homePage = (
+
+    <Page themeId="home">
+      <Content>
+       <Grid container spacing={3}>
+
++       <Grid item xs={12} md={6}>
++         <BazaarOverviewCard variant={'latest'} limit={4} />
++       </Grid>
+
++       <Grid item xs={12} md={6}>
++         <BazaarOverviewCard variant={'random'} limit={4} />
++       </Grid>
+
+        {/* ...other homepage items */}
+```
+
+Specify how many projects you want through the "limit" props. In the example above 4 cards is specified.
+
 ## How does the Bazaar work?
 
 ### Layout
@@ -71,6 +95,10 @@ const overviewContent = (
 The latest modified Bazaar projects are displayed in the Bazaar landing page, located at the Bazaar icon in the sidebar. Each project is represented as a card containing its most relevant data to give an overview of the project. It is also possible to sort in alphabetical order or on the number of members. Here you can also search or add project to the Bazaar.
 
 ![home](media/layout.png)
+
+The "BazaarOverviewCard" can be displayed in Backstage homepage.
+
+![home](media/overviewCard.png)
 
 ### Workflow
 
