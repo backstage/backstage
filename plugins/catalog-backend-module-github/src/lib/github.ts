@@ -285,6 +285,7 @@ export async function getOrganizationRepositories(
               __typename
               ... on Blob {
                 id
+                text
               }
             }
             url
