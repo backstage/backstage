@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useApi, useApiHolder } from '@backstage/core-plugin-api';
+import { useApiHolder } from '@backstage/core-plugin-api';
 import { JsonObject, JsonValue } from '@backstage/types';
 import {
   Stepper as MuiStepper,
@@ -31,7 +31,6 @@ import { createAsyncValidators } from './createAsyncValidators';
 import { useTemplateSchema } from './useTemplateSchema';
 import { ReviewState } from './ReviewState';
 import validator from '@rjsf/validator-ajv8';
-import { scaffolderApiRef } from '../../../api';
 
 const useStyles = makeStyles(theme => ({
   backButton: {

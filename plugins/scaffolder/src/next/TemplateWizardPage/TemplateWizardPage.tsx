@@ -38,7 +38,6 @@ import { Stepper } from './Stepper';
 import { BackstageTheme } from '@backstage/theme';
 import {
   nextRouteRef,
-  nextScaffolderTaskRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../../routes';
