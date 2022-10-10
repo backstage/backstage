@@ -102,6 +102,21 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const HeaderTitle = () => {
+  const showBackButton = document.referrer
+  const onBackClick = () => window.history.back()
+
+  return ( <>
+    {showBackButton && 
+      <IconButton size='small' onClick={onBackClick} data-testid="header-back-button">
+        <ArrowBackIcon  />
+      </IconButton>
+    }
+    Catalog Graph
+  </>
+ )
+}
+
 export const CatalogGraphPage = (props: {
   relationPairs?: RelationPairs;
   initialState?: {
@@ -171,7 +186,7 @@ export const CatalogGraphPage = (props: {
     <Page themeId="home">
       <Header
         title={<HeaderTitle />}
-        pageTitleOverride={'Catalog Graph'}
+        pageTitleOverride="Catalog Graph"
         subtitle={rootEntityNames.map(e => humanizeEntityRef(e)).join(', ')}
       />
       <Content stretch className={classes.content}>
@@ -257,18 +272,3 @@ export const CatalogGraphPage = (props: {
     </Page>
   );
 };
-
-const HeaderTitle = () => {
-  const showBackButton = document.referrer
-  const onBackClick = () => window.history.back()
-
-  return ( <>
-    {showBackButton && 
-      <IconButton size='small' onClick={onBackClick} data-testid="header-back-button">
-        <ArrowBackIcon  />
-      </IconButton>
-    }
-    {"Catalog Graph"}
-  </>
- )
-}
