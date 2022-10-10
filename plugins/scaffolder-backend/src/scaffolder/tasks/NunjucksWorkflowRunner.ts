@@ -354,30 +354,20 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 }
 
 function scaffoldingTracker() {
-  const taskSuccesses = createCounterMetric({
+  const taskCount = createCounterMetric({
     name: 'scaffolder_task_success_count',
     help: 'Count of succesful task runs',
-    labelNames: ['template', 'user'],
-  });
-  const taskErrors = createCounterMetric({
-    name: 'scaffolder_task_error_count',
-    help: 'Count of failed task runs',
-    labelNames: ['template', 'user'],
+    labelNames: ['template', 'user', 'result'],
   });
   const taskDuration = createHistogramMetric({
     name: 'scaffolder_task_duration',
     help: 'Duration of a task run',
     labelNames: ['template', 'result'],
   });
-  const stepSuccesses = createCounterMetric({
+  const stepCount = createCounterMetric({
     name: 'scaffolder_step_success_count',
     help: 'Count of successful step runs',
-    labelNames: ['template', 'step'],
-  });
-  const stepErrors = createCounterMetric({
-    name: 'scaffolder_step_error_count',
-    help: 'Count of failed step runs',
-    labelNames: ['template', 'step'],
+    labelNames: ['template', 'step', 'result'],
   });
   const stepDuration = createHistogramMetric({
     name: 'scaffolder_step_duration',
@@ -405,9 +395,10 @@ function scaffoldingTracker() {
     }
 
     function markSuccessful() {
-      taskSuccesses.inc({
+      taskCount.inc({
         template,
         user,
+        result: 'ok'
       });
       taskTimer({ result: 'ok' });
     }
@@ -417,9 +408,10 @@ function scaffoldingTracker() {
         stepId: step.id,
         status: 'failed',
       });
-      taskErrors.inc({
+      taskCount.inc({
         template,
         user,
+        result: 'failed'
       });
       taskTimer({ result: 'failed' });
     }
@@ -448,17 +440,19 @@ function scaffoldingTracker() {
         stepId: step.id,
         status: 'completed',
       });
-      stepSuccesses.inc({
+      stepCount.inc({
         template,
         step: step.name,
+        result: 'ok'
       });
       stepTimer({ result: 'ok' });
     }
 
     function markFailed() {
-      stepErrors.inc({
+      stepCount.inc({
         template,
         step: step.name,
+        result: 'failed'
       });
       stepTimer({ result: 'failed' });
     }
