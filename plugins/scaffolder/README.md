@@ -79,6 +79,48 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
     </Sidebar>
 ```
 
+### Troubleshooting
+
+In case if you encountered with the [issue of closing EventStream](https://github.com/backstage/backstage/issues/5535)
+which auto-updates logs during the task execution, you can enable long polling. In order to you it, you have to create
+in your codebase file in this location `packages/app/src/apis.ts` where you register `ScaffolderClient` with an extra
+parameter `useLongPollingLogs: true`. By default, it is `false`.
+
+```typescript
+import {
+  createApiFactory,
+  discoveryApiRef,
+  fetchApiRef,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
+
+import {
+  scaffolderApiRef,
+  ScaffolderClient,
+} from '@backstage/plugin-scaffolder';
+
+createApiFactory({
+  api: scaffolderApiRef,
+  deps: {
+    discoveryApi: discoveryApiRef,
+    identityApi: identityApiRef,
+    scmIntegrationsApi: scmIntegrationsApiRef,
+    fetchApi: fetchApiRef,
+  },
+  factory: ({ scmIntegrationsApi, discoveryApi, identityApi, fetchApi }) =>
+    new ScaffolderClient({
+      discoveryApi,
+      identityApi,
+      scmIntegrationsApi,
+      fetchApi,
+      useLongPollingLogs: true,
+    }),
+});
+```
+
+Api factory creates the API and adds it to a registry. Because this file is processed before the default scaffolder
+api registry, it is added to the registry prior and overrides the default behavior.
+
 ## Links
 
 - [scaffolder-backend](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend)
