@@ -163,6 +163,7 @@ export class GitHubEntityProvider implements EntityProvider {
   private async findCatalogFiles(): Promise<Repository[]> {
     const organization = this.config.organization;
     const host = this.integration.host;
+    const catalogPath = this.config.catalogPath;
     const orgUrl = `https://${host}/${organization}`;
 
     const { headers } = await this.githubCredentialsProvider.getCredentials({
@@ -177,7 +178,17 @@ export class GitHubEntityProvider implements EntityProvider {
     const { repositories } = await getOrganizationRepositories(
       client,
       organization,
+      catalogPath,
     );
+
+    if (this.config.validateLocationsExist) {
+      return repositories.filter(repository => {
+        return (
+          repository.catalogInfoFile?.__typename === 'Blob' &&
+          repository.catalogInfoFile.text !== ''
+        );
+      });
+    }
 
     return repositories;
   }
