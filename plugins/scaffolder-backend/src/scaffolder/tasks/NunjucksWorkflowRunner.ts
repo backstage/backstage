@@ -398,7 +398,7 @@ function scaffoldingTracker() {
       taskCount.inc({
         template,
         user,
-        result: 'ok'
+        result: 'ok',
       });
       taskTimer({ result: 'ok' });
     }
@@ -411,7 +411,7 @@ function scaffoldingTracker() {
       taskCount.inc({
         template,
         user,
-        result: 'failed'
+        result: 'failed',
       });
       taskTimer({ result: 'failed' });
     }
@@ -443,7 +443,7 @@ function scaffoldingTracker() {
       stepCount.inc({
         template,
         step: step.name,
-        result: 'ok'
+        result: 'ok',
       });
       stepTimer({ result: 'ok' });
     }
@@ -452,7 +452,7 @@ function scaffoldingTracker() {
       stepCount.inc({
         template,
         step: step.name,
-        result: 'failed'
+        result: 'failed',
       });
       stepTimer({ result: 'failed' });
     }
