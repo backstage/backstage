@@ -19,6 +19,7 @@ import {
   Content,
   ContentHeader,
   Header,
+  Link,
   Page,
   SupportButton,
 } from '@backstage/core-components';
@@ -28,7 +29,9 @@ import {
   humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
 import { Grid, makeStyles, Paper, Typography } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import { ToggleButton } from '@material-ui/lab';
 import React, { MouseEvent, useCallback } from 'react';
@@ -167,7 +170,8 @@ export const CatalogGraphPage = (props: {
   return (
     <Page themeId="home">
       <Header
-        title="Catalog Graph"
+        title={<HeaderTitle />}
+        pageTitleOverride={'Catalog Graph'}
         subtitle={rootEntityNames.map(e => humanizeEntityRef(e)).join(', ')}
       />
       <Content stretch className={classes.content}>
@@ -253,3 +257,18 @@ export const CatalogGraphPage = (props: {
     </Page>
   );
 };
+
+const HeaderTitle = () => {
+  const showBackButton = document.referrer
+  const onBackClick = () => window.history.back()
+
+  return ( <>
+    {showBackButton && 
+      <IconButton size='small' onClick={onBackClick} data-testid="header-back-button">
+        <ArrowBackIcon  />
+      </IconButton>
+    }
+    {"Catalog Graph"}
+  </>
+ )
+}
