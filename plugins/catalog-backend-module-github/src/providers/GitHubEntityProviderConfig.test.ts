@@ -101,6 +101,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
       },
+      validateLocationsExist: false,
     });
     expect(providerConfigs[1]).toEqual({
       id: 'providerCustomCatalogPath',
@@ -115,6 +116,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
       },
+      validateLocationsExist: false,
     });
     expect(providerConfigs[2]).toEqual({
       id: 'providerWithRepositoryFilter',
@@ -129,6 +131,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
       },
+      validateLocationsExist: false,
     });
     expect(providerConfigs[3]).toEqual({
       id: 'providerWithBranchFilter',
@@ -143,6 +146,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
       },
+      validateLocationsExist: false,
     });
     expect(providerConfigs[4]).toEqual({
       id: 'providerWithTopicFilter',
@@ -157,6 +161,7 @@ describe('readProviderConfigs', () => {
           exclude: ['backstage-exclude'],
         },
       },
+      validateLocationsExist: false,
     });
     expect(providerConfigs[5]).toEqual({
       id: 'providerWithHost',
@@ -171,6 +176,38 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
       },
+      validateLocationsExist: false,
     });
+  });
+
+  it('defaults validateLocationsExist to false', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+          },
+        },
+      },
+    });
+    const providerConfigs = readProviderConfigs(config);
+
+    expect(providerConfigs[0].validateLocationsExist).toEqual(false);
+  });
+
+  it('throws an error when a wildcard catalog path is configured with validation of locations', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+            validateLocationsExist: true,
+            catalogPath: '/*/catalog-info.yaml',
+          },
+        },
+      },
+    });
+
+    expect(() => readProviderConfigs(config)).toThrow();
   });
 });
