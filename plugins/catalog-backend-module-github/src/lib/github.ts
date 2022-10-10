@@ -273,7 +273,14 @@ export async function getOrganizationRepositories(
   org: string,
   catalogPath: string,
 ): Promise<{ repositories: Repository[] }> {
-  const catalogPathRef = `HEAD:${catalogPath}`;
+  let relativeCatalogPathRef: string;
+  // We must strip the leading slash or the query for objects does not work
+  if (catalogPath.startsWith('/')) {
+    relativeCatalogPathRef = catalogPath.substring(1);
+  } else {
+    relativeCatalogPathRef = catalogPath;
+  }
+  const catalogPathRef = `HEAD:${relativeCatalogPathRef}`;
   const query = `
     query repositories($org: String!, $catalogPathRef: String!, $cursor: String) {
       repositoryOwner(login: $org) {
