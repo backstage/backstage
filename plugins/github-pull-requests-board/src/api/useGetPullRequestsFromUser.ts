@@ -15,30 +15,28 @@
  */
 import React from 'react';
 
-import { GraphQlPullRequests, PullRequestsNumber } from '../utils/types';
+import {
+  GraphQlUserPullRequests,
+  PullRequestsNumberAndOwner,
+} from '../utils/types';
 import { useOctokitGraphQl } from './useOctokitGraphQl';
 
 const PULL_REQUEST_LIMIT = 10;
 const GITHUB_GRAPHQL_MAX_ITEMS = 100;
 
-export const useGetPullRequestsFromRepository = () => {
+export const useGetPullRequestsFromUser = () => {
   const graphql =
-    useOctokitGraphQl<GraphQlPullRequests<PullRequestsNumber[]>>();
+    useOctokitGraphQl<GraphQlUserPullRequests<PullRequestsNumberAndOwner[]>>();
 
   const fn = React.useRef(
     async (
-      repo: string,
+      userLogin: string,
+      organization?: string,
       pullRequestLimit?: number,
-    ): Promise<PullRequestsNumber[]> => {
+    ): Promise<PullRequestsNumberAndOwner[]> => {
       const limit = pullRequestLimit ?? PULL_REQUEST_LIMIT;
-      const [organisation, repositoryName] = repo.split('/');
 
-      return await getPullRequestNodes(
-        graphql,
-        repositoryName,
-        organisation,
-        limit,
-      );
+      return await getPullRequestNodes(graphql, userLogin, limit, organization);
     },
   );
 
@@ -49,27 +47,30 @@ async function getPullRequestNodes(
   graphql: (
     path: string,
     options?: any,
-  ) => Promise<GraphQlPullRequests<PullRequestsNumber[]>>,
-  repositoryName: string,
-  organisation: string,
+  ) => Promise<GraphQlUserPullRequests<PullRequestsNumberAndOwner[]>>,
+  userLogin: string,
   pullRequestLimit: number,
-): Promise<PullRequestsNumber[]> {
-  const pullRequestNodes: PullRequestsNumber[] = [];
-  let result: GraphQlPullRequests<PullRequestsNumber[]> | undefined = undefined;
+  organization?: string,
+): Promise<PullRequestsNumberAndOwner[]> {
+  const pullRequestNodes: PullRequestsNumberAndOwner[] = [];
+  let result:
+    | GraphQlUserPullRequests<PullRequestsNumberAndOwner[]>
+    | undefined = undefined;
 
   do {
     result = await graphql(
       `
-        query (
-          $name: String!
-          $owner: String!
-          $first: Int
-          $endCursor: String
-        ) {
-          repository(name: $name, owner: $owner) {
+        query ($login: String!, $first: Int, $endCursor: String) {
+          user(login: $login) {
             pullRequests(states: OPEN, first: $first, after: $endCursor) {
               nodes {
                 number
+                repository {
+                  name
+                  owner {
+                    login
+                  }
+                }
               }
               pageInfo {
                 hasNextPage
@@ -80,22 +81,28 @@ async function getPullRequestNodes(
         }
       `,
       {
-        name: repositoryName,
-        owner: organisation,
+        login: userLogin,
         first:
           pullRequestLimit > GITHUB_GRAPHQL_MAX_ITEMS
             ? GITHUB_GRAPHQL_MAX_ITEMS
             : pullRequestLimit,
         endCursor: result
-          ? result.repository.pullRequests.pageInfo.endCursor
+          ? result.user.pullRequests.pageInfo.endCursor
           : undefined,
       },
     );
 
-    pullRequestNodes.push(...result.repository.pullRequests.nodes);
+    pullRequestNodes.push(
+      ...result.user.pullRequests.nodes.filter(
+        edge =>
+          !organization ||
+          edge?.repository?.owner?.login?.toLocaleLowerCase('en-US') ===
+            organization.toLocaleLowerCase('en-US'),
+      ),
+    );
 
     if (pullRequestNodes.length >= pullRequestLimit) return pullRequestNodes;
-  } while (result.repository.pullRequests.pageInfo.hasNextPage);
+  } while (result.user.pullRequests.pageInfo.hasNextPage);
 
   return pullRequestNodes;
 }
