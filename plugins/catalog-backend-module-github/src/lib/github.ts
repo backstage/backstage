@@ -65,6 +65,11 @@ export type Repository = {
   defaultBranchRef: {
     name: string;
   } | null;
+  catalogInfoFile: {
+    __typename: string;
+    id: string;
+    text: string;
+  } | null;
 };
 
 type RepositoryTopics = {
@@ -266,14 +271,22 @@ export async function getOrganizationTeams(
 export async function getOrganizationRepositories(
   client: typeof graphql,
   org: string,
+  catalogPath: string,
 ): Promise<{ repositories: Repository[] }> {
+  const catalogPathRef = `HEAD:${catalogPath}`;
   const query = `
-    query repositories($org: String!, $cursor: String) {
+    query repositories($org: String!, $catalogPathRef: String!, $cursor: String) {
       repositoryOwner(login: $org) {
         login
         repositories(first: 100, after: $cursor) {
           nodes {
             name
+            catalogInfoFile: object(expression: $catalogPathRef) {
+              __typename
+              ... on Blob {
+                id
+              }
+            }
             url
             isArchived
             repositoryTopics(first: 100) {
@@ -302,7 +315,7 @@ export async function getOrganizationRepositories(
     query,
     r => r.repositoryOwner?.repositories,
     x => x,
-    { org },
+    { org, catalogPathRef },
   );
 
   return { repositories };

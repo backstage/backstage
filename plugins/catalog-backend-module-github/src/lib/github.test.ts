@@ -213,6 +213,7 @@ describe('github', () => {
                 defaultBranchRef: {
                   name: 'main',
                 },
+                catalogInfoFile: null,
               },
               {
                 name: 'demo',
@@ -221,6 +222,11 @@ describe('github', () => {
                 repositoryTopics: { nodes: [] },
                 defaultBranchRef: {
                   name: 'main',
+                },
+                catalogInfoFile: {
+                  __typename: 'Blob',
+                  id: 'acb123',
+                  text: 'some yaml',
                 },
               },
             ],
@@ -243,6 +249,7 @@ describe('github', () => {
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
           },
           {
             name: 'demo',
@@ -251,6 +258,11 @@ describe('github', () => {
             repositoryTopics: { nodes: [] },
             defaultBranchRef: {
               name: 'main',
+            },
+            catalogInfoFile: {
+              __typename: 'Blob',
+              id: 'acb123',
+              text: 'some yaml',
             },
           },
         ],
@@ -262,9 +274,9 @@ describe('github', () => {
         ),
       );
 
-      await expect(getOrganizationRepositories(graphql, 'a')).resolves.toEqual(
-        output,
-      );
+      await expect(
+        getOrganizationRepositories(graphql, 'a', 'catalog-info.yaml'),
+      ).resolves.toEqual(output);
     });
   });
 });
