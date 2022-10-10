@@ -14,16 +14,26 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Page, Header, Content } from '@backstage/core-components';
 import { useTaskEventStream } from '../../components/hooks/useEventStream';
 import { useParams } from 'react-router';
+import { Box, Paper } from '@material-ui/core';
+import { Stepper } from './Stepper';
 
 export const TaskPage = () => {
   const { taskId } = useParams();
   // check that task Id actually exists, and that it's valid. otherwise redirect to something more useful.
-
   const taskStream = useTaskEventStream(taskId!);
+  const steps = useMemo(
+    () =>
+      taskStream.task?.spec.steps.map(step => ({
+        ...step,
+        ...taskStream?.steps?.[step.id],
+      })) ?? [],
+    [taskStream],
+  );
+
   return (
     <Page themeId="website">
       <Header
@@ -32,7 +42,11 @@ export const TaskPage = () => {
         subtitle="View the status of a task"
       />
       <Content>
-        <p>Hey</p>
+        <Paper>
+          <Box padding={2}>
+            <Stepper steps={steps} />
+          </Box>
+        </Paper>
       </Content>
     </Page>
   );

@@ -25,7 +25,7 @@ import {
 import { useApi } from '@backstage/core-plugin-api';
 import { Subscription } from '@backstage/types';
 
-type Step = {
+export type Step = {
   id: string;
   status: ScaffolderTaskStatus;
   endedAt?: string;
