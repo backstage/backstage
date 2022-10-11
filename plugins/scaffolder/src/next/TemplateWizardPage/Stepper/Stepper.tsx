@@ -96,9 +96,9 @@ export const Stepper = (props: StepperProps) => {
 
     const returnedValidation = await validation(formData);
 
-    const hasErrors = Object.values(returnedValidation).some(i => {
-      return i.__errors?.length! > 0 ?? false;
-    });
+    const hasErrors = Object.values(returnedValidation).some(
+      i => i.__errors?.length,
+    );
 
     if (hasErrors) {
       setErrors(returnedValidation);
