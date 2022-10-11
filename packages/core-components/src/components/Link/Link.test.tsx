@@ -24,8 +24,8 @@ import {
 import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
 import { isExternalUri, Link, useResolvedPath } from './Link';
 import { Route, Routes } from 'react-router';
-import { ConfigReader } from '@backstage/config';
 import { renderHook, WrapperComponent } from '@testing-library/react-hooks';
+import { ConfigReader } from '@backstage/config';
 
 describe('<Link />', () => {
   it('navigates using react-router', async () => {
