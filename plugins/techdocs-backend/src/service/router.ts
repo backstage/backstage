@@ -109,7 +109,8 @@ export async function createRouter(
 ): Promise<express.Router> {
   const router = Router();
   const { publisher, config, logger, discovery } = options;
-  const catalogClient = options.catalogClient ?? new CatalogClient({ discoveryApi: discovery });
+  const catalogClient =
+    options.catalogClient ?? new CatalogClient({ discoveryApi: discovery });
   const docsBuildStrategy =
     options.docsBuildStrategy ?? DefaultDocsBuildStrategy.fromConfig(config);
   const buildLogTransport =
