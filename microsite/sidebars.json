@@ -226,6 +226,7 @@
       "plugins/composability",
       "plugins/customization",
       "plugins/analytics",
+      "plugins/feature-flags",
       {
         "type": "subcategory",
         "label": "Backends and APIs",
