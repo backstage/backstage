@@ -46,7 +46,7 @@ const testIntegration = () =>
         description: 'Test rule 2',
         resourceType: 'test-resource',
         paramsSchema: z.object({
-          foo: z.string(),
+          foo: z.string().optional(),
         }),
         apply: (_resource: any) => false,
         toQuery: params => ({
@@ -76,12 +76,10 @@ describe('createConditionExports', () => {
         },
       });
 
-      expect(conditions.testRule2({ foo: 'baz' })).toEqual({
+      expect(conditions.testRule2({})).toEqual({
         rule: 'testRule2',
         resourceType: 'test-resource',
-        params: {
-          foo: 'baz',
-        },
+        params: {},
       });
     });
   });
