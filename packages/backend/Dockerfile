@@ -39,7 +39,7 @@ COPY --chown=node:node yarn.lock package.json packages/backend/dist/skeleton.tar
 RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 
 # Note that this install is not immutable, which is one of the reasons we don't recommend Yarn 3 yet
-RUN --mount=type=cache,uid=1000,gid=1000,target=/home/node/.yarn/berry/cache,sharing=locked \
+RUN --mount=type=cache,target=/home/node/.yarn/berry/cache,sharing=locked,uid=1000,gid=1000 \
     yarn workspaces focus --all --production
 
 # Then copy the rest of the backend bundle, along with any other files we might want.
