@@ -81,7 +81,7 @@ export const adjustQuadrants = (
     },
   ];
 
-  return quadrants.slice().map((quadrant, index) => {
+  return quadrants.map((quadrant, index) => {
     const legendParam = legendParams[index % 4];
 
     return {
@@ -100,14 +100,14 @@ export const adjustQuadrants = (
 };
 
 export const adjustEntries = (
-  _entries: Entry[],
+  entries: Entry[],
   quadrants: Quadrant[],
   rings: Ring[],
   radius: number,
   activeEntry?: Entry,
-) => {
+): Entry[] => {
   let seed = 42;
-  const entries = _entries.map((entry, index) => {
+  const adjustedEntries = entries.map((entry, index) => {
     const quadrant = quadrants.find(q => {
       const match =
         typeof entry.quadrant === 'object' ? entry.quadrant.id : entry.quadrant;
@@ -145,7 +145,7 @@ export const adjustEntries = (
   });
 
   const simulation = forceSimulation()
-    .nodes(entries)
+    .nodes(adjustedEntries)
     .velocityDecay(0.19)
     .force('collision', forceCollide().radius(12).strength(0.85))
     .stop();
@@ -160,7 +160,7 @@ export const adjustEntries = (
   ) {
     simulation.tick();
 
-    for (const entry of entries) {
+    for (const entry of adjustedEntries) {
       if (entry.segment) {
         entry.x = entry.segment.clipx(entry);
         entry.y = entry.segment.clipy(entry);
@@ -168,11 +168,11 @@ export const adjustEntries = (
     }
   }
 
-  return entries;
+  return adjustedEntries;
 };
 
 export const adjustRings = (rings: Ring[], radius: number) =>
-  rings.slice().map((ring, index) => ({
+  rings.map((ring, index) => ({
     ...ring,
     index,
     outerRadius: ((index + 2) / (rings.length + 1)) * radius,
