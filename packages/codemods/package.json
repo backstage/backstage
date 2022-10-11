@@ -1,7 +1,7 @@
 {
   "name": "@backstage/codemods",
   "description": "A collection of codemods for Backstage projects",
-  "version": "0.1.40-next.1",
+  "version": "0.1.40-next.2",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js"

@@ -1,5 +1,12 @@
 # @backstage/config
 
+## 1.0.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+
 ## 1.0.3-next.1
 
 ### Patch Changes

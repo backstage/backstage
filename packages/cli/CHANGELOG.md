@@ -1,5 +1,18 @@
 # @backstage/cli
 
+## 0.20.0-next.2
+
+### Patch Changes
+
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.2
+  - @backstage/config-loader@1.1.5-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/release-manifests@0.0.6
+  - @backstage/types@1.0.0
+
 ## 0.20.0-next.1
 
 ### Patch Changes

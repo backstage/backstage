@@ -44,7 +44,7 @@
     "@types/react": "^17",
     "@types/react-dom": "^17"
   },
-  "version": "1.7.0-next.1",
+  "version": "1.7.0-next.2",
   "dependencies": {
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",

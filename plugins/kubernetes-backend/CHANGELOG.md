@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.7.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/plugin-auth-node@0.2.6-next.2
+  - @backstage/catalog-client@1.1.1-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/plugin-kubernetes-common@0.4.3-next.2
+
 ## 0.7.3-next.1
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/create-app
 
+## 0.4.32-next.2
+
+### Patch Changes
+
+- 01dff06be4: Leverage cache mounts in Dockerfile during `yarn install ...` and `apt-get ...` commands to speed up repeated builds.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
 ## 0.4.32-next.1
 
 ### Patch Changes

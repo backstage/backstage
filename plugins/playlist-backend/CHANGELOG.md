@@ -1,5 +1,39 @@
 # @backstage/plugin-playlist-backend
 
+## 0.2.0-next.2
+
+### Minor Changes
+
+- eb25f7e12d: **BREAKING** The exported permission rules have changed to reflect the breaking changes made to the PermissionRule type.
+
+  For example, the `playlistConditions.isOwner` API has changed from:
+
+  ```ts
+  playlistConditions.isOwner(['user:default/me', 'group:default/owner']);
+  ```
+
+  to:
+
+  ```ts
+  playlistConditions.isOwner({
+    owners: ['user:default/me', 'group:default/owner'],
+  });
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/plugin-permission-common@0.7.0-next.2
+  - @backstage/plugin-permission-node@0.7.0-next.2
+  - @backstage/backend-test-utils@0.1.29-next.2
+  - @backstage/plugin-auth-node@0.2.6-next.2
+  - @backstage/plugin-playlist-common@0.1.1-next.2
+  - @backstage/catalog-client@1.1.1-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+
 ## 0.1.1-next.1
 
 ### Patch Changes

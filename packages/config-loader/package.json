@@ -1,7 +1,7 @@
 {
   "name": "@backstage/config-loader",
   "description": "Config loading functionality used by Backstage backend, and CLI",
-  "version": "1.1.5-next.1",
+  "version": "1.1.5-next.2",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
