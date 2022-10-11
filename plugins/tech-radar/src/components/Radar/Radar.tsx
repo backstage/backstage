@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import type { Entry, Quadrant, Ring } from '../../utils/types';
 import RadarPlot from '../RadarPlot';
 import { adjustEntries, adjustQuadrants, adjustRings } from './utils';
