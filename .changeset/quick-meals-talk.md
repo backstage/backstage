@@ -2,7 +2,7 @@
 '@backstage/plugin-playlist-backend': minor
 ---
 
-**BREAKING** Due to the changes made in the Permission framework. The playlist backends permission rules have change to reflect this.
+**BREAKING** The exported permission rules have changed to reflect the breaking changes made to the PermissionRule type.
 
 As an example the `playlistConditions.isOwner` API has changed from
 
