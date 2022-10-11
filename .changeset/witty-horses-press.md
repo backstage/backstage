@@ -2,4 +2,4 @@
 '@backstage/plugin-techdocs': minor
 ---
 
-feat: tech doc reader page hader now has a explicit label for code icon
+Updated TechDocs header to include label for source code icon and updated label to reflect Kind name

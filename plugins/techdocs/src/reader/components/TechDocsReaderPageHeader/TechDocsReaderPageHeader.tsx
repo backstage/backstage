@@ -17,6 +17,7 @@
 import React, { PropsWithChildren, useEffect } from 'react';
 import Helmet from 'react-helmet';
 
+import { Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import CodeIcon from '@material-ui/icons/Code';
 
@@ -37,7 +38,6 @@ import { Header, HeaderLabel } from '@backstage/core-components';
 import { useRouteRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from '../../../routes';
-import { Grid } from '@material-ui/core';
 
 const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
 
@@ -103,7 +103,7 @@ export const TechDocsReaderPageHeader = (
   const labels = (
     <>
       <HeaderLabel
-        label="Entity"
+        label={entityMetadata?.kind || 'Entity'}
         value={
           <EntityRefLink
             color="inherit"
