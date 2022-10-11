@@ -42,6 +42,14 @@ export interface Config {
        * @visibility frontend
        */
       allowedIframeHosts?: string[];
+      /**
+       * Allows extra save links
+       * Example:
+       *  saveLinks: ["stylesheets/extra.css"]
+       *  this will allow all links which match the given path in the href attribute
+       * @visibility frontend
+       */
+      saveLinks?: string[];
     };
   };
 }

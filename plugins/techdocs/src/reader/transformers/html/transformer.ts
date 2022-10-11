@@ -42,8 +42,9 @@ export const useSanitizerTransformer = (): Transformer => {
   return useCallback(
     async (dom: Element) => {
       const hosts = config?.getOptionalStringArray('allowedIframeHosts');
+      const saveLinks = config?.getOptionalStringArray('saveLinks');
 
-      DOMPurify.addHook('beforeSanitizeElements', removeUnsafeLinks);
+      DOMPurify.addHook('beforeSanitizeElements', removeUnsafeLinks(saveLinks));
       const tags = ['link'];
 
       if (hosts) {

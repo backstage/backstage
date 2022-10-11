@@ -422,6 +422,18 @@ techdocs:
 This way, all iframes where the host of src attribute is in the
 `sanitizer.allowedIframeHosts` list will be displayed.
 
+To add additional css links you can add `techdocs.sanitizer.saveLinks` configuration of your `app-config.yaml`
+
+E.g.
+
+```yaml
+techdocs:
+  sanitizer:
+    saveLinks:
+      - stylesheets
+      - stylesheets/extra.css
+```
+
 ## How to add Mermaid support in TechDocs
 
 To add `Mermaid` support in Techdocs, you can use [`kroki`](https://kroki.io)

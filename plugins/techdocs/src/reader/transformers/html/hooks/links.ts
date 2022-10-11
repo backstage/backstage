@@ -27,25 +27,32 @@ const isLink = (node: Element) => node.nodeName === 'LINK';
 
 /**
  * Checks whether a link is safe or not.
+ * @param saveLinks - list of allowed links.
  * @param node - is an link element.
  * @returns true when link is mkdocs css, google fonts or gstatic fonts.
  */
-const isSafe = (node: Element) => {
+const isSafe = (saveLinks: string[] | undefined, node: Element) => {
   const href = node?.getAttribute('href') || '';
   const isMkdocsCss = href.match(MKDOCS_CSS);
   const isGoogleFonts = href.match(GOOGLE_FONTS);
   const isGstaticFonts = href.match(GSTATIC_FONTS);
+  if (saveLinks) {
+    if (saveLinks.filter(i => href.match(i)).length > 0) {
+      return true;
+    }
+  }
   return isMkdocsCss || isGoogleFonts || isGstaticFonts;
 };
 
 /**
  * Function that removes unsafe link nodes.
+ * @param saveLinks - list of allowed links.
  * @param node - can be any element.
- * @param hosts - list of allowed hosts.
  */
-export const removeUnsafeLinks = (node: Element) => {
-  if (isLink(node) && !isSafe(node)) {
-    node.remove();
-  }
-  return node;
-};
+export const removeUnsafeLinks =
+  (saveLinks: string[] | undefined) => (node: Element) => {
+    if (isLink(node) && !isSafe(saveLinks, node)) {
+      node.remove();
+    }
+    return node;
+  };
