@@ -4,7 +4,7 @@
 
 **BREAKING** The exported permission rules have changed to reflect the breaking changes made to the PermissionRule type.
 
-As an example the `playlistConditions.isOwner` API has changed from
+For example, the `playlistConditions.isOwner` API has changed from:
 
 ```ts
 playlistConditions.isOwner(['user:default/me', 'group:default/owner']);
