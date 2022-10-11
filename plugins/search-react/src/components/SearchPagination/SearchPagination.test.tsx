@@ -76,7 +76,7 @@ describe('SearchPagination', () => {
     await renderWithEffects(
       <TestApiProvider apis={[[searchApiRef, { query }]]}>
         <SearchContextProvider>
-          <SearchPagination pageLimitLabel={label} />
+          <SearchPagination limitLabel={label} />
         </SearchContextProvider>
       </TestApiProvider>,
     );
@@ -84,12 +84,24 @@ describe('SearchPagination', () => {
     expect(screen.getByText(label)).toBeInTheDocument();
   });
 
+  it('Show the total in text', async () => {
+    await renderWithEffects(
+      <TestApiProvider apis={[[searchApiRef, { query }]]}>
+        <SearchContextProvider>
+          <SearchPagination total={100} />
+        </SearchContextProvider>
+      </TestApiProvider>,
+    );
+
+    expect(screen.getByText('of 100')).toBeInTheDocument();
+  });
+
   it('Accept custom page limit text', async () => {
     await renderWithEffects(
       <TestApiProvider apis={[[searchApiRef, { query }]]}>
         <SearchContextProvider>
           <SearchPagination
-            pageLimitText={({ from, to }) => `${from}-${to} of more than ${to}`}
+            limitText={({ from, to }) => `${from}-${to} of more than ${to}`}
           />
         </SearchContextProvider>
       </TestApiProvider>,
@@ -102,7 +114,7 @@ describe('SearchPagination', () => {
     await renderWithEffects(
       <TestApiProvider apis={[[searchApiRef, { query }]]}>
         <SearchContextProvider>
-          <SearchPagination pageLimitOptions={[5, 10, 20, 25]} />
+          <SearchPagination limitOptions={[5, 10, 20, 25]} />
         </SearchContextProvider>
       </TestApiProvider>,
     );

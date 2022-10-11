@@ -222,13 +222,14 @@ export const SearchPaginationBase: (
 // @public
 export type SearchPaginationBaseProps = {
   className?: string;
-  pageCursor?: string;
-  onPageCursorChange?: (pageCursor: string) => void;
-  pageLimit?: number;
-  pageLimitLabel?: ReactNode;
-  pageLimitText?: SearchPaginationLimitText;
-  pageLimitOptions?: SearchPaginationLimitOption[];
-  onPageLimitChange?: (value: number) => void;
+  total?: number;
+  cursor?: string;
+  onCursorChange?: (pageCursor: string) => void;
+  limit?: number;
+  limitLabel?: ReactNode;
+  limitText?: SearchPaginationLimitText;
+  limitOptions?: SearchPaginationLimitOption[];
+  onLimitChange?: (value: number) => void;
 };
 
 // @public
@@ -247,6 +248,7 @@ export type SearchPaginationLimitText = (params: {
   from: number;
   to: number;
   page: number;
+  count: number;
 }) => ReactNode;
 
 // @public

@@ -33,10 +33,10 @@ const SearchPage = () => {
           </Grid>
           <Grid item xs={12}>
             <SearchPaginationBase
-              pageLimit={pageLimit}
-              onPageLimitChange={setPageLimit}
-              pageCursor={pageCursor}
-              onPageCursorChange={setPageCursor}
+              limit={pageLimit}
+              onLimitChange={setPageLimit}
+              cursor={pageCursor}
+              onCursorChange={setPageCursor}
             />
           </Grid>
           <Grid item xs={12}>

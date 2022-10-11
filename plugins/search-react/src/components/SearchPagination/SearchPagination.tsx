@@ -48,13 +48,14 @@ export type SearchPaginationLimitOption<
     >;
 
 /**
- * A page limit text, this function is called with a "\{ from, to, page \}" object.
+ * A page limit text, this function is called with a "\{ from, to, page, count \}" object.
  * @public
  */
 export type SearchPaginationLimitText = (params: {
   from: number;
   to: number;
   page: number;
+  count: number;
 }) => ReactNode;
 
 /**
@@ -67,36 +68,45 @@ export type SearchPaginationBaseProps = {
    */
   className?: string;
   /**
+   * The total number of results.
+   * For an unknown number of items, provide -1.
+   * Defaults to -1.
+   */
+  total?: number;
+  /**
    * The cursor for the current page.
    */
-  pageCursor?: string;
+  cursor?: string;
   /**
    * Callback fired when the current page cursor is changed.
    */
-  onPageCursorChange?: (pageCursor: string) => void;
+  onCursorChange?: (pageCursor: string) => void;
   /**
    * The limit of results per page.
    * Set -1 to display all the results.
    */
-  pageLimit?: number;
+  limit?: number;
   /**
    * Customize the results per page label.
+   * Defaults to "Results per page:".
    */
-  pageLimitLabel?: ReactNode;
+  limitLabel?: ReactNode;
   /**
    * Customize the results per page text.
+   * Defaults to "(\{ from, to, count \}) =\> count \> 0 ? `of $\{count\}` : `$\{from\}-$\{to\}`".
    */
-  pageLimitText?: SearchPaginationLimitText;
+  limitText?: SearchPaginationLimitText;
   /**
    * Options for setting how many results show per page.
    * If less than two options are available, no select field will be displayed.
    * Use -1 for the value with a custom label to show all the results.
+   * Defaults to [10, 25, 50, 100].
    */
-  pageLimitOptions?: SearchPaginationLimitOption[];
+  limitOptions?: SearchPaginationLimitOption[];
   /**
    * Callback fired when the number of results per page is changed.
    */
-  onPageLimitChange?: (value: number) => void;
+  onLimitChange?: (value: number) => void;
 };
 
 /**
@@ -106,13 +116,15 @@ export type SearchPaginationBaseProps = {
  */
 export const SearchPaginationBase = (props: SearchPaginationBaseProps) => {
   const {
-    pageCursor,
-    onPageCursorChange,
-    pageLimit: rowsPerPage = 25,
-    pageLimitLabel: labelRowsPerPage = 'Results per page:',
-    pageLimitText: labelDisplayedRows = ({ from, to }) => `${from}-${to}`,
-    pageLimitOptions: rowsPerPageOptions,
-    onPageLimitChange,
+    total: count = -1,
+    cursor: pageCursor,
+    onCursorChange: onPageCursorChange,
+    limit: rowsPerPage = 25,
+    limitLabel: labelRowsPerPage = 'Results per page:',
+    limitText: labelDisplayedRows = ({ from, to }) =>
+      count > 0 ? `of ${count}` : `${from}-${to}`,
+    limitOptions: rowsPerPageOptions,
+    onLimitChange: onPageLimitChange,
     ...rest
   } = props;
 
@@ -137,7 +149,7 @@ export const SearchPaginationBase = (props: SearchPaginationBaseProps) => {
     <TablePagination
       {...rest}
       component="div"
-      count={-1}
+      count={count}
       page={page}
       onPageChange={handlePageChange}
       rowsPerPage={rowsPerPage}
@@ -169,10 +181,10 @@ export const SearchPagination = (props: SearchPaginationProps) => {
   return (
     <SearchPaginationBase
       {...props}
-      pageLimit={pageLimit}
-      onPageLimitChange={setPageLimit}
-      pageCursor={pageCursor}
-      onPageCursorChange={setPageCursor}
+      limit={pageLimit}
+      onLimitChange={setPageLimit}
+      cursor={pageCursor}
+      onCursorChange={setPageCursor}
     />
   );
 };
