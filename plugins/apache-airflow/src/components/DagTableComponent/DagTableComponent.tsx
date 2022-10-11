@@ -22,7 +22,7 @@ import {
   TableColumn,
   WarningPanel,
 } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
+import { storageApiRef, useApi } from '@backstage/core-plugin-api';
 import Box from '@material-ui/core/Box';
 import Chip from '@material-ui/core/Chip';
 import IconButton from '@material-ui/core/IconButton';
@@ -49,13 +49,16 @@ type DenseTableProps = {
 };
 
 export const DenseTable = ({ dags, rowClick }: DenseTableProps) => {
+  const storage = useApi(storageApiRef);
+  const hiddenColumnsKey = 'dag-table-hidden-columns';
   const [hiddenColumns, setHiddenColumns] = useState<string[]>([]);
 
   useEffect(() => {
-    const hiddenState = window.localStorage.getItem('hiddenColumns');
-    if (hiddenState) {
-      setHiddenColumns(JSON.parse(hiddenState));
+    const hiddenState = storage.snapshot(hiddenColumnsKey);
+    if (hiddenState.presence === 'present') {
+      setHiddenColumns(hiddenState.value as string[]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const columns: TableColumn[] = [
@@ -170,10 +173,7 @@ export const DenseTable = ({ dags, rowClick }: DenseTableProps) => {
             newHiddenColumns = hiddenColumns.filter(v => v !== column.field);
           }
           setHiddenColumns(newHiddenColumns);
-          window.localStorage.setItem(
-            'hiddenColumns',
-            JSON.stringify(newHiddenColumns),
-          );
+          storage.set(hiddenColumnsKey, newHiddenColumns);
         }
       }}
     />
@@ -186,7 +186,7 @@ type DagTableComponentProps = {
 
 export const DagTableComponent = (props: DagTableComponentProps) => {
   const { dagIds } = props;
-  const [dagsData, setDagsData] = useState<DagTableRow[] | []>([]);
+  const [dagsData, setDagsData] = useState<DagTableRow[]>([]);
   const apiClient = useApi(apacheAirflowApiRef);
 
   const updatePaused = async (rowData: Dag): Promise<Dag> => {
@@ -206,26 +206,27 @@ export const DagTableComponent = (props: DagTableComponentProps) => {
     return newDag;
   };
 
-  const { value, loading, error } = useAsync(async (): Promise<Dag[]> => {
+  const { value, loading, error } = useAsync(async (): Promise<
+    DagTableRow[]
+  > => {
+    let dags: Dag[] = [];
     if (dagIds) {
-      const { dags } = await apiClient.getDags(dagIds);
-      return dags;
+      dags = (await apiClient.getDags(dagIds)).dags;
+    } else {
+      dags = await apiClient.listDags();
     }
-    return await apiClient.listDags();
+    return dags.map(el => ({
+      ...el,
+      id: el.dag_id, // table records require `id` attribute
+      dagUrl: `${apiClient.baseUrl}dag_details?dag_id=${el.dag_id}`, // construct path to DAG using `baseUrl`
+    }));
   }, []);
 
-  const data = value?.map(el => ({
-    ...el,
-    id: el.dag_id, // table records require `id` attribute
-    dagUrl: `${apiClient.baseUrl}dag_details?dag_id=${el.dag_id}`, // construct path to DAG using `baseUrl`
-  }));
-
   useEffect(() => {
-    if (data) {
-      setDagsData(data);
+    if (value) {
+      setDagsData(value);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data?.length]);
+  }, [value]);
 
   if (loading) {
     return <Progress />;

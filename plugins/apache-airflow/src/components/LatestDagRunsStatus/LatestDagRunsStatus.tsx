@@ -104,9 +104,10 @@ export const LatestDagRunsStatus = ({
 }: LatestDagRunsStatusProps) => {
   const classes = useStyles();
   const apiClient = useApi(apacheAirflowApiRef);
-  const { value, loading, error } = useAsync(async (): Promise<DagRun[]> => {
-    return await apiClient.getDagRuns(dagId, { limit });
-  }, []);
+  const { value, loading, error } = useAsync(
+    async (): Promise<DagRun[]> => await apiClient.getDagRuns(dagId, { limit }),
+    [dagId, limit],
+  );
 
   if (loading) {
     return (

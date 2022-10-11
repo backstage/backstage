@@ -134,15 +134,16 @@ export class ApacheAirflowClient implements ApacheAirflowApi {
       }>(`/dags/${dagId}/dagRuns?${qs.stringify(searchParams)}`);
       dagRuns.push(...response.dag_runs);
 
+      if (response.dag_runs.length < searchParams.limit!) {
+        break;
+      }
       if (
         dagRuns.length >= response.total_entries ||
         dagRuns.length >= options.limit
       ) {
         break;
       }
-      if (typeof searchParams.offset !== 'undefined') {
-        searchParams.offset += response.dag_runs.length;
-      }
+      searchParams.offset! += response.dag_runs.length;
     }
     return dagRuns;
   }
