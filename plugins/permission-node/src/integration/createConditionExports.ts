@@ -36,7 +36,9 @@ export type Condition<TRule> = TRule extends PermissionRule<
   infer TResourceType,
   infer TParams
 >
-  ? (...params: TParams) => PermissionCondition<TResourceType, TParams>
+  ? undefined extends TParams
+    ? () => PermissionCondition<TResourceType, TParams>
+    : (params: TParams) => PermissionCondition<TResourceType, TParams>
   : never;
 
 /**
