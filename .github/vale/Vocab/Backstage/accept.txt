@@ -2,6 +2,7 @@ abc
 accessors
 addon
 addons
+ADRs
 Airbrake
 Airbrakes
 airbrake
@@ -28,6 +29,7 @@ bool
 boolean
 builtins
 callout
+CDNs
 Chai
 changeset
 changesets
@@ -129,6 +131,7 @@ hotspots
 http
 https
 Iain
+iLert
 img
 incentivised
 Indal
@@ -139,6 +142,7 @@ JaCoCo
 JavaScript
 jenkins
 Jira
+JWTs
 jq
 js
 json
@@ -147,6 +151,7 @@ jsx
 Kaewkasi
 Keyv
 Knex
+KPIs
 kubectl
 kubernetes
 kubernetes
@@ -308,6 +313,7 @@ Superfences
 superset
 supertype
 storable
+SVGs
 talkdesk
 Talkdesk
 tasklist
@@ -352,12 +358,15 @@ utils
 validator
 validators
 varchar
+VPCs
+VSCode
 Wayfair
 Weaveworks
 Webpack
 winston
 www
 WWW
+XCMetrics
 XML
 xyz
 yaml
