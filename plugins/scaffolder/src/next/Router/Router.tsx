@@ -28,13 +28,8 @@ import {
 import { useElementFilter } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
-import {
-  nextScaffolderTaskRouteRef,
-  nextSelectedTemplateRouteRef,
-} from '../../routes';
+import { nextSelectedTemplateRouteRef } from '../../routes';
 import { SecretsContextProvider } from '../../components/secrets/SecretsContext';
-import { TaskPage } from '../TaskPage';
-import { ErrorPage } from '@backstage/core-components';
 
 /**
  * The Props for the Scaffolder Router
@@ -99,11 +94,6 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
             <TemplateWizardPage customFieldExtensions={fieldExtensions} />
           </SecretsContextProvider>
         }
-      />
-      <Route path={nextScaffolderTaskRouteRef.path} element={<TaskPage />} />
-      <Route
-        path="*"
-        element={<ErrorPage status="404" statusMessage="Page not found" />}
       />
     </Routes>
   );
