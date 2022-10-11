@@ -179,22 +179,10 @@ export type PermissionRule<
   name: string;
   description: string;
   resourceType: TResourceType;
-  paramsSchema?: PermissionRuleSchema<TParams>;
-  apply(
-    resource: TResource,
-    params: NoInfer<z.input<PermissionRuleSchema<TParams>>>,
-  ): boolean;
-  toQuery(
-    params: NoInfer<z.input<PermissionRuleSchema<TParams>>>,
-  ): PermissionCriteria<TQuery>;
+  paramsSchema?: z.ZodSchema<TParams>;
+  apply(resource: TResource, params: NoInfer<TParams>): boolean;
+  toQuery(params: NoInfer<TParams>): PermissionCriteria<TQuery>;
 };
-
-// @public
-export type PermissionRuleSchema<TParams> = z.ZodObject<{
-  [P in keyof TParams]-?: TParams[P] extends undefined
-    ? z.ZodOptionalType<z.ZodType<TParams[P]>>
-    : z.ZodType<TParams[P]>;
-}>;
 
 // @public
 export type PolicyQuery = {
