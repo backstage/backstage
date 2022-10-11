@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useApiHolder } from '@backstage/core-plugin-api';
-import { JsonObject } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 import {
   Stepper as MuiStepper,
   Step as MuiStep,
@@ -50,6 +50,7 @@ const useStyles = makeStyles(theme => ({
 export interface StepperProps {
   manifest: TemplateParameterSchema;
   extensions: NextFieldExtensionOptions<any, any>[];
+  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
 }
 
 // TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
@@ -109,10 +110,6 @@ export const Stepper = (props: StepperProps) => {
     setFormState(current => ({ ...current, ...formData }));
   };
 
-  const handleCreate = () => {
-    // TODO(blam): Create the template in a modal with the ability to view the logs etc.
-  };
-
   return (
     <>
       <MuiStepper activeStep={activeStep} alternativeLabel variant="elevation">
@@ -161,7 +158,10 @@ export const Stepper = (props: StepperProps) => {
               >
                 Back
               </Button>
-              <Button variant="contained" onClick={handleCreate}>
+              <Button
+                variant="contained"
+                onClick={() => props.onComplete(formState)}
+              >
                 Create
               </Button>
             </div>

@@ -87,7 +87,6 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
           />
         }
       />
-
       <Route
         path={nextSelectedTemplateRouteRef.path}
         element={
