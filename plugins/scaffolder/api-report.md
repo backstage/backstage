@@ -15,7 +15,9 @@ import { Extension } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { FieldProps } from '@rjsf/core';
+import { FieldProps as FieldProps_2 } from '@rjsf/utils';
 import { FieldValidation } from '@rjsf/core';
+import { FieldValidation as FieldValidation_2 } from '@rjsf/utils';
 import type { FormProps } from '@rjsf/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
@@ -29,6 +31,16 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { UIOptionsType } from '@rjsf/utils';
+import { UiSchema } from '@rjsf/utils';
+
+// @alpha
+export function createNextScaffolderFieldExtension<
+  TReturnValue = unknown,
+  TInputProps extends UIOptionsType = {},
+>(
+  options: NextFieldExtensionOptions<TReturnValue, TInputProps>,
+): Extension<NextFieldExtensionComponentProps<TReturnValue, TInputProps>>;
 
 // @public
 export function createScaffolderFieldExtension<
@@ -153,6 +165,38 @@ export type LogEvent = {
   createdAt: string;
   id: string;
   taskId: string;
+};
+
+// @alpha
+export type NextCustomFieldValidator<TFieldReturnValue> = (
+  data: TFieldReturnValue,
+  field: FieldValidation_2,
+  context: {
+    apiHolder: ApiHolder;
+  },
+) => void | Promise<void>;
+
+// @alpha
+export interface NextFieldExtensionComponentProps<
+  TFieldReturnValue,
+  TUiOptions = {},
+> extends PropsWithChildren<FieldProps_2<TFieldReturnValue>> {
+  // (undocumented)
+  uiSchema?: UiSchema<TFieldReturnValue> & {
+    'ui:options'?: TUiOptions & UIOptionsType;
+  };
+}
+
+// @alpha
+export type NextFieldExtensionOptions<
+  TFieldReturnValue = unknown,
+  TInputProps = unknown,
+> = {
+  name: string;
+  component: (
+    props: NextFieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
+  ) => JSX.Element | null;
+  validation?: NextCustomFieldValidator<TFieldReturnValue>;
 };
 
 // @alpha
