@@ -1,5 +1,4 @@
 ---
-'example-backend': patch
 '@backstage/create-app': patch
 ---
 
