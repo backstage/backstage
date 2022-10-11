@@ -1,5 +1,17 @@
 # @backstage/plugin-badges-backend
 
+## 0.1.31-next.2
+
+### Patch Changes
+
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/catalog-client@1.1.1-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+
 ## 0.1.31-next.1
 
 ### Patch Changes

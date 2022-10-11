@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-test-utils",
   "description": "Test helpers library for Backstage backends",
-  "version": "0.1.29-next.1",
+  "version": "0.1.29-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {

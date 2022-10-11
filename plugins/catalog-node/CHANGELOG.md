@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-node
 
+## 1.2.0-next.2
+
+### Minor Changes
+
+- 404366c853: Deprecated the `LocationSpec` type. It got moved from this package to the `@backstage/plugin-catalog-common` so make sure imports are updated.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.0.7-next.2
+  - @backstage/backend-plugin-api@0.1.3-next.2
+  - @backstage/catalog-client@1.1.1-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/types@1.0.0
+
 ## 1.1.1-next.1
 
 ### Patch Changes

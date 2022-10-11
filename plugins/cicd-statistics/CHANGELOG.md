@@ -1,5 +1,14 @@
 # @backstage/plugin-cicd-statistics
 
+## 0.1.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.0-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/core-plugin-api@1.0.7-next.2
+
 ## 0.1.12-next.1
 
 ### Patch Changes

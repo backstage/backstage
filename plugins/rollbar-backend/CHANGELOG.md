@@ -1,5 +1,14 @@
 # @backstage/plugin-rollbar-backend
 
+## 0.1.34-next.2
+
+### Patch Changes
+
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/config@1.0.3-next.2
+
 ## 0.1.34-next.1
 
 ### Patch Changes
