@@ -37,6 +37,7 @@ import { Header, HeaderLabel } from '@backstage/core-components';
 import { useRouteRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from '../../../routes';
+import { Grid } from '@material-ui/core';
 
 const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
 
@@ -102,7 +103,7 @@ export const TechDocsReaderPageHeader = (
   const labels = (
     <>
       <HeaderLabel
-        label="Component"
+        label="Entity"
         value={
           <EntityRefLink
             color="inherit"
@@ -131,14 +132,21 @@ export const TechDocsReaderPageHeader = (
         <HeaderLabel
           label=""
           value={
-            <a
-              href={locationMetadata.target}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Grid
+              container
+              direction="row"
+              alignItems="center"
+              style={{ color: '#fff' }}
             >
-              <CodeIcon style={{ marginTop: '-25px', fill: '#fff' }} />
-            </a>
+              <Grid style={{ paddingTop: 16, paddingRight: 0 }} item>
+                <CodeIcon style={{ marginTop: '-25px' }} />
+              </Grid>
+              <Grid style={{ paddingTop: 2, paddingLeft: 2 }} item>
+                Source
+              </Grid>
+            </Grid>
           }
+          url={locationMetadata.target}
         />
       ) : null}
     </>
