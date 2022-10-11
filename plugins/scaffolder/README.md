@@ -81,10 +81,10 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
 
 ### Troubleshooting
 
-In case if you encountered with the [issue of closing EventStream](https://github.com/backstage/backstage/issues/5535)
-which auto-updates logs during the task execution, you can enable long polling. In order to you it, you have to create
-in your codebase file in this location `packages/app/src/apis.ts` where you register `ScaffolderClient` with an extra
-parameter `useLongPollingLogs: true`. By default, it is `false`.
+If you encounter the [issue of closing EventStream](https://github.com/backstage/backstage/issues/5535)
+which auto-updates logs during task execution, you can enable long polling. To do so,
+update your `packages/app/src/apis.ts` file to register a `ScaffolderClient` with the
+`useLongPollingLogs` set to `true`. By default, it is `false`.
 
 ```typescript
 import {
@@ -93,33 +93,33 @@ import {
   fetchApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-
 import {
   scaffolderApiRef,
   ScaffolderClient,
 } from '@backstage/plugin-scaffolder';
 
-createApiFactory({
-  api: scaffolderApiRef,
-  deps: {
-    discoveryApi: discoveryApiRef,
-    identityApi: identityApiRef,
-    scmIntegrationsApi: scmIntegrationsApiRef,
-    fetchApi: fetchApiRef,
-  },
-  factory: ({ scmIntegrationsApi, discoveryApi, identityApi, fetchApi }) =>
-    new ScaffolderClient({
-      discoveryApi,
-      identityApi,
-      scmIntegrationsApi,
-      fetchApi,
-      useLongPollingLogs: true,
-    }),
-});
+export const apis: AnyApiFactory[] = [
+  createApiFactory({
+    api: scaffolderApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      identityApi: identityApiRef,
+      scmIntegrationsApi: scmIntegrationsApiRef,
+      fetchApi: fetchApiRef,
+    },
+    factory: ({ scmIntegrationsApi, discoveryApi, identityApi, fetchApi }) =>
+      new ScaffolderClient({
+        discoveryApi,
+        identityApi,
+        scmIntegrationsApi,
+        fetchApi,
+        useLongPollingLogs: true,
+      }),
+  }),
+  // ... other factories
 ```
 
-Api factory creates the API and adds it to a registry. Because this file is processed before the default scaffolder
-api registry, it is added to the registry prior and overrides the default behavior.
+This replaces the default implementation of the `scaffolderApiRef`.
 
 ## Links
 
