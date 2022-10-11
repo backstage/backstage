@@ -23,11 +23,19 @@ import { InputError, AuthenticationError } from '@backstage/errors';
 import express, { Request } from 'express';
 import { KubernetesObjectsProvider } from '../types/types';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import { 
+  AuthorizeResult,
+  PermissionEvaluator
+} from '@backstage/plugin-permission-common';
+import { 
+  kubernetesWorkloadResourcesReadPermission, kubernetesCustomResourcesReadPermission } from '../../../kubernetes-common/src/permissions';
+import { NotAllowedError } from '@backstage/errors';
 
 export const addResourceRoutesToRouter = (
   router: express.Router,
   catalogApi: CatalogApi,
   objectsProvider: KubernetesObjectsProvider,
+  permissionApi: PermissionEvaluator
 ) => {
   const getEntityByReq = async (req: Request<any>) => {
     const rawEntityRef = req.body.entityRef;
@@ -65,6 +73,25 @@ export const addResourceRoutesToRouter = (
   };
 
   router.post('/resources/workloads/query', async (req, res) => {
+    const token = getBearerTokenFromAuthorizationHeader(
+      req.header('authorization'),
+    );
+
+    const authorizeResponse = (
+      await permissionApi.authorizeConditional(
+        [{ permission: kubernetesWorkloadResourcesReadPermission, 
+          resourceRef: req.body.id }],
+        {token},
+      )
+    )[0];
+
+    console.log(authorizeResponse)
+
+    if (authorizeResponse.result === AuthorizeResult.DENY) {
+      res.status(403).json({ error: new NotAllowedError() });
+      return
+    }
+      
     const entity = await getEntityByReq(req);
     const response = await objectsProvider.getKubernetesObjectsByEntity({
       entity,
@@ -74,8 +101,26 @@ export const addResourceRoutesToRouter = (
   });
 
   router.post('/resources/custom/query', async (req, res) => {
-    const entity = await getEntityByReq(req);
+    const token = getBearerTokenFromAuthorizationHeader(
+      req.header('authorization'),
+    );
 
+    const authorizeResponse = (
+      await permissionApi.authorizeConditional(
+        [{ permission: kubernetesCustomResourcesReadPermission, 
+          resourceRef: req.body.id }],
+        {token},
+      )
+    )[0];
+
+    console.log(authorizeResponse, "custom")
+
+    if (authorizeResponse.result === AuthorizeResult.DENY) {
+      res.status(403).json({ error: new NotAllowedError() });
+      return
+    }
+
+    const entity = await getEntityByReq(req);
     if (!req.body.customResources) {
       throw new InputError('customResources is a required field');
     } else if (!Array.isArray(req.body.customResources)) {
@@ -83,7 +128,6 @@ export const addResourceRoutesToRouter = (
     } else if (req.body.customResources.length === 0) {
       throw new InputError('at least 1 customResource is required');
     }
-
     const response = await objectsProvider.getCustomResourcesByEntity({
       entity,
       customResources: req.body.customResources,

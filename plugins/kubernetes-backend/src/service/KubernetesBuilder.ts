@@ -42,12 +42,9 @@ import { KubernetesProxy } from './KubernetesProxy';
 import {
   AuthorizeResult,
   PermissionEvaluator,
-  PermissionAuthorizer,
 } from '@backstage/plugin-permission-common';
 import { NotAllowedError } from '@backstage/errors';
-// import { catalogEntityReadPermission } from '../../../catalog-common/src/permissions';
-import { clustersReadPermission } from '../permissions/permissions';
-
+import { kubernetesClusterReadPermission } from '@backstage/plugin-kubernetes-common';
 /**
  *
  * @alpha
@@ -56,7 +53,7 @@ export interface KubernetesEnvironment {
   logger: Logger;
   config: Config;
   catalogApi: CatalogApi;
-  permissions: PermissionEvaluator | PermissionAuthorizer;
+  permissions: PermissionEvaluator;
 }
 
 /**
@@ -272,7 +269,7 @@ export class KubernetesBuilder {
     clusterSupplier: KubernetesClustersSupplier,
     catalogApi: CatalogApi,
     proxy: KubernetesProxy,
-    permissionApi: PermissionEvaluator | PermissionAuthorizer,
+    permissionApi: PermissionEvaluator,
   ): express.Router {
     const logger = this.env.logger;
     const router = Router();
@@ -297,12 +294,14 @@ export class KubernetesBuilder {
     });
 
     router.get('/clusters', async (_, res) => {
-      const authorizeResponse = await permissionApi.authorize([
-        { permission: clustersReadPermission },
-      ]);
+      const authorizeResponse = (
+        await permissionApi.authorize([
+          { permission: kubernetesClusterReadPermission },
+        ])
+      )[0];
 
-      if (authorizeResponse[0].result === AuthorizeResult.DENY) {
-        res.status(403).json({ error: new NotAllowedError().message });
+      if (authorizeResponse.result === AuthorizeResult.DENY) {
+        res.status(403).json({ error: new NotAllowedError() });
         return;
       }
 
@@ -319,7 +318,12 @@ export class KubernetesBuilder {
 
     router.use('/proxy', proxy.createRequestHandler());
 
-    addResourceRoutesToRouter(router, catalogApi, objectsProvider);
+    addResourceRoutesToRouter(
+      router,
+      catalogApi,
+      objectsProvider,
+      permissionApi,
+    );
 
     return router;
   }
