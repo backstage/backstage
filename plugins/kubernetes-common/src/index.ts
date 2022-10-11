@@ -21,3 +21,13 @@
  */
 
 export * from './types';
+
+export {
+    RESOURCE_TYPE_KUBERNETES_RESOURCE,
+    kubernetesClusterReadPermission,
+    kubernetesWorkloadResourcesReadPermission,
+    kubernetesCustomResourcesReadPermission,
+    kubernetesClusterPermissions,
+} from './permissions';
+
+export type { KubernetesResourcePermission } from './permissions';
