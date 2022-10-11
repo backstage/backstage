@@ -30,7 +30,7 @@ export const isInSystemRule = createCatalogPermissionRule({
   },
   toQuery: (systemRef: string) => ({
     key: 'relations.partOf',
-    value: systemRef,
+    values: [systemRef],
   }),
 });
 
