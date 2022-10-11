@@ -5,6 +5,11 @@
 ```ts
 /// <reference types="node" />
 
+import { AnalyzeLocationEntityField as AnalyzeLocationEntityField_2 } from '@backstage/plugin-catalog-common';
+import { AnalyzeLocationExistingEntity as AnalyzeLocationExistingEntity_2 } from '@backstage/plugin-catalog-common';
+import { AnalyzeLocationGenerateEntity as AnalyzeLocationGenerateEntity_2 } from '@backstage/plugin-catalog-common';
+import { AnalyzeLocationRequest as AnalyzeLocationRequest_2 } from '@backstage/plugin-catalog-common';
+import { AnalyzeLocationResponse as AnalyzeLocationResponse_2 } from '@backstage/plugin-catalog-common';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
@@ -51,39 +56,25 @@ import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Validators } from '@backstage/catalog-model';
 
-// @public (undocumented)
-export type AnalyzeLocationEntityField = {
-  field: string;
-  state:
-    | 'analysisSuggestedValue'
-    | 'analysisSuggestedNoValue'
-    | 'needsUserInput';
-  value: string | null;
-  description: string;
-};
+// @public @deprecated
+export type AnalyzeLocationEntityField = AnalyzeLocationEntityField_2;
 
-// @public
-export type AnalyzeLocationExistingEntity = {
-  location: LocationSpec;
-  isRegistered: boolean;
-  entity: Entity;
-};
+// @public @deprecated
+export type AnalyzeLocationExistingEntity = AnalyzeLocationExistingEntity_2;
 
-// @public
-export type AnalyzeLocationGenerateEntity = {
-  entity: RecursivePartial<Entity>;
-  fields: AnalyzeLocationEntityField[];
-};
+// @public @deprecated
+export type AnalyzeLocationGenerateEntity = AnalyzeLocationGenerateEntity_2;
+
+// @public @deprecated (undocumented)
+export type AnalyzeLocationRequest = AnalyzeLocationRequest_2;
+
+// @public @deprecated (undocumented)
+export type AnalyzeLocationResponse = AnalyzeLocationResponse_2;
 
 // @public (undocumented)
-export type AnalyzeLocationRequest = {
-  location: LocationSpec;
-};
-
-// @public (undocumented)
-export type AnalyzeLocationResponse = {
-  existingEntityFiles: AnalyzeLocationExistingEntity[];
-  generateEntities: AnalyzeLocationGenerateEntity[];
+export type AnalyzeOptions = {
+  url: string;
+  catalogFilename?: string;
 };
 
 // @public (undocumented)
@@ -132,6 +123,9 @@ export class CatalogBuilder {
   ): CatalogBuilder;
   addEntityProvider(
     ...providers: Array<EntityProvider | Array<EntityProvider>>
+  ): CatalogBuilder;
+  addLocationAnalyzers(
+    ...analyzers: Array<ScmLocationAnalyzer | Array<ScmLocationAnalyzer>>
   ): CatalogBuilder;
   // @alpha
   addPermissionRules(
@@ -530,6 +524,14 @@ export type PlaceholderResolverResolveUrl = (
 export type ProcessingIntervalFunction = () => number;
 
 export { processingResult };
+
+// @public (undocumented)
+export type ScmLocationAnalyzer = {
+  supports(url: string): boolean;
+  analyze(options: AnalyzeOptions): Promise<{
+    existing: AnalyzeLocationExistingEntity[];
+  }>;
+};
 
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor {

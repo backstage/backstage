@@ -33,6 +33,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "@backstage/catalog-model": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^"
   },
