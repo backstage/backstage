@@ -10,7 +10,7 @@ For example, the `playlistConditions.isOwner` API has changed from:
 playlistConditions.isOwner(['user:default/me', 'group:default/owner']);
 ```
 
-to the new API
+to:
 
 ```ts
 playlistConditions.isOwner({
