@@ -6,6 +6,7 @@
 /// <reference types="node" />
 
 import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
@@ -79,6 +80,7 @@ export type OutOfTheBoxDeploymentOptions = {
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;
   buildLogTransport?: winston.transport;
+  catalogClient?: CatalogClient;
 };
 
 // @public
@@ -90,6 +92,7 @@ export type RecommendedDeploymentOptions = {
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;
   buildLogTransport?: winston.transport;
+  catalogClient?: CatalogClient;
 };
 
 // @public

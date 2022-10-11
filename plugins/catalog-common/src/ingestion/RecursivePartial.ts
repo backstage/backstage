@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-export type {
-  AnalyzeLocationEntityField,
-  AnalyzeLocationExistingEntity,
-  AnalyzeLocationGenerateEntity,
-  AnalyzeLocationRequest,
-  AnalyzeLocationResponse,
-  LocationAnalyzer,
-  ScmLocationAnalyzer,
-  AnalyzeOptions,
-} from './types';
+/**
+ * Makes all keys of an entire hierarchy optional.
+ * @ignore
+ */
+export type RecursivePartial<T> = {
+  [P in keyof T]?: T[P] extends (infer U)[]
+    ? RecursivePartial<U>[]
+    : T[P] extends object
+    ? RecursivePartial<T[P]>
+    : T[P];
+};

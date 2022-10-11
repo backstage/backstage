@@ -58,6 +58,7 @@ export type OutOfTheBoxDeploymentOptions = {
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;
   buildLogTransport?: winston.transport;
+  catalogClient?: CatalogClient;
 };
 
 /**
@@ -74,6 +75,7 @@ export type RecommendedDeploymentOptions = {
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;
   buildLogTransport?: winston.transport;
+  catalogClient?: CatalogClient;
 };
 
 /**
@@ -107,7 +109,8 @@ export async function createRouter(
 ): Promise<express.Router> {
   const router = Router();
   const { publisher, config, logger, discovery } = options;
-  const catalogClient = new CatalogClient({ discoveryApi: discovery });
+  const catalogClient =
+    options.catalogClient ?? new CatalogClient({ discoveryApi: discovery });
   const docsBuildStrategy =
     options.docsBuildStrategy ?? DefaultDocsBuildStrategy.fromConfig(config);
   const buildLogTransport =

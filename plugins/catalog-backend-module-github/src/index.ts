@@ -29,3 +29,5 @@ export type { GitHubOrgEntityProviderOptions } from './providers/GitHubOrgEntity
 export type { GithubMultiOrgConfig } from './lib';
 export { githubEntityProviderCatalogModule } from './module';
 export type { GithubEntityProviderCatalogModuleOptions } from './module';
+export { GitHubLocationAnalyzer } from './analyzers/GitHubLocationAnalyzer';
+export type { GitHubLocationAnalyzerOptions } from './analyzers/GitHubLocationAnalyzer';
