@@ -76,11 +76,11 @@ export const homePage = (
        <Grid container spacing={3}>
 
 +       <Grid item xs={12} md={6}>
-+         <BazaarOverviewCard variant={'latest'} limit={4} />
++         <BazaarOverviewCard order={'latest'} limit={4} />
 +       </Grid>
 
 +       <Grid item xs={12} md={6}>
-+         <BazaarOverviewCard variant={'random'} limit={4} />
++         <BazaarOverviewCard order={'random'} limit={4} />
 +       </Grid>
 
         {/* ...other homepage items */}
