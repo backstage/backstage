@@ -26,7 +26,9 @@ const pluginMetadata = fs
       )
       .toString();
 
-    return { ...metadata, date: new Date(gitIsoDate) };
+    metadata.date = new Date(gitIsoDate)
+
+    return metadata;
   })
   .sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
 const truncate = text =>
