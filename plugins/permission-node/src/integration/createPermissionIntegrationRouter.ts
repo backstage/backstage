@@ -36,6 +36,7 @@ import {
   isNotCriteria,
   isOrCriteria,
 } from './util';
+import { JsonSchema7Type } from 'zod-to-json-schema/src/parseDef';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -100,6 +101,29 @@ export type ApplyConditionsResponseEntry =
  */
 export type ApplyConditionsResponse = {
   items: ApplyConditionsResponseEntry[];
+};
+
+/**
+ * Serialized permission rules, with the paramsSchema
+ * converted from a ZodSchema to a JsonSchema.
+ *
+ * @public
+ */
+export type MetaDataResponseSerializedRule = {
+  name: string;
+  description: string;
+  resourceType: string;
+  paramsSchema?: JsonSchema7Type;
+};
+
+/**
+ * Response type for the .metadata endpoint.
+ *
+ * @public
+ */
+export type MetaDataResponse = {
+  permissions?: Permission[];
+  rules: MetaDataResponseSerializedRule[];
 };
 
 const applyConditions = <TResourceType extends string, TResource>(
@@ -191,14 +215,21 @@ export const createPermissionIntegrationRouter = <
   router.use(express.json());
 
   router.get('/.well-known/backstage/permissions/metadata', (_, res) => {
-    const serializableRules = rules.map(rule => ({
-      name: rule.name,
-      description: rule.description,
-      resourceType: rule.resourceType,
-      paramsSchema: zodToJsonSchema(rule.paramsSchema ?? z.object({})),
-    }));
+    const serializedRules: MetaDataResponseSerializedRule[] = rules.map(
+      rule => ({
+        name: rule.name,
+        description: rule.description,
+        resourceType: rule.resourceType,
+        paramsSchema: zodToJsonSchema(rule.paramsSchema ?? z.object({})),
+      }),
+    );
 
-    return res.json({ permissions, rules: serializableRules });
+    const responseJson: MetaDataResponse = {
+      permissions,
+      rules: serializedRules,
+    };
+
+    return res.json(responseJson);
   });
 
   const getRule = createGetRule(rules);

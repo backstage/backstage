@@ -14,6 +14,7 @@ import { DefinitivePolicyDecision } from '@backstage/plugin-permission-common';
 import { EvaluatorRequestOptions } from '@backstage/plugin-permission-common';
 import express from 'express';
 import { IdentifiedPermissionMessage } from '@backstage/plugin-permission-common';
+import { JsonSchema7Type } from 'zod-to-json-schema/src/parseDef';
 import { NotCriteria } from '@backstage/plugin-permission-common';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
@@ -159,6 +160,20 @@ export const makeCreatePermissionRule: <
 >() => <TParams extends PermissionRuleParams = undefined>(
   rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
 ) => PermissionRule<TResource, TQuery, TResourceType, TParams>;
+
+// @public
+export type MetaDataResponse = {
+  permissions?: Permission[];
+  rules: MetaDataResponseSerializedRule[];
+};
+
+// @public
+export type MetaDataResponseSerializedRule = {
+  name: string;
+  description: string;
+  resourceType: string;
+  paramsSchema?: JsonSchema7Type;
+};
 
 // @public
 export interface PermissionPolicy {
