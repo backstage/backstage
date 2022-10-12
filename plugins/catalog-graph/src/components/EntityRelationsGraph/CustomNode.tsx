@@ -21,20 +21,81 @@ import classNames from 'classnames';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { EntityKindIcon } from './EntityKindIcon';
 import { EntityNodeData } from './types';
+import { createTheme, Theme } from '@material-ui/core';
+import {
+  Palette,
+} from '@material-ui/core/styles/createPalette';
+import { red } from '@material-ui/core/colors';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
+
+//in mui v5 
+import { PaletteOptions } from '@material-ui/core/styles/createPalette';
+
+declare module '@material-ui/core/styles/createPalette' {
+  interface PaletteOptions {
+    catalogGraph?: {
+      component?: string ;
+      domain?: string;
+      system?: string;
+      location?: string;
+      resource?: string;
+      group?: string;
+      user?: string;
+      template?: string;
+      api?: string ;
+    };
+  }
+}
+
+type graphPalette = Palette & PaletteOptions;
+
+interface customTheme extends Theme {
+  palette: graphPalette;
+}
+
+const customTheme: customTheme = createTheme({
+  palette: {
+    primary: {
+      main: red[300],
+    },
+    catalogGraph: {
+      component: red[300],
+      domain: '#FF0000',
+      system: '#0000ff',
+      location: '#FF0000',
+      resource: '#fefefe',
+      group: '#fefefe',
+      user: '#ffffff',
+      template: '#fefefe',
+      api: '#00008B',
+    },
+  },
+});
+
+const useStyles = makeStyles((theme: customTheme) => ({
   node: {
-    fill: theme.palette.grey[300],
-    stroke: theme.palette.grey[300],
+    fill: theme.palette.primary.main,
+    // fill: theme?.palette?.catalogGraph?['api'],
+    // fill: (props: { [key: string]: undefined }) =>
+    //   theme.palette.catalogGraph?.system,
+    stroke: theme.palette.catalogGraph?.domain,
 
     '&.primary': {
-      fill: theme.palette.primary.light,
-      stroke: theme.palette.primary.light,
+      fill: theme.palette.grey[300],
+      // fill: (props: { [key: string]: undefined }) =>
+      //   props?.kind && theme.palette.catalogGraph
+      //     ? theme.palette.catalogGraph[props?.kind]
+      //     : theme.palette.primary.light,
+      stroke: theme.palette.grey[300],
     },
     '&.secondary': {
-      fill: theme.palette.secondary.light,
-      stroke: theme.palette.secondary.light,
-    },
+      fill: theme.palette.grey[300],
+      // fill: (props: { [key: string]: undefined }) =>
+      //   props?.kind && theme.palette.catalogGraph
+      //     ? theme.palette.catalogGraph[props?.kind]
+      //     : theme.palette.secondary.light,
+      stroke: theme.palette.grey[300]
+    }
   },
   text: {
     fill: theme.palette.getContrastText(theme.palette.grey[300]),
@@ -54,6 +115,47 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
   },
 }));
 
+// const useStyles = makeStyles((theme: BackstageTheme) => ({
+//   node: {
+//     fill: (props: { [key: string]: undefined }) =>
+//       props?.kind && theme.palette.catalogGraph
+//         ? theme.palette.catalogGraph[props?.kind]
+//         : theme.palette.grey[300],
+//     stroke: theme.palette.grey[300],
+
+//     '&.primary': {
+//       fill: (props: { [key: string]: undefined }) =>
+//         props?.kind && theme.palette.catalogGraph
+//           ? theme.palette.catalogGraph[props?.kind]
+//           : theme.palette.primary.light,
+//       stroke: theme.palette.primary.light,
+//     },
+//     '&.secondary': {
+//       fill: (props: { [key: string]: undefined }) =>
+//         props?.kind && theme.palette.catalogGraph
+//           ? theme.palette.catalogGraph[props?.kind]
+//           : theme.palette.secondary.light,
+//       stroke: theme.palette.secondary.light,
+//     },
+//   },
+//   text: {
+//     fill: theme.palette.getContrastText(theme.palette.grey[300]),
+
+//     '&.primary': {
+//       fill: theme.palette.primary.contrastText,
+//     },
+//     '&.secondary': {
+//       fill: theme.palette.secondary.contrastText,
+//     },
+//     '&.focused': {
+//       fontWeight: 'bold',
+//     },
+//   },
+//   clickable: {
+//     cursor: 'pointer',
+//   },
+// }));
+
 export function CustomNode({
   node: {
     id,
@@ -66,7 +168,10 @@ export function CustomNode({
     onClick,
   },
 }: DependencyGraphTypes.RenderNodeProps<EntityNodeData>) {
-  const classes = useStyles();
+  const styleProps: any = {
+    kind: kind?.toLocaleLowerCase('en-US'),
+  };
+  const classes = useStyles({ ...styleProps });
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
   const idRef = useRef<SVGTextElement | null>(null);
@@ -103,8 +208,8 @@ export function CustomNode({
       <rect
         className={classNames(
           classes.node,
-          color === 'primary' && 'primary',
-          color === 'secondary' && 'secondary',
+          // color === 'primary' && 'primary',
+          // color === 'secondary' && 'secondary',
         )}
         width={paddedWidth}
         height={paddedHeight}
