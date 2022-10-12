@@ -133,7 +133,6 @@ export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
         fetchBazaarProjects={fetchBazaarProjects}
         catalogEntities={unlinkedCatalogEntities || []}
         useTablePagination={false}
-        fullHeight={false}
         width={3}
       />
     </InfoCard>

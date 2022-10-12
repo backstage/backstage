@@ -26,7 +26,6 @@ type Props = {
   fetchBazaarProjects: () => Promise<BazaarProject[]>;
   catalogEntities: Entity[];
   useTablePagination?: boolean;
-  fullHeight?: boolean;
   width?: GridSize;
 };
 
@@ -55,7 +54,6 @@ export const ProjectPreview = ({
   fetchBazaarProjects,
   catalogEntities,
   useTablePagination = true,
-  fullHeight = true,
   width = 2,
 }: Props) => {
   const classes = useStyles();
@@ -92,7 +90,6 @@ export const ProjectPreview = ({
                   key={i}
                   fetchBazaarProjects={fetchBazaarProjects}
                   catalogEntities={catalogEntities}
-                  fullHeight={fullHeight}
                 />
               </Grid>
             );
