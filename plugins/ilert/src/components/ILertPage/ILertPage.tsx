@@ -33,9 +33,9 @@ export const ILertPage = () => {
   const tabs = [
     { label: 'Who is on call?' },
     { label: 'Alerts' },
-    { label: 'Uptime Monitors' },
     { label: 'Services' },
     { label: 'Status pages' },
+    { label: 'Uptime Monitors' },
   ];
   const renderTab = () => {
     switch (selectedTab) {
@@ -44,11 +44,11 @@ export const ILertPage = () => {
       case 1:
         return <AlertsPage />;
       case 2:
-        return <UptimeMonitorsPage />;
-      case 3:
         return <ServicesPage />;
-      case 4:
+      case 3:
         return <StatusPagesPage />;
+      case 4:
+        return <UptimeMonitorsPage />;
       default:
         return null;
     }
