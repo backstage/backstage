@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
+
 export interface Config {
   catalog?: {
     processors?: {
@@ -103,6 +105,10 @@ export interface Config {
                 exclude?: string[];
               };
             };
+            /**
+             * (Optional) TaskScheduleDefinition for the refresh.
+             */
+            schedule?: TaskScheduleDefinitionConfig;
           }
         | Record<
             string,
@@ -156,6 +162,10 @@ export interface Config {
                   exclude?: string[];
                 };
               };
+              /**
+               * (Optional) TaskScheduleDefinition for the refresh.
+               */
+              schedule?: TaskScheduleDefinitionConfig;
             }
           >;
     };

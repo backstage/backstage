@@ -56,7 +56,8 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@types/lodash": "^4.14.151"
+    "@types/lodash": "^4.14.151",
+    "luxon": "^3.0.0"
   },
   "files": [
     "dist",

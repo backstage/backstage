@@ -39,10 +39,13 @@ And then add the entity provider to your catalog builder:
 +   builder.addEntityProvider(
 +     GitHubEntityProvider.fromConfig(env.config, {
 +       logger: env.logger,
++       // optional: alternatively, use scheduler with schedule defined in app-config.yaml
 +       schedule: env.scheduler.createScheduledTaskRunner({
 +         frequency: { minutes: 30 },
 +         timeout: { minutes: 3 },
 +       }),
++       // optional: alternatively, use schedule
++       scheduler: env.scheduler,
 +     }),
 +   );
 
@@ -68,6 +71,11 @@ catalog:
         filters:
           branch: 'main' # string
           repository: '.*' # Regex
+        schedule: # optional; same options as in TaskScheduleDefinition
+          # supports cron, ISO duration, "human duration" as used in code
+          frequency: { minutes: 30 }
+          # supports ISO duration, "human duration" as used in code
+          timeout: { minutes: 3 }
       customProviderId:
         organization: 'new-org' # string
         catalogPath: '/custom/path/catalog-info.yaml' # string
@@ -111,26 +119,35 @@ This provider supports multiple organizations via unique provider IDs.
   Default: `/catalog-info.yaml`.
   Path where to look for `catalog-info.yaml` files.
   You can use wildcards - `*` or `**` - to search the path and/or the filename
-- **filters** _(optional)_:
-  - **branch** _(optional)_:
+- **`filters`** _(optional)_:
+  - **`branch`** _(optional)_:
     String used to filter results based on the branch name.
-  - **repository** _(optional)_:
+  - **`repository`** _(optional)_:
     Regular expression used to filter results based on the repository name.
-  - **topic** _(optional)_:
+  - **`topic`** _(optional)_:
     Both of the filters below may be used at the same time but the exclusion filter has the highest priority.
     In the example above, a repository with the `backstage-include` topic would still be excluded
     if it were also carrying the `experiments` topic.
-    - **include** _(optional)_:
+    - **`include`** _(optional)_:
       An array of strings used to filter in results based on their associated GitHub topics.
       If configured, only repositories with one (or more) topic(s) present in the inclusion filter will be ingested
-    - **exclude** _(optional)_:
+    - **`exclude`** _(optional)_:
       An array of strings used to filter out results based on their associated GitHub topics.
       If configured, all repositories _except_ those with one (or more) topics(s) present in the exclusion filter will be ingested.
-- **organization**:
+- **`host`** _(optional)_:
+  The hostname of your GitHub Enterprise instance. It must match a host defined in [integrations.github](locations.md).
+- **`organization`**:
   Name of your organization account/workspace.
   If you want to add multiple organizations, you need to add one provider config each.
-- **host** _(optional)_:
-  The hostname of your GitHub Enterprise instance. It must match a host defined in [integrations.github](locations.md).
+- **`schedule`** _(optional)_:
+  - **`frequency`**:
+    How often you want the task to run. The system does its best to avoid overlapping invocations.
+  - **`timeout`**:
+    The maximum amount of time that a single task invocation can take.
+  - **`initialDelay`** _(optional)_:
+    The amount of time that should pass before the first invocation happens.
+  - **`scope`** _(optional)_:
+    `'global'` or `'local'`. Sets the scope of concurrency control.
 
 ## GitHub API Rate Limits
 
