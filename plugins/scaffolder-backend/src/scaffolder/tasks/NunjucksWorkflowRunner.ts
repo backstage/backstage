@@ -230,7 +230,6 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           const { taskLogger, streamLogger } = createStepLogger({ task, step });
 
           if (task.isDryRun) {
-            await taskTrack.skipDryRun(step, action);
             const redactedSecrets = Object.fromEntries(
               Object.entries(task.secrets ?? {}).map(secret => [
                 secret[0],
@@ -258,13 +257,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
               )}`,
             );
             if (!action.supportsDryRun) {
-              task.emitLog(
-                `Skipping because ${action.id} does not support dry-run`,
-                {
-                  stepId: step.id,
-                  status: 'skipped',
-                },
-              );
+              await taskTrack.skipDryRun(step, action);
               const outputSchema = action.schema?.output;
               if (outputSchema) {
                 context.steps[step.id] = {
@@ -336,13 +329,13 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           await stepTrack.markSuccessful();
         } catch (err) {
           await taskTrack.markFailed(step, err);
-          stepTrack.markFailed();
+          await stepTrack.markFailed();
           throw err;
         }
       }
 
       const output = this.render(task.spec.output, context, renderTemplate);
-      taskTrack.markSuccessful();
+      await taskTrack.markSuccessful();
 
       return { output };
     } finally {
@@ -355,8 +348,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
 function scaffoldingTracker() {
   const taskCount = createCounterMetric({
-    name: 'scaffolder_task_success_count',
-    help: 'Count of succesful task runs',
+    name: 'scaffolder_task_count',
+    help: 'Count of task runs',
     labelNames: ['template', 'user', 'result'],
   });
   const taskDuration = createHistogramMetric({
@@ -365,8 +358,8 @@ function scaffoldingTracker() {
     labelNames: ['template', 'result'],
   });
   const stepCount = createCounterMetric({
-    name: 'scaffolder_step_success_count',
-    help: 'Count of successful step runs',
+    name: 'scaffolder_step_count',
+    help: 'Count of step runs',
     labelNames: ['template', 'step', 'result'],
   });
   const stepDuration = createHistogramMetric({
@@ -394,7 +387,7 @@ function scaffoldingTracker() {
       });
     }
 
-    function markSuccessful() {
+    async function markSuccessful() {
       taskCount.inc({
         template,
         user,
@@ -448,7 +441,7 @@ function scaffoldingTracker() {
       stepTimer({ result: 'ok' });
     }
 
-    function markFailed() {
+    async function markFailed() {
       stepCount.inc({
         template,
         step: step.name,
