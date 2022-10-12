@@ -21,12 +21,16 @@ const pluginMetadata = fs
     let metadata = yaml.load(fileContent);
 
     const gitIsoDate = require('child_process')
-      .execSync(
-        `git log -1 --format="%ai" --reverse ./data/plugins/${file}  | cat -`,
-      )
+      .execFileSync('git', [
+        'log',
+        '-1',
+        '--format="%ai"',
+        '--reverse',
+        `./data/plugins/${file}`,
+      ])
       .toString();
 
-    metadata.date = new Date(gitIsoDate)
+    metadata.date = new Date(gitIsoDate);
 
     return metadata;
   })
@@ -120,7 +124,7 @@ const Plugins = () => (
               <div className="PluginCard">
                 {Math.trunc((Date.now() - date) / (1000 * 60 * 60 * 24)) <
                   newForDays && (
-                  <div class="ribbon ribbon-top-right">
+                  <div className="ribbon ribbon-top-right">
                     <span>NEW</span>
                   </div>
                 )}
