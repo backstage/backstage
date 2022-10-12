@@ -23,7 +23,6 @@ export * from './Header';
 export * from './HeaderActionMenu';
 export * from './HeaderLabel';
 export * from './HeaderTabs';
-export * from './HomepageTimer';
 export * from './InfoCard';
 export * from './ItemCard';
 export * from './Page';

@@ -89,15 +89,6 @@ export interface Config {
     name?: string;
   };
 
-  homepage?: {
-    clocks?: Array<{
-      /** @visibility frontend */
-      label: string;
-      /** @visibility frontend */
-      timezone: string;
-    }>;
-  };
-
   /**
    * Configuration that provides information on available configured authentication providers.
    */
