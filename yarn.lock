@@ -28795,12 +28795,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:^4.0.10, marked@npm:^4.0.14":
+"marked@npm:^4.0.10":
   version: 4.1.0
   resolution: "marked@npm:4.1.0"
   bin:
     marked: bin/marked.js
   checksum: f0b3732a9d6208c933541342e60eb78029bd046c143a6ade0e76ed80b6174f92b186205a9dfe805e435070806ec475b0e87e62d04348eafd2f761c24281b192a
+  languageName: node
+  linkType: hard
+
+"marked@npm:^4.0.14":
+  version: 4.1.1
+  resolution: "marked@npm:4.1.1"
+  bin:
+    marked: bin/marked.js
+  checksum: 717e3357952ee53de831bf0eb110ed075bebca2376c58bcdf7ee523ef540d45308ad6d51b2c933da0968832ea4386f31c142ca65443e77c098e84f6cce73e418
   languageName: node
   linkType: hard
 
