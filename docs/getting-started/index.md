@@ -51,14 +51,10 @@ create a subdirectory inside your current working directory.
 npx @backstage/create-app
 ```
 
-The wizard will ask you
-
-- The name of the app, which will also be the name of the directory
-- The database type to use for the backend. For this guide, you'll be using the
-  SQLite option.
+The wizard will ask you for the name of the app, which will also be the name of the directory
 
 <p align='center'>
-  <img src='../assets/getting-started/wizard.png' alt='Screenshot of the wizard asking for a name for the app, and a selection menu for the database.' />
+  <img src='../assets/getting-started/wizard.png' alt='Screenshot of the wizard asking for a name for the app.' />
 </p>
 
 ### Run the Backstage app
