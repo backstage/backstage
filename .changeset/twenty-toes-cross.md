@@ -2,4 +2,4 @@
 '@backstage/plugin-bazaar': patch
 ---
 
-Change prop name in README.md and removed fixed with from BazaarOverviewCard
+Changed prop name in README.md, removed fixed width and optinal different height from BazaarOverviewCard. Also removed scroll in ProjectCard. 
