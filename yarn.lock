@@ -30017,8 +30017,8 @@ __metadata:
   linkType: hard
 
 "msw@npm:^0.47.0":
-  version: 0.47.3
-  resolution: "msw@npm:0.47.3"
+  version: 0.47.4
+  resolution: "msw@npm:0.47.4"
   dependencies:
     "@mswjs/cookies": ^0.2.2
     "@mswjs/interceptors": ^0.17.5
@@ -30037,7 +30037,7 @@ __metadata:
     outvariant: ^1.3.0
     path-to-regexp: ^6.2.0
     statuses: ^2.0.0
-    strict-event-emitter: ^0.2.0
+    strict-event-emitter: ^0.2.6
     type-fest: ^2.19.0
     yargs: ^17.3.1
   peerDependencies:
@@ -30047,7 +30047,7 @@ __metadata:
       optional: true
   bin:
     msw: cli/index.js
-  checksum: 1be018c7b2eff982409967cccb5c604e45f65710ee9698bab57fbe794f8426d1a4d33e52b75ef395c6d226948c799241c7c2c7748ec4f5b741e7f25bcbafbd1e
+  checksum: 10ff632641d40384d6622abf4df6399e4ae649db0f676b5d1ee2d0a515ec96f33abe9d4fecba08cdba4b2e43255af419da9eefc020d40a7e10669d0906457197
   languageName: node
   linkType: hard
 
@@ -36632,6 +36632,15 @@ __metadata:
   dependencies:
     events: ^3.3.0
   checksum: fe6af7baf4002910ffd04d16f37c994e7b9f56b4c01c8846a3b394efcea6689a9eba3ebcd5283774476c3a7632aae6b47ef89061b0fbf7f2256b8e07a5cab32d
+  languageName: node
+  linkType: hard
+
+"strict-event-emitter@npm:^0.2.6":
+  version: 0.2.7
+  resolution: "strict-event-emitter@npm:0.2.7"
+  dependencies:
+    events: ^3.3.0
+  checksum: 111691e7d3fce0810586ccd8e8234af883ad3b121ef69091c7e260c32299d1ba085a95238ad09b43478bc5e9e80370f2fcb8114716e343be6f44bfc08fab4142
   languageName: node
   linkType: hard
 
