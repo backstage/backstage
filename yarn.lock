@@ -31645,8 +31645,8 @@ __metadata:
   linkType: hard
 
 "passport-saml@npm:^3.1.2":
-  version: 3.2.1
-  resolution: "passport-saml@npm:3.2.1"
+  version: 3.2.2
+  resolution: "passport-saml@npm:3.2.2"
   dependencies:
     "@xmldom/xmldom": ^0.7.5
     debug: ^4.3.2
@@ -31655,7 +31655,7 @@ __metadata:
     xml-encryption: ^2.0.0
     xml2js: ^0.4.23
     xmlbuilder: ^15.1.1
-  checksum: 7236c82f2b16240acc6e026cbe171e130e703d0e85c7f83733be0137218a62f61dee72d34cea00ea02a0db4b823497e574ef4b6585a316097b926eb760f90bb8
+  checksum: 1ae16bb5df60f70ba822896a1d3b360466f87ef6b45e941d28a91c1f9a681752a040da9e8b02e06c665e9b7277dd862abb384eb5e8b10d3b9e5fdabaa68b1691
   languageName: node
   linkType: hard
 
