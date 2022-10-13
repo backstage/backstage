@@ -22,7 +22,7 @@ import * as https from 'https';
 import { Logger } from 'winston';
 import { HttpsSettings } from './config';
 
-const ALMOST_MONTH_IN_MS = 25 * 24 * 60 * 60 * 1000;
+const FIVE_DAYS_IN_MS = 5 * 24 * 60 * 60 * 1000;
 
 const IP_HOSTNAME_REGEX = /:|^\d+\.\d+\.\d+\.\d+$/;
 
@@ -95,15 +95,21 @@ async function getGeneratedCertificate(hostname: string, logger?: Logger) {
   }
 
   let cert = undefined;
+  let remainingMs = 0;
   if (await fs.pathExists(certPath)) {
-    const stat = await fs.stat(certPath);
-    const ageMs = Date.now() - stat.ctimeMs;
-    if (stat.isFile() && ageMs < ALMOST_MONTH_IN_MS) {
-      cert = await fs.readFile(certPath);
+    cert = await fs.readFile(certPath);
+    try {
+      const forge = require('node-forge')
+      const crt = forge.pki.certificateFromPem(cert)
+      const crtTimestamp = Date.parse(crt.validity.notAfter);
+      remainingMs = crtTimestamp - Date.now();
+    } catch (error) {
+      logger.warn(`Unable to parse self-signed certificate. ${error}`);
+      remainingMs = 0
     }
   }
 
-  if (cert) {
+  if (remainingMs > FIVE_DAYS_IN_MS) {
     logger?.info('Using existing self-signed certificate');
     return {
       key: cert,
