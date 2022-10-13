@@ -32,18 +32,24 @@ import {
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 
 describe('DefaultEntitiesCatalog', () => {
+  let knex: Knex;
+
+  afterEach(async () => {
+    await knex.destroy();
+  });
+
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
 
   async function createDatabase(databaseId: TestDatabaseId) {
-    const knex = await databases.init(databaseId);
-    await applyDatabaseMigrations(knex);
-    return { knex };
+    const db = await databases.init(databaseId);
+    await applyDatabaseMigrations(db);
+    return { knex: db };
   }
 
   async function addEntity(
-    knex: Knex,
+    db: Knex,
     entity: Entity,
     parents: { source?: string; entity?: Entity }[],
   ) {
@@ -51,7 +57,7 @@ describe('DefaultEntitiesCatalog', () => {
     const entityRef = stringifyEntityRef(entity);
     const entityJson = JSON.stringify(entity);
 
-    await knex<DbRefreshStateRow>('refresh_state').insert({
+    await db<DbRefreshStateRow>('refresh_state').insert({
       entity_id: id,
       entity_ref: entityRef,
       unprocessed_entity: entityJson,
@@ -60,7 +66,7 @@ describe('DefaultEntitiesCatalog', () => {
       last_discovery_at: '2021-04-01 13:37:00',
     });
 
-    await knex<DbFinalEntitiesRow>('final_entities').insert({
+    await db<DbFinalEntitiesRow>('final_entities').insert({
       entity_id: id,
       final_entity: entityJson,
       hash: 'h',
@@ -68,9 +74,7 @@ describe('DefaultEntitiesCatalog', () => {
     });
 
     for (const parent of parents) {
-      await knex<DbRefreshStateReferencesRow>(
-        'refresh_state_references',
-      ).insert({
+      await db<DbRefreshStateReferencesRow>('refresh_state_references').insert({
         source_key: parent.source,
         source_entity_ref: parent.entity && stringifyEntityRef(parent.entity),
         target_entity_ref: stringifyEntityRef(entity),
@@ -80,12 +84,12 @@ describe('DefaultEntitiesCatalog', () => {
     return id;
   }
 
-  async function addEntityToSearch(knex: Knex, entity: Entity) {
+  async function addEntityToSearch(db: Knex, entity: Entity) {
     const id = uuid();
     const entityRef = stringifyEntityRef(entity);
     const entityJson = JSON.stringify(entity);
 
-    await knex<DbRefreshStateRow>('refresh_state').insert({
+    await db<DbRefreshStateRow>('refresh_state').insert({
       entity_id: id,
       entity_ref: entityRef,
       unprocessed_entity: entityJson,
@@ -94,18 +98,18 @@ describe('DefaultEntitiesCatalog', () => {
       last_discovery_at: '2021-04-01 13:37:00',
     });
 
-    await knex<DbFinalEntitiesRow>('final_entities').insert({
+    await db<DbFinalEntitiesRow>('final_entities').insert({
       entity_id: id,
       final_entity: entityJson,
       hash: 'h',
       stitch_ticket: '',
     });
 
-    await insertSearchRow(knex, id, null, entity);
+    await insertSearchRow(db, id, null, entity);
   }
 
   async function insertSearchRow(
-    knex: Knex,
+    db: Knex,
     id: string,
     previousKey: string | null,
     previousValue: Object,
@@ -116,7 +120,7 @@ describe('DefaultEntitiesCatalog', () => {
         if (typeof value === 'object') {
           await insertSearchRow(knex, id, currentKey, value);
         } else {
-          await knex<DbSearchRow>('search').insert({
+          await db<DbSearchRow>('search').insert({
             entity_id: id,
             key: currentKey,
             value: value,
@@ -130,7 +134,7 @@ describe('DefaultEntitiesCatalog', () => {
     it.each(databases.eachSupportedId())(
       'should return the ancestry with one parent, %p',
       async databaseId => {
-        const { knex } = await createDatabase(databaseId);
+        ({ knex } = await createDatabase(databaseId));
 
         const grandparent: Entity = {
           apiVersion: 'a',
@@ -156,6 +160,7 @@ describe('DefaultEntitiesCatalog', () => {
         await addEntity(knex, root, [{ entity: parent }]);
 
         const catalog = new DefaultEntitiesCatalog(knex);
+
         const result = await catalog.entityAncestry('k:default/root');
         expect(result.rootEntityRef).toEqual('k:default/root');
 
@@ -184,7 +189,7 @@ describe('DefaultEntitiesCatalog', () => {
     it.each(databases.eachSupportedId())(
       'should throw error if the entity does not exist, %p',
       async databaseId => {
-        const { knex } = await createDatabase(databaseId);
+        ({ knex } = await createDatabase(databaseId));
         const catalog = new DefaultEntitiesCatalog(knex);
         await expect(() =>
           catalog.entityAncestry('k:default/root'),
@@ -196,7 +201,7 @@ describe('DefaultEntitiesCatalog', () => {
     it.each(databases.eachSupportedId())(
       'should return the ancestry with multiple parents, %p',
       async databaseId => {
-        const { knex } = await createDatabase(databaseId);
+        ({ knex } = await createDatabase(databaseId));
 
         const grandparent: Entity = {
           apiVersion: 'a',
@@ -267,7 +272,7 @@ describe('DefaultEntitiesCatalog', () => {
     it.each(databases.eachSupportedId())(
       'should return correct entity for simple filter',
       async databaseId => {
-        const { knex } = await createDatabase(databaseId);
+        ({ knex } = await createDatabase(databaseId));
         const entity1: Entity = {
           apiVersion: 'a',
           kind: 'k',
@@ -300,7 +305,7 @@ describe('DefaultEntitiesCatalog', () => {
     it.each(databases.eachSupportedId())(
       'should return correct entity for negation filter',
       async databaseId => {
-        const { knex } = await createDatabase(databaseId);
+        ({ knex } = await createDatabase(databaseId));
         const entity1: Entity = {
           apiVersion: 'a',
           kind: 'k',
@@ -335,7 +340,7 @@ describe('DefaultEntitiesCatalog', () => {
     it.each(databases.eachSupportedId())(
       'should return correct entities for nested filter',
       async databaseId => {
-        const { knex } = await createDatabase(databaseId);
+        ({ knex } = await createDatabase(databaseId));
         const entity1: Entity = {
           apiVersion: 'a',
           kind: 'k',
@@ -404,7 +409,7 @@ describe('DefaultEntitiesCatalog', () => {
     it.each(databases.eachSupportedId())(
       'should return correct entities for complex negation filter',
       async databaseId => {
-        const { knex } = await createDatabase(databaseId);
+        ({ knex } = await createDatabase(databaseId));
         const entity1: Entity = {
           apiVersion: 'a',
           kind: 'k',
@@ -446,7 +451,7 @@ describe('DefaultEntitiesCatalog', () => {
       'should return no matches for an empty values array',
       // NOTE: An empty values array is not a sensible input in a realistic scenario.
       async databaseId => {
-        const { knex } = await createDatabase(databaseId);
+        ({ knex } = await createDatabase(databaseId));
         const entity1: Entity = {
           apiVersion: 'a',
           kind: 'k',
@@ -477,7 +482,7 @@ describe('DefaultEntitiesCatalog', () => {
     it.each(databases.eachSupportedId())(
       'should return both target and targetRef for entities',
       async databaseId => {
-        const { knex } = await createDatabase(databaseId);
+        ({ knex } = await createDatabase(databaseId));
         await addEntity(
           knex,
           {
@@ -538,7 +543,7 @@ describe('DefaultEntitiesCatalog', () => {
         it.each(databases.eachSupportedId())(
           'should return paginated entities and scroll the items accordingly, %p',
           async databaseId => {
-            const { knex } = await createDatabase(databaseId);
+            ({ knex } = await createDatabase(databaseId));
 
             function entityFrom(name: string) {
               return {
@@ -729,7 +734,7 @@ describe('DefaultEntitiesCatalog', () => {
         it.each(databases.eachSupportedId())(
           'should return paginated entities ordered in descending order and scroll the items accordingly, %p',
           async databaseId => {
-            const { knex } = await createDatabase(databaseId);
+            ({ knex } = await createDatabase(databaseId));
 
             function entityFrom(name: string) {
               return {
@@ -921,7 +926,7 @@ describe('DefaultEntitiesCatalog', () => {
         it.each(databases.eachSupportedId())(
           'should filter the results when query is provided, %p',
           async databaseId => {
-            const { knex } = await createDatabase(databaseId);
+            ({ knex } = await createDatabase(databaseId));
 
             function entityFrom(name: string) {
               return {
@@ -994,7 +999,7 @@ describe('DefaultEntitiesCatalog', () => {
         it.each(databases.eachSupportedId())(
           'should include totalItems and empty entities in the response in case limit is zero, %p',
           async databaseId => {
-            const { knex } = await createDatabase(databaseId);
+            ({ knex } = await createDatabase(databaseId));
 
             await Promise.all(
               Array(20)
@@ -1027,7 +1032,7 @@ describe('DefaultEntitiesCatalog', () => {
     it.each(databases.eachSupportedId())(
       'also clears parent hashes',
       async databaseId => {
-        const { knex } = await createDatabase(databaseId);
+        ({ knex } = await createDatabase(databaseId));
 
         const grandparent: Entity = {
           apiVersion: 'a',
@@ -1092,7 +1097,7 @@ describe('DefaultEntitiesCatalog', () => {
     it.each(databases.eachSupportedId())(
       'can filter and collect properly',
       async databaseId => {
-        const { knex } = await createDatabase(databaseId);
+        ({ knex } = await createDatabase(databaseId));
 
         await addEntityToSearch(knex, {
           apiVersion: 'a',
@@ -1128,7 +1133,7 @@ describe('DefaultEntitiesCatalog', () => {
     it.each(databases.eachSupportedId())(
       'can match on annotations and labels with dots in them',
       async databaseId => {
-        const { knex } = await createDatabase(databaseId);
+        ({ knex } = await createDatabase(databaseId));
 
         await addEntityToSearch(knex, {
           apiVersion: 'a',
@@ -1174,7 +1179,7 @@ describe('DefaultEntitiesCatalog', () => {
     it.each(databases.eachSupportedId())(
       'can match on strings in arrays',
       async databaseId => {
-        const { knex } = await createDatabase(databaseId);
+        ({ knex } = await createDatabase(databaseId));
 
         await addEntityToSearch(knex, {
           apiVersion: 'a',
