@@ -146,6 +146,7 @@ export interface EntitiesCatalog {
    */
   paginatedEntities(
     request?: PaginatedEntitiesRequest,
+    options?: PaginatedEntitiesOptions,
   ): Promise<PaginatedEntitiesResponse>;
 
   /**
@@ -185,6 +186,13 @@ export interface EntitiesCatalog {
 export type PaginatedEntitiesRequest =
   | PaginatedEntitiesInitialRequest
   | PaginatedEntitiesCursorRequest;
+
+/**
+ * Options for {@link EntitiesCatalog.paginatedEntities}.
+ */
+export type PaginatedEntitiesOptions = {
+  pagination: 'cursor' | 'offset';
+};
 
 /**
  * The initial request for {@link EntitiesCatalog.paginatedEntities}.
@@ -253,8 +261,10 @@ export type Cursor = {
   /**
    * The value of the cursor of the last item returned.
    * This is used for performing pagination.
+   * The value will be a string[] in case of cursor based pagination
+   * or a number in case of offset based pagination.
    */
-  sortFieldIds: string[];
+  offset: string[] | number;
 
   /**
    * A filter to apply on the full list of entities.
@@ -269,11 +279,12 @@ export type Cursor = {
    */
   query?: string;
   /**
-   * Sort field id of the first item.
-   * The catalog uses this field internally for understanding when the beginning
-   * of the list has been reached when performing cursor based pagination.
+   * Sort field ids of the first item.
+   * The catalog uses this field internally when performing cursor based pagination,
+   * to understand if the beginning of the list has been reached.
    */
-  firstFieldId: string;
+  firstItemFields: string[];
+
   /**
    * The number of items that match the provided filters
    */

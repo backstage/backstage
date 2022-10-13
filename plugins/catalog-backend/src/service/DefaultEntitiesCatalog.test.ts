@@ -532,398 +532,493 @@ describe('DefaultEntitiesCatalog', () => {
   });
 
   describe('paginatedEntities', () => {
-    it.each(databases.eachSupportedId())(
-      'should return paginated entities and scroll the items accordingly, %p',
-      async databaseId => {
-        const { knex } = await createDatabase(databaseId);
+    describe.each(['cursor', 'offset'] as const)(
+      'pagination using %s',
+      pagination => {
+        it.each(databases.eachSupportedId())(
+          'should return paginated entities and scroll the items accordingly, %p',
+          async databaseId => {
+            const { knex } = await createDatabase(databaseId);
 
-        function entityFrom(name: string) {
-          return {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name },
-            spec: { should_include_this: 'yes' },
-          };
-        }
-
-        const names = ['B', 'F', 'A', 'G', 'D', 'C', 'E'];
-        const entities: Entity[] = names.map(entityFrom);
-
-        const notFoundEntities: Entity[] = [
-          {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name: 'something' },
-            spec: {},
-          },
-          {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name: 'something else' },
-            spec: {},
-          },
-        ];
-
-        await Promise.all(
-          entities
-            .concat(notFoundEntities)
-            .map(e => addEntityToSearch(knex, e)),
-        );
-
-        const catalog = new DefaultEntitiesCatalog(knex);
-
-        const filter = {
-          key: 'spec.should_include_this',
-        };
-
-        const limit = 2;
-
-        // initial request
-        const request1: PaginatedEntitiesInitialRequest = {
-          filter,
-          limit,
-          sortFields: [{ field: 'metadata.name' }],
-        };
-        const response1 = await catalog.paginatedEntities(request1);
-        expect(response1.entities).toEqual([entityFrom('A'), entityFrom('B')]);
-        expect(response1.nextCursor).toBeDefined();
-        expect(response1.prevCursor).toBeUndefined();
-        expect(response1.totalItems).toBe(names.length);
-
-        // second request (forward)
-        const request2: PaginatedEntitiesCursorRequest = {
-          cursor: response1.nextCursor!,
-          limit,
-        };
-        const response2 = await catalog.paginatedEntities(request2);
-        expect(response2.entities).toEqual([entityFrom('C'), entityFrom('D')]);
-        expect(response2.nextCursor).toBeDefined();
-        expect(response2.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
-
-        // third request (forward)
-        const request3: PaginatedEntitiesCursorRequest = {
-          cursor: response2.nextCursor!,
-          limit,
-        };
-        const response3 = await catalog.paginatedEntities(request3);
-        expect(response3.entities).toEqual([entityFrom('E'), entityFrom('F')]);
-        expect(response3.nextCursor).toBeDefined();
-        expect(response3.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
-
-        // fourth request (backwards)
-        const request4: PaginatedEntitiesCursorRequest = {
-          cursor: response3.prevCursor!,
-          limit,
-        };
-        const response4 = await catalog.paginatedEntities(request4);
-        expect(response4.entities).toEqual([entityFrom('C'), entityFrom('D')]);
-        expect(response4.nextCursor).toBeDefined();
-        expect(response4.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
-
-        // fifth request (backwards)
-        const request5: PaginatedEntitiesCursorRequest = {
-          cursor: response4.prevCursor!,
-          limit,
-        };
-        const response5 = await catalog.paginatedEntities(request5);
-        expect(response5.entities).toEqual([entityFrom('A'), entityFrom('B')]);
-        expect(response5.nextCursor).toBeDefined();
-        expect(response5.prevCursor).toBeUndefined();
-        expect(response1.totalItems).toBe(names.length);
-
-        // sixth request (forward)
-        const request6: PaginatedEntitiesCursorRequest = {
-          cursor: response5.nextCursor!,
-          limit,
-        };
-        const response6 = await catalog.paginatedEntities(request6);
-        expect(response6.entities).toEqual([entityFrom('C'), entityFrom('D')]);
-        expect(response6.nextCursor).toBeDefined();
-        expect(response6.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
-
-        // seventh request (forward)
-        const request7: PaginatedEntitiesCursorRequest = {
-          cursor: response6.nextCursor!,
-          limit,
-        };
-        const response7 = await catalog.paginatedEntities(request7);
-        expect(response7.entities).toEqual([entityFrom('E'), entityFrom('F')]);
-        expect(response7.nextCursor).toBeDefined();
-        expect(response7.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
-
-        // seventh.2 request (forward with a different limit)
-        const request7bis: PaginatedEntitiesCursorRequest = {
-          cursor: response6.nextCursor!,
-          limit: limit + 1,
-        };
-        const response7bis = await catalog.paginatedEntities(request7bis);
-        expect(response7bis.entities).toEqual([
-          entityFrom('E'),
-          entityFrom('F'),
-          entityFrom('G'),
-        ]);
-        expect(response7bis.nextCursor).toBeUndefined();
-        expect(response7bis.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
-
-        // last request (forward)
-        const request8: PaginatedEntitiesCursorRequest = {
-          cursor: response7.nextCursor!,
-          limit,
-        };
-        const response8 = await catalog.paginatedEntities(request8);
-        expect(response8.entities).toEqual([entityFrom('G')]);
-        expect(response8.nextCursor).toBeUndefined();
-        expect(response8.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
-      },
-    );
-
-    it.each(databases.eachSupportedId())(
-      'should return paginated entities ordered in descending order and scroll the items accordingly, %p',
-      async databaseId => {
-        const { knex } = await createDatabase(databaseId);
-
-        function entityFrom(name: string) {
-          return {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name },
-            spec: { should_include_this: 'yes' },
-          };
-        }
-
-        const names = ['B', 'F', 'A', 'G', 'D', 'C', 'E'];
-        const entities: Entity[] = names.map(entityFrom);
-
-        const notFoundEntities: Entity[] = [
-          {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name: 'something' },
-            spec: {},
-          },
-          {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name: 'something else' },
-            spec: {},
-          },
-        ];
-
-        await Promise.all(
-          entities
-            .concat(notFoundEntities)
-            .map(e => addEntityToSearch(knex, e)),
-        );
-
-        const catalog = new DefaultEntitiesCatalog(knex);
-
-        const filter = {
-          key: 'spec.should_include_this',
-        };
-
-        const limit = 2;
-
-        // initial request
-        const request1: PaginatedEntitiesInitialRequest = {
-          filter,
-          limit,
-          sortFields: [{ field: 'metadata.name', order: 'desc' }],
-        };
-        const response1 = await catalog.paginatedEntities(request1);
-        expect(response1.entities).toEqual([entityFrom('G'), entityFrom('F')]);
-        expect(response1.nextCursor).toBeDefined();
-        expect(response1.prevCursor).toBeUndefined();
-        expect(response1.totalItems).toBe(names.length);
-
-        // second request (forward)
-        const request2: PaginatedEntitiesCursorRequest = {
-          cursor: response1.nextCursor!,
-          limit,
-        };
-        const response2 = await catalog.paginatedEntities(request2);
-        expect(response2.entities).toEqual([entityFrom('E'), entityFrom('D')]);
-        expect(response2.nextCursor).toBeDefined();
-        expect(response2.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
-
-        // third request (forward)
-        const request3: PaginatedEntitiesCursorRequest = {
-          cursor: response2.nextCursor!,
-          limit,
-        };
-        const response3 = await catalog.paginatedEntities(request3);
-        expect(response3.entities).toEqual([entityFrom('C'), entityFrom('B')]);
-        expect(response3.nextCursor).toBeDefined();
-        expect(response3.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
-
-        // fourth request (backwards)
-        const request4: PaginatedEntitiesCursorRequest = {
-          cursor: response3.prevCursor!,
-          limit,
-        };
-        const response4 = await catalog.paginatedEntities(request4);
-
-        expect(response4.entities).toEqual([entityFrom('E'), entityFrom('D')]);
-        expect(response4.nextCursor).toBeDefined();
-        expect(response4.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
-
-        // fifth request (backwards)
-        const request5: PaginatedEntitiesCursorRequest = {
-          cursor: response4.prevCursor!,
-          limit,
-        };
-        const response5 = await catalog.paginatedEntities(request5);
-        expect(response5.entities).toEqual([entityFrom('G'), entityFrom('F')]);
-        expect(response5.nextCursor).toBeDefined();
-        expect(response5.prevCursor).toBeUndefined();
-        expect(response1.totalItems).toBe(names.length);
-
-        // sixth request (forward)
-        const request6: PaginatedEntitiesCursorRequest = {
-          cursor: response5.nextCursor!,
-          limit,
-        };
-        const response6 = await catalog.paginatedEntities(request6);
-        expect(response6.entities).toEqual([entityFrom('E'), entityFrom('D')]);
-        expect(response6.nextCursor).toBeDefined();
-        expect(response6.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
-
-        // seventh request (forward)
-        const request7: PaginatedEntitiesCursorRequest = {
-          cursor: response6.nextCursor!,
-          limit,
-        };
-        const response7 = await catalog.paginatedEntities(request7);
-        expect(response7.entities).toEqual([entityFrom('C'), entityFrom('B')]);
-        expect(response7.nextCursor).toBeDefined();
-        expect(response7.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
-
-        // seventh.2 request (forward with a different limit)
-        const request7bis: PaginatedEntitiesCursorRequest = {
-          cursor: response6.nextCursor!,
-          limit: limit + 1,
-        };
-        const response7bis = await catalog.paginatedEntities(request7bis);
-        expect(response7bis.entities).toEqual([
-          entityFrom('C'),
-          entityFrom('B'),
-          entityFrom('A'),
-        ]);
-        expect(response7bis.nextCursor).toBeUndefined();
-        expect(response7bis.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
-
-        // last request (forward)
-        const request8: PaginatedEntitiesCursorRequest = {
-          cursor: response7.nextCursor!,
-          limit,
-        };
-        const response8 = await catalog.paginatedEntities(request8);
-        expect(response8.entities).toEqual([entityFrom('A')]);
-        expect(response8.nextCursor).toBeUndefined();
-        expect(response8.prevCursor).toBeDefined();
-        expect(response1.totalItems).toBe(names.length);
-      },
-    );
-
-    it.each(databases.eachSupportedId())(
-      'should filter the results when query is provided, %p',
-      async databaseId => {
-        const { knex } = await createDatabase(databaseId);
-
-        function entityFrom(name: string) {
-          return {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name },
-            spec: { should_include_this: 'yes' },
-          };
-        }
-
-        const names = ['lion', 'cat', 'atcatss', 'dog', 'dogcat', 'aa', 's'];
-        const entities: Entity[] = names.map(entityFrom);
-
-        const notFoundEntities: Entity[] = [
-          {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name: 'something' },
-            spec: {},
-          },
-          {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name: 'something else' },
-            spec: {},
-          },
-        ];
-
-        await Promise.all(
-          entities
-            .concat(notFoundEntities)
-            .map(e => addEntityToSearch(knex, e)),
-        );
-
-        const catalog = new DefaultEntitiesCatalog(knex);
-
-        const filter = {
-          key: 'spec.should_include_this',
-        };
-
-        const request: PaginatedEntitiesInitialRequest = {
-          filter,
-          limit: 100,
-
-          sortFields: [{ field: 'metadata.name' }],
-          query: 'cAt ',
-        };
-        const response = await catalog.paginatedEntities(request);
-        expect(response.entities).toEqual([
-          entityFrom('atcatss'),
-          entityFrom('cat'),
-          entityFrom('dogcat'),
-        ]);
-        expect(response.nextCursor).toBeUndefined();
-        expect(response.prevCursor).toBeUndefined();
-        expect(response.totalItems).toBe(3);
-      },
-    );
-
-    it.each(databases.eachSupportedId())(
-      'should include totalItems and empty entities in the response in case limit is zero, %p',
-      async databaseId => {
-        const { knex } = await createDatabase(databaseId);
-
-        await Promise.all(
-          Array(20)
-            .fill(0)
-            .map(() =>
-              addEntityToSearch(knex, {
+            function entityFrom(name: string) {
+              return {
                 apiVersion: 'a',
                 kind: 'k',
-                metadata: { name: v4() },
-              }),
-            ),
+                metadata: { name },
+                spec: { should_include_this: 'yes' },
+              };
+            }
+
+            const names = ['B', 'F', 'A', 'G', 'D', 'C', 'E'];
+            const entities: Entity[] = names.map(entityFrom);
+
+            const notFoundEntities: Entity[] = [
+              {
+                apiVersion: 'a',
+                kind: 'k',
+                metadata: { name: 'something' },
+                spec: {},
+              },
+              {
+                apiVersion: 'a',
+                kind: 'k',
+                metadata: { name: 'something else' },
+                spec: {},
+              },
+            ];
+
+            await Promise.all(
+              entities
+                .concat(notFoundEntities)
+                .map(e => addEntityToSearch(knex, e)),
+            );
+
+            const catalog = new DefaultEntitiesCatalog(knex);
+
+            const filter = {
+              key: 'spec.should_include_this',
+            };
+
+            const limit = 2;
+
+            // initial request
+            const request1: PaginatedEntitiesInitialRequest = {
+              filter,
+              limit,
+              sortFields: [{ field: 'metadata.name' }],
+            };
+            const response1 = await catalog.paginatedEntities(request1, {
+              pagination,
+            });
+            expect(response1.entities).toEqual([
+              entityFrom('A'),
+              entityFrom('B'),
+            ]);
+            expect(response1.nextCursor).toBeDefined();
+            expect(response1.prevCursor).toBeUndefined();
+            expect(response1.totalItems).toBe(names.length);
+
+            // second request (forward)
+            const request2: PaginatedEntitiesCursorRequest = {
+              cursor: response1.nextCursor!,
+              limit,
+            };
+            const response2 = await catalog.paginatedEntities(request2, {
+              pagination,
+            });
+            expect(response2.entities).toEqual([
+              entityFrom('C'),
+              entityFrom('D'),
+            ]);
+            expect(response2.nextCursor).toBeDefined();
+            expect(response2.prevCursor).toBeDefined();
+            expect(response1.totalItems).toBe(names.length);
+
+            // third request (forward)
+            const request3: PaginatedEntitiesCursorRequest = {
+              cursor: response2.nextCursor!,
+              limit,
+            };
+            const response3 = await catalog.paginatedEntities(request3, {
+              pagination,
+            });
+            expect(response3.entities).toEqual([
+              entityFrom('E'),
+              entityFrom('F'),
+            ]);
+            expect(response3.nextCursor).toBeDefined();
+            expect(response3.prevCursor).toBeDefined();
+            expect(response1.totalItems).toBe(names.length);
+
+            // fourth request (backwards)
+            const request4: PaginatedEntitiesCursorRequest = {
+              cursor: response3.prevCursor!,
+              limit,
+            };
+            const response4 = await catalog.paginatedEntities(request4, {
+              pagination,
+            });
+            expect(response4.entities).toEqual([
+              entityFrom('C'),
+              entityFrom('D'),
+            ]);
+            expect(response4.nextCursor).toBeDefined();
+            expect(response4.prevCursor).toBeDefined();
+            expect(response1.totalItems).toBe(names.length);
+
+            // fifth request (backwards)
+            const request5: PaginatedEntitiesCursorRequest = {
+              cursor: response4.prevCursor!,
+              limit,
+            };
+            const response5 = await catalog.paginatedEntities(request5, {
+              pagination,
+            });
+            expect(response5.entities).toEqual([
+              entityFrom('A'),
+              entityFrom('B'),
+            ]);
+            expect(response5.nextCursor).toBeDefined();
+            expect(response5.prevCursor).toBeUndefined();
+            expect(response1.totalItems).toBe(names.length);
+
+            // sixth request (forward)
+            const request6: PaginatedEntitiesCursorRequest = {
+              cursor: response5.nextCursor!,
+              limit,
+            };
+            const response6 = await catalog.paginatedEntities(request6, {
+              pagination,
+            });
+            expect(response6.entities).toEqual([
+              entityFrom('C'),
+              entityFrom('D'),
+            ]);
+            expect(response6.nextCursor).toBeDefined();
+            expect(response6.prevCursor).toBeDefined();
+            expect(response1.totalItems).toBe(names.length);
+
+            // seventh request (forward)
+            const request7: PaginatedEntitiesCursorRequest = {
+              cursor: response6.nextCursor!,
+              limit,
+            };
+            const response7 = await catalog.paginatedEntities(request7, {
+              pagination,
+            });
+            expect(response7.entities).toEqual([
+              entityFrom('E'),
+              entityFrom('F'),
+            ]);
+            expect(response7.nextCursor).toBeDefined();
+            expect(response7.prevCursor).toBeDefined();
+            expect(response1.totalItems).toBe(names.length);
+
+            // seventh.2 request (forward with a different limit)
+            const request7bis: PaginatedEntitiesCursorRequest = {
+              cursor: response6.nextCursor!,
+              limit: limit + 1,
+            };
+            const response7bis = await catalog.paginatedEntities(request7bis, {
+              pagination,
+            });
+            expect(response7bis.entities).toEqual([
+              entityFrom('E'),
+              entityFrom('F'),
+              entityFrom('G'),
+            ]);
+            expect(response7bis.nextCursor).toBeUndefined();
+            expect(response7bis.prevCursor).toBeDefined();
+            expect(response1.totalItems).toBe(names.length);
+
+            // last request (forward)
+            const request8: PaginatedEntitiesCursorRequest = {
+              cursor: response7.nextCursor!,
+              limit,
+            };
+            const response8 = await catalog.paginatedEntities(request8, {
+              pagination,
+            });
+            expect(response8.entities).toEqual([entityFrom('G')]);
+            expect(response8.nextCursor).toBeUndefined();
+            expect(response8.prevCursor).toBeDefined();
+            expect(response1.totalItems).toBe(names.length);
+          },
         );
 
-        const catalog = new DefaultEntitiesCatalog(knex);
+        it.each(databases.eachSupportedId())(
+          'should return paginated entities ordered in descending order and scroll the items accordingly, %p',
+          async databaseId => {
+            const { knex } = await createDatabase(databaseId);
 
-        const request: PaginatedEntitiesInitialRequest = {
-          limit: 0,
-        };
-        const response = await catalog.paginatedEntities(request);
-        expect(response).toEqual({ totalItems: 20, entities: [] });
+            function entityFrom(name: string) {
+              return {
+                apiVersion: 'a',
+                kind: 'k',
+                metadata: { name },
+                spec: { should_include_this: 'yes' },
+              };
+            }
+
+            const names = ['B', 'F', 'A', 'G', 'D', 'C', 'E'];
+            const entities: Entity[] = names.map(entityFrom);
+
+            const notFoundEntities: Entity[] = [
+              {
+                apiVersion: 'a',
+                kind: 'k',
+                metadata: { name: 'something' },
+                spec: {},
+              },
+              {
+                apiVersion: 'a',
+                kind: 'k',
+                metadata: { name: 'something else' },
+                spec: {},
+              },
+            ];
+
+            await Promise.all(
+              entities
+                .concat(notFoundEntities)
+                .map(e => addEntityToSearch(knex, e)),
+            );
+
+            const catalog = new DefaultEntitiesCatalog(knex);
+
+            const filter = {
+              key: 'spec.should_include_this',
+            };
+
+            const limit = 2;
+
+            // initial request
+            const request1: PaginatedEntitiesInitialRequest = {
+              filter,
+              limit,
+              sortFields: [{ field: 'metadata.name', order: 'desc' }],
+            };
+            const response1 = await catalog.paginatedEntities(request1, {
+              pagination,
+            });
+            expect(response1.entities).toEqual([
+              entityFrom('G'),
+              entityFrom('F'),
+            ]);
+            expect(response1.nextCursor).toBeDefined();
+            expect(response1.prevCursor).toBeUndefined();
+            expect(response1.totalItems).toBe(names.length);
+
+            // second request (forward)
+            const request2: PaginatedEntitiesCursorRequest = {
+              cursor: response1.nextCursor!,
+              limit,
+            };
+            const response2 = await catalog.paginatedEntities(request2, {
+              pagination,
+            });
+            expect(response2.entities).toEqual([
+              entityFrom('E'),
+              entityFrom('D'),
+            ]);
+            expect(response2.nextCursor).toBeDefined();
+            expect(response2.prevCursor).toBeDefined();
+            expect(response1.totalItems).toBe(names.length);
+
+            // third request (forward)
+            const request3: PaginatedEntitiesCursorRequest = {
+              cursor: response2.nextCursor!,
+              limit,
+            };
+            const response3 = await catalog.paginatedEntities(request3, {
+              pagination,
+            });
+            expect(response3.entities).toEqual([
+              entityFrom('C'),
+              entityFrom('B'),
+            ]);
+            expect(response3.nextCursor).toBeDefined();
+            expect(response3.prevCursor).toBeDefined();
+            expect(response1.totalItems).toBe(names.length);
+
+            // fourth request (backwards)
+            const request4: PaginatedEntitiesCursorRequest = {
+              cursor: response3.prevCursor!,
+              limit,
+            };
+            const response4 = await catalog.paginatedEntities(request4, {
+              pagination,
+            });
+
+            expect(response4.entities).toEqual([
+              entityFrom('E'),
+              entityFrom('D'),
+            ]);
+            expect(response4.nextCursor).toBeDefined();
+            expect(response4.prevCursor).toBeDefined();
+            expect(response1.totalItems).toBe(names.length);
+
+            // fifth request (backwards)
+            const request5: PaginatedEntitiesCursorRequest = {
+              cursor: response4.prevCursor!,
+              limit,
+            };
+            const response5 = await catalog.paginatedEntities(request5, {
+              pagination,
+            });
+            expect(response5.entities).toEqual([
+              entityFrom('G'),
+              entityFrom('F'),
+            ]);
+            expect(response5.nextCursor).toBeDefined();
+            expect(response5.prevCursor).toBeUndefined();
+            expect(response1.totalItems).toBe(names.length);
+
+            // sixth request (forward)
+            const request6: PaginatedEntitiesCursorRequest = {
+              cursor: response5.nextCursor!,
+              limit,
+            };
+            const response6 = await catalog.paginatedEntities(request6, {
+              pagination,
+            });
+            expect(response6.entities).toEqual([
+              entityFrom('E'),
+              entityFrom('D'),
+            ]);
+            expect(response6.nextCursor).toBeDefined();
+            expect(response6.prevCursor).toBeDefined();
+            expect(response1.totalItems).toBe(names.length);
+
+            // seventh request (forward)
+            const request7: PaginatedEntitiesCursorRequest = {
+              cursor: response6.nextCursor!,
+              limit,
+            };
+            const response7 = await catalog.paginatedEntities(request7, {
+              pagination,
+            });
+            expect(response7.entities).toEqual([
+              entityFrom('C'),
+              entityFrom('B'),
+            ]);
+            expect(response7.nextCursor).toBeDefined();
+            expect(response7.prevCursor).toBeDefined();
+            expect(response1.totalItems).toBe(names.length);
+
+            // seventh.2 request (forward with a different limit)
+            const request7bis: PaginatedEntitiesCursorRequest = {
+              cursor: response6.nextCursor!,
+              limit: limit + 1,
+            };
+            const response7bis = await catalog.paginatedEntities(request7bis, {
+              pagination,
+            });
+            expect(response7bis.entities).toEqual([
+              entityFrom('C'),
+              entityFrom('B'),
+              entityFrom('A'),
+            ]);
+            expect(response7bis.nextCursor).toBeUndefined();
+            expect(response7bis.prevCursor).toBeDefined();
+            expect(response1.totalItems).toBe(names.length);
+
+            // last request (forward)
+            const request8: PaginatedEntitiesCursorRequest = {
+              cursor: response7.nextCursor!,
+              limit,
+            };
+            const response8 = await catalog.paginatedEntities(request8, {
+              pagination,
+            });
+            expect(response8.entities).toEqual([entityFrom('A')]);
+            expect(response8.nextCursor).toBeUndefined();
+            expect(response8.prevCursor).toBeDefined();
+            expect(response1.totalItems).toBe(names.length);
+          },
+        );
+
+        it.each(databases.eachSupportedId())(
+          'should filter the results when query is provided, %p',
+          async databaseId => {
+            const { knex } = await createDatabase(databaseId);
+
+            function entityFrom(name: string) {
+              return {
+                apiVersion: 'a',
+                kind: 'k',
+                metadata: { name },
+                spec: { should_include_this: 'yes' },
+              };
+            }
+
+            const names = [
+              'lion',
+              'cat',
+              'atcatss',
+              'dog',
+              'dogcat',
+              'aa',
+              's',
+            ];
+            const entities: Entity[] = names.map(entityFrom);
+
+            const notFoundEntities: Entity[] = [
+              {
+                apiVersion: 'a',
+                kind: 'k',
+                metadata: { name: 'something' },
+                spec: {},
+              },
+              {
+                apiVersion: 'a',
+                kind: 'k',
+                metadata: { name: 'something else' },
+                spec: {},
+              },
+            ];
+
+            await Promise.all(
+              entities
+                .concat(notFoundEntities)
+                .map(e => addEntityToSearch(knex, e)),
+            );
+
+            const catalog = new DefaultEntitiesCatalog(knex);
+
+            const filter = {
+              key: 'spec.should_include_this',
+            };
+
+            const request: PaginatedEntitiesInitialRequest = {
+              filter,
+              limit: 100,
+
+              sortFields: [{ field: 'metadata.name' }],
+              query: 'cAt ',
+            };
+            const response = await catalog.paginatedEntities(request, {
+              pagination,
+            });
+            expect(response.entities).toEqual([
+              entityFrom('atcatss'),
+              entityFrom('cat'),
+              entityFrom('dogcat'),
+            ]);
+            expect(response.nextCursor).toBeUndefined();
+            expect(response.prevCursor).toBeUndefined();
+            expect(response.totalItems).toBe(3);
+          },
+        );
+
+        it.each(databases.eachSupportedId())(
+          'should include totalItems and empty entities in the response in case limit is zero, %p',
+          async databaseId => {
+            const { knex } = await createDatabase(databaseId);
+
+            await Promise.all(
+              Array(20)
+                .fill(0)
+                .map(() =>
+                  addEntityToSearch(knex, {
+                    apiVersion: 'a',
+                    kind: 'k',
+                    metadata: { name: v4() },
+                  }),
+                ),
+            );
+
+            const catalog = new DefaultEntitiesCatalog(knex);
+
+            const request: PaginatedEntitiesInitialRequest = {
+              limit: 0,
+            };
+            const response = await catalog.paginatedEntities(request, {
+              pagination,
+            });
+            expect(response).toEqual({ totalItems: 20, entities: [] });
+          },
+        );
       },
     );
   });

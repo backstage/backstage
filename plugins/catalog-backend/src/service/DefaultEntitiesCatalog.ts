@@ -34,6 +34,7 @@ import {
   EntityFilter,
   EntityPagination,
   EntitySortField,
+  PaginatedEntitiesOptions,
   PaginatedEntitiesRequest,
   PaginatedEntitiesResponse,
 } from '../catalog/types';
@@ -253,26 +254,48 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
   async paginatedEntities(
     request?: PaginatedEntitiesRequest,
+    options: PaginatedEntitiesOptions = { pagination: 'offset' },
   ): Promise<PaginatedEntitiesResponse> {
     const db = this.database;
     const limit = request?.limit ?? 20;
 
-    const cursor: Omit<Cursor, 'sortFieldIds'> & { sortFieldIds?: string[] } = {
-      firstFieldId: '',
+    const cursor: Omit<Cursor, 'offset' | 'firstItemFields'> & {
+      offset?: string[] | number;
+      firstItemFields?: string[];
+    } = {
       sortFields: [defaultSortField],
       isPrevious: false,
       ...parseCursorFromRequest(request),
     };
 
-    const isFetchingBackwards = cursor.isPrevious;
+    let offset = 0;
 
-    // TODO(vinzscam): at the moment only a single sortField is supported
+    let isCursorBasedPagination = options.pagination === 'cursor';
+    let sortFieldId: string | undefined;
+
+    // infer the pagination method from the cursor
+    if (cursor.offset) {
+      if (Array.isArray(cursor.offset)) {
+        isCursorBasedPagination = true;
+        // TODO(vinzscam): at the moment only a single sort field is supported
+        sortFieldId = cursor.offset?.[0];
+      }
+
+      if (typeof cursor.offset === 'number') {
+        isCursorBasedPagination = false;
+        offset = cursor.offset;
+      }
+    }
+
+    const isFetchingBackwards = isCursorBasedPagination
+      ? cursor.isPrevious
+      : false;
+
+    // TODO(vinzscam): at the moment only a single sort field is supported
     const sortField: EntitySortField = {
       ...defaultSortField,
       ...cursor.sortFields[0],
     };
-
-    const sortFieldId = cursor.sortFieldIds?.[0];
 
     const dbQuery = db('search')
       .join('final_entities', 'search.entity_id', 'final_entities.entity_id')
@@ -290,15 +313,19 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       );
     }
 
-    const countQuery = dbQuery.clone();
+    const countQuery = dbQuery
+      .clone()
+      .count('search.entity_id', { as: 'count' });
 
-    const isOrderingDescending = sortField.order === 'desc';
-    if (sortFieldId) {
-      dbQuery.andWhere(
-        'value',
-        isFetchingBackwards !== isOrderingDescending ? '<' : '>',
-        sortFieldId,
-      );
+    if (isCursorBasedPagination) {
+      const isOrderingDescending = sortField.order === 'desc';
+      if (sortFieldId) {
+        dbQuery.andWhere(
+          'value',
+          isFetchingBackwards !== isOrderingDescending ? '<' : '>',
+          sortFieldId,
+        );
+      }
     }
 
     dbQuery
@@ -309,14 +336,15 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       // fetch an extra item to check if there are more items.
       .limit(isFetchingBackwards ? limit : limit + 1);
 
-    countQuery.count('search.entity_id', { as: 'count' });
+    if (!isCursorBasedPagination && offset) {
+      dbQuery.offset(offset);
+    }
 
     const [rows, [{ count }]] = await Promise.all([
       dbQuery,
-      // for performance reasons we invoke the countQuery
-      // only on the first request.
-      // The result is then embedded into the cursor
-      // for subsequent requests.
+      // for performance reasons invoke the countQuery
+      // only on the first request and embed the value
+      // into the cursor for subsequent requests.
       typeof cursor.totalItems === 'undefined'
         ? countQuery
         : [{ count: cursor.totalItems }],
@@ -335,36 +363,38 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       rows.length -= 1;
     }
 
-    const isInitialRequest = cursor.firstFieldId === '';
+    const hasPrevResults =
+      cursor.firstItemFields &&
+      rows.length > 0 &&
+      rows[0].value !== cursor.firstItemFields[0];
 
-    const firstFieldId = cursor.firstFieldId || rows[0]?.value;
+    const firstItemFields = cursor.firstItemFields || [rows[0]?.value];
+
+    const prevCursor = hasPrevResults
+      ? encodeCursor({
+          ...cursor,
+          offset: isCursorBasedPagination ? [rows[0].value] : offset - limit,
+          firstItemFields,
+          isPrevious: true,
+          totalItems,
+        })
+      : undefined;
 
     const nextCursor = hasMoreResults
       ? encodeCursor({
           ...cursor,
-          sortFieldIds: [rows[rows.length - 1].value],
-          firstFieldId,
+          offset: isCursorBasedPagination
+            ? [rows[rows.length - 1].value]
+            : offset + limit,
+          firstItemFields,
           isPrevious: false,
           totalItems,
         })
       : undefined;
 
-    const prevCursor =
-      !isInitialRequest &&
-      rows.length > 0 &&
-      rows[0].value !== cursor.firstFieldId
-        ? encodeCursor({
-            ...cursor,
-            sortFieldIds: [rows[0].value],
-            firstFieldId: cursor.firstFieldId,
-            isPrevious: true,
-            totalItems,
-          })
-        : undefined;
-
     const entities = rows
       .map(e => JSON.parse(e.final_entity!))
-      .map(e => (request?.fields ? request.fields(e) : e));
+      .map(e => request?.fields?.(e) ?? e);
 
     return { entities, prevCursor, nextCursor, totalItems };
   }
