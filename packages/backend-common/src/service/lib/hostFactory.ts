@@ -99,17 +99,17 @@ async function getGeneratedCertificate(hostname: string, logger?: Logger) {
   if (await fs.pathExists(certPath)) {
     cert = await fs.readFile(certPath);
     try {
-      const forge = require('node-forge')
-      const crt = forge.pki.certificateFromPem(cert)
+      const forge = require('node-forge');
+      const crt = forge.pki.certificateFromPem(cert);
       const crtTimestamp = Date.parse(crt.validity.notAfter);
       remainingMs = crtTimestamp - Date.now();
     } catch (error) {
       logger?.warn(`Unable to parse self-signed certificate. ${error}`);
-      remainingMs = 0
+      remainingMs = 0;
     }
     if (remainingMs < FIVE_DAYS_IN_MS) {
       // Reset certificate if expiration is nearly over
-      cert = undefined
+      cert = undefined;
     }
   }
 
