@@ -107,9 +107,13 @@ async function getGeneratedCertificate(hostname: string, logger?: Logger) {
       logger?.warn(`Unable to parse self-signed certificate. ${error}`);
       remainingMs = 0
     }
+    if (remainingMs < FIVE_DAYS_IN_MS) {
+      // Reset certificate if expiration is nearly over
+      cert = undefined
+    }
   }
 
-  if (remainingMs > FIVE_DAYS_IN_MS) {
+  if (cert) {
     logger?.info('Using existing self-signed certificate');
     return {
       key: cert,
