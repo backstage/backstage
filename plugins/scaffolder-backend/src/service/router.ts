@@ -67,6 +67,7 @@ export interface RouterOptions {
   scheduler?: PluginTaskScheduler;
 
   actions?: TemplateAction<any>[];
+  taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
@@ -158,6 +159,7 @@ export async function createRouter(
     database,
     catalogClient,
     actions,
+    taskWorkers,
     scheduler,
     additionalTemplateFilters,
     additionalTemplateGlobals,
