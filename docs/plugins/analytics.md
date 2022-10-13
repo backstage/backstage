@@ -301,11 +301,11 @@ it's important to keep each of these levels of detail disaggregated.
   automatically as part of the `extension` in which the `filter` event was
   captured).
 
-- On the flip side, when adding `attributes` to an event, look at existing
-  events and see if the data you are capturing matches the intention, type, or
-  even the content of _their_ `attributes`. For instance, it may be common for
-  events that involve the Catalog to add details like entity `name`, `kind`,
-  and/or `namespace` as `attributes`. Using the same keys in your event will
+- On the flip side, when adding `attributes` to or `context` around an event,
+  look at existing events and see if the data you are capturing matches the
+  intention, type, or even the content of _their_ `attributes` or `context`.
+  For instance, it's common for events that involve the Catalog to include an
+  `entityRef` contextual key. Using the same keys and values in your event will
   ensure that events instrumented across plugins can easily be aggregated.
 
 ### Unit Testing Event Capture
