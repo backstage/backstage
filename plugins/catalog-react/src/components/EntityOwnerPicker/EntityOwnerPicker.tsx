@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { parseEntityRef } from '@backstage/catalog-model';
 import {
   Box,
   Checkbox,
@@ -30,8 +30,8 @@ import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityOwnerFilter } from '../../filters';
-import { getEntityRelations } from '../../utils';
 import { humanizeEntityRef } from '../EntityRefLink';
+import { useEntityFilter } from '../../hooks';
 
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
@@ -51,12 +51,18 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 /** @public */
 export const EntityOwnerPicker = () => {
   const classes = useStyles();
+
   const {
     updateFilters,
-    backendEntities,
     filters,
     queryParameters: { owners: ownersParameter },
   } = useEntityList();
+
+  const availableOwners = useEntityFilter('relations.ownedBy')
+    ?.map(({ value }) =>
+      humanizeEntityRef(parseEntityRef(value), { defaultKind: 'group' }),
+    )
+    .sort();
 
   const queryParamOwners = useMemo(
     () => [ownersParameter].flat().filter(Boolean) as string[],
@@ -83,23 +89,7 @@ export const EntityOwnerPicker = () => {
     });
   }, [selectedOwners, updateFilters]);
 
-  const availableOwners = useMemo(
-    () =>
-      [
-        ...new Set(
-          backendEntities
-            .flatMap((e: Entity) =>
-              getEntityRelations(e, RELATION_OWNED_BY).map(o =>
-                humanizeEntityRef(o, { defaultKind: 'group' }),
-              ),
-            )
-            .filter(Boolean) as string[],
-        ),
-      ].sort(),
-    [backendEntities],
-  );
-
-  if (!availableOwners.length) return null;
+  if (!availableOwners?.length) return null;
 
   return (
     <Box pb={1} pt={1}>

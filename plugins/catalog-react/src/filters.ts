@@ -17,11 +17,10 @@
 import {
   AlphaEntity,
   Entity,
-  RELATION_OWNED_BY,
+  parseEntityRef,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { humanizeEntityRef } from './components/EntityRefLink';
 import { EntityFilter, UserListFilterKind } from './types';
-import { getEntityRelations } from './utils';
 
 /**
  * Filter entities based on Kind.
@@ -67,8 +66,8 @@ export class EntityTypeFilter implements EntityFilter {
 export class EntityTagFilter implements EntityFilter {
   constructor(readonly values: string[]) {}
 
-  filterEntity(entity: Entity): boolean {
-    return this.values.every(v => (entity.metadata.tags ?? []).includes(v));
+  getCatalogFilters(): Record<string, string | string[]> {
+    return { 'metadata.tags': this.values };
   }
 
   toQueryValue(): string[] {
@@ -120,12 +119,16 @@ export class EntityTextFilter implements EntityFilter {
 export class EntityOwnerFilter implements EntityFilter {
   constructor(readonly values: string[]) {}
 
-  filterEntity(entity: Entity): boolean {
-    return this.values.some(v =>
-      getEntityRelations(entity, RELATION_OWNED_BY).some(
-        o => humanizeEntityRef(o, { defaultKind: 'group' }) === v,
+  getCatalogFilters() {
+    return {
+      'relations.ownedBy': this.values.map(value =>
+        stringifyEntityRef(
+          parseEntityRef(value, {
+            defaultKind: 'group',
+          }),
+        ),
       ),
-    );
+    };
   }
 
   toQueryValue(): string[] {
@@ -140,8 +143,8 @@ export class EntityOwnerFilter implements EntityFilter {
 export class EntityLifecycleFilter implements EntityFilter {
   constructor(readonly values: string[]) {}
 
-  filterEntity(entity: Entity): boolean {
-    return this.values.some(v => entity.spec?.lifecycle === v);
+  getCatalogFilters() {
+    return { 'spec.lifecycle': this.values };
   }
 
   toQueryValue(): string[] {
@@ -154,21 +157,40 @@ export class EntityLifecycleFilter implements EntityFilter {
  * @public
  */
 export class UserListFilter implements EntityFilter {
-  constructor(
+  private constructor(
     readonly value: UserListFilterKind,
-    readonly isOwnedEntity: (entity: Entity) => boolean,
-    readonly isStarredEntity: (entity: Entity) => boolean,
+    readonly refs?: string[],
   ) {}
 
-  filterEntity(entity: Entity): boolean {
-    switch (this.value) {
-      case 'owned':
-        return this.isOwnedEntity(entity);
-      case 'starred':
-        return this.isStarredEntity(entity);
-      default:
-        return true;
+  static owned(ownershipEntityRefs: string[]) {
+    return new UserListFilter('owned', ownershipEntityRefs);
+  }
+
+  static all() {
+    return new UserListFilter('all');
+  }
+
+  static starred(starredEntityRefs: string[]) {
+    return new UserListFilter('starred', starredEntityRefs);
+  }
+
+  getCatalogFilters(): Record<string, string[]> {
+    if (this.value === 'owned') {
+      return { 'relations.ownedBy': this.refs ?? [] };
     }
+    if (this.value === 'starred') {
+      return {
+        'metadata.name': this.refs?.map(e => parseEntityRef(e).name) ?? [],
+      };
+    }
+    return {};
+  }
+
+  filterEntity(entity: Entity) {
+    if (this.value === 'starred') {
+      return this.refs?.includes(stringifyEntityRef(entity)) ?? true;
+    }
+    return true;
   }
 
   toQueryValue(): string {

@@ -29,9 +29,7 @@ import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityTagFilter } from '../../filters';
-import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
-import { catalogApiRef } from '../../api';
+import { useEntityFilter } from '../../hooks';
 
 /** @public */
 export type CatalogReactEntityTagPickerClassKey = 'input';
@@ -57,16 +55,8 @@ export const EntityTagPicker = () => {
     queryParameters: { tags: tagsParameter },
   } = useEntityList();
 
-  const catalogApi = useApi(catalogApiRef);
-  const { value: availableTags } = useAsync(async () => {
-    const facet = 'metadata.tags';
-    const { facets } = await catalogApi.getEntityFacets({
-      facets: [facet],
-      filter: filters.kind?.getCatalogFilters(),
-    });
-
-    return facets[facet].map(({ value }) => value);
-  }, [filters.kind]);
+  const tags = useEntityFilter('metadata.tags');
+  const availableTags = useMemo(() => tags?.map(({ value }) => value), [tags]);
 
   const queryParamTags = useMemo(
     () => [tagsParameter].flat().filter(Boolean) as string[],

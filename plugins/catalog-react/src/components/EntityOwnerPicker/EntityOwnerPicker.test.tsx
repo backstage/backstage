@@ -15,11 +15,20 @@
  */
 
 import { Entity, parseEntityRef } from '@backstage/catalog-model';
-import { fireEvent, render } from '@testing-library/react';
-import React from 'react';
+import {
+  fireEvent,
+  render as renderComponent,
+  waitFor,
+} from '@testing-library/react';
+import React, { ReactNode } from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityOwnerFilter } from '../../filters';
 import { EntityOwnerPicker } from './EntityOwnerPicker';
+import { TestApiProvider } from '@backstage/test-utils';
+import { catalogApiRef } from '../../api';
+import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
+import { CatalogApi } from '@backstage/catalog-client';
+import { SWRConfig } from 'swr';
 
 const sampleEntities: Entity[] = [
   {
@@ -28,16 +37,6 @@ const sampleEntities: Entity[] = [
     metadata: {
       name: 'component-1',
     },
-    relations: [
-      {
-        type: 'ownedBy',
-        targetRef: 'group:default/some-owner',
-      },
-      {
-        type: 'ownedBy',
-        targetRef: 'group:default/some-owner-2',
-      },
-    ],
   },
   {
     apiVersion: '1',
@@ -45,12 +44,6 @@ const sampleEntities: Entity[] = [
     metadata: {
       name: 'component-2',
     },
-    relations: [
-      {
-        type: 'ownedBy',
-        targetRef: 'group:default/another-owner',
-      },
-    ],
   },
   {
     apiVersion: '1',
@@ -58,43 +51,80 @@ const sampleEntities: Entity[] = [
     metadata: {
       name: 'component-3',
     },
-    relations: [
-      {
-        type: 'ownedBy',
-        targetRef: 'group:default/some-owner',
-      },
-    ],
   },
 ];
 
+const sampleGroupOwners = [
+  'group:default/some-owner',
+  'group:default/some-owner-2',
+  'group:default/another-owner',
+  'group:default/team-a',
+  'group:default/team-b',
+];
+
+const sampleUserOwners = ['user:default/someone'];
+
+const sampleOwners = [...sampleGroupOwners, ...sampleUserOwners];
+
+const mockIdentityApi: Partial<IdentityApi> = {
+  getBackstageIdentity: async () => ({
+    type: 'user',
+    userEntityRef: 'user:default/guest',
+    ownershipEntityRefs: [],
+  }),
+  getCredentials: async () => ({ token: undefined }),
+};
+
+const getEntityFacets = jest.fn().mockImplementation(async () => ({
+  facets: {
+    'relations.ownedBy': sampleOwners.map(value => ({ count: 1, value })),
+  },
+}));
+const mockCatalogApi: Partial<CatalogApi> = {
+  getEntities: jest
+    .fn()
+    .mockImplementation(async () => ({ items: sampleEntities })),
+  getEntityByRef: async () => undefined,
+  getEntityFacets,
+};
+
 describe('<EntityOwnerPicker/>', () => {
-  it('renders all owners', () => {
+  it('renders all owners', async () => {
     const rendered = render(
-      <MockEntityListContextProvider
-        value={{ entities: sampleEntities, backendEntities: sampleEntities }}
-      >
+      <MockEntityListContextProvider value={{ entities: sampleEntities }}>
         <EntityOwnerPicker />
       </MockEntityListContextProvider>,
     );
-    expect(rendered.getByText('Owner')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(rendered.getByText('Owner')).toBeInTheDocument(),
+    );
 
     fireEvent.click(rendered.getByTestId('owner-picker-expand'));
-    sampleEntities
-      .flatMap(e => e.relations?.map(r => parseEntityRef(r.targetRef).name))
+    sampleGroupOwners
+      .map(r => parseEntityRef(r).name)
       .forEach(owner => {
-        expect(rendered.getByText(owner as string)).toBeInTheDocument();
+        expect(rendered.getByText(owner)).toBeInTheDocument();
+      });
+
+    sampleUserOwners
+      .map(r => {
+        const { name, kind } = parseEntityRef(r);
+        return [kind, name].join(':');
+      })
+      .forEach(owner => {
+        expect(rendered.getByText(owner)).toBeInTheDocument();
       });
   });
 
-  it('renders unique owners in alphabetical order', () => {
+  it('renders unique owners in alphabetical order using group as default kind', async () => {
     const rendered = render(
-      <MockEntityListContextProvider
-        value={{ entities: sampleEntities, backendEntities: sampleEntities }}
-      >
+      <MockEntityListContextProvider value={{ entities: sampleEntities }}>
         <EntityOwnerPicker />
       </MockEntityListContextProvider>,
     );
-    expect(rendered.getByText('Owner')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(rendered.getByText('Owner')).toBeInTheDocument(),
+    );
 
     fireEvent.click(rendered.getByTestId('owner-picker-expand'));
 
@@ -102,17 +132,19 @@ describe('<EntityOwnerPicker/>', () => {
       'another-owner',
       'some-owner',
       'some-owner-2',
+      'team-a',
+      'team-b',
+      'user:someone',
     ]);
   });
 
-  it('respects the query parameter filter value', () => {
+  it('respects the query parameter filter value', async () => {
     const updateFilters = jest.fn();
     const queryParameters = { owners: ['another-owner'] };
     render(
       <MockEntityListContextProvider
         value={{
           entities: sampleEntities,
-          backendEntities: sampleEntities,
           updateFilters,
           queryParameters,
         }}
@@ -121,19 +153,21 @@ describe('<EntityOwnerPicker/>', () => {
       </MockEntityListContextProvider>,
     );
 
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      owners: new EntityOwnerFilter(['another-owner']),
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        owners: new EntityOwnerFilter(['another-owner']),
+      }),
+    );
   });
 
-  it('adds owners to filters', () => {
+  it('adds owners to filters', async () => {
     const updateFilters = jest.fn();
     const rendered = render(
       <MockEntityListContextProvider
         value={{
           entities: sampleEntities,
-          backendEntities: sampleEntities,
           updateFilters,
+          filters: { owners: new EntityOwnerFilter([]) },
         }}
       >
         <EntityOwnerPicker />
@@ -142,21 +176,23 @@ describe('<EntityOwnerPicker/>', () => {
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: undefined,
     });
-
+    await waitFor(() => expect(rendered.getByTestId('owner-picker-expand')));
     fireEvent.click(rendered.getByTestId('owner-picker-expand'));
     fireEvent.click(rendered.getByText('some-owner'));
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      owners: new EntityOwnerFilter(['some-owner']),
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        owners: new EntityOwnerFilter(['some-owner']),
+      }),
+    );
   });
 
-  it('removes owners from filters', () => {
+  it('removes owners from filters', async () => {
     const updateFilters = jest.fn();
+
     const rendered = render(
       <MockEntityListContextProvider
         value={{
           entities: sampleEntities,
-          backendEntities: sampleEntities,
           updateFilters,
           filters: { owners: new EntityOwnerFilter(['some-owner']) },
         }}
@@ -164,9 +200,11 @@ describe('<EntityOwnerPicker/>', () => {
         <EntityOwnerPicker />
       </MockEntityListContextProvider>,
     );
+
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: new EntityOwnerFilter(['some-owner']),
     });
+    await waitFor(() => expect(rendered.getByTestId('owner-picker-expand')));
     fireEvent.click(rendered.getByTestId('owner-picker-expand'));
     expect(rendered.getByLabelText('some-owner')).toBeChecked();
 
@@ -176,7 +214,7 @@ describe('<EntityOwnerPicker/>', () => {
     });
   });
 
-  it('responds to external queryParameters changes', () => {
+  it('responds to external queryParameters changes', async () => {
     const updateFilters = jest.fn();
     const rendered = render(
       <MockEntityListContextProvider
@@ -192,17 +230,42 @@ describe('<EntityOwnerPicker/>', () => {
       owners: new EntityOwnerFilter(['team-a']),
     });
     rendered.rerender(
-      <MockEntityListContextProvider
-        value={{
-          updateFilters,
-          queryParameters: { owners: ['team-b'] },
-        }}
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockCatalogApi],
+          [identityApiRef, mockIdentityApi],
+        ]}
       >
-        <EntityOwnerPicker />
-      </MockEntityListContextProvider>,
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { owners: ['team-b'] },
+          }}
+        >
+          <EntityOwnerPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      owners: new EntityOwnerFilter(['team-b']),
-    });
+
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        owners: new EntityOwnerFilter(['team-b']),
+      }),
+    );
   });
 });
+
+function render(component: ReactNode) {
+  return renderComponent(
+    <SWRConfig value={{ provider: () => new Map() }}>
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockCatalogApi],
+          [identityApiRef, mockIdentityApi],
+        ]}
+      >
+        {component}
+      </TestApiProvider>
+    </SWRConfig>,
+  );
+}

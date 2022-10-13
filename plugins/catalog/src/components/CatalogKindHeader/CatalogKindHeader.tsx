@@ -25,12 +25,10 @@ import {
   Theme,
 } from '@material-ui/core';
 import {
-  catalogApiRef,
   EntityKindFilter,
+  useEntityKinds,
   useEntityList,
 } from '@backstage/plugin-catalog-react';
-import useAsync from 'react-use/lib/useAsync';
-import { useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -62,12 +60,8 @@ export interface CatalogKindHeaderProps {
 export function CatalogKindHeader(props: CatalogKindHeaderProps) {
   const { initialFilter = 'component', allowedKinds } = props;
   const classes = useStyles();
-  const catalogApi = useApi(catalogApiRef);
-  const { value: allKinds } = useAsync(async () => {
-    return await catalogApi
-      .getEntityFacets({ facets: ['kind'] })
-      .then(response => response.facets.kind?.map(f => f.value).sort() || []);
-  });
+
+  const { kinds: allKinds = [] } = useEntityKinds();
   const {
     updateFilters,
     queryParameters: { kind: kindParameter },

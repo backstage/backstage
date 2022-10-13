@@ -24,7 +24,7 @@ import {
 import { UserListPicker } from './UserListPicker';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityTagFilter, UserListFilter } from '../../filters';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogApi, GetEntityFacetsResponse } from '@backstage/catalog-client';
 import { catalogApiRef } from '../../api';
 import { MockStorageApi, TestApiRegistry } from '@backstage/test-utils';
 
@@ -36,7 +36,7 @@ import {
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
-import { useEntityOwnership } from '../../hooks';
+// import { useEntityOwnership } from '../../hooks';
 
 const mockUser: UserEntity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -54,44 +54,33 @@ const mockConfigApi = {
   getOptionalString: () => 'Test Company',
 } as Partial<ConfigApi>;
 
-const mockCatalogApi = {
-  getEntityByRef: () => Promise.resolve(mockUser),
-} as Partial<CatalogApi>;
+/*
+ 
+  */
 
 const mockIdentityApi = {
   getUserId: () => 'testUser',
   getIdToken: async () => undefined,
+  getBackstageIdentity: async () => ({
+    ownershipEntityRefs: ['user:default/someone', 'group:default/a-group'],
+    type: 'user',
+    userEntityRef: 'user:default/someone',
+  }),
 } as Partial<IdentityApi>;
 
-const apis = TestApiRegistry.from(
-  [configApiRef, mockConfigApi],
-  [catalogApiRef, mockCatalogApi],
-  [identityApiRef, mockIdentityApi],
-  [storageApiRef, MockStorageApi.create()],
-);
-
-const mockIsOwnedEntity = jest.fn(
-  (entity: Entity) => entity.metadata.name === 'component-1',
-);
-
-const mockIsStarredEntity = jest.fn(
-  (entity: Entity) => entity.metadata.name === 'component-3',
-);
+const mockedStarredEntities = new Set(['component:namespace-2/component-3']);
 
 jest.mock('../../hooks', () => {
   const actual = jest.requireActual('../../hooks');
   return {
     ...actual,
-    useEntityOwnership: jest.fn(() => ({
-      isOwnedEntity: mockIsOwnedEntity,
-    })),
     useStarredEntities: () => ({
-      isStarredEntity: mockIsStarredEntity,
+      starredEntities: mockedStarredEntities,
     }),
   };
 });
 
-const backendEntities: Entity[] = [
+const entities: Entity[] = [
   {
     apiVersion: '1',
     kind: 'Component',
@@ -142,38 +131,69 @@ const backendEntities: Entity[] = [
   },
 ];
 
+const mockedFacets = {
+  'metadata.uid': [{ count: 4, value: 'uid' }],
+  'metadata.name': [{ count: 1, value: 'component:namespace-2/component-3' }],
+  'relations.ownedBy': [
+    { count: 1, value: 'component:namespace-1/component-1' },
+  ],
+};
+
+const mockedEntityFacets = jest.fn();
+
+const mockCatalogApi = {
+  getEntityByRef: () => Promise.resolve(mockUser),
+  getEntityFacets: mockedEntityFacets,
+  getEntities: async () => ({ items: entities }),
+} as Partial<CatalogApi>;
+
+const apis = TestApiRegistry.from(
+  [configApiRef, mockConfigApi],
+  [catalogApiRef, mockCatalogApi],
+  [identityApiRef, mockIdentityApi],
+  [storageApiRef, MockStorageApi.create()],
+);
+
 describe('<UserListPicker />', () => {
-  it('renders filter groups', () => {
+  beforeEach(() => {
+    mockedEntityFacets.mockImplementation(async () => {
+      return { facets: mockedFacets };
+    });
+  });
+
+  it('renders filter groups', async () => {
     const { queryByText } = render(
       <ApiProvider apis={apis}>
-        <MockEntityListContextProvider value={{ backendEntities }}>
+        <MockEntityListContextProvider value={{}}>
           <UserListPicker />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
 
-    expect(queryByText('Personal')).toBeInTheDocument();
+    await waitFor(() => expect(queryByText('Personal')).toBeInTheDocument());
     expect(queryByText('Test Company')).toBeInTheDocument();
   });
 
-  it('renders filters', () => {
+  it('renders filters', async () => {
     const { getAllByRole } = render(
       <ApiProvider apis={apis}>
-        <MockEntityListContextProvider value={{ backendEntities }}>
+        <MockEntityListContextProvider value={{ entities }}>
           <UserListPicker />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
 
-    expect(
-      getAllByRole('menuitem').map(({ textContent }) => textContent),
-    ).toEqual(['Owned 1', 'Starred 1', 'All 4']);
+    await waitFor(() =>
+      expect(
+        getAllByRole('menuitem').map(({ textContent }) => textContent),
+      ).toEqual(['Owned', 'Starred', 'All']),
+    );
   });
 
   it('includes counts alongside each filter', async () => {
     const { getAllByRole } = render(
       <ApiProvider apis={apis}>
-        <MockEntityListContextProvider value={{ backendEntities }}>
+        <MockEntityListContextProvider value={{ entities }}>
           <UserListPicker />
         </MockEntityListContextProvider>
       </ApiProvider>,
@@ -189,11 +209,11 @@ describe('<UserListPicker />', () => {
   });
 
   it('respects other frontend filters in counts', async () => {
-    const { getAllByRole } = render(
+    render(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
-            backendEntities,
+            entities,
             filters: { tags: new EntityTagFilter(['tag1']) },
           }}
         >
@@ -202,38 +222,42 @@ describe('<UserListPicker />', () => {
       </ApiProvider>,
     );
 
-    await waitFor(() => {
-      expect(
-        getAllByRole('menuitem').map(({ textContent }) => textContent),
-      ).toEqual(['Owned 1', 'Starred 0', 'All 2']);
-    });
+    await waitFor(() =>
+      expect(mockedEntityFacets).toHaveBeenCalledWith({
+        facets: ['metadata.uid'],
+        filter: { 'metadata.tags': ['tag1'] },
+      }),
+    );
   });
 
-  it('respects the query parameter filter value', () => {
+  it('respects the query parameter filter value', async () => {
     const updateFilters = jest.fn();
     const queryParameters = { user: 'owned' };
     render(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
-          value={{ backendEntities, updateFilters, queryParameters }}
+          value={{ entities, updateFilters, queryParameters }}
         >
           <UserListPicker />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
 
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      user: new UserListFilter('owned', mockIsOwnedEntity, mockIsStarredEntity),
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        user: UserListFilter.owned([
+          'user:default/someone',
+          'group:default/a-group',
+        ]),
+      }),
+    );
   });
 
-  it('updates user filter when a menuitem is selected', () => {
+  it('updates user filter when a menuitem is selected', async () => {
     const updateFilters = jest.fn();
     const { getByText } = render(
       <ApiProvider apis={apis}>
-        <MockEntityListContextProvider
-          value={{ backendEntities, updateFilters }}
-        >
+        <MockEntityListContextProvider value={{ entities, updateFilters }}>
           <UserListPicker />
         </MockEntityListContextProvider>
       </ApiProvider>,
@@ -241,22 +265,19 @@ describe('<UserListPicker />', () => {
 
     fireEvent.click(getByText('Starred'));
 
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      user: new UserListFilter(
-        'starred',
-        mockIsOwnedEntity,
-        mockIsStarredEntity,
-      ),
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        user: UserListFilter.starred(Array.from(mockedStarredEntities)),
+      }),
+    );
   });
 
-  it('responds to external queryParameters changes', () => {
+  it('responds to external queryParameters changes', async () => {
     const updateFilters = jest.fn();
     const rendered = render(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
-            backendEntities,
             updateFilters,
             queryParameters: { user: ['all'] },
           }}
@@ -265,14 +286,15 @@ describe('<UserListPicker />', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      user: new UserListFilter('all', mockIsOwnedEntity, mockIsStarredEntity),
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        user: UserListFilter.all(),
+      }),
+    );
     rendered.rerender(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
-            backendEntities,
             updateFilters,
             queryParameters: { user: ['owned'] },
           }}
@@ -281,22 +303,27 @@ describe('<UserListPicker />', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      user: new UserListFilter('owned', mockIsOwnedEntity, mockIsStarredEntity),
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        user: UserListFilter.owned([
+          'user:default/someone',
+          'group:default/a-group',
+        ]),
+      }),
+    );
   });
 
   describe.each`
-    type         | filterFn
-    ${'owned'}   | ${mockIsOwnedEntity}
-    ${'starred'} | ${mockIsStarredEntity}
-  `('filter resetting for $type entities', ({ type, filterFn }) => {
+    type         | facet
+    ${'owned'}   | ${'relations.ownedBy'}
+    ${'starred'} | ${'metadata.name'}
+  `('filter resetting for $type entities', ({ type, facet }) => {
     let updateFilters: jest.Mock;
 
     const picker = (props: { loading: boolean }) => (
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
-          value={{ backendEntities, updateFilters, loading: props.loading }}
+          value={{ updateFilters, loading: props.loading }}
         >
           <UserListPicker initialFilter={type} />
         </MockEntityListContextProvider>
@@ -304,79 +331,61 @@ describe('<UserListPicker />', () => {
     );
 
     beforeEach(() => {
+      mockedEntityFacets.mockImplementation(async () => {
+        return { facets: mockedFacets };
+      });
+
       updateFilters = jest.fn();
     });
 
     describe(`when there are no ${type} entities match the filter`, () => {
-      beforeEach(() => {
-        filterFn.mockReturnValue(false);
-      });
-
-      it('does not reset the filter while entities are loading', () => {
-        render(picker({ loading: true }));
-
-        expect(updateFilters).not.toHaveBeenCalledWith({
-          user: new UserListFilter(
-            'all',
-            mockIsOwnedEntity,
-            mockIsStarredEntity,
-          ),
-        });
-      });
-
-      it('does not reset the filter while owned entities are loading', () => {
-        const isOwnedEntity = jest.fn(() => false);
-        (useEntityOwnership as jest.Mock).mockReturnValueOnce({
-          loading: true,
-          isOwnedEntity,
-        });
-
-        render(picker({ loading: false }));
-        expect(updateFilters).not.toHaveBeenCalledWith({
-          user: new UserListFilter('all', isOwnedEntity, mockIsStarredEntity),
-        });
-      });
-
-      it('resets the filter to "all" when entities are loaded', () => {
+      it('does not reset the filter while any facet is loading', async () => {
+        mockedEntityFacets.mockImplementation(
+          // @ts-expect-error
+          new Promise<GetEntityFacetsResponse>(() => {}),
+        );
         render(picker({ loading: false }));
 
-        expect(updateFilters).toHaveBeenLastCalledWith({
-          user: new UserListFilter(
-            'all',
-            mockIsOwnedEntity,
-            mockIsStarredEntity,
-          ),
-        });
+        await waitFor(() =>
+          expect(updateFilters).not.toHaveBeenCalledWith({
+            user: UserListFilter.all(),
+          }),
+        );
+      });
+
+      it('resets the filter to "all" when entities are loaded', async () => {
+        mockedEntityFacets.mockImplementation(async () => ({
+          facets: { ...mockedFacets, [facet]: [] },
+        }));
+        render(picker({ loading: false }));
+
+        await waitFor(() =>
+          expect(updateFilters).toHaveBeenLastCalledWith({
+            user: UserListFilter.all(),
+          }),
+        );
       });
     });
 
     describe(`when there are some ${type} entities present`, () => {
-      beforeEach(() => {
-        filterFn.mockReturnValue(true);
-      });
-
-      it('does not reset the filter while entities are loading', () => {
+      it('does not reset the filter while entities are loading', async () => {
         render(picker({ loading: true }));
 
-        expect(updateFilters).not.toHaveBeenCalledWith({
-          user: new UserListFilter(
-            'all',
-            mockIsOwnedEntity,
-            mockIsStarredEntity,
-          ),
-        });
+        await waitFor(() =>
+          expect(updateFilters).not.toHaveBeenCalledWith({
+            user: UserListFilter.all(),
+          }),
+        );
       });
 
-      it('does not reset the filter when entities are loaded', () => {
+      it('does not reset the filter when entities are loaded', async () => {
         render(picker({ loading: false }));
 
-        expect(updateFilters).toHaveBeenLastCalledWith({
-          user: new UserListFilter(
-            type,
-            mockIsOwnedEntity,
-            mockIsStarredEntity,
+        await waitFor(() =>
+          expect(updateFilters).not.toHaveBeenLastCalledWith(
+            UserListFilter.all(),
           ),
-        });
+        );
       });
     });
   });

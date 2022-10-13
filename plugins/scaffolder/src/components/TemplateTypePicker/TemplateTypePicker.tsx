@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import capitalize from 'lodash/capitalize';
 import { Progress } from '@backstage/core-components';
 import {
@@ -44,17 +44,18 @@ export const TemplateTypePicker = () => {
   const { error, loading, availableTypes, selectedTypes, setSelectedTypes } =
     useEntityTypeFilter();
 
+  useEffect(() => {
+    if (error) {
+      alertApi.post({
+        message: `Failed to load entity types`,
+        severity: 'error',
+      });
+    }
+  }, [error, alertApi]);
+
   if (loading) return <Progress />;
 
   if (!availableTypes) return null;
-
-  if (error) {
-    alertApi.post({
-      message: `Failed to load entity types`,
-      severity: 'error',
-    });
-    return null;
-  }
 
   return (
     <Box pb={1} pt={1}>

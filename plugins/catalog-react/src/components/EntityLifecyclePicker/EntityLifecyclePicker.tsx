@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import {
   Box,
   Checkbox,
@@ -30,6 +29,7 @@ import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityLifecycleFilter } from '../../filters';
+import { useEntityFilter } from '../../hooks';
 
 /** @public */
 export type CatalogReactEntityLifecyclePickerClassKey = 'input';
@@ -49,9 +49,9 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 /** @public */
 export const EntityLifecyclePicker = () => {
   const classes = useStyles();
+
   const {
     updateFilters,
-    backendEntities,
     filters,
     queryParameters: { lifecycles: lifecyclesParameter },
   } = useEntityList();
@@ -83,17 +83,8 @@ export const EntityLifecyclePicker = () => {
     });
   }, [selectedLifecycles, updateFilters]);
 
-  const availableLifecycles = useMemo(
-    () =>
-      [
-        ...new Set(
-          backendEntities
-            .map((e: Entity) => e.spec?.lifecycle)
-            .filter(Boolean) as string[],
-        ),
-      ].sort(),
-    [backendEntities],
-  );
+  const availableLifecycles =
+    useEntityFilter('spec.lifecycle')?.map(({ value }) => value) ?? [];
 
   if (!availableLifecycles.length) return null;
 

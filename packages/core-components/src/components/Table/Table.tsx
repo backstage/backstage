@@ -237,6 +237,7 @@ export interface TableProps<T extends object = {}>
   initialState?: TableState;
   emptyContent?: ReactNode;
   onStateChange?: (state: TableState) => any;
+  Pagination?: React.ComponentType<any>;
 }
 
 export function TableToolbar(toolbarProps: {
@@ -304,6 +305,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     emptyContent,
     onStateChange,
     components,
+    Pagination,
     ...restProps
   } = props;
   const tableClasses = useTableStyles();
@@ -494,6 +496,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
           Header: StyledMTableHeader,
           Toolbar,
           Body,
+          Pagination,
           ...components,
         }}
         options={{ ...defaultOptions, ...options }}

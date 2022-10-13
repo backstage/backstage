@@ -43,6 +43,8 @@ import React, { useMemo } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableRow } from './types';
 
+import { CatalogTablePagination } from './CatalogTablePagination';
+
 /**
  * Props for {@link CatalogTable}.
  *
@@ -65,7 +67,7 @@ const YellowStar = withStyles({
 export const CatalogTable = (props: CatalogTableProps) => {
   const { columns, actions, tableOptions, subtitle } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
-  const { loading, error, entities, filters } = useEntityList();
+  const { loading, error, entities, filters, totalItems } = useEntityList();
 
   const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(() => {
     return [
@@ -208,26 +210,28 @@ export const CatalogTable = (props: CatalogTableProps) => {
   if (typeColumn) {
     typeColumn.hidden = !showTypeColumn;
   }
-  const showPagination = rows.length > 20;
+  const showPagination = true; //  rows.length > 20;
 
   return (
     <Table<CatalogTableRow>
       isLoading={loading}
       columns={columns || defaultColumns}
+      // filters={[]}
       options={{
         paging: showPagination,
         pageSize: 20,
         actionsColumnIndex: -1,
+        paginationPosition: 'both',
         loadingType: 'linear',
         showEmptyDataSourceMessage: !loading,
         padding: 'dense',
-        pageSizeOptions: [20, 50, 100],
         ...tableOptions,
       }}
-      title={`${titlePreamble} (${entities.length})`}
+      title={`${titlePreamble} (${totalItems})`}
       data={rows}
       actions={actions || defaultActions}
       subtitle={subtitle}
+      Pagination={CatalogTablePagination}
     />
   );
 };

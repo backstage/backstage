@@ -4708,6 +4708,7 @@ __metadata:
     qs: ^6.9.4
     react-test-renderer: ^16.13.1
     react-use: ^17.2.4
+    swr: ^1.2.2
     yaml: ^2.0.0
     zen-observable: ^0.8.15
   peerDependencies:
@@ -6217,7 +6218,7 @@ __metadata:
     "@types/jest": ^26.0.7
     cross-fetch: ^3.1.5
     react-use: ^17.2.4
-    swr: ^1.1.2
+    swr: ^1.2.2
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
@@ -38146,7 +38147,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swr@npm:^1.1.2":
+"swr@npm:^1.1.2, swr@npm:^1.2.2":
   version: 1.3.0
   resolution: "swr@npm:1.3.0"
   peerDependencies:

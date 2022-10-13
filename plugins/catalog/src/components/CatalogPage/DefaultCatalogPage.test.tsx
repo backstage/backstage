@@ -16,7 +16,6 @@
 
 import { CatalogApi } from '@backstage/catalog-client';
 import {
-  Entity,
   parseEntityRef,
   RELATION_MEMBER_OF,
   RELATION_OWNED_BY,
@@ -44,7 +43,7 @@ import {
   wrapInTestApp,
 } from '@backstage/test-utils';
 import DashboardIcon from '@material-ui/icons/Dashboard';
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTableRow } from '../CatalogTable';
@@ -59,51 +58,13 @@ describe('DefaultCatalogPage', () => {
     window.history.replaceState = origReplaceState;
   });
 
+  const mockedGetEntityFacets = jest.fn();
+
+  const mockedGetEntities = jest.fn();
+
   const catalogApi: Partial<CatalogApi> = {
-    getEntities: () =>
-      Promise.resolve({
-        items: [
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Component',
-            metadata: {
-              name: 'Entity1',
-            },
-            spec: {
-              owner: 'tools',
-              type: 'service',
-            },
-            relations: [
-              {
-                type: RELATION_OWNED_BY,
-                targetRef: 'group:default/tools',
-              },
-            ],
-          },
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Component',
-            metadata: {
-              name: 'Entity2',
-            },
-            spec: {
-              owner: 'not-tools',
-              type: 'service',
-            },
-            relations: [
-              {
-                type: RELATION_OWNED_BY,
-                targetRef: 'group:default/not-tools',
-                target: {
-                  kind: 'group',
-                  name: 'not-tools',
-                  namespace: 'default',
-                },
-              },
-            ],
-          },
-        ] as Entity[],
-      }),
+    getEntityFacets: mockedGetEntityFacets,
+    getEntities: mockedGetEntities,
     getLocationByRef: () =>
       Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
     getEntityByRef: async entityRef => {
@@ -172,6 +133,81 @@ describe('DefaultCatalogPage', () => {
         },
       ),
     );
+
+  beforeEach(() => {
+    mockedGetEntities.mockImplementation(async request => {
+      const ownedItem = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'Entity1',
+        },
+        spec: {
+          owner: 'tools',
+          type: 'service',
+        },
+        relations: [
+          {
+            type: RELATION_OWNED_BY,
+            targetRef: 'group:default/tools',
+          },
+        ],
+      };
+      const otherItem = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'Entity2',
+        },
+        spec: {
+          owner: 'not-tools',
+          type: 'service',
+        },
+        relations: [
+          {
+            type: RELATION_OWNED_BY,
+            targetRef: 'group:default/not-tools',
+            target: {
+              kind: 'group',
+              name: 'not-tools',
+              namespace: 'default',
+            },
+          },
+        ],
+      };
+      if (request.filter['relations.ownedBy']) {
+        return { items: [ownedItem] };
+      }
+      return {
+        items: [ownedItem, otherItem],
+      };
+    });
+
+    mockedGetEntityFacets.mockImplementation(async () => {
+      return {
+        facets: {
+          'metadata.uid': [
+            { count: 1, value: 'uid-1' },
+            { count: 1, value: 'uid-2' },
+          ],
+          'metadata.name': [
+            { count: 1, value: 'component:default/Entity1' },
+            { count: 1, value: 'component:default/Entity2' },
+          ],
+          'relations.ownedBy': [
+            { count: 1, value: 'component:default/Entity1' },
+          ],
+          kind: [{ count: 1, value: 'Component' }],
+          'spec.lifecycle': [
+            { count: 1, value: 'production' },
+            { count: 1, value: 'experimental' },
+          ],
+          'metadata.tags': [],
+          'spec.type': [{ count: 1, value: 'service' }],
+        },
+      };
+    });
+  });
 
   // TODO(freben): The test timeouts are bumped in this file, because it seems
   // page and table rerenders accumulate to occasionally go over the default
@@ -278,32 +314,33 @@ describe('DefaultCatalogPage', () => {
   // this test is for fixing the bug after favoriting an entity, the matching
   // entities defaulting to "owned" filter and not based on the selected filter
   it('should render the correct entities filtered on the selected filter', async () => {
-    const { getByTestId } = await renderWrapped(<DefaultCatalogPage />);
+    const { getByTestId, getByText, findByText } = await renderWrapped(
+      <DefaultCatalogPage />,
+    );
+
     fireEvent.click(getByTestId('user-picker-owned'));
-    await expect(screen.findByText(/Owned \(1\)/)).resolves.toBeInTheDocument();
+    await waitFor(() => getByText(/Owned \(1\)/));
     // The "Starred" menu option should initially be disabled, since there
     // aren't any starred entities.
-    await expect(screen.getByTestId('user-picker-starred')).toHaveAttribute(
+    await expect(getByTestId('user-picker-starred')).toHaveAttribute(
       'aria-disabled',
       'true',
     );
-    fireEvent.click(screen.getByTestId('user-picker-all'));
-    await expect(screen.findByText(/All \(2\)/)).resolves.toBeInTheDocument();
+    fireEvent.click(getByTestId('user-picker-all'));
+    await expect(findByText(/All \(2\)/)).resolves.toBeInTheDocument();
 
     const starredIcons = await screen.findAllByTitle('Add to favorites');
     fireEvent.click(starredIcons[0]);
-    await expect(screen.findByText(/All \(2\)/)).resolves.toBeInTheDocument();
+    await expect(findByText(/All \(2\)/)).resolves.toBeInTheDocument();
 
     // Now that we've starred an entity, the "Starred" menu option should be
     // enabled.
-    await expect(screen.getByTestId('user-picker-starred')).not.toHaveAttribute(
+    await expect(getByTestId('user-picker-starred')).not.toHaveAttribute(
       'aria-disabled',
       'true',
     );
-    fireEvent.click(screen.getByTestId('user-picker-starred'));
-    await expect(
-      screen.findByText(/Starred \(1\)/),
-    ).resolves.toBeInTheDocument();
+    fireEvent.click(getByTestId('user-picker-starred'));
+    await expect(findByText(/Starred \(1\)/)).resolves.toBeInTheDocument();
   }, 20_000);
 
   it('should wrap filter in drawer on smaller screens', async () => {
