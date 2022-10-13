@@ -44,13 +44,86 @@ const POD_METRICS_FIXTURE = {
 };
 
 const mockFetch = (mock: jest.Mock) => {
-  mock.mockImplementation((params: ObjectFetchParams) =>
-    Promise.resolve(
-      generateMockResourcesAndErrors(
-        params.serviceId,
-        params.clusterDetails.name,
-      ),
-    ),
+  mock.mockImplementation(
+    ({ serviceId, clusterDetails }: ObjectFetchParams) => {
+      const clusterName = clusterDetails.name;
+      if (clusterName === 'empty-cluster') {
+        return Promise.resolve({
+          errors: [],
+          responses: [
+            {
+              type: 'pods',
+              resources: [],
+            },
+            {
+              type: 'configmaps',
+              resources: [],
+            },
+            {
+              type: 'services',
+              resources: [],
+            },
+          ],
+        });
+      } else if (clusterName === 'error-cluster') {
+        return Promise.resolve({
+          errors: ['some random cluster error'],
+          responses: [
+            {
+              type: 'pods',
+              resources: [],
+            },
+            {
+              type: 'configmaps',
+              resources: [],
+            },
+            {
+              type: 'services',
+              resources: [],
+            },
+          ],
+        });
+      }
+
+      return Promise.resolve({
+        errors: [],
+        responses: [
+          {
+            type: 'pods',
+            resources: [
+              {
+                metadata: {
+                  name: `my-pods-${serviceId}-${clusterName}`,
+                  namespace: `ns-${serviceId}-${clusterName}`,
+                },
+              },
+            ],
+          },
+          {
+            type: 'configmaps',
+            resources: [
+              {
+                metadata: {
+                  name: `my-configmaps-${serviceId}-${clusterName}`,
+                  namespace: `ns-${serviceId}-${clusterName}`,
+                },
+              },
+            ],
+          },
+          {
+            type: 'services',
+            resources: [
+              {
+                metadata: {
+                  name: `my-services-${serviceId}-${clusterName}`,
+                  namespace: `ns-${serviceId}-${clusterName}`,
+                },
+              },
+            ],
+          },
+        ],
+      });
+    },
   );
 };
 
@@ -190,88 +263,6 @@ function generatePodStatus(
         ],
       };
     }),
-  };
-}
-
-function generateMockResourcesAndErrors(
-  serviceId: string,
-  clusterName: string,
-) {
-  if (clusterName === 'empty-cluster') {
-    return {
-      errors: [],
-      responses: [
-        {
-          type: 'pods',
-          resources: [],
-        },
-        {
-          type: 'configmaps',
-          resources: [],
-        },
-        {
-          type: 'services',
-          resources: [],
-        },
-      ],
-    };
-  } else if (clusterName === 'error-cluster') {
-    return {
-      errors: ['some random cluster error'],
-      responses: [
-        {
-          type: 'pods',
-          resources: [],
-        },
-        {
-          type: 'configmaps',
-          resources: [],
-        },
-        {
-          type: 'services',
-          resources: [],
-        },
-      ],
-    };
-  }
-
-  return {
-    errors: [],
-    responses: [
-      {
-        type: 'pods',
-        resources: [
-          {
-            metadata: {
-              name: `my-pods-${serviceId}-${clusterName}`,
-              namespace: `ns-${serviceId}-${clusterName}`,
-            },
-          },
-        ],
-      },
-      {
-        type: 'configmaps',
-        resources: [
-          {
-            metadata: {
-              name: `my-configmaps-${serviceId}-${clusterName}`,
-              namespace: `ns-${serviceId}-${clusterName}`,
-            },
-          },
-        ],
-      },
-      {
-        type: 'services',
-        resources: [
-          {
-            metadata: {
-              name: `my-services-${serviceId}-${clusterName}`,
-              namespace: `ns-${serviceId}-${clusterName}`,
-            },
-          },
-        ],
-      },
-    ],
   };
 }
 
