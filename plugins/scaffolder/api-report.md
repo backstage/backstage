@@ -169,9 +169,6 @@ export type LogEvent = {
   taskId: string;
 };
 
-// @alpha (undocumented)
-export const nextRouteRef: RouteRef<undefined>;
-
 // @alpha
 export type NextCustomFieldValidator<TFieldReturnValue> = (
   data: TFieldReturnValue,
@@ -203,6 +200,9 @@ export type NextFieldExtensionOptions<
   ) => JSX.Element | null;
   validation?: NextCustomFieldValidator<TFieldReturnValue>;
 };
+
+// @alpha (undocumented)
+export const nextRouteRef: RouteRef<undefined>;
 
 // @alpha
 export type NextRouterProps = {
