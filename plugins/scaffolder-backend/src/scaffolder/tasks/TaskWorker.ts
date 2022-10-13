@@ -75,7 +75,7 @@ export class TaskWorker {
       integrations,
       workingDirectory,
       additionalTemplateFilters,
-      concurrentTasksLimit = 10, // Or Infinity
+      concurrentTasksLimit = 2, // Or Infinity
       additionalTemplateGlobals,
     } = options;
 
@@ -98,6 +98,7 @@ export class TaskWorker {
   start() {
     (async () => {
       for (;;) {
+        await this.taskQueue.onEmpty();
         const task = await this.options.taskBroker.claim();
         this.taskQueue.add(() => this.runOneTask(task));
       }
