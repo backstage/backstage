@@ -104,7 +104,7 @@ async function getGeneratedCertificate(hostname: string, logger?: Logger) {
       const crtTimestamp = Date.parse(crt.validity.notAfter);
       remainingMs = crtTimestamp - Date.now();
     } catch (error) {
-      logger.warn(`Unable to parse self-signed certificate. ${error}`);
+      logger?.warn(`Unable to parse self-signed certificate. ${error}`);
       remainingMs = 0
     }
   }
