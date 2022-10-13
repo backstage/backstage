@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonObject } from '@backstage/types';
 import {
-  Box,
   Button,
-  Paper,
   Step as StepUI,
   StepContent,
   StepLabel,
@@ -26,23 +23,20 @@ import {
 } from '@material-ui/core';
 import {
   errorApiRef,
-  useApi,
   featureFlagsApiRef,
+  useApi,
 } from '@backstage/core-plugin-api';
-import { FormProps, IChangeEvent, UiSchema, withTheme } from '@rjsf/core';
+import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useState } from 'react';
 import { transformSchemaToProps } from './schema';
-import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
 import { LayoutOptions } from '../../layouts';
+import { Step } from './types';
+import { useScaffolderPluginOptions } from '../../options';
 
 const Form = withTheme(MuiTheme);
-type Step = {
-  schema: JsonObject;
-  title: string;
-} & Partial<Omit<FormProps<any>, 'schema'>>;
 
 type Props = {
   /**
@@ -58,59 +52,6 @@ type Props = {
   finishButtonLabel?: string;
   layouts: LayoutOptions[];
 };
-
-export function getUiSchemasFromSteps(steps: Step[]): UiSchema[] {
-  const uiSchemas: Array<UiSchema> = [];
-  steps.forEach(step => {
-    const schemaProps = step.schema.properties as JsonObject;
-    for (const key in schemaProps) {
-      if (schemaProps.hasOwnProperty(key)) {
-        const uiSchema = schemaProps[key] as UiSchema;
-        uiSchema.name = key;
-        uiSchemas.push(uiSchema);
-      }
-    }
-  });
-  return uiSchemas;
-}
-
-export function getReviewData(formData: Record<string, any>, steps: Step[]) {
-  const uiSchemas = getUiSchemasFromSteps(steps);
-  const reviewData: Record<string, any> = {};
-  for (const key in formData) {
-    if (formData.hasOwnProperty(key)) {
-      const uiSchema = uiSchemas.find(us => us.name === key);
-
-      if (!uiSchema) {
-        reviewData[key] = formData[key];
-        continue;
-      }
-
-      if (uiSchema['ui:widget'] === 'password') {
-        reviewData[key] = '******';
-        continue;
-      }
-
-      if (!uiSchema['ui:backstage'] || !uiSchema['ui:backstage'].review) {
-        reviewData[key] = formData[key];
-        continue;
-      }
-
-      const review = uiSchema['ui:backstage'].review as JsonObject;
-      if (review.mask) {
-        reviewData[key] = review.mask;
-        continue;
-      }
-
-      if (!review.show) {
-        continue;
-      }
-      reviewData[key] = formData[key];
-    }
-  }
-
-  return reviewData;
-}
 
 export const MultistepJsonForm = (props: Props) => {
   const {
@@ -134,7 +75,7 @@ export const MultistepJsonForm = (props: Props) => {
     if (filteredStep.schema.properties) {
       filteredStep.schema.properties = Object.fromEntries(
         Object.entries(filteredStep.schema.properties).filter(
-          ([key, value]) => {
+          ([key, value]: [string, any]) => {
             if (value[featureFlagKey]) {
               if (featureFlagApi.isActive(value[featureFlagKey])) {
                 return true;
@@ -189,6 +130,8 @@ export const MultistepJsonForm = (props: Props) => {
     }
   };
 
+  const { lastStepFormComponent } = useScaffolderPluginOptions();
+
   return (
     <>
       <Stepper activeStep={activeStep} orientation="vertical">
@@ -231,32 +174,16 @@ export const MultistepJsonForm = (props: Props) => {
           );
         })}
       </Stepper>
-      {activeStep === steps.length && (
-        <Content>
-          <Paper square elevation={0}>
-            <Typography variant="h6">Review and create</Typography>
-            <StructuredMetadataTable
-              dense
-              metadata={getReviewData(formData, steps)}
-            />
-            <Box mb={4} />
-            <Button onClick={handleBack} disabled={disableButtons}>
-              Back
-            </Button>
-            <Button onClick={handleReset} disabled={disableButtons}>
-              Reset
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleCreate}
-              disabled={!onFinish || disableButtons}
-            >
-              {finishButtonLabel ?? 'Create'}
-            </Button>
-          </Paper>
-        </Content>
-      )}
+      {activeStep === steps.length &&
+        lastStepFormComponent({
+          disableButtons,
+          handleBack,
+          handleCreate,
+          handleReset,
+          finishButtonLabel,
+          formData,
+          steps,
+        })}
     </>
   );
 };

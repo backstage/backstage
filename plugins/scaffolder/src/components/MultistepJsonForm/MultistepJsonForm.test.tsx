@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getReviewData } from './MultistepJsonForm';
+import { getReviewData } from './LastStepForm';
 
 describe('MultistepJsonForm', () => {
   const formDataMock = {

@@ -13,6 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { MultistepJsonForm } from './MultistepJsonForm';
-export { lastStepFormComponent, LastStepForm } from './LastStepForm';
-export type { LastStepFormProps } from './LastStepForm';
+
+import { usePluginOptions } from '@backstage/core-plugin-api';
+import { ReactElement } from 'react';
+import { LastStepFormProps } from './components/MultistepJsonForm';
+
+export type ScaffolderPluginOptions = {
+  lastStepFormComponent: (props: LastStepFormProps) => ReactElement;
+};
+
+/** @ignore */
+export type ScaffolderInputPluginOptionsOptions = {
+  lastStepFormComponent: (props: LastStepFormProps) => ReactElement;
+};
+
+export const useScaffolderPluginOptions = () =>
+  usePluginOptions<ScaffolderPluginOptions>();

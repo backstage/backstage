@@ -20,7 +20,7 @@ import { EntityPicker } from './components/fields/EntityPicker/EntityPicker';
 import { entityNamePickerValidation } from './components/fields/EntityNamePicker';
 import { EntityNamePicker } from './components/fields/EntityNamePicker/EntityNamePicker';
 import { OwnerPicker } from './components/fields/OwnerPicker/OwnerPicker';
-import { repoPickerValidation } from './components/fields/RepoUrlPicker';
+import { repoPickerValidation } from './components';
 import { RepoUrlPicker } from './components/fields/RepoUrlPicker/RepoUrlPicker';
 import { createScaffolderFieldExtension } from './extensions';
 import {
@@ -39,6 +39,11 @@ import {
 } from '@backstage/core-plugin-api';
 import { OwnedEntityPicker } from './components/fields/OwnedEntityPicker/OwnedEntityPicker';
 import { EntityTagsPicker } from './components/fields/EntityTagsPicker/EntityTagsPicker';
+import {
+  ScaffolderInputPluginOptionsOptions,
+  ScaffolderPluginOptions,
+} from './options';
+import { lastStepFormComponent } from './components/MultistepJsonForm';
 
 /**
  * The main plugin export for the scaffolder.
@@ -71,6 +76,14 @@ export const scaffolderPlugin = createPlugin({
     registerComponent: registerComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
   },
+  __experimentalConfigure(
+    options?: ScaffolderInputPluginOptionsOptions,
+  ): ScaffolderPluginOptions {
+    const defaultOptions = {
+      lastStepFormComponent,
+    };
+    return { ...defaultOptions, ...options };
+  },
 });
 
 /**
@@ -100,7 +113,7 @@ export const EntityNamePickerFieldExtension = scaffolderPlugin.provide(
 
 /**
  * The field extension which provides the ability to select a RepositoryUrl.
- * Currently this is an encoded URL that looks something like the following `github.com?repo=myRepoName&owner=backstage`.
+ * Currently, this is an encoded URL that looks something like the following `github.com?repo=myRepoName&owner=backstage`.
  *
  * @public
  */

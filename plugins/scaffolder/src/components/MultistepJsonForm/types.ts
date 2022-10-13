@@ -13,6 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { MultistepJsonForm } from './MultistepJsonForm';
-export { lastStepFormComponent, LastStepForm } from './LastStepForm';
-export type { LastStepFormProps } from './LastStepForm';
+import { FormProps } from '@rjsf/core';
+import { JsonObject } from '@backstage/types';
+
+export type Step = {
+  schema: JsonObject;
+  title: string;
+} & Partial<Omit<FormProps<any>, 'schema'>>;
