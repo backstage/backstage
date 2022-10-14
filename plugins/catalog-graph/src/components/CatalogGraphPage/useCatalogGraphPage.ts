@@ -38,6 +38,8 @@ export type CatalogGraphPageValue = {
   setMaxDepth: Dispatch<React.SetStateAction<number>>;
   selectedRelations: string[] | undefined;
   setSelectedRelations: Dispatch<React.SetStateAction<string[] | undefined>>;
+  selectedOwnedby: string[] | undefined;
+  setSelectedOwnedby: Dispatch<React.SetStateAction<string[] | undefined>>;
   selectedKinds: string[] | undefined;
   setSelectedKinds: Dispatch<React.SetStateAction<string[] | undefined>>;
   unidirectional: boolean;
@@ -56,6 +58,7 @@ export function useCatalogGraphPage({
   initialState?: {
     selectedRelations?: string[] | undefined;
     selectedKinds?: string[] | undefined;
+    selectedOwnedby?: string[] | undefined;
     rootEntityRefs?: string[];
     maxDepth?: number;
     unidirectional?: boolean;
@@ -71,6 +74,7 @@ export function useCatalogGraphPage({
         {}) as {
         selectedRelations?: string[] | string;
         selectedKinds?: string[] | string;
+        selectedOwnedby?: string[] | undefined;
         rootEntityRefs?: string[] | string;
         maxDepth?: string[] | string;
         unidirectional?: string[] | string;
@@ -106,6 +110,13 @@ export function useCatalogGraphPage({
       ? query.selectedKinds
       : initialState?.selectedKinds
     )?.map(k => k.toLocaleLowerCase('en-US')),
+  );
+  const [selectedOwnedby, setSelectedOwnedby] = useState<string[] | undefined>(
+    () =>
+      (Array.isArray(query.selectedOwnedby)
+        ? query.selectedOwnedby
+        : initialState?.selectedOwnedby
+      )?.map(k => k.toLocaleLowerCase('en-US')),
   );
   const [unidirectional, setUnidirectional] = useState<boolean>(() =>
     typeof query.unidirectional === 'string'
@@ -156,6 +167,10 @@ export function useCatalogGraphPage({
       setSelectedRelations(query.selectedRelations);
     }
 
+    if (Array.isArray(query.selectedOwnedby)) {
+      setSelectedOwnedby(query.selectedOwnedby);
+    }
+
     if (typeof query.unidirectional === 'string') {
       setUnidirectional(query.unidirectional === 'true');
     }
@@ -179,6 +194,7 @@ export function useCatalogGraphPage({
     setMaxDepth,
     setSelectedKinds,
     setSelectedRelations,
+    setSelectedOwnedby,
     setUnidirectional,
     setMergeRelations,
     setDirection,
@@ -198,6 +214,7 @@ export function useCatalogGraphPage({
         maxDepth: isFinite(maxDepth) ? maxDepth : '∞',
         selectedKinds,
         selectedRelations,
+        selectedOwnedby,
         unidirectional,
         mergeRelations,
         direction,
@@ -227,6 +244,7 @@ export function useCatalogGraphPage({
     maxDepth,
     selectedKinds,
     selectedRelations,
+    selectedOwnedby,
     unidirectional,
     mergeRelations,
     direction,
@@ -241,6 +259,8 @@ export function useCatalogGraphPage({
     setMaxDepth,
     selectedRelations,
     setSelectedRelations,
+    selectedOwnedby,
+    setSelectedOwnedby,
     selectedKinds,
     setSelectedKinds,
     unidirectional,

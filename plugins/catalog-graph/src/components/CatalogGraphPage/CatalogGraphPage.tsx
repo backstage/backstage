@@ -44,6 +44,7 @@ import { DirectionFilter } from './DirectionFilter';
 import { MaxDepthFilter } from './MaxDepthFilter';
 import { SelectedKindsFilter } from './SelectedKindsFilter';
 import { SelectedRelationsFilter } from './SelectedRelationsFilter';
+import { SelectedOwnbyFilter } from './SelectedOwnbyFilter';
 import { SwitchFilter } from './SwitchFilter';
 import { useCatalogGraphPage } from './useCatalogGraphPage';
 
@@ -104,6 +105,7 @@ export const CatalogGraphPage = (props: {
   initialState?: {
     selectedRelations?: string[];
     selectedKinds?: string[];
+    selectedOwnedby?: string[];
     rootEntityRefs?: string[];
     maxDepth?: number;
     unidirectional?: boolean;
@@ -124,6 +126,8 @@ export const CatalogGraphPage = (props: {
     setSelectedKinds,
     selectedRelations,
     setSelectedRelations,
+    selectedOwnedby,
+    setSelectedOwnedby,
     unidirectional,
     setUnidirectional,
     mergeRelations,
@@ -139,6 +143,7 @@ export const CatalogGraphPage = (props: {
   const onNodeClick = useCallback(
     (node: EntityNode, event: MouseEvent<unknown>) => {
       const nodeEntityName = parseEntityRef(node.id);
+      console.log(nodeEntityName, '---------nodee name');
 
       if (event.shiftKey) {
         const path = catalogEntityRoute({
@@ -200,6 +205,10 @@ export const CatalogGraphPage = (props: {
                 onChange={setSelectedRelations}
                 relationPairs={relationPairs}
               />
+              <SelectedOwnbyFilter
+                value={selectedOwnedby}
+                onChange={setSelectedOwnedby}
+              />
               <DirectionFilter value={direction} onChange={setDirection} />
               <SwitchFilter
                 value={unidirectional}
@@ -236,6 +245,11 @@ export const CatalogGraphPage = (props: {
                 relations={
                   selectedRelations && selectedRelations.length > 0
                     ? selectedRelations
+                    : undefined
+                }
+                ownedby={
+                  selectedOwnedby && selectedOwnedby.length > 0
+                    ? selectedOwnedby
                     : undefined
                 }
                 mergeRelations={mergeRelations}

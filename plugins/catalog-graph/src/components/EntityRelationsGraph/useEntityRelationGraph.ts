@@ -24,13 +24,19 @@ import { useEntityStore } from './useEntityStore';
  */
 export function useEntityRelationGraph({
   rootEntityRefs,
-  filter: { maxDepth = Number.POSITIVE_INFINITY, relations, kinds } = {},
+  filter: {
+    maxDepth = Number.POSITIVE_INFINITY,
+    relations,
+    kinds,
+    ownedby,
+  } = {},
 }: {
   rootEntityRefs: string[];
   filter?: {
     maxDepth?: number;
     relations?: string[];
     kinds?: string[];
+    ownedby?: string[];
   };
 }): {
   entities?: { [ref: string]: Entity };
@@ -68,7 +74,11 @@ export function useEntityRelationGraph({
                   rel.targetRef.startsWith(
                     `${kind.toLocaleLowerCase('en-US')}:`,
                   ),
-                ))
+                )) &&
+              (!ownedby ||
+                (rel.type == 'ownedBy' && ownedby.includes(rel.target.name)) ||
+                (rel.type == 'ownerOf' &&
+                  ownedby.includes(entity.metadata.name)))
             ) {
               if (!processedEntityRefs.has(rel.targetRef)) {
                 nextDepthRefQueue.push(rel.targetRef);
@@ -83,7 +93,15 @@ export function useEntityRelationGraph({
     }
 
     requestEntities([...expectedEntities]);
-  }, [entities, rootEntityRefs, maxDepth, relations, kinds, requestEntities]);
+  }, [
+    entities,
+    rootEntityRefs,
+    maxDepth,
+    relations,
+    kinds,
+    ownedby,
+    requestEntities,
+  ]);
 
   return {
     entities,

@@ -179,6 +179,9 @@ export type EntityMeta = JsonObject & {
  * @public
  */
 export type EntityRelation = {
+  target: {
+    name: string,
+  };
   /**
    * The type of the relation.
    */

@@ -74,6 +74,7 @@ export const EntityRelationsGraph = (props: {
   unidirectional?: boolean;
   mergeRelations?: boolean;
   kinds?: string[];
+  ownedby?: string[];
   relations?: string[];
   direction?: Direction;
   onNodeClick?: (value: EntityNode, event: MouseEvent<unknown>) => void;
@@ -89,6 +90,7 @@ export const EntityRelationsGraph = (props: {
     unidirectional = true,
     mergeRelations = true,
     kinds,
+    ownedby,
     relations,
     direction = Direction.LEFT_RIGHT,
     onNodeClick,
@@ -116,6 +118,7 @@ export const EntityRelationsGraph = (props: {
     unidirectional,
     mergeRelations,
     kinds,
+    ownedby,
     relations,
     onNodeClick,
     relationPairs,
