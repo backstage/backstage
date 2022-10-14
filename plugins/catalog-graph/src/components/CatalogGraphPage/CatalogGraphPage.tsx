@@ -143,7 +143,6 @@ export const CatalogGraphPage = (props: {
   const onNodeClick = useCallback(
     (node: EntityNode, event: MouseEvent<unknown>) => {
       const nodeEntityName = parseEntityRef(node.id);
-      console.log(nodeEntityName, '---------nodee name');
 
       if (event.shiftKey) {
         const path = catalogEntityRoute({

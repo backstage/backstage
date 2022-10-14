@@ -76,8 +76,9 @@ export function useEntityRelationGraph({
                   ),
                 )) &&
               (!ownedby ||
-                (rel.type == 'ownedBy' && ownedby.includes(rel.target.name)) ||
-                (rel.type == 'ownerOf' &&
+                (rel.type === 'ownedBy' &&
+                  ownedby.includes(rel.targetRef.split('/').slice(-1)[0])) ||
+                (rel.type === 'ownerOf' &&
                   ownedby.includes(entity.metadata.name)))
             ) {
               if (!processedEntityRefs.has(rel.targetRef)) {
