@@ -22,12 +22,15 @@ import { ScaffolderApi } from '../../types';
 import { rootRouteRef } from '../../routes';
 import { TemplatePage } from './TemplatePage';
 import {
-  featureFlagsApiRef,
+  BackstagePlugin,
+  errorApiRef,
   FeatureFlagsApi,
+  featureFlagsApiRef,
+  PluginProvider,
 } from '@backstage/core-plugin-api';
 
 import { ApiProvider } from '@backstage/core-app-api';
-import { errorApiRef } from '@backstage/core-plugin-api';
+import { lastStepFormComponent } from '../MultistepJsonForm';
 
 jest.mock('react-router-dom', () => {
   return {
@@ -107,6 +110,12 @@ const apis = TestApiRegistry.from(
   [featureFlagsApiRef, featureFlagsApiMock],
 );
 
+const plugin = {
+  getPluginOptions: () => ({
+    lastStepFormComponent,
+  }),
+} as unknown as BackstagePlugin;
+
 describe('TemplatePage', () => {
   beforeEach(() => jest.resetAllMocks());
 
@@ -117,7 +126,9 @@ describe('TemplatePage', () => {
     });
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <TemplatePage />
+        <PluginProvider plugin={plugin}>
+          <TemplatePage />
+        </PluginProvider>
       </ApiProvider>,
       {
         mountedRoutes: {
@@ -219,7 +230,9 @@ describe('TemplatePage', () => {
     const { findByText, findByLabelText, findAllByRole, findByRole } =
       await renderInTestApp(
         <ApiProvider apis={apis}>
-          <TemplatePage />
+          <PluginProvider plugin={plugin}>
+            <TemplatePage />
+          </PluginProvider>
         </ApiProvider>,
         {
           mountedRoutes: {
@@ -263,7 +276,9 @@ describe('TemplatePage', () => {
 
     const { queryByText } = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <TemplatePage />
+        <PluginProvider plugin={plugin}>
+          <TemplatePage />
+        </PluginProvider>
       </ApiProvider>,
       {
         mountedRoutes: {
