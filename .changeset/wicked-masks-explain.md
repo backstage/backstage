@@ -4,4 +4,4 @@
 '@backstage/plugin-catalog-graph': patch
 ---
 
-Added ownedBy filter to catalog-graph
+Added owned by filter to catalog-graph
