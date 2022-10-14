@@ -18,6 +18,7 @@ import {
   Entity,
   DEFAULT_NAMESPACE,
   RELATION_OWNED_BY,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
   Content,
@@ -44,9 +45,12 @@ import {
   UnregisterEntityDialog,
   useAsyncEntity,
 } from '@backstage/plugin-catalog-react';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
+import { usePermissions } from '@backstage/plugin-permission-react';
 import { Box, TabProps } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import React, { useEffect, useState } from 'react';
+import uniq from 'lodash/uniq';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 
@@ -56,6 +60,7 @@ export type EntityLayoutRouteProps = {
   title: string;
   children: JSX.Element;
   if?: (entity: Entity) => boolean;
+  permission?: ResourcePermission;
   tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
 };
 
@@ -185,33 +190,53 @@ export const EntityLayout = (props: EntityLayoutProps) => {
   const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
   const location = useLocation();
-  const routes = useElementFilter(
-    children,
-    elements =>
-      elements
-        .selectByComponentData({
-          key: dataKey,
-          withStrictError:
-            'Child of EntityLayout must be an EntityLayout.Route',
-        })
-        .getElements<EntityLayoutRouteProps>() // all nodes, element data, maintain structure or not?
-        .flatMap(({ props: elementProps }) => {
-          if (!entity) {
-            return [];
-          } else if (elementProps.if && !elementProps.if(entity)) {
+
+  const routeElements = useElementFilter(children, elements =>
+    elements
+      .selectByComponentData({
+        key: dataKey,
+        withStrictError: 'Child of EntityLayout must be an EntityLayout.Route',
+      })
+      .getElements<EntityLayoutRouteProps>(),
+  );
+
+  // Extract unique permissions from routes with a `permission` prop; duplicated permissions only
+  // need to be checked once.
+  const permissions = uniq(
+    routeElements.flatMap(({ props: elementProps }) =>
+      elementProps.permission ? [elementProps.permission] : [],
+    ),
+  );
+
+  const permissionResults = usePermissions({
+    permissions,
+    resourceRef: entity ? stringifyEntityRef(entity) : undefined,
+  });
+
+  const routes = useMemo(
+    () =>
+      routeElements.flatMap(({ props: elementProps }) => {
+        if (!entity) {
+          return [];
+        } else if (elementProps.if && !elementProps.if(entity)) {
+          return [];
+        } else if (elementProps.permission) {
+          const { allowed } = permissionResults[elementProps.permission!.name];
+          if (!allowed) {
             return [];
           }
+        }
 
-          return [
-            {
-              path: elementProps.path,
-              title: elementProps.title,
-              children: elementProps.children,
-              tabProps: elementProps.tabProps,
-            },
-          ];
-        }),
-    [entity],
+        return [
+          {
+            path: elementProps.path,
+            title: elementProps.title,
+            children: elementProps.children,
+            tabProps: elementProps.tabProps,
+          },
+        ];
+      }),
+    [entity, routeElements, permissionResults],
   );
 
   const { headerTitle, headerType } = headerProps(

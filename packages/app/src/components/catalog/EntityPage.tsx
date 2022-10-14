@@ -153,6 +153,7 @@ import {
   TextSize,
   ReportIssue,
 } from '@backstage/plugin-techdocs-module-addons-contrib';
+import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
@@ -485,7 +486,11 @@ const serviceEntityPage = (
       <EntityKafkaContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/todos" title="TODOs">
+    <EntityLayout.Route
+      path="/todos"
+      title="TODOs"
+      permission={catalogEntityDeletePermission}
+    >
       <EntityTodoContent />
     </EntityLayout.Route>
 
@@ -572,7 +577,11 @@ const websiteEntityPage = (
       <EntityCodeCoverageContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/todos" title="TODOs">
+    <EntityLayout.Route
+      path="/todos"
+      title="TODOs"
+      permission={catalogEntityDeletePermission}
+    >
       <EntityTodoContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
@@ -588,7 +597,11 @@ const defaultEntityPage = (
       {techdocsContent}
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/todos" title="TODOs">
+    <EntityLayout.Route
+      path="/todos"
+      title="TODOs"
+      permission={catalogEntityDeletePermission}
+    >
       <EntityTodoContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
