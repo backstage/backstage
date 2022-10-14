@@ -16,6 +16,11 @@
 import { FormProps } from '@rjsf/core';
 import { JsonObject } from '@backstage/types';
 
+/**
+ * The props for the Step in scaffolder template.
+ *
+ * @public
+ */
 export type Step = {
   schema: JsonObject;
   title: string;

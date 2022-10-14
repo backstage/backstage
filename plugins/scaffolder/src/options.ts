@@ -16,13 +16,22 @@
 
 import { usePluginOptions } from '@backstage/core-plugin-api';
 import { ReactElement } from 'react';
-import { LastStepFormProps } from './components/MultistepJsonForm';
+import { LastStepFormProps } from './components';
 
+/**
+ * Scaffolder Plugin options to override default plugin behavior.
+ *
+ * @public
+ */
 export type ScaffolderPluginOptions = {
   lastStepFormComponent: (props: LastStepFormProps) => ReactElement;
 };
 
-/** @ignore */
+/**
+ * Scaffolder Plugin options to override default plugin behavior.
+ *
+ * @public
+ */
 export type ScaffolderInputPluginOptionsOptions = {
   lastStepFormComponent: (props: LastStepFormProps) => ReactElement;
 };

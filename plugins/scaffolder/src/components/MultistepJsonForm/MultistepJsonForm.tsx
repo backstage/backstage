@@ -53,6 +53,11 @@ type Props = {
   layouts: LayoutOptions[];
 };
 
+/**
+ * Creates the dynamic form for a scaffolder template.
+ *
+ * @public
+ */
 export const MultistepJsonForm = (props: Props) => {
   const {
     formData,

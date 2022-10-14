@@ -20,6 +20,12 @@ import { Step } from './types';
 import { UiSchema } from '@rjsf/core';
 import { JsonObject } from '@backstage/types';
 
+/**
+ * The props for the Last Step in scaffolder template form.
+ * Which represents the summary of the input provided by the end user.
+ *
+ * @public
+ */
 export type LastStepFormProps = {
   disableButtons: boolean;
   finishButtonLabel?: string;
@@ -84,6 +90,12 @@ export function getReviewData(formData: Record<string, any>, steps: Step[]) {
   return reviewData;
 }
 
+/**
+ * The component displaying the Last Step in scaffolder template form.
+ * Which represents the summary of the input provided by the end user.
+ *
+ * @public
+ */
 export const LastStepForm = (props: LastStepFormProps) => {
   const {
     disableButtons,
@@ -123,6 +135,11 @@ export const LastStepForm = (props: LastStepFormProps) => {
   );
 };
 
+/**
+ * Creates LastStepForm from provided properties.
+ *
+ * @public
+ */
 export const lastStepFormComponent = (props: LastStepFormProps) => (
   <LastStepForm {...props} />
 );

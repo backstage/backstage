@@ -43,7 +43,7 @@ import {
   ScaffolderInputPluginOptionsOptions,
   ScaffolderPluginOptions,
 } from './options';
-import { lastStepFormComponent } from './components/MultistepJsonForm';
+import { lastStepFormComponent } from './components';
 
 /**
  * The main plugin export for the scaffolder.
