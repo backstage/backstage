@@ -16,25 +16,9 @@
 
 import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
-import { useSidebarPinState } from '../Sidebar/SidebarPinStateContext';
+import { ThemeProvider } from '@material-ui/core/styles';
 
 export type PageClassKey = 'root';
-
-const useStyles = makeStyles<BackstageTheme, { isMobile?: boolean }>(
-  () => ({
-    root: ({ isMobile }) => ({
-      display: 'grid',
-      gridTemplateAreas:
-        "'pageHeader pageHeader pageHeader' 'pageSubheader pageSubheader pageSubheader' 'pageNav pageContent pageSidebar'",
-      gridTemplateRows: 'max-content auto 1fr',
-      gridTemplateColumns: 'auto 1fr auto',
-      height: isMobile ? '100%' : '100vh',
-      overflowY: 'auto',
-    }),
-  }),
-  { name: 'BackstagePage' },
-);
 
 type Props = {
   themeId: string;
@@ -43,8 +27,6 @@ type Props = {
 
 export function Page(props: Props) {
   const { themeId, children } = props;
-  const { isMobile } = useSidebarPinState();
-  const classes = useStyles({ isMobile });
   return (
     <ThemeProvider
       theme={(baseTheme: BackstageTheme) => ({
@@ -52,7 +34,7 @@ export function Page(props: Props) {
         page: baseTheme.getPageTheme({ themeId }),
       })}
     >
-      <main className={classes.root}>{children}</main>
+      {children}
     </ThemeProvider>
   );
 }
