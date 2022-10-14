@@ -13,6 +13,9 @@ jobs:
       matrix:
         node-version: [14.x]
 
+    env:
+      NODE_OPTIONS: --max-old-space-size=4096
+
     steps:
       - uses: actions/checkout@v3
 
