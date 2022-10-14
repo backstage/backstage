@@ -53,4 +53,11 @@ export class IdentityPermissionApi implements PermissionApi {
     );
     return response[0];
   }
+
+  async authorizeAll(requests: AuthorizePermissionRequest[]) {
+    return this.permissionClient.authorize(
+      requests,
+      await this.identityApi.getCredentials(),
+    );
+  }
 }

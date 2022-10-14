@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import { useApi } from '@backstage/core-plugin-api';
 import {
-  isResourcePermission,
+  AuthorizeResult,
   Permission,
   ResourcePermission,
 } from '@backstage/plugin-permission-common';
-import { AsyncPermissionResult, usePermission } from './usePermission';
+import useAsync from 'react-use/lib/useAsync';
+import { permissionApiRef } from '../apis';
+import { AsyncPermissionResult } from './usePermission';
 
 /**
  * React hook for authorization of multiple permissions. This wraps
@@ -28,27 +31,25 @@ import { AsyncPermissionResult, usePermission } from './usePermission';
  * @public
  */
 export function usePermissions(
-  input:
+  input: Array<
     | {
-        permissions: Array<Exclude<Permission, ResourcePermission>>;
+        permission: Exclude<Permission, ResourcePermission>;
         resourceRef?: never;
       }
     | {
-        permissions: Array<ResourcePermission>;
+        permission: ResourcePermission;
         resourceRef: string | undefined;
-      },
-): Record<string, AsyncPermissionResult> {
-  const { permissions, resourceRef } = input;
-
-  const results: Record<string, AsyncPermissionResult> = {};
-  for (const permission of permissions) {
-    if (!results[permission.name]) {
-      if (isResourcePermission(permission)) {
-        results[permission.name] = usePermission({ permission, resourceRef });
-      } else {
-        results[permission.name] = usePermission({ permission });
       }
-    }
-  }
-  return results;
+  >,
+): AsyncPermissionResult[] {
+  const permissionApi = useApi(permissionApiRef);
+
+  const { value, loading, error } = useAsync(
+    async () => await permissionApi.authorizeAll(input),
+  );
+  return input.map((_, index) => ({
+    loading,
+    error,
+    allowed: value?.[index].result === AuthorizeResult.ALLOW,
+  }));
 }

@@ -46,7 +46,10 @@ import {
   useAsyncEntity,
 } from '@backstage/plugin-catalog-react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
-import { usePermissions } from '@backstage/plugin-permission-react';
+import {
+  AsyncPermissionResult,
+  usePermissions,
+} from '@backstage/plugin-permission-react';
 import { Box, TabProps } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import uniq from 'lodash/uniq';
@@ -208,10 +211,20 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     ),
   );
 
-  const permissionResults = usePermissions({
-    permissions,
-    resourceRef: entity ? stringifyEntityRef(entity) : undefined,
-  });
+  const permissionResults = usePermissions(
+    permissions.map(permission => ({
+      permission,
+      resourceRef: entity ? stringifyEntityRef(entity) : undefined,
+    })),
+  );
+
+  const permissionsByName = permissionResults.reduce((acc, result, index) => {
+    const permission = permissions[index];
+    if (!acc[permission.name]) {
+      acc[permission.name] = result;
+    }
+    return acc;
+  }, {} as Record<string, AsyncPermissionResult>);
 
   const routes = useMemo(
     () =>
@@ -221,7 +234,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
         } else if (elementProps.if && !elementProps.if(entity)) {
           return [];
         } else if (elementProps.permission) {
-          const { allowed } = permissionResults[elementProps.permission!.name];
+          const { allowed } = permissionsByName[elementProps.permission!.name];
           if (!allowed) {
             return [];
           }
@@ -236,7 +249,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
           },
         ];
       }),
-    [entity, routeElements, permissionResults],
+    [entity, routeElements, permissionsByName],
   );
 
   const { headerTitle, headerType } = headerProps(

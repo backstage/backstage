@@ -41,4 +41,10 @@ export class MockPermissionApi implements PermissionApi {
   ): Promise<EvaluatePermissionResponse> {
     return { result: this.requestHandler(request) };
   }
+
+  async authorizeAll(
+    requests: EvaluatePermissionRequest[],
+  ): Promise<EvaluatePermissionResponse[]> {
+    return await Promise.all(requests.map(request => this.authorize(request)));
+  }
 }
