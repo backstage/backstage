@@ -187,10 +187,21 @@ export type LogEvent = {
   taskId: string;
 };
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-//
 // @public
-export const MultistepJsonForm: (props: Props) => JSX.Element;
+export const MultistepJsonForm: (props: MultistepJsonFormProps) => JSX.Element;
+
+// @public
+export type MultistepJsonFormProps = {
+  steps: Step[];
+  formData: Record<string, any>;
+  onChange: (e: IChangeEvent) => void;
+  onReset: () => void;
+  onFinish?: () => Promise<void>;
+  widgets?: FormProps<any>['widgets'];
+  fields?: FormProps<any>['fields'];
+  finishButtonLabel?: string;
+  layouts: LayoutOptions[];
+};
 
 // @alpha
 export type NextCustomFieldValidator<TFieldReturnValue> = (

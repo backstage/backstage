@@ -38,7 +38,12 @@ import { useScaffolderPluginOptions } from '../../options';
 
 const Form = withTheme(MuiTheme);
 
-type Props = {
+/**
+ * The props for a dynamic form of a scaffolder template.
+ *
+ * @public
+ */
+export type MultistepJsonFormProps = {
   /**
    * Steps for the form, each contains title and form schema
    */
@@ -58,7 +63,7 @@ type Props = {
  *
  * @public
  */
-export const MultistepJsonForm = (props: Props) => {
+export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
   const {
     formData,
     onChange,

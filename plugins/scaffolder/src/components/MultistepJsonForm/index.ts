@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 export { MultistepJsonForm } from './MultistepJsonForm';
+export type { MultistepJsonFormProps } from './MultistepJsonForm';
 export { lastStepFormComponent, LastStepForm } from './LastStepForm';
 export type { LastStepFormProps } from './LastStepForm';
 export type { Step } from './types';
