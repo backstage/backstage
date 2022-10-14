@@ -33,12 +33,15 @@ import {
   ListItemIcon,
   ListItemText,
   Tooltip,
+  Divider,
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
 import PersonIcon from '@material-ui/icons/Person';
+import LinkIcon from '@material-ui/icons/Link';
 import Alert from '@material-ui/lab/Alert';
+import Icon from '@material-ui/core/Icon';
 import React from 'react';
 import {
   Avatar,
@@ -46,6 +49,8 @@ import {
   InfoCardVariants,
   Link,
 } from '@backstage/core-components';
+
+const staticProfileKeys = ['displayName', 'email', 'picture'];
 
 const CardTitle = (props: { title?: string }) =>
   props.title ? (
@@ -66,7 +71,7 @@ export const UserProfileCard = (props: { variant?: InfoCardVariants }) => {
     user.metadata.annotations?.[ANNOTATION_EDIT_URL];
 
   const {
-    metadata: { name: metaName, description },
+    metadata: { name: metaName, description, links },
     spec: { profile },
   } = user;
   const displayName = profile?.displayName ?? metaName;
@@ -74,6 +79,11 @@ export const UserProfileCard = (props: { variant?: InfoCardVariants }) => {
   const memberOfRelations = getEntityRelations(user, RELATION_MEMBER_OF, {
     kind: 'Group',
   });
+
+  const profileKeys =
+    profile !== undefined
+      ? Object.keys(profile).filter(key => !staticProfileKeys.includes(key))
+      : [];
 
   return (
     <InfoCard
@@ -128,6 +138,44 @@ export const UserProfileCard = (props: { variant?: InfoCardVariants }) => {
                 />
               </ListItemText>
             </ListItem>
+
+            {links !== undefined && <Divider />}
+            {links !== undefined &&
+              links.map(link => {
+                return (
+                  <ListItem button component="a" key={link.url} href={link.url}>
+                    {link.icon ? (
+                      <ListItemIcon>
+                        <Tooltip title={link.icon}>
+                          <Icon>{link.icon}</Icon>
+                        </Tooltip>
+                      </ListItemIcon>
+                    ) : (
+                      <ListItemIcon>
+                        <LinkIcon />
+                      </ListItemIcon>
+                    )}
+                    <ListItemText>{link.title}</ListItemText>
+                  </ListItem>
+                );
+              })}
+
+            {profile !== undefined && profileKeys.length > 0 && <Divider />}
+            {profile !== undefined &&
+              profileKeys.length > 0 &&
+              profileKeys.map(key => {
+                const value = profile[key];
+
+                return (
+                  <ListItem key={key}>
+                    <ListItemText style={{ width: '100px', flexGrow: 0 }}>
+                      {key}
+                    </ListItemText>
+
+                    <ListItemText>{value}</ListItemText>
+                  </ListItem>
+                );
+              })}
           </List>
         </Grid>
       </Grid>

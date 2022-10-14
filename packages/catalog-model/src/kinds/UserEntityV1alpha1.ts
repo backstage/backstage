@@ -18,6 +18,14 @@ import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/User.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
 
+interface UserProfileStatic {
+  displayName?: string;
+  email?: string;
+  picture?: string;
+}
+
+type UserProfile = Record<string, string> & UserProfileStatic;
+
 /**
  * Backstage catalog User kind Entity.
  *
@@ -27,11 +35,7 @@ export interface UserEntityV1alpha1 extends Entity {
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
   kind: 'User';
   spec: {
-    profile?: {
-      displayName?: string;
-      email?: string;
-      picture?: string;
-    };
+    profile?: UserProfile;
     memberOf?: string[];
   };
 }

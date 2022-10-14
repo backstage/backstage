@@ -373,7 +373,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
       const newData = (data as any[]).filter(
         el =>
           !!Object.entries(selectedFilters)
-            .filter(([, value]) => !!value.length)
+            .filter(([, value]) => !!(value as []).length)
             .every(([key, filterValue]) => {
               const fieldValue = extractValueByField(
                 el,

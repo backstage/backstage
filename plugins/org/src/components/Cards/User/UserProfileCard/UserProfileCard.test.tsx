@@ -155,4 +155,65 @@ describe('Edit Button', () => {
     );
     expect(rendered.getByRole('button')).toBeInTheDocument();
   });
+
+  it('Should show the extra fields if either links or extra profile are filled', async () => {
+    const annotations: Record<string, string> = {
+      'backstage.io/edit-url': 'https://example.com/user.yaml',
+    };
+    const userEntity: UserEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: {
+        name: 'calum.leavy',
+        description: 'Super awesome human',
+        annotations,
+        links: [
+          {
+            url: 'slack://user?team=T00000000&id=U00000000',
+            title: 'Slack',
+            icon: 'message',
+          },
+          {
+            url: 'https://www.google.com',
+            title: 'Google',
+          },
+        ],
+      },
+      spec: {
+        profile: {
+          displayName: 'Calum Leavy',
+          email: 'calum-leavy@example.com',
+          'Job Title': 'Software Engineer',
+          Department: 'Engineering',
+          Location: 'San Francisco, CA',
+        },
+        memberOf: ['ExampleGroup'],
+      },
+      relations: [
+        {
+          type: 'memberOf',
+          targetRef: 'group:default/examplegroup',
+        },
+      ],
+    };
+
+    const rendered = await renderWithEffects(
+      wrapInTestApp(
+        <EntityProvider entity={userEntity}>
+          <UserProfileCard variant="gridItem" />
+        </EntityProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
+      ),
+    );
+    expect(rendered.getByText('Software Engineer')).toBeInTheDocument();
+    expect(rendered.getByText('Department')).toBeInTheDocument();
+    expect(rendered.getByText('San Francisco, CA')).toBeInTheDocument();
+    expect(rendered.getByText('Location')).toBeInTheDocument();
+    expect(rendered.getByText('Slack')).toBeInTheDocument();
+    expect(rendered.getByText('Google')).toBeInTheDocument();
+  });
 });
