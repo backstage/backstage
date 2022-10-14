@@ -18,7 +18,8 @@ import { FieldProps } from '@rjsf/core';
 import { FieldProps as FieldProps_2 } from '@rjsf/utils';
 import { FieldValidation } from '@rjsf/core';
 import { FieldValidation as FieldValidation_2 } from '@rjsf/utils';
-import type { FormProps } from '@rjsf/core';
+import { FormProps } from '@rjsf/core';
+import { IChangeEvent } from '@rjsf/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
@@ -26,6 +27,7 @@ import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
+import { ReactElement } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
@@ -131,6 +133,24 @@ export type FieldExtensionOptions<
 };
 
 // @public
+export const LastStepForm: (props: LastStepFormProps) => JSX.Element;
+
+// @public
+export const lastStepFormComponent: (props: LastStepFormProps) => JSX.Element;
+
+// @public
+export type LastStepFormProps = {
+  disableButtons: boolean;
+  finishButtonLabel?: string;
+  formData: Record<string, any>;
+  handleBack: () => void;
+  handleCreate: () => void;
+  handleReset: () => void;
+  onFinish?: () => Promise<void>;
+  steps: Step[];
+};
+
+// @public
 export type LayoutComponent<_TInputProps> = () => null;
 
 // @public
@@ -166,6 +186,11 @@ export type LogEvent = {
   id: string;
   taskId: string;
 };
+
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+//
+// @public
+export const MultistepJsonForm: (props: Props) => JSX.Element;
 
 // @alpha
 export type NextCustomFieldValidator<TFieldReturnValue> = (
@@ -422,6 +447,11 @@ export interface ScaffolderGetIntegrationsListResponse {
 }
 
 // @public
+export type ScaffolderInputPluginOptionsOptions = {
+  lastStepFormComponent: (props: LastStepFormProps) => ReactElement;
+};
+
+// @public
 export const ScaffolderLayouts: React.ComponentType;
 
 // @public (undocumented)
@@ -451,8 +481,13 @@ export const scaffolderPlugin: BackstagePlugin<
       true
     >;
   },
-  {}
+  ScaffolderInputPluginOptionsOptions
 >;
+
+// @public
+export type ScaffolderPluginOptions = {
+  lastStepFormComponent: (props: LastStepFormProps) => ReactElement;
+};
 
 // @public
 export interface ScaffolderScaffoldOptions {
@@ -507,6 +542,12 @@ export interface ScaffolderUseTemplateSecrets {
   // (undocumented)
   setSecrets: (input: Record<string, string>) => void;
 }
+
+// @public
+export type Step = {
+  schema: JsonObject;
+  title: string;
+} & Partial<Omit<FormProps<any>, 'schema'>>;
 
 // @public
 export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;
