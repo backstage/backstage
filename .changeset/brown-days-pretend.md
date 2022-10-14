@@ -2,4 +2,4 @@
 '@backstage/plugin-tech-insights': minor
 ---
 
-Fixed bug that when sending data by Post, the default context type used was `plain/text`
+Fixed bug when sending data by Post in `runChecks` and `runBulkChecks` functions of the `TechInsightsClient` class, the default `Content-Type` used was `plain/text`
