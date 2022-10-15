@@ -1,0 +1,23 @@
+name: Extract data for software analytics
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: setup-node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+          registry-url: https://registry.npmjs.org/
+
+      - name: test-node
+        run: node --version
+
+      - name: test-fs
+        run: ls -al
