@@ -110,10 +110,10 @@ const components: Options['components'] = {
 };
 
 /**
- * MarkdownContent
- * --
- * Renders markdown with the default dialect [gfm - GitHub flavored Markdown](https://github.github.com/gfm/) to backstage theme styled HTML.
- * If you just want to render to plain [CommonMark](https://commonmark.org/), set the dialect to `'common-mark'`
+ * Renders markdown with the default dialect {@link https://github.github.com/gfm/ | gfm - GitHub flavored Markdown} to backstage theme styled HTML.
+ *
+ * @remarks
+ * If you just want to render to plain {@link https://commonmark.org/ | CommonMark}, set the dialect to `'common-mark'`
  */
 export function MarkdownContent(props: Props) {
   const {
