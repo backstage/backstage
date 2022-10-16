@@ -93,7 +93,7 @@ export class NewlineDelimitedJsonCollatorFactory
       options.type,
       options.searchPattern,
       options.reader,
-      options.logger,
+      options.logger.child({ documentType: options.type }),
       options.visibilityPermission,
     );
   }
