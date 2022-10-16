@@ -1,5 +1,42 @@
 # @backstage/plugin-bazaar-backend
 
+## 0.2.0-next.2
+
+### Minor Changes
+
+- 8554533546: **BREAKING** The bazaar-backend `createRouter` now requires that the `identityApi` is passed to the router.
+
+  These changes are **required** to `packages/backend/src/plugins/bazaar.ts`
+
+  The user entity ref is now added to the members table and is taken from the requesting user using the `identityApi`.
+
+  ```diff
+  import { PluginEnvironment } from '../types';
+  import { createRouter } from '@backstage/plugin-bazaar-backend';
+  import { Router } from 'express';
+
+  export default async function createPlugin(
+    env: PluginEnvironment,
+  ): Promise<Router> {
+    return await createRouter({
+      logger: env.logger,
+      config: env.config,
+      database: env.database,
+  +   identity: env.identity,
+    });
+  }
+  ```
+
+### Patch Changes
+
+- f7c2855d76: Router now also has endpoint `getLatestProjects` that takes a limit of projects as prop.
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/backend-test-utils@0.1.29-next.2
+  - @backstage/plugin-auth-node@0.2.6-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+
 ## 0.1.21-next.1
 
 ### Patch Changes

@@ -15,6 +15,7 @@
  */
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import { LocationSpec as NonDeprecatedLocationSpec } from '@backstage/plugin-catalog-common';
 
 /**
  * Holds the entity location information.
@@ -26,12 +27,9 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
  *  default value: 'required'.
  *
  * @public
+ * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
  */
-export type LocationSpec = {
-  type: string;
-  target: string;
-  presence?: 'optional' | 'required';
-};
+export type LocationSpec = NonDeprecatedLocationSpec;
 
 /**
  * Holds the relation data for entities.

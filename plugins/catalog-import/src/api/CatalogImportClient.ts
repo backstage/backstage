@@ -15,7 +15,6 @@
  */
 
 import { CatalogApi } from '@backstage/catalog-client';
-import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
   ConfigApi,
   DiscoveryApi,
@@ -28,11 +27,11 @@ import {
 import { ScmAuthApi } from '@backstage/integration-react';
 import { Octokit } from '@octokit/rest';
 import { Base64 } from 'js-base64';
-import { PartialEntity } from '../types';
 import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
 import { getGithubIntegrationConfig } from './GitHub';
-import { trimEnd } from 'lodash';
 import { getBranchName, getCatalogFilename } from '../components/helpers';
+import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 
 /**
  * The default implementation of the {@link CatalogImportApi}.
@@ -105,16 +104,40 @@ export class CatalogImportClient implements CatalogImportApi {
       );
     }
 
-    // TODO: this could be part of the analyze-location endpoint
-    const locations = await this.checkGitHubForExistingCatalogInfo({
-      ...ghConfig,
-      url,
+    const analyzation = await this.analyzeLocation({
+      repo: url,
     });
 
-    if (locations.length > 0) {
+    if (analyzation.existingEntityFiles.length > 0) {
+      const locations = analyzation.existingEntityFiles.reduce<
+        Record<
+          string,
+          {
+            target: string;
+            exists?: boolean;
+            entities: CompoundEntityRef[];
+          }
+        >
+      >((state, curr) => {
+        state[curr.location.target] = {
+          target: curr.location.target,
+          exists: curr.isRegistered,
+          entities: [
+            ...(curr.location.target in state
+              ? state[curr.location.target].entities
+              : []),
+            {
+              name: curr.entity.metadata.name,
+              namespace: curr.entity.metadata.namespace ?? 'default',
+              kind: curr.entity.kind,
+            },
+          ],
+        };
+        return state;
+      }, {});
       return {
         type: 'locations',
-        locations,
+        locations: Object.values(locations),
       };
     }
 
@@ -122,9 +145,7 @@ export class CatalogImportClient implements CatalogImportApi {
       type: 'repository',
       integrationType: 'github',
       url: url,
-      generatedEntities: await this.generateEntityDefinitions({
-        repo: url,
-      }),
+      generatedEntities: analyzation.generateEntities.map(x => x.entity),
     };
   }
 
@@ -174,9 +195,9 @@ the component will become available.\n\nFor more information, read an \
   }
 
   // TODO: this could be part of the catalog api
-  private async generateEntityDefinitions(options: {
+  private async analyzeLocation(options: {
     repo: string;
-  }): Promise<PartialEntity[]> {
+  }): Promise<AnalyzeLocationResponse> {
     const { token } = await this.identityApi.getCredentials();
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/analyze-location`,
@@ -188,6 +209,13 @@ the component will become available.\n\nFor more information, read an \
         method: 'POST',
         body: JSON.stringify({
           location: { type: 'url', target: options.repo },
+          ...(this.configApi.getOptionalString(
+            'catalog.import.entityFilename',
+          ) && {
+            catalogFilename: this.configApi.getOptionalString(
+              'catalog.import.entityFilename',
+            ),
+          }),
         }),
       },
     ).catch(e => {
@@ -200,69 +228,7 @@ the component will become available.\n\nFor more information, read an \
     }
 
     const payload = await response.json();
-    return payload.generateEntities.map((x: any) => x.entity);
-  }
-
-  // TODO: this response should better be part of the analyze-locations response and scm-independent / implemented per scm
-  private async checkGitHubForExistingCatalogInfo(options: {
-    url: string;
-    owner: string;
-    repo: string;
-    githubIntegrationConfig: GitHubIntegrationConfig;
-  }): Promise<
-    Array<{
-      target: string;
-      entities: CompoundEntityRef[];
-    }>
-  > {
-    const { url, owner, repo, githubIntegrationConfig } = options;
-
-    const { token } = await this.scmAuthApi.getCredentials({ url });
-    const octo = new Octokit({
-      auth: token,
-      baseUrl: githubIntegrationConfig.apiBaseUrl,
-    });
-    const catalogFilename = getCatalogFilename(this.configApi);
-    const query = `repo:${owner}/${repo}+filename:${catalogFilename}`;
-
-    const searchResult = await octo.search.code({ q: query }).catch(e => {
-      throw new Error(
-        formatHttpErrorMessage(
-          "Couldn't search repository for metadata file.",
-          e,
-        ),
-      );
-    });
-    const exists = searchResult.data.total_count > 0;
-    if (exists) {
-      const repoInformation = await octo.repos.get({ owner, repo }).catch(e => {
-        throw new Error(formatHttpErrorMessage("Couldn't fetch repo data", e));
-      });
-      const defaultBranch = repoInformation.data.default_branch;
-
-      return await Promise.all(
-        searchResult.data.items
-          .map(i => `${trimEnd(url, '/')}/blob/${defaultBranch}/${i.path}`)
-          .map(async target => {
-            const result = await this.catalogApi.addLocation({
-              type: 'url',
-              target,
-              dryRun: true,
-            });
-            return {
-              target,
-              exists: result.exists,
-              entities: result.entities.map(e => ({
-                kind: e.kind,
-                namespace: e.metadata.namespace ?? 'default',
-                name: e.metadata.name,
-              })),
-            };
-          }),
-      );
-    }
-
-    return [];
+    return payload;
   }
 
   // TODO: extract this function and implement for non-github

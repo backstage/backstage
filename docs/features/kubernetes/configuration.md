@@ -62,7 +62,7 @@ This is an array used to determine where to retrieve cluster configuration from.
 Valid cluster locator methods are:
 
 - [`catalog`](#catalog)
-- [`localKubectlProxy`](#localKubectlProxy)
+- [`localKubectlProxy`](#localkubectlproxy)
 - [`config`](#config)
 - [`gke`](#gke)
 - [custom `KubernetesClustersSupplier`](#custom-kubernetesclusterssupplier)

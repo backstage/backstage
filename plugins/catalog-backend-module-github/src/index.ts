@@ -20,12 +20,13 @@
  * @packageDocumentation
  */
 
+export { GitHubLocationAnalyzer } from './analyzers/GitHubLocationAnalyzer';
+export type { GitHubLocationAnalyzerOptions } from './analyzers/GitHubLocationAnalyzer';
+export type { GithubMultiOrgConfig } from './lib';
 export { GithubDiscoveryProcessor } from './processors/GithubDiscoveryProcessor';
 export { GithubMultiOrgReaderProcessor } from './processors/GithubMultiOrgReaderProcessor';
 export { GithubOrgReaderProcessor } from './processors/GithubOrgReaderProcessor';
 export { GitHubEntityProvider } from './providers/GitHubEntityProvider';
 export { GitHubOrgEntityProvider } from './providers/GitHubOrgEntityProvider';
 export type { GitHubOrgEntityProviderOptions } from './providers/GitHubOrgEntityProvider';
-export type { GithubMultiOrgConfig } from './lib';
-export { githubEntityProviderCatalogModule } from './module';
-export type { GithubEntityProviderCatalogModuleOptions } from './module';
+export { githubEntityProviderCatalogModule } from './service/GithubEntityProviderCatalogModule';

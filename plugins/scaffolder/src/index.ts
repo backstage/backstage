@@ -59,11 +59,17 @@ export {
   RepoUrlPickerFieldExtension,
   ScaffolderPage,
   scaffolderPlugin,
-  NextScaffolderPage,
 } from './plugin';
 export * from './components';
 export type { TaskPageProps } from './components/TaskPage';
 
 /** next exports */
+export { NextScaffolderPage } from './plugin';
 export type { NextRouterProps } from './next';
 export type { TemplateGroupFilter } from './next';
+export {
+  createNextScaffolderFieldExtension,
+  type NextCustomFieldValidator,
+  type NextFieldExtensionOptions,
+  type NextFieldExtensionComponentProps,
+} from './extensions';

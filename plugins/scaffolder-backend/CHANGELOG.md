@@ -1,5 +1,31 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.7.0-next.2
+
+### Minor Changes
+
+- 17ff77154c: Update the `github:publish` action to allow passing whether pull
+  requests must be up to date with the default branch before merging.
+- a8e9848479: Added optional `sourcePath` parameter to `publish:gitlab:merge-request` action, `targetPath` is now optional and falls back to current workspace path.
+
+### Patch Changes
+
+- 4880d43e25: Fixed setting default branch for Bitbucket Server
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.2.0-next.2
+  - @backstage/plugin-catalog-backend@1.5.0-next.2
+  - @backstage/backend-tasks@0.3.6-next.2
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/backend-plugin-api@0.1.3-next.2
+  - @backstage/plugin-auth-node@0.2.6-next.2
+  - @backstage/catalog-client@1.1.1-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/integration@1.3.2-next.2
+  - @backstage/types@1.0.0
+  - @backstage/plugin-scaffolder-common@1.2.1-next.2
+
 ## 1.7.0-next.1
 
 ### Patch Changes

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-app-api",
   "description": "Core API used by Backstage backend apps",
-  "version": "0.2.2-next.1",
+  "version": "0.2.2-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {

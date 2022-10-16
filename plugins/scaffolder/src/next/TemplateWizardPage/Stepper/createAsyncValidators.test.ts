@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { JsonObject } from '@backstage/types';
-import { CustomFieldValidator } from '../../../extensions';
+import { NextCustomFieldValidator } from '../../../extensions';
 import { createAsyncValidators } from './createAsyncValidators';
 
 describe('createAsyncValidators', () => {
@@ -79,13 +79,16 @@ describe('createAsyncValidators', () => {
       },
     };
 
-    const NameField: CustomFieldValidator<string> = (value, { addError }) => {
+    const NameField: NextCustomFieldValidator<string> = (
+      value,
+      { addError },
+    ) => {
       if (!value) {
         addError('something is broken here!');
       }
     };
 
-    const AddressField: CustomFieldValidator<{
+    const AddressField: NextCustomFieldValidator<{
       street?: string;
       postcode?: string;
     }> = (value, { addError }) => {
@@ -101,8 +104,8 @@ describe('createAsyncValidators', () => {
     const validate = createAsyncValidators(
       schema,
       {
-        NameField: NameField as CustomFieldValidator<unknown>,
-        AddressField: AddressField as CustomFieldValidator<unknown>,
+        NameField: NameField as NextCustomFieldValidator<unknown>,
+        AddressField: AddressField as NextCustomFieldValidator<unknown>,
       },
       {
         apiHolder: { get: jest.fn() },

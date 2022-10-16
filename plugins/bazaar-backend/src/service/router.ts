@@ -92,8 +92,14 @@ export async function createRouter(
     response.json({ status: 'ok', data: data });
   });
 
-  router.get('/projects', async (_, response) => {
-    const data = await dbHandler.getProjects();
+  router.get('/projects', async (request, response) => {
+    const limit = request.query.limit?.toString();
+    const order = request.query.order?.toString();
+
+    const data = await dbHandler.getProjects(
+      limit ? parseInt(limit, 10) : undefined,
+      order,
+    );
 
     response.json({ status: 'ok', data: data });
   });

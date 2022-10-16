@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  readTaskScheduleDefinitionFromConfig,
+  TaskScheduleDefinition,
+} from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 
 const DEFAULT_CATALOG_PATH = '/catalog-info.yaml';
@@ -29,6 +33,7 @@ export type GitHubEntityProviderConfig = {
     branch?: string;
     topic?: GithubTopicFilters;
   };
+  schedule?: TaskScheduleDefinition;
 };
 
 export type GithubTopicFilters = {
@@ -73,6 +78,10 @@ function readProviderConfig(
     'filters.topic.exclude',
   );
 
+  const schedule = config.has('schedule')
+    ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+    : undefined;
+
   return {
     id,
     catalogPath,
@@ -88,8 +97,10 @@ function readProviderConfig(
         exclude: topicFilterExclude,
       },
     },
+    schedule,
   };
 }
+
 /**
  * Compiles a RegExp while enforcing the pattern to contain
  * the start-of-line and end-of-line anchors.

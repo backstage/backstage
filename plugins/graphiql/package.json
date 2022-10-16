@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-graphiql",
   "description": "Backstage plugin for browsing GraphQL APIs",
-  "version": "0.2.42-next.1",
+  "version": "0.2.42-next.2",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",

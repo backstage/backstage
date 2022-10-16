@@ -30,6 +30,13 @@ import { DateTime } from 'luxon';
 import { HomePageBazaarInfoCard } from '../HomePageBazaarInfoCard';
 import { Entity } from '@backstage/catalog-model';
 
+type Props = {
+  project: BazaarProject;
+  fetchBazaarProjects: () => Promise<BazaarProject[]>;
+  catalogEntities: Entity[];
+  fullHeight?: boolean;
+};
+
 const useStyles = makeStyles({
   statusTag: {
     display: 'inline-block',
@@ -47,7 +54,7 @@ const useStyles = makeStyles({
     float: 'right',
   },
   content: {
-    height: '13rem',
+    overflow: 'scroll',
   },
   header: {
     whiteSpace: 'nowrap',
@@ -56,16 +63,11 @@ const useStyles = makeStyles({
   },
 });
 
-type Props = {
-  project: BazaarProject;
-  fetchBazaarProjects: () => Promise<BazaarProject[]>;
-  catalogEntities: Entity[];
-};
-
 export const ProjectCard = ({
   project,
   fetchBazaarProjects,
   catalogEntities,
+  fullHeight,
 }: Props) => {
   const classes = useStyles();
   const [openCard, setOpenCard] = useState(false);
@@ -101,7 +103,10 @@ export const ProjectCard = ({
               base: DateTime.now(),
             })}`}
           />
-          <CardContent className={classes.content}>
+          <CardContent
+            className={classes.content}
+            style={{ height: fullHeight ? '13rem' : '7rem' }}
+          >
             <StatusTag styles={classes.statusTag} status={status} />
             <Typography variant="body2" className={classes.memberCount}>
               {Number(membersCount) === Number(1)

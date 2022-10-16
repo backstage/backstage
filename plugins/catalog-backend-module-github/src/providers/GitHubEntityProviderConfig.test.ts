@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { Duration } from 'luxon';
 import { readProviderConfigs } from './GitHubEntityProviderConfig';
 
 describe('readProviderConfigs', () => {
@@ -81,13 +82,22 @@ describe('readProviderConfigs', () => {
               organization: 'test-org1',
               host: 'ghe.internal.com',
             },
+            providerWithSchedule: {
+              organization: 'test-org1',
+              schedule: {
+                frequency: 'PT30M',
+                timeout: {
+                  minutes: 3,
+                },
+              },
+            },
           },
         },
       },
     });
     const providerConfigs = readProviderConfigs(config);
 
-    expect(providerConfigs).toHaveLength(6);
+    expect(providerConfigs).toHaveLength(7);
     expect(providerConfigs[0]).toEqual({
       id: 'providerOrganizationOnly',
       organization: 'test-org1',
@@ -101,6 +111,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
       },
+      schedule: undefined,
     });
     expect(providerConfigs[1]).toEqual({
       id: 'providerCustomCatalogPath',
@@ -115,6 +126,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
       },
+      schedule: undefined,
     });
     expect(providerConfigs[2]).toEqual({
       id: 'providerWithRepositoryFilter',
@@ -129,6 +141,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
       },
+      schedule: undefined,
     });
     expect(providerConfigs[3]).toEqual({
       id: 'providerWithBranchFilter',
@@ -143,6 +156,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
       },
+      schedule: undefined,
     });
     expect(providerConfigs[4]).toEqual({
       id: 'providerWithTopicFilter',
@@ -157,6 +171,7 @@ describe('readProviderConfigs', () => {
           exclude: ['backstage-exclude'],
         },
       },
+      schedule: undefined,
     });
     expect(providerConfigs[5]).toEqual({
       id: 'providerWithHost',
@@ -169,6 +184,27 @@ describe('readProviderConfigs', () => {
         topic: {
           include: undefined,
           exclude: undefined,
+        },
+      },
+      schedule: undefined,
+    });
+    expect(providerConfigs[6]).toEqual({
+      id: 'providerWithSchedule',
+      organization: 'test-org1',
+      catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
+      filters: {
+        repository: undefined,
+        branch: undefined,
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
+      },
+      schedule: {
+        frequency: Duration.fromISO('PT30M'),
+        timeout: {
+          minutes: 3,
         },
       },
     });
