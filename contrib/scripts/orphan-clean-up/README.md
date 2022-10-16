@@ -10,7 +10,7 @@ _Warning:_ There is a risk of entities being orphaned (and being deleted by this
 
 ## PowerShell
 
-A PowerShell implementation of a the orphan cleanup script.
+A PowerShell implementation of the orphan cleanup script.
 
 ### Requirements
 
@@ -28,7 +28,7 @@ Here's how to use the script:
 
 ## Bash
 
-A bash implementation implementation of a the orphan cleanup script.
+A bash implementation of the orphan cleanup script.
 
 ### Requirements
 
