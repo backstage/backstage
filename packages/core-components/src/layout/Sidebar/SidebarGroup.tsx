@@ -115,6 +115,7 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
 /**
  * Groups items of the `Sidebar` together.
  *
+ * @remarks
  * On bigger screens, this won't have any effect at the moment.
  * On small screens, it will add an action to the bottom navigation - either triggering an overlay menu or acting as a link
  *
