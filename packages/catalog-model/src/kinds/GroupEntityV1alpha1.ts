@@ -18,13 +18,18 @@ import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/Group.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
 
-interface GroupProfileStatic {
+export interface GroupProfileStatic {
   displayName?: string;
   email?: string;
   picture?: string;
 }
 
-type GroupProfile = Record<string, string> & GroupProfileStatic;
+/**
+ * Backstage Group Profile.
+ *
+ * @public
+ */
+export type GroupProfile = Record<string, string> & GroupProfileStatic;
 
 /**
  * Backstage catalog Group kind Entity.

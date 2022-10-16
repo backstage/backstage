@@ -18,13 +18,17 @@ import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/User.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
 
-interface UserProfileStatic {
+export interface UserProfileStatic {
   displayName?: string;
   email?: string;
   picture?: string;
 }
-
-type UserProfile = Record<string, string> & UserProfileStatic;
+/**
+ * Backstage User Profile.
+ *
+ * @public
+ */
+export type UserProfile = Record<string, string> & UserProfileStatic;
 
 /**
  * Backstage catalog User kind Entity.

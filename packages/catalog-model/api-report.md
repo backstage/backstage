@@ -257,11 +257,7 @@ interface GroupEntityV1alpha1 extends Entity {
   // (undocumented)
   spec: {
     type: string;
-    profile?: {
-      displayName?: string;
-      email?: string;
-      picture?: string;
-    };
+    profile?: GroupProfile;
     parent?: string;
     children: string[];
     members?: string[];
@@ -491,11 +487,7 @@ interface UserEntityV1alpha1 extends Entity {
   kind: 'User';
   // (undocumented)
   spec: {
-    profile?: {
-      displayName?: string;
-      email?: string;
-      picture?: string;
-    };
+    profile?: UserProfile;
     memberOf?: string[];
   };
 }
@@ -517,4 +509,9 @@ export type Validators = {
   isValidAnnotationValue(value: unknown): boolean;
   isValidTag(value: unknown): boolean;
 };
+
+// Warnings were encountered during analysis:
+//
+// src/kinds/GroupEntityV1alpha1.d.ts:23:9 - (ae-forgotten-export) The symbol "GroupProfile" needs to be exported by the entry point index.d.ts
+// src/kinds/UserEntityV1alpha1.d.ts:22:9 - (ae-forgotten-export) The symbol "UserProfile" needs to be exported by the entry point index.d.ts
 ```
