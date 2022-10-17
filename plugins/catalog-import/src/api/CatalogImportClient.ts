@@ -21,7 +21,7 @@ import {
   IdentityApi,
 } from '@backstage/core-plugin-api';
 import {
-  GitHubIntegrationConfig,
+  GithubIntegrationConfig,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { ScmAuthApi } from '@backstage/integration-react';
@@ -239,7 +239,7 @@ the component will become available.\n\nFor more information, read an \
     body: string;
     fileContent: string;
     repositoryUrl: string;
-    githubIntegrationConfig: GitHubIntegrationConfig;
+    githubIntegrationConfig: GithubIntegrationConfig;
   }): Promise<{ link: string; location: string }> {
     const {
       owner,

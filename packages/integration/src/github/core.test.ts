@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { GitHubIntegrationConfig } from './config';
-import { getGitHubFileFetchUrl, getGitHubRequestOptions } from './core';
+import { GithubIntegrationConfig } from './config';
+import { getGithubFileFetchUrl, getGitHubRequestOptions } from './core';
 import { GithubCredentials } from './types';
 
 describe('github core', () => {
@@ -37,12 +37,12 @@ describe('github core', () => {
 
   describe('getGitHubRequestOptions', () => {
     it('inserts a token when needed', () => {
-      const withToken: GitHubIntegrationConfig = {
+      const withToken: GithubIntegrationConfig = {
         host: '',
         rawBaseUrl: '',
         token: 'A',
       };
-      const withoutToken: GitHubIntegrationConfig = {
+      const withoutToken: GithubIntegrationConfig = {
         host: '',
         rawBaseUrl: '',
       };
@@ -57,21 +57,21 @@ describe('github core', () => {
     });
   });
 
-  describe('getGitHubFileFetchUrl', () => {
+  describe('getGithubFileFetchUrl', () => {
     it('rejects targets that do not look like URLs', () => {
-      const config: GitHubIntegrationConfig = { host: '', apiBaseUrl: '' };
-      expect(() => getGitHubFileFetchUrl('a/b', config, noCredentials)).toThrow(
+      const config: GithubIntegrationConfig = { host: '', apiBaseUrl: '' };
+      expect(() => getGithubFileFetchUrl('a/b', config, noCredentials)).toThrow(
         /Incorrect URL: a\/b/,
       );
     });
 
     it('happy path for github api', () => {
-      const config: GitHubIntegrationConfig = {
+      const config: GithubIntegrationConfig = {
         host: 'github.com',
         apiBaseUrl: 'https://api.github.com',
       };
       expect(
-        getGitHubFileFetchUrl(
+        getGithubFileFetchUrl(
           'https://github.com/a/b/blob/branchname/path/to/c.yaml',
           config,
           appCredentials,
@@ -80,7 +80,7 @@ describe('github core', () => {
         'https://api.github.com/repos/a/b/contents/path/to/c.yaml?ref=branchname',
       );
       expect(
-        getGitHubFileFetchUrl(
+        getGithubFileFetchUrl(
           'https://github.com/a/b/blob/branchname/path/to/c.yaml',
           config,
           tokenCredentials,
@@ -91,12 +91,12 @@ describe('github core', () => {
     });
 
     it('happy path for ghe api', () => {
-      const config: GitHubIntegrationConfig = {
+      const config: GithubIntegrationConfig = {
         host: 'ghe.mycompany.net',
         apiBaseUrl: 'https://ghe.mycompany.net/api/v3',
       };
       expect(
-        getGitHubFileFetchUrl(
+        getGithubFileFetchUrl(
           'https://ghe.mycompany.net/a/b/blob/branchname/path/to/c.yaml',
           config,
           appCredentials,
@@ -105,7 +105,7 @@ describe('github core', () => {
         'https://ghe.mycompany.net/api/v3/repos/a/b/contents/path/to/c.yaml?ref=branchname',
       );
       expect(
-        getGitHubFileFetchUrl(
+        getGithubFileFetchUrl(
           'https://ghe.mycompany.net/a/b/blob/branchname/path/to/c.yaml',
           config,
           tokenCredentials,
@@ -116,12 +116,12 @@ describe('github core', () => {
     });
 
     it('happy path for github tree', () => {
-      const config: GitHubIntegrationConfig = {
+      const config: GithubIntegrationConfig = {
         host: 'github.com',
         apiBaseUrl: 'https://api.github.com',
       };
       expect(
-        getGitHubFileFetchUrl(
+        getGithubFileFetchUrl(
           'https://github.com/a/b/tree/branchname/path/to/c.yaml',
           config,
           tokenCredentials,
@@ -132,12 +132,12 @@ describe('github core', () => {
     });
 
     it('happy path for ghe tree', () => {
-      const config: GitHubIntegrationConfig = {
+      const config: GithubIntegrationConfig = {
         host: 'ghe.mycompany.net',
         apiBaseUrl: 'https://ghe.mycompany.net/api/v3',
       };
       expect(
-        getGitHubFileFetchUrl(
+        getGithubFileFetchUrl(
           'https://ghe.mycompany.net/a/b/tree/branchname/path/to/c.yaml',
           config,
           tokenCredentials,
@@ -148,12 +148,12 @@ describe('github core', () => {
     });
 
     it('happy path for github raw', () => {
-      const config: GitHubIntegrationConfig = {
+      const config: GithubIntegrationConfig = {
         host: 'github.com',
         rawBaseUrl: 'https://raw.githubusercontent.com',
       };
       expect(
-        getGitHubFileFetchUrl(
+        getGithubFileFetchUrl(
           'https://github.com/a/b/blob/branchname/path/to/c.yaml',
           config,
           tokenCredentials,
@@ -164,12 +164,12 @@ describe('github core', () => {
     });
 
     it('happy path for ghe raw', () => {
-      const config: GitHubIntegrationConfig = {
+      const config: GithubIntegrationConfig = {
         host: 'ghe.mycompany.net',
         rawBaseUrl: 'https://ghe.mycompany.net/raw',
       };
       expect(
-        getGitHubFileFetchUrl(
+        getGithubFileFetchUrl(
           'https://ghe.mycompany.net/a/b/blob/branchname/path/to/c.yaml',
           config,
           tokenCredentials,
