@@ -96,7 +96,7 @@ function createConfig(dir, extraConfig = {}) {
                 `!${joinPath(dir, 'src/**')}`,
                 joinPath(dir, 'src/**/*.test.*'),
                 joinPath(dir, 'src/**/*.stories.*'),
-                joinPath(dir, 'src/**/__tests__/**'),
+                joinPath(dir, 'src/**/__testUtils__/**'),
                 joinPath(dir, 'src/**/__mocks__/**'),
                 joinPath(dir, 'src/setupTests.*'),
               ]
@@ -104,7 +104,7 @@ function createConfig(dir, extraConfig = {}) {
                 // Legacy config for packages that don't provide a dir
                 '**/*.test.*',
                 '**/*.stories.*',
-                '**/__tests__/**',
+                '**/__testUtils__/**',
                 '**/__mocks__/**',
                 '**/src/setupTests.*',
                 '**/dev/**',
@@ -141,7 +141,7 @@ function createConfig(dir, extraConfig = {}) {
             // Prevent imports of stories or tests
             '*.stories*',
             '*.test*',
-            '**/__tests__/**',
+            '**/__testUtils__/**',
             '**/__mocks__/**',
           ],
         },
@@ -168,7 +168,7 @@ function createConfig(dir, extraConfig = {}) {
         files: [
           '**/*.test.*',
           '**/*.stories.*',
-          '**/__tests__/**',
+          '**/__testUtils__/**',
           '**/__mocks__/**',
           'src/setupTests.*',
           '!src/**',
