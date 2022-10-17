@@ -33,18 +33,6 @@ export interface Config {
     clusterLocatorMethods: Array<
       | {
           /** @visibility frontend */
-          type: 'gke';
-          /** @visibility frontend */
-          projectId: string;
-          /** @visibility frontend */
-          region?: string;
-          /** @visibility frontend */
-          skipTLSVerify?: boolean;
-          /** @visibility frontend */
-          skipMetricsLookup?: boolean;
-        }
-      | {
-          /** @visibility frontend */
           type: 'config';
           clusters: Array<{
             /** @visibility frontend */
@@ -67,6 +55,26 @@ export interface Config {
             /** @visibility frontend */
             skipMetricsLookup?: boolean;
           }>;
+        }
+      | {
+          /** @visibility frontend */
+          type: 'catalog';
+        }
+      | {
+          /** @visibility frontend */
+          type: 'localKubectlProxy';
+        }
+      | {
+          /** @visibility frontend */
+          type: 'gke';
+          /** @visibility frontend */
+          projectId: string;
+          /** @visibility frontend */
+          region?: string;
+          /** @visibility frontend */
+          skipTLSVerify?: boolean;
+          /** @visibility frontend */
+          skipMetricsLookup?: boolean;
         }
     >;
     customResources?: Array<{
