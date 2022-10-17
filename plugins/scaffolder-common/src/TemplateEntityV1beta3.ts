@@ -40,7 +40,7 @@ export interface TemplateEntityV1beta3 extends Entity {
   /**
    * The specification of the Template Entity
    */
-  spec: Entity["spec"] & {
+  spec: Entity['spec'] & {
     /**
      * The type that the Template will create. For example service, website or library.
      */

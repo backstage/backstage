@@ -26,7 +26,7 @@ import { ajvCompiledJsonSchemaValidator } from './util';
 export interface LocationEntityV1alpha1 extends Entity {
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
   kind: 'Location';
-  spec: Entity["spec"] & {
+  spec: Entity['spec'] & {
     type?: string;
     target?: string;
     targets?: string[];
