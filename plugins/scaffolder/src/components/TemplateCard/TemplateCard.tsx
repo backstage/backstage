@@ -27,6 +27,7 @@ import {
   MarkdownContent,
 } from '@backstage/core-components';
 import {
+  alertApiRef,
   IconComponent,
   useApi,
   useApp,
@@ -37,6 +38,7 @@ import {
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
 import {
+  catalogApiRef,
   EntityRefLinks,
   FavoriteEntity,
   getEntityRelations,
@@ -60,8 +62,9 @@ import {
 } from '@material-ui/core';
 import LanguageIcon from '@material-ui/icons/Language';
 import WarningIcon from '@material-ui/icons/Warning';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { selectedTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
+import CachedIcon from '@material-ui/icons/Cached';
 
 const useStyles = makeStyles(theme => ({
   cardHeader: {
@@ -97,7 +100,7 @@ const useStyles = makeStyles(theme => ({
   leftButton: {
     marginRight: 'auto',
   },
-  starButton: {
+  actions: {
     position: 'absolute',
     top: theme.spacing(0.5),
     right: theme.spacing(0.5),
@@ -175,6 +178,8 @@ const DeprecationWarning = () => {
 export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
   const app = useApp();
   const backstageTheme = useTheme<BackstageTheme>();
+  const catalogApi = useApi(catalogApiRef);
+  const alertApi = useApi(alertApiRef);
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
   const templateProps = getTemplateCardProps(template);
   const ownedByRelations = getEntityRelations(
@@ -188,6 +193,11 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
   const classes = useStyles({ backgroundImage: theme.backgroundImage });
   const { name, namespace } = parseEntityRef(stringifyEntityRef(template));
   const href = templateRoute({ templateName: name, namespace });
+
+  const refreshEntity = useCallback(async () => {
+    await catalogApi.refreshEntity(stringifyEntityRef(template));
+    alertApi.post({ message: 'Refresh scheduled', severity: 'info' });
+  }, [catalogApi, alertApi, template]);
 
   // TechDocs Link
   const viewTechDoc = useRouteRef(viewTechDocRouteRef);
@@ -211,7 +221,16 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
   return (
     <Card>
       <CardMedia className={classes.cardHeader}>
-        <FavoriteEntity className={classes.starButton} entity={template} />
+        <Box className={classes.actions}>
+          <IconButton
+            aria-label="Refresh"
+            title="Schedule entity refresh"
+            onClick={refreshEntity}
+          >
+            <CachedIcon />
+          </IconButton>
+          <FavoriteEntity entity={template} />
+        </Box>
         {deprecated && <DeprecationWarning />}
         <ItemCardHeader
           title={templateProps.title}
