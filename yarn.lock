@@ -7043,7 +7043,7 @@ __metadata:
     msw: ^0.47.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
-    winston: ^3.8.1
+    winston: ^3.2.1
     yn: ^5.0.0
   languageName: unknown
   linkType: soft
@@ -7666,7 +7666,7 @@ __metadata:
     node-fetch: ^2.6.7
     p-limit: ^3.1.0
     supertest: ^6.1.6
-    winston: ^3.7.2
+    winston: ^3.2.1
     yn: ^5.0.0
   languageName: unknown
   linkType: soft
@@ -39565,7 +39565,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"winston@npm:^3.2.1, winston@npm:^3.7.2, winston@npm:^3.8.1":
+"winston@npm:^3.2.1":
   version: 3.8.2
   resolution: "winston@npm:3.8.2"
   dependencies:
