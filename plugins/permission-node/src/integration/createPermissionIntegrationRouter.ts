@@ -36,7 +36,6 @@ import {
   isNotCriteria,
   isOrCriteria,
 } from './util';
-import { JsonSchema7Type } from 'zod-to-json-schema/src/parseDef';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -113,7 +112,7 @@ export type MetaDataResponseSerializedRule = {
   name: string;
   description: string;
   resourceType: string;
-  paramsSchema?: JsonSchema7Type;
+  paramsSchema?: ReturnType<typeof zodToJsonSchema>;
 };
 
 /**

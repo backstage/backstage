@@ -14,7 +14,6 @@ import { DefinitivePolicyDecision } from '@backstage/plugin-permission-common';
 import { EvaluatorRequestOptions } from '@backstage/plugin-permission-common';
 import express from 'express';
 import { IdentifiedPermissionMessage } from '@backstage/plugin-permission-common';
-import { JsonSchema7Type } from 'zod-to-json-schema/src/parseDef';
 import { NotCriteria } from '@backstage/plugin-permission-common';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
@@ -27,6 +26,7 @@ import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TokenManager } from '@backstage/backend-common';
 import { z } from 'zod';
+import zodToJsonSchema from 'zod-to-json-schema';
 
 // @public
 export type ApplyConditionsRequest = {
@@ -172,7 +172,7 @@ export type MetaDataResponseSerializedRule = {
   name: string;
   description: string;
   resourceType: string;
-  paramsSchema?: JsonSchema7Type;
+  paramsSchema?: ReturnType<typeof zodToJsonSchema>;
 };
 
 // @public
