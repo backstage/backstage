@@ -1,5 +1,5 @@
 ---
-'@backstage/cli': minor
+'@backstage/cli': patch
 ---
 
 Treat files in `__testUtils__` and `__mocks__` directories as test files for linting
