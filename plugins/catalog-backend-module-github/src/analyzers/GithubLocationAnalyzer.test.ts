@@ -33,7 +33,7 @@ jest.mock('@octokit/rest', () => {
 });
 
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { GitHubLocationAnalyzer } from './GitHubLocationAnalyzer';
+import { GithubLocationAnalyzer } from './GithubLocationAnalyzer';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
@@ -41,7 +41,7 @@ import { ConfigReader } from '@backstage/config';
 
 const server = setupServer();
 
-describe('GitHubLocationAnalyzer', () => {
+describe('GithubLocationAnalyzer', () => {
   const mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery> = {
     getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007'),
     getExternalBaseUrl: jest.fn(),
@@ -114,7 +114,7 @@ describe('GitHubLocationAnalyzer', () => {
       return Promise.reject();
     });
 
-    const analyzer = new GitHubLocationAnalyzer({
+    const analyzer = new GithubLocationAnalyzer({
       discovery: mockDiscoveryApi,
       config,
     });
@@ -139,7 +139,7 @@ describe('GitHubLocationAnalyzer', () => {
       return Promise.reject();
     });
 
-    const analyzer = new GitHubLocationAnalyzer({
+    const analyzer = new GithubLocationAnalyzer({
       discovery: mockDiscoveryApi,
       config,
     });

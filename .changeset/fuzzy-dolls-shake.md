@@ -9,10 +9,10 @@ Add the following to your `CatalogBuilder` to have the repo URL ingestion workin
 
 ```ts
 // catalog.ts
-import { GitHubLocationAnalyzer } from '@backstage/plugin-catalog-backend-module-github';
+import { GithubLocationAnalyzer } from '@backstage/plugin-catalog-backend-module-github';
 ...
   builder.addLocationAnalyzers(
-    new GitHubLocationAnalyzer({
+    new GithubLocationAnalyzer({
       discovery: env.discovery,
       config: env.config,
     }),

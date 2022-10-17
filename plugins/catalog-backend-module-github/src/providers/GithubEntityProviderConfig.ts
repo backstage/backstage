@@ -23,7 +23,7 @@ import { Config } from '@backstage/config';
 const DEFAULT_CATALOG_PATH = '/catalog-info.yaml';
 const DEFAULT_PROVIDER_ID = 'default';
 
-export type GitHubEntityProviderConfig = {
+export type GithubEntityProviderConfig = {
   id: string;
   catalogPath: string;
   organization: string;
@@ -43,7 +43,7 @@ export type GithubTopicFilters = {
 
 export function readProviderConfigs(
   config: Config,
-): GitHubEntityProviderConfig[] {
+): GithubEntityProviderConfig[] {
   const providersConfig = config.getOptionalConfig('catalog.providers.github');
   if (!providersConfig) {
     return [];
@@ -64,7 +64,7 @@ export function readProviderConfigs(
 function readProviderConfig(
   id: string,
   config: Config,
-): GitHubEntityProviderConfig {
+): GithubEntityProviderConfig {
   const organization = config.getString('organization');
   const catalogPath =
     config.getOptionalString('catalogPath') ?? DEFAULT_CATALOG_PATH;

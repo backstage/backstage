@@ -23,13 +23,13 @@ import {
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { graphql } from '@octokit/graphql';
 import {
-  GitHubOrgEntityProvider,
+  GithubOrgEntityProvider,
   withLocations,
-} from './GitHubOrgEntityProvider';
+} from './GithubOrgEntityProvider';
 
 jest.mock('@octokit/graphql');
 
-describe('GitHubOrgEntityProvider', () => {
+describe('GithubOrgEntityProvider', () => {
   describe('read', () => {
     afterEach(() => jest.resetAllMocks());
 
@@ -100,7 +100,7 @@ describe('GitHubOrgEntityProvider', () => {
         getCredentials: mockGetCredentials,
       };
 
-      const entityProvider = new GitHubOrgEntityProvider({
+      const entityProvider = new GithubOrgEntityProvider({
         id: 'my-id',
         githubCredentialsProvider,
         orgUrl: 'https://github.com/backstage',

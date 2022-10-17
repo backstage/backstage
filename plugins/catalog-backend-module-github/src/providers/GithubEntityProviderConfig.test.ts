@@ -16,7 +16,7 @@
 
 import { ConfigReader } from '@backstage/config';
 import { Duration } from 'luxon';
-import { readProviderConfigs } from './GitHubEntityProviderConfig';
+import { readProviderConfigs } from './GithubEntityProviderConfig';
 
 describe('readProviderConfigs', () => {
   afterEach(() => jest.resetAllMocks());
