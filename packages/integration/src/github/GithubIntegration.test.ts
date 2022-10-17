@@ -15,11 +15,11 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { GitHubIntegration, replaceGitHubUrlType } from './GitHubIntegration';
+import { GithubIntegration, replaceGithubUrlType } from './GithubIntegration';
 
-describe('GitHubIntegration', () => {
+describe('GithubIntegration', () => {
   it('has a working factory', () => {
-    const integrations = GitHubIntegration.factory({
+    const integrations = GithubIntegration.factory({
       config: new ConfigReader({
         integrations: {
           github: [
@@ -39,7 +39,7 @@ describe('GitHubIntegration', () => {
   });
 
   it('returns the basics', () => {
-    const integration = new GitHubIntegration({
+    const integration = new GithubIntegration({
       host: 'h.com',
       apiBaseUrl: 'a',
       rawBaseUrl: 'r',
@@ -51,7 +51,7 @@ describe('GitHubIntegration', () => {
   });
 
   it('resolveUrl', () => {
-    const integration = new GitHubIntegration({ host: 'h.com' });
+    const integration = new GithubIntegration({ host: 'h.com' });
 
     expect(
       integration.resolveUrl({
@@ -70,7 +70,7 @@ describe('GitHubIntegration', () => {
   });
 
   it('resolve edit URL', () => {
-    const integration = new GitHubIntegration({ host: 'h.com' });
+    const integration = new GithubIntegration({ host: 'h.com' });
 
     expect(
       integration.resolveEditUrl(
@@ -80,28 +80,28 @@ describe('GitHubIntegration', () => {
   });
 });
 
-describe('replaceGitHubUrlType', () => {
+describe('replaceGithubUrlType', () => {
   it('should replace with expected type', () => {
     expect(
-      replaceGitHubUrlType(
+      replaceGithubUrlType(
         'https://github.com/backstage/backstage/blob/master/README.md',
         'edit',
       ),
     ).toBe('https://github.com/backstage/backstage/edit/master/README.md');
     expect(
-      replaceGitHubUrlType(
+      replaceGithubUrlType(
         'https://github.com/webmodules/blob/blob/master/test',
         'tree',
       ),
     ).toBe('https://github.com/webmodules/blob/tree/master/test');
     expect(
-      replaceGitHubUrlType(
+      replaceGithubUrlType(
         'https://github.com/blob/blob/blob/master/test',
         'tree',
       ),
     ).toBe('https://github.com/blob/blob/tree/master/test');
     expect(
-      replaceGitHubUrlType(
+      replaceGithubUrlType(
         'https://github.com/backstage/backstage/edit/tree/README.md',
         'blob',
       ),

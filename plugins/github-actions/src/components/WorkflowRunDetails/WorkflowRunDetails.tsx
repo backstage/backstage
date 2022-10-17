@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { readGitHubIntegrationConfigs } from '@backstage/integration';
+import { readGithubIntegrationConfigs } from '@backstage/integration';
 import {
   Accordion,
   AccordionDetails,
@@ -170,7 +170,7 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
   const projectName = getProjectNameFromEntity(entity);
 
   // TODO: Get github hostname from metadata annotation
-  const hostname = readGitHubIntegrationConfigs(
+  const hostname = readGithubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
   )[0].host;
   const [owner, repo] = (projectName && projectName.split('/')) || [];
