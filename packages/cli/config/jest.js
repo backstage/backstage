@@ -179,6 +179,10 @@ async function getProjectConfig(targetPath, displayName) {
         {
           sourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
           jsc: {
+            parser: {
+              syntax: 'typescript',
+              tsx: true,
+            },
             transform: {
               react: {
                 runtime: 'automatic',
