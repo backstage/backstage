@@ -162,13 +162,13 @@ export const makeCreatePermissionRule: <
 ) => PermissionRule<TResource, TQuery, TResourceType, TParams>;
 
 // @public
-export type MetaDataResponse = {
+export type MetadataResponse = {
   permissions?: Permission[];
-  rules: MetaDataResponseSerializedRule[];
+  rules: MetadataResponseSerializedRule[];
 };
 
 // @public
-export type MetaDataResponseSerializedRule = {
+export type MetadataResponseSerializedRule = {
   name: string;
   description: string;
   resourceType: string;

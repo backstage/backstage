@@ -108,7 +108,7 @@ export type ApplyConditionsResponse = {
  *
  * @public
  */
-export type MetaDataResponseSerializedRule = {
+export type MetadataResponseSerializedRule = {
   name: string;
   description: string;
   resourceType: string;
@@ -120,9 +120,9 @@ export type MetaDataResponseSerializedRule = {
  *
  * @public
  */
-export type MetaDataResponse = {
+export type MetadataResponse = {
   permissions?: Permission[];
-  rules: MetaDataResponseSerializedRule[];
+  rules: MetadataResponseSerializedRule[];
 };
 
 const applyConditions = <TResourceType extends string, TResource>(
@@ -214,7 +214,7 @@ export const createPermissionIntegrationRouter = <
   router.use(express.json());
 
   router.get('/.well-known/backstage/permissions/metadata', (_, res) => {
-    const serializedRules: MetaDataResponseSerializedRule[] = rules.map(
+    const serializedRules: MetadataResponseSerializedRule[] = rules.map(
       rule => ({
         name: rule.name,
         description: rule.description,
@@ -223,7 +223,7 @@ export const createPermissionIntegrationRouter = <
       }),
     );
 
-    const responseJson: MetaDataResponse = {
+    const responseJson: MetadataResponse = {
       permissions,
       rules: serializedRules,
     };
