@@ -75,12 +75,19 @@ export class TechInsightsClient implements TechInsightsApi {
   ): Promise<CheckResult[]> {
     const { namespace, kind, name } = entityParams;
     const requestBody = { checks };
+
+    const JSON_HEADERS = {
+      'Content-Type': 'application/json; charset=utf-8',
+      Accept: 'application/json',
+    };
+
     return this.api(
       `/checks/run/${encodeURIComponent(namespace)}/${encodeURIComponent(
         kind,
       )}/${encodeURIComponent(name)}`,
       {
         method: 'POST',
+        headers: JSON_HEADERS,
         body: JSON.stringify(requestBody),
       },
     );
