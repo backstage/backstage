@@ -55,7 +55,6 @@ import {
   createPublishGitlabAction,
   createPublishGitlabMergeRequestAction,
 } from './publish';
-import { waitWorkflow } from './stress';
 
 /**
  * The options passed to {@link createBuiltinActions}
@@ -185,7 +184,6 @@ export const createBuiltinActions = (
       config,
       githubCredentialsProvider,
     }),
-    waitWorkflow(),
   ];
 
   return actions as TemplateAction<JsonObject>[];
