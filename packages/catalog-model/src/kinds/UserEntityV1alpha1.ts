@@ -26,7 +26,7 @@ import { ajvCompiledJsonSchemaValidator } from './util';
 export interface UserEntityV1alpha1 extends Entity {
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
   kind: 'User';
-  spec: {
+  spec: Entity["spec"] & {
     profile?: {
       displayName?: string;
       email?: string;

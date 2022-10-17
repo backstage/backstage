@@ -26,7 +26,7 @@ import { ajvCompiledJsonSchemaValidator } from './util';
 export interface GroupEntityV1alpha1 extends Entity {
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
   kind: 'Group';
-  spec: {
+  spec: Entity["spec"] & {
     type: string;
     profile?: {
       displayName?: string;

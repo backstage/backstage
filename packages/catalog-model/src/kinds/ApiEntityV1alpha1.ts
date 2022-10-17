@@ -30,7 +30,7 @@ import { ajvCompiledJsonSchemaValidator } from './util';
 export interface ApiEntityV1alpha1 extends Entity {
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
   kind: 'API';
-  spec: {
+  spec: Entity['spec'] & {
     type: string;
     lifecycle: string;
     owner: string;
