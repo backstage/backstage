@@ -51,6 +51,18 @@ export type CreateWorkerOptions = {
   workingDirectory: string;
   logger: Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  /**
+   * The number of tasks that can be executed at the same time by the worker
+   * @defaultValue 10
+   * @example
+   * ```
+   * {
+   *   concurrentTasksLimit: 1,
+   *   // OR
+   *   concurrentTasksLimit: Infinity
+   * }
+   * ```
+   */
   concurrentTasksLimit?: number;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 };
@@ -75,7 +87,7 @@ export class TaskWorker {
       integrations,
       workingDirectory,
       additionalTemplateFilters,
-      concurrentTasksLimit = 2, // Or Infinity
+      concurrentTasksLimit = 10, // from 1 to Infinity
       additionalTemplateGlobals,
     } = options;
 
