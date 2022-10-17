@@ -56,14 +56,6 @@ export interface CatalogTableProps {
   subtitle?: string;
 }
 
-const useStyles = makeStyles(theme => ({
-  empty: {
-    padding: theme.spacing(2),
-    display: 'flex',
-    justifyContent: 'center',
-  },
-}));
-
 const YellowStar = withStyles({
   root: {
     color: '#f3ba37',
@@ -75,7 +67,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const { columns, actions, tableOptions, subtitle, emptyContent } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const { loading, error, entities, filters } = useEntityList();
-  const classes = useStyles();
 
   const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(() => {
     return [
@@ -238,9 +229,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       data={rows}
       actions={actions || defaultActions}
       subtitle={subtitle}
-      emptyContent={
-        emptyContent && <div className={classes.empty}>{emptyContent}</div>
-      }
+      emptyContent={emptyContent}
     />
   );
 };
