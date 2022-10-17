@@ -98,7 +98,7 @@ const extraDetailsEntity: GroupEntity = {
       {
         url: 'slack://user?team=T00000000&id=U00000000',
         title: 'Slack',
-        icon: 'message',
+        icon: 'chat',
       },
       {
         url: 'https://www.google.com',

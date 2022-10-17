@@ -37,13 +37,10 @@ import {
   ListItemText,
   Tooltip,
   IconButton,
-  Divider,
 } from '@material-ui/core';
-import Icon from '@material-ui/core/Icon';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
-import LinkIcon from '@material-ui/icons/Link';
 import EditIcon from '@material-ui/icons/Edit';
 import CachedIcon from '@material-ui/icons/Cached';
 import Alert from '@material-ui/lab/Alert';
@@ -55,8 +52,7 @@ import {
   Link,
 } from '@backstage/core-components';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
-
-const staticProfileKeys = ['displayName', 'email', 'picture'];
+import { LinksGroup, ProfileInfoGroup } from '../../Meta';
 
 const CardTitle = (props: { title: string }) => (
   <Box display="flex" alignItems="center">
@@ -98,11 +94,6 @@ export const GroupProfileCard = (props: { variant?: InfoCardVariants }) => {
 
   const entityMetadataEditUrl =
     group.metadata.annotations?.[ANNOTATION_EDIT_URL];
-
-  const profileKeys =
-    profile !== undefined
-      ? Object.keys(profile).filter(key => !staticProfileKeys.includes(key))
-      : [];
 
   const displayName = profile?.displayName ?? name;
   const emailHref = profile?.email ? `mailto:${profile.email}` : '#';
@@ -200,42 +191,8 @@ export const GroupProfileCard = (props: { variant?: InfoCardVariants }) => {
                 secondary="Child Groups"
               />
             </ListItem>
-            {links !== undefined && <Divider />}
-            {links !== undefined &&
-              links.map(link => {
-                return (
-                  <ListItem button component="a" key={link.url} href={link.url}>
-                    {link.icon ? (
-                      <ListItemIcon>
-                        <Tooltip title={link.icon}>
-                          <Icon>{link.icon}</Icon>
-                        </Tooltip>
-                      </ListItemIcon>
-                    ) : (
-                      <ListItemIcon>
-                        <LinkIcon />
-                      </ListItemIcon>
-                    )}
-                    <ListItemText>{link.title}</ListItemText>
-                  </ListItem>
-                );
-              })}
-            {profile !== undefined && profileKeys.length > 0 && <Divider />}
-            {profile !== undefined &&
-              profileKeys.length > 0 &&
-              profileKeys.map(key => {
-                const value = profile[key];
-
-                return (
-                  <ListItem key={key}>
-                    <ListItemText style={{ width: '25%', flexGrow: 0 }}>
-                      {key}
-                    </ListItemText>
-
-                    <ListItemText>{value}</ListItemText>
-                  </ListItem>
-                );
-              })}
+            <LinksGroup links={links} />
+            <ProfileInfoGroup profile={profile} />
           </List>
         </Grid>
       </Grid>

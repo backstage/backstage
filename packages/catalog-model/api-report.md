@@ -269,6 +269,13 @@ export { GroupEntityV1alpha1 };
 // @public
 export const groupEntityV1alpha1Validator: KindValidator;
 
+// @public
+export type GroupProfile = Record<string, string> & {
+  displayName?: string;
+  email?: string;
+  picture?: string;
+};
+
 // @public (undocumented)
 export function isApiEntity(entity: Entity): entity is ApiEntityV1alpha1;
 
@@ -498,6 +505,13 @@ export { UserEntityV1alpha1 };
 export const userEntityV1alpha1Validator: KindValidator;
 
 // @public
+export type UserProfile = Record<string, string> & {
+  displayName?: string;
+  email?: string;
+  picture?: string;
+};
+
+// @public
 export type Validators = {
   isValidApiVersion(value: unknown): boolean;
   isValidKind(value: unknown): boolean;
@@ -509,9 +523,4 @@ export type Validators = {
   isValidAnnotationValue(value: unknown): boolean;
   isValidTag(value: unknown): boolean;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/kinds/GroupEntityV1alpha1.d.ts:23:9 - (ae-forgotten-export) The symbol "GroupProfile" needs to be exported by the entry point index.d.ts
-// src/kinds/UserEntityV1alpha1.d.ts:22:9 - (ae-forgotten-export) The symbol "UserProfile" needs to be exported by the entry point index.d.ts
 ```
