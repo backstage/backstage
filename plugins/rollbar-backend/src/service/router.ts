@@ -48,40 +48,40 @@ export async function createRouter(
 
     router.get('/projects', async (_req, res) => {
       const projects = await rollbarApi.getAllProjects();
-      res.status(200).header('').send(projects);
+      res.status(200).json(projects);
     });
 
     router.get('/projects/:id', async (req, res) => {
       const { id } = req.params;
       const projects = await rollbarApi.getProject(id);
-      res.status(200).send(projects);
+      res.status(200).json(projects);
     });
 
     router.get('/projects/:id/items', async (req, res) => {
       const { id } = req.params;
       const projects = await rollbarApi.getProjectItems(id);
-      res.status(200).send(projects);
+      res.status(200).json(projects);
     });
 
     router.get('/projects/:id/top_active_items', async (req, res) => {
       const { id } = req.params;
       const query = req.query;
       const items = await rollbarApi.getTopActiveItems(id, query as any);
-      res.status(200).send(items);
+      res.status(200).json(items);
     });
 
     router.get('/projects/:id/occurance_counts', async (req, res) => {
       const { id } = req.params;
       const query = req.query;
       const items = await rollbarApi.getOccuranceCounts(id, query as any);
-      res.status(200).send(items);
+      res.status(200).json(items);
     });
 
     router.get('/projects/:id/activated_item_counts', async (req, res) => {
       const { id } = req.params;
       const query = req.query;
       const items = await rollbarApi.getActivatedCounts(id, query as any);
-      res.status(200).send(items);
+      res.status(200).json(items);
     });
   }
 

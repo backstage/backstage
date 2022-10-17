@@ -53,6 +53,7 @@ export function createGithubRepoCreateAction(options: {
     allowAutoMerge?: boolean;
     requireCodeOwnerReviews?: boolean;
     requiredStatusCheckContexts?: string[];
+    requireBranchesToBeUpToDate?: boolean;
     repoVisibility?: 'private' | 'internal' | 'public';
     collaborators?: Array<
       | {
@@ -85,6 +86,7 @@ export function createGithubRepoCreateAction(options: {
           access: inputProps.access,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+          requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
           repoVisibility: inputProps.repoVisibility,
           deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
           allowMergeCommit: inputProps.allowMergeCommit,

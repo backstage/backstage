@@ -248,6 +248,7 @@ export async function initRepoPushAndProtect(
   repo: string,
   requireCodeOwnerReviews: boolean,
   requiredStatusCheckContexts: string[],
+  requireBranchesToBeUpToDate: boolean,
   config: Config,
   logger: any,
   gitCommitMessage?: string,
@@ -290,6 +291,7 @@ export async function initRepoPushAndProtect(
         defaultBranch,
         requireCodeOwnerReviews,
         requiredStatusCheckContexts,
+        requireBranchesToBeUpToDate,
         enforceAdmins: protectEnforceAdmins,
       });
     } catch (e) {

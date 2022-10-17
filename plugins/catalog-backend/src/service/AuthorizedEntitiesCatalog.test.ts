@@ -65,7 +65,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       fakePermissionApi.authorizeConditional.mockResolvedValue([
         {
           result: AuthorizeResult.CONDITIONAL,
-          conditions: { rule: 'IS_ENTITY_KIND', params: [['b']] },
+          conditions: { rule: 'IS_ENTITY_KIND', params: { kinds: ['b'] } },
         },
       ]);
       const catalog = createCatalog(isEntityKind);
@@ -117,7 +117,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       fakePermissionApi.authorizeConditional.mockResolvedValue([
         {
           result: AuthorizeResult.CONDITIONAL,
-          conditions: { rule: 'IS_ENTITY_KIND', params: [['b']] },
+          conditions: { rule: 'IS_ENTITY_KIND', params: { kinds: ['b'] } },
         },
       ]);
       fakeCatalog.entities.mockResolvedValue({ entities: [] });
@@ -136,7 +136,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       fakePermissionApi.authorizeConditional.mockResolvedValue([
         {
           result: AuthorizeResult.CONDITIONAL,
-          conditions: { rule: 'IS_ENTITY_KIND', params: [['b']] },
+          conditions: { rule: 'IS_ENTITY_KIND', params: { kinds: ['b'] } },
         },
       ]);
       fakeCatalog.entities.mockResolvedValue({
@@ -272,7 +272,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       fakePermissionApi.authorizeConditional.mockResolvedValue([
         {
           result: AuthorizeResult.CONDITIONAL,
-          conditions: { rule: 'IS_ENTITY_KIND', params: [['b']] },
+          conditions: { rule: 'IS_ENTITY_KIND', params: { kinds: ['b'] } },
         },
       ]);
       const catalog = createCatalog(isEntityKind);

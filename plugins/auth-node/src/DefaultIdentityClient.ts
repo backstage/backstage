@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { AuthenticationError, NotAllowedError } from '@backstage/errors';
+import { AuthenticationError } from '@backstage/errors';
 import {
   createRemoteJWKSet,
   decodeJwt,
@@ -86,7 +86,7 @@ export class DefaultIdentityClient implements IdentityApi {
         getBearerTokenFromAuthorizationHeader(request.headers.authorization),
       );
     } catch (e) {
-      throw new NotAllowedError(e.message);
+      throw new AuthenticationError(e.message);
     }
   }
 

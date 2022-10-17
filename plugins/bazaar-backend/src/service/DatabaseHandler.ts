@@ -175,14 +175,22 @@ export class DatabaseHandler {
     return await this.client('metadata').where({ id: id }).del();
   }
 
-  async getProjects() {
+  async getProjects(limit?: number, order?: string) {
     const coalesce = this.client.raw(
       'coalesce(count(members.item_id), 0) as members_count',
     );
-
-    return await this.client('metadata')
+    let get = this.client('metadata')
       .select([...this.columns, coalesce])
-      .groupBy(this.columns)
-      .leftJoin('members', 'metadata.id', '=', 'members.item_id');
+      .groupBy(this.columns);
+    if (limit) {
+      get = get.limit(limit);
+    }
+    if (order === 'latest') {
+      get = get.orderByRaw('id desc');
+    }
+    if (order === 'random') {
+      get = get.orderByRaw('RANDOM()');
+    }
+    return await get.leftJoin('members', 'metadata.id', '=', 'members.item_id');
   }
 }

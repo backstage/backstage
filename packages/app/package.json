@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.76-next.1",
+  "version": "0.2.76-next.2",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -83,7 +83,6 @@
   },
   "devDependencies": {
     "@backstage/test-utils": "workspace:^",
-    "@rjsf/core": "^3.2.1",
     "@testing-library/cypress": "^8.0.2",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",

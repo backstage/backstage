@@ -31,7 +31,9 @@ describe('hasAnnotation permission rule', () => {
               },
             },
           },
-          'backstage.io/test-annotation',
+          {
+            annotation: 'backstage.io/test-annotation',
+          },
         ),
       ).toEqual(false);
     });
@@ -46,7 +48,9 @@ describe('hasAnnotation permission rule', () => {
               name: 'test-component',
             },
           },
-          'backstage.io/test-annotation',
+          {
+            annotation: 'backstage.io/test-annotation',
+          },
         ),
       ).toEqual(false);
       expect(
@@ -58,8 +62,10 @@ describe('hasAnnotation permission rule', () => {
               name: 'test-component',
             },
           },
-          'backstage.io/test-annotation',
-          'some value',
+          {
+            annotation: 'backstage.io/test-annotation',
+            value: 'some value',
+          },
         ),
       ).toEqual(false);
     });
@@ -78,7 +84,9 @@ describe('hasAnnotation permission rule', () => {
               },
             },
           },
-          'backstage.io/test-annotation',
+          {
+            annotation: 'backstage.io/test-annotation',
+          },
         ),
       ).toEqual(true);
     });
@@ -97,8 +105,10 @@ describe('hasAnnotation permission rule', () => {
               },
             },
           },
-          'backstage.io/test-annotation',
-          'baz',
+          {
+            annotation: 'backstage.io/test-annotation',
+            value: 'baz',
+          },
         ),
       ).toEqual(false);
     });
@@ -117,8 +127,10 @@ describe('hasAnnotation permission rule', () => {
               },
             },
           },
-          'backstage.io/test-annotation',
-          'bar',
+          {
+            annotation: 'backstage.io/test-annotation',
+            value: 'bar',
+          },
         ),
       ).toEqual(true);
     });
@@ -126,7 +138,11 @@ describe('hasAnnotation permission rule', () => {
 
   describe('toQuery', () => {
     it('returns an appropriate catalog-backend filter', () => {
-      expect(hasAnnotation.toQuery('backstage.io/test-annotation')).toEqual({
+      expect(
+        hasAnnotation.toQuery({
+          annotation: 'backstage.io/test-annotation',
+        }),
+      ).toEqual({
         key: 'metadata.annotations.backstage.io/test-annotation',
       });
     });
@@ -134,7 +150,10 @@ describe('hasAnnotation permission rule', () => {
 
   it('returns an appropriate catalog-backend filter with values', () => {
     expect(
-      hasAnnotation.toQuery('backstage.io/test-annotation', 'foo'),
+      hasAnnotation.toQuery({
+        annotation: 'backstage.io/test-annotation',
+        value: 'foo',
+      }),
     ).toEqual({
       key: 'metadata.annotations.backstage.io/test-annotation',
       values: ['foo'],

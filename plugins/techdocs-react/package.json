@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-techdocs-react",
   "description": "Shared frontend utilities for TechDocs and Addons",
-  "version": "1.0.5-next.1",
+  "version": "1.0.5-next.2",
   "publishConfig": {
     "access": "public",
     "alphaTypes": "dist/index.alpha.d.ts",

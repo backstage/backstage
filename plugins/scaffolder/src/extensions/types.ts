@@ -15,6 +15,14 @@
  */
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { FieldValidation, FieldProps } from '@rjsf/core';
+import { PropsWithChildren } from 'react';
+
+import {
+  UIOptionsType,
+  FieldProps as FieldPropsV5,
+  UiSchema as UiSchemaV5,
+  FieldValidation as FieldValidationV5,
+} from '@rjsf/utils';
 
 /**
  * Field validation type for Custom Field Extensions.
@@ -58,3 +66,45 @@ export interface FieldExtensionComponentProps<
     'ui:options'?: TUiOptions;
   };
 }
+
+/**
+ * Type for Field Extension Props for RJSF v5
+ *
+ * @alpha
+ */
+export interface NextFieldExtensionComponentProps<
+  TFieldReturnValue,
+  TUiOptions = {},
+> extends PropsWithChildren<FieldPropsV5<TFieldReturnValue>> {
+  uiSchema?: UiSchemaV5<TFieldReturnValue> & {
+    'ui:options'?: TUiOptions & UIOptionsType;
+  };
+}
+
+/**
+ * Field validation type for Custom Field Extensions.
+ *
+ * @alpha
+ */
+export type NextCustomFieldValidator<TFieldReturnValue> = (
+  data: TFieldReturnValue,
+  field: FieldValidationV5,
+  context: { apiHolder: ApiHolder },
+) => void | Promise<void>;
+
+/**
+ * Type for the Custom Field Extension with the
+ * name and components and validation function.
+ *
+ * @alpha
+ */
+export type NextFieldExtensionOptions<
+  TFieldReturnValue = unknown,
+  TInputProps = unknown,
+> = {
+  name: string;
+  component: (
+    props: NextFieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
+  ) => JSX.Element | null;
+  validation?: NextCustomFieldValidator<TFieldReturnValue>;
+};

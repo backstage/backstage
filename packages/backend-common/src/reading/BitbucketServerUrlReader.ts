@@ -188,38 +188,45 @@ export class BitbucketServerUrlReader implements UrlReader {
   private async getLastCommitShortHash(url: string): Promise<string> {
     const { name: repoName, owner: project, ref: branch } = parseGitUrl(url);
 
-    // Bitbucket Server https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp224
-    const commitApiUrl = `${this.integration.config.apiBaseUrl}/projects/${project}/repos/${repoName}/commits/${branch}`;
+    // If a branch is provided use that otherwise fall back to the default branch
+    const branchParameter = branch
+      ? `?filterText=${encodeURIComponent(branch)}`
+      : '/default';
 
-    const commitResponse = await fetch(
-      commitApiUrl,
+    // https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp211 (branches docs)
+    const branchListUrl = `${this.integration.config.apiBaseUrl}/projects/${project}/repos/${repoName}/branches${branchParameter}`;
+
+    const branchListResponse = await fetch(
+      branchListUrl,
       getBitbucketServerRequestOptions(this.integration.config),
     );
-    if (!commitResponse.ok) {
-      const message = `Failed to retrieve commits from ${commitApiUrl}, ${commitResponse.status} ${commitResponse.statusText}`;
-      if (commitResponse.status === 404) {
+    if (!branchListResponse.ok) {
+      const message = `Failed to retrieve branch list from ${branchListUrl}, ${branchListResponse.status} ${branchListResponse.statusText}`;
+      if (branchListResponse.status === 404) {
         throw new NotFoundError(message);
       }
       throw new Error(message);
     }
 
-    const commits = await commitResponse.json();
+    const branchMatches = await branchListResponse.json();
 
-    // Handles case when a branch is provided in the URL
-    if (commits && commits.id) {
-      return commits.id.substring(0, 12);
+    if (branchMatches && branchMatches.size > 0) {
+      const exactBranchMatch = branchMatches.values.filter(
+        (branchDetails: { displayId: string }) =>
+          branchDetails.displayId === branch,
+      )[0];
+      return exactBranchMatch.latestCommit.substring(0, 12);
     }
 
-    // Handles case when no branch is provided in the URL
-    if (
-      commits &&
-      commits.values &&
-      commits.values.length > 0 &&
-      commits.values[0].id
-    ) {
-      return commits.values[0].id.substring(0, 12);
+    // Handle when no branch is provided using the default as the fallback
+    if (!branch && branchMatches) {
+      return branchMatches.latestCommit.substring(0, 12);
     }
 
-    throw new Error(`Failed to read response from ${commitApiUrl}`);
+    throw new Error(
+      `Failed to find Last Commit using ${
+        branch ? `branch "${branch}"` : 'default branch'
+      } in response from ${branchListUrl}`,
+    );
   }
 }

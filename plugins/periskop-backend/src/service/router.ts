@@ -43,7 +43,7 @@ export async function createRouter(
 
   router.get('/health', (_, response) => {
     logger.info('PONG!');
-    response.send({ status: 'ok' });
+    response.json({ status: 'ok' });
   });
 
   router.get('/:locationName/:serviceName', async (request, response) => {

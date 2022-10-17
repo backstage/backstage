@@ -19,6 +19,7 @@ import {
   PLAYLIST_LIST_RESOURCE_TYPE,
   PlaylistMetadata,
 } from '@backstage/plugin-playlist-common';
+import { z } from 'zod';
 
 import { ListPlaylistsFilter } from '../service';
 
@@ -32,11 +33,13 @@ const isOwner = createPlaylistPermissionRule({
   name: 'IS_OWNER',
   description: 'Should allow only if the playlist belongs to the user',
   resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
-  apply: (list: PlaylistMetadata, userOwnershipRefs: string[]) =>
-    userOwnershipRefs.includes(list.owner),
-  toQuery: (userOwnershipRefs: string[]) => ({
+  paramsSchema: z.object({
+    owners: z.array(z.string()).describe('List of owner entity refs'),
+  }),
+  apply: (list: PlaylistMetadata, { owners }) => owners.includes(list.owner),
+  toQuery: ({ owners }) => ({
     key: 'owner',
-    values: userOwnershipRefs,
+    values: owners,
   }),
 });
 

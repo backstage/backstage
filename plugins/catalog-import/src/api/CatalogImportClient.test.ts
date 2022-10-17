@@ -297,7 +297,7 @@ describe('CatalogImportClient', () => {
     it('should find locations from github', async () => {
       (new Octokit().search.code as any as jest.Mock).mockResolvedValueOnce({
         data: {
-          total_count: 2,
+          total_count: 3,
           items: [
             { path: 'simple/path/catalog-info.yaml' },
             { path: 'co/mple/x/path/catalog-info.yaml' },
@@ -305,24 +305,72 @@ describe('CatalogImportClient', () => {
           ],
         },
       });
-
-      catalogApi.addLocation.mockImplementation(async ({ type, target }) => ({
-        location: {
-          id: 'id-0',
-          type: type ?? 'url',
-          target,
-        },
-        entities: [
-          {
-            apiVersion: '1',
-            kind: 'k',
-            metadata: {
-              name: 'e',
-              namespace: 'n',
+      server.use(
+        rest.post(`${mockBaseUrl}/analyze-location`, (req, res, ctx) => {
+          expect(req.body).toEqual({
+            location: {
+              target: 'https://github.com/backstage/backstage',
+              type: 'url',
             },
-          },
-        ],
-      }));
+          });
+
+          return res(
+            ctx.json({
+              generateEntities: [],
+              existingEntityFiles: [
+                {
+                  isRegistered: false,
+                  location: {
+                    type: 'url',
+                    target:
+                      'https://github.com/backstage/backstage/blob/main/simple/path/catalog-info.yaml',
+                  },
+                  entity: {
+                    apiVersion: '1',
+                    kind: 'k',
+                    metadata: {
+                      name: 'e',
+                      namespace: 'n',
+                    },
+                  },
+                },
+                {
+                  isRegistered: false,
+                  location: {
+                    type: 'url',
+                    target:
+                      'https://github.com/backstage/backstage/blob/main/co/mple/x/path/catalog-info.yaml',
+                  },
+                  entity: {
+                    apiVersion: '1',
+                    kind: 'k',
+                    metadata: {
+                      name: 'e',
+                      namespace: 'n',
+                    },
+                  },
+                },
+                {
+                  isRegistered: false,
+                  location: {
+                    type: 'url',
+                    target:
+                      'https://github.com/backstage/backstage/blob/main/catalog-info.yaml',
+                  },
+                  entity: {
+                    apiVersion: '1',
+                    kind: 'k',
+                    metadata: {
+                      name: 'e',
+                      namespace: 'n',
+                    },
+                  },
+                },
+              ],
+            }),
+          );
+        }),
+      );
 
       await expect(
         catalogImportClient.analyzeUrl(
@@ -332,16 +380,19 @@ describe('CatalogImportClient', () => {
         locations: [
           {
             entities: [{ kind: 'k', name: 'e', namespace: 'n' }],
+            exists: false,
             target:
               'https://github.com/backstage/backstage/blob/main/simple/path/catalog-info.yaml',
           },
           {
             entities: [{ kind: 'k', name: 'e', namespace: 'n' }],
+            exists: false,
             target:
               'https://github.com/backstage/backstage/blob/main/co/mple/x/path/catalog-info.yaml',
           },
           {
             entities: [{ kind: 'k', name: 'e', namespace: 'n' }],
+            exists: false,
             target:
               'https://github.com/backstage/backstage/blob/main/catalog-info.yaml',
           },
@@ -426,31 +477,57 @@ describe('CatalogImportClient', () => {
         }),
       );
 
-      catalogApi.addLocation.mockImplementation(async ({ type, target }) => ({
-        location: {
-          id: 'id-0',
-          type: type ?? 'url',
-          target,
-        },
-        entities: [
-          {
-            apiVersion: '1',
-            kind: 'Location',
-            metadata: {
-              name: 'my-entity',
-              namespace: 'my-namespace',
+      server.use(
+        rest.post(`${mockBaseUrl}/analyze-location`, (req, res, ctx) => {
+          expect(req.body).toEqual({
+            location: {
+              target: 'https://github.com/acme-corp/our-awesome-api',
+              type: 'url',
             },
-          },
-          {
-            apiVersion: '1',
-            kind: 'Component',
-            metadata: {
-              name: 'my-entity',
-              namespace: 'my-namespace',
-            },
-          },
-        ],
-      }));
+            catalogFilename: 'anvil.yaml',
+          });
+
+          return res(
+            ctx.json({
+              generateEntities: [],
+              existingEntityFiles: [
+                {
+                  isRegistered: false,
+                  location: {
+                    type: 'url',
+                    target:
+                      'https://github.com/acme-corp/our-awesome-api/blob/main/anvil.yaml',
+                  },
+                  entity: {
+                    apiVersion: '1',
+                    kind: 'Location',
+                    metadata: {
+                      name: 'my-entity',
+                      namespace: 'my-namespace',
+                    },
+                  },
+                },
+                {
+                  isRegistered: false,
+                  location: {
+                    type: 'url',
+                    target:
+                      'https://github.com/acme-corp/our-awesome-api/blob/main/anvil.yaml',
+                  },
+                  entity: {
+                    apiVersion: '1',
+                    kind: 'Component',
+                    metadata: {
+                      name: 'my-entity',
+                      namespace: 'my-namespace',
+                    },
+                  },
+                },
+              ],
+            }),
+          );
+        }),
+      );
 
       await expect(
         catalogImportClient.analyzeUrl(repositoryUrl),
@@ -470,6 +547,7 @@ describe('CatalogImportClient', () => {
               },
             ],
             target: `${repositoryUrl}/blob/main/${entityFilename}`,
+            exists: false,
           },
         ],
         type: 'locations',

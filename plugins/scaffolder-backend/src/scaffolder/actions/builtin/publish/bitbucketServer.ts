@@ -30,6 +30,7 @@ const createRepository = async (opts: {
   repo: string;
   description?: string;
   repoVisibility: 'private' | 'public';
+  defaultBranch: string;
   authorization: string;
   apiBaseUrl: string;
 }) => {
@@ -39,6 +40,7 @@ const createRepository = async (opts: {
     description,
     authorization,
     repoVisibility,
+    defaultBranch,
     apiBaseUrl,
   } = opts;
 
@@ -48,6 +50,7 @@ const createRepository = async (opts: {
     body: JSON.stringify({
       name: repo,
       description: description,
+      defaultBranch: defaultBranch,
       public: repoVisibility === 'public',
     }),
     headers: {
@@ -232,6 +235,7 @@ export function createPublishBitbucketServerAction(options: {
         project,
         repo,
         repoVisibility,
+        defaultBranch,
         description,
         apiBaseUrl,
       });

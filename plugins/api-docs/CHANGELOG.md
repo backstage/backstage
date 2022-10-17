@@ -1,5 +1,17 @@
 # @backstage/plugin-api-docs
 
+## 0.8.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.6.0-next.2
+  - @backstage/plugin-catalog-react@1.2.0-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/core-components@0.11.2-next.2
+  - @backstage/core-plugin-api@1.0.7-next.2
+  - @backstage/theme@0.2.16
+
 ## 0.8.10-next.1
 
 ### Patch Changes

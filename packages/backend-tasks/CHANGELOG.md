@@ -1,5 +1,16 @@
 # @backstage/backend-tasks
 
+## 0.3.6-next.2
+
+### Patch Changes
+
+- d4fea86ea3: Added new function `readTaskScheduleDefinitionFromConfig` to read `TaskScheduleDefinition` (aka. schedule) from the `Config`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/types@1.0.0
+
 ## 0.3.6-next.1
 
 ### Patch Changes

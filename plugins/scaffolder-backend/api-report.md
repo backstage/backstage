@@ -199,6 +199,7 @@ export function createGithubRepoCreateAction(options: {
   allowAutoMerge?: boolean | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
+  requireBranchesToBeUpToDate?: boolean | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   collaborators?:
     | (
@@ -236,6 +237,7 @@ export function createGithubRepoPushAction(options: {
   gitAuthorEmail?: string | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
+  requireBranchesToBeUpToDate?: boolean | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
 }>;
@@ -366,6 +368,7 @@ export function createPublishGithubAction(options: {
   sourcePath?: string | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
+  requireBranchesToBeUpToDate?: boolean | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   collaborators?:
     | (
@@ -429,7 +432,8 @@ export const createPublishGitlabMergeRequestAction: (options: {
   title: string;
   description: string;
   branchName: string;
-  targetPath: string;
+  sourcePath?: string | undefined;
+  targetPath?: string | undefined;
   token?: string | undefined;
   commitAction?: 'update' | 'create' | 'delete' | undefined;
   projectid?: string | undefined;

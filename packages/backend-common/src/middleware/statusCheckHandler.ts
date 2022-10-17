@@ -55,7 +55,7 @@ export async function statusCheckHandler(
   return async (_request: Request, response: Response, next: NextFunction) => {
     try {
       const status = await statusCheck();
-      response.status(200).header('').send(status);
+      response.status(200).json(status);
     } catch (err) {
       next(err);
     }
