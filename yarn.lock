@@ -11594,16 +11594,16 @@ __metadata:
   linkType: hard
 
 "@octokit/request@npm:^6.0.0":
-  version: 6.2.1
-  resolution: "@octokit/request@npm:6.2.1"
+  version: 6.2.2
+  resolution: "@octokit/request@npm:6.2.2"
   dependencies:
     "@octokit/endpoint": ^7.0.0
     "@octokit/request-error": ^3.0.0
-    "@octokit/types": ^7.0.0
+    "@octokit/types": ^8.0.0
     is-plain-object: ^5.0.0
     node-fetch: ^2.6.7
     universal-user-agent: ^6.0.0
-  checksum: f0a3e878de8c2e6930da5af835d9a3750800eff9ba66af02400dc75238475a9b9c2c5473047792c0f37c2c371095a36485c0729c419873bdccb6058bb8637685
+  checksum: adbeb38807c60b53d32d9b69be0c1f861c26698bc6f5f3f7e05d26972290dc4867827dd333bdd801818c347e5723efd049a2b9848c6c8bf74a2032968dede0ff
   languageName: node
   linkType: hard
 
