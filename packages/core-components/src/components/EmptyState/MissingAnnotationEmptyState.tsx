@@ -36,7 +36,7 @@ spec:
   owner: user:guest`;
 
 type Props = {
-  annotation: string;
+  annotation: string | string[];
   readMoreUrl?: string;
 };
 
@@ -53,16 +53,21 @@ const useStyles = makeStyles<BackstageTheme>(
   { name: 'BackstageMissingAnnotationEmptyState' },
 );
 
-export function MissingAnnotationEmptyState(props: Props) {
-  const { annotation, readMoreUrl } = props;
+export function MissingAnnotationEmptyState({
+  annotation,
+  readMoreUrl,
+}: Props) {
   const url =
     readMoreUrl ||
     'https://backstage.io/docs/features/software-catalog/well-known-annotations';
   const classes = useStyles();
+  const annotationsToDisplay = Array.isArray(annotation)
+    ? annotation
+    : [annotation];
   const description = (
     <>
-      The <code>{annotation}</code> annotation is missing. You need to add the
-      annotation to your component if you want to enable this tool.
+      The <code>{annotation.toString()}</code> annotation is missing. You need
+      to add the annotation to your component if you want to enable this tool.
     </>
   );
   return (
@@ -77,13 +82,16 @@ export function MissingAnnotationEmptyState(props: Props) {
             highlighted example below:
           </Typography>
           <div className={classes.code}>
-            <CodeSnippet
-              text={COMPONENT_YAML.replace('ANNOTATION', annotation)}
-              language="yaml"
-              showLineNumbers
-              highlightedNumbers={[6, 7]}
-              customStyle={{ background: 'inherit', fontSize: '115%' }}
-            />
+            {annotationsToDisplay.map(ann => (
+              <CodeSnippet
+                key={ann}
+                text={COMPONENT_YAML.replace('ANNOTATION', ann)}
+                language="yaml"
+                showLineNumbers
+                highlightedNumbers={[6, 7]}
+                customStyle={{ background: 'inherit', fontSize: '115%' }}
+              />
+            ))}
           </div>
           <Button color="primary" component={Link} to={url}>
             Read more
