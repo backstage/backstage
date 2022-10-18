@@ -41,15 +41,15 @@ import {
   buildOrgHierarchy,
   getOrganizationTeams,
   getOrganizationUsers,
-  parseGitHubOrgUrl,
+  parseGithubOrgUrl,
 } from '../lib';
 
 /**
- * Options for {@link GitHubOrgEntityProvider}.
+ * Options for {@link GithubOrgEntityProvider}.
  *
  * @public
  */
-export interface GitHubOrgEntityProviderOptions {
+export interface GithubOrgEntityProviderOptions {
   /**
    * A unique, stable identifier for this provider.
    *
@@ -96,12 +96,12 @@ export interface GitHubOrgEntityProviderOptions {
  *
  * @public
  */
-export class GitHubOrgEntityProvider implements EntityProvider {
+export class GithubOrgEntityProvider implements EntityProvider {
   private readonly credentialsProvider: GithubCredentialsProvider;
   private connection?: EntityProviderConnection;
   private scheduleFn?: () => Promise<void>;
 
-  static fromConfig(config: Config, options: GitHubOrgEntityProviderOptions) {
+  static fromConfig(config: Config, options: GithubOrgEntityProviderOptions) {
     const integrations = ScmIntegrations.fromConfig(config);
     const gitHubConfig = integrations.github.byUrl(options.orgUrl)?.config;
 
@@ -115,7 +115,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       target: options.orgUrl,
     });
 
-    const provider = new GitHubOrgEntityProvider({
+    const provider = new GithubOrgEntityProvider({
       id: options.id,
       orgUrl: options.orgUrl,
       logger,
@@ -146,7 +146,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
 
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
   getProviderName() {
-    return `GitHubOrgEntityProvider:${this.options.id}`;
+    return `GithubOrgEntityProvider:${this.options.id}`;
   }
 
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
@@ -176,7 +176,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       headers,
     });
 
-    const { org } = parseGitHubOrgUrl(this.options.orgUrl);
+    const { org } = parseGithubOrgUrl(this.options.orgUrl);
     const { users } = await getOrganizationUsers(client, org, tokenType);
     const { groups, groupMemberUsers } = await getOrganizationTeams(
       client,
@@ -202,7 +202,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
     markCommitComplete();
   }
 
-  private schedule(schedule: GitHubOrgEntityProviderOptions['schedule']) {
+  private schedule(schedule: GithubOrgEntityProviderOptions['schedule']) {
     if (!schedule || schedule === 'manual') {
       return;
     }
@@ -213,7 +213,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
         id,
         fn: async () => {
           const logger = this.options.logger.child({
-            class: GitHubOrgEntityProvider.prototype.constructor.name,
+            class: GithubOrgEntityProvider.prototype.constructor.name,
             taskId: id,
             taskInstanceId: uuid.v4(),
           });

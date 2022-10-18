@@ -35,8 +35,8 @@ import * as uuid from 'uuid';
 import { Logger } from 'winston';
 import {
   readProviderConfigs,
-  GitHubEntityProviderConfig,
-} from './GitHubEntityProviderConfig';
+  GithubEntityProviderConfig,
+} from './GithubEntityProviderConfig';
 import { getOrganizationRepositories, Repository } from '../lib/github';
 import { satisfiesTopicFilter } from '../lib/util';
 
@@ -48,8 +48,8 @@ import { satisfiesTopicFilter } from '../lib/util';
  *
  * @public
  */
-export class GitHubEntityProvider implements EntityProvider {
-  private readonly config: GitHubEntityProviderConfig;
+export class GithubEntityProvider implements EntityProvider {
+  private readonly config: GithubEntityProviderConfig;
   private readonly logger: Logger;
   private readonly integration: GitHubIntegrationConfig;
   private readonly scheduleFn: () => Promise<void>;
@@ -63,7 +63,7 @@ export class GitHubEntityProvider implements EntityProvider {
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
     },
-  ): GitHubEntityProvider[] {
+  ): GithubEntityProvider[] {
     if (!options.schedule && !options.scheduler) {
       throw new Error('Either schedule or scheduler must be provided.');
     }
@@ -90,7 +90,7 @@ export class GitHubEntityProvider implements EntityProvider {
         options.schedule ??
         options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
 
-      return new GitHubEntityProvider(
+      return new GithubEntityProvider(
         providerConfig,
         integration,
         options.logger,
@@ -100,7 +100,7 @@ export class GitHubEntityProvider implements EntityProvider {
   }
 
   private constructor(
-    config: GitHubEntityProviderConfig,
+    config: GithubEntityProviderConfig,
     integration: GitHubIntegration,
     logger: Logger,
     taskRunner: TaskRunner,
@@ -133,7 +133,7 @@ export class GitHubEntityProvider implements EntityProvider {
         id: taskId,
         fn: async () => {
           const logger = this.logger.child({
-            class: GitHubEntityProvider.prototype.constructor.name,
+            class: GithubEntityProvider.prototype.constructor.name,
             taskId,
             taskInstanceId: uuid.v4(),
           });
@@ -156,7 +156,7 @@ export class GitHubEntityProvider implements EntityProvider {
     const matchingTargets = this.matchesFilters(targets);
     const entities = matchingTargets
       .map(repository => this.createLocationUrl(repository))
-      .map(GitHubEntityProvider.toLocationSpec)
+      .map(GithubEntityProvider.toLocationSpec)
       .map(location => {
         return {
           locationKey: this.getProviderName(),

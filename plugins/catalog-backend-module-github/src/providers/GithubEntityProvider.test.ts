@@ -22,7 +22,7 @@ import {
 } from '@backstage/backend-tasks';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
-import { GitHubEntityProvider } from './GitHubEntityProvider';
+import { GithubEntityProvider } from './GithubEntityProvider';
 import * as helpers from '../lib/github';
 
 jest.mock('../lib/github', () => {
@@ -45,13 +45,13 @@ class PersistingTaskRunner implements TaskRunner {
 
 const logger = getVoidLogger();
 
-describe('GitHubEntityProvider', () => {
+describe('GithubEntityProvider', () => {
   afterEach(() => jest.resetAllMocks());
 
   it('no provider config', () => {
     const schedule = new PersistingTaskRunner();
     const config = new ConfigReader({});
-    const providers = GitHubEntityProvider.fromConfig(config, {
+    const providers = GithubEntityProvider.fromConfig(config, {
       logger,
       schedule,
     });
@@ -70,7 +70,7 @@ describe('GitHubEntityProvider', () => {
         },
       },
     });
-    const providers = GitHubEntityProvider.fromConfig(config, {
+    const providers = GithubEntityProvider.fromConfig(config, {
       logger,
       schedule,
     });
@@ -93,7 +93,7 @@ describe('GitHubEntityProvider', () => {
     });
 
     expect(() =>
-      GitHubEntityProvider.fromConfig(config, {
+      GithubEntityProvider.fromConfig(config, {
         logger,
         schedule,
       }),
@@ -116,7 +116,7 @@ describe('GitHubEntityProvider', () => {
         },
       },
     });
-    const providers = GitHubEntityProvider.fromConfig(config, {
+    const providers = GithubEntityProvider.fromConfig(config, {
       logger,
       schedule,
     });
@@ -153,7 +153,7 @@ describe('GitHubEntityProvider', () => {
       refresh: jest.fn(),
     };
 
-    const provider = GitHubEntityProvider.fromConfig(config, {
+    const provider = GithubEntityProvider.fromConfig(config, {
       logger,
       schedule,
     })[0];
@@ -241,7 +241,7 @@ describe('GitHubEntityProvider', () => {
       refresh: jest.fn(),
     };
 
-    const provider = GitHubEntityProvider.fromConfig(config, {
+    const provider = GithubEntityProvider.fromConfig(config, {
       logger,
       schedule,
     })[0];
@@ -315,7 +315,7 @@ describe('GitHubEntityProvider', () => {
       refresh: jest.fn(),
     };
 
-    const provider = GitHubEntityProvider.fromConfig(config, {
+    const provider = GithubEntityProvider.fromConfig(config, {
       logger,
       schedule,
     })[0];
@@ -413,7 +413,7 @@ describe('GitHubEntityProvider', () => {
       refresh: jest.fn(),
     };
 
-    const provider = GitHubEntityProvider.fromConfig(config, {
+    const provider = GithubEntityProvider.fromConfig(config, {
       logger,
       schedule,
     })[0];
@@ -526,7 +526,7 @@ describe('GitHubEntityProvider', () => {
     });
 
     expect(() =>
-      GitHubEntityProvider.fromConfig(config, {
+      GithubEntityProvider.fromConfig(config, {
         logger,
       }),
     ).toThrow('Either schedule or scheduler must be provided');
@@ -547,7 +547,7 @@ describe('GitHubEntityProvider', () => {
     });
 
     expect(() =>
-      GitHubEntityProvider.fromConfig(config, {
+      GithubEntityProvider.fromConfig(config, {
         logger,
         scheduler,
       }),
@@ -574,7 +574,7 @@ describe('GitHubEntityProvider', () => {
         },
       },
     });
-    const providers = GitHubEntityProvider.fromConfig(config, {
+    const providers = GithubEntityProvider.fromConfig(config, {
       logger,
       scheduler,
     });

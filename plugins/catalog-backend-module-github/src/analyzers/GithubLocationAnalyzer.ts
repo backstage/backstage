@@ -27,24 +27,27 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 
 /** @public */
-export type GitHubLocationAnalyzerOptions = {
+export type GithubLocationAnalyzerOptions = {
   config: Config;
   discovery: PluginEndpointDiscovery;
 };
+
 /** @public */
-export class GitHubLocationAnalyzer implements ScmLocationAnalyzer {
+export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
   private readonly catalogClient: CatalogApi;
   private readonly config: Config;
 
-  constructor(options: GitHubLocationAnalyzerOptions) {
+  constructor(options: GithubLocationAnalyzerOptions) {
     this.config = options.config;
     this.catalogClient = new CatalogClient({ discoveryApi: options.discovery });
   }
+
   supports(url: string) {
     const integrations = ScmIntegrations.fromConfig(this.config);
     const integration = integrations.byUrl(url);
     return integration?.type === 'github';
   }
+
   async analyze({ url, catalogFilename }: AnalyzeOptions) {
     const { owner, name: repo } = parseGitUrl(url);
 

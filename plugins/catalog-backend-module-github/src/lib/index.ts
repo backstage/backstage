@@ -22,4 +22,4 @@ export {
   getOrganizationUsers,
 } from './github';
 export { assignGroupsToUsers, buildOrgHierarchy } from './org';
-export { parseGitHubOrgUrl } from './util';
+export { parseGithubOrgUrl } from './util';
