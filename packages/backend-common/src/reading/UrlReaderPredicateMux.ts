@@ -15,7 +15,6 @@
  */
 
 import { NotAllowedError } from '@backstage/errors';
-import { Logger } from 'winston';
 import {
   ReadTreeOptions,
   ReadTreeResponse,
@@ -41,8 +40,6 @@ function notAllowedMessage(url: string) {
  */
 export class UrlReaderPredicateMux implements UrlReader {
   private readonly readers: UrlReaderPredicateTuple[] = [];
-
-  constructor(private readonly logger: Logger) {}
 
   register(tuple: UrlReaderPredicateTuple): void {
     this.readers.push(tuple);
