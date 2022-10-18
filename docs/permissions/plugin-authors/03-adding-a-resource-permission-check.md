@@ -84,7 +84,7 @@ Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append th
 ```typescript
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 import { TODO_LIST_RESOURCE_TYPE } from '@internal/plugin-todo-list-common';
-import { z } from 'zod;
+import { z } from 'zod';
 import { Todo, TodoFilter } from './todos';
 
 export const createTodoListPermissionRule = makeCreatePermissionRule<
