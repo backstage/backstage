@@ -1,4 +1,4 @@
-# Azure Backend
+# Azure Sites Backend
 
 Simple plugin that proxies requests to the Azure Portal API through Azure SDK JavaScript libraries.
 
@@ -6,14 +6,14 @@ _Inspired by [roadie.io AWS Lamda plugin](https://roadie.io/backstage/plugins/aw
 
 ## Setup
 
-The following sections will help you get the Azure Backend plugin setup and running.
+The following sections will help you get the Azure Sites Backend plugin setup and running.
 
 ### Configuration
 
 The Azure plugin requires the following YAML to be added to your app-config.yaml:
 
 ```yaml
-azureFunctions:
+azureSites:
   domain:
   tenantId:
   clientId:
@@ -70,11 +70,13 @@ Here's how to get the backend plugin up and running:
    async function main() {
      // ...
      // Add this line under the other lines that follow the useHotMemoize pattern
-     const azureEnv = useHotMemoize(module, () => createEnv('azure'));
+     const azureSitesEnv = useHotMemoize(module, () =>
+       createEnv('azure-sites'),
+     );
 
      // ...
      // Insert this line under the other lines that add their routers to apiRouter in the same way
-     apiRouter.use('/azure', await azure(azureEnv));
+     apiRouter.use('/azure-sites', await azure(azureSitesEnv));
    }
    ```
 

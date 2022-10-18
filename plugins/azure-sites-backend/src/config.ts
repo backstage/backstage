@@ -17,7 +17,7 @@
 import { Config } from '@backstage/config';
 
 /** @public */
-export class AzureFunctionsConfig {
+export class AzureSitesConfig {
   constructor(
     public readonly domain: string,
     public readonly tenantId: string,
@@ -26,10 +26,10 @@ export class AzureFunctionsConfig {
     public readonly clientSecret?: string,
   ) {}
 
-  static fromConfig(config: Config): AzureFunctionsConfig {
-    const azConfig = config.getConfig('azureFunctions');
+  static fromConfig(config: Config): AzureSitesConfig {
+    const azConfig = config.getConfig('azureSites');
 
-    return new AzureFunctionsConfig(
+    return new AzureSitesConfig(
       azConfig.getString('domain'),
       azConfig.getString('tenantId'),
       azConfig

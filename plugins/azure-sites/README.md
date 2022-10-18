@@ -1,4 +1,4 @@
-# Azure Plugin
+# Azure Sites Plugin
 
 ![preview of Azure table](docs/functions-table.png)
 
@@ -12,13 +12,13 @@ _Inspired by [roadie.io AWS Lamda plugin](https://roadie.io/backstage/plugins/aw
 
 The following sections will help you get the Azure plugin setup and running
 
-### Azure Backend
+### Azure Sites Backend
 
-You need to set up the Azure backend plugin before you move forward with any of these steps if you haven't already.
+You need to set up the Azure Sites Backend plugin before you move forward with any of these steps if you haven't already.
 
 ### Entity Annotation
 
-To be able to use the Azure plugin you need to add the following annotation to any entities you want to use it with:
+To be able to use the Azure Sites plugin you need to add the following annotation to any entities you want to use it with:
 
 ```yaml
 azure.com/microsoft-web-sites: <name>

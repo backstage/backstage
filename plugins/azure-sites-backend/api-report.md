@@ -11,7 +11,20 @@ import express from 'express';
 import { Logger } from 'winston';
 
 // @public (undocumented)
-export class AzureFunctionsConfig {
+export class AzureSitesApi {
+  constructor(config: AzureSitesConfig);
+  // (undocumented)
+  static fromConfig(config: Config): AzureSitesApi;
+  // (undocumented)
+  list(request: AzureSiteListRequest): Promise<AzureSiteListResponse>;
+  // (undocumented)
+  start(request: AzureSiteStartStopRequest): Promise<void>;
+  // (undocumented)
+  stop(request: AzureSiteStartStopRequest): Promise<void>;
+}
+
+// @public (undocumented)
+export class AzureSitesConfig {
   constructor(
     domain: string,
     tenantId: string,
@@ -26,24 +39,11 @@ export class AzureFunctionsConfig {
   // (undocumented)
   readonly domain: string;
   // (undocumented)
-  static fromConfig(config: Config): AzureFunctionsConfig;
+  static fromConfig(config: Config): AzureSitesConfig;
   // (undocumented)
   readonly subscriptions?: string[] | undefined;
   // (undocumented)
   readonly tenantId: string;
-}
-
-// @public (undocumented)
-export class AzureSitesApi {
-  constructor(config: AzureFunctionsConfig);
-  // (undocumented)
-  static fromConfig(config: Config): AzureSitesApi;
-  // (undocumented)
-  list(request: AzureSiteListRequest): Promise<AzureSiteListResponse>;
-  // (undocumented)
-  start(request: AzureSiteStartStopRequest): Promise<void>;
-  // (undocumented)
-  stop(request: AzureSiteStartStopRequest): Promise<void>;
 }
 
 // @public (undocumented)

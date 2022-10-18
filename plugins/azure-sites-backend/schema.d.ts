@@ -15,7 +15,7 @@
  */
 
 export interface Config {
-  azureFunctions: {
+  azureSites: {
     /** @visibility backend  */
     domain: string;
     /** @visibility backend  */

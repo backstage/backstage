@@ -27,7 +27,7 @@ import {
   AzureSiteListResponse,
   AzureSiteStartStopRequest,
 } from '@backstage/plugin-azure-sites-common';
-import { AzureFunctionsConfig } from '../config';
+import { AzureSitesConfig } from '../config';
 
 /** @public */
 export class AzureSitesApi {
@@ -35,13 +35,13 @@ export class AzureSitesApi {
     `https://portal.azure.com/#@${domain}/resource`;
   private readonly client: ResourceGraphClient;
 
-  constructor(private readonly config: AzureFunctionsConfig) {
+  constructor(private readonly config: AzureSitesConfig) {
     const creds = this.getCredentials(config);
 
     this.client = new ResourceGraphClient(creds);
   }
 
-  private getCredentials(config: AzureFunctionsConfig) {
+  private getCredentials(config: AzureSitesConfig) {
     return config.clientId && config.clientSecret
       ? new ClientSecretCredential(
           config.tenantId,
@@ -52,7 +52,7 @@ export class AzureSitesApi {
   }
 
   static fromConfig(config: Config): AzureSitesApi {
-    return new AzureSitesApi(AzureFunctionsConfig.fromConfig(config));
+    return new AzureSitesApi(AzureSitesConfig.fromConfig(config));
   }
 
   async start(request: AzureSiteStartStopRequest): Promise<void> {
@@ -73,31 +73,25 @@ export class AzureSitesApi {
 
   async list(request: AzureSiteListRequest): Promise<AzureSiteListResponse> {
     const items: AzureSite[] = [];
-    try {
-      const result = await this.client.resources({
-        query: `resources | where type == 'microsoft.web/sites' | where name contains '${request.name}'`,
-        subscriptions: this.config.subscriptions,
+    const result = await this.client.resources({
+      query: `resources | where type == 'microsoft.web/sites' | where name contains '${request.name}'`,
+      subscriptions: this.config.subscriptions,
+    });
+    for (const v of result.data) {
+      items.push({
+        href: `${this.baseHref(this.config.domain)}${v.id!}`,
+        logstreamHref: `${this.baseHref(this.config.domain)}${v.id!}/logStream`,
+        name: v.name!,
+        kind: v.kind!,
+        resourceGroup: v.resourceGroup!,
+        subscription: v.id!.match(/\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12}/)[0],
+        location: v.location!,
+        lastModifiedDate: v.properties.lastModifiedTimeUtc!,
+        usageState: v.properties.usageState!,
+        state: v.properties.state!,
+        containerSize: v.properties.containerSize!,
+        tags: v.properties.tags!,
       });
-      for (const v of result.data) {
-        items.push({
-          href: `${this.baseHref(this.config.domain)}${v.id!}`,
-          logstreamHref: `${this.baseHref(
-            this.config.domain,
-          )}${v.id!}/logStream`,
-          name: v.name!,
-          kind: v.kind!,
-          resourceGroup: v.resourceGroup!,
-          subscription: v.id!.match(/\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12}/)[0],
-          location: v.location!,
-          lastModifiedDate: v.properties.lastModifiedTimeUtc!,
-          usageState: v.properties.usageState!,
-          state: v.properties.state!,
-          containerSize: v.properties.containerSize!,
-          tags: v.properties.tags!,
-        });
-      }
-    } catch (ex: any) {
-      throw ex;
     }
     return { items: items };
   }
