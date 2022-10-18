@@ -1,5 +1,20 @@
 # @backstage/plugin-adr-backend
 
+## 0.2.2
+
+### Patch Changes
+
+- 8006f8a602: In order to improve the debuggability of the search indexing process, messages logged during indexing are now tagged with a `documentType` whose value corresponds to the `type` being indexed.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/catalog-client@1.1.1
+  - @backstage/plugin-search-common@1.1.0
+  - @backstage/plugin-adr-common@0.2.2
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+
 ## 0.2.2-next.2
 
 ### Patch Changes

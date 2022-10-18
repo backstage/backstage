@@ -1,5 +1,16 @@
 # @backstage/plugin-gcalendar
 
+## 0.3.6
+
+### Patch Changes
+
+- 4c2ed7ecf1: Fixed loader showing when user not signed in
+- Updated dependencies
+  - @backstage/core-components@0.11.2
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/errors@1.1.2
+  - @backstage/theme@0.2.16
+
 ## 0.3.6-next.2
 
 ### Patch Changes

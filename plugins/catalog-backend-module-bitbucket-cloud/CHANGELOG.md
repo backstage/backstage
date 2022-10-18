@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-cloud
 
+## 0.1.4
+
+### Patch Changes
+
+- f66e696e7b: Bitbucket Cloud provider: Add option to configure schedule via `app-config.yaml` instead of in code.
+
+  Please find how to configure the schedule at the config at
+  https://backstage.io/docs/integrations/bitbucketCloud/discovery
+
+- a9b91d39bb: Add `bitbucketCloudCatalogModule` (new backend-plugin-api, alpha).
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.2.0
+  - @backstage/plugin-catalog-backend@1.5.0
+  - @backstage/backend-tasks@0.3.6
+  - @backstage/backend-plugin-api@0.1.3
+  - @backstage/plugin-bitbucket-cloud-common@0.2.0
+  - @backstage/config@1.0.3
+  - @backstage/integration@1.3.2
+
 ## 0.1.4-next.2
 
 ### Patch Changes

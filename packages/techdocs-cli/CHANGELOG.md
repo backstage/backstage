@@ -1,5 +1,26 @@
 # @techdocs/cli
 
+## 1.2.2
+
+### Patch Changes
+
+- 0b2a30dead: fixing techdocs-cli Docker client creation
+
+  Docker client does not need to be created when --no-docker
+  option is provided.
+
+  If you had DOCKER_CERT_PATH environment variable defined
+  the Docker client was looking for certificates
+  and breaking techdocs-cli generate command even with --no-docker
+  option.
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-techdocs-node@1.4.1
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3
+
 ## 1.2.2-next.2
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/test-utils
 
+## 1.2.1
+
+### Patch Changes
+
+- e05e0f021b: Align on the version of `@material-ui/icons` used, to `^4.9.1` like other packages in the main repo
+- Updated dependencies
+  - @backstage/core-app-api@1.1.1
+  - @backstage/plugin-permission-common@0.7.0
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/config@1.0.3
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+  - @backstage/plugin-permission-react@0.4.6
+
 ## 1.2.1-next.2
 
 ### Patch Changes

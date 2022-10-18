@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-common
 
+## 1.0.7
+
+### Patch Changes
+
+- 823acaa88b: Moved the following types from `@backstage/plugin-catalog-backend` to this package.
+
+  - AnalyzeLocationResponse
+  - AnalyzeLocationRequest
+  - AnalyzeLocationExistingEntity
+  - AnalyzeLocationGenerateEntity
+  - AnalyzeLocationEntityField
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/plugin-permission-common@0.7.0
+  - @backstage/plugin-search-common@1.1.0
+
 ## 1.0.7-next.2
 
 ### Patch Changes
