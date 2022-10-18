@@ -22,6 +22,6 @@ To use the `GroupListPicker` component you'll need to import it and add it to yo
 
 The `GroupListPicker` comes with three optional props:
 
-- **groupTypes**: gives the user the option which group types the component should load. If no value is provided all group types will be loaded in;
-- **defaultGroup**: which group by default should be selected. For example, a group of the logged in user;
-- **placeholder**: the placeholder that the select box in the component should display. This might be helpfull in informing your users what the functionality of the component is.
+- `groupTypes`: gives the user the option which group types the component should load. If no value is provided all group types will be loaded in;
+- `defaultGroup`: which group by default should be selected. For example, a group of the logged in user;
+- `placeholder`: the placeholder that the select box in the component should display. This might be helpful in informing your users what the functionality of the component is.
