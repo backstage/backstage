@@ -23,7 +23,7 @@
     "backstage",
     "kubernetes"
   ],
-  "configSchema": "schema.d.ts",
+  "configSchema": "config.d.ts",
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
@@ -69,6 +69,6 @@
   },
   "files": [
     "dist",
-    "schema.d.ts"
+    "config.d.ts"
   ]
 }
