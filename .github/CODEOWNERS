@@ -49,6 +49,7 @@ yarn.lock                                           @backstage/reviewers @backst
 /plugins/kubernetes                                 @backstage/reviewers @backstage/warpspeed
 /plugins/kubernetes-*                               @backstage/reviewers @backstage/warpspeed
 /plugins/newrelic-dashboard                         @backstage/reviewers @mufaddal7
+/plugins/org-react                                  @backstage/reviewers
 /plugins/playlist                                   @backstage/reviewers @kuangp
 /plugins/playlist-*                                 @backstage/reviewers @kuangp
 /plugins/scaffolder-backend-module-rails            @backstage/reviewers @angeliski
