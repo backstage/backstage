@@ -452,7 +452,7 @@ function scaffoldingTracker() {
 
     async function skipFalsy() {
       await task.emitLog(
-        `Skipping step ${step.id} because it's if condition was false`,
+        `Skipping step ${step.id} because its if condition was false`,
         { stepId: step.id, status: 'skipped' },
       );
       stepTimer({ result: 'skipped' });
