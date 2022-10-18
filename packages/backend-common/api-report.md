@@ -717,7 +717,7 @@ export interface TokenManager {
 // @public
 export type UrlReader = {
   read(url: string): Promise<Buffer>;
-  readUrl?(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
 };
