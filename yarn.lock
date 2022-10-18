@@ -8167,11 +8167,11 @@ __metadata:
   linkType: hard
 
 "@google-cloud/container@npm:^4.0.0":
-  version: 4.1.3
-  resolution: "@google-cloud/container@npm:4.1.3"
+  version: 4.3.0
+  resolution: "@google-cloud/container@npm:4.3.0"
   dependencies:
     google-gax: ^3.3.0
-  checksum: d9554ed344e065ec16b9d281eeecd2796bf5c90149358e724596c6e2bc97c6b9ea16a9dbcf4805e29003e4bcaf3aaa85c70609b7b9b1db0fbae6c9018e55b6d8
+  checksum: cc1dc2ca7f6b47bac0d374013e78b05372f25dce7a3f84d799899af274d26fa22f23d2554a66ca1db528c3bbbec1cfbac86dfa9fc72cc78f175bcb737900b3ed
   languageName: node
   linkType: hard
 
