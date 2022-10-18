@@ -1,5 +1,15 @@
 # @backstage/catalog-model
 
+## 1.1.2
+
+### Patch Changes
+
+- 6f3b8d0962: Defer `ajv` compilation of schema validators to improve module-import performance
+- Updated dependencies
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/types@1.0.0
+
 ## 1.1.2-next.2
 
 ### Patch Changes
