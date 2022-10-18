@@ -3234,7 +3234,7 @@ __metadata:
     json-schema: ^0.4.0
     lodash: ^4.17.21
     uuid: ^8.0.0
-    yaml: ^2.0.0
+    yaml: ^2.1.1
   languageName: unknown
   linkType: soft
 
@@ -3373,7 +3373,7 @@ __metadata:
     webpack: ^5.70.0
     webpack-dev-server: ^4.7.3
     webpack-node-externals: ^3.0.0
-    yaml: ^2.0.0
+    yaml: ^2.1.1
     yml-loader: ^2.1.0
     yn: ^4.0.0
     zod: ^3.11.6
@@ -3429,7 +3429,7 @@ __metadata:
     msw: ^0.47.0
     node-fetch: ^2.6.7
     typescript-json-schema: ^0.54.0
-    yaml: ^2.0.0
+    yaml: ^2.1.1
     yup: ^0.32.9
   languageName: unknown
   linkType: soft
@@ -4455,7 +4455,7 @@ __metadata:
     p-limit: ^3.0.2
     uuid: ^8.0.0
     winston: ^3.2.1
-    yaml: ^2.0.0
+    yaml: ^2.1.1
   languageName: unknown
   linkType: soft
 
@@ -4734,7 +4734,7 @@ __metadata:
     uuid: ^8.0.0
     wait-for-expect: ^3.0.2
     winston: ^3.2.1
-    yaml: ^2.0.0
+    yaml: ^2.1.1
     yn: ^4.0.0
     zod: ^3.11.6
   languageName: unknown
@@ -4854,7 +4854,7 @@ __metadata:
     msw: ^0.47.0
     react-hook-form: ^7.12.2
     react-use: ^17.2.4
-    yaml: ^2.0.0
+    yaml: ^2.1.1
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
@@ -4948,7 +4948,7 @@ __metadata:
     qs: ^6.9.4
     react-test-renderer: ^16.13.1
     react-use: ^17.2.4
-    yaml: ^2.0.0
+    yaml: ^2.1.1
     zen-observable: ^0.8.15
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
@@ -6516,7 +6516,7 @@ __metadata:
     supertest: ^6.1.3
     uuid: ^8.0.0
     winston: ^3.2.1
-    yaml: ^2.0.0
+    yaml: ^2.1.1
     yn: ^4.0.0
     yup: ^0.32.9
   languageName: unknown
@@ -6700,7 +6700,7 @@ __metadata:
     uuid: ^8.2.0
     vm2: ^3.9.11
     winston: ^3.2.1
-    yaml: ^2.0.0
+    yaml: ^2.1.1
     zen-observable: ^0.8.15
     zod: ^3.11.6
   languageName: unknown
@@ -6774,7 +6774,7 @@ __metadata:
     qs: ^6.9.4
     react-use: ^17.2.4
     use-immer: ^0.7.0
-    yaml: ^2.0.0
+    yaml: ^2.1.1
     zen-observable: ^0.8.15
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
@@ -39971,7 +39971,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^2.0.0, yaml@npm:^2.1.1":
+"yaml@npm:^2.0.0":
+  version: 2.1.3
+  resolution: "yaml@npm:2.1.3"
+  checksum: 91316062324a93f9cb547469092392e7d004ff8f70c40fecb420f042a4870b2181557350da56c92f07bd44b8f7a252b0be26e6ade1f548e1f4351bdd01c9d3c7
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^2.1.1":
   version: 2.1.1
   resolution: "yaml@npm:2.1.1"
   checksum: f48bb209918aa57cfaf78ef6448d1a1f8187f45c746f933268b7023dc59e5456004611879126c9bb5ea55b0a2b1c2b392dfde436931ece0c703a3d754562bb96
