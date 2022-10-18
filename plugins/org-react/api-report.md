@@ -5,11 +5,15 @@
 ```ts
 /// <reference types="react" />
 
-// Warning: (ae-forgotten-export) The symbol "GroupListPickerProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "GroupListPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const GroupListPicker: (props: GroupListPickerProps) => JSX.Element;
+
+// @public
+export type GroupListPickerProps = {
+  placeholder?: string;
+  groupTypes?: Array<string>;
+  defaultGroup?: string;
+};
 
 // (No @packageDocumentation comment for this package)
 ```

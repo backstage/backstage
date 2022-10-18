@@ -27,6 +27,7 @@ export const orgReactPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const GroupListPicker = orgReactPlugin.provide(
   createRoutableExtension({
     name: 'GroupListPicker',

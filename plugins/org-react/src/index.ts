@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { GroupListPicker } from './plugin';
+export type { GroupListPickerProps } from './components/GroupListPicker';
