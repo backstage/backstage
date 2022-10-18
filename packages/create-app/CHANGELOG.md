@@ -1,5 +1,37 @@
 # @backstage/create-app
 
+## 0.4.32
+
+### Patch Changes
+
+- 58c2264325: Newly created Backstage repositories now use the stable version 6 of
+  `react-router`, just like the main repo does. Please let us know if you find any
+  issues with this.
+
+  Migrating to the stable version of `react-router` is optional for the time
+  being. But if you want to do the same for your existing repository, please
+  follow [this
+  guide](https://backstage.io/docs/tutorials/react-router-stable-migration).
+
+- e05e0f021b: Update versions of packages used in the create-app template, to match those in the main repo
+- 01dff06be4: Leverage cache mounts in Dockerfile during `yarn install ...` and `apt-get ...` commands to speed up repeated builds.
+- 90616bcaa6: Add the new search pagination component to the search page template.
+- 7c6306fc8a: Initializes a git repository when creating an app using @packages/create-app
+- 52f25858a8: Added `*.session.sql` Visual Studio Code database functionality files to `.gitignore` in the default template. This is optional but potentially helpful if your developers use Visual Studio Code; you can add a line with that exact value to your own root `.gitignore` if you want the same.
+- 6d00e80146: Updated the root `test` scripts to use `backstage-cli repo test`.
+
+  To apply this change to an existing app, make the following change to the root `package.json`:
+
+  ```diff
+  -    "test": "backstage-cli test",
+  -    "test:all": "lerna run test -- --coverage",
+  +    "test": "backstage-cli repo test",
+  +    "test:all": "backstage-cli repo test --coverage",
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
 ## 0.4.32-next.2
 
 ### Patch Changes

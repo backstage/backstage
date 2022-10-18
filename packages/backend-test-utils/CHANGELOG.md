@@ -1,5 +1,18 @@
 # @backstage/backend-test-utils
 
+## 0.1.29
+
+### Patch Changes
+
+- 72549952d1: Fixed handling of root scoped services in `startTestBackend`.
+- e91e8e9c55: Increased test database max connection pool size to reduce the risk of resource exhaustion.
+- Updated dependencies
+  - @backstage/backend-common@0.15.2
+  - @backstage/cli@0.20.0
+  - @backstage/backend-app-api@0.2.2
+  - @backstage/backend-plugin-api@0.1.3
+  - @backstage/config@1.0.3
+
 ## 0.1.29-next.2
 
 ### Patch Changes

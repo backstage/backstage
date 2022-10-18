@@ -154,10 +154,7 @@ export const EntityKindPicker = (props: EntityKindPickerProps) => {
         severity: 'error',
       });
     }
-    if (initialFilter) {
-      setSelectedKind(initialFilter);
-    }
-  }, [error, alertApi, initialFilter, setSelectedKind]);
+  }, [error, alertApi]);
 
   if (availableKinds?.length === 0 || error) return null;
 

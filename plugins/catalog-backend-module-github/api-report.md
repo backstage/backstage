@@ -46,7 +46,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
-// @public
+// @public @deprecated (undocumented)
 export class GitHubEntityProvider implements EntityProvider {
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;
@@ -65,14 +65,33 @@ export class GitHubEntityProvider implements EntityProvider {
   refresh(logger: Logger): Promise<void>;
 }
 
+// @public
+export class GithubEntityProvider implements EntityProvider {
+  // (undocumented)
+  connect(connection: EntityProviderConnection): Promise<void>;
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: {
+      logger: Logger;
+      schedule?: TaskRunner;
+      scheduler?: PluginTaskScheduler;
+    },
+  ): GithubEntityProvider[];
+  // (undocumented)
+  getProviderName(): string;
+  // (undocumented)
+  refresh(logger: Logger): Promise<void>;
+}
+
 // @alpha
 export const githubEntityProviderCatalogModule: (
   options?: undefined,
 ) => BackendFeature;
 
 // @public (undocumented)
-export class GitHubLocationAnalyzer implements ScmLocationAnalyzer {
-  constructor(options: GitHubLocationAnalyzerOptions);
+export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
+  constructor(options: GithubLocationAnalyzerOptions);
   // (undocumented)
   analyze({ url, catalogFilename }: AnalyzeOptions): Promise<{
     existing: {
@@ -89,7 +108,7 @@ export class GitHubLocationAnalyzer implements ScmLocationAnalyzer {
 }
 
 // @public (undocumented)
-export type GitHubLocationAnalyzerOptions = {
+export type GithubLocationAnalyzerOptions = {
   config: Config;
   discovery: PluginEndpointDiscovery;
 };
@@ -127,8 +146,17 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
+// @public @deprecated (undocumented)
+export class GitHubOrgEntityProvider extends GithubOrgEntityProvider {
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: GitHubOrgEntityProviderOptions,
+  ): GitHubOrgEntityProvider;
+}
+
 // @public
-export class GitHubOrgEntityProvider implements EntityProvider {
+export class GithubOrgEntityProvider implements EntityProvider {
   constructor(options: {
     id: string;
     orgUrl: string;
@@ -141,15 +169,18 @@ export class GitHubOrgEntityProvider implements EntityProvider {
   // (undocumented)
   static fromConfig(
     config: Config,
-    options: GitHubOrgEntityProviderOptions,
-  ): GitHubOrgEntityProvider;
+    options: GithubOrgEntityProviderOptions,
+  ): GithubOrgEntityProvider;
   // (undocumented)
   getProviderName(): string;
   read(options?: { logger?: Logger }): Promise<void>;
 }
 
+// @public @deprecated (undocumented)
+export type GitHubOrgEntityProviderOptions = GithubOrgEntityProviderOptions;
+
 // @public
-export interface GitHubOrgEntityProviderOptions {
+export interface GithubOrgEntityProviderOptions {
   githubCredentialsProvider?: GithubCredentialsProvider;
   id: string;
   logger: Logger;
