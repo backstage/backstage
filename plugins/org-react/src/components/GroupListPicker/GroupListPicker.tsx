@@ -71,7 +71,7 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
     });
 
     return groupsList.items as GroupEntity[];
-  }, [catalogApi]);
+  }, [catalogApi, groupTypes]);
 
   if (error) {
     return <ResponseErrorPanel error={error} />;
