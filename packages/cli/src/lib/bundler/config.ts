@@ -267,7 +267,7 @@ export async function createBackendConfig(
       paths.targetRunFile ? paths.targetRunFile : paths.targetEntry,
     ],
     resolve: {
-      extensions: ['.ts', '.mjs', '.js', '.json'],
+      extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
       mainFields: ['main'],
       modules: [paths.rootNodeModules, ...moduleDirs],
       plugins: [
