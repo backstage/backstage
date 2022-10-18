@@ -105,3 +105,150 @@ The change is also marked as a breaking `major` change. This should be changed t
   - [ ] Bump level
 - [ ] Have tests been added for new features bug fixes?
 - [ ] Has documentation been added?
+
+## Breaking Changes
+
+Identifying breaking changes can be quite tricky. You need to look at the changes from both the point of view of consumers and producers of APIs, as well as behavioral changes. In this section we explore a couple of methods for identifying whether a change is breaking or not.
+
+### TypeScript
+
+Typescript is a huge help when it comes to identifying breaking changes, as well as the API Reports that we generate for all packages. Most of the time it is enough to only look at the API Reports to determine whether a change is breaking or not.
+
+In this section we will be talking about changed "types", but that refers to any kind of exported symbol from a packages, such as TypeScript types and interfaces, functions, classes, constants, etc.
+
+An important distinction to make when looking at changes to an API Report is the direction of a changed type, that is whether it's used as input or output from the user's point of view. In the next two sections we'll dive into the different directions of a type, and how it affects whether a change is breaking or not.
+
+#### Input Types
+
+A input type is one that users need to provide to the package by consumers. The most common form of input type are function, constructor and method parameters.
+
+The following is an example where `MyComponentProps` is an input type:
+
+```ts
+type MyComponentProps = {
+  title: string;
+  size?: 'small' | 'medium' | 'large';
+};
+
+function MyComponent(props: MyComponentProps): JSX.Element;
+```
+
+And from the consumer's point of view it would look something like this:
+
+```tsx
+<MyComponent title="Hello World" size="medium" />
+```
+
+When modifying an input type, any change that increases constraints are breaking. For example, if we made the `size` prop required, that would be a breaking change. Likewise, if we changed the type of `size` to `'small' | 'large'`, that would also be breaking.
+
+On the other hand, it's fine to relax constraints without it being a breaking change. For example, if we made the `title` prop optional, that would not be breaking. Likewise, if we changed the type of `size` to `'small' | 'medium' | 'large' | 'huge'`, that would not be breaking either. It is also possible to add new properties without it being a breaking change, as long as they are optional.
+
+There's an edge-case where completely removing a property is also considered a breaking change. That's because of TypeScript being strict and refusing unknown properties, rather than a runtime breaking change. It is typically and easy thing for consumers to fix though.
+
+Another way to think about the rules for evolving input types is that the old type must be assignable to the new type. In this case for example `_props: NewComponentProps = {} as OldComponentProps`. It's not a silver bullet though, because of edge-cases like the one mentioned above.
+
+#### Output Types
+
+An output type is one that the user receives from the packages. One of the most obvious examples here are the top-level exports from the package itself, but it also includes function return types.
+
+The following is an example where both `useSize` and `Size` are output types:
+
+```ts
+type Box = {
+  title: string;
+  shape?: 'square' | 'rounded';
+};
+
+function useBox(): Box;
+```
+
+And from the consumer's point of view it would look something like this:
+
+```ts
+const { title, shape } = useBox();
+```
+
+When modifying an output type, any change that reduces constraints are breaking. For example, if we made the `title` property optional, that would be a breaking change, or if we changed the type of `shape` to `'square' | 'rounded' | 'octagon'`.
+
+Adding new properties is not a breaking change, regardless of whether they are optional or not. Removing properties is on the other hand always breaking.
+
+It is generally fine to increase constraints without it being a breaking change. For example, if we made the `title` property required, that would not be breaking.
+
+There are some edge-cases though, for example if `shape` was changed to just `'square'`, that would be a breaking change because consumers might be checking for `box.shape === 'rounded'`, which would then be breaking. It's typically a quite easy thing for consumers to fix though. More generally, type unions and discriminated unions are quite troublesome in output types, as both adding and removing types from them are considered breaking changes.
+
+Another way to think about the rules for evolving output types is that the new type must be assignable to the old type. In this case for example `_box: OldBox = {} as NewBox`. It's not a silver bullet though, because of edge-cases like the one mentioned above.
+
+#### I/O Types
+
+Some types are considered both input and output types. For example, consider the following example:
+
+```ts
+type Point = {
+  x: number;
+  y: number;
+};
+
+function trimCoords(point: Point): Point;
+```
+
+In this case `Point` is both an input and output type. This means that the only changes we can make to the type that aren't breaking are the intersection of allowed changes between input and output types. In practice this only allows for the addition of new optional properties. Because of this constraint it is generally best to avoid using I/O types, and keep the input separated from the output.
+
+There are some cases where I/O types favor either input or output when it comes to API stability. For example, all types used by Utility APIs are I/O types, but the stability of the output is a lot more important than the stability of the input. That is because it's a lot easier for the single producer of the input interface to adapt to changes compared to all consumers of the API that use it as an output type.
+
+#### Identifying the Direction
+
+The only way to identify the direction of a type is to look at the context in which it's being used. In particular this can be tricky when looking at individual type aliases and interfaces, as you need to look at the rest of the package exports to see how the type is being used.
+
+One important rule is that the context considered for any type is limited to only the package in which the type is declared. Just because a type is imported in a different package and used as an input type does not make it an input type.
+
+The following rules can be used to identify the direction of a type alias or interface:
+
+- If the type is used in an input context, for example function parameter, then it's an input type.
+- If the type is used in an output context, for example function return type, then it's an output type.
+- If the type is referenced by another type, then it inherits the direction of that type, except if referenced through a function callback, in which case the direction is reversed.
+- If the type is used or inherits both input and output context, then it's an I/O type.
+- If the type is not referenced anywhere else, then it's an I/O type.
+
+Below is an example of the public API of a package, with type directions assigned to each export:
+
+```ts
+// I/O, used by getPoint as return type and referenced by BoxProps, an input type
+interface Point {
+  x: number;
+  y: number;
+}
+
+function getPoint(): Point;
+
+// Input, used by Box as parameter type
+interface BoxProps {
+  point?: Point
+}
+
+function Box(props: BoxProps): JSX.Element;
+
+// Output, used by createWidget as return type
+interface Widget {
+  ...
+}
+
+// Output, as it's referenced by WidgetOptions, which is an input
+// type, but the render callback causes a direction reversal
+interface WidgetProps {
+  ...
+}
+
+// Input, just like WidgetProps this is due to the direction reversal
+// caused by the render callback
+type RenderedWidget = JSX.Element | null;
+
+// Input, used by createWidget parameter type
+interface WidgetOptions {
+  render(props: WidgetProps): RenderedWidget;
+}
+
+function createWidget(options: WidgetOptions): Widget;
+
+// I/O, since it's not referenced anywhere else
+type LabelStyle = 'normal' | 'thin';
+```
