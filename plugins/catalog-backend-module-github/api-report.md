@@ -20,6 +20,7 @@ import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmLocationAnalyzer } from '@backstage/plugin-catalog-backend';
 import { TaskRunner } from '@backstage/backend-tasks';
+import { TokenManager } from '@backstage/backend-common';
 
 // @public
 export class GithubDiscoveryProcessor implements CatalogProcessor {
@@ -111,6 +112,7 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
 export type GithubLocationAnalyzerOptions = {
   config: Config;
   discovery: PluginEndpointDiscovery;
+  tokenManager: TokenManager;
 };
 
 // @public
