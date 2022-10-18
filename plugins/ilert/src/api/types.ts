@@ -114,7 +114,7 @@ export interface ILertApi {
   ): Promise<Schedule>;
 
   fetchServices(opts?: GetServicesOpts): Promise<Service[]>;
-  createService(eventRequest: ServiceRequest): Promise<boolean>;
+  createService(serviceRequest: ServiceRequest): Promise<boolean>;
 
   fetchStatusPages(opts?: GetStatusPagesOpts): Promise<StatusPage[]>;
 

@@ -379,10 +379,8 @@ export interface ILertApi {
   assignAlert(alert: Alert, responder: AlertResponder): Promise<Alert>;
   // (undocumented)
   createAlert(eventRequest: EventRequest): Promise<boolean>;
-  // Warning: (ae-forgotten-export) The symbol "ServiceRequest" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
-  createService(eventRequest: ServiceRequest): Promise<boolean>;
+  createService(serviceRequest: ServiceRequest): Promise<boolean>;
   // (undocumented)
   disableAlertSource(alertSource: AlertSource): Promise<AlertSource>;
   // (undocumented)
@@ -710,6 +708,11 @@ export interface Service {
   // (undocumented)
   uptime: Uptime;
 }
+
+// @public (undocumented)
+export type ServiceRequest = {
+  name: string;
+};
 
 // @public (undocumented)
 export type ServiceStatus =
