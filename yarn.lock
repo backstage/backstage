@@ -6182,6 +6182,35 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-org-react@^0.0.0, @backstage/plugin-org-react@workspace:plugins/org-react":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-org-react@workspace:plugins/org-react"
+  dependencies:
+    "@backstage/catalog-client": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/dev-utils": "workspace:^"
+    "@backstage/plugin-catalog-react": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/theme": "workspace:^"
+    "@material-ui/core": ^4.9.13
+    "@material-ui/icons": ^4.9.1
+    "@material-ui/lab": ^4.0.0-alpha.57
+    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/react": ^12.1.3
+    "@testing-library/user-event": ^14.0.0
+    "@types/node": "*"
+    cross-fetch: ^3.1.5
+    msw: ^0.47.0
+    react-use: ^17.2.4
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-org@workspace:^, @backstage/plugin-org@workspace:plugins/org":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-org@workspace:plugins/org"
@@ -22153,6 +22182,7 @@ __metadata:
     "@backstage/plugin-newrelic": "workspace:^"
     "@backstage/plugin-newrelic-dashboard": "workspace:^"
     "@backstage/plugin-org": "workspace:^"
+    "@backstage/plugin-org-react": "workspace:^"
     "@backstage/plugin-pagerduty": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/plugin-playlist": "workspace:^"

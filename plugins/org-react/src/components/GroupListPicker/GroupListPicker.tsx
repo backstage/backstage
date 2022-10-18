@@ -15,14 +15,17 @@
  */
 
 import React from 'react';
-import { catalogApiRef } from '../../api';
+import {
+  catalogApiRef,
+  humanizeEntityRef,
+} from '@backstage/plugin-catalog-react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import useAsync from 'react-use/lib/useAsync';
 import Popover from '@material-ui/core/Popover';
 import { useApi } from '@backstage/core-plugin-api';
 import { ResponseErrorPanel } from '@backstage/core-components';
-import { GroupEntity } from '@backstage/catalog-model';
+import { Entity, GroupEntity } from '@backstage/catalog-model';
 import { GroupListPickerButton } from './GroupListPickerButton';
 
 /**
@@ -32,7 +35,7 @@ import { GroupListPickerButton } from './GroupListPickerButton';
  */
 export type GroupListPickerProps = {
   placeholder?: string;
-  groupTypes: Array<string>;
+  groupTypes?: Array<string>;
   defaultGroup?: string;
 };
 
@@ -63,7 +66,7 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
     const groupsList = await catalogApi.getEntities({
       filter: {
         kind: 'Group',
-        'spec.type': groupTypes,
+        'spec.type': groupTypes || [],
       },
     });
 
@@ -73,6 +76,9 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
   if (error) {
     return <ResponseErrorPanel error={error} />;
   }
+
+  const getHumanEntityRef = (entity: Entity) =>
+    humanizeEntityRef(entity, { defaultNamespace: false });
 
   return (
     <>
@@ -88,19 +94,20 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
           options={groups ?? []}
           groupBy={option => option.spec.type}
           getOptionLabel={option =>
-            option.spec.profile?.displayName ?? option.metadata.name
+            option.spec.profile?.displayName ?? getHumanEntityRef(option)
           }
           inputValue={inputValue}
           onInputChange={(_, value) => setInputValue(value)}
           onChange={(_, newValue) => {
             if (newValue) {
               setGroup(
-                newValue.spec.profile?.displayName ?? newValue.metadata.name,
+                newValue.spec.profile?.displayName ??
+                  getHumanEntityRef(newValue),
               );
             }
             setInputValue('');
           }}
-          style={{ width: '200px' }}
+          style={{ width: '300px' }}
           renderInput={params => (
             <TextField
               {...params}

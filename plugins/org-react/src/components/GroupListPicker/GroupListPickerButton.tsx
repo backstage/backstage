@@ -45,12 +45,7 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
   },
 }));
 
-/**
- * Props for {@link GroupListPickerButton}.
- *
- * @public
- */
-export type GroupListPickerButtonProps = {
+type GroupListPickerButtonProps = {
   handleClick: (event: React.MouseEvent<HTMLElement>) => void;
   group: string;
 };

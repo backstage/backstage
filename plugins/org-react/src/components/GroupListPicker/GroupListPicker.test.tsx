@@ -17,7 +17,7 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { ApiProvider } from '@backstage/core-app-api';
-import { catalogApiRef } from '../../api';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { CatalogApi } from '@backstage/catalog-client';
 import { GroupListPicker } from '../GroupListPicker';
 import { GroupEntity } from '@backstage/catalog-model';

@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { orgReactPlugin } from './plugin';
 
-export { GroupListPicker } from './GroupListPicker';
-export { GroupListPickerButton } from './GroupListPickerButton';
-export type { GroupListPickerProps } from './GroupListPicker';
-export type { GroupListPickerButtonProps } from './GroupListPickerButton';
+describe('org-react', () => {
+  it('should export plugin', () => {
+    expect(orgReactPlugin).toBeDefined();
+  });
+});
