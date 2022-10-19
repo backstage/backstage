@@ -1,5 +1,21 @@
 # @backstage/backend-common
 
+## 0.15.2
+
+### Patch Changes
+
+- e8d7976413: Added back support for when no branch is provided for the Bitbucket Server `UrlReader`
+- c44cf412de: Fix BitBucket server integration
+- c31f7cdfbc: Fixed an issue where `getClient()` for a `pluginId` would return different clients and not share them
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3
+  - @backstage/config-loader@1.1.5
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+  - @backstage/types@1.0.0
+
 ## 0.15.2-next.2
 
 ### Patch Changes

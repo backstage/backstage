@@ -1,5 +1,51 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.1.8
+
+### Patch Changes
+
+- 8749df3d02: `GitHubEntityProvider`: Add option to configure schedule via `app-config.yaml` instead of in code.
+
+  Please find how to configure the schedule at the config at
+  https://backstage.io/docs/integrations/github/discovery
+
+- 7022aebf35: Added `GithubLocationAnalyzer`. This can be used to add to the `CatalogBuilder`. When added this will be used by `RepoLocationAnalyzer` to figure out if the given URL that you are trying to import from the /catalog-import page already contains catalog-info.yaml files.
+- 51046b58b0: Use schedule from config at backend module.
+
+  Also, it removes `GithubEntityProviderCatalogModuleOptions`
+  in favor of config-only for the backend module setup
+  like at other similar modules.
+
+- 7edb5909e8: Add missing config schema for the `GitHubEntityProvider`.
+- be9474b103: Replaces in-code uses of `GitHub` by `Github` and deprecates old versions.
+
+  Deprecates
+
+  - `GitHubEntityProvider` replaced by `GithubEntityProvider`
+  - `GitHubLocationAnalyzer` replaced by `GithubLocationAnalyzer`
+  - `GitHubLocationAnalyzerOptions` replaced by `GithubLocationAnalyzerOptions`
+  - `GitHubOrgEntityProvider` replaced by `GithubOrgEntityProvider`
+  - `GitHubOrgEntityProviderOptions` replaced by `GithubOrgEntityProviderOptions`
+
+  Renames
+
+  - `GitHubLocationAnalyzer` to `GithubLocationAnalyzer`
+  - `GitHubLocationAnalyzerOptions` to `GithubLocationAnalyzerOptions`
+
+- a35a27df70: Updated the `moduleId` of the experimental module export.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.2.0
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-catalog-backend@1.5.0
+  - @backstage/backend-tasks@0.3.6
+  - @backstage/backend-plugin-api@0.1.3
+  - @backstage/catalog-client@1.1.1
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+  - @backstage/types@1.0.0
+
 ## 0.1.8-next.2
 
 ### Patch Changes

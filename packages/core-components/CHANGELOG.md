@@ -1,5 +1,19 @@
 # @backstage/core-components
 
+## 0.11.2
+
+### Patch Changes
+
+- bde1e8c8e2: Added `curve` prop to the `DependencyGraph` component to select the type of layout
+- 882101cd9b: Deep-import LightAsync component to improve module-import speed
+- 0d0f30d87e: Fixed layout for core-components docs where table was broken by splitting with code sample
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.1
+
 ## 0.11.2-next.2
 
 ### Patch Changes

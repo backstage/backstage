@@ -243,8 +243,8 @@ need this as well) to support user sessions.
 ### The Sign In provider
 
 The last step is to add the provider to the `SignInPage` so users can sign in with your
-new provider, please follow the [Sing In Configuration][3] docs, here's where you import
-and use the API ref we defined earlier.
+new provider, please follow the [Sign In Configuration][3] docs, here's where you import
+and use the API reference we defined earlier.
 
 ## Note
 

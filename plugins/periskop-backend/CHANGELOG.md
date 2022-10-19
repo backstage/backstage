@@ -1,5 +1,14 @@
 # @backstage/plugin-periskop-backend
 
+## 0.1.8
+
+### Patch Changes
+
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/backend-common@0.15.2
+  - @backstage/config@1.0.3
+
 ## 0.1.8-next.2
 
 ### Patch Changes

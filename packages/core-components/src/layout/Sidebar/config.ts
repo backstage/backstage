@@ -20,13 +20,13 @@ const drawerWidthClosed = 72;
 const iconPadding = 24;
 const userBadgePadding = 18;
 
-/** @public **/
+/** @public */
 export type SidebarOptions = {
   drawerWidthClosed?: number;
   drawerWidthOpen?: number;
 };
 
-/** @public **/
+/** @public */
 export type SubmenuOptions = {
   drawerWidthClosed?: number;
   drawerWidthOpen?: number;

@@ -1,5 +1,20 @@
 # @backstage/plugin-kubernetes
 
+## 0.7.3
+
+### Patch Changes
+
+- 51af8361de: Add useCustomResources react hook for fetching Kubernetes Custom Resources
+- 35a6cfe257: Fix infinite call bug in `useCustomResources` hook
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/plugin-catalog-react@1.2.0
+  - @backstage/core-components@0.11.2
+  - @backstage/plugin-kubernetes-common@0.4.3
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/config@1.0.3
+  - @backstage/theme@0.2.16
+
 ## 0.7.3-next.2
 
 ### Patch Changes

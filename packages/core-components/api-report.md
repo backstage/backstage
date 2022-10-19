@@ -495,9 +495,6 @@ export type HeaderTabsClassKey =
 // @public (undocumented)
 export function HelpIcon(props: IconComponentProps): JSX.Element;
 
-// @public @deprecated
-export function HomepageTimer(_props: {}): JSX.Element | null;
-
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
 // @public

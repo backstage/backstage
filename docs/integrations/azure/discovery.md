@@ -42,12 +42,17 @@ catalog:
         project: myproject
         repository: service-* # this will match all repos starting with service-*
         path: /catalog-info.yaml
+        schedule: # optional; same options as in TaskScheduleDefinition
+          # supports cron, ISO duration, "human duration" as used in code
+          frequency: { minutes: 30 }
+          # supports ISO duration, "human duration" as used in code
+          timeout: { minutes: 3 }
       anotherProviderId: # another identifier
         organization: myorg
         project: myproject
         repository: '*' # this will match all repos
         path: /src/*/catalog-info.yaml # this will search for files deep inside the /src folder
-      yetAotherProviderId: # guess, what? Another one :)
+      yetAnotherProviderId: # guess, what? Another one :)
         host: selfhostedazure.yourcompany.com
         organization: myorg
         project: myproject
@@ -55,11 +60,20 @@ catalog:
 
 The parameters available are:
 
-- `host:` Leave empty for Cloud hosted, otherwise set to your self-hosted instance host.
-- `organization:` Your Organization slug (or Collection for on-premise users). Required.
-- `project:` Your project slug. Required.
-- `repository:` The repository name. Wildcards are supported as show on the examples above. If not set, all repositories will be searched.
-- `path:` Where to find catalog-info.yaml files. Defaults to /catalog-info.yaml.
+- **`host:`** _(optional)_ Leave empty for Cloud hosted, otherwise set to your self-hosted instance host.
+- **`organization:`** Your Organization slug (or Collection for on-premise users). Required.
+- **`project:`** Your project slug. Required.
+- **`repository:`** _(optional)_ The repository name. Wildcards are supported as show on the examples above. If not set, all repositories will be searched.
+- **`path:`** _(optional)_ Where to find catalog-info.yaml files. Defaults to /catalog-info.yaml.
+- **`schedule`** _(optional)_:
+  - **`frequency`**:
+    How often you want the task to run. The system does its best to avoid overlapping invocations.
+  - **`timeout`**:
+    The maximum amount of time that a single task invocation can take.
+  - **`initialDelay`** _(optional)_:
+    The amount of time that should pass before the first invocation happens.
+  - **`scope`** _(optional)_:
+    `'global'` or `'local'`. Sets the scope of concurrency control.
 
 _Note:_ the path parameter follows the same rules as the search on Azure DevOps
 web interface. For more details visit the
@@ -84,10 +98,13 @@ const builder = await CatalogBuilder.create(env);
 +builder.addEntityProvider(
 +  AzureDevOpsEntityProvider.fromConfig(env.config, {
 +    logger: env.logger,
++    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
 +    schedule: env.scheduler.createScheduledTaskRunner({
-+      frequency: Duration.fromObject({ minutes: 30 }),
-+      timeout: Duration.fromObject({ minutes: 3 }),
++      frequency: { minutes: 30 },
++      timeout: { minutes: 3 },
 +    }),
++    // optional: alternatively, use schedule
++    scheduler: env.scheduler,
 +  }),
 +);
 ```

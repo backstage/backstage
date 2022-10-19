@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { GithubTopicFilters } from '../providers/GitHubEntityProviderConfig';
-import { parseGitHubOrgUrl, satisfiesTopicFilter } from './util';
+import { GithubTopicFilters } from '../providers/GithubEntityProviderConfig';
+import { parseGithubOrgUrl, satisfiesTopicFilter } from './util';
 
-describe('parseGitHubOrgUrl', () => {
+describe('parseGithubOrgUrl', () => {
   it('only supports clean org urls, and decodes them', () => {
-    expect(() => parseGitHubOrgUrl('https://github.com')).toThrow();
-    expect(() => parseGitHubOrgUrl('https://github.com/org/foo')).toThrow();
+    expect(() => parseGithubOrgUrl('https://github.com')).toThrow();
+    expect(() => parseGithubOrgUrl('https://github.com/org/foo')).toThrow();
     expect(() =>
-      parseGitHubOrgUrl('https://github.com/org/foo/teams'),
+      parseGithubOrgUrl('https://github.com/org/foo/teams'),
     ).toThrow();
-    expect(parseGitHubOrgUrl('https://github.com/foo%32')).toEqual({
+    expect(parseGithubOrgUrl('https://github.com/foo%32')).toEqual({
       org: 'foo2',
     });
   });

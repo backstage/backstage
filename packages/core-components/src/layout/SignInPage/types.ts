@@ -32,7 +32,7 @@ export type SignInProviderConfig = {
   apiRef: ApiRef<ProfileInfoApi & BackstageIdentityApi & SessionApi>;
 };
 
-/** @public **/
+/** @public */
 export type IdentityProviders = ('guest' | 'custom' | SignInProviderConfig)[];
 
 export type ProviderComponent = ComponentType<

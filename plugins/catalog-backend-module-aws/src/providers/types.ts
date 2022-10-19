@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+
 export type AwsS3Config = {
   id: string;
   bucketName: string;
   prefix?: string;
   region?: string;
+  schedule?: TaskScheduleDefinition;
 };

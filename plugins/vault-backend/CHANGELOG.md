@@ -1,5 +1,18 @@
 # @backstage/plugin-vault-backend
 
+## 0.2.3
+
+### Patch Changes
+
+- 9c595302cb: Normalize on winston version ^3.2.1
+- dae0bbe522: VaultBuilder.tsx renamed to VaultBuilder in order for module to be correctly loaded.
+- Updated dependencies
+  - @backstage/backend-common@0.15.2
+  - @backstage/backend-test-utils@0.1.29
+  - @backstage/backend-tasks@0.3.6
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+
 ## 0.2.3-next.2
 
 ### Patch Changes
