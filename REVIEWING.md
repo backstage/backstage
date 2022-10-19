@@ -200,7 +200,7 @@ When modifying an input type, any change that increases constraints are breaking
 
 On the other hand, it's fine to relax constraints without it being a breaking change. For example, if we made the `title` prop optional, that would not be breaking. Likewise, if we changed the type of `size` to `'small' | 'medium' | 'large' | 'huge'`, that would not be breaking either. It is also possible to add new properties without it being a breaking change, as long as they are optional.
 
-There's an edge-case where completely removing a property is also considered a breaking change. That's because of TypeScript being strict and refusing unknown properties, rather than a runtime breaking change. It is typically and easy thing for consumers to fix though.
+There's an edge-case where completely removing a property is also considered a breaking change. That's because of TypeScript being strict and refusing unknown properties, rather than a runtime breaking change. It is typically an easy thing for consumers to fix though.
 
 Another way to think about the rules for evolving input types is that the old type must be assignable to the new type. In this case for example `_props: NewComponentProps = {} as OldComponentProps`. It's not a silver bullet though, because of edge-cases like the one mentioned above.
 
