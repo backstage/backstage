@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
 
 type GroupListPickerButtonProps = {
   handleClick: (event: React.MouseEvent<HTMLElement>) => void;
-  group: string;
+  group: string | undefined;
 };
 
 /** @public */

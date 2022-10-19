@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import {
+  createComponentExtension,
   createPlugin,
-  createRoutableExtension,
 } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
@@ -29,10 +29,11 @@ export const orgReactPlugin = createPlugin({
 
 /** @public */
 export const GroupListPicker = orgReactPlugin.provide(
-  createRoutableExtension({
+  createComponentExtension({
     name: 'GroupListPicker',
-    component: () =>
-      import('./components/GroupListPicker').then(m => m.GroupListPicker),
-    mountPoint: rootRouteRef,
+    component: {
+      lazy: () =>
+        import('./components/GroupListPicker').then(m => m.GroupListPicker),
+    },
   }),
 );

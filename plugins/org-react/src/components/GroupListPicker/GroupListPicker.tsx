@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   catalogApiRef,
   humanizeEntityRef,
@@ -36,17 +36,17 @@ import { GroupListPickerButton } from './GroupListPickerButton';
 export type GroupListPickerProps = {
   placeholder?: string;
   groupTypes?: Array<string>;
-  defaultGroup?: string;
+  initialGroup?: string | undefined;
+  onChange: (value: GroupEntity | undefined) => void;
 };
 
 /** @public */
 export const GroupListPicker = (props: GroupListPickerProps) => {
   const catalogApi = useApi(catalogApiRef);
 
-  const { groupTypes, defaultGroup = '', placeholder = '' } = props;
+  const { onChange, groupTypes, initialGroup, placeholder = '' } = props;
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const [inputValue, setInputValue] = React.useState('');
-  const [group, setGroup] = React.useState(defaultGroup);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -73,6 +73,13 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
     return groupsList.items as GroupEntity[];
   }, [catalogApi, groupTypes]);
 
+  const handleChange = useCallback(
+    (_, v: GroupEntity | null) => {
+      onChange(v ?? undefined);
+    },
+    [onChange],
+  );
+
   if (error) {
     return <ResponseErrorPanel error={error} />;
   }
@@ -98,15 +105,7 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
           }
           inputValue={inputValue}
           onInputChange={(_, value) => setInputValue(value)}
-          onChange={(_, newValue) => {
-            if (newValue) {
-              setGroup(
-                newValue.spec.profile?.displayName ??
-                  getHumanEntityRef(newValue),
-              );
-            }
-            setInputValue('');
-          }}
+          onChange={handleChange}
           style={{ width: '300px' }}
           renderInput={params => (
             <TextField
@@ -117,7 +116,7 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
           )}
         />
       </Popover>
-      <GroupListPickerButton handleClick={handleClick} group={group} />
+      <GroupListPickerButton handleClick={handleClick} group={initialGroup} />
     </>
   );
 };
