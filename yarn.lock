@@ -3251,7 +3251,7 @@ __metadata:
     "@sucrase/jest-plugin": ^2.1.1
     "@sucrase/webpack-loader": ^2.0.0
     "@svgr/plugin-jsx": 6.3.x
-    "@svgr/plugin-svgo": 6.3.x
+    "@svgr/plugin-svgo": 6.5.x
     "@svgr/rollup": 6.3.x
     "@svgr/webpack": 6.3.x
     "@swc/core": ^1.2.239
@@ -12273,7 +12273,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@svgr/plugin-svgo@npm:6.3.x, @svgr/plugin-svgo@npm:^6.3.1":
+"@svgr/plugin-svgo@npm:6.5.x":
+  version: 6.5.0
+  resolution: "@svgr/plugin-svgo@npm:6.5.0"
+  dependencies:
+    cosmiconfig: ^7.0.1
+    deepmerge: ^4.2.2
+    svgo: ^2.8.0
+  peerDependencies:
+    "@svgr/core": ^6.0.0
+  checksum: d1a0ee79283a997aa4af2c2848f502dff71a9fd99623b47b0b2476effd7fe53077456afd1ff54283512a7dd10f30df91736f5d20eb931a462b34f281c90347e0
+  languageName: node
+  linkType: hard
+
+"@svgr/plugin-svgo@npm:^6.3.1":
   version: 6.3.1
   resolution: "@svgr/plugin-svgo@npm:6.3.1"
   dependencies:

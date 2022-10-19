@@ -49,7 +49,7 @@
     "@sucrase/jest-plugin": "^2.1.1",
     "@sucrase/webpack-loader": "^2.0.0",
     "@svgr/plugin-jsx": "6.3.x",
-    "@svgr/plugin-svgo": "6.3.x",
+    "@svgr/plugin-svgo": "6.5.x",
     "@svgr/rollup": "6.3.x",
     "@svgr/webpack": "6.3.x",
     "@swc/core": "^1.2.239",
