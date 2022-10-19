@@ -61,8 +61,6 @@ export type MultistepJsonFormProps = {
 
 /**
  * Creates the dynamic form for a scaffolder template.
- *
- * @public
  */
 export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
   const {

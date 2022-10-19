@@ -39,11 +39,6 @@ import {
 } from '@backstage/core-plugin-api';
 import { OwnedEntityPicker } from './components/fields/OwnedEntityPicker/OwnedEntityPicker';
 import { EntityTagsPicker } from './components/fields/EntityTagsPicker/EntityTagsPicker';
-import {
-  ScaffolderInputPluginOptionsOptions,
-  ScaffolderPluginOptions,
-} from './options';
-import { lastStepFormComponent } from './components';
 
 /**
  * The main plugin export for the scaffolder.
@@ -75,14 +70,6 @@ export const scaffolderPlugin = createPlugin({
   externalRoutes: {
     registerComponent: registerComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
-  },
-  __experimentalConfigure(
-    options?: ScaffolderInputPluginOptionsOptions,
-  ): ScaffolderPluginOptions {
-    const defaultOptions = {
-      lastStepFormComponent,
-    };
-    return { ...defaultOptions, ...options };
   },
 });
 

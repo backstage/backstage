@@ -23,8 +23,6 @@ import { Step } from '../types';
 /**
  * The props for the Last Step in scaffolder template form.
  * Which represents the summary of the input provided by the end user.
- *
- * @public
  */
 export type LastStepFormProps = {
   disableButtons: boolean;
@@ -93,8 +91,6 @@ export function getReviewData(formData: Record<string, any>, steps: Step[]) {
 /**
  * The component displaying the Last Step in scaffolder template form.
  * Which represents the summary of the input provided by the end user.
- *
- * @public
  */
 export const LastStepForm = (props: LastStepFormProps) => {
   const {
