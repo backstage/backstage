@@ -40,7 +40,7 @@ const cicdContent = (
 # In app-config.yaml
 proxy:
   '/circleci/api':
-    target: https://app.circleci.com/api/v1.1
+    target: https://circleci.com/api/v1.1
     headers:
       Circle-Token: ${CIRCLECI_AUTH_TOKEN}
 ```
