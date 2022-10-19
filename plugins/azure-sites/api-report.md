@@ -55,9 +55,6 @@ export const azureSitesPlugin: BackstagePlugin<
 export const EntityAzureSitesOverviewWidget: () => JSX.Element;
 
 // @public (undocumented)
-export const entityContentRouteRef: RouteRef<undefined>;
-
-// @public (undocumented)
 export const isAzureWebSiteNameAvailable: (
   entity: Entity,
 ) => string | undefined;

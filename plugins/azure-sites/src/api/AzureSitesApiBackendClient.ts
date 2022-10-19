@@ -35,56 +35,44 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
   }
 
   async stop(request: AzureSiteStartStopRequest): Promise<void> {
-    try {
-      const url = `${await this.discoveryApi.getBaseUrl('azure-functions')}/${
-        request.subscription
-      }/${request.resourceGroup}/${request.name}/stop`;
-      const { token: accessToken } = await this.identityApi.getCredentials();
-      await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-        },
-      });
-    } catch (e: any) {
-      throw new Error(e);
-    }
+    const url = `${await this.discoveryApi.getBaseUrl('azure-functions')}/${
+      request.subscription
+    }/${request.resourceGroup}/${request.name}/stop`;
+    const { token: accessToken } = await this.identityApi.getCredentials();
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+      },
+    });
   }
   async start(request: AzureSiteStartStopRequest): Promise<void> {
-    try {
-      const url = `${await this.discoveryApi.getBaseUrl('azure-functions')}/${
-        request.subscription
-      }/${request.resourceGroup}/${request.name}/start`;
-      const { token: accessToken } = await this.identityApi.getCredentials();
-      await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-        },
-      });
-    } catch (e: any) {
-      throw new Error(e);
-    }
+    const url = `${await this.discoveryApi.getBaseUrl('azure-functions')}/${
+      request.subscription
+    }/${request.resourceGroup}/${request.name}/start`;
+    const { token: accessToken } = await this.identityApi.getCredentials();
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+      },
+    });
   }
 
   async list(request: AzureSiteListRequest): Promise<AzureSiteListResponse> {
-    try {
-      const url = `${await this.discoveryApi.getBaseUrl('azure-sites')}/list/${
-        request.name
-      }`;
-      const { token: accessToken } = await this.identityApi.getCredentials();
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-        },
-      });
-      return await response.json();
-    } catch (e: any) {
-      throw new Error(e);
-    }
+    const url = `${await this.discoveryApi.getBaseUrl('azure-sites')}/list/${
+      request.name
+    }`;
+    const { token: accessToken } = await this.identityApi.getCredentials();
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+      },
+    });
+    return await response.json();
   }
 }

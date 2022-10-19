@@ -24,14 +24,13 @@ import {
 } from '@backstage/core-plugin-api';
 import { azureSiteApiRef, AzureSitesApiBackendClient } from './api';
 
-/** @public */
-export const entityContentRouteRef = createRouteRef({
-  id: 'Azure Entity Content',
+const entityContentRouteRef = createRouteRef({
+  id: 'Azure Sites Entity Content',
 });
 
 /** @public */
 export const azureSitesPlugin = createPlugin({
-  id: 'azureFunctions',
+  id: 'azureSites',
   apis: [
     createApiFactory({
       api: azureSiteApiRef,
