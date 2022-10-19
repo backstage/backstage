@@ -90,6 +90,20 @@ export interface Config {
   };
 
   /**
+   * This config was used by the HomepageTimer but has been replaced  by the HeaderWorldClock in the home plugin
+   *
+   * @deprecated in favor of the HeaderWorldClock which is found in the home plugin
+   */
+  homepage?: {
+    clocks?: Array<{
+      /** @visibility frontend */
+      label: string;
+      /** @visibility frontend */
+      timezone: string;
+    }>;
+  };
+
+  /**
    * Configuration that provides information on available configured authentication providers.
    */
   auth?: {
