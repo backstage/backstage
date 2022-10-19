@@ -18,22 +18,7 @@ import React from 'react';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import { UiSchema } from '@rjsf/core';
 import { JsonObject } from '@backstage/types';
-import { Step } from '../types';
-
-/**
- * The props for the Last Step in scaffolder template form.
- * Which represents the summary of the input provided by the end user.
- */
-export type LastStepFormProps = {
-  disableButtons: boolean;
-  finishButtonLabel?: string;
-  formData: Record<string, any>;
-  handleBack: () => void;
-  handleCreate: () => void;
-  handleReset: () => void;
-  onFinish?: () => Promise<void>;
-  steps: Step[];
-};
+import { LastStepFormProps, Step } from '../types';
 
 export function getUiSchemasFromSteps(steps: Step[]): UiSchema[] {
   const uiSchemas: Array<UiSchema> = [];
@@ -130,12 +115,3 @@ export const LastStepForm = (props: LastStepFormProps) => {
     </Content>
   );
 };
-
-/**
- * Creates LastStepForm from provided properties.
- *
- * @public
- */
-export const lastStepFormComponent = (props: LastStepFormProps) => (
-  <LastStepForm {...props} />
-);

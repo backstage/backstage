@@ -40,8 +40,6 @@ const Form = withTheme(MuiTheme);
 
 /**
  * The props for a dynamic form of a scaffolder template.
- *
- * @public
  */
 export type MultistepJsonFormProps = {
   /**

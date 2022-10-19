@@ -19,4 +19,4 @@ export { TemplateTypePicker } from './TemplateTypePicker';
 export * from './secrets';
 export { TaskPage } from './TaskPage';
 export type { RouterProps } from './Router';
-export * from './MultistepJsonForm';
+export type { LastStepFormProps, Step } from './types';

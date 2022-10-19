@@ -19,7 +19,6 @@ import { FieldProps as FieldProps_2 } from '@rjsf/utils';
 import { FieldValidation } from '@rjsf/core';
 import { FieldValidation as FieldValidation_2 } from '@rjsf/utils';
 import { FormProps } from '@rjsf/core';
-import { IChangeEvent } from '@rjsf/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
@@ -27,7 +26,6 @@ import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
-import { ReactElement } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
@@ -133,12 +131,6 @@ export type FieldExtensionOptions<
 };
 
 // @public
-export const LastStepForm: (props: LastStepFormProps) => JSX.Element;
-
-// @public
-export const lastStepFormComponent: (props: LastStepFormProps) => JSX.Element;
-
-// @public
 export type LastStepFormProps = {
   disableButtons: boolean;
   finishButtonLabel?: string;
@@ -185,22 +177,6 @@ export type LogEvent = {
   createdAt: string;
   id: string;
   taskId: string;
-};
-
-// @public
-export const MultistepJsonForm: (props: MultistepJsonFormProps) => JSX.Element;
-
-// @public
-export type MultistepJsonFormProps = {
-  steps: Step[];
-  formData: Record<string, any>;
-  onChange: (e: IChangeEvent) => void;
-  onReset: () => void;
-  onFinish?: () => Promise<void>;
-  widgets?: FormProps<any>['widgets'];
-  fields?: FormProps<any>['fields'];
-  finishButtonLabel?: string;
-  layouts: LayoutOptions[];
 };
 
 // @alpha
@@ -326,6 +302,7 @@ export interface RepoUrlPickerUiOptions {
 // @public
 export type RouterProps = {
   components?: {
+    LastStepFormComponent?: ComponentType<LastStepFormProps>;
     TemplateCardComponent?:
       | ComponentType<{
           template: TemplateEntityV1beta3;
@@ -458,11 +435,6 @@ export interface ScaffolderGetIntegrationsListResponse {
 }
 
 // @public
-export type ScaffolderInputPluginOptionsOptions = {
-  lastStepFormComponent: (props: LastStepFormProps) => ReactElement;
-};
-
-// @public
 export const ScaffolderLayouts: React.ComponentType;
 
 // @public (undocumented)
@@ -492,13 +464,8 @@ export const scaffolderPlugin: BackstagePlugin<
       true
     >;
   },
-  ScaffolderInputPluginOptionsOptions
+  {}
 >;
-
-// @public
-export type ScaffolderPluginOptions = {
-  lastStepFormComponent: (props: LastStepFormProps) => ReactElement;
-};
 
 // @public
 export interface ScaffolderScaffoldOptions {

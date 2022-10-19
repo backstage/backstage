@@ -19,12 +19,20 @@ import { JsonObject } from '@backstage/types';
 
 /**
  * The props for the Step in scaffolder template.
+ *
+ * @public
  */
 export type Step = {
   schema: JsonObject;
   title: string;
 } & Partial<Omit<FormProps<any>, 'schema'>>;
 
+/**
+ * The props for the Last Step in scaffolder template form.
+ * Which represents the summary of the input provided by the end user.
+ *
+ * @public
+ */
 export type LastStepFormProps = {
   disableButtons: boolean;
   finishButtonLabel?: string;
