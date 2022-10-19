@@ -380,7 +380,7 @@ export class UserEntityProvider implements EntityProvider {
       type: 'full',
       entities: userResources.map((entity) => ({
         entity,
-        locationKey: 'hr-user-https://www.hrurl.com/',
+        locationKey: 'hr-user:https://www.hrurl.com',
       })),
     })
 }
