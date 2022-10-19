@@ -1,5 +1,18 @@
 # @backstage/plugin-github-pull-requests-board
 
+## 0.1.4
+
+### Patch Changes
+
+- 719ccbb963: Properly filter on relations instead of the spec, when finding by owner
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/plugin-catalog-react@1.2.0
+  - @backstage/core-components@0.11.2
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/integration@1.3.2
+  - @backstage/theme@0.2.16
+
 ## 0.1.4-next.2
 
 ### Patch Changes

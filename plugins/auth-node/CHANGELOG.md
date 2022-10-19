@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-node
 
+## 0.2.6
+
+### Patch Changes
+
+- f3a3fefb96: Ensure `getIdentity` throws an `AuthenticationError` instead of a `NotAllowed` error when authentication fails
+- Updated dependencies
+  - @backstage/backend-common@0.15.2
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+
 ## 0.2.6-next.2
 
 ### Patch Changes

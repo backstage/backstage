@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  readTaskScheduleDefinitionFromConfig,
+  TaskScheduleDefinition,
+} from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 
 const DEFAULT_CATALOG_PATH = '/catalog-info.yaml';
@@ -27,6 +31,7 @@ export type BitbucketServerEntityProviderConfig = {
     projectKey?: RegExp;
     repoSlug?: RegExp;
   };
+  schedule?: TaskScheduleDefinition;
 };
 
 export function readProviderConfigs(
@@ -60,6 +65,10 @@ function readProviderConfig(
   const projectKeyPattern = config.getOptionalString('filters.projectKey');
   const repoSlugPattern = config.getOptionalString('filters.repoSlug');
 
+  const schedule = config.has('schedule')
+    ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+    : undefined;
+
   return {
     id,
     host,
@@ -68,5 +77,6 @@ function readProviderConfig(
       projectKey: projectKeyPattern ? new RegExp(projectKeyPattern) : undefined,
       repoSlug: repoSlugPattern ? new RegExp(repoSlugPattern) : undefined,
     },
+    schedule,
   };
 }

@@ -1,5 +1,14 @@
 # @backstage/plugin-adr-common
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/plugin-search-common@1.1.0
+  - @backstage/integration@1.3.2
+
 ## 0.2.2-next.2
 
 ### Patch Changes

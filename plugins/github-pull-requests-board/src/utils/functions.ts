@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import {
   Reviews,
   PullRequests,
@@ -58,7 +58,7 @@ export const filterSameUser = (users: Author[]): Author[] => {
 };
 
 export const getElapsedTime = (start: string): string => {
-  return moment(start).fromNow();
+  return DateTime.fromISO(start).toRelative() ?? start;
 };
 
 export const formatPRsByReviewDecision = (

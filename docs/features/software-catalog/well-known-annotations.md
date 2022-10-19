@@ -110,7 +110,7 @@ metadata:
     backstage.io/edit-url: https://github.com/my-org/catalog/edit/master/my-service.jsonnet
 ```
 
-These annotations allow customising links from the catalog pages. The view URL
+These annotations allow customizing links from the catalog pages. The view URL
 should point to the canonical metadata YAML that governs this entity. The edit
 URL should point to the source file for the metadata. In the example above,
 `my-org` generates its catalog data from Jsonnet files in a monorepo, so the
@@ -159,11 +159,11 @@ metadata:
     github.com/project-slug: backstage/backstage
 ```
 
-The value of this annotation is the so-called slug that identifies a project on
+The value of this annotation is the so-called slug that identifies a repository on
 [GitHub](https://github.com) (either the public one, or a private GitHub
 Enterprise installation) that is related to this entity. It is on the format
-`<organization>/<project>`, and is the same as can be seen in the URL location
-bar of the browser when viewing that project.
+`<organization or owner>/<repository>`, and is the same as can be seen in the URL location
+bar of the browser when viewing that repository.
 
 Specifying this annotation will enable GitHub related features in Backstage for
 that entity.

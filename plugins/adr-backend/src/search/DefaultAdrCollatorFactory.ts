@@ -113,7 +113,7 @@ export class DefaultAdrCollatorFactory implements DocumentCollatorFactory {
     this.catalogClient =
       options.catalogClient ??
       new CatalogClient({ discoveryApi: options.discovery });
-    this.logger = options.logger;
+    this.logger = options.logger.child({ documentType: this.type });
     this.parser = options.parser ?? createMadrParser();
     this.reader = options.reader;
     this.scmIntegrations = ScmIntegrations.fromConfig(options.config);

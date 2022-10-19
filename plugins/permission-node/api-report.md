@@ -26,6 +26,7 @@ import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TokenManager } from '@backstage/backend-common';
 import { z } from 'zod';
+import zodToJsonSchema from 'zod-to-json-schema';
 
 // @public
 export type ApplyConditionsRequest = {
@@ -159,6 +160,20 @@ export const makeCreatePermissionRule: <
 >() => <TParams extends PermissionRuleParams = undefined>(
   rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
 ) => PermissionRule<TResource, TQuery, TResourceType, TParams>;
+
+// @public
+export type MetadataResponse = {
+  permissions?: Permission[];
+  rules: MetadataResponseSerializedRule[];
+};
+
+// @public
+export type MetadataResponseSerializedRule = {
+  name: string;
+  description: string;
+  resourceType: string;
+  paramsSchema?: ReturnType<typeof zodToJsonSchema>;
+};
 
 // @public
 export interface PermissionPolicy {

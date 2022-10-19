@@ -178,7 +178,7 @@ When migrating over to React Router v6 stable, you might also see browser consol
 
 ```diff
 - <Navigate key="/" to="catalog" />
-+ <Route path="/" element={<Navigate to="/catalog" />} />
++ <Route path="/" element={<Navigate to="catalog" />} />
 ```
 
 ### `NavLink`

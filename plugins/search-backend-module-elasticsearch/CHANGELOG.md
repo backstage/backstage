@@ -1,5 +1,16 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.0.3
+
+### Patch Changes
+
+- a799972bb1: The search engine has been updated to take advantage of the `pageLimit` property on search queries. If none is provided, the search engine will continue to use its default value of 25 results per page.
+- 8006f8a602: In order to improve the debuggability of the search indexing process, messages logged during indexing are now tagged with a `documentType` whose value corresponds to the `type` being indexed.
+- Updated dependencies
+  - @backstage/plugin-search-common@1.1.0
+  - @backstage/plugin-search-backend-node@1.0.3
+  - @backstage/config@1.0.3
+
 ## 1.0.3-next.2
 
 ### Patch Changes

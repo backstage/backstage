@@ -1,5 +1,187 @@
 # @backstage/plugin-search-react
 
+## 1.2.0
+
+### Minor Changes
+
+- 4ed1fa2480: The search query state now has an optional `pageLimit` property that determines how many results will be requested per page, it defaults to 25.
+
+  Examples:
+  _Basic_
+
+  ```jsx
+  <SearchResults query={{ pageLimit: 30 }}>
+    {results => {
+      // Item rendering logic is omitted
+    }}
+  </SearchResults>
+  ```
+
+  _With context_
+
+  ```jsx
+  <SearchContextProvider initialState={{ pageLimit: 30 }}>
+    <SearchResults>
+      {results => {
+        // Item rendering logic is omitted
+      }}
+    </SearchResults>
+  </SearchContextProvider>
+  ```
+
+- bed5a1dc6e: The `<SearchResultList />` component now accepts an optional property `disableRenderingWithNoResults` to disable rendering when no results are returned.
+  Possibility to provide a custom no results component if needed through the `noResultsComponent` property.
+
+  Examples:
+
+  _Rendering a custom no results component_
+
+  ```jsx
+  <SearchResultList
+    query={query}
+    noResultsComponent={<ListItemText primary="No results were found" />}
+  />
+  ```
+
+  _Disable rendering when there are no results_
+
+  ```jsx
+  <SearchResultList query={query} disableRenderingWithNoResults />
+  ```
+
+- 3de4bd4f19: A `<SearchPagination />` component was created for limiting the number of results shown per search page. Use this new component to give users options to select how many search results they want to display per page. The default options are 10, 25, 50, 100.
+
+  See examples below:
+
+  _Basic_
+
+  ```jsx
+  import React, { useState } from 'react';
+  import { Grid } from '@material-ui/core';
+  import { Page, Header, Content, Lifecycle } from '@backstage/core-components';
+  import {
+    SearchBarBase,
+    SearchPaginationBase,
+    SearchResultList,
+  } from '@backstage/plugin-search-react';
+
+  const SearchPage = () => {
+    const [term, setTerm] = useState('');
+    const [pageLimit, setPageLimit] = useState(25);
+    const [pageCursor, setPageCursor] = useState<string>();
+
+    return (
+      <Page themeId="home">
+        <Header title="Search" subtitle={<Lifecycle alpha />} />
+        <Content>
+          <Grid container direction="row">
+            <Grid item xs={12}>
+              <SearchBarBase value={term} onChange={setTerm} />
+            </Grid>
+            <Grid item xs={12}>
+              <SearchPaginationBase
+                limit={pageLimit}
+                onLimitChange={setPageLimit}
+                cursor={pageCursor}
+                onCursorChange={setPageCursor}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <SearchResultList query={{ term, pageLimit }} />
+            </Grid>
+          </Grid>
+        </Content>
+      </Page>
+    );
+  };
+  ```
+
+  _With context_
+
+  ```jsx
+  import React from 'react';
+  import { Grid } from '@material-ui/core';
+  import { Page, Header, Content, Lifecycle } from '@backstage/core-components';
+  import {
+    SearchBar,
+    SearchResult,
+    SearchPagination,
+    SearchResultListLayout,
+    SearchContextProvider,
+    DefaultResultListItem,
+  } from '@backstage/plugin-search-react';
+
+  const SearchPage = () => (
+    <SearchContextProvider>
+      <Page themeId="home">
+        <Header title="Search" subtitle={<Lifecycle alpha />} />
+        <Content>
+          <Grid container direction="row">
+            <Grid item xs={12}>
+              <SearchBar />
+            </Grid>
+            <Grid item xs={12}>
+              <SearchPagination />
+            </Grid>
+            <Grid item xs={12}>
+              <SearchResult>
+                {({ results }) => (
+                  <SearchResultListLayout
+                    resultItems={results}
+                    renderResultItem={({ document }) => (
+                      <DefaultResultListItem
+                        key={document.location}
+                        result={document}
+                      />
+                    )}
+                  />
+                )}
+              </SearchResult>
+            </Grid>
+          </Grid>
+        </Content>
+      </Page>
+    </SearchContextProvider>
+  );
+  ```
+
+- 6faaa05626: The `<SearchResultGroup />` component now accepts an optional property `disableRenderingWithNoResults` to disable rendering when no results are returned.
+  Possibility to provide a custom no results component if needed through the `noResultsComponent` property.
+
+  Examples:
+
+  _Rendering a custom no results component_
+
+  ```jsx
+  <SearchResultGroup
+    query={query}
+    icon={<DocsIcon />}
+    title="Documentation"
+    noResultsComponent={<ListItemText primary="No results were found" />}
+  />
+  ```
+
+  _Disable rendering when there are no results_
+
+  ```jsx
+  <SearchResultGroup
+    query={query}
+    icon={<DocsIcon />}
+    title="Documentation"
+    disableRenderingWithNoResults
+  />
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.2
+  - @backstage/plugin-search-common@1.1.0
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
 ## 1.2.0-next.2
 
 ### Patch Changes

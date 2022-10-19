@@ -16,11 +16,59 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { createDevApp } from '@backstage/dev-utils';
+import { CatalogEntityPage, EntityLayout } from '@backstage/plugin-catalog';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
 import React from 'react';
 import { ExplorePage, explorePlugin } from '../src';
 import { exampleTools } from '../src/util/examples';
+
+const catalogApi: Partial<CatalogApi> = {
+  async getEntityByRef(): Promise<Entity | undefined> {
+    return {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'example',
+        annotations: {
+          'backstage.io/managed-by-location': 'file:/path/to/catalog-info.yaml',
+        },
+      },
+      spec: {
+        type: 'service',
+        lifecycle: 'production',
+        owner: 'guest',
+      },
+    } as Entity;
+  },
+  async getEntities() {
+    const domainNames = [
+      'playback',
+      'artists',
+      'payments',
+      'analytics',
+      'songs',
+      'devops',
+    ];
+    return {
+      items: domainNames.map(
+        (n, i) =>
+          ({
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Domain',
+            metadata: {
+              name: n,
+              description: `Everything about ${n}`,
+              tags: i % 2 === 0 ? [n] : undefined,
+            },
+            spec: {
+              owner: `${n}@example.com`,
+            },
+          } as Entity),
+      ),
+    };
+  },
+};
 
 createDevApp()
   .registerPlugin(explorePlugin)
@@ -36,37 +84,18 @@ createDevApp()
   .registerApi({
     api: catalogApiRef,
     deps: {},
-    factory: () =>
-      ({
-        async getEntities() {
-          const domainNames = [
-            'playback',
-            'artists',
-            'payments',
-            'analytics',
-            'songs',
-            'devops',
-          ];
-
-          return {
-            items: domainNames.map(
-              (n, i) =>
-                ({
-                  apiVersion: 'backstage.io/v1alpha1',
-                  kind: 'Domain',
-                  metadata: {
-                    name: n,
-                    description: `Everything about ${n}`,
-                    tags: i % 2 === 0 ? [n] : undefined,
-                  },
-                  spec: {
-                    owner: `${n}@example.com`,
-                  },
-                } as Entity),
-            ),
-          };
-        },
-      } as CatalogApi),
+    factory: () => catalogApi as CatalogApi,
   })
   .addPage({ element: <ExplorePage />, title: 'Explore' })
+  .addPage({
+    path: '/catalog/:namespace/:kind/:name',
+    element: <CatalogEntityPage />,
+    children: (
+      <EntityLayout>
+        <EntityLayout.Route path="/" title="Overview">
+          <h1>Some Content Here</h1>
+        </EntityLayout.Route>
+      </EntityLayout>
+    ),
+  })
   .render();
