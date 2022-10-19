@@ -82,9 +82,6 @@ export class TechInsightsClient implements TechInsightsApi {
       {
         method: 'POST',
         body: JSON.stringify(requestBody),
-        headers: {
-          'Content-Type': 'application/json',
-        },
       },
     );
   }
@@ -101,9 +98,6 @@ export class TechInsightsClient implements TechInsightsApi {
     return this.api('/checks/run', {
       method: 'POST',
       body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json',
-      },
     });
   }
 
@@ -111,13 +105,17 @@ export class TechInsightsClient implements TechInsightsApi {
     const url = await this.discoveryApi.getBaseUrl('tech-insights');
     const { token } = await this.identityApi.getCredentials();
 
-    const request = new Request(`${url}${path}`, init);
-    if (!request.headers.has('content-type')) {
-      request.headers.set('content-type', 'application/json');
+    const headers: HeadersInit = new Headers(init?.headers);
+    if (!headers.has('content-type'))
+      headers.set('content-type', 'application/json');
+    if (token && !headers.has('authorization')) {
+      headers.set('authorization', `Bearer ${token}`);
     }
-    if (token && !request.headers.has('authorization')) {
-      request.headers.set('authorization', `Bearer ${token}`);
-    }
+
+    const request = new Request(`${url}${path}`, {
+      ...init,
+      headers,
+    });
 
     return fetch(request).then(async response => {
       if (!response.ok) {
