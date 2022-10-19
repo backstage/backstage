@@ -124,6 +124,7 @@ export interface TaskContext {
  */
 export interface TaskBroker {
   claim(): Promise<TaskContext>;
+  cancel(taskId: string): void;
   dispatch(
     options: TaskBrokerDispatchOptions,
   ): Promise<TaskBrokerDispatchResult>;

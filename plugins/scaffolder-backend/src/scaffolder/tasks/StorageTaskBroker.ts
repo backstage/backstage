@@ -270,4 +270,12 @@ export class StorageTaskBroker implements TaskBroker {
     this.deferredDispatch.resolve();
     this.deferredDispatch = defer();
   }
+
+  async cancel(taskId: string) {
+    await this.storage.completeTask({
+      taskId,
+      status: 'cancelled',
+      eventBody: {},
+    });
+  }
 }

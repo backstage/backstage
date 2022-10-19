@@ -325,4 +325,19 @@ export class ScaffolderClient implements ScaffolderApi {
 
     return await response.json();
   }
+
+  async cancelTask(taskId: string) {
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const url = `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}`;
+
+    const response = await this.fetchApi.fetch(url, {
+      method: 'PUT',
+    });
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return await response.json();
+  }
 }

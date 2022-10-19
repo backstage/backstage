@@ -220,7 +220,7 @@ export class DatabaseTaskStore implements TaskStore {
         .update({
           status: 'processing',
           last_heartbeat_at: this.db.fn.now(),
-          // remove the secrets when moving moving to processing state.
+          // remove the secrets when moving to processing state.
           secrets: null,
         });
 
@@ -287,7 +287,11 @@ export class DatabaseTaskStore implements TaskStore {
     const { taskId, status, eventBody } = options;
 
     let oldStatus: string;
-    if (status === 'failed' || status === 'completed') {
+    if (
+      status === 'failed' ||
+      status === 'completed' ||
+      status === 'cancelled'
+    ) {
       oldStatus = 'processing';
     } else {
       throw new Error(

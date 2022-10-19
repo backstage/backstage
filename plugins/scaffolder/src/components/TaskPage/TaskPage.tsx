@@ -19,11 +19,15 @@ import {
   Content,
   ErrorPage,
   Header,
-  Page,
   LogViewer,
+  Page,
   Progress,
 } from '@backstage/core-components';
-import { useRouteRef, useRouteRefParams } from '@backstage/core-plugin-api';
+import {
+  useApi,
+  useRouteRef,
+  useRouteRefParams,
+} from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import {
   Button,
@@ -52,10 +56,11 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../../routes';
-import { ScaffolderTaskStatus, ScaffolderTaskOutput } from '../../types';
+import { ScaffolderTaskOutput, ScaffolderTaskStatus } from '../../types';
 import { useTaskEventStream } from '../hooks/useEventStream';
 import { TaskErrors } from './TaskErrors';
 import { TaskPageLinks } from './TaskPageLinks';
+import { scaffolderApiRef } from '../../api';
 
 // typings are wrong for this library, so fallback to not parsing types.
 const humanizeDuration = require('humanize-duration');
@@ -244,6 +249,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
   const classes = useStyles();
   const navigate = useNavigate();
   const rootPath = useRouteRef(rootRouteRef);
+  const scaffolderApi = useApi(scaffolderApiRef);
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
   const [userSelectedStepId, setUserSelectedStepId] = useState<
     string | undefined
@@ -290,9 +296,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
   }, [taskStream.stepLogs, currentStepId, loadingText]);
 
   const taskNotFound =
-    taskStream.completed === true &&
-    taskStream.loading === false &&
-    !taskStream.task;
+    taskStream.completed && !taskStream.loading && !taskStream.task;
 
   const { output } = taskStream;
 
@@ -313,6 +317,10 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
         formData: JSON.stringify(formData),
       })}`,
     );
+  };
+
+  const handleCancel = async () => {
+    scaffolderApi.cancelTask(taskId);
   };
 
   return (
@@ -350,6 +358,15 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
                     color="primary"
                   >
                     Start Over
+                  </Button>
+                  <Button
+                    className={classes.button}
+                    onClick={handleCancel}
+                    disabled={completed}
+                    variant="contained"
+                    color="secondary"
+                  >
+                    Cancel
                   </Button>
                 </Paper>
               </Grid>
