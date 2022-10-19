@@ -197,9 +197,11 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
     !!viewTechDocsAnnotation &&
     !!viewTechDoc &&
     viewTechDoc({
-      namespace: template.metadata.namespace || DEFAULT_NAMESPACE,
-      kind: template.kind,
-      name: template.metadata.name,
+      namespace: (
+        template.metadata.namespace || DEFAULT_NAMESPACE
+      ).toLocaleLowerCase('en-US'),
+      kind: template.kind.toLocaleLowerCase('en-US'),
+      name: template.metadata.name.toLocaleLowerCase('en-US'),
     });
 
   const iconResolver = (key?: string): IconComponent =>

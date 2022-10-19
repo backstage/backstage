@@ -395,7 +395,7 @@ describe('<AboutCard />', () => {
 
     expect(getByText('View TechDocs').closest('a')).toHaveAttribute(
       'href',
-      '/docs/default/Component/software',
+      '/docs/default/component/software',
     );
   });
 

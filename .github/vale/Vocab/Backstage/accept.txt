@@ -164,6 +164,7 @@ Lerna
 LocalStack
 lockdown
 lockfile
+lowercased
 lunr
 Luxon
 magiclink
