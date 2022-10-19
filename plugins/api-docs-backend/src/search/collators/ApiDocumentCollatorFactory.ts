@@ -1,23 +1,23 @@
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
+
 import { Config } from '@backstage/config';
 import { Readable } from 'stream';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { parse } from 'yaml'
 
-import {
-  ApiEntity
-} from '@backstage/catalog-model';
+import {SemVer} from 'semver'
 
 import {
   CatalogApi,
   CatalogClient
 } from '@backstage/catalog-client';
 
-import { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types';
 
+import { SUPPORTED_API_SPEC_TYPES, getSpecText } from './utils';
 
-import {
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
 
 
 import { ApiDocument } from './ApiDocument';
@@ -27,30 +27,34 @@ import { ApiDocument } from './ApiDocument';
 export type ApiDocumentCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
   catalogClient?: CatalogApi;
+  batchSize?: number;
+  tokenManager: TokenManager;
 };
-
 
 
 export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
 
+
   // private readonly logger: Logger;
   public readonly type: string = 'api-definition';
   private readonly catalogClient: CatalogApi;
-  
+  private batchSize: number;
+  private tokenManager: TokenManager;
 
   private constructor(options: ApiDocumentCollatorFactoryOptions) {
     const {
-      // batchSize,
       discovery,
-      // locationTemplate,
-      // filter,
       catalogClient,
-      // tokenManager,
+      batchSize,
+      tokenManager,
     } = options;
 
+    this.tokenManager = tokenManager
+    this.batchSize = batchSize || 500;
     this.catalogClient =
       catalogClient || new CatalogClient({ discoveryApi: discovery });
   }
+
 
   static fromConfig(
     _config: Config,
@@ -59,53 +63,54 @@ export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
     return new ApiDocumentCollatorFactory(options);
   }
 
+
   async getCollator() {
     return Readable.from(this.execute());
   }
-  
-  
+
 
   async *execute(): AsyncGenerator<ApiDocument> {
+    const { token } = await this.tokenManager.getToken();
+    let entitiesRetrieved = 0;
+    let moreEntitiesToGet = true;
 
-    const filter: Record<string, string> = {
-      kind: 'api',
-    };
-    
-    const entities = (
-      await this.catalogClient.getEntities(
-        {
-          filter: filter
+
+    while (moreEntitiesToGet) {
+      const entities = (
+        await this.catalogClient.getEntities(
+          {
+            filter: {
+              kind: 'api',
+            },
+            limit: this.batchSize,
+            offset: entitiesRetrieved,
+          },
+          { token }
+        )
+      ).items;
+
+      moreEntitiesToGet = entities.length === this.batchSize;
+      entitiesRetrieved += entities.length;
+
+      for (const entity of entities) {
+        
+        const isSuppportedSpecType = SUPPORTED_API_SPEC_TYPES.includes((entity.spec?.type as string))
+
+        if(!isSuppportedSpecType){
+          continue
         }
-      )
-    ).items;
 
-    for (const entity of entities) {
-      const api = entity as ApiEntity;
-      console.log(api.spec.type)
+        const definition = parse((entity.spec?.definition as string) || '')
+        const version:string = definition?.openapi
 
-      if (api.spec.type == 'graphql'){
-        continue
-      }
-  
 
-      console.log(parse(api.spec.definition))
-      const definition:OpenAPIV3_1.Document = parse(api.spec.definition)
-
-      var indexingString = definition.info.title + "\n"
-      if(definition.paths !== undefined){
-        for (const path in definition.paths) {
-          var path_details = definition.paths[path]
-          indexingString += path_details?.get?.summary + " "
-          indexingString += path + "\n"
+        yield {
+          title: entity.metadata.name,
+          location: `/catalog/default/api/${entity.metadata.name}/definition/`,
+          text: getSpecText(definition, new SemVer(version)),
+          kind: entity.kind,
+          lifecycle: (entity.spec?.lifecycle as string) || '',
         }
-      }
-
-      yield {
-        title: entity.metadata.name,
-        location: `/catalog/default/api/${entity.metadata.name}/definition/`,
-        text: indexingString,
-        kind: entity.kind,
-        lifecycle: (entity.spec?.lifecycle as string) || '',
       }
     }
   }
