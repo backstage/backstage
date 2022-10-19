@@ -429,7 +429,7 @@ homepage:
     - label: STO
       timezone: 'Europe/Stockholm'
     - label: TYO
-      timezone: 'Asia/Tokyo'      
+      timezone: 'Asia/Tokyo'
 pagerduty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
 jenkins:
