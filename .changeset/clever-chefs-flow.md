@@ -2,4 +2,4 @@
 '@backstage/integration': patch
 ---
 
-Handles undefined optional config values without crashing on startup
+Handle undefined optional `username` and `appPassword` config values for bitbucketCloud without crashing on startup
