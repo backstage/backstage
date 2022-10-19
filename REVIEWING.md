@@ -1,6 +1,6 @@
 # Introduction
 
-This file provides pointers for reviewing pull requests. While the main audience are reviewers, this can also be useful if you are contributing to the repository as well.
+This file provides pointers for reviewing pull requests. While the main audience are reviewers, this can also be useful if you are contributing to this repository.
 
 ## Code Style
 
@@ -16,20 +16,20 @@ Be sure to familiarize yourself with our [secure coding practices](./SECURITY.md
 
 ## Release & Versioning Policy
 
-When reviewing pull requests it's important to consider our [versioning policy and release cycle](https://backstage.io/docs/overview/versioning-policy). Generally the most important bit is our [package versioning policy](https://backstage.io/docs/overview/versioning-policy#package-versioning-policy), which describes when and how we can ship breaking changes. We'll dive into how to identify breaking changes in a later section section.
+When reviewing pull requests it's important to consider our [versioning policy and release cycle](https://backstage.io/docs/overview/versioning-policy). Generally the most important bit is our [package versioning policy](https://backstage.io/docs/overview/versioning-policy#package-versioning-policy), which describes when and how we can ship breaking changes. We'll dive into how to identify breaking changes in a different section.
 
 One other thing to keep in mind, especially when merging pull requests, is where in the release cycle we're currently at. In particular you want to avoid merging any large or risky changes towards the end of each release cycle. If there is a change that is ready to be merged, but you want to hold off until the next main line release, then you can label it with the `merge-after-release` label.
 
 ## Changesets
 
-We use changesets to track the changes in all published packages. Changesets both define what should go into the changelog of each package, but also what kind of version bump should be done for the next release.
+We use changesets to track changes in all published packages. Changesets both define what should go into the changelog of each package, but also what kind of version bump should be done for the next release.
 An introduction to changesets can be found in our [contribution guidelines](./CONTRIBUTING.md#creating-changesets).
 
-When reviewing a changeset, the most important things to look for are the bump level, i.e. `major` / `minor` / `patch`, and whether the content is accurate and if it's written in a way that makes sense when reading it in the changelog for each package.
+When reviewing a changeset, the most important things to look for are the bump levels, i.e. `major` / `minor` / `patch`, as well as whether the content is accurate and if it's written in a way that makes sense when reading it in the changelog for each package.
 
 ### Reviewing Changeset Bump Levels
 
-The following table provides a reference for what type of version bump is needed for each individual package. This applies to each individual package separately, it does not matter what the scope of a change is in any other broader scope.
+The following table provides a reference for what type of version bump is needed for each package. This is applied separately to each individual package, it does not matter what the scope of a change is in any other broader context.
 
 | Scope           | Current Package Version | Bump Level |
 | --------------- | ----------------------- | ---------- |
@@ -44,25 +44,25 @@ The only situation where a package that is currently at `0.x` can have a `major`
 
 ### Reviewing Changeset Content
 
-Each changeset should be written in a way that describes the impact of the change for the end user of each package. The changesets end up in the changelog of each package, for example [@backstage/core-plugin-api](./packages/core-plugin-api/CHANGELOG.md). The changelogs are intended to provide both a summary of the new features as well as guidance in the case of breaking changes or deprecations.
+Each changeset should be written in a way that describes the impact of the change for the users of each package. The contents of the changesets will end up in the changelog of each package, for example [@backstage/core-plugin-api](./packages/core-plugin-api/CHANGELOG.md). The changelogs are intended to provide both a summary of the new features as well as guidance in the case of breaking changes or deprecations.
 
 Some things that changeset should NOT contain are:
 
-- Internal architecture details - these are generally not interesting to end users, focus on the impact towards end users instead.
+- Internal architecture details - these are generally not interesting to users, focus on the impact towards users of the package instead.
 - Information related to a different package.
 - A large amount of content, consider for example a separate migration guide instead, either in the package README or [./docs/](./docs/), and then link to that instead.
 - Documentation - changesets can describe new features, but it should not be relied on for documenting them. Documentation should either be placed in [TSDoc](https://tsdoc.org) comments, package README, or [./docs/](./docs/).
 
 ### When is a changeset needed?
 
-In general our changeset feedback bot will take care of informing whether a changeset is needed or not, but there are some edge cases. Whether a changeset is needed depends mostly on what files have been changed, but sometimes also
+In general our changeset feedback bot will take care of informing whether a changeset is needed or not, but there are some edge cases. Whether a changeset is needed depends mostly on what files have been changed, but sometimes also on the kind of change that has been made.
 
 Changes that do NOT need a new changeset:
 
 - Changes to any test, storybook, or other local development files, for example, `MyComponent.test.tsx`, `MyComponent.stories.tsx, `**mocks**/MyMock.ts`, `.eslintrc.js`, `setupTests.ts`, or `api-report.md`. Explained differently, it is only files that affect the published package that need changesets, such as source files and additional resources like `package.json`, `README.md`, `config.d.ts`, etc.
-- When tweaking a change that has not yet been released, you can rely on and potentially modify the existing changeset.
+- When tweaking a change that has not yet been released, you can rely on and potentially modify the existing changeset instead.
 - Changes that do not belong to a published packages, either because it's not a package at all, such as `docs/`, or because the package is private, such as `packages/app`.
-- Changes that do not end up having an effect on the published package can be skipped, such as whitespace fixes or code formatting changes. It is also alright to include a short changeset for these kind of changes too.
+- Changes that do not end up having an effect on the published package, such as whitespace fixes or code formatting changes. Although it's also fine to have a short changeset for these kind of changes too.
 
 ### Changeset Example
 
@@ -70,7 +70,7 @@ Consider the following scenario for a changeset:
 
 A new `EntityList` component has been added to `plugins/catalog-react`.
 
-Below are examples of a good and two bad changesets for that change.
+Below are examples of a good and three bad changesets for that change.
 
 **GOOD**
 
@@ -89,18 +89,17 @@ The `@backstage/plugin-catalog-react` package has reached version `1.x`, which m
 ```md
 ---
 '@backstage/plugin-catalog-react': minor
-'@backstage/plugin-catalog': patch
+'@backstage/plugin-catalog': minor
 ---
 
 Added `EntityList` component.
+
 Fixed a bug in the catalog index page.
 ```
 
 This changeset is too short, it's best to give users an idea of how they can benefit from the new addition.
 
-It also includes changes affecting both the Catalog and Catalog React library. It should be split into two separate changeset for each of the two packages, otherwise we'll end up with redundant and unrelated information in both changelogs.
-
-Lastly, the `@backstage/plugin-catalog-react` package has reached `1.x`, which means that new features should be introduced through a `minor` bump. We'd only use `patch` bumps for minor changes or fixes that do not affect the public API.
+It also includes changes affecting both the Catalog and Catalog React library. It should be split into two separate changesets for each of the two packages, otherwise we'll end up with redundant and unrelated information in both changelogs.
 
 **BAD**
 
@@ -120,9 +119,23 @@ It accepts the following properties:
 - dialog - An optional component that overrides the default details dialog.
 ```
 
-This changeset is getting too detailed. It's not always bad to get this much into the weeds, but keep in mind that changesets are not easy to browse when search for information about specific APIs. It's better to document things like this separately and keep the changeset more lean. Also avoid linking to assets in changesets, keep them text-only.
+This changeset is getting too detailed. It's not always bad to get this much into the weeds, but keep in mind that changesets are not easy to browse when searching for information about specific APIs. It's better to document things like this separately and keep the changeset more lean. Also avoid linking to assets in changesets, keep them text-only.
 
 The change is also marked as a breaking `major` change. This should be changed to `minor` since adding new APIs is never a breaking change.
+
+**BAD**
+
+```md
+---
+'@backstage/plugin-catalog-react': patch
+---
+
+Added a new `EntityList` component that can be used to display detailed information about a list of entities. The `ListView` component was also refactored in order to make it possible to reuse it between the new `EntityList` and `KindList` components.
+```
+
+Assuming that the `ListView` component is not public API, this changeset goes into details that are not interesting to the user of the package. Internal changes do not need to be highlighted in changesets. If an internal refactor is the only change then it's alright to say something short like "Internal refactor to improve code reuse", but otherwise those details should be left out.
+
+The `@backstage/plugin-catalog-react` package has also reached `1.x`, which means that new features should be introduced through a `minor` bump. We'd only use `patch` bumps for minor changes or fixes that do not affect the public API.
 
 ## Breaking Changes
 
@@ -130,7 +143,7 @@ Identifying breaking changes can be quite tricky. You need to look at the change
 
 ### Behavioral Changes
 
-These are changes where the behavior of the code changes, but the public API remains the same. They can be anything from tiny tweaks, like adding a bit of padding to a visual element, to a complete redesign and refactor of an entire plugin.
+These are changes where the behavior of the code changes, but the public API is unchanged or doesn't have any breaking changes. They can be anything from tiny tweaks, like adding a bit of padding to a visual element, to a complete redesign and refactor of an entire plugin.
 
 It's hard to set up exact rules for when a behavioral change is breaking or not. In some cases it's obvious, for example if you remove important functionality of a system, while in other cases it can be very hard to tell. In the end what's important is whether a significant number of users of the package will be negatively impacted by the change. One question that you can ask yourself here is "is it likely that there are users that don't want the new behavior, or will need to change their code to adapt to the new behavior?" If the answer is yes, then it's likely a breaking change. You do also want to keep [xkcd.com/1172](https://xkcd.com/1172/) in mind though.
 
@@ -140,15 +153,31 @@ For tricky behavioral changes you may simply need to let end users provide feedb
 
 ### Public API Changes
 
-Typescript is a huge help when it comes to identifying breaking changes, as well as the API Reports that we generate for all packages. Most of the time it is enough to only look at the API Reports to determine whether a change is breaking or not.
+Typescript is a huge help when it comes to identifying breaking changes, as well as the API Reports that we generate for all packages. Most of the time it is enough to only look at the API Reports to determine whether a change is breaking or not. If you determine that a change is breaking at the TypeScript level, then it is a breaking change.
 
-In this section we will be talking about changed "types", but that refers to any kind of exported symbol from a packages, such as TypeScript types and interfaces, functions, classes, constants, etc.
+In this section we will be talking about changed "types", but by that we mean any kind of exported symbol from a packages, such as TypeScript types aliases or interfaces, functions, classes, constants, etc.
 
-An important distinction to make when looking at changes to an API Report is the direction of a changed type, that is whether it's used as input or output from the user's point of view. In the next two sections we'll dive into the different directions of a type, and how it affects whether a change is breaking or not.
+#### API Reports
+
+We generate API Reports using the [API Extractor](https://api-extractor.com/) tool. These reports are generated for most packages in the Backstage repository, and are stored in the `api-report.md` file of each package. For CLI package we use custom tooling, and instead store the result in `cli-report.md`. Whenever the public API of a package changes, the API Report needs to be updated to reflect the new state of the API. Our CI checks will fail if the API reports are not up to date in a pull request.
+
+Each API report contains a list of all the exported types of each package. As long as the API report does not have any warnings it will contain the full publicly facing API of the package, meaning you do not need to consider any other changes to the package from the point of view of TypeScript API stability.
+
+Exported types can be marked with either `@public`, `@alpha` or `@beta` release tags. It is only the `@public` exports that we consider to be part of the stable API. The `@alpha` and `@beta` exports are considered unstable and can be changed at any time without needing a breaking package versions bump. However, this **ONLY** applies if the package has been configured to use experimental type builds, which looks like this in `package.json`:
+
+```json
+  "build": "backstage-cli package build --experimental-type-build"
+```
+
+If a package does not have this configuration, then all exported types are considered stable, even if they are marked as `@alpha` or `@beta`.
+
+#### Type Contract Direction
+
+An important distinction to make when looking at changes to an API Report is the direction of the contract of a changed type, that is, whether it's used as input or output from the user's point of view. In the next two sections we'll dive into the different directions of a type contract, and how it affects whether a change is breaking or not.
 
 #### Input Types
 
-A input type is one that users need to provide to the package by consumers. The most common form of input type are function, constructor and method parameters.
+A input type is one where a value needs to be provided by users of the package. The most common form of input type are function, constructor, and method parameters.
 
 The following is an example where `MyComponentProps` is an input type:
 
@@ -161,7 +190,7 @@ type MyComponentProps = {
 function MyComponent(props: MyComponentProps): JSX.Element;
 ```
 
-And from the consumer's point of view it would look something like this:
+And from the package user's point of view it would look something like this:
 
 ```tsx
 <MyComponent title="Hello World" size="medium" />
@@ -177,9 +206,9 @@ Another way to think about the rules for evolving input types is that the old ty
 
 #### Output Types
 
-An output type is one that the user receives from the packages. One of the most obvious examples here are the top-level exports from the package itself, but it also includes function return types.
+An output type is one that the user receives from the packages. One of the most obvious examples here are the top-level exports from the package itself, but it also includes for example function return types.
 
-The following is an example where both `useSize` and `Size` are output types:
+The following is an example where both `useBox` and `Box` are output types:
 
 ```ts
 type Box = {
@@ -223,9 +252,9 @@ In this case `Point` is both an input and output type. This means that the only 
 
 There are some cases where I/O types favor either input or output when it comes to API stability. For example, all types used by Utility APIs are I/O types, but the stability of the output is a lot more important than the stability of the input. That is because it's a lot easier for the single producer of the input interface to adapt to changes compared to all consumers of the API that use it as an output type.
 
-#### Identifying the Direction
+#### Identifying the Contract Direction
 
-The only way to identify the direction of a type is to look at the context in which it's being used. In particular this can be tricky when looking at individual type aliases and interfaces, as you need to look at the rest of the package exports to see how the type is being used.
+The only way to identify the contract direction of a type is to look at the context in which it's being used. In particular this can be tricky when looking at individual type aliases and interfaces, as you need to look at the rest of the package exports to see how the type is being used.
 
 One important rule is that the context considered for any type is limited to only the package in which the type is declared. Just because a type is imported in a different package and used as an input type does not make it an input type.
 
@@ -234,7 +263,7 @@ The following rules can be used to identify the direction of a type alias or int
 - If the type is used in an input context, for example function parameter, then it's an input type.
 - If the type is used in an output context, for example function return type, then it's an output type.
 - If the type is referenced by another type, then it inherits the direction of that type, except if referenced through a function callback, in which case the direction is reversed.
-- If the type is used or inherits both input and output context, then it's an I/O type.
+- If the type is used or inherits both input and output contexts, then it's an I/O type.
 - If the type is not referenced anywhere else, then it's an I/O type.
 
 Below is an example of the public API of a package, with type directions assigned to each export:
