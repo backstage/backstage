@@ -69,7 +69,8 @@ describe('<GroupListPicker />', () => {
         <GroupListPicker
           placeholder="Search"
           groupTypes={['org', 'department']}
-          defaultGroup="test"
+          initialGroup="test"
+          onChange={() => {}}
         />
       </ApiProvider>,
     );
@@ -83,6 +84,8 @@ describe('<GroupListPicker />', () => {
         <GroupListPicker
           placeholder="Search"
           groupTypes={['org', 'department']}
+          initialGroup="Group A"
+          onChange={() => {}}
         />
       </ApiProvider>,
     );

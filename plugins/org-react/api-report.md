@@ -5,6 +5,8 @@
 ```ts
 /// <reference types="react" />
 
+import { GroupEntity } from '@backstage/catalog-model';
+
 // @public (undocumented)
 export const GroupListPicker: (props: GroupListPickerProps) => JSX.Element;
 
@@ -12,7 +14,8 @@ export const GroupListPicker: (props: GroupListPickerProps) => JSX.Element;
 export type GroupListPickerProps = {
   placeholder?: string;
   groupTypes?: Array<string>;
-  defaultGroup?: string;
+  initialGroup?: string | undefined;
+  onChange: (value: GroupEntity | undefined) => void;
 };
 
 // (No @packageDocumentation comment for this package)
