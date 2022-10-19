@@ -341,6 +341,7 @@ transpiled
 transpiler
 transpilers
 truthy
+TSDoc
 typeahead
 ui
 unbreak
