@@ -10,6 +10,12 @@ See [STYLE.md](./STYLE.md). In particular, make sure that naming follows establi
 
 Be sure to familiarize yourself with our [secure coding practices](./SECURITY.md#coding-practices).
 
+## Release & Versioning Policy
+
+When reviewing pull requests it's important to consider our [versioning policy and release cycle](https://backstage.io/docs/overview/versioning-policy). Generally the most important bit is our [package versioning policy](https://backstage.io/docs/overview/versioning-policy#package-versioning-policy), which describes when and how we can ship breaking changes. We'll dive into how to identify breaking changes in a later section section.
+
+One other thing to keep in mind, especially when merging pull requests, is where in the release cycle we're currently at. In particular you want to avoid merging any large or risky changes towards the end of each release cycle. If there is a change that is ready to be merged, but you want to hold off until the next main line release, then you can label it with the `merge-after-release` label.
+
 ## Changesets
 
 We use changesets to track the changes in all published packages. Changesets both define what should go into the changelog of each package, but also what kind of version bump should be done for the next release.
@@ -18,6 +24,19 @@ An introduction to changesets can be found in our [contribution guidelines](./CO
 When reviewing a changeset, the most important things to look for are the bump level, i.e. `major` / `minor` / `patch`, and whether the content is accurate and if it's written in a way that makes sense when reading it in the changelog for each package.
 
 ### Reviewing Changeset Bump Levels
+
+The following table provides a reference for what type of version bump is needed for each individual package. This applies to each individual package separately, it does not matter what the scope of a change is in any other broader scope.
+
+| Scope           | Current Package Version | Bump Level |
+| --------------- | ----------------------- | ---------- |
+| Breaking Change | `1.0` and above         | `major`    |
+| New Feature     | `1.0` and above         | `minor`    |
+| Fix             | `1.0` and above         | `patch`    |
+| Breaking Change | `0.x`                   | `minor`    |
+| New Feature     | `0.x`                   | `patch`    |
+| Fix             | `0.x`                   | `patch`    |
+
+The only situation where a package that is currently at `0.x` can have a `major` bump is if all owners and stakeholders of the package agree that the package is ready to be released as `1.0`.
 
 ### Reviewing Changeset Content
 
