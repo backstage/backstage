@@ -4,7 +4,11 @@ This file provides pointers for reviewing pull requests. While the main audience
 
 ## Code Style
 
-See [STYLE.md](./STYLE.md). In particular, make sure that naming follows established conventions within the project and/or package.
+See our code style documented at [STYLE.md](./STYLE.md).
+
+In particular when it comes to naming, make sure that naming follows established conventions within the project and/or package.
+
+When adding new dependencies to packages it is always preferred to use version ranges that are already in use by other packages in the repository. This helps minimize lockfile changes and reduce package duplication, both in our repository as well as other Backstage installations.
 
 ## Secure Coding Practices
 
