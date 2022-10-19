@@ -1,5 +1,38 @@
 # @backstage/plugin-scaffolder
 
+## 1.7.0
+
+### Minor Changes
+
+- f13d5f3f06: Add support for link to TechDocs and other links defined in template entity specification metadata on TemplateCard
+- 05f22193c5: EntityPickers now support flags to control when to include default namespace
+  in result
+
+### Patch Changes
+
+- e4f0a96424: Making the description of the GitLab repoUrl owner field more clearer by focusing it refers to the GitLab namespace.
+- 92e490d6b4: Make the `/next` scaffolder work end to end with the old `TaskPage` view
+- 8220f2fd83: Support custom layouts in dry run editor
+- 1047baa926: Bump to `react-jsonschema-form@v5-beta` for the `NextRouter` under `@alpha` exports
+- 98ae18b68f: Fixed a bug where the `allowed*` values for the `RepoUrlPicker` would be reset on render.
+- 8960d83013: Add support for `allowedOrganizations` and `allowedOwners` to the `AzureRepoPicker`.
+- b681275e69: Ignore .git directories in Template Editor, increase upload limit for dry-runs to 10MB.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/plugin-catalog-react@1.2.0
+  - @backstage/core-components@0.11.2
+  - @backstage/plugin-catalog-common@1.0.7
+  - @backstage/catalog-client@1.1.1
+  - @backstage/plugin-scaffolder-common@1.2.1
+  - @backstage/integration-react@1.1.5
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+  - @backstage/plugin-permission-react@0.4.6
+
 ## 1.7.0-next.2
 
 ### Patch Changes

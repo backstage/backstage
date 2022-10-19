@@ -1,5 +1,41 @@
 # @backstage/plugin-catalog-import
 
+## 0.9.0
+
+### Minor Changes
+
+- b2e6cb6acf: **Breaking**
+  Moved the code search for the existing catalog-info.yaml files to the backend from the frontend. It means it will use the configured GitHub integration's credentials.
+
+  Add the following to your `CatalogBuilder` to have the repo URL ingestion working again.
+
+  ```ts
+  // catalog.ts
+  import { GithubLocationAnalyzer } from '@backstage/plugin-catalog-backend-module-github';
+  ...
+    builder.addLocationAnalyzers(
+      new GithubLocationAnalyzer({
+        discovery: env.discovery,
+        config: env.config,
+      }),
+    );
+  ...
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/plugin-catalog-react@1.2.0
+  - @backstage/core-components@0.11.2
+  - @backstage/plugin-catalog-common@1.0.7
+  - @backstage/catalog-client@1.1.1
+  - @backstage/integration-react@1.1.5
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+
 ## 0.9.0-next.2
 
 ### Minor Changes

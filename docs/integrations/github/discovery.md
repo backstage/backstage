@@ -30,14 +30,14 @@ And then add the entity provider to your catalog builder:
 
 ```diff
   // In packages/backend/src/plugins/catalog.ts
-+ import { GitHubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
++ import { GithubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
 
   export default async function createPlugin(
     env: PluginEnvironment,
   ): Promise<Router> {
     const builder = await CatalogBuilder.create(env);
 +   builder.addEntityProvider(
-+     GitHubEntityProvider.fromConfig(env.config, {
++     GithubEntityProvider.fromConfig(env.config, {
 +       logger: env.logger,
 +       // optional: alternatively, use scheduler with schedule defined in app-config.yaml
 +       schedule: env.scheduler.createScheduledTaskRunner({
