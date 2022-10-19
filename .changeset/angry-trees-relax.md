@@ -7,9 +7,5 @@ Enabling the customization of the last step in the scaffolder template.
 To override the content you have to do the next:
 
 ```typescript jsx
-scaffolderPlugin.__experimentalReconfigure({
-  lastStepFormComponent: (props: LastStepFormProps) => (
-    <YourCustomComponent {...props} />
-  ),
-});
+<TemplatePage LastStepFormComponent={YourCustomComponent}/>
 ```
