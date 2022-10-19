@@ -82,6 +82,9 @@ export class TechInsightsClient implements TechInsightsApi {
       {
         method: 'POST',
         body: JSON.stringify(requestBody),
+        headers: {
+          'content-type': 'application/json',
+        },
       },
     );
   }
@@ -98,6 +101,9 @@ export class TechInsightsClient implements TechInsightsApi {
     return this.api('/checks/run', {
       method: 'POST',
       body: JSON.stringify(requestBody),
+      headers: {
+        'content-type': 'application/json',
+      },
     });
   }
 
