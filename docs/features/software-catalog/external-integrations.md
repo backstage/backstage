@@ -318,7 +318,7 @@ export class UserEntityProvider implements EntityProvider {
     this.slackTeam = options.slackTeam
   }
 
-  async getAllStaff(): Promise<Staff>{
+  async getAllStaff(): Promise<Staff[]>{
     await return axios.get(this.getStaffUrl)
   }
 
