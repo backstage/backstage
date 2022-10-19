@@ -76,17 +76,17 @@ export const homePage = (
        <Grid container spacing={3}>
 
 +       <Grid item xs={12} md={6}>
-+         <BazaarOverviewCard variant={'latest'} limit={4} />
++         <BazaarOverviewCard order='latest'/>
 +       </Grid>
 
-+       <Grid item xs={12} md={6}>
-+         <BazaarOverviewCard variant={'random'} limit={4} />
++       <Grid item xs={12} >
++         <BazaarOverviewCard order='random' fullWidth />
 +       </Grid>
 
         {/* ...other homepage items */}
 ```
 
-Specify how many projects you want through the "limit" props. In the example above 4 cards is specified.
+The property `fullWidth` is optional and can be used to adjust the card to fit a grid with column width 12.
 
 ## How does the Bazaar work?
 
