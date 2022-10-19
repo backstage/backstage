@@ -82,6 +82,7 @@ export const EntityRelationsGraph = (props: {
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';
   renderNode?: DependencyGraphTypes.RenderNodeFunction<EntityNode>;
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
+  curve?: 'curveStepBefore' | 'curveMonotoneX';
 }) => {
   const {
     rootEntityNames,
@@ -97,6 +98,7 @@ export const EntityRelationsGraph = (props: {
     zoom = 'enabled',
     renderNode,
     renderLabel,
+    curve,
   } = props;
 
   const theme = useTheme();
@@ -143,6 +145,7 @@ export const EntityRelationsGraph = (props: {
           labelPosition={DependencyGraphTypes.LabelPosition.RIGHT}
           labelOffset={theme.spacing(1)}
           zoom={zoom}
+          curve={curve}
         />
       )}
     </div>

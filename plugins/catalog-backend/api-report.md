@@ -5,6 +5,11 @@
 ```ts
 /// <reference types="node" />
 
+import { AnalyzeLocationEntityField as AnalyzeLocationEntityField_2 } from '@backstage/plugin-catalog-common';
+import { AnalyzeLocationExistingEntity as AnalyzeLocationExistingEntity_2 } from '@backstage/plugin-catalog-common';
+import { AnalyzeLocationGenerateEntity as AnalyzeLocationGenerateEntity_2 } from '@backstage/plugin-catalog-common';
+import { AnalyzeLocationRequest as AnalyzeLocationRequest_2 } from '@backstage/plugin-catalog-common';
+import { AnalyzeLocationResponse as AnalyzeLocationResponse_2 } from '@backstage/plugin-catalog-common';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
@@ -40,6 +45,7 @@ import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { processingResult } from '@backstage/plugin-catalog-node';
@@ -51,39 +57,25 @@ import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Validators } from '@backstage/catalog-model';
 
-// @public (undocumented)
-export type AnalyzeLocationEntityField = {
-  field: string;
-  state:
-    | 'analysisSuggestedValue'
-    | 'analysisSuggestedNoValue'
-    | 'needsUserInput';
-  value: string | null;
-  description: string;
-};
+// @public @deprecated
+export type AnalyzeLocationEntityField = AnalyzeLocationEntityField_2;
 
-// @public
-export type AnalyzeLocationExistingEntity = {
-  location: LocationSpec;
-  isRegistered: boolean;
-  entity: Entity;
-};
+// @public @deprecated
+export type AnalyzeLocationExistingEntity = AnalyzeLocationExistingEntity_2;
 
-// @public
-export type AnalyzeLocationGenerateEntity = {
-  entity: RecursivePartial<Entity>;
-  fields: AnalyzeLocationEntityField[];
-};
+// @public @deprecated
+export type AnalyzeLocationGenerateEntity = AnalyzeLocationGenerateEntity_2;
+
+// @public @deprecated (undocumented)
+export type AnalyzeLocationRequest = AnalyzeLocationRequest_2;
+
+// @public @deprecated (undocumented)
+export type AnalyzeLocationResponse = AnalyzeLocationResponse_2;
 
 // @public (undocumented)
-export type AnalyzeLocationRequest = {
-  location: LocationSpec;
-};
-
-// @public (undocumented)
-export type AnalyzeLocationResponse = {
-  existingEntityFiles: AnalyzeLocationExistingEntity[];
-  generateEntities: AnalyzeLocationGenerateEntity[];
+export type AnalyzeOptions = {
+  url: string;
+  catalogFilename?: string;
 };
 
 // @public (undocumented)
@@ -133,6 +125,9 @@ export class CatalogBuilder {
   addEntityProvider(
     ...providers: Array<EntityProvider | Array<EntityProvider>>
   ): CatalogBuilder;
+  addLocationAnalyzers(
+    ...analyzers: Array<ScmLocationAnalyzer | Array<ScmLocationAnalyzer>>
+  ): CatalogBuilder;
   // @alpha
   addPermissionRules(
     ...permissionRules: Array<
@@ -177,37 +172,52 @@ export const catalogConditions: Conditions<{
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [annotation: string, value?: string | undefined]
+    {
+      value?: string | undefined;
+      annotation: string;
+    }
   >;
   hasLabel: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [label: string]
+    {
+      label: string;
+    }
   >;
   hasMetadata: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [key: string, value?: string | undefined]
+    {
+      value?: string | undefined;
+      key: string;
+    }
   >;
   hasSpec: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [key: string, value?: string | undefined]
+    {
+      value?: string | undefined;
+      key: string;
+    }
   >;
   isEntityKind: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [kinds: string[]]
+    {
+      kinds: string[];
+    }
   >;
   isEntityOwner: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [claims: string[]]
+    {
+      claims: string[];
+    }
   >;
 }>;
 
@@ -221,8 +231,9 @@ export type CatalogEnvironment = {
 };
 
 // @alpha
-export type CatalogPermissionRule<TParams extends unknown[] = unknown[]> =
-  PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
+export type CatalogPermissionRule<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 // @alpha
 export const catalogPlugin: (options?: undefined) => BackendFeature;
@@ -280,12 +291,14 @@ export class CodeOwnersProcessor implements CatalogProcessor {
 export const createCatalogConditionalDecision: (
   permission: ResourcePermission<'catalog-entity'>,
   conditions: PermissionCriteria<
-    PermissionCondition<'catalog-entity', unknown[]>
+    PermissionCondition<'catalog-entity', PermissionRuleParams>
   >,
 ) => ConditionalPolicyDecision;
 
 // @alpha
-export const createCatalogPermissionRule: <TParams extends unknown[]>(
+export const createCatalogPermissionRule: <
+  TParams extends PermissionRuleParams = undefined,
+>(
   rule: PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>,
 ) => PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
@@ -448,37 +461,52 @@ export const permissionRules: {
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [annotation: string, value?: string | undefined]
+    {
+      value?: string | undefined;
+      annotation: string;
+    }
   >;
   hasLabel: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [label: string]
+    {
+      label: string;
+    }
   >;
   hasMetadata: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [key: string, value?: string | undefined]
+    {
+      value?: string | undefined;
+      key: string;
+    }
   >;
   hasSpec: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [key: string, value?: string | undefined]
+    {
+      value?: string | undefined;
+      key: string;
+    }
   >;
   isEntityKind: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [kinds: string[]]
+    {
+      kinds: string[];
+    }
   >;
   isEntityOwner: PermissionRule<
     Entity,
     EntitiesSearchFilter,
     'catalog-entity',
-    [claims: string[]]
+    {
+      claims: string[];
+    }
   >;
 };
 
@@ -530,6 +558,14 @@ export type PlaceholderResolverResolveUrl = (
 export type ProcessingIntervalFunction = () => number;
 
 export { processingResult };
+
+// @public (undocumented)
+export type ScmLocationAnalyzer = {
+  supports(url: string): boolean;
+  analyze(options: AnalyzeOptions): Promise<{
+    existing: AnalyzeLocationExistingEntity[];
+  }>;
+};
 
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor {

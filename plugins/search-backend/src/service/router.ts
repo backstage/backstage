@@ -173,7 +173,7 @@ export async function createRouter(
       try {
         const resultSet = await engine?.query(query, { token });
 
-        res.send(filterResultSet(toSearchResults(resultSet)));
+        res.json(filterResultSet(toSearchResults(resultSet)));
       } catch (error) {
         if (error.name === 'MissingIndexError') {
           // re-throw and let the default error handler middleware captures it and serializes it with the right response code on the standard form

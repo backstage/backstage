@@ -242,6 +242,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   acyclicer?: 'greedy';
   // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
   align?: Alignment;
+  curve?: 'curveStepBefore' | 'curveMonotoneX';
   defs?: SVGDefsElement | SVGDefsElement[];
   // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
   direction?: Direction;

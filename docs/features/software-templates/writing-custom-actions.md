@@ -123,7 +123,7 @@ will set the available actions that the scaffolder has access to.
 ```ts
 import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
 import { ScmIntegrations } from '@backstage/integration';
-import { createNewFileAction } from './actions/custom';
+import { createNewFileAction } from './scaffolder/actions/custom';
 
 export default async function createPlugin(
   env: PluginEnvironment,

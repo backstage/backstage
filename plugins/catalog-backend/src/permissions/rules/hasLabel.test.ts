@@ -31,7 +31,9 @@ describe('hasLabel permission rule', () => {
               },
             },
           },
-          'backstage.io/testlabel',
+          {
+            label: 'backstage.io/testlabel',
+          },
         ),
       ).toEqual(false);
     });
@@ -46,7 +48,9 @@ describe('hasLabel permission rule', () => {
               name: 'test-component',
             },
           },
-          'backstage.io/testlabel',
+          {
+            label: 'backstage.io/testlabel',
+          },
         ),
       ).toEqual(false);
     });
@@ -65,7 +69,7 @@ describe('hasLabel permission rule', () => {
               },
             },
           },
-          'backstage.io/testlabel',
+          { label: 'backstage.io/testlabel' },
         ),
       ).toEqual(true);
     });
@@ -73,7 +77,11 @@ describe('hasLabel permission rule', () => {
 
   describe('toQuery', () => {
     it('returns an appropriate catalog-backend filter', () => {
-      expect(hasLabel.toQuery('backstage.io/testlabel')).toEqual({
+      expect(
+        hasLabel.toQuery({
+          label: 'backstage.io/testlabel',
+        }),
+      ).toEqual({
         key: 'metadata.labels.backstage.io/testlabel',
       });
     });

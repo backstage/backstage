@@ -12,6 +12,30 @@ import { RouteRef } from '@backstage/core-plugin-api';
 export const GitHubIssuesCard: (props: GitHubIssuesProps) => JSX.Element;
 
 // @public (undocumented)
+export interface GithubIssuesFilters {
+  // (undocumented)
+  assignee?: string;
+  // (undocumented)
+  createdBy?: string;
+  // (undocumented)
+  labels?: string[];
+  // (undocumented)
+  mentioned?: string;
+  // (undocumented)
+  milestone?: string;
+  // (undocumented)
+  states?: ('OPEN' | 'CLOSED')[];
+}
+
+// @public (undocumented)
+export interface GithubIssuesOrdering {
+  // (undocumented)
+  direction?: 'ASC' | 'DESC';
+  // (undocumented)
+  field: 'CREATED_AT' | 'UPDATED_AT' | 'COMMENTS';
+}
+
+// @public (undocumented)
 export const GitHubIssuesPage: (props: GitHubIssuesProps) => JSX.Element;
 
 // @public (undocumented)
@@ -27,7 +51,17 @@ export const gitHubIssuesPlugin: BackstagePlugin<
 export type GitHubIssuesProps = {
   itemsPerPage?: number;
   itemsPerRepo?: number;
+  filterBy?: GithubIssuesFilters;
+  orderBy?: GithubIssuesOrdering;
 };
+
+// @public (undocumented)
+export interface GitubIssuesByRepoOptions {
+  // (undocumented)
+  filterBy?: GithubIssuesFilters;
+  // (undocumented)
+  orderBy?: GithubIssuesOrdering;
+}
 
 // (No @packageDocumentation comment for this package)
 ```

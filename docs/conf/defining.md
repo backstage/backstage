@@ -23,6 +23,17 @@ Each package is searched for a schema at a single point of entry, a top-level
 inlined JSON schema, or a relative path to a schema file. Supported schema file
 formats are `.json` or `.d.ts`.
 
+```jsonc title="package.json"
+{
+  // ...
+  "files": [
+    // ...
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
+}
+```
+
 > When defining a schema file, be sure to include the file in your
 > `package.json` > `"files"` field as well!
 

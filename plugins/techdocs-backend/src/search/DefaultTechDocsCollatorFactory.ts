@@ -90,7 +90,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
     this.discovery = options.discovery;
     this.locationTemplate =
       options.locationTemplate || '/docs/:namespace/:kind/:name/:path';
-    this.logger = options.logger;
+    this.logger = options.logger.child({ documentType: this.type });
     this.catalogClient =
       options.catalogClient ||
       new CatalogClient({ discoveryApi: options.discovery });

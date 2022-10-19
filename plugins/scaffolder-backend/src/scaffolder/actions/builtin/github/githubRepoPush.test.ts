@@ -283,6 +283,7 @@ describe('github:repo:push', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
     });
 
@@ -302,6 +303,7 @@ describe('github:repo:push', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: true,
       requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
     });
 
@@ -321,6 +323,7 @@ describe('github:repo:push', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
     });
   });
@@ -343,6 +346,7 @@ describe('github:repo:push', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
     });
 
@@ -362,6 +366,7 @@ describe('github:repo:push', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
     });
 
@@ -381,11 +386,12 @@ describe('github:repo:push', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
       enforceAdmins: false,
     });
   });
 
-  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requiredStatusCheckContexts', async () => {
+  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requiredStatusCheckContexts and requireBranchesToBeUpToDate', async () => {
     mockOctokit.rest.repos.get.mockResolvedValue({
       data: {
         clone_url: 'https://github.com/clone/url.git',
@@ -403,6 +409,7 @@ describe('github:repo:push', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
     });
 
@@ -411,6 +418,7 @@ describe('github:repo:push', () => {
       input: {
         ...mockContext.input,
         requiredStatusCheckContexts: ['statusCheck'],
+        requireBranchesToBeUpToDate: true,
       },
     });
 
@@ -422,6 +430,28 @@ describe('github:repo:push', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: ['statusCheck'],
+      requireBranchesToBeUpToDate: true,
+      enforceAdmins: true,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        requiredStatusCheckContexts: ['statusCheck'],
+        requireBranchesToBeUpToDate: false,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: ['statusCheck'],
+      requireBranchesToBeUpToDate: false,
       enforceAdmins: true,
     });
 
@@ -430,6 +460,7 @@ describe('github:repo:push', () => {
       input: {
         ...mockContext.input,
         requiredStatusCheckContexts: [],
+        requireBranchesToBeUpToDate: true,
       },
     });
 
@@ -441,6 +472,7 @@ describe('github:repo:push', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
     });
   });

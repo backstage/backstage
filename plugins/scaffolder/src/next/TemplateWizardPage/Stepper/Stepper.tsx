@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useApiHolder } from '@backstage/core-plugin-api';
-import { JsonObject } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 import {
   Stepper as MuiStepper,
   Step as MuiStep,
@@ -22,14 +22,15 @@ import {
   Button,
   makeStyles,
 } from '@material-ui/core';
-import { FieldValidation, withTheme } from '@rjsf/core';
-import { Theme as MuiTheme } from '@rjsf/material-ui';
+import { withTheme } from '@rjsf/core-v5';
+import { ErrorSchema, FieldValidation } from '@rjsf/utils';
 import React, { useMemo, useState } from 'react';
-import { FieldExtensionOptions } from '../../../extensions';
+import { NextFieldExtensionOptions } from '../../../extensions';
 import { TemplateParameterSchema } from '../../../types';
 import { createAsyncValidators } from './createAsyncValidators';
 import { useTemplateSchema } from './useTemplateSchema';
 import { ReviewState } from './ReviewState';
+import validator from '@rjsf/validator-ajv8';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -48,10 +49,14 @@ const useStyles = makeStyles(theme => ({
 
 export interface StepperProps {
   manifest: TemplateParameterSchema;
-  extensions: FieldExtensionOptions<any, any>[];
+  extensions: NextFieldExtensionOptions<any, any>[];
+  onComplete: (values: Record<string, JsonValue>) => Promise<void>;
 }
 
-const Form = withTheme(MuiTheme);
+// TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
+// which is what we're using here as the default types, it needs to depend on @rjsf/core-v5 because
+// of the re-writing we're doing. Once we've migrated, we can import this the exact same as before.
+const Form = withTheme(require('@rjsf/material-ui-v5').Theme);
 
 export const Stepper = (props: StepperProps) => {
   const { steps } = useTemplateSchema(props.manifest);
@@ -92,9 +97,9 @@ export const Stepper = (props: StepperProps) => {
 
     const returnedValidation = await validation(formData);
 
-    const hasErrors = Object.values(returnedValidation).some(i => {
-      return i.__errors.length > 0;
-    });
+    const hasErrors = Object.values(returnedValidation).some(
+      i => i.__errors?.length,
+    );
 
     if (hasErrors) {
       setErrors(returnedValidation);
@@ -103,10 +108,6 @@ export const Stepper = (props: StepperProps) => {
       setActiveStep(prevActiveStep => prevActiveStep + 1);
     }
     setFormState(current => ({ ...current, ...formData }));
-  };
-
-  const handleCreate = () => {
-    // TODO(blam): Create the template in a modal with the ability to view the logs etc.
   };
 
   return (
@@ -124,7 +125,8 @@ export const Stepper = (props: StepperProps) => {
       <div className={styles.formWrapper}>
         {activeStep < steps.length ? (
           <Form
-            extraErrors={errors}
+            validator={validator}
+            extraErrors={errors as unknown as ErrorSchema}
             formData={formState}
             schema={steps[activeStep].schema}
             uiSchema={steps[activeStep].uiSchema}
@@ -156,7 +158,10 @@ export const Stepper = (props: StepperProps) => {
               >
                 Back
               </Button>
-              <Button variant="contained" onClick={handleCreate}>
+              <Button
+                variant="contained"
+                onClick={() => props.onComplete(formState)}
+              >
                 Create
               </Button>
             </div>

@@ -159,6 +159,7 @@ export const MobileSidebarContext = createContext<MobileSidebarContextType>({
 /**
  * A navigation component for mobile screens, which sticks to the bottom.
  *
+ * @remarks
  * It alternates the normal sidebar by grouping the `SidebarItems` based on provided `SidebarGroup`s
  * either rendering them as a link or an overlay menu.
  * If no `SidebarGroup`s are provided the sidebar content is wrapped in an default overlay menu.

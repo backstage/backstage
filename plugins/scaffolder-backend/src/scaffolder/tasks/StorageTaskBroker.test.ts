@@ -126,12 +126,15 @@ describe('StorageTaskBroker', () => {
     const logPromise = new Promise<SerializedTaskEvent[]>(resolve => {
       const observedEvents = new Array<SerializedTaskEvent>();
 
-      broker2.event$({ taskId, after: undefined }).subscribe(({ events }) => {
-        observedEvents.push(...events);
-        if (events.some(e => e.type === 'completion')) {
-          resolve(observedEvents);
-        }
-      });
+      const subscription = broker2
+        .event$({ taskId, after: undefined })
+        .subscribe(({ events }) => {
+          observedEvents.push(...events);
+          if (events.some(e => e.type === 'completion')) {
+            resolve(observedEvents);
+            subscription.unsubscribe();
+          }
+        });
     });
     const task = await broker1.claim();
     await task.emitLog('log 1');
@@ -148,11 +151,12 @@ describe('StorageTaskBroker', () => {
     ]);
 
     const afterLogs = await new Promise<string[]>(resolve => {
-      broker2
+      const subscription = broker2
         .event$({ taskId, after: logs[1].id })
-        .subscribe(({ events }) =>
-          resolve(events.map(e => e.body.message as string)),
-        );
+        .subscribe(({ events }) => {
+          resolve(events.map(e => e.body.message as string));
+          subscription.unsubscribe();
+        });
     });
     expect(afterLogs).toEqual([
       'log 3',

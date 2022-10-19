@@ -17,7 +17,8 @@
 import { InputError, NotFoundError } from '@backstage/errors';
 import { Entity } from '@backstage/catalog-model';
 import { CatalogProcessorResult } from './processor';
-import { EntityRelationSpec, LocationSpec } from './common';
+import { EntityRelationSpec } from './common';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 /**
  * Factory functions for the standard processing result types.

@@ -67,10 +67,9 @@ describe('DefaultPlaylistPermissionPolicy', () => {
       resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
       conditions: {
         anyOf: [
-          playlistConditions.isOwner([
-            'user:default/me',
-            'group:default/owner',
-          ]),
+          playlistConditions.isOwner({
+            owners: ['user:default/me', 'group:default/owner'],
+          }),
           playlistConditions.isPublic(),
         ],
       },
@@ -89,10 +88,9 @@ describe('DefaultPlaylistPermissionPolicy', () => {
       resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
       conditions: {
         anyOf: [
-          playlistConditions.isOwner([
-            'user:default/me',
-            'group:default/owner',
-          ]),
+          playlistConditions.isOwner({
+            owners: ['user:default/me', 'group:default/owner'],
+          }),
           playlistConditions.isPublic(),
         ],
       },
@@ -109,10 +107,9 @@ describe('DefaultPlaylistPermissionPolicy', () => {
       result: AuthorizeResult.CONDITIONAL,
       pluginId: 'playlist',
       resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
-      conditions: playlistConditions.isOwner([
-        'user:default/me',
-        'group:default/owner',
-      ]),
+      conditions: playlistConditions.isOwner({
+        owners: ['user:default/me', 'group:default/owner'],
+      }),
     });
   });
 
@@ -126,10 +123,9 @@ describe('DefaultPlaylistPermissionPolicy', () => {
       result: AuthorizeResult.CONDITIONAL,
       pluginId: 'playlist',
       resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
-      conditions: playlistConditions.isOwner([
-        'user:default/me',
-        'group:default/owner',
-      ]),
+      conditions: playlistConditions.isOwner({
+        owners: ['user:default/me', 'group:default/owner'],
+      }),
     });
   });
 });

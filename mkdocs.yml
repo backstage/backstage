@@ -163,6 +163,7 @@ nav:
           - Bitbucket: 'auth/bitbucket/provider.md'
       - Sign in resolvers: 'auth/identity-resolver.md'
       - OAuth and OpenID Connect: 'auth/oauth.md'
+      - OIDC provider from scratch: 'auth/oidc.md'
       - Contributing New Providers: 'auth/add-auth-provider.md'
       - Service to Service Auth: 'auth/service-to-service-auth.md'
       - Troubleshooting Auth: 'auth/troubleshooting.md'

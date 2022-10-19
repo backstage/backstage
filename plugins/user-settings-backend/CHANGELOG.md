@@ -1,5 +1,32 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.1.1
+
+### Patch Changes
+
+- f3463b176b: Use `Response.status` instead of `.send(number)`
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- 82ac9bcfe5: Fix wrong import statement in `README.md`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-auth-node@0.2.6
+  - @backstage/errors@1.1.2
+  - @backstage/types@1.0.0
+
+## 0.1.1-next.2
+
+### Patch Changes
+
+- f3463b176b: Use `Response.status` instead of `.send(number)`
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/plugin-auth-node@0.2.6-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/types@1.0.0
+
 ## 0.1.1-next.1
 
 ### Patch Changes

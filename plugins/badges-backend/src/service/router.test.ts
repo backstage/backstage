@@ -114,7 +114,7 @@ describe('createRouter', () => {
       );
 
       expect(response.status).toEqual(200);
-      expect(response.text).toEqual(JSON.stringify([badge], null, 2));
+      expect(response.body).toEqual([badge]);
 
       expect(catalog.getEntityByRef).toHaveBeenCalledTimes(1);
       expect(catalog.getEntityByRef).toHaveBeenCalledWith(

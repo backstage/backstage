@@ -114,22 +114,7 @@ const builder = buildTechInsightsContext({
 
 #### Running fact retrievers in a multi-instance installation
 
-Current logic on running scheduled fact retrievers is intended to be executed in a single instance. Running on multi-instane environment there might be some additional data accumulation when multiple fact retrievers would retrieve and persist their facts. To mitigate this it is recommended to mark a single instance to be a specific fact retriever instance. One way to do this is by using environment variables to indicate if the retrievers should be registered. This can be done for example like the code snippet below
-
-```diff
-const builder = buildTechInsightsContext({
-  logger: env.logger,
-  config: env.config,
-  database: env.database,
-  discovery: env.discovery,
-  tokenManager: env.tokenManager,
-  scheduler: env.scheduler,
-- factRetrievers: [],
-+ factRetrievers: process.env.MAIN_FACT_RETRIEVER_INSTANCE ? [myFactRetrieverRegistration] : [],
-});
-```
-
-Where the instance dedicated to handling retrieval of facts would have environment variable `MAIN_FACT_RETRIEVER_INSTANCE` set to true.
+The Tech Insights plugin utilizes the `PluginTaskScheduler` for scheduling tasks and coordinating the task invocation across instances. See [the PluginTaskScheduler documentation](https://backstage.io/docs/reference/backend-tasks.plugintaskscheduler) for more information.
 
 ### Creating Fact Retrievers
 

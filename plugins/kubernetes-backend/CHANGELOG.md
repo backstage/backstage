@@ -1,5 +1,33 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.7.3
+
+### Patch Changes
+
+- de676888bc: Added missing cluster locator configuration schema entries, for the catalog and local proxy types
+- d4a8c683be: kubernetes service locator now take request context parameters
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-auth-node@0.2.6
+  - @backstage/catalog-client@1.1.1
+  - @backstage/plugin-kubernetes-common@0.4.3
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+
+## 0.7.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/plugin-auth-node@0.2.6-next.2
+  - @backstage/catalog-client@1.1.1-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/plugin-kubernetes-common@0.4.3-next.2
+
 ## 0.7.3-next.1
 
 ### Patch Changes
