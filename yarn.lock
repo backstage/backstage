@@ -10271,11 +10271,11 @@ __metadata:
   linkType: hard
 
 "@keyv/redis@npm:^2.2.3":
-  version: 2.3.8
-  resolution: "@keyv/redis@npm:2.3.8"
+  version: 2.5.2
+  resolution: "@keyv/redis@npm:2.5.2"
   dependencies:
-    ioredis: ^5.1.0
-  checksum: 7927d870094161db5bf90677008f6a584235162a0981f875a8616d244d2ba1da525858f656f434aea2a923fb39c5ce0cf88fd9720061e5f025c9db59146e6f48
+    ioredis: ^5.2.3
+  checksum: 2439e5097c6d4bf14e316b7a19d532287d43c5860f0614569f125a3c0a0a8c322610ed26b86b941b9aa9243ebf1e265c1d3f99a43da42d2150d02fc8fd2d94dd
   languageName: node
   linkType: hard
 
@@ -13771,13 +13771,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/json-buffer@npm:~3.0.0":
-  version: 3.0.0
-  resolution: "@types/json-buffer@npm:3.0.0"
-  checksum: 6b0a371dd603f0eec9d00874574bae195382570e832560dadf2193ee0d1062b8e0694bbae9798bc758632361c227b1e3b19e3bd914043b498640470a2da38b77
-  languageName: node
-  linkType: hard
-
 "@types/json-schema-merge-allof@npm:^0.6.0":
   version: 0.6.1
   resolution: "@types/json-schema-merge-allof@npm:0.6.1"
@@ -13827,11 +13820,11 @@ __metadata:
   linkType: hard
 
 "@types/keyv@npm:*":
-  version: 3.1.1
-  resolution: "@types/keyv@npm:3.1.1"
+  version: 3.1.4
+  resolution: "@types/keyv@npm:3.1.4"
   dependencies:
     "@types/node": "*"
-  checksum: ee0d098693bf4af44be756eed02daf95f5d0fd4b5b02da952a5952e08842baddf6a986a9ea5f9e460729782f1a0a47848c892ad96ea188b66a363feb49a1536f
+  checksum: e009a2bfb50e90ca9b7c6e8f648f8464067271fd99116f881073fa6fa76dc8d0133181dd65e6614d5fb1220d671d67b0124aef7d97dc02d7e342ab143a47779d
   languageName: node
   linkType: hard
 
@@ -18482,16 +18475,6 @@ __metadata:
   version: 0.0.3
   resolution: "component-inherit@npm:0.0.3"
   checksum: 9f5b872a6b3a396cf827d471d07db5626d7918202ab6c1d59f2b849bab18ce4fe61d9b2b7b6ae5cd547b81f27a3de5ae678f438bfe4fadce8f26a1526ba86a74
-  languageName: node
-  linkType: hard
-
-"compress-brotli@npm:^1.3.8":
-  version: 1.3.8
-  resolution: "compress-brotli@npm:1.3.8"
-  dependencies:
-    "@types/json-buffer": ~3.0.0
-    json-buffer: ~3.0.1
-  checksum: de7589d692d40eb362f6c91070b5e51bc10b05a89eabb4a7c76c1aa21b625756f8c101c6999e4df0c4dc6199c5ca2e1353573bfdcca5615810f27485394162a5
   languageName: node
   linkType: hard
 
@@ -25131,9 +25114,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ioredis@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "ioredis@npm:5.1.0"
+"ioredis@npm:^5.2.3":
+  version: 5.2.3
+  resolution: "ioredis@npm:5.2.3"
   dependencies:
     "@ioredis/commands": ^1.1.1
     cluster-key-slot: ^1.1.0
@@ -25144,7 +25127,7 @@ __metadata:
     redis-errors: ^1.2.0
     redis-parser: ^3.0.0
     standard-as-callback: ^2.1.0
-  checksum: 7b1c137836ee136a634926df4ec68cc2393772a32ecda8e30dd305d7b9182af02d600456e661f96a6ceada17560ce7b6458948fd09b8adc277a1d287325777dd
+  checksum: 2cb7f0f4217e6774accad3620af1b7114722721c1d1824be2c9f0c2a77ab9629f2e0848d18b1a7208bc37796ae1207cb3e0898fce61900cfe797da0382724ad1
   languageName: node
   linkType: hard
 
@@ -27038,7 +27021,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-buffer@npm:3.0.1, json-buffer@npm:^3.0.1, json-buffer@npm:~3.0.1":
+"json-buffer@npm:3.0.1, json-buffer@npm:^3.0.1":
   version: 3.0.1
   resolution: "json-buffer@npm:3.0.1"
   checksum: 9026b03edc2847eefa2e37646c579300a1f3a4586cfb62bf857832b60c852042d0d6ae55d1afb8926163fa54c2b01d83ae24705f34990348bdac6273a29d4581
@@ -27091,15 +27074,15 @@ __metadata:
   linkType: hard
 
 "json-schema-library@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "json-schema-library@npm:7.0.0"
+  version: 7.2.0
+  resolution: "json-schema-library@npm:7.2.0"
   dependencies:
     deepmerge: ^4.2.2
     fast-deep-equal: ^3.1.3
     gson-pointer: ^4.1.1
     gson-query: ^5.1.0
     valid-url: ^1.0.9
-  checksum: 4e6b129b836c84d8080d46a02fef4886ffec8114182ea015a80536f6b8609c5a11354a5e2a98a15b0734bfb25ec60b6a0f1e7230172396d026c679cb385b8f21
+  checksum: 6c5086899c2f89c1b488145f1067f00a5901729e1d13513bb48551971d45be5dc60810fa4bcec65345e4d1520aa08743348dabdf59f74122b5b95c840b4edfda
   languageName: node
   linkType: hard
 
@@ -27553,12 +27536,11 @@ __metadata:
   linkType: hard
 
 "keyv@npm:^4.0.0, keyv@npm:^4.0.3":
-  version: 4.3.2
-  resolution: "keyv@npm:4.3.2"
+  version: 4.5.0
+  resolution: "keyv@npm:4.5.0"
   dependencies:
-    compress-brotli: ^1.3.8
     json-buffer: 3.0.1
-  checksum: 237952f5faa2ed08da36677d7a3faae48b7e3c305264698cbf4480443f293a2f0c6c63c1d05f5cd4a842ee864dbb395745e6636fecd07489565776a22de7b8d6
+  checksum: d294873cf88ec8f691e5edeb7b4b884f886c5f021a01902a0e243c362449db2b55419d7fb7187d059add747b7398321e39e44d391b65f94935174ce13452714d
   languageName: node
   linkType: hard
 
