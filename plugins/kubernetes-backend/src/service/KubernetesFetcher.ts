@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CoreV1Api, topPods } from '@kubernetes/client-node';
+import { topPods } from '@kubernetes/client-node';
 import lodash, { Dictionary } from 'lodash';
 import { Logger } from 'winston';
 import {
@@ -29,13 +29,9 @@ import {
   FetchResponse,
   KubernetesFetchError,
   KubernetesErrorTypes,
+  PodStatusFetchResponse,
 } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
-import { PodStatus } from '@kubernetes/client-node/dist/top';
-
-export interface Clients {
-  core: CoreV1Api;
-}
 
 export interface KubernetesClientBasedFetcherOptions {
   kubernetesClientProvider: KubernetesClientProvider;
@@ -66,6 +62,8 @@ const statusCodeToErrorType = (statusCode: number): KubernetesErrorTypes => {
       return 'BAD_REQUEST';
     case 401:
       return 'UNAUTHORIZED_ERROR';
+    case 404:
+      return 'NOT_FOUND';
     case 500:
       return 'SYSTEM_ERROR';
     default:
@@ -104,10 +102,10 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
   }
 
-  fetchPodMetricsByNamespace(
+  fetchPodMetricsByNamespaces(
     clusterDetails: ClusterDetails,
-    namespace: string,
-  ): Promise<PodStatus[]> {
+    namespaces: Set<string>,
+  ): Promise<FetchResponseWrapper> {
     const metricsClient =
       this.kubernetesClientProvider.getMetricsClient(clusterDetails);
     const coreApi =
@@ -115,7 +113,18 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
         clusterDetails,
       );
 
-    return topPods(coreApi, metricsClient, namespace);
+    const fetchResults = Array.from(namespaces).map(ns =>
+      topPods(coreApi, metricsClient, ns)
+        .then(r => {
+          return {
+            type: 'podstatus',
+            resources: r,
+          } as PodStatusFetchResponse;
+        })
+        .catch(this.captureKubernetesErrorsRethrowOthers.bind(this)),
+    );
+
+    return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
   }
 
   private captureKubernetesErrorsRethrowOthers(e: any): KubernetesFetchError {

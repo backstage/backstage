@@ -24,6 +24,12 @@ export const registerComponentRouteRef = createExternalRouteRef({
   optional: true,
 });
 
+export const viewTechDocRouteRef = createExternalRouteRef({
+  id: 'view-techdoc',
+  optional: true,
+  params: ['namespace', 'kind', 'name'],
+});
+
 export const rootRouteRef = createRouteRef({
   id: 'scaffolder',
 });
@@ -56,6 +62,12 @@ export const nextSelectedTemplateRouteRef = createSubRouteRef({
 export const scaffolderTaskRouteRef = createSubRouteRef({
   id: 'scaffolder/task',
   parent: rootRouteRef,
+  path: '/tasks/:taskId',
+});
+
+export const nextScaffolderTaskRouteRef = createSubRouteRef({
+  id: 'scaffolder/next/task',
+  parent: nextRouteRef,
   path: '/tasks/:taskId',
 });
 

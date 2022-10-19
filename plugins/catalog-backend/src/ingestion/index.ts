@@ -21,4 +21,6 @@ export type {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
   LocationAnalyzer,
+  ScmLocationAnalyzer,
+  AnalyzeOptions,
 } from './types';

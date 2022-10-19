@@ -47,6 +47,11 @@ const requiredStatusCheckContexts = {
     type: 'string',
   },
 };
+const requireBranchesToBeUpToDate = {
+  title: 'Require Branches To Be Up To Date?',
+  description: `Require branches to be up to date before merging. The default value is 'true'`,
+  type: 'boolean',
+};
 const repoVisibility = {
   title: 'Repository Visibility',
   type: 'string',
@@ -81,6 +86,11 @@ const allowRebaseMerge = {
   title: 'Allow Rebase Merges',
   type: 'boolean',
   description: `Allow rebase merges. The default value is 'true'`,
+};
+const allowAutoMerge = {
+  title: 'Allow Auto Merges',
+  type: 'boolean',
+  description: `Allow individual PRs to merge automatically when all merge requirements are met. The default value is 'false'`,
 };
 const collaborators = {
   title: 'Collaborators',
@@ -153,6 +163,7 @@ export { access };
 export { allowMergeCommit };
 export { allowRebaseMerge };
 export { allowSquashMerge };
+export { allowAutoMerge };
 export { collaborators };
 export { defaultBranch };
 export { deleteBranchOnMerge };
@@ -167,6 +178,7 @@ export { repoUrl };
 export { repoVisibility };
 export { requireCodeOwnerReviews };
 export { requiredStatusCheckContexts };
+export { requireBranchesToBeUpToDate };
 export { sourcePath };
 export { token };
 export { topics };

@@ -148,6 +148,15 @@ export const CatalogTable: {
           }
         | undefined,
     ): TableColumn<CatalogTableRow>;
+    createLabelColumn(
+      key: string,
+      options?:
+        | {
+            title?: string | undefined;
+            defaultValue?: string | undefined;
+          }
+        | undefined,
+    ): TableColumn<CatalogTableRow>;
   }>;
 };
 
@@ -157,6 +166,8 @@ export interface CatalogTableProps {
   actions?: TableProps<CatalogTableRow>['actions'];
   // (undocumented)
   columns?: TableColumn<CatalogTableRow>[];
+  // (undocumented)
+  emptyContent?: ReactNode;
   // (undocumented)
   subtitle?: string;
   // (undocumented)
@@ -186,6 +197,8 @@ export interface DefaultCatalogPageProps {
   actions?: TableProps<CatalogTableRow>['actions'];
   // (undocumented)
   columns?: TableColumn<CatalogTableRow>[];
+  // (undocumented)
+  emptyContent?: ReactNode;
   // (undocumented)
   initialKind?: string;
   // (undocumented)

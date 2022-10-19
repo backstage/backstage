@@ -14,9 +14,57 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { RecursivePartial } from '../util/RecursivePartial';
-import { LocationSpec } from '@backstage/plugin-catalog-node';
+import {
+  AnalyzeLocationRequest as NonDeprecatedAnalyzeLocationRequest,
+  AnalyzeLocationResponse as NonDeprecatedAnalyzeLocationResponse,
+  AnalyzeLocationExistingEntity as NonDeprecatedAnalyzeLocationExistingEntity,
+  AnalyzeLocationGenerateEntity as NonDeprecatedAnalyzeLocationGenerateEntity,
+  AnalyzeLocationEntityField as NonDeprecatedAnalyzeLocationEntityField,
+} from '@backstage/plugin-catalog-common';
+
+/**
+ * @public
+ * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
+ */
+export type AnalyzeLocationRequest = NonDeprecatedAnalyzeLocationRequest;
+/**
+ * @public
+ * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
+ */
+export type AnalyzeLocationResponse = NonDeprecatedAnalyzeLocationResponse;
+
+/**
+ * If the folder pointed to already contained catalog info yaml files, they are
+ * read and emitted like this so that the frontend can inform the user that it
+ * located them and can make sure to register them as well if they weren't
+ * already
+ * @public
+ * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
+ */
+export type AnalyzeLocationExistingEntity =
+  NonDeprecatedAnalyzeLocationExistingEntity;
+/**
+ * This is some form of representation of what the analyzer could deduce.
+ * We should probably have a chat about how this can best be conveyed to
+ * the frontend. It'll probably contain a (possibly incomplete) entity, plus
+ * enough info for the frontend to know what form data to show to the user
+ * for overriding/completing the info.
+ * @public
+ * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
+ */
+export type AnalyzeLocationGenerateEntity =
+  NonDeprecatedAnalyzeLocationGenerateEntity;
+
+/**
+ *
+ * This is where I get really vague. Something like this perhaps? Or it could be
+ * something like a json-schema that contains enough info for the frontend to
+ * be able to present a form and explanations
+ * @public
+ * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
+ */
+export type AnalyzeLocationEntityField =
+  NonDeprecatedAnalyzeLocationEntityField;
 
 /** @public */
 export type LocationAnalyzer = {
@@ -30,71 +78,19 @@ export type LocationAnalyzer = {
     location: AnalyzeLocationRequest,
   ): Promise<AnalyzeLocationResponse>;
 };
+/** @public */
+export type AnalyzeOptions = {
+  url: string;
+  catalogFilename?: string;
+};
 
 /** @public */
-export type AnalyzeLocationRequest = {
-  location: LocationSpec;
-};
-
-/** @public */
-export type AnalyzeLocationResponse = {
-  existingEntityFiles: AnalyzeLocationExistingEntity[];
-  generateEntities: AnalyzeLocationGenerateEntity[];
-};
-
-/**
- * If the folder pointed to already contained catalog info yaml files, they are
- * read and emitted like this so that the frontend can inform the user that it
- * located them and can make sure to register them as well if they weren't
- * already
- * @public
- */
-export type AnalyzeLocationExistingEntity = {
-  location: LocationSpec;
-  isRegistered: boolean;
-  entity: Entity;
-};
-
-/**
- * This is some form of representation of what the analyzer could deduce.
- * We should probably have a chat about how this can best be conveyed to
- * the frontend. It'll probably contain a (possibly incomplete) entity, plus
- * enough info for the frontend to know what form data to show to the user
- * for overriding/completing the info.
- * @public
- */
-export type AnalyzeLocationGenerateEntity = {
-  // Some form of partial representation of the entity
-  entity: RecursivePartial<Entity>;
-  // Lists the suggestions that the user may want to override
-  fields: AnalyzeLocationEntityField[];
-};
-
-// This is where I get really vague. Something like this perhaps? Or it could be
-// something like a json-schema that contains enough info for the frontend to
-// be able to present a form and explanations
-/** @public */
-export type AnalyzeLocationEntityField = {
-  /**
-   * e.g. "spec.owner"? The frontend needs to know how to "inject" the field into the
-   * entity again if the user wants to change it
-   */
-  field: string;
-
-  /** The outcome of the analysis for this particular field */
-  state:
-    | 'analysisSuggestedValue'
-    | 'analysisSuggestedNoValue'
-    | 'needsUserInput';
-
-  // If the analysis did suggest a value, this is where it would be. Not sure if we want
-  // to limit this to strings or if we want it to be any JsonValue
-  value: string | null;
-  /**
-   * A text to show to the user to inform about the choices made. Like, it could say
-   * "Found a CODEOWNERS file that covers this target, so we suggest leaving this
-   * field empty; which would currently make it owned by X" where X is taken from the
-   * codeowners file.
-   */
-  description: string;
+export type ScmLocationAnalyzer = {
+  /** The method that decides if this analyzer can work with the provided url */
+  supports(url: string): boolean;
+  /** This function can return an array of already existing entities */
+  analyze(options: AnalyzeOptions): Promise<{
+    /** Existing entities in the analyzed location */
+    existing: AnalyzeLocationExistingEntity[];
+  }>;
 };

@@ -314,13 +314,18 @@ export interface OAuthHandlers {
     response: OAuthResponse;
     refreshToken?: string;
   }>;
-  logout?(): Promise<void>;
+  logout?(req: OAuthLogoutRequest): Promise<void>;
   refresh?(req: OAuthRefreshRequest): Promise<{
     response: OAuthResponse;
     refreshToken?: string;
   }>;
   start(req: OAuthStartRequest): Promise<OAuthStartResponse>;
 }
+
+// @public (undocumented)
+export type OAuthLogoutRequest = express.Request<{}> & {
+  refreshToken: string;
+};
 
 // @public (undocumented)
 export type OAuthProviderInfo = {

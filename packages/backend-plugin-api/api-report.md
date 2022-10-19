@@ -71,13 +71,9 @@ export const cacheServiceRef: ServiceRef<PluginCacheManager, 'plugin'>;
 // @public (undocumented)
 export const configServiceRef: ServiceRef<Config, 'root'>;
 
-// @public (undocumented)
+// @public
 export function createBackendModule<
-  TOptions extends
-    | {
-        [name: string]: unknown;
-      }
-    | undefined = undefined,
+  TOptions extends object | undefined = undefined,
 >(
   config: BackendModuleConfig<TOptions>,
 ): undefined extends TOptions
@@ -86,14 +82,11 @@ export function createBackendModule<
 
 // @public (undocumented)
 export function createBackendPlugin<
-  TOptions extends
-    | {
-        [name: string]: unknown;
-      }
-    | undefined = undefined,
->(
-  config: BackendPluginConfig<TOptions>,
-): undefined extends TOptions
+  TOptions extends object | undefined = undefined,
+>(config: {
+  id: string;
+  register(reg: BackendRegistrationPoints, options: TOptions): void;
+}): undefined extends TOptions
   ? (options?: TOptions) => BackendFeature
   : (options: TOptions) => BackendFeature;
 
@@ -110,11 +103,7 @@ export function createServiceFactory<
   TDeps extends {
     [name in string]: ServiceRef<unknown>;
   },
-  TOpts extends
-    | {
-        [name in string]: unknown;
-      }
-    | undefined = undefined,
+  TOpts extends object | undefined = undefined,
 >(config: {
   service: ServiceRef<TService, TScope>;
   deps: TDeps;

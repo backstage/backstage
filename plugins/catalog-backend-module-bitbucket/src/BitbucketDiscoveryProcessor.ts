@@ -41,7 +41,10 @@ import {
 const DEFAULT_BRANCH = 'master';
 const DEFAULT_CATALOG_LOCATION = '/catalog-info.yaml';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Please migrate to `@backstage/plugin-catalog-backend-module-bitbucket-cloud` or `@backstage/plugin-catalog-backend-module-bitbucket-server` instead.
+ */
 export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly parser: BitbucketRepositoryParser;
@@ -70,6 +73,9 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
     this.integrations = options.integrations;
     this.parser = options.parser || defaultRepositoryParser;
     this.logger = options.logger;
+    this.logger.warn(
+      'Please migrate to `@backstage/plugin-catalog-backend-module-bitbucket-cloud` or `@backstage/plugin-catalog-backend-module-bitbucket-server` instead.',
+    );
   }
 
   getProcessorName(): string {

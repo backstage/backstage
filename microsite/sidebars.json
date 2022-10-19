@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.7.0",
       "releases/v1.6.0",
       "releases/v1.5.0",
       "releases/v1.4.0",
@@ -97,6 +98,7 @@
           "features/software-templates/builtin-actions",
           "features/software-templates/writing-custom-actions",
           "features/software-templates/writing-custom-field-extensions",
+          "features/software-templates/writing-custom-step-layouts",
           "features/software-templates/migrating-from-v1beta2-to-v1beta3"
         ]
       },
@@ -225,6 +227,7 @@
       "plugins/composability",
       "plugins/customization",
       "plugins/analytics",
+      "plugins/feature-flags",
       {
         "type": "subcategory",
         "label": "Backends and APIs",
@@ -277,7 +280,9 @@
       },
       "auth/identity-resolver",
       "auth/oauth",
+      "auth/oidc",
       "auth/add-auth-provider",
+      "auth/service-to-service-auth",
       "auth/troubleshooting",
       "auth/glossary"
     ],
@@ -334,7 +339,6 @@
       "tutorials/configuring-plugin-databases",
       "tutorials/switching-sqlite-postgres",
       "tutorials/using-backstage-proxy-within-plugin",
-      "tutorials/backend-to-backend-auth",
       "tutorials/yarn-migration"
     ],
     "Architecture Decision Records (ADRs)": [

@@ -119,7 +119,7 @@ export const WithError = () => {
   );
 };
 
-export const WithNoResults = () => {
+export const WithDefaultNoResultsComponent = () => {
   const [query] = useState<Partial<SearchQuery>>({
     types: ['techdocs'],
   });
@@ -127,6 +127,21 @@ export const WithNoResults = () => {
   return (
     <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
       <SearchResultList query={query} />
+    </TestApiProvider>
+  );
+};
+
+export const WithCustomNoResultsComponent = () => {
+  const [query] = useState<Partial<SearchQuery>>({
+    types: ['techdocs'],
+  });
+
+  return (
+    <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
+      <SearchResultList
+        query={query}
+        noResultsComponent={<ListItemText primary="No results were found" />}
+      />
     </TestApiProvider>
   );
 };

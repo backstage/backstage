@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.75",
+  "version": "0.2.76",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -19,6 +19,7 @@
     "@backstage/plugin-apache-airflow": "workspace:^",
     "@backstage/plugin-api-docs": "workspace:^",
     "@backstage/plugin-azure-devops": "workspace:^",
+    "@backstage/plugin-azure-sites": "workspace:^",
     "@backstage/plugin-badges": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-graph": "workspace:^",
@@ -67,6 +68,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
     "@octokit/rest": "^19.0.3",
+    "@oriflame/backstage-plugin-score-card": "^0.5.1",
     "@roadiehq/backstage-plugin-buildkite": "^2.0.8",
     "@roadiehq/backstage-plugin-github-insights": "^2.0.5",
     "@roadiehq/backstage-plugin-github-pull-requests": "^2.2.7",
@@ -82,7 +84,6 @@
   },
   "devDependencies": {
     "@backstage/test-utils": "workspace:^",
-    "@rjsf/core": "^3.2.1",
     "@testing-library/cypress": "^8.0.2",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",

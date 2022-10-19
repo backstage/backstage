@@ -1,5 +1,33 @@
 # @backstage/errors
 
+## 1.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+
+## 1.1.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+
+## 1.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+
+## 1.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+
 ## 1.1.1
 
 ### Patch Changes

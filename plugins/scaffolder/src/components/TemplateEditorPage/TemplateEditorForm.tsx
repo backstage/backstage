@@ -207,7 +207,7 @@ export function TemplateEditorFormDirectoryEditorDryRun(
     'setErrorText' | 'fieldExtensions' | 'layouts'
   >,
 ) {
-  const { setErrorText, fieldExtensions = [] } = props;
+  const { setErrorText, fieldExtensions = [], layouts } = props;
   const dryRun = useDryRun();
 
   const directoryEditor = useDirectoryEditor();
@@ -246,6 +246,7 @@ export function TemplateEditorFormDirectoryEditorDryRun(
       content={content}
       data={data}
       onUpdate={setData}
+      layouts={layouts}
     />
   );
 }

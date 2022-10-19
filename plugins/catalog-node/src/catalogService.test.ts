@@ -37,7 +37,7 @@ describe('catalogServiceRef', () => {
     });
 
     const testModule = createBackendModule({
-      moduleId: 'test.module',
+      moduleId: 'test',
       pluginId: 'test',
       register(env) {
         env.registerInit({

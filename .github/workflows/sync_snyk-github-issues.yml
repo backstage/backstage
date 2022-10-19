@@ -13,6 +13,9 @@ jobs:
       matrix:
         node-version: [14.x]
 
+    env:
+      NODE_OPTIONS: --max-old-space-size=4096
+
     steps:
       - uses: actions/checkout@v3
 
@@ -22,7 +25,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.5
+        uses: backstage/actions/yarn-install@v0.5.6
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 

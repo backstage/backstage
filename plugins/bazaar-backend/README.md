@@ -15,7 +15,7 @@ yarn add --cwd packages/backend @backstage/plugin-bazaar-backend
 
 You'll need to add the plugin to the router in your `backend` package. You can do this by creating a file called `packages/backend/src/plugins/bazaar.ts`
 
-```tsx
+```typescript
 import { PluginEnvironment } from '../types';
 import { createRouter } from '@backstage/plugin-bazaar-backend';
 import { Router } from 'express';
@@ -27,6 +27,7 @@ export default async function createPlugin(
     logger: env.logger,
     config: env.config,
     database: env.database,
+    identity: env.identity,
   });
 }
 ```

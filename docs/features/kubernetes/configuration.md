@@ -62,7 +62,7 @@ This is an array used to determine where to retrieve cluster configuration from.
 Valid cluster locator methods are:
 
 - [`catalog`](#catalog)
-- [`localKubectlProxy`](#localKubectlProxy)
+- [`localKubectlProxy`](#localkubectlproxy)
 - [`config`](#config)
 - [`gke`](#gke)
 - [custom `KubernetesClustersSupplier`](#custom-kubernetesclusterssupplier)
@@ -101,14 +101,14 @@ array. Users will see this value in the Software Catalog Kubernetes plugin.
 This determines how the Kubernetes client authenticates with the Kubernetes
 cluster. Valid values are:
 
-| Value                  | Description                                                                                                                                                                                                                           |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `serviceAccount`       | This will use a Kubernetes [service account](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/) to access the Kubernetes API. When this is used the `serviceAccountToken` field should also be set.     |
-| `google`               | This will use a user's Google auth token from the [Google auth plugin](https://backstage.io/docs/auth/) to access the Kubernetes API.                                                                                                 |
-| `aws`                  | This will use AWS credentials to access resources in EKS clusters                                                                                                                                                                     |
-| `googleServiceAccount` | This will use the Google Cloud service account credentials to access resources in clusters                                                                                                                                            |
-| `azure`                | This will use [Azure Identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) to access resources in clusters                                                                   |
-| `oidc`                 | This will use [Oidc Tokens](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens) to authenticate to the Kubernetes API. When this is used the `oidcTokenProvider` field should also be set. |
+| Value                  | Description                                                                                                                                                                                                                                                                                                                               |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `serviceAccount`       | This will use a Kubernetes [service account](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/) to access the Kubernetes API. When this is used the `serviceAccountToken` field should also be set.                                                                                                         |
+| `google`               | This will use a user's Google auth token from the [Google auth plugin](https://backstage.io/docs/auth/) to access the Kubernetes API.                                                                                                                                                                                                     |
+| `aws`                  | This will use AWS credentials to access resources in EKS clusters                                                                                                                                                                                                                                                                         |
+| `googleServiceAccount` | This will use the Google Cloud service account credentials to access resources in clusters                                                                                                                                                                                                                                                |
+| `azure`                | This will use [Azure Identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) to access resources in clusters                                                                                                                                                                       |
+| `oidc`                 | This will use [Oidc Tokens](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens) to authenticate to the Kubernetes API. When this is used the `oidcTokenProvider` field should also be set. Please note the cluster must support OIDC, at the time of writing AKS clusters do not support OIDC. |
 
 Check the [Kubernetes Authentication][4] section for additional explanation.
 
@@ -159,7 +159,12 @@ auth:
         audience: ${AUTH_OKTA_AUDIENCE}
 ```
 
-The following values are supported out-of-the-box by the frontend: `google`, `microsoft`, `okta`, `onelogin`.
+The following values are supported out-of-the-box by the frontend: `google`, `microsoft`,
+`okta`, `onelogin`.
+
+Take note that `oidcTokenProvider` is just the issuer for the token, you can use any
+of these with an OIDC enabled cluster, like using `microsoft` as the issuer for a EKS
+cluster.
 
 ##### `clusters.\*.dashboardUrl` (optional)
 
@@ -413,6 +418,7 @@ rules:
       - ingresses
       - statefulsets
       - limitranges
+      - daemonsets
     verbs:
       - get
       - list

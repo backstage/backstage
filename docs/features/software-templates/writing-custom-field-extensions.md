@@ -81,8 +81,7 @@ import {
   scaffolderPlugin,
   createScaffolderFieldExtension,
 } from '@backstage/plugin-scaffolder';
-import { MyCustomExtension } from './MyCustomExtension';
-import { myCustomValidation } from './validation';
+import { MyCustomExtension, myCustomValidation } from './MyCustomExtension';
 
 export const MyCustomFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({

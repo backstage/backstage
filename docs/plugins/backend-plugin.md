@@ -13,10 +13,10 @@ A new, bare-bones backend plugin package can be created by issuing the following
 command in your Backstage repository root:
 
 ```sh
-yarn create-plugin --backend
+yarn new --select backend-plugin
 ```
 
-Please also see the `--help` flag for the `create-plugin` command for some
+Please also see the `--help` flag for the `new` command for some
 further options that are available, notably the `--scope` and `--no-private`
 flags that control naming and publishing of the newly created package. Your repo
 root `package.json` will probably also have some default values already set up

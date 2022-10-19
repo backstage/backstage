@@ -165,6 +165,7 @@ export type SearchContextState = {
   term: string;
   types: string[];
   filters: JsonObject;
+  pageLimit?: number;
   pageCursor?: string;
 };
 
@@ -174,6 +175,7 @@ export type SearchContextValue = {
   setTerm: React_2.Dispatch<React_2.SetStateAction<string>>;
   setTypes: React_2.Dispatch<React_2.SetStateAction<string[]>>;
   setFilters: React_2.Dispatch<React_2.SetStateAction<JsonObject>>;
+  setPageLimit: React_2.Dispatch<React_2.SetStateAction<number | undefined>>;
   setPageCursor: React_2.Dispatch<React_2.SetStateAction<string | undefined>>;
   fetchNextPage?: React_2.DispatchWithoutAction;
   fetchPreviousPage?: React_2.DispatchWithoutAction;
@@ -210,10 +212,58 @@ export type SearchFilterWrapperProps = SearchFilterComponentProps & {
 };
 
 // @public
+export const SearchPagination: (props: SearchPaginationProps) => JSX.Element;
+
+// @public
+export const SearchPaginationBase: (
+  props: SearchPaginationBaseProps,
+) => JSX.Element;
+
+// @public
+export type SearchPaginationBaseProps = {
+  className?: string;
+  total?: number;
+  cursor?: string;
+  onCursorChange?: (pageCursor: string) => void;
+  limit?: number;
+  limitLabel?: ReactNode;
+  limitText?: SearchPaginationLimitText;
+  limitOptions?: SearchPaginationLimitOption[];
+  onLimitChange?: (value: number) => void;
+};
+
+// @public
+export type SearchPaginationLimitOption<
+  Current extends number = 101,
+  Accumulator extends number[] = [],
+> = Accumulator['length'] extends Current
+  ? Accumulator[number]
+  : SearchPaginationLimitOption<
+      Current,
+      [...Accumulator, Accumulator['length']]
+    >;
+
+// @public
+export type SearchPaginationLimitText = (params: {
+  from: number;
+  to: number;
+  page: number;
+  count: number;
+}) => ReactNode;
+
+// @public
+export type SearchPaginationProps = Omit<
+  SearchPaginationBaseProps,
+  'pageLimit' | 'onPageLimitChange' | 'pageCursor' | 'onPageCursorChange'
+>;
+
+// @public
 export const SearchResult: (props: SearchResultProps) => JSX.Element;
 
 // @public
-export const SearchResultApi: (props: SearchResultApiProps) => JSX.Element;
+export const SearchResultApi: (
+  props: SearchResultApiProps,
+) => JSX.Element | null;
 
 // @public
 export type SearchResultApiProps = SearchResultContextProps & {
@@ -226,11 +276,11 @@ export const SearchResultComponent: (props: SearchResultProps) => JSX.Element;
 // @public
 export const SearchResultContext: (
   props: SearchResultContextProps,
-) => JSX.Element;
+) => JSX.Element | null;
 
 // @public
 export type SearchResultContextProps = {
-  children: (state: AsyncState<SearchResultSet>) => JSX.Element;
+  children: (state: AsyncState<SearchResultSet>) => JSX.Element | null;
 };
 
 // @public
@@ -269,13 +319,22 @@ export type SearchResultGroupLayoutProps<FilterOption> = ListProps & {
   link?: ReactNode;
   linkProps?: Partial<LinkProps>;
   filterOptions?: FilterOption[];
-  renderFilterOption?: (filterOption: FilterOption) => JSX.Element;
+  renderFilterOption?: (
+    value: FilterOption,
+    index: number,
+    array: FilterOption[],
+  ) => JSX.Element | null;
   filterFields?: string[];
   renderFilterField?: (key: string) => JSX.Element | null;
   resultItems?: SearchResult_2[];
-  renderResultItem?: (resultItem: SearchResult_2) => JSX.Element;
+  renderResultItem?: (
+    value: SearchResult_2,
+    index: number,
+    array: SearchResult_2[],
+  ) => JSX.Element | null;
   error?: Error;
   loading?: boolean;
+  noResultsComponent?: ReactNode;
 };
 
 // @public
@@ -284,6 +343,7 @@ export type SearchResultGroupProps<FilterOption> = Omit<
   'loading' | 'error' | 'resultItems' | 'filterFields'
 > & {
   query: Partial<SearchQuery>;
+  disableRenderingWithNoResults?: boolean;
 };
 
 // @public
@@ -317,9 +377,14 @@ export const SearchResultListLayout: (
 // @public
 export type SearchResultListLayoutProps = ListProps & {
   resultItems?: SearchResult_2[];
-  renderResultItem?: (resultItem: SearchResult_2) => JSX.Element;
+  renderResultItem?: (
+    value: SearchResult_2,
+    index: number,
+    array: SearchResult_2[],
+  ) => JSX.Element | null;
   error?: Error;
   loading?: boolean;
+  noResultsComponent?: ReactNode;
 };
 
 // @public
@@ -328,6 +393,7 @@ export type SearchResultListProps = Omit<
   'loading' | 'error' | 'resultItems'
 > & {
   query: Partial<SearchQuery>;
+  disableRenderingWithNoResults?: boolean;
 };
 
 // @public (undocumented)

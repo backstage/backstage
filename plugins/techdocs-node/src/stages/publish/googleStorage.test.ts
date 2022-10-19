@@ -219,13 +219,13 @@ describe('GoogleGCSPublish', () => {
     },
   };
 
-  beforeAll(() => {
+  beforeEach(() => {
     mockFs({
       [directory]: files,
     });
   });
 
-  afterAll(() => {
+  afterEach(() => {
     mockFs.restore();
   });
 

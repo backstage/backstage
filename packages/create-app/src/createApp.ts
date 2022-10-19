@@ -28,7 +28,11 @@ import {
   createTemporaryAppFolderTask,
   moveAppTask,
   templatingTask,
+  initGitRepository,
+  readGitConfig,
 } from './lib/tasks';
+
+const DEFAULT_BRANCH = 'master';
 
 export default async (opts: OptionValues): Promise<void> => {
   /* eslint-disable-next-line no-restricted-syntax */
@@ -73,6 +77,8 @@ export default async (opts: OptionValues): Promise<void> => {
   Task.log('Creating the app...');
 
   try {
+    const gitConfig = await readGitConfig();
+
     if (opts.path) {
       // Template directly to specified path
 
@@ -80,7 +86,10 @@ export default async (opts: OptionValues): Promise<void> => {
       await checkPathExistsTask(appDir);
 
       Task.section('Preparing files');
-      await templatingTask(templateDir, opts.path, answers);
+      await templatingTask(templateDir, opts.path, {
+        ...answers,
+        defaultBranch: gitConfig?.defaultBranch ?? DEFAULT_BRANCH,
+      });
     } else {
       // Template to temporary location, and then move files
 
@@ -91,10 +100,18 @@ export default async (opts: OptionValues): Promise<void> => {
       await createTemporaryAppFolderTask(tempDir);
 
       Task.section('Preparing files');
-      await templatingTask(templateDir, tempDir, answers);
+      await templatingTask(templateDir, tempDir, {
+        ...answers,
+        defaultBranch: gitConfig?.defaultBranch ?? DEFAULT_BRANCH,
+      });
 
       Task.section('Moving to final location');
       await moveAppTask(tempDir, appDir, answers.name);
+    }
+
+    if (gitConfig?.name && gitConfig?.email) {
+      Task.section('Initializing git repository');
+      await initGitRepository(appDir);
     }
 
     if (!opts.skipInstall) {

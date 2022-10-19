@@ -15,7 +15,11 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
+import {
+  PluginTaskScheduler,
+  TaskInvocationDefinition,
+  TaskRunner,
+} from '@backstage/backend-tasks';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
@@ -69,6 +73,75 @@ describe('BitbucketCloudEntityProvider', () => {
     const providers = BitbucketCloudEntityProvider.fromConfig(config, {
       logger,
       schedule,
+    });
+
+    expect(providers).toHaveLength(1);
+    expect(providers[0].getProviderName()).toEqual(
+      'bitbucketCloud-provider:default',
+    );
+  });
+
+  it('fail without schedule and scheduler', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          bitbucketCloud: {
+            workspace: 'test-ws',
+          },
+        },
+      },
+    });
+
+    expect(() =>
+      BitbucketCloudEntityProvider.fromConfig(config, {
+        logger,
+      }),
+    ).toThrow('Either schedule or scheduler must be provided.');
+  });
+
+  it('fail with scheduler but no schedule config', () => {
+    const scheduler = jest.fn() as unknown as PluginTaskScheduler;
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          bitbucketCloud: {
+            workspace: 'test-ws',
+          },
+        },
+      },
+    });
+
+    expect(() =>
+      BitbucketCloudEntityProvider.fromConfig(config, {
+        logger,
+        scheduler,
+      }),
+    ).toThrow(
+      'No schedule provided neither via code nor config for bitbucketCloud-provider:default.',
+    );
+  });
+
+  it('single simple provider config with schedule in config', () => {
+    const scheduler = {
+      createScheduledTaskRunner: (_: any) => jest.fn(),
+    } as unknown as PluginTaskScheduler;
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          bitbucketCloud: {
+            workspace: 'test-ws',
+            schedule: {
+              frequency: 'PT30M',
+              timeout: 'PT3M',
+            },
+          },
+        },
+      },
+    });
+
+    const providers = BitbucketCloudEntityProvider.fromConfig(config, {
+      logger,
+      scheduler,
     });
 
     expect(providers).toHaveLength(1);

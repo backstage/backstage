@@ -27,6 +27,7 @@ import {
   CustomResource,
   CustomResourcesByEntity,
   KubernetesObjectsByEntity,
+  ServiceLocatorRequestContext,
 } from '../types/types';
 import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
 import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
@@ -40,6 +41,7 @@ import {
   PodFetchResponse,
   KubernetesRequestAuth,
   CustomResourceMatcher,
+  PodStatusFetchResponse,
 } from '@backstage/plugin-kubernetes-common';
 import {
   ContainerStatus,
@@ -162,19 +164,22 @@ const toClientSafeContainer = (
 };
 
 const toClientSafePodMetrics = (
-  podMetrics: PodStatus[][],
+  podMetrics: PodStatusFetchResponse[],
 ): ClientPodStatus[] => {
-  return podMetrics.flat().map((pd: PodStatus): ClientPodStatus => {
-    return {
-      pod: pd.Pod,
-      memory: toClientSafeResource(pd.Memory),
-      cpu: toClientSafeResource(pd.CPU),
-      containers: pd.Containers.map(toClientSafeContainer),
-    };
-  });
+  return podMetrics
+    .map(r => r.resources)
+    .flat()
+    .map((pd: PodStatus): ClientPodStatus => {
+      return {
+        pod: pd.Pod,
+        memory: toClientSafeResource(pd.Memory),
+        cpu: toClientSafeResource(pd.CPU),
+        containers: pd.Containers.map(toClientSafeContainer),
+      };
+    });
 };
 
-type responseWithMetrics = [FetchResponseWrapper, PodStatus[][]];
+type responseWithMetrics = [FetchResponseWrapper, PodStatusFetchResponse[]];
 
 export class KubernetesFanOutHandler {
   private readonly logger: Logger;
@@ -231,7 +236,10 @@ export class KubernetesFanOutHandler {
       entity.metadata?.name;
 
     const clusterDetailsDecoratedForAuth: ClusterDetails[] =
-      await this.decorateClusterDetailsWithAuth(entity, auth);
+      await this.decorateClusterDetailsWithAuth(entity, auth, {
+        objectTypesToFetch: objectTypesToFetch,
+        customResources: customResources ?? [],
+      });
 
     this.logger.info(
       `entity.metadata.name=${entityName} clusterDetails=[${clusterDetailsDecoratedForAuth
@@ -274,9 +282,10 @@ export class KubernetesFanOutHandler {
   private async decorateClusterDetailsWithAuth(
     entity: Entity,
     auth: KubernetesRequestAuth,
+    requestContext: ServiceLocatorRequestContext,
   ) {
     const clusterDetails: ClusterDetails[] = await (
-      await this.serviceLocator.getClustersByEntity(entity)
+      await this.serviceLocator.getClustersByEntity(entity, requestContext)
     ).clusters;
 
     // Execute all of these async actions simultaneously/without blocking sequentially as no common object is modified by them
@@ -345,11 +354,17 @@ export class KubernetesFanOutHandler {
         .filter(isString),
     );
 
-    const podMetrics = Array.from(namespaces).map(ns =>
-      this.fetcher.fetchPodMetricsByNamespace(clusterDetails, ns),
+    if (namespaces.size === 0) {
+      return [result, []];
+    }
+
+    const podMetrics = await this.fetcher.fetchPodMetricsByNamespaces(
+      clusterDetails,
+      namespaces,
     );
 
-    return Promise.all([result, Promise.all(podMetrics)]);
+    result.errors.push(...podMetrics.errors);
+    return [result, podMetrics.responses as PodStatusFetchResponse[]];
   }
 
   private getAuthTranslator(provider: string): KubernetesAuthTranslator {

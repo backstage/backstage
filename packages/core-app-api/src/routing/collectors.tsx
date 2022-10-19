@@ -178,7 +178,7 @@ export const routingV2Collector = createCollector(
     }
 
     if (mountPoint) {
-      if (!ctx?.gatherPath) {
+      if (ctx?.gatherPath === undefined) {
         throw new Error(
           `Routable extension "${stringifyNode(
             node,

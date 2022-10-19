@@ -331,4 +331,42 @@ describe('CatalogTable component', () => {
 
     expect(getByText('Should be rendered')).toBeInTheDocument();
   });
+
+  it('should render the label column with customised title and value as specified', async () => {
+    const columns = [
+      CatalogTable.columns.createNameColumn({ defaultKind: 'API' }),
+      CatalogTable.columns.createLabelColumn('category', { title: 'Category' }),
+    ];
+    const entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'API',
+      metadata: {
+        name: 'APIWithLabel',
+        labels: { category: 'generic' },
+      },
+    };
+    const expectedColumns = ['Name', 'Category', 'Actions'];
+
+    const { getAllByRole, getByText } = await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider value={{ entities: [entity] }}>
+          <CatalogTable columns={columns} />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    const columnHeader = getAllByRole('button').filter(
+      c => c.tagName === 'SPAN',
+    );
+    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    expect(columnHeaderLabels).toEqual(expectedColumns);
+
+    const labelCellValue = getByText('generic');
+    expect(labelCellValue).toBeInTheDocument();
+  });
 });

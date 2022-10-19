@@ -112,6 +112,37 @@ describe('createRouter', () => {
       });
     });
 
+    it('should accept per page value under or equal to 100', async () => {
+      const response = await request(app).get(`/query?pageLimit=30`);
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toMatchObject({
+        results: [],
+      });
+    });
+
+    it('should reject per page value over 100', async () => {
+      const response = await request(app).get(`/query?pageLimit=200`);
+
+      expect(response.status).toEqual(400);
+      expect(response.body).toMatchObject({
+        error: {
+          message: /The page limit "200" is greater than "100"/i,
+        },
+      });
+    });
+
+    it('should reject a non number per page value', async () => {
+      const response = await request(app).get(`/query?pageLimit=twohundred`);
+
+      expect(response.status).toEqual(400);
+      expect(response.body).toMatchObject({
+        error: {
+          message: /The page limit "twohundred" is not a number"/i,
+        },
+      });
+    });
+
     it('removes backend-only properties from search documents', async () => {
       mockSearchEngine.query.mockResolvedValue({
         results: [
@@ -146,6 +177,25 @@ describe('createRouter', () => {
           },
         ],
       });
+    });
+
+    it('is less restrictive with unknown keys on query endpoint', async () => {
+      const queryString =
+        'term=test&%5BdocType%5D%5B0%5D=Service&filters%5BdocType%5D%5B0%5D=filter1&unknownKey1%5B2%5D=unknownValue1&unknownKey1%5B3%5D=unknownValue2&unknownKey2=unknownValue1&pageCursor';
+      const response = await request(app).get(`/query?${queryString}`);
+      const firstArg: Object = {
+        docType: ['Service'],
+        filters: { docType: ['filter1'] },
+        pageCursor: '',
+        term: 'test',
+        unknownKey1: ['unknownValue1', 'unknownValue2'],
+        unknownKey2: 'unknownValue1',
+      };
+      const secondArg = {
+        token: undefined,
+      };
+      expect(response.status).toEqual(200);
+      expect(mockSearchEngine.query).toHaveBeenCalledWith(firstArg, secondArg);
     });
 
     describe('search result filtering', () => {

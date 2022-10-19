@@ -16,7 +16,8 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
-import { EntityRelationSpec, LocationSpec } from './common';
+import { EntityRelationSpec } from './common';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 /**
  * @public

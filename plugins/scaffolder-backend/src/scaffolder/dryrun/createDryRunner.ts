@@ -25,7 +25,7 @@ import {
   SerializedFile,
   serializeDirectoryContents,
 } from '../../lib/files';
-import { TemplateFilter } from '../../lib/templating';
+import { TemplateFilter, TemplateGlobal } from '../../lib/templating';
 import { createTemplateAction, TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
 import { TaskSecrets } from '../tasks/types';
@@ -52,6 +52,7 @@ export type TemplateTesterCreateOptions = {
   actionRegistry: TemplateActionRegistry;
   workingDirectory: string;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 };
 
 /**

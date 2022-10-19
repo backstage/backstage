@@ -1,5 +1,49 @@
 # @backstage/plugin-techdocs-react
 
+## 1.0.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/core-components@0.11.2
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/config@1.0.3
+  - @backstage/version-bridge@1.0.1
+
+## 1.0.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/core-components@0.11.2-next.2
+  - @backstage/core-plugin-api@1.0.7-next.2
+  - @backstage/version-bridge@1.0.1
+
+## 1.0.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.2-next.1
+  - @backstage/core-plugin-api@1.0.7-next.1
+  - @backstage/catalog-model@1.1.2-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/version-bridge@1.0.1
+
+## 1.0.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.0
+  - @backstage/core-components@0.11.2-next.0
+  - @backstage/config@1.0.3-next.0
+  - @backstage/core-plugin-api@1.0.7-next.0
+  - @backstage/version-bridge@1.0.1
+
 ## 1.0.4
 
 ### Patch Changes

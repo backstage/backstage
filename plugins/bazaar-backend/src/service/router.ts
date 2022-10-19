@@ -19,6 +19,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { DatabaseHandler } from './DatabaseHandler';
 
 /** @public */
@@ -26,13 +27,14 @@ export interface RouterOptions {
   logger: Logger;
   database: PluginDatabaseManager;
   config: Config;
+  identity: IdentityApi;
 }
 
 /** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, database } = options;
+  const { logger, database, identity } = options;
 
   const dbHandler = await DatabaseHandler.create({ database });
 
@@ -53,7 +55,14 @@ export async function createRouter(
 
   router.put('/projects/:id/member/:userId', async (request, response) => {
     const { id, userId } = request.params;
-    await dbHandler.addMember(parseInt(id, 10), userId, request.body?.picture);
+    const user = await identity.getIdentity({ request: request });
+
+    await dbHandler.addMember(
+      parseInt(id, 10),
+      userId,
+      user?.identity.userEntityRef,
+      request.body?.picture,
+    );
 
     response.json({ status: 'ok' });
   });
@@ -83,8 +92,14 @@ export async function createRouter(
     response.json({ status: 'ok', data: data });
   });
 
-  router.get('/projects', async (_, response) => {
-    const data = await dbHandler.getProjects();
+  router.get('/projects', async (request, response) => {
+    const limit = request.query.limit?.toString();
+    const order = request.query.order?.toString();
+
+    const data = await dbHandler.getProjects(
+      limit ? parseInt(limit, 10) : undefined,
+      order,
+    );
 
     response.json({ status: 'ok', data: data });
   });

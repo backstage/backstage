@@ -1,5 +1,78 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.4.0
+
+### Minor Changes
+
+- 7ced1b4076: Add optional `catalogClient` argument to `createRoute` parameters
+
+### Patch Changes
+
+- 8006f8a602: In order to improve the debuggability of the search indexing process, messages logged during indexing are now tagged with a `documentType` whose value corresponds to the `type` being indexed.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-catalog-common@1.0.7
+  - @backstage/plugin-techdocs-node@1.4.1
+  - @backstage/plugin-permission-common@0.7.0
+  - @backstage/catalog-client@1.1.1
+  - @backstage/plugin-search-common@1.1.0
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+
+## 1.4.0-next.2
+
+### Minor Changes
+
+- 7ced1b4076: Add optional `catalogClient` argument to `createRoute` parameters
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.0.7-next.2
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/plugin-permission-common@0.7.0-next.2
+  - @backstage/plugin-techdocs-node@1.4.1-next.2
+  - @backstage/plugin-search-common@1.1.0-next.2
+  - @backstage/catalog-client@1.1.1-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/integration@1.3.2-next.2
+
+## 1.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.1.1-next.1
+  - @backstage/backend-common@0.15.2-next.1
+  - @backstage/plugin-search-common@1.1.0-next.1
+  - @backstage/catalog-model@1.1.2-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/integration@1.3.2-next.1
+  - @backstage/plugin-catalog-common@1.0.7-next.1
+  - @backstage/plugin-permission-common@0.6.5-next.1
+  - @backstage/plugin-techdocs-node@1.4.1-next.1
+
+## 1.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.0
+  - @backstage/plugin-techdocs-node@1.4.1-next.0
+  - @backstage/catalog-client@1.1.1-next.0
+  - @backstage/backend-common@0.15.2-next.0
+  - @backstage/config@1.0.3-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/integration@1.3.2-next.0
+  - @backstage/plugin-catalog-common@1.0.7-next.0
+  - @backstage/plugin-permission-common@0.6.5-next.0
+  - @backstage/plugin-search-common@1.0.2-next.0
+
 ## 1.3.0
 
 ### Minor Changes

@@ -113,6 +113,7 @@ describe('publish:github', () => {
       allow_squash_merge: true,
       allow_merge_commit: true,
       allow_rebase_merge: true,
+      allow_auto_merge: false,
       visibility: 'private',
     });
 
@@ -132,6 +133,7 @@ describe('publish:github', () => {
       allow_squash_merge: true,
       allow_merge_commit: true,
       allow_rebase_merge: true,
+      allow_auto_merge: false,
       visibility: 'public',
     });
 
@@ -152,6 +154,7 @@ describe('publish:github', () => {
       allow_squash_merge: true,
       allow_merge_commit: true,
       allow_rebase_merge: true,
+      allow_auto_merge: false,
       visibility: 'private',
     });
   });
@@ -176,6 +179,7 @@ describe('publish:github', () => {
       allow_squash_merge: true,
       allow_merge_commit: true,
       allow_rebase_merge: true,
+      allow_auto_merge: false,
     });
 
     await action.handler({
@@ -195,6 +199,7 @@ describe('publish:github', () => {
       allow_squash_merge: true,
       allow_merge_commit: true,
       allow_rebase_merge: true,
+      allow_auto_merge: false,
     });
 
     await action.handler({
@@ -215,6 +220,7 @@ describe('publish:github', () => {
       allow_squash_merge: true,
       allow_merge_commit: true,
       allow_rebase_merge: true,
+      allow_auto_merge: false,
     });
   });
 
@@ -663,6 +669,7 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
     });
 
@@ -682,6 +689,7 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: true,
       requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
     });
 
@@ -701,6 +709,7 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
     });
   });
@@ -726,6 +735,7 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
     });
 
@@ -745,6 +755,7 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
       enforceAdmins: false,
     });
 
@@ -764,11 +775,12 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
     });
   });
 
-  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requiredStatusCheckContexts', async () => {
+  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requiredStatusCheckContexts and requireBranchesToBeUpToDate', async () => {
     mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
     });
@@ -789,6 +801,7 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
     });
 
@@ -797,6 +810,7 @@ describe('publish:github', () => {
       input: {
         ...mockContext.input,
         requiredStatusCheckContexts: ['statusCheck'],
+        requireBranchesToBeUpToDate: true,
       },
     });
 
@@ -808,6 +822,28 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: ['statusCheck'],
+      requireBranchesToBeUpToDate: true,
+      enforceAdmins: true,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        requiredStatusCheckContexts: ['statusCheck'],
+        requireBranchesToBeUpToDate: false,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repo',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: ['statusCheck'],
+      requireBranchesToBeUpToDate: false,
       enforceAdmins: true,
     });
 
@@ -827,6 +863,7 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
       enforceAdmins: true,
     });
   });

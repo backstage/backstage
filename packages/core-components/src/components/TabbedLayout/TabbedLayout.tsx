@@ -71,6 +71,7 @@ export function createSubRoutesFromChildren(
  * TabbedLayout is a compound component, which allows you to define a layout for
  * pages using a sub-navigation mechanism.
  *
+ * @remarks
  * Consists of two parts: TabbedLayout and TabbedLayout.Route
  *
  * @example

@@ -40,6 +40,7 @@ type ItemCardProps = {
  * This card type has been deprecated. Instead use plain MUI Card and helpers
  * where appropriate.
  *
+ *  @example
  * ```
  *   <Card>
  *     <CardMedia>

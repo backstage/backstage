@@ -15,5 +15,7 @@
  */
 
 export { bazaarPlugin, BazaarPage } from './plugin';
+export { BazaarOverviewCard } from './components/BazaarOverviewCard';
+export type { BazaarOverviewCardProps } from './components/BazaarOverviewCard';
 export { EntityBazaarInfoCard } from './components/EntityBazaarInfoCard';
 export { SortView } from './components/SortView';

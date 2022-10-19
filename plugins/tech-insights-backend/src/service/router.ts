@@ -87,7 +87,7 @@ export async function createRouter<
   if (factChecker) {
     logger.info('Fact checker configured. Enabling fact checking endpoints.');
     router.get('/checks', async (_req, res) => {
-      return res.send(await factChecker.getChecks());
+      return res.json(await factChecker.getChecks());
     });
 
     router.post('/checks/run/:namespace/:kind/:name', async (req, res) => {
@@ -95,7 +95,7 @@ export async function createRouter<
       const { checks }: { checks: string[] } = req.body;
       const entityTriplet = stringifyEntityRef({ namespace, kind, name });
       const checkResult = await factChecker.runChecks(entityTriplet, checks);
-      return res.send(checkResult);
+      return res.json(checkResult);
     });
 
     router.post('/checks/run', async (req, res) => {
@@ -113,7 +113,7 @@ export async function createRouter<
         };
       });
       const results = await Promise.all(tasks);
-      return res.send(results);
+      return res.json(results);
     });
   } else {
     logger.info(
@@ -123,7 +123,7 @@ export async function createRouter<
 
   router.get('/fact-schemas', async (req, res) => {
     const ids = req.query.ids as string[];
-    return res.send(await techInsightsStore.getLatestSchemas(ids));
+    return res.json(await techInsightsStore.getLatestSchemas(ids));
   });
 
   /**
@@ -132,8 +132,14 @@ export async function createRouter<
   router.get('/facts/latest', async (req, res) => {
     const { entity } = req.query;
     const { namespace, kind, name } = parseEntityRef(entity as string);
-    const ids = req.query.ids as string[];
-    return res.send(
+
+    if (!req.query.ids) {
+      return res
+        .status(422)
+        .json({ error: 'Failed to parse ids from request' });
+    }
+    const ids = [req.query.ids].flat() as string[];
+    return res.json(
       await techInsightsStore.getLatestFactsByIds(
         ids,
         stringifyEntityRef({ namespace, kind, name }),
@@ -148,18 +154,23 @@ export async function createRouter<
     const { entity } = req.query;
     const { namespace, kind, name } = parseEntityRef(entity as string);
 
-    const ids = req.query.ids as string[];
+    if (!req.query.ids) {
+      return res
+        .status(422)
+        .json({ error: 'Failed to parse ids from request' });
+    }
+    const ids = [req.query.ids].flat() as string[];
     const startDatetime = DateTime.fromISO(req.query.startDatetime as string);
     const endDatetime = DateTime.fromISO(req.query.endDatetime as string);
     if (!startDatetime.isValid || !endDatetime.isValid) {
-      return res.status(422).send({
+      return res.status(422).json({
         message: 'Failed to parse datetime from request',
         field: !startDatetime.isValid ? 'startDateTime' : 'endDateTime',
         value: !startDatetime.isValid ? startDatetime : endDatetime,
       });
     }
     const entityTriplet = stringifyEntityRef({ namespace, kind, name });
-    return res.send(
+    return res.json(
       await techInsightsStore.getFactsBetweenTimestampsByIds(
         ids,
         entityTriplet,

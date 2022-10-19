@@ -72,7 +72,7 @@ export type ParamNames<S extends string> =
 export type PathParams<S extends string> = { [name in ParamNames<S>]: string };
 
 /**
- * Merges a param object type with with an optional params type into a params object.
+ * Merges a param object type with an optional params type into a params object.
  * @public
  */
 export type MergeParams<

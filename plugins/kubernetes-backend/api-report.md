@@ -22,7 +22,6 @@ import { Logger } from 'winston';
 import { Metrics } from '@kubernetes/client-node';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { PodStatus } from '@kubernetes/client-node/dist/top';
 import { TokenCredential } from '@azure/identity';
 
 // @alpha (undocumented)
@@ -267,10 +266,10 @@ export interface KubernetesFetcher {
     params: ObjectFetchParams,
   ): Promise<FetchResponseWrapper>;
   // (undocumented)
-  fetchPodMetricsByNamespace(
+  fetchPodMetricsByNamespaces(
     clusterDetails: ClusterDetails,
-    namespace: string,
-  ): Promise<PodStatus[]>;
+    namespaces: Set<string>,
+  ): Promise<FetchResponseWrapper>;
 }
 
 // @alpha (undocumented)
@@ -326,7 +325,10 @@ export type KubernetesObjectTypes =
 // @alpha
 export interface KubernetesServiceLocator {
   // (undocumented)
-  getClustersByEntity(entity: Entity): Promise<{
+  getClustersByEntity(
+    entity: Entity,
+    requestContext: ServiceLocatorRequestContext,
+  ): Promise<{
     clusters: ClusterDetails[];
   }>;
 }
@@ -402,6 +404,14 @@ export interface ServiceAccountClusterDetails extends ClusterDetails {}
 
 // @alpha (undocumented)
 export type ServiceLocatorMethod = 'multiTenant' | 'http';
+
+// @alpha (undocumented)
+export interface ServiceLocatorRequestContext {
+  // (undocumented)
+  customResources: CustomResourceMatcher[];
+  // (undocumented)
+  objectTypesToFetch: Set<ObjectToFetch>;
+}
 
 // @alpha (undocumented)
 export type SigningCreds = {

@@ -55,6 +55,8 @@ export type Auth0AuthProviderOptions = OAuthProviderOptions & {
   authHandler: AuthHandler<OAuthResult>;
   resolverContext: AuthResolverContext;
   audience?: string;
+  connection?: string;
+  connectionScope?: string;
 };
 
 export class Auth0AuthProvider implements OAuthHandlers {
@@ -63,6 +65,8 @@ export class Auth0AuthProvider implements OAuthHandlers {
   private readonly authHandler: AuthHandler<OAuthResult>;
   private readonly resolverContext: AuthResolverContext;
   private readonly audience?: string;
+  private readonly connection?: string;
+  private readonly connectionScope?: string;
 
   /**
    * Due to passport-auth0 forcing options.state = true,
@@ -86,6 +90,8 @@ export class Auth0AuthProvider implements OAuthHandlers {
     this.authHandler = options.authHandler;
     this.resolverContext = options.resolverContext;
     this.audience = options.audience;
+    this.connection = options.connection;
+    this.connectionScope = options.connectionScope;
     this._strategy = new Auth0Strategy(
       {
         clientID: options.clientId,
@@ -127,6 +133,10 @@ export class Auth0AuthProvider implements OAuthHandlers {
       scope: req.scope,
       state: encodeState(req.state),
       ...(this.audience ? { audience: this.audience } : {}),
+      ...(this.connection ? { connection: this.connection } : {}),
+      ...(this.connectionScope
+        ? { connection_scope: this.connectionScope }
+        : {}),
     });
   }
 
@@ -136,6 +146,10 @@ export class Auth0AuthProvider implements OAuthHandlers {
       PrivateInfo
     >(req, this._strategy, {
       ...(this.audience ? { audience: this.audience } : {}),
+      ...(this.connection ? { connection: this.connection } : {}),
+      ...(this.connectionScope
+        ? { connection_scope: this.connectionScope }
+        : {}),
     });
 
     return {
@@ -224,6 +238,8 @@ export const auth0 = createAuthProviderIntegration({
         const domain = envConfig.getString('domain');
         const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
         const audience = envConfig.getOptionalString('audience');
+        const connection = envConfig.getOptionalString('connection');
+        const connectionScope = envConfig.getOptionalString('connectionScope');
         const callbackUrl =
           customCallbackUrl ||
           `${globalConfig.baseUrl}/${providerId}/handler/frame`;
@@ -245,6 +261,8 @@ export const auth0 = createAuthProviderIntegration({
           signInResolver,
           resolverContext,
           audience,
+          connection,
+          connectionScope,
         });
 
         return OAuthAdapter.fromConfig(globalConfig, provider, {

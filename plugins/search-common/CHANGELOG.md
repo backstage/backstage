@@ -1,5 +1,45 @@
 # @backstage/plugin-search-common
 
+## 1.1.0
+
+### Minor Changes
+
+- a799972bb1: There is a new property called `pageLimit` on the `SearchQuery` interface that specifies how many results should be returned per page.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.0
+  - @backstage/types@1.0.0
+
+## 1.1.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.0-next.2
+  - @backstage/types@1.0.0
+
+## 1.1.0-next.1
+
+### Minor Changes
+
+- a799972bb1: There is a new property called `pageLimit` on the `SearchQuery` interface that specifies how many results should be returned per page.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+  - @backstage/plugin-permission-common@0.6.5-next.1
+
+## 1.0.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+  - @backstage/plugin-permission-common@0.6.5-next.0
+
 ## 1.0.1
 
 ### Patch Changes
