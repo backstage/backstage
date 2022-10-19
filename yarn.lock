@@ -14050,11 +14050,11 @@ __metadata:
   linkType: hard
 
 "@types/puppeteer@npm:^5.4.4":
-  version: 5.4.6
-  resolution: "@types/puppeteer@npm:5.4.6"
+  version: 5.4.7
+  resolution: "@types/puppeteer@npm:5.4.7"
   dependencies:
     "@types/node": "*"
-  checksum: b969230812e95fcc5eee83151731e51b287cc934169f552034d8eea58ce9b5beb4ba09b9ce05b75d9510241a85d244f28e8b0a0a4b9f7dffcad8c37a39288260
+  checksum: 491c0ca2d879b72e869f5152a9ea7de1356a66f44ef6210fdd5c5036d893b4ee2956212e2f3353c7045b9e56d1a4cea408f41a26d7cf3708774c4d6c19a7c654
   languageName: node
   linkType: hard
 
