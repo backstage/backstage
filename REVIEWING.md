@@ -4,7 +4,7 @@ This file provides pointers for reviewing pull requests. While the main audience
 
 ## Code Style
 
-See [STYLE.md](./STYLE.md).
+See [STYLE.md](./STYLE.md). In particular, make sure that naming follows established conventions within the project and/or package.
 
 ## Secure Coding Practices
 
@@ -41,13 +41,15 @@ Changes that do NOT need a new changeset:
 - Changes that do not belong to a published packages, either because it's not a package at all, such as `docs/`, or because the package is private, such as `packages/app`.
 - Changes that do not end up having an effect on the published package can be skipped, such as whitespace fixes or code formatting changes. It is also alright to include a short changeset for these kind of changes too.
 
-### Changeset Examples
+### Changeset Example
 
-**Example 1**
+Consider the following scenario for a changeset:
 
 A new `EntityList` component has been added to `plugins/catalog-react`.
 
-#### GOOD
+Below are examples of a good and two bad changesets for that change.
+
+**GOOD**
 
 ```md
 ---
@@ -57,14 +59,14 @@ A new `EntityList` component has been added to `plugins/catalog-react`.
 Added a new `EntityList` component that can be used to display detailed information about a list of entities.
 ```
 
-The Catalog React library has reached version `1.x`, which means that feature additions that aren't breaking should be a `minor` change. We don't bother with too much documentation, keeping it short and sweet. The main purpose is to inform users that this new component exists and to give them an idea of how they can use it.
+The `@backstage/plugin-catalog-react` package has reached version `1.x`, which means that feature additions that aren't breaking should be a `minor` change. We don't bother with too much documentation, keeping it short and sweet. The main purpose is to inform users that this new component exists and to give them an idea of how they can use it.
 
-#### BAD
+**BAD**
 
 ```md
 ---
 '@backstage/plugin-catalog-react': minor
-'@backstage/plugin-catalog': minor
+'@backstage/plugin-catalog': patch
 ---
 
 Added `EntityList` component.
@@ -74,6 +76,10 @@ Fixed a bug in the catalog index page.
 This changeset is too short, it's best to give users an idea of how they can benefit from the new addition.
 
 It also includes changes affecting both the Catalog and Catalog React library. It should be split into two separate changeset for each of the two packages, otherwise we'll end up with redundant and unrelated information in both changelogs.
+
+Lastly, the `@backstage/plugin-catalog-react` package has reached `1.x`, which means that new features should be introduced through a `minor` bump. We'd only use `patch` bumps for minor changes or fixes that do not affect the public API.
+
+**BAD**
 
 ```md
 ---
@@ -95,22 +101,21 @@ This changeset is getting too detailed. It's not always bad to get this much int
 
 The change is also marked as a breaking `major` change. This should be changed to `minor` since adding new APIs is never a breaking change.
 
-## Review Checklist
-
-- [ ] API Reports
-  - [ ] Naming
-  - [ ] Breaking changes
-- [ ] Changesets
-  - [ ] Content
-  - [ ] Bump level
-- [ ] Have tests been added for new features bug fixes?
-- [ ] Has documentation been added?
-
 ## Breaking Changes
 
 Identifying breaking changes can be quite tricky. You need to look at the changes from both the point of view of consumers and producers of APIs, as well as behavioral changes. In this section we explore a couple of methods for identifying whether a change is breaking or not.
 
-### TypeScript
+### Behavioral Changes
+
+These are changes where the behavior of the code changes, but the public API remains the same. They can be anything from tiny tweaks, like adding a bit of padding to a visual element, to a complete redesign and refactor of an entire plugin.
+
+It's hard to set up exact rules for when a behavioral change is breaking or not. In some cases it's obvious, for example if you remove important functionality of a system, while in other cases it can be very hard to tell. In the end what's important is whether a significant number of users of the package will be negatively impacted by the change. One question that you can ask yourself here is "is it likely that there are users that don't want the new behavior, or will need to change their code to adapt to the new behavior?" If the answer is yes, then it's likely a breaking change. You do also want to keep [xkcd.com/1172](https://xkcd.com/1172/) in mind though.
+
+Note that even a bug fix can be considered a breaking change in some situations. One things to lean on in that case is what the _documented_ behavior is. If the current behavior does not match the documented behavior, then a change to match the documentation is generally not a breaking change. That is unless it is likely that there are a significant number of users that will be impacted by the change.
+
+For tricky behavioral changes you may simply need to let end users provide feedback. This can be done either by hiding the new behavior behind an experimental feature switch, or by releasing the change early on in the release cycle, preferably in the first or second next line release. Be ready to respond to feedback and potentially revert the change if needed.
+
+### Public API Changes
 
 Typescript is a huge help when it comes to identifying breaking changes, as well as the API Reports that we generate for all packages. Most of the time it is enough to only look at the API Reports to determine whether a change is breaking or not.
 
@@ -218,6 +223,7 @@ interface Point {
   y: number;
 }
 
+// Output, since it's an exported function
 function getPoint(): Point;
 
 // Input, used by Box as parameter type
@@ -225,6 +231,7 @@ interface BoxProps {
   point?: Point
 }
 
+// Output, since it's an exported function
 function Box(props: BoxProps): JSX.Element;
 
 // Output, used by createWidget as return type
@@ -247,8 +254,12 @@ interface WidgetOptions {
   render(props: WidgetProps): RenderedWidget;
 }
 
+// Output, since it's an exported function
 function createWidget(options: WidgetOptions): Widget;
 
 // I/O, since it's not referenced anywhere else
 type LabelStyle = 'normal' | 'thin';
+
+// Output, since it's an exported constant
+const LABEL_SIZE: number;
 ```
