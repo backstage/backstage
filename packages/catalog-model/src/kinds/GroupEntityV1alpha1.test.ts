@@ -95,33 +95,8 @@ describe('GroupV1alpha1Validator', () => {
     await expect(validator.check(entity)).resolves.toBe(true);
   });
 
-  it('profile accepts multiple words in displayName', async () => {
-    (entity as any).spec.profile.displayName = 'Testing test test';
-    await expect(validator.check(entity)).resolves.toBe(true);
-  });
-
-  it('profile accepts dashes and underscores in displayName', async () => {
-    (entity as any).spec.profile.displayName = 'test-test test_test';
-    await expect(validator.check(entity)).resolves.toBe(true);
-  });
-
-  it('profile accepts numbers in displayName', async () => {
-    (entity as any).spec.profile.displayName = 'test1 23';
-    await expect(validator.check(entity)).resolves.toBe(true);
-  });
-
   it('profile rejects wrong displayName', async () => {
     (entity as any).spec.profile.displayName = 7;
-    await expect(validator.check(entity)).rejects.toThrow(/displayName/);
-  });
-
-  it('profile rejects special characters in displayName', async () => {
-    (entity as any).spec.profile.displayName = 'M & M';
-    await expect(validator.check(entity)).rejects.toThrow(/displayName/);
-  });
-
-  it('profile rejects punctuation in displayName', async () => {
-    (entity as any).spec.profile.displayName = 'Test.';
     await expect(validator.check(entity)).rejects.toThrow(/displayName/);
   });
 
