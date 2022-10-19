@@ -110,7 +110,7 @@ It also includes changes affecting both the Catalog and Catalog React library. I
 
 Added a new `EntityList` component that can be used to display detailed information about a list of entities. The component looks like this:
 
-![EntityList screenshot](./screenshot.png)
+![EntityList screenshot](./docs/assets/headline.png)
 
 It accepts the following properties:
 
