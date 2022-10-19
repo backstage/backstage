@@ -16,9 +16,9 @@
 import { Box, Button, Paper, Typography } from '@material-ui/core';
 import React from 'react';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
-import { Step } from './types';
 import { UiSchema } from '@rjsf/core';
 import { JsonObject } from '@backstage/types';
+import { Step } from '../types';
 
 /**
  * The props for the Last Step in scaffolder template form.

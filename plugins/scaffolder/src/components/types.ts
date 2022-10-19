@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { FormProps } from '@rjsf/core';
 import { JsonObject } from '@backstage/types';
 
@@ -25,3 +26,14 @@ export type Step = {
   schema: JsonObject;
   title: string;
 } & Partial<Omit<FormProps<any>, 'schema'>>;
+
+export type LastStepFormProps = {
+  disableButtons: boolean;
+  finishButtonLabel?: string;
+  formData: Record<string, any>;
+  handleBack: () => void;
+  handleCreate: () => void;
+  handleReset: () => void;
+  onFinish?: () => Promise<void>;
+  steps: Step[];
+};

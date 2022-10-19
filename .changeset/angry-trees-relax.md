@@ -2,7 +2,7 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-Enabling the customization of the last page in the scaffolder template.
+Enabling the customization of the last step in the scaffolder template.
 
 To override the content you have to do the next:
 

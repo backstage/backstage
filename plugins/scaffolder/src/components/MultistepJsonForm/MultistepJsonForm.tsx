@@ -28,13 +28,13 @@ import {
 } from '@backstage/core-plugin-api';
 import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
-import React, { useState } from 'react';
+import React, { ComponentType, useState } from 'react';
 import { transformSchemaToProps } from './schema';
 import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
 import { LayoutOptions } from '../../layouts';
-import { Step } from './types';
-import { useScaffolderPluginOptions } from '../../options';
+import { LastStepFormProps, Step } from '../types';
+import { LastStepForm } from './LastStepForm';
 
 const Form = withTheme(MuiTheme);
 
@@ -56,6 +56,7 @@ export type MultistepJsonFormProps = {
   fields?: FormProps<any>['fields'];
   finishButtonLabel?: string;
   layouts: LayoutOptions[];
+  LastStepFormComponent?: ComponentType<LastStepFormProps>;
 };
 
 /**
@@ -73,6 +74,7 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
     widgets,
     finishButtonLabel,
     layouts,
+    LastStepFormComponent,
   } = props;
   const [activeStep, setActiveStep] = useState(0);
   const [disableButtons, setDisableButtons] = useState(false);
@@ -140,7 +142,7 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
     }
   };
 
-  const { lastStepFormComponent } = useScaffolderPluginOptions();
+  const LastStepFormElement = LastStepFormComponent ?? LastStepForm;
 
   return (
     <>
@@ -184,16 +186,17 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
           );
         })}
       </Stepper>
-      {activeStep === steps.length &&
-        lastStepFormComponent({
-          disableButtons,
-          handleBack,
-          handleCreate,
-          handleReset,
-          finishButtonLabel,
-          formData,
-          steps,
-        })}
+      {activeStep === steps.length && (
+        <LastStepFormElement
+          disableButtons={disableButtons}
+          handleBack={handleBack}
+          handleCreate={handleCreate}
+          handleReset={handleReset}
+          finishButtonLabel={finishButtonLabel}
+          formData={formData}
+          steps={steps}
+        />
+      )}
     </>
   );
 };

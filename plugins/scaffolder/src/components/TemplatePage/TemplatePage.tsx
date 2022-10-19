@@ -16,7 +16,7 @@
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import qs from 'qs';
-import React, { useCallback, useContext, useState } from 'react';
+import React, { ComponentType, useCallback, useContext, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router';
 import useAsync from 'react-use/lib/useAsync';
 import { scaffolderApiRef } from '../../api';
@@ -40,6 +40,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { LayoutOptions } from '../../layouts';
+import { LastStepFormProps } from '../types';
 
 const useTemplateParameterSchema = (templateRef: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -51,9 +52,11 @@ const useTemplateParameterSchema = (templateRef: string) => {
 };
 
 export const TemplatePage = ({
+  LastStepFormComponent,
   customFieldExtensions = [],
   layouts = [],
 }: {
+  LastStepFormComponent?: ComponentType<LastStepFormProps>;
   customFieldExtensions?: FieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
 }) => {
@@ -144,6 +147,7 @@ export const TemplatePage = ({
             titleTypographyProps={{ component: 'h2' }}
           >
             <MultistepJsonForm
+              LastStepFormComponent={LastStepFormComponent}
               formData={formState}
               fields={customFieldComponents}
               onChange={handleChange}

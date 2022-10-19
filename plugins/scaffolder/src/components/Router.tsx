@@ -15,7 +15,7 @@
  */
 
 import React, { ComponentType, useEffect } from 'react';
-import { Routes, Route, useOutlet, Navigate } from 'react-router';
+import { Navigate, Route, Routes, useOutlet } from 'react-router';
 import { Entity } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ScaffolderPage } from './ScaffolderPage';
@@ -26,10 +26,10 @@ import { SecretsContextProvider } from './secrets/SecretsContext';
 import { TemplateEditorPage } from './TemplateEditorPage';
 
 import {
-  FieldExtensionOptions,
-  FIELD_EXTENSION_WRAPPER_KEY,
-  FIELD_EXTENSION_KEY,
   DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
+  FIELD_EXTENSION_KEY,
+  FIELD_EXTENSION_WRAPPER_KEY,
+  FieldExtensionOptions,
 } from '../extensions';
 import {
   useElementFilter,
@@ -46,6 +46,7 @@ import {
 } from '../routes';
 import { ListTasksPage } from './ListTasksPage';
 import { LayoutOptions, LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../layouts';
+import { LastStepFormProps } from './types';
 
 /**
  * The props for the entrypoint `ScaffolderPage` component the plugin.
@@ -53,6 +54,7 @@ import { LayoutOptions, LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../layouts';
  */
 export type RouterProps = {
   components?: {
+    LastStepFormComponent?: ComponentType<LastStepFormProps>;
     TemplateCardComponent?:
       | ComponentType<{ template: TemplateEntityV1beta3 }>
       | undefined;
@@ -82,7 +84,8 @@ export type RouterProps = {
 export const Router = (props: RouterProps) => {
   const { groups, components = {}, defaultPreviewTemplate } = props;
 
-  const { TemplateCardComponent, TaskPageComponent } = components;
+  const { LastStepFormComponent, TemplateCardComponent, TaskPageComponent } =
+    components;
 
   const outlet = useOutlet();
   const TaskPageElement = TaskPageComponent ?? TaskPage;
@@ -155,6 +158,7 @@ export const Router = (props: RouterProps) => {
         element={
           <SecretsContextProvider>
             <TemplatePage
+              LastStepFormComponent={LastStepFormComponent}
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
             />
