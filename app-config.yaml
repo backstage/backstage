@@ -420,16 +420,6 @@ costInsights:
       kind: 'PINTS_OF_ICE_CREAM'
       unit: 'ice cream pint'
       rate: 5.5
-homepage:
-  clocks:
-    - label: UTC
-      timezone: UTC
-    - label: NYC
-      timezone: 'America/New_York'
-    - label: STO
-      timezone: 'Europe/Stockholm'
-    - label: TYO
-      timezone: 'Asia/Tokyo'
 pagerduty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
 jenkins:
