@@ -155,7 +155,7 @@ For tricky behavioral changes you may simply need to let end users provide feedb
 
 Typescript is a huge help when it comes to identifying breaking changes, as well as the API Reports that we generate for all packages. Most of the time it is enough to only look at the API Reports to determine whether a change is breaking or not. If you determine that a change is breaking at the TypeScript level, then it is a breaking change.
 
-In this section we will be talking about changed "types", but by that we mean any kind of exported symbol from a packages, such as TypeScript types aliases or interfaces, functions, classes, constants, etc.
+In this section we will be talking about changed "types", but by that we mean any kind of exported symbol from packages, such as TypeScript types aliases or interfaces, functions, classes, constants, etc.
 
 #### API Reports
 
