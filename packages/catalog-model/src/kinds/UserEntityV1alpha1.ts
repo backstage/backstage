@@ -19,17 +19,6 @@ import schema from '../schema/kinds/User.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
 
 /**
- * Backstage User Profile.
- *
- * @public
- */
-export type UserProfile = Record<string, string> & {
-  displayName?: string;
-  email?: string;
-  picture?: string;
-};
-
-/**
  * Backstage catalog User kind Entity.
  *
  * @public
@@ -38,7 +27,11 @@ export interface UserEntityV1alpha1 extends Entity {
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
   kind: 'User';
   spec: {
-    profile?: UserProfile;
+    profile?: {
+      displayName?: string;
+      email?: string;
+      picture?: string;
+    };
     memberOf?: string[];
   };
 }

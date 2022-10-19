@@ -46,7 +46,7 @@ import {
   InfoCardVariants,
   Link,
 } from '@backstage/core-components';
-import { LinksGroup, ProfileInfoGroup } from '../../Meta';
+import { LinksGroup } from '../../Meta';
 
 const CardTitle = (props: { title?: string }) =>
   props.title ? (
@@ -131,7 +131,6 @@ export const UserProfileCard = (props: { variant?: InfoCardVariants }) => {
             </ListItem>
 
             <LinksGroup links={links} />
-            <ProfileInfoGroup profile={profile} />
           </List>
         </Grid>
       </Grid>

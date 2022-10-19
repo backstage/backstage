@@ -183,9 +183,6 @@ describe('Edit Button', () => {
         profile: {
           displayName: 'Calum Leavy',
           email: 'calum-leavy@example.com',
-          'Job Title': 'Software Engineer',
-          Department: 'Engineering',
-          Location: 'San Francisco, CA',
         },
         memberOf: ['ExampleGroup'],
       },
@@ -209,10 +206,6 @@ describe('Edit Button', () => {
         },
       ),
     );
-    expect(rendered.getByText('Software Engineer')).toBeInTheDocument();
-    expect(rendered.getByText('Department')).toBeInTheDocument();
-    expect(rendered.getByText('San Francisco, CA')).toBeInTheDocument();
-    expect(rendered.getByText('Location')).toBeInTheDocument();
     expect(rendered.getByText('Slack')).toBeInTheDocument();
     expect(rendered.getByText('Google')).toBeInTheDocument();
   });

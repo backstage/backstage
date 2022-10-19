@@ -112,8 +112,6 @@ const extraDetailsEntity: GroupEntity = {
       email: 'team-a@example.com',
       picture:
         'https://avatars.dicebear.com/api/identicon/team-a@example.com.svg?background=%23fff&margin=25',
-      Telephone: '123456789',
-      Location: 'London',
     },
     type: 'group',
     children: [],

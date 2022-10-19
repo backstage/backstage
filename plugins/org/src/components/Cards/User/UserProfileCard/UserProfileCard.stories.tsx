@@ -127,9 +127,6 @@ const extraDetailsEntity: UserEntity = {
       email: 'guest@example.com',
       picture:
         'https://avatars.dicebear.com/api/avataaars/guest@example.com.svg?background=%23fff',
-      'Job Title': 'Software Engineer',
-      Department: 'Engineering',
-      Location: 'San Francisco, CA',
     },
     memberOf: ['team-a'],
   },

@@ -356,18 +356,15 @@ export class UserEntityProvider implements EntityProvider {
           },
           links,
           // name of the entity
-          name: kebabCase(user.displayName as string),
+          name: kebabCase(user.displayName),
           // name for display purposes could be anything including email
-          title: user.displayName as string,
+          title: user.displayName,
         },
         spec: {
           profile: {
-            displayName: user.displayName as string,
+            displayName: user.displayName,
             email: user.email,
-            picture: user.photoUrl ?? 'fake',
-            // we can add any string/string here and it will be displayed on a user profile card, eg Job Title, Address, or any other information you want displayed
-            'Job Title': user.jobTitle as string,
-            'Address': user.address,
+            picture: user.photoUrl,
           },
           memberOf: [],
         },
@@ -380,7 +377,7 @@ export class UserEntityProvider implements EntityProvider {
       type: 'full',
       entities: userResources.map((entity) => ({
         entity,
-        locationKey: 'hr-user:https://www.hrurl.com',
+        locationKey: 'hr-user-https://www.hrurl.com/',
       })),
     })
 }

@@ -257,7 +257,11 @@ interface GroupEntityV1alpha1 extends Entity {
   // (undocumented)
   spec: {
     type: string;
-    profile?: GroupProfile;
+    profile?: {
+      displayName?: string;
+      email?: string;
+      picture?: string;
+    };
     parent?: string;
     children: string[];
     members?: string[];
@@ -268,13 +272,6 @@ export { GroupEntityV1alpha1 };
 
 // @public
 export const groupEntityV1alpha1Validator: KindValidator;
-
-// @public
-export type GroupProfile = Record<string, string> & {
-  displayName?: string;
-  email?: string;
-  picture?: string;
-};
 
 // @public (undocumented)
 export function isApiEntity(entity: Entity): entity is ApiEntityV1alpha1;
@@ -494,7 +491,11 @@ interface UserEntityV1alpha1 extends Entity {
   kind: 'User';
   // (undocumented)
   spec: {
-    profile?: UserProfile;
+    profile?: {
+      displayName?: string;
+      email?: string;
+      picture?: string;
+    };
     memberOf?: string[];
   };
 }
@@ -503,13 +504,6 @@ export { UserEntityV1alpha1 };
 
 // @public
 export const userEntityV1alpha1Validator: KindValidator;
-
-// @public
-export type UserProfile = Record<string, string> & {
-  displayName?: string;
-  email?: string;
-  picture?: string;
-};
 
 // @public
 export type Validators = {

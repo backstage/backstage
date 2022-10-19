@@ -52,7 +52,7 @@ import {
   Link,
 } from '@backstage/core-components';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
-import { LinksGroup, ProfileInfoGroup } from '../../Meta';
+import { LinksGroup } from '../../Meta';
 
 const CardTitle = (props: { title: string }) => (
   <Box display="flex" alignItems="center">
@@ -192,7 +192,6 @@ export const GroupProfileCard = (props: { variant?: InfoCardVariants }) => {
               />
             </ListItem>
             <LinksGroup links={links} />
-            <ProfileInfoGroup profile={profile} />
           </List>
         </Grid>
       </Grid>

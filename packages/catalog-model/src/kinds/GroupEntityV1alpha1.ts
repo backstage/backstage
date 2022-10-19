@@ -19,17 +19,6 @@ import schema from '../schema/kinds/Group.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
 
 /**
- * Backstage Group Profile.
- *
- * @public
- */
-export type GroupProfile = Record<string, string> & {
-  displayName?: string;
-  email?: string;
-  picture?: string;
-};
-
-/**
  * Backstage catalog Group kind Entity.
  *
  * @public
@@ -39,7 +28,11 @@ export interface GroupEntityV1alpha1 extends Entity {
   kind: 'Group';
   spec: {
     type: string;
-    profile?: GroupProfile;
+    profile?: {
+      displayName?: string;
+      email?: string;
+      picture?: string;
+    };
     parent?: string;
     children: string[];
     members?: string[];

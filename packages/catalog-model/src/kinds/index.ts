@@ -33,7 +33,6 @@ export { groupEntityV1alpha1Validator } from './GroupEntityV1alpha1';
 export type {
   GroupEntityV1alpha1 as GroupEntity,
   GroupEntityV1alpha1,
-  GroupProfile,
 } from './GroupEntityV1alpha1';
 export { locationEntityV1alpha1Validator } from './LocationEntityV1alpha1';
 export type {
@@ -56,5 +55,4 @@ export { userEntityV1alpha1Validator } from './UserEntityV1alpha1';
 export type {
   UserEntityV1alpha1 as UserEntity,
   UserEntityV1alpha1,
-  UserProfile,
 } from './UserEntityV1alpha1';
