@@ -22,10 +22,10 @@ import {
   schedulerServiceRef,
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
-import { GitHubEntityProvider } from '../providers/GitHubEntityProvider';
+import { GithubEntityProvider } from '../providers/GithubEntityProvider';
 
 /**
- * Registers the GitHubEntityProvider with the catalog processing extension point.
+ * Registers the {@link GithubEntityProvider} with the catalog processing extension point.
  *
  * @alpha
  */
@@ -42,7 +42,7 @@ export const githubEntityProviderCatalogModule = createBackendModule({
       },
       async init({ catalog, config, logger, scheduler }) {
         catalog.addEntityProvider(
-          GitHubEntityProvider.fromConfig(config, {
+          GithubEntityProvider.fromConfig(config, {
             logger: loggerToWinstonLogger(logger),
             scheduler,
           }),

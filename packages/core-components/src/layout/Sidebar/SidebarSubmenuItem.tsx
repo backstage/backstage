@@ -111,6 +111,7 @@ export type SidebarSubmenuItemDropdownItem = {
 /**
  * Holds submenu item content.
  *
+ * @remarks
  * title: Text content of submenu item
  * subtitle: A subtitle displayed under the main title
  * to: Path to navigate to when item is clicked

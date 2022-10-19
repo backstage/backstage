@@ -1,5 +1,37 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.7.0
+
+### Minor Changes
+
+- 253453fa14: Added a new property called `additionalTemplateGlobals` which allows you to add global functions to the scaffolder nunjucks templates.
+- 17ff77154c: Update the `github:publish` action to allow passing whether pull
+  requests must be up to date with the default branch before merging.
+- 304305dd20: Add `allowAutoMerge` option for `publish:github` action
+- 694bfe2d61: Add functionality to shutdown scaffolder tasks if they are stale
+- a8e9848479: Added optional `sourcePath` parameter to `publish:gitlab:merge-request` action, `targetPath` is now optional and falls back to current workspace path.
+
+### Patch Changes
+
+- 489621f613: Switching off duplicated timestamp in case of logging via task logger in a custom action
+- 4880d43e25: Fixed setting default branch for Bitbucket Server
+- b681275e69: Ignore .git directories in Template Editor, increase upload limit for dry-runs to 10MB.
+- a35a27df70: Updated the `moduleId` of the experimental module export.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.2.0
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-catalog-backend@1.5.0
+  - @backstage/plugin-auth-node@0.2.6
+  - @backstage/backend-tasks@0.3.6
+  - @backstage/backend-plugin-api@0.1.3
+  - @backstage/catalog-client@1.1.1
+  - @backstage/plugin-scaffolder-common@1.2.1
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+  - @backstage/types@1.0.0
+
 ## 1.7.0-next.2
 
 ### Minor Changes

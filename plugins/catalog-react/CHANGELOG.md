@@ -1,5 +1,29 @@
 # @backstage/plugin-catalog-react
 
+## 1.2.0
+
+### Minor Changes
+
+- 4efadb6968: Implemented the visual parts of `EntityKindPicker` so that it can be shown alongside the other filters on the left side of your catalog pages.
+
+### Patch Changes
+
+- 7939e743f5: Added two new `EntityRefLinks` props, the first being `getTitle` that allows for customization of the title used for each link. The second one is `fetchEntities`, which triggers a fetching of all entities so that the full entity definition is available in the `getTitle` callback.
+- e9e532ebd8: Fixed issue where the query kind parameter is not honored
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/core-components@0.11.2
+  - @backstage/plugin-catalog-common@1.0.7
+  - @backstage/plugin-permission-common@0.7.0
+  - @backstage/catalog-client@1.1.1
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+  - @backstage/plugin-permission-react@0.4.6
+
 ## 1.2.0-next.2
 
 ### Patch Changes

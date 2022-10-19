@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-graph
 
+## 0.2.22
+
+### Patch Changes
+
+- bde1e8c8e2: Added `curve` prop to the `DependencyGraph` component to select the type of layout
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/plugin-catalog-react@1.2.0
+  - @backstage/core-components@0.11.2
+  - @backstage/catalog-client@1.1.1
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/theme@0.2.16
+
 ## 0.2.22-next.2
 
 ### Patch Changes
