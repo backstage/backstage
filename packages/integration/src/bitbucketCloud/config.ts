@@ -61,8 +61,8 @@ export function readBitbucketCloudIntegrationConfig(
   const apiBaseUrl = BITBUCKET_CLOUD_API_BASE_URL;
   // If config is provided, we assume authenticated access is desired
   // (as the anonymous one is provided by default).
-  const username = config.getString('username');
-  const appPassword = config.getString('appPassword');
+  const username = config.getOptionalString('username');
+  const appPassword = config.getOptionalString('appPassword');
 
   return {
     host,

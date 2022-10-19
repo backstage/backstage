@@ -54,6 +54,7 @@
                   "type": "string",
                   "description": "A simple display name to present to users.",
                   "examples": ["Infrastructure"],
+                  "pattern": "^[A-Za-z0-9-_\\s]{2,}$",
                   "minLength": 1
                 },
                 "email": {
