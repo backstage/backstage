@@ -72,12 +72,12 @@ export interface Config {
        * The username to use for authenticated requests.
        * @visibility secret
        */
-      username: string;
+      username?: string;
       /**
        * Bitbucket Cloud app password used to authenticate requests.
        * @visibility secret
        */
-      appPassword: string;
+      appPassword?: string;
     }>;
 
     /** Integration configuration for Bitbucket Server */
