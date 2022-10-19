@@ -339,10 +339,47 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@azure/arm-appservice@npm:^13.0.1":
+  version: 13.0.2
+  resolution: "@azure/arm-appservice@npm:13.0.2"
+  dependencies:
+    "@azure/abort-controller": ^1.0.0
+    "@azure/core-auth": ^1.3.0
+    "@azure/core-client": ^1.5.0
+    "@azure/core-lro": ^2.2.0
+    "@azure/core-paging": ^1.2.0
+    "@azure/core-rest-pipeline": ^1.8.0
+    tslib: ^2.2.0
+  checksum: 6d604c492a70a6cdd4d3ad3f634a74228dc081ed4f49128873e76bfa5e65ec8cce18b7b19319fd2b1b4edbd390dbd66c9ac48646f0ed80cae09cd2f1d05fb279
+  languageName: node
+  linkType: hard
+
+"@azure/arm-resourcegraph@npm:^4.2.1":
+  version: 4.2.1
+  resolution: "@azure/arm-resourcegraph@npm:4.2.1"
+  dependencies:
+    "@azure/core-auth": ^1.1.4
+    "@azure/ms-rest-azure-js": ^2.1.0
+    "@azure/ms-rest-js": ^2.2.0
+    tslib: ^1.10.0
+  checksum: a5afea9faef84ed4576fda430301039524aefe6976a54204fe4453e672aa3d13edc7ef5c996ad6293e9afa3a0833549174aaac18ce236c4ec1242698e2c22bd2
+  languageName: node
+  linkType: hard
+
 "@azure/core-asynciterator-polyfill@npm:^1.0.0":
   version: 1.0.0
   resolution: "@azure/core-asynciterator-polyfill@npm:1.0.0"
   checksum: b6d3ab3f0ffc0a9f426a1d2cc90b81778730b14d81af7dcab9760c9e241f7c0f6843d45fad572dcd1379232b3fb2cacd76d110a0d54a999ceb1bf0fd9ed39e99
+  languageName: node
+  linkType: hard
+
+"@azure/core-auth@npm:^1.1.4, @azure/core-auth@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "@azure/core-auth@npm:1.4.0"
+  dependencies:
+    "@azure/abort-controller": ^1.0.0
+    tslib: ^2.2.0
+  checksum: 1c76c296fe911ad39fc780b033c25a92c41c5a15f011b816d42c13584f627a4dd153dfb4334900ec93eb5b006e14bdda37e8412a7697c5a9636a0abaccffad39
   languageName: node
   linkType: hard
 
@@ -368,6 +405,21 @@ __metadata:
     "@azure/logger": ^1.0.0
     tslib: ^2.2.0
   checksum: dc51cdeae0788a14c57fed1b420e9d86d9b6cd29a1b7a3cecec5d8fad7664e4857415568cf4dd363fd3a845f0f4ee39904390d4f2e927206a8d50f87d66089a5
+  languageName: node
+  linkType: hard
+
+"@azure/core-client@npm:^1.5.0":
+  version: 1.6.1
+  resolution: "@azure/core-client@npm:1.6.1"
+  dependencies:
+    "@azure/abort-controller": ^1.0.0
+    "@azure/core-auth": ^1.4.0
+    "@azure/core-rest-pipeline": ^1.9.1
+    "@azure/core-tracing": ^1.0.0
+    "@azure/core-util": ^1.0.0
+    "@azure/logger": ^1.0.0
+    tslib: ^2.2.0
+  checksum: 400890a9b5f0c8801ff92005c3cba7bb5124634e321735406731bef33688a79f23d28b49fccdfab90814dade41a13f3d3cb99f80151a2bff17628416e811afb6
   languageName: node
   linkType: hard
 
@@ -415,6 +467,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@azure/core-paging@npm:^1.2.0":
+  version: 1.3.0
+  resolution: "@azure/core-paging@npm:1.3.0"
+  dependencies:
+    tslib: ^2.2.0
+  checksum: 3fbf3d6474e2346f7c3ea8344a41bf41e053789efbbd29df78365e9c9ca66e143da3e5407d8c9dd5ddc82a65680185cd6f0ec851c48635776d18a6a605a98e78
+  languageName: node
+  linkType: hard
+
 "@azure/core-rest-pipeline@npm:^1.1.0, @azure/core-rest-pipeline@npm:^1.5.0":
   version: 1.5.0
   resolution: "@azure/core-rest-pipeline@npm:1.5.0"
@@ -432,6 +493,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@azure/core-rest-pipeline@npm:^1.8.0, @azure/core-rest-pipeline@npm:^1.9.1":
+  version: 1.9.2
+  resolution: "@azure/core-rest-pipeline@npm:1.9.2"
+  dependencies:
+    "@azure/abort-controller": ^1.0.0
+    "@azure/core-auth": ^1.4.0
+    "@azure/core-tracing": ^1.0.1
+    "@azure/core-util": ^1.0.0
+    "@azure/logger": ^1.0.0
+    form-data: ^4.0.0
+    http-proxy-agent: ^5.0.0
+    https-proxy-agent: ^5.0.0
+    tslib: ^2.2.0
+    uuid: ^8.3.0
+  checksum: cdfdaf8bdb0778f40ecfeb8b5da0b4f8643d641b75bb5869485afd38f7c3127ab088ac2fe2980df03d28fb6715928e04560343ee6416246aebe75443c4dd2906
+  languageName: node
+  linkType: hard
+
 "@azure/core-tracing@npm:1.0.0-preview.13":
   version: 1.0.0-preview.13
   resolution: "@azure/core-tracing@npm:1.0.0-preview.13"
@@ -442,7 +521,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/core-tracing@npm:^1.0.0":
+"@azure/core-tracing@npm:^1.0.0, @azure/core-tracing@npm:^1.0.1":
   version: 1.0.1
   resolution: "@azure/core-tracing@npm:1.0.1"
   dependencies:
@@ -490,6 +569,34 @@ __metadata:
   dependencies:
     tslib: ^2.0.0
   checksum: a9312a3a2c19cb23a48a08adfc37dc618755f00428c4bac549bcf996f5bb19a1e220172f44ca33d126b7001192261ce2c92d665748e2cb3ea16798a63a5c8982
+  languageName: node
+  linkType: hard
+
+"@azure/ms-rest-azure-js@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@azure/ms-rest-azure-js@npm:2.1.0"
+  dependencies:
+    "@azure/core-auth": ^1.1.4
+    "@azure/ms-rest-js": ^2.2.0
+    tslib: ^1.10.0
+  checksum: 0e6d6700f4ee0ad14383642b02fe86b33f4034aaff38499374ed5be59154e869ee231790d20b7557622ebcdfa9eed45dc2559391a79dee51c849a8ced0c86fed
+  languageName: node
+  linkType: hard
+
+"@azure/ms-rest-js@npm:^2.2.0":
+  version: 2.6.2
+  resolution: "@azure/ms-rest-js@npm:2.6.2"
+  dependencies:
+    "@azure/core-auth": ^1.1.4
+    abort-controller: ^3.0.0
+    form-data: ^2.5.0
+    node-fetch: ^2.6.7
+    tough-cookie: ^3.0.1
+    tslib: ^1.10.0
+    tunnel: 0.0.6
+    uuid: ^8.3.2
+    xml2js: ^0.4.19
+  checksum: de650dfc3928a2036923fb3bf50e0324f9f36f5d320ca6d128005b1345ad80b39ab3410073ac35fb137dec4c7d799c602b1cafdf9573b3432b6b8eee8a1e39f8
   languageName: node
   linkType: hard
 
@@ -4135,6 +4242,66 @@ __metadata:
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-azure-sites-backend@workspace:^, @backstage/plugin-azure-sites-backend@workspace:plugins/azure-sites-backend":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-azure-sites-backend@workspace:plugins/azure-sites-backend"
+  dependencies:
+    "@azure/arm-appservice": ^13.0.1
+    "@azure/arm-resourcegraph": ^4.2.1
+    "@azure/identity": ^2.1.0
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-azure-sites-common": "workspace:^"
+    "@types/express": ^4.17.6
+    "@types/supertest": ^2.0.8
+    express: ^4.17.1
+    express-promise-router: ^4.1.0
+    msw: ^0.47.0
+    node-fetch: ^2.6.7
+    winston: ^3.2.1
+    yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-azure-sites-common@workspace:^, @backstage/plugin-azure-sites-common@workspace:plugins/azure-sites-common":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-azure-sites-common@workspace:plugins/azure-sites-common"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-azure-sites@workspace:^, @backstage/plugin-azure-sites@workspace:plugins/azure-sites":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-azure-sites@workspace:plugins/azure-sites"
+  dependencies:
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/dev-utils": "workspace:^"
+    "@backstage/plugin-azure-sites-common": "workspace:^"
+    "@backstage/plugin-catalog-react": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/theme": "workspace:^"
+    "@material-ui/core": ^4.12.2
+    "@material-ui/icons": ^4.9.1
+    "@material-ui/lab": 4.0.0-alpha.57
+    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/react": ^12.1.3
+    "@testing-library/user-event": ^14.0.0
+    "@types/node": ^16.11.26
+    cross-fetch: ^3.1.5
+    luxon: ^3.0.0
+    msw: ^0.47.0
+    react-use: ^17.2.4
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
   languageName: unknown
   linkType: soft
 
@@ -21868,6 +22035,7 @@ __metadata:
     "@backstage/plugin-apache-airflow": "workspace:^"
     "@backstage/plugin-api-docs": "workspace:^"
     "@backstage/plugin-azure-devops": "workspace:^"
+    "@backstage/plugin-azure-sites": "workspace:^"
     "@backstage/plugin-badges": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-graph": "workspace:^"
@@ -21973,6 +22141,7 @@ __metadata:
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-azure-devops-backend": "workspace:^"
+    "@backstage/plugin-azure-sites-backend": "workspace:^"
     "@backstage/plugin-badges-backend": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-code-coverage-backend": "workspace:^"
@@ -25061,6 +25230,13 @@ __metadata:
     redis-parser: ^3.0.0
     standard-as-callback: ^2.1.0
   checksum: 7b1c137836ee136a634926df4ec68cc2393772a32ecda8e30dd305d7b9182af02d600456e661f96a6ceada17560ce7b6458948fd09b8adc277a1d287325777dd
+  languageName: node
+  linkType: hard
+
+"ip-regex@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "ip-regex@npm:2.1.0"
+  checksum: 331d95052aa53ce245745ea0fc3a6a1e2e3c8d6da65fa8ea52bf73768c1b22a9ac50629d1d2b08c04e7b3ac4c21b536693c149ce2c2615ee4796030e5b3e3cba
   languageName: node
   linkType: hard
 
@@ -37528,6 +37704,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tough-cookie@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "tough-cookie@npm:3.0.1"
+  dependencies:
+    ip-regex: ^2.1.0
+    psl: ^1.1.28
+    punycode: ^2.1.1
+  checksum: 796f6239bce5674a1267b19f41972a2602a2a23715817237b5922b0dc2343512512eea7d41d29210a4ec545f8ef32173bbbf01277dd8ec3ae3841b19cbe69f67
+  languageName: node
+  linkType: hard
+
 "tough-cookie@npm:^4.0.0":
   version: 4.0.0
   resolution: "tough-cookie@npm:4.0.0"
@@ -37729,7 +37916,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^1.8.1, tslib@npm:^1.9.0, tslib@npm:^1.9.3":
+"tslib@npm:^1.10.0, tslib@npm:^1.8.1, tslib@npm:^1.9.0, tslib@npm:^1.9.3":
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
   checksum: dbe628ef87f66691d5d2959b3e41b9ca0045c3ee3c7c7b906cc1e328b39f199bb1ad9e671c39025bd56122ac57dfbf7385a94843b1cc07c60a4db74795829acd
