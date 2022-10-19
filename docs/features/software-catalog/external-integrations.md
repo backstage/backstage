@@ -328,7 +328,7 @@ export class UserEntityProvider implements EntityProvider {
 
   async run(): Promise<void> {
     if (!this.connection) {
-      throw new Error('USer Connection Not initialized')
+      throw new Error('User Connection Not initialized')
     }
 
     const userResources: UserEntity[] = []
