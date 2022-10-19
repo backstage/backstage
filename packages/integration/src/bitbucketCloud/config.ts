@@ -16,8 +16,8 @@
 
 import { Config } from '@backstage/config';
 
-const BITBUCKET_CLOUD_HOST = 'bitbucket.org';
-const BITBUCKET_CLOUD_API_BASE_URL = 'https://api.bitbucket.org/2.0';
+export const BITBUCKET_CLOUD_HOST = 'bitbucket.org';
+export const BITBUCKET_CLOUD_API_BASE_URL = 'https://api.bitbucket.org/2.0';
 
 /**
  * The configuration parameters for a single Bitbucket Cloud API provider.

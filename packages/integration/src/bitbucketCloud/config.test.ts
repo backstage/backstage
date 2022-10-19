@@ -17,6 +17,8 @@
 import { Config, ConfigReader } from '@backstage/config';
 import { loadConfigSchema } from '@backstage/config-loader';
 import {
+  BITBUCKET_CLOUD_API_BASE_URL,
+  BITBUCKET_CLOUD_HOST,
   BitbucketCloudIntegrationConfig,
   readBitbucketCloudIntegrationConfig,
   readBitbucketCloudIntegrationConfigs,
@@ -81,6 +83,15 @@ describe('readBitbucketCloudIntegrationConfig', () => {
         buildConfig({ ...valid, appPassword: 7 }),
       ),
     ).toThrow(/appPassword/);
+  });
+
+  it('returns default required values and undefined auth values when auth not set', () => {
+    expect(readBitbucketCloudIntegrationConfig(buildConfig({}))).toEqual({
+      apiBaseUrl: BITBUCKET_CLOUD_API_BASE_URL,
+      host: BITBUCKET_CLOUD_HOST,
+      username: undefined,
+      appPassword: undefined,
+    });
   });
 
   it('credentials hidden on the frontend', async () => {
