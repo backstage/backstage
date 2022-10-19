@@ -2,8 +2,11 @@
 
 Website: [https://circleci.com/](https://circleci.com/)
 
-<img src="./src/assets/screenshot-1.png" />
-<img src="./src/assets/screenshot-2.png" />
+## Screenshots
+
+<img src="./src/assets/screenshot-pipeline-list.png" />
+<img src="./src/assets/screenshot-build-details.png" />
+<img src="./src/assets/screenshot-build-failure.png" />
 
 ## Setup
 
@@ -37,13 +40,13 @@ const cicdContent = (
 # In app-config.yaml
 proxy:
   '/circleci/api':
-    target: https://circleci.com/api/v1.1
+    target: https://app.circleci.com/api/v1.1
     headers:
       Circle-Token: ${CIRCLECI_AUTH_TOKEN}
 ```
 
 5. Get and provide a `CIRCLECI_AUTH_TOKEN` as an environment variable (see the [CircleCI docs](https://circleci.com/docs/api/#add-an-api-token)).
-6. Add a `circleci.com/project-slug` annotation to your respective `catalog-info.yaml` files, on the format <git-provider>/<owner>/<project> (https://backstage.io/docs/architecture-decisions/adrs-adr002#format).
+6. Add an annotation to your respective `catalog-info.yaml` files, with the format `circleci.com/project-slug: <git-provider>/<owner>/<project>` (See reference in [ADR002](https://backstage.io/docs/architecture-decisions/adrs-adr002#format)).
 
 ```yaml
 # Example catalog-info.yaml entity definition file
