@@ -55,7 +55,7 @@ export class UrlReaders {
    */
   static create(options: UrlReadersOptions): UrlReader {
     const { logger, config, factories } = options;
-    const mux = new UrlReaderPredicateMux(logger);
+    const mux = new UrlReaderPredicateMux();
     const treeResponseFactory = DefaultReadTreeResponseFactory.create({
       config,
     });
