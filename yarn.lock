@@ -4030,6 +4030,34 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-api-docs-backend@workspace:plugins/api-docs-backend":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-api-docs-backend@workspace:plugins/api-docs-backend"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/catalog-client": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-catalog-common": "workspace:^"
+    "@backstage/plugin-search-common": "workspace:^"
+    "@types/express": "*"
+    "@types/semver": ^7.3.12
+    "@types/supertest": ^2.0.8
+    express: ^4.18.1
+    express-promise-router: ^4.1.0
+    msw: ^0.47.0
+    node-fetch: ^2.6.7
+    openapi-types: ^12.0.2
+    semver: ^7.3.8
+    supertest: ^6.2.4
+    typescript: ^4.8.4
+    winston: ^3.8.1
+    yaml: ^2.1.3
+    yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-api-docs-module-protoc-gen-doc@workspace:plugins/api-docs-module-protoc-gen-doc":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-api-docs-module-protoc-gen-doc@workspace:plugins/api-docs-module-protoc-gen-doc"
@@ -14556,7 +14584,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/semver@npm:^7.3.8":
+"@types/semver@npm:^7.3.12, @types/semver@npm:^7.3.8":
   version: 7.3.12
   resolution: "@types/semver@npm:7.3.12"
   checksum: 35536b2fc5602904f21cae681f6c9498e177dab3f54ae37c92f9a1b7e43c35f18bcd81e1c98c1cf0d33ee046bb06c771e9928c1c00a401d56a03f56549252a15
@@ -30992,7 +31020,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi-types@npm:^12.0.0":
+"openapi-types@npm:^12.0.0, openapi-types@npm:^12.0.2":
   version: 12.0.2
   resolution: "openapi-types@npm:12.0.2"
   checksum: 097edc46adb5a8fc2a3419e2e0adbb5516737fd83b4041ec62ee28427e85d9f18c6ead9231b9d1c8f718d86eeccf3c0997437414011d8bb1597387a047493fea
@@ -35550,6 +35578,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"semver@npm:^7.3.8":
+  version: 7.3.8
+  resolution: "semver@npm:7.3.8"
+  dependencies:
+    lru-cache: ^6.0.0
+  bin:
+    semver: bin/semver.js
+  checksum: ba9c7cbbf2b7884696523450a61fee1a09930d888b7a8d7579025ad93d459b2d1949ee5bbfeb188b2be5f4ac163544c5e98491ad6152df34154feebc2cc337c1
+  languageName: node
+  linkType: hard
+
 "send@npm:0.18.0":
   version: 0.18.0
   resolution: "send@npm:0.18.0"
@@ -38182,6 +38221,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:^4.8.4":
+  version: 4.8.4
+  resolution: "typescript@npm:4.8.4"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 3e4f061658e0c8f36c820802fa809e0fd812b85687a9a2f5430bc3d0368e37d1c9605c3ce9b39df9a05af2ece67b1d844f9f6ea8ff42819f13bcb80f85629af0
+  languageName: node
+  linkType: hard
+
 "typescript@npm:~4.6.0, typescript@npm:~4.6.3":
   version: 4.6.4
   resolution: "typescript@npm:4.6.4"
@@ -38199,6 +38248,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 5750181b1cd7e6482c4195825547e70f944114fb47e58e4aa7553e62f11b3f3173766aef9c281783edfd881f7b8299cf35e3ca8caebe73d8464528c907a164df
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@^4.8.4#~builtin<compat/typescript>":
+  version: 4.8.4
+  resolution: "typescript@patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=a1c5e5"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 563a0ef47abae6df27a9a3ab38f75fc681f633ccf1a3502b1108e252e187787893de689220f4544aaf95a371a4eb3141e4a337deb9895de5ac3c1ca76430e5f0
   languageName: node
   linkType: hard
 
@@ -39968,6 +40027,13 @@ __metadata:
   version: 2.1.1
   resolution: "yaml@npm:2.1.1"
   checksum: f48bb209918aa57cfaf78ef6448d1a1f8187f45c746f933268b7023dc59e5456004611879126c9bb5ea55b0a2b1c2b392dfde436931ece0c703a3d754562bb96
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^2.1.3":
+  version: 2.1.3
+  resolution: "yaml@npm:2.1.3"
+  checksum: 91316062324a93f9cb547469092392e7d004ff8f70c40fecb420f042a4870b2181557350da56c92f07bd44b8f7a252b0be26e6ade1f548e1f4351bdd01c9d3c7
   languageName: node
   linkType: hard
 

@@ -6,22 +6,12 @@ import {
 import { Config } from '@backstage/config';
 import { Readable } from 'stream';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
-import { parse } from 'yaml'
 
-import {SemVer} from 'semver'
-
-import {
-  CatalogApi,
-  CatalogClient
-} from '@backstage/catalog-client';
-
-
-import { SUPPORTED_API_SPEC_TYPES, getSpecText } from './utils';
-
-
+import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 
 import { ApiDocument } from './ApiDocument';
 
+import { SpecHandler, OpenAPISpecParser } from './spec-parsers';
 
 /** @public */
 export type ApiDocumentCollatorFactoryOptions = {
@@ -31,10 +21,8 @@ export type ApiDocumentCollatorFactoryOptions = {
   tokenManager: TokenManager;
 };
 
-
+/** @public */
 export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
-
-
   // private readonly logger: Logger;
   public readonly type: string = 'api-definition';
   private readonly catalogClient: CatalogApi;
@@ -42,19 +30,13 @@ export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
   private tokenManager: TokenManager;
 
   private constructor(options: ApiDocumentCollatorFactoryOptions) {
-    const {
-      discovery,
-      catalogClient,
-      batchSize,
-      tokenManager,
-    } = options;
+    const { discovery, catalogClient, batchSize, tokenManager } = options;
 
-    this.tokenManager = tokenManager
+    this.tokenManager = tokenManager;
     this.batchSize = batchSize || 500;
     this.catalogClient =
       catalogClient || new CatalogClient({ discoveryApi: discovery });
   }
-
 
   static fromConfig(
     _config: Config,
@@ -63,17 +45,18 @@ export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
     return new ApiDocumentCollatorFactory(options);
   }
 
-
   async getCollator() {
     return Readable.from(this.execute());
   }
 
-
   async *execute(): AsyncGenerator<ApiDocument> {
     const { token } = await this.tokenManager.getToken();
+
+    const specHandler = new SpecHandler();
+    specHandler.addSpecParser(new OpenAPISpecParser());
+
     let entitiesRetrieved = 0;
     let moreEntitiesToGet = true;
-
 
     while (moreEntitiesToGet) {
       const entities = (
@@ -85,7 +68,7 @@ export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
             limit: this.batchSize,
             offset: entitiesRetrieved,
           },
-          { token }
+          { token },
         )
       ).items;
 
@@ -93,24 +76,20 @@ export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
       entitiesRetrieved += entities.length;
 
       for (const entity of entities) {
-        
-        const isSuppportedSpecType = SUPPORTED_API_SPEC_TYPES.includes((entity.spec?.type as string))
-
-        if(!isSuppportedSpecType){
-          continue
+        const specParser = specHandler.getSpecParser(
+          entity.spec?.type as string,
+        );
+        if (specParser == undefined) {
+          continue;
         }
-
-        const definition = parse((entity.spec?.definition as string) || '')
-        const version:string = definition?.openapi
-
 
         yield {
           title: entity.metadata.name,
           location: `/catalog/default/api/${entity.metadata.name}/definition/`,
-          text: getSpecText(definition, new SemVer(version)),
+          text: specParser.getSpecText(entity.spec?.definition),
           kind: entity.kind,
           lifecycle: (entity.spec?.lifecycle as string) || '',
-        }
+        };
       }
     }
   }
