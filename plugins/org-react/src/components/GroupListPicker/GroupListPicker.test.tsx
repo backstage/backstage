@@ -63,28 +63,12 @@ const mockCatalogApi = {
 const apis = TestApiRegistry.from([catalogApiRef, mockCatalogApi]);
 
 describe('<GroupListPicker />', () => {
-  it('renders group list picker', () => {
-    const { queryByText } = render(
-      <ApiProvider apis={apis}>
-        <GroupListPicker
-          placeholder="Search"
-          groupTypes={['org', 'department']}
-          initialGroup="test"
-          onChange={() => {}}
-        />
-      </ApiProvider>,
-    );
-
-    expect(queryByText('test')).toBeInTheDocument();
-  });
-
   it('can choose a group', async () => {
     const { getByText, queryByText, getByTestId } = render(
       <ApiProvider apis={apis}>
         <GroupListPicker
           placeholder="Search"
           groupTypes={['org', 'department']}
-          initialGroup="Group A"
           onChange={() => {}}
         />
       </ApiProvider>,

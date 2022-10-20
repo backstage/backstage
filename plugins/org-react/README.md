@@ -18,7 +18,7 @@ To use the `GroupListPicker` component you'll need to import it and add it to yo
 
  <Grid container spacing={3}>
     <Grid item xs={12}>
-+     <GroupListPicker groupTypes={['team']} initialGroup={group.metadata.name} placeholder='Search for a team' onChange={setGroup}/>
++     <GroupListPicker groupTypes={['team']} placeholder='Search for a team' onChange={setGroup}/>
     </Grid>
  </Grid>
 ```
@@ -26,6 +26,5 @@ To use the `GroupListPicker` component you'll need to import it and add it to yo
 The `GroupListPicker` comes with three optional props:
 
 - `groupTypes`: gives the user the option which group types the component should load. If no value is provided all group types will be loaded in;
-- `initialGroup`: which group by default should be selected. For example, a group of the logged in user;
 - `placeholder`: the placeholder that the select box in the component should display. This might be helpful in informing your users what the functionality of the component is.
 - `onChange`: a prop to help the user to give access to the selected group

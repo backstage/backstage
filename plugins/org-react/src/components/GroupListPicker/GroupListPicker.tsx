@@ -36,7 +36,6 @@ import { GroupListPickerButton } from './GroupListPickerButton';
 export type GroupListPickerProps = {
   placeholder?: string;
   groupTypes?: Array<string>;
-  initialGroup?: string | undefined;
   onChange: (value: GroupEntity | undefined) => void;
 };
 
@@ -44,7 +43,7 @@ export type GroupListPickerProps = {
 export const GroupListPicker = (props: GroupListPickerProps) => {
   const catalogApi = useApi(catalogApiRef);
 
-  const { onChange, groupTypes, initialGroup, placeholder = '' } = props;
+  const { onChange, groupTypes, placeholder = '' } = props;
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const [inputValue, setInputValue] = React.useState('');
 
@@ -116,7 +115,7 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
           )}
         />
       </Popover>
-      <GroupListPickerButton handleClick={handleClick} group={initialGroup} />
+      <GroupListPickerButton handleClick={handleClick} group={inputValue} />
     </>
   );
 };
