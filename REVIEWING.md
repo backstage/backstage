@@ -149,7 +149,7 @@ It's hard to set up exact rules for when a behavioral change is breaking or not.
 
 Note that even a bug fix can be considered a breaking change in some situations. One thing to lean on in that case is what the _documented_ behavior is. If the current behavior does not match the documented behavior, then a change to match the documentation is generally not a breaking change. That is unless it is likely that there are a significant number of users that will be impacted by the change.
 
-For tricky behavioral changes you may simply need to let end users provide feedback. This can be done either by hiding the new behavior behind an experimental feature switch, or by releasing the change early on in the release cycle, preferably in the first or second next line release. Be ready to respond to feedback and potentially revert the change if needed.
+For tricky behavioral changes you may simply need to let end users provide feedback. This can be done either by hiding the new behavior behind an experimental feature switch, or by releasing the change early on in the release cycle, preferably in the first or second `next`-line release. Be ready to respond to feedback and potentially revert the change if needed.
 
 ### Public API Changes
 
