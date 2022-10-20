@@ -144,7 +144,7 @@ This section describes guidelines for designing public APIs. It can also be appl
    function createWidget(options: CreateWidgetOptions) {}
    ```
 
-1. Avoid arrays as return types prefer response objects.
+1. Avoid arrays as return types; prefer response objects.
 
    ```ts
    interface UserApi {
