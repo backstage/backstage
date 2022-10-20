@@ -36,6 +36,7 @@
     "@backstage/plugin-auth-backend": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-azure-devops-backend": "workspace:^",
+    "@backstage/plugin-azure-sites-backend": "workspace:^",
     "@backstage/plugin-badges-backend": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-code-coverage-backend": "workspace:^",

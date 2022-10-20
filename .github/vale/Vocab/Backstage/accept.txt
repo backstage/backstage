@@ -373,6 +373,7 @@ xyz
 yaml
 Zalando
 Zhou
+zod
 zoomable
 zsh
 Alef

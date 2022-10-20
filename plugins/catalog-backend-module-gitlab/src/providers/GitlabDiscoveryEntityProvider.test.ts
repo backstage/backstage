@@ -15,13 +15,17 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
+import {
+  PluginTaskScheduler,
+  TaskInvocationDefinition,
+  TaskRunner,
+} from '@backstage/backend-tasks';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import { GitlabDiscoveryEntityProvider } from './GitlabDiscoveryEntityProvider';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { GitlabDiscoveryEntityProvider } from './GitlabDiscoveryEntityProvider';
 
 class PersistingTaskRunner implements TaskRunner {
   private tasks: TaskInvocationDefinition[] = [];
@@ -337,5 +341,112 @@ describe('GitlabDiscoveryEntityProvider', () => {
         },
       ],
     });
+  });
+
+  it('fail without schedule and scheduler', () => {
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'test-gitlab',
+            apiBaseUrl: 'https://api.gitlab.example/api/v4',
+            token: '1234',
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          gitlab: {
+            'test-id': {
+              host: 'test-gitlab',
+              group: 'test-group',
+            },
+          },
+        },
+      },
+    });
+
+    expect(() =>
+      GitlabDiscoveryEntityProvider.fromConfig(config, {
+        logger,
+      }),
+    ).toThrow('Either schedule or scheduler must be provided');
+  });
+
+  it('fail with scheduler but no schedule config', () => {
+    const scheduler = {
+      createScheduledTaskRunner: (_: any) => jest.fn(),
+    } as unknown as PluginTaskScheduler;
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'test-gitlab',
+            apiBaseUrl: 'https://api.gitlab.example/api/v4',
+            token: '1234',
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          gitlab: {
+            'test-id': {
+              host: 'test-gitlab',
+              group: 'test-group',
+            },
+          },
+        },
+      },
+    });
+
+    expect(() =>
+      GitlabDiscoveryEntityProvider.fromConfig(config, {
+        logger,
+        scheduler,
+      }),
+    ).toThrow(
+      'No schedule provided neither via code nor config for GitlabDiscoveryEntityProvider:test-id',
+    );
+  });
+
+  it('single simple provider config with schedule in config', async () => {
+    const schedule = new PersistingTaskRunner();
+    const scheduler = {
+      createScheduledTaskRunner: (_: any) => schedule,
+    } as unknown as PluginTaskScheduler;
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'test-gitlab',
+            apiBaseUrl: 'https://api.gitlab.example/api/v4',
+            token: '1234',
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          gitlab: {
+            'test-id': {
+              host: 'test-gitlab',
+              group: 'test-group',
+              schedule: {
+                frequency: 'PT30M',
+                timeout: 'PT3M',
+              },
+            },
+          },
+        },
+      },
+    });
+    const providers = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      scheduler,
+    });
+
+    expect(providers).toHaveLength(1);
+    expect(providers[0].getProviderName()).toEqual(
+      'GitlabDiscoveryEntityProvider:test-id',
+    );
   });
 });

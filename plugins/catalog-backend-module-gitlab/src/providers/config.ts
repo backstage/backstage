@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { GitlabProviderConfig } from '../lib';
 
@@ -35,6 +36,10 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     config.getOptionalString('projectPattern') ?? /[\s\S]*/,
   );
 
+  const schedule = config.has('schedule')
+    ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+    : undefined;
+
   return {
     id,
     group,
@@ -42,6 +47,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     host,
     catalogFile,
     projectPattern,
+    schedule,
   };
 }
 

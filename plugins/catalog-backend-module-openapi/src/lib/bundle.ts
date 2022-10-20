@@ -47,11 +47,21 @@ export async function bundleOpenApiSpecification(
       return await read(url);
     },
   };
+  const httpUrlReaderResolver: SwaggerParser.ResolverOptions = {
+    canRead: ref => {
+      const protocol = getProtocol(ref.url);
+      return protocol === 'http' || protocol === 'https';
+    },
+    read: async ref => {
+      const url = resolveUrl(ref.url, baseUrl);
+      return await read(url);
+    },
+  };
 
   const options: SwaggerParser.Options = {
     resolve: {
       file: fileUrlReaderResolver,
-      http: true,
+      http: httpUrlReaderResolver,
     },
   };
   const specObject = parse(specification);
