@@ -12,7 +12,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { GithubCredentialsProvider } from '@backstage/integration';
-import { GitHubIntegrationConfig } from '@backstage/integration';
+import { GithubIntegrationConfig } from '@backstage/integration';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -160,7 +160,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
   constructor(options: {
     id: string;
     orgUrl: string;
-    gitHubConfig: GitHubIntegrationConfig;
+    gitHubConfig: GithubIntegrationConfig;
     logger: Logger;
     githubCredentialsProvider?: GithubCredentialsProvider;
   });

@@ -18,7 +18,7 @@ import parseGitUrl from 'git-url-parse';
 
 import { useApi } from '@backstage/core-plugin-api';
 import {
-  replaceGitHubUrlType,
+  replaceGithubUrlType,
   replaceGitLabUrlType,
 } from '@backstage/integration';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
@@ -31,7 +31,7 @@ import { PAGE_EDIT_LINK_SELECTOR } from './constants';
 
 const resolveBlobUrl = (url: string, type: string) => {
   if (type === 'github') {
-    return replaceGitHubUrlType(url, 'blob');
+    return replaceGithubUrlType(url, 'blob');
   } else if (type === 'gitlab') {
     return replaceGitLabUrlType(url, 'blob');
   }
