@@ -18985,11 +18985,11 @@ __metadata:
   linkType: hard
 
 "cron@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "cron@npm:2.0.0"
+  version: 2.1.0
+  resolution: "cron@npm:2.1.0"
   dependencies:
     luxon: ^1.23.x
-  checksum: 179ec137ada4ceb44cafe51c55491e84954308d7012d2a44539f0dadbbb1ffbbe3072c2f7aaa88595d60bd56e0d536aae2e4aaa4430c869317d6c2abd966988b
+  checksum: 9395875c091f56db7964491c249cb143d2e4ba77560d7132da783943c1b0537ef1814eb8f552c81eda5a2aa153216dd3f5b7ff63e372a68a063fcfafe8231f91
   languageName: node
   linkType: hard
 
