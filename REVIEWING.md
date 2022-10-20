@@ -229,7 +229,7 @@ When modifying an output type, any change that reduces constraints are breaking.
 
 Adding new properties is not a breaking change, regardless of whether they are optional or not. Removing properties is on the other hand always breaking.
 
-It is generally fine to increase constraints without it being a breaking change. For example, if we made the `title` property required, that would not be breaking.
+It is generally fine to increase constraints without it being a breaking change. For example, if we made the `shape` property required, that would not be breaking.
 
 There are some edge-cases though, for example if `shape` was changed to just `'square'`, that would be a breaking change because consumers might be checking for `box.shape === 'rounded'`, which would then be breaking. It's typically a quite easy thing for consumers to fix though. More generally, type unions and discriminated unions are quite troublesome in output types, as both adding and removing types from them are considered breaking changes.
 
