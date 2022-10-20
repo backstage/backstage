@@ -34,7 +34,7 @@ You can also use this process if you have an idea for a good plugin but you hope
 
 ### Adding Non-code Contributions
 
-Since there is such a large landscape of possible development, build, and deployment environments, we welcome community contributions in these areas in the [`/contrib`](https://github.com/backstage/backstage/tree/master/contrib) folder of the project. This is an excellent place to put things that help out the community at large, but which may not fit within the scope of the core product to support natively. Here, you will find Helm charts, alternative Docker images, and much more.
+Since there is such a large landscape of possible development, build, and deployment environments, we welcome community contributions in these areas in the [`/contrib`](https://github.com/backstage/backstage/tree/master/contrib) folder of the project. This is an excellent place to put things that help out the community at large but may not fit within the scope of the core product to support natively. Here, you will find Helm charts, alternative Docker images, and much more.
 
 ### Write Documentation or improve the website
 
@@ -61,7 +61,7 @@ If you are proposing a feature:
 - Explain in detail how it would work.
 - Keep the scope as narrow as possible, to make it easier to implement.
 - Use appropriate labels
-- Remember that this is a volunteer-driven project, and that contributions
+- Remember that this is a volunteer-driven project and that contributions
   are welcome :)
 
 ### Add your company to `ADOPTERS`
