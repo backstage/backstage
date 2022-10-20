@@ -499,28 +499,6 @@
         }
       }
     },
-    "homepage": {
-      "type": "object",
-      "properties": {
-        "clocks": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["label", "timezone"],
-            "properties": {
-              "label": {
-                "visibility": "frontend",
-                "type": "string"
-              },
-              "timezone": {
-                "visibility": "frontend",
-                "type": "string"
-              }
-            }
-          }
-        }
-      }
-    },
     "integrations": {
       "description": "Configuration for integrations towards various external repository provider systems",
       "type": "object",

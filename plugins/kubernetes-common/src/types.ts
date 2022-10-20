@@ -16,6 +16,7 @@
 
 import type { JsonObject } from '@backstage/types';
 import {
+  PodStatus,
   V1ConfigMap,
   V1CronJob,
   V1DaemonSet,
@@ -134,7 +135,8 @@ export type FetchResponse =
   | IngressesFetchResponse
   | CustomResourceFetchResponse
   | StatefulSetsFetchResponse
-  | DaemonSetsFetchResponse;
+  | DaemonSetsFetchResponse
+  | PodStatusFetchResponse;
 
 /** @public */
 export interface PodFetchResponse {
@@ -215,6 +217,12 @@ export interface DaemonSetsFetchResponse {
 }
 
 /** @public */
+export interface PodStatusFetchResponse {
+  type: 'podstatus';
+  resources: Array<PodStatus>;
+}
+
+/** @public */
 export interface KubernetesFetchError {
   errorType: KubernetesErrorTypes;
   statusCode?: number;
@@ -225,6 +233,7 @@ export interface KubernetesFetchError {
 export type KubernetesErrorTypes =
   | 'BAD_REQUEST'
   | 'UNAUTHORIZED_ERROR'
+  | 'NOT_FOUND'
   | 'SYSTEM_ERROR'
   | 'UNKNOWN_ERROR';
 
