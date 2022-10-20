@@ -134,7 +134,7 @@ This section describes guidelines for designing public APIs. It can also be appl
    }
    ```
 
-1. Use options as arguments to functions and methods, rather than positional arguments.
+1. When there is a significant number of arguments to a function or method, prefer to use a single options object as the argument, rather than many positional arguments.
 
    ```ts
    // Bad
