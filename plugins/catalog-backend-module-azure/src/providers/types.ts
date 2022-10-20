@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+
 export type AzureDevOpsConfig = {
   id: string;
   host: string;
@@ -21,4 +23,5 @@ export type AzureDevOpsConfig = {
   project: string;
   repository: string;
   path: string;
+  schedule?: TaskScheduleDefinition;
 };

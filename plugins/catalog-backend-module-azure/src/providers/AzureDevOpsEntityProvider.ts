@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TaskRunner } from '@backstage/backend-tasks';
+import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { AzureIntegration, ScmIntegrations } from '@backstage/integration';
 import {
@@ -45,10 +45,15 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
     configRoot: Config,
     options: {
       logger: Logger;
-      schedule: TaskRunner;
+      schedule?: TaskRunner;
+      scheduler?: PluginTaskScheduler;
     },
   ): AzureDevOpsEntityProvider[] {
     const providerConfigs = readAzureDevOpsConfigs(configRoot);
+
+    if (!options.schedule && !options.scheduler) {
+      throw new Error('Either schedule or scheduler must be provided.');
+    }
 
     return providerConfigs.map(providerConfig => {
       const integration = ScmIntegrations.fromConfig(configRoot).azure.byHost(
@@ -61,11 +66,21 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
         );
       }
 
+      if (!options.schedule && !providerConfig.schedule) {
+        throw new Error(
+          `No schedule provided neither via code nor config for AzureDevOpsEntityProvider:${providerConfig.id}.`,
+        );
+      }
+
+      const taskRunner =
+        options.schedule ??
+        options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
+
       return new AzureDevOpsEntityProvider(
         providerConfig,
         integration,
         options.logger,
-        options.schedule,
+        taskRunner,
       );
     });
   }
@@ -74,19 +89,19 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
     private readonly config: AzureDevOpsConfig,
     private readonly integration: AzureIntegration,
     logger: Logger,
-    schedule: TaskRunner,
+    taskRunner: TaskRunner,
   ) {
     this.logger = logger.child({
       target: this.getProviderName(),
     });
 
-    this.scheduleFn = this.createScheduleFn(schedule);
+    this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 
-  private createScheduleFn(schedule: TaskRunner): () => Promise<void> {
+  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:refresh`;
-      return schedule.run({
+      return taskRunner.run({
         id: taskId,
         fn: async () => {
           const logger = this.logger.child({

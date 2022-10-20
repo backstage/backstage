@@ -10,6 +10,7 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { JsonValue } from '@backstage/types';
+import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @alpha (undocumented)
@@ -31,7 +32,7 @@ export const catalogProcessingExtensionPoint: ExtensionPoint<CatalogProcessingEx
 export type CatalogProcessor = {
   getProcessorName(): string;
   readLocation?(
-    location: LocationSpec,
+    location: LocationSpec_2,
     optional: boolean,
     emit: CatalogProcessorEmit,
     parser: CatalogProcessorParser,
@@ -39,15 +40,15 @@ export type CatalogProcessor = {
   ): Promise<boolean>;
   preProcessEntity?(
     entity: Entity,
-    location: LocationSpec,
+    location: LocationSpec_2,
     emit: CatalogProcessorEmit,
-    originLocation: LocationSpec,
+    originLocation: LocationSpec_2,
     cache: CatalogProcessorCache,
   ): Promise<Entity>;
   validateEntityKind?(entity: Entity): Promise<boolean>;
   postProcessEntity?(
     entity: Entity,
-    location: LocationSpec,
+    location: LocationSpec_2,
     emit: CatalogProcessorEmit,
     cache: CatalogProcessorCache,
   ): Promise<Entity>;
@@ -66,26 +67,26 @@ export type CatalogProcessorEmit = (generated: CatalogProcessorResult) => void;
 export type CatalogProcessorEntityResult = {
   type: 'entity';
   entity: Entity;
-  location: LocationSpec;
+  location: LocationSpec_2;
 };
 
 // @public (undocumented)
 export type CatalogProcessorErrorResult = {
   type: 'error';
   error: Error;
-  location: LocationSpec;
+  location: LocationSpec_2;
 };
 
 // @public (undocumented)
 export type CatalogProcessorLocationResult = {
   type: 'location';
-  location: LocationSpec;
+  location: LocationSpec_2;
 };
 
 // @public
 export type CatalogProcessorParser = (options: {
   data: Buffer;
-  location: LocationSpec;
+  location: LocationSpec_2;
 }) => AsyncIterable<CatalogProcessorResult>;
 
 // @public (undocumented)
@@ -153,30 +154,26 @@ export type EntityRelationSpec = {
   target: CompoundEntityRef;
 };
 
-// @public
-export type LocationSpec = {
-  type: string;
-  target: string;
-  presence?: 'optional' | 'required';
-};
+// @public @deprecated
+export type LocationSpec = LocationSpec_2;
 
 // @public
 export const processingResult: Readonly<{
   readonly notFoundError: (
-    atLocation: LocationSpec,
+    atLocation: LocationSpec_2,
     message: string,
   ) => CatalogProcessorResult;
   readonly inputError: (
-    atLocation: LocationSpec,
+    atLocation: LocationSpec_2,
     message: string,
   ) => CatalogProcessorResult;
   readonly generalError: (
-    atLocation: LocationSpec,
+    atLocation: LocationSpec_2,
     message: string,
   ) => CatalogProcessorResult;
-  readonly location: (newLocation: LocationSpec) => CatalogProcessorResult;
+  readonly location: (newLocation: LocationSpec_2) => CatalogProcessorResult;
   readonly entity: (
-    atLocation: LocationSpec,
+    atLocation: LocationSpec_2,
     newEntity: Entity,
   ) => CatalogProcessorResult;
   readonly relation: (spec: EntityRelationSpec) => CatalogProcessorResult;

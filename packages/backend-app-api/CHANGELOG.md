@@ -1,5 +1,29 @@
 # @backstage/backend-app-api
 
+## 0.2.2
+
+### Patch Changes
+
+- 0027a749cd: Added possibility to configure index plugin of the HTTP router service.
+- 45857bffae: Properly export `rootLoggerFactory`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.2
+  - @backstage/backend-tasks@0.3.6
+  - @backstage/plugin-permission-node@0.7.0
+  - @backstage/backend-plugin-api@0.1.3
+  - @backstage/errors@1.1.2
+
+## 0.2.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.6-next.2
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/plugin-permission-node@0.7.0-next.2
+  - @backstage/backend-plugin-api@0.1.3-next.2
+  - @backstage/errors@1.1.2-next.2
+
 ## 0.2.2-next.1
 
 ### Patch Changes

@@ -65,6 +65,12 @@ export const scaffolderTaskRouteRef = createSubRouteRef({
   path: '/tasks/:taskId',
 });
 
+export const nextScaffolderTaskRouteRef = createSubRouteRef({
+  id: 'scaffolder/next/task',
+  parent: nextRouteRef,
+  path: '/tasks/:taskId',
+});
+
 export const scaffolderListTaskRouteRef = createSubRouteRef({
   id: 'scaffolder/list-tasks',
   parent: rootRouteRef,

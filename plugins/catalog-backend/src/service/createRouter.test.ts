@@ -36,6 +36,7 @@ import {
 } from '@backstage/plugin-permission-node';
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 import { CatalogProcessingOrchestrator } from '../processing/types';
+import { z } from 'zod';
 
 describe('createRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
@@ -695,6 +696,9 @@ describe('NextRouter permissioning', () => {
     name: 'FAKE_RULE',
     description: 'fake rule',
     resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+    paramsSchema: z.object({
+      foo: z.string(),
+    }),
     apply: () => true,
     toQuery: () => ({ key: '', values: [] }),
   });
@@ -758,7 +762,9 @@ describe('NextRouter permissioning', () => {
           conditions: {
             rule: 'FAKE_RULE',
             resourceType: 'catalog-entity',
-            params: ['user:default/spiderman'],
+            params: {
+              foo: 'user:default/spiderman',
+            },
           },
         },
       ],

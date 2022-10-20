@@ -18,10 +18,11 @@ import { Routes, Route, useOutlet } from 'react-router';
 import { TemplateListPage } from '../TemplateListPage';
 import { TemplateWizardPage } from '../TemplateWizardPage';
 import {
-  FieldExtensionOptions,
   FIELD_EXTENSION_WRAPPER_KEY,
   FIELD_EXTENSION_KEY,
   DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
+  NextFieldExtensionOptions,
+  FieldExtensionOptions,
 } from '../../extensions';
 
 import { useElementFilter } from '@backstage/core-plugin-api';
@@ -60,7 +61,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
       .selectByComponentData({
         key: FIELD_EXTENSION_WRAPPER_KEY,
       })
-      .findComponentData<FieldExtensionOptions>({
+      .findComponentData<FieldExtensionOptions | NextFieldExtensionOptions>({
         key: FIELD_EXTENSION_KEY,
       }),
   );
@@ -73,7 +74,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
           customFieldExtension => customFieldExtension.name === name,
         ),
     ),
-  ];
+  ] as NextFieldExtensionOptions[];
 
   return (
     <Routes>
@@ -86,7 +87,6 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
           />
         }
       />
-
       <Route
         path={nextSelectedTemplateRouteRef.path}
         element={

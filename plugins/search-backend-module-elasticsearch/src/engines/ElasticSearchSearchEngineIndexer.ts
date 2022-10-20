@@ -63,7 +63,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
 
   constructor(options: ElasticSearchSearchEngineIndexerOptions) {
     super({ batchSize: options.batchSize });
-    this.logger = options.logger;
+    this.logger = options.logger.child({ documentType: options.type });
     this.startTimestamp = process.hrtime();
     this.type = options.type;
     this.indexPrefix = options.indexPrefix;

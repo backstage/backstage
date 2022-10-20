@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.7.0",
       "releases/v1.6.0",
       "releases/v1.5.0",
       "releases/v1.4.0",
@@ -226,6 +227,7 @@
       "plugins/composability",
       "plugins/customization",
       "plugins/analytics",
+      "plugins/feature-flags",
       {
         "type": "subcategory",
         "label": "Backends and APIs",

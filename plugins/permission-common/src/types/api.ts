@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { JsonPrimitive } from '@backstage/types';
 import { ResourcePermission } from '.';
 import { Permission } from './permission';
 
@@ -101,11 +102,11 @@ export type PolicyDecision =
  */
 export type PermissionCondition<
   TResourceType extends string = string,
-  TParams extends unknown[] = unknown[],
+  TParams extends PermissionRuleParams = PermissionRuleParams,
 > = {
   resourceType: TResourceType;
   rule: string;
-  params: TParams;
+  params?: TParams;
 };
 
 /**
@@ -147,6 +148,22 @@ export type PermissionCriteria<TQuery> =
   | AnyOfCriteria<TQuery>
   | NotCriteria<TQuery>
   | TQuery;
+
+/**
+ * A parameter to a permission rule.
+ *
+ * @public
+ */
+export type PermissionRuleParam = undefined | JsonPrimitive | JsonPrimitive[];
+
+/**
+ * Types that can be used as parameters to permission rules.
+ *
+ * @public
+ */
+export type PermissionRuleParams =
+  | undefined
+  | Record<string, PermissionRuleParam>;
 
 /**
  * An individual request sent to the permission backend.

@@ -144,7 +144,9 @@ import {
 +   ) {
       return createTodoListConditionalDecision(
         request.permission,
-        todoListConditions.isOwner(user?.identity.userEntityRef),
+        todoListConditions.isOwner({
+          userId: user?.identity.userEntityRef
+        }),
       );
     }
 ```

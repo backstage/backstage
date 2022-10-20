@@ -227,7 +227,7 @@ describe('PermissionClient', () => {
             conditions: {
               resourceType: 'test-resource',
               rule: 'FOO',
-              params: ['bar'],
+              params: { foo: 'bar' },
             },
           }),
         );
@@ -275,7 +275,7 @@ describe('PermissionClient', () => {
           conditions: {
             rule: 'FOO',
             resourceType: 'test-resource',
-            params: ['bar'],
+            params: { foo: 'bar' },
           },
         }),
       );
