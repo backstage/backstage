@@ -25,7 +25,6 @@ import { AlertsPage } from '../AlertsPage';
 import { OnCallSchedulesPage } from '../OnCallSchedulesPage';
 import { ServicesPage } from '../ServicesPage';
 import { StatusPagesPage } from '../StatusPagePage';
-import { UptimeMonitorsPage } from '../UptimeMonitorsPage';
 
 /** @public */
 export const ILertPage = () => {
@@ -35,7 +34,6 @@ export const ILertPage = () => {
     { label: 'Alerts' },
     { label: 'Services' },
     { label: 'Status pages' },
-    { label: 'Uptime Monitors' },
   ];
   const renderTab = () => {
     switch (selectedTab) {
@@ -47,8 +45,6 @@ export const ILertPage = () => {
         return <ServicesPage />;
       case 3:
         return <StatusPagesPage />;
-      case 4:
-        return <UptimeMonitorsPage />;
       default:
         return null;
     }

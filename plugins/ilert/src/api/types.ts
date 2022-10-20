@@ -25,8 +25,7 @@ import {
   Schedule,
   Service,
   StatusPage,
-  UptimeMonitor,
-  User,
+  User
 } from '../types';
 
 /** @public */
@@ -82,11 +81,6 @@ export interface ILertApi {
   createAlert(eventRequest: EventRequest): Promise<boolean>;
   triggerAlertAction(alert: Alert, action: AlertAction): Promise<void>;
 
-  fetchUptimeMonitors(): Promise<UptimeMonitor[]>;
-  pauseUptimeMonitor(uptimeMonitor: UptimeMonitor): Promise<UptimeMonitor>;
-  resumeUptimeMonitor(uptimeMonitor: UptimeMonitor): Promise<UptimeMonitor>;
-  fetchUptimeMonitor(id: number): Promise<UptimeMonitor>;
-
   fetchAlertSources(): Promise<AlertSource[]>;
   fetchAlertSource(idOrIntegrationKey: number | string): Promise<AlertSource>;
   fetchAlertSourceOnCalls(alertSource: AlertSource): Promise<OnCall[]>;
@@ -115,7 +109,6 @@ export interface ILertApi {
   getAlertDetailsURL(alert: Alert): string;
   getAlertSourceDetailsURL(alertSource: AlertSource | null): string;
   getEscalationPolicyDetailsURL(escalationPolicy: EscalationPolicy): string;
-  getUptimeMonitorDetailsURL(uptimeMonitor: UptimeMonitor): string;
   getScheduleDetailsURL(schedule: Schedule): string;
   getServiceDetailsURL(service: Service): string;
   getStatusPageDetailsURL(statusPage: StatusPage): string;

@@ -352,32 +352,6 @@ export interface Shift {
 }
 
 /** @public */
-export interface UptimeMonitor {
-  id: number;
-  name: string;
-  region: 'EU' | 'US';
-  checkType: 'http' | 'tcp' | 'udp' | 'ping';
-  checkParams: UptimeMonitorCheckParams;
-  intervalSec: number;
-  timeoutMs: number;
-  createAlertAfterFailedChecks: number;
-  paused: boolean;
-  embedUrl: string;
-  shareUrl: string;
-  status: string;
-  lastStatusChange: string;
-  escalationPolicy: EscalationPolicy;
-  teams: TeamShort[];
-}
-
-/** @public */
-export interface UptimeMonitorCheckParams {
-  host?: string;
-  port?: number;
-  url?: string;
-}
-
-/** @public */
 export interface AlertResponder {
   group: 'SUGGESTED' | 'USER' | 'ESCALATION_POLICY' | 'ON_CALL_SCHEDULE';
   id: number;

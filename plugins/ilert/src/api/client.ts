@@ -30,7 +30,6 @@ import {
   Schedule,
   Service,
   StatusPage,
-  UptimeMonitor,
   User,
 } from '../types';
 import {
@@ -293,63 +292,6 @@ export class ILertClient implements ILertApi {
     return response;
   }
 
-  async fetchUptimeMonitors(): Promise<UptimeMonitor[]> {
-    const init = {
-      headers: JSON_HEADERS,
-    };
-
-    const response = await this.fetch('/api/uptime-monitors', init);
-
-    return response;
-  }
-
-  async fetchUptimeMonitor(id: number): Promise<UptimeMonitor> {
-    const init = {
-      headers: JSON_HEADERS,
-    };
-
-    const response: UptimeMonitor = await this.fetch(
-      `/api/uptime-monitors/${encodeURIComponent(id)}`,
-      init,
-    );
-
-    return response;
-  }
-
-  async pauseUptimeMonitor(
-    uptimeMonitor: UptimeMonitor,
-  ): Promise<UptimeMonitor> {
-    const init = {
-      method: 'PUT',
-      headers: JSON_HEADERS,
-      body: JSON.stringify({ ...uptimeMonitor, paused: true }),
-    };
-
-    const response = await this.fetch(
-      `/api/uptime-monitors/${encodeURIComponent(uptimeMonitor.id)}`,
-      init,
-    );
-
-    return response;
-  }
-
-  async resumeUptimeMonitor(
-    uptimeMonitor: UptimeMonitor,
-  ): Promise<UptimeMonitor> {
-    const init = {
-      method: 'PUT',
-      headers: JSON_HEADERS,
-      body: JSON.stringify({ ...uptimeMonitor, paused: false }),
-    };
-
-    const response = await this.fetch(
-      `/api/uptime-monitors/${encodeURIComponent(uptimeMonitor.id)}`,
-      init,
-    );
-
-    return response;
-  }
-
   async fetchAlertSources(): Promise<AlertSource[]> {
     const init = {
       headers: JSON_HEADERS,
@@ -543,12 +485,6 @@ export class ILertClient implements ILertApi {
   getEscalationPolicyDetailsURL(escalationPolicy: EscalationPolicy): string {
     return `${this.baseUrl}/policy/view.jsf?id=${encodeURIComponent(
       escalationPolicy.id,
-    )}`;
-  }
-
-  getUptimeMonitorDetailsURL(uptimeMonitor: UptimeMonitor): string {
-    return `${this.baseUrl}/uptime/view.jsf?id=${encodeURIComponent(
-      uptimeMonitor.id,
     )}`;
   }
 
