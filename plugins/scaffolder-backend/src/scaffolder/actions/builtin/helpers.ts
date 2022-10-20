@@ -21,6 +21,8 @@ import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
 import { Octokit } from 'octokit';
 import { PassThrough, Writable } from 'stream';
 import { Logger } from 'winston';
+import { BypassPullRequestAllowances } from '../types';
+
 
 /** @public */
 export type RunCommandOptions = {
@@ -184,6 +186,7 @@ type BranchProtectionOptions = {
   repoName: string;
   logger: Logger;
   requireCodeOwnerReviews: boolean;
+  bypassPullRequestAllowances?: BypassPullRequestAllowances;
   requiredStatusCheckContexts?: string[];
   requireBranchesToBeUpToDate?: boolean;
   defaultBranch?: string;
@@ -196,6 +199,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
   owner,
   logger,
   requireCodeOwnerReviews,
+  bypassPullRequestAllowances,
   requiredStatusCheckContexts = [],
   requireBranchesToBeUpToDate = true,
   defaultBranch = 'master',
@@ -226,6 +230,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
         required_pull_request_reviews: {
           required_approving_review_count: 1,
           require_code_owner_reviews: requireCodeOwnerReviews,
+          bypass_pull_request_allowances: bypassPullRequestAllowances,
         },
       });
     } catch (e) {

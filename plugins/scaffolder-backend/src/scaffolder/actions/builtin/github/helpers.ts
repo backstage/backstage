@@ -28,6 +28,7 @@ import {
   initRepoAndPush,
 } from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from '../publish/util';
+import { BypassPullRequestAllowances } from '../../types';
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 
@@ -247,6 +248,7 @@ export async function initRepoPushAndProtect(
   client: Octokit,
   repo: string,
   requireCodeOwnerReviews: boolean,
+  bypassPullRequestAllowances: BypassPullRequestAllowances,
   requiredStatusCheckContexts: string[],
   requireBranchesToBeUpToDate: boolean,
   config: Config,
@@ -289,6 +291,7 @@ export async function initRepoPushAndProtect(
         repoName: repo,
         logger,
         defaultBranch,
+        bypassPullRequestAllowances,
         requireCodeOwnerReviews,
         requiredStatusCheckContexts,
         requireBranchesToBeUpToDate,

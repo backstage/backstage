@@ -29,6 +29,7 @@ import {
 import * as inputProps from '../github/inputProperties';
 import * as outputProps from '../github/outputProperties';
 import { parseRepoUrl } from './util';
+import { BypassPullRequestAllowances } from '../../types';
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
  * and publishes it to GitHub.
@@ -60,6 +61,7 @@ export function createPublishGithubAction(options: {
     allowAutoMerge?: boolean;
     sourcePath?: string;
     requireCodeOwnerReviews?: boolean;
+    bypassPullRequestAllowances?: BypassPullRequestAllowances;
     requiredStatusCheckContexts?: string[];
     requireBranchesToBeUpToDate?: boolean;
     repoVisibility?: 'private' | 'internal' | 'public';
@@ -94,6 +96,7 @@ export function createPublishGithubAction(options: {
           homepage: inputProps.homepage,
           access: inputProps.access,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+          bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
           requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
           repoVisibility: inputProps.repoVisibility,
@@ -129,6 +132,7 @@ export function createPublishGithubAction(options: {
         homepage,
         access,
         requireCodeOwnerReviews = false,
+        bypassPullRequestAllowances,
         requiredStatusCheckContexts = [],
         requireBranchesToBeUpToDate = true,
         repoVisibility = 'private',
@@ -195,6 +199,7 @@ export function createPublishGithubAction(options: {
         client,
         repo,
         requireCodeOwnerReviews,
+        bypassPullRequestAllowances,
         requiredStatusCheckContexts,
         requireBranchesToBeUpToDate,
         config,
