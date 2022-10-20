@@ -16,3 +16,5 @@
 
 export { createCatalogRegisterAction } from './register';
 export { createCatalogWriteAction } from './write';
+export { createCatalogCheckAndRegister } from './checkAndRegister'
+
