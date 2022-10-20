@@ -17,8 +17,8 @@
 import { basicIntegrations, defaultScmResolveUrl } from '../helpers';
 import { ScmIntegration, ScmIntegrationsFactory } from '../types';
 import {
-  GitHubIntegrationConfig,
-  readGitHubIntegrationConfigs,
+  GithubIntegrationConfig,
+  readGithubIntegrationConfigs,
 } from './config';
 
 /**
@@ -26,18 +26,18 @@ import {
  *
  * @public
  */
-export class GitHubIntegration implements ScmIntegration {
-  static factory: ScmIntegrationsFactory<GitHubIntegration> = ({ config }) => {
-    const configs = readGitHubIntegrationConfigs(
+export class GithubIntegration implements ScmIntegration {
+  static factory: ScmIntegrationsFactory<GithubIntegration> = ({ config }) => {
+    const configs = readGithubIntegrationConfigs(
       config.getOptionalConfigArray('integrations.github') ?? [],
     );
     return basicIntegrations(
-      configs.map(c => new GitHubIntegration(c)),
+      configs.map(c => new GithubIntegration(c)),
       i => i.config.host,
     );
   };
 
-  constructor(private readonly integrationConfig: GitHubIntegrationConfig) {}
+  constructor(private readonly integrationConfig: GithubIntegrationConfig) {}
 
   get type(): string {
     return 'github';
@@ -47,7 +47,7 @@ export class GitHubIntegration implements ScmIntegration {
     return this.integrationConfig.host;
   }
 
-  get config(): GitHubIntegrationConfig {
+  get config(): GithubIntegrationConfig {
     return this.integrationConfig;
   }
 
@@ -59,11 +59,11 @@ export class GitHubIntegration implements ScmIntegration {
     // GitHub uses blob URLs for files and tree urls for directory listings. But
     // there is a redirect from tree to blob for files, so we can always return
     // tree urls here.
-    return replaceGitHubUrlType(defaultScmResolveUrl(options), 'tree');
+    return replaceGithubUrlType(defaultScmResolveUrl(options), 'tree');
   }
 
   resolveEditUrl(url: string): string {
-    return replaceGitHubUrlType(url, 'edit');
+    return replaceGithubUrlType(url, 'edit');
   }
 }
 
@@ -74,7 +74,7 @@ export class GitHubIntegration implements ScmIntegration {
  * @param type - The desired type, e.g. "blob"
  * @public
  */
-export function replaceGitHubUrlType(
+export function replaceGithubUrlType(
   url: string,
   type: 'blob' | 'tree' | 'edit',
 ): string {

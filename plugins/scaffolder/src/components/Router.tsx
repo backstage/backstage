@@ -65,6 +65,11 @@ export type RouterProps = {
     filter: (entity: Entity) => boolean;
   }>;
   defaultPreviewTemplate?: string;
+  headerOptions?: {
+    pageTitleOverride?: string;
+    title?: string;
+    subtitle?: string;
+  };
   /**
    * Options for the context menu on the scaffolder page.
    */
@@ -146,6 +151,7 @@ export const Router = (props: RouterProps) => {
             groups={groups}
             TemplateCardComponent={TemplateCardComponent}
             contextMenu={props.contextMenu}
+            headerOptions={props.headerOptions}
           />
         }
       />

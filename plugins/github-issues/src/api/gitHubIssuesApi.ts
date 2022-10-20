@@ -20,7 +20,7 @@ import {
   ErrorApi,
   OAuthApi,
 } from '@backstage/core-plugin-api';
-import { readGitHubIntegrationConfigs } from '@backstage/integration';
+import { readGithubIntegrationConfigs } from '@backstage/integration';
 import { ForwardedError } from '@backstage/errors';
 
 /** @internal */
@@ -115,7 +115,7 @@ export const gitHubIssuesApi = (
   let octokit: Octokit;
 
   const getOctokit = async () => {
-    const baseUrl = readGitHubIntegrationConfigs(
+    const baseUrl = readGithubIntegrationConfigs(
       configApi.getOptionalConfigArray('integrations.github') ?? [],
     )[0].apiBaseUrl;
 

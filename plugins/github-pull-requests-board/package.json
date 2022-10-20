@@ -45,6 +45,7 @@
     "@material-ui/lab": "4.0.0-alpha.57",
     "@octokit/rest": "^19.0.3",
     "luxon": "^3.0.0",
+    "p-limit": "^4.0.0",
     "react-use": "^17.2.4"
   },
   "devDependencies": {

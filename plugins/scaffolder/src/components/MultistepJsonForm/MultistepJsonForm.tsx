@@ -24,6 +24,8 @@ import {
 import {
   errorApiRef,
   featureFlagsApiRef,
+  useAnalytics,
+  useRouteRefParams,
   useApi,
 } from '@backstage/core-plugin-api';
 import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
@@ -35,6 +37,7 @@ import * as fieldOverrides from './FieldOverrides';
 import { LayoutOptions } from '../../layouts';
 import { LastStepFormProps, Step } from '../types';
 import { LastStepForm } from './LastStepForm';
+import { selectedTemplateRouteRef } from '../../routes';
 
 const Form = withTheme(MuiTheme);
 
@@ -72,6 +75,8 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
     layouts,
     LastStepFormComponent,
   } = props;
+  const { templateName } = useRouteRefParams(selectedTemplateRouteRef);
+  const analytics = useAnalytics();
   const [activeStep, setActiveStep] = useState(0);
   const [disableButtons, setDisableButtons] = useState(false);
   const errorApi = useApi(errorApiRef);
@@ -120,7 +125,9 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
     onReset();
   };
   const handleNext = () => {
-    setActiveStep(Math.min(activeStep + 1, steps.length));
+    const stepNum = Math.min(activeStep + 1, steps.length);
+    setActiveStep(stepNum);
+    analytics.captureEvent('click', `Next Step (${stepNum})`);
   };
   const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
   const handleCreate = async () => {
@@ -131,6 +138,7 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
     setDisableButtons(true);
     try {
       await onFinish();
+      analytics.captureEvent('create', formData.name || `new ${templateName}`);
     } catch (err) {
       errorApi.post(err);
     } finally {

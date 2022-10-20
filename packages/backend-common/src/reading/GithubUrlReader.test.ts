@@ -17,8 +17,8 @@
 import { ConfigReader } from '@backstage/config';
 import {
   GithubCredentialsProvider,
-  GitHubIntegration,
-  readGitHubIntegrationConfig,
+  GithubIntegration,
+  readGithubIntegrationConfig,
 } from '@backstage/integration';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
@@ -46,8 +46,8 @@ const mockCredentialsProvider = {
 } as unknown as GithubCredentialsProvider;
 
 const githubProcessor = new GithubUrlReader(
-  new GitHubIntegration(
-    readGitHubIntegrationConfig(
+  new GithubIntegration(
+    readGithubIntegrationConfig(
       new ConfigReader({
         host: 'github.com',
         apiBaseUrl: 'https://api.github.com',
@@ -58,8 +58,8 @@ const githubProcessor = new GithubUrlReader(
 );
 
 const gheProcessor = new GithubUrlReader(
-  new GitHubIntegration(
-    readGitHubIntegrationConfig(
+  new GithubIntegration(
+    readGithubIntegrationConfig(
       new ConfigReader({
         host: 'ghe.github.com',
         apiBaseUrl: 'https://ghe.github.com/api/v3',
@@ -539,8 +539,8 @@ describe('GithubUrlReader', () => {
       expect(() => {
         /* eslint-disable no-new */
         new GithubUrlReader(
-          new GitHubIntegration(
-            readGitHubIntegrationConfig(
+          new GithubIntegration(
+            readGithubIntegrationConfig(
               new ConfigReader({
                 host: 'ghe.mycompany.net',
               }),

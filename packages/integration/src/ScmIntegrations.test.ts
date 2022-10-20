@@ -29,8 +29,8 @@ import {
 } from './bitbucketServer';
 import { GerritIntegrationConfig } from './gerrit';
 import { GerritIntegration } from './gerrit/GerritIntegration';
-import { GitHubIntegrationConfig } from './github';
-import { GitHubIntegration } from './github/GitHubIntegration';
+import { GithubIntegrationConfig } from './github';
+import { GithubIntegration } from './github/GithubIntegration';
 import { GitLabIntegrationConfig } from './gitlab';
 import { GitLabIntegration } from './gitlab/GitLabIntegration';
 import { basicIntegrations } from './helpers';
@@ -61,9 +61,9 @@ describe('ScmIntegrations', () => {
     host: 'gerrit.local',
   } as GerritIntegrationConfig);
 
-  const github = new GitHubIntegration({
+  const github = new GithubIntegration({
     host: 'github.local',
-  } as GitHubIntegrationConfig);
+  } as GithubIntegrationConfig);
 
   const gitlab = new GitLabIntegration({
     host: 'gitlab.local',

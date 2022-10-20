@@ -101,13 +101,11 @@ export interface Config {
               secretAccessKey?: string;
               /**
                * ARN of role to be assumed
-               * @visibility backend
                */
               roleArn?: string;
             };
             /**
              * (Required) Cloud Storage Bucket Name
-             * @visibility backend
              */
             bucketName: string;
             /**
@@ -128,7 +126,6 @@ export interface Config {
              * (Optional) Whether to use path style URLs when communicating with S3.
              * Defaults to false.
              * This allows providers like LocalStack, Minio and Wasabi (and possibly others) to be used to host tech docs.
-             * @visibility backend
              */
             s3ForcePathStyle?: boolean;
 
@@ -167,17 +164,14 @@ export interface Config {
             };
             /**
              * (Required) Cloud Storage Container Name
-             * @visibility backend
              */
             containerName: string;
             /**
              * (Required) Auth url sometimes OpenStack uses different port check your OpenStack apis.
-             * @visibility backend
              */
             authUrl: string;
             /**
              * (Required) Swift URL
-             * @visibility backend
              */
             swiftUrl: string;
           };
@@ -209,7 +203,6 @@ export interface Config {
             };
             /**
              * (Required) Cloud Storage Container Name
-             * @visibility backend
              */
             containerName: string;
           };
@@ -223,7 +216,6 @@ export interface Config {
           googleGcs?: {
             /**
              * (Required) Cloud Storage Bucket Name
-             * @visibility backend
              */
             bucketName: string;
             /**
@@ -237,7 +229,6 @@ export interface Config {
              * (Optional) GCP project ID that contains the bucket. Should be
              * set if credentials is not set, or if the service account in
              * the credentials belongs to a different project to the bucket.
-             * @visibility backend
              */
             projectId?: string;
           };

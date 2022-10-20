@@ -22,7 +22,7 @@ import { ErrorRequestHandler } from 'express';
 import express from 'express';
 import { GerritIntegration } from '@backstage/integration';
 import { GithubCredentialsProvider } from '@backstage/integration';
-import { GitHubIntegration } from '@backstage/integration';
+import { GithubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
 import { isChildPath } from '@backstage/cli-common';
 import { JsonValue } from '@backstage/types';
@@ -409,7 +409,7 @@ export class Git {
 // @public
 export class GithubUrlReader implements UrlReader {
   constructor(
-    integration: GitHubIntegration,
+    integration: GithubIntegration,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
       credentialsProvider: GithubCredentialsProvider;
