@@ -8,3 +8,4 @@ documentation: https://backstage.io/docs/features/software-catalog/software-cata
 iconUrl: img/backstage-search-platform.svg
 npmPackageName: '@backstage/plugin-search'
 order: 5
+addedDate: '2022-09-07'
