@@ -177,7 +177,7 @@ An important distinction to make when looking at changes to an API Report is the
 
 #### Input Types
 
-A input type is one where a value needs to be provided by users of the package. The most common form of input type are function, constructor, and method parameters.
+An input type is one where a value needs to be provided by users of the package. The most common form of input type are function, constructor, and method parameters.
 
 The following is an example where `MyComponentProps` is an input type:
 
