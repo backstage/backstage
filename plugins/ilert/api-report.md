@@ -406,10 +406,6 @@ export interface ILertApi {
   // (undocumented)
   fetchStatusPages(opts?: GetStatusPagesOpts): Promise<StatusPage[]>;
   // (undocumented)
-  fetchUptimeMonitor(id: number): Promise<UptimeMonitor>;
-  // (undocumented)
-  fetchUptimeMonitors(): Promise<UptimeMonitor[]>;
-  // (undocumented)
   fetchUsers(): Promise<User[]>;
   // (undocumented)
   getAlertDetailsURL(alert: Alert): string;
@@ -426,8 +422,6 @@ export interface ILertApi {
   // (undocumented)
   getStatusPageURL(statusPage: StatusPage): string;
   // (undocumented)
-  getUptimeMonitorDetailsURL(uptimeMonitor: UptimeMonitor): string;
-  // (undocumented)
   getUserInitials(user: User | null): string;
   // (undocumented)
   getUserPhoneNumber(user: User | null): string;
@@ -439,11 +433,7 @@ export interface ILertApi {
     end: string,
   ): Promise<Schedule>;
   // (undocumented)
-  pauseUptimeMonitor(uptimeMonitor: UptimeMonitor): Promise<UptimeMonitor>;
-  // (undocumented)
   resolveAlert(alert: Alert, userName: string): Promise<Alert>;
-  // (undocumented)
-  resumeUptimeMonitor(uptimeMonitor: UptimeMonitor): Promise<UptimeMonitor>;
   // (undocumented)
   triggerAlertAction(alert: Alert, action: AlertAction): Promise<void>;
 }
@@ -499,10 +489,6 @@ export class ILertClient implements ILertApi {
   // (undocumented)
   fetchStatusPages(opts?: GetStatusPagesOpts): Promise<StatusPage[]>;
   // (undocumented)
-  fetchUptimeMonitor(id: number): Promise<UptimeMonitor>;
-  // (undocumented)
-  fetchUptimeMonitors(): Promise<UptimeMonitor[]>;
-  // (undocumented)
   fetchUsers(): Promise<User[]>;
   // (undocumented)
   static fromConfig(
@@ -524,8 +510,6 @@ export class ILertClient implements ILertApi {
   // (undocumented)
   getStatusPageURL(statusPage: StatusPage): string;
   // (undocumented)
-  getUptimeMonitorDetailsURL(uptimeMonitor: UptimeMonitor): string;
-  // (undocumented)
   getUserInitials(user: User | null): string;
   // (undocumented)
   getUserPhoneNumber(user: User | null): string;
@@ -537,11 +521,7 @@ export class ILertClient implements ILertApi {
     end: string,
   ): Promise<Schedule>;
   // (undocumented)
-  pauseUptimeMonitor(uptimeMonitor: UptimeMonitor): Promise<UptimeMonitor>;
-  // (undocumented)
   resolveAlert(alert: Alert, userName: string): Promise<Alert>;
-  // (undocumented)
-  resumeUptimeMonitor(uptimeMonitor: UptimeMonitor): Promise<UptimeMonitor>;
   // (undocumented)
   triggerAlertAction(alert: Alert, action: AlertAction): Promise<void>;
 }
@@ -784,50 +764,6 @@ export const UNDER_MAINTENANCE = 'UNDER_MAINTENANCE';
 export interface Uptime {
   // (undocumented)
   uptimePercentage: UptimePercentage;
-}
-
-// @public (undocumented)
-export interface UptimeMonitor {
-  // (undocumented)
-  checkParams: UptimeMonitorCheckParams;
-  // (undocumented)
-  checkType: 'http' | 'tcp' | 'udp' | 'ping';
-  // (undocumented)
-  createAlertAfterFailedChecks: number;
-  // (undocumented)
-  embedUrl: string;
-  // (undocumented)
-  escalationPolicy: EscalationPolicy;
-  // (undocumented)
-  id: number;
-  // (undocumented)
-  intervalSec: number;
-  // (undocumented)
-  lastStatusChange: string;
-  // (undocumented)
-  name: string;
-  // (undocumented)
-  paused: boolean;
-  // (undocumented)
-  region: 'EU' | 'US';
-  // (undocumented)
-  shareUrl: string;
-  // (undocumented)
-  status: string;
-  // (undocumented)
-  teams: TeamShort[];
-  // (undocumented)
-  timeoutMs: number;
-}
-
-// @public (undocumented)
-export interface UptimeMonitorCheckParams {
-  // (undocumented)
-  host?: string;
-  // (undocumented)
-  port?: number;
-  // (undocumented)
-  url?: string;
 }
 
 // @public (undocumented)

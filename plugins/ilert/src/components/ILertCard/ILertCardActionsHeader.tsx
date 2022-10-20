@@ -23,12 +23,11 @@ import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import BuildIcon from '@material-ui/icons/Build';
 import PauseIcon from '@material-ui/icons/Pause';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import TimelineIcon from '@material-ui/icons/Timeline';
 import WebIcon from '@material-ui/icons/Web';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import { ilertApiRef } from '../../api';
-import { AlertSource, UptimeMonitor } from '../../types';
+import { AlertSource } from '../../types';
 
 import {
   HeaderIconLinkRow,
@@ -41,13 +40,11 @@ export const ILertCardActionsHeader = ({
   setAlertSource,
   setIsNewAlertModalOpened,
   setIsMaintenanceModalOpened,
-  uptimeMonitor,
 }: {
   alertSource: AlertSource | null;
   setAlertSource: (alertSource: AlertSource) => void;
   setIsNewAlertModalOpened: (isOpen: boolean) => void;
   setIsMaintenanceModalOpened: (isOpen: boolean) => void;
-  uptimeMonitor: UptimeMonitor | null;
 }) => {
   const ilertApi = useApi(ilertApiRef);
   const alertApi = useApi(alertApiRef);
@@ -140,13 +137,6 @@ export const ILertCardActionsHeader = ({
     disabled: !alertSource || isLoading,
   };
 
-  const uptimeMonitorReportLink: IconLinkVerticalProps = {
-    label: 'Uptime Report',
-    href: uptimeMonitor ? uptimeMonitor.shareUrl : '',
-    icon: <TimelineIcon />,
-    disabled: !alertSource || !uptimeMonitor || isLoading,
-  };
-
   const links: IconLinkVerticalProps[] = [
     alertSourceLink,
     createAlertLink,
@@ -154,10 +144,6 @@ export const ILertCardActionsHeader = ({
       ? disableAlertSourceLink
       : enableAlertSourceLink,
   ];
-
-  if (alertSource && alertSource.integrationType === 'MONITOR') {
-    links.push(uptimeMonitorReportLink);
-  }
 
   if (alertSource && alertSource.status !== 'IN_MAINTENANCE') {
     links.push(maintenanceAlertSourceLink);

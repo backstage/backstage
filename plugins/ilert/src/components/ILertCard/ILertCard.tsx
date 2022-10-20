@@ -55,10 +55,8 @@ const useStyles = makeStyles({
 export const ILertCard = () => {
   const classes = useStyles();
   const { integrationKey, name } = useILertEntity();
-  const [
-    { alertSource, uptimeMonitor },
-    { setAlertSource, refetchAlertSource },
-  ] = useAlertSource(integrationKey);
+  const [{ alertSource }, { setAlertSource, refetchAlertSource }] =
+    useAlertSource(integrationKey);
   const [
     { tableState, states, alerts, alertsCount, isLoading, error },
     {
@@ -99,7 +97,6 @@ export const ILertCard = () => {
               setAlertSource={setAlertSource}
               setIsNewAlertModalOpened={setIsNewAlertModalOpened}
               setIsMaintenanceModalOpened={setIsMaintenanceModalOpened}
-              uptimeMonitor={uptimeMonitor}
             />
           }
           action={<ILertCardHeaderStatus alertSource={alertSource} />}
