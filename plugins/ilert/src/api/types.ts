@@ -25,7 +25,7 @@ import {
   Schedule,
   Service,
   StatusPage,
-  User
+  User,
 } from '../types';
 
 /** @public */
