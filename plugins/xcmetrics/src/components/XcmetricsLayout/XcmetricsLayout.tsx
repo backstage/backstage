@@ -23,7 +23,7 @@ import {
 } from '@backstage/core-components';
 import { Overview } from '../Overview';
 import { buildsRouteRef } from '../../routes';
-import { BuildsPage } from '../BuildsPage';
+import { BuildList } from '../BuildList';
 
 export interface TabConfig {
   path: string;
@@ -40,7 +40,7 @@ const TABS: TabConfig[] = [
   {
     path: buildsRouteRef.path,
     title: 'Builds',
-    component: <BuildsPage />,
+    component: <BuildList />,
   },
 ];
 
