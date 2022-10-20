@@ -27,6 +27,7 @@ import {
 } from './helpers';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
+import { BypassPullRequestAllowances } from '../../types';
 
 /**
  * Creates a new action that initializes a git repository
@@ -52,6 +53,7 @@ export function createGithubRepoCreateAction(options: {
     allowMergeCommit?: boolean;
     allowAutoMerge?: boolean;
     requireCodeOwnerReviews?: boolean;
+    bypassPullRequestAllowances?: BypassPullRequestAllowances;
     requiredStatusCheckContexts?: string[];
     requireBranchesToBeUpToDate?: boolean;
     repoVisibility?: 'private' | 'internal' | 'public';
@@ -85,6 +87,7 @@ export function createGithubRepoCreateAction(options: {
           homepage: inputProps.homepage,
           access: inputProps.access,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+          bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
           requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
           repoVisibility: inputProps.repoVisibility,

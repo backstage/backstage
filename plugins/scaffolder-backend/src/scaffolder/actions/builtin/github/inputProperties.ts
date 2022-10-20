@@ -147,6 +147,35 @@ const protectEnforceAdmins = {
   type: 'boolean',
   description: `Enforce admins to adhere to default branch protection. The default value is 'true'`,
 };
+
+const bypassPullRequestAllowances = {
+  title: 'Bypass pull request requirements',
+  description:
+    'Allow specific users, teams, or apps to bypass pull request requirements.',
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    apps: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    users: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    teams: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+  },
+};
+
 const gitCommitMessage = {
   title: 'Git Commit Message',
   type: 'string',
@@ -174,6 +203,7 @@ export { gitCommitMessage };
 export { homepage };
 export { protectDefaultBranch };
 export { protectEnforceAdmins };
+export { bypassPullRequestAllowances };
 export { repoUrl };
 export { repoVisibility };
 export { requireCodeOwnerReviews };

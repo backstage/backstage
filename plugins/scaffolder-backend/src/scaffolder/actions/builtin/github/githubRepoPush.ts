@@ -25,6 +25,7 @@ import { parseRepoUrl } from '../publish/util';
 import { getOctokitOptions, initRepoPushAndProtect } from './helpers';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
+import { BypassPullRequestAllowances } from '../../types';
 
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
@@ -49,6 +50,7 @@ export function createGithubRepoPushAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
     requireCodeOwnerReviews?: boolean;
+    bypassPullRequestAllowances?: BypassPullRequestAllowances;
     requiredStatusCheckContexts?: string[];
     requireBranchesToBeUpToDate?: boolean;
     sourcePath?: string;
@@ -64,6 +66,7 @@ export function createGithubRepoPushAction(options: {
         properties: {
           repoUrl: inputProps.repoUrl,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+          bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
           requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
           defaultBranch: inputProps.defaultBranch,
@@ -94,6 +97,7 @@ export function createGithubRepoPushAction(options: {
         gitAuthorName,
         gitAuthorEmail,
         requireCodeOwnerReviews = false,
+        bypassPullRequestAllowances,
         requiredStatusCheckContexts = [],
         requireBranchesToBeUpToDate = true,
         token: providedToken,
@@ -131,6 +135,7 @@ export function createGithubRepoPushAction(options: {
         client,
         repo,
         requireCodeOwnerReviews,
+        bypassPullRequestAllowances,
         requiredStatusCheckContexts,
         requireBranchesToBeUpToDate,
         config,
