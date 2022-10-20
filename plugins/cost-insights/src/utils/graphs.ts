@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { TooltipPayload, TooltipProps } from 'recharts';
+import { TooltipProps } from 'recharts';
+import { Payload } from 'recharts/types/component/DefaultTooltipContent';
 import { AlertCost, DataKey, Entity, ResourceData } from '../types';
 import {
   currencyFormatter,
@@ -22,7 +23,11 @@ import {
   lengthyCurrencyFormatter,
 } from './formatters';
 
-export function formatGraphValue(value: number, format?: string) {
+export function formatGraphValue(
+  value: number,
+  _index: number,
+  format?: string,
+) {
   if (format === 'number') {
     return value.toLocaleString();
   }
@@ -37,12 +42,12 @@ export function formatGraphValue(value: number, format?: string) {
 export const overviewGraphTickFormatter = (millis: string | number) =>
   typeof millis === 'number' ? dateFormatter.format(millis) : millis;
 
-export const tooltipItemOf = (payload: TooltipPayload) => {
+export const tooltipItemOf = (payload: Payload<string, string>) => {
   const value =
     typeof payload.value === 'number'
       ? currencyFormatter.format(payload.value)
-      : (payload.value as string);
-  const fill = payload.fill as string;
+      : payload.value;
+  const fill = payload.color as string;
 
   switch (payload.dataKey) {
     case DataKey.Current:
@@ -67,7 +72,7 @@ export const titleOf = (label?: string | number) => {
   return label ? String(label) : 'Unlabeled';
 };
 
-export const isInvalid = ({ label, payload }: TooltipProps) => {
+export const isInvalid = ({ label, payload }: TooltipProps<string, string>) => {
   // null labels are empty strings, which are valid
   return label === undefined || !payload || !payload.length;
 };
