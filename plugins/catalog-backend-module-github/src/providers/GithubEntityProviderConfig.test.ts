@@ -191,6 +191,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
       },
+      validateLocationsExist: false,
       schedule: undefined,
     });
     expect(providerConfigs[6]).toEqual({
