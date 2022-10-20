@@ -38616,16 +38616,15 @@ __metadata:
   linkType: hard
 
 "util@npm:^0.12.3, util@npm:^0.12.4":
-  version: 0.12.4
-  resolution: "util@npm:0.12.4"
+  version: 0.12.5
+  resolution: "util@npm:0.12.5"
   dependencies:
     inherits: ^2.0.3
     is-arguments: ^1.0.4
     is-generator-function: ^1.0.7
     is-typed-array: ^1.1.3
-    safe-buffer: ^5.1.2
     which-typed-array: ^1.1.2
-  checksum: 8eac7a6e6b341c0f1b3eb73bbe5dfcae31a7e9699c8fc3266789f3e95f7637946a7700dcf1904dbd3749a58a36760ebf7acf4bb5b717f7468532a8a79f44eff0
+  checksum: 705e51f0de5b446f4edec10739752ac25856541e0254ea1e7e45e5b9f9b0cb105bc4bd415736a6210edc68245a7f903bf085ffb08dd7deb8a0e847f60538a38a
   languageName: node
   linkType: hard
 
