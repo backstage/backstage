@@ -3301,7 +3301,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/catalog-model@^1.1.0-next.2, @backstage/catalog-model@^1.1.1, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
+"@backstage/catalog-model@^1.1.1, @backstage/catalog-model@^1.1.2, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
   version: 0.0.0-use.local
   resolution: "@backstage/catalog-model@workspace:packages/catalog-model"
   dependencies:
@@ -3515,7 +3515,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/config@^1.0.1, @backstage/config@workspace:^, @backstage/config@workspace:packages/config":
+"@backstage/config@^1.0.3, @backstage/config@workspace:^, @backstage/config@workspace:packages/config":
   version: 0.0.0-use.local
   resolution: "@backstage/config@workspace:packages/config"
   dependencies:
@@ -3561,7 +3561,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-components@^0.11.0, @backstage/core-components@^0.11.1, @backstage/core-components@workspace:^, @backstage/core-components@workspace:packages/core-components":
+"@backstage/core-components@^0.11.1, @backstage/core-components@^0.11.2, @backstage/core-components@workspace:^, @backstage/core-components@workspace:packages/core-components":
   version: 0.0.0-use.local
   resolution: "@backstage/core-components@workspace:packages/core-components"
   dependencies:
@@ -3633,7 +3633,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-plugin-api@^1.0.3, @backstage/core-plugin-api@^1.0.6, @backstage/core-plugin-api@workspace:^, @backstage/core-plugin-api@workspace:packages/core-plugin-api":
+"@backstage/core-plugin-api@^1.0.6, @backstage/core-plugin-api@^1.0.7, @backstage/core-plugin-api@workspace:^, @backstage/core-plugin-api@workspace:packages/core-plugin-api":
   version: 0.0.0-use.local
   resolution: "@backstage/core-plugin-api@workspace:packages/core-plugin-api"
   dependencies:
@@ -4772,7 +4772,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-common@^1.0.4-next.0, @backstage/plugin-catalog-common@workspace:^, @backstage/plugin-catalog-common@workspace:plugins/catalog-common":
+"@backstage/plugin-catalog-common@^1.0.7, @backstage/plugin-catalog-common@workspace:^, @backstage/plugin-catalog-common@workspace:plugins/catalog-common":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-common@workspace:plugins/catalog-common"
   dependencies:
@@ -4900,7 +4900,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-react@^1.1.2-next.2, @backstage/plugin-catalog-react@^1.1.4, @backstage/plugin-catalog-react@workspace:^, @backstage/plugin-catalog-react@workspace:plugins/catalog-react":
+"@backstage/plugin-catalog-react@^1.1.4, @backstage/plugin-catalog-react@^1.2.0, @backstage/plugin-catalog-react@workspace:^, @backstage/plugin-catalog-react@workspace:plugins/catalog-react":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-react@workspace:plugins/catalog-react"
   dependencies:
@@ -7674,7 +7674,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/theme@^0.2.16, @backstage/theme@^0.2.16-next.1, @backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
+"@backstage/theme@^0.2.16, @backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
   version: 0.0.0-use.local
   resolution: "@backstage/theme@workspace:packages/theme"
   dependencies:
@@ -11674,16 +11674,16 @@ __metadata:
   linkType: hard
 
 "@oriflame/backstage-plugin-score-card@npm:^0.5.1":
-  version: 0.5.3
-  resolution: "@oriflame/backstage-plugin-score-card@npm:0.5.3"
+  version: 0.5.4
+  resolution: "@oriflame/backstage-plugin-score-card@npm:0.5.4"
   dependencies:
-    "@backstage/catalog-model": ^1.1.0-next.2
-    "@backstage/config": ^1.0.1
-    "@backstage/core-components": ^0.11.0
-    "@backstage/core-plugin-api": ^1.0.3
-    "@backstage/plugin-catalog-common": ^1.0.4-next.0
-    "@backstage/plugin-catalog-react": ^1.1.2-next.2
-    "@backstage/theme": ^0.2.16-next.1
+    "@backstage/catalog-model": ^1.1.2
+    "@backstage/config": ^1.0.3
+    "@backstage/core-components": ^0.11.2
+    "@backstage/core-plugin-api": ^1.0.7
+    "@backstage/plugin-catalog-common": ^1.0.7
+    "@backstage/plugin-catalog-react": ^1.2.0
+    "@backstage/theme": ^0.2.16
     "@backstage/types": ^1.0.0
     "@backstage/version-bridge": ^1.0.1
     "@material-ui/core": ^4.12.2
@@ -11693,7 +11693,7 @@ __metadata:
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
-  checksum: 2f567d8838ecd938215899ce92e5569438bad8cdc521a938864a565497d4133f41f3710516abf3e375aaba881808de68ac41b249672943bda76fa54aa0352b06
+  checksum: 1c9e08ec4bac5487941d2823ccd923c474ec18a99d62b97047d4bd0cdd1c33660339cfba1085dc8e756675a3f03cfff9e33cb395afa8fb74cacd11ab1251547c
   languageName: node
   linkType: hard
 
