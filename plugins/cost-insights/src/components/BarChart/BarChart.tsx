@@ -19,11 +19,8 @@ import {
   Bar,
   BarChart as RechartsBarChart,
   CartesianGrid,
-  ContentRenderer,
-  TooltipProps as RechartsTooltipProps,
-  RechartsFunction,
-  ResponsiveContainer,
   Tooltip as RechartsTooltip,
+  ResponsiveContainer,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -34,20 +31,18 @@ import { BarChartTooltip } from './BarChartTooltip';
 import { BarChartTooltipItem } from './BarChartTooltipItem';
 import { currencyFormatter } from '../../utils/formatters';
 import {
-  BarChartData,
   ResourceData,
   DataKey,
   CostInsightsTheme,
+  BarChartOptions,
 } from '../../types';
 import { notEmpty } from '../../utils/assert';
 import { useBarChartStyles } from '../../utils/styles';
 import { resourceSort } from '../../utils/sort';
 import { isInvalid, titleOf, tooltipItemOf } from '../../utils/graphs';
+import { TooltipRenderer } from '../../types/Tooltip';
 
-export const defaultTooltip: ContentRenderer<RechartsTooltipProps> = ({
-  label,
-  payload = [],
-}) => {
+export const defaultTooltip: TooltipRenderer = ({ label, payload = [] }) => {
   if (isInvalid({ label, payload })) return null;
 
   const title = titleOf(label);
@@ -66,10 +61,10 @@ export type BarChartProps = {
   resources: ResourceData[];
   responsive?: boolean;
   displayAmount?: number;
-  options?: Partial<BarChartData>;
-  tooltip?: ContentRenderer<RechartsTooltipProps>;
-  onClick?: RechartsFunction;
-  onMouseMove?: RechartsFunction;
+  options?: Partial<BarChartOptions>;
+  tooltip?: TooltipRenderer;
+  onClick?: (...args: any[]) => void;
+  onMouseMove?: (...args: any[]) => void;
 };
 
 /** @public */
