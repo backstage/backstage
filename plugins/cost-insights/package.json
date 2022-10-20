@@ -49,7 +49,7 @@
     "pluralize": "^8.0.0",
     "qs": "^6.9.4",
     "react-use": "^17.2.4",
-    "recharts": "^1.8.5",
+    "recharts": "^2.0.0",
     "regression": "^2.0.1",
     "yup": "^0.32.9"
   },

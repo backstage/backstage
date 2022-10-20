@@ -21,13 +21,29 @@ import {
   ReviewDecision,
   PullRequestsColumn,
   Author,
+  PRCardFormating,
+  Repository,
 } from './types';
 import { COLUMNS } from './constants';
 
 const GITHUB_PULL_REQUESTS_ANNOTATION = 'github.com/project-slug';
+const GITHUB_USER_LOGIN_ANNOTATION = 'github.com/user-login';
 
-export const getProjectNameFromEntity = (entity: Entity): string => {
-  return entity?.metadata.annotations?.[GITHUB_PULL_REQUESTS_ANNOTATION] ?? '';
+export const getProjectNameFromEntity = (
+  entity: Entity,
+): string | undefined => {
+  return entity?.metadata.annotations?.[GITHUB_PULL_REQUESTS_ANNOTATION];
+};
+
+export const getUserNameFromEntity = (entity: Entity): string | undefined => {
+  return entity?.metadata.annotations?.[GITHUB_USER_LOGIN_ANNOTATION];
+};
+
+export const getGithubOrganizationFromEntity = (entity: Entity): string => {
+  return (
+    entity?.metadata?.annotations?.['github.com/team-slug']?.split('/')?.[0] ??
+    ''
+  );
 };
 
 export const getApprovedReviews = (reviews: Reviews = []): Reviews => {
@@ -106,4 +122,33 @@ export const formatPRsByReviewDecision = (
     { title: COLUMNS.REVIEW_IN_PROGRESS, content: reviewDecisions.IN_PROGRESS },
     { title: COLUMNS.APPROVED, content: reviewDecisions.APPROVED },
   ];
+};
+
+export const shouldDisplayCard = (
+  repository: Repository,
+  author: Author,
+  teamRepositories: string[],
+  teamMembers: string[],
+  infoCardFormat: PRCardFormating[],
+  isDraft: boolean,
+) => {
+  // hide draft PRs unless "draft" filter is toggled
+  if (infoCardFormat.includes('draft') !== isDraft) {
+    return false;
+  }
+
+  // when "team" filter is toggled on, only shows PR from team members
+  if (infoCardFormat.includes('team')) {
+    return teamMembers.includes(author.login);
+  }
+
+  const fullRepoName =
+    `${repository.owner.login}/${repository.name}`.toLocaleLowerCase('en-US');
+
+  const repositories = teamRepositories.map(repo =>
+    repo.toLocaleLowerCase('en-US'),
+  );
+
+  // when "team" filter is toggled off, only shows PR on team repos
+  return repositories.includes(fullRepoName);
 };

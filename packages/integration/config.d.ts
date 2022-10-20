@@ -164,7 +164,6 @@ export interface Config {
 
       /**
        * GitHub Apps configuration
-       * @visibility backend
        */
       apps?: Array<{
         /**
@@ -233,7 +232,6 @@ export interface Config {
     googleGcs?: {
       /**
        * Service account email used to authenticate requests.
-       * @visibility backend
        */
       clientEmail?: string;
       /**
@@ -265,7 +263,6 @@ export interface Config {
 
       /**
        * Account access key used to authenticate requests.
-       * @visibility backend
        */
       accessKeyId?: string;
       /**
@@ -276,13 +273,11 @@ export interface Config {
 
       /**
        * ARN of the role to be assumed
-       * @visibility backend
        */
       roleArn?: string;
 
       /**
        * External ID to use when assuming role
-       * @visibility backend
        */
       externalId?: string;
     }>;
