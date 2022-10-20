@@ -40,7 +40,6 @@ import {
   GetServicesOpts,
   GetStatusPagesOpts,
   ILertApi,
-  ServiceRequest,
 } from './types';
 
 /** @public */
@@ -504,20 +503,6 @@ export class ILertClient implements ILertApi {
       `/api/services?${query.toString()}`,
       init,
     );
-    return response;
-  }
-
-  async createService(serviceRequest: ServiceRequest): Promise<boolean> {
-    const init = {
-      method: 'POST',
-      headers: JSON_HEADERS,
-      body: JSON.stringify({
-        // apiKey: eventRequest.integrationKey,
-        name: serviceRequest.name,
-      }),
-    };
-
-    const response = await this.fetch('/api/services', init);
     return response;
   }
 

@@ -22,7 +22,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { ACCEPTED, AlertStatus, PENDING, RESOLVED } from '../../types';
-import { alertStatusLabels } from '../Alert/AlertStatus';
+import { alertStatusLabels } from './StatusChip';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;

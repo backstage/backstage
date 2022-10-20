@@ -23,7 +23,6 @@ import {
   StatusPage,
   UNDER_MAINTENANCE,
 } from '../../types';
-import { statusPageStatusLabels } from '../StatusPage/StatusPageStatus';
 
 const OperationalChip = withStyles({
   root: {
@@ -61,6 +60,14 @@ const MajorOutageChip = withStyles({
     margin: 0,
   },
 })(Chip);
+
+const statusPageStatusLabels = {
+  [OPERATIONAL]: 'Operational',
+  [UNDER_MAINTENANCE]: 'Under maintenance',
+  [DEGRADED]: 'Degraded',
+  [PARTIAL_OUTAGE]: 'Partial outage',
+  [MAJOR_OUTAGE]: 'Major outage',
+} as Record<string, string>;
 
 export const StatusChip = ({ statusPage }: { statusPage: StatusPage }) => {
   const label = `${statusPageStatusLabels[statusPage.status]}`;

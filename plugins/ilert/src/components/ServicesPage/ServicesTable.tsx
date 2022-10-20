@@ -50,91 +50,59 @@ export const ServicesTable = ({
 }) => {
   const classes = useStyles();
 
-  // const xsColumnStyle = {
-  //   width: '5%',
-  //   maxWidth: '5%',
-  // };
   const smColumnStyle = {
     width: '10%',
     maxWidth: '10%',
   };
-  // const mdColumnStyle = {
-  //   width: '15%',
-  //   maxWidth: '15%',
-  // };
-  // const lgColumnStyle = {
-  //   width: '20%',
-  //   maxWidth: '20%',
-  // };
   const xlColumnStyle = {
     width: '30%',
     maxWidth: '30%',
   };
-
-  const idColumn: TableColumn = {
+  const idColumn: TableColumn<Service> = {
     title: 'ID',
     field: 'id',
     highlight: true,
     cellStyle: smColumnStyle,
     headerStyle: smColumnStyle,
-    render: rowData => <ServiceLink service={rowData as Service} />,
+    render: rowData => <ServiceLink service={rowData} />,
   };
-  const nameColumn: TableColumn = {
+  const nameColumn: TableColumn<Service> = {
     title: 'Name',
     field: 'name',
     cellStyle: !compact ? xlColumnStyle : undefined,
     headerStyle: !compact ? xlColumnStyle : undefined,
-    render: rowData => <Typography>{(rowData as Service).name}</Typography>,
+    render: rowData => <Typography>{rowData.name}</Typography>,
   };
-  const statusColumn: TableColumn = {
+  const statusColumn: TableColumn<Service> = {
     title: 'Status',
     field: 'status',
     cellStyle: smColumnStyle,
     headerStyle: smColumnStyle,
-    render: rowData => <StatusChip service={rowData as Service} />,
+    render: rowData => <StatusChip service={rowData} />,
   };
-  const uptimeColumn: TableColumn = {
+  const uptimeColumn: TableColumn<Service> = {
     title: 'Uptime in the last 90 days',
     field: 'uptimePercentage',
     cellStyle: smColumnStyle,
     headerStyle: smColumnStyle,
     render: rowData => (
-      <Typography>
-        {(rowData as Service).uptime.uptimePercentage.p90}
-      </Typography>
+      <Typography>{rowData.uptime.uptimePercentage.p90}</Typography>
     ),
   };
-  const actionsColumn: TableColumn = {
+  const actionsColumn: TableColumn<Service> = {
     title: '',
     field: '',
     cellStyle: smColumnStyle,
     headerStyle: smColumnStyle,
-    render: rowData => <ServiceActionsMenu service={rowData as Service} />,
+    render: rowData => <ServiceActionsMenu service={rowData} />,
   };
 
-  const columns: TableColumn[] = compact
+  const columns: TableColumn<Service>[] = compact
     ? [nameColumn, statusColumn, uptimeColumn, actionsColumn]
     : [idColumn, nameColumn, statusColumn, uptimeColumn, actionsColumn];
-  let tableStyle: React.CSSProperties = {};
-  if (compact) {
-    tableStyle = {
-      width: '100%',
-      maxWidth: '100%',
-      minWidth: '0',
-      height: 'calc(100% - 10px)',
-      boxShadow: 'none !important',
-      borderRadius: 'none !important',
-    };
-  } else {
-    tableStyle = {
-      width: '100%',
-      maxWidth: '100%',
-    };
-  }
 
   return (
     <Table
-      style={tableStyle}
       options={{
         sorting: false,
         search: !compact,
@@ -161,7 +129,6 @@ export const ServicesTable = ({
       page={tableState.page}
       onPageChange={onChangePage}
       onRowsPerPageChange={onChangeRowsPerPage}
-      // localization={{ header: { actions: undefined } }}
       columns={columns}
       data={services}
       isLoading={isLoading}

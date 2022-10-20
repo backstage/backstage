@@ -380,8 +380,6 @@ export interface ILertApi {
   // (undocumented)
   createAlert(eventRequest: EventRequest): Promise<boolean>;
   // (undocumented)
-  createService(serviceRequest: ServiceRequest): Promise<boolean>;
-  // (undocumented)
   disableAlertSource(alertSource: AlertSource): Promise<AlertSource>;
   // (undocumented)
   enableAlertSource(alertSource: AlertSource): Promise<AlertSource>;
@@ -474,8 +472,6 @@ export class ILertClient implements ILertApi {
   assignAlert(alert: Alert, responder: AlertResponder): Promise<Alert>;
   // (undocumented)
   createAlert(eventRequest: EventRequest): Promise<boolean>;
-  // (undocumented)
-  createService(serviceRequest: ServiceRequest): Promise<boolean>;
   // (undocumented)
   disableAlertSource(alertSource: AlertSource): Promise<AlertSource>;
   // (undocumented)
@@ -708,11 +704,6 @@ export interface Service {
   // (undocumented)
   uptime: Uptime;
 }
-
-// @public (undocumented)
-export type ServiceRequest = {
-  name: string;
-};
 
 // @public (undocumented)
 export type ServiceStatus =

@@ -19,7 +19,6 @@ import {
   ResponseErrorPanel,
   SupportButton,
 } from '@backstage/core-components';
-import { AuthenticationError } from '@backstage/errors';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import React from 'react';
@@ -48,7 +47,7 @@ export const AlertsPage = () => {
   };
 
   if (error) {
-    if (error instanceof AuthenticationError) {
+    if (error.name === 'AuthenticationError') {
       return (
         <Content>
           <MissingAuthorizationHeaderError />

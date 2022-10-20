@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { ilertApiRef } from '../../api';
 import { Service } from '../../types';
@@ -21,23 +20,12 @@ import { Service } from '../../types';
 import { Link } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
-const useStyles = makeStyles({
-  link: {
-    lineHeight: '22px',
-  },
-});
-
 export const ServiceLink = ({ service }: { service: Service | null }) => {
   const ilertApi = useApi(ilertApiRef);
-  const classes = useStyles();
 
   if (!service) {
     return null;
   }
 
-  return (
-    <Link className={classes.link} to={ilertApi.getServiceDetailsURL(service)}>
-      #{service.id}
-    </Link>
-  );
+  return <Link to={ilertApi.getServiceDetailsURL(service)}>#{service.id}</Link>;
 };

@@ -14,4 +14,3 @@
  * limitations under the License.
  */
 export * from './AlertActionsMenu';
-export * from './AlertStatus';

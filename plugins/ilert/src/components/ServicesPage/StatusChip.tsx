@@ -23,7 +23,6 @@ import {
   Service,
   UNDER_MAINTENANCE,
 } from '../../types';
-import { serviceStatusLabels } from '../Service/ServiceStatus';
 
 const OperationalChip = withStyles({
   root: {
@@ -61,6 +60,14 @@ const MajorOutageChip = withStyles({
     margin: 0,
   },
 })(Chip);
+
+const serviceStatusLabels = {
+  [OPERATIONAL]: 'Operational',
+  [UNDER_MAINTENANCE]: 'Under maintenance',
+  [DEGRADED]: 'Degraded',
+  [PARTIAL_OUTAGE]: 'Partial outage',
+  [MAJOR_OUTAGE]: 'Major outage',
+} as Record<string, string>;
 
 export const StatusChip = ({ service }: { service: Service }) => {
   const label = `${serviceStatusLabels[service.status]}`;

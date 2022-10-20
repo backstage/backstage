@@ -22,6 +22,5 @@ export type {
   GetServicesOpts,
   GetStatusPagesOpts,
   ILertApi,
-  ServiceRequest as ServiceRequest,
   TableState,
 } from './types';

@@ -52,74 +52,60 @@ export const StatusPagesTable = ({
 }) => {
   const classes = useStyles();
 
-  // const xsColumnStyle = {
-  //   width: '5%',
-  //   maxWidth: '5%',
-  // };
   const smColumnStyle = {
     width: '10%',
     maxWidth: '10%',
   };
-  // const mdColumnStyle = {
-  //   width: '15%',
-  //   maxWidth: '15%',
-  // };
-  // const lgColumnStyle = {
-  //   width: '20%',
-  //   maxWidth: '20%',
-  // };
   const xlColumnStyle = {
     width: '30%',
     maxWidth: '30%',
   };
 
-  const idColumn: TableColumn = {
+  const idColumn: TableColumn<StatusPage> = {
     title: 'ID',
     field: 'id',
     highlight: true,
     cellStyle: smColumnStyle,
     headerStyle: smColumnStyle,
-    render: rowData => <StatusPageLink statusPage={rowData as StatusPage} />,
+    render: rowData => <StatusPageLink statusPage={rowData} />,
   };
-  const nameColumn: TableColumn = {
+  const nameColumn: TableColumn<StatusPage> = {
     title: 'Name',
     field: 'name',
     cellStyle: !compact ? xlColumnStyle : undefined,
     headerStyle: !compact ? xlColumnStyle : undefined,
-    render: rowData => <Typography>{(rowData as StatusPage).name}</Typography>,
+    render: rowData => <Typography>{rowData.name}</Typography>,
   };
-  const urlColumn: TableColumn = {
+  const urlColumn: TableColumn<StatusPage> = {
     title: 'URL',
     field: 'url',
     cellStyle: smColumnStyle,
     headerStyle: smColumnStyle,
-    render: rowData => <StatusPageURL statusPage={rowData as StatusPage} />,
+    render: rowData => <StatusPageURL statusPage={rowData} />,
   };
-  const visibilityColumn: TableColumn = {
+  const visibilityColumn: TableColumn<StatusPage> = {
     title: 'Visibility',
     field: 'visibility',
     cellStyle: smColumnStyle,
     headerStyle: smColumnStyle,
-    render: rowData => <VisibilityChip statusPage={rowData as StatusPage} />,
+    render: rowData => <VisibilityChip statusPage={rowData} />,
   };
-  const statusColumn: TableColumn = {
+  const statusColumn: TableColumn<StatusPage> = {
     title: 'Status',
     field: 'status',
     cellStyle: smColumnStyle,
     headerStyle: smColumnStyle,
-    render: rowData => <StatusChip statusPage={rowData as StatusPage} />,
+    render: rowData => <StatusChip statusPage={rowData} />,
   };
-  const actionsColumn: TableColumn = {
+  const actionsColumn: TableColumn<StatusPage> = {
     title: '',
     field: '',
     cellStyle: smColumnStyle,
     headerStyle: smColumnStyle,
-    render: rowData => (
-      <StatusPageActionsMenu statusPage={rowData as StatusPage} />
-    ),
+    render: rowData => <StatusPageActionsMenu statusPage={rowData} />,
   };
 
-  const columns: TableColumn[] = compact
+  const columns: TableColumn<StatusPage>[] = compact
     ? [nameColumn, statusColumn, urlColumn, actionsColumn]
     : [
         idColumn,
@@ -129,26 +115,9 @@ export const StatusPagesTable = ({
         visibilityColumn,
         actionsColumn,
       ];
-  let tableStyle: React.CSSProperties = {};
-  if (compact) {
-    tableStyle = {
-      width: '100%',
-      maxWidth: '100%',
-      minWidth: '0',
-      height: 'calc(100% - 10px)',
-      boxShadow: 'none !important',
-      borderRadius: 'none !important',
-    };
-  } else {
-    tableStyle = {
-      width: '100%',
-      maxWidth: '100%',
-    };
-  }
 
   return (
     <Table
-      style={tableStyle}
       options={{
         sorting: false,
         search: !compact,
@@ -175,7 +144,6 @@ export const StatusPagesTable = ({
       page={tableState.page}
       onPageChange={onChangePage}
       onRowsPerPageChange={onChangeRowsPerPage}
-      // localization={{ header: { actions: undefined } }}
       columns={columns}
       data={statusPages}
       isLoading={isLoading}

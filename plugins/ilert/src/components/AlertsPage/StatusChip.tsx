@@ -16,7 +16,6 @@
 import { Chip, withStyles } from '@material-ui/core';
 import React from 'react';
 import { ACCEPTED, Alert, PENDING, RESOLVED } from '../../types';
-import { alertStatusLabels } from '../Alert/AlertStatus';
 
 const ResolvedChip = withStyles({
   root: {
@@ -40,6 +39,12 @@ const PendingChip = withStyles({
     margin: 0,
   },
 })(Chip);
+
+export const alertStatusLabels = {
+  [RESOLVED]: 'Resolved',
+  [ACCEPTED]: 'Accepted',
+  [PENDING]: 'Pending',
+} as Record<string, string>;
 
 export const StatusChip = ({ alert }: { alert: Alert }) => {
   const label = `${alertStatusLabels[alert.status]}`;

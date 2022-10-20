@@ -86,31 +86,29 @@ export const AlertsTable = ({
     maxWidth: '30%',
   };
 
-  const idColumn: TableColumn = {
+  const idColumn: TableColumn<Alert> = {
     title: 'ID',
     field: 'id',
     highlight: true,
     cellStyle: smColumnStyle,
     headerStyle: smColumnStyle,
-    render: rowData => <AlertLink alert={rowData as Alert} />,
+    render: rowData => <AlertLink alert={rowData} />,
   };
-  const summaryColumn: TableColumn = {
+  const summaryColumn: TableColumn<Alert> = {
     title: 'Summary',
     field: 'summary',
     cellStyle: !compact ? xlColumnStyle : undefined,
     headerStyle: !compact ? xlColumnStyle : undefined,
-    render: rowData => <Typography>{(rowData as Alert).summary}</Typography>,
+    render: rowData => <Typography>{rowData.summary}</Typography>,
   };
-  const sourceColumn: TableColumn = {
+  const sourceColumn: TableColumn<Alert> = {
     title: 'Source',
     field: 'source',
     cellStyle: mdColumnStyle,
     headerStyle: mdColumnStyle,
-    render: rowData => (
-      <AlertSourceLink alertSource={(rowData as Alert).alertSource} />
-    ),
+    render: rowData => <AlertSourceLink alertSource={rowData.alertSource} />,
   };
-  const durationColumn: TableColumn = {
+  const durationColumn: TableColumn<Alert> = {
     title: 'Duration',
     field: 'reportTime',
     type: 'datetime',
@@ -118,20 +116,17 @@ export const AlertsTable = ({
     headerStyle: smColumnStyle,
     render: rowData => (
       <Typography noWrap>
-        {(rowData as Alert).status !== 'RESOLVED'
+        {rowData.status !== 'RESOLVED'
           ? humanizeDuration(
-              Interval.fromDateTimes(
-                dt.fromISO((rowData as Alert).reportTime),
-                dt.now(),
-              )
+              Interval.fromDateTimes(dt.fromISO(rowData.reportTime), dt.now())
                 .toDuration()
                 .valueOf(),
               { units: ['h', 'm', 's'], largest: 2, round: true },
             )
           : humanizeDuration(
               Interval.fromDateTimes(
-                dt.fromISO((rowData as Alert).reportTime),
-                dt.fromISO((rowData as Alert).resolvedOn),
+                dt.fromISO(rowData.reportTime),
+                dt.fromISO(rowData.resolvedOn),
               )
                 .toDuration()
                 .valueOf(),
@@ -140,14 +135,14 @@ export const AlertsTable = ({
       </Typography>
     ),
   };
-  const respondersColumn: TableColumn = {
+  const respondersColumn: TableColumn<Alert> = {
     title: 'Responders',
     field: 'responders',
     cellStyle: !compact ? mdColumnStyle : lgColumnStyle,
     headerStyle: !compact ? mdColumnStyle : lgColumnStyle,
     render: rowData => (
       <Typography>
-        {(rowData as Alert).responders.map((value, i, arr) => {
+        {rowData.responders.map((value, i, arr) => {
           return (
             ilertApi.getUserInitials(value.user) +
             (arr.length - 1 !== i ? ', ' : '')
@@ -156,39 +151,39 @@ export const AlertsTable = ({
       </Typography>
     ),
   };
-  const priorityColumn: TableColumn = {
+  const priorityColumn: TableColumn<Alert> = {
     title: 'Priority',
     field: 'priority',
     cellStyle: smColumnStyle,
     headerStyle: smColumnStyle,
     render: rowData => (
       <Typography noWrap>
-        {(rowData as Alert).priority === 'HIGH' ? 'High' : 'Low'}
+        {rowData.priority === 'HIGH' ? 'High' : 'Low'}
       </Typography>
     ),
   };
-  const statusColumn: TableColumn = {
+  const statusColumn: TableColumn<Alert> = {
     title: 'Status',
     field: 'status',
     cellStyle: xsColumnStyle,
     headerStyle: xsColumnStyle,
-    render: rowData => <StatusChip alert={rowData as Alert} />,
+    render: rowData => <StatusChip alert={rowData} />,
   };
-  const actionsColumn: TableColumn = {
+  const actionsColumn: TableColumn<Alert> = {
     title: '',
     field: '',
     cellStyle: xsColumnStyle,
     headerStyle: xsColumnStyle,
     render: rowData => (
       <AlertActionsMenu
-        alert={rowData as Alert}
+        alert={rowData}
         onAlertChanged={onAlertChanged}
         setIsLoading={setIsLoading}
       />
     ),
   };
 
-  const columns: TableColumn[] = compact
+  const columns: TableColumn<Alert>[] = compact
     ? [
         summaryColumn,
         durationColumn,
@@ -206,26 +201,9 @@ export const AlertsTable = ({
         statusColumn,
         actionsColumn,
       ];
-  let tableStyle: React.CSSProperties = {};
-  if (compact) {
-    tableStyle = {
-      width: '100%',
-      maxWidth: '100%',
-      minWidth: '0',
-      height: 'calc(100% - 10px)',
-      boxShadow: 'none !important',
-      borderRadius: 'none !important',
-    };
-  } else {
-    tableStyle = {
-      width: '100%',
-      maxWidth: '100%',
-    };
-  }
 
   return (
     <Table
-      style={tableStyle}
       options={{
         sorting: false,
         search: !compact,
@@ -260,7 +238,6 @@ export const AlertsTable = ({
       totalCount={alertsCount}
       onPageChange={onChangePage}
       onRowsPerPageChange={onChangeRowsPerPage}
-      // localization={{ header: { actions: undefined } }}
       columns={columns}
       data={alerts}
       isLoading={isLoading}

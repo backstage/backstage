@@ -19,7 +19,6 @@ import {
   ResponseErrorPanel,
   SupportButton,
 } from '@backstage/core-components';
-import { AuthenticationError } from '@backstage/errors';
 import React from 'react';
 import { useServices } from '../../hooks/useServices';
 import { MissingAuthorizationHeaderError } from '../Errors';
@@ -32,7 +31,7 @@ export const ServicesPage = () => {
   ] = useServices(true);
 
   if (error) {
-    if (error instanceof AuthenticationError) {
+    if (error.name === 'AuthenticationError') {
       return (
         <Content>
           <MissingAuthorizationHeaderError />

@@ -70,11 +70,6 @@ export type EventRequest = {
 };
 
 /** @public */
-export type ServiceRequest = {
-  name: string;
-};
-
-/** @public */
 export interface ILertApi {
   fetchAlerts(opts?: GetAlertsOpts): Promise<Alert[]>;
   fetchAlertsCount(opts?: GetAlertsCountOpts): Promise<number>;
@@ -114,7 +109,6 @@ export interface ILertApi {
   ): Promise<Schedule>;
 
   fetchServices(opts?: GetServicesOpts): Promise<Service[]>;
-  createService(serviceRequest: ServiceRequest): Promise<boolean>;
 
   fetchStatusPages(opts?: GetStatusPagesOpts): Promise<StatusPage[]>;
 

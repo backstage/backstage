@@ -16,7 +16,6 @@
 import { Chip, withStyles } from '@material-ui/core';
 import React from 'react';
 import { PRIVATE, PUBLIC, StatusPage } from '../../types';
-import { statusPageVisibilityLabels } from '../StatusPage/StatusPageVisibility';
 
 const PrivateChip = withStyles({
   root: {
@@ -33,6 +32,11 @@ const PublicChip = withStyles({
     margin: 0,
   },
 })(Chip);
+
+const statusPageVisibilityLabels = {
+  [PUBLIC]: 'Public',
+  [PRIVATE]: 'Private',
+} as Record<string, string>;
 
 export const VisibilityChip = ({ statusPage }: { statusPage: StatusPage }) => {
   const label = `${statusPageVisibilityLabels[statusPage.visibility]}`;
