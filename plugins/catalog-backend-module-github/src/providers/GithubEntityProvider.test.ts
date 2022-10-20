@@ -424,7 +424,7 @@ describe('GithubEntityProvider', () => {
       refresh: jest.fn(),
     };
 
-    const provider = GitHubEntityProvider.fromConfig(config, {
+    const provider = GithubEntityProvider.fromConfig(config, {
       logger,
       schedule,
     })[0];
@@ -542,70 +542,70 @@ describe('GithubEntityProvider', () => {
       'getOrganizationRepositories',
     );
 
-  mockGetOrganizationRepositories.mockReturnValue(
-    Promise.resolve({
-      repositories: [
-        {
-          name: 'test-repo',
-          url: 'https://github.com/test-org/test-repo',
-          repositoryTopics: {
-            nodes: [
-              {
-                topic: { name: 'backstage-include' },
-              },
-            ],
+    mockGetOrganizationRepositories.mockReturnValue(
+      Promise.resolve({
+        repositories: [
+          {
+            name: 'test-repo',
+            url: 'https://github.com/test-org/test-repo',
+            repositoryTopics: {
+              nodes: [
+                {
+                  topic: { name: 'backstage-include' },
+                },
+              ],
+            },
+            isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
+            catalogInfoFile: {
+              __typename: 'Blob',
+              id: 'abc123',
+              text: 'some yaml',
+            },
           },
-          isArchived: false,
-          defaultBranchRef: {
-            name: 'main',
+          {
+            name: 'test-repo-2',
+            url: 'https://github.com/test-org/test-repo-2',
+            repositoryTopics: {
+              nodes: [
+                {
+                  topic: { name: 'backstage-include' },
+                },
+                {
+                  topic: { name: 'backstage-exclude' },
+                },
+              ],
+            },
+            isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
+            catalogInfoFile: {
+              __typename: 'Blob',
+              id: 'abc123',
+              text: 'some yaml',
+            },
           },
-          catalogInfoFile: {
-            __typename: 'Blob',
-            id: 'abc123',
-            text: 'some yaml',
-          },
-        },
-        {
-          name: 'test-repo-2',
-          url: 'https://github.com/test-org/test-repo-2',
-          repositoryTopics: {
-            nodes: [
-              {
-                topic: { name: 'backstage-include' },
-              },
-              {
-                topic: { name: 'backstage-exclude' },
-              },
-            ],
-          },
-          isArchived: false,
-          defaultBranchRef: {
-            name: 'main',
-          },
-          catalogInfoFile: {
-            __typename: 'Blob',
-            id: 'abc123',
-            text: 'some yaml',
-          },
-        },
-        {
-          name: 'test-repo-3',
-          url: 'https://github.com/test-org/test-repo-3',
-          repositoryTopics: {
-            nodes: [
-              {
-                topic: { name: 'backstage-exclude' },
-              },
-            ],
-          },
-          isArchived: false,
-          defaultBranchRef: {
-            name: 'main',
-          },
-          catalogInfoFile: {
-            __typename: 'Blob',
-            id: 'abc123',
-            text: 'some yaml',
+          {
+            name: 'test-repo-3',
+            url: 'https://github.com/test-org/test-repo-3',
+            repositoryTopics: {
+              nodes: [
+                {
+                  topic: { name: 'backstage-exclude' },
+                },
+              ],
+            },
+            isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
+            catalogInfoFile: {
+              __typename: 'Blob',
+              id: 'abc123',
+              text: 'some yaml',
             },
           },
         ],
