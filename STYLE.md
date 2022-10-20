@@ -134,6 +134,31 @@ This section describes guidelines for designing public APIs. It can also be appl
    }
    ```
 
+1. Use options as arguments to functions and methods, rather than positional arguments.
+
+   ```ts
+   // Bad
+   function createWidget(id: string, name: string, width: number) {}
+
+   // Good
+   function createWidget(options: CreateWidgetOptions) {}
+   ```
+
+1. Avoid arrays as return types prefer response objects.
+
+   ```ts
+   interface UserApi {
+     // Bad
+     // Can only return Users without signaling additional information such as pagination.
+     listUsers(): Promise<User[]>;
+
+     // Good
+     // Easy to evolve with additional fields.
+     listUsers(): Promise<ListUsersResponse>;
+   }
+   ```
+
+
 # Documentation Guidelines
 
 We use [API Extractor](https://api-extractor.com/pages/overview/demo_docs/) to generate our documentation, which in turn uses [TSDoc](https://github.com/microsoft/tsdoc) to parse our doc comments.
