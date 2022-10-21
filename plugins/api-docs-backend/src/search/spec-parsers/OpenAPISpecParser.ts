@@ -14,92 +14,90 @@
  * limitations under the License.
  */
 
-import {major, coerce } from "semver";
-import { SpecParser } from "./SpecHandler";
-import { OpenAPI,  OpenAPIV3, OpenAPIV2 } from 'openapi-types';
-import { parse } from 'yaml'
-
+import { major, coerce } from 'semver';
+import { SpecParser } from './SpecHandler';
+import { OpenAPI, OpenAPIV3, OpenAPIV2 } from 'openapi-types';
+import { parse } from 'yaml';
 
 export class OpenAPISpecParser implements SpecParser {
-    
-    specType: string = 'openapi'
+  specType: string = 'openapi';
 
+  getV3SpecText(spec: OpenAPIV3.Document): (string | undefined)[] {
+    const pathTexts: (string | undefined)[] = [];
+    for (const path in spec.paths) {
+      pathTexts.push(path);
+      const pathDetails = spec.paths[path];
+      if (pathDetails) {
+        Object.values(OpenAPIV3.HttpMethods).forEach(method => {
+          const pathMethod = pathDetails[method];
+          pathTexts.push(pathMethod?.summary);
+          pathTexts.push(pathMethod?.description);
+          pathTexts.push(pathMethod?.tags?.join(','));
+          for (const response in pathMethod?.responses) {
+            const responseValue = pathMethod?.responses[
+              response
+            ] as OpenAPIV3.ResponseObject;
+            pathTexts.push(responseValue?.description);
+          }
+        });
+      }
+    }
+    return pathTexts;
+  }
 
+  getV2SpecText(spec: OpenAPIV2.Document): (string | undefined)[] {
+    const pathTexts: (string | undefined)[] = [];
+    for (const path in spec.paths) {
+      const pathDetails = spec.paths[path];
+      if (pathDetails) {
+        Object.values(OpenAPIV2.HttpMethods).forEach(method => {
+          const pathMethod = pathDetails[method];
+          pathTexts.push(pathMethod?.summary);
+          pathTexts.push(pathMethod?.description);
+          pathTexts.push(pathMethod?.tags?.join(','));
+          for (const response in pathMethod?.responses) {
+            const responseValue = pathMethod?.responses[
+              response
+            ] as OpenAPIV2.ResponseObject;
+            pathTexts.push(responseValue?.description);
+          }
+        });
+      }
+    }
+    return pathTexts;
+  }
 
-    getV3SpecText(spec: OpenAPIV3.Document) : (string|undefined)[] { 
-        const pathTexts: (string|undefined)[] = [];
-        for( const path in spec.paths){
-            pathTexts.push(path)
-            const pathDetails = spec.paths[path]
-            if(pathDetails){
-                Object.values(OpenAPIV3.HttpMethods).forEach((method) => {
-                    const pathMethod = pathDetails[method]
-                    pathTexts.push(pathMethod?.summary)
-                    pathTexts.push(pathMethod?.description)
-                    pathTexts.push(pathMethod?.tags?.join(','))
-                    for (const response in  pathMethod?.responses) {
-                        const responseValue = pathMethod?.responses[response] as OpenAPIV3.ResponseObject
-                        pathTexts.push(responseValue?.description)
-                    }
-                })
-            }
-        }
-        return pathTexts
+  getSpecVersionText(
+    spec: OpenAPI.Document,
+    specVersion: string,
+  ): (string | undefined)[] {
+    if (specVersion.split('.')[0] == '2') {
+      return this.getV2SpecText(spec as OpenAPIV2.Document);
     }
 
-    getV2SpecText(spec: OpenAPIV2.Document) : (string|undefined)[] {
-        const pathTexts: (string|undefined)[] = [];
-        for( const path in spec.paths){
-            const pathDetails = spec.paths[path]
-            if(pathDetails){
-                Object.values(OpenAPIV2.HttpMethods).forEach((method) => {
-                    const pathMethod = pathDetails[method]
-                    pathTexts.push(pathMethod?.summary)
-                    pathTexts.push(pathMethod?.description)
-                    pathTexts.push(pathMethod?.tags?.join(','))
-                    for (const response in  pathMethod?.responses) {
-                        const responseValue = pathMethod?.responses[response] as OpenAPIV2.ResponseObject
-                        pathTexts.push(responseValue?.description)
-                    }
-                })
-            }
-        }
-        return pathTexts
+    if (major(specVersion) == 3) {
+      return this.getV3SpecText(spec as OpenAPIV3.Document);
     }
 
-    getSpecVersionText(spec:OpenAPI.Document, specVersion: string) : (string|undefined )[] {
-        if (specVersion.split('.')[0] == '2'){
-            return this.getV2SpecText(spec as OpenAPIV2.Document)
-        }
+    return [];
+  }
 
-        if (major(specVersion) == 3){
-            return this.getV3SpecText(spec as OpenAPIV3.Document)
+  parseSpec(spec: OpenAPI.Document, specVersion: string): string {
+    const { description, title } = spec.info;
+    const baseDocumentText: (string | undefined)[] = [];
+    baseDocumentText.push(title);
+    baseDocumentText.push(description);
 
-        }
+    const versionSpecificText = this.getSpecVersionText(spec, specVersion);
 
-        return []
-    }
+    const fullDocumentText = baseDocumentText.concat(versionSpecificText);
 
-    parseSpec(spec:OpenAPI.Document, specVersion: string) : string {
-        const { description, title } = spec.info
-        const baseDocumentText: (string|undefined)[] = [];
-        baseDocumentText.push(title)
-        baseDocumentText.push(description)
+    return fullDocumentText.filter(x => x).join(' : ');
+  }
 
-        const versionSpecificText = this.getSpecVersionText(spec, specVersion)
-
-        const fullDocumentText = baseDocumentText.concat(versionSpecificText)
-
-        return fullDocumentText
-        .filter(x => x)
-        .join(' : ')
-    }
-
-    getSpecText(specDefinition: string){
-        const definition = parse(specDefinition)
-        const version:string = definition?.openapi || definition?.swagger
-        return this.parseSpec(definition, version)
-    }
-
-
+  getSpecText(specDefinition: string) {
+    const definition = parse(specDefinition);
+    const version: string = definition?.openapi || definition?.swagger;
+    return this.parseSpec(definition, version);
+  }
 }

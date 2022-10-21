@@ -35,7 +35,7 @@ export type ApiDocumentCollatorFactoryOptions = {
   catalogClient?: CatalogApi;
   batchSize?: number;
   tokenManager: TokenManager;
-  specHandler?: SpecHandler
+  specHandler?: SpecHandler;
 };
 
 /** @public */
@@ -45,16 +45,17 @@ export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
   private readonly catalogClient: CatalogApi;
   private batchSize: number;
   private tokenManager: TokenManager;
-  private specHandler: SpecHandler
+  private specHandler: SpecHandler;
 
   private constructor(options: ApiDocumentCollatorFactoryOptions) {
-    const { discovery, catalogClient, batchSize, tokenManager, specHandler} = options;
+    const { discovery, catalogClient, batchSize, tokenManager, specHandler } =
+      options;
 
     this.tokenManager = tokenManager;
     this.batchSize = batchSize || 500;
     this.catalogClient =
       catalogClient || new CatalogClient({ discoveryApi: discovery });
-    this.specHandler = specHandler || new SpecHandler()
+    this.specHandler = specHandler || new SpecHandler();
   }
 
   static fromConfig(
@@ -67,7 +68,6 @@ export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
   async getCollator() {
     return Readable.from(this.execute());
   }
-
 
   async *execute(): AsyncGenerator<ApiDocument> {
     const { token } = await this.tokenManager.getToken();
@@ -90,7 +90,6 @@ export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
           { token },
         )
       ).items;
-
 
       moreEntitiesToGet = entities.length === this.batchSize;
       entitiesRetrieved += entities.length;

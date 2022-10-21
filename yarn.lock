@@ -4041,18 +4041,14 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
-    "@types/express": "*"
     "@types/semver": ^7.3.12
     "@types/supertest": ^2.0.8
-    express: ^4.18.1
-    express-promise-router: ^4.1.0
     msw: ^0.47.0
     node-fetch: ^2.6.7
     openapi-types: ^12.0.2
     semver: ^7.3.8
     supertest: ^6.2.4
     typescript: ^4.8.4
-    winston: ^3.8.1
     yaml: ^2.1.3
     yn: ^4.0.0
   languageName: unknown
