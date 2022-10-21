@@ -7111,6 +7111,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-tech-insights-common": "workspace:^"
     "@backstage/plugin-tech-insights-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@types/express": ^4.17.6
     "@types/luxon": ^3.0.0
     "@types/semver": ^7.3.8
@@ -7689,6 +7690,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@types/zen-observable": ^0.8.0
+    luxon: ^3.0.0
     zen-observable: ^0.8.15
   languageName: unknown
   linkType: soft
