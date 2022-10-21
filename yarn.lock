@@ -3674,7 +3674,6 @@ __metadata:
     "@types/node": ^16.11.26
     "@types/recursive-readdir": ^2.2.0
     chalk: ^4.0.0
-    command-exists: ^1.2.9
     commander: ^9.1.0
     fs-extra: 10.1.0
     handlebars: ^4.7.3
