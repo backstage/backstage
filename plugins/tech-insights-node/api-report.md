@@ -75,6 +75,7 @@ export type FactRetrieverRegistration = {
   cadence?: string;
   timeout?: Duration | HumanDuration;
   lifecycle?: FactLifecycle;
+  initialDelay?: Duration | HumanDuration;
 };
 
 // @public
