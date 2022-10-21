@@ -18,47 +18,61 @@ import { AuthenticationError } from '@backstage/errors';
 import React from 'react';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { ilertApiRef } from '../api';
-import { AlertSource, OnCall } from '../types';
+import { AlertSource } from '../types';
 
-export const useAlertSourceOnCalls = (alertSource?: AlertSource | null) => {
+export const useNewAlert = (
+  open: boolean,
+  initialAlertSource?: AlertSource | null,
+) => {
   const ilertApi = useApi(ilertApiRef);
   const errorApi = useApi(errorApiRef);
 
-  const [onCallsList, setOnCallsList] = React.useState<OnCall[]>([]);
+  const [alertSourcesList, setAlertSourcesList] = React.useState<AlertSource[]>(
+    [],
+  );
+  const [alertSource, setAlertSource] = React.useState<AlertSource | null>(
+    null,
+  );
+  const [summary, setSummary] = React.useState('');
+  const [details, setDetails] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const fetchAlertSourceOnCallsCall = async () => {
+  const fetchAlertSources = useAsyncRetry(async () => {
     try {
-      if (!alertSource) {
+      if (!open || initialAlertSource) {
         return;
       }
-      setIsLoading(true);
-      const data = await ilertApi.fetchAlertSourceOnCalls(alertSource);
-      setOnCallsList(data || []);
-      setIsLoading(false);
+      const count = await ilertApi.fetchAlertSources();
+      setAlertSourcesList(count || 0);
     } catch (e) {
-      setIsLoading(false);
       if (!(e instanceof AuthenticationError)) {
         errorApi.post(e);
       }
       throw e;
     }
-  };
+  }, [open]);
 
-  const { error, retry } = useAsyncRetry(fetchAlertSourceOnCallsCall, [
-    alertSource,
-  ]);
+  const error = fetchAlertSources.error;
+  const retry = () => {
+    fetchAlertSources.retry();
+  };
 
   return [
     {
-      onCalls: onCallsList,
+      alertSources: alertSourcesList,
+      alertSource: initialAlertSource ? initialAlertSource : alertSource,
+      summary,
+      details,
       error,
       isLoading,
     },
     {
-      retry,
+      setAlertSourcesList,
+      setAlertSource,
+      setSummary,
+      setDetails,
       setIsLoading,
-      refetchAlertSourceOnCalls: fetchAlertSourceOnCallsCall,
+      retry,
     },
   ] as const;
 };

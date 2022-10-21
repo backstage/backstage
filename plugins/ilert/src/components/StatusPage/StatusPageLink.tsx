@@ -13,14 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { ilertApiRef } from '../../api';
+import { StatusPage } from '../../types';
 
-export { ilertApiRef, ILertClient } from './client';
-export type {
-  EventRequest as EventRequest,
-  GetAlertsCountOpts,
-  GetAlertsOpts,
-  GetServicesOpts,
-  GetStatusPagesOpts,
-  ILertApi,
-  TableState,
-} from './types';
+import { Link } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
+
+export const StatusPageLink = ({
+  statusPage,
+}: {
+  statusPage: StatusPage | null;
+}) => {
+  const ilertApi = useApi(ilertApiRef);
+
+  if (!statusPage) {
+    return null;
+  }
+
+  return (
+    <Link to={ilertApi.getStatusPageDetailsURL(statusPage)}>
+      #{statusPage.id}
+    </Link>
+  );
+};

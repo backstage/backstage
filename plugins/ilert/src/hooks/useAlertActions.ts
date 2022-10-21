@@ -18,47 +18,42 @@ import { AuthenticationError } from '@backstage/errors';
 import React from 'react';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { ilertApiRef } from '../api';
-import { AlertSource, OnCall } from '../types';
+import { Alert, AlertAction } from '../types';
 
-export const useAlertSourceOnCalls = (alertSource?: AlertSource | null) => {
+export const useAlertActions = (alert: Alert | null, open: boolean) => {
   const ilertApi = useApi(ilertApiRef);
   const errorApi = useApi(errorApiRef);
 
-  const [onCallsList, setOnCallsList] = React.useState<OnCall[]>([]);
+  const [alertActionsList, setAlertActionsList] = React.useState<AlertAction[]>(
+    [],
+  );
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const fetchAlertSourceOnCallsCall = async () => {
+  const { error, retry } = useAsyncRetry(async () => {
     try {
-      if (!alertSource) {
+      if (!alert || !open) {
         return;
       }
-      setIsLoading(true);
-      const data = await ilertApi.fetchAlertSourceOnCalls(alertSource);
-      setOnCallsList(data || []);
-      setIsLoading(false);
+      const data = await ilertApi.fetchAlertActions(alert);
+      setAlertActionsList(data);
     } catch (e) {
-      setIsLoading(false);
       if (!(e instanceof AuthenticationError)) {
         errorApi.post(e);
       }
       throw e;
     }
-  };
-
-  const { error, retry } = useAsyncRetry(fetchAlertSourceOnCallsCall, [
-    alertSource,
-  ]);
+  }, [alert, open]);
 
   return [
     {
-      onCalls: onCallsList,
+      alertActions: alertActionsList,
       error,
       isLoading,
     },
     {
-      retry,
+      setAlertActionsList,
       setIsLoading,
-      refetchAlertSourceOnCalls: fetchAlertSourceOnCallsCall,
+      retry,
     },
   ] as const;
 };
