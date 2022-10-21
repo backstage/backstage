@@ -42,7 +42,7 @@ theme's color palette, most Backstage components and all MUI components should
 use the theme's color palette by default, so unless you need explicit control
 on the color of a component (say when the component was designed to use the
 primay color but you want to use the secondary), then the easiest way to access
-the color palette is with [useTheme hook](https://mui.com/material-ui/customization/theming/#accessing-the-theme-in-a-component).
+the color palette is with [`useTheme` hook](https://mui.com/material-ui/customization/theming/#accessing-the-theme-in-a-component).
 
 It's not a very common use case to override a theme color in a MUI component
 but let's say you have a Paper component that highlights it's content with a
