@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-import { IndexableDocument } from '@backstage/plugin-search-common';
+export interface SpecParser {
+  specType: string;
+  getSpecText(specDefinition: any): string;
+}
 
-export interface ApiDocument extends IndexableDocument {
-  /**
-   * Entity kind
-   */
-  kind: string;
+export class SpecHandler {
+  specParsers: Record<string, SpecParser> = {};
 
-  /**
-   * Entity lifecycle
-   */
-  lifecycle: string;
+  addSpecParser(parser: SpecParser) {
+    this.specParsers[parser.specType] = parser;
+  }
+
+  getSpecParser(specType: string): SpecParser {
+    return this.specParsers[specType];
+  }
 }
