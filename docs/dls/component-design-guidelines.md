@@ -40,7 +40,7 @@ color palette and typography:
 Any component that needs a color to put in the styles should be using the
 theme's color palette, most Backstage components and all MUI components should
 use the theme's color palette by default, so unless you need explicit control
-on the color of a component (say when the component was design to use the
+on the color of a component (say when the component was designed to use the
 primay color but you want to use the secondary), then the easiest way to access
 the color palette is with [useTheme hook](https://mui.com/material-ui/customization/theming/#accessing-the-theme-in-a-component).
 
