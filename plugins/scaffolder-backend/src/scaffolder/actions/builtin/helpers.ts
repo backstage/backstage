@@ -23,7 +23,6 @@ import { PassThrough, Writable } from 'stream';
 import { Logger } from 'winston';
 import { BypassPullRequestAllowances } from '../types';
 
-
 /** @public */
 export type RunCommandOptions = {
   /** command to run */
