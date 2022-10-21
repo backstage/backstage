@@ -28,7 +28,7 @@ import {
   initRepoAndPush,
 } from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from '../publish/util';
-import { BypassPullRequestAllowances } from '../../types';
+import { BypassPullRequestAllowances } from './types';
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 

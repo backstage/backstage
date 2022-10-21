@@ -21,7 +21,7 @@ import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
 import { Octokit } from 'octokit';
 import { PassThrough, Writable } from 'stream';
 import { Logger } from 'winston';
-import { BypassPullRequestAllowances } from '../types';
+import { BypassPullRequestAllowances } from './github/types';
 
 /** @public */
 export type RunCommandOptions = {
