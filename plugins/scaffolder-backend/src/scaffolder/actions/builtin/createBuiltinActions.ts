@@ -24,6 +24,7 @@ import {
 } from '@backstage/integration';
 import { JsonObject } from '@backstage/types';
 import {
+  createCatalogCheckAndRegister,
   createCatalogRegisterAction,
   createCatalogWriteAction,
 } from './catalog';
@@ -44,6 +45,7 @@ import {
   createGithubWebhookAction,
 } from './github';
 import {
+  createGitlabCreateOrMergeAction,
   createPublishAzureAction,
   createPublishBitbucketAction,
   createPublishBitbucketCloudAction,
@@ -142,6 +144,10 @@ export const createBuiltinActions = (
     createPublishGitlabMergeRequestAction({
       integrations,
     }),
+    createGitlabCreateOrMergeAction({
+      integrations,
+      config,
+    }),
     createPublishBitbucketAction({
       integrations,
       config,
@@ -161,6 +167,7 @@ export const createBuiltinActions = (
     createDebugLogAction(),
     createCatalogRegisterAction({ catalogClient, integrations }),
     createCatalogWriteAction(),
+    createCatalogCheckAndRegister({ catalogClient, integrations }),
     createFilesystemDeleteAction(),
     createFilesystemRenameAction(),
     createGithubActionsDispatchAction({
