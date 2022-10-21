@@ -33,6 +33,7 @@ export type GithubEntityProviderConfig = {
     branch?: string;
     topic?: GithubTopicFilters;
   };
+  validateLocationsExist: boolean;
   schedule?: TaskScheduleDefinition;
   validateLocationsExist: boolean;
 };
