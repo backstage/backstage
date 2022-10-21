@@ -6631,6 +6631,7 @@ __metadata:
     octokit: ^2.0.0
     octokit-plugin-create-pull-request: ^3.10.0
     p-limit: ^3.1.0
+    prom-client: ^14.0.1
     supertest: ^6.1.3
     uuid: ^8.2.0
     vm2: ^3.9.11
