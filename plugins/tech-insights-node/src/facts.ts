@@ -285,5 +285,5 @@ export type FactRetrieverRegistration = {
    * catalog backend is not yet available. Defaults to 5 seconds.
    *
    */
-   initialDelay?: Duration | HumanDuration;
+  initialDelay?: Duration | HumanDuration;
 };
