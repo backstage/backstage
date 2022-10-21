@@ -71,11 +71,11 @@ export class OpenAPISpecParser implements SpecParser {
     spec: OpenAPI.Document,
     specVersion: string,
   ): (string | undefined)[] {
-    if (specVersion.split('.')[0] == '2') {
+    if (specVersion.split('.')[0] === '2') {
       return this.getV2SpecText(spec as OpenAPIV2.Document);
     }
 
-    if (major(specVersion) == 3) {
+    if (major(specVersion) === 3) {
       return this.getV3SpecText(spec as OpenAPIV3.Document);
     }
 
