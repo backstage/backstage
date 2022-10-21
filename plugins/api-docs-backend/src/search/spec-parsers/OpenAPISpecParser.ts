@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {major, gt } from "semver";
+import {major, coerce } from "semver";
 import { SpecParser } from "./SpecHandler";
-import { OpenAPI, OpenAPIV3_1, OpenAPIV3, OpenAPIV2 } from 'openapi-types';
+import { OpenAPI,  OpenAPIV3, OpenAPIV2 } from 'openapi-types';
 import { parse } from 'yaml'
 
 
@@ -24,25 +24,7 @@ export class OpenAPISpecParser implements SpecParser {
     
     specType: string = 'openapi'
 
-    getV3_1SpecText(spec: OpenAPIV3_1.Document) : (string|undefined)[] {
-        const pathTexts: (string|undefined)[] = [];
-        for( const path in spec.paths){
-            pathTexts.push(path)
-            const pathDetails = spec.paths[path]
-            if(pathDetails){
-                Object.values(OpenAPIV3.HttpMethods).forEach((method) => {
-                    const pathMethod = pathDetails[method]
-                    pathTexts.push(pathMethod?.summary)
-                    pathTexts.push(pathMethod?.description)
-                    pathTexts.push(pathMethod?.tags?.join(','))
-                    for( const response in  pathMethod?.responses){
-                        pathTexts.push(pathMethod?.responses[response].description)
-                    }
-                })
-            }
-        }
-        return pathTexts
-    }
+
 
     getV3SpecText(spec: OpenAPIV3.Document) : (string|undefined)[] { 
         const pathTexts: (string|undefined)[] = [];
@@ -86,15 +68,15 @@ export class OpenAPISpecParser implements SpecParser {
     }
 
     getSpecVersionText(spec:OpenAPI.Document, specVersion: string) : (string|undefined )[] {
-     if (major(specVersion) == 3){
-            if (gt(specVersion,'3.0.0')) {
-                return this.getV3_1SpecText(spec as OpenAPIV3_1.Document)
-            }
-            return this.getV3SpecText(spec as OpenAPIV3.Document)
-
-        } else if (major(specVersion) == 2){
+        if (specVersion.split('.')[0] == '2'){
             return this.getV2SpecText(spec as OpenAPIV2.Document)
         }
+
+        if (major(specVersion) == 3){
+            return this.getV3SpecText(spec as OpenAPIV3.Document)
+
+        }
+
         return []
     }
 
@@ -115,7 +97,7 @@ export class OpenAPISpecParser implements SpecParser {
 
     getSpecText(specDefinition: string){
         const definition = parse(specDefinition)
-        const version:string = definition?.openapi
+        const version:string = definition?.openapi || definition?.swagger
         return this.parseSpec(definition, version)
     }
 

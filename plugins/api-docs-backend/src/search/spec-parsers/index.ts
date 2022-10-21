@@ -15,4 +15,4 @@
  */
 
 export { OpenAPISpecParser } from './OpenAPISpecParser';
-export { SpecHandler } from './SpecHandler';
+export * from './SpecHandler';

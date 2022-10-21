@@ -27,7 +27,7 @@ import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 
 import { ApiDocument } from './ApiDocument';
 
-import { SpecHandler, OpenAPISpecParser } from './../spec-parsers';
+import { SpecHandler } from './../spec-parsers';
 
 /** @public */
 export type ApiDocumentCollatorFactoryOptions = {
@@ -35,6 +35,7 @@ export type ApiDocumentCollatorFactoryOptions = {
   catalogClient?: CatalogApi;
   batchSize?: number;
   tokenManager: TokenManager;
+  specHandler?: SpecHandler
 };
 
 /** @public */
@@ -44,14 +45,16 @@ export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
   private readonly catalogClient: CatalogApi;
   private batchSize: number;
   private tokenManager: TokenManager;
+  private specHandler: SpecHandler
 
   private constructor(options: ApiDocumentCollatorFactoryOptions) {
-    const { discovery, catalogClient, batchSize, tokenManager } = options;
+    const { discovery, catalogClient, batchSize, tokenManager, specHandler} = options;
 
     this.tokenManager = tokenManager;
     this.batchSize = batchSize || 500;
     this.catalogClient =
       catalogClient || new CatalogClient({ discoveryApi: discovery });
+    this.specHandler = specHandler || new SpecHandler()
   }
 
   static fromConfig(
@@ -65,11 +68,11 @@ export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
     return Readable.from(this.execute());
   }
 
+
   async *execute(): AsyncGenerator<ApiDocument> {
     const { token } = await this.tokenManager.getToken();
 
-    const specHandler = new SpecHandler();
-    specHandler.addSpecParser(new OpenAPISpecParser());
+    //this.specHandler.addSpecParser(new OpenAPISpecParser());
 
     let entitiesRetrieved = 0;
     let moreEntitiesToGet = true;
@@ -88,13 +91,15 @@ export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
         )
       ).items;
 
+
       moreEntitiesToGet = entities.length === this.batchSize;
       entitiesRetrieved += entities.length;
 
       for (const entity of entities) {
-        const specParser = specHandler.getSpecParser(
+        const specParser = this.specHandler.getSpecParser(
           entity.spec?.type as string,
         );
+
         if (specParser == undefined) {
           continue;
         }
