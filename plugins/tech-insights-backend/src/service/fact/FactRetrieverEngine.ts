@@ -119,13 +119,16 @@ export class DefaultFactRetrieverEngine implements FactRetrieverEngine {
 
     await Promise.all(
       registrations.map(async registration => {
-        const { factRetriever, cadence, lifecycle, timeout, initialDelay } = registration;
+        const { factRetriever, cadence, lifecycle, timeout, initialDelay } =
+          registration;
         const cronExpression =
           cadence || this.defaultCadence || randomDailyCron();
         const timeLimit =
           timeout || this.defaultTimeout || Duration.fromObject({ minutes: 5 });
         const initialDelaySetting =
-          initialDelay || this.defaultInitialDelay || Duration.fromObject({ seconds: 5 });
+          initialDelay ||
+          this.defaultInitialDelay ||
+          Duration.fromObject({ seconds: 5 });
         try {
           await this.scheduler.scheduleTask({
             id: factRetriever.id,
