@@ -23,9 +23,10 @@ export { createPublishGerritReviewAction } from './gerritReview';
 export { createPublishGithubAction } from './github';
 export { createPublishGithubPullRequestAction } from './githubPullRequest';
 export type {
-  CreateGithubPullRequestClientFactoryInput,
   CreateGithubPullRequestActionOptions,
+  CreateGithubPullRequestClientFactoryInput,
   OctokitWithPullRequestPluginClient,
 } from './githubPullRequest';
 export { createPublishGitlabAction } from './gitlab';
+export { createGitlabCreateOrMergeAction } from './gitlabCreateOrMerge';
 export { createPublishGitlabMergeRequestAction } from './gitlabMergeRequest';
