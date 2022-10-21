@@ -35,6 +35,7 @@ export type FactRetrieverRegistrationOptions = {
   factRetriever: FactRetriever;
   lifecycle?: FactLifecycle;
   timeout?: Duration | HumanDuration;
+  initialDelay?: Duration | HumanDuration;
 };
 
 /**
@@ -45,6 +46,7 @@ export type FactRetrieverRegistrationOptions = {
  * @param factRetriever - Implementation of fact retriever consisting of at least id, version, schema and handler
  * @param lifecycle - Optional lifecycle definition indicating the cleanup logic of facts when this retriever is run
  * @param timeout - Optional duration to determine how long the fact retriever should be allowed to run, defaults to 5 minutes
+ * @param initialDelay - Optional initial delay to determine how long the fact retriever should wait before the initial run, defaults to 5 seconds
  *
  *
  * @remarks
@@ -68,11 +70,12 @@ export type FactRetrieverRegistrationOptions = {
 export function createFactRetrieverRegistration(
   options: FactRetrieverRegistrationOptions,
 ): FactRetrieverRegistration {
-  const { cadence, factRetriever, lifecycle, timeout } = options;
+  const { cadence, factRetriever, lifecycle, timeout, initialDelay } = options;
   return {
     cadence,
     factRetriever,
     lifecycle,
     timeout,
+    initialDelay,
   };
 }
