@@ -102,9 +102,3 @@ catalog:
 - **`workspace`**:
   Name of your organization account/workspace.
   If you want to add multiple workspaces, you need to add one provider config each.
-
-## Alternative
-
-_Deprecated!_ Please raise issues for use cases not covered by the entity provider.
-
-[You can use the `BitbucketDiscoveryProcessor`.](../bitbucket/discovery.md#bitbucket-cloud)

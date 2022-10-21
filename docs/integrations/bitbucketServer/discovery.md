@@ -120,9 +120,3 @@ const provider = BitbucketServerEntityProvider.fromConfig(env.config, {
   },
 });
 ```
-
-## Alternative
-
-_Deprecated!_ Please raise issues for use cases not covered by the entity provider.
-
-[You can use the `BitbucketDiscoveryProcessor`.](../bitbucket/discovery.md#self-hosted-bitbucket-server)
