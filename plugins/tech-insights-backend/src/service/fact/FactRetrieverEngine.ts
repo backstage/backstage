@@ -76,6 +76,7 @@ export class DefaultFactRetrieverEngine implements FactRetrieverEngine {
     private readonly scheduler: PluginTaskScheduler,
     private readonly defaultCadence?: string,
     private readonly defaultTimeout?: Duration,
+    private readonly defaultInitialDelay?: Duration,
   ) {}
 
   static async create(options: {
@@ -85,6 +86,7 @@ export class DefaultFactRetrieverEngine implements FactRetrieverEngine {
     scheduler: PluginTaskScheduler;
     defaultCadence?: string;
     defaultTimeout?: Duration;
+    defaultInitialDelay?: Duration;
   }) {
     const {
       repository,
@@ -93,6 +95,7 @@ export class DefaultFactRetrieverEngine implements FactRetrieverEngine {
       scheduler,
       defaultCadence,
       defaultTimeout,
+      defaultInitialDelay,
     } = options;
 
     const retrievers = await factRetrieverRegistry.listRetrievers();
@@ -106,6 +109,7 @@ export class DefaultFactRetrieverEngine implements FactRetrieverEngine {
       scheduler,
       defaultCadence,
       defaultTimeout,
+      defaultInitialDelay,
     );
   }
 
@@ -115,11 +119,13 @@ export class DefaultFactRetrieverEngine implements FactRetrieverEngine {
 
     await Promise.all(
       registrations.map(async registration => {
-        const { factRetriever, cadence, lifecycle, timeout } = registration;
+        const { factRetriever, cadence, lifecycle, timeout, initialDelay } = registration;
         const cronExpression =
           cadence || this.defaultCadence || randomDailyCron();
         const timeLimit =
           timeout || this.defaultTimeout || Duration.fromObject({ minutes: 5 });
+        const initialDelaySetting =
+          initialDelay || this.defaultInitialDelay || Duration.fromObject({ seconds: 5 });
         try {
           await this.scheduler.scheduleTask({
             id: factRetriever.id,
@@ -128,7 +134,7 @@ export class DefaultFactRetrieverEngine implements FactRetrieverEngine {
             timeout: timeLimit,
             // We add a delay in order to prevent errors due to the
             // fact that the backend is not yet online in a cold-start scenario
-            initialDelay: Duration.fromObject({ seconds: 5 }),
+            initialDelay: initialDelaySetting,
           });
           newRegs.push(factRetriever.id);
         } catch (e) {

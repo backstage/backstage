@@ -279,4 +279,11 @@ export type FactRetrieverRegistration = {
    * If defined this value will be used to determine expired items which will deleted when this fact retriever is run
    */
   lifecycle?: FactLifecycle;
+
+  /**
+   * A duration to determine the initial delay for the fact retriever. Useful for cold start scenarios when e.g. the
+   * catalog backend is not yet available. Defaults to 5 seconds.
+   *
+   */
+   initialDelay?: Duration | HumanDuration;
 };
