@@ -198,6 +198,7 @@ export function createGithubRepoCreateAction(options: {
   allowMergeCommit?: boolean | undefined;
   allowAutoMerge?: boolean | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
+  bypassPullRequestAllowances?: BypassPullRequestAllowances;
   requiredStatusCheckContexts?: string[] | undefined;
   requireBranchesToBeUpToDate?: boolean | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
@@ -236,6 +237,7 @@ export function createGithubRepoPushAction(options: {
   gitAuthorName?: string | undefined;
   gitAuthorEmail?: string | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
+  bypassPullRequestAllowances?: BypassPullRequestAllowances;
   requiredStatusCheckContexts?: string[] | undefined;
   requireBranchesToBeUpToDate?: boolean | undefined;
   sourcePath?: string | undefined;
@@ -367,6 +369,7 @@ export function createPublishGithubAction(options: {
   allowAutoMerge?: boolean | undefined;
   sourcePath?: string | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
+  bypassPullRequestAllowances?: BypassPullRequestAllowances;
   requiredStatusCheckContexts?: string[] | undefined;
   requireBranchesToBeUpToDate?: boolean | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;

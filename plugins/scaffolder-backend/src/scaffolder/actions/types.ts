@@ -73,11 +73,3 @@ export type TemplateAction<Input extends JsonObject> = {
   };
   handler: (ctx: ActionContext<Input>) => Promise<void>;
 };
-
-export type BypassPullRequestAllowances =
-  | {
-      users?: string[];
-      teams?: string[];
-      apps?: string[];
-    }
-  | undefined;

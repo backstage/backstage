@@ -27,7 +27,7 @@ import {
 } from './helpers';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
-import { BypassPullRequestAllowances } from '../../types';
+import { BypassPullRequestAllowances } from './types';
 
 /**
  * Creates a new action that initializes a git repository
