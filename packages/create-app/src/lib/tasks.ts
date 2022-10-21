@@ -28,15 +28,12 @@ import {
 import { exec as execCb } from 'child_process';
 import { packageVersions } from './versions';
 import { promisify } from 'util';
-import commandExists from 'command-exists';
 import os from 'os';
 
 const TASK_NAME_MAX_LENGTH = 14;
 const exec = promisify(execCb);
 
 export type GitConfig = {
-  name?: string;
-  email?: string;
   defaultBranch?: string;
 };
 
@@ -250,71 +247,59 @@ export async function moveAppTask(
  *
  * @throws if `exec` fails
  */
-export async function readGitConfig(): Promise<GitConfig> {
+export async function readGitConfig(): Promise<GitConfig | undefined> {
   const tempDir = resolvePath(os.tmpdir(), 'git-temp-dir');
-
-  const runCmd = (cmd: string) =>
-    exec(cmd, { cwd: tempDir }).catch(error => {
-      process.stdout.write(error.stderr);
-      process.stdout.write(error.stdout);
-      throw new Error(`Could not execute command ${chalk.cyan(cmd)}`);
-    });
-
-  const isGitAvailable = await commandExists('git').catch(() => false);
-
-  if (!isGitAvailable) return {};
 
   try {
     await fs.mkdir(tempDir);
 
-    const [gitUsername, gitEmail] = await Promise.all([
-      runCmd('git config user.name'),
-      runCmd('git config user.email'),
-    ]);
+    await exec('git init', { cwd: tempDir });
+    await exec('git commit --allow-empty -m "Initial commit"', {
+      cwd: tempDir,
+    });
 
-    const gitCredentials = Boolean(
-      gitUsername.stdout?.trim() && gitEmail.stdout?.trim(),
-    );
-
-    if (!gitCredentials) return {};
-
-    await runCmd('git init');
-    await runCmd('git commit --allow-empty -m "Initial commit"');
-
-    const gitDefaultBranch = await runCmd(
+    const getDefaultBranch = await exec(
       'git branch --format="%(refname:short)"',
+      { cwd: tempDir },
     );
 
     return {
-      name: gitUsername.stdout?.trim(),
-      email: gitEmail.stdout?.trim(),
-      defaultBranch: gitDefaultBranch.stdout?.trim(),
+      defaultBranch: getDefaultBranch.stdout?.trim() || undefined,
     };
   } catch (error) {
-    throw new Error(`Failed to read git config, ${error}`);
+    return undefined;
   } finally {
     await fs.rm(tempDir, { recursive: true });
   }
 }
 
 /**
- * Initializes a git repository in the destination folder
+ * Initializes a git repository in the destination folder if possible
  *
  * @param dir - source path to initialize git repository in
- * @throws if `exec` fails
+ * @returns true if git repository was initialized
  */
-export async function initGitRepository(dir: string) {
-  const runCmd = (cmd: string) =>
-    exec(cmd).catch(error => {
-      process.stdout.write(error.stderr);
-      process.stdout.write(error.stdout);
-      throw new Error(`Could not execute command ${chalk.cyan(cmd)}`);
-    });
+export async function tryInitGitRepository(dir: string) {
+  try {
+    // Check if we're already in a git repo
+    await exec('git rev-parse --is-inside-work-tree', { cwd: dir });
+    return false;
+  } catch {
+    /* ignored */
+  }
 
-  await Task.forItem('init', 'git repository', async () => {
-    process.chdir(dir);
+  try {
+    await exec('git init', { cwd: dir });
+    await exec('git add .', { cwd: dir });
+    await exec('git commit -m "Initial commit"', { cwd: dir });
+    return true;
+  } catch (error) {
+    try {
+      await fs.rm(resolvePath(dir, '.git'), { recursive: true, force: true });
+    } catch {
+      throw new Error('Failed to remove .git folder');
+    }
 
-    await runCmd('git init');
-    await runCmd('git commit --allow-empty -m "Initial commit"');
-  });
+    return false;
+  }
 }
