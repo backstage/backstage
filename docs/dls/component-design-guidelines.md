@@ -1,6 +1,6 @@
 ---
-id: design
-title: Design
+id: component-design-guidelines
+title: Component Design Guidelines
 description: Documentation on Design
 ---
 
