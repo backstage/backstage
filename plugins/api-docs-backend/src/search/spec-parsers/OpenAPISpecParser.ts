@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { major, coerce } from 'semver';
+import { major } from 'semver';
 import { SpecParser } from './SpecHandler';
 import { OpenAPI, OpenAPIV3, OpenAPIV2 } from 'openapi-types';
 import { parse } from 'yaml';
