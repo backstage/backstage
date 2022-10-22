@@ -17,4 +17,4 @@ export const updateH1Text = (): Transformer => {
 };
 ```
 
-The transformers are then registered in the Reader.tsx file. They are registered in two places, one place that runs before it's attached to the actual browser DOM (preTransformers) and once after (postTransfomers). Doing modifications is faster before it's attached, but doesn't allow us to do some things, such as attaching event listeners.
+The transformers are then registered in the Reader.tsx file. They are registered in two places, one place that runs before it's attached to the actual browser DOM (`preTransformer`s) and once after (`postTransformer`s). Doing modifications is faster before it's attached, but doesn't allow us to do some things, such as attaching event listeners.

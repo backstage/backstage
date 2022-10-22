@@ -83,7 +83,7 @@ export const ExamplePage = examplePlugin.provide(
 
 This is where the plugin is created and where it creates and exports extensions
 that can be imported and used the app. See reference docs for
-[createPlugin](../reference/core-plugin-api.createplugin.md) or introduction to
+[`createPlugin`](../reference/core-plugin-api.createplugin.md) or introduction to
 the new [Composability System](./composability.md).
 
 ## Components

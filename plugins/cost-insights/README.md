@@ -136,7 +136,7 @@ For showing cost breakdowns you can define a map of cloud products. They must be
 
 You can optionally supply a product `icon` to display in Cost Insights navigation. See the [type file](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/types/Icon.ts) for supported types and Material UI icon [mappings](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/utils/navigation.tsx).
 
-**Note:** Product keys should be unique and camelCased. Backstage does not support underscores in configuration keys.
+**Note:** Product keys should be unique and on `camelCase` form. Backstage does not support underscores in configuration keys.
 
 ```yaml
 ## ./app-config.yaml
