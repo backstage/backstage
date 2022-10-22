@@ -54,10 +54,10 @@ export const EntityTypePicker = (props: EntityTypePickerProps) => {
   if (availableTypes.length === 0 || error) return null;
 
   const items = [
-    { value: 'all', label: 'All' },
+    { value: 'all', label: 'all' },
     ...availableTypes.map((type: string) => ({
       value: type,
-      label: capitalize(type),
+      label: type,
     })),
   ];
 
