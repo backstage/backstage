@@ -6,7 +6,7 @@ description: Documentation on Customizing look and feel of the App
 
 Backstage ships with a default theme with a light and dark mode variant. The
 themes are provided as a part of the
-[@backstage/theme](https://www.npmjs.com/package/@backstage/theme) package,
+[`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme) package,
 which also includes utilities for customizing the default theme, or creating
 completely new themes.
 
@@ -14,7 +14,7 @@ completely new themes.
 
 The easiest way to create a new theme is to use the `createTheme` function
 exported by the
-[@backstage/theme](https://www.npmjs.com/package/@backstage/theme) package. You
+[`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme) package. You
 can use it to override some basic parameters of the default theme such as the
 color palette and font.
 
@@ -33,16 +33,16 @@ const myTheme = createTheme({
 
 If you want more control over the theme, and for example customize font sizes
 and margins, you can use the lower-level `createThemeOverrides` function
-exported by [@backstage/theme](https://www.npmjs.com/package/@backstage/theme)
+exported by [`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme)
 in combination with
-[createTheme](https://material-ui.com/customization/theming/#createmuitheme-options-args-theme)
-from [@material-ui/core](https://www.npmjs.com/package/@material-ui/core). See
+[`createTheme`](https://material-ui.com/customization/theming/#createmuitheme-options-args-theme)
+from [`@material-ui/core`](https://www.npmjs.com/package/@material-ui/core). See
 the "Overriding Backstage and Material UI css rules" section below.
 
 You can also create a theme from scratch that matches the `BackstageTheme` type
-exported by [@backstage/theme](https://www.npmjs.com/package/@backstage/theme).
+exported by [`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme).
 See the
-[material-ui docs on theming](https://material-ui.com/customization/theming/)
+[Material-UI docs on theming](https://material-ui.com/customization/theming/)
 for more information about how that can be done.
 
 ## Using your Custom Theme
@@ -79,7 +79,7 @@ const app = createApp({
 Note that your list of custom themes overrides the default themes. If you still
 want to use the default themes, they are exported as `lightTheme` and
 `darkTheme` from
-[@backstage/theme](https://www.npmjs.com/package/@backstage/theme).
+[`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme).
 
 ## Example of a custom theme
 

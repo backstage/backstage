@@ -18,7 +18,7 @@ Settings for local development:
 
 - Name: Backstage (or your custom app name)
 - Redirect URI: `http://localhost:7007/api/auth/gitlab/handler/frame`
-- Scopes: read_user
+- Scopes: `read_user`
 
 ## Configuration
 

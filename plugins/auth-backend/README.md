@@ -91,9 +91,9 @@ export AUTH_GITLAB_CLIENT_SECRET=x
 
 Add a new Okta application using the following URI conventions:
 
-Login redirect URI's: `http://localhost:7007/api/auth/okta/handler/frame`
-Logout redirect URI's: `http://localhost:7007/api/auth/okta/logout`
-Initiate login URI's: `http://localhost:7007/api/auth/okta/start`
+Login redirect URIs: `http://localhost:7007/api/auth/okta/handler/frame`
+Logout redirect URIs: `http://localhost:7007/api/auth/okta/logout`
+Initiate login URIs: `http://localhost:7007/api/auth/okta/start`
 
 Then configure the following environment variables to be used in the `app-config.yaml` file:
 
