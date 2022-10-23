@@ -198,6 +198,7 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
           handleReset={handleReset}
           finishButtonLabel={finishButtonLabel}
           formData={formData}
+          onFinish={onFinish}
           steps={steps}
         />
       )}
