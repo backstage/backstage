@@ -1,38 +1,43 @@
 ---
 id: backend
-title: Backend
-description: About Backend
+title: New Backend System
+description: Details of the upcoming backend system
 ---
 
-## Backend System
+> **DISCLAMER: The new backend system is under active development and is not considered stable**
 
-**DISCLAMER: The new backend system is under active development and is not considered stable** 
+## Overview
 
 This is an example of how you create, start and add existing plugins to your backend.
 
 ```ts
 import { createBackend } from '@backstage/backend-defaults';
+import { catalogPlugin } from '@backstage/plugin-catalog-backend';
 
+// Create your backend instance
 const backend = createBackend();
 
-// backend.add(catalogPlugin());
+// Install all desired features
+backend.add(catalogPlugin());
+
+// Start up the backend
 await backend.start();
 ```
 
-### Overview
+## Backend Services
 
-The default backend provides several _services_ out of the box which includes access to config, logging, scheduling and more.
-Service are declared using their _serviceRef_ in the `deps` section of plugin or module requiring them and are then available in the `init` method of the plugin or module.
+The default backend provides several _services_ out of the box which includes access to configuration, logging, databases and more.
+Services are declared using their _serviceRef_ in the `deps` section of plugin or module requiring them and are then available in the `init` method of the plugin or module.
 
-### Service Refs
+### Service References
 
-A serviceRef is a named reference to an interface which are later used to resolve the concrete service implementation. Conceptually this is very similar to `ApiRef`s in the frontend.
+A `ServiceRef` is a named reference to an interface which are later used to resolve the concrete service implementation. Conceptually this is very similar to `ApiRef`s in the frontend.
 Services is what provides common utilities that previously resided in the `PluginEnvironment` such as Config, Logging and Database.
 
 On startup the backend will make sure that the services are initialized before being passed to the plugin/module that depend on them.
 ServiceRefs contain a scope which is used to determine if the serviceFactory creating the service will create a new instance scoped per plugin/module or if it will be shared. `plugin` scoped services will be created once per plugin/module and `root` scoped services will be created once per backend instance.
 
-#### Defining a ServiceRef
+#### Defining a Service
 
 ```ts
 import {
@@ -61,51 +66,59 @@ export const exampleServiceRef = createServiceRef<ExampleApi>({
       },
       // Logger is available directly in the factory as it's a root scoped service and will be created once per backend instance.
       async factory({ logger }) {
-
         // plugin is available as it's a plugin scoped service and will be created once per plugin.
         return async ({ plugin }) => {
-          // This block will be executed once per plugin depending on this serviceRef
-          logger.info(`Creating example service for for plugin ${plugin.id}`);
-          return new ExampleImpl({logger});
+          // This block will be executed once for every plugin that depends on this service
+          logger.info('Initializing example service plugin instance');
+          return new ExampleImpl({ logger });
         };
       },
     }),
-}),
+});
 ```
 
-### Overriding services
+### Overriding Services
 
-In this example replace the default log implementation with a custom logger.
+In this example replace the default root logger service implementation with a custom one that streams logs to GCP. The `rootLoggerServiceRef` has a `'root'` scope, meaning there are no plugin-specific instances of this service.
 
 ```ts
 import {
   createServiceFactory,
-  loggerServiceRef,
+  rootLoggerServiceRef,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
-export const gcpLoggerFactory = createServiceFactory({
-  service: loggerServiceRef,
-  deps: {},
-  async factory({}) {
-    return async ({}) => {
-      // This custom implementation conform with the type of the loggerServiceRef
+
+// This custom implementation would typically live separately from
+// the backend setup code, either nearby such as in
+//   packages/backend/src/services/logger/GoogleCloudLogger.ts
+// Or you can let it live in its own library package.
+class GoogleCloudLogger implements LoggerService {
+  static factory = createServiceFactory({
+    service: rootLoggerServiceRef,
+    deps: {},
+    async factory() {
       return new GoogleCloudLogger();
-    };
-  },
-});
+    },
+  });
+  // custom implementation here ...
+}
 
 // packages/backend/src/index.ts
 const backend = createBackend({
   services: [
-    // supplies additional/replacement services to the backend
-    gcpLoggerFactory,
+    // supplies additional or replacement services to the backend
+    GoogleCloudLogger.factory(),
   ],
-})
+});
 ```
 
 ## Writing Plugins
 
 ```ts
-import { configServiceRef, createBackendPlugin } from '@backstage/backend-plugin-api';
+import {
+  configServiceRef,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
 
 // export type ExamplePluginOptions = { exampleOption: boolean };
 export const examplePlugin = createBackendPlugin({
@@ -134,6 +147,7 @@ backend.add(examplePlugin());
 // Options can be passed to the plugin
 // backend.add(examplePlugin({ exampleOption: true}));
 ```
+
 ## Writing Modules
 
 Some facts about modules
@@ -142,9 +156,9 @@ Some facts about modules
 - A module can only extend one plugin but can interact with multiple `ExtensionPoint`s registered by that plugin.
 - A module is always initialized before the plugin it extends.
 
-A module depend on the extensionPoint exported by the plugins library package(eg `catalog-node`, `scaffolder-backend`) and does not directly declare a dependency on the plugin package itself.
+A module depend on the `ExtensionPoint`s exported by the target plugin's library package, for example `@backstage/plugin-catalog-node`, and does not directly declare a dependency on the plugin package itself.
 
-Here's an example on how to create a module that adds a new processor using the `catalogProcessingExtensionPoint`
+Here's an example on how to create a module that adds a new processor using the `catalogProcessingExtensionPoint`:
 
 ```ts
 import { createBackendModule } from '@backstage/backend-plugin-api';
@@ -177,7 +191,7 @@ Modules depend on extension points just as a regular dependency but specifying i
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 
 export interface ScaffolderActionsExtensionPoint {
- addAction(action: ScaffolderAction): void;
+  addAction(action: ScaffolderAction): void;
 }
 
 export const ScaffolderActionsExtensionPoint =
@@ -190,8 +204,7 @@ export const ScaffolderActionsExtensionPoint =
 
 Extension points are registered by a plugin and extended by modules.
 
-
-### Testing
+## Testing
 
 Utilities for testing backend plugins and modules are available in `@backstage/backend-test-utils`.
 
@@ -206,18 +219,17 @@ describe('Example', () => {
       // plugins and modules for testing
       features: [testModule()],
     });
-    // assertions 
+
+    // assertions
   });
 });
 ```
 
-
 ## Package structure
 
-The package relationship between plugins, modules and extension are illustrated in the following diagram.
+A detailed explanation of the package architecture can be found in the [Backstage Architecture Overview](../overview/architecture-overview.md#package-architecture). The most important packages to consider for this system are `backend`, `plugin-<pluginId>-backend`, `plugin-<pluginId>-node`, and `plugin-<pluginId>-backend-module-<moduleId>`.
 
-Taken with an artificial foobar backend plugin.
-
-- `plugin-foobar-backend` houses the plugin and registers the extension points into the backend system.
-- `plugin-foobar-common` houses the shared types including the Extension Point registered by the backend.
-- `plugin-foobar-XYZ-module` houses the modules that extend the foobar backend with extension points imported from `plugin-foobar-common`
+- `plugin-<pluginId>-backend` houses the implementation of the plugins themselves.
+- `plugin-<pluginId>-node` houses the extension points and any other utilities that modules or other plugins might need.
+- `plugin-<pluginId>-backend-module-<moduleId>` houses the modules that extend the plugins via the extension points.
+- `backend` is the backend itself that wires everything together to something that you can deploy.
