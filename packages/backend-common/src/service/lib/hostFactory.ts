@@ -21,6 +21,7 @@ import * as http from 'http';
 import * as https from 'https';
 import { Logger } from 'winston';
 import { HttpsSettings } from './config';
+import * as forge from 'node-forge';
 
 const FIVE_DAYS_IN_MS = 5 * 24 * 60 * 60 * 1000;
 
@@ -99,9 +100,8 @@ async function getGeneratedCertificate(hostname: string, logger?: Logger) {
   if (await fs.pathExists(certPath)) {
     cert = await fs.readFile(certPath);
     try {
-      const forge = require('node-forge');
-      const crt = forge.pki.certificateFromPem(cert);
-      const crtTimestamp = Date.parse(crt.validity.notAfter);
+      const crt = forge.pki.certificateFromPem(cert.toString());
+      const crtTimestamp = Date.parse(crt.validity.notAfter.toString());
       remainingMs = crtTimestamp - Date.now();
     } catch (error) {
       logger?.warn(`Unable to parse self-signed certificate. ${error}`);
