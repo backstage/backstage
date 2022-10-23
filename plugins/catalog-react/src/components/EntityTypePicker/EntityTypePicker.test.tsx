@@ -132,7 +132,7 @@ describe('<EntityTypePicker/>', () => {
     });
 
     fireEvent.click(input);
-    fireEvent.click(rendered.getByText('All'));
+    fireEvent.click(rendered.getByText('all'));
 
     expect(updateFilters).toHaveBeenLastCalledWith({ type: undefined });
   });
