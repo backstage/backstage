@@ -137,6 +137,7 @@ nav:
           - Backend plugin: 'plugins/backend-plugin.md'
           - Call existing API: 'plugins/call-existing-api.md'
           - URL Reader: 'plugins/url-reader.md'
+          - New Backend System: 'plugins/new-backend-system.md'
       - Testing:
           - Testing with Jest: 'plugins/testing.md'
       - Publishing:
