@@ -70,6 +70,122 @@ Each module may only extend a single plugin, and the module must be deployed tog
 
 Just like plugins, modules also have access to services and can depend on their own service implementations. They will however share services with the plugin that they extend, there are no module-specific service implementations.
 
+## Creating Plugins
+
+Plugins are created using the `createBackendPlugin` function. All plugins must have an ID and a register method. Plugins may also accept an options object, which can be either optional or required. The options are passed to the second parameter of the register method, and the options type is inferred and forwarded to the returned plugin factory function.
+
+```ts
+import {
+  configServiceRef,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+
+// export type ExamplePluginOptions = { exampleOption: boolean };
+export const examplePlugin = createBackendPlugin({
+  // unique id for the plugin
+  id: 'example',
+  // It's possible to provide options to the plugin
+  // register(env, options: ExamplePluginOptions) {
+  register(env) {
+    env.registerInit({
+      deps: {
+        logger: loggerServiceRef,
+      },
+      // logger is provided by the backend based on the dependency on loggerServiceRef above.
+      async init({ logger }) {
+        logger.info('Hello from example plugin');
+      },
+    });
+  },
+});
+```
+
+The plugin can then be installed in the backend using the returned plugin factory function:
+
+```ts
+backend.add(examplePlugin());
+```
+
+If we wanted our plugin to accept options as well, we'd accept the options as the second parameter of the register method:
+
+```ts
+export const examplePlugin = createBackendPlugin({
+  id: 'example',
+  register(env, options?: { silent?: boolean }) {
+    env.registerInit({
+      deps: { logger: loggerServiceRef },
+      async init({ logger }) {
+        if (!options?.silent) {
+          logger.info('Hello from example plugin');
+        }
+      },
+    });
+  },
+});
+```
+
+Passing the option to the plugin during installation looks like this:
+
+```ts
+backend.add(examplePlugin({ silent: true }));
+```
+
+## Creating Modules
+
+Some facts about modules
+
+- A Module is able to extend a plugin with additional functionality using the `ExtensionPoint`s registered by the plugin.
+- A module can only extend one plugin but can interact with multiple `ExtensionPoint`s registered by that plugin.
+- A module is always initialized before the plugin it extends.
+
+A module depend on the `ExtensionPoint`s exported by the target plugin's library package, for example `@backstage/plugin-catalog-node`, and does not directly declare a dependency on the plugin package itself.
+
+Here's an example on how to create a module that adds a new processor using the `catalogProcessingExtensionPoint`:
+
+```ts
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { MyCustomProcessor } from './processor';
+
+export const exampleCustomProcessorCatalogModule = createBackendModule({
+  moduleId: 'exampleCustomProcessor',
+  pluginId: 'catalog',
+  register(env) {
+    env.registerInit({
+      deps: {
+        catalog: catalogProcessingExtensionPoint,
+      },
+      async init({ catalog }) {
+        catalog.addProcessor(new MyCustomProcessor());
+      },
+    });
+  },
+});
+```
+
+### Extension Points
+
+Modules depend on extension points just as a regular dependency but specifying it in the `deps` section.
+
+#### Defining an Extension Point
+
+```ts
+import { createExtensionPoint } from '@backstage/backend-plugin-api';
+
+export interface ScaffolderActionsExtensionPoint {
+  addAction(action: ScaffolderAction): void;
+}
+
+export const scaffolderActionsExtensionPoint =
+  createExtensionPoint<ScaffolderActionsExtensionPoint>({
+    id: 'scaffolder.actions',
+  });
+```
+
+#### Registering an Extension Point
+
+Extension points are registered by a plugin and extended by modules.
+
 ## Backend Services
 
 The default backend provides several _services_ out of the box which includes access to configuration, logging, databases and more.
@@ -157,98 +273,6 @@ const backend = createBackend({
   ],
 });
 ```
-
-## Writing Plugins
-
-```ts
-import {
-  configServiceRef,
-  createBackendPlugin,
-} from '@backstage/backend-plugin-api';
-
-// export type ExamplePluginOptions = { exampleOption: boolean };
-export const examplePlugin = createBackendPlugin({
-  // unique id for the plugin
-  id: 'example',
-  // It's possible to provide options to the plugin
-  // register(env, options: ExamplePluginOptions) {
-  register(env) {
-    env.registerInit({
-      deps: {
-        logger: loggerServiceRef,
-      },
-      // logger is provided by the backend based on the dependency on loggerServiceRef above.
-      async init({ logger }) {
-        logger.info('Hello from example plugin');
-      },
-    });
-  },
-});
-```
-
-The plugin can then be installed to the backend using
-
-```ts
-backend.add(examplePlugin());
-// Options can be passed to the plugin
-// backend.add(examplePlugin({ exampleOption: true}));
-```
-
-## Writing Modules
-
-Some facts about modules
-
-- A Module is able to extend a plugin with additional functionality using the `ExtensionPoint`s registered by the plugin.
-- A module can only extend one plugin but can interact with multiple `ExtensionPoint`s registered by that plugin.
-- A module is always initialized before the plugin it extends.
-
-A module depend on the `ExtensionPoint`s exported by the target plugin's library package, for example `@backstage/plugin-catalog-node`, and does not directly declare a dependency on the plugin package itself.
-
-Here's an example on how to create a module that adds a new processor using the `catalogProcessingExtensionPoint`:
-
-```ts
-import { createBackendModule } from '@backstage/backend-plugin-api';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
-import { MyCustomProcessor } from './processor';
-
-export const exampleCustomProcessorCatalogModule = createBackendModule({
-  moduleId: 'exampleCustomProcessor',
-  pluginId: 'catalog',
-  register(env) {
-    env.registerInit({
-      deps: {
-        catalog: catalogProcessingExtensionPoint,
-      },
-      async init({ catalog }) {
-        catalog.addProcessor(new MyCustomProcessor());
-      },
-    });
-  },
-});
-```
-
-### Extension Points
-
-Modules depend on extension points just as a regular dependency but specifying it in the `deps` section.
-
-#### Defining an Extension Point
-
-```ts
-import { createExtensionPoint } from '@backstage/backend-plugin-api';
-
-export interface ScaffolderActionsExtensionPoint {
-  addAction(action: ScaffolderAction): void;
-}
-
-export const ScaffolderActionsExtensionPoint =
-  createExtensionPoint<ScaffolderActionsExtensionPoint>({
-    id: 'scaffolder.actions',
-  });
-```
-
-#### Registering an Extension Point
-
-Extension points are registered by a plugin and extended by modules.
 
 ## Testing
 
