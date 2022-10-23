@@ -7,3 +7,4 @@ description: Manage releases without having to juggle git commands.
 documentation: https://github.com/backstage/backstage/tree/master/plugins/git-release-manager
 iconUrl: img/git-release-manager-logo.svg
 npmPackageName: '@backstage/plugin-git-release-manager'
+addedDate: '2021-10-04'

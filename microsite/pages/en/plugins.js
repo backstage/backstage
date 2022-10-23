@@ -21,6 +21,8 @@ const pluginMetadata = fs
 const truncate = text =>
   text.length > 170 ? text.substr(0, 170) + '...' : text;
 
+const newForDays = 100;
+
 const addPluginDocsLink = '/docs/plugins/add-to-marketplace';
 const defaultIconUrl = 'img/logo-gradient-on-dark.svg';
 
@@ -100,8 +102,16 @@ const Plugins = () => (
               authorUrl,
               documentation,
               category,
+              addedDate,
             }) => (
               <div className="PluginCard">
+                {Math.trunc(
+                  (Date.now() - new Date(addedDate)) / (1000 * 60 * 60 * 24),
+                ) < newForDays && (
+                  <div className="ribbon ribbon-top-right">
+                    <span>NEW</span>
+                  </div>
+                )}
                 <div className="PluginCardHeader">
                   <div className="PluginCardImage">
                     <img src={iconUrl || defaultIconUrl} alt={title} />

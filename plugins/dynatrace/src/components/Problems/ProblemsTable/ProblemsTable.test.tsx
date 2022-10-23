@@ -31,6 +31,10 @@ describe('ProblemsTable', () => {
         <ProblemsTable problems={problems} dynatraceBaseUrl="__dynatrace__" />,
       </ApiProvider>,
     );
-    expect(await rendered.findByTitle('Search')).toBeInTheDocument();
+
+    // Checking for Title from mocked problems
+    expect(
+      await rendered.findByText('this IS a big problem'),
+    ).toBeInTheDocument();
   });
 });

@@ -54,6 +54,7 @@ export async function startStandaloneServer(
   const discovery = SingleHostDiscovery.fromConfig(config);
   const mockUrlReader: jest.Mocked<UrlReader> = {
     read: jest.fn(),
+    readUrl: jest.fn(),
     readTree: jest.fn(),
     search: jest.fn(),
   };

@@ -53,6 +53,22 @@ function renderInContext(children: JSX.Element) {
 }
 
 describe('<CostOverviewCard/>', () => {
+  beforeEach(() => {
+    // @ts-expect-error: Since we have strictNullChecks enabled, this will throw an error as window.ResizeObserver
+    // it's not an optional operand
+    delete window.ResizeObserver;
+    window.ResizeObserver = jest.fn().mockImplementation(() => ({
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+      disconnect: jest.fn(),
+    }));
+  });
+
+  afterEach(() => {
+    window.ResizeObserver = ResizeObserver;
+    jest.restoreAllMocks();
+  });
+
   it('Renders without exploding', async () => {
     const { getByText } = await renderInContext(
       <CostOverviewCard dailyCostData={mockGroupDailyCost} metricData={null} />,

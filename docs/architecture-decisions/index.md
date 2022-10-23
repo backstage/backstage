@@ -34,5 +34,5 @@ Records should be stored under the `architecture-decisions` directory.
 
 ## Superseding an ADR
 
-If an ADR supersedes an older ADR then the older ADR's status is changed to
-superseded by ADR-XXXX and links to the new ADR.
+If an ADR supersedes an older ADR then the status of the older ADR is changed to
+"superseded by ADR-XXXX", and links to the new ADR.

@@ -15,7 +15,7 @@
  */
 
 import { ScmIntegrations } from '../ScmIntegrations';
-import { GitHubIntegrationConfig } from './config';
+import { GithubIntegrationConfig } from './config';
 import { SingleInstanceGithubCredentialsProvider } from './SingleInstanceGithubCredentialsProvider';
 
 import { DefaultGithubCredentialsProvider } from './DefaultGithubCredentialsProvider';
@@ -65,7 +65,7 @@ describe('DefaultGithubCredentialsProvider tests', () => {
     );
     jest.resetAllMocks();
     SingleInstanceGithubCredentialsProvider.create = (
-      config: GitHubIntegrationConfig,
+      config: GithubIntegrationConfig,
     ) => {
       return {
         getCredentials: (_opts: { url: string }) => {

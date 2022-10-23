@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import {
+  MockAnalyticsApi,
+  renderInTestApp,
+  TestApiRegistry,
+} from '@backstage/test-utils';
 import { act, fireEvent, within } from '@testing-library/react';
 import React from 'react';
 import { Route, Routes } from 'react-router';
@@ -24,6 +28,7 @@ import { TemplatePage } from './TemplatePage';
 import {
   featureFlagsApiRef,
   FeatureFlagsApi,
+  analyticsApiRef,
 } from '@backstage/core-plugin-api';
 
 import { ApiProvider } from '@backstage/core-app-api';
@@ -56,6 +61,8 @@ const featureFlagsApiMock: jest.Mocked<FeatureFlagsApi> = {
 };
 
 const errorApiMock = { post: jest.fn(), error$: jest.fn() };
+
+const analyticsMock = new MockAnalyticsApi();
 
 const schemaMockValue = {
   title: 'my-schema',
@@ -105,6 +112,7 @@ const apis = TestApiRegistry.from(
   [scaffolderApiRef, scaffolderApiMock],
   [errorApiRef, errorApiMock],
   [featureFlagsApiRef, featureFlagsApiMock],
+  [analyticsApiRef, analyticsMock],
 );
 
 describe('TemplatePage', () => {
@@ -155,6 +163,66 @@ describe('TemplatePage', () => {
         title: 'React SSR Template',
         steps: [],
       });
+    });
+  });
+
+  it('captures expected analytics events', async () => {
+    scaffolderApiMock.scaffold.mockResolvedValue({ taskId: 'xyz' });
+    scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+      title: 'schema-4-analytics',
+      steps: [
+        {
+          title: 'Fill in some steps',
+          schema: {
+            properties: {
+              name: {
+                title: 'Name',
+                type: 'string',
+              },
+            },
+            required: ['name'],
+          },
+        },
+      ],
+    });
+    const { findByLabelText, findByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <TemplatePage />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/create': rootRouteRef,
+        },
+      },
+    );
+
+    // Fill out the name field
+    expect(await findByText('Fill in some steps')).toBeInTheDocument();
+    fireEvent.change(await findByLabelText('Name', { exact: false }), {
+      target: { value: 'expected-name' },
+    });
+
+    // Go to the final page
+    fireEvent.click(await findByText('Next step'));
+    expect(await findByText('Reset')).toBeInTheDocument();
+
+    // Create the software
+    await act(async () => {
+      fireEvent.click(await findByText('Create'));
+    });
+
+    // The "Next Step" button should have fired an event
+    expect(analyticsMock.getEvents()[0]).toMatchObject({
+      action: 'click',
+      subject: 'Next Step (1)',
+      context: { entityRef: 'template:default/test' },
+    });
+
+    // And the "Create" button should have fired an event
+    expect(analyticsMock.getEvents()[1]).toMatchObject({
+      action: 'create',
+      subject: 'expected-name',
+      context: { entityRef: 'template:default/test' },
     });
   });
 

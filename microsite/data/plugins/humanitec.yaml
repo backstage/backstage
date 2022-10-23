@@ -9,3 +9,4 @@ description: |
 documentation: https://github.com/thefrontside/backstage/tree/main/plugins/humanitec
 iconUrl: img/humanitec-logo.png
 npmPackageName: '@frontside/backstage-plugin-humanitec'
+addedDate: '2022-06-22'

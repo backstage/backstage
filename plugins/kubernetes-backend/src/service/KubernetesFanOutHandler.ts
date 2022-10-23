@@ -41,6 +41,7 @@ import {
   PodFetchResponse,
   KubernetesRequestAuth,
   CustomResourceMatcher,
+  PodStatusFetchResponse,
 } from '@backstage/plugin-kubernetes-common';
 import {
   ContainerStatus,
@@ -163,19 +164,22 @@ const toClientSafeContainer = (
 };
 
 const toClientSafePodMetrics = (
-  podMetrics: PodStatus[][],
+  podMetrics: PodStatusFetchResponse[],
 ): ClientPodStatus[] => {
-  return podMetrics.flat().map((pd: PodStatus): ClientPodStatus => {
-    return {
-      pod: pd.Pod,
-      memory: toClientSafeResource(pd.Memory),
-      cpu: toClientSafeResource(pd.CPU),
-      containers: pd.Containers.map(toClientSafeContainer),
-    };
-  });
+  return podMetrics
+    .map(r => r.resources)
+    .flat()
+    .map((pd: PodStatus): ClientPodStatus => {
+      return {
+        pod: pd.Pod,
+        memory: toClientSafeResource(pd.Memory),
+        cpu: toClientSafeResource(pd.CPU),
+        containers: pd.Containers.map(toClientSafeContainer),
+      };
+    });
 };
 
-type responseWithMetrics = [FetchResponseWrapper, PodStatus[][]];
+type responseWithMetrics = [FetchResponseWrapper, PodStatusFetchResponse[]];
 
 export class KubernetesFanOutHandler {
   private readonly logger: Logger;
@@ -350,11 +354,17 @@ export class KubernetesFanOutHandler {
         .filter(isString),
     );
 
-    const podMetrics = Array.from(namespaces).map(ns =>
-      this.fetcher.fetchPodMetricsByNamespace(clusterDetails, ns),
+    if (namespaces.size === 0) {
+      return [result, []];
+    }
+
+    const podMetrics = await this.fetcher.fetchPodMetricsByNamespaces(
+      clusterDetails,
+      namespaces,
     );
 
-    return Promise.all([result, Promise.all(podMetrics)]);
+    result.errors.push(...podMetrics.errors);
+    return [result, podMetrics.responses as PodStatusFetchResponse[]];
   }
 
   private getAuthTranslator(provider: string): KubernetesAuthTranslator {

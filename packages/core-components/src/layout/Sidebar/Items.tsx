@@ -510,6 +510,7 @@ const SidebarItemWithSubmenu = ({
 /**
  * Creates a `SidebarItem`
  *
+ * @remarks
  * If children contain a `SidebarSubmenu` component the `SidebarItem` will have a expandable submenu
  */
 export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
@@ -663,6 +664,8 @@ export const SidebarScrollWrapper = styled('div')(({ theme }) => {
 
 /**
  * A button which allows you to expand the sidebar when clicked.
+ *
+ * @remarks
  * Use optionally to replace sidebar's expand-on-hover feature with expand-on-click.
  *
  * If you are using this you might want to set the `disableExpandOnHover` of the `Sidebar` to `true`.

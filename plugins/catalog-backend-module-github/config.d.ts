@@ -50,7 +50,7 @@ export interface Config {
 
     providers?: {
       /**
-       * GitHubEntityProvider configuration
+       * GithubEntityProvider configuration
        *
        * Uses "default" as default id for the single config variant.
        */

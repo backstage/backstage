@@ -76,7 +76,7 @@ export class StackOverflowQuestionsCollatorFactory
     this.apiKey = options.apiKey;
     this.maxPage = options.maxPage;
     this.requestParams = options.requestParams;
-    this.logger = options.logger;
+    this.logger = options.logger.child({ documentType: this.type });
   }
 
   static fromConfig(

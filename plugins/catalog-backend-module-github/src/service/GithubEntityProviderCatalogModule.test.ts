@@ -29,11 +29,11 @@ import { ConfigReader } from '@backstage/config';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { Duration } from 'luxon';
 import { githubEntityProviderCatalogModule } from './GithubEntityProviderCatalogModule';
-import { GitHubEntityProvider } from '../providers/GitHubEntityProvider';
+import { GithubEntityProvider } from '../providers/GithubEntityProvider';
 
 describe('githubEntityProviderCatalogModule', () => {
   it('should register provider at the catalog extension point', async () => {
-    let addedProviders: Array<GitHubEntityProvider> | undefined;
+    let addedProviders: Array<GithubEntityProvider> | undefined;
     let usedSchedule: TaskScheduleDefinition | undefined;
 
     const extensionPoint = {

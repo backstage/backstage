@@ -121,7 +121,11 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     const startTimestamp = Date.now();
     this.logger.info(`Reading GitHub repositories from ${location.target}`);
 
-    const { repositories } = await getOrganizationRepositories(client, org);
+    const { repositories } = await getOrganizationRepositories(
+      client,
+      org,
+      catalogPath,
+    );
     const matching = repositories.filter(
       r => !r.isArchived && repoSearchPath.test(r.name),
     );

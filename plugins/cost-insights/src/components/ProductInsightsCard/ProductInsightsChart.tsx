@@ -15,11 +15,6 @@
  */
 
 import React, { useMemo, useState } from 'react';
-import {
-  ContentRenderer,
-  TooltipProps as RechartsTooltipProps,
-  RechartsFunction,
-} from 'recharts';
 import pluralize from 'pluralize';
 import { Box, Typography } from '@material-ui/core';
 import { default as FullScreenIcon } from '@material-ui/icons/Fullscreen';
@@ -55,6 +50,7 @@ import {
 } from '../../utils/styles';
 import { Duration, Entity, Maybe } from '../../types';
 import { choose } from '../../utils/change';
+import { TooltipRenderer } from '../../types/Tooltip';
 
 export type ProductInsightsChartProps = {
   billingDate: string;
@@ -96,7 +92,7 @@ export const ProductInsightsChart = ({
     currentName: formatPeriod(duration, billingDate, true),
   };
 
-  const onMouseMove: RechartsFunction = (
+  const onMouseMove: (...args: any[]) => void = (
     data: Record<'activeLabel', string | undefined>,
   ) => {
     if (isLabeled(data)) {
@@ -108,7 +104,9 @@ export const ProductInsightsChart = ({
     }
   };
 
-  const onClick: RechartsFunction = (data: Record<'activeLabel', string>) => {
+  const onClick: (...args: any[]) => void = (
+    data: Record<'activeLabel', string>,
+  ) => {
     if (isLabeled(data)) {
       setSelected(data.activeLabel);
     } else if (isUnlabeled(data)) {
@@ -118,7 +116,7 @@ export const ProductInsightsChart = ({
     }
   };
 
-  const renderProductInsightsTooltip: ContentRenderer<RechartsTooltipProps> = ({
+  const renderProductInsightsTooltip: TooltipRenderer = ({
     label,
     payload = [],
   }) => {

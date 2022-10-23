@@ -1,5 +1,35 @@
 # @backstage/plugin-search-backend
 
+## 1.1.0
+
+### Minor Changes
+
+- 16c853a6ed: Be less restrictive with unknown keys on query endpoint
+- a799972bb1: The query received by search engines now contains a property called `pageLimit`, it specifies how many results to return per page when sending a query request to the search backend.
+
+  Example:
+  _Returns up to 30 results per page_
+
+  ```
+  GET /query?pageLimit=30
+  ```
+
+  The search backend validates the page limit and this value must not exceed 100, but it doesn't set a default value for the page limit parameter, it leaves it up to each search engine to set this, so Lunr, Postgres and Elastic Search set 25 results per page as a default value.
+
+### Patch Changes
+
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-auth-node@0.2.6
+  - @backstage/plugin-permission-node@0.7.0
+  - @backstage/plugin-permission-common@0.7.0
+  - @backstage/plugin-search-common@1.1.0
+  - @backstage/plugin-search-backend-node@1.0.3
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/types@1.0.0
+
 ## 1.1.0-next.2
 
 ### Patch Changes

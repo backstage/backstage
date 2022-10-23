@@ -25,6 +25,11 @@ catalog:
         group: example-group # Optional. Group and subgroup (if needed) to look for repositories. If not present the whole project will be scanned
         entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
         projectPattern: /[\s\S]*/ # Optional. Filters found projects based on provided patter. Defaults to `/[\s\S]*/`, what means to not filter anything
+        schedule: # optional; same options as in TaskScheduleDefinition
+          # supports cron, ISO duration, "human duration" as used in code
+          frequency: { minutes: 30 }
+          # supports ISO duration, "human duration" as used in code
+          timeout: { minutes: 3 }
 ```
 
 As this provider is not one of the default providers, you will first need to install
@@ -47,10 +52,13 @@ const builder = await CatalogBuilder.create(env);
 builder.addEntityProvider(
   ...GitlabDiscoveryEntityProvider.fromConfig(env.config, {
     logger: env.logger,
+    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
     schedule: env.scheduler.createScheduledTaskRunner({
       frequency: { minutes: 30 },
       timeout: { minutes: 3 },
     }),
+    // optional: alternatively, use schedule
+    scheduler: env.scheduler,
   }),
 );
 ```

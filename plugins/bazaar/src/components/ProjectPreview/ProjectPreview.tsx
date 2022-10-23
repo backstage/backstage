@@ -17,7 +17,7 @@
 import React, { ChangeEvent, useState } from 'react';
 import { Content } from '@backstage/core-components';
 import { ProjectCard } from '../ProjectCard/ProjectCard';
-import { makeStyles, Grid, TablePagination } from '@material-ui/core';
+import { makeStyles, Grid, TablePagination, GridSize } from '@material-ui/core';
 import { BazaarProject } from '../../types';
 import { Entity } from '@backstage/catalog-model';
 
@@ -26,8 +26,7 @@ type Props = {
   fetchBazaarProjects: () => Promise<BazaarProject[]>;
   catalogEntities: Entity[];
   useTablePagination?: boolean;
-  fullHeight?: boolean;
-  fixedWidth?: boolean;
+  gridSize?: GridSize;
 };
 
 const useStyles = makeStyles({
@@ -55,8 +54,7 @@ export const ProjectPreview = ({
   fetchBazaarProjects,
   catalogEntities,
   useTablePagination = true,
-  fullHeight = true,
-  fixedWidth = false,
+  gridSize = 2,
 }: Props) => {
   const classes = useStyles();
   const [page, setPage] = useState(1);
@@ -86,18 +84,12 @@ export const ProjectPreview = ({
           .slice((page - 1) * rows, rows * page)
           .map((bazaarProject: BazaarProject, i: number) => {
             return (
-              <Grid
-                key={i}
-                item
-                xs={fixedWidth ? false : 2}
-                style={{ width: '16rem' }}
-              >
+              <Grid key={i} item xs={gridSize}>
                 <ProjectCard
                   project={bazaarProject}
                   key={i}
                   fetchBazaarProjects={fetchBazaarProjects}
                   catalogEntities={catalogEntities}
-                  fullHeight={fullHeight}
                 />
               </Grid>
             );

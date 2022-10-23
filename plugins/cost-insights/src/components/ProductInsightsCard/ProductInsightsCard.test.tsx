@@ -74,6 +74,22 @@ const renderProductInsightsCardInTestApp = async (
   );
 
 describe('<ProductInsightsCard/>', () => {
+  const { ResizeObserver } = window;
+  beforeEach(() => {
+    // @ts-expect-error
+    delete window.ResizeObserver;
+    window.ResizeObserver = jest.fn().mockImplementation(() => ({
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+      disconnect: jest.fn(),
+    }));
+  });
+
+  afterEach(() => {
+    window.ResizeObserver = ResizeObserver;
+    jest.restoreAllMocks();
+  });
+
   it('Should render the right subheader for products with cost data', async () => {
     const entity = {
       ...mockProductCost,
