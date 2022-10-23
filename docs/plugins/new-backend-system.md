@@ -12,7 +12,43 @@ The new backend system is under active development, and only a small number of p
 
 You can find an example backend setup at https://github.com/backstage/backstage/tree/master/packages/backend-next.
 
-## Overview
+## Building Blocks
+
+This section introduces the high-level building blocks upon which this new system is built. These are all concepts that exist in our current system in one way or another, but the have all been lifted up to be first class concerns in the new system.
+
+### Backend
+
+This is the backend instance itself, which you can think of at the unity of deployment. It does not have any functionality in itself, but is simply responsible for wiring things together.
+
+It is up to you to decide how many different backends you want to deploy. You can have all features in a single one, or split things out into multiple smaller deployments. All depending on your need to scale and isolate individual features.
+
+### Plugins
+
+Plugins provide the actual features, just like in our existing system. They operate completely independently of each other. If plugins what to communicate with each other, they must do so over the wire. There can be no direct communication between plugins through code. Because of this constraints, each plugins can be considered to be its own microservice.
+
+### Services
+
+Services provide utilities to help make it simpler to implement plugins, so that each plugin doesn't need to implement everything from scratch. There are both many built-in services, like the ones for logging, database access, and reading configuration, but you can also import third-party services, or create your own.
+
+Services are also a customization point for individual backend installations. You can both override services with your own implementations, as well as make smaller customizations to existing services.
+
+### Extension Points
+
+Many plugins have ways in which you can extend them, for example entity providers for the Catalog, or custom actions for the Scaffolder. These extension patterns are now encoded into Extension Points.
+
+Extension Points look a little bit like services, since you depended on them just like you would a service. A key difference is that extension points are registered and provided by plugins themselves, based on what customizations each individual plugin wants to expose.
+
+Extension Points are also exported separately from the plugin instance itself, and a single plugin can also expose multiple different extension points at once. This makes it easier to evolve and deprecated individual Extension Points over time, rather than dealing with a single large API surface.
+
+### Modules
+
+Modules use the plugin Extension Points to add new features for plugins. They might for example add an individual Catalog Entity Provider, or one or more Scaffolder Actions. Modules basically plugins for plugins.
+
+Each module may only extend a single plugin, and the module must be deployed together with that plugin in the same backend instance. Modules may however only communicate with their plugin through its registered extension points.
+
+Just like plugins, modules also have access to services and can depend on their own service implementations. They will however share services with the plugin that they extend, there are no module-specific service implementations.
+
+## API Overview
 
 This is an example of how you create, add plugins, and start up your backend.
 
