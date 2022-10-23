@@ -96,6 +96,21 @@ export class TaskManager implements TaskContext {
     }
   }
 
+  async cancel(metadata?: JsonObject): Promise<void> {
+    await this.storage.completeTask({
+      taskId: this.task.taskId,
+      status: 'cancelled',
+      eventBody: {
+        message: `Run completed with status: cancelled`,
+        ...metadata,
+      },
+    });
+    this.isDone = true;
+    if (this.heartbeatTimeoutId) {
+      clearTimeout(this.heartbeatTimeoutId);
+    }
+  }
+
   private startTimeout() {
     this.heartbeatTimeoutId = setTimeout(async () => {
       try {
@@ -163,6 +178,7 @@ export class StorageTaskBroker implements TaskBroker {
   }
 
   private deferredDispatch = defer();
+  private taskManagerRegistry = new Map<String, TaskManager>();
 
   /**
    * {@inheritdoc TaskBroker.claim}
@@ -171,7 +187,7 @@ export class StorageTaskBroker implements TaskBroker {
     for (;;) {
       const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
-        return TaskManager.create(
+        const taskManager = TaskManager.create(
           {
             taskId: pendingTask.id,
             spec: pendingTask.spec,
@@ -181,6 +197,9 @@ export class StorageTaskBroker implements TaskBroker {
           this.storage,
           this.logger,
         );
+
+        this.taskManagerRegistry.set(pendingTask.id, taskManager);
+        return taskManager;
       }
 
       await this.waitForDispatch();
@@ -272,10 +291,11 @@ export class StorageTaskBroker implements TaskBroker {
   }
 
   async cancel(taskId: string) {
-    await this.storage.completeTask({
-      taskId,
-      status: 'cancelled',
-      eventBody: {},
-    });
+    const taskManager = this.taskManagerRegistry.get(taskId);
+    if (taskManager) {
+      await taskManager.cancel({
+        eventBody: { message: 'This task was cancelled' },
+      });
+    }
   }
 }

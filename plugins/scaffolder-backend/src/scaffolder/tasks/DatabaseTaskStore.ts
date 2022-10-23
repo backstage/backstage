@@ -306,10 +306,14 @@ export class DatabaseTaskStore implements TaskStore {
         .limit(1)
         .select();
 
+      if (task.status === 'cancelled') {
+        return;
+      }
+
       if (!task) {
         throw new Error(`No task with taskId ${taskId} found`);
       }
-      if (task.status !== oldStatus) {
+      if (task.status !== oldStatus && oldStatus !== 'cancelled') {
         throw new ConflictError(
           `Refusing to update status of run '${taskId}' to status '${status}' ` +
             `as it is currently '${task.status}', expected '${oldStatus}'`,
