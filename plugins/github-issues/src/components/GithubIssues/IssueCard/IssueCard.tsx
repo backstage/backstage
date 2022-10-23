@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { DateTime } from 'luxon';
-
-import { Box, Paper, Typography, CardActionArea } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
+import { Box, CardActionArea, Paper, Typography } from '@material-ui/core';
+import Divider from '@material-ui/core/Divider';
+import { DateTime } from 'luxon';
+import React from 'react';
 import { Assignees } from './Assignees';
 import { CommentsCount } from './CommentsCount';
-import Divider from '@material-ui/core/Divider';
 
 type IssueCardProps = {
   title: string;
