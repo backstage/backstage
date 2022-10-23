@@ -139,7 +139,9 @@ export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
   Progress: ComponentType<{}>;
-  Router: ComponentType<{}>;
+  Router: ComponentType<{
+    basename?: string;
+  }>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
   ThemeProvider?: ComponentType<{}>;
   SignInPage?: ComponentType<SignInPageProps>;

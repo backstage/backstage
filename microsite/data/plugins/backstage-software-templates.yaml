@@ -8,3 +8,4 @@ documentation: https://backstage.io/docs/features/software-templates/software-te
 iconUrl: img/backstage-software-templates.svg
 npmPackageName: '@backstage/plugin-scaffolder'
 order: 2
+addedDate: '2021-03-29'

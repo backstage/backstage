@@ -9,3 +9,4 @@ iconUrl: img/vault.png
 npmPackageName: '@backstage/plugin-vault'
 tags:
   - vault
+addedDate: '2022-06-03'

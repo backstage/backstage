@@ -155,11 +155,6 @@
       },
       {
         "type": "subcategory",
-        "label": "Bitbucket",
-        "ids": ["integrations/bitbucket/discovery"]
-      },
-      {
-        "type": "subcategory",
         "label": "Bitbucket Cloud",
         "ids": [
           "integrations/bitbucketCloud/locations",

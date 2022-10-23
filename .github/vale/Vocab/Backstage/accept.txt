@@ -1,5 +1,6 @@
 abc
 accessors
+ACLs
 addon
 addons
 ADRs
@@ -17,6 +18,7 @@ autoscaling
 Autoscaling
 autoselect
 Avro
+backend's
 backported
 backporting
 Bigtable
@@ -88,6 +90,8 @@ dockerfiles
 Dockerize
 dockerode
 Docusaurus
+DOMPurify
+don'ts
 dynatrace
 Dynatrace
 ecco
@@ -96,6 +100,8 @@ Env
 elasticsearch
 esbuild
 eslint
+ESModule
+ESModules
 etag
 Expedia
 facto
@@ -136,8 +142,10 @@ iLert
 img
 incentivised
 Indal
+indexable
 inlined
 inlinehilite
+integrator's
 interop
 JaCoCo
 JavaScript
@@ -168,6 +176,7 @@ lunr
 Luxon
 magiclink
 mailto
+maintainer's
 maintainership
 makefile
 md
@@ -222,6 +231,7 @@ orgs
 pagerduty
 pageview
 parallelization
+parseable
 Patrik
 Peloton
 performant
@@ -306,6 +316,10 @@ stringify
 stringified
 subcomponent
 subcomponents
+subfolder
+subfolders
+subheader
+subheaders
 subkey
 subroutes
 subtree
@@ -326,6 +340,7 @@ templater
 Templater
 templaters
 Templaters
+TFRecord
 theia
 thumbsup
 todo
@@ -365,6 +380,7 @@ VSCode
 Wayfair
 Weaveworks
 Webpack
+widget's
 winston
 www
 WWW

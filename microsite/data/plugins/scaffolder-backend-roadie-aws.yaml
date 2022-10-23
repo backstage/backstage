@@ -7,3 +7,4 @@ description: Here you can find some AWS cli actions
 documentation: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/plugins/scaffolder-actions/scaffolder-backend-module-aws/README.md
 iconUrl: https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg
 npmPackageName: '@roadiehq/scaffolder-backend-module-aws'
+addedDate: '2022-03-07'

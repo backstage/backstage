@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
+import { ThemeProvider } from '@material-ui/core';
+import { render } from '@testing-library/react';
+import React from 'react';
 import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
 
-import RadarLegend, { Props } from './RadarLegend';
+import RadarLegend from './RadarLegend';
+import { RadarLegendProps } from './types';
 
-const minProps: Props = {
+const minProps: RadarLegendProps = {
   quadrants: [{ id: 'languages', name: 'Languages' }],
   rings: [{ id: 'use', name: 'USE', color: '#93c47d' }],
   entries: [

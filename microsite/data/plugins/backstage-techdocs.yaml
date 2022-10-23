@@ -8,3 +8,4 @@ documentation: https://backstage.io/docs/features/techdocs/techdocs-overview
 iconUrl: img/backstage-techdocs.svg
 npmPackageName: '@backstage/plugin-techdocs'
 order: 3
+addedDate: '2021-03-29'

@@ -15,7 +15,12 @@
  */
 
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  DefaultGithubCredentialsProvider,
+  GithubCredentialsProvider,
+  ScmIntegrationRegistry,
+  ScmIntegrations,
+} from '@backstage/integration';
 import { Octokit } from '@octokit/rest';
 import { trimEnd } from 'lodash';
 import parseGitUrl from 'git-url-parse';
@@ -23,28 +28,36 @@ import {
   AnalyzeOptions,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-backend';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 
 /** @public */
 export type GithubLocationAnalyzerOptions = {
   config: Config;
   discovery: PluginEndpointDiscovery;
+  tokenManager: TokenManager;
 };
 
 /** @public */
 export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
   private readonly catalogClient: CatalogApi;
-  private readonly config: Config;
+  private readonly githubCredentialsProvider: GithubCredentialsProvider;
+  private readonly integrations: ScmIntegrationRegistry;
+  private readonly tokenManager: TokenManager;
 
   constructor(options: GithubLocationAnalyzerOptions) {
-    this.config = options.config;
     this.catalogClient = new CatalogClient({ discoveryApi: options.discovery });
+    this.integrations = ScmIntegrations.fromConfig(options.config);
+    this.githubCredentialsProvider =
+      DefaultGithubCredentialsProvider.fromIntegrations(this.integrations);
+    this.tokenManager = options.tokenManager;
   }
 
   supports(url: string) {
-    const integrations = ScmIntegrations.fromConfig(this.config);
-    const integration = integrations.byUrl(url);
+    const integration = this.integrations.byUrl(url);
     return integration?.type === 'github';
   }
 
@@ -55,15 +68,18 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
 
     const query = `filename:${catalogFile} repo:${owner}/${repo}`;
 
-    const integration = ScmIntegrations.fromConfig(this.config).github.byUrl(
-      url,
-    );
+    const integration = this.integrations.github.byUrl(url);
     if (!integration) {
       throw new Error('Make sure you have a GitHub integration configured');
     }
 
+    const { token: githubToken } =
+      await this.githubCredentialsProvider.getCredentials({
+        url,
+      });
+
     const octokitClient = new Octokit({
-      auth: integration.config.token,
+      auth: githubToken,
       baseUrl: integration.config.apiBaseUrl,
     });
 
@@ -82,15 +98,20 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
         });
       const defaultBranch = repoInformation.data.default_branch;
 
+      const { token: serviceToken } = await this.tokenManager.getToken();
+
       const result = await Promise.all(
         searchResult.data.items
           .map(i => `${trimEnd(url, '/')}/blob/${defaultBranch}/${i.path}`)
           .map(async target => {
-            const addLocationResult = await this.catalogClient.addLocation({
-              type: 'url',
-              target,
-              dryRun: true,
-            });
+            const addLocationResult = await this.catalogClient.addLocation(
+              {
+                type: 'url',
+                target,
+                dryRun: true,
+              },
+              { token: serviceToken },
+            );
             return addLocationResult.entities.map(e => ({
               location: { type: 'url', target },
               isRegistered: !!addLocationResult.exists,

@@ -7,3 +7,4 @@ description: Extend the Backstage Software Catalog with a graph that shows all e
 documentation: https://github.com/backstage/backstage/blob/master/plugins/catalog-graph/README.md
 iconUrl: img/catalog-graph.svg
 npmPackageName: '@backstage/plugin-catalog-graph'
+addedDate: '2021-09-15'
