@@ -15,7 +15,6 @@
  */
 
 import React, { useEffect } from 'react';
-import capitalize from 'lodash/capitalize';
 import { Box } from '@material-ui/core';
 import { useEntityTypeFilter } from '../../hooks/useEntityTypeFilter';
 
