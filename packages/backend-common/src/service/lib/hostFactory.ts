@@ -83,6 +83,17 @@ export async function createHttpsServer(
   return https.createServer(credentials, app) as http.Server;
 }
 
+function getCertificateExpiration(cert: string, logger?: Logger) {
+  try {
+    const crt = forge.pki.certificateFromPem(cert);
+    const crtTimestamp = Date.parse(crt.validity.notAfter.toString());
+    return crtTimestamp - Date.now();
+  } catch (error) {
+    logger?.warn(`Unable to parse self-signed certificate. ${error}`);
+    return 0;
+  }
+}
+
 async function getGeneratedCertificate(hostname: string, logger?: Logger) {
   const hasModules = await fs.pathExists('node_modules');
   let certPath;
@@ -95,25 +106,14 @@ async function getGeneratedCertificate(hostname: string, logger?: Logger) {
     certPath = resolvePath('.dev-cert.pem');
   }
 
-  let cert = undefined;
+  let cert = undefined
   let remainingMs = 0;
   if (await fs.pathExists(certPath)) {
     cert = await fs.readFile(certPath);
-    try {
-      const crt = forge.pki.certificateFromPem(cert.toString());
-      const crtTimestamp = Date.parse(crt.validity.notAfter.toString());
-      remainingMs = crtTimestamp - Date.now();
-    } catch (error) {
-      logger?.warn(`Unable to parse self-signed certificate. ${error}`);
-      remainingMs = 0;
-    }
-    if (remainingMs < FIVE_DAYS_IN_MS) {
-      // Reset certificate if expiration is nearly over
-      cert = undefined;
-    }
+    remainingMs = getCertificateExpiration(cert.toString(), logger);
   }
 
-  if (cert) {
+  if (cert && remainingMs > FIVE_DAYS_IN_MS) {
     logger?.info('Using existing self-signed certificate');
     return {
       key: cert,
