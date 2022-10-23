@@ -12,6 +12,28 @@ The new backend system is under active development, and only a small number of p
 
 You can find an example backend setup at https://github.com/backstage/backstage/tree/master/packages/backend-next.
 
+## Overview
+
+The new Backstage backend system is being built to help make it simpler to install backend plugins and keep projects up to date. It also changes the foundation to one that makes it a lot easier to evolve plugins and the system itself. You can read more about the reasoning in the [original RFC](https://github.com/backstage/backstage/issues/TODO).
+
+One of the goals of the new system was to reduce the code needed for setting up a Backstage backend and installing plugins. This is an example of how you create, add features, and start up your backend in the new system:
+
+```ts
+import { createBackend } from '@backstage/backend-defaults';
+import { catalogPlugin } from '@backstage/plugin-catalog-backend';
+
+// Create your backend instance
+const backend = createBackend();
+
+// Install all desired features
+backend.add(catalogPlugin());
+
+// Start up the backend
+await backend.start();
+```
+
+One notable change that helped achieve this much slimmer backend setup is the introduction of dependency injection, with a system that is very similar to the one in the Backstage frontend.
+
 ## Building Blocks
 
 This section introduces the high-level building blocks upon which this new system is built. These are all concepts that exist in our current system in one way or another, but the have all been lifted up to be first class concerns in the new system.
@@ -47,24 +69,6 @@ Modules use the plugin Extension Points to add new features for plugins. They mi
 Each module may only extend a single plugin, and the module must be deployed together with that plugin in the same backend instance. Modules may however only communicate with their plugin through its registered extension points.
 
 Just like plugins, modules also have access to services and can depend on their own service implementations. They will however share services with the plugin that they extend, there are no module-specific service implementations.
-
-## API Overview
-
-This is an example of how you create, add plugins, and start up your backend.
-
-```ts
-import { createBackend } from '@backstage/backend-defaults';
-import { catalogPlugin } from '@backstage/plugin-catalog-backend';
-
-// Create your backend instance
-const backend = createBackend();
-
-// Install all desired features
-backend.add(catalogPlugin());
-
-// Start up the backend
-await backend.start();
-```
 
 ## Backend Services
 
