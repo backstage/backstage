@@ -4,11 +4,17 @@ title: New Backend System
 description: Details of the upcoming backend system
 ---
 
-> **DISCLAMER: The new backend system is under active development and is not considered stable**
+> **DISCLAIMER: The new backend system is under active development and is not considered stable**
+
+## Status
+
+The new backend system is under active development, and only a small number of plugins and services have been migrated so far. It is possible to try it out, but it is not recommended to use this new system in production yet.
+
+You can find an example backend setup at https://github.com/backstage/backstage/tree/master/packages/backend-next.
 
 ## Overview
 
-This is an example of how you create, start and add existing plugins to your backend.
+This is an example of how you create, add plugins, and start up your backend.
 
 ```ts
 import { createBackend } from '@backstage/backend-defaults';
