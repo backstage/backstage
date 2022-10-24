@@ -33,6 +33,9 @@ export const useGetPullRequestDetails = () => {
                 id
                 repository {
                   name
+                  owner {
+                    login
+                  }
                 }
                 title
                 url

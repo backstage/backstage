@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { GithubTopicFilters } from '../providers/GitHubEntityProviderConfig';
+import { GithubTopicFilters } from '../providers/GithubEntityProviderConfig';
 
-export function parseGitHubOrgUrl(urlString: string): { org: string } {
+export function parseGithubOrgUrl(urlString: string): { org: string } {
   const path = new URL(urlString).pathname.substr(1).split('/');
 
   // /backstage

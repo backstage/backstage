@@ -164,7 +164,6 @@ export interface Config {
 
       /**
        * GitHub Apps configuration
-       * @visibility backend
        */
       apps?: Array<{
         /**
@@ -233,7 +232,6 @@ export interface Config {
     googleGcs?: {
       /**
        * Service account email used to authenticate requests.
-       * @visibility backend
        */
       clientEmail?: string;
       /**
@@ -265,7 +263,6 @@ export interface Config {
 
       /**
        * Account access key used to authenticate requests.
-       * @visibility backend
        */
       accessKeyId?: string;
       /**
@@ -276,15 +273,39 @@ export interface Config {
 
       /**
        * ARN of the role to be assumed
-       * @visibility backend
        */
       roleArn?: string;
 
       /**
        * External ID to use when assuming role
-       * @visibility backend
        */
       externalId?: string;
+    }>;
+
+    /** Integration configuration for Gitea */
+    gitea?: Array<{
+      /**
+       * The hostname of the given Gitea instance
+       * @visibility frontend
+       */
+      host: string;
+      /**
+       * The base url for the Gitea instance.
+       * @visibility frontend
+       */
+      baseUrl?: string;
+
+      /**
+       * The username to use for authenticated requests.
+       * @visibility secret
+       */
+      username?: string;
+      /**
+       * Gitea password used to authenticate requests. This can be either a password
+       * or a generated access token.
+       * @visibility secret
+       */
+      password?: string;
     }>;
   };
 }

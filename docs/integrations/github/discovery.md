@@ -30,14 +30,14 @@ And then add the entity provider to your catalog builder:
 
 ```diff
   // In packages/backend/src/plugins/catalog.ts
-+ import { GitHubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
++ import { GithubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
 
   export default async function createPlugin(
     env: PluginEnvironment,
   ): Promise<Router> {
     const builder = await CatalogBuilder.create(env);
 +   builder.addEntityProvider(
-+     GitHubEntityProvider.fromConfig(env.config, {
++     GithubEntityProvider.fromConfig(env.config, {
 +       logger: env.logger,
 +       // optional: alternatively, use scheduler with schedule defined in app-config.yaml
 +       schedule: env.scheduler.createScheduledTaskRunner({
@@ -104,6 +104,13 @@ catalog:
           topic:
             include: ['backstage-include'] # optional array of strings
             exclude: ['experiments'] # optional array of strings
+      validateLocationsExist:
+        organization: 'backstage' # string
+        catalogPath: '/catalog-info.yaml' # string
+        filters:
+          branch: 'main' # string
+          repository: '.*' # Regex
+        validateLocationsExist: true # optional boolean
       enterpriseProviderId:
         host: ghe.example.net
         organization: 'backstage' # string
@@ -118,7 +125,8 @@ This provider supports multiple organizations via unique provider IDs.
 - **`catalogPath`** _(optional)_:
   Default: `/catalog-info.yaml`.
   Path where to look for `catalog-info.yaml` files.
-  You can use wildcards - `*` or `**` - to search the path and/or the filename
+  You can use wildcards - `*` or `**` - to search the path and/or the filename.
+  Wildcards cannot be used if the `validateLocationsExist` option is set to `true`.
 - **`filters`** _(optional)_:
   - **`branch`** _(optional)_:
     String used to filter results based on the branch name.
@@ -139,6 +147,12 @@ This provider supports multiple organizations via unique provider IDs.
 - **`organization`**:
   Name of your organization account/workspace.
   If you want to add multiple organizations, you need to add one provider config each.
+- **`validateLocationsExist`** _(optional)_:
+  Whether to validate locations that exist before emitting them.
+  This option avoids generating locations for catalog info files that do not exist in the source repository.
+  Defaults to `false`.
+  Due to limitations in the GitHub API's ability to query for repository objects, this option cannot be used in
+  conjunction with wildcards in the `catalogPath`.
 - **`schedule`** _(optional)_:
   - **`frequency`**:
     How often you want the task to run. The system does its best to avoid overlapping invocations.

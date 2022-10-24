@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { Duration } from 'luxon';
 import { readMicrosoftGraphConfig, readProviderConfigs } from './config';
 
 describe('readMicrosoftGraphConfig', () => {
@@ -172,6 +173,12 @@ describe('readProviderConfigs', () => {
                 filter: 'securityEnabled eq false',
                 select: ['id', 'displayName', 'description'],
               },
+              schedule: {
+                frequency: 'PT30M',
+                timeout: {
+                  minutes: 3,
+                },
+              },
             },
           },
         },
@@ -192,6 +199,12 @@ describe('readProviderConfigs', () => {
         groupExpand: 'member',
         groupSelect: ['id', 'displayName', 'description'],
         groupFilter: 'securityEnabled eq false',
+        schedule: {
+          frequency: Duration.fromISO('PT30M'),
+          timeout: {
+            minutes: 3,
+          },
+        },
       },
     ];
     expect(actual).toEqual(expected);

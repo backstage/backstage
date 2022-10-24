@@ -1,5 +1,17 @@
 # @backstage/backend-plugin-api
 
+## 0.1.3
+
+### Patch Changes
+
+- 28377dc89f: Allow interfaces to be used for inferred option types.
+- a35a27df70: Added documentation for `createBackendModule`, with guidelines for choosing a module ID.
+- Updated dependencies
+  - @backstage/backend-common@0.15.2
+  - @backstage/backend-tasks@0.3.6
+  - @backstage/plugin-permission-common@0.7.0
+  - @backstage/config@1.0.3
+
 ## 0.1.3-next.2
 
 ### Patch Changes

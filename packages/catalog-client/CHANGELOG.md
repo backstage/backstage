@@ -1,5 +1,14 @@
 # @backstage/catalog-client
 
+## 1.1.1
+
+### Patch Changes
+
+- 4f2ac624b4: Renamed argument in `validateEntity` from `location` to `locationRef`
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/errors@1.1.2
+
 ## 1.1.1-next.2
 
 ### Patch Changes

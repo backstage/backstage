@@ -1,5 +1,22 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.5.3
+
+### Patch Changes
+
+- 296aea34da: The Tech Insights plugin supports running fact retrievers across multiple instances. Update the README to remove the stale instructions.
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- f7cbfb97ed: Modify router endpoint to handle singular and collections of request parameters similarly.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/backend-tasks@0.3.6
+  - @backstage/catalog-client@1.1.1
+  - @backstage/plugin-tech-insights-node@0.3.5
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/plugin-tech-insights-common@0.2.7
+
 ## 0.5.3-next.2
 
 ### Patch Changes

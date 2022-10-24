@@ -1,5 +1,43 @@
 # @backstage/plugin-catalog-backend
 
+## 1.5.0
+
+### Minor Changes
+
+- b2e6cb6acf: Added a new method `addLocationAnalyzers` to the `CatalogBuilder`. With this you can add location analyzers to your catalog. These analyzers will be used by the /analyze-location endpoint to decide if the provided URL contains any catalog-info.yaml files already or not.
+
+  Moved the following types from this package to `@backstage/plugin-catalog-backend`.
+
+  - AnalyzeLocationResponse
+  - AnalyzeLocationRequest
+  - AnalyzeLocationExistingEntity
+  - AnalyzeLocationGenerateEntity
+  - AnalyzeLocationEntityField
+
+- eb25f7e12d: The exported permission rules and the API of `createCatalogConditionalDecision` have changed to reflect the breaking changes made to the `PermissionRule` type. Note that all involved types are exported from `@backstage/plugin-catalog-backend/alpha`
+
+### Patch Changes
+
+- 8cb6e10105: Fixed a bug where entities provided without a location key would always replace existing entities, rather than updating them.
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- 63296ebcd4: Allow Placeholder value to be any value, not only string.
+- 74022e0163: Make sure to stitch entities correctly after deletion, to ensure that their relations are updated.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.2.0
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-catalog-common@1.0.7
+  - @backstage/plugin-permission-node@0.7.0
+  - @backstage/backend-plugin-api@0.1.3
+  - @backstage/plugin-permission-common@0.7.0
+  - @backstage/catalog-client@1.1.1
+  - @backstage/plugin-search-common@1.1.0
+  - @backstage/plugin-scaffolder-common@1.2.1
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+  - @backstage/types@1.0.0
+
 ## 1.5.0-next.2
 
 ### Minor Changes

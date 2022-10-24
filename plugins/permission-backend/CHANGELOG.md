@@ -1,5 +1,18 @@
 # @backstage/plugin-permission-backend
 
+## 0.5.12
+
+### Patch Changes
+
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-auth-node@0.2.6
+  - @backstage/plugin-permission-node@0.7.0
+  - @backstage/plugin-permission-common@0.7.0
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+
 ## 0.5.12-next.2
 
 ### Patch Changes

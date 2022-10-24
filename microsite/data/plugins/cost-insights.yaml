@@ -9,3 +9,4 @@ iconUrl: img/cost-insights.png
 npmPackageName: '@backstage/plugin-cost-insights'
 tags:
   - web
+addedDate: '2021-04-28'

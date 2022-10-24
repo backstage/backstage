@@ -1,5 +1,62 @@
 # @backstage/plugin-catalog
 
+## 1.6.0
+
+### Minor Changes
+
+- d558f41d3a: Added new column `Label` to `CatalogTable.columns`, this new column allows you make use of labels from metadata.
+  For example: category and visibility are type of labels associated with API entity illustrated below.
+
+  YAML code snippet for API entity
+
+  ```yaml
+  apiVersion: backstage.io/v1alpha1
+  kind: API
+  metadata:
+    name: sample-api
+    description: API for sample
+    links:
+      - url: http://localhost:8080/swagger-ui.html
+        title: Swagger UI
+    tags:
+      - http
+    labels:
+      category: legacy
+      visibility: protected
+  ```
+
+  Consumers can customise columns to include label column and show in api-docs list
+
+  ```typescript
+  const columns = [
+    CatalogTable.columns.createNameColumn({ defaultKind: 'API' }),
+    CatalogTable.columns.createLabelColumn('category', { title: 'Category' }),
+    CatalogTable.columns.createLabelColumn('visibility', {
+      title: 'Visibility',
+      defaultValue: 'public',
+    }),
+  ];
+  ```
+
+### Patch Changes
+
+- 4efadb6968: Implemented the visual parts of `EntityKindPicker` so that it can be shown alongside the other filters on the left side of your catalog pages.
+- 182000c663: Added `emptyContent` property to CatalogTable and DefaultCatalogPage to support customization of the Catalog Table.
+- e89e1f614d: Added support for copy entity URL in entity page context menu
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/plugin-catalog-react@1.2.0
+  - @backstage/core-components@0.11.2
+  - @backstage/plugin-catalog-common@1.0.7
+  - @backstage/catalog-client@1.1.1
+  - @backstage/plugin-search-react@1.2.0
+  - @backstage/plugin-search-common@1.1.0
+  - @backstage/integration-react@1.1.5
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/errors@1.1.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+
 ## 1.6.0-next.2
 
 ### Patch Changes

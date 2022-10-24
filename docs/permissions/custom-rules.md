@@ -11,15 +11,21 @@ For some use cases, you may want to define custom [rules](./concepts.md#resource
 Plugins should export a rule factory that provides type-safety that ensures compatibility with the plugin's backend. The catalog plugin exports `createCatalogPermissionRule` from `@backstage/plugin-catalog-backend/alpha` for this purpose. Note: the `/alpha` path segment is temporary until this API is marked as stable. For this example, we'll define the rule in `packages/backend/src/plugins/permission.ts`, but you can put it anywhere that's accessible by your `backend` package.
 
 ```typescript
-import type { Entity } from '@backstage/plugin-catalog-model';
+import type { Entity } from '@backstage/catalog-model';
 import { createCatalogPermissionRule } from '@backstage/plugin-catalog-backend/alpha';
 import { createConditionFactory } from '@backstage/plugin-permission-node';
+import { z } from 'zod';
 
 export const isInSystemRule = createCatalogPermissionRule({
   name: 'IS_IN_SYSTEM',
   description: 'Checks if an entity is part of the system provided',
   resourceType: 'catalog-entity',
-  apply: (resource: Entity, systemRef: string) => {
+  paramsSchema: z.object({
+    systemRef: z
+      .string()
+      .describe('SystemRef to check the resource is part of'),
+  }),
+  apply: (resource: Entity, { systemRef }) => {
     if (!resource.relations) {
       return false;
     }
@@ -28,7 +34,7 @@ export const isInSystemRule = createCatalogPermissionRule({
       .filter(relation => relation.type === 'partOf')
       .some(relation => relation.targetRef === systemRef);
   },
-  toQuery: (systemRef: string) => ({
+  toQuery: ({ systemRef }) => ({
     key: 'relations.partOf',
     values: [systemRef],
   }),
@@ -85,14 +91,14 @@ class TestPermissionPolicy implements PermissionPolicy {
     if (isResourcePermission(request.permission, 'catalog-entity')) {
       return createCatalogConditionalDecision(
         request.permission,
--       catalogConditions.isEntityOwner(
--         user?.identity.ownershipEntityRefs ?? [],
--       ),
+-       catalogConditions.isEntityOwner({
+-         claims: user?.identity.ownershipEntityRefs ?? [],
+-       }),
 +       {
 +         anyOf: [
-+           catalogConditions.isEntityOwner(
-+             user?.identity.ownershipEntityRefs ?? []
-+           ),
++           catalogConditions.isEntityOwner({
++             claims: user?.identity.ownershipEntityRefs ?? []
++           }),
 +           isInSystem('interviewing')
 +         ]
 +       }

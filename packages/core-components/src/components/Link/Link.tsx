@@ -26,6 +26,12 @@ import {
   LinkProps as RouterLinkProps,
 } from 'react-router-dom';
 import { trimEnd } from 'lodash';
+import { createRoutesFromChildren, Route } from 'react-router-dom';
+
+export function isReactRouterBeta(): boolean {
+  const [obj] = createRoutesFromChildren(<Route index element={<div />} />);
+  return !obj.index;
+}
 
 const useStyles = makeStyles(
   {
@@ -79,6 +85,7 @@ const useBasePath = () => {
   return trimEnd(pathname, '/');
 };
 
+/** @deprecated Remove once we no longer support React Router v6 beta */
 export const useResolvedPath = (uri: LinkProps['to']) => {
   let resolvedPath = String(uri);
 
@@ -125,7 +132,12 @@ export const Link = React.forwardRef<any, LinkProps>(
   ({ onClick, noTrack, ...props }, ref) => {
     const classes = useStyles();
     const analytics = useAnalytics();
-    const to = useResolvedPath(props.to);
+
+    // Adding the base path to URLs breaks react-router v6 stable, so we only
+    // do it for beta. The react router version won't change at runtime so it is
+    // fine to ignore the rules of hooks.
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const to = isReactRouterBeta() ? useResolvedPath(props.to) : props.to;
     const linkText = getNodeText(props.children) || to;
     const external = isExternalUri(to);
     const newWindow = external && !!/^https?:/.exec(to);

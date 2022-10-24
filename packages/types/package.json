@@ -34,6 +34,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/zen-observable": "^0.8.0",
+    "luxon": "^3.0.0",
     "zen-observable": "^0.8.15"
   },
   "files": [

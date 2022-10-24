@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '../logging';
 import { UrlReaderPredicateMux } from './UrlReaderPredicateMux';
 
 describe('UrlReaderPredicateMux', () => {
@@ -32,7 +31,7 @@ describe('UrlReaderPredicateMux', () => {
       search: jest.fn(),
     };
 
-    const mux = new UrlReaderPredicateMux(getVoidLogger());
+    const mux = new UrlReaderPredicateMux();
     mux.register({
       predicate: url => url.hostname === 'foo',
       reader: fooReader,
@@ -62,7 +61,7 @@ describe('UrlReaderPredicateMux', () => {
   });
 
   it('throws an error if no predicate matches', async () => {
-    const mux = new UrlReaderPredicateMux(getVoidLogger());
+    const mux = new UrlReaderPredicateMux();
 
     await expect(mux.readUrl('http://foo/1')).rejects.toThrow(
       /^Reading from 'http:\/\/foo\/1' is not allowed. You may/,

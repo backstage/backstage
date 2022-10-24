@@ -107,58 +107,6 @@ describe('<Link />', () => {
     });
   });
 
-  describe('resolves a sub-path correctly', () => {
-    it('when it starts with base path', async () => {
-      const testString = 'This is test string';
-      const linkText = 'Navigate!';
-      const configApi = new ConfigReader({
-        app: { baseUrl: 'http://localhost:3000/example' },
-      });
-
-      const { getByText } = render(
-        wrapInTestApp(
-          <TestApiProvider apis={[[configApiRef, configApi]]}>
-            <Link to="/example/test">{linkText}</Link>
-            <Routes>
-              <Route path="/example/test" element={<p>{testString}</p>} />
-            </Routes>
-          </TestApiProvider>,
-        ),
-      );
-
-      expect(() => getByText(testString)).toThrow();
-      fireEvent.click(getByText(linkText));
-      await waitFor(() => {
-        expect(getByText(testString)).toBeInTheDocument();
-      });
-    });
-
-    it('when it does not start with base path', async () => {
-      const testString = 'This is test string';
-      const linkText = 'Navigate!';
-      const configApi = new ConfigReader({
-        app: { baseUrl: 'http://localhost:3000/example' },
-      });
-
-      const { getByText } = render(
-        wrapInTestApp(
-          <TestApiProvider apis={[[configApiRef, configApi]]}>
-            <Link to="/test">{linkText}</Link>
-            <Routes>
-              <Route path="/example/test" element={<p>{testString}</p>} />
-            </Routes>
-          </TestApiProvider>,
-        ),
-      );
-
-      expect(() => getByText(testString)).toThrow();
-      fireEvent.click(getByText(linkText));
-      await waitFor(() => {
-        expect(getByText(testString)).toBeInTheDocument();
-      });
-    });
-  });
-
   describe('isExternalUri', () => {
     it.each([
       [true, 'http://'],

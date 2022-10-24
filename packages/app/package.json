@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.76-next.2",
+  "version": "0.2.76",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -19,6 +19,7 @@
     "@backstage/plugin-apache-airflow": "workspace:^",
     "@backstage/plugin-api-docs": "workspace:^",
     "@backstage/plugin-azure-devops": "workspace:^",
+    "@backstage/plugin-azure-sites": "workspace:^",
     "@backstage/plugin-badges": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-graph": "workspace:^",
