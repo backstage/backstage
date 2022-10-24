@@ -64,7 +64,7 @@ export function AlertDisplay(props: AlertDisplayProps) {
 
   useEffect(() => {
     const [current] = messages;
-    if (current && current.transient)
+    if (current && current.display === 'transient')
       setTimeout(() => {
         setMessages(msgs => msgs.filter(msg => msg !== current));
       }, timeoutMs);
