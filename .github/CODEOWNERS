@@ -38,6 +38,7 @@ yarn.lock                                           @backstage/reviewers @backst
 /plugins/cost-insights-*                            @backstage/reviewers @backstage/silver-lining
 /plugins/events-backend                             @backstage/reviewers @pjungermann
 /plugins/events-backend-module-aws-sqs              @backstage/reviewers @pjungermann
+/plugins/events-backend-module-azure                @backstage/reviewers @pjungermann
 /plugins/events-backend-module-bitbucket-cloud      @backstage/reviewers @pjungermann
 /plugins/events-backend-module-github               @backstage/reviewers @pjungermann
 /plugins/events-backend-module-gitlab               @backstage/reviewers @pjungermann
