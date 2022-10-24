@@ -1,5 +1,6 @@
 name: Sync Snyk GitHub issues
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 */4 * * *'
 
@@ -14,7 +15,7 @@ jobs:
         node-version: [14.x]
 
     env:
-      NODE_OPTIONS: --max-old-space-size=4096
+      NODE_OPTIONS: --max-old-space-size=7168
 
     steps:
       - uses: actions/checkout@v3

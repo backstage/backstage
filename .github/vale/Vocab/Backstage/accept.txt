@@ -121,6 +121,8 @@ github
 Gitiles
 gitlab
 GitLab
+gitea
+Gitea
 Gource
 Grafana
 graphql
