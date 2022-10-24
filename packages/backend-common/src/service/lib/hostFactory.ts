@@ -106,7 +106,7 @@ async function getGeneratedCertificate(hostname: string, logger?: Logger) {
     certPath = resolvePath('.dev-cert.pem');
   }
 
-  let cert = undefined
+  let cert = undefined;
   let remainingMs = 0;
   if (await fs.pathExists(certPath)) {
     cert = await fs.readFile(certPath);
