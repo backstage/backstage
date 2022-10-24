@@ -111,7 +111,7 @@ in Backstage. While a default table experience, similar to the one provided by
 the Catalog plugin, is made available for ease-of-use, it's possible for you to
 provide a completely custom experience, tailored to the needs of your
 organization. For example, TechDocs comes with an alternative grid based layout
-(`<EntityListDocsGrid>`).
+(`<EntityListDocsGrid>`) and panel layout (`TechDocsCustomHome`).
 
 This is done in your `app` package. By default, you might see something like
 this in your `App.tsx`:
@@ -126,10 +126,100 @@ const AppRoutes = () => {
 };
 ```
 
+### Using TechDocsCustomHome
+
+You can easily customize the TechDocs home page using TechDocs panel layout
+(`<TechDocsCustomHome />`).
+
+Modify your `App.tsx` as follows:
+
+```tsx
+import { TechDocsCustomHome } from '@backstage/plugin-techdocs';
+//...
+
+const techDocsTabsConfig = [
+  {
+    label: "Recommended Documentation",
+    panels: [
+      {
+        title: 'Golden Path',
+        description: 'Documentation about standards to follow',
+        panelType: 'DocsCardGrid',
+        filterPredicate: entity => entity?.metadata?.tags?.includes('recommended') ?? false,
+      }
+    ]
+  }
+]
+
+const AppRoutes = () => {
+  <FlatRoutes>
+    <Route path="/docs" element={<TechDocsCustomHome tabsConfig={techDocsTabsConfig} />}>
+  </FlatRoutes>;
+};
+```
+
+### Building a Custom home page
+
 But you can replace `<DefaultTechDocsHome />` with any React component, which
 will be rendered in its place. Most likely, you would want to create and
 maintain such a component in a new directory at
 `packages/app/src/components/techdocs`, and import and use it in `App.tsx`:
+
+For example, you can define the following Custom home page component:
+
+```tsx
+import React from 'react';
+
+import { Content } from '@backstage/core-components';
+import {
+  CatalogFilterLayout,
+  EntityOwnerPicker,
+  EntityTagPicker,
+  UserListPicker,
+  EntityListProvider,
+} from '@backstage/plugin-catalog-react';
+import {
+  TechDocsPageWrapper,
+  TechDocsPicker,
+} from '@backstage/plugin-techdocs';
+import { Entity } from '@backstage/catalog-model';
+
+import {
+  EntityListDocsGrid,
+  DocsGroupConfig,
+} from '@backstage/plugin-techdocs';
+
+export type CustomTechDocsHomeProps = {
+  groups?: Array<{
+    title: React.ReactNode;
+    filterPredicate: (entity: Entity) => boolean;
+  }>;
+};
+
+export const CustomTechDocsHome = ({ groups }: CustomTechDocsHomeProps) => {
+  return (
+    <TechDocsPageWrapper>
+      <Content>
+        <EntityListProvider>
+          <CatalogFilterLayout>
+            <CatalogFilterLayout.Filters>
+              <TechDocsPicker />
+              <UserListPicker initialFilter="all" />
+              <EntityOwnerPicker />
+              <EntityTagPicker />
+            </CatalogFilterLayout.Filters>
+            <CatalogFilterLayout.Content>
+              <EntityListDocsGrid groups={groups} />
+            </CatalogFilterLayout.Content>
+          </CatalogFilterLayout>
+        </EntityListProvider>
+      </Content>
+    </TechDocsPageWrapper>
+  );
+};
+```
+
+Then you can add the following to your `App.tsx`:
 
 ```tsx
 import { CustomTechDocsHome } from './components/techdocs/CustomTechDocsHome';
@@ -137,7 +227,19 @@ import { CustomTechDocsHome } from './components/techdocs/CustomTechDocsHome';
 const AppRoutes = () => {
   <FlatRoutes>
     <Route path="/docs" element={<TechDocsIndexPage />}>
-      <CustomTechDocsHome />
+      <CustomTechDocsHome
+        groups={[
+          {
+            title: 'Recommended Documentation',
+            filterPredicate: entity =>
+              entity?.metadata?.tags?.includes('recommended') ?? false,
+          },
+          {
+            title: 'My Docs',
+            filterPredicate: 'ownedByUser',
+          },
+        ]}
+      />
     </Route>
   </FlatRoutes>;
 };
