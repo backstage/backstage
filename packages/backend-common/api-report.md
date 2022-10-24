@@ -21,6 +21,7 @@ import { Duration } from 'luxon';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
 import { GerritIntegration } from '@backstage/integration';
+import { GiteaIntegration } from '@backstage/integration';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
@@ -404,6 +405,23 @@ export class Git {
   }): Promise<PushResult>;
   readCommit(options: { dir: string; sha: string }): Promise<ReadCommitResult>;
   resolveRef(options: { dir: string; ref: string }): Promise<string>;
+}
+
+// @public
+export class GiteaUrlReader implements UrlReader {
+  constructor(integration: GiteaIntegration);
+  // (undocumented)
+  static factory: ReaderFactory;
+  // (undocumented)
+  read(url: string): Promise<Buffer>;
+  // (undocumented)
+  readTree(): Promise<ReadTreeResponse>;
+  // (undocumented)
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  // (undocumented)
+  search(): Promise<SearchResponse>;
+  // (undocumented)
+  toString(): string;
 }
 
 // @public

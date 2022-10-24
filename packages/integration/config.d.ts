@@ -281,5 +281,31 @@ export interface Config {
        */
       externalId?: string;
     }>;
+
+    /** Integration configuration for Gitea */
+    gitea?: Array<{
+      /**
+       * The hostname of the given Gitea instance
+       * @visibility frontend
+       */
+      host: string;
+      /**
+       * The base url for the Gitea instance.
+       * @visibility frontend
+       */
+      baseUrl?: string;
+
+      /**
+       * The username to use for authenticated requests.
+       * @visibility secret
+       */
+      username?: string;
+      /**
+       * Gitea password used to authenticate requests. This can be either a password
+       * or a generated access token.
+       * @visibility secret
+       */
+      password?: string;
+    }>;
   };
 }

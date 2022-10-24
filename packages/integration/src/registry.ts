@@ -23,6 +23,7 @@ import { BitbucketServerIntegration } from './bitbucketServer/BitbucketServerInt
 import { GerritIntegration } from './gerrit/GerritIntegration';
 import { GithubIntegration } from './github/GithubIntegration';
 import { GitLabIntegration } from './gitlab/GitLabIntegration';
+import { GiteaIntegration } from './gitea/GiteaIntegration';
 
 /**
  * Holds all registered SCM integrations, of all types.
@@ -42,7 +43,7 @@ export interface ScmIntegrationRegistry
   gerrit: ScmIntegrationsGroup<GerritIntegration>;
   github: ScmIntegrationsGroup<GithubIntegration>;
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
-
+  gitea: ScmIntegrationsGroup<GiteaIntegration>;
   /**
    * Resolves an absolute or relative URL in relation to a base URL.
    *
