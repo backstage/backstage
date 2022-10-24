@@ -14,7 +14,7 @@ You can find an example backend setup at https://github.com/backstage/backstage/
 
 ## Overview
 
-The new Backstage backend system is being built to help make it simpler to install backend plugins and keep projects up to date. It also changes the foundation to one that makes it a lot easier to evolve plugins and the system itself. You can read more about the reasoning in the [original RFC](https://github.com/backstage/backstage/issues/TODO).
+The new Backstage backend system is being built to help make it simpler to install backend plugins and keep projects up to date. It also changes the foundation to one that makes it a lot easier to evolve plugins and the system itself. You can read more about the reasoning in the [original RFC](https://github.com/backstage/backstage/issues/11611).
 
 One of the goals of the new system was to reduce the code needed for setting up a Backstage backend and installing plugins. This is an example of how you create, add features, and start up your backend in the new system:
 
@@ -40,7 +40,7 @@ This section introduces the high-level building blocks upon which this new syste
 
 ### Backend
 
-This is the backend instance itself, which you can think of at the unity of deployment. It does not have any functionality in itself, but is simply responsible for wiring things together.
+This is the backend instance itself, which you can think of as the unit of deployment. It does not have any functionality in itself, but is simply responsible for wiring things together.
 
 It is up to you to decide how many different backends you want to deploy. You can have all features in a single one, or split things out into multiple smaller deployments. All depending on your need to scale and isolate individual features.
 
@@ -64,7 +64,7 @@ Extension Points are also exported separately from the plugin instance itself, a
 
 ### Modules
 
-Modules use the plugin Extension Points to add new features for plugins. They might for example add an individual Catalog Entity Provider, or one or more Scaffolder Actions. Modules basically plugins for plugins.
+Modules use the plugin Extension Points to add new features for plugins. They might for example add an individual Catalog Entity Provider, or one or more Scaffolder Actions. Modules are basically plugins for plugins.
 
 Each module may only extend a single plugin, and the module must be deployed together with that plugin in the same backend instance. Modules may however only communicate with their plugin through its registered extension points.
 
@@ -138,7 +138,7 @@ Some facts about modules
 - A module can only extend one plugin but can interact with multiple `ExtensionPoint`s registered by that plugin.
 - A module is always initialized before the plugin it extends.
 
-A module depend on the `ExtensionPoint`s exported by the target plugin's library package, for example `@backstage/plugin-catalog-node`, and does not directly declare a dependency on the plugin package itself.
+A module depends on the `ExtensionPoint`s exported by the target plugin's library package, for example `@backstage/plugin-catalog-node`, and does not directly declare a dependency on the plugin package itself.
 
 Here's an example on how to create a module that adds a new processor using the `catalogProcessingExtensionPoint`:
 
@@ -165,7 +165,7 @@ export const exampleCustomProcessorCatalogModule = createBackendModule({
 
 ### Extension Points
 
-Modules depend on extension points just as a regular dependency but specifying it in the `deps` section.
+Modules depend on extension points just as a regular dependency by specifying it in the `deps` section.
 
 #### Defining an Extension Point
 
@@ -189,7 +189,7 @@ Extension points are registered by a plugin and extended by modules.
 ## Backend Services
 
 The default backend provides several _services_ out of the box which includes access to configuration, logging, databases and more.
-Services are declared using their _serviceRef_ in the `deps` section of plugin or module requiring them and are then available in the `init` method of the plugin or module.
+Services are declared using their _serviceRef_ in the `deps` section of the plugin or module requiring them and are then available in the `init` method of the plugin or module.
 
 ### Service References
 
@@ -241,7 +241,7 @@ export const exampleServiceRef = createServiceRef<ExampleApi>({
 
 ### Overriding Services
 
-In this example replace the default root logger service implementation with a custom one that streams logs to GCP. The `rootLoggerServiceRef` has a `'root'` scope, meaning there are no plugin-specific instances of this service.
+In this example we replace the default root logger service implementation with a custom one that streams logs to GCP. The `rootLoggerServiceRef` has a `'root'` scope, meaning there are no plugin-specific instances of this service.
 
 ```ts
 import {
