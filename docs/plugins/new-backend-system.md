@@ -232,7 +232,7 @@ export const exampleServiceRef = createServiceRef<ExampleApi>({
         return async ({ plugin }) => {
           // This block will be executed once for every plugin that depends on this service
           logger.info('Initializing example service plugin instance');
-          return new ExampleImpl({ logger });
+          return new ExampleImpl({ logger, plugin });
         };
       },
     }),
