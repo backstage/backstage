@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.4.33
+
+### Patch Changes
+
+- 7f01e61464: Updated the create-app command to no longer require Git to be installed and configured. A git repository will only be initialized if possible and if not already in an git repository.
+
 ## 0.4.32
 
 ### Patch Changes
