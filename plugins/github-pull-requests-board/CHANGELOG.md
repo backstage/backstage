@@ -4,6 +4,7 @@
 
 ### Patch Changes
 
+- 80d75adf3a: Replace the momentjs dependency with luxon.
 - 719ccbb963: Properly filter on relations instead of the spec, when finding by owner
 - Updated dependencies
   - @backstage/catalog-model@1.1.2
