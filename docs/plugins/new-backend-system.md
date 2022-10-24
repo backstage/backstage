@@ -189,7 +189,7 @@ Extension points are registered by a plugin and extended by modules.
 ## Backend Services
 
 The default backend provides several _services_ out of the box which includes access to configuration, logging, databases and more.
-Services are declared using their _serviceRef_ in the `deps` section of the plugin or module requiring them and are then available in the `init` method of the plugin or module.
+Service dependencies are declared using their `ServiceRef`s in the `deps` section of the plugin or module, and the implementations are then forwarded to the `init` method of the plugin or module.
 
 ### Service References
 
