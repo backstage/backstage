@@ -39,6 +39,7 @@ yarn.lock                                           @backstage/reviewers @backst
 /plugins/events-backend                             @backstage/reviewers @pjungermann
 /plugins/events-backend-module-aws-sqs              @backstage/reviewers @pjungermann
 /plugins/events-backend-module-bitbucket-cloud      @backstage/reviewers @pjungermann
+/plugins/events-backend-module-github               @backstage/reviewers @pjungermann
 /plugins/events-backend-test-utils                  @backstage/reviewers @pjungermann
 /plugins/events-node                                @backstage/reviewers @pjungermann
 /plugins/explore                                    @backstage/reviewers @backstage/sda-se-reviewers
