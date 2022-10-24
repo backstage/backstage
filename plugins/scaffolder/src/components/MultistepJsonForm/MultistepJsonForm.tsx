@@ -35,8 +35,8 @@ import { transformSchemaToProps } from './schema';
 import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
 import { LayoutOptions } from '../../layouts';
-import { LastStepFormProps, Step } from '../types';
-import { LastStepForm } from './LastStepForm';
+import { ReviewStepComponentProps, Step } from '../types';
+import { ReviewStep } from './ReviewStep';
 import { selectedTemplateRouteRef } from '../../routes';
 
 const Form = withTheme(MuiTheme);
@@ -57,7 +57,7 @@ export type MultistepJsonFormProps = {
   fields?: FormProps<any>['fields'];
   finishButtonLabel?: string;
   layouts: LayoutOptions[];
-  LastStepFormComponent?: ComponentType<LastStepFormProps>;
+  ReviewStepComponent?: ComponentType<ReviewStepComponentProps>;
 };
 
 /**
@@ -73,7 +73,7 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
     widgets,
     finishButtonLabel,
     layouts,
-    LastStepFormComponent,
+    ReviewStepComponent,
   } = props;
   const { templateName } = useRouteRefParams(selectedTemplateRouteRef);
   const analytics = useAnalytics();
@@ -146,7 +146,7 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
     }
   };
 
-  const LastStepFormElement = LastStepFormComponent ?? LastStepForm;
+  const ReviewStepElement = ReviewStepComponent ?? ReviewStep;
 
   return (
     <>
@@ -191,7 +191,7 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
         })}
       </Stepper>
       {activeStep === steps.length && (
-        <LastStepFormElement
+        <ReviewStepElement
           disableButtons={disableButtons}
           handleBack={handleBack}
           handleCreate={handleCreate}

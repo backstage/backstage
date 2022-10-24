@@ -18,7 +18,7 @@ import React from 'react';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import { UiSchema } from '@rjsf/core';
 import { JsonObject } from '@backstage/types';
-import { LastStepFormProps, Step } from '../types';
+import { ReviewStepComponentProps, Step } from '../types';
 
 export function getUiSchemasFromSteps(steps: Step[]): UiSchema[] {
   const uiSchemas: Array<UiSchema> = [];
@@ -77,7 +77,7 @@ export function getReviewData(formData: Record<string, any>, steps: Step[]) {
  * The component displaying the Last Step in scaffolder template form.
  * Which represents the summary of the input provided by the end user.
  */
-export const LastStepForm = (props: LastStepFormProps) => {
+export const ReviewStep = (props: ReviewStepComponentProps) => {
   const {
     disableButtons,
     finishButtonLabel,

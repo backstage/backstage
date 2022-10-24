@@ -46,7 +46,7 @@ import {
 } from '../routes';
 import { ListTasksPage } from './ListTasksPage';
 import { LayoutOptions, LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../layouts';
-import { LastStepFormProps } from './types';
+import { ReviewStepComponentProps } from './types';
 
 /**
  * The props for the entrypoint `ScaffolderPage` component the plugin.
@@ -54,7 +54,7 @@ import { LastStepFormProps } from './types';
  */
 export type RouterProps = {
   components?: {
-    LastStepFormComponent?: ComponentType<LastStepFormProps>;
+    ReviewStepComponent?: ComponentType<ReviewStepComponentProps>;
     TemplateCardComponent?:
       | ComponentType<{ template: TemplateEntityV1beta3 }>
       | undefined;
@@ -89,7 +89,7 @@ export type RouterProps = {
 export const Router = (props: RouterProps) => {
   const { groups, components = {}, defaultPreviewTemplate } = props;
 
-  const { LastStepFormComponent, TemplateCardComponent, TaskPageComponent } =
+  const { ReviewStepComponent, TemplateCardComponent, TaskPageComponent } =
     components;
 
   const outlet = useOutlet();
@@ -164,7 +164,7 @@ export const Router = (props: RouterProps) => {
         element={
           <SecretsContextProvider>
             <TemplatePage
-              LastStepFormComponent={LastStepFormComponent}
+              ReviewStepComponent={ReviewStepComponent}
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
             />

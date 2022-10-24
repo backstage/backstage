@@ -33,7 +33,7 @@ export type Step = {
  *
  * @public
  */
-export type LastStepFormProps = {
+export type ReviewStepComponentProps = {
   disableButtons: boolean;
   finishButtonLabel?: string;
   formData: Record<string, any>;

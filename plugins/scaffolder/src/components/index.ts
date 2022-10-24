@@ -19,4 +19,4 @@ export { TemplateTypePicker } from './TemplateTypePicker';
 export * from './secrets';
 export { TaskPage } from './TaskPage';
 export type { RouterProps } from './Router';
-export type { LastStepFormProps, Step } from './types';
+export type { ReviewStepComponentProps, Step } from './types';

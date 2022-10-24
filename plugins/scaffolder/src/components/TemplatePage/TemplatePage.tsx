@@ -41,7 +41,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { LayoutOptions } from '../../layouts';
-import { LastStepFormProps } from '../types';
+import { ReviewStepComponentProps } from '../types';
 
 const useTemplateParameterSchema = (templateRef: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -53,11 +53,11 @@ const useTemplateParameterSchema = (templateRef: string) => {
 };
 
 export const TemplatePage = ({
-  LastStepFormComponent,
+  ReviewStepComponent,
   customFieldExtensions = [],
   layouts = [],
 }: {
-  LastStepFormComponent?: ComponentType<LastStepFormProps>;
+  ReviewStepComponent?: ComponentType<ReviewStepComponentProps>;
   customFieldExtensions?: FieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
 }) => {
@@ -149,7 +149,7 @@ export const TemplatePage = ({
               titleTypographyProps={{ component: 'h2' }}
             >
               <MultistepJsonForm
-                LastStepFormComponent={LastStepFormComponent}
+                ReviewStepComponent={ReviewStepComponent}
                 formData={formState}
                 fields={customFieldComponents}
                 onChange={handleChange}
