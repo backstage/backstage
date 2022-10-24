@@ -498,9 +498,11 @@ export async function createRouter(
       }
 
       const token = (
-        await identity.getIdentity({
-          request: req,
-        })
+        await identity
+          .getIdentity({
+            request: req,
+          })
+          .catch(() => null)
       )?.token;
 
       for (const parameters of [template.spec.parameters ?? []].flat()) {
