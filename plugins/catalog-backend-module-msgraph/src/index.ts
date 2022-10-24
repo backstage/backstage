@@ -20,5 +20,7 @@
  * @packageDocumentation
  */
 
-export * from './processors';
 export * from './microsoftGraph';
+export * from './processors';
+export { microsoftGraphOrgEntityProviderCatalogModule } from './service/MicrosoftGraphOrgEntityProviderCatalogModule';
+export type { MicrosoftGraphOrgEntityProviderCatalogModuleOptions } from './service/MicrosoftGraphOrgEntityProviderCatalogModule';
