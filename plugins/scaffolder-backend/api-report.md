@@ -834,4 +834,8 @@ export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
 export type TemplateGlobal =
   | ((...args: JsonValue[]) => JsonValue | undefined)
   | JsonValue;
+
+// Warnings were encountered during analysis:
+//
+// src/scaffolder/actions/builtin/github/githubRepoCreate.d.ts:24:5 - (ae-forgotten-export) The symbol "BypassPullRequestAllowances" needs to be exported by the entry point index.d.ts
 ```
