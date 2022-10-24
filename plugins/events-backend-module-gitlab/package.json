@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/config": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
     "winston": "^3.2.1"
   },
@@ -35,6 +36,8 @@
   },
   "files": [
     "alpha",
+    "config.d.ts",
     "dist"
-  ]
+  ],
+  "configSchema": "config.d.ts"
 }
