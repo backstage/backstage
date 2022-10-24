@@ -83,8 +83,7 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
     return <ResponseErrorPanel error={error} />;
   }
 
-  const getHumanEntityRef = (entity: Entity) =>
-    humanizeEntityRef(entity, { defaultNamespace: false });
+  const getHumanEntityRef = (entity: Entity) => humanizeEntityRef(entity);
 
   return (
     <>

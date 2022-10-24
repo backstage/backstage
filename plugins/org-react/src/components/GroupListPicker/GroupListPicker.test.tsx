@@ -64,7 +64,7 @@ const apis = TestApiRegistry.from([catalogApiRef, mockCatalogApi]);
 
 describe('<GroupListPicker />', () => {
   it('can choose a group', async () => {
-    const { getByText, queryByText, getByTestId } = render(
+    const { getByText, getByTestId } = render(
       <ApiProvider apis={apis}>
         <GroupListPicker
           placeholder="Search"
@@ -78,8 +78,8 @@ describe('<GroupListPicker />', () => {
     const input = getByTestId('group-list-picker-input').querySelector('input');
     fireEvent.change(input as HTMLElement, { target: { value: 'GR' } });
 
-    await waitFor(() => {
-      expect(queryByText('Group A')).toBeInTheDocument();
+    await waitFor(async () => {
+      expect(getByText('Group A')).toBeInTheDocument();
       fireEvent.click(getByText('Group A'));
       expect(getByText('Group A')).toBeInTheDocument();
     });

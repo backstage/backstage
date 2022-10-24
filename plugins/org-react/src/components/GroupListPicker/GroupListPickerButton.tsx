@@ -16,18 +16,17 @@
 
 import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
-import { Box, makeStyles, Typography } from '@material-ui/core';
+import { makeStyles, Typography, Button } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import PeopleIcon from '@material-ui/icons/People';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   btn: {
-    backgroundColor: 'transparent',
-    border: 'none',
     margin: 0,
-    padding: 0,
+    padding: 10,
     width: '100%',
     cursor: 'pointer',
+    justifyContent: 'space-between',
   },
   title: {
     fontSize: '1.5rem',
@@ -36,12 +35,10 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
     letterSpacing: '-0.25px',
     lineHeight: '32px',
     marginBottom: 0,
+    textTransform: 'none',
   },
-  peopleIcon: {
-    marginRight: theme.spacing(1),
-  },
-  arrowDownIcon: {
-    marginLeft: 'auto',
+  icon: {
+    transform: 'scale(1.5)',
   },
 }));
 
@@ -56,22 +53,16 @@ export const GroupListPickerButton = (props: GroupListPickerButtonProps) => {
   const classes = useStyles();
 
   return (
-    <button
+    <Button
       onClick={handleClick}
-      className={classes.btn}
       data-testid="group-list-picker-button"
       aria-describedby="group-list-popover"
+      startIcon={<PeopleIcon className={classes.icon} />}
+      className={classes.btn}
+      size="large"
+      endIcon={<KeyboardArrowDownIcon className={classes.icon} />}
     >
-      <Box display="flex" flexDirection="row" alignItems="center">
-        <PeopleIcon fontSize="large" className={classes.peopleIcon} />
-        <Typography variant="h3" className={classes.title}>
-          {group}
-        </Typography>
-        <KeyboardArrowDownIcon
-          fontSize="large"
-          className={classes.arrowDownIcon}
-        />
-      </Box>
-    </button>
+      <Typography className={classes.title}>{group}</Typography>
+    </Button>
   );
 };

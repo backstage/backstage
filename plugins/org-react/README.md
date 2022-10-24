@@ -23,7 +23,7 @@ To use the `GroupListPicker` component you'll need to import it and add it to yo
  </Grid>
 ```
 
-The `GroupListPicker` comes with three optional props:
+The `GroupListPicker` comes with three props:
 
 - `groupTypes`: gives the user the option which group types the component should load. If no value is provided all group types will be loaded in;
 - `placeholder`: the placeholder that the select box in the component should display. This might be helpful in informing your users what the functionality of the component is.
