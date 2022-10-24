@@ -4,8 +4,15 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
 import { EventParams } from '@backstage/plugin-events-node';
+import { RequestValidator } from '@backstage/plugin-events-node';
 import { SubTopicEventRouter } from '@backstage/plugin-events-node';
+
+// @public
+export function createGithubSignatureValidator(
+  config: Config,
+): RequestValidator;
 
 // @public
 export class GithubEventRouter extends SubTopicEventRouter {
@@ -18,4 +25,7 @@ export class GithubEventRouter extends SubTopicEventRouter {
 export const githubEventRouterEventsModule: (
   options?: undefined,
 ) => BackendFeature;
+
+// @alpha
+export const githubWebhookEventsModule: (options?: undefined) => BackendFeature;
 ```
