@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Octokit } from 'octokit';
 import {
   createApiRef,
@@ -71,7 +72,7 @@ export type RepoIssues = {
 export type IssuesByRepo = Record<string, RepoIssues>;
 
 /** @internal */
-export type GitHubIssuesApi = ReturnType<typeof gitHubIssuesApi>;
+export type GithubIssuesApi = ReturnType<typeof githubIssuesApi>;
 
 /**
  * @public
@@ -96,18 +97,18 @@ export interface GithubIssuesOrdering {
 /**
  * @public
  */
-export interface GitubIssuesByRepoOptions {
+export interface GithubIssuesByRepoOptions {
   filterBy?: GithubIssuesFilters;
   orderBy?: GithubIssuesOrdering;
 }
 
 /** @internal */
-export const gitHubIssuesApiRef = createApiRef<GitHubIssuesApi>({
+export const githubIssuesApiRef = createApiRef<GithubIssuesApi>({
   id: 'plugin.githubissues.service',
 });
 
 /** @internal */
-export const gitHubIssuesApi = (
+export const githubIssuesApi = (
   githubAuthApi: OAuthApi,
   configApi: ConfigApi,
   errorApi: ErrorApi,
@@ -128,7 +129,7 @@ export const gitHubIssuesApi = (
     return octokit.graphql;
   };
 
-  const fetchIssuesByRepoFromGitHub = async (
+  const fetchIssuesByRepoFromGithub = async (
     repos: Array<string>,
     itemsPerRepo: number,
     {
@@ -137,7 +138,7 @@ export const gitHubIssuesApi = (
         field: 'UPDATED_AT',
         direction: 'DESC',
       },
-    }: GitubIssuesByRepoOptions = {},
+    }: GithubIssuesByRepoOptions = {},
   ): Promise<IssuesByRepo> => {
     const graphql = await getOctokit();
     const safeNames: Array<string> = [];
@@ -186,7 +187,7 @@ export const gitHubIssuesApi = (
     }, {} as IssuesByRepo);
   };
 
-  return { fetchIssuesByRepoFromGitHub };
+  return { fetchIssuesByRepoFromGithub };
 };
 
 function formatFilterValue(
@@ -224,7 +225,7 @@ function createIssueByRepoQuery(
     owner: string;
   }>,
   itemsPerRepo: number,
-  { filterBy, orderBy }: GitubIssuesByRepoOptions,
+  { filterBy, orderBy }: GithubIssuesByRepoOptions,
 ): string {
   const fragment = `
     fragment issues on Repository {
@@ -278,7 +279,7 @@ function createIssueByRepoQuery(
         }
       `,
       )}
-    }    
+    }
   `;
 
   return query;

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { DateTime } from 'luxon';
-
 import {
   Box,
   Paper,
@@ -25,7 +25,6 @@ import {
 } from '@material-ui/core';
 import { Assignees } from './Assignees';
 import { CommentsCount } from './CommentsCount';
-
 import Divider from '@material-ui/core/Divider';
 
 type IssueCardProps = {

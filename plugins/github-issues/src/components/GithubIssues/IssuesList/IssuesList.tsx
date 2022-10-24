@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 
+import React from 'react';
 import { Box } from '@material-ui/core';
 import { Pagination } from '@material-ui/lab';
-
 import { IssueCard } from '../IssueCard';
 import { IssuesByRepo } from '../../../api';
 import { RepositoryFilters } from './Filters';
@@ -60,7 +59,7 @@ export const IssuesList = ({
     [issuesByRepository],
   );
 
-  const totalIssuesInGitHub = React.useMemo(
+  const totalIssuesInGithub = React.useMemo(
     () =>
       issuesByRepository
         ? Object.values(issuesByRepository).reduce(
@@ -113,12 +112,12 @@ export const IssuesList = ({
       {issues.length > 0 && (
         <RepositoryFilters
           placeholder={`All repositories ${getIssuesCountForFilterLabel(
-            totalIssuesInGitHub,
+            totalIssuesInGithub,
             issues.length,
           )}`}
           items={filters}
           onChange={setActiveFilter}
-          totalIssuesInGitHub={totalIssuesInGitHub}
+          totalIssuesInGithub={totalIssuesInGithub}
         />
       )}
 

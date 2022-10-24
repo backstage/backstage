@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 const mockGraphQLQuery = jest.fn(() => ({}));
 jest.mock('octokit', () => ({
   Octokit: jest.fn(() => ({ graphql: mockGraphQLQuery })),
@@ -20,8 +21,8 @@ jest.mock('octokit', () => ({
 
 import { ConfigApi, ErrorApi } from '@backstage/core-plugin-api';
 import { ForwardedError } from '@backstage/errors';
-import { createFilterByClause, gitHubIssuesApi } from './gitHubIssuesApi';
-import type { GithubIssuesFilters } from './gitHubIssuesApi';
+import { createFilterByClause, githubIssuesApi } from './githubIssuesApi';
+import type { GithubIssuesFilters } from './githubIssuesApi';
 
 function getFragment(
   filterBy = '',
@@ -84,21 +85,21 @@ function getFragment(
     '          ...issues\n' +
     '        }\n' +
     '      \n' +
-    '    }    \n' +
+    '    }\n' +
     '  '
   );
 }
 
-describe('gitHubIssuesApi', () => {
-  describe('fetchIssuesByRepoFromGitHub', () => {
-    let api: ReturnType<typeof gitHubIssuesApi>;
+describe('githubIssuesApi', () => {
+  describe('fetchIssuesByRepoFromGithub', () => {
+    let api: ReturnType<typeof githubIssuesApi>;
 
     afterEach(() => {
       jest.clearAllMocks();
     });
 
     beforeEach(() => {
-      api = gitHubIssuesApi(
+      api = githubIssuesApi(
         { getAccessToken: jest.fn() },
         {
           getOptionalConfigArray: jest.fn(),
@@ -108,7 +109,7 @@ describe('gitHubIssuesApi', () => {
     });
 
     it('should call GitHub API with correct query with fragment for each repo', async () => {
-      await api.fetchIssuesByRepoFromGitHub(
+      await api.fetchIssuesByRepoFromGithub(
         ['mrwolny/yo-yo', 'mrwolny/yoyo', 'mrwolny/yo.yo'],
         10,
       );
@@ -118,7 +119,7 @@ describe('gitHubIssuesApi', () => {
     });
 
     it('should call Github API with the correct filterBy and orderBy clauses', async () => {
-      await api.fetchIssuesByRepoFromGitHub(
+      await api.fetchIssuesByRepoFromGithub(
         ['mrwolny/yo-yo', 'mrwolny/yoyo', 'mrwolny/yo.yo'],
         10,
         {
@@ -221,7 +222,7 @@ describe('gitHubIssuesApi', () => {
       }),
     );
 
-    const api = gitHubIssuesApi(
+    const api = githubIssuesApi(
       { getAccessToken: jest.fn() },
       {
         getOptionalConfigArray: jest.fn(),
@@ -229,7 +230,7 @@ describe('gitHubIssuesApi', () => {
       { post: jest.fn() } as unknown as ErrorApi,
     );
 
-    const data = await api.fetchIssuesByRepoFromGitHub(
+    const data = await api.fetchIssuesByRepoFromGithub(
       ['mrwolny/yo-yo', 'mrwolny/notfound'],
       10,
     );
@@ -291,7 +292,7 @@ describe('gitHubIssuesApi', () => {
       }),
     );
 
-    const api = gitHubIssuesApi(
+    const api = githubIssuesApi(
       { getAccessToken: jest.fn() },
       {
         getOptionalConfigArray: jest.fn(),
@@ -299,7 +300,7 @@ describe('gitHubIssuesApi', () => {
       { post: jest.fn() } as unknown as ErrorApi,
     );
 
-    const data = await api.fetchIssuesByRepoFromGitHub(
+    const data = await api.fetchIssuesByRepoFromGithub(
       ['mrwolny/notfound'],
       10,
     );
@@ -332,7 +333,7 @@ describe('gitHubIssuesApi', () => {
 
     const mockErrorApi = { post: jest.fn() };
 
-    const api = gitHubIssuesApi(
+    const api = githubIssuesApi(
       { getAccessToken: jest.fn() },
       {
         getOptionalConfigArray: jest.fn(),
@@ -340,7 +341,7 @@ describe('gitHubIssuesApi', () => {
       mockErrorApi as unknown as ErrorApi,
     );
 
-    await api.fetchIssuesByRepoFromGitHub(['mrwolny/notfound'], 10);
+    await api.fetchIssuesByRepoFromGithub(['mrwolny/notfound'], 10);
 
     expect(mockErrorApi.post).toHaveBeenCalledTimes(1);
     expect(mockErrorApi.post).toHaveBeenCalledWith(
