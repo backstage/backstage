@@ -73,7 +73,7 @@ Edit `plugins/todo-list-backend/src/service/router.ts`:
     router.post('/todos', async (req, res) => {
       let author: string | undefined = undefined;
 
-      const user = await identity.authenticate(token) : undefined;
+      const user = await identity.getIdentity({ request: req });
       author = user?.identity.userEntityRef;
 +     const token = getBearerTokenFromAuthorizationHeader(
 +       req.header('authorization'),
@@ -178,111 +178,111 @@ At this point everything is working but if you run `yarn tsc` you'll get some er
 First we'll clean up the `plugins/todo-list-backend/src/service/router.test.ts`:
 
 ```diff
-import { getVoidLogger } from '@backstage/backend-common';
-import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+  import { getVoidLogger } from '@backstage/backend-common';
+  import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 + import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import express from 'express';
-import request from 'supertest';
+  import express from 'express';
+  import request from 'supertest';
 
-import { createRouter } from './router';
+  import { createRouter } from './router';
 
 + const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
-+  jest.fn();
++   jest.fn();
 + const mockedPermissionQuery: jest.MockedFunction<
-+  PermissionEvaluator['authorizeConditional']
-+> = jest.fn();
++   PermissionEvaluator['authorizeConditional']
++ > = jest.fn();
 
 + const permissionEvaluator: PermissionEvaluator = {
-+  authorize: mockedAuthorize,
-+  authorizeConditional: mockedPermissionQuery,
-+};
++   authorize: mockedAuthorize,
++   authorizeConditional: mockedPermissionQuery,
++ };
 
-describe('createRouter', () => {
-  let app: express.Express;
+  describe('createRouter', () => {
+    let app: express.Express;
 
-  beforeAll(async () => {
-    const router = await createRouter({
-      logger: getVoidLogger(),
-      identity: {} as DefaultIdentityClient,
-+      permissions: toPermissionEvaluator,
+    beforeAll(async () => {
+      const router = await createRouter({
+        logger: getVoidLogger(),
+        identity: {} as DefaultIdentityClient,
++       permissions: toPermissionEvaluator,
+      });
+      app = express().use(router);
     });
-    app = express().use(router);
-  });
 
-  beforeEach(() => {
-    jest.resetAllMocks();
-  });
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
 
-  describe('GET /health', () => {
-    it('returns ok', async () => {
-      const response = await request(app).get('/health');
+    describe('GET /health', () => {
+      it('returns ok', async () => {
+        const response = await request(app).get('/health');
 
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual({ status: 'ok' });
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({ status: 'ok' });
+      });
     });
   });
-});
 
 ```
 
 Then we want to update the `plugins/todo-list-backend/src/service/standaloneServer.ts`, first we need to add the `@backstage/plugin-permission-node` package to `plugins/todo-list-backend/package.json` and then we can make the following edits:
 
 ```diff
-import {
-  createServiceBuilder,
-  loadBackendConfig,
-  SingleHostDiscovery,
-+  ServerTokenManager,
-} from '@backstage/backend-common';
-import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
-import { ServerPermissionClient } from '@backstage/plugin-permission-node';
-import { Server } from 'http';
-import { Logger } from 'winston';
-import { createRouter } from './router';
+  import {
+    createServiceBuilder,
+    loadBackendConfig,
+    SingleHostDiscovery,
++   ServerTokenManager,
+  } from '@backstage/backend-common';
+  import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+  import { ServerPermissionClient } from '@backstage/plugin-permission-node';
+  import { Server } from 'http';
+  import { Logger } from 'winston';
+  import { createRouter } from './router';
 
-export interface ServerOptions {
-  port: number;
-  enableCors: boolean;
-  logger: Logger;
-}
-
-export async function startStandaloneServer(
-  options: ServerOptions,
-): Promise<Server> {
-  const logger = options.logger.child({ service: 'todo-list-backend' });
-  logger.debug('Starting application server...');
-  const config = await loadBackendConfig({ logger, argv: process.argv });
-  const discovery = SingleHostDiscovery.fromConfig(config);
-+  const tokenManager = ServerTokenManager.fromConfig(config, {
-+    logger,
-+  });
-+  const permissions = ServerPermissionClient.fromConfig(config, {
-+    discovery,
-+    tokenManager,
-+  });
-  const router = await createRouter({
-    logger,
-    identity: DefaultIdentityClient.create({
-      discovery,
-      issuer: await discovery.getExternalBaseUrl('auth'),
-    }),
-+    permissions,
-  });
-
-  let service = createServiceBuilder(module)
-    .setPort(options.port)
-    .addRouter('/todo-list', router);
-  if (options.enableCors) {
-    service = service.enableCors({ origin: 'http://localhost:3000' });
+  export interface ServerOptions {
+    port: number;
+    enableCors: boolean;
+    logger: Logger;
   }
 
-  return await service.start().catch(err => {
-    logger.error(err);
-    process.exit(1);
-  });
-}
+  export async function startStandaloneServer(
+    options: ServerOptions,
+  ): Promise<Server> {
+    const logger = options.logger.child({ service: 'todo-list-backend' });
+    logger.debug('Starting application server...');
+    const config = await loadBackendConfig({ logger, argv: process.argv });
+    const discovery = SingleHostDiscovery.fromConfig(config);
++   const tokenManager = ServerTokenManager.fromConfig(config, {
++     logger,
++   });
++   const permissions = ServerPermissionClient.fromConfig(config, {
++     discovery,
++     tokenManager,
++   });
+    const router = await createRouter({
+      logger,
+      identity: DefaultIdentityClient.create({
+        discovery,
+        issuer: await discovery.getExternalBaseUrl('auth'),
+      }),
++     permissions,
+    });
 
-module.hot?.accept();
+    let service = createServiceBuilder(module)
+      .setPort(options.port)
+      .addRouter('/todo-list', router);
+    if (options.enableCors) {
+      service = service.enableCors({ origin: 'http://localhost:3000' });
+    }
+
+    return await service.start().catch(err => {
+      logger.error(err);
+      process.exit(1);
+    });
+  }
+
+  module.hot?.accept();
 ```
 
 Now when you run `yarn tsc` you should have no more errors.

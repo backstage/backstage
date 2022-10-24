@@ -166,7 +166,7 @@ Providing a disabled state can be a helpful signal to users, but there may be ca
 
 Now you should find that the component for adding a todo list item does not render at all. Success!
 
-You can also use `RequirePermission` to prevent access to routes as well, here's how that would look in your `packages/app/src/App.tsx`:
+You can also use `RequirePermission` to prevent access to routes as well. Here's how that would look in your `packages/app/src/App.tsx`:
 
 ```diff
 + import { RequirePermission } from '@backstage/plugin-permission-react';
@@ -181,7 +181,7 @@ You can also use `RequirePermission` to prevent access to routes as well, here's
 +   <Route path="/todo-list" element={
        // You might want to create a "read" permission for this, we are just using this one as an example
 +      <RequirePermission permission={todoListCreatePermission}>
-+        <TodoListPage />} />
++        <TodoListPage />
 +      </RequirePermission>
   </FlatRoutes>
 ```
