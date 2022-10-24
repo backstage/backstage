@@ -41,7 +41,7 @@ indexBuilder.addCollator({
 
 Congrats! You can now search the API specs registered in Backstage with the core search plugin.
 
-If you would like to add a catagory to the main search page's (/search) Result Type Facet you may add a type with `value` set to `api-definition` to the
+If you would like to add a category to the main search page's (/search) Result Type Facet you may add a type with `value` set to `api-definition` to the
 `<SearchType.Accordion>` components `types` prop:
 
 ```tsx
@@ -68,4 +68,4 @@ If you would like to add a catagory to the main search page's (/search) Result T
 />
 ```
 
-![API Seearch Full Page](./docs/api_search_full.png)
+![API Search Full Page](./docs/api_search_full.png)
