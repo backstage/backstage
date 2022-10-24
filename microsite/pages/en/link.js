@@ -6,6 +6,7 @@ const redirects = {
   'bind-routes':
     '/docs/plugins/composability#binding-external-routes-in-the-app',
   'scm-auth': '/docs/auth/#scaffolder-configuration-software-templates',
+  'backend-system': '/docs/plugins/new-backend-system',
 };
 const fallback = '/docs';
 
