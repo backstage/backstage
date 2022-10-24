@@ -60,6 +60,7 @@ export type FactRetrieverRegistrationOptions = {
   factRetriever: FactRetriever;
   lifecycle?: FactLifecycle;
   timeout?: Duration | HumanDuration;
+  initialDelay?: Duration | HumanDuration;
 };
 
 // @public (undocumented)
