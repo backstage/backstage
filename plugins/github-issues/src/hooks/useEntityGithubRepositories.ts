@@ -25,7 +25,7 @@ export const getProjectNameFromEntity = (entity: Entity): string => {
   return entity?.metadata.annotations?.[GITHUB_PROJECT_SLUG_ANNOTATION] ?? '';
 };
 
-export function useEntityGitHubRepositories() {
+export function useEntityGithubRepositories() {
   const { entity } = useEntity();
 
   const catalogApi = useApi(catalogApiRef);

@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { useApi } from '@backstage/core-plugin-api';
-
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
-import { gitHubIssuesApiRef, GitubIssuesByRepoOptions } from '../api';
+import { githubIssuesApiRef, GithubIssuesByRepoOptions } from '../api';
 
-export const useGetIssuesByRepoFromGitHub = (
+export const useGetIssuesByRepoFromGithub = (
   repos: Array<string>,
   itemsPerRepo: number,
-  options?: GitubIssuesByRepoOptions,
+  options?: GithubIssuesByRepoOptions,
 ) => {
-  const gitHubIssuesApi = useApi(gitHubIssuesApiRef);
+  const githubIssuesApi = useApi(githubIssuesApiRef);
 
   const {
     value: issues,
@@ -31,7 +31,7 @@ export const useGetIssuesByRepoFromGitHub = (
     retry,
   } = useAsyncRetry(async () => {
     if (repos.length > 0) {
-      return await gitHubIssuesApi.fetchIssuesByRepoFromGitHub(
+      return await githubIssuesApi.fetchIssuesByRepoFromGithub(
         repos,
         itemsPerRepo,
         options,
@@ -41,5 +41,5 @@ export const useGetIssuesByRepoFromGitHub = (
     return {};
   }, [repos]);
 
-  return { isLoading, gitHubIssuesByRepo: issues, retry };
+  return { isLoading, githubIssuesByRepo: issues, retry };
 };
