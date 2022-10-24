@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,17 @@
  */
 
 /**
- * Common TypeScript types used within Backstage
+ * Human friendly durations object.
  *
- * @packageDocumentation
+ * @public
  */
-
-export type { JsonArray, JsonObject, JsonPrimitive, JsonValue } from './json';
-export type { Observable, Observer, Subscription } from './observable';
-export type { HumanDuration } from './time';
+export type HumanDuration = {
+  years?: number;
+  months?: number;
+  weeks?: number;
+  days?: number;
+  hours?: number;
+  minutes?: number;
+  seconds?: number;
+  milliseconds?: number;
+};

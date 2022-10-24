@@ -15,13 +15,12 @@
  */
 import { DateTime, Duration, DurationLike } from 'luxon';
 import { Config } from '@backstage/config';
-import { JsonValue } from '@backstage/types';
+import { HumanDuration, JsonValue } from '@backstage/types';
 import {
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
 import { Logger } from 'winston';
-import { HumanDuration } from '@backstage/backend-tasks';
 
 /**
  * A container for facts. The shape of the fact records needs to correspond to the FactSchema with same `ref` value.
