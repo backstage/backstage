@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, Children, ReactElement } from 'react';
+import React, { ReactNode, Children, ReactElement, ReactChild } from 'react';
 import { useOutlet } from 'react-router-dom';
 
 import { Page } from '@backstage/core-components';
@@ -34,6 +34,14 @@ import {
   getComponentData,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
+
+type Extension = ReactChild & {
+  type: {
+    __backstage_data: {
+      map: Map<string, boolean>;
+    };
+  };
+};
 
 /**
  * Props for {@link TechDocsReaderLayout}
@@ -88,19 +96,27 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
   if (!children) {
     const childrenList = outlet ? Children.toArray(outlet.props.children) : [];
 
-    const page = childrenList.find(child => {
+    let page: React.ReactNode;
+    childrenList.forEach(child => {
+      // console.log({child: JSON.stringify(child)})
+      // const { type } = child as Extension;
+      // console.log(!type?.__backstage_data?.map?.get(TECHDOCS_ADDONS_WRAPPER_KEY));
+
       if (getComponentData(child, TECHDOCS_ADDONS_WRAPPER_KEY)) {
-        return false;
+        return;
       }
 
       // react-router 6 stable wraps children in a routing context provider, so check one level deeper
       const nestedChildren = (child as ReactElement)?.props?.children;
       if (nestedChildren) {
-        return !Children.toArray(nestedChildren).some(nested =>
-          getComponentData(nested, TECHDOCS_ADDONS_WRAPPER_KEY),
-        );
+        Children.toArray(nestedChildren).forEach(nested => {
+          if (!getComponentData(nested, TECHDOCS_ADDONS_WRAPPER_KEY)) {
+            page = nested;
+          }
+        });
+        return;
       }
-      return true;
+      page = child;
     });
 
     return (
