@@ -131,6 +131,13 @@ function createConfig(dir, extraConfig = {}) {
         2,
         {
           paths: [
+            ...['.', '..', '../..', '../../..', '../../../..', '../../../../..']
+              .flatMap(p => [p, `${p}/index`])
+              .map(p => ({
+                name: p,
+                message:
+                  'Do not import from the current index file or from index files in parent folders; this easily leads to circular dependencies. Please specify the path to the actual file you want to import instead.',
+              })),
             ...(restrictedImports ?? []),
             ...(restrictedSrcImports ?? []),
           ],
