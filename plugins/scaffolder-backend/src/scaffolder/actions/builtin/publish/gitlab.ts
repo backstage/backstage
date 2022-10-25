@@ -185,7 +185,9 @@ export function createPublishGitlabAction(options: {
         visibility: repoVisibility,
       });
 
-      await client.Projects.edit(projectId, {topics});
+      if (topics.length) {
+        await client.Projects.edit(projectId, {topics});
+      }
 
       // When setUserAsOwner is true the input token is expected to come from an unprivileged user GitLab
       // OAuth flow. In this case GitLab works in a way that allows the unprivileged user to
