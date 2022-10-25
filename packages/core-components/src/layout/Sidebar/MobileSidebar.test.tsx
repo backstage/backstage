@@ -21,13 +21,11 @@ import LayersIcon from '@material-ui/icons/Layers';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
-import {
-  MobileSidebar,
-  Sidebar,
-  SidebarGroup,
-  SidebarItem,
-  SidebarPage,
-} from '.';
+import { Sidebar } from './Bar';
+import { SidebarItem } from './Items';
+import { MobileSidebar } from './MobileSidebar';
+import { SidebarPage } from './Page';
+import { SidebarGroup } from './SidebarGroup';
 
 const MobileSidebarWithGroups = () => (
   <SidebarPage>
