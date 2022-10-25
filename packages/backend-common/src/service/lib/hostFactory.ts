@@ -86,8 +86,7 @@ export async function createHttpsServer(
 function getCertificateExpiration(cert: string, logger?: Logger) {
   try {
     const crt = forge.pki.certificateFromPem(cert);
-    const crtTimestamp = Date.parse(crt.validity.notAfter.toString());
-    return crtTimestamp - Date.now();
+    return crt.validity.notAfter.getTime() - Date.now();
   } catch (error) {
     logger?.warn(`Unable to parse self-signed certificate. ${error}`);
     return 0;
