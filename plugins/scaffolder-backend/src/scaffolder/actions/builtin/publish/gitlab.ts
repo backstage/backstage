@@ -186,7 +186,7 @@ export function createPublishGitlabAction(options: {
       });
 
       if (topics.length) {
-        await client.Projects.edit(projectId, {topics});
+        await client.Projects.edit(projectId, { topics });
       }
 
       // When setUserAsOwner is true the input token is expected to come from an unprivileged user GitLab
