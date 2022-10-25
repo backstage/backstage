@@ -58,7 +58,7 @@ export const IssueCard = (props: IssueCardProps) => {
         <CardActionArea href={url} target="_blank">
           <Box padding={1}>
             <Box display="flex" justifyContent="space-between">
-              <Link to={`https://github.com/${repositoryName}/issues`}>
+              <Link to={`${url.substring(0, url.lastIndexOf('/'))}`}>
                 {repositoryName}
               </Link>
               <Assignees name={assigneeName} avatar={assigneeAvatar} />
