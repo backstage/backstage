@@ -43,6 +43,7 @@ jobs:
             --org=backstage-dgh
             --strict-out-of-sync=false
             --sarif-file-output=snyk.sarif
+            --debug
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           NODE_OPTIONS: --max-old-space-size=4096
