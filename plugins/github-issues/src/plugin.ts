@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   createPlugin,
   createApiFactory,
@@ -22,23 +23,22 @@ import {
   errorApiRef,
   githubAuthApiRef,
 } from '@backstage/core-plugin-api';
-import { gitHubIssuesApi, gitHubIssuesApiRef } from './api';
-
+import { githubIssuesApi, githubIssuesApiRef } from './api';
 import { rootRouteRef } from './routes';
 
 /** @public */
-export const gitHubIssuesPlugin = createPlugin({
+export const githubIssuesPlugin = createPlugin({
   id: 'github-issues',
   apis: [
     createApiFactory({
-      api: gitHubIssuesApiRef,
+      api: githubIssuesApiRef,
       deps: {
         configApi: configApiRef,
         githubAuthApi: githubAuthApiRef,
         errorApi: errorApiRef,
       },
       factory: ({ configApi, githubAuthApi, errorApi }) =>
-        gitHubIssuesApi(githubAuthApi, configApi, errorApi),
+        githubIssuesApi(githubAuthApi, configApi, errorApi),
     }),
   ],
   routes: {
@@ -47,21 +47,21 @@ export const gitHubIssuesPlugin = createPlugin({
 });
 
 /** @public */
-export const GitHubIssuesCard = gitHubIssuesPlugin.provide(
+export const GithubIssuesCard = githubIssuesPlugin.provide(
   createComponentExtension({
-    name: 'GitHubIssuesCard',
+    name: 'GithubIssuesCard',
     component: {
-      lazy: () => import('./components/GitHubIssues').then(m => m.GitHubIssues),
+      lazy: () => import('./components/GithubIssues').then(m => m.GithubIssues),
     },
   }),
 );
 
 /** @public */
-export const GitHubIssuesPage = gitHubIssuesPlugin.provide(
+export const GithubIssuesPage = githubIssuesPlugin.provide(
   createRoutableExtension({
-    name: 'GitHubIssuesPage',
+    name: 'GithubIssuesPage',
     component: () =>
-      import('./components/GitHubIssues').then(m => m.GitHubIssues),
+      import('./components/GithubIssues').then(m => m.GithubIssues),
     mountPoint: rootRouteRef,
   }),
 );

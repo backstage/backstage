@@ -13,28 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { ChatIcon } from '@backstage/core-components';
-import { Box, Badge } from '@material-ui/core';
 
-type CommentsCountProps = {
-  commentsCount: number;
-};
-
-export const CommentsCount = (props: CommentsCountProps) => {
-  const { commentsCount } = props;
-
-  return (
-    <Box
-      marginBottom={1}
-      style={{ marginRight: '12px' }}
-      display="flex"
-      justifyContent="flex-start"
-      alignSelf="flex-end"
-    >
-      <Badge badgeContent={commentsCount} color="primary">
-        <ChatIcon />
-      </Badge>
-    </Box>
-  );
-};
+export * from './IssuesList';
