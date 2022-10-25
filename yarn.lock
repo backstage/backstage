@@ -6023,6 +6023,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-incremental-ingestion-backend@^0.0.0, @backstage/plugin-incremental-ingestion-backend@workspace:plugins/incremental-ingestion-backend":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-incremental-ingestion-backend@workspace:plugins/incremental-ingestion-backend"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@types/express": "*"
+    "@types/supertest": ^2.0.8
+    express: ^4.18.1
+    express-promise-router: ^4.1.0
+    msw: ^0.47.0
+    node-fetch: ^2.6.7
+    supertest: ^6.2.4
+    winston: ^3.2.1
+    yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-jenkins-backend@workspace:^, @backstage/plugin-jenkins-backend@workspace:plugins/jenkins-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-jenkins-backend@workspace:plugins/jenkins-backend"
@@ -21350,6 +21369,7 @@ __metadata:
     "@backstage/plugin-events-backend": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/plugin-graphql-backend": "workspace:^"
+    "@backstage/plugin-incremental-ingestion-backend": ^0.0.0
     "@backstage/plugin-jenkins-backend": "workspace:^"
     "@backstage/plugin-kafka-backend": "workspace:^"
     "@backstage/plugin-kubernetes-backend": "workspace:^"
