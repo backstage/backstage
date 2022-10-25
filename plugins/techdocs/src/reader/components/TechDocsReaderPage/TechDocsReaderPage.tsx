@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, Children, ReactElement, ReactChild } from 'react';
+import React, { ReactNode, Children, ReactElement } from 'react';
 import { useOutlet } from 'react-router-dom';
 
 import { Page } from '@backstage/core-components';
@@ -34,14 +34,6 @@ import {
   getComponentData,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
-
-type Extension = ReactChild & {
-  type: {
-    __backstage_data: {
-      map: Map<string, boolean>;
-    };
-  };
-};
 
 /**
  * Props for {@link TechDocsReaderLayout}
