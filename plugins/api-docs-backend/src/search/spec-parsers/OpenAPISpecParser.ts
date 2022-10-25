@@ -39,6 +39,14 @@ export class OpenAPISpecParser implements SpecParser {
             pathTexts.push(pathMethod?.description);
             pathTexts.push(pathMethod?.tags?.join(','));
             for (const response in pathMethod?.responses) {
+              if (
+                !Object.prototype.hasOwnProperty.call(
+                  pathMethod?.responses,
+                  response,
+                )
+              ) {
+                continue;
+              }
               const responseValue = pathMethod?.responses[
                 response
               ] as OpenAPIV3.ResponseObject;
@@ -54,6 +62,10 @@ export class OpenAPISpecParser implements SpecParser {
   getV2SpecText(spec: OpenAPIV2.Document): (string | undefined)[] {
     const pathTexts: (string | undefined)[] = [];
     for (const path in spec.paths) {
+      if (!Object.prototype.hasOwnProperty.call(spec.paths, path)) {
+        continue;
+      }
+
       const pathDetails = spec.paths[path];
       if (pathDetails) {
         Object.values(OpenAPIV2.HttpMethods).forEach(method => {
@@ -62,6 +74,14 @@ export class OpenAPISpecParser implements SpecParser {
           pathTexts.push(pathMethod?.description);
           pathTexts.push(pathMethod?.tags?.join(','));
           for (const response in pathMethod?.responses) {
+            if (
+              !Object.prototype.hasOwnProperty.call(
+                pathMethod?.responses,
+                response,
+              )
+            ) {
+              continue;
+            }
             const responseValue = pathMethod?.responses[
               response
             ] as OpenAPIV2.ResponseObject;

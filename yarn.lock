@@ -3991,11 +3991,13 @@ __metadata:
   resolution: "@backstage/plugin-api-docs-backend@workspace:plugins/api-docs-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
+    "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@types/semver": ^7.3.12
     "@types/supertest": ^2.0.8

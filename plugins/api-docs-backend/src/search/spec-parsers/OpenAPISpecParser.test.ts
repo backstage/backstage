@@ -16,7 +16,6 @@
 
 import { OpenAPIV3_1, OpenAPIV3, OpenAPIV2 } from 'openapi-types';
 import { OpenAPISpecParser } from './OpenAPISpecParser';
-import { expect, jest } from '@jest/globals';
 import { readFileSync } from 'fs';
 import * as path from 'path';
 import { parse } from 'yaml';
@@ -50,19 +49,19 @@ describe('OpenAPISpecParser', () => {
     it('detects 2.0 spec version', () => {
       jest.spyOn(parser, 'parseSpec');
       parser.getSpecText(v2Spec);
-      expect(parser.parseSpec).toBeCalledWith(expect.anything(), '2.0');
+      expect(parser.parseSpec).toHaveBeenCalledWith(expect.anything(), '2.0');
     });
 
     it('detects 3.0 spec version', () => {
       jest.spyOn(parser, 'parseSpec');
       parser.getSpecText(v3Spec);
-      expect(parser.parseSpec).toBeCalledWith(expect.anything(), '3.0.0');
+      expect(parser.parseSpec).toHaveBeenCalledWith(expect.anything(), '3.0.0');
     });
 
     it('detects 3.1 spec version', () => {
       jest.spyOn(parser, 'parseSpec');
       parser.getSpecText(v31Spec);
-      expect(parser.parseSpec).toBeCalledWith(expect.anything(), '3.1.0');
+      expect(parser.parseSpec).toHaveBeenCalledWith(expect.anything(), '3.1.0');
     });
   });
 
