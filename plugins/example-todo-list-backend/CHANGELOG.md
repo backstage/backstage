@@ -1,5 +1,15 @@
 # @internal/plugin-todo-list-backend
 
+## 1.0.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/plugin-auth-node@0.2.7-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+
 ## 1.0.6
 
 ### Patch Changes

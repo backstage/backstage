@@ -1,5 +1,23 @@
 # @backstage/plugin-bazaar
 
+## 0.2.0-next.0
+
+### Minor Changes
+
+- 28b39e0e0e: The limit prop of BazaarOverviewCard has been removed entirely, and instead replaced with a new optional boolean prop `fullWidth`. The BazaarOverviewCard now always use full height without fixed width. Also fixed problem with link to Bazaar.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.1-next.0
+  - @backstage/core-components@0.12.0-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/cli@0.21.0-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/plugin-catalog@1.6.1-next.0
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/errors@1.1.3-next.0
+
 ## 0.1.25
 
 ### Patch Changes
