@@ -21,7 +21,7 @@ import * as http from 'http';
 import * as https from 'https';
 import { Logger } from 'winston';
 import { HttpsSettings } from './config';
-import * as forge from 'node-forge';
+import forge from 'node-forge';
 
 const FIVE_DAYS_IN_MS = 5 * 24 * 60 * 60 * 1000;
 
@@ -106,19 +106,16 @@ async function getGeneratedCertificate(hostname: string, logger?: Logger) {
     certPath = resolvePath('.dev-cert.pem');
   }
 
-  let cert = undefined;
-  let remainingMs = 0;
   if (await fs.pathExists(certPath)) {
-    cert = await fs.readFile(certPath);
-    remainingMs = getCertificateExpiration(cert.toString(), logger);
-  }
-
-  if (cert && remainingMs > FIVE_DAYS_IN_MS) {
-    logger?.info('Using existing self-signed certificate');
-    return {
-      key: cert,
-      cert: cert,
-    };
+    const cert = await fs.readFile(certPath);
+    const remainingMs = getCertificateExpiration(cert.toString(), logger);
+    if (remainingMs > FIVE_DAYS_IN_MS) {
+      logger?.info('Using existing self-signed certificate');
+      return {
+        key: cert,
+        cert,
+      };
+    }
   }
 
   logger?.info('Generating new self-signed certificate');
