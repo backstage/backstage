@@ -8,21 +8,21 @@ import { createKubernetesPermissionRule } from './util';
  *
  * @alpha
  */
-export const isEntityOwner = createKubernetesPermissionRule({
-  name: 'IS_ENTITY_OWNER',
-  description: 'Allow entities owned by the current user',
-  resourceType: RESOURCE_TYPE_KUBERNETES_RESOURCE,
-  apply: (resource: Entity, claims: string[]) => {
-    if (!resource.relations) {
-      return false;
-    }
+// export const isEntityOwner = createKubernetesPermissionRule({
+//   name: 'IS_ENTITY_OWNER',
+//   description: 'Allow entities owned by the current user',
+//   resourceType: RESOURCE_TYPE_KUBERNETES_RESOURCE,
+//   apply: (resource: Entity, claims: string[]) => {
+//     if (!resource.relations) {
+//       return false;
+//     }
 
-    return resource.relations
-      .filter(relation => relation.type === RELATION_OWNED_BY)
-      .some(relation => claims.includes(relation.targetRef));
-  },
-  toQuery: (claims: string[]) => ({
-    key: 'relations.ownedBy',
-    values: claims,
-  }),
-});
+//     return resource.relations
+//       .filter(relation => relation.type === RELATION_OWNED_BY)
+//       .some(relation => claims.includes(relation.targetRef));
+//   },
+//   toQuery: (claims: string[]) => ({
+//     key: 'relations.ownedBy',
+//     values: claims,
+//   }),
+// });

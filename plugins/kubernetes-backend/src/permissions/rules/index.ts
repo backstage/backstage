@@ -1,4 +1,4 @@
-import { isEntityOwner } from './isEntityOwner';
+import { isOfKind } from './isOfKind';
 
 /**
  * These permission rules can be used to conditionally filter Kubernetes resources
@@ -7,7 +7,7 @@ import { isEntityOwner } from './isEntityOwner';
  * @alpha
  */
 export const permissionRules = {
-    isEntityOwner,
+    isOfKind,
 };
 
 export type { KubernetesPermissionRule } from './util';

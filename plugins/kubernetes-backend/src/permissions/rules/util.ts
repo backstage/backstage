@@ -1,11 +1,9 @@
-import { Entity } from '@backstage/catalog-model';
+import { KubernetesObjectTypes } from '@backstage/plugin-kubernetes-backend';
 import { RESOURCE_TYPE_KUBERNETES_RESOURCE } from '@backstage/plugin-kubernetes-common';
 import {
   makeCreatePermissionRule,
   PermissionRule,
 } from '@backstage/plugin-permission-node';
-import { EntitiesSearchFilter } from '/Users/rvallejohome/Workspace/backstage-oss/backstage-work/plugins/catalog-backend/src/catalog/types';
-// import { EntitiesSearchFilter } from '../../../plugins/catalog-backend/src/catalog/types';
 /**
  * Convenience type for {@link @backstage/plugin-permission-node#PermissionRule}
  * instances with the correct resource type and resource to work with
@@ -13,8 +11,10 @@ import { EntitiesSearchFilter } from '/Users/rvallejohome/Workspace/backstage-os
  *
  * @alpha
  */
+
+//TODO: (rubenv-dev) switch KubernetesObjectTypes type requirement to something wider like ObjectToFetch to be used on the custom resources endpoint. 
 export type KubernetesPermissionRule<TParams extends unknown[] = unknown[]> =
-  PermissionRule<Entity, EntitiesSearchFilter,'kubernetes-resource', TParams>;
+  PermissionRule<KubernetesObjectTypes, unknown,'kubernetes-resource', TParams>;
 
 /**
  * Helper function for creating correctly-typed
@@ -24,7 +24,7 @@ export type KubernetesPermissionRule<TParams extends unknown[] = unknown[]> =
  * @alpha
  */
 export const createKubernetesPermissionRule = makeCreatePermissionRule<
-  Entity,
-  EntitiesSearchFilter,
+  KubernetesObjectTypes,
+  unknown,
   typeof RESOURCE_TYPE_KUBERNETES_RESOURCE
 >();
