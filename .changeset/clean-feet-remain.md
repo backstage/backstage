@@ -2,4 +2,4 @@
 '@backstage/plugin-github-issues': patch
 ---
 
-Respecting GitHub integration host value from catalog-info.yaml file
+Stripping specific issues url already present to target base issues url.
