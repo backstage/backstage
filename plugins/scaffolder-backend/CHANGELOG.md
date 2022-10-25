@@ -1,5 +1,62 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.8.0-next.0
+
+### Minor Changes
+
+- ea14eb62a2: Added a set of default Prometheus metrics around scaffolding. See below for a list of metrics and an explanation of their labels:
+
+  - `scaffolder_task_count`: Tracks successful task runs.
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `user`: The entity ref of the user that invoked the template run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  - `scaffolder_task_duration`: a histogram which tracks the duration of a task run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `result`: A boolean describing whether the task ran successfully
+
+  - `scaffolder_step_count`: a count that tracks each step run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `step`: The name of the step that was run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  - `scaffolder_step_duration`: a histogram which tracks the duration of each step run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `step`: The name of the step that was run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  You can find a guide for running Prometheus metrics here: https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/prometheus-metrics.md
+
+### Patch Changes
+
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/plugin-catalog-backend@1.5.1-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/backend-tasks@0.3.7-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/plugin-auth-node@0.2.7-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/backend-plugin-api@0.1.4-next.0
+  - @backstage/plugin-catalog-node@1.2.1-next.0
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/plugin-scaffolder-common@1.2.2-next.0
+
 ## 1.7.0
 
 ### Minor Changes
