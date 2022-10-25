@@ -25,7 +25,8 @@ import { KubernetesObjectsProvider } from '../types/types';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { 
   AuthorizeResult,
-  PermissionEvaluator
+  PermissionEvaluator,
+  PermissionCondition
 } from '@backstage/plugin-permission-common';
 import { 
   kubernetesWorkloadResourcesReadPermission, kubernetesCustomResourcesReadPermission } from '../../../kubernetes-common/src/permissions';
@@ -85,8 +86,6 @@ export const addResourceRoutesToRouter = (
       )
     )[0];
 
-    console.log(authorizeResponse)
-
     if (authorizeResponse.result === AuthorizeResult.DENY) {
       res.status(403).json({ error: new NotAllowedError() });
       return
@@ -97,7 +96,27 @@ export const addResourceRoutesToRouter = (
       entity,
       auth: req.body.auth,
     });
-    res.json(response);
+    let editedResponse = response;
+
+    if (authorizeResponse.result === AuthorizeResult.CONDITIONAL) {
+      let permissionCondition = authorizeResponse.conditions as PermissionCondition;
+      let permissionParamsArray = permissionCondition.params[0]
+      let responseResourcesWithTypesArray = response.items[0].resources
+
+      for (let i = 0; i <= permissionParamsArray.length - 1; i++){
+        let currentParam = permissionParamsArray[i]
+
+        responseResourcesWithTypesArray.map((currentResource) => {
+          let {type, resources} = currentResource
+          if(type !== currentParam && resources.length > 0){
+            currentResource.resources = []
+          }
+        })
+      }
+
+      editedResponse.items[0].resources = responseResourcesWithTypesArray;
+    }
+    res.json(editedResponse);
   });
 
   router.post('/resources/custom/query', async (req, res) => {
@@ -112,8 +131,6 @@ export const addResourceRoutesToRouter = (
         {token},
       )
     )[0];
-
-    console.log(authorizeResponse, "custom")
 
     if (authorizeResponse.result === AuthorizeResult.DENY) {
       res.status(403).json({ error: new NotAllowedError() });
