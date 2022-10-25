@@ -85,6 +85,7 @@ export type TechDocsReaderPageProps = {
 
 /**
  * An addon-aware implementation of the TechDocsReaderPage.
+ *
  * @public
  */
 export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
@@ -96,28 +97,12 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
   if (!children) {
     const childrenList = outlet ? Children.toArray(outlet.props.children) : [];
 
-    let page: React.ReactNode;
-    childrenList.forEach(child => {
-      // console.log({child: JSON.stringify(child)})
-      // const { type } = child as Extension;
-      // console.log(!type?.__backstage_data?.map?.get(TECHDOCS_ADDONS_WRAPPER_KEY));
-
-      if (getComponentData(child, TECHDOCS_ADDONS_WRAPPER_KEY)) {
-        return;
-      }
-
-      // react-router 6 stable wraps children in a routing context provider, so check one level deeper
-      const nestedChildren = (child as ReactElement)?.props?.children;
-      if (nestedChildren) {
-        Children.toArray(nestedChildren).forEach(nested => {
-          if (!getComponentData(nested, TECHDOCS_ADDONS_WRAPPER_KEY)) {
-            page = nested;
-          }
-        });
-        return;
-      }
-      page = child;
-    });
+    const grandChildren = childrenList.flatMap(
+      child => (child as ReactElement)?.props?.children ?? [],
+    );
+    const page: React.ReactNode = grandChildren.find(
+      grandChild => !getComponentData(grandChild, TECHDOCS_ADDONS_WRAPPER_KEY),
+    );
 
     return (
       <TechDocsReaderPageProvider entityRef={entityRef}>
