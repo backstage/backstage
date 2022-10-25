@@ -422,6 +422,7 @@ export function createPublishGitlabAction(options: {
   gitAuthorName?: string | undefined;
   gitAuthorEmail?: string | undefined;
   setUserAsOwner?: boolean | undefined;
+  topics?: string[] | undefined;
 }>;
 
 // @public
