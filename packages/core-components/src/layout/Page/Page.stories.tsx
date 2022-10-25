@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
+import { wrapInTestApp } from '@backstage/test-utils';
 import Box from '@material-ui/core/Box';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import React, { useState } from 'react';
-import { wrapInTestApp } from '@backstage/test-utils';
-import {
-  Content,
-  ContentHeader,
-  Header,
-  HeaderLabel,
-  HeaderTabs,
-  InfoCard,
-  Page,
-} from '..';
 import {
   GaugeCard,
   StatusOK,
@@ -38,6 +29,13 @@ import {
   TableColumn,
   TrendLine,
 } from '../../components';
+import { Content } from '../Content';
+import { ContentHeader } from '../ContentHeader';
+import { Header } from '../Header';
+import { HeaderLabel } from '../HeaderLabel';
+import { HeaderTabs } from '../HeaderTabs';
+import { InfoCard } from '../InfoCard';
+import { Page } from '../Page';
 
 export default {
   title: 'Plugins/Examples',
