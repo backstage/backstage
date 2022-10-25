@@ -58,22 +58,67 @@ describe('resourcesRoutes', () => {
           if (args.entity.metadata.name === 'inject500') {
             return Promise.reject(new Error('some internal error'));
           }
-
-          return Promise.resolve({
-            items: [
-              {
-                clusterOne: {
-                  pods: [
+          return Promise.resolve(
+            {
+              items: [
+                {
+                  cluster : {
+                    name : "clusterOne"
+                  },
+                  podMetrics: [],
+                  resources: [
                     {
-                      metadata: {
-                        name: 'pod1',
-                      },
+                      type: "pods",
+                      resources: [
+                        {
+                          metadata: {
+                            name: 'pod1'
+                          } 
+                        }
+                      ]
+                    },
+                    {type: "services",
+                     resources: []
+                    },
+                    {type: "configmaps",
+                     resources: []
+                    },
+                    {type: "limitranges",
+                     resources: []
+                    },
+                    {type: "deployments",
+                     resources: [
+                       {
+                         name: "deployment1"
+                       }
+                     ]
+                    },
+                    {type: "replicasets",
+                     resources: []
+                    },
+                    {type: "horizontalpodautoscalers",
+                     resources: []
+                    },
+                    {type: "jobs",
+                     resources: []
+                    },
+                    {type: "cronjobs",
+                     resources: []
+                    },
+                    {type: "ingresses",
+                     resources: []
+                    },
+                    {type: "statefulsets",
+                     resources: []
+                    },
+                    {type: "daemonsets",
+                     resources: []
                     },
                   ],
-                },
-              },
-            ],
-          });
+                  errors: []
+                }
+              ]
+            });
         }),
         getCustomResourcesByEntity: jest.fn().mockImplementation(args => {
           if (args.entity.metadata.name === 'inject500') {
@@ -107,7 +152,7 @@ describe('resourcesRoutes', () => {
 
     beforeEach(() => {
       permissions.authorizeConditional.mockReset();
-    })
+    });
 
     // eslint-disable-next-line jest/expect-expect
     it('200 happy path', async () => {
@@ -126,18 +171,64 @@ describe('resourcesRoutes', () => {
         .expect(200, {
           items: [
             {
-              clusterOne: {
-                pods: [
-                  {
-                    metadata: {
-                      name: 'pod1',
-                    },
-                  },
-                ],
+              cluster : {
+                name : "clusterOne"
               },
-            },
-          ],
+              podMetrics: [],
+              resources: [
+                {
+                  type: "pods",
+                  resources: [
+                    {
+                      metadata: {
+                        name: 'pod1'
+                      } 
+                    }
+                  ]
+                },
+                {type: "services",
+                 resources: []
+                },
+                {type: "configmaps",
+                 resources: []
+                },
+                {type: "limitranges",
+                 resources: []
+                },
+                {type: "deployments",
+                 resources: [
+                   {
+                     name: "deployment1"
+                   }
+                 ]
+                },
+                {type: "replicasets",
+                 resources: []
+                },
+                {type: "horizontalpodautoscalers",
+                 resources: []
+                },
+                {type: "jobs",
+                 resources: []
+                },
+                {type: "cronjobs",
+                 resources: []
+                },
+                {type: "ingresses",
+                 resources: []
+                },
+                {type: "statefulsets",
+                 resources: []
+                },
+                {type: "daemonsets",
+                 resources: []
+                },
+              ],
+              errors: []
+            }
+          ]
         });
+  
     });
     // eslint-disable-next-line jest/expect-expect
     it('400 when missing entity ref', async () => {
@@ -260,23 +351,6 @@ describe('resourcesRoutes', () => {
         });
     });
     // eslint-disable-next-line jest/expect-expect
-    it('403 response if Permission Policy is in place that blocks endpoint', async () => {
-      permissions.authorizeConditional.mockReturnValue(Promise.resolve([{result: AuthorizeResult.DENY}]))
-      
-      await request(app)
-        .post('/resources/workloads/query')
-        .send({
-          entityRef: 'kind:namespacec/someComponent',
-          auth: {
-            google: 'something',
-          },
-        })
-        .set('Content-Type', 'application/json')
-        .set('Authorization', 'Bearer Zm9vYmFy')
-        .expect(403);
-      
-    });
-    // eslint-disable-next-line jest/expect-expect
     it('500 handle gracefully', async () => {
       permissions.authorizeConditional.mockReturnValue(Promise.resolve([{result: AuthorizeResult.ALLOW}]))
 
@@ -299,6 +373,127 @@ describe('resourcesRoutes', () => {
           response: { statusCode: 500 },
         });
     });
+
+    describe('permissions framework is enabled', () => {
+      it('403 response if Permission Policy is in place that blocks endpoint', async () => {
+        permissions.authorizeConditional.mockReturnValue(Promise.resolve([{result: AuthorizeResult.DENY}]))
+        
+        await request(app)
+          .post('/resources/workloads/query')
+          .send({
+            entityRef: 'kind:namespacec/someComponent',
+            auth: {
+              google: 'something',
+            },
+          })
+          .set('Content-Type', 'application/json')
+          .set('Authorization', 'Bearer Zm9vYmFy')
+          .expect(403);
+        
+      });
+      //{
+        //   [1]   id: '177d5243-4fdb-4511-a853-b3a1981fe49e',
+        //   [1]   result: 'CONDITIONAL',
+        //   [1]   pluginId: 'kubernetes',
+        //   [1]   resourceType: 'kubernetes-resource',
+        //   [1]   conditions: {
+        //   [1]     rule: 'IS_OF_KIND',
+        //   [1]     resourceType: 'kubernetes-resource',
+        //   [1]     params: [ [Array] ]
+        //   [1]   }
+        //   [1] }
+      it('Filters out deployments if Permission Policy only allows access to pods', async () => {
+        permissions.authorizeConditional.mockReturnValue(
+          Promise.resolve([
+            {
+              result: AuthorizeResult.CONDITIONAL,
+              pluginId: 'kubernetes',
+              resourceType: 'kubernetes-resource',
+              conditions: {
+                resourceType:'kubernetes-resource', 
+                rule: 'IS_OF_KIND',
+                params: [
+                  [
+                    'pods'
+                  ]
+                ],
+              }
+            }
+          ])
+        )
+        
+        await request(app)
+          .post('/resources/workloads/query')
+          .send({
+            entityRef: 'kind:namespacec/someComponent',
+            auth: {
+              google: 'something',
+            },
+          })
+          .set('Content-Type', 'application/json')
+          .set('Authorization', 'Bearer Zm9vYmFy')
+          .expect(200)
+          .expect((res)=> {
+            expect(res.body).toStrictEqual({
+              items: [
+                {
+                  cluster : {
+                    name : "clusterOne"
+                  },
+                  podMetrics: [],
+                  resources: [
+                    {
+                      type: "pods",
+                      resources: [
+                        {
+                          metadata: {
+                            name: 'pod1'
+                          } 
+                        }
+                      ]
+                    },
+                    {type: "services",
+                     resources: []
+                    },
+                    {type: "configmaps",
+                     resources: []
+                    },
+                    {type: "limitranges",
+                     resources: []
+                    },
+                    {type: "deployments",
+                     resources: []
+                    },
+                    {type: "replicasets",
+                     resources: []
+                    },
+                    {type: "horizontalpodautoscalers",
+                     resources: []
+                    },
+                    {type: "jobs",
+                     resources: []
+                    },
+                    {type: "cronjobs",
+                     resources: []
+                    },
+                    {type: "ingresses",
+                     resources: []
+                    },
+                    {type: "statefulsets",
+                     resources: []
+                    },
+                    {type: "daemonsets",
+                     resources: []
+                    },
+                  ],
+                  errors: []
+                }
+              ]
+            })
+          });
+      });
+    })
+
   });
   describe('POST /resources/custom/query', () => {
 
