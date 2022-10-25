@@ -36,6 +36,7 @@ jobs:
             --org=backstage-dgh
             --strict-out-of-sync=false
             --json-file-output=snyk.json
+            --debug
           json: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
