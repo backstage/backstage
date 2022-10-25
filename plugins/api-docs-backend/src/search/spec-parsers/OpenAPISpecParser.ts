@@ -25,19 +25,25 @@ export class OpenAPISpecParser implements SpecParser {
   getV3SpecText(spec: OpenAPIV3.Document): (string | undefined)[] {
     const pathTexts: (string | undefined)[] = [];
     for (const path in spec.paths) {
+      if (!Object.prototype.hasOwnProperty.call(spec.paths, path)) {
+        continue;
+      }
+
       pathTexts.push(path);
       const pathDetails = spec.paths[path];
       if (pathDetails) {
         Object.values(OpenAPIV3.HttpMethods).forEach(method => {
-          const pathMethod = pathDetails[method];
-          pathTexts.push(pathMethod?.summary);
-          pathTexts.push(pathMethod?.description);
-          pathTexts.push(pathMethod?.tags?.join(','));
-          for (const response in pathMethod?.responses) {
-            const responseValue = pathMethod?.responses[
-              response
-            ] as OpenAPIV3.ResponseObject;
-            pathTexts.push(responseValue?.description);
+          if (Object.prototype.hasOwnProperty.call(pathDetails, method)) {
+            const pathMethod = pathDetails[method];
+            pathTexts.push(pathMethod?.summary);
+            pathTexts.push(pathMethod?.description);
+            pathTexts.push(pathMethod?.tags?.join(','));
+            for (const response in pathMethod?.responses) {
+              const responseValue = pathMethod?.responses[
+                response
+              ] as OpenAPIV3.ResponseObject;
+              pathTexts.push(responseValue?.description);
+            }
           }
         });
       }

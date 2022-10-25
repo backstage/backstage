@@ -40,7 +40,6 @@ export type ApiDocumentCollatorFactoryOptions = {
 
 /** @public */
 export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
-  // private readonly logger: Logger;
   public readonly type: string = 'api-definition';
   private readonly catalogClient: CatalogApi;
   private batchSize: number;
@@ -72,8 +71,6 @@ export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
   async *execute(): AsyncGenerator<ApiDocument> {
     const { token } = await this.tokenManager.getToken();
 
-    //this.specHandler.addSpecParser(new OpenAPISpecParser());
-
     let entitiesRetrieved = 0;
     let moreEntitiesToGet = true;
 
@@ -99,7 +96,7 @@ export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
           entity.spec?.type as string,
         );
 
-        if (specParser == undefined) {
+        if (!specParser) {
           continue;
         }
 
