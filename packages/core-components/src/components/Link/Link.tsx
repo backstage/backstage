@@ -16,6 +16,7 @@
 
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import classnames from 'classnames';
+// eslint-disable-next-line no-restricted-imports
 import MaterialLink, {
   LinkProps as MaterialLinkProps,
 } from '@material-ui/core/Link';

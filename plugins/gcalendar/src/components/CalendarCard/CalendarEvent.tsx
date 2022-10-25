@@ -22,10 +22,10 @@ import {
 import React, { useState } from 'react';
 
 import { useAnalytics } from '@backstage/core-plugin-api';
+import { Link } from '@backstage/core-components';
 
 import {
   Box,
-  Link,
   Paper,
   Popover,
   Tooltip,
@@ -133,12 +133,12 @@ export const CalendarEvent = ({ event }: { event: GCalendarEvent }) => {
             <Link
               data-testid="calendar-event-zoom-link"
               className={classes.link}
-              href={zoomLink}
-              target="_blank"
+              to={zoomLink}
               onClick={e => {
                 e.stopPropagation();
                 analytics.captureEvent('click', 'zoom link');
               }}
+              noTrack
             >
               <img src={zoomIcon} alt="Zoom link" />
             </Link>
