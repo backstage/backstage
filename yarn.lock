@@ -8661,14 +8661,14 @@ __metadata:
   linkType: hard
 
 "@google-cloud/firestore@npm:^6.0.0":
-  version: 6.4.0
-  resolution: "@google-cloud/firestore@npm:6.4.0"
+  version: 6.4.1
+  resolution: "@google-cloud/firestore@npm:6.4.1"
   dependencies:
     fast-deep-equal: ^3.1.1
     functional-red-black-tree: ^1.0.1
     google-gax: ^3.5.1
     protobufjs: ^7.0.0
-  checksum: 7503e56f85c20aad4fa01b5de0b97e5108fe44c87db3423cb53bcdb083e053c6458c7a690820dc7db9ead384ce28da66142c1781d8cc406d4e7056374b29d23d
+  checksum: 7bd79d7444cefd8ffe8f768c28dbd1f0b32628ff5b611b4bdaa9b415428436f5368a8e258a002948d084381762b64501a574828c51c5cea7c054cc604f93b6d6
   languageName: node
   linkType: hard
 
