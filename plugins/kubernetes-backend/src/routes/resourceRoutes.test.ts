@@ -391,17 +391,7 @@ describe('resourcesRoutes', () => {
           .expect(403);
         
       });
-      //{
-        //   [1]   id: '177d5243-4fdb-4511-a853-b3a1981fe49e',
-        //   [1]   result: 'CONDITIONAL',
-        //   [1]   pluginId: 'kubernetes',
-        //   [1]   resourceType: 'kubernetes-resource',
-        //   [1]   conditions: {
-        //   [1]     rule: 'IS_OF_KIND',
-        //   [1]     resourceType: 'kubernetes-resource',
-        //   [1]     params: [ [Array] ]
-        //   [1]   }
-        //   [1] }
+      
       it('Filters out deployments if Permission Policy only allows access to pods', async () => {
         permissions.authorizeConditional.mockReturnValue(
           Promise.resolve([
@@ -412,11 +402,11 @@ describe('resourcesRoutes', () => {
               conditions: {
                 resourceType:'kubernetes-resource', 
                 rule: 'IS_OF_KIND',
-                params: [
-                  [
+                params: {
+                  kinds: [
                     'pods'
                   ]
-                ],
+                },
               }
             }
           ])
