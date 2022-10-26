@@ -15,4 +15,4 @@
  */
 
 export * from './search/collators';
-export * from './search/spec-parsers/'
+export * from './search/spec-parsers/';
