@@ -24,6 +24,7 @@ import {
 import {
   Button,
   ItemCardHeader,
+  Link,
   MarkdownContent,
 } from '@backstage/core-components';
 import {
@@ -52,7 +53,6 @@ import {
   CardMedia,
   Chip,
   IconButton,
-  Link,
   makeStyles,
   Tooltip,
   Typography,
@@ -162,7 +162,7 @@ const DeprecationWarning = () => {
     <div className={styles.deprecationIcon}>
       <Tooltip title={Title}>
         <Link
-          href="https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3"
+          to="https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3"
           className={styles.link}
         >
           <WarningIcon />

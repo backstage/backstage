@@ -18,12 +18,11 @@ import React from 'react';
 import DOMPurify from 'dompurify';
 
 import { useAnalytics } from '@backstage/core-plugin-api';
-
+import { Link } from '@backstage/core-components';
 import {
   Box,
   Divider,
   IconButton,
-  Link,
   Tooltip,
   Typography,
   makeStyles,
@@ -77,11 +76,11 @@ export const CalendarEventPopoverContent = ({
           <Tooltip title="Open in Calendar">
             <Link
               data-testid="open-calendar-link"
-              href={event.htmlLink}
-              target="_blank"
+              to={event.htmlLink}
               onClick={_e =>
                 analytics.captureEvent('click', 'open in calendar')
               }
+              noTrack
             >
               <IconButton>
                 <ArrowForwardIcon />
@@ -92,9 +91,9 @@ export const CalendarEventPopoverContent = ({
       </Box>
       {zoomLink && (
         <Link
-          href={zoomLink}
-          target="_blank"
+          to={zoomLink}
           onClick={_e => analytics.captureEvent('click', 'zoom link')}
+          noTrack
         >
           Join Zoom Meeting
         </Link>

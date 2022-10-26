@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { Select, SelectedItems, SelectItem } from '@backstage/core-components';
 import { makeStyles, Box, Typography } from '@material-ui/core';
 
 type RepositoryFiltersProps = {
   items: Array<SelectItem>;
-  totalIssuesInGitHub: number;
+  totalIssuesInGithub: number;
   placeholder: string;
   onChange: (active: Array<string>) => void;
 };

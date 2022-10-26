@@ -1,5 +1,15 @@
 # @backstage/create-app
 
+## 0.4.33-next.0
+
+### Patch Changes
+
+- 4091c73e68: Updated `@swc/core` to `v1.3.9` which fixes a `.tsx` parser bug. You may want to run `yarn backstage-cli versions:bump` to get on latest version including the CLI itself.
+- 80bfac5266: Updated the create-app command to no longer require Git to be installed and configured. A git repository will only be initialized if possible and if not already in an git repository.
+- f905853ad6: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
 ## 0.4.32
 
 ### Patch Changes

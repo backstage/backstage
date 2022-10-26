@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
@@ -21,10 +22,8 @@ import {
   CatalogApi,
 } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
-
-import { GitHubIssuesApi, gitHubIssuesApiRef, Issue } from '../../api';
-
-import { GitHubIssues } from './GitHubIssues';
+import { GithubIssuesApi, githubIssuesApiRef, Issue } from '../../api';
+import { GithubIssues } from './GithubIssues';
 
 const getTestIssue = (overwrites: Partial<Issue> = {}): { node: Issue } => ({
   node: {
@@ -80,10 +79,10 @@ const mockCatalogApi = {
   getEntities: () => ({}),
 } as CatalogApi;
 
-describe('GitHubIssues', () => {
+describe('GithubIssues', () => {
   it('should render correctly when there are no issues in GitHub', async () => {
     const mockApi = {
-      fetchIssuesByRepoFromGitHub: async () => ({
+      fetchIssuesByRepoFromGithub: async () => ({
         backstage: {
           issues: {
             totalCount: 0,
@@ -91,17 +90,17 @@ describe('GitHubIssues', () => {
           },
         },
       }),
-    } as GitHubIssuesApi;
+    } as GithubIssuesApi;
 
     const apis = [
-      [gitHubIssuesApiRef, mockApi],
+      [githubIssuesApiRef, mockApi],
       [catalogApiRef, mockCatalogApi],
     ] as const;
 
     const { getByTestId } = await renderInTestApp(
       <TestApiProvider apis={apis}>
         <EntityProvider entity={entityComponent}>
-          <GitHubIssues />
+          <GithubIssues />
         </EntityProvider>
       </TestApiProvider>,
     );
@@ -118,7 +117,7 @@ describe('GitHubIssues', () => {
     });
 
     const mockApi = {
-      fetchIssuesByRepoFromGitHub: async () => ({
+      fetchIssuesByRepoFromGithub: async () => ({
         backstage: {
           issues: {
             totalCount: 1,
@@ -126,16 +125,16 @@ describe('GitHubIssues', () => {
           },
         },
       }),
-    } as GitHubIssuesApi;
+    } as GithubIssuesApi;
     const apis = [
-      [gitHubIssuesApiRef, mockApi],
+      [githubIssuesApiRef, mockApi],
       [catalogApiRef, mockCatalogApi],
     ] as const;
 
     const { getByText, getByTestId } = await renderInTestApp(
       <TestApiProvider apis={apis}>
         <EntityProvider entity={entityComponent}>
-          <GitHubIssues />
+          <GithubIssues />
         </EntityProvider>
       </TestApiProvider>,
     );

@@ -1,5 +1,26 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.8.0-next.0
+
+### Minor Changes
+
+- cbf5d11fdf: The Kubernetes errors when fetching pod metrics are now captured and returned to the frontend.
+
+  - **BREAKING** The method `fetchPodMetricsByNamespace` in the interface `KubernetesFetcher` is changed to `fetchPodMetricsByNamespaces`. It now accepts a set of namespace strings and returns `Promise<FetchResponseWrapper>`.
+  - Add the `PodStatusFetchResponse` to the `FetchResponse` union type.
+  - Add `NOT_FOUND` to the `KubernetesErrorTypes` union type, the HTTP error with status code 404 will be mapped to this error.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/plugin-auth-node@0.2.7-next.0
+  - @backstage/plugin-kubernetes-common@0.4.4-next.0
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+
 ## 0.7.3
 
 ### Patch Changes
