@@ -161,6 +161,8 @@ describe('Concurrent TaskWorker', () => {
   const logger = getVoidLogger();
 
   it('should be able to run multiple tasks at once', async () => {
+    const broker = new StorageTaskBroker(storage, logger);
+
     const dispatchANewTask = () =>
       broker.dispatch({
         spec: {
@@ -174,7 +176,6 @@ describe('Concurrent TaskWorker', () => {
       });
 
     const expectedConcurrentTasks = 3;
-    const broker = new StorageTaskBroker(storage, logger);
     const taskWorker = await TaskWorker.create({
       logger,
       workingDirectory,
