@@ -127,3 +127,70 @@ describe('TaskWorker', () => {
     expect(event?.body.output).toEqual({ testOutput: 'testmockoutput' });
   });
 });
+
+describe('Concurrent TaskWorker', () => {
+  let storage: DatabaseTaskStore;
+
+  const integrations: ScmIntegrations = {} as ScmIntegrations;
+
+  const actionRegistry: TemplateActionRegistry = {} as TemplateActionRegistry;
+  const workingDirectory = '/tmp/scaffolder';
+  let asyncTasksCount = 0;
+
+  const workflowRunner: NunjucksWorkflowRunner = {
+    execute: () => {
+      asyncTasksCount++;
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve({ output: { testOutput: 'testmockoutput' } });
+        }, 1000);
+      });
+    },
+  } as unknown as NunjucksWorkflowRunner;
+
+  beforeAll(async () => {
+    storage = await createStore();
+  });
+
+  beforeEach(() => {
+    asyncTasksCount = 0;
+    jest.resetAllMocks();
+    MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
+  });
+
+  const logger = getVoidLogger();
+
+  it('should be able to run multiple tasks at once', async () => {
+    const dispatchANewTask = () =>
+      broker.dispatch({
+        spec: {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
+          output: {
+            result: '{{ steps.test.output.testOutput }}',
+          },
+          parameters: {},
+        },
+      });
+
+    const expectedConcurrentTasks = 3;
+    const broker = new StorageTaskBroker(storage, logger);
+    const taskWorker = await TaskWorker.create({
+      logger,
+      workingDirectory,
+      integrations,
+      taskBroker: broker,
+      actionRegistry,
+      concurrentTasksLimit: expectedConcurrentTasks,
+    });
+
+    taskWorker.start();
+
+    await dispatchANewTask();
+    await dispatchANewTask();
+    await dispatchANewTask();
+    await dispatchANewTask();
+
+    expect(asyncTasksCount).toEqual(expectedConcurrentTasks);
+  });
+});
