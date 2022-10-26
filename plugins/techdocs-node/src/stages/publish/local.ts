@@ -197,7 +197,7 @@ export class LocalPublish implements PublisherBase {
 
     // Redirect middleware ensuring that requests to case-sensitive entity
     // triplet paths are always sent to lower-case versions.
-    router.use((req, res, next) => {
+    router.use(async (req, res, next) => {
       // If legacy path casing is on, let the request immediately continue.
       if (this.legacyPathCasing) {
         return next();
@@ -225,7 +225,12 @@ export class LocalPublish implements PublisherBase {
       }
 
       // Otherwise, redirect to the new path.
-      return res.redirect(301, req.baseUrl + newPath);
+      return res.redirect(
+        301,
+        `${await this.discovery.getExternalBaseUrl(
+          'techdocs',
+        )}/static/docs${newPath}`,
+      );
     });
     router.use(
       express.static(this.staticDocsDir, {
