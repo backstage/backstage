@@ -14,7 +14,7 @@ Other formats can be contributed to this plugin by implementing a `SpecParser` f
 
 ## Getting Started
 
-1. Follow the Guide On [Setting Up Search in Backstage](./../../docs/features/search/getting-started.md)
+1. Follow the Guide On [Setting up Search in Backstage](./../../docs/features/search/getting-started.md)
 
 2. Install the API docs backend plugin
 
