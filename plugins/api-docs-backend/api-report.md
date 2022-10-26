@@ -25,14 +25,14 @@ export interface APIDocument extends IndexableDocument {
 }
 
 // @public (undocumented)
-export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
+export class APIDocumentCollatorFactory implements DocumentCollatorFactory {
   // (undocumented)
   execute(): AsyncGenerator<APIDocument>;
   // (undocumented)
   static fromConfig(
     _config: Config,
-    options: ApiDocumentCollatorFactoryOptions,
-  ): ApiDocumentCollatorFactory;
+    options: APIDocumentCollatorFactoryOptions,
+  ): APIDocumentCollatorFactory;
   // (undocumented)
   getCollator(): Promise<Readable>;
   // (undocumented)
@@ -40,7 +40,7 @@ export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
 }
 
 // @public (undocumented)
-export type ApiDocumentCollatorFactoryOptions = {
+export type APIDocumentCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
   catalogClient?: CatalogApi;
   batchSize?: number;
