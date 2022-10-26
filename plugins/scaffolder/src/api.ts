@@ -331,7 +331,7 @@ export class ScaffolderClient implements ScaffolderApi {
     const url = `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}`;
 
     const response = await this.fetchApi.fetch(url, {
-      method: 'PUT',
+      method: 'POST',
     });
 
     if (!response.ok) {
