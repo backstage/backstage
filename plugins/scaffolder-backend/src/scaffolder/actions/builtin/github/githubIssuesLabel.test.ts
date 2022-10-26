@@ -23,7 +23,7 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { PassThrough } from 'stream';
-import { TemplateAction } from '../..';
+import { TemplateAction } from '../../types';
 
 const mockOctokit = {
   rest: {

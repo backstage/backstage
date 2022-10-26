@@ -15,7 +15,6 @@
  */
 import React from 'react';
 import {
-  Link,
   Typography,
   Box,
   IconButton,
@@ -33,7 +32,12 @@ import { getProjectNameFromEntity } from '../getProjectNameFromEntity';
 import { Entity } from '@backstage/catalog-model';
 import { readGithubIntegrationConfigs } from '@backstage/integration';
 
-import { EmptyState, Table, TableColumn } from '@backstage/core-components';
+import {
+  EmptyState,
+  Table,
+  TableColumn,
+  Link,
+} from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 const generatedColumns: TableColumn[] = [

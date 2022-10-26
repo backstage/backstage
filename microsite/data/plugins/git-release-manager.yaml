@@ -1,6 +1,6 @@
 ---
 title: GitHub Release Manager
-author: '@Spotify'
+author: Spotify
 authorUrl: https://github.com/spotify
 category: Release management
 description: Manage releases without having to juggle git commands.

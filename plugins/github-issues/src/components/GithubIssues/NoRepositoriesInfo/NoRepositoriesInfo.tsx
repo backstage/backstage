@@ -13,4 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './IssuesList';
+
+import React from 'react';
+import { EmptyState } from '@backstage/core-components';
+
+export const NoRepositoriesInfo = () => {
+  return (
+    <EmptyState
+      title="There are no GitHub repositories connected to this entity."
+      missing="data"
+    />
+  );
+};
