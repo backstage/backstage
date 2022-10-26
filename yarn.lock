@@ -3314,7 +3314,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/catalog-model@npm:^1.1.1, @backstage/catalog-model@npm:^1.1.2":
+"@backstage/catalog-model@npm:^1.1.2":
   version: 1.1.2
   resolution: "@backstage/catalog-model@npm:1.1.2"
   dependencies:
@@ -3599,7 +3599,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-components@npm:^0.11.1, @backstage/core-components@npm:^0.11.2":
+"@backstage/core-components@npm:^0.11.2":
   version: 0.11.2
   resolution: "@backstage/core-components@npm:0.11.2"
   dependencies:
@@ -3722,7 +3722,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-plugin-api@npm:^1.0.6, @backstage/core-plugin-api@npm:^1.0.7":
+"@backstage/core-plugin-api@npm:^1.0.7":
   version: 1.0.7
   resolution: "@backstage/core-plugin-api@npm:1.0.7"
   dependencies:
@@ -5066,7 +5066,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-react@npm:^1.1.4, @backstage/plugin-catalog-react@npm:^1.2.0":
+"@backstage/plugin-catalog-react@npm:^1.2.0":
   version: 1.2.0
   resolution: "@backstage/plugin-catalog-react@npm:1.2.0"
   dependencies:
