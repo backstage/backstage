@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
-export { ApiDocumentCollatorFactory } from './search/collators/ApiDocumentCollatorFactory';
 export * from './search/collators/ApiDocumentCollatorFactory';
+export * from './search/spec-parsers/'
+export *  from './search/collators/APIDocument';

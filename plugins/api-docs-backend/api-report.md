@@ -9,17 +9,25 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { IndexableDocument } from '@backstage/plugin-search-common';
+import { OpenAPI } from 'openapi-types';
+import { OpenAPIV2 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
+import { TokenManager } from '@backstage/backend-common';
 
-// Warning: (ae-missing-release-tag) "ApiDocumentCollatorFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "APIDocument" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
+export interface APIDocument extends IndexableDocument {
+  kind: string;
+  lifecycle: string;
+}
+
+// @public (undocumented)
 export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
-  // Warning: (ae-forgotten-export) The symbol "ApiDocument" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
-  execute(): AsyncGenerator<ApiDocument>;
+  execute(): AsyncGenerator<APIDocument>;
   // (undocumented)
   static fromConfig(
     _config: Config,
@@ -35,7 +43,51 @@ export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
 export type ApiDocumentCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
   catalogClient?: CatalogApi;
+  batchSize?: number;
+  tokenManager: TokenManager;
+  specHandler?: SpecHandler;
 };
+
+// Warning: (ae-missing-release-tag) "OpenAPISpecParser" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class OpenAPISpecParser implements SpecParser {
+  // (undocumented)
+  getSpecText(specDefinition: string): string;
+  // (undocumented)
+  getSpecVersionText(
+    spec: OpenAPI.Document,
+    specVersion: string,
+  ): (string | undefined)[];
+  // (undocumented)
+  getV2SpecText(spec: OpenAPIV2.Document): (string | undefined)[];
+  // (undocumented)
+  getV3SpecText(spec: OpenAPIV3.Document): (string | undefined)[];
+  // (undocumented)
+  parseSpec(spec: OpenAPI.Document, specVersion: string): string;
+  // (undocumented)
+  specType: string;
+}
+
+// Warning: (ae-missing-release-tag) "SpecHandler" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class SpecHandler {
+  // (undocumented)
+  addSpecParser(parser: SpecParser): void;
+  // (undocumented)
+  getSpecParser(specType: string): SpecParser;
+  // (undocumented)
+  specParsers: Record<string, SpecParser>;
+}
+
+// @public (undocumented)
+export interface SpecParser {
+  // (undocumented)
+  getSpecText(specDefinition: any): string;
+  // (undocumented)
+  specType: string;
+}
 
 // (No @packageDocumentation comment for this package)
 ```

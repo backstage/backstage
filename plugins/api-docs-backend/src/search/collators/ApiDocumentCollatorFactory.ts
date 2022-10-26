@@ -25,7 +25,7 @@ import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 
-import { ApiDocument } from './ApiDocument';
+import { APIDocument } from './APIDocument';
 
 import { SpecHandler } from './../spec-parsers';
 
@@ -68,7 +68,7 @@ export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
     return Readable.from(this.execute());
   }
 
-  async *execute(): AsyncGenerator<ApiDocument> {
+  async *execute(): AsyncGenerator<APIDocument> {
     const { token } = await this.tokenManager.getToken();
 
     let entitiesRetrieved = 0;

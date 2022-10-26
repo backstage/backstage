@@ -16,7 +16,7 @@
 
 import { IndexableDocument } from '@backstage/plugin-search-common';
 
-export interface ApiDocument extends IndexableDocument {
+export interface APIDocument extends IndexableDocument {
   /**
    * Entity kind
    */

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** @public */
 export interface SpecParser {
   specType: string;
   getSpecText(specDefinition: any): string;
