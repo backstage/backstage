@@ -16,8 +16,8 @@
 
 import { BackstageTheme } from '@backstage/theme';
 import Collapse from '@material-ui/core/Collapse';
-import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import React, { useContext, useState } from 'react';
@@ -106,17 +106,12 @@ export function IntroCard(props: IntroCardProps) {
     <div className={classes.introCard}>
       <Typography variant="subtitle2">{text}</Typography>
       <div className={classes.introDismiss}>
-        <Link
-          component="button"
-          onClick={handleClose}
-          underline="none"
-          className={classes.introDismissLink}
-        >
+        <IconButton onClick={handleClose} className={classes.introDismissLink}>
           <CloseIcon className={classes.introDismissIcon} />
           <Typography component="span" className={classes.introDismissText}>
             Dismiss
           </Typography>
-        </Link>
+        </IconButton>
       </div>
     </div>
   );

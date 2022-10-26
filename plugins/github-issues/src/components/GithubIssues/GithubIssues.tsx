@@ -13,41 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 
+import React from 'react';
 import { Box, IconButton, Typography } from '@material-ui/core';
 import { InfoCard, Progress } from '@backstage/core-components';
 import RefreshIcon from '@material-ui/icons/Refresh';
-
-import { useEntityGitHubRepositories } from '../../hooks/useEntityGitHubRepositories';
-import { useGetIssuesByRepoFromGitHub } from '../../hooks/useGetIssuesByRepoFromGitHub';
-
+import { useEntityGithubRepositories } from '../../hooks/useEntityGithubRepositories';
+import { useGetIssuesByRepoFromGithub } from '../../hooks/useGetIssuesByRepoFromGithub';
 import { IssuesList } from './IssuesList';
 import { NoRepositoriesInfo } from './NoRepositoriesInfo';
 import type {
   GithubIssuesFilters,
   GithubIssuesOrdering,
-} from '../../api/gitHubIssuesApi';
+} from '../../api/githubIssuesApi';
 
 /**
  * @public
  */
-export type GitHubIssuesProps = {
+export type GithubIssuesProps = {
   itemsPerPage?: number;
   itemsPerRepo?: number;
   filterBy?: GithubIssuesFilters;
   orderBy?: GithubIssuesOrdering;
 };
 
-export const GitHubIssues = (props: GitHubIssuesProps) => {
+export const GithubIssues = (props: GithubIssuesProps) => {
   const { itemsPerPage = 10, itemsPerRepo = 40, filterBy, orderBy } = props;
 
-  const { repositories } = useEntityGitHubRepositories();
+  const { repositories } = useEntityGithubRepositories();
   const {
     isLoading,
-    gitHubIssuesByRepo: issuesByRepository,
+    githubIssuesByRepo: issuesByRepository,
     retry,
-  } = useGetIssuesByRepoFromGitHub(repositories, itemsPerRepo, {
+  } = useGetIssuesByRepoFromGithub(repositories, itemsPerRepo, {
     filterBy,
     orderBy,
   });

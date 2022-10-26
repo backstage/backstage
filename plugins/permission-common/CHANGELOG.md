@@ -1,5 +1,16 @@
 # @backstage/plugin-permission-common
 
+## 0.7.1-next.0
+
+### Patch Changes
+
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- 64848c963c: Properly handle rules that have no parameters in `PermissionClient`
+- Updated dependencies
+  - @backstage/types@1.0.1-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+
 ## 0.7.0
 
 ### Minor Changes

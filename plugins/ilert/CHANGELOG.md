@@ -1,5 +1,21 @@
 # @backstage/plugin-ilert
 
+## 0.2.0-next.0
+
+### Minor Changes
+
+- 0697af30da: Added support for multiple responders in alert list, added new tab with list to support iLert resource 'service', added new tab with list to support iLert resource 'status page'
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.1-next.0
+  - @backstage/core-components@0.12.0-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/theme@0.2.16
+
 ## 0.1.36
 
 ### Patch Changes
