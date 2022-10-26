@@ -15638,6 +15638,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@xmldom/xmldom@npm:^0.7.6":
+  version: 0.7.6
+  resolution: "@xmldom/xmldom@npm:0.7.6"
+  checksum: 3c31dcd909aaefd65090033bd45e0aca42d636a9ae43c7313f4be87de570d046abba28362810d63c0718d6f08a9ce5f8da27b87437afc24d2290b6d4e75a6eee
+  languageName: node
+  linkType: hard
+
 "@xobotyi/scrollbar-width@npm:^1.9.5":
   version: 1.9.5
   resolution: "@xobotyi/scrollbar-width@npm:1.9.5"
@@ -31783,17 +31790,17 @@ __metadata:
   linkType: hard
 
 "passport-saml@npm:^3.1.2":
-  version: 3.2.3
-  resolution: "passport-saml@npm:3.2.3"
+  version: 3.2.4
+  resolution: "passport-saml@npm:3.2.4"
   dependencies:
-    "@xmldom/xmldom": ^0.7.5
+    "@xmldom/xmldom": ^0.7.6
     debug: ^4.3.2
     passport-strategy: ^1.0.0
     xml-crypto: ^2.1.3
     xml-encryption: ^2.0.0
     xml2js: ^0.4.23
     xmlbuilder: ^15.1.1
-  checksum: ccddfa37557ef39219b447285d9b87ad08309b3cd2537aab5df344fd3910d9b506eb36e4f24f2eec35047465f00fbea53b320674de9ae68ea18cbbce17de79f4
+  checksum: 8e885af4d44c2d862b2ea0d051ab2a36bc6f9a70e62f90daf7ce4eefd126ac2ab4d5fc070693eba05f5e1be248af23fa018611bbfa7fad31708371f387f5dd77
   languageName: node
   linkType: hard
 
