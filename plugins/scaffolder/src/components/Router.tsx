@@ -46,7 +46,7 @@ import {
 } from '../routes';
 import { ListTasksPage } from './ListTasksPage';
 import { LayoutOptions, LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../layouts';
-import { ReviewStepComponentProps } from './types';
+import { ReviewStepProps } from './types';
 
 /**
  * The props for the entrypoint `ScaffolderPage` component the plugin.
@@ -54,7 +54,7 @@ import { ReviewStepComponentProps } from './types';
  */
 export type RouterProps = {
   components?: {
-    ReviewStepComponent?: ComponentType<ReviewStepComponentProps>;
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
     TemplateCardComponent?:
       | ComponentType<{ template: TemplateEntityV1beta3 }>
       | undefined;

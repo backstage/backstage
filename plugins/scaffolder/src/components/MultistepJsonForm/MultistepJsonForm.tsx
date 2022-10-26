@@ -21,6 +21,7 @@ import {
   Stepper,
   Typography,
 } from '@material-ui/core';
+import { JsonObject } from '@backstage/types';
 import {
   errorApiRef,
   featureFlagsApiRef,
@@ -28,16 +29,17 @@ import {
   useRouteRefParams,
   useApi,
 } from '@backstage/core-plugin-api';
-import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
+import { FormProps, IChangeEvent, UiSchema, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { ComponentType, useState } from 'react';
 import { transformSchemaToProps } from './schema';
 import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
 import { LayoutOptions } from '../../layouts';
-import { ReviewStepComponentProps, Step } from '../types';
+import { ReviewStepProps, Step } from '../types';
 import { ReviewStep } from './ReviewStep';
 import { selectedTemplateRouteRef } from '../../routes';
+import { extractSchemaFromStep } from '../../next/TemplateWizardPage/Stepper/schema';
 
 const Form = withTheme(MuiTheme);
 
@@ -57,8 +59,25 @@ export type MultistepJsonFormProps = {
   fields?: FormProps<any>['fields'];
   finishButtonLabel?: string;
   layouts: LayoutOptions[];
-  ReviewStepComponent?: ComponentType<ReviewStepComponentProps>;
+  ReviewStepComponent?: ComponentType<ReviewStepProps>;
 };
+
+function getUiSchemasFromSteps(steps: Step[]): {
+  uiSchema: UiSchema;
+  mergedSchema: JsonObject;
+  schema: JsonObject;
+}[] {
+  const res = steps.map(({ schema }) => ({
+    mergedSchema: schema,
+    ...extractSchemaFromStep(schema),
+  }));
+
+  return res as unknown as {
+    uiSchema: UiSchema;
+    mergedSchema: JsonObject;
+    schema: JsonObject;
+  }[];
+}
 
 /**
  * Creates the dynamic form for a scaffolder template.
@@ -71,7 +90,6 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
     onFinish,
     fields,
     widgets,
-    finishButtonLabel,
     layouts,
     ReviewStepComponent,
   } = props;
@@ -196,10 +214,8 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
           handleBack={handleBack}
           handleCreate={handleCreate}
           handleReset={handleReset}
-          finishButtonLabel={finishButtonLabel}
           formData={formData}
-          onFinish={onFinish}
-          steps={steps}
+          steps={getUiSchemasFromSteps(steps)}
         />
       )}
     </>

@@ -34,7 +34,8 @@ import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UIOptionsType } from '@rjsf/utils';
-import { UiSchema } from '@rjsf/utils';
+import { UiSchema } from '@rjsf/core';
+import { UiSchema as UiSchema_2 } from '@rjsf/utils';
 
 // @alpha
 export function createNextScaffolderFieldExtension<
@@ -133,18 +134,6 @@ export type FieldExtensionOptions<
 };
 
 // @public
-export type LastStepFormProps = {
-  disableButtons: boolean;
-  finishButtonLabel?: string;
-  formData: Record<string, any>;
-  handleBack: () => void;
-  handleCreate: () => void;
-  handleReset: () => void;
-  onFinish?: () => Promise<void>;
-  steps: Step[];
-};
-
-// @public
 export type LayoutComponent<_TInputProps> = () => null;
 
 // @public
@@ -196,7 +185,7 @@ export interface NextFieldExtensionComponentProps<
   TUiOptions = {},
 > extends PropsWithChildren<FieldProps_2<TFieldReturnValue>> {
   // (undocumented)
-  uiSchema?: UiSchema<TFieldReturnValue> & {
+  uiSchema?: UiSchema_2<TFieldReturnValue> & {
     'ui:options'?: TUiOptions & UIOptionsType;
   };
 }
@@ -309,13 +298,27 @@ export interface RepoUrlPickerUiOptions {
   };
 }
 
+// @public
+export type ReviewStepProps = {
+  disableButtons: boolean;
+  formData: JsonObject;
+  handleBack: () => void;
+  handleReset: () => void;
+  handleCreate: () => void;
+  steps: {
+    uiSchema: UiSchema;
+    mergedSchema: JsonObject;
+    schema: JsonObject;
+  }[];
+};
+
 // @public (undocumented)
 export const rootRouteRef: RouteRef<undefined>;
 
 // @public
 export type RouterProps = {
   components?: {
-    LastStepFormComponent?: ComponentType<LastStepFormProps>;
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
     TemplateCardComponent?:
       | ComponentType<{
           template: TemplateEntityV1beta3;

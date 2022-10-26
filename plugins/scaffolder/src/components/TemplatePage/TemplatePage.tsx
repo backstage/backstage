@@ -41,7 +41,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { LayoutOptions } from '../../layouts';
-import { ReviewStepComponentProps } from '../types';
+import { ReviewStepProps } from '../types';
 
 const useTemplateParameterSchema = (templateRef: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -57,7 +57,7 @@ export const TemplatePage = ({
   customFieldExtensions = [],
   layouts = [],
 }: {
-  ReviewStepComponent?: ComponentType<ReviewStepComponentProps>;
+  ReviewStepComponent?: ComponentType<ReviewStepProps>;
   customFieldExtensions?: FieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
 }) => {

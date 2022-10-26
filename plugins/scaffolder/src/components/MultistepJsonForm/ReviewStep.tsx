@@ -18,29 +18,16 @@ import React from 'react';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import { UiSchema } from '@rjsf/core';
 import { JsonObject } from '@backstage/types';
-import { ReviewStepComponentProps, Step } from '../types';
+import { ReviewStepProps } from '../types';
 
-export function getUiSchemasFromSteps(steps: Step[]): UiSchema[] {
-  const uiSchemas: Array<UiSchema> = [];
-  steps.forEach(step => {
-    const schemaProps = step.schema.properties as JsonObject;
-    for (const key in schemaProps) {
-      if (schemaProps.hasOwnProperty(key)) {
-        const uiSchema = schemaProps[key] as UiSchema;
-        uiSchema.name = key;
-        uiSchemas.push(uiSchema);
-      }
-    }
-  });
-  return uiSchemas;
-}
-
-export function getReviewData(formData: Record<string, any>, steps: Step[]) {
-  const uiSchemas = getUiSchemasFromSteps(steps);
+export function getReviewData(
+  formData: Record<string, any>,
+  steps: UiSchema[],
+) {
   const reviewData: Record<string, any> = {};
   for (const key in formData) {
     if (formData.hasOwnProperty(key)) {
-      const uiSchema = uiSchemas.find(us => us.name === key);
+      const uiSchema = steps.find(us => us.name === key);
 
       if (!uiSchema) {
         reviewData[key] = formData[key];
@@ -77,15 +64,13 @@ export function getReviewData(formData: Record<string, any>, steps: Step[]) {
  * The component displaying the Last Step in scaffolder template form.
  * Which represents the summary of the input provided by the end user.
  */
-export const ReviewStep = (props: ReviewStepComponentProps) => {
+export const ReviewStep = (props: ReviewStepProps) => {
   const {
     disableButtons,
-    finishButtonLabel,
     formData,
     handleBack,
     handleCreate,
     handleReset,
-    onFinish,
     steps,
   } = props;
   return (
@@ -94,7 +79,10 @@ export const ReviewStep = (props: ReviewStepComponentProps) => {
         <Typography variant="h6">Review and create</Typography>
         <StructuredMetadataTable
           dense
-          metadata={getReviewData(formData, steps)}
+          metadata={getReviewData(
+            formData,
+            steps.map(step => ({ uiSchema: step.uiSchema })),
+          )}
         />
         <Box mb={4} />
         <Button onClick={handleBack} disabled={disableButtons}>
@@ -107,9 +95,9 @@ export const ReviewStep = (props: ReviewStepComponentProps) => {
           variant="contained"
           color="primary"
           onClick={handleCreate}
-          disabled={!onFinish || disableButtons}
+          disabled={disableButtons}
         >
-          {finishButtonLabel ?? 'Create'}
+          Create
         </Button>
       </Paper>
     </Content>

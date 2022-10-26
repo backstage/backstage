@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FormProps } from '@rjsf/core';
+import { FormProps, UiSchema } from '@rjsf/core';
 import { JsonObject } from '@backstage/types';
 
 /**
@@ -33,13 +33,15 @@ export type Step = {
  *
  * @public
  */
-export type ReviewStepComponentProps = {
+export type ReviewStepProps = {
   disableButtons: boolean;
-  finishButtonLabel?: string;
-  formData: Record<string, any>;
+  formData: JsonObject;
   handleBack: () => void;
-  handleCreate: () => void;
   handleReset: () => void;
-  onFinish?: () => Promise<void>;
-  steps: Step[];
+  handleCreate: () => void;
+  steps: {
+    uiSchema: UiSchema;
+    mergedSchema: JsonObject;
+    schema: JsonObject;
+  }[];
 };
