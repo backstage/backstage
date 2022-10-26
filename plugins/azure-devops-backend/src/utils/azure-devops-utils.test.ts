@@ -247,10 +247,15 @@ describe('replaceReadme', () => {
     `;
 
     const reader: UrlReader = {
-      read: url => new Promise<Buffer>(resolve => resolve(Buffer.from(url))),
+      readUrl: url =>
+        Promise.resolve({
+          buffer: async () => Buffer.from(url),
+          etag: 'buffer',
+          stream: jest.fn(),
+        }),
       readTree: jest.fn(),
       search: jest.fn(),
-      readUrl: jest.fn(),
+      read: jest.fn(),
     };
 
     const result = await replaceReadme(
