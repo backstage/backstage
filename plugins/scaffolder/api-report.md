@@ -18,7 +18,7 @@ import { FieldProps } from '@rjsf/core';
 import { FieldProps as FieldProps_2 } from '@rjsf/utils';
 import { FieldValidation } from '@rjsf/core';
 import { FieldValidation as FieldValidation_2 } from '@rjsf/utils';
-import { FormProps } from '@rjsf/core';
+import type { FormProps } from '@rjsf/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
@@ -546,12 +546,6 @@ export interface ScaffolderUseTemplateSecrets {
 export const selectedTemplateRouteRef: SubRouteRef<
   PathParams<'/templates/:namespace/:templateName'>
 >;
-
-// @public
-export type Step = {
-  schema: JsonObject;
-  title: string;
-} & Partial<Omit<FormProps<any>, 'schema'>>;
 
 // @public
 export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;
