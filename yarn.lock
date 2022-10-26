@@ -3172,7 +3172,7 @@ __metadata:
     "@types/webpack-env": ^1.15.2
     "@types/yauzl": ^2.10.0
     archiver: ^5.0.2
-    aws-sdk: ^2.840.0
+    aws-sdk: ^2.948.0
     aws-sdk-mock: ^5.2.1
     base64-stream: ^1.0.0
     better-sqlite3: ^7.5.0
@@ -3314,7 +3314,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/catalog-model@npm:^1.1.1, @backstage/catalog-model@npm:^1.1.2":
+"@backstage/catalog-model@npm:^1.1.2":
   version: 1.1.2
   resolution: "@backstage/catalog-model@npm:1.1.2"
   dependencies:
@@ -3599,7 +3599,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-components@npm:^0.11.1, @backstage/core-components@npm:^0.11.2":
+"@backstage/core-components@npm:^0.11.2":
   version: 0.11.2
   resolution: "@backstage/core-components@npm:0.11.2"
   dependencies:
@@ -3722,7 +3722,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-plugin-api@npm:^1.0.6, @backstage/core-plugin-api@npm:^1.0.7":
+"@backstage/core-plugin-api@npm:^1.0.7":
   version: 1.0.7
   resolution: "@backstage/core-plugin-api@npm:1.0.7"
   dependencies:
@@ -4620,7 +4620,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/lodash": ^4.14.151
-    aws-sdk: ^2.840.0
+    aws-sdk: ^2.948.0
     aws-sdk-mock: ^5.2.1
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -5066,7 +5066,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-react@npm:^1.1.4, @backstage/plugin-catalog-react@npm:^1.2.0":
+"@backstage/plugin-catalog-react@npm:^1.2.0":
   version: 1.2.0
   resolution: "@backstage/plugin-catalog-react@npm:1.2.0"
   dependencies:
@@ -6224,7 +6224,7 @@ __metadata:
     "@types/aws4": ^1.5.1
     "@types/express": ^4.17.6
     "@types/luxon": ^3.0.0
-    aws-sdk: ^2.840.0
+    aws-sdk: ^2.948.0
     aws-sdk-mock: ^5.2.1
     aws4: ^1.11.0
     compression: ^1.7.4
@@ -7637,7 +7637,7 @@ __metadata:
     "@types/mock-fs": ^4.13.0
     "@types/recursive-readdir": ^2.2.0
     "@types/supertest": ^2.0.8
-    aws-sdk: ^2.840.0
+    aws-sdk: ^2.948.0
     express: ^4.17.1
     fs-extra: 10.1.0
     git-url-parse: ^13.0.0
@@ -16721,7 +16721,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:^2.1122.0, aws-sdk@npm:^2.814.0, aws-sdk@npm:^2.840.0, aws-sdk@npm:^2.948.0":
+"aws-sdk@npm:^2.1122.0, aws-sdk@npm:^2.814.0, aws-sdk@npm:^2.948.0":
   version: 2.1224.0
   resolution: "aws-sdk@npm:2.1224.0"
   dependencies:
