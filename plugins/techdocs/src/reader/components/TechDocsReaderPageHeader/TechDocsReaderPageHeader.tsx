@@ -134,14 +134,14 @@ export const TechDocsReaderPageHeader = (
           value={
             <Grid
               container
-              direction="row"
+              direction="column"
               alignItems="center"
               style={{ color: '#fff' }}
             >
-              <Grid style={{ paddingTop: 16, paddingRight: 0 }} item>
+              <Grid style={{ padding: 0 }} item>
                 <CodeIcon style={{ marginTop: '-25px' }} />
               </Grid>
-              <Grid style={{ paddingTop: 2, paddingLeft: 2 }} item>
+              <Grid style={{ padding: 0 }} item>
                 Source
               </Grid>
             </Grid>
