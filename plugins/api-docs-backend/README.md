@@ -2,7 +2,7 @@
 
 This is an extension to the [api-docs](./../api-docs/README.md) plugin which is responsible for indexing the API specification content surfaced via the API tab of a catalog entity.
 
-The plugin provides an `ApiDocumentCollatorFactory` which is an implementation of the `DocumentCollatorFactory`. Once integrated into the search plugin, users will be able to search API specification content and navigate to the corresponding API definition.
+The plugin provides an `APIDocumentCollatorFactory` which is an implementation of the `DocumentCollatorFactory`. Once integrated into the search plugin, users will be able to search API specification content and navigate to the corresponding API definition.
 
 ![Search API Specs](./docs/api_search_example.png)
 
@@ -23,16 +23,16 @@ Other formats can be contributed to this plugin by implementing a `SpecParser` f
 yarn add --cwd packages/app @backstage/plugin-api-docs-backend
 ```
 
-3. Add a `ApiDocumentCollatorFactory` to the IndexBuilder
+3. Add a `APIDocumentCollatorFactory` to the IndexBuilder
 
 ```typescript
-import { ApiDocumentCollatorFactory } from '@backstage/plugin-api-docs-backend';
+import { APIDocumentCollatorFactory } from '@backstage/plugin-api-docs-backend';
 ```
 
 ```typescript
 indexBuilder.addCollator({
   schedule,
-  factory: ApiDocumentCollatorFactory.fromConfig(env.config, {
+  factory: APIDocumentCollatorFactory.fromConfig(env.config, {
     discovery: env.discovery,
     tokenManager: env.tokenManager,
   }),

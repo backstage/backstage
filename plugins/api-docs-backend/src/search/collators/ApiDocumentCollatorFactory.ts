@@ -27,7 +27,7 @@ import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 
 import { APIDocument } from './APIDocument';
 
-import { SpecHandler } from './../spec-parsers';
+import { SpecHandler } from '../spec-parsers';
 
 /** @public */
 export type ApiDocumentCollatorFactoryOptions = {

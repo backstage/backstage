@@ -26,8 +26,8 @@ import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
-import { ApiDocumentCollatorFactory } from './ApiDocumentCollatorFactory';
-import { SpecHandler, SpecParser } from './../spec-parsers';
+import { ApiDocumentCollatorFactory } from './APIDocumentCollatorFactory';
+import { SpecHandler, SpecParser } from '../spec-parsers';
 
 const server = setupServer();
 
