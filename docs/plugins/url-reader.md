@@ -174,14 +174,14 @@ which can be used to request the provider's API.
 `read` then makes an authenticated request to the provider API and returns the
 file's content.
 
-#### readUrl
+#### `readUrl`
 
 `readUrl` is a new interface that allows complex response objects and is
 intended to replace the `read` method. This new method is currently optional to
 implement which allows for a soft migration to `readUrl` instead of `read` in
 the future.
 
-#### readTree
+#### `readTree`
 
 `readTree` method also expects user-friendly URLs similar to `read` but the URL
 should point to a tree (could be the root of a repository or even a
@@ -241,8 +241,8 @@ without an `etag`, the response contains an ETag of the resource (should ideally
 forward the ETag returned by the provider). If the method is called with an
 `etag`, it first compares the ETag and returns a `NotModifiedError` in case the
 resource has not been modified. This approach is very similar to the actual
-[ETag](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag) and
-[If-None-Match](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-None-Match)
+[`ETag`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag) and
+[`If-None-Match`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-None-Match)
 HTTP headers.
 
 ### 6. Debugging

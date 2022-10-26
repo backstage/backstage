@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+
 export type GitlabGroupDescription = {
   id: number;
   web_url: string;
@@ -36,4 +38,5 @@ export type GitlabProviderConfig = {
   branch: string;
   catalogFile: string;
   projectPattern: RegExp;
+  schedule?: TaskScheduleDefinition;
 };

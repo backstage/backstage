@@ -19,8 +19,12 @@ import {
   CustomFieldValidator,
   FieldExtensionOptions,
   FieldExtensionComponentProps,
+  NextCustomFieldValidator,
+  NextFieldExtensionOptions,
+  NextFieldExtensionComponentProps,
 } from './types';
 import { Extension, attachComponentData } from '@backstage/core-plugin-api';
+import { UIOptionsType } from '@rjsf/utils';
 
 export const FIELD_EXTENSION_WRAPPER_KEY = 'scaffolder.extensions.wrapper.v1';
 export const FIELD_EXTENSION_KEY = 'scaffolder.extensions.field.v1';
@@ -59,6 +63,32 @@ export function createScaffolderFieldExtension<
 }
 
 /**
+ * Method for creating field extensions that can be used in the scaffolder
+ * frontend form.
+ * @alpha
+ */
+export function createNextScaffolderFieldExtension<
+  TReturnValue = unknown,
+  TInputProps extends UIOptionsType = {},
+>(
+  options: NextFieldExtensionOptions<TReturnValue, TInputProps>,
+): Extension<NextFieldExtensionComponentProps<TReturnValue, TInputProps>> {
+  return {
+    expose() {
+      const FieldExtensionDataHolder: any = () => null;
+
+      attachComponentData(
+        FieldExtensionDataHolder,
+        FIELD_EXTENSION_KEY,
+        options,
+      );
+
+      return FieldExtensionDataHolder;
+    },
+  };
+}
+
+/**
  * The Wrapping component for defining fields extensions inside
  *
  * @public
@@ -76,6 +106,9 @@ export type {
   CustomFieldValidator,
   FieldExtensionOptions,
   FieldExtensionComponentProps,
+  NextCustomFieldValidator,
+  NextFieldExtensionOptions,
+  NextFieldExtensionComponentProps,
 };
 
 export { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from './default';

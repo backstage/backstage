@@ -7,3 +7,4 @@ description: The shortcuts plugin allows a user to have easy access to pages wit
 documentation: https://github.com/backstage/backstage/blob/master/plugins/shortcuts/README.md
 iconUrl: img/shortcuts.svg
 npmPackageName: '@backstage/plugin-shortcuts'
+addedDate: '2021-10-06'

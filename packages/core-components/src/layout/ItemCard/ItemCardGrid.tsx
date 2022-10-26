@@ -49,6 +49,7 @@ export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
  * A default grid to use when arranging "item cards" - cards that let users
  * select among several options.
  *
+ * @remarks
  * The immediate children are expected to be MUI Card components.
  *
  * Styles for the grid can be overridden using the `classes` prop, e.g.:

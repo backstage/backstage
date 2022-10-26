@@ -1,5 +1,6 @@
 name: Sync Snyk GitHub issues
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 */4 * * *'
 
@@ -35,9 +36,11 @@ jobs:
             --org=backstage-dgh
             --strict-out-of-sync=false
             --json-file-output=snyk.json
+            --debug
           json: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          NODE_OPTIONS: --max-old-space-size=7168
       - name: Update Github issues
         run: yarn ts-node scripts/snyk-github-issue-sync.ts
         env:

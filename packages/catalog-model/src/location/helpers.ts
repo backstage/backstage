@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { ANNOTATION_SOURCE_LOCATION } from '.';
 import { Entity, stringifyEntityRef } from '../entity';
-import { ANNOTATION_LOCATION } from './annotation';
+import { ANNOTATION_LOCATION, ANNOTATION_SOURCE_LOCATION } from './annotation';
 
 /**
  * Parses a string form location reference.

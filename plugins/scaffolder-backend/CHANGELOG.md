@@ -1,5 +1,120 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.8.0-next.0
+
+### Minor Changes
+
+- ea14eb62a2: Added a set of default Prometheus metrics around scaffolding. See below for a list of metrics and an explanation of their labels:
+
+  - `scaffolder_task_count`: Tracks successful task runs.
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `user`: The entity ref of the user that invoked the template run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  - `scaffolder_task_duration`: a histogram which tracks the duration of a task run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `result`: A boolean describing whether the task ran successfully
+
+  - `scaffolder_step_count`: a count that tracks each step run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `step`: The name of the step that was run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  - `scaffolder_step_duration`: a histogram which tracks the duration of each step run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `step`: The name of the step that was run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  You can find a guide for running Prometheus metrics here: https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/prometheus-metrics.md
+
+### Patch Changes
+
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/plugin-catalog-backend@1.5.1-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/backend-tasks@0.3.7-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/plugin-auth-node@0.2.7-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/backend-plugin-api@0.1.4-next.0
+  - @backstage/plugin-catalog-node@1.2.1-next.0
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/plugin-scaffolder-common@1.2.2-next.0
+
+## 1.7.0
+
+### Minor Changes
+
+- 253453fa14: Added a new property called `additionalTemplateGlobals` which allows you to add global functions to the scaffolder nunjucks templates.
+- 17ff77154c: Update the `github:publish` action to allow passing whether pull
+  requests must be up to date with the default branch before merging.
+- 304305dd20: Add `allowAutoMerge` option for `publish:github` action
+- 694bfe2d61: Add functionality to shutdown scaffolder tasks if they are stale
+- a8e9848479: Added optional `sourcePath` parameter to `publish:gitlab:merge-request` action, `targetPath` is now optional and falls back to current workspace path.
+
+### Patch Changes
+
+- 489621f613: Switching off duplicated timestamp in case of logging via task logger in a custom action
+- 4880d43e25: Fixed setting default branch for Bitbucket Server
+- b681275e69: Ignore .git directories in Template Editor, increase upload limit for dry-runs to 10MB.
+- a35a27df70: Updated the `moduleId` of the experimental module export.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.2.0
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-catalog-backend@1.5.0
+  - @backstage/plugin-auth-node@0.2.6
+  - @backstage/backend-tasks@0.3.6
+  - @backstage/backend-plugin-api@0.1.3
+  - @backstage/catalog-client@1.1.1
+  - @backstage/plugin-scaffolder-common@1.2.1
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+  - @backstage/types@1.0.0
+
+## 1.7.0-next.2
+
+### Minor Changes
+
+- 17ff77154c: Update the `github:publish` action to allow passing whether pull
+  requests must be up to date with the default branch before merging.
+- a8e9848479: Added optional `sourcePath` parameter to `publish:gitlab:merge-request` action, `targetPath` is now optional and falls back to current workspace path.
+
+### Patch Changes
+
+- 4880d43e25: Fixed setting default branch for Bitbucket Server
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.2.0-next.2
+  - @backstage/plugin-catalog-backend@1.5.0-next.2
+  - @backstage/backend-tasks@0.3.6-next.2
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/backend-plugin-api@0.1.3-next.2
+  - @backstage/plugin-auth-node@0.2.6-next.2
+  - @backstage/catalog-client@1.1.1-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/integration@1.3.2-next.2
+  - @backstage/types@1.0.0
+  - @backstage/plugin-scaffolder-common@1.2.1-next.2
+
 ## 1.7.0-next.1
 
 ### Patch Changes

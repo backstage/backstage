@@ -75,7 +75,7 @@ export const createAuthMiddleware = async (
         // Authorization header may be forwarded by plugin requests
         req.headers.authorization = `Bearer ${token}`;
       }
-      if (token && token !== req.cookies.token) {
+      if (token && token !== req.cookies?.token) {
         setTokenCookie(res, {
           token,
           secure,

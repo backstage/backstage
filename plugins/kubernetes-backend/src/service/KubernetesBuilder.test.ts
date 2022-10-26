@@ -30,7 +30,6 @@ import {
 } from '../types/types';
 import { KubernetesBuilder } from './KubernetesBuilder';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
-import { PodStatus } from '@kubernetes/client-node';
 import { CatalogApi } from '@backstage/catalog-client';
 
 describe('KubernetesBuilder', () => {
@@ -222,11 +221,11 @@ describe('KubernetesBuilder', () => {
       };
 
       const fetcher: KubernetesFetcher = {
-        fetchPodMetricsByNamespace(
+        fetchPodMetricsByNamespaces(
           _clusterDetails: ClusterDetails,
-          _namespace: string,
-        ): Promise<PodStatus[]> {
-          return Promise.resolve([]);
+          _namespaces: Set<string>,
+        ): Promise<FetchResponseWrapper> {
+          return Promise.resolve({ errors: [], responses: [] });
         },
         fetchObjectsForService(
           _params: ObjectFetchParams,

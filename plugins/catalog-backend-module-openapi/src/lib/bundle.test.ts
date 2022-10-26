@@ -90,4 +90,31 @@ describe('bundleOpenApiSpecification', () => {
 
     expect(result).toEqual(expectedResult.trimStart());
   });
+  it('should use the urlreaders to fetch $refs', async () => {
+    const spec = `
+    openapi: "3.0.0"
+    info:
+      version: 1.0.0
+      title: Swagger Petstore
+      license:
+        name: MIT
+    servers:
+      - url: http://petstore.swagger.io/v1
+    paths:
+      /pets:
+        get:
+          $ref: "https://foo.com/paths/pets/list.yaml"
+    `;
+
+    read.mockResolvedValue(list);
+
+    const result = await bundleOpenApiSpecification(
+      spec,
+      'https://github.com/owner/repo/blob/main/catalog-info.yaml',
+      read,
+      resolveUrl,
+    );
+
+    expect(result).toEqual(expectedResult.trimStart());
+  });
 });

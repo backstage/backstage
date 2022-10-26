@@ -35,6 +35,7 @@ yarn.lock                                           @backstage/reviewers @backst
 /plugins/code-coverage                              @backstage/reviewers @alde @nissayeva
 /plugins/code-coverage-backend                      @backstage/reviewers @alde @nissayeva
 /plugins/cost-insights                              @backstage/reviewers @backstage/silver-lining
+/plugins/cost-insights-*                            @backstage/reviewers @backstage/silver-lining
 /plugins/explore                                    @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/explore-react                              @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/fossa                                      @backstage/reviewers @backstage/sda-se-reviewers
@@ -44,13 +45,15 @@ yarn.lock                                           @backstage/reviewers @backst
 /plugins/ilert                                      @backstage/reviewers @yacut
 /plugins/jenkins                                    @backstage/reviewers @timja
 /plugins/jenkins-backend                            @backstage/reviewers @timja
-/plugins/kafka                                      @backstage/reviewers @nirga
-/plugins/kafka-backend                              @backstage/reviewers @nirga
+/plugins/kafka                                      @backstage/reviewers @nirga @andrewthauer
+/plugins/kafka-backend                              @backstage/reviewers @nirga @andrewthauer
 /plugins/kubernetes                                 @backstage/reviewers @backstage/warpspeed
 /plugins/kubernetes-*                               @backstage/reviewers @backstage/warpspeed
 /plugins/newrelic-dashboard                         @backstage/reviewers @mufaddal7
 /plugins/playlist                                   @backstage/reviewers @kuangp
 /plugins/playlist-*                                 @backstage/reviewers @kuangp
+/plugins/rollbar                                    @backstage/reviewers @andrewthauer
+/plugins/rollbar-backend                            @backstage/reviewers @andrewthauer
 /plugins/scaffolder-backend-module-rails            @backstage/reviewers @angeliski
 /plugins/scaffolder-backend-module-yeoman           @backstage/reviewers @pawelmitka
 /plugins/search                                     @backstage/reviewers @backstage/techdocs-core

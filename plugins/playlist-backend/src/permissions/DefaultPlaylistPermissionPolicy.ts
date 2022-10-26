@@ -68,7 +68,9 @@ export class DefaultPlaylistPermissionPolicy implements PermissionPolicy {
     ) {
       return createPlaylistConditionalDecision(request.permission, {
         anyOf: [
-          playlistConditions.isOwner(user?.identity.ownershipEntityRefs ?? []),
+          playlistConditions.isOwner({
+            owners: user?.identity.ownershipEntityRefs ?? [],
+          }),
           playlistConditions.isPublic(),
         ],
       });
@@ -81,7 +83,9 @@ export class DefaultPlaylistPermissionPolicy implements PermissionPolicy {
     ) {
       return createPlaylistConditionalDecision(
         request.permission,
-        playlistConditions.isOwner(user?.identity.ownershipEntityRefs ?? []),
+        playlistConditions.isOwner({
+          owners: user?.identity.ownershipEntityRefs ?? [],
+        }),
       );
     }
 

@@ -1,7 +1,9 @@
 abc
 accessors
+ACLs
 addon
 addons
+ADRs
 Airbrake
 Airbrakes
 airbrake
@@ -16,6 +18,7 @@ autoscaling
 Autoscaling
 autoselect
 Avro
+backend's
 backported
 backporting
 Bigtable
@@ -28,6 +31,7 @@ bool
 boolean
 builtins
 callout
+CDNs
 Chai
 changeset
 changesets
@@ -68,6 +72,7 @@ dataflow
 dayjs
 debounce
 Debounce
+debuggability
 declaratively
 deduplicated
 deps
@@ -85,6 +90,8 @@ dockerfiles
 Dockerize
 dockerode
 Docusaurus
+DOMPurify
+don'ts
 dynatrace
 Dynatrace
 ecco
@@ -93,6 +100,8 @@ Env
 elasticsearch
 esbuild
 eslint
+ESModule
+ESModules
 etag
 Expedia
 facto
@@ -112,6 +121,8 @@ github
 Gitiles
 gitlab
 GitLab
+gitea
+Gitea
 Gource
 Grafana
 graphql
@@ -129,16 +140,20 @@ hotspots
 http
 https
 Iain
+iLert
 img
 incentivised
 Indal
+indexable
 inlined
 inlinehilite
+integrator's
 interop
 JaCoCo
 JavaScript
 jenkins
 Jira
+JWTs
 jq
 js
 json
@@ -147,6 +162,7 @@ jsx
 Kaewkasi
 Keyv
 Knex
+KPIs
 kubectl
 kubernetes
 kubernetes
@@ -162,6 +178,7 @@ lunr
 Luxon
 magiclink
 mailto
+maintainer's
 maintainership
 makefile
 md
@@ -216,6 +233,7 @@ orgs
 pagerduty
 pageview
 parallelization
+parseable
 Patrik
 Peloton
 performant
@@ -300,6 +318,10 @@ stringify
 stringified
 subcomponent
 subcomponents
+subfolder
+subfolders
+subheader
+subheaders
 subkey
 subroutes
 subtree
@@ -308,6 +330,7 @@ Superfences
 superset
 supertype
 storable
+SVGs
 talkdesk
 Talkdesk
 tasklist
@@ -319,6 +342,7 @@ templater
 Templater
 templaters
 Templaters
+TFRecord
 theia
 thumbsup
 todo
@@ -335,6 +359,7 @@ transpiled
 transpiler
 transpilers
 truthy
+TSDoc
 typeahead
 ui
 unbreak
@@ -352,17 +377,22 @@ utils
 validator
 validators
 varchar
+VPCs
+VSCode
 Wayfair
 Weaveworks
 Webpack
+widget's
 winston
 www
 WWW
+XCMetrics
 XML
 xyz
 yaml
 Zalando
 Zhou
+zod
 zoomable
 zsh
 Alef

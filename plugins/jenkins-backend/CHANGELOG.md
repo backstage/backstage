@@ -1,5 +1,48 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.1.28-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/plugin-auth-node@0.2.7-next.0
+  - @backstage/plugin-permission-common@0.7.1-next.0
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/plugin-jenkins-common@0.1.10-next.0
+
+## 0.1.27
+
+### Patch Changes
+
+- b19ea927af: Fixed a bug where `extraRequestHeaders` configuration was ignored.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-auth-node@0.2.6
+  - @backstage/plugin-permission-common@0.7.0
+  - @backstage/catalog-client@1.1.1
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/plugin-jenkins-common@0.1.9
+
+## 0.1.27-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/plugin-permission-common@0.7.0-next.2
+  - @backstage/plugin-jenkins-common@0.1.9-next.2
+  - @backstage/plugin-auth-node@0.2.6-next.2
+  - @backstage/catalog-client@1.1.1-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+
 ## 0.1.27-next.1
 
 ### Patch Changes

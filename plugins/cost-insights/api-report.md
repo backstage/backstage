@@ -11,14 +11,12 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import { ChangeStatistic as ChangeStatistic_2 } from '@backstage/plugin-cost-insights-common';
 import * as common from '@backstage/plugin-cost-insights-common';
-import { ContentRenderer } from 'recharts';
 import { Dispatch } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import { Maybe as Maybe_2 } from '@backstage/plugin-cost-insights-common';
 import { PaletteOptions } from '@material-ui/core/styles/createPalette';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
-import { RechartsFunction } from 'recharts';
 import { RefAttributes } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SetStateAction } from 'react';
@@ -178,10 +176,10 @@ export type BarChartProps = {
   resources: ResourceData[];
   responsive?: boolean;
   displayAmount?: number;
-  options?: Partial<BarChartData>;
-  tooltip?: ContentRenderer<TooltipProps>;
-  onClick?: RechartsFunction;
-  onMouseMove?: RechartsFunction;
+  options?: Partial<BarChartOptions>;
+  tooltip?: TooltipRenderer;
+  onClick?: (...args: any[]) => void;
+  onMouseMove?: (...args: any[]) => void;
 };
 
 // @public (undocumented)
@@ -586,9 +584,14 @@ export interface ResourceData {
 // @public (undocumented)
 export type TooltipItem = {
   fill: string;
-  label: string;
-  value: string;
+  label?: string;
+  value?: string;
 };
+
+// @public (undocumented)
+export type TooltipRenderer = (
+  props: TooltipProps<string, string>,
+) => ReactNode;
 
 // @public @deprecated (undocumented)
 export type Trendline = common.Trendline;

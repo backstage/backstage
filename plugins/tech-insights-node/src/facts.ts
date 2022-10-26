@@ -15,13 +15,12 @@
  */
 import { DateTime, Duration, DurationLike } from 'luxon';
 import { Config } from '@backstage/config';
-import { JsonValue } from '@backstage/types';
+import { HumanDuration, JsonValue } from '@backstage/types';
 import {
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
 import { Logger } from 'winston';
-import { HumanDuration } from '@backstage/backend-tasks';
 
 /**
  * A container for facts. The shape of the fact records needs to correspond to the FactSchema with same `ref` value.
@@ -279,4 +278,11 @@ export type FactRetrieverRegistration = {
    * If defined this value will be used to determine expired items which will deleted when this fact retriever is run
    */
   lifecycle?: FactLifecycle;
+
+  /**
+   * A duration to determine the initial delay for the fact retriever. Useful for cold start scenarios when e.g. the
+   * catalog backend is not yet available. Defaults to 5 seconds.
+   *
+   */
+  initialDelay?: Duration | HumanDuration;
 };

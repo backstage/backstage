@@ -8,3 +8,4 @@ documentation: https://backstage.io/docs/features/software-catalog/software-cata
 iconUrl: img/backstage-software-catalog.svg
 npmPackageName: '@backstage/plugin-catalog'
 order: 1
+addedDate: '2021-06-17'

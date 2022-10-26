@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 
+import React from 'react';
 import { googleAuthApiRef, storageApiRef } from '@backstage/core-plugin-api';
 import {
   MockStorageApi,
   TestApiProvider,
   renderInTestApp,
 } from '@backstage/test-utils';
-
-import { HomePageCalendar } from '.';
-import { gcalendarApiRef, gcalendarPlugin } from '../..';
+import { HomePageCalendar } from './HomePageCalendar';
+import { gcalendarApiRef } from '../../api';
+import { gcalendarPlugin } from '../../plugin';
 
 describe('<HomePageCalendar />', () => {
   const primaryCalendar = {

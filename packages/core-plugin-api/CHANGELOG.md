@@ -1,5 +1,36 @@
 # @backstage/core-plugin-api
 
+## 1.1.0-next.0
+
+### Minor Changes
+
+- a228f113d0: The app `Router` component now accepts an optional `basename` property.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.1-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.0.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.2
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
 ## 1.0.7-next.1
 
 ### Patch Changes

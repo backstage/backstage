@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { z } from 'zod';
 import { createConditionFactory } from './createConditionFactory';
 import { createPermissionRule } from './createPermissionRule';
 
@@ -22,8 +23,11 @@ describe('createConditionFactory', () => {
     name: 'test-rule',
     description: 'test-description',
     resourceType: 'test-resource',
-    apply: jest.fn(),
-    toQuery: jest.fn(),
+    paramsSchema: z.object({
+      foo: z.string(),
+    }),
+    apply: (_resource, _params) => true,
+    toQuery: _params => ({}),
   });
 
   it('returns a function', () => {
@@ -33,10 +37,17 @@ describe('createConditionFactory', () => {
   describe('return value', () => {
     it('constructs a condition with the rule name and supplied params', () => {
       const conditionFactory = createConditionFactory(testRule);
-      expect(conditionFactory('a', 'b', 1, 2)).toEqual({
+
+      expect(
+        conditionFactory({
+          foo: 'bar',
+        }),
+      ).toEqual({
         rule: 'test-rule',
         resourceType: 'test-resource',
-        params: ['a', 'b', 1, 2],
+        params: {
+          foo: 'bar',
+        },
       });
     });
   });

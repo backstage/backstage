@@ -53,7 +53,6 @@ $ yarn workspace backend add @backstage/plugin-permission-backend
 2. Add the following to a new file, `packages/backend/src/plugins/permission.ts`. This adds the permission-backend router, and configures it with a policy which allows everything.
 
 ```typescript
-import { IdentityClient } from '@backstage/plugin-auth-node';
 import { createRouter } from '@backstage/plugin-permission-backend';
 import {
   AuthorizeResult,
@@ -119,7 +118,6 @@ permission:
 2. Update the PermissionPolicy in `packages/backend/src/plugins/permission.ts` to disable a permission that’s easy for us to test. This policy rejects any attempt to delete a catalog entity:
 
 ```diff
-  import { IdentityClient } from '@backstage/plugin-auth-node';
   import { createRouter } from '@backstage/plugin-permission-backend';
   import {
     AuthorizeResult,

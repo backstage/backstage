@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
+import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
+
 export interface Config {
   catalog?: {
-    /**
-     * List of provider-specific options and attributes
-     */
     providers?: {
       /**
        * GitlabDiscoveryEntityProvider configuration
@@ -28,27 +27,27 @@ export interface Config {
         {
           /**
            * (Required) Gitlab's host name.
-           * @visibility backend
            */
           host: string;
           /**
            * (Optional) Gitlab's group[/subgroup] where the discovery is done.
            * If not defined the whole project will be scanned.
-           * @visibility backend
            */
           group?: string;
           /**
            * (Optional) Default branch to read the catalog-info.yaml file.
            * If not set, 'master' will be used.
-           * @visibility backend
            */
           branch?: string;
           /**
            * (Optional) The name used for the catalog file.
            * If not set, 'catalog-info.yaml' will be used.
-           * @visibility backend
            */
           entityFilename?: string;
+          /**
+           * (Optional) TaskScheduleDefinition for the refresh.
+           */
+          schedule?: TaskScheduleDefinitionConfig;
         }
       >;
     };

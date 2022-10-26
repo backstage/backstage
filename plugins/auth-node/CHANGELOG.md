@@ -1,5 +1,34 @@
 # @backstage/plugin-auth-node
 
+## 0.2.7-next.0
+
+### Patch Changes
+
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+
+## 0.2.6
+
+### Patch Changes
+
+- f3a3fefb96: Ensure `getIdentity` throws an `AuthenticationError` instead of a `NotAllowed` error when authentication fails
+- Updated dependencies
+  - @backstage/backend-common@0.15.2
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+
+## 0.2.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+
 ## 0.2.6-next.1
 
 ### Patch Changes

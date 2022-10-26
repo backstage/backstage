@@ -23,6 +23,14 @@ import {
 import { PermissionRule } from '../types';
 
 /**
+ * Prevent use of type parameter from contributing to type inference.
+ *
+ * https://github.com/Microsoft/TypeScript/issues/14829#issuecomment-980401795
+ * @ignore
+ */
+export type NoInfer<T> = T extends infer S ? S : never;
+
+/**
  * Utility function used to parse a PermissionCriteria
  * @param criteria - a PermissionCriteria
  * @alpha

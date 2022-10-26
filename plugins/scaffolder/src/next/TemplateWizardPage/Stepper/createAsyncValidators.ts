@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { FieldValidation } from '@rjsf/core';
+import { FieldValidation } from '@rjsf/utils';
 import { JsonObject } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
-import { CustomFieldValidator } from '../../../extensions';
+import { NextCustomFieldValidator } from '../../../extensions';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { createFieldValidation } from './schema';
 
 export const createAsyncValidators = (
   rootSchema: JsonObject,
-  validators: Record<string, undefined | CustomFieldValidator<unknown>>,
+  validators: Record<string, undefined | NextCustomFieldValidator<unknown>>,
   context: {
     apiHolder: ApiHolder;
   },
