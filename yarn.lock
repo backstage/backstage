@@ -3994,7 +3994,7 @@ __metadata:
     cross-fetch: ^3.1.5
     git-url-parse: ^13.0.0
     msw: ^0.47.0
-    octokit: ^2.0.0
+    octokit: ^2.0.4
     react-markdown: ^8.0.0
     react-use: ^17.2.4
     remark-gfm: ^3.0.1
@@ -6884,7 +6884,7 @@ __metadata:
     msw: ^0.47.0
     node-fetch: ^2.6.7
     nunjucks: ^3.2.3
-    octokit: ^2.0.0
+    octokit: ^2.0.4
     octokit-plugin-create-pull-request: ^3.10.0
     p-limit: ^3.1.0
     prom-client: ^14.0.1
@@ -31000,7 +31000,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"octokit@npm:^2.0.0, octokit@npm:^2.0.4":
+"octokit@npm:^2.0.4":
   version: 2.0.7
   resolution: "octokit@npm:2.0.7"
   dependencies:
