@@ -2,6 +2,8 @@
 import { RESOURCE_TYPE_KUBERNETES_RESOURCE } from '@backstage/plugin-kubernetes-common';
 import { createKubernetesPermissionRule } from './util';
 import { KubernetesObjectTypes } from '../..';
+import { z } from 'zod';
+import { KubernetesObjectSearchFilter } from '../../../../kubernetes-common/src/types';
 /**
  * A Resource {@link @backstage/plugin-permission-node#PermissionRule} which
  * filters for resources by a given kind type.
@@ -29,17 +31,21 @@ import { KubernetesObjectTypes } from '../..';
 //   }),
 // });
   
-//TODO: (rubenv-dev) Determine whether or not KubernetesObjectTypes should be the only types users can provide as paramaters in a permission policy. We probably need to switch to ObjectToFetch type as a resource in this permission rule and then adjust workload endpoint accordingly.
 
 export const isOfKind = createKubernetesPermissionRule({
     name: 'IS_OF_KIND',
     description: 'Allow kubernetes resources with the specified kind',
     resourceType: RESOURCE_TYPE_KUBERNETES_RESOURCE,
-    apply: (resource: KubernetesObjectTypes, kinds: string[]) => {
+    paramsSchema: z.object({
+      kinds: z
+        .array(z.string())
+        .describe('List of kinds to match at least one of'),
+    }),
+    apply: (resource, { kinds }) => {
       const resourceKind = resource.toLocaleLowerCase('en-US');
       return kinds.some(kind => kind.toLocaleLowerCase('en-US') === resourceKind);
     },
-    toQuery(kinds: string[]) {
+    toQuery({ kinds }): KubernetesObjectSearchFilter {
       return {
         key: 'kind',
         values: kinds.map(kind => kind.toLocaleLowerCase('en-US')),
