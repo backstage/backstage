@@ -16,15 +16,13 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
 import { TokenManager } from '@backstage/backend-common';
 
-// Warning: (ae-missing-release-tag) "APIDocument" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface APIDocument extends IndexableDocument {
   kind: string;
   lifecycle: string;
 }
 
-// @public (undocumented)
+// @public
 export class APIDocumentCollatorFactory implements DocumentCollatorFactory {
   // (undocumented)
   execute(): AsyncGenerator<APIDocument>;
@@ -48,8 +46,6 @@ export type APIDocumentCollatorFactoryOptions = {
   specHandler?: SpecHandler;
 };
 
-// Warning: (ae-missing-release-tag) "OpenAPISpecParser" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class OpenAPISpecParser implements SpecParser {
   // (undocumented)
@@ -69,8 +65,6 @@ export class OpenAPISpecParser implements SpecParser {
   specType: string;
 }
 
-// Warning: (ae-missing-release-tag) "SpecHandler" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class SpecHandler {
   // (undocumented)

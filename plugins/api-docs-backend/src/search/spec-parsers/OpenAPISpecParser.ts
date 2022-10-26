@@ -19,6 +19,7 @@ import { SpecParser } from './SpecHandler';
 import { OpenAPI, OpenAPIV3, OpenAPIV2 } from 'openapi-types';
 import { parse } from 'yaml';
 
+/** @public */
 export class OpenAPISpecParser implements SpecParser {
   specType: string = 'openapi';
 

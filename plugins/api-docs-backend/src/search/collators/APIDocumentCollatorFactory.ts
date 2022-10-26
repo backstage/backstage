@@ -38,7 +38,11 @@ export type APIDocumentCollatorFactoryOptions = {
   specHandler?: SpecHandler;
 };
 
-/** @public */
+/**
+ * Options to configure the TechDocs collator factory
+ *
+ * @public
+ */
 export class APIDocumentCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'api-definition';
   private readonly catalogClient: CatalogApi;

@@ -20,6 +20,7 @@ export interface SpecParser {
   getSpecText(specDefinition: any): string;
 }
 
+/** @public */
 export class SpecHandler {
   specParsers: Record<string, SpecParser> = {};
 
