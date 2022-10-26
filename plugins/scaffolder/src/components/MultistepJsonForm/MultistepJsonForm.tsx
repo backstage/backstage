@@ -36,12 +36,17 @@ import { transformSchemaToProps } from './schema';
 import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
 import { LayoutOptions } from '../../layouts';
-import { ReviewStepProps, Step } from '../types';
+import { ReviewStepProps } from '../types';
 import { ReviewStep } from './ReviewStep';
 import { selectedTemplateRouteRef } from '../../routes';
 import { extractSchemaFromStep } from '../../next/TemplateWizardPage/Stepper/schema';
 
 const Form = withTheme(MuiTheme);
+
+type Step = {
+  schema: JsonObject;
+  title: string;
+} & Partial<Omit<FormProps<any>, 'schema'>>;
 
 /**
  * The props for a dynamic form of a scaffolder template.

@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-import { FormProps, UiSchema } from '@rjsf/core';
+import { UiSchema } from '@rjsf/core';
 import { JsonObject } from '@backstage/types';
-
-/**
- * The props for the Step in scaffolder template.
- *
- * @public
- */
-export type Step = {
-  schema: JsonObject;
-  title: string;
-} & Partial<Omit<FormProps<any>, 'schema'>>;
 
 /**
  * The props for the Last Step in scaffolder template form.
