@@ -199,7 +199,7 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cu
   
   token: string;
   
-  construtor(token: string) {
+  constructor(token: string) {
     this.token = token;
   }
 
@@ -224,7 +224,7 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cu
   
   token: string;
   
-  construtor(token: string) {
+  constructor(token: string) {
     this.token = token;
   }
 
@@ -242,10 +242,9 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cu
 
   async next(context: MyContext, cursor?: MyApiCursor = { page: 1 }): Promise<EntityIteratorResult<TCursor>> {
     const { apiClient } = context;
-    const { page } = cursor;
 
-    // call your API with the current page
-    const data = await apiClient.getServices(page);
+    // call your API with the current cursor
+    const data = await apiClient.getServices(cursor);
 
     // calculate the next page
     const nextPage = page + 1;
@@ -293,7 +292,7 @@ Now that you have your new Incremental Entity Provider, we can connect it to the
 We'll assume you followed the <a href="#Installation">Installation</a> instructions. After you create your `incrementalBuilder`, you can instantiate your Entity Provider and pass it to the `addIncrementalEntityProvider` method.
 
 ```ts
-  const incrementalBuilder = IncrementalCatalogBuilder.create(env, builder);
+  const incrementalBuilder = await IncrementalCatalogBuilder.create(env, builder);
 
   // I'm assuming you're going to get your token from config
   const token = config.getString('myApiClient.token');
@@ -319,4 +318,4 @@ That's it!!!
 
 ## Error handling
 
-If `around` or `next` methods throw an error, the error will show up in logs and it'll trigger the Incremental Entity Provider to try again after a backoff period. It'll keep trying until it reaches the last backoff attempt. You don't need to do anything special to handle the retry logic.
+If `around` or `next` methods throw an error, the error will show up in logs and it'll trigger the Incremental Entity Provider to try again after a backoff period. It'll keep trying until it reaches the last backoff attempt, at which point it will cancel the current ingestion and start over. You don't need to do anything special to handle the retry logic.
