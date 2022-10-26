@@ -19,7 +19,7 @@ import {
   githubAuthApiRef,
   configApiRef,
 } from '@backstage/core-plugin-api';
-import { readGitHubIntegrationConfigs } from '@backstage/integration';
+import { readGithubIntegrationConfigs } from '@backstage/integration';
 
 let octokit: any;
 
@@ -27,7 +27,7 @@ export const useOctokitGraphQl = <T>() => {
   const auth = useApi(githubAuthApiRef);
   const config = useApi(configApiRef);
 
-  const baseUrl = readGitHubIntegrationConfigs(
+  const baseUrl = readGithubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
   )[0].apiBaseUrl;
 

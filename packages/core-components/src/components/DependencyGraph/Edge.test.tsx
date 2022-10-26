@@ -21,6 +21,7 @@ import { RenderLabelProps } from './types';
 
 const fromNode = 'node';
 const toNode = 'other-node';
+const curve: 'curveStepBefore' | 'curveMonotoneX' = 'curveMonotoneX';
 
 const edge = {
   points: [
@@ -46,6 +47,7 @@ const minProps = {
   setEdge,
   renderElement,
   edge,
+  curve,
 };
 
 const label = 'label';

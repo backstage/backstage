@@ -60,6 +60,12 @@ export type DocsCardGridProps = {
 };
 
 // @public
+export type DocsGroupConfig = {
+  title: React_2.ReactNode;
+  filterPredicate: ((entity: Entity) => boolean) | string;
+};
+
+// @public
 export const DocsTable: {
   (props: DocsTableProps): JSX.Element | null;
   columns: {
@@ -112,7 +118,14 @@ export const EmbeddedDocsRouter: (
 ) => JSX.Element | null;
 
 // @public
-export const EntityListDocsGrid: () => JSX.Element;
+export const EntityListDocsGrid: ({
+  groups,
+}: EntityListDocsGridPageProps) => JSX.Element;
+
+// @public
+export type EntityListDocsGridPageProps = {
+  groups?: DocsGroupConfig[];
+};
 
 // @public
 export const EntityListDocsTable: {

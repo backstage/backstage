@@ -167,6 +167,8 @@ export interface CatalogTableProps {
   // (undocumented)
   columns?: TableColumn<CatalogTableRow>[];
   // (undocumented)
+  emptyContent?: ReactNode;
+  // (undocumented)
   subtitle?: string;
   // (undocumented)
   tableOptions?: TableProps<CatalogTableRow>['options'];
@@ -195,6 +197,8 @@ export interface DefaultCatalogPageProps {
   actions?: TableProps<CatalogTableRow>['actions'];
   // (undocumented)
   columns?: TableColumn<CatalogTableRow>[];
+  // (undocumented)
+  emptyContent?: ReactNode;
   // (undocumented)
   initialKind?: string;
   // (undocumented)

@@ -33,34 +33,24 @@ describe('CodeOwnersProcessor', () => {
     target: `https://github.com/backstage/backstage/blob/master/${basePath}catalog-info.yaml`,
   });
 
-  const mockReadResult = ({
-    error = undefined,
-    data = undefined,
-  }: {
-    error?: string;
-    data?: string;
-  } = {}) => {
-    if (error) {
-      throw Error(error);
-    }
-    return data;
-  };
-
   describe('preProcessEntity', () => {
     const setupTest = ({ kind = 'Component', spec = {} } = {}) => {
       const entity = { kind, spec };
-      const read = jest
-        .fn()
-        .mockResolvedValue(mockReadResult({ data: mockCodeOwnersText() }));
-
       const config = new ConfigReader({});
-      const reader = { read, readTree: jest.fn(), search: jest.fn() };
+      const reader = {
+        read: jest.fn(),
+        readTree: jest.fn(),
+        search: jest.fn(),
+        readUrl: jest.fn().mockResolvedValue({
+          buffer: jest.fn().mockResolvedValue(mockCodeOwnersText()),
+        }),
+      };
       const processor = CodeOwnersProcessor.fromConfig(config, {
         logger: getVoidLogger(),
         reader,
       });
 
-      return { entity, processor, read };
+      return { entity, processor };
     };
 
     it('should not modify existing owner', async () => {

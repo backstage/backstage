@@ -61,6 +61,7 @@ export function createPublishGithubAction(options: {
     sourcePath?: string;
     requireCodeOwnerReviews?: boolean;
     requiredStatusCheckContexts?: string[];
+    requireBranchesToBeUpToDate?: boolean;
     repoVisibility?: 'private' | 'internal' | 'public';
     collaborators?: Array<
       | {
@@ -94,6 +95,7 @@ export function createPublishGithubAction(options: {
           access: inputProps.access,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+          requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
           repoVisibility: inputProps.repoVisibility,
           defaultBranch: inputProps.defaultBranch,
           protectDefaultBranch: inputProps.protectDefaultBranch,
@@ -128,6 +130,7 @@ export function createPublishGithubAction(options: {
         access,
         requireCodeOwnerReviews = false,
         requiredStatusCheckContexts = [],
+        requireBranchesToBeUpToDate = true,
         repoVisibility = 'private',
         defaultBranch = 'master',
         protectDefaultBranch = true,
@@ -193,6 +196,7 @@ export function createPublishGithubAction(options: {
         repo,
         requireCodeOwnerReviews,
         requiredStatusCheckContexts,
+        requireBranchesToBeUpToDate,
         config,
         ctx.logger,
         gitCommitMessage,

@@ -84,6 +84,7 @@ Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append th
 ```typescript
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 import { TODO_LIST_RESOURCE_TYPE } from '@internal/plugin-todo-list-common';
+import { z } from 'zod';
 import { Todo, TodoFilter } from './todos';
 
 export const createTodoListPermissionRule = makeCreatePermissionRule<
@@ -95,10 +96,13 @@ export const isOwner = createTodoListPermissionRule({
   name: 'IS_OWNER',
   description: 'Should allow only if the todo belongs to the user',
   resourceType: TODO_LIST_RESOURCE_TYPE,
-  apply: (resource: Todo, userId: string) => {
+  paramsSchema: z.object({
+    userId: z.string().describe('User ID to match on the resource')
+  })
+  apply: (resource: Todo, { userId }) => {
     return resource.author === userId;
   },
-  toQuery: (userId: string) => {
+  toQuery: ({ userId }) => {
     return {
       property: 'author',
       values: [userId],
@@ -223,7 +227,9 @@ Let's go back to the permission policy's handle function and try to authorize ou
 +   if (isPermission(request.permission, todoListUpdatePermission)) {
 +     return createTodoListConditionalDecision(
 +       request.permission,
-+       todoListConditions.isOwner(user?.identity.userEntityRef),
++       todoListConditions.isOwner({
++         userId: user?.identity.userEntityRef ?? '',
++       }),
 +     );
 +   }
 +

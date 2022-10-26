@@ -46,7 +46,9 @@ describe('EntitySwitch', () => {
 
     const rendered = render(
       <Wrapper>
-        <EntityProvider entity={{ kind: 'component' } as Entity}>
+        <EntityProvider
+          entity={{ metadata: { name: 'mock' }, kind: 'component' } as Entity}
+        >
           {content}
         </EntityProvider>
       </Wrapper>,
@@ -58,7 +60,9 @@ describe('EntitySwitch', () => {
 
     rendered.rerender(
       <Wrapper>
-        <EntityProvider entity={{ kind: 'template' } as Entity}>
+        <EntityProvider
+          entity={{ metadata: { name: 'mock' }, kind: 'template' } as Entity}
+        >
           {content}
         </EntityProvider>
       </Wrapper>,
@@ -70,7 +74,9 @@ describe('EntitySwitch', () => {
 
     rendered.rerender(
       <Wrapper>
-        <EntityProvider entity={{ kind: 'derp' } as Entity}>
+        <EntityProvider
+          entity={{ metadata: { name: 'mock' }, kind: 'derp' } as Entity}
+        >
           {content}
         </EntityProvider>
       </Wrapper>,
@@ -94,7 +100,7 @@ describe('EntitySwitch', () => {
   });
 
   it('should switch child when filters switch', () => {
-    const entity = { kind: 'component' } as Entity;
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
 
     const rendered = render(
       <Wrapper>
@@ -126,7 +132,7 @@ describe('EntitySwitch', () => {
   });
 
   it('should switch with async condition that is true', async () => {
-    const entity = { kind: 'component' } as Entity;
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
 
     const shouldRender = () => Promise.resolve(true);
     const rendered = render(
@@ -145,7 +151,7 @@ describe('EntitySwitch', () => {
   });
 
   it('should switch with sync condition that is false', async () => {
-    const entity = { kind: 'component' } as Entity;
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
 
     const shouldRender = () => Promise.resolve(false);
     const rendered = render(
@@ -164,7 +170,7 @@ describe('EntitySwitch', () => {
   });
 
   it('should switch with sync condition that throws', async () => {
-    const entity = { kind: 'component' } as Entity;
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
 
     const shouldRender = () => Promise.reject();
     const rendered = render(

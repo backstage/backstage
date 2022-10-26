@@ -162,6 +162,14 @@ export interface DependencyGraphProps<NodeData, EdgeData>
    * Default: `enabled`
    */
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';
+  /**
+   * A factory for curve generators addressing both lines and areas.
+   *
+   * @remarks
+   *
+   * Default: 'curveMonotoneX'
+   */
+  curve?: 'curveStepBefore' | 'curveMonotoneX';
 }
 
 const WORKSPACE_ID = 'workspace';
@@ -194,6 +202,7 @@ export function DependencyGraph<NodeData, EdgeData>(
     renderLabel,
     defs,
     zoom = 'enabled',
+    curve = 'curveMonotoneX',
     ...svgProps
   } = props;
   const theme: BackstageTheme = useTheme();
@@ -424,6 +433,7 @@ export function DependencyGraph<NodeData, EdgeData>(
                 setEdge={setEdge}
                 render={renderLabel}
                 edge={edge}
+                curve={curve}
               />
             );
           })}

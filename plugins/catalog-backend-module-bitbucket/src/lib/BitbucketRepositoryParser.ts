@@ -26,6 +26,7 @@ import { Logger } from 'winston';
  * results.
  *
  * @public
+ * @deprecated Please migrate to `@backstage/plugin-catalog-backend-module-bitbucket-cloud` or `@backstage/plugin-catalog-backend-module-bitbucket-server` instead.
  */
 export type BitbucketRepositoryParser = (options: {
   integration: BitbucketIntegration;

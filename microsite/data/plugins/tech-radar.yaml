@@ -7,3 +7,4 @@ description: Visualize the your company's official guidelines of different areas
 documentation: https://github.com/backstage/backstage/tree/master/plugins/tech-radar
 iconUrl: https://www.materialui.co/materialIcons/action/track_changes_white_192x192.png
 npmPackageName: '@backstage/plugin-tech-radar'
+addedDate: '2020-11-03'

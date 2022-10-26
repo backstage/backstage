@@ -7,3 +7,4 @@ description: Here you can find all .NET related actions to improve your scaffold
 documentation: https://github.com/alefcarlos/plusultra-dotnet-backstage-plugins/blob/main/plugins/scaffolder-dotnet-backend/README.md
 iconUrl: img/scaffolder-backend-dotnet-icon.png
 npmPackageName: '@plusultra/plugin-scaffolder-dotnet-backend'
+addedDate: '2022-01-24'

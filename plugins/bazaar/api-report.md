@@ -9,6 +9,17 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
+export const BazaarOverviewCard: (
+  props: BazaarOverviewCardProps,
+) => JSX.Element;
+
+// @public (undocumented)
+export type BazaarOverviewCardProps = {
+  order: 'latest' | 'random';
+  fullWidth?: boolean;
+};
+
+// @public (undocumented)
 export const BazaarPage: () => JSX.Element;
 
 // @public (undocumented)

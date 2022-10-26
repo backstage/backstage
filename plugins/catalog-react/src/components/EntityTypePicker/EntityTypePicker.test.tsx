@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { fireEvent, waitFor } from '@testing-library/react';
-import { capitalize } from 'lodash';
 import { Entity } from '@backstage/catalog-model';
 import { EntityTypePicker } from './EntityTypePicker';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
@@ -99,11 +98,11 @@ describe('<EntityTypePicker/>', () => {
     const input = rendered.getByTestId('select');
     fireEvent.click(input);
 
-    await waitFor(() => rendered.getByText('Service'));
+    await waitFor(() => rendered.getByText('service'));
 
     entities.forEach(entity => {
       expect(
-        rendered.getByText(capitalize(entity.spec!.type as string)),
+        rendered.getByText(entity.spec!.type as string),
       ).toBeInTheDocument();
     });
   });
@@ -125,15 +124,15 @@ describe('<EntityTypePicker/>', () => {
     const input = rendered.getByTestId('select');
     fireEvent.click(input);
 
-    await waitFor(() => rendered.getByText('Service'));
-    fireEvent.click(rendered.getByText('Service'));
+    await waitFor(() => rendered.getByText('service'));
+    fireEvent.click(rendered.getByText('service'));
 
     expect(updateFilters).toHaveBeenLastCalledWith({
       type: new EntityTypeFilter(['service']),
     });
 
     fireEvent.click(input);
-    fireEvent.click(rendered.getByText('All'));
+    fireEvent.click(rendered.getByText('all'));
 
     expect(updateFilters).toHaveBeenLastCalledWith({ type: undefined });
   });

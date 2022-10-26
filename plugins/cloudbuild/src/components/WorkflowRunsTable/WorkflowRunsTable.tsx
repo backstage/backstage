@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Link, Typography, Box, IconButton, Tooltip } from '@material-ui/core';
+import { Typography, Box, IconButton, Tooltip } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import GoogleIcon from '@material-ui/icons/CloudCircle';
-import { Link as RouterLink } from 'react-router-dom';
 import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import SyncIcon from '@material-ui/icons/Sync';
@@ -25,7 +24,7 @@ import { useProjectName } from '../useProjectName';
 import { Entity } from '@backstage/catalog-model';
 import { buildRouteRef } from '../../routes';
 import { DateTime } from 'luxon';
-import { Table, TableColumn } from '@backstage/core-components';
+import { Table, TableColumn, Link } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
 const generatedColumns: TableColumn[] = [
@@ -59,11 +58,7 @@ const generatedColumns: TableColumn[] = [
       const LinkWrapper = () => {
         const routeLink = useRouteRef(buildRouteRef);
         return (
-          <Link
-            component={RouterLink}
-            data-testid="cell-source"
-            to={routeLink({ id: row.id! })}
-          >
+          <Link data-testid="cell-source" to={routeLink({ id: row.id! })}>
             {row.message}
           </Link>
         );

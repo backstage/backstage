@@ -23,6 +23,17 @@ Each package is searched for a schema at a single point of entry, a top-level
 inlined JSON schema, or a relative path to a schema file. Supported schema file
 formats are `.json` or `.d.ts`.
 
+```jsonc title="package.json"
+{
+  // ...
+  "files": [
+    // ...
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
+}
+```
+
 > When defining a schema file, be sure to include the file in your
 > `package.json` > `"files"` field as well!
 
@@ -127,7 +138,7 @@ may need to pass in all files using one or multiple `--config <path>` options.
 > to change for different deployment environments should be static
 > configuration, while it should otherwise be avoided.
 
-When defining configuration for your plugin, keep keys camelCased and stick to
+When defining configuration for your plugin, keep keys on `camelCase` form and stick to
 existing casing conventions such as `baseUrl` rather than `baseURL`.
 
 It is also usually best to prefer objects over arrays, as it makes it possible

@@ -1,5 +1,87 @@
 # @backstage/plugin-techdocs
 
+## 1.4.0-next.0
+
+### Minor Changes
+
+- 5691baea69: Add ability to configure filters when using EntityListDocsGrid
+
+  The following example will render two sections of cards grid:
+
+  - One section for documentations tagged as `recommended`
+  - One section for documentations tagged as `runbook`
+
+  ```js
+  <EntityListDocsGrid groups={{[
+    {
+      title: "Recommended Documentation",
+      filterPredicate: entity =>
+        entity?.metadata?.tags?.includes('recommended') ?? false,
+    },
+    {
+      title: "RunBooks Documentation",
+      filterPredicate: entity =>
+        entity?.metadata?.tags?.includes('runbook') ?? false,
+    }
+  ]}} />
+  ```
+
+### Patch Changes
+
+- cbe11d1e23: Tweak README
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+- 3a1a999b7b: Include query parameters when navigating to relative links in documents
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.1-next.0
+  - @backstage/core-components@0.12.0-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/integration-react@1.1.6-next.0
+  - @backstage/plugin-search-react@1.2.1-next.0
+  - @backstage/plugin-techdocs-react@1.0.6-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.1.1-next.0
+
+## 1.3.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/plugin-catalog-react@1.2.0
+  - @backstage/core-components@0.11.2
+  - @backstage/plugin-search-react@1.2.0
+  - @backstage/plugin-search-common@1.1.0
+  - @backstage/plugin-techdocs-react@1.0.5
+  - @backstage/integration-react@1.1.5
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+  - @backstage/theme@0.2.16
+
+## 1.3.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.0-next.2
+  - @backstage/plugin-search-common@1.1.0-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/core-components@0.11.2-next.2
+  - @backstage/core-plugin-api@1.0.7-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/integration@1.3.2-next.2
+  - @backstage/integration-react@1.1.5-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-react@1.2.0-next.2
+  - @backstage/plugin-techdocs-react@1.0.5-next.2
+
 ## 1.3.3-next.1
 
 ### Patch Changes

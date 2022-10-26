@@ -17,7 +17,8 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
-import { createCacheMiddleware, TechDocsCache } from '.';
+import { createCacheMiddleware } from './cacheMiddleware';
+import { TechDocsCache } from './TechDocsCache';
 
 /**
  * Mocks cached HTTP response.

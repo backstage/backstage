@@ -39,7 +39,7 @@ import OpenInNew from '@material-ui/icons/OpenInNew';
 import Star from '@material-ui/icons/Star';
 import StarBorder from '@material-ui/icons/StarBorder';
 import { capitalize } from 'lodash';
-import React, { useMemo } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableRow } from './types';
 
@@ -52,6 +52,7 @@ export interface CatalogTableProps {
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
   tableOptions?: TableProps<CatalogTableRow>['options'];
+  emptyContent?: ReactNode;
   subtitle?: string;
 }
 
@@ -63,7 +64,7 @@ const YellowStar = withStyles({
 
 /** @public */
 export const CatalogTable = (props: CatalogTableProps) => {
-  const { columns, actions, tableOptions, subtitle } = props;
+  const { columns, actions, tableOptions, subtitle, emptyContent } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const { loading, error, entities, filters } = useEntityList();
 
@@ -228,6 +229,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       data={rows}
       actions={actions || defaultActions}
       subtitle={subtitle}
+      emptyContent={emptyContent}
     />
   );
 };

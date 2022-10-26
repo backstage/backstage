@@ -1,5 +1,116 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.2.0-next.0
+
+### Minor Changes
+
+- 67fe5bc9a9: BREAKING: Support authenticated backends by including a server token for catalog requests. The constructor of `GithubLocationAnalyzer` now requires an instance of `TokenManager` to be supplied:
+
+  ```diff
+  ...
+    builder.addLocationAnalyzers(
+      new GitHubLocationAnalyzer({
+        discovery: env.discovery,
+        config: env.config,
+  +     tokenManager: env.tokenManager,
+      }),
+    );
+  ...
+  ```
+
+- f64d66a45c: Added the ability for the GitHub discovery provider to validate that catalog files exist before emitting them.
+
+  Users can now set the `validateLocationsExist` property to `true` in their GitHub discovery configuration to opt in to this feature.
+  This feature only works with `catalogPath`s that do not contain wildcards.
+
+  When `validateLocationsExist` is set to `true`, the GitHub discovery provider will retrieve the object from the
+  repository at the provided `catalogPath`.
+  If this file exists and is non-empty, then it will be emitted as a location for further processing.
+  If this file does not exist or is empty, then it will not be emitted.
+  Not emitting locations that do not exist allows for far fewer calls to the GitHub API to validate locations that do not exist.
+
+### Patch Changes
+
+- 67fe5bc9a9: Properly derive Github credentials when making requests in `GithubLocationAnalyzer` to support Github App authentication
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/plugin-catalog-backend@1.5.1-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/backend-tasks@0.3.7-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/backend-plugin-api@0.1.4-next.0
+  - @backstage/plugin-catalog-node@1.2.1-next.0
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+
+## 0.1.8
+
+### Patch Changes
+
+- 8749df3d02: `GitHubEntityProvider`: Add option to configure schedule via `app-config.yaml` instead of in code.
+
+  Please find how to configure the schedule at the config at
+  https://backstage.io/docs/integrations/github/discovery
+
+- 7022aebf35: Added `GithubLocationAnalyzer`. This can be used to add to the `CatalogBuilder`. When added this will be used by `RepoLocationAnalyzer` to figure out if the given URL that you are trying to import from the /catalog-import page already contains catalog-info.yaml files.
+- 51046b58b0: Use schedule from config at backend module.
+
+  Also, it removes `GithubEntityProviderCatalogModuleOptions`
+  in favor of config-only for the backend module setup
+  like at other similar modules.
+
+- 7edb5909e8: Add missing config schema for the `GitHubEntityProvider`.
+- be9474b103: Replaces in-code uses of `GitHub` by `Github` and deprecates old versions.
+
+  Deprecates
+
+  - `GitHubEntityProvider` replaced by `GithubEntityProvider`
+  - `GitHubLocationAnalyzer` replaced by `GithubLocationAnalyzer`
+  - `GitHubLocationAnalyzerOptions` replaced by `GithubLocationAnalyzerOptions`
+  - `GitHubOrgEntityProvider` replaced by `GithubOrgEntityProvider`
+  - `GitHubOrgEntityProviderOptions` replaced by `GithubOrgEntityProviderOptions`
+
+  Renames
+
+  - `GitHubLocationAnalyzer` to `GithubLocationAnalyzer`
+  - `GitHubLocationAnalyzerOptions` to `GithubLocationAnalyzerOptions`
+
+- a35a27df70: Updated the `moduleId` of the experimental module export.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.2.0
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-catalog-backend@1.5.0
+  - @backstage/backend-tasks@0.3.6
+  - @backstage/backend-plugin-api@0.1.3
+  - @backstage/catalog-client@1.1.1
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+  - @backstage/types@1.0.0
+
+## 0.1.8-next.2
+
+### Patch Changes
+
+- 7022aebf35: Added `GitHubLocationAnalyzer`. This can be used to add to the `CatalogBuilder`. When added this will be used by `RepoLocationAnalyzer` to figure out if the given URL that you are trying to import from the /catalog-import page already contains catalog-info.yaml files.
+- 7edb5909e8: Add missing config schema for the `GitHubEntityProvider`.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.2.0-next.2
+  - @backstage/plugin-catalog-backend@1.5.0-next.2
+  - @backstage/backend-tasks@0.3.6-next.2
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/backend-plugin-api@0.1.3-next.2
+  - @backstage/catalog-client@1.1.1-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/integration@1.3.2-next.2
+  - @backstage/types@1.0.0
+
 ## 0.1.8-next.1
 
 ### Patch Changes

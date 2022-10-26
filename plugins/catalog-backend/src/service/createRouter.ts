@@ -98,7 +98,7 @@ export async function createRouter(
       );
 
       await refreshService.refresh(refreshOptions);
-      res.status(200).send();
+      res.status(200).end();
     });
   }
 
@@ -229,9 +229,15 @@ export async function createRouter(
     router.post('/analyze-location', async (req, res) => {
       const body = await validateRequestBody(
         req,
-        z.object({ location: locationInput }),
+        z.object({
+          location: locationInput,
+          catalogFilename: z.string().optional(),
+        }),
       );
-      const schema = z.object({ location: locationInput });
+      const schema = z.object({
+        location: locationInput,
+        catalogFilename: z.string().optional(),
+      });
       const output = await locationAnalyzer.analyzeLocation(schema.parse(body));
       res.status(200).json(output);
     });

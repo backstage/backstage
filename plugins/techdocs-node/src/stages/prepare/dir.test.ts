@@ -46,6 +46,7 @@ const createMockEntity = (annotations: {}) => {
 const mockConfig = new ConfigReader({});
 const mockUrlReader: jest.Mocked<UrlReader> = {
   read: jest.fn(),
+  readUrl: jest.fn(),
   readTree: jest.fn(),
   search: jest.fn(),
 };

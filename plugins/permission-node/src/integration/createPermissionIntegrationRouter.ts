@@ -17,6 +17,7 @@
 import express, { Response } from 'express';
 import Router from 'express-promise-router';
 import { z } from 'zod';
+import zodToJsonSchema from 'zod-to-json-schema';
 import { InputError } from '@backstage/errors';
 import { errorHandler } from '@backstage/backend-common';
 import {
@@ -29,6 +30,7 @@ import {
 } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '../types';
 import {
+  NoInfer,
   createGetRule,
   isAndCriteria,
   isNotCriteria,
@@ -45,7 +47,7 @@ const permissionCriteriaSchema: z.ZodSchema<
     z.object({
       rule: z.string(),
       resourceType: z.string(),
-      params: z.array(z.unknown()),
+      params: z.record(z.any()).optional(),
     }),
   ]),
 );
@@ -100,6 +102,29 @@ export type ApplyConditionsResponse = {
   items: ApplyConditionsResponseEntry[];
 };
 
+/**
+ * Serialized permission rules, with the paramsSchema
+ * converted from a ZodSchema to a JsonSchema.
+ *
+ * @public
+ */
+export type MetadataResponseSerializedRule = {
+  name: string;
+  description: string;
+  resourceType: string;
+  paramsSchema?: ReturnType<typeof zodToJsonSchema>;
+};
+
+/**
+ * Response type for the .metadata endpoint.
+ *
+ * @public
+ */
+export type MetadataResponse = {
+  permissions?: Permission[];
+  rules: MetadataResponseSerializedRule[];
+};
+
 const applyConditions = <TResourceType extends string, TResource>(
   criteria: PermissionCriteria<PermissionCondition<TResourceType>>,
   resource: TResource | undefined,
@@ -124,16 +149,15 @@ const applyConditions = <TResourceType extends string, TResource>(
     return !applyConditions(criteria.not, resource, getRule);
   }
 
-  return getRule(criteria.rule).apply(resource, ...criteria.params);
-};
+  const rule = getRule(criteria.rule);
+  const result = rule.paramsSchema?.safeParse(criteria.params);
 
-/**
- * Prevent use of type parameter from contributing to type inference.
- *
- * https://github.com/Microsoft/TypeScript/issues/14829#issuecomment-980401795
- * @ignore
- */
-type NoInfer<T> = T extends infer S ? S : never;
+  if (result && !result.success) {
+    throw new InputError(`Parameters to rule are invalid`, result.error);
+  }
+
+  return rule.apply(resource, criteria.params ?? {});
+};
 
 /**
  * Create an express Router which provides an authorization route to allow
@@ -190,16 +214,21 @@ export const createPermissionIntegrationRouter = <
   router.use(express.json());
 
   router.get('/.well-known/backstage/permissions/metadata', (_, res) => {
-    const serializableRules = rules.map(rule => ({
-      name: rule.name,
-      description: rule.description,
-      resourceType: rule.resourceType,
-      parameters: {
-        count: rule.toQuery.length,
-      },
-    }));
+    const serializedRules: MetadataResponseSerializedRule[] = rules.map(
+      rule => ({
+        name: rule.name,
+        description: rule.description,
+        resourceType: rule.resourceType,
+        paramsSchema: zodToJsonSchema(rule.paramsSchema ?? z.object({})),
+      }),
+    );
 
-    return res.json({ permissions, rules: serializableRules });
+    const responseJson: MetadataResponse = {
+      permissions,
+      rules: serializedRules,
+    };
+
+    return res.json(responseJson);
   });
 
   const getRule = createGetRule(rules);

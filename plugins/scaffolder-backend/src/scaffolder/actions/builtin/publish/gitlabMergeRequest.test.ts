@@ -108,7 +108,6 @@ describe('createGitLabMergeRequest', () => {
         title: 'Create my new MR',
         branchName: 'new-mr',
         description: 'This MR is really good',
-        draft: true,
         targetPath: 'Subdirectory',
       };
       mockFs({
@@ -145,7 +144,6 @@ describe('createGitLabMergeRequest', () => {
         branchName: 'new-mr',
         description: 'MR description',
         removeSourceBranch: true,
-        draft: true,
         targetPath: 'Subdirectory',
       };
       mockFs({
@@ -181,7 +179,6 @@ describe('createGitLabMergeRequest', () => {
         branchName: 'new-mr',
         description: 'other MR description',
         removeSourceBranch: false,
-        draft: true,
         targetPath: 'Subdirectory',
       };
       mockFs({
@@ -222,7 +219,6 @@ describe('createGitLabMergeRequest', () => {
         branchName: 'new-mr',
         description: 'This is an important change',
         removeSourceBranch: false,
-        draft: true,
         targetPath: 'Subdirectory',
         assignee: 'John Smith',
       };
@@ -263,7 +259,6 @@ describe('createGitLabMergeRequest', () => {
         branchName: 'new-mr',
         description: 'This is an important change',
         removeSourceBranch: false,
-        draft: true,
         targetPath: 'Subdirectory',
         assingnee: 'John Doe',
       };
@@ -305,7 +300,6 @@ describe('createGitLabMergeRequest', () => {
         branchName: 'new-mr',
         description: 'This is an important change',
         removeSourceBranch: false,
-        draft: true,
         targetPath: 'Subdirectory',
       };
       mockFs({
@@ -344,7 +338,6 @@ describe('createGitLabMergeRequest', () => {
         branchName: 'new-mr',
         description: 'This is an important change',
         removeSourceBranch: false,
-        draft: true,
         targetPath: 'Subdirectory',
         assignee: 'Unknown',
       };
@@ -376,6 +369,52 @@ describe('createGitLabMergeRequest', () => {
         },
       );
     });
+
+    it('use workspacePath as default when no sourcePath or targetPath is specified', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'This MR is really good',
+      };
+      mockFs({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+          irrelevant: { 'bar.txt': 'Nothing to see here' },
+        },
+      });
+      const ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'Create my new MR',
+        [
+          {
+            action: 'create',
+            filePath: 'irrelevant/bar.txt',
+            encoding: 'base64',
+            content: 'Tm90aGluZyB0byBzZWUgaGVyZQ==',
+            execute_filemode: false,
+          },
+          {
+            action: 'create',
+            filePath: 'source/foo.txt',
+            encoding: 'base64',
+            content: 'SGVsbG8gdGhlcmUh',
+            execute_filemode: false,
+          },
+        ],
+      );
+    });
   });
 
   describe('createGitLabMergeRequestWithoutCommitAction', () => {
@@ -385,7 +424,6 @@ describe('createGitLabMergeRequest', () => {
         title: 'Create my new MR',
         branchName: 'new-mr',
         description: 'This MR is really good',
-        draft: true,
         targetPath: 'source',
       };
       mockFs({
@@ -429,7 +467,6 @@ describe('createGitLabMergeRequest', () => {
         branchName: 'new-mr',
         description: 'MR description',
         commitAction: 'create',
-        draft: true,
         targetPath: 'source',
       };
       mockFs({
@@ -472,7 +509,6 @@ describe('createGitLabMergeRequest', () => {
         branchName: 'new-mr',
         description: 'MR description',
         commitAction: 'update',
-        draft: true,
         targetPath: 'source',
       };
       mockFs({
@@ -515,7 +551,6 @@ describe('createGitLabMergeRequest', () => {
         branchName: 'new-mr',
         description: 'other MR description',
         commitAction: 'delete',
-        draft: true,
         targetPath: 'source',
       };
       mockFs({
@@ -548,6 +583,121 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ],
+      );
+    });
+  });
+
+  describe('with sourcePath', () => {
+    it('creates a Merge Request with only relevant files', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'MR description',
+        sourcePath: 'source',
+        commitAction: 'create',
+      };
+
+      mockFs({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+          irrelevant: { 'bar.txt': 'Nothing to see here' },
+        },
+      });
+
+      const ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'Create my new MR',
+        [
+          {
+            action: 'create',
+            filePath: 'foo.txt',
+            content: 'SGVsbG8gdGhlcmUh',
+            encoding: 'base64',
+            execute_filemode: false,
+          },
+        ],
+      );
+    });
+
+    it('creates a Merge Request with only relevant files placed under different targetPath', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'MR description',
+        sourcePath: 'source',
+        targetPath: 'target',
+        commitAction: 'create',
+      };
+
+      mockFs({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+          irrelevant: { 'bar.txt': 'Nothing to see here' },
+        },
+      });
+
+      const ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'Create my new MR',
+        [
+          {
+            action: 'create',
+            filePath: 'target/foo.txt',
+            content: 'SGVsbG8gdGhlcmUh',
+            encoding: 'base64',
+            execute_filemode: false,
+          },
+        ],
+      );
+    });
+
+    it('should not allow to use files outside of the workspace', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'MR description',
+        sourcePath: '../../test',
+        commitAction: 'create',
+      };
+
+      const ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+
+      await expect(instance.handler(ctx)).rejects.toThrow(
+        'Relative path is not allowed to refer to a directory outside its parent',
       );
     });
   });

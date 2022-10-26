@@ -24,8 +24,10 @@ describe('EntityLinksCard', () => {
   const createEntity = (links: EntityLink[] = []): Entity =>
     ({
       metadata: {
+        name: 'mock',
         links,
       },
+      kind: 'MockKind',
     } as Entity);
 
   const createLink = ({

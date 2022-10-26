@@ -53,16 +53,13 @@ import {
   SidebarItemWithSubmenuContext,
   SidebarConfig,
 } from './config';
-import {
-  SidebarSubmenuItemProps,
-  SidebarSubmenuProps,
-  SidebarSubmenu,
-} from '.';
+import { SidebarSubmenuProps, SidebarSubmenu } from './SidebarSubmenu';
 import DoubleArrowLeft from './icons/DoubleArrowLeft';
 import DoubleArrowRight from './icons/DoubleArrowRight';
 import { isLocationMatch } from './utils';
 import { Location } from 'history';
 import { useSidebarOpenState } from './SidebarOpenStateContext';
+import { SidebarSubmenuItemProps } from './SidebarSubmenuItem';
 
 /** @public */
 export type SidebarItemClassKey =
@@ -214,7 +211,7 @@ function useMemoStyles(sidebarConfig: SidebarConfig) {
 
 /**
  * Evaluates the routes of the SubmenuItems & nested DropdownItems.
- * The reeveluation is only triggered, if the `locationPathname` changes, as `useElementFilter` uses memorization.
+ * The reevaluation is only triggered, if the `locationPathname` changes, as `useElementFilter` uses memorization.
  *
  * @param submenu SidebarSubmenu component
  * @param location Location
@@ -510,6 +507,7 @@ const SidebarItemWithSubmenu = ({
 /**
  * Creates a `SidebarItem`
  *
+ * @remarks
  * If children contain a `SidebarSubmenu` component the `SidebarItem` will have a expandable submenu
  */
 export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
@@ -663,6 +661,8 @@ export const SidebarScrollWrapper = styled('div')(({ theme }) => {
 
 /**
  * A button which allows you to expand the sidebar when clicked.
+ *
+ * @remarks
  * Use optionally to replace sidebar's expand-on-hover feature with expand-on-click.
  *
  * If you are using this you might want to set the `disableExpandOnHover` of the `Sidebar` to `true`.

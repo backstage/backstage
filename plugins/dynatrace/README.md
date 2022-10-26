@@ -29,7 +29,7 @@ proxy:
       Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
 ```
 
-It also requires a baseUrl for rendering links to problems in the table like so:
+It also requires a `baseUrl` for rendering links to problems in the table like so:
 
 ```yaml
 dynatrace:

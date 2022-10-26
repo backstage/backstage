@@ -34,7 +34,7 @@ import {
   Link,
 } from '@backstage/core-components';
 import useAsync from 'react-use/lib/useAsync';
-import { periskopApiRef } from '../..';
+import { periskopApiRef } from '../../plugin';
 import { AggregatedError, NotFoundInInstance } from '../../types';
 
 /**

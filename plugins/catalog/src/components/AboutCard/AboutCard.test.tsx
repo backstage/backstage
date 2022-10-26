@@ -216,7 +216,7 @@ describe('<AboutCard />', () => {
     );
   });
 
-  it('renders without "view source" link', async () => {
+  it('renders disabled "view source" link', async () => {
     const entity = {
       apiVersion: 'v1',
       kind: 'Component',
@@ -250,7 +250,8 @@ describe('<AboutCard />', () => {
         },
       },
     );
-    expect(getByText('View Source').closest('a')).not.toHaveAttribute('href');
+    expect(getByText('View Source')).toBeVisible();
+    expect(getByText('View Source').closest('a')).toBeNull();
   });
 
   it.each([
@@ -445,7 +446,8 @@ describe('<AboutCard />', () => {
       },
     );
 
-    expect(getByText('View TechDocs').closest('a')).not.toHaveAttribute('href');
+    expect(getByText('View TechDocs')).toBeVisible();
+    expect(getByText('View TechDocs').closest('a')).toBeNull();
   });
 
   it('renders disabled techdocs link when route is not bound', async () => {
@@ -497,6 +499,7 @@ describe('<AboutCard />', () => {
       },
     );
 
-    expect(getByText('View TechDocs').closest('a')).not.toHaveAttribute('href');
+    expect(getByText('View TechDocs')).toBeVisible();
+    expect(getByText('View TechDocs').closest('a')).toBeNull();
   });
 });
