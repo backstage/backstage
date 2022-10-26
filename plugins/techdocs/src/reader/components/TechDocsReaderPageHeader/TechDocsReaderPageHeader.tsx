@@ -37,6 +37,8 @@ import { RELATION_OWNED_BY, CompoundEntityRef } from '@backstage/catalog-model';
 import { Header, HeaderLabel } from '@backstage/core-components';
 import { useRouteRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 
+import { capitalize } from 'lodash';
+
 import { rootRouteRef } from '../../../routes';
 
 const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
@@ -103,7 +105,7 @@ export const TechDocsReaderPageHeader = (
   const labels = (
     <>
       <HeaderLabel
-        label={entityMetadata?.kind || 'Entity'}
+        label={capitalize(entityMetadata?.kind || 'entity')}
         value={
           <EntityRefLink
             color="inherit"
