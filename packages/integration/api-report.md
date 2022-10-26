@@ -323,6 +323,17 @@ export function getGerritRequestOptions(config: GerritIntegrationConfig): {
   headers?: Record<string, string>;
 };
 
+// @public
+export function getGiteaFileContentsUrl(
+  config: GiteaIntegrationConfig,
+  url: string,
+): string;
+
+// @public
+export function getGiteaRequestOptions(config: GiteaIntegrationConfig): {
+  headers?: Record<string, string>;
+};
+
 // @public @deprecated (undocumented)
 export const getGitHubFileFetchUrl: typeof getGithubFileFetchUrl;
 
@@ -355,6 +366,35 @@ export function getGitLabIntegrationRelativePath(
 // @public
 export function getGitLabRequestOptions(config: GitLabIntegrationConfig): {
   headers: Record<string, string>;
+};
+
+// @public
+export class GiteaIntegration implements ScmIntegration {
+  constructor(config: GiteaIntegrationConfig);
+  // (undocumented)
+  readonly config: GiteaIntegrationConfig;
+  // (undocumented)
+  static factory: ScmIntegrationsFactory<GiteaIntegration>;
+  // (undocumented)
+  resolveEditUrl(url: string): string;
+  // (undocumented)
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number | undefined;
+  }): string;
+  // (undocumented)
+  get title(): string;
+  // (undocumented)
+  get type(): string;
+}
+
+// @public
+export type GiteaIntegrationConfig = {
+  host: string;
+  baseUrl?: string;
+  username?: string;
+  password?: string;
 };
 
 // @public
@@ -488,6 +528,8 @@ export interface IntegrationsByType {
   // (undocumented)
   gerrit: ScmIntegrationsGroup<GerritIntegration>;
   // (undocumented)
+  gitea: ScmIntegrationsGroup<GiteaIntegration>;
+  // (undocumented)
   github: ScmIntegrationsGroup<GithubIntegration>;
   // (undocumented)
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
@@ -566,6 +608,9 @@ export function readGerritIntegrationConfigs(
   configs: Config[],
 ): GerritIntegrationConfig[];
 
+// @public
+export function readGiteaConfig(config: Config): GiteaIntegrationConfig;
+
 // @public @deprecated (undocumented)
 export const readGitHubIntegrationConfig: typeof readGithubIntegrationConfig;
 
@@ -640,6 +685,8 @@ export interface ScmIntegrationRegistry
   // (undocumented)
   gerrit: ScmIntegrationsGroup<GerritIntegration>;
   // (undocumented)
+  gitea: ScmIntegrationsGroup<GiteaIntegration>;
+  // (undocumented)
   github: ScmIntegrationsGroup<GithubIntegration>;
   // (undocumented)
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
@@ -672,6 +719,8 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
   static fromConfig(config: Config): ScmIntegrations;
   // (undocumented)
   get gerrit(): ScmIntegrationsGroup<GerritIntegration>;
+  // (undocumented)
+  get gitea(): ScmIntegrationsGroup<GiteaIntegration>;
   // (undocumented)
   get github(): ScmIntegrationsGroup<GithubIntegration>;
   // (undocumented)

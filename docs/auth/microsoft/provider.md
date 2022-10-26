@@ -46,6 +46,12 @@ The Microsoft provider is a structure with three configuration keys:
 - `clientSecret`: Secret, found on App Registration > Certificates & secrets
 - `tenantId`: Directory (tenant) ID, found on App Registration > Overview
 
+In order to finish signing a user in from Azure, the Backstage backend must
+fetch their information from graph.microsoft.com (as seen in [this source
+code](https://github.com/seanfisher/passport-microsoft/blob/0456aa9bce05579c18e77f51330176eb26373658/lib/strategy.js#L93-L95)),
+so ensure that your Backstage backend has connectivity to this host.
+Otherwise users may see an `Authentication failed, failed to fetch user profile` error when they attempt to log in.
+
 ## Adding the provider to the Backstage frontend
 
 To add the provider to the frontend, add the `microsoftAuthApiRef` reference and

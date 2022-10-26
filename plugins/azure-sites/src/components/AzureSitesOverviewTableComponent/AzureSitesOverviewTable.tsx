@@ -20,7 +20,6 @@ import {
   Card,
   IconButton,
   LinearProgress,
-  Link,
   Menu,
   MenuItem,
   Snackbar,
@@ -28,7 +27,7 @@ import {
 } from '@material-ui/core';
 import { default as MuiAlert } from '@material-ui/lab/Alert';
 import { AzureSite } from '@backstage/plugin-azure-sites-common';
-import { Table, TableColumn } from '@backstage/core-components';
+import { Table, TableColumn, Link } from '@backstage/core-components';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import PublicIcon from '@material-ui/icons/Public';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -199,11 +198,7 @@ export const AzureSitesOverviewTable = ({ data, loading }: TableProps) => {
       field: 'name',
       highlight: true,
       render: (func: AzureSite) => {
-        return (
-          <Link href={func.href} target="_blank">
-            {func.name}
-          </Link>
-        );
+        return <Link to={func.href}>{func.name}</Link>;
       },
     },
     {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { formatDuration } from '.';
+import { formatDuration } from './format';
 import { BuildCount, BuildTime } from '../api';
 
 export const getErrorRatios = (buildCounts?: BuildCount[]) => {

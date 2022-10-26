@@ -202,6 +202,11 @@
       },
       {
         "type": "subcategory",
+        "label": "Gitea",
+        "ids": ["integrations/gitea/locations"]
+      },
+      {
+        "type": "subcategory",
         "label": "Google GCS",
         "ids": ["integrations/google-cloud-storage/locations"]
       },
@@ -230,7 +235,8 @@
           "plugins/proxying",
           "plugins/backend-plugin",
           "plugins/call-existing-api",
-          "plugins/url-reader"
+          "plugins/url-reader",
+          "plugins/new-backend-system"
         ]
       },
       {

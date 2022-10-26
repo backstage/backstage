@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { AuthenticationError } from '@backstage/errors';
 import {
@@ -24,12 +25,12 @@ import {
   jwtVerify,
 } from 'jose';
 import { GetKeyFunction } from 'jose/dist/types/types';
-
 import {
   BackstageIdentityResponse,
   IdentityApiGetIdentityRequest,
 } from './types';
-import { getBearerTokenFromAuthorizationHeader, IdentityApi } from '.';
+import { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';
+import { IdentityApi } from './IdentityApi';
 
 const CLOCK_MARGIN_S = 10;
 

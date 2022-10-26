@@ -26,6 +26,7 @@ import { GitLabIntegration } from './gitlab/GitLabIntegration';
 import { defaultScmResolveUrl } from './helpers';
 import { ScmIntegration, ScmIntegrationsGroup } from './types';
 import { ScmIntegrationRegistry } from './registry';
+import { GiteaIntegration } from './gitea';
 
 /**
  * The set of supported integrations.
@@ -44,6 +45,7 @@ export interface IntegrationsByType {
   gerrit: ScmIntegrationsGroup<GerritIntegration>;
   github: ScmIntegrationsGroup<GithubIntegration>;
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
+  gitea: ScmIntegrationsGroup<GiteaIntegration>;
 }
 
 /**
@@ -64,6 +66,7 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
       gerrit: GerritIntegration.factory({ config }),
       github: GithubIntegration.factory({ config }),
       gitlab: GitLabIntegration.factory({ config }),
+      gitea: GiteaIntegration.factory({ config }),
     });
   }
 
@@ -104,6 +107,10 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
 
   get gitlab(): ScmIntegrationsGroup<GitLabIntegration> {
     return this.byType.gitlab;
+  }
+
+  get gitea(): ScmIntegrationsGroup<GiteaIntegration> {
+    return this.byType.gitea;
   }
 
   list(): ScmIntegration[] {

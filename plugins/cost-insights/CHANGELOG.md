@@ -1,5 +1,22 @@
 # @backstage/plugin-cost-insights
 
+## 0.12.0-next.0
+
+### Minor Changes
+
+- 43afded227: Updated recharts to v2.0.0 and fixed typing issues
+
+### Patch Changes
+
+- cbe11d1e23: Tweak README
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
 ## 0.11.32
 
 ### Patch Changes
