@@ -167,30 +167,30 @@ describe('extractAssets', () => {
   it('should return assets', () => {
     const readme = `  
     ## Images
-    ![Image 1](./images/sample-4(2).png)
+    ![Image 1](./images/sample-4(2).PNG)
     ![Image 2](./images/cdCSj+-012340.jpg)             
     ![Image 3](/images/test-4(2)))).jpeg)       
     ![Image 4](./images/test-2211jd.webp)    
-    ![Image 5](/images/sa)mple.gif)
+    ![Image 5](/images/sa)mple.GIf)
   `;
     const result = extractAssets(readme);
     expect(result).toEqual([
-      '[Image 1](./images/sample-4(2).png)',
+      '[Image 1](./images/sample-4(2).PNG)',
       '[Image 2](./images/cdCSj+-012340.jpg)',
       '[Image 3](/images/test-4(2)))).jpeg)',
       '[Image 4](./images/test-2211jd.webp)',
-      '[Image 5](/images/sa)mple.gif)',
+      '[Image 5](/images/sa)mple.GIf)',
     ]);
   });
 });
 
 describe('extractPartsFromAsset', () => {
   it('should return parts from asset - PNG', () => {
-    const result = extractPartsFromAsset('[Image 1](./images/sample-4(2).png)');
+    const result = extractPartsFromAsset('[Image 1](./images/sample-4(2).PNG)');
     expect(result).toEqual({
       label: 'Image 1',
       path: '/images/sample-4(2)',
-      ext: '.png',
+      ext: '.PNG',
     });
   });
 
@@ -207,12 +207,12 @@ describe('extractPartsFromAsset', () => {
 
   it('should return parts from asset - JPEG', () => {
     const result = extractPartsFromAsset(
-      '[Image 2](/images/test-4(2)))).jpeg)',
+      '[Image 2](/images/test-4(2)))).JpEg)',
     );
     expect(result).toEqual({
       label: 'Image 2',
       path: '/images/test-4(2))))',
-      ext: '.jpeg',
+      ext: '.JpEg',
     });
   });
 
