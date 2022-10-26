@@ -35,7 +35,7 @@ import {
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, Typography, useTheme } from '@material-ui/core';
+import { makeStyles, Typography, Paper, useTheme } from '@material-ui/core';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import classNames from 'classnames';
 import React from 'react';
@@ -45,6 +45,12 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
   graph: {
     flex: 1,
     minHeight: 0,
+  },
+  graphWrapper: {
+    position: 'relative',
+    flex: 1,
+    minHeight: 0,
+    display: 'flex',
   },
   organizationNode: {
     fill: theme.palette.secondary.light,
@@ -61,6 +67,15 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
     alignItems: 'center',
     justifyContent: 'center',
     color: 'black',
+  },
+  legend: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    padding: theme.spacing(1),
+    '& .icon': {
+      verticalAlign: 'bottom',
+    },
   },
   textOrganization: {
     color: theme.palette.secondary.contrastText,
@@ -222,21 +237,26 @@ export function GroupsDiagram() {
 
   return (
     <>
-      <DependencyGraph
-        nodes={nodes}
-        edges={edges}
-        nodeMargin={10}
-        direction={DependencyGraphTypes.Direction.RIGHT_LEFT}
-        renderNode={RenderNode}
-        className={classes.graph}
-      />
-      <Typography
-        variant="caption"
-        style={{ display: 'block', textAlign: 'right' }}
-      >
-        <ZoomOutMap style={{ verticalAlign: 'bottom' }} /> Use pinch &amp; zoom
-        to move around the diagram.
-      </Typography>
+      <Paper className={classes.graphWrapper}>
+        <DependencyGraph
+          nodes={nodes}
+          edges={edges}
+          nodeMargin={10}
+          direction={DependencyGraphTypes.Direction.RIGHT_LEFT}
+          renderNode={RenderNode}
+          className={classes.graph}
+        />
+
+        <Typography
+          variant="caption"
+          color="textSecondary"
+          display="block"
+          className={classes.legend}
+        >
+          <ZoomOutMap className="icon" /> Use pinch &amp; zoom to move around
+          the diagram.
+        </Typography>
+      </Paper>
     </>
   );
 }
