@@ -26,11 +26,12 @@ import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-no
 import { 
   AuthorizeResult,
   PermissionEvaluator,
-  PermissionCondition
+  PermissionCondition,
 } from '@backstage/plugin-permission-common';
 import { 
   kubernetesWorkloadResourcesReadPermission, kubernetesCustomResourcesReadPermission } from '../../../kubernetes-common/src/permissions';
 import { NotAllowedError } from '@backstage/errors';
+import { JsonPrimitive } from '../../../../packages/types/src';
 
 export const addResourceRoutesToRouter = (
   router: express.Router,
@@ -97,24 +98,26 @@ export const addResourceRoutesToRouter = (
       auth: req.body.auth,
     });
     let editedResponse = response;
-
+    
     if (authorizeResponse.result === AuthorizeResult.CONDITIONAL) {
       let permissionCondition = authorizeResponse.conditions as PermissionCondition;
-      let permissionParamsArray = permissionCondition.params[0]
-      let responseResourcesWithTypesArray = response.items[0].resources
 
-      for (let i = 0; i <= permissionParamsArray.length - 1; i++){
-        let currentParam = permissionParamsArray[i]
+      if (permissionCondition.params !== undefined && permissionCondition.params.kinds !== null && permissionCondition.params.kinds !== undefined) {
+        let permissionParamsArray = permissionCondition.params.kinds as JsonPrimitive[]
+        let responseResourcesWithTypesArray = response.items[0].resources
 
-        responseResourcesWithTypesArray.map((currentResource) => {
-          let {type, resources} = currentResource
-          if(type !== currentParam && resources.length > 0){
-            currentResource.resources = []
-          }
-        })
+        for (let i = 0; i <= permissionParamsArray.length - 1; i++){
+          let currentParam = permissionParamsArray[i]
+
+          responseResourcesWithTypesArray.map((currentResource) => {
+            let {type, resources} = currentResource
+            if(type !== currentParam && resources.length > 0){
+              currentResource.resources = []
+            }
+          })
+        }
+        editedResponse.items[0].resources = responseResourcesWithTypesArray;
       }
-
-      editedResponse.items[0].resources = responseResourcesWithTypesArray;
     }
     res.json(editedResponse);
   });
