@@ -30,7 +30,7 @@ import { APIDocument } from './APIDocument';
 import { SpecHandler } from '../spec-parsers';
 
 /** @public */
-export type ApiDocumentCollatorFactoryOptions = {
+export type APIDocumentCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
   catalogClient?: CatalogApi;
   batchSize?: number;
@@ -39,14 +39,14 @@ export type ApiDocumentCollatorFactoryOptions = {
 };
 
 /** @public */
-export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
+export class APIDocumentCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'api-definition';
   private readonly catalogClient: CatalogApi;
   private batchSize: number;
   private tokenManager: TokenManager;
   private specHandler: SpecHandler;
 
-  private constructor(options: ApiDocumentCollatorFactoryOptions) {
+  private constructor(options: APIDocumentCollatorFactoryOptions) {
     const { discovery, catalogClient, batchSize, tokenManager, specHandler } =
       options;
 
@@ -59,9 +59,9 @@ export class ApiDocumentCollatorFactory implements DocumentCollatorFactory {
 
   static fromConfig(
     _config: Config,
-    options: ApiDocumentCollatorFactoryOptions,
+    options: APIDocumentCollatorFactoryOptions,
   ) {
-    return new ApiDocumentCollatorFactory(options);
+    return new APIDocumentCollatorFactory(options);
   }
 
   async getCollator() {

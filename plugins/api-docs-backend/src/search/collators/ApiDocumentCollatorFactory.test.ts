@@ -26,7 +26,7 @@ import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
-import { ApiDocumentCollatorFactory } from './APIDocumentCollatorFactory';
+import { APIDocumentCollatorFactory } from './APIDocumentCollatorFactory';
 import { SpecHandler, SpecParser } from '../spec-parsers';
 
 const server = setupServer();
@@ -286,7 +286,7 @@ const expectedEntities: Entity[] = [
   },
 ];
 
-describe('ApiDocumentCollatorFactory', () => {
+describe('APIDocumentCollatorFactory', () => {
   const config = new ConfigReader({});
 
   const mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery> = {
@@ -329,16 +329,16 @@ describe('ApiDocumentCollatorFactory', () => {
   });
 
   it('has expected type', () => {
-    const factory = ApiDocumentCollatorFactory.fromConfig(config, options);
+    const factory = APIDocumentCollatorFactory.fromConfig(config, options);
     expect(factory.type).toBe('api-definition');
   });
 
   describe('getCollator', () => {
-    let factory: ApiDocumentCollatorFactory;
+    let factory: APIDocumentCollatorFactory;
     let collator: Readable;
 
     beforeEach(async () => {
-      factory = ApiDocumentCollatorFactory.fromConfig(config, options);
+      factory = APIDocumentCollatorFactory.fromConfig(config, options);
       collator = await factory.getCollator();
     });
 

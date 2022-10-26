@@ -15,4 +15,4 @@
  */
 
 export * from './APIDocument';
-export * from './APIDocumentCollatorFactory';
+export * from './APIDocumentCollatorFactory'
