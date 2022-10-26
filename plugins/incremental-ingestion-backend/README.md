@@ -21,7 +21,7 @@ We created the Incremental Entity Provider to address all of the above issues. T
 
 Incremental Entity Providers will wait a configurable interval before proceeding to the next burst.
 
-Once the source has no more results, Incremental Entity Provider compares all entities annotated with `frontside/incremental-entity-provider: <entity-provider-id>` against all marked entities to determine which entities commited by same entity provider were not marked during the last ingestion cycle. All unmarked entities are deleted at the end of the cycle. The Incremental Entity Provider rests for a fixed internal before restarting the ingestion process.
+Once the source has no more results, Incremental Entity Provider compares all entities annotated with `frontside/incremental-entity-provider: <entity-provider-id>` against all marked entities to determine which entities committed by same entity provider were not marked during the last ingestion cycle. All unmarked entities are deleted at the end of the cycle. The Incremental Entity Provider rests for a fixed internal before restarting the ingestion process.
 
 ![Diagram of execution of an Incremental Entity Provider](https://user-images.githubusercontent.com/74687/185822734-ee6279c7-64fa-46b9-9aa8-d4092ab73858.png)
 
@@ -34,10 +34,11 @@ This approach has the following benefits,
 
 ## Requirements
 
-The Incremental Entity Provider backend is designed for data sources that provide paginated results. Each burst attempts to handle one or more pages of the query. The plugin will attempt to fetch as many pages as it can within a configurable burst length. At every iteration, it expects to receive the next cursor that will be used to query in the next iteration. Each iteration may happen on a different replica. This has several concequences:
+The Incremental Entity Provider backend is designed for data sources that provide paginated results. Each burst attempts to handle one or more pages of the query. The plugin will attempt to fetch as many pages as it can within a configurable burst length. At every iteration, it expects to receive the next cursor that will be used to query in the next iteration. Each iteration may happen on a different replica. This has several consequences:
 
 1. The cursor must be serializable to JSON (not an issue for most RESTful or GraphQL based APIs).
 2. The client must be stateless - a client is created from scratch for each iteration to allow distributing processing over multiple replicas.
+3. There must be sufficient storage in Postgres to handle the additional data.
 
 ## Installation
 
@@ -191,7 +192,7 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cu
 }
 ```
 
-If you need to pass a token to your API, then you can create a constructor that will receive a token and use the token to setup th client.
+If you need to pass a token to your API, then you can create a constructor that will receive a token and use the token to setup the client.
 
 ```ts
 export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cursor, Context> {
