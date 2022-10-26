@@ -67,12 +67,10 @@ function getUiSchemasFromSteps(steps: Step[]): {
   mergedSchema: JsonObject;
   schema: JsonObject;
 }[] {
-  const res = steps.map(({ schema }) => ({
+  return steps.map(({ schema }) => ({
     mergedSchema: schema,
     ...extractSchemaFromStep(schema),
-  }));
-
-  return res as unknown as {
+  })) as unknown as {
     uiSchema: UiSchema;
     mergedSchema: JsonObject;
     schema: JsonObject;
