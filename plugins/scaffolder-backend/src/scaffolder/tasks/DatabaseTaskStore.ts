@@ -298,6 +298,7 @@ export class DatabaseTaskStore implements TaskStore {
         `Invalid status update of run '${taskId}' to status '${status}'`,
       );
     }
+
     await this.db.transaction(async tx => {
       const [task] = await tx<RawDbTaskRow>('tasks')
         .where({
@@ -306,6 +307,36 @@ export class DatabaseTaskStore implements TaskStore {
         .limit(1)
         .select();
 
+      const updateTask = async (criteria: {
+        id: string;
+        status?: TaskStatus;
+      }) => {
+        const updateCount = await tx<RawDbTaskRow>('tasks')
+          .where(criteria)
+          .update({
+            status,
+          });
+
+        if (updateCount !== 1) {
+          throw new ConflictError(
+            `Failed to update status to '${status}' for taskId ${taskId}`,
+          );
+        }
+
+        await tx<RawDbTaskEventRow>('task_events').insert({
+          task_id: taskId,
+          event_type: 'completion',
+          body: JSON.stringify(eventBody),
+        });
+      };
+
+      if (status === 'cancelled') {
+        await updateTask({
+          id: taskId,
+        });
+        return;
+      }
+
       if (task.status === 'cancelled') {
         return;
       }
@@ -313,31 +344,16 @@ export class DatabaseTaskStore implements TaskStore {
       if (!task) {
         throw new Error(`No task with taskId ${taskId} found`);
       }
-      if (task.status !== oldStatus && oldStatus !== 'cancelled') {
+      if (task.status !== oldStatus) {
         throw new ConflictError(
           `Refusing to update status of run '${taskId}' to status '${status}' ` +
             `as it is currently '${task.status}', expected '${oldStatus}'`,
         );
       }
-      const updateCount = await tx<RawDbTaskRow>('tasks')
-        .where({
-          id: taskId,
-          status: oldStatus,
-        })
-        .update({
-          status,
-        });
 
-      if (updateCount !== 1) {
-        throw new ConflictError(
-          `Failed to update status to '${status}' for taskId ${taskId}`,
-        );
-      }
-
-      await tx<RawDbTaskEventRow>('task_events').insert({
-        task_id: taskId,
-        event_type: 'completion',
-        body: JSON.stringify(eventBody),
+      await updateTask({
+        id: taskId,
+        status: oldStatus,
       });
     });
   }
