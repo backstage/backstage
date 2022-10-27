@@ -13,11 +13,11 @@ What an action-packed and memorable week for the Backstage community meeting up 
 
 ### BackstageCon: A full day of nothing but Backstage
 
-![Backstagecon group](assets/2022-10-28/backstageCon_image.jpg)
+![Backstagecon group](assets/2022-10-28/groupimage.jpg)
 
 We started the week off strong, packing a ballroom for [BackstageCon](https://events.linuxfoundation.org/backstagecon-north-america/) on Monday. It was a smorgasbord of some of our active community members at the first official Backstage conference — as well as some new faces interested in learning more about Backstage! To welcome us, Roadie’s [Martina Iglesias Fernandez](https://github.com/martina-if) and Spotify’s [Suzanne Daniels](https://github.com/suuus) took center stage. Next up, we listened to three keynotes from the event’s top sponsors: Roadie’s [David Tuite](https://github.com/dtuite) enlightened us on how to 10x developer effectiveness for teams, [Dave Zolotusky](https://github.com/dzolotusky) from Spotify discussed developer happiness and [announced](https://www.linkedin.com/posts/spotify-r%26d_backstage-devex-activity-6990305201710587904-SnDQ?utm_source=share&utm_medium=member_desktop) that [Spotify Plugins for Backstage](https://backstage.spotify.com/blog/spotify-plugins-for-backstage/) are launching soon, and [Valentina Alaria](https://www.linkedin.com/in/valentinaalaria/) from VMware Tanzu talked about how to curate the Backstage experience to enable developer velocity. In between some creative snacks (lemon blueberry popcorn, anyone?) and coffee breaks, we heard from adopters including [Telus](https://backstage.spotify.com/blog/building-for-simplicity-TELUS/), [DAZN](https://backstage.spotify.com/blog/adopter-spotlight/dazn/), HP, US Bank, and more on lessons learned through their adoption journeys, we talked about different ways to leverage data within Backstage, and we discussed new ways to customize Backstage for specific adopter needs.
 
-Stay tuned to the [CNCF YouTube channel](https://www.youtube.com/c/cloudnativefdn) where talks and sessions from BackstageCon will be posted soon!
+You can watch all the BackstageCon sessions, talks, and keynotes [here](https://www.youtube.com/playlist?list=PLj6h78yzYM2OKySsTuiip3BqmdYZQRnSf)! 
 
 ### Project Meeting: Building a better Backstage together
 
