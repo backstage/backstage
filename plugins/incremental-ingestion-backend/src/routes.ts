@@ -101,12 +101,10 @@ export const createIncrementalProviderRouter = async (
           message: 'Unable to trigger next action (provider is restarting)',
         });
       } else {
-        res
-          .status(404)
-          .json({
-            success: false,
-            message: `Provider '${provider}' not found`,
-          });
+        res.status(404).json({
+          success: false,
+          message: `Provider '${provider}' not found`,
+        });
       }
     }
   });
@@ -136,12 +134,10 @@ export const createIncrementalProviderRouter = async (
           message: 'Provider is already restarting',
         });
       } else {
-        res
-          .status(404)
-          .json({
-            success: false,
-            message: `Provider '${provider}' not found`,
-          });
+        res.status(404).json({
+          success: false,
+          message: `Provider '${provider}' not found`,
+        });
       }
     }
   });
@@ -172,12 +168,10 @@ export const createIncrementalProviderRouter = async (
           message: 'Provider is currently restarting, please wait.',
         });
       } else {
-        res
-          .status(404)
-          .json({
-            success: false,
-            message: `Provider '${provider}' not found`,
-          });
+        res.status(404).json({
+          success: false,
+          message: `Provider '${provider}' not found`,
+        });
       }
     }
   });
