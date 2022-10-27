@@ -35,5 +35,7 @@ export {
   getEntityRelations,
   getEntitySourceLocation,
   isOwnerOf,
+  useAllKinds,
+  filterAndCapitalize,
 } from './utils';
 export type { EntitySourceLocation } from './utils';

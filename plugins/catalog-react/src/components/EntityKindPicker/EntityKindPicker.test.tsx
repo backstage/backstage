@@ -147,6 +147,43 @@ describe('<EntityKindPicker/>', () => {
     });
   });
 
+  it('renders unknown kinds provided in query parameters', async () => {
+    const rendered = await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{ queryParameters: { kind: 'frob' } }}
+        >
+          <EntityKindPicker />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(rendered.getByText('Frob')).toBeInTheDocument();
+  });
+
+  it('limits kinds when allowedKinds is set', async () => {
+    const rendered = await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider>
+          <EntityKindPicker allowedKinds={['component', 'domain']} />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    const input = rendered.getByTestId('select');
+    fireEvent.click(input);
+
+    expect(
+      rendered.getByRole('option', { name: 'Component' }),
+    ).toBeInTheDocument();
+    expect(
+      rendered.getByRole('option', { name: 'Domain' }),
+    ).toBeInTheDocument();
+    expect(
+      rendered.queryByRole('option', { name: 'Template' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('responds to external queryParameters changes', async () => {
     const updateFilters = jest.fn();
     const rendered = await renderWithEffects(
@@ -179,5 +216,25 @@ describe('<EntityKindPicker/>', () => {
     expect(updateFilters).toHaveBeenLastCalledWith({
       kind: new EntityKindFilter('domain'),
     });
+  });
+
+  it('renders kind from the query parameter even when not in allowedKinds', async () => {
+    const rendered = await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{ queryParameters: { kind: 'Frob' } }}
+        >
+          <EntityKindPicker allowedKinds={['domain']} />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(rendered.getByText('Frob')).toBeInTheDocument();
+
+    const input = rendered.getByTestId('select');
+    fireEvent.click(input);
+    expect(
+      rendered.getByRole('option', { name: 'Domain' }),
+    ).toBeInTheDocument();
   });
 });

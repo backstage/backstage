@@ -175,6 +175,7 @@ export const EntityKindPicker: (
 
 // @public
 export interface EntityKindPickerProps {
+  allowedKinds?: string[];
   // (undocumented)
   hidden?: boolean;
   // (undocumented)
@@ -432,6 +433,13 @@ export type FavoriteEntityProps = ComponentProps<typeof IconButton> & {
 };
 
 // @public
+export function filterAndCapitalize(
+  allKinds: string[],
+  allowedKinds?: string[],
+  forcedKinds?: string[],
+): Record<string, string>;
+
+// @public
 export function getEntityRelations(
   entity: Entity | undefined,
   relationType: string,
@@ -501,6 +509,13 @@ export type UnregisterEntityDialogProps = {
   onConfirm: () => any;
   onClose: () => any;
   entity: Entity;
+};
+
+// @public
+export function useAllKinds(): {
+  loading: boolean;
+  error?: Error;
+  allKinds: string[];
 };
 
 // @public
