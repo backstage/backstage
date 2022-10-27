@@ -5,7 +5,7 @@ description: Documentation on Design
 ---
 
 Be it a new component contribution, or plugin specific components, you'll want
-to follow these guidelines, we'll cover the 3 main subjects that define the
+to follow these guidelines. We'll cover the three main subjects that define the
 general look and feel of your components, all of which build on top of the MUI
 theme features:
 
