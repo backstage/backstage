@@ -35,10 +35,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@types/express": "*",
-    "@types/supertest": "^2.0.8",
-    "msw": "^0.35.0",
-    "supertest": "^4.0.2"
+    "@types/express": "*"
   },
   "files": [
     "dist",
