@@ -73,7 +73,7 @@ your app theme color palette.
 
 Most of the time the components from MUI will use the `<Typography />` component
 which will use the theme's typography properties like font family, size, weight
-and appropriate color from the palette for the context of that component, like
+and appropriate color from the palette for the context of that component. This applies for example to 
 buttons that use white font color for contained buttons, or the respective color
 passed on via props when not outlined for proper contrast (buttons in dark
 theme adapt properly by using a dark font instead of white).
