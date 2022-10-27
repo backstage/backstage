@@ -1,11 +1,9 @@
 ---
-title: 'BackstageCon & KubeCon NA 2022 Recap'
+title: 'ICYMI: BackstageCon & KubeCon NA 2022 Recap'
 description: 'We had a great time in Detroit! Learn more about our first dedicated conference to Backstage and KubeCon NA 2022.'
-publishedISODate: '2022-10-28'
-previewImage: ./preview.png
+author: Emma White, Spotify
+authorURL: [https://www.linkedin.com/in/emmamckeewhite/]
 ---
-
-*Note this blog was originally published on Backstage.io*
  
 ## ICYMI: BackstageCon & KubeCon NA 2022 Recap
 
