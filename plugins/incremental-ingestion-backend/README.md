@@ -29,7 +29,7 @@ This approach has the following benefits,
 
 1. Reduced ingestion latency - each burst commits entities which are processed before the entire list is processed.
 2. Stable pressure - each period between bursts provides an opportunity for the processing pipeline to settle without overwhelming the pipeline with a large number of unprocessed entities.
-3. Built-in retry/backoff - Failed bursts are automatically retried with a built-in backoff interval providing an opportunity for the data source to reset its rate limits before retrying the burst.
+3. Built-in retry / back-off - Failed bursts are automatically retried with a built-in backoff interval providing an opportunity for the data source to reset its rate limits before retrying the burst.
 4. Prevents orphan entities - Deleted entities are removed as with `full` mutation with a low memory footprint.
 
 ## Requirements
@@ -310,6 +310,13 @@ We'll assume you followed the <a href="#Installation">Installation</a> instructi
       burstInterval: Duration.fromObject({ seconds: 3 }),
       // how long should it rest before re-ingesting again?
       restLength: Duration.fromObject({ day: 1 })
+      // optional back-off configuration - how long should it wait to retry?
+      backoff: [
+        Duration.fromObject({ seconds: 5 }),
+        Duration.fromObject({ seconds: 30 }),
+        Duration.fromObject({ minutes: 10 }),
+        Duration.fromObject({ hours: 3 })
+      ]
     }
   )
 ```
@@ -318,4 +325,4 @@ That's it!!!
 
 ## Error handling
 
-If `around` or `next` methods throw an error, the error will show up in logs and it'll trigger the Incremental Entity Provider to try again after a backoff period. It'll keep trying until it reaches the last backoff attempt, at which point it will cancel the current ingestion and start over. You don't need to do anything special to handle the retry logic.
+If `around` or `next` methods throw an error, the error will show up in logs and it'll trigger the Incremental Entity Provider to try again after a back-off period. It'll keep trying until it reaches the last back-off attempt, at which point it will cancel the current ingestion and start over. You don't need to do anything special to handle the retry logic.
