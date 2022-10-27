@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import os from 'os';
 import { getVoidLogger, DatabaseManager } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
