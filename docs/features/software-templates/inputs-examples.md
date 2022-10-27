@@ -8,9 +8,9 @@ All the examples on this page you can test using _create/edit_ from your Backsta
 
 It is important to remember that all examples are based on [react-jsonschema-form](https://rjsf-team.github.io/react-jsonschema-form/).
 
-# Simple text input
+## Simple text input
 
-## Simple input with basic validations
+### Simple input with basic validations
 
 ```yaml
 parameters:
@@ -26,7 +26,7 @@ parameters:
         ui:help: "Hint: additional description..."
 ```
 
-## Simple secret input
+### Simple secret input
 
 ```yaml
 parameters:
@@ -40,7 +40,7 @@ parameters:
         ui:widget: "password"
 ```
 
-## Multi line text input
+### Multi line text input
 
 ```yaml
 parameters:
@@ -65,9 +65,9 @@ parameters:
               lifecycle: experimental
 ```
 
-# Arrays options
+## Arrays options
 
-## Array with custom titles
+### Array with custom titles
 
 ```yaml
 parameters:
@@ -91,7 +91,7 @@ parameters:
           ]
 ```
 
-## A multiple choices list
+### A multiple choices list
 
 ```yaml
 parameters:
@@ -107,7 +107,7 @@ parameters:
         ui:widget: checkboxes
 ```
 
-## Array with another types
+### Array with another types
 
 ```yaml
 parameters:
@@ -140,9 +140,9 @@ parameters:
               type: string
 ```
 
-# Boolean options
+## Boolean options
 
-## Boolean
+### Boolean
 
 ```yaml
 parameters:
@@ -153,7 +153,7 @@ parameters:
         type: boolean
 ```
 
-## Boolean Yes or No options
+### Boolean Yes or No options
 
 ```yaml
 parameters:
@@ -165,7 +165,7 @@ parameters:
         ui:widget: radio
 ```
 
-## Boolean multiple options
+### Boolean multiple options
 
 ```yaml
 parameters:
