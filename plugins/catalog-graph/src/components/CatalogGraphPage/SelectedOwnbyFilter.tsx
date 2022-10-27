@@ -41,16 +41,16 @@ export type Props = {
   onChange: (value: string[] | undefined) => void;
 };
 
-export const SelectedOwnbyFilter = ({ value, onChange }: Props) => {
+export const SelectedOwnByFilter = ({ value, onChange }: Props) => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const catalogApi = useApi(catalogApiRef);
 
   const { error, value: ownedby } = useAsync(async () => {
-    return await catalogApi.getEntityFacets({ facets: ['Group', 'User'] }).then(
+    return await catalogApi.getEntityFacets({ facets: ["Group", "User"] }).then(
       response =>
-        response.facets['Group']
-          .concat(response.facets['User'])
+        response.facets["Group"]
+          .concat(response.facets["User"])
           ?.map(f => f.value)
           .sort() || [],
     );

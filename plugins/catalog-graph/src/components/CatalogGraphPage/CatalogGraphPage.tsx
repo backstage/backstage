@@ -44,7 +44,7 @@ import { DirectionFilter } from './DirectionFilter';
 import { MaxDepthFilter } from './MaxDepthFilter';
 import { SelectedKindsFilter } from './SelectedKindsFilter';
 import { SelectedRelationsFilter } from './SelectedRelationsFilter';
-import { SelectedOwnbyFilter } from './SelectedOwnbyFilter';
+import { SelectedOwnByFilter } from './SelectedOwnbyFilter';
 import { SwitchFilter } from './SwitchFilter';
 import { useCatalogGraphPage } from './useCatalogGraphPage';
 
@@ -204,7 +204,7 @@ export const CatalogGraphPage = (props: {
                 onChange={setSelectedRelations}
                 relationPairs={relationPairs}
               />
-              <SelectedOwnbyFilter
+              <SelectedOwnByFilter
                 value={selectedOwnedBy}
                 onChange={setSelectedOwnedBy}
               />
