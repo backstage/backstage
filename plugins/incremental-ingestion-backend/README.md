@@ -29,7 +29,7 @@ This approach has the following benefits,
 
 1. Reduced ingestion latency - each burst commits entities which are processed before the entire list is processed.
 2. Stable pressure - each period between bursts provides an opportunity for the processing pipeline to settle without overwhelming the pipeline with a large number of unprocessed entities.
-3. Built-in retry / back-off - Failed bursts are automatically retried with a built-in backoff interval providing an opportunity for the data source to reset its rate limits before retrying the burst.
+3. Built-in retry / back-off - Failed bursts are automatically retried with a built-in back-off interval providing an opportunity for the data source to reset its rate limits before retrying the burst.
 4. Prevents orphan entities - Deleted entities are removed as with `full` mutation with a low memory footprint.
 
 ## Requirements
@@ -173,7 +173,7 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<My
 }
 ```
 
-`around` method is used for setup and teardown. For example, if you need to create a client that will connect to the API, you would do that here.
+`around` method is used for setup and tear-down. For example, if you need to create a client that will connect to the API, you would do that here.
 
 ```ts
 export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cursor, Context> {
