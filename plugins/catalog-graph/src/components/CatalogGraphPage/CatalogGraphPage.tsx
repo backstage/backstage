@@ -105,7 +105,7 @@ export const CatalogGraphPage = (props: {
   initialState?: {
     selectedRelations?: string[];
     selectedKinds?: string[];
-    selectedOwnedby?: string[];
+    selectedOwnedBy?: string[];
     rootEntityRefs?: string[];
     maxDepth?: number;
     unidirectional?: boolean;
@@ -126,8 +126,8 @@ export const CatalogGraphPage = (props: {
     setSelectedKinds,
     selectedRelations,
     setSelectedRelations,
-    selectedOwnedby,
-    setSelectedOwnedby,
+    selectedOwnedBy,
+    setSelectedOwnedBy,
     unidirectional,
     setUnidirectional,
     mergeRelations,
@@ -205,8 +205,8 @@ export const CatalogGraphPage = (props: {
                 relationPairs={relationPairs}
               />
               <SelectedOwnbyFilter
-                value={selectedOwnedby}
-                onChange={setSelectedOwnedby}
+                value={selectedOwnedBy}
+                onChange={setSelectedOwnedBy}
               />
               <DirectionFilter value={direction} onChange={setDirection} />
               <SwitchFilter
@@ -246,9 +246,9 @@ export const CatalogGraphPage = (props: {
                     ? selectedRelations
                     : undefined
                 }
-                ownedby={
-                  selectedOwnedby && selectedOwnedby.length > 0
-                    ? selectedOwnedby
+                ownedBy={
+                  selectedOwnedBy && selectedOwnedBy.length > 0
+                    ? selectedOwnedBy
                     : undefined
                 }
                 mergeRelations={mergeRelations}

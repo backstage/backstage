@@ -24,7 +24,7 @@ export const CatalogGraphPage: (props: {
     | {
         selectedRelations?: string[] | undefined;
         selectedKinds?: string[] | undefined;
-        selectedOwnedby?: string[] | undefined;
+        selectedOwnedBy?: string[] | undefined;
         rootEntityRefs?: string[] | undefined;
         maxDepth?: number | undefined;
         unidirectional?: boolean | undefined;
@@ -109,7 +109,7 @@ export const EntityRelationsGraph: (props: {
   unidirectional?: boolean | undefined;
   mergeRelations?: boolean | undefined;
   kinds?: string[] | undefined;
-  ownedby?: string[] | undefined;
+  ownedBy?: string[] | undefined;
   relations?: string[] | undefined;
   direction?: Direction | undefined;
   onNodeClick?:

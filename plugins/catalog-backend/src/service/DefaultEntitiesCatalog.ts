@@ -379,7 +379,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
               facet.substring('metadata.labels.'.length)
             ];
           }
-          if (facet === 'owner') return lodash.get(entity.spec, facet);
+          if (facet === entity.kind) return entity.metadata.name;
           return lodash.get(entity, facet);
         })
         .flatMap(field => {

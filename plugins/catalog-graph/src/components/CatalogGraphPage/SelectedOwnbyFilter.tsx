@@ -47,9 +47,13 @@ export const SelectedOwnbyFilter = ({ value, onChange }: Props) => {
   const catalogApi = useApi(catalogApiRef);
 
   const { error, value: ownedby } = useAsync(async () => {
-    return await catalogApi
-      .getEntityFacets({ facets: ['owner'] })
-      .then(response => response.facets.owner?.map(f => f.value).sort() || []);
+    return await catalogApi.getEntityFacets({ facets: ['Group', 'User'] }).then(
+      response =>
+        response.facets['Group']
+          .concat(response.facets['User'])
+          ?.map(f => f.value)
+          .sort() || [],
+    );
   });
 
   useEffect(() => {
@@ -85,7 +89,7 @@ export const SelectedOwnbyFilter = ({ value, onChange }: Props) => {
   }, [value, onChange]);
 
   if (!ownedby?.length || !normalizedOwnedby?.length || error) {
-    return <></>;
+    return null;
   }
 
   return (

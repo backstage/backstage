@@ -29,7 +29,7 @@ export function useEntityRelationNodesAndEdges({
   unidirectional = true,
   mergeRelations = true,
   kinds,
-  ownedby,
+  ownedBy,
   relations,
   onNodeClick,
   relationPairs = ALL_RELATION_PAIRS,
@@ -39,7 +39,7 @@ export function useEntityRelationNodesAndEdges({
   unidirectional?: boolean;
   mergeRelations?: boolean;
   kinds?: string[];
-  ownedby?: string[];
+  ownedBy?: string[];
   relations?: string[];
   onNodeClick?: (value: EntityNode, event: MouseEvent<unknown>) => void;
   relationPairs?: RelationPairs;
@@ -59,7 +59,7 @@ export function useEntityRelationNodesAndEdges({
       maxDepth,
       kinds,
       relations,
-      ownedby,
+      ownedBy,
     },
   });
 
