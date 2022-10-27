@@ -67,7 +67,7 @@ parameters:
 
 # Arrays options
 
-## Enum with custom titles
+## Array with custom titles
 
 ```yaml
 parameters:
