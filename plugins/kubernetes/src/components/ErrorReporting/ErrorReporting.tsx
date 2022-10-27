@@ -27,7 +27,10 @@ const columns: TableColumn<DetectedError>[] = [
   {
     title: 'cluster',
     width: '10%',
-    render: (detectedError: DetectedError) => detectedError.cluster,
+    render: (detectedError: DetectedError) =>
+      detectedError.alias
+        ? `${detectedError.cluster} (${detectedError.alias})`
+        : detectedError.cluster,
   },
   {
     title: 'namespace',

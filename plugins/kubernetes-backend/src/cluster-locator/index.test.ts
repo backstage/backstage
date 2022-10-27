@@ -31,12 +31,14 @@ describe('getCombinedClusterSupplier', () => {
               clusters: [
                 {
                   name: 'cluster1',
+                  alias: 'alias1',
                   serviceAccountToken: 'token',
                   url: 'http://localhost:8080',
                   authProvider: 'serviceAccount',
                 },
                 {
                   name: 'cluster2',
+                  alias: 'alias2',
                   url: 'http://localhost:8081',
                   authProvider: 'google',
                 },
@@ -54,6 +56,7 @@ describe('getCombinedClusterSupplier', () => {
     expect(result).toStrictEqual([
       {
         name: 'cluster1',
+        alias: 'alias1',
         serviceAccountToken: 'token',
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
@@ -63,6 +66,7 @@ describe('getCombinedClusterSupplier', () => {
       },
       {
         name: 'cluster2',
+        alias: 'alias2',
         serviceAccountToken: undefined,
         url: 'http://localhost:8081',
         authProvider: 'google',
@@ -83,12 +87,14 @@ describe('getCombinedClusterSupplier', () => {
               clusters: [
                 {
                   name: 'cluster1',
+                  alias: 'alias1',
                   serviceAccountToken: 'token',
                   url: 'http://localhost:8080',
                   authProvider: 'serviceAccount',
                 },
                 {
                   name: 'cluster2',
+                  alias: 'alias2',
                   url: 'http://localhost:8081',
                   authProvider: 'google',
                 },

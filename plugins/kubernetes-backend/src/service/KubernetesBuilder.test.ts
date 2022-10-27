@@ -199,6 +199,7 @@ describe('KubernetesBuilder', () => {
           {
             cluster: {
               name: someCluster.name,
+              alias: undefined,
             },
             errors: [],
             podMetrics: [],

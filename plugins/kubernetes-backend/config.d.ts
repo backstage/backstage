@@ -39,6 +39,8 @@ export interface Config {
             url: string;
             /** @visibility frontend */
             name: string;
+            /** @visibility frontend */
+            alias?: string;
             /** @visibility secret  */
             serviceAccountToken?: string;
             /** @visibility frontend */

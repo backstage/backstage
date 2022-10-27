@@ -322,6 +322,7 @@ export class KubernetesFanOutHandler {
     const objects: ClusterObjects = {
       cluster: {
         name: clusterDetails.name,
+        alias: clusterDetails.alias,
       },
       podMetrics: toClientSafePodMetrics(metrics),
       resources: result.responses,

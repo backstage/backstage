@@ -39,6 +39,7 @@ describe('MultiTenantConfigClusterLocator', () => {
         return [
           {
             name: 'cluster1',
+            alias: undefined,
             url: 'http://localhost:8080',
             authProvider: 'serviceAccount',
             serviceAccountToken: '12345',
@@ -56,6 +57,7 @@ describe('MultiTenantConfigClusterLocator', () => {
       clusters: [
         {
           name: 'cluster1',
+          alias: undefined,
           serviceAccountToken: '12345',
           url: 'http://localhost:8080',
           authProvider: 'serviceAccount',

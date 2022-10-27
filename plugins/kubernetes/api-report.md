@@ -104,6 +104,8 @@ export interface DeploymentResources {
 // @alpha
 export interface DetectedError {
   // (undocumented)
+  alias: string | undefined;
+  // (undocumented)
   cluster: string;
   // (undocumented)
   kind: ErrorDetectableKind;

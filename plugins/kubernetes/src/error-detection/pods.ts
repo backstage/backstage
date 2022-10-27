@@ -91,5 +91,12 @@ const podErrorMappers: ErrorMapper<V1Pod>[] = [
 export const detectErrorsInPods = (
   pods: V1Pod[],
   clusterName: string,
+  clusterAlias: string | undefined,
 ): DetectedError[] =>
-  detectErrorsInObjects(pods, 'Pod', clusterName, podErrorMappers);
+  detectErrorsInObjects(
+    pods,
+    'Pod',
+    clusterName,
+    clusterAlias,
+    podErrorMappers,
+  );

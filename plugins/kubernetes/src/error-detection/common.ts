@@ -27,6 +27,7 @@ export const detectErrorsInObjects = <T extends ErrorDetectable>(
   objects: T[],
   kind: ErrorDetectableKind,
   clusterName: string,
+  clusterAlias: string | undefined,
   errorMappers: ErrorMapper<T>[],
 ): DetectedError[] => {
   // Build up a map of errors
@@ -57,6 +58,7 @@ export const detectErrorsInObjects = <T extends ErrorDetectable>(
         } else {
           errors.set(dedupKey, {
             cluster: clusterName,
+            alias: clusterAlias,
             kind: kind,
             names: [name],
             message: message,

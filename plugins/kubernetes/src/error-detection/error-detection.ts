@@ -38,13 +38,18 @@ export const detectErrors = (
     const groupedResponses = groupResponses(clusterResponse.resources);
 
     clusterErrors = clusterErrors.concat(
-      detectErrorsInPods(groupedResponses.pods, clusterResponse.cluster.name),
+      detectErrorsInPods(
+        groupedResponses.pods,
+        clusterResponse.cluster.name,
+        clusterResponse.cluster.alias,
+      ),
     );
 
     clusterErrors = clusterErrors.concat(
       detectErrorsInDeployments(
         groupedResponses.deployments,
         clusterResponse.cluster.name,
+        clusterResponse.cluster.alias,
       ),
     );
 
@@ -52,6 +57,7 @@ export const detectErrors = (
       detectErrorsInHpa(
         groupedResponses.horizontalPodAutoscalers,
         clusterResponse.cluster.name,
+        clusterResponse.cluster.alias,
       ),
     );
 

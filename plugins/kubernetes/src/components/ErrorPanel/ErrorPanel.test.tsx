@@ -48,6 +48,7 @@ describe('ErrorPanel', () => {
           clustersWithErrors={[
             {
               cluster: {
+                alias: undefined,
                 name: 'THIS_CLUSTER',
               },
               resources: [],

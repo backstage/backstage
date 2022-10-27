@@ -56,6 +56,7 @@ export interface ClientPodStatus {
 
 // @public (undocumented)
 export interface ClusterAttributes {
+  alias?: string;
   dashboardApp?: string;
   dashboardParameters?: JsonObject;
   dashboardUrl?: string;

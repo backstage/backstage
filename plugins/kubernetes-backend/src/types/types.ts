@@ -153,6 +153,7 @@ export interface ClusterDetails {
    * Specifies the name of the Kubernetes cluster.
    */
   name: string;
+  alias?: string | undefined;
   url: string;
   authProvider: string;
   serviceAccountToken?: string | undefined;

@@ -58,7 +58,7 @@ describe('KubernetesContent', () => {
       kubernetesObjects: {
         items: [
           {
-            cluster: { name: 'cluster-1' },
+            cluster: { name: 'cluster-1', alias: undefined },
             resources: [
               {
                 type: 'deployments',
@@ -107,7 +107,7 @@ describe('KubernetesContent', () => {
       kubernetesObjects: {
         items: [
           {
-            cluster: { name: 'cluster-1' },
+            cluster: { name: 'cluster-1', alias: undefined },
             resources: [
               {
                 type: 'deployments',
@@ -126,7 +126,7 @@ describe('KubernetesContent', () => {
             errors: [],
           },
           {
-            cluster: { name: 'cluster-a' },
+            cluster: { name: 'cluster-a', alias: undefined },
             resources: [
               {
                 type: 'deployments',

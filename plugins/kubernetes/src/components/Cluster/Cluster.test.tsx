@@ -30,6 +30,7 @@ describe('Cluster', () => {
           {...({
             clusterObjects: {
               cluster: {
+                alias: undefined,
                 name: 'cluster-1',
               },
               resources: [

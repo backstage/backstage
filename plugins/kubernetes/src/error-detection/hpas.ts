@@ -41,10 +41,12 @@ const hpaErrorMappers: ErrorMapper<V1HorizontalPodAutoscaler>[] = [
 export const detectErrorsInHpa = (
   hpas: V1HorizontalPodAutoscaler[],
   clusterName: string,
+  clusterAlias: string | undefined,
 ): DetectedError[] =>
   detectErrorsInObjects(
     hpas,
     'HorizontalPodAutoscaler',
     clusterName,
+    clusterAlias,
     hpaErrorMappers,
   );

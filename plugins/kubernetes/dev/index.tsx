@@ -103,8 +103,12 @@ class MockKubernetesClient implements KubernetesApi {
     };
   }
 
-  async getClusters(): Promise<{ name: string; authProvider: string }[]> {
-    return [{ name: 'mock-cluster', authProvider: 'serviceAccount' }];
+  async getClusters(): Promise<
+    { name: string; alias: string | undefined; authProvider: string }[]
+  > {
+    return [
+      { name: 'mock-cluster', alias: 'dev', authProvider: 'serviceAccount' },
+    ];
   }
 }
 

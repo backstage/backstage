@@ -38,7 +38,7 @@ const entityWithAuthToken = {
 const mockResponse = {
   items: [
     {
-      cluster: { name: 'some-cluster' },
+      cluster: { name: 'some-cluster', alias: undefined },
       resources: [
         {
           type: 'pods',

@@ -74,6 +74,8 @@ export class AzureIdentityKubernetesAuthTranslator
 // @alpha (undocumented)
 export interface ClusterDetails {
   // (undocumented)
+  alias?: string | undefined;
+  // (undocumented)
   authProvider: string;
   // (undocumented)
   caData?: string | undefined;

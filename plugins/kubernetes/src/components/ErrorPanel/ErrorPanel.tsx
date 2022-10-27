@@ -23,9 +23,12 @@ const clustersWithErrorsToErrorMessage = (
   clustersWithErrors: ClusterObjects[],
 ): React.ReactNode => {
   return clustersWithErrors.map((c, i) => {
+    const clusterFullName = c.cluster.alias
+      ? `${c.cluster.name} (${c.cluster.alias})`
+      : c.cluster.name;
     return (
       <div key={i}>
-        <Typography variant="body2">{`Cluster: ${c.cluster.name}`}</Typography>
+        <Typography variant="body2">{`Cluster: ${clusterFullName}`}</Typography>
         {c.errors.map((e, j) => {
           return (
             <Typography variant="body2" key={j}>

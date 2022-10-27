@@ -46,6 +46,7 @@ import { PodNamesWithMetricsContext } from '../../hooks/PodNamesWithMetrics';
 
 type ClusterSummaryProps = {
   clusterName: string;
+  clusterAlias: string | undefined;
   totalNumberOfPods: number;
   numberOfPodsWithErrors: number;
   children?: React.ReactNode;
@@ -53,9 +54,13 @@ type ClusterSummaryProps = {
 
 const ClusterSummary = ({
   clusterName,
+  clusterAlias,
   totalNumberOfPods,
   numberOfPodsWithErrors,
 }: ClusterSummaryProps) => {
+  const clusterFullName = clusterAlias
+    ? `${clusterName} (${clusterAlias})`
+    : `${clusterName}`;
   return (
     <Grid
       container
@@ -73,7 +78,7 @@ const ClusterSummary = ({
         spacing={0}
       >
         <Grid item xs>
-          <Typography variant="h3">{clusterName}</Typography>
+          <Typography variant="h3">{clusterFullName}</Typography>
           <Typography color="textSecondary" variant="body1">
             Cluster
           </Typography>
@@ -131,6 +136,7 @@ export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <ClusterSummary
                   clusterName={clusterObjects.cluster.name}
+                  clusterAlias={clusterObjects.cluster.alias}
                   totalNumberOfPods={groupedResponses.pods.length}
                   numberOfPodsWithErrors={podsWithErrors.size}
                 />

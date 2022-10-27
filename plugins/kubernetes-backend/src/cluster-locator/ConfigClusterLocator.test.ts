@@ -36,6 +36,7 @@ describe('ConfigClusterLocator', () => {
       clusters: [
         {
           name: 'cluster1',
+          alias: 'alias1',
           url: 'http://localhost:8080',
           authProvider: 'serviceAccount',
         },
@@ -49,6 +50,7 @@ describe('ConfigClusterLocator', () => {
     expect(result).toStrictEqual([
       {
         name: 'cluster1',
+        alias: 'alias1',
         serviceAccountToken: undefined,
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
@@ -64,6 +66,7 @@ describe('ConfigClusterLocator', () => {
       clusters: [
         {
           name: 'cluster1',
+          alias: 'alias1',
           serviceAccountToken: 'token',
           url: 'http://localhost:8080',
           authProvider: 'serviceAccount',
@@ -73,6 +76,7 @@ describe('ConfigClusterLocator', () => {
         },
         {
           name: 'cluster2',
+          alias: 'alias2',
           url: 'http://localhost:8081',
           authProvider: 'google',
           skipTLSVerify: true,
@@ -88,6 +92,7 @@ describe('ConfigClusterLocator', () => {
     expect(result).toStrictEqual([
       {
         name: 'cluster1',
+        alias: 'alias1',
         dashboardUrl: 'https://k8s.foo.com',
         serviceAccountToken: 'token',
         url: 'http://localhost:8080',
@@ -98,6 +103,7 @@ describe('ConfigClusterLocator', () => {
       },
       {
         name: 'cluster2',
+        alias: 'alias2',
         serviceAccountToken: undefined,
         url: 'http://localhost:8081',
         authProvider: 'google',
@@ -121,6 +127,7 @@ describe('ConfigClusterLocator', () => {
         {
           assumeRole: 'SomeRole',
           name: 'cluster2',
+          alias: 'alias2',
           url: 'http://localhost:8081',
           authProvider: 'aws',
           skipTLSVerify: true,
@@ -128,6 +135,7 @@ describe('ConfigClusterLocator', () => {
         {
           assumeRole: 'SomeRole',
           name: 'cluster2',
+          alias: 'alias2',
           externalId: 'SomeExternalId',
           url: 'http://localhost:8081',
           authProvider: 'aws',
@@ -144,6 +152,7 @@ describe('ConfigClusterLocator', () => {
       {
         assumeRole: undefined,
         name: 'cluster1',
+        alias: undefined,
         serviceAccountToken: 'token',
         externalId: undefined,
         url: 'http://localhost:8080',
@@ -155,6 +164,7 @@ describe('ConfigClusterLocator', () => {
       {
         assumeRole: 'SomeRole',
         name: 'cluster2',
+        alias: 'alias2',
         externalId: undefined,
         serviceAccountToken: undefined,
         url: 'http://localhost:8081',
@@ -166,6 +176,7 @@ describe('ConfigClusterLocator', () => {
       {
         assumeRole: 'SomeRole',
         name: 'cluster2',
+        alias: 'alias2',
         externalId: 'SomeExternalId',
         url: 'http://localhost:8081',
         serviceAccountToken: undefined,
@@ -182,6 +193,7 @@ describe('ConfigClusterLocator', () => {
       clusters: [
         {
           name: 'cluster1',
+          alias: undefined,
           url: 'http://localhost:8080',
           authProvider: 'serviceAccount',
           dashboardApp: 'gke',
@@ -201,6 +213,7 @@ describe('ConfigClusterLocator', () => {
     expect(result).toStrictEqual([
       {
         name: 'cluster1',
+        alias: undefined,
         serviceAccountToken: undefined,
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
@@ -237,6 +250,74 @@ describe('ConfigClusterLocator', () => {
     expect(result).toStrictEqual([
       {
         name: 'cluster1',
+        alias: undefined,
+        serviceAccountToken: undefined,
+        url: 'http://localhost:8080',
+        authProvider: 'serviceAccount',
+        skipMetricsLookup: false,
+        skipTLSVerify: false,
+        caData: undefined,
+        dashboardApp: 'standard',
+        dashboardUrl: 'http://someurl',
+      },
+    ]);
+  });
+
+  it('one cluster without alias', async () => {
+    const config: Config = new ConfigReader({
+      clusters: [
+        {
+          name: 'cluster1',
+          url: 'http://localhost:8080',
+          authProvider: 'serviceAccount',
+          dashboardApp: 'standard',
+          dashboardUrl: 'http://someurl',
+        },
+      ],
+    });
+
+    const sut = ConfigClusterLocator.fromConfig(config);
+
+    const result = await sut.getClusters();
+
+    expect(result).toStrictEqual([
+      {
+        name: 'cluster1',
+        alias: undefined,
+        serviceAccountToken: undefined,
+        url: 'http://localhost:8080',
+        authProvider: 'serviceAccount',
+        skipMetricsLookup: false,
+        skipTLSVerify: false,
+        caData: undefined,
+        dashboardApp: 'standard',
+        dashboardUrl: 'http://someurl',
+      },
+    ]);
+  });
+
+  it('one cluster with alias', async () => {
+    const config: Config = new ConfigReader({
+      clusters: [
+        {
+          name: 'cluster1',
+          alias: 'alias1',
+          url: 'http://localhost:8080',
+          authProvider: 'serviceAccount',
+          dashboardApp: 'standard',
+          dashboardUrl: 'http://someurl',
+        },
+      ],
+    });
+
+    const sut = ConfigClusterLocator.fromConfig(config);
+
+    const result = await sut.getClusters();
+
+    expect(result).toStrictEqual([
+      {
+        name: 'cluster1',
+        alias: 'alias1',
         serviceAccountToken: undefined,
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',

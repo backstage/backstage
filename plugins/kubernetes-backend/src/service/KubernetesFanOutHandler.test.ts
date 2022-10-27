@@ -311,6 +311,7 @@ describe('getKubernetesObjectsByEntity', () => {
         {
           cluster: {
             name: 'test-cluster',
+            alias: undefined,
           },
           errors: [],
           podMetrics: [POD_METRICS_FIXTURE],
@@ -463,6 +464,7 @@ describe('getKubernetesObjectsByEntity', () => {
         {
           cluster: {
             name: 'test-cluster',
+            alias: undefined,
           },
           errors: [],
           podMetrics: [POD_METRICS_FIXTURE, POD_METRICS_FIXTURE],
@@ -502,11 +504,13 @@ describe('getKubernetesObjectsByEntity', () => {
         clusters: [
           {
             name: 'test-cluster',
+            alias: undefined,
             authProvider: 'serviceAccount',
             dashboardUrl: 'https://k8s.foo.coom',
           },
           {
             name: 'other-cluster',
+            alias: undefined,
             authProvider: 'google',
           },
         ],
@@ -528,6 +532,7 @@ describe('getKubernetesObjectsByEntity', () => {
       items: [
         {
           cluster: {
+            alias: undefined,
             dashboardUrl: 'https://k8s.foo.coom',
             name: 'test-cluster',
           },
@@ -537,6 +542,7 @@ describe('getKubernetesObjectsByEntity', () => {
         },
         {
           cluster: {
+            alias: undefined,
             name: 'other-cluster',
           },
           errors: [],
@@ -551,14 +557,17 @@ describe('getKubernetesObjectsByEntity', () => {
       Promise.resolve({
         clusters: [
           {
+            alias: undefined,
             name: 'test-cluster',
             authProvider: 'serviceAccount',
           },
           {
+            alias: undefined,
             name: 'other-cluster',
             authProvider: 'google',
           },
           {
+            alias: undefined,
             name: 'empty-cluster',
             authProvider: 'google',
           },
@@ -581,6 +590,7 @@ describe('getKubernetesObjectsByEntity', () => {
       items: [
         {
           cluster: {
+            alias: undefined,
             name: 'test-cluster',
           },
           errors: [],
@@ -589,6 +599,7 @@ describe('getKubernetesObjectsByEntity', () => {
         },
         {
           cluster: {
+            alias: undefined,
             name: 'other-cluster',
           },
           errors: [],
@@ -603,18 +614,22 @@ describe('getKubernetesObjectsByEntity', () => {
       Promise.resolve({
         clusters: [
           {
+            alias: undefined,
             name: 'test-cluster',
             authProvider: 'serviceAccount',
           },
           {
+            alias: undefined,
             name: 'other-cluster',
             authProvider: 'google',
           },
           {
+            alias: undefined,
             name: 'empty-cluster',
             authProvider: 'google',
           },
           {
+            alias: undefined,
             name: 'error-cluster',
             authProvider: 'google',
           },
@@ -637,6 +652,7 @@ describe('getKubernetesObjectsByEntity', () => {
       items: [
         {
           cluster: {
+            alias: undefined,
             name: 'test-cluster',
           },
           errors: [],
@@ -645,6 +661,7 @@ describe('getKubernetesObjectsByEntity', () => {
         },
         {
           cluster: {
+            alias: undefined,
             name: 'other-cluster',
           },
           errors: [],
@@ -653,6 +670,7 @@ describe('getKubernetesObjectsByEntity', () => {
         },
         {
           cluster: {
+            alias: undefined,
             name: 'error-cluster',
           },
           errors: ['some random cluster error'],
@@ -680,11 +698,13 @@ describe('getKubernetesObjectsByEntity', () => {
       Promise.resolve({
         clusters: [
           {
+            alias: undefined,
             name: 'test-cluster',
             authProvider: 'serviceAccount',
             dashboardUrl: 'https://k8s.foo.coom',
           },
           {
+            alias: undefined,
             name: 'other-cluster',
             authProvider: 'google',
           },
@@ -727,6 +747,7 @@ describe('getKubernetesObjectsByEntity', () => {
       items: [
         {
           cluster: {
+            alias: undefined,
             dashboardUrl: 'https://k8s.foo.coom',
             name: 'test-cluster',
           },
@@ -736,6 +757,7 @@ describe('getKubernetesObjectsByEntity', () => {
         },
         {
           cluster: {
+            alias: undefined,
             name: 'other-cluster',
           },
           errors: [

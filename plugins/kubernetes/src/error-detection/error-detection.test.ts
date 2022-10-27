@@ -38,7 +38,7 @@ const oneItem = (value: FetchResponse): ObjectsByEntityResponse => {
   return {
     items: [
       {
-        cluster: { name: CLUSTER_NAME },
+        cluster: { name: CLUSTER_NAME, alias: undefined },
         errors: [],
         podMetrics: [],
         resources: [value],
@@ -73,7 +73,7 @@ describe('detectErrors', () => {
     const result = detectErrors({
       items: [
         {
-          cluster: { name: 'cluster-a' },
+          cluster: { name: 'cluster-a', alias: undefined },
           errors: [],
           podMetrics: [],
           resources: [
@@ -84,7 +84,7 @@ describe('detectErrors', () => {
           ],
         },
         {
-          cluster: { name: 'cluster-b' },
+          cluster: { name: 'cluster-b', alias: 'B' },
           errors: [],
           podMetrics: [],
           resources: [
@@ -95,7 +95,7 @@ describe('detectErrors', () => {
           ],
         },
         {
-          cluster: { name: 'cluster-c' },
+          cluster: { name: 'cluster-c', alias: undefined },
           errors: [],
           podMetrics: [],
           resources: [
@@ -148,6 +148,7 @@ describe('detectErrors', () => {
 
     expect(err1).toStrictEqual({
       cluster: 'cluster-a',
+      alias: undefined,
       kind: 'Pod',
       message: [
         'container=other-side-car restarted 38 times',
@@ -160,6 +161,7 @@ describe('detectErrors', () => {
 
     expect(err2).toStrictEqual({
       cluster: 'cluster-a',
+      alias: undefined,
       kind: 'Pod',
       message: [
         'containers with unready status: [side-car other-side-car]',
@@ -172,6 +174,7 @@ describe('detectErrors', () => {
 
     expect(err3).toStrictEqual({
       cluster: 'cluster-a',
+      alias: undefined,
       kind: 'Pod',
       message: [
         'back-off 5m0s restarting failed container=other-side-car pod=dice-roller-canary-7d64cd756c-55rfq_default(65ad28e3-5d51-4b4b-9bf8-4cb069803034)',
@@ -184,6 +187,7 @@ describe('detectErrors', () => {
 
     expect(err4).toStrictEqual({
       cluster: 'cluster-a',
+      alias: undefined,
       kind: 'Pod',
       message: [
         'container=other-side-car exited with error code (1)',
@@ -208,6 +212,7 @@ describe('detectErrors', () => {
 
     expect(err1).toStrictEqual({
       cluster: 'cluster-a',
+      alias: undefined,
       kind: 'Pod',
       message: [
         'containers with unready status: [nginx]',
@@ -220,6 +225,7 @@ describe('detectErrors', () => {
 
     expect(err2).toStrictEqual({
       cluster: 'cluster-a',
+      alias: undefined,
       kind: 'Pod',
       message: ['configmap "some-cm" not found'],
       names: ['dice-roller-bad-cm-855bf85464-mg6xb'],
@@ -251,6 +257,7 @@ describe('detectErrors', () => {
 
     expect(err1).toStrictEqual({
       cluster: 'cluster-a',
+      alias: undefined,
       kind: 'Deployment',
       message: ['Deployment does not have minimum availability.'],
       names: ['dice-roller-canary'],
@@ -282,6 +289,7 @@ describe('detectErrors', () => {
 
     expect(err1).toStrictEqual({
       cluster: 'cluster-a',
+      alias: undefined,
       kind: 'HorizontalPodAutoscaler',
       message: [
         'Current number of replicas (10) is equal to the configured max number of replicas (10)',

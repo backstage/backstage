@@ -31,6 +31,7 @@ export class KubernetesClientProvider {
   getKubeConfig(clusterDetails: ClusterDetails) {
     const cluster = {
       name: clusterDetails.name,
+      alias: clusterDetails.alias,
       server: clusterDetails.url,
       skipTLSVerify: clusterDetails.skipTLSVerify,
       caData: clusterDetails.caData,

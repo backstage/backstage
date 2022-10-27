@@ -977,6 +977,7 @@
     clusters:
       - url: http://127.0.0.1:9999
         name: minikube
+        alias: dev
         authProvider: 'serviceAccount'
         serviceAccountToken:
           $env: K8S_MINIKUBE_TOKEN
@@ -996,6 +997,7 @@
         clusters:
           - url: http://127.0.0.1:9999
             name: minikube
+            alias: dev
             authProvider: 'serviceAccount'
             serviceAccountToken:
               $env: K8S_MINIKUBE_TOKEN

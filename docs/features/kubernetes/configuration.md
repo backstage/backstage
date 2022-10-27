@@ -24,6 +24,7 @@ kubernetes:
       clusters:
         - url: http://127.0.0.1:9999
           name: minikube
+          alias: dev
           authProvider: 'serviceAccount'
           skipTLSVerify: false
           skipMetricsLookup: true
@@ -37,6 +38,7 @@ kubernetes:
               plural: 'rollouts'
         - url: http://127.0.0.2:9999
           name: aws-cluster-1
+          alias: eks
           authProvider: 'aws'
     - type: 'gke'
       projectId: 'gke-clusters'
@@ -147,6 +149,7 @@ kubernetes:
     - type: 'config'
       clusters:
         - name: test-cluster
+          alias: oidc-auth
           url: http://localhost:8080
           authProvider: oidc
           oidcTokenProvider: okta # This value needs to match a config under auth.providers
@@ -165,6 +168,14 @@ The following values are supported out-of-the-box by the frontend: `google`, `mi
 Take note that `oidcTokenProvider` is just the issuer for the token, you can use any
 of these with an OIDC enabled cluster, like using `microsoft` as the issuer for a EKS
 cluster.
+
+##### `clusters.\*.name`
+
+Specifies the name of the K8s cluster. This field for example for EKS is mandatory and needs to match the actual cluster name as it is part of the STS signed token.
+
+##### `clusters.\*.alias` (optional
+
+Specifies an alias for the K8s cluster. In some case the name of the cluster is not sufficient, especially in a multi cluster environments. The alias provides a way to annotate the cluster in the UI with a user friendly Identifier.
 
 ##### `clusters.\*.dashboardUrl` (optional)
 

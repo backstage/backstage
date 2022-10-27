@@ -40,10 +40,12 @@ const deploymentErrorMappers: ErrorMapper<V1Deployment>[] = [
 export const detectErrorsInDeployments = (
   deployments: V1Deployment[],
   clusterName: string,
+  clusterAlias: string | undefined,
 ): DetectedError[] =>
   detectErrorsInObjects(
     deployments,
     'Deployment',
     clusterName,
+    clusterAlias,
     deploymentErrorMappers,
   );

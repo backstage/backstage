@@ -25,6 +25,7 @@ export class LocalKubectlProxyClusterLocator
     this.clusterDetails = [
       {
         name: 'local',
+        alias: 'proxy',
         url: 'http:/localhost:8001',
         authProvider: 'localKubectlProxy',
         skipMetricsLookup: true,

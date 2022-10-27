@@ -73,6 +73,10 @@ export interface ClusterAttributes {
    */
   name: string;
   /**
+   * Specifies an alias of the Kubernetes cluster.
+   */
+  alias?: string;
+  /**
    * Specifies the link to the Kubernetes dashboard managing this cluster.
    * @remarks
    * Note that you should specify the app used for the dashboard
