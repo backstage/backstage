@@ -19,7 +19,7 @@ Layout refers to how you organize or stack content. Whenever possible, we want
 to use Backstage's components (check the [Storybook][1] for a list and demo)
 first, and otherwise fall back to Material-UI components (check the [MUI docs][2]).
 
-If none of these fit your layout needs, then you can build one, however using
+If none of these fit your layout needs, then you can build your own components. However, using
 HTML+CSS directly is not recommended, it's better to use MUI layout components
 to make your layout theme aware, meaning if someone changes the theme, your
 layout would react to those changes without requiring updates to your code.
