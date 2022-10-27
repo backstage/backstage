@@ -25,7 +25,7 @@ import { createTheme, Theme } from '@material-ui/core';
 import {
   Palette,
 } from '@material-ui/core/styles/createPalette';
-import { red } from '@material-ui/core/colors';
+import { blue, green, grey, orange, purple, red } from '@material-ui/core/colors';
 
 
 //in mui v5 
@@ -53,49 +53,44 @@ interface customTheme extends Theme {
   palette: graphPalette;
 }
 
-const customTheme: customTheme = createTheme({
+const customNodeTheme: customTheme = createTheme({
   palette: {
-    primary: {
-      main: red[300],
-    },
     catalogGraph: {
-      component: red[300],
-      domain: '#FF0000',
-      system: '#0000ff',
-      location: '#FF0000',
-      resource: '#fefefe',
-      group: '#fefefe',
-      user: '#ffffff',
-      template: '#fefefe',
-      api: '#00008B',
+      component: red[500],
+      domain: green[300],
+      system: purple[500],
+      location: orange[300],
+      resource: purple[300],
+      group: blue[500],
+      user: grey[300],
+      template: red[300],
+      api: green[500],
     },
   },
 });
 
 const useStyles = makeStyles((theme: customTheme) => ({
   node: {
-    fill: theme.palette.primary.main,
-    // fill: theme?.palette?.catalogGraph?['api'],
-    // fill: (props: { [key: string]: undefined }) =>
-    //   theme.palette.catalogGraph?.system,
+    fill: (props: { [key: string]: undefined }) =>
+      props?.kind && customNodeTheme.palette?.catalogGraph
+        ? customNodeTheme.palette.catalogGraph?.[props?.kind]
+        : theme.palette.grey[300],
     stroke: theme.palette.catalogGraph?.domain,
 
     '&.primary': {
-      fill: theme.palette.grey[300],
-      // fill: (props: { [key: string]: undefined }) =>
-      //   props?.kind && theme.palette.catalogGraph
-      //     ? theme.palette.catalogGraph[props?.kind]
-      //     : theme.palette.primary.light,
+      fill: (props: { [key: string]: undefined }) =>
+        props?.kind && customNodeTheme.palette.catalogGraph
+          ? customNodeTheme.palette.catalogGraph?.[props?.kind]
+          : theme.palette.grey[300],
       stroke: theme.palette.grey[300],
     },
     '&.secondary': {
-      fill: theme.palette.grey[300],
-      // fill: (props: { [key: string]: undefined }) =>
-      //   props?.kind && theme.palette.catalogGraph
-      //     ? theme.palette.catalogGraph[props?.kind]
-      //     : theme.palette.secondary.light,
-      stroke: theme.palette.grey[300]
-    }
+      fill: (props: { [key: string]: undefined }) =>
+        props?.kind && customNodeTheme.palette.catalogGraph
+          ? customNodeTheme.palette.catalogGraph?.[props?.kind]
+          : theme.palette.grey[300],
+      stroke: theme.palette.grey[300],
+    },
   },
   text: {
     fill: theme.palette.getContrastText(theme.palette.grey[300]),
@@ -114,47 +109,6 @@ const useStyles = makeStyles((theme: customTheme) => ({
     cursor: 'pointer',
   },
 }));
-
-// const useStyles = makeStyles((theme: BackstageTheme) => ({
-//   node: {
-//     fill: (props: { [key: string]: undefined }) =>
-//       props?.kind && theme.palette.catalogGraph
-//         ? theme.palette.catalogGraph[props?.kind]
-//         : theme.palette.grey[300],
-//     stroke: theme.palette.grey[300],
-
-//     '&.primary': {
-//       fill: (props: { [key: string]: undefined }) =>
-//         props?.kind && theme.palette.catalogGraph
-//           ? theme.palette.catalogGraph[props?.kind]
-//           : theme.palette.primary.light,
-//       stroke: theme.palette.primary.light,
-//     },
-//     '&.secondary': {
-//       fill: (props: { [key: string]: undefined }) =>
-//         props?.kind && theme.palette.catalogGraph
-//           ? theme.palette.catalogGraph[props?.kind]
-//           : theme.palette.secondary.light,
-//       stroke: theme.palette.secondary.light,
-//     },
-//   },
-//   text: {
-//     fill: theme.palette.getContrastText(theme.palette.grey[300]),
-
-//     '&.primary': {
-//       fill: theme.palette.primary.contrastText,
-//     },
-//     '&.secondary': {
-//       fill: theme.palette.secondary.contrastText,
-//     },
-//     '&.focused': {
-//       fontWeight: 'bold',
-//     },
-//   },
-//   clickable: {
-//     cursor: 'pointer',
-//   },
-// }));
 
 export function CustomNode({
   node: {
@@ -208,8 +162,8 @@ export function CustomNode({
       <rect
         className={classNames(
           classes.node,
-          // color === 'primary' && 'primary',
-          // color === 'secondary' && 'secondary',
+          color === 'primary' && 'primary',
+          color === 'secondary' && 'secondary',
         )}
         width={paddedWidth}
         height={paddedHeight}
