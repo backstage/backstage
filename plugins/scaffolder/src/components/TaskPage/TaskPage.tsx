@@ -296,9 +296,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
   }, [taskStream.stepLogs, currentStepId, loadingText]);
 
   const taskNotFound =
-    taskStream.completed === true &&
-    taskStream.loading === false &&
-    !taskStream.task;
+    taskStream.completed && !taskStream.loading && !taskStream.task;
 
   const { output } = taskStream;
 
