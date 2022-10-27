@@ -295,7 +295,11 @@ export class StorageTaskBroker implements TaskBroker {
     const taskManager = this.taskManagerRegistry.get(taskId);
     if (taskManager) {
       await taskManager.cancel({
-        eventBody: { message: 'This task was cancelled' },
+        message: 'Run completed with status: cancelled',
+        error: {
+          name: 'TaskCancelled',
+          message: 'The task has been cancelled',
+        },
       });
     }
   }

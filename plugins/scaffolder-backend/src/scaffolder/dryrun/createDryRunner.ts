@@ -25,10 +25,10 @@ import {
   SerializedFile,
   serializeDirectoryContents,
 } from '../../lib/files';
-import { TemplateFilter, TemplateGlobal } from '../../lib/templating';
+import { TemplateFilter, TemplateGlobal } from '../../lib';
 import { createTemplateAction, TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
-import { TaskSecrets } from '../tasks/types';
+import { TaskSecrets } from '../tasks';
 import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
 import fs from 'fs-extra';
 import { resolveSafeChildPath } from '@backstage/backend-common';
@@ -125,7 +125,10 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
             },
           });
         },
-        async complete() {
+        cancel: async () => {
+          throw new Error('Not implemented');
+        },
+        complete: async () => {
           throw new Error('Not implemented');
         },
       });

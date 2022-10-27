@@ -61,6 +61,7 @@ describe('DefaultWorkflowRunner', () => {
     spec,
     secrets,
     isDryRun,
+    cancel: async () => {},
     complete: async () => {},
     done: false,
     emitLog: async () => {},
@@ -146,7 +147,7 @@ describe('DefaultWorkflowRunner', () => {
       });
 
       await expect(runner.execute(task)).rejects.toThrow(
-        /Invalid input passed to action jest-validated-action, instance requires property \"foo\"/,
+        /Invalid input passed to action jest-validated-action, instance requires property "foo"/,
       );
     });
 

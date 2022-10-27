@@ -414,7 +414,10 @@ export class DatabaseTaskStore implements TaskStore {
 
     const completedSteps = statusStepEvents
       .filter(
-        ({ body: { status } }) => status === 'failed' || status === 'completed',
+        ({ body: { status } }) =>
+          status === 'failed' ||
+          status === 'completed' ||
+          status === 'cancelled',
       )
       .map(step => step.body.stepId);
 
