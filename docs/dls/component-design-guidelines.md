@@ -15,7 +15,7 @@ theme features:
 
 ## 🏗️ Layout
 
-Layout refers to how you organize or stack content, whenever possible we want
+Layout refers to how you organize or stack content. Whenever possible, we want
 to use Backstage's components (check the [Storybook][1] for a list and demo)
 or MUI components (check the [MUI docs][2]).
 
