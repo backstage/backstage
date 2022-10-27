@@ -44,27 +44,28 @@ The Incremental Entity Provider backend is designed for data sources that provid
 
 1. Install `@backstage/plugin-incremental-ingestion-backend` with `yarn add @backstage/plugin-incremental-ingestion-backend`
 2. Import `IncrementalCatalogBuilder` from `@backstage/plugin-incremental-ingestion-backend` and instantiate it with `await IncrementalCatalogBuilder.create(env, builder)`. You have to pass `builder` into `IncrementalCatalogBuilder.create` function because `IncrementalCatalogBuilder` will convert an `IncrementalEntityProvider` into an `EntityProvider` and call `builder.addEntityProvider`.
-  ```ts
-  const builder = CatalogBuilder.create(env);
-  // incremental builder receives builder because it'll register
-  // incremental entity providers with the builder 
-  const incrementalBuilder = await IncrementalCatalogBuilder.create(env, builder);
-  ```
-3. Last step, add `await incrementBuilder.build()` after `await builder.build()` to ensure that all `CatalogBuider` migration run before running `incrementBuilder.build()` migrations.
-  ```ts
-  const { processingEngine, router } = await builder.build();
 
-  // this has to run after `await builder.build()` to ensure that catalog migrations are completed 
-  // before incremental builder migrations are executed 
-  await incrementalBuilder.build();
-  ```
+```ts
+const builder = CatalogBuilder.create(env);
+// incremental builder receives builder because it'll register
+// incremental entity providers with the builder
+const incrementalBuilder = await IncrementalCatalogBuilder.create(env, builder);
+```
+
+3. Last step, add `await incrementBuilder.build()` after `await builder.build()` to ensure that all `CatalogBuider` migration run before running `incrementBuilder.build()` migrations.
+
+```ts
+const { processingEngine, router } = await builder.build();
+
+// this has to run after `await builder.build()` to ensure that catalog migrations are completed
+// before incremental builder migrations are executed
+await incrementalBuilder.build();
+```
 
 The result should look something like this,
 
 ```ts
-import {
-  CatalogBuilder
-} from '@backstage/plugin-catalog-backend';
+import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
 import { IncrementalCatalogBuilder } from '@backstage/plugin-incremental-ingestion-backend';
 import { Router } from 'express';
@@ -74,18 +75,20 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  
   const builder = CatalogBuilder.create(env);
   // incremental builder receives builder because it'll register
-  // incremental entity providers with the builder 
-  const incrementalBuilder = await IncrementalCatalogBuilder.create(env, builder);
+  // incremental entity providers with the builder
+  const incrementalBuilder = await IncrementalCatalogBuilder.create(
+    env,
+    builder,
+  );
 
   builder.addProcessor(new ScaffolderEntitiesProcessor());
 
   const { processingEngine, router } = await builder.build();
 
-  // this has to run after `await builder.build()` so ensure that catalog migrations are completed 
-  // before incremental builder migrations are executed 
+  // this has to run after `await builder.build()` so ensure that catalog migrations are completed
+  // before incremental builder migrations are executed
   const { incrementalAdminRouter } = await incrementalBuilder.build();
 
   router.use('/incremental', incrementalAdminRouter);
@@ -128,7 +131,10 @@ interface IncrementalEntityProvider<TCursor, TContext> {
    * @returns the entities to be ingested, as well as the cursor of
    * the the next page after this one.
    */
-  next(context: TContext, cursor?: TCursor): Promise<EntityIteratorResult<TCursor>>;
+  next(
+    context: TContext,
+    cursor?: TCursor,
+  ): Promise<EntityIteratorResult<TCursor>>;
 }
 ```
 
@@ -136,7 +142,7 @@ For tutorial, we'll write an Incremental Entity Provider that will call an imagi
 
 ```ts
 interface MyApiClient {
-  getServices(page: number): MyPaginatedResults<Service>
+  getServices(page: number): MyPaginatedResults<Service>;
 }
 
 interface MyPaginatedResults<T> {
@@ -152,7 +158,10 @@ interface Service {
 These are the only 3 methods that you need to implement. `getProviderName()` is pretty self explanatory and it's exactly same as on Entity Provider.
 
 ```ts
-import { IncrementalEntityProvider, EntityIteratorResult } from '@backstage/plugin-incremental-ingestion-backend';
+import {
+  IncrementalEntityProvider,
+  EntityIteratorResult,
+} from '@backstage/plugin-incremental-ingestion-backend';
 
 // this will include your pagination information, let's say our API accepts a `page` parameter.
 // In this case, the cursor will include `page`
@@ -162,10 +171,12 @@ interface MyApiCursor {
 
 // This interface describes the type of data that will be passed to your burst function.
 interface MyContext {
-  apiClient: MyApiClient
+  apiClient: MyApiClient;
 }
 
-export class MyIncrementalEntityProvider implements IncrementalEntityProvider<MyApiCursor, MyContext> {
+export class MyIncrementalEntityProvider
+  implements IncrementalEntityProvider<MyApiCursor, MyContext>
+{
   getProviderName() {
     return `MyIncrementalEntityProvider`;
   }
@@ -175,13 +186,14 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<My
 `around` method is used for setup and tear-down. For example, if you need to create a client that will connect to the API, you would do that here.
 
 ```ts
-export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cursor, Context> {
+export class MyIncrementalEntityProvider
+  implements IncrementalEntityProvider<Cursor, Context>
+{
   getProviderName() {
     return `MyIncrementalEntityProvider`;
   }
 
   async around(burst: (context: MyContext) => Promise<void>): Promise<void> {
-
     const apiClient = new MyApiClient();
 
     await burst({ apiClient });
@@ -194,10 +206,11 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cu
 If you need to pass a token to your API, then you can create a constructor that will receive a token and use the token to setup the client.
 
 ```ts
-export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cursor, Context> {
-  
+export class MyIncrementalEntityProvider
+  implements IncrementalEntityProvider<Cursor, Context>
+{
   token: string;
-  
+
   constructor(token: string) {
     this.token = token;
   }
@@ -206,12 +219,10 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cu
     return `MyIncrementalEntityProvider`;
   }
 
-
   async around(burst: (context: MyContext) => Promise<void>): Promise<void> {
+    const apiClient = new MyApiClient(this.token);
 
-    const apiClient = new MyApiClient(this.token)
-
-    await burst({ apiClient })
+    await burst({ apiClient });
   }
 }
 ```
@@ -220,9 +231,9 @@ The last step is to implement the actual `next` method that will accept the curs
 
 ```ts
 export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cursor, Context> {
-  
+
   token: string;
-  
+
   constructor(token: string) {
     this.token = token;
   }
@@ -284,7 +295,7 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cu
 }
 ```
 
-Now that you have your new Incremental Entity Provider, we can connect it to the catalog. 
+Now that you have your new Incremental Entity Provider, we can connect it to the catalog.
 
 ## Adding an Incremental Entity Provider to the catalog
 

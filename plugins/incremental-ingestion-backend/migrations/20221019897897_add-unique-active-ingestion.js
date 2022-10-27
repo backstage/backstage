@@ -23,7 +23,9 @@ exports.up = async function up(knex) {
   const schema = () => knex.schema.withSchema('ingestion');
 
   await knex.transaction(async tx => {
-    const providers = await tx('ingestion.ingestions').distinct('provider_name');
+    const providers = await tx('ingestion.ingestions').distinct(
+      'provider_name',
+    );
     for (const provider of providers) {
       const valid = await tx('ingestion.ingestions')
         .where('provider_name', provider)
@@ -44,8 +46,15 @@ exports.up = async function up(knex) {
         await tx('ingestion.ingestions').delete().whereIn('id', invalid);
         await tx('ingestion.ingestion_mark_entities')
           .delete()
-          .whereIn('ingestion_mark_id', tx('ingestion.ingestion_marks').select('id').whereIn('ingestion_id', invalid));
-        await tx('ingestion.ingestion_marks').delete().whereIn('ingestion_id', invalid);
+          .whereIn(
+            'ingestion_mark_id',
+            tx('ingestion.ingestion_marks')
+              .select('id')
+              .whereIn('ingestion_id', invalid),
+          );
+        await tx('ingestion.ingestion_marks')
+          .delete()
+          .whereIn('ingestion_id', invalid);
       }
     }
   });
@@ -55,11 +64,18 @@ exports.up = async function up(knex) {
   });
 
   await knex.transaction(async tx => {
-    await tx('ingestion.ingestions').update('completion_ticket', 'open').where('rest_completed_at', null);
+    await tx('ingestion.ingestions')
+      .update('completion_ticket', 'open')
+      .where('rest_completed_at', null);
 
-    const rows = await tx('ingestion.ingestions').whereNot('rest_completed_at', null);
+    const rows = await tx('ingestion.ingestions').whereNot(
+      'rest_completed_at',
+      null,
+    );
     for (const row of rows) {
-      await tx('ingestion.ingestions').update('completion_ticket', uuidv4()).where('id', row.id);
+      await tx('ingestion.ingestions')
+        .update('completion_ticket', uuidv4())
+        .where('id', row.id);
     }
   });
 

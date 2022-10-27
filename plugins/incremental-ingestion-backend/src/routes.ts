@@ -19,7 +19,10 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { IncrementalIngestionDatabaseManager } from './database/IncrementalIngestionDatabaseManager';
 
-export const createIncrementalProviderRouter = async (manager: IncrementalIngestionDatabaseManager, logger: Logger) => {
+export const createIncrementalProviderRouter = async (
+  manager: IncrementalIngestionDatabaseManager,
+  logger: Logger,
+) => {
   const router = Router();
   router.use(express.json());
 
@@ -27,7 +30,9 @@ export const createIncrementalProviderRouter = async (manager: IncrementalIngest
   router.get('/health', async (_, res) => {
     const records = await manager.healthcheck();
     const providers = records.map(record => record.provider_name);
-    const duplicates = [...new Set(providers.filter((e, i, a) => a.indexOf(e) !== i))];
+    const duplicates = [
+      ...new Set(providers.filter((e, i, a) => a.indexOf(e) !== i)),
+    ];
 
     if (duplicates.length > 0) {
       res.json({ healthy: false, duplicateIngestions: duplicates });
@@ -65,7 +70,9 @@ export const createIncrementalProviderRouter = async (manager: IncrementalIngest
           },
         });
       } else {
-        logger.error(`${provider} - No ingestion record found in the database!`);
+        logger.error(
+          `${provider} - No ingestion record found in the database!`,
+        );
         res.status(404).json({
           success: false,
           status: {},
@@ -81,7 +88,10 @@ export const createIncrementalProviderRouter = async (manager: IncrementalIngest
     const record = await manager.getCurrentIngestionRecord(provider);
     if (record) {
       await manager.triggerNextProviderAction(provider);
-      res.json({ success: true, message: `${provider}: Next action triggered.` });
+      res.json({
+        success: true,
+        message: `${provider}: Next action triggered.`,
+      });
     } else {
       const providers: string[] = await manager.listProviders();
       if (providers.includes(provider)) {
@@ -91,7 +101,12 @@ export const createIncrementalProviderRouter = async (manager: IncrementalIngest
           message: 'Unable to trigger next action (provider is restarting)',
         });
       } else {
-        res.status(404).json({ success: false, message: `Provider '${provider}' not found` });
+        res
+          .status(404)
+          .json({
+            success: false,
+            message: `Provider '${provider}' not found`,
+          });
       }
     }
   });
@@ -108,7 +123,10 @@ export const createIncrementalProviderRouter = async (manager: IncrementalIngest
         rest_completed_at: new Date(),
         status: 'complete',
       });
-      res.json({ success: true, message: `${provider}: Next cycle triggered.` });
+      res.json({
+        success: true,
+        message: `${provider}: Next cycle triggered.`,
+      });
     } else {
       const providers: string[] = await manager.listProviders();
       if (providers.includes(provider)) {
@@ -118,7 +136,12 @@ export const createIncrementalProviderRouter = async (manager: IncrementalIngest
           message: 'Provider is already restarting',
         });
       } else {
-        res.status(404).json({ success: false, message: `Provider '${provider}' not found` });
+        res
+          .status(404)
+          .json({
+            success: false,
+            message: `Provider '${provider}' not found`,
+          });
       }
     }
   });
@@ -136,7 +159,10 @@ export const createIncrementalProviderRouter = async (manager: IncrementalIngest
         next_action_at,
         status: 'resting',
       });
-      res.json({ success: true, message: `${provider}: Current ingestion canceled.` });
+      res.json({
+        success: true,
+        message: `${provider}: Current ingestion canceled.`,
+      });
     } else {
       const providers: string[] = await manager.listProviders();
       if (providers.includes(provider)) {
@@ -146,7 +172,12 @@ export const createIncrementalProviderRouter = async (manager: IncrementalIngest
           message: 'Provider is currently restarting, please wait.',
         });
       } else {
-        res.status(404).json({ success: false, message: `Provider '${provider}' not found` });
+        res
+          .status(404)
+          .json({
+            success: false,
+            message: `Provider '${provider}' not found`,
+          });
       }
     }
   });
@@ -175,7 +206,9 @@ export const createIncrementalProviderRouter = async (manager: IncrementalIngest
           message: 'No records yet (provider is restarting)',
         });
       } else {
-        logger.error(`${provider} - No ingestion record found in the database!`);
+        logger.error(
+          `${provider} - No ingestion record found in the database!`,
+        );
         res.status(404).json({
           success: false,
           status: {},

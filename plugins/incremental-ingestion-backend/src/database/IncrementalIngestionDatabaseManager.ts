@@ -51,7 +51,10 @@ export class IncrementalIngestionDatabaseManager {
    * @param provider string
    * @param update Partial<IngestionUpsertIFace>
    */
-  async updateIngestionRecordByProvider(provider: string, update: Partial<IngestionUpsertIFace>) {
+  async updateIngestionRecordByProvider(
+    provider: string,
+    update: Partial<IngestionUpsertIFace>,
+  ) {
     await this.client.transaction(async tx => {
       await tx('ingestion.ingestions')
         .where('provider_name', provider)
@@ -71,7 +74,10 @@ export class IncrementalIngestionDatabaseManager {
     });
   }
 
-  private async deleteMarkEntities(tx: Knex.Transaction, ids: { id: string }[]) {
+  private async deleteMarkEntities(
+    tx: Knex.Transaction,
+    ids: { id: string }[],
+  ) {
     const chunks: { id: string }[][] = [];
     for (let i = 0; i < ids.length; i += 100) {
       const chunk = ids.slice(i, i + 100);
@@ -174,8 +180,15 @@ export class IncrementalIngestionDatabaseManager {
         await tx('ingestion.ingestions').delete().whereIn('id', invalid);
         await tx('ingestion.ingestion_mark_entities')
           .delete()
-          .whereIn('ingestion_mark_id', tx('ingestion.ingestion_marks').select('id').whereIn('ingestion_id', invalid));
-        await tx('ingestion.ingestion_marks').delete().whereIn('ingestion_id', invalid);
+          .whereIn(
+            'ingestion_mark_id',
+            tx('ingestion.ingestion_marks')
+              .select('id')
+              .whereIn('ingestion_id', invalid),
+          );
+        await tx('ingestion.ingestion_marks')
+          .delete()
+          .whereIn('ingestion_id', invalid);
       }
     });
   }
@@ -212,7 +225,10 @@ export class IncrementalIngestionDatabaseManager {
               )
           : [];
 
-      const markEntitiesDeleted = await this.deleteMarkEntities(tx, markEntityIDs);
+      const markEntitiesDeleted = await this.deleteMarkEntities(
+        tx,
+        markEntityIDs,
+      );
 
       const marksDeleted =
         markIDs.length > 0
@@ -224,7 +240,9 @@ export class IncrementalIngestionDatabaseManager {
               )
           : 0;
 
-      const ingestionsDeleted = await tx('ingestion.ingestions').delete().where('provider_name', provider);
+      const ingestionsDeleted = await tx('ingestion.ingestions')
+        .delete()
+        .where('provider_name', provider);
 
       const next_action_at = new Date();
       next_action_at.setTime(next_action_at.getTime() + 24 * 60 * 60 * 1000);
@@ -271,9 +289,18 @@ export class IncrementalIngestionDatabaseManager {
    */
   async computeRemoved(provider: string, ingestionId: string) {
     return await this.client.transaction(async tx => {
-      const removed: { entity: string; ref: string }[] = await tx('final_entities')
-        .select(tx.ref('final_entity').as('entity'), tx.ref('refresh_state.entity_ref').as('ref'))
-        .join('refresh_state', 'refresh_state.entity_id', 'final_entities.entity_id')
+      const removed: { entity: string; ref: string }[] = await tx(
+        'final_entities',
+      )
+        .select(
+          tx.ref('final_entity').as('entity'),
+          tx.ref('refresh_state.entity_ref').as('ref'),
+        )
+        .join(
+          'refresh_state',
+          'refresh_state.entity_id',
+          'final_entities.entity_id',
+        )
         .whereRaw(
           `((final_entity::json #>> '{metadata, annotations, ${INCREMENTAL_ENTITY_PROVIDER_ANNOTATION}}')) = ?`,
           [provider],
@@ -301,7 +328,9 @@ export class IncrementalIngestionDatabaseManager {
    */
   async healthcheck() {
     return await this.client.transaction(async tx => {
-      const records = await tx<{ id: string; provider_name: string }>('ingestion.ingestions')
+      const records = await tx<{ id: string; provider_name: string }>(
+        'ingestion.ingestions',
+      )
         .distinct('id', 'provider_name')
         .where('rest_completed_at', null);
       return records;
@@ -313,7 +342,9 @@ export class IncrementalIngestionDatabaseManager {
    * @param provider string
    */
   async triggerNextProviderAction(provider: string) {
-    await this.updateIngestionRecordByProvider(provider, { next_action_at: new Date() });
+    await this.updateIngestionRecordByProvider(provider, {
+      next_action_at: new Date(),
+    });
   }
 
   /**
@@ -346,8 +377,12 @@ export class IncrementalIngestionDatabaseManager {
       });
     }
 
-    const ingestionMarksDeleted = await this.purgeTable('ingestion.ingestion_marks');
-    const markEntitiesDeleted = await this.purgeTable('ingestion.ingestion_mark_entities');
+    const ingestionMarksDeleted = await this.purgeTable(
+      'ingestion.ingestion_marks',
+    );
+    const markEntitiesDeleted = await this.purgeTable(
+      'ingestion.ingestion_mark_entities',
+    );
 
     return { ingestionsDeleted, ingestionMarksDeleted, markEntitiesDeleted };
   }
@@ -357,7 +392,10 @@ export class IncrementalIngestionDatabaseManager {
    * @param ingestionId string
    */
   async setProviderIngesting(ingestionId: string) {
-    await this.updateIngestionRecordById({ ingestionId, update: { next_action: 'ingest' } });
+    await this.updateIngestionRecordById({
+      ingestionId,
+      update: { next_action: 'ingest' },
+    });
   }
 
   /**
@@ -365,7 +403,10 @@ export class IncrementalIngestionDatabaseManager {
    * @param ingestionId string
    */
   async setProviderBursting(ingestionId: string) {
-    await this.updateIngestionRecordById({ ingestionId, update: { status: 'bursting' } });
+    await this.updateIngestionRecordById({
+      ingestionId,
+      update: { status: 'bursting' },
+    });
   }
 
   /**
@@ -405,7 +446,10 @@ export class IncrementalIngestionDatabaseManager {
    * @param ingestionId string
    */
   async setProviderInterstitial(ingestionId: string) {
-    await this.updateIngestionRecordById({ ingestionId, update: { attempts: 0, status: 'interstitial' } });
+    await this.updateIngestionRecordById({
+      ingestionId,
+      update: { attempts: 0, status: 'interstitial' },
+    });
   }
 
   /**
@@ -445,7 +489,12 @@ export class IncrementalIngestionDatabaseManager {
    * @param error Error
    * @param backoffLength number
    */
-  async setProviderBackoff(ingestionId: string, attempts: number, error: Error, backoffLength: number) {
+  async setProviderBackoff(
+    ingestionId: string,
+    attempts: number,
+    error: Error,
+    backoffLength: number,
+  ) {
     await this.updateIngestionRecordById({
       ingestionId,
       update: {
@@ -526,7 +575,9 @@ export class IncrementalIngestionDatabaseManager {
    */
   async listProviders() {
     return await this.client.transaction(async tx => {
-      const providers = await tx<{ provider_name: string }>('ingestion.ingestions').distinct('provider_name');
+      const providers = await tx<{ provider_name: string }>(
+        'ingestion.ingestions',
+      ).distinct('provider_name');
       return providers.map(entry => entry.provider_name);
     });
   }

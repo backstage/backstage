@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IncrementalEntityProvider, IncrementalEntityProviderOptions, PluginEnvironment } from '../types';
+import {
+  IncrementalEntityProvider,
+  IncrementalEntityProviderOptions,
+  PluginEnvironment,
+} from '../types';
 import { CatalogBuilder as CoreCatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { Duration } from 'luxon';
 import { Knex } from 'knex';
@@ -76,9 +80,14 @@ export class IncrementalCatalogBuilder {
     await applyDatabaseMigrations(this.client);
     this.ready.resolve();
 
-    const routerLogger = this.env.logger.child({ router: 'IncrementalProviderAdmin' });
+    const routerLogger = this.env.logger.child({
+      router: 'IncrementalProviderAdmin',
+    });
 
-    const incrementalAdminRouter = await createIncrementalProviderRouter(this.manager, routerLogger);
+    const incrementalAdminRouter = await createIncrementalProviderRouter(
+      this.manager,
+      routerLogger,
+    );
 
     return { incrementalAdminRouter, manager: this.manager };
   }
@@ -94,7 +103,9 @@ export class IncrementalCatalogBuilder {
     this.builder.addEntityProvider({
       getProviderName: provider.getProviderName.bind(provider),
       async connect(connection) {
-        const logger = catalogLogger.child({ entityProvider: provider.getProviderName() });
+        const logger = catalogLogger.child({
+          entityProvider: provider.getProviderName(),
+        });
 
         logger.info(`Connecting`);
 
@@ -112,8 +123,12 @@ export class IncrementalCatalogBuilder {
           connection,
         });
 
-        const frequency = Duration.isDuration(burstInterval) ? burstInterval : Duration.fromObject(burstInterval);
-        const length = Duration.isDuration(burstLength) ? burstLength : Duration.fromObject(burstLength);
+        const frequency = Duration.isDuration(burstInterval)
+          ? burstInterval
+          : Duration.fromObject(burstInterval);
+        const length = Duration.isDuration(burstLength)
+          ? burstLength
+          : Duration.fromObject(burstLength);
 
         await scheduler.scheduleTask({
           id: provider.getProviderName(),

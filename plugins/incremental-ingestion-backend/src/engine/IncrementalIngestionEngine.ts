@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 import type { DeferredEntity } from '@backstage/plugin-catalog-backend';
-import { INCREMENTAL_ENTITY_PROVIDER_ANNOTATION, IterationEngine, IterationEngineOptions } from '../types';
+import {
+  INCREMENTAL_ENTITY_PROVIDER_ANNOTATION,
+  IterationEngine,
+  IterationEngineOptions,
+} from '../types';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import type { AbortSignal } from 'node-abort-controller';
 
@@ -31,7 +35,12 @@ export class IncrementalIngestionEngine implements IterationEngine {
   constructor(private options: IterationEngineOptions) {
     this.manager = options.manager;
     this.restLength = Duration.fromObject(options.restLength);
-    this.backoff = options.backoff ?? [{ minutes: 1 }, { minutes: 5 }, { minutes: 30 }, { hours: 3 }];
+    this.backoff = options.backoff ?? [
+      { minutes: 1 },
+      { minutes: 5 },
+      { minutes: 30 },
+      { hours: 3 },
+    ];
   }
 
   async taskFn(signal: AbortSignal) {
@@ -49,19 +58,24 @@ export class IncrementalIngestionEngine implements IterationEngine {
   async handleNextAction(signal: AbortSignal) {
     await this.options.ready;
 
-    const { ingestionId, nextActionAt, nextAction, attempts } = await this.getCurrentAction();
+    const { ingestionId, nextActionAt, nextAction, attempts } =
+      await this.getCurrentAction();
 
     switch (nextAction) {
       case 'rest':
         if (Date.now() > nextActionAt) {
-          await this.manager.clearFinishedIngestions(this.options.provider.getProviderName());
+          await this.manager.clearFinishedIngestions(
+            this.options.provider.getProviderName(),
+          );
           this.options.logger.info(
             `incremental-engine: Ingestion ${ingestionId} rest period complete. Ingestion will start again`,
           );
 
           await this.manager.setProviderComplete(ingestionId);
         } else {
-          this.options.logger.info(`incremental-engine: Ingestion '${ingestionId}' rest period continuing`);
+          this.options.logger.info(
+            `incremental-engine: Ingestion '${ingestionId}' rest period continuing`,
+          );
         }
         break;
       case 'ingest':
@@ -75,14 +89,26 @@ export class IncrementalIngestionEngine implements IterationEngine {
             await this.manager.setProviderResting(ingestionId, this.restLength);
           } else {
             await this.manager.setProviderInterstitial(ingestionId);
-            this.options.logger.info(`incremental-engine: Ingestion '${ingestionId}' continuing`);
+            this.options.logger.info(
+              `incremental-engine: Ingestion '${ingestionId}' continuing`,
+            );
           }
         } catch (error) {
-          if ((error as Error).message && (error as Error).message === 'CANCEL') {
-            this.options.logger.info(`incremental-engine: Ingestion '${ingestionId}' canceled`);
-            await this.manager.setProviderCanceling(ingestionId, (error as Error).message);
+          if (
+            (error as Error).message &&
+            (error as Error).message === 'CANCEL'
+          ) {
+            this.options.logger.info(
+              `incremental-engine: Ingestion '${ingestionId}' canceled`,
+            );
+            await this.manager.setProviderCanceling(
+              ingestionId,
+              (error as Error).message,
+            );
           } else {
-            const currentBackoff = Duration.fromObject(this.backoff[Math.min(this.backoff.length - 1, attempts)]);
+            const currentBackoff = Duration.fromObject(
+              this.backoff[Math.min(this.backoff.length - 1, attempts)],
+            );
 
             const backoffLength = currentBackoff.as('milliseconds');
             this.options.logger.error(error);
@@ -92,7 +118,12 @@ export class IncrementalIngestionEngine implements IterationEngine {
               `incremental-engine: Ingestion '${ingestionId}' threw an error during ingestion burst. Ingestion will backoff for ${currentBackoff.toHuman()} (${truncatedError})`,
             );
 
-            await this.manager.setProviderBackoff(ingestionId, attempts, error as Error, backoffLength);
+            await this.manager.setProviderBackoff(
+              ingestionId,
+              attempts,
+              error as Error,
+              backoffLength,
+            );
           }
         }
         break;
@@ -103,11 +134,15 @@ export class IncrementalIngestionEngine implements IterationEngine {
           );
           await this.manager.setProviderIngesting(ingestionId);
         } else {
-          this.options.logger.info(`incremental-engine: Ingestion '${ingestionId}' backoff continuing`);
+          this.options.logger.info(
+            `incremental-engine: Ingestion '${ingestionId}' backoff continuing`,
+          );
         }
         break;
       case 'cancel':
-        this.options.logger.info(`incremental-engine: Ingestion '${ingestionId}' canceling, will restart`);
+        this.options.logger.info(
+          `incremental-engine: Ingestion '${ingestionId}' canceling, will restart`,
+        );
         await this.manager.setProviderCanceled(ingestionId);
         break;
       default:
@@ -121,16 +156,22 @@ export class IncrementalIngestionEngine implements IterationEngine {
     const providerName = this.options.provider.getProviderName();
     const record = await this.manager.getCurrentIngestionRecord(providerName);
     if (record) {
-      this.options.logger.info(`incremental-engine: Ingestion record found: '${record.id}'`);
+      this.options.logger.info(
+        `incremental-engine: Ingestion record found: '${record.id}'`,
+      );
       return {
         ingestionId: record.id,
         nextAction: record.next_action as 'rest' | 'ingest' | 'backoff',
         attempts: record.attempts as number,
         nextActionAt: record.next_action_at.valueOf() as number,
       };
-    } 
-    const result = await this.manager.createProviderIngestionRecord(providerName);
-    this.options.logger.info(`incremental-engine: Ingestion record created: '${result.ingestionId}'`);
+    }
+    const result = await this.manager.createProviderIngestionRecord(
+      providerName,
+    );
+    this.options.logger.info(
+      `incremental-engine: Ingestion record created: '${result.ingestionId}'`,
+    );
     return result;
   }
 
@@ -143,7 +184,9 @@ export class IncrementalIngestionEngine implements IterationEngine {
     const start = performance.now();
     let count = 0;
     let done = false;
-    this.options.logger.info(`incremental-engine: Ingestion '${id}' burst initiated`);
+    this.options.logger.info(
+      `incremental-engine: Ingestion '${id}' burst initiated`,
+    );
 
     await this.options.provider.around(async (context: unknown) => {
       let next = await this.options.provider.next(context, cursor);
@@ -170,11 +213,17 @@ export class IncrementalIngestionEngine implements IterationEngine {
     return done;
   }
 
-  async mark(id: string, sequence: number, entities: DeferredEntity[], done: boolean, cursor?: unknown) {
+  async mark(
+    id: string,
+    sequence: number,
+    entities: DeferredEntity[],
+    done: boolean,
+    cursor?: unknown,
+  ) {
     this.options.logger.debug(
-      `incremental-engine: Ingestion '${id}': MARK ${entities.length} entities, cursor: ${JSON.stringify(
-        cursor,
-      )}, done: ${done}`,
+      `incremental-engine: Ingestion '${id}': MARK ${
+        entities.length
+      } entities, cursor: ${JSON.stringify(cursor)}, done: ${done}`,
     );
     const markId = v4();
 
@@ -199,7 +248,8 @@ export class IncrementalIngestionEngine implements IterationEngine {
           ...deferred.entity.metadata,
           annotations: {
             ...deferred.entity.metadata.annotations,
-            [INCREMENTAL_ENTITY_PROVIDER_ANNOTATION]: this.options.provider.getProviderName(),
+            [INCREMENTAL_ENTITY_PROVIDER_ANNOTATION]:
+              this.options.provider.getProviderName(),
           },
         },
       },
@@ -207,7 +257,10 @@ export class IncrementalIngestionEngine implements IterationEngine {
 
     const removed: DeferredEntity[] = done
       ? []
-      : await this.manager.computeRemoved(this.options.provider.getProviderName(), id);
+      : await this.manager.computeRemoved(
+          this.options.provider.getProviderName(),
+          id,
+        );
 
     await this.options.connection.applyMutation({
       type: 'delta',

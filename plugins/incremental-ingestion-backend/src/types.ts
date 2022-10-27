@@ -13,10 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
-import type { PluginTaskScheduler, TaskFunction } from '@backstage/backend-tasks';
+import type {
+  PluginDatabaseManager,
+  UrlReader,
+} from '@backstage/backend-common';
+import type {
+  PluginTaskScheduler,
+  TaskFunction,
+} from '@backstage/backend-tasks';
 import type { Config } from '@backstage/config';
-import type { DeferredEntity, EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import type {
+  DeferredEntity,
+  EntityProviderConnection,
+} from '@backstage/plugin-catalog-backend';
 import type { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import type { DurationObjectUnits } from 'luxon';
 import type { Logger } from 'winston';
@@ -27,7 +36,8 @@ import { IncrementalIngestionDatabaseManager } from './database/IncrementalInges
  *
  * @public
  */
-export const INCREMENTAL_ENTITY_PROVIDER_ANNOTATION = 'backstage.io/incremental-provider-name';
+export const INCREMENTAL_ENTITY_PROVIDER_ANNOTATION =
+  'backstage.io/incremental-provider-name';
 
 /**
  * Ingest entities into the catalog in bite-sized chunks.
@@ -58,7 +68,10 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
    * @returns the entities to be ingested, as well as the cursor of
    * the the next page after this one.
    */
-  next(context: TContext, cursor?: TCursor): Promise<EntityIteratorResult<TCursor>>;
+  next(
+    context: TContext,
+    cursor?: TCursor,
+  ): Promise<EntityIteratorResult<TCursor>>;
 
   /**
    * Do any setup and teardown necessary in order to provide the
@@ -131,7 +144,7 @@ export type PluginEnvironment = {
 };
 
 /**
- * The core ingestion engine implements this interface 
+ * The core ingestion engine implements this interface
  */
 export interface IterationEngine {
   taskFn: TaskFunction;
@@ -154,8 +167,20 @@ export interface IterationEngineOptions {
  * The shape of data inserted into or updated in the `ingestion.ingestions` table.
  */
 export interface IngestionUpsertIFace {
-  next_action: 'rest' | 'ingest' | 'backoff' | 'cancel' | 'nothing (done)' | 'nothing (canceled)';
-  status: 'complete' | 'bursting' | 'resting' | 'canceling' | 'interstitial' | 'backing off';
+  next_action:
+    | 'rest'
+    | 'ingest'
+    | 'backoff'
+    | 'cancel'
+    | 'nothing (done)'
+    | 'nothing (canceled)';
+  status:
+    | 'complete'
+    | 'bursting'
+    | 'resting'
+    | 'canceling'
+    | 'interstitial'
+    | 'backing off';
   provider_name: string;
   next_action_at?: Date;
   last_error?: string;
