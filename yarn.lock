@@ -6023,7 +6023,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-incremental-ingestion-backend@^0.1.0, @backstage/plugin-incremental-ingestion-backend@workspace:plugins/incremental-ingestion-backend":
+"@backstage/plugin-incremental-ingestion-backend@workspace:^, @backstage/plugin-incremental-ingestion-backend@workspace:plugins/incremental-ingestion-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-incremental-ingestion-backend@workspace:plugins/incremental-ingestion-backend"
   dependencies:
@@ -21371,7 +21371,7 @@ __metadata:
     "@backstage/plugin-events-backend": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/plugin-graphql-backend": "workspace:^"
-    "@backstage/plugin-incremental-ingestion-backend": ^0.1.0
+    "@backstage/plugin-incremental-ingestion-backend": "workspace:^"
     "@backstage/plugin-jenkins-backend": "workspace:^"
     "@backstage/plugin-kafka-backend": "workspace:^"
     "@backstage/plugin-kubernetes-backend": "workspace:^"
