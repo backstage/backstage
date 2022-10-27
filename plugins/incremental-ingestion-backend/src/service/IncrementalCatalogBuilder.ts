@@ -24,10 +24,10 @@ import { createIncrementalProviderRouter } from '../routes';
 
 export class Deferred<T> implements Promise<T> {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
+  // @ts-ignore
   resolve: (value: T) => void;
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
+  // @ts-ignore
   reject: (error: Error) => void;
 
   then: Promise<T>['then'];

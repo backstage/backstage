@@ -128,11 +128,10 @@ export class IncrementalIngestionEngine implements IterationEngine {
         attempts: record.attempts as number,
         nextActionAt: record.next_action_at.valueOf() as number,
       };
-    } else {
-      const result = await this.manager.createProviderIngestionRecord(providerName);
-      this.options.logger.info(`incremental-engine: Ingestion record created: '${result.ingestionId}'`);
-      return result;
-    }
+    } 
+    const result = await this.manager.createProviderIngestionRecord(providerName);
+    this.options.logger.info(`incremental-engine: Ingestion record created: '${result.ingestionId}'`);
+    return result;
   }
 
   async ingestOneBurst(id: string, signal: AbortSignal) {
@@ -149,6 +148,7 @@ export class IncrementalIngestionEngine implements IterationEngine {
     await this.options.provider.around(async (context: unknown) => {
       let next = await this.options.provider.next(context, cursor);
       count++;
+      // eslint-disable-next-line no-constant-condition
       while (true) {
         done = next.done;
         await this.mark(id, sequence, next.entities, next.done, next.cursor);
