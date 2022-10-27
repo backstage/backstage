@@ -38,7 +38,7 @@ color palette and typography:
 ## Color palette
 
 Any component that needs a color to put in the styles should be using the
-theme's color palette, most Backstage components and all MUI components should
+theme's color palette. Most Backstage components and all MUI components should
 use the theme's color palette by default, so unless you need explicit control
 on the color of a component (say when the component was designed to use the
 primary color but you want to use the secondary), then the easiest way to access
