@@ -6037,6 +6037,9 @@ __metadata:
     "@types/express": ^4.17.6
     express: ^4.17.1
     express-promise-router: ^4.1.0
+    knex: ^2.0.0
+    luxon: ^3.0.0
+    uuid: ^8.3.2
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
