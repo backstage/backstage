@@ -22,19 +22,23 @@ import React, { useLayoutEffect, useRef, useState } from 'react';
 import { EntityKindIcon } from './EntityKindIcon';
 import { EntityNodeData } from './types';
 import { createTheme, Theme } from '@material-ui/core';
+import { Palette } from '@material-ui/core/styles/createPalette';
 import {
-  Palette,
-} from '@material-ui/core/styles/createPalette';
-import { blue, green, grey, orange, purple, red } from '@material-ui/core/colors';
+  blue,
+  green,
+  grey,
+  orange,
+  purple,
+  red,
+} from '@material-ui/core/colors';
 
-
-//in mui v5 
+//in mui v5
 import { PaletteOptions } from '@material-ui/core/styles/createPalette';
 
 declare module '@material-ui/core/styles/createPalette' {
   interface PaletteOptions {
     catalogGraph?: {
-      component?: string ;
+      component?: string;
       domain?: string;
       system?: string;
       location?: string;
@@ -42,7 +46,7 @@ declare module '@material-ui/core/styles/createPalette' {
       group?: string;
       user?: string;
       template?: string;
-      api?: string ;
+      api?: string;
     };
   }
 }
