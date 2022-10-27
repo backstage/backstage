@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonObject, Observable } from '@backstage/types';
-import ObservableImpl from 'zen-observable';
+
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { JsonObject, Observable } from '@backstage/types';
 import { Logger } from 'winston';
+import ObservableImpl from 'zen-observable';
 import {
+  SerializedTask,
+  SerializedTaskEvent,
+  TaskBroker,
+  TaskBrokerDispatchOptions,
   TaskCompletionState,
   TaskContext,
   TaskSecrets,
   TaskStore,
-  TaskBroker,
-  SerializedTaskEvent,
-  SerializedTask,
 } from './types';
-import { TaskBrokerDispatchOptions } from '.';
 
 /**
  * TaskManager

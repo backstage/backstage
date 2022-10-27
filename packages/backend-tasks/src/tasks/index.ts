@@ -23,5 +23,4 @@ export type {
   TaskRunner,
   TaskScheduleDefinition,
   TaskScheduleDefinitionConfig,
-  HumanDuration,
 } from './types';

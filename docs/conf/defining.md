@@ -138,7 +138,7 @@ may need to pass in all files using one or multiple `--config <path>` options.
 > to change for different deployment environments should be static
 > configuration, while it should otherwise be avoided.
 
-When defining configuration for your plugin, keep keys camelCased and stick to
+When defining configuration for your plugin, keep keys on `camelCase` form and stick to
 existing casing conventions such as `baseUrl` rather than `baseURL`.
 
 It is also usually best to prefer objects over arrays, as it makes it possible

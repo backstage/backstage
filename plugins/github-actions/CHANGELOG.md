@@ -1,5 +1,19 @@
 # @backstage/plugin-github-actions
 
+## 0.5.11-next.0
+
+### Patch Changes
+
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+- f905853ad6: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.1-next.0
+  - @backstage/core-components@0.12.0-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/theme@0.2.16
+
 ## 0.5.10
 
 ### Patch Changes

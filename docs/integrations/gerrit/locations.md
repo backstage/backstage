@@ -38,7 +38,7 @@ a structure with up to six elements:
   not set. The address used to clone a repo is the `cloneUrl` plus the repo name.
 - `gitilesBaseUrl` (optional): This is needed for creating a valid user-friendly URL
   that can be used for browsing the content of the provider. If not set a default
-  value will be created in the same way as the "baseUrl" option. There is no
+  value will be created in the same way as the `baseUrl` option. There is no
   requirement to have Gitiles for the Backstage Gerrit integration but without it
   some links in the Backstage UI will be broken.
 - `username` (optional): The Gerrit username to use in API requests. If

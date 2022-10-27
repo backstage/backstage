@@ -1,5 +1,17 @@
 # @backstage/plugin-gcalendar
 
+## 0.3.7-next.0
+
+### Patch Changes
+
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- f905853ad6: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/theme@0.2.16
+
 ## 0.3.6
 
 ### Patch Changes

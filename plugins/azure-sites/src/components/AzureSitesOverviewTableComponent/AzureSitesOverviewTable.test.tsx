@@ -30,8 +30,8 @@ import {
 import { setupServer } from 'msw/node';
 import { DateTime } from 'luxon';
 import { siteMock } from '../../mocks/mocks';
-import { azureSiteApiRef } from '../..';
 import { AzureSitesOverviewTable } from './AzureSitesOverviewTable';
+import { azureSiteApiRef } from '../../api';
 
 const errorApiMock = { post: jest.fn(), error$: jest.fn() };
 const identityApiMock = (getCredentials: any) => ({

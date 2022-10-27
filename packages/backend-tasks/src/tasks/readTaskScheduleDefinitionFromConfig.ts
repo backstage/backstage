@@ -15,8 +15,8 @@
  */
 
 import { Config } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
-import { HumanDuration, TaskScheduleDefinition } from './types';
+import { HumanDuration, JsonObject } from '@backstage/types';
+import { TaskScheduleDefinition } from './types';
 import { Duration } from 'luxon';
 
 const propsOfHumanDuration = [

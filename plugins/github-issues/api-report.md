@@ -9,7 +9,15 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
-export const GitHubIssuesCard: (props: GitHubIssuesProps) => JSX.Element;
+export interface GithubIssuesByRepoOptions {
+  // (undocumented)
+  filterBy?: GithubIssuesFilters;
+  // (undocumented)
+  orderBy?: GithubIssuesOrdering;
+}
+
+// @public (undocumented)
+export const GithubIssuesCard: (props: GithubIssuesProps) => JSX.Element;
 
 // @public (undocumented)
 export interface GithubIssuesFilters {
@@ -36,10 +44,10 @@ export interface GithubIssuesOrdering {
 }
 
 // @public (undocumented)
-export const GitHubIssuesPage: (props: GitHubIssuesProps) => JSX.Element;
+export const GithubIssuesPage: (props: GithubIssuesProps) => JSX.Element;
 
 // @public (undocumented)
-export const gitHubIssuesPlugin: BackstagePlugin<
+export const githubIssuesPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
@@ -48,20 +56,12 @@ export const gitHubIssuesPlugin: BackstagePlugin<
 >;
 
 // @public (undocumented)
-export type GitHubIssuesProps = {
+export type GithubIssuesProps = {
   itemsPerPage?: number;
   itemsPerRepo?: number;
   filterBy?: GithubIssuesFilters;
   orderBy?: GithubIssuesOrdering;
 };
-
-// @public (undocumented)
-export interface GitubIssuesByRepoOptions {
-  // (undocumented)
-  filterBy?: GithubIssuesFilters;
-  // (undocumented)
-  orderBy?: GithubIssuesOrdering;
-}
 
 // (No @packageDocumentation comment for this package)
 ```
