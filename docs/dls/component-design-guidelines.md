@@ -47,7 +47,7 @@ the color palette is with [`useTheme` hook](https://mui.com/material-ui/customiz
 It's not a very common use case to override a theme color in a MUI component
 but let's say you have a Paper component that highlights its content with a
 different color for a side menu or something (usually you use the elevation,
-but maybe the designer wanted a colorful app), you can use the theme like this:
+but maybe the designer wanted a colorful app). You can use the theme like this:
 
 ```tsx
 import { useTheme } from '@mui/material/styles';
