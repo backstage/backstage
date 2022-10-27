@@ -134,7 +134,7 @@ describe('Concurrent TaskWorker', () => {
   const integrations: ScmIntegrations = {} as ScmIntegrations;
 
   const actionRegistry: TemplateActionRegistry = {} as TemplateActionRegistry;
-  const workingDirectory = '/tmp/scaffolder';
+  const workingDirectory = os.tmpdir();
   let asyncTasksCount = 0;
 
   const workflowRunner: NunjucksWorkflowRunner = {
