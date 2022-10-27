@@ -21,7 +21,7 @@ We created the Incremental Entity Provider to address all of the above issues. T
 
 Incremental Entity Providers will wait a configurable interval before proceeding to the next burst.
 
-Once the source has no more results, Incremental Entity Provider compares all entities annotated with `frontside/incremental-entity-provider: <entity-provider-id>` against all marked entities to determine which entities committed by same entity provider were not marked during the last ingestion cycle. All unmarked entities are deleted at the end of the cycle. The Incremental Entity Provider rests for a fixed internal before restarting the ingestion process.
+Once the source has no more results, Incremental Entity Provider compares all entities annotated with `@backstage/incremental-entity-provider: <entity-provider-id>` against all marked entities to determine which entities committed by same entity provider were not marked during the last ingestion cycle. All unmarked entities are deleted at the end of the cycle. The Incremental Entity Provider rests for a fixed internal before restarting the ingestion process.
 
 ![Diagram of execution of an Incremental Entity Provider](https://user-images.githubusercontent.com/74687/185822734-ee6279c7-64fa-46b9-9aa8-d4092ab73858.png)
 
@@ -38,7 +38,7 @@ The Incremental Entity Provider backend is designed for data sources that provid
 
 1. The cursor must be serializable to JSON (not an issue for most RESTful or GraphQL based APIs).
 2. The client must be stateless - a client is created from scratch for each iteration to allow distributing processing over multiple replicas.
-3. There must be sufficient storage in Postgres to handle the additional data.
+3. There must be sufficient storage in Postgres to handle the additional data. (Presumably, this is also true of sqlite, but it has only been tested with Postgres.)
 
 ## Installation
 
@@ -66,8 +66,7 @@ import {
   CatalogBuilder
 } from '@backstage/plugin-catalog-backend';
 import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
-import { IncrementalCatalogBuilder } from '@frontside/backstage-plugin-incremental-ingestion-backend';
-import { GithubRepositoryEntityProvider } from '@frontside/backstage-plugin-incremental-ingestion-github';
+import { IncrementalCatalogBuilder } from '@backstage/plugin-incremental-ingestion-backend';
 import { Router } from 'express';
 import { Duration } from 'luxon';
 import { PluginEnvironment } from '../types';
@@ -87,9 +86,9 @@ export default async function createPlugin(
 
   // this has to run after `await builder.build()` so ensure that catalog migrations are completed 
   // before incremental builder migrations are executed 
-  await incrementalBuilder.build();
-  // If you want to use a suite of administrative routes to control the incremental providers, use
-  // `const { incrementalAdminRouter } = await incrementalBuilder.build();`
+  const { incrementalAdminRouter } = await incrementalBuilder.build();
+
+  router.use('/incremental', incrementalAdminRouter);
 
   await processingEngine.start();
 

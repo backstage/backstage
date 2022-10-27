@@ -21,7 +21,7 @@ CREATE VIEW ingestion.current_entities as SELECT
     LOWER(final_entity::json #>> '{kind}'),
     LOWER(final_entity::json #>> '{metadata, namespace}'),
     LOWER(final_entity::json #>> '{metadata, name}')) as ref,
-  final_entity::json #>> '{metadata, annotations, hp.com/provider-name}' as provider_name,
+  final_entity::json #>> '{metadata, annotations, backstage.io/incremental-provider-name}' as provider_name,
   final_entity FROM public.final_entities;
 `);
 
