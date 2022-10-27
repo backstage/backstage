@@ -21,6 +21,7 @@
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack"
+
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
@@ -31,6 +32,7 @@
     "@backstage/plugin-permission-common": "workspace:^",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
+    "uuid": "^8.3.2",
     "winston": "^3.2.1"
   },
   "devDependencies": {
