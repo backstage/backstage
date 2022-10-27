@@ -105,7 +105,7 @@ export function createGitlabCreateOrMergeAction(options: {
           },
         },
       },
-      
+
       output: {
         type: 'object',
         properties: {
@@ -290,7 +290,6 @@ export function createGitlabCreateOrMergeAction(options: {
         }
 
         try {
-
           await api.MergeRequests.create(
             projectPath,
             destinationBranch,
