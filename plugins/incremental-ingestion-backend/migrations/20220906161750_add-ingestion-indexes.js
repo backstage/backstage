@@ -15,10 +15,9 @@
  */
 
 /**
- * @param { import('knex').Knex } knex
- * @returns { Promise<void> }
+ * @param { import("knex").Knex } knex
  */
-exports.up = async function (knex) {
+exports.up = async function up(knex) {
   const schema = () => knex.schema.withSchema('ingestion');
 
   await knex.raw(
@@ -45,9 +44,8 @@ exports.up = async function (knex) {
 
 /**
  * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
  */
-exports.down = async function (knex) {
+exports.down = async function down(knex) {
   const schema = () => knex.schema.withSchema('ingestion');
 
   await schema().alterTable('ingestions', t => {
@@ -61,7 +59,10 @@ exports.down = async function (knex) {
   });
 
   await schema().alterTable('ingestions_mark_entities', t => {
-    t.dropIndex('ingestion_mark_id', 'ingestion_mark_entity_ingestion_mark_id_idx');
+    t.dropIndex(
+      'ingestion_mark_id',
+      'ingestion_mark_entity_ingestion_mark_id_idx',
+    );
     t.dropPrimary('id');
   });
 

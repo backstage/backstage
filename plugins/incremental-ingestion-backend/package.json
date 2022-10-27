@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@types/express": "*"
+    "@types/express": "^4.17.6"
   },
   "files": [
     "dist",
