@@ -69,6 +69,22 @@ export interface CreateBuiltInActionsOptions {
 }
 
 // @public
+export function createCatalogCheckAndRegister(options: {
+  catalogClient: CatalogApi;
+  integrations: ScmIntegrations;
+}): TemplateAction<
+  | {
+      catalogInfoUrl: string;
+      optional?: boolean | undefined;
+    }
+  | {
+      repoContentsUrl: string;
+      catalogInfoPath?: string | undefined;
+      optional?: boolean | undefined;
+    }
+>;
+
+// @public
 export function createCatalogRegisterAction(options: {
   catalogClient: CatalogApi;
   integrations: ScmIntegrations;
@@ -259,6 +275,22 @@ export function createGithubWebhookAction(options: {
 }>;
 
 // @public
+export function createGitlabCreateOrMergeAction(options: {
+  integrations: ScmIntegrationRegistry;
+  config: Config;
+}): TemplateAction<{
+  repoUrl: string;
+  defaultBranch?: string | undefined;
+  repoVisibility?: 'internal' | 'private' | 'public' | undefined;
+  sourcePath?: string | undefined;
+  token?: string | undefined;
+  gitCommitMessage?: string | undefined;
+  gitAuthorName?: string | undefined;
+  gitAuthorEmail?: string | undefined;
+  setUserAsOwner?: boolean | undefined;
+}>;
+
+// @public
 export function createPublishAzureAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
@@ -435,7 +467,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   sourcePath?: string | undefined;
   targetPath?: string | undefined;
   token?: string | undefined;
-  commitAction?: 'update' | 'create' | 'delete' | undefined;
+  commitAction?: 'update' | 'delete' | 'create' | undefined;
   projectid?: string | undefined;
   removeSourceBranch?: boolean | undefined;
   assignee?: string | undefined;
