@@ -67,7 +67,7 @@ export type MultistepJsonFormProps = {
   ReviewStepComponent?: ComponentType<ReviewStepProps>;
 };
 
-function getUiSchemasFromSteps(steps: Step[]): {
+export function getSchemasFromSteps(steps: Step[]): {
   uiSchema: UiSchema;
   mergedSchema: JsonObject;
   schema: JsonObject;
@@ -218,7 +218,7 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
           handleCreate={handleCreate}
           handleReset={handleReset}
           formData={formData}
-          steps={getUiSchemasFromSteps(steps)}
+          steps={getSchemasFromSteps(steps)}
         />
       )}
     </>

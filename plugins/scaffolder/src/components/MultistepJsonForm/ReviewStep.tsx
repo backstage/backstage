@@ -22,12 +22,12 @@ import { ReviewStepProps } from '../types';
 
 export function getReviewData(
   formData: Record<string, any>,
-  steps: UiSchema[],
+  uiSchemas: UiSchema[],
 ) {
   const reviewData: Record<string, any> = {};
   for (const key in formData) {
     if (formData.hasOwnProperty(key)) {
-      const uiSchema = steps.find(us => us.name === key);
+      const uiSchema = uiSchemas.find(us => us.name === key);
 
       if (!uiSchema) {
         reviewData[key] = formData[key];
@@ -60,6 +60,25 @@ export function getReviewData(
   return reviewData;
 }
 
+export function getUiSchemasFromSteps(
+  steps: {
+    schema: JsonObject;
+  }[],
+): UiSchema[] {
+  const uiSchemas: Array<UiSchema> = [];
+  steps.forEach(step => {
+    const schemaProps = step.schema.properties as JsonObject;
+    for (const key in schemaProps) {
+      if (schemaProps.hasOwnProperty(key)) {
+        const uiSchema = schemaProps[key] as UiSchema;
+        uiSchema.name = key;
+        uiSchemas.push(uiSchema);
+      }
+    }
+  });
+  return uiSchemas;
+}
+
 /**
  * The component displaying the Last Step in scaffolder template form.
  * Which represents the summary of the input provided by the end user.
@@ -79,10 +98,7 @@ export const ReviewStep = (props: ReviewStepProps) => {
         <Typography variant="h6">Review and create</Typography>
         <StructuredMetadataTable
           dense
-          metadata={getReviewData(
-            formData,
-            steps.map(step => ({ uiSchema: step.uiSchema })),
-          )}
+          metadata={getReviewData(formData, getUiSchemasFromSteps(steps))}
         />
         <Box mb={4} />
         <Button onClick={handleBack} disabled={disableButtons}>
