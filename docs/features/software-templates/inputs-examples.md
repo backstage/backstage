@@ -23,7 +23,7 @@ parameters:
         maxLength: 8
         pattern: '^([a-zA-Z][a-zA-Z0-9]*)(-[a-zA-Z0-9]+)*$'
         ui:autofocus: true
-        ui:help: "Hint: additional description..."
+        ui:help: 'Hint: additional description...'
 ```
 
 ### Simple secret input
@@ -37,7 +37,7 @@ parameters:
         type: string
         description: Super secret description hint
         minLength: 6
-        ui:widget: "password"
+        ui:widget: 'password'
 ```
 
 ### Multi line text input
@@ -50,10 +50,10 @@ parameters:
         title: Text area input
         type: string
         description: Insira o valor do input que gostraia
-        ui:widget: "textarea"
-        ui:options: 
+        ui:widget: 'textarea'
+        ui:options:
           rows: 10
-        ui:help: "Hint: Make it strong!"
+        ui:help: 'Hint: Make it strong!'
         ui:placeholder: |
           apiVersion: backstage.io/v1alpha1
             kind: Component
@@ -102,7 +102,7 @@ parameters:
         type: array
         items:
           type: string
-          enum: ["production", "staging", "development"]
+          enum: ['production', 'staging', 'development']
         uniqueItems: true
         ui:widget: checkboxes
 ```
@@ -176,7 +176,7 @@ parameters:
         type: array
         items:
           type: boolean
-          enum: ["Enable scraping", "Enable HPA", "Enable cache"]
+          enum: ['Enable scraping', 'Enable HPA', 'Enable cache']
         uniqueItems: true
         ui:widget: checkboxes
 ```
@@ -188,11 +188,11 @@ parameters:
   if: ${{ parameters.environment === "staging" and parameters.environment === "development" }}
   action: debug:log
   input:
-    message: "development step"
+    message: 'development step'
 
 - name: Only production environments
   if: ${{ parameters.environment === "prod" or parameters.environment === "production" }}
   action: debug:log
   input:
-    message: "production step"
+    message: 'production step'
 ```
