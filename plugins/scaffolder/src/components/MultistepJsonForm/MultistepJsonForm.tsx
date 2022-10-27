@@ -133,6 +133,8 @@ export const MultistepJsonForm = (props: Props) => {
   const errorApi = useApi(errorApiRef);
   const featureFlagApi = useApi(featureFlagsApiRef);
   const featureFlagKey = 'backstage:featureFlag';
+  const visibleKey = 'backstage:visible';
+
   const filterOutProperties = (step: Step): Step => {
     const filteredStep = cloneDeep(step);
     const removedPropertyKeys: Array<string> = [];
@@ -143,6 +145,14 @@ export const MultistepJsonForm = (props: Props) => {
             if (value[featureFlagKey]) {
               if (featureFlagApi.isActive(value[featureFlagKey])) {
                 return true;
+              }
+              removedPropertyKeys.push(key);
+              return false;
+            } else if (value[visibleKey]) {
+              for (const formKey in formData) {
+                if (formKey === value[visibleKey]) {
+                  return Boolean(formData[formKey]);
+                }
               }
               removedPropertyKeys.push(key);
               return false;
@@ -168,6 +178,10 @@ export const MultistepJsonForm = (props: Props) => {
       return (
         typeof featureFlag !== 'string' || featureFlagApi.isActive(featureFlag)
       );
+    })
+    .filter(step => {
+      const visible = step.schema[visibleKey];
+      return typeof visible !== 'string' || formData[visible];
     })
     .map(filterOutProperties);
 
