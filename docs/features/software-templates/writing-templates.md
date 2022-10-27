@@ -299,6 +299,51 @@ your first step would be shown. The same goes for the nested properties in the
 spec. Make sure to use the key `backstage:featureFlag` in your templates if
 you want to use this functionality.
 
+### Hide sections or fields based on other fields
+
+Based on other fields you can hide sections or even only fields of your
+template. This is a good use case if you want to make your form more dynamic.
+To use it let's look at the following template:
+
+```yaml
+spec:
+  type: website
+  owner: team-a
+  parameters:
+    - title: Fill in some steps
+      required:
+        - name
+      properties:
+        name:
+          title: Name
+          type: string
+          ui:field: EntityNamePicker
+        enableExtraSection:
+          title: Enable an extra section
+          type: boolean
+        enableExtraSectionDescription:
+          title: Enable description in an extra section
+          type: boolean
+    - title: Toggleable section
+      required:
+        - someName
+      backstage:visible: enableExtraSection
+      properties:
+        someName:
+          title: Some name
+          type: string
+          ui:field: EntityNamePicker
+        someDescription:
+          title: Some description
+          type: string
+          ui:field: EntityNamePicker
+          backstage:visible: enableExtraSectionDescription
+```
+
+If you have a checked field `enableExtraSection` then
+`Toggleable section` would be shown. The same goes for the nested property `enableExtraSectionDescription`, which
+makes the field `someDescription` visible based on the value of `enableExtraSectionDescription`.
+
 ### The Repository Picker
 
 In order to make working with repository providers easier, we've built a custom
