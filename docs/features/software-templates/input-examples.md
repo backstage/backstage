@@ -77,18 +77,23 @@ parameters:
         title: Volume Type
         type: string
         description: The volume type to be used.
-        enum: ['gp2', 'gp3', 'io1', 'io2', 'sc1', 'st1', 'standard']
         default: 'gp2'
+        enum: 
+          - 'gp2'
+          - 'gp3' 
+          - 'io1' 
+          - 'io2' 
+          - 'sc1' 
+          - 'st1' 
+          - 'standard'
         enumNames:
-          [
-            'General Purpose SSD (gp2)',
-            'General Purpose SSD (gp3)',
-            'Provisioned IOPS (io1)',
-            'Provisioned IOPS (io2)',
-            'Cold HDD (sc1)',
-            'Throughput Optimized HDD (st1)',
-            'Magnetic (standard)',
-          ]
+          - 'General Purpose SSD (gp2)'
+          - 'General Purpose SSD (gp3)'
+          - 'Provisioned IOPS (io1)'
+          - 'Provisioned IOPS (io2)'
+          - 'Cold HDD (sc1)'
+          - 'Throughput Optimized HDD (st1)'
+          - 'Magnetic (standard)'
 ```
 
 ### A multiple choices list
@@ -102,7 +107,10 @@ parameters:
         type: array
         items:
           type: string
-          enum: ['production', 'staging', 'development']
+          enum: 
+          - 'production'
+          - 'staging'
+          - 'development'
         uniqueItems: true
         ui:widget: checkboxes
 ```
@@ -176,7 +184,10 @@ parameters:
         type: array
         items:
           type: boolean
-          enum: ['Enable scraping', 'Enable HPA', 'Enable cache']
+          enum: 
+            - 'Enable scraping'
+            - 'Enable HPA'
+            - 'Enable cache'
         uniqueItems: true
         ui:widget: checkboxes
 ```
