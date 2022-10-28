@@ -15,7 +15,6 @@
  */
 import { DependencyGraphTypes } from '@backstage/core-components';
 import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
-//import { BackstageTheme } from '@backstage/theme';
 import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import React, { useLayoutEffect, useRef, useState } from 'react';
@@ -32,7 +31,6 @@ import {
   red,
 } from '@material-ui/core/colors';
 
-//in mui v5
 import { PaletteOptions } from '@material-ui/core/styles/createPalette';
 
 declare module '@material-ui/core/styles/createPalette' {
