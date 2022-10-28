@@ -1,12 +1,11 @@
 ---
 '@backstage/plugin-scaffolder-backend': minor
 ---
+Deprecated the `taskWorkers` option in RouterOptions in favor of `concurrentTasksLimit` which sets the limit of concurrentTasks in a single TaskWorker
 
-Added optional "concurrentTasksLimit" option to TaskWorker
+TaskWorker can now run multiple (defaults to 10) tasks concurrently using the `concurrentTasksLimit` option available in both `RouterOptions` and `CreateWorkerOptions`.
 
-TaskWorker can now run multiple (defaults to 10) tasks concurrently.
-
-To use the option, in `createRouter`:
+To use the option to create a TaskWorker:
 
 ```diff
 const worker = await TaskWorker.create({
