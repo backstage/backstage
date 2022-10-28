@@ -30,6 +30,7 @@
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@types/express": "^4.17.6",
+    "@types/luxon": "3.0.0",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "knex": "^2.0.0",
@@ -38,8 +39,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^",
-    "@types/luxon": "3.0.0"
+    "@backstage/cli": "workspace:^"
   },
   "files": [
     "dist",
