@@ -5,4 +5,4 @@
 
 Making the scaffolder template more dynamic.
 
-More information about it in writing-templates.md section "Hide sections or fields based on other fields".
+More information about it in writing-templates.md section "Hide steps based on the fields".

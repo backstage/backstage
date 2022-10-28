@@ -148,14 +148,6 @@ export const MultistepJsonForm = (props: Props) => {
               }
               removedPropertyKeys.push(key);
               return false;
-            } else if (value[visibleKey]) {
-              for (const formKey in formData) {
-                if (formKey === value[visibleKey]) {
-                  return Boolean(formData[formKey]);
-                }
-              }
-              removedPropertyKeys.push(key);
-              return false;
             }
             return true;
           },
