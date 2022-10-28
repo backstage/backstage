@@ -26,7 +26,7 @@ import { applyDatabaseMigrations } from '../database/migrations';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { createIncrementalProviderRouter } from '../routes';
 
-export class Deferred<T> implements Promise<T> {
+class Deferred<T> implements Promise<T> {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   resolve: (value: T) => void;
@@ -52,11 +52,12 @@ export class Deferred<T> implements Promise<T> {
   [Symbol.toStringTag]: 'Deferred' = 'Deferred';
 }
 
+/** @public */
 export class IncrementalCatalogBuilder {
   /**
    * Creates the incremental catalog builder, which extends the regular catalog builder.
-   * @param env PluginEnvironment
-   * @param builder CatalogBuilder
+   * @param env - PluginEnvironment
+   * @param builder - CatalogBuilder
    * @returns IncrementalCatalogBuilder
    */
   static async create(env: PluginEnvironment, builder: CoreCatalogBuilder) {

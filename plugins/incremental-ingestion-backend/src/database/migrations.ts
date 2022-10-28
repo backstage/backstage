@@ -16,6 +16,7 @@
 import { resolvePackagePath } from '@backstage/backend-common';
 import { Knex } from 'knex';
 
+/** @public */
 export async function applyDatabaseMigrations(knex: Knex): Promise<void> {
   const migrationsDir = resolvePackagePath(
     '@devex/backend-incremental-ingestion',

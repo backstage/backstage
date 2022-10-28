@@ -28,6 +28,7 @@ import {
   MarkRecordInsert,
 } from '../types';
 
+/** @public */
 export class IncrementalIngestionDatabaseManager {
   private client: Knex;
 
@@ -37,7 +38,7 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Performs an update to the ingestion record with matching `id`.
-   * @param options IngestionRecordUpdate
+   * @param options - IngestionRecordUpdate
    */
   async updateIngestionRecordById(options: IngestionRecordUpdate) {
     await this.client.transaction(async tx => {
@@ -48,8 +49,8 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Performs an update to the ingestion record with matching provider name. Will only update active records.
-   * @param provider string
-   * @param update Partial<IngestionUpsertIFace>
+   * @param provider - string
+   * @param update - Partial<IngestionUpsertIFace>
    */
   async updateIngestionRecordByProvider(
     provider: string,
@@ -65,7 +66,7 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Performs an insert into the `ingestion.ingestions` table with the supplied values.
-   * @param options IngestionRecordInsert
+   * @param options - IngestionRecordInsert
    */
   async insertIngestionRecord(options: IngestionRecordInsert) {
     await this.client.transaction(async tx => {
@@ -101,7 +102,7 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Finds the current ingestion record for the named provider.
-   * @param provider string
+   * @param provider - string
    * @returns IngestionRecord | undefined
    */
   async getCurrentIngestionRecord(provider: string) {
@@ -117,7 +118,7 @@ export class IncrementalIngestionDatabaseManager {
   /**
    * Removes all entries from `ingestion_marks_entities`, `ingestion_marks`, and `ingestions`
    * for prior ingestions that completed (i.e., have a value for `rest_completed_at`).
-   * @param provider string
+   * @param provider - string
    * @returns A count of deletions for each record type.
    */
   async clearFinishedIngestions(provider: string) {
@@ -166,8 +167,8 @@ export class IncrementalIngestionDatabaseManager {
    * Automatically cleans up duplicate ingestion records if they were accidentally created.
    * Any ingestion record where the `rest_completed_at` is null (meaning it is active) AND
    * the ingestionId is incorrect is a duplicate ingestion record.
-   * @param ingestionId string
-   * @param provider string
+   * @param ingestionId - string
+   * @param provider - string
    */
   async clearDuplicateIngestions(ingestionId: string, provider: string) {
     await this.client.transaction(async tx => {
@@ -196,7 +197,7 @@ export class IncrementalIngestionDatabaseManager {
   /**
    * This method fully purges and resets all ingestion records for the named provider, and
    * leaves it in a paused state.
-   * @param provider string
+   * @param provider - string
    * @returns Counts of all deleted ingestion records
    */
   async purgeAndResetProvider(provider: string) {
@@ -264,7 +265,7 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Creates a new ingestion record.
-   * @param provider string
+   * @param provider - string
    * @returns A new ingestion record
    */
   async createProviderIngestionRecord(provider: string) {
@@ -283,8 +284,8 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Computes which entities to remove, if any, at the end of a burst.
-   * @param provider string
-   * @param ingestionId string
+   * @param provider - string
+   * @param ingestionId - string
    * @returns All entities to remove for this burst.
    */
   async computeRemoved(provider: string, ingestionId: string) {
@@ -339,7 +340,7 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Skips any wait time for the next action to run.
-   * @param provider string
+   * @param provider - string
    */
   async triggerNextProviderAction(provider: string) {
     await this.updateIngestionRecordByProvider(provider, {
@@ -389,7 +390,7 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Configures the current ingestion record to ingest a burst.
-   * @param ingestionId string
+   * @param ingestionId - string
    */
   async setProviderIngesting(ingestionId: string) {
     await this.updateIngestionRecordById({
@@ -400,7 +401,7 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Indicates the provider is currently ingesting a burst.
-   * @param ingestionId string
+   * @param ingestionId - string
    */
   async setProviderBursting(ingestionId: string) {
     await this.updateIngestionRecordById({
@@ -411,7 +412,7 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Finalizes the current ingestion record to indicate that the post-ingestion rest period is complete.
-   * @param ingestionId string
+   * @param ingestionId - string
    */
   async setProviderComplete(ingestionId: string) {
     await this.updateIngestionRecordById({
@@ -426,8 +427,8 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Marks ingestion as complete and starts the post-ingestion rest cycle.
-   * @param ingestionId string
-   * @param restLength Duration
+   * @param ingestionId - string
+   * @param restLength - Duration
    */
   async setProviderResting(ingestionId: string, restLength: Duration) {
     await this.updateIngestionRecordById({
@@ -443,7 +444,7 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Marks ingestion as paused after a burst completes.
-   * @param ingestionId string
+   * @param ingestionId - string
    */
   async setProviderInterstitial(ingestionId: string) {
     await this.updateIngestionRecordById({
@@ -454,8 +455,8 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Starts the cancel process for the current ingestion.
-   * @param ingestionId string
-   * @param message string (optional)
+   * @param ingestionId - string
+   * @param message - string (optional)
    */
   async setProviderCanceling(ingestionId: string, message?: string) {
     const update: Partial<IngestionUpsertIFace> = {
@@ -469,7 +470,7 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Completes the cancel process and triggers a new ingestion.
-   * @param ingestionId string
+   * @param ingestionId - string
    */
   async setProviderCanceled(ingestionId: string) {
     await this.updateIngestionRecordById({
@@ -484,10 +485,10 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Configures the current ingestion to wait and retry, due to a data source error.
-   * @param ingestionId string
-   * @param attempts number
-   * @param error Error
-   * @param backoffLength number
+   * @param ingestionId - string
+   * @param attempts - number
+   * @param error - Error
+   * @param backoffLength - number
    */
   async setProviderBackoff(
     ingestionId: string,
@@ -509,7 +510,7 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Returns the last record from `ingestion.ingestion_marks` for the supplied ingestionId.
-   * @param ingestionId string
+   * @param ingestionId - string
    * @returns MarkRecord | undefined
    */
   async getLastMark(ingestionId: string) {
@@ -533,7 +534,7 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Performs an insert into the `ingestion.ingestion_marks` table with the supplied values.
-   * @param options MarkRecordInsert
+   * @param options - MarkRecordInsert
    */
   async createMark(options: MarkRecordInsert) {
     const { record } = options;
@@ -543,8 +544,8 @@ export class IncrementalIngestionDatabaseManager {
   }
   /**
    * Performs an upsert to the `ingestion.ingestion_mark_entities` table for all deferred entities.
-   * @param markId string
-   * @param entities DeferredEntity[]
+   * @param markId - string
+   * @param entities - DeferredEntity[]
    */
   async createMarkEntities(markId: string, entities: DeferredEntity[]) {
     await this.client.transaction(async tx => {
@@ -560,7 +561,7 @@ export class IncrementalIngestionDatabaseManager {
 
   /**
    * Deletes the entire content of a table, and returns the number of records deleted.
-   * @param table string
+   * @param table - string
    * @returns number
    */
   async purgeTable(table: string) {

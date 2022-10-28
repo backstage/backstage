@@ -26,6 +26,7 @@ import { performance } from 'perf_hooks';
 import { Duration, DurationObjectUnits } from 'luxon';
 import { v4 } from 'uuid';
 
+/** @public */
 export class IncrementalIngestionEngine implements IterationEngine {
   restLength: Duration;
   backoff: DurationObjectUnits[];

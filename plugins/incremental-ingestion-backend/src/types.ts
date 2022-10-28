@@ -51,6 +51,7 @@ export const INCREMENTAL_ENTITY_PROVIDER_ANNOTATION =
  * batches of entities in sequence so that you never need to have more
  * than a few hundred in memory at a time.
  *
+ * @public
  */
 export interface IncrementalEntityProvider<TCursor, TContext> {
   /**
@@ -84,13 +85,17 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
 }
 
 /**
- * Value returned by an @{link IncrementalEntityProvider} to provide a
+ * Value returned by an {@link IncrementalEntityProvider} to provide a
  * single page of entities to ingest.
+ * 
+ * @public
  */
 export interface EntityIteratorResult<T> {
   /**
    * Indicates whether there are any further pages of entities to
    * ingest after this one.
+   * 
+   * @public
    */
   done: boolean;
 
@@ -106,6 +111,7 @@ export interface EntityIteratorResult<T> {
   entities: DeferredEntity[];
 }
 
+/** @public */
 export interface IncrementalEntityProviderOptions {
   /**
    * Entities are ingested in bursts. This interval determines how
@@ -129,11 +135,16 @@ export interface IncrementalEntityProviderOptions {
   /**
    * In the event of an error during an ingestion burst, the backoff
    * determines how soon it will be retried. E.g.
-   * [{ minutes: 1}, { minutes: 5}, {minutes: 30 }, { hours: 3 }]
+   * `[{ minutes: 1}, { minutes: 5}, {minutes: 30 }, { hours: 3 }]`
    */
   backoff?: DurationObjectUnits[];
 }
 
+/**
+ * Provides the environment used by the incremental entity provider,
+ * 
+ * @public
+ */
 export type PluginEnvironment = {
   logger: Logger;
   database: PluginDatabaseManager;
@@ -145,6 +156,8 @@ export type PluginEnvironment = {
 
 /**
  * The core ingestion engine implements this interface
+ * 
+ * @public
  */
 export interface IterationEngine {
   taskFn: TaskFunction;
@@ -152,6 +165,8 @@ export interface IterationEngine {
 
 /**
  * Options passed to the core ingestion engine during initialization.
+ * 
+ * @public
  */
 export interface IterationEngineOptions {
   logger: Logger;
@@ -165,6 +180,8 @@ export interface IterationEngineOptions {
 
 /**
  * The shape of data inserted into or updated in the `ingestion.ingestions` table.
+ * 
+ * @public
  */
 export interface IngestionUpsertIFace {
   next_action:
@@ -191,6 +208,8 @@ export interface IngestionUpsertIFace {
 
 /**
  * This interface supplies all potential values that can be inserted into the `ingestion.ingestions` table.
+ * 
+ * @public
  */
 export interface IngestionRecordInsert {
   record: IngestionUpsertIFace & {
@@ -200,6 +219,8 @@ export interface IngestionRecordInsert {
 
 /**
  * This interface is for updating an existing ingestion record.
+ * 
+ * @public
  */
 export interface IngestionRecordUpdate {
   ingestionId: string;
@@ -208,6 +229,8 @@ export interface IngestionRecordUpdate {
 
 /**
  * The expected response from the `ingestion.ingestion_marks` table.
+ * 
+ * @public
  */
 export interface MarkRecord {
   id: string;
@@ -219,6 +242,8 @@ export interface MarkRecord {
 
 /**
  * The expected response from the `ingestion.ingestions` table.
+ * 
+ * @public
  */
 export interface IngestionRecord {
   id: string;
@@ -235,6 +260,8 @@ export interface IngestionRecord {
 
 /**
  * This interface supplies all the values for adding an ingestion mark.
+ * 
+ * @public
  */
 export interface MarkRecordInsert {
   record: {

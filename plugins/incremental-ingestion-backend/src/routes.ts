@@ -19,6 +19,7 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { IncrementalIngestionDatabaseManager } from './database/IncrementalIngestionDatabaseManager';
 
+/** @public */
 export const createIncrementalProviderRouter = async (
   manager: IncrementalIngestionDatabaseManager,
   logger: Logger,
