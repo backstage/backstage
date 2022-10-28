@@ -6035,6 +6035,7 @@ __metadata:
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@types/express": ^4.17.6
+    "@types/luxon": 3.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
     knex: ^2.0.0
@@ -13801,6 +13802,13 @@ __metadata:
   version: 3.1.0
   resolution: "@types/luxon@npm:3.1.0"
   checksum: 04768029342ad76fc2a9339436c143ea64797b35cf9b03ddded787c13eae30f0ca1246e51c2c5365ed912f98068e13a967a3931b137eb4585248a0ad7ec3fa86
+  languageName: node
+  linkType: hard
+
+"@types/luxon@npm:3.0.0":
+  version: 3.0.0
+  resolution: "@types/luxon@npm:3.0.0"
+  checksum: 7738d3f4b91097a8139eca966ab53c6b40bb417b2cc2014c3bbd0aee033d6ff54af14c62046c2eb042434923b6bf796874f24b2af90e07ef422e6d841463d4b2
   languageName: node
   linkType: hard
 
