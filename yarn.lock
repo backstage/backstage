@@ -5964,6 +5964,7 @@ __metadata:
   dependencies:
     "@azure/identity": ^2.0.4
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -5988,6 +5989,8 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     morgan: ^1.10.0
+    msw: ^0.48.0
+    node-fetch: ^2.6.0
     stream-buffers: ^3.0.2
     supertest: ^6.1.3
     winston: ^3.2.1

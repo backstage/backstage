@@ -22,6 +22,8 @@ import { Logger } from 'winston';
 import { Metrics } from '@kubernetes/client-node';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { PodStatus } from '@kubernetes/client-node/dist/top';
+import type { Request as Request_2 } from 'express';
 import { TokenCredential } from '@azure/identity';
 
 // @alpha (undocumented)
@@ -188,6 +190,8 @@ export class KubernetesBuilder {
     options: KubernetesObjectsProviderOptions,
   ): KubernetesObjectsProvider;
   // (undocumented)
+  protected buildProxy(): KubernetesProxy;
+  // (undocumented)
   protected buildRouter(
     objectsProvider: KubernetesObjectsProvider,
     clusterSupplier: KubernetesClustersSupplier,
@@ -207,9 +211,19 @@ export class KubernetesBuilder {
     clusterSupplier: KubernetesClustersSupplier,
   ): Promise<ClusterDetails[]>;
   // (undocumented)
+  protected getClusterSupplier(): KubernetesClustersSupplier;
+  // (undocumented)
+  protected getFetcher(): KubernetesFetcher;
+  // (undocumented)
+  protected getObjectsProvider(
+    options: KubernetesObjectsProviderOptions,
+  ): KubernetesObjectsProvider;
+  // (undocumented)
   protected getObjectTypesToFetch(): ObjectToFetch[] | undefined;
   // (undocumented)
-  protected getProxyServices(): KubernetesProxyServices;
+  protected getProxy(): KubernetesProxy;
+  // (undocumented)
+  protected getServiceLocator(): KubernetesServiceLocator;
   // (undocumented)
   protected getServiceLocatorMethod(): ServiceLocatorMethod;
   // (undocumented)
@@ -225,6 +239,8 @@ export class KubernetesBuilder {
   setFetcher(fetcher?: KubernetesFetcher): this;
   // (undocumented)
   setObjectsProvider(objectsProvider?: KubernetesObjectsProvider): this;
+  // (undocumented)
+  setProxy(proxy?: KubernetesProxy): this;
   // (undocumented)
   setServiceLocator(serviceLocator?: KubernetesServiceLocator): this;
 }
@@ -330,9 +346,25 @@ export type KubernetesObjectTypes =
   | 'daemonsets';
 
 // @alpha (undocumented)
-export interface KubernetesProxyServices {
+export class KubernetesProxy {
+  constructor(logger: Logger);
   // (undocumented)
-  kcs: KubernetesClustersSupplier;
+  handleProxyRequest(
+    req: Request_2,
+    clusterSupplier: KubernetesClustersSupplier,
+  ): Promise<KubernetesProxyResponse>;
+  // (undocumented)
+  protected readonly logger: Logger;
+}
+
+// @alpha (undocumented)
+export interface KubernetesProxyResponse {
+  // (undocumented)
+  cluster?: string;
+  // (undocumented)
+  code: number;
+  // (undocumented)
+  data: any;
 }
 
 // @alpha

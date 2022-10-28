@@ -13,69 +13,81 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { KubeConfig, bufferFromFileOrString } from '@kubernetes/client-node';
-import { Logger } from 'winston';
-import fetch from 'node-fetch';
+import {
+  AuthenticationError,
+  ConflictError,
+  ForwardedError,
+  InputError,
+  NotFoundError,
+  stringifyError,
+} from '@backstage/errors';
+import { bufferFromFileOrString, KubeConfig } from '@kubernetes/client-node';
 import * as https from 'https';
+import fetch, { RequestInit } from 'node-fetch';
+import { Logger } from 'winston';
+
+import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 
 import type { Request } from 'express';
-
-import {
-  ClusterDetails,
-  KubernetesProxyServices,
-  KubernetesClustersSupplier,
-} from '../types/types';
 
 const HEADER_CONTENT_TYPE: string = 'Content-Type';
 const APPLICATION_JSON: string = 'application/json';
 
 const HEADER_KUBERNETES_CLUSTERS: string = 'X-Kubernetes-Clusters';
 
-const ERROR_BAD_REQUEST: number = 400;
-const ERROR_NOT_FOUND: number = 404;
 const ERROR_INTERNAL_SERVER: number = 500;
 
 const CLUSTER_USER_NAME: string = 'backstage';
 
+/**
+ *
+ * @alpha
+ */
 export interface KubernetesProxyResponse {
   code: number;
   data: any;
   cluster?: string;
 }
 
+/**
+ *
+ * @alpha
+ */
 interface KubernetesProxyClusters {
   [key: string]: string;
 }
 
+/**
+ *
+ * @alpha
+ */
 export class KubernetesProxy {
   constructor(protected readonly logger: Logger) {}
 
   public async handleProxyRequest(
-    services: KubernetesProxyServices,
     req: Request,
+    clusterSupplier: KubernetesClustersSupplier,
   ): Promise<KubernetesProxyResponse> {
-    const krc = this.getKubernetesRequestedClusters(req);
+    const requestedClusters = this.getKubernetesRequestedClusters(req);
 
-    if (Object.keys(krc).length < 1) {
-      return {
-        code: ERROR_NOT_FOUND,
-        data: 'No clusters found!',
-      };
+    if (Object.keys(requestedClusters).length < 1) {
+      this.logger.error(`No clusters found`);
+      throw new NotFoundError('No clusters found!');
     }
 
-    const details = await this.getClusterDetails(services.kcs, krc);
+    const clusterDetails = await this.getClusterDetails(
+      clusterSupplier,
+      requestedClusters,
+    );
 
-    if (details.length < 1) {
-      return {
-        code: ERROR_NOT_FOUND,
-        data: 'No clusters found!',
-      };
+    if (clusterDetails.length < 1) {
+      this.logger.error(`No clusters found`);
+      throw new NotFoundError('No clusters found!');
     }
 
     const responses = await Promise.all(
-      details.map(async d => {
-        const response = await this.makeRequestToCluster(d, req);
+      clusterDetails.map(async clusterDetail => {
+        const response = await this.makeRequestToCluster(clusterDetail, req);
         return response;
       }),
     );
@@ -116,7 +128,7 @@ export class KubernetesProxy {
       return clusters;
     } catch (e: any) {
       this.logger.debug(
-        `error with encoded cluster header: ${JSON.stringify(e)}`,
+        `error with encoded cluster header: ${stringifyError(e)}`,
       );
     }
     return {};
@@ -124,17 +136,17 @@ export class KubernetesProxy {
 
   private async getClusterDetails(
     clusterSupplier: KubernetesClustersSupplier,
-    krc: KubernetesProxyClusters,
+    requestedClusters: KubernetesProxyClusters,
   ): Promise<ClusterDetails[]> {
     const clusters = await clusterSupplier.getClusters();
 
-    const clusterNames = Object.keys(krc);
+    const clusterNames = Object.keys(requestedClusters);
 
     const clusterDetails = clusters.filter(c => clusterNames.includes(c.name));
 
     const clusterDetailsAuth = clusterDetails.map(c => {
       const cAuth: ClusterDetails = Object.assign(c, {
-        serviceAccountToken: krc[c.name],
+        serviceAccountToken: requestedClusters[c.name],
       });
       return cAuth;
     });
@@ -151,28 +163,26 @@ export class KubernetesProxy {
     details: ClusterDetails,
     req: Request,
   ): Promise<KubernetesProxyResponse> {
-    const serverIP = this.getClusterURI(details);
-    if (!serverIP) {
-      return {
-        code: ERROR_INTERNAL_SERVER,
-        data: null,
-      };
+    const serverURI = this.getClusterURI(details);
+
+    if (!serverURI) {
+      this.logger.error(`Cluster ${details.name} details IP error`);
+
+      throw new ConflictError('Cluster detail error');
     }
 
     const query = decodeURIComponent(req.params.encodedQuery) || '';
-    const uri = `${serverIP}/${query}`;
+    const uri = `${serverURI}/${query}`;
 
     const contentType = req.header(HEADER_CONTENT_TYPE) || APPLICATION_JSON;
 
-    const res = await this.sendClusterRequest(
+    return await this.sendClusterRequest(
       details,
       uri,
       req.method,
       contentType,
       req.body,
     );
-
-    return res;
   }
 
   private async sendClusterRequest(
@@ -183,16 +193,14 @@ export class KubernetesProxy {
     body?: any,
   ): Promise<KubernetesProxyResponse> {
     const bearerToken = details.serviceAccountToken;
+
     if (!bearerToken) {
-      return {
-        code: ERROR_BAD_REQUEST,
-        data: {
-          error: 'Invalid service account token',
-        },
-      };
+      this.logger.error('Invalid service account token');
+
+      throw new AuthenticationError('Invalid service account token');
     }
 
-    const reqData: any = {
+    const reqData: RequestInit = {
       method,
       headers: {
         'Content-Type': contentType,
@@ -205,13 +213,10 @@ export class KubernetesProxy {
         const ca = bufferFromFileOrString('', details.caData)?.toString() || '';
         reqData.agent = new https.Agent({ ca });
       } else {
-        this.logger.info('could not find CA certificate!');
-        return {
-          code: ERROR_INTERNAL_SERVER,
-          data: {
-            error: 'Invalid CA certificate configured within Backstage',
-          },
-        };
+        this.logger.error('could not find CA certificate!');
+        throw new InputError(
+          'Invalid CA certificate configured within Backstage',
+        );
       }
     }
 
@@ -220,28 +225,25 @@ export class KubernetesProxy {
     }
 
     try {
-      const req = await fetch(uri, reqData);
+      const res = await fetch(uri, reqData);
 
-      let res;
+      let data: string | any;
+
       if (contentType.includes(APPLICATION_JSON)) {
-        res = await req.json();
+        data = await res.json();
       } else {
-        res = await req.text();
+        data = await res.text();
       }
 
       const proxyResponse: KubernetesProxyResponse = {
-        code: req.status,
-        data: res,
+        code: res.status,
+        data,
         cluster: details.name,
       };
 
       return proxyResponse;
     } catch (e: any) {
-      return {
-        code: ERROR_INTERNAL_SERVER,
-        data: e,
-        cluster: details.name,
-      };
+      throw new ForwardedError(`Cluster ${details.name} request error`, e);
     }
   }
 
@@ -264,19 +266,20 @@ export class KubernetesProxy {
       cluster: cluster.name,
     };
 
-    const kc = new KubeConfig();
+    const kubeConfig = new KubeConfig();
+
     if (clusterDetails.serviceAccountToken) {
-      kc.loadFromOptions({
+      kubeConfig.loadFromOptions({
         clusters: [cluster],
         users: [user],
         contexts: [context],
         currentContext: context.name,
       });
     } else {
-      kc.loadFromDefault();
+      kubeConfig.loadFromDefault();
     }
 
-    return kc;
+    return kubeConfig;
   }
 
   private getBestResponseCode(codes: number[]): number {

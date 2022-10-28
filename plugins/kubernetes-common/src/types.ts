@@ -259,6 +259,7 @@ export interface ClientPodStatus {
   containers: ClientContainerStatus[];
 }
 
+/** @public */
 export interface KubernetesProxyClusters {
   [key: string]: string;
 }

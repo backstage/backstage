@@ -13,32 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { getVoidLogger } from '@backstage/backend-common';
-import {
-  ClusterDetails,
-  KubernetesClustersSupplier,
-  KubernetesProxyServices,
-} from '../types/types';
-import { KubernetesProxy } from './KubernetesProxy';
-
-import { Request } from 'express';
-
 import 'buffer';
 
-jest.mock('node-fetch');
-const { Response } = jest.requireActual('node-fetch');
+import { getVoidLogger } from '@backstage/backend-common';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { Request } from 'express';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 
-import fetch from 'node-fetch';
+import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
+import { KubernetesProxy } from './KubernetesProxy';
+import { NotFoundError } from '@backstage/errors';
 
 describe('KubernetesProxy', () => {
-  let _clientMock: any;
-  let sut: KubernetesProxy;
+  let proxy: KubernetesProxy;
+  const worker = setupServer();
+  setupRequestMockHandlers(worker);
 
   const buildEncodedRequest = (
     clustersHeader: any,
     query: string,
-    body?: any,
+    body?: unknown,
   ): Request => {
     const encodedQuery = encodeURIComponent(query);
     const encodedClusters = Buffer.from(
@@ -75,41 +70,29 @@ describe('KubernetesProxy', () => {
     return req;
   };
 
-  const buildProxyServicesWithClusters = (
+  const buildClustersSupplierWithClusters = (
     clusters: ClusterDetails[],
-  ): KubernetesProxyServices => {
-    const kcs: KubernetesClustersSupplier = {
-      getClusters: async () => {
-        return clusters;
-      },
-    };
-
-    return {
-      kcs,
-    };
-  };
-
-  beforeEach(() => {
-    jest.resetAllMocks();
-    _clientMock = {
-      handleProxyRequest: jest.fn(),
-    };
-
-    sut = new KubernetesProxy(getVoidLogger());
+  ): KubernetesClustersSupplier => ({
+    getClusters: async () => {
+      return clusters;
+    },
   });
 
-  it('should return a 404 if no clusters are found', async () => {
-    const services = buildProxyServicesWithClusters([]);
+  beforeEach(() => {
+    proxy = new KubernetesProxy(getVoidLogger());
+  });
+
+  it('should return a ERROR_NOT_FOUND if no clusters are found', async () => {
+    const clustersSupplier = buildClustersSupplierWithClusters([]);
     const req = buildEncodedRequest({}, 'api');
 
-    const result = await sut.handleProxyRequest(services, req);
-
-    expect(result.code).toEqual(404);
-    expect(fetch).not.toHaveBeenCalled();
+    await expect(
+      proxy.handleProxyRequest(req, clustersSupplier),
+    ).rejects.toThrow(NotFoundError);
   });
 
   it('should match the response code of the Kubernetes response (single cluster)', async () => {
-    const services = buildProxyServicesWithClusters([
+    const clusters: ClusterDetails[] = [
       {
         name: 'cluster1',
         url: 'http://localhost:9999',
@@ -117,7 +100,9 @@ describe('KubernetesProxy', () => {
         authProvider: 'serviceAccount',
         skipTLSVerify: true,
       },
-    ]);
+    ];
+
+    const clustersSupplier = buildClustersSupplierWithClusters(clusters);
     const req = buildEncodedRequest({ cluster1: 'token' }, 'api');
 
     const apiResponse = {
@@ -131,21 +116,19 @@ describe('KubernetesProxy', () => {
       ],
     };
 
-    // @ts-ignore-next-line
-    (fetch as jest.MockedFunction<typeof fetch>).mockResolvedValue(
-      new Response(JSON.stringify(apiResponse), {
-        status: 299,
-      }),
+    worker.use(
+      rest.get(`${clusters[0].url}/${req.params.encodedQuery}`, (_, res, ctx) =>
+        res(ctx.status(299), ctx.body(JSON.stringify(apiResponse))),
+      ),
     );
 
-    const result = await sut.handleProxyRequest(services, req);
+    const result = await proxy.handleProxyRequest(req, clustersSupplier);
 
-    expect(fetch).toBeCalledTimes(1);
     expect(result.code).toEqual(299);
   });
 
   it('should match the response code of the best Kubernetes response (multi cluster)', async () => {
-    const services = buildProxyServicesWithClusters([
+    const clusters: ClusterDetails[] = [
       {
         name: 'cluster1',
         url: 'http://localhost:9998',
@@ -160,7 +143,9 @@ describe('KubernetesProxy', () => {
         authProvider: 'serviceAccount',
         skipTLSVerify: true,
       },
-    ]);
+    ];
+
+    const clustersSupplier = buildClustersSupplierWithClusters(clusters);
     const req = buildEncodedRequest(
       { cluster1: 'token', cluster2: 'token' },
       'api',
@@ -187,26 +172,22 @@ describe('KubernetesProxy', () => {
       code: 401,
     };
 
-    (fetch as jest.MockedFunction<typeof fetch>)
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify(apiResponse1), {
-          status: 200,
-        }),
-      )
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify(apiResponse2), {
-          status: 401,
-        }),
-      );
+    worker.use(
+      rest.get(`${clusters[0].url}/${req.params.encodedQuery}`, (_, res, ctx) =>
+        res(ctx.status(200), ctx.body(JSON.stringify(apiResponse1))),
+      ),
+      rest.get(`${clusters[1].url}/${req.params.encodedQuery}`, (_, res, ctx) =>
+        res(ctx.status(401), ctx.body(JSON.stringify(apiResponse2))),
+      ),
+    );
 
-    const result = await sut.handleProxyRequest(services, req);
+    const result = await proxy.handleProxyRequest(req, clustersSupplier);
 
-    expect(fetch).toBeCalledTimes(2);
     expect(result.code).toEqual(200);
   });
 
   it('should pass the exact response data from Kubernetes (single cluster)', async () => {
-    const services = buildProxyServicesWithClusters([
+    const clusters: ClusterDetails[] = [
       {
         name: 'cluster1',
         url: 'http://localhost:9999',
@@ -214,7 +195,9 @@ describe('KubernetesProxy', () => {
         authProvider: 'serviceAccount',
         skipTLSVerify: true,
       },
-    ]);
+    ];
+
+    const clustersSupplier = buildClustersSupplierWithClusters(clusters);
     const req = buildEncodedRequest({ cluster1: 'token' }, 'api');
 
     const apiResponse = {
@@ -228,14 +211,13 @@ describe('KubernetesProxy', () => {
       ],
     };
 
-    // @ts-ignore-next-line
-    (fetch as jest.MockedFunction<typeof fetch>).mockResolvedValue(
-      new Response(JSON.stringify(apiResponse), {
-        status: 200,
-      }),
+    worker.use(
+      rest.get(`${clusters[0].url}/${req.params.encodedQuery}`, (_, res, ctx) =>
+        res(ctx.status(200), ctx.body(JSON.stringify(apiResponse))),
+      ),
     );
 
-    const result = await sut.handleProxyRequest(services, req);
+    const result = await proxy.handleProxyRequest(req, clustersSupplier);
 
     const resultString = JSON.stringify(result.data);
     const expectedString = JSON.stringify({
@@ -251,12 +233,11 @@ describe('KubernetesProxy', () => {
       },
     });
 
-    expect(fetch).toBeCalledTimes(1);
     expect(resultString).toEqual(expectedString);
   });
 
   it('should pass the exact response data from Kubernetes (multi cluster)', async () => {
-    const services = buildProxyServicesWithClusters([
+    const clusters: ClusterDetails[] = [
       {
         name: 'cluster1',
         url: 'http://localhost:9998',
@@ -271,7 +252,9 @@ describe('KubernetesProxy', () => {
         authProvider: 'serviceAccount',
         skipTLSVerify: true,
       },
-    ]);
+    ];
+
+    const clustersSupplier = buildClustersSupplierWithClusters(clusters);
     const req = buildEncodedRequest(
       { cluster1: 'token', cluster2: 'token' },
       'api',
@@ -298,20 +281,16 @@ describe('KubernetesProxy', () => {
       code: 401,
     };
 
-    // @ts-ignore-next-line
-    (fetch as jest.MockedFunction<typeof fetch>)
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify(apiResponse1), {
-          status: 200,
-        }),
-      )
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify(apiResponse2), {
-          status: 401,
-        }),
-      );
+    worker.use(
+      rest.get(`${clusters[0].url}/${req.params.encodedQuery}`, (_, res, ctx) =>
+        res(ctx.status(200), ctx.body(JSON.stringify(apiResponse1))),
+      ),
+      rest.get(`${clusters[1].url}/${req.params.encodedQuery}`, (_, res, ctx) =>
+        res(ctx.status(401), ctx.body(JSON.stringify(apiResponse2))),
+      ),
+    );
 
-    const result = await sut.handleProxyRequest(services, req);
+    const result = await proxy.handleProxyRequest(req, clustersSupplier);
 
     const resultString = JSON.stringify(result.data);
     const expectedString = JSON.stringify({
@@ -336,7 +315,6 @@ describe('KubernetesProxy', () => {
       },
     });
 
-    expect(fetch).toBeCalledTimes(2);
     expect(resultString).toEqual(expectedString);
   });
 });

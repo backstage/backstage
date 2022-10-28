@@ -32,6 +32,7 @@ export * from './kubernetes-auth-translator/types';
 export * from './service/router';
 export * from './service/KubernetesBuilder';
 export * from './service/KubernetesClientProvider';
+export * from './service/KubernetesProxy';
 
 export * from './types/types';
 
