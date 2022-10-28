@@ -103,7 +103,7 @@ async function main() {
 
   if (newVersions.length === 0) {
     console.log('No package version bumps detected, no release needed');
-    console.log(`::set-output name=needs_release::false`);
+    console.log(`needs_release=false >> $GITHUB_OUTPUT`);
     return;
   }
 
@@ -114,7 +114,7 @@ async function main() {
       `  ${name.padEnd(maxLength, ' ')} ${oldVersion} to ${newVersion}`,
     );
   }
-  console.log(`::set-output name=needs_release::true`);
+  console.log(`needs_release=true >> $GITHUB_OUTPUT`);
 }
 
 main().catch(error => {

@@ -74,8 +74,8 @@ async function main() {
   console.log(`Creating release tag ${tagName} at ${commitSha}`);
   await createGitTag(octokit, commitSha, tagName);
 
-  console.log(`::set-output name=tag_name::${tagName}`);
-  console.log(`::set-output name=version::${releaseVersion}`);
+  console.log(`tag_name=${tagName} >> $GITHUB_OUTPUT`);
+  console.log(`version=${releaseVersion} >> $GITHUB_OUTPUT`);
 }
 
 main().catch(error => {
