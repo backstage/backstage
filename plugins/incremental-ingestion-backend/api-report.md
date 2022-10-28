@@ -18,30 +18,6 @@ import { Router } from 'express';
 import type { TaskFunction } from '@backstage/backend-tasks';
 import type { UrlReader } from '@backstage/backend-common';
 
-// Warning: (ae-missing-release-tag) "Deferred" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export class Deferred<T> implements Promise<T> {
-  // (undocumented)
-  [Symbol.toStringTag]: 'Deferred';
-  constructor();
-  // (undocumented)
-  catch: Promise<T>['catch'];
-  // (undocumented)
-  finally: Promise<T>['finally'];
-  // (undocumented)
-  reject: (error: Error) => void;
-  // (undocumented)
-  resolve: (value: T) => void;
-  // (undocumented)
-  then: Promise<T>['then'];
-}
-
-// Warning: (tsdoc-at-sign-without-tag-name) Expecting a TSDoc tag name after "@"; if it is not a tag, use a backslash to escape this character
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (ae-missing-release-tag) "EntityIteratorResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface EntityIteratorResult<T> {
   cursor: T;
@@ -53,8 +29,6 @@ export interface EntityIteratorResult<T> {
 export const INCREMENTAL_ENTITY_PROVIDER_ANNOTATION =
   'backstage.io/incremental-provider-name';
 
-// Warning: (ae-missing-release-tag) "IncrementalCatalogBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class IncrementalCatalogBuilder {
   // (undocumented)
@@ -67,16 +41,12 @@ export class IncrementalCatalogBuilder {
     incrementalAdminRouter: Router;
     manager: IncrementalIngestionDatabaseManager;
   }>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   static create(
     env: PluginEnvironment,
     builder: CatalogBuilder,
   ): Promise<IncrementalCatalogBuilder>;
 }
 
-// Warning: (ae-missing-release-tag) "IncrementalEntityProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface IncrementalEntityProvider<TCursor, TContext> {
   around(burst: (context: TContext) => Promise<void>): Promise<void>;
@@ -87,26 +57,14 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
   ): Promise<EntityIteratorResult<TCursor>>;
 }
 
-// Warning: (ae-missing-release-tag) "IncrementalEntityProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface IncrementalEntityProviderOptions {
-  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
   backoff?: DurationObjectUnits[];
   burstInterval: DurationObjectUnits;
   burstLength: DurationObjectUnits;
   restLength: DurationObjectUnits;
 }
 
-// Warning: (ae-missing-release-tag) "IncrementalIngestionDatabaseManager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class IncrementalIngestionDatabaseManager {
   constructor(options: { client: Knex });
@@ -115,13 +73,10 @@ export class IncrementalIngestionDatabaseManager {
     ingestionMarksDeleted: void;
     markEntitiesDeleted: void;
   }>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   clearDuplicateIngestions(
     ingestionId: string,
     provider: string,
   ): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   clearFinishedIngestions(provider: string): Promise<{
     deletions: {
       markEntitiesDeleted: number;
@@ -129,8 +84,6 @@ export class IncrementalIngestionDatabaseManager {
       ingestionsDeleted: number;
     };
   }>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   computeRemoved(
     provider: string,
     ingestionId: string,
@@ -139,12 +92,8 @@ export class IncrementalIngestionDatabaseManager {
       entity: any;
     }[]
   >;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   createMark(options: MarkRecordInsert): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   createMarkEntities(markId: string, entities: DeferredEntity[]): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   createProviderIngestionRecord(provider: string): Promise<{
     ingestionId: string;
     nextAction: string;
@@ -153,11 +102,9 @@ export class IncrementalIngestionDatabaseManager {
   }>;
   // (undocumented)
   getAllMarks(ingestionId: string): Promise<MarkRecord[]>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   getCurrentIngestionRecord(
     provider: string,
   ): Promise<IngestionRecord | undefined>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   getLastMark(ingestionId: string): Promise<MarkRecord | undefined>;
   healthcheck(): Promise<
     Pick<
@@ -168,65 +115,43 @@ export class IncrementalIngestionDatabaseManager {
       'id' | 'provider_name'
     >[]
   >;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   insertIngestionRecord(options: IngestionRecordInsert): Promise<void>;
   // (undocumented)
   insertRecord(options: IngestionRecordInsert): Promise<void>;
   listProviders(): Promise<string[]>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   purgeAndResetProvider(provider: string): Promise<{
     provider: string;
     ingestionsDeleted: number;
     marksDeleted: number;
     markEntitiesDeleted: number;
   }>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   purgeTable(table: string): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setProviderBackoff(
     ingestionId: string,
     attempts: number,
     error: Error,
     backoffLength: number,
   ): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setProviderBursting(ingestionId: string): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setProviderCanceled(ingestionId: string): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setProviderCanceling(ingestionId: string, message?: string): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setProviderComplete(ingestionId: string): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setProviderIngesting(ingestionId: string): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setProviderInterstitial(ingestionId: string): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setProviderResting(ingestionId: string, restLength: Duration): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   triggerNextProviderAction(provider: string): Promise<void>;
   // (undocumented)
   updateByName(
     provider: string,
     update: Partial<IngestionUpsertIFace>,
   ): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   updateIngestionRecordById(options: IngestionRecordUpdate): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   updateIngestionRecordByProvider(
     provider: string,
     update: Partial<IngestionUpsertIFace>,
   ): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "IngestionRecord" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface IngestionRecord {
   // (undocumented)
@@ -251,8 +176,6 @@ export interface IngestionRecord {
   status: string;
 }
 
-// Warning: (ae-missing-release-tag) "IngestionRecordInsert" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface IngestionRecordInsert {
   // (undocumented)
@@ -261,8 +184,6 @@ export interface IngestionRecordInsert {
   };
 }
 
-// Warning: (ae-missing-release-tag) "IngestionRecordUpdate" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface IngestionRecordUpdate {
   // (undocumented)
@@ -271,8 +192,6 @@ export interface IngestionRecordUpdate {
   update: Partial<IngestionUpsertIFace>;
 }
 
-// Warning: (ae-missing-release-tag) "IngestionUpsertIFace" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface IngestionUpsertIFace {
   // (undocumented)
@@ -305,16 +224,12 @@ export interface IngestionUpsertIFace {
     | 'backing off';
 }
 
-// Warning: (ae-missing-release-tag) "IterationEngine" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface IterationEngine {
   // (undocumented)
   taskFn: TaskFunction;
 }
 
-// Warning: (ae-missing-release-tag) "IterationEngineOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface IterationEngineOptions {
   // (undocumented)
@@ -333,8 +248,6 @@ export interface IterationEngineOptions {
   restLength: DurationObjectUnits;
 }
 
-// Warning: (ae-missing-release-tag) "MarkRecord" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface MarkRecord {
   // (undocumented)
@@ -349,8 +262,6 @@ export interface MarkRecord {
   sequence: number;
 }
 
-// Warning: (ae-missing-release-tag) "MarkRecordInsert" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface MarkRecordInsert {
   // (undocumented)
@@ -362,9 +273,7 @@ export interface MarkRecordInsert {
   };
 }
 
-// Warning: (ae-missing-release-tag) "PluginEnvironment" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type PluginEnvironment = {
   logger: Logger;
   database: PluginDatabaseManager;
