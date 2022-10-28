@@ -1,5 +1,5 @@
 ---
-id: inputs-examples
+id: input-examples
 title: Built-in examples inputs
 description: Some examples to use in your template
 ---
@@ -78,13 +78,13 @@ parameters:
         type: string
         description: The volume type to be used.
         default: 'gp2'
-        enum: 
+        enum:
           - 'gp2'
-          - 'gp3' 
-          - 'io1' 
-          - 'io2' 
-          - 'sc1' 
-          - 'st1' 
+          - 'gp3'
+          - 'io1'
+          - 'io2'
+          - 'sc1'
+          - 'st1'
           - 'standard'
         enumNames:
           - 'General Purpose SSD (gp2)'
@@ -107,10 +107,10 @@ parameters:
         type: array
         items:
           type: string
-          enum: 
-          - 'production'
-          - 'staging'
-          - 'development'
+          enum:
+            - 'production'
+            - 'staging'
+            - 'development'
         uniqueItems: true
         ui:widget: checkboxes
 ```
@@ -184,7 +184,7 @@ parameters:
         type: array
         items:
           type: boolean
-          enum: 
+          enum:
             - 'Enable scraping'
             - 'Enable HPA'
             - 'Enable cache'
