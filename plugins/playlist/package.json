@@ -12,6 +12,11 @@
   "backstage": {
     "role": "frontend-plugin"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/playlist"
+  },
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
