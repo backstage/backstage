@@ -23,9 +23,18 @@ import {
   SidebarSpace,
   useSidebarOpenState,
   Link,
+  GroupIcon,
+  SidebarSubmenu,
+  SidebarSubmenuItem,
 } from '@backstage/core-components';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
+import ApiIcon from '@material-ui/icons/Extension';
+import ComponentIcon from '@material-ui/icons/Memory';
+import DomainIcon from '@material-ui/icons/Apartment';
+import ResourceIcon from '@material-ui/icons/Work';
+import SystemIcon from '@material-ui/icons/Category';
+import UserIcon from '@material-ui/icons/Person';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -65,7 +74,53 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarDivider />
       <SidebarGroup label="Menu" icon={<MenuIcon />}>
         {/* Global nav, not org-specific */}
-        <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+        <SidebarItem icon={HomeIcon} to="catalog" text="Home">
+          <SidebarSubmenu title="Catalog">
+            <SidebarSubmenuItem
+              title="Domains"
+              to="catalog?filters%5Bkind%5D=domain"
+              icon={DomainIcon}
+            />
+            <SidebarSubmenuItem
+              title="Systems"
+              to="catalog?filters%5Bkind%5D=system"
+              icon={SystemIcon}
+            />
+            <SidebarSubmenuItem
+              title="Components"
+              to="catalog?filters%5Bkind%5D=component"
+              icon={ComponentIcon}
+            />
+            <SidebarSubmenuItem
+              title="APIs"
+              to="catalog?filters%5Bkind%5D=api"
+              icon={ApiIcon}
+            />
+            <SidebarDivider />
+            <SidebarSubmenuItem
+              title="Resources"
+              to="catalog?filters%5Bkind%5D=resource"
+              icon={ResourceIcon}
+            />
+            <SidebarDivider />
+            <SidebarSubmenuItem
+              title="Templates"
+              to="catalog?filters%5Bkind%5D=template"
+              icon={CreateComponentIcon}
+            />
+            <SidebarDivider />
+            <SidebarSubmenuItem
+              title="Groups"
+              to="catalog?filters%5Bkind%5D=group"
+              icon={GroupIcon}
+            />
+            <SidebarSubmenuItem
+              title="Users"
+              to="catalog?filters%5Bkind%5D=user"
+              icon={UserIcon}
+            />
+          </SidebarSubmenu>
+        </SidebarItem>
         <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
         <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
         <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
