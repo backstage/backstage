@@ -141,7 +141,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - uses: actions/setup-node@v2
       - uses: actions/setup-python@v2
