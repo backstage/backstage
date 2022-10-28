@@ -20,11 +20,7 @@
  * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
-  let STRING_TEXT = 'text';
-  if (knex.client.config.client.includes('mysql')) {
-    STRING_TEXT = 'string';
-  }
-
+  const isMySQL = knex.client.config.client.includes('mysql');
   await knex.schema.createTable('refresh_state', table => {
     table.comment('Location refresh states');
     table
@@ -94,23 +90,24 @@ exports.up = async function up(knex) {
   });
 
   await knex.schema.createTable('refresh_state_references', table => {
+    const textColumn = isMySQL
+        ? table.string.bind(table)
+        : table.text.bind(table);
+
     table.comment('Edges between refresh state rows');
     table
       .increments('id')
       .comment('Primary key to distinguish unique lines from each other');
-    // @ts-ignore
-    table[STRING_TEXT]('source_key')
+    textColumn('source_key')
       .nullable()
       .comment('Opaque identifier for non-entity sources');
-    // @ts-ignore
-    table[STRING_TEXT]('source_entity_ref')
+    textColumn('source_entity_ref')
       .nullable()
       .references('entity_ref')
       .inTable('refresh_state')
       .onDelete('CASCADE')
       .comment('EntityRef of entity sources');
-    // @ts-ignore
-    table[STRING_TEXT]('target_entity_ref')
+    textColumn('target_entity_ref')
       .notNullable()
       .references('entity_ref')
       .inTable('refresh_state')
