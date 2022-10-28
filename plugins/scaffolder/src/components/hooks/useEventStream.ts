@@ -99,9 +99,7 @@ function reducer(draft: TaskStream, action: ReducerAction) {
             currentStep.startedAt = entry.createdAt;
           }
 
-          if (
-            ['cancelled', 'failed', 'completed'].includes(currentStep.status)
-          ) {
+          if (['aborted', 'failed', 'completed'].includes(currentStep.status)) {
             currentStep.endedAt = entry.createdAt;
           }
         }

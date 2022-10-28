@@ -287,11 +287,7 @@ export class DatabaseTaskStore implements TaskStore {
     const { taskId, status, eventBody } = options;
 
     let oldStatus: string;
-    if (
-      status === 'failed' ||
-      status === 'completed' ||
-      status === 'cancelled'
-    ) {
+    if (status === 'failed' || status === 'completed' || status === 'aborted') {
       oldStatus = 'processing';
     } else {
       throw new Error(
@@ -330,14 +326,14 @@ export class DatabaseTaskStore implements TaskStore {
         });
       };
 
-      if (status === 'cancelled') {
+      if (status === 'aborted') {
         await updateTask({
           id: taskId,
         });
         return;
       }
 
-      if (task.status === 'cancelled') {
+      if (task.status === 'aborted') {
         return;
       }
 
@@ -414,10 +410,7 @@ export class DatabaseTaskStore implements TaskStore {
 
     const completedSteps = statusStepEvents
       .filter(
-        ({ body: { status } }) =>
-          status === 'failed' ||
-          status === 'completed' ||
-          status === 'cancelled',
+        ({ body: { status } }) => status === 'failed' || status === 'completed',
       )
       .map(step => step.body.stepId);
 

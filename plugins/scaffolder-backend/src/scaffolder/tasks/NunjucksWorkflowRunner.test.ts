@@ -61,7 +61,6 @@ describe('DefaultWorkflowRunner', () => {
     spec,
     secrets,
     isDryRun,
-    cancel: async () => {},
     complete: async () => {},
     done: false,
     emitLog: async () => {},

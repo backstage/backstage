@@ -44,6 +44,7 @@ jest.mock('react-router-dom', () => {
 });
 
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
+  abortTask: jest.fn(),
   scaffold: jest.fn(),
   getTemplateParameterSchema: jest.fn(),
   getIntegrationsList: jest.fn(),
@@ -320,10 +321,7 @@ describe('TemplatePage', () => {
 
   it('should display a section or property based on a feature flag', async () => {
     featureFlagsApiMock.isActive.mockImplementation(flag => {
-      if (flag === 'experimental-feature') {
-        return true;
-      }
-      return false;
+      return flag === 'experimental-feature';
     });
     scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue(
       schemaMockValue,
