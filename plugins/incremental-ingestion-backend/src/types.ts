@@ -87,15 +87,14 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
 /**
  * Value returned by an {@link IncrementalEntityProvider} to provide a
  * single page of entities to ingest.
- * 
+ *
  * @public
  */
 export interface EntityIteratorResult<T> {
   /**
    * Indicates whether there are any further pages of entities to
    * ingest after this one.
-   * 
-   * @public
+   *
    */
   done: boolean;
 
@@ -142,7 +141,7 @@ export interface IncrementalEntityProviderOptions {
 
 /**
  * Provides the environment used by the incremental entity provider,
- * 
+ *
  * @public
  */
 export type PluginEnvironment = {
@@ -156,7 +155,7 @@ export type PluginEnvironment = {
 
 /**
  * The core ingestion engine implements this interface
- * 
+ *
  * @public
  */
 export interface IterationEngine {
@@ -165,7 +164,7 @@ export interface IterationEngine {
 
 /**
  * Options passed to the core ingestion engine during initialization.
- * 
+ *
  * @public
  */
 export interface IterationEngineOptions {
@@ -180,7 +179,7 @@ export interface IterationEngineOptions {
 
 /**
  * The shape of data inserted into or updated in the `ingestion.ingestions` table.
- * 
+ *
  * @public
  */
 export interface IngestionUpsertIFace {
@@ -208,7 +207,7 @@ export interface IngestionUpsertIFace {
 
 /**
  * This interface supplies all potential values that can be inserted into the `ingestion.ingestions` table.
- * 
+ *
  * @public
  */
 export interface IngestionRecordInsert {
@@ -219,7 +218,7 @@ export interface IngestionRecordInsert {
 
 /**
  * This interface is for updating an existing ingestion record.
- * 
+ *
  * @public
  */
 export interface IngestionRecordUpdate {
@@ -229,7 +228,7 @@ export interface IngestionRecordUpdate {
 
 /**
  * The expected response from the `ingestion.ingestion_marks` table.
- * 
+ *
  * @public
  */
 export interface MarkRecord {
@@ -242,7 +241,7 @@ export interface MarkRecord {
 
 /**
  * The expected response from the `ingestion.ingestions` table.
- * 
+ *
  * @public
  */
 export interface IngestionRecord {
@@ -260,7 +259,7 @@ export interface IngestionRecord {
 
 /**
  * This interface supplies all the values for adding an ingestion mark.
- * 
+ *
  * @public
  */
 export interface MarkRecordInsert {
