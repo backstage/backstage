@@ -52,7 +52,7 @@ Check out [the documentation](https://backstage.io/docs/getting-started) on how 
 - [Code of Conduct](CODE_OF_CONDUCT.md) - This is how we roll
 - [Adopters](ADOPTERS.md) - Companies already using Backstage
 - [Blog](https://backstage.io/blog/) - Announcements and updates
-- [Newsletter](https://mailchi.mp/spotify/backstage-community) - Subscribe to our email newsletter
+- [Newsletter](https://spoti.fi/backstagenewsletter) - Subscribe to our email newsletter
 - [Backstage Community Sessions](https://github.com/backstage/community) - Join monthly meetups and explore Backstage community
 - Give us a star ⭐️ - If you are using Backstage or think it is an interesting project, we would love a star ❤️
 
