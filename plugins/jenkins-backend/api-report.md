@@ -7,6 +7,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import express from 'express';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Logger } from 'winston';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -81,6 +82,8 @@ export interface JenkinsInstanceConfig {
 
 // @public (undocumented)
 export interface RouterOptions {
+  // (undocumented)
+  identity?: IdentityApi;
   // (undocumented)
   jenkinsInfoProvider: JenkinsInfoProvider;
   // (undocumented)
