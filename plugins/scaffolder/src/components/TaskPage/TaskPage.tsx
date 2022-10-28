@@ -320,7 +320,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
     );
   };
 
-  const handleCancel = async () => {
+  const handleAbort = async () => {
     scaffolderApi.abortTask(taskId);
   };
 
@@ -362,12 +362,12 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
                   </Button>
                   <Button
                     className={classes.button}
-                    onClick={handleCancel}
+                    onClick={handleAbort}
                     disabled={completed}
                     variant="contained"
                     color="secondary"
                   >
-                    Cancel
+                    Abort
                   </Button>
                 </Paper>
               </Grid>
