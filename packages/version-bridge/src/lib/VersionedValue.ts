@@ -36,9 +36,27 @@ export function createVersionedValueMap<
   Versions extends { [version: number]: unknown },
 >(versions: Versions): VersionedValue<Versions> {
   Object.freeze(versions);
-  return {
+  const versionedValue: VersionedValue<Versions> = {
     atVersion(version) {
       return versions[version];
     },
   };
+  Object.defineProperty(versionedValue, '$value', {
+    configurable: false,
+    enumerable: true,
+    get() {
+      const highest = Object.keys(versions)
+        .map(v => parseInt(v, 10))
+        .sort((a, b) => b - a)[0];
+      return versions[highest];
+    },
+  });
+  Object.defineProperty(versionedValue, '$map', {
+    configurable: false,
+    enumerable: true,
+    get() {
+      return versions;
+    },
+  });
+  return versionedValue;
 }
