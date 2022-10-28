@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { NotFoundError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { findCodeOwnerByTarget, readCodeOwners } from './read';
 
@@ -25,35 +26,32 @@ const mockCodeowners = `
 /docs   @acme/team-bar
 `;
 
-const mockReadResult = ({
-  error = undefined,
-  data = undefined,
-}: {
-  error?: string;
-  data?: string;
-} = {}) => {
-  if (error) {
-    throw Error(error);
-  }
-  return data;
-};
-
 describe('readCodeOwners', () => {
   it('should return found codeowners file', async () => {
-    const ownersText = mockCodeowners;
-    const read = jest
-      .fn()
-      .mockResolvedValue(mockReadResult({ data: ownersText }));
-    const reader = { read, readTree: jest.fn(), search: jest.fn() };
+    const reader = {
+      read: jest.fn(),
+      readUrl: jest.fn().mockResolvedValue({
+        buffer: jest.fn().mockResolvedValue(Buffer.from(mockCodeowners)),
+      }),
+      readTree: jest.fn(),
+      search: jest.fn(),
+    };
+
     const result = await readCodeOwners(reader, sourceUrl, [
       '.github/CODEOWNERS',
     ]);
-    expect(result).toEqual(ownersText);
+    expect(result).toEqual(mockCodeowners);
   });
 
   it('should return undefined when no codeowner', async () => {
-    const read = jest.fn().mockRejectedValue(mockReadResult());
-    const reader = { read, readTree: jest.fn(), search: jest.fn() };
+    const reader = {
+      read: jest.fn(),
+      readUrl: jest.fn().mockResolvedValue({
+        buffer: jest.fn().mockRejectedValue(undefined),
+      }),
+      readTree: jest.fn(),
+      search: jest.fn(),
+    };
 
     await expect(
       readCodeOwners(reader, sourceUrl, ['.github/CODEOWNERS']),
@@ -61,22 +59,31 @@ describe('readCodeOwners', () => {
   });
 
   it('should look at multiple locations', async () => {
-    const ownersText = mockCodeowners;
-    const read = jest
-      .fn()
-      .mockImplementationOnce(() => mockReadResult({ error: 'not found' }))
-      .mockResolvedValue(mockReadResult({ data: ownersText }));
-    const reader = { read, readTree: jest.fn(), search: jest.fn() };
+    const reader = {
+      read: jest.fn(),
+      readUrl: jest.fn().mockResolvedValue({
+        buffer: jest
+          .fn()
+          .mockRejectedValue(new NotFoundError('not found'))
+          .mockResolvedValue(mockCodeowners),
+      }),
+      readTree: jest.fn(),
+      search: jest.fn(),
+    };
 
     const result = await readCodeOwners(reader, sourceUrl, [
       '.github/CODEOWNERS',
       'docs/CODEOWNERS',
     ]);
 
-    expect(read.mock.calls.length).toBe(2);
-    expect(read.mock.calls[0]).toEqual([`${sourceUrl}.github/CODEOWNERS`]);
-    expect(read.mock.calls[1]).toEqual([`${sourceUrl}docs/CODEOWNERS`]);
-    expect(result).toEqual(ownersText);
+    expect(reader.readUrl.mock.calls.length).toBe(2);
+    expect(reader.readUrl.mock.calls[0]).toEqual([
+      `${sourceUrl}.github/CODEOWNERS`,
+    ]);
+    expect(reader.readUrl.mock.calls[1]).toEqual([
+      `${sourceUrl}docs/CODEOWNERS`,
+    ]);
+    expect(result).toEqual(mockCodeowners);
   });
 });
 
@@ -85,15 +92,18 @@ describe('findCodeOwnerByLocation', () => {
     target = 'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
     codeownersContents: codeOwnersContents = mockCodeowners,
   }: { target?: string; codeownersContents?: string } = {}) => {
-    const read = jest
-      .fn()
-      .mockResolvedValue(mockReadResult({ data: codeOwnersContents }));
-
     const scmIntegration = ScmIntegrations.fromConfig(
       new ConfigReader({}),
     ).byUrl(target);
 
-    const reader = { read, readTree: jest.fn(), search: jest.fn() };
+    const reader = {
+      read: jest.fn(),
+      readUrl: jest.fn().mockResolvedValue({
+        buffer: jest.fn().mockResolvedValue(codeOwnersContents),
+      }),
+      readTree: jest.fn(),
+      search: jest.fn(),
+    };
 
     return { target, reader, scmIntegration, codeOwnersContents };
   };

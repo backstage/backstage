@@ -17,8 +17,8 @@
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { Link } from '../Link';
-import { SubvalueCell, Table, TableColumn } from '.';
-import { TableFilter } from './Table';
+import { SubvalueCell } from './SubvalueCell';
+import { Table, TableColumn, TableFilter } from './Table';
 
 export default {
   title: 'Data Display/Table',

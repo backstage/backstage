@@ -54,12 +54,18 @@ export type ScaffolderPageProps = {
     actions?: boolean;
     tasks?: boolean;
   };
+  headerOptions?: {
+    pageTitleOverride?: string;
+    title?: string;
+    subtitle?: string;
+  };
 };
 
 export const ScaffolderPageContents = ({
   TemplateCardComponent,
   groups,
   contextMenu,
+  headerOptions,
 }: ScaffolderPageProps) => {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const otherTemplatesGroup = {
@@ -80,6 +86,7 @@ export const ScaffolderPageContents = ({
         pageTitleOverride="Create a New Component"
         title="Create a New Component"
         subtitle="Create new software components using standard templates"
+        {...headerOptions}
       >
         <ScaffolderPageContextMenu {...contextMenu} />
       </Header>
@@ -134,12 +141,14 @@ export const ScaffolderPage = ({
   TemplateCardComponent,
   groups,
   contextMenu,
+  headerOptions,
 }: ScaffolderPageProps) => (
   <EntityListProvider>
     <ScaffolderPageContents
       TemplateCardComponent={TemplateCardComponent}
       groups={groups}
       contextMenu={contextMenu}
+      headerOptions={headerOptions}
     />
   </EntityListProvider>
 );

@@ -18,7 +18,7 @@ Settings for local development:
 
 - Name: Backstage (or your custom app name)
 - Redirect URI: `http://localhost:7007/api/auth/gitlab/handler/frame`
-- Scopes: read_user
+- Scopes: `read_user`
 
 ## Configuration
 
@@ -35,6 +35,8 @@ auth:
         clientSecret: ${AUTH_GITLAB_CLIENT_SECRET}
         ## uncomment if using self-hosted GitLab
         # audience: https://gitlab.company.com
+        ## uncomment if using a custom redirect URI
+        # callbackUrl: https://${BASE_URL}/api/auth/gitlab/handler/frame
 ```
 
 The GitLab provider is a structure with three configuration keys:
@@ -44,6 +46,9 @@ The GitLab provider is a structure with three configuration keys:
 - `clientSecret`: The Application secret
 - `audience` (optional): The base URL for the self-hosted GitLab instance, e.g.
   `https://gitlab.company.com`
+- `callbackUrl` (optional): The URL matching the Redirect URI registered when creating your GitLab OAuth App, e.g.
+  `https://$backstage.acme.corp/api/auth/gitlab/handler/frame`
+  Note: Due to a peculiarity with GitLab OAuth, ensure there is no trailing `/` after 'frame' in the URL.
 
 ## Adding the provider to the Backstage frontend
 

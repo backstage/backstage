@@ -24,7 +24,7 @@ import { Config } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
-  GitHubIntegrationConfig,
+  GithubIntegrationConfig,
   ScmIntegrations,
   SingleInstanceGithubCredentialsProvider,
 } from '@backstage/integration';
@@ -134,7 +134,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
     private options: {
       id: string;
       orgUrl: string;
-      gitHubConfig: GitHubIntegrationConfig;
+      gitHubConfig: GithubIntegrationConfig;
       logger: Logger;
       githubCredentialsProvider?: GithubCredentialsProvider;
     },

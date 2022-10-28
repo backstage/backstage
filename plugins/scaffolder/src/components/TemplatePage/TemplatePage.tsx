@@ -32,6 +32,7 @@ import { createValidator } from './createValidator';
 
 import { Content, Header, InfoCard, Page } from '@backstage/core-components';
 import {
+  AnalyticsContext,
   errorApiRef,
   useApi,
   useApiHolder,
@@ -129,41 +130,43 @@ export const TemplatePage = ({
   );
 
   return (
-    <Page themeId="home">
-      <Header
-        pageTitleOverride="Create a New Component"
-        title="Create a New Component"
-        subtitle="Create new software components using standard templates"
-      />
-      <Content>
-        {loading && <LinearProgress data-testid="loading-progress" />}
-        {schema && (
-          <InfoCard
-            title={schema.title}
-            noPadding
-            titleTypographyProps={{ component: 'h2' }}
-          >
-            <MultistepJsonForm
-              formData={formState}
-              fields={customFieldComponents}
-              onChange={handleChange}
-              onReset={handleFormReset}
-              onFinish={handleCreate}
-              layouts={layouts}
-              steps={schema.steps.map(step => {
-                return {
-                  ...step,
-                  validate: createValidator(
-                    step.schema,
-                    customFieldValidators,
-                    { apiHolder },
-                  ),
-                };
-              })}
-            />
-          </InfoCard>
-        )}
-      </Content>
-    </Page>
+    <AnalyticsContext attributes={{ entityRef: templateRef }}>
+      <Page themeId="home">
+        <Header
+          pageTitleOverride="Create a New Component"
+          title="Create a New Component"
+          subtitle="Create new software components using standard templates"
+        />
+        <Content>
+          {loading && <LinearProgress data-testid="loading-progress" />}
+          {schema && (
+            <InfoCard
+              title={schema.title}
+              noPadding
+              titleTypographyProps={{ component: 'h2' }}
+            >
+              <MultistepJsonForm
+                formData={formState}
+                fields={customFieldComponents}
+                onChange={handleChange}
+                onReset={handleFormReset}
+                onFinish={handleCreate}
+                layouts={layouts}
+                steps={schema.steps.map(step => {
+                  return {
+                    ...step,
+                    validate: createValidator(
+                      step.schema,
+                      customFieldValidators,
+                      { apiHolder },
+                    ),
+                  };
+                })}
+              />
+            </InfoCard>
+          )}
+        </Content>
+      </Page>
+    </AnalyticsContext>
   );
 };

@@ -7,3 +7,4 @@ description: Browse your project's ADRs.
 documentation: https://github.com/backstage/backstage/tree/master/plugins/adr
 iconUrl: img/adr-logo.png
 npmPackageName: '@backstage/plugin-adr'
+addedDate: '2022-04-13'

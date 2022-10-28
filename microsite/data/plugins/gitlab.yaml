@@ -10,3 +10,4 @@ npmPackageName: '@loblaw/backstage-plugin-gitlab'
 tags:
   - ci
   - cd
+addedDate: '2021-08-17'

@@ -24,10 +24,12 @@ import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
+import { PathParams } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { SubRouteRef } from '@backstage/core-plugin-api';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
@@ -199,6 +201,9 @@ export type NextFieldExtensionOptions<
   validation?: NextCustomFieldValidator<TFieldReturnValue>;
 };
 
+// @alpha (undocumented)
+export const nextRouteRef: RouteRef<undefined>;
+
 // @alpha
 export type NextRouterProps = {
   components?: {
@@ -214,6 +219,11 @@ export type NextRouterProps = {
 export const NextScaffolderPage: (
   props: PropsWithChildren<NextRouterProps>,
 ) => JSX.Element;
+
+// @alpha (undocumented)
+export const nextSelectedTemplateRouteRef: SubRouteRef<
+  PathParams<'/templates/:namespace/:templateName'>
+>;
 
 // @public
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent<
@@ -287,6 +297,9 @@ export interface RepoUrlPickerUiOptions {
   };
 }
 
+// @public (undocumented)
+export const rootRouteRef: RouteRef<undefined>;
+
 // @public
 export type RouterProps = {
   components?: {
@@ -302,6 +315,11 @@ export type RouterProps = {
     filter: (entity: Entity) => boolean;
   }>;
   defaultPreviewTemplate?: string;
+  headerOptions?: {
+    pageTitleOverride?: string;
+    title?: string;
+    subtitle?: string;
+  };
   contextMenu?: {
     editor?: boolean;
     actions?: boolean;
@@ -507,6 +525,11 @@ export interface ScaffolderUseTemplateSecrets {
   // (undocumented)
   setSecrets: (input: Record<string, string>) => void;
 }
+
+// @public (undocumented)
+export const selectedTemplateRouteRef: SubRouteRef<
+  PathParams<'/templates/:namespace/:templateName'>
+>;
 
 // @public
 export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;

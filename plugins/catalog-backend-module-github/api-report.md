@@ -12,7 +12,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { GithubCredentialsProvider } from '@backstage/integration';
-import { GitHubIntegrationConfig } from '@backstage/integration';
+import { GithubIntegrationConfig } from '@backstage/integration';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -20,6 +20,7 @@ import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmLocationAnalyzer } from '@backstage/plugin-catalog-backend';
 import { TaskRunner } from '@backstage/backend-tasks';
+import { TokenManager } from '@backstage/backend-common';
 
 // @public
 export class GithubDiscoveryProcessor implements CatalogProcessor {
@@ -111,6 +112,7 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
 export type GithubLocationAnalyzerOptions = {
   config: Config;
   discovery: PluginEndpointDiscovery;
+  tokenManager: TokenManager;
 };
 
 // @public
@@ -160,7 +162,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
   constructor(options: {
     id: string;
     orgUrl: string;
-    gitHubConfig: GitHubIntegrationConfig;
+    gitHubConfig: GithubIntegrationConfig;
     logger: Logger;
     githubCredentialsProvider?: GithubCredentialsProvider;
   });

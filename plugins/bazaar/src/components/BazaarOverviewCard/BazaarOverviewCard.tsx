@@ -30,7 +30,7 @@ import { bazaarPlugin } from '../../plugin';
 /** @public */
 export type BazaarOverviewCardProps = {
   order: 'latest' | 'random';
-  limit: number;
+  fullWidth?: boolean;
 };
 
 const getUnlinkedCatalogEntities = (
@@ -48,14 +48,14 @@ const getUnlinkedCatalogEntities = (
 
 /** @public */
 export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
-  const { order, limit } = props;
+  const { order, fullWidth = false } = props;
   const bazaarApi = useApi(bazaarApiRef);
   const catalogApi = useApi(catalogApiRef);
   const root = useRouteRef(bazaarPlugin.routes.root);
 
   const bazaarLink = {
     title: 'Go to Bazaar',
-    link: root.toString(),
+    link: `${root()}`,
   };
 
   const [unlinkedCatalogEntities, setUnlinkedCatalogEntities] =
@@ -66,6 +66,7 @@ export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
   });
 
   const [bazaarProjects, fetchBazaarProjects] = useAsyncFn(async () => {
+    const limit = fullWidth ? 6 : 3;
     const response = await bazaarApi.getProjects(limit, order);
     return response.data.map(parseBazaarProject) as BazaarProject[];
   });
@@ -133,8 +134,7 @@ export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
         fetchBazaarProjects={fetchBazaarProjects}
         catalogEntities={unlinkedCatalogEntities || []}
         useTablePagination={false}
-        fullHeight={false}
-        fixedWidth
+        gridSize={fullWidth ? 2 : 4}
       />
     </InfoCard>
   );

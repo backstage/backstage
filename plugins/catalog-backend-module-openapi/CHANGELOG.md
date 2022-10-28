@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-openapi
 
+## 0.1.4-next.0
+
+### Patch Changes
+
+- 4ce887400d: Added support to use the `UrlReaders` when `$ref` pointing to a URL.
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/plugin-catalog-backend@1.5.1-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/plugin-catalog-node@1.2.1-next.0
+  - @backstage/config@1.0.4-next.0
+
 ## 0.1.3
 
 ### Patch Changes

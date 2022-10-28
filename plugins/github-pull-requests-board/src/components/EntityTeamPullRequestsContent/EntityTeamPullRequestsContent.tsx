@@ -15,6 +15,7 @@
  */
 import React, { useState } from 'react';
 import { Grid, Typography } from '@material-ui/core';
+import PeopleIcon from '@material-ui/icons/People';
 import { Progress, InfoCard } from '@backstage/core-components';
 
 import { InfoCardHeader } from '../InfoCardHeader';
@@ -23,8 +24,9 @@ import { Wrapper } from '../Wrapper';
 import { PullRequestCard } from '../PullRequestCard';
 import { usePullRequestsByTeam } from '../../hooks/usePullRequestsByTeam';
 import { PRCardFormating } from '../../utils/types';
+import { shouldDisplayCard } from '../../utils/functions';
 import { DraftPrIcon } from '../icons/DraftPr';
-import { useUserRepositories } from '../../hooks/useUserRepositories';
+import { useUserRepositoriesAndTeam } from '../../hooks/useUserRepositoriesAndTeam';
 
 /** @public */
 export interface EntityTeamPullRequestsContentProps {
@@ -36,9 +38,20 @@ const EntityTeamPullRequestsContent = (
 ) => {
   const { pullRequestLimit } = props;
   const [infoCardFormat, setInfoCardFormat] = useState<PRCardFormating[]>([]);
-  const { repositories } = useUserRepositories();
-  const { loading, pullRequests, refreshPullRequests } = usePullRequestsByTeam(
+  const {
+    loading: loadingReposAndTeam,
     repositories,
+    teamMembers,
+    teamMembersOrganization,
+  } = useUserRepositoriesAndTeam();
+  const {
+    loading: loadingPRs,
+    pullRequests,
+    refreshPullRequests,
+  } = usePullRequestsByTeam(
+    repositories,
+    teamMembers,
+    teamMembersOrganization,
     pullRequestLimit,
   );
 
@@ -48,6 +61,11 @@ const EntityTeamPullRequestsContent = (
         onClickOption={newFormats => setInfoCardFormat(newFormats)}
         value={infoCardFormat}
         options={[
+          {
+            icon: <PeopleIcon />,
+            value: 'team',
+            ariaLabel: 'Show PRs from your team',
+          },
           {
             icon: <DraftPrIcon />,
             value: 'draft',
@@ -59,7 +77,7 @@ const EntityTeamPullRequestsContent = (
   );
 
   const getContent = () => {
-    if (loading) {
+    if (loadingReposAndTeam || loadingPRs) {
       return <Progress />;
     }
 
@@ -84,7 +102,14 @@ const EntityTeamPullRequestsContent = (
                   },
                   index,
                 ) =>
-                  infoCardFormat.includes('draft') === isDraft && (
+                  shouldDisplayCard(
+                    repository,
+                    author,
+                    repositories,
+                    teamMembers,
+                    infoCardFormat,
+                    isDraft,
+                  ) && (
                     <PullRequestCard
                       key={`pull-request-${id}-${index}`}
                       title={title}

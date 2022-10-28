@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { readGitHubIntegrationConfigs } from '@backstage/integration';
+import { readGithubIntegrationConfigs } from '@backstage/integration';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   LinearProgress,
@@ -88,7 +88,7 @@ export const LatestWorkflowRunCard = (props: {
   const config = useApi(configApiRef);
   const errorApi = useApi(errorApiRef);
   // TODO: Get github hostname from metadata annotation
-  const hostname = readGitHubIntegrationConfigs(
+  const hostname = readGithubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
   )[0].host;
   const [owner, repo] = (

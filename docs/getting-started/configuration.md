@@ -284,27 +284,25 @@ otherwise something went terribly wrong.
 
 ## Create a new component using a software template
 
-- Go to `create` and choose to create a website with the `React SSR Template`
-- Type in a name, let's use `tutorial`
-- Select the group `team-a` which will own this new website, and go to the next
-  step
-
+- Go to `create` and choose to create a website with the `Example Node.js Template`
+- Type in a name, let's use `tutorial` and click `Next Step`
 <p align='center'>
-  <img src='../assets/getting-started/b-scaffold-1.png' alt='Software template deployment input screen asking for a name, the group owning this, and a description' />
+  <img src='../assets/getting-started/b-scaffold-1.png' alt='Software template deployment input screen asking for a name' />
 </p>
 
-- For the location, we're going to use the default
-- As owner, type your GitHub username
-- For the repository name, type `tutorial`. Go to the next step
-
+- You should see the following screen:
 <p align='center'>
   <img src='../assets/getting-started/b-scaffold-2.png' alt='Software template deployment input screen asking for the GitHub username, and name of the new repo to create' />
 </p>
 
+- For host, it should default to github.com
+- As owner, type your GitHub username
+- For the repository name, type `tutorial`. Go to the next step
+
 - Review the details of this new service, and press `Create` if you want to
   deploy it like this.
-  - You can follow along with the progress, and as soon as every step is
-    finished, you can take a look at your new service
+- You can follow along with the progress, and as soon as every step is
+  finished, you can take a look at your new service
 
 Achievement unlocked. You've set up an installation of the core Backstage App,
 made it persistent, and configured it so you are now able to use software

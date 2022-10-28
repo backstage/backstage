@@ -54,7 +54,7 @@ const useStyles = makeStyles({
     float: 'right',
   },
   content: {
-    overflow: 'scroll',
+    height: '13rem',
   },
   header: {
     whiteSpace: 'nowrap',
@@ -67,7 +67,6 @@ export const ProjectCard = ({
   project,
   fetchBazaarProjects,
   catalogEntities,
-  fullHeight,
 }: Props) => {
   const classes = useStyles();
   const [openCard, setOpenCard] = useState(false);
@@ -103,10 +102,7 @@ export const ProjectCard = ({
               base: DateTime.now(),
             })}`}
           />
-          <CardContent
-            className={classes.content}
-            style={{ height: fullHeight ? '13rem' : '7rem' }}
-          >
+          <CardContent className={classes.content}>
             <StatusTag styles={classes.statusTag} status={status} />
             <Typography variant="body2" className={classes.memberCount}>
               {Number(membersCount) === Number(1)

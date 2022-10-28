@@ -16,24 +16,7 @@ const {
 const pluginsDirectory = require('path').join(process.cwd(), 'data/plugins');
 const pluginMetadata = fs
   .readdirSync(pluginsDirectory)
-  .map(file => {
-    const fileContent = fs.readFileSync(`./data/plugins/${file}`, 'utf8');
-    let metadata = yaml.load(fileContent);
-
-    const gitIsoDate = require('child_process')
-      .execFileSync('git', [
-        'log',
-        '-1',
-        '--format="%ai"',
-        '--reverse',
-        `./data/plugins/${file}`,
-      ])
-      .toString();
-
-    metadata.date = new Date(gitIsoDate);
-
-    return metadata;
-  })
+  .map(file => yaml.load(fs.readFileSync(`./data/plugins/${file}`, 'utf8')))
   .sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
 const truncate = text =>
   text.length > 170 ? text.substr(0, 170) + '...' : text;
@@ -119,11 +102,12 @@ const Plugins = () => (
               authorUrl,
               documentation,
               category,
-              date,
+              addedDate,
             }) => (
               <div className="PluginCard">
-                {Math.trunc((Date.now() - date) / (1000 * 60 * 60 * 24)) <
-                  newForDays && (
+                {Math.trunc(
+                  (Date.now() - new Date(addedDate)) / (1000 * 60 * 60 * 24),
+                ) < newForDays && (
                   <div className="ribbon ribbon-top-right">
                     <span>NEW</span>
                   </div>

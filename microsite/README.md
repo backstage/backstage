@@ -167,7 +167,7 @@ For more information about blog posts, click [here](https://docusaurus.io/docs/e
 
 ### Adding items to your site's top navigation bar
 
-1. Add links to docs, custom pages or external links by editing the headerLinks field of `website/siteConfig.js`:
+1. Add links to docs, custom pages or external links by editing the `headerLinks` field of `website/siteConfig.js`:
 
 `website/siteConfig.js`
 
