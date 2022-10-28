@@ -28,6 +28,7 @@ export default async function createPlugin(
   const catalog = new CatalogClient({ discoveryApi: env.discovery });
 
   return await createRouter({
+    identity: env.identity,
     logger: env.logger,
     jenkinsInfoProvider: DefaultJenkinsInfoProvider.fromConfig({
       catalog,

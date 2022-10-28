@@ -25,7 +25,10 @@ import {
   PermissionEvaluator,
   toPermissionEvaluator,
 } from '@backstage/plugin-permission-common';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import {
+  getBearerTokenFromAuthorizationHeader,
+  IdentityApi,
+} from '@backstage/plugin-auth-node';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { stringifyError } from '@backstage/errors';
 
@@ -34,13 +37,26 @@ export interface RouterOptions {
   logger: Logger;
   jenkinsInfoProvider: JenkinsInfoProvider;
   permissions?: PermissionEvaluator | PermissionAuthorizer;
+  identity?: IdentityApi;
 }
 
 /** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { jenkinsInfoProvider, permissions, logger } = options;
+  const { jenkinsInfoProvider, permissions, logger, identity } = options;
+
+  async function getRequestToken(
+    request: express.Request,
+  ): Promise<string | undefined> {
+    if (identity) {
+      const user = await identity.getIdentity({ request });
+      if (user?.token) {
+        return user.token;
+      }
+    }
+    return getBearerTokenFromAuthorizationHeader(request.headers.authorization);
+  }
 
   let permissionEvaluator: PermissionEvaluator | undefined;
   if (permissions && 'authorizeConditional' in permissions) {
@@ -63,9 +79,8 @@ export async function createRouter(
     '/v1/entity/:namespace/:kind/:name/projects',
     async (request, response) => {
       const { namespace, kind, name } = request.params;
-      const token = getBearerTokenFromAuthorizationHeader(
-        request.header('authorization'),
-      );
+      const token = await getRequestToken(request);
+
       const branch = request.query.branch;
       let branches: string[] | undefined;
 
@@ -116,9 +131,7 @@ export async function createRouter(
   router.get(
     '/v1/entity/:namespace/:kind/:name/job/:jobFullName/:buildNumber',
     async (request, response) => {
-      const token = getBearerTokenFromAuthorizationHeader(
-        request.header('authorization'),
-      );
+      const token = await getRequestToken(request);
       const { namespace, kind, name, jobFullName, buildNumber } =
         request.params;
 
@@ -148,9 +161,7 @@ export async function createRouter(
     '/v1/entity/:namespace/:kind/:name/job/:jobFullName/:buildNumber::rebuild',
     async (request, response) => {
       const { namespace, kind, name, jobFullName } = request.params;
-      const token = getBearerTokenFromAuthorizationHeader(
-        request.header('authorization'),
-      );
+      const token = await getRequestToken(request);
       const jenkinsInfo = await jenkinsInfoProvider.getInstance({
         entityRef: {
           kind,
