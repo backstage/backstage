@@ -403,8 +403,8 @@ export async function createRouter(
     })
     .post('/v2/tasks/:taskId', async (req, res) => {
       const { taskId } = req.params;
-      await taskBroker.cancel(taskId);
-      res.status(200).json({ status: 'cancelled' });
+      await taskBroker.abort(taskId);
+      res.status(200).json({ status: 'aborted' });
     })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const { taskId } = req.params;

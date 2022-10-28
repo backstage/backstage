@@ -15,7 +15,12 @@
  */
 
 import { ScmIntegrations } from '@backstage/integration';
-import { TaskContext, WorkflowResponse, WorkflowRunner } from './types';
+import {
+  TaskContext,
+  TaskTrackType,
+  WorkflowResponse,
+  WorkflowRunner,
+} from './types';
 import * as winston from 'winston';
 import fs from 'fs-extra';
 import path from 'path';
@@ -185,14 +190,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     step: TaskStep,
     context: TemplateContext,
     renderTemplate: (template: string, values: unknown) => string,
-    taskTrack: {
-      markFailed: (step: TaskStep, err: Error) => Promise<void>;
-      markSuccessful: () => Promise<void>;
-      skipDryRun: (
-        step: TaskStep,
-        action: TemplateAction<JsonObject>,
-      ) => Promise<void>;
-    },
+    taskTrack: TaskTrackType,
     workspacePath: string,
   ) {
     const stepTrack = await this.tracker.stepStart(task, step);
@@ -273,6 +271,12 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       const tmpDirs = new Array<string>();
       const stepOutput: { [outputName: string]: JsonValue } = {};
+      const signal = task.abortContext?.signal;
+
+      task.abortContext?.setAbortListener(async () => {
+        await taskTrack.markAborted(step);
+        await stepTrack.markAborted();
+      });
 
       await action.handler({
         input,
@@ -291,6 +295,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         templateInfo: task.spec.templateInfo,
         user: task.spec.user,
         isDryRun: task.isDryRun,
+        signal,
       });
 
       // Remove all temporary directories that were created when executing the action
@@ -420,6 +425,19 @@ function scaffoldingTracker() {
       taskTimer({ result: 'ok' });
     }
 
+    async function markAborted(step: TaskStep) {
+      await task.emitLog(`Step ${step.id} has aborted.`, {
+        stepId: step.id,
+        status: 'aborted',
+      });
+      taskCount.inc({
+        template,
+        user,
+        result: 'aborted',
+      });
+      taskTimer({ result: 'aborted' });
+    }
+
     async function markFailed(step: TaskStep, err: Error) {
       await task.emitLog(String(err.stack), {
         stepId: step.id,
@@ -435,6 +453,7 @@ function scaffoldingTracker() {
 
     return {
       skipDryRun,
+      markAborted,
       markSuccessful,
       markFailed,
     };
@@ -465,6 +484,15 @@ function scaffoldingTracker() {
       stepTimer({ result: 'ok' });
     }
 
+    async function markAborted() {
+      stepCount.inc({
+        template,
+        step: step.name,
+        result: 'aborted',
+      });
+      stepTimer({ result: 'aborted' });
+    }
+
     async function markFailed() {
       stepCount.inc({
         template,
@@ -483,8 +511,9 @@ function scaffoldingTracker() {
     }
 
     return {
-      markSuccessful,
+      markAborted,
       markFailed,
+      markSuccessful,
       skipFalsy,
     };
   }

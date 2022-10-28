@@ -125,9 +125,6 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
             },
           });
         },
-        cancel: async () => {
-          throw new Error('Not implemented');
-        },
         complete: async () => {
           throw new Error('Not implemented');
         },

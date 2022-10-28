@@ -36,7 +36,7 @@ import {
  */
 export class TaskManager implements TaskContext {
   private isDone = false;
-
+  private ac = new AbortController();
   private heartbeatTimeoutId?: ReturnType<typeof setInterval>;
 
   static create(task: CurrentClaimedTask, storage: TaskStore, logger: Logger) {
@@ -58,6 +58,38 @@ export class TaskManager implements TaskContext {
 
   get secrets() {
     return this.task.secrets;
+  }
+
+  get abortContext() {
+    const context = {
+      abort: async () => {
+        this.ac.abort('Task has been aborted manually');
+        this.ac.signal.removeEventListener('abort', context.abortListener);
+
+        await this.storage.completeTask({
+          taskId: this.task.taskId,
+          status: 'aborted',
+          eventBody: {
+            message: `Run completed with status: aborted`,
+            error: {
+              name: 'TaskAborted',
+              message: 'The task has been aborted',
+            },
+          },
+        });
+        this.isDone = true;
+        if (this.heartbeatTimeoutId) {
+          clearTimeout(this.heartbeatTimeoutId);
+        }
+      },
+      abortListener: () => {},
+      setAbortListener: (listener: () => void) => {
+        context.abortListener = listener;
+        context.signal.addEventListener('abort', listener, { once: true });
+      },
+      signal: this.ac.signal,
+    };
+    return context;
   }
 
   get createdBy() {
@@ -88,21 +120,6 @@ export class TaskManager implements TaskContext {
       status: result === 'failed' ? 'failed' : 'completed',
       eventBody: {
         message: `Run completed with status: ${result}`,
-        ...metadata,
-      },
-    });
-    this.isDone = true;
-    if (this.heartbeatTimeoutId) {
-      clearTimeout(this.heartbeatTimeoutId);
-    }
-  }
-
-  async cancel(metadata?: JsonObject): Promise<void> {
-    await this.storage.completeTask({
-      taskId: this.task.taskId,
-      status: 'cancelled',
-      eventBody: {
-        message: `Run completed with status: cancelled`,
         ...metadata,
       },
     });
@@ -291,16 +308,10 @@ export class StorageTaskBroker implements TaskBroker {
     this.deferredDispatch = defer();
   }
 
-  async cancel(taskId: string) {
+  async abort(taskId: string) {
     const taskManager = this.taskManagerRegistry.get(taskId);
     if (taskManager) {
-      await taskManager.cancel({
-        message: 'Run completed with status: cancelled',
-        error: {
-          name: 'TaskCancelled',
-          message: 'The task has been cancelled',
-        },
-      });
+      await taskManager.abortContext.abort();
     }
   }
 }

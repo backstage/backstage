@@ -190,9 +190,10 @@ export const TaskStatusStepper = memo(
           nonLinear
         >
           {steps.map((step, index) => {
+            const isAborted = step.status === 'aborted';
+            const isActive = step.status === 'processing';
             const isCompleted = step.status === 'completed';
             const isFailed = step.status === 'failed';
-            const isActive = step.status === 'processing';
             const isSkipped = step.status === 'skipped';
 
             return (
@@ -201,7 +202,7 @@ export const TaskStatusStepper = memo(
                   <StepLabel
                     StepIconProps={{
                       completed: isCompleted,
-                      error: isFailed,
+                      error: isFailed || isAborted,
                       active: isActive,
                     }}
                     StepIconComponent={TaskStepIconComponent}
@@ -320,7 +321,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
   };
 
   const handleCancel = async () => {
-    scaffolderApi.cancelTask(taskId);
+    scaffolderApi.abortTask(taskId);
   };
 
   return (
