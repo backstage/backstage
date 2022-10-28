@@ -114,7 +114,7 @@ export async function createRouter(
     allProviderFactories,
   )) {
     if (configuredProviders.includes(providerId)) {
-      logger.info(`Configuring provider, ${providerId}`);
+      logger.info(`Configuring auth provider: ${providerId}`);
       try {
         const provider = providerFactory({
           providerId,
