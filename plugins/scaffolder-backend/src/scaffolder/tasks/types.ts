@@ -15,7 +15,8 @@
  */
 
 import { JsonValue, JsonObject, Observable } from '@backstage/types';
-import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
+import { TemplateAction } from '../actions';
 
 /**
  * The status of each step of the Task
@@ -23,11 +24,12 @@ import { TaskSpec } from '@backstage/plugin-scaffolder-common';
  * @public
  */
 export type TaskStatus =
-  | 'open'
-  | 'processing'
-  | 'failed'
+  | 'aborted'
   | 'cancelled'
-  | 'completed';
+  | 'completed'
+  | 'failed'
+  | 'open'
+  | 'processing';
 
 /**
  * The state of a completed task.
@@ -101,6 +103,13 @@ export type TaskBrokerDispatchOptions = {
   createdBy?: string;
 };
 
+export type AbortContext = {
+  abort(): void;
+  abortListener: () => void;
+  setAbortListener(listener: () => void): void;
+  signal: AbortSignal;
+};
+
 /**
  * Task
  *
@@ -109,11 +118,12 @@ export type TaskBrokerDispatchOptions = {
 export interface TaskContext {
   spec: TaskSpec;
   secrets?: TaskSecrets;
+  abortContext?: AbortContext;
   createdBy?: string;
   done: boolean;
   isDryRun?: boolean;
-  emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
+  emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   getWorkspaceName(): Promise<string>;
 }
 
@@ -123,6 +133,7 @@ export interface TaskContext {
  * @public
  */
 export interface TaskBroker {
+  abort(taskId: string): void;
   claim(): Promise<TaskContext>;
   dispatch(
     options: TaskBrokerDispatchOptions,
@@ -204,7 +215,6 @@ export interface TaskStore {
     tasks: { taskId: string }[];
   }>;
   list?(options: { createdBy?: string }): Promise<{ tasks: SerializedTask[] }>;
-
   emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void>;
   listEvents({
     taskId,
@@ -214,6 +224,17 @@ export interface TaskStore {
 }
 
 export type WorkflowResponse = { output: { [key: string]: JsonValue } };
+
+export type TaskTrackType = {
+  markAborted: (step: TaskStep) => Promise<void>;
+  markFailed: (step: TaskStep, err: Error) => Promise<void>;
+  markSuccessful: () => Promise<void>;
+  skipDryRun: (
+    step: TaskStep,
+    action: TemplateAction<JsonObject>,
+  ) => Promise<void>;
+};
+
 export interface WorkflowRunner {
   execute(task: TaskContext): Promise<WorkflowResponse>;
 }

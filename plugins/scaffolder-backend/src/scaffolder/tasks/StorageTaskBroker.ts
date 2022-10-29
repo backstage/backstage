@@ -36,7 +36,7 @@ import {
  */
 export class TaskManager implements TaskContext {
   private isDone = false;
-
+  private ac = new AbortController();
   private heartbeatTimeoutId?: ReturnType<typeof setInterval>;
 
   static create(task: CurrentClaimedTask, storage: TaskStore, logger: Logger) {
@@ -58,6 +58,38 @@ export class TaskManager implements TaskContext {
 
   get secrets() {
     return this.task.secrets;
+  }
+
+  get abortContext() {
+    const context = {
+      abort: async () => {
+        this.ac.abort('Task has been aborted manually');
+        this.ac.signal.removeEventListener('abort', context.abortListener);
+
+        await this.storage.completeTask({
+          taskId: this.task.taskId,
+          status: 'aborted',
+          eventBody: {
+            message: `Run completed with status: aborted`,
+            error: {
+              name: 'TaskAborted',
+              message: 'The task has been aborted',
+            },
+          },
+        });
+        this.isDone = true;
+        if (this.heartbeatTimeoutId) {
+          clearTimeout(this.heartbeatTimeoutId);
+        }
+      },
+      abortListener: () => {},
+      setAbortListener: (listener: () => void) => {
+        context.abortListener = listener;
+        context.signal.addEventListener('abort', listener, { once: true });
+      },
+      signal: this.ac.signal,
+    };
+    return context;
   }
 
   get createdBy() {
@@ -164,6 +196,21 @@ export class StorageTaskBroker implements TaskBroker {
   }
 
   private deferredDispatch = defer();
+  private taskManagerRegistry = new Map<String, TaskManager>();
+
+  private async registerTaskManager(taskManager: TaskManager) {
+    const taskId = await taskManager.getWorkspaceName();
+    this.taskManagerRegistry.set(taskId, taskManager);
+
+    const subscription = this.event$({ taskId }).subscribe(
+      ({ events }: { events: SerializedTaskEvent[] }) => {
+        if (events.some((e: SerializedTaskEvent) => e.type === 'completion')) {
+          this.taskManagerRegistry.delete(taskId);
+          subscription.unsubscribe();
+        }
+      },
+    );
+  }
 
   /**
    * {@inheritdoc TaskBroker.claim}
@@ -172,7 +219,7 @@ export class StorageTaskBroker implements TaskBroker {
     for (;;) {
       const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
-        return TaskManager.create(
+        const taskManager = TaskManager.create(
           {
             taskId: pendingTask.id,
             spec: pendingTask.spec,
@@ -182,6 +229,9 @@ export class StorageTaskBroker implements TaskBroker {
           this.storage,
           this.logger,
         );
+        await this.registerTaskManager(taskManager);
+
+        return taskManager;
       }
 
       await this.waitForDispatch();
@@ -270,5 +320,12 @@ export class StorageTaskBroker implements TaskBroker {
   private signalDispatch() {
     this.deferredDispatch.resolve();
     this.deferredDispatch = defer();
+  }
+
+  async abort(taskId: string) {
+    const taskManager = this.taskManagerRegistry.get(taskId);
+    if (taskManager) {
+      await taskManager.abortContext.abort();
+    }
   }
 }

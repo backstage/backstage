@@ -23,10 +23,11 @@ import { JSONSchema7 } from 'json-schema';
  * @public
  */
 export type ScaffolderTaskStatus =
+  | 'aborted'
+  | 'completed'
+  | 'failed'
   | 'open'
   | 'processing'
-  | 'failed'
-  | 'completed'
   | 'skipped';
 
 /**
@@ -193,6 +194,8 @@ export interface ScaffolderApi {
   ): Promise<ScaffolderScaffoldResponse>;
 
   getTask(taskId: string): Promise<ScaffolderTask>;
+
+  abortTask(taskId: string): void;
 
   listTasks?(options: {
     filterByOwnership: 'owned' | 'all';
