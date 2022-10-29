@@ -198,6 +198,20 @@ export class StorageTaskBroker implements TaskBroker {
   private deferredDispatch = defer();
   private taskManagerRegistry = new Map<String, TaskManager>();
 
+  private async registerTaskManager(taskManager: TaskManager) {
+    const taskId = await taskManager.getWorkspaceName();
+    this.taskManagerRegistry.set(taskId, taskManager);
+
+    const subscription = this.event$({ taskId }).subscribe(
+      ({ events }: { events: SerializedTaskEvent[] }) => {
+        if (events.some((e: SerializedTaskEvent) => e.type === 'completion')) {
+          this.taskManagerRegistry.delete(taskId);
+          subscription.unsubscribe();
+        }
+      },
+    );
+  }
+
   /**
    * {@inheritdoc TaskBroker.claim}
    */
@@ -215,8 +229,8 @@ export class StorageTaskBroker implements TaskBroker {
           this.storage,
           this.logger,
         );
+        await this.registerTaskManager(taskManager);
 
-        this.taskManagerRegistry.set(pendingTask.id, taskManager);
         return taskManager;
       }
 
