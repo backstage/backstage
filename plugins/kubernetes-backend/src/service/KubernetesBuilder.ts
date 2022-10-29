@@ -121,6 +121,7 @@ export class KubernetesBuilder {
         serviceLocator,
         customResources,
         objectTypesToFetch: this.getObjectTypesToFetch(),
+        rejectionHandler: new KubernetesErrorIndicator(logger),
       });
 
     const router = this.buildRouter(

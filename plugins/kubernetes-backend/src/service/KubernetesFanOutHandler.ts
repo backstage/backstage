@@ -27,6 +27,7 @@ import {
   CustomResource,
   CustomResourcesByEntity,
   KubernetesObjectsByEntity,
+  KubernetesRejectionHandler,
   ServiceLocatorRequestContext,
 } from '../types/types';
 import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
@@ -188,6 +189,7 @@ export class KubernetesFanOutHandler {
   private readonly customResources: CustomResource[];
   private readonly objectTypesToFetch: Set<ObjectToFetch>;
   private readonly authTranslators: Record<string, KubernetesAuthTranslator>;
+  private readonly rejectionHandler: KubernetesRejectionHandler;
 
   constructor({
     logger,
@@ -195,6 +197,7 @@ export class KubernetesFanOutHandler {
     serviceLocator,
     customResources,
     objectTypesToFetch = DEFAULT_OBJECTS,
+    rejectionHandler,
   }: KubernetesFanOutHandlerOptions) {
     this.logger = logger;
     this.fetcher = fetcher;
@@ -202,6 +205,7 @@ export class KubernetesFanOutHandler {
     this.customResources = customResources;
     this.objectTypesToFetch = new Set(objectTypesToFetch);
     this.authTranslators = {};
+    this.rejectionHandler = rejectionHandler;
   }
 
   async getCustomResourcesByEntity({
@@ -274,6 +278,17 @@ export class KubernetesFanOutHandler {
             namespace,
           })
           .then(result => this.getMetricsForPods(clusterDetailsItem, result))
+          .catch(reason =>
+            this.rejectionHandler
+              .onRejected(reason)
+              .then(
+                kubernetesFetchError =>
+                  [
+                    { errors: [kubernetesFetchError], responses: [] },
+                    [],
+                  ] as responseWithMetrics,
+              ),
+          )
           .then(r => this.toClusterObjects(clusterDetailsItem, r));
       }),
     ).then(this.toObjectsByEntityResponse);

@@ -303,6 +303,8 @@ export interface KubernetesObjectsProviderOptions {
   // (undocumented)
   objectTypesToFetch?: ObjectToFetch[];
   // (undocumented)
+  rejectionHandler: KubernetesRejectionHandler;
+  // (undocumented)
   serviceLocator: KubernetesServiceLocator;
 }
 

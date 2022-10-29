@@ -21,6 +21,7 @@ import {
   FetchResponseWrapper,
   ObjectFetchParams,
 } from '../types/types';
+import { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 
 const fetchObjectsForService = jest.fn();
@@ -41,6 +42,15 @@ const POD_METRICS_FIXTURE = {
     requestTotal: '1001',
   },
   pod: {},
+};
+
+const unreachableReason = {
+  name: 'KubernetesFetchError',
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'badurl.does.not.exist',
+  message: 'getaddrinfo ENOTFOUND badurl.does.not.exist',
 };
 
 const mockFetch = (mock: jest.Mock) => {
@@ -83,6 +93,8 @@ const mockFetch = (mock: jest.Mock) => {
             },
           ],
         });
+      } else if (clusterName === 'unreachable-cluster') {
+        return Promise.reject(unreachableReason);
       }
 
       return Promise.resolve({
@@ -222,6 +234,10 @@ function mockFetchAndGetKubernetesFanOutHandler(
   return getKubernetesFanOutHandler(customResources);
 }
 
+const rejectionHandler = {
+  onRejected: jest.fn(),
+};
+
 function getKubernetesFanOutHandler(customResources: CustomResource[]) {
   return new KubernetesFanOutHandler({
     logger: getVoidLogger(),
@@ -233,6 +249,7 @@ function getKubernetesFanOutHandler(customResources: CustomResource[]) {
       getClustersByEntity,
     },
     customResources: customResources,
+    rejectionHandler: rejectionHandler,
   });
 }
 
@@ -741,6 +758,55 @@ describe('getKubernetesObjectsByEntity', () => {
         },
       ],
     });
+  });
+  it('returns objects for one cluster when another is unreachable', async () => {
+    const surfacedError = {
+      errorType: 'UNKNOWN_ERROR',
+      message: 'surfaced error',
+    } as KubernetesFetchError;
+    getClustersByEntity.mockImplementation(() =>
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'test-cluster',
+            authProvider: 'serviceAccount',
+          },
+          {
+            name: 'unreachable-cluster',
+            authProvider: 'serviceAccount',
+          },
+        ],
+      }),
+    );
+    rejectionHandler.onRejected.mockResolvedValue(surfacedError);
+    const sut = mockFetchAndGetKubernetesFanOutHandler([]);
+
+    const result = await sut.getKubernetesObjectsByEntity({
+      entity,
+      auth: {},
+    });
+
+    expect(result).toStrictEqual({
+      items: [
+        {
+          cluster: {
+            name: 'test-cluster',
+          },
+          errors: [],
+          podMetrics: [POD_METRICS_FIXTURE],
+          resources: resourcesByCluster('test-cluster'),
+        },
+        {
+          cluster: {
+            name: 'unreachable-cluster',
+          },
+          errors: [surfacedError],
+          podMetrics: [],
+          resources: [],
+        },
+      ],
+    });
+    expect(rejectionHandler.onRejected).toHaveBeenCalledWith(unreachableReason);
   });
 });
 
