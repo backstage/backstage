@@ -69,12 +69,12 @@ export interface RouterOptions {
   actions?: TemplateAction<any>[];
   /**
    * @deprecated taskWorkers is deprecated in favor of concurrentTasksLimit option with a single TaskWorker
-   * @default 1
+   * @defaultValue 1
    */
   taskWorkers?: number;
   /**
    * Sets the number of concurrent tasks that can be run at any given time on the TaskWorker
-   * @default 10
+   * @defaultValue 10
    */
   concurrentTasksLimit?: number;
   taskBroker?: TaskBroker;

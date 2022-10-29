@@ -200,7 +200,7 @@ export function createGithubRepoCreateAction(options: {
   requireCodeOwnerReviews?: boolean | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
   requireBranchesToBeUpToDate?: boolean | undefined;
-  repoVisibility?: 'internal' | 'private' | 'public' | undefined;
+  repoVisibility?: 'public' | 'private' | 'internal' | undefined;
   collaborators?:
     | (
         | {
@@ -281,7 +281,7 @@ export function createPublishBitbucketAction(options: {
   repoUrl: string;
   description?: string | undefined;
   defaultBranch?: string | undefined;
-  repoVisibility?: 'private' | 'public' | undefined;
+  repoVisibility?: 'public' | 'private' | undefined;
   sourcePath?: string | undefined;
   enableLFS?: boolean | undefined;
   token?: string | undefined;
@@ -298,7 +298,7 @@ export function createPublishBitbucketCloudAction(options: {
   repoUrl: string;
   description?: string | undefined;
   defaultBranch?: string | undefined;
-  repoVisibility?: 'private' | 'public' | undefined;
+  repoVisibility?: 'public' | 'private' | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
 }>;
@@ -311,7 +311,7 @@ export function createPublishBitbucketServerAction(options: {
   repoUrl: string;
   description?: string | undefined;
   defaultBranch?: string | undefined;
-  repoVisibility?: 'private' | 'public' | undefined;
+  repoVisibility?: 'public' | 'private' | undefined;
   sourcePath?: string | undefined;
   enableLFS?: boolean | undefined;
   token?: string | undefined;
@@ -369,7 +369,7 @@ export function createPublishGithubAction(options: {
   requireCodeOwnerReviews?: boolean | undefined;
   requiredStatusCheckContexts?: string[] | undefined;
   requireBranchesToBeUpToDate?: boolean | undefined;
-  repoVisibility?: 'internal' | 'private' | 'public' | undefined;
+  repoVisibility?: 'public' | 'private' | 'internal' | undefined;
   collaborators?:
     | (
         | {
@@ -415,7 +415,7 @@ export function createPublishGitlabAction(options: {
 }): TemplateAction<{
   repoUrl: string;
   defaultBranch?: string | undefined;
-  repoVisibility?: 'internal' | 'private' | 'public' | undefined;
+  repoVisibility?: 'public' | 'private' | 'internal' | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
   gitCommitMessage?: string | undefined;
@@ -435,7 +435,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   sourcePath?: string | undefined;
   targetPath?: string | undefined;
   token?: string | undefined;
-  commitAction?: 'update' | 'create' | 'delete' | undefined;
+  commitAction?: 'create' | 'update' | 'delete' | undefined;
   projectid?: string | undefined;
   removeSourceBranch?: boolean | undefined;
   assignee?: string | undefined;
@@ -552,6 +552,7 @@ export interface RouterOptions {
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   // (undocumented)
   catalogClient: CatalogApi;
+  concurrentTasksLimit?: number;
   // (undocumented)
   config: Config;
   // (undocumented)
@@ -566,7 +567,7 @@ export interface RouterOptions {
   scheduler?: PluginTaskScheduler;
   // (undocumented)
   taskBroker?: TaskBroker;
-  // (undocumented)
+  // @deprecated (undocumented)
   taskWorkers?: number;
 }
 
