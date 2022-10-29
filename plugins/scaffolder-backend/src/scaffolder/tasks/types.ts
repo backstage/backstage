@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AbortSignal } from 'node-abort-controller';
 import { JsonValue, JsonObject, Observable } from '@backstage/types';
 import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateAction } from '../actions';

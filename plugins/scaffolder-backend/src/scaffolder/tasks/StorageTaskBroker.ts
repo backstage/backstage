@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AbortController } from 'node-abort-controller';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { JsonObject, Observable } from '@backstage/types';
 import { Logger } from 'winston';
@@ -63,7 +64,7 @@ export class TaskManager implements TaskContext {
   get abortContext() {
     const context = {
       abort: async () => {
-        this.ac.abort('Task has been aborted manually');
+        this.ac.abort();
         this.ac.signal.removeEventListener('abort', context.abortListener);
 
         await this.storage.completeTask({
