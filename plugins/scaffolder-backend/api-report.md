@@ -50,6 +50,7 @@ export type ActionContext<Input extends JsonObject> = {
     entity?: UserEntity;
     ref?: string;
   };
+  signal?: AbortSignal;
 };
 
 // @public
@@ -631,6 +632,8 @@ export type SerializedTaskEvent = {
 // @public
 export interface TaskBroker {
   // (undocumented)
+  abort(taskId: string): void;
+  // (undocumented)
   claim(): Promise<TaskContext>;
   // (undocumented)
   dispatch(
@@ -667,6 +670,10 @@ export type TaskCompletionState = 'failed' | 'completed';
 
 // @public
 export interface TaskContext {
+  // Warning: (ae-forgotten-export) The symbol "AbortContext" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  abortContext?: AbortContext;
   // (undocumented)
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   // (undocumented)
@@ -690,6 +697,13 @@ export type TaskEventType = 'completion' | 'log';
 
 // @public
 export class TaskManager implements TaskContext {
+  // (undocumented)
+  get abortContext(): {
+    abort: () => Promise<void>;
+    abortListener: () => void;
+    setAbortListener: (listener: () => void) => void;
+    signal: AbortSignal;
+  };
   // (undocumented)
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   // (undocumented)
@@ -719,11 +733,12 @@ export type TaskSecrets = Record<string, string> & {
 
 // @public
 export type TaskStatus =
-  | 'open'
-  | 'processing'
-  | 'failed'
+  | 'aborted'
   | 'cancelled'
-  | 'completed';
+  | 'completed'
+  | 'failed'
+  | 'open'
+  | 'processing';
 
 // @public
 export interface TaskStore {

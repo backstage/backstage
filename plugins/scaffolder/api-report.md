@@ -329,6 +329,8 @@ export type RouterProps = {
 // @public
 export interface ScaffolderApi {
   // (undocumented)
+  abortTask(taskId: string): void;
+  // (undocumented)
   dryRun?(options: ScaffolderDryRunOptions): Promise<ScaffolderDryRunResponse>;
   // (undocumented)
   getIntegrationsList(
@@ -364,6 +366,8 @@ export class ScaffolderClient implements ScaffolderApi {
     scmIntegrationsApi: ScmIntegrationRegistry;
     useLongPollingLogs?: boolean;
   });
+  // (undocumented)
+  abortTask(taskId: string): Promise<any>;
   // (undocumented)
   dryRun(options: ScaffolderDryRunOptions): Promise<ScaffolderDryRunResponse>;
   // (undocumented)
@@ -514,10 +518,11 @@ export type ScaffolderTaskOutput = {
 
 // @public
 export type ScaffolderTaskStatus =
+  | 'aborted'
+  | 'completed'
+  | 'failed'
   | 'open'
   | 'processing'
-  | 'failed'
-  | 'completed'
   | 'skipped';
 
 // @public
