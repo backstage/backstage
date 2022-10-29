@@ -37,6 +37,14 @@ import { UserEntity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
 
 // @public
+export type AbortContext = {
+  abort(): void;
+  abortListener: () => void;
+  setAbortListener(listener: () => void): void;
+  signal: AbortSignal_2;
+};
+
+// @public
 export type ActionContext<Input extends JsonObject> = {
   logger: Logger;
   logStream: Writable;
@@ -437,7 +445,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   sourcePath?: string | undefined;
   targetPath?: string | undefined;
   token?: string | undefined;
-  commitAction?: 'update' | 'create' | 'delete' | undefined;
+  commitAction?: 'update' | 'delete' | 'create' | undefined;
   projectid?: string | undefined;
   removeSourceBranch?: boolean | undefined;
   assignee?: string | undefined;
@@ -671,8 +679,6 @@ export type TaskCompletionState = 'failed' | 'completed';
 
 // @public
 export interface TaskContext {
-  // Warning: (ae-forgotten-export) The symbol "AbortContext" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   abortContext?: AbortContext;
   // (undocumented)

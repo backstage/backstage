@@ -104,6 +104,11 @@ export type TaskBrokerDispatchOptions = {
   createdBy?: string;
 };
 
+/**
+ * It used to abort a running task.
+ *
+ * @public
+ */
 export type AbortContext = {
   abort(): void;
   abortListener: () => void;

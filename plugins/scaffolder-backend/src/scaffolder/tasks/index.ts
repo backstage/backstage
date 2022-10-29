@@ -20,6 +20,7 @@ export type { CurrentClaimedTask } from './StorageTaskBroker';
 export { TaskWorker } from './TaskWorker';
 export type { CreateWorkerOptions } from './TaskWorker';
 export type {
+  AbortContext,
   TaskSecrets,
   TaskCompletionState,
   TaskStoreEmitOptions,
