@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="node" />
 
+import { AbortSignal as AbortSignal_2 } from 'node-abort-controller';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
@@ -50,7 +51,7 @@ export type ActionContext<Input extends JsonObject> = {
     entity?: UserEntity;
     ref?: string;
   };
-  signal?: AbortSignal;
+  signal?: AbortSignal_2;
 };
 
 // @public
@@ -702,7 +703,7 @@ export class TaskManager implements TaskContext {
     abort: () => Promise<void>;
     abortListener: () => void;
     setAbortListener: (listener: () => void) => void;
-    signal: AbortSignal;
+    signal: AbortSignal_2;
   };
   // (undocumented)
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
