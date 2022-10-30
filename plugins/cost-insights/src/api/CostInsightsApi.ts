@@ -24,6 +24,7 @@ import {
   MetricData,
 } from '../types';
 import { createApiRef } from '@backstage/core-plugin-api';
+import { Entity as CatalogEntity } from '@backstage/catalog-model';
 
 /** @public */
 export type ProductInsightsOptions = {
@@ -76,6 +77,25 @@ export type CostInsightsApi = {
    * @param group - The group id from getUserGroups or query parameters
    */
   getGroupProjects(group: string): Promise<Project[]>;
+
+  /**
+   * Get daily cost aggregations for a given entity and interval time frame.
+   *
+   * The return type includes an array of daily cost aggregations as well as statistics about the
+   * change in cost over the intervals. Calculating these statistics requires us to bucket costs
+   * into two or more time periods, hence a repeating interval format rather than just a start and
+   * end date.
+   *
+   * The rate of change in this comparison allows teams to reason about their cost growth (or
+   * reduction) and compare it to metrics important to the business.
+   *
+   * Note: implementing this is only required when using the `EntityCostInsightsContent` extension.
+   *
+   * @param entity - The catalog entity
+   * @param intervals - An ISO 8601 repeating interval string, such as R2/P30D/2020-09-01
+   *   https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
+   */
+  getEntityDailyCost?(entity: CatalogEntity, intervals: string): Promise<Cost>;
 
   /**
    * Get daily cost aggregations for a given group and interval time frame.

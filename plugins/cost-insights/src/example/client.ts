@@ -38,6 +38,7 @@ import {
   getGroupedProjects,
   trendlineOf,
 } from '../testUtils';
+import { Entity as CatalogEntity } from '@backstage/catalog-model';
 
 /** @public */
 export class ExampleCostInsightsClient implements CostInsightsApi {
@@ -90,6 +91,29 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     );
 
     return cost;
+  }
+
+  async getEntityDailyCost(
+    entity: CatalogEntity,
+    intervals: string,
+  ): Promise<Cost> {
+    const aggregation = aggregationFor(intervals, 8_000);
+    const groupDailyCost: Cost = await this.request(
+      { entity, intervals },
+      {
+        aggregation: aggregation,
+        change: changeOf(aggregation),
+        trendline: trendlineOf(aggregation),
+        // Optional field providing cost groupings / breakdowns keyed by the type. In this example,
+        // daily cost grouped by cloud product OR by project / billing account.
+        groupedCosts: {
+          product: getGroupedProducts(intervals),
+          project: getGroupedProjects(intervals),
+        },
+      },
+    );
+
+    return groupDailyCost;
   }
 
   async getGroupDailyCost(group: string, intervals: string): Promise<Cost> {
