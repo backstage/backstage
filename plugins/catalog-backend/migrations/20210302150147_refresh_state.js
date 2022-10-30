@@ -91,8 +91,8 @@ exports.up = async function up(knex) {
 
   await knex.schema.createTable('refresh_state_references', table => {
     const textColumn = isMySQL
-        ? table.string.bind(table)
-        : table.text.bind(table);
+      ? table.string.bind(table)
+      : table.text.bind(table);
 
     table.comment('Edges between refresh state rows');
     table

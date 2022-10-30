@@ -21,17 +21,11 @@
  */
 exports.up = async function up(knex) {
   await knex.schema.alterTable('entities_search', table => {
-    const options = knex.client.config.client.includes('mysql') ? { indexType: 'FULLTEXT', } : {}
-      table.index(
-        ['key'],
-        'entities_search_key',
-        options
-      );
-      table.index(
-        ['value'],
-        'entities_search_value',
-        options
-      );
+    const options = knex.client.config.client.includes('mysql')
+      ? { indexType: 'FULLTEXT' }
+      : {};
+    table.index(['key'], 'entities_search_key', options);
+    table.index(['value'], 'entities_search_value', options);
   });
 };
 
