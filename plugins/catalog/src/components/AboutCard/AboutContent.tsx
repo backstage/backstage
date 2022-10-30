@@ -203,17 +203,20 @@ export function AboutContent(props: AboutContentProps) {
         value="No Labels"
         gridSizes={{ xs: 12, sm: 6, lg: 4 }}
       >
-        {(Object.keys(entity?.metadata?.labels as Object) || []).map(t => (
-          <Chip
-            key={t}
-            size="small"
-            label={`${t}:${
-              entity?.metadata?.labels !== undefined
-                ? entity?.metadata?.labels[t]
-                : null
-            }`}
-          />
-        ))}
+        {(Object.keys(entity?.metadata?.labels || {}) as (keyof string)[]).map(
+          t => (
+            <Chip
+              key={t as string}
+              size="small"
+              label={`${t as string}:${
+                entity?.metadata?.labels !== undefined
+                  ? entity?.metadata?.labels[t as string]
+                  : null
+              }`}
+            />
+          ),
+        )}
+        {}
       </AboutField>
       {isLocation && (entity?.spec?.targets || entity?.spec?.target) && (
         <AboutField label="Targets" gridSizes={{ xs: 12 }}>
