@@ -15,10 +15,29 @@
  */
 import { useOutlet } from 'react-router';
 import React from 'react';
-import { DefaultSettingsPage } from './DefaultSettingsPage';
+import { DefaultSettingsPage } from '../DefaultSettingsPage';
+import { useElementFilter } from '@backstage/core-plugin-api';
+import {
+  USER_SETTINGS_TAB_KEY,
+  UserSettingsTabProps,
+} from '../UserSettingsTab';
 
-export const SettingsPage = () => {
+export const SettingsPage = (props: { providerSettings?: JSX.Element }) => {
+  const { providerSettings } = props;
   const outlet = useOutlet();
+  const tabs = useElementFilter(outlet, elements =>
+    elements
+      .selectByComponentData({
+        key: USER_SETTINGS_TAB_KEY,
+      })
+      .getElements<UserSettingsTabProps>(),
+  );
 
-  return <>{outlet || <DefaultSettingsPage />}</>;
+  return (
+    <>
+      {(tabs.length === 0 && outlet) || (
+        <DefaultSettingsPage tabs={tabs} providerSettings={providerSettings} />
+      )}
+    </>
+  );
 };

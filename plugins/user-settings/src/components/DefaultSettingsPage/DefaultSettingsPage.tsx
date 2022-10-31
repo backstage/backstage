@@ -19,14 +19,16 @@ import { UserSettingsAuthProviders } from '../AuthProviders';
 import { UserSettingsFeatureFlags } from '../FeatureFlags';
 import { UserSettingsGeneral } from '../General';
 import { SettingsLayout } from '../SettingsLayout';
+import { UserSettingsTabProps } from '../UserSettingsTab';
 
 /**
  * @public
  */
 export const DefaultSettingsPage = (props: {
+  tabs?: React.ReactElement<UserSettingsTabProps>[];
   providerSettings?: JSX.Element;
 }) => {
-  const { providerSettings } = props;
+  const { providerSettings, tabs } = props;
 
   return (
     <SettingsLayout>
@@ -42,6 +44,11 @@ export const DefaultSettingsPage = (props: {
       <SettingsLayout.Route path="feature-flags" title="Feature Flags">
         <UserSettingsFeatureFlags />
       </SettingsLayout.Route>
+      {tabs?.map((child, i) => (
+        <SettingsLayout.Route key={i} {...child.props}>
+          {child}
+        </SettingsLayout.Route>
+      ))}
     </SettingsLayout>
   );
 };

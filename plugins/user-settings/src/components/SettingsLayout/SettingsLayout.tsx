@@ -35,7 +35,7 @@ export type SubRoute = {
   tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
 };
 
-const dataKey = 'plugin.explore.settingsLayoutRoute';
+const dataKey = 'plugin.user-settings.settingsLayoutRoute';
 
 const Route: (props: SubRoute) => null = () => null;
 attachComponentData(Route, dataKey, true);
