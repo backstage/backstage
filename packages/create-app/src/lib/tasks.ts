@@ -28,9 +28,14 @@ import {
 import { exec as execCb } from 'child_process';
 import { packageVersions } from './versions';
 import { promisify } from 'util';
+import os from 'os';
 
 const TASK_NAME_MAX_LENGTH = 14;
 const exec = promisify(execCb);
+
+export type GitConfig = {
+  defaultBranch?: string;
+};
 
 export class Task {
   static log(name: string = '') {
@@ -235,4 +240,66 @@ export async function moveAppTask(
         fs.removeSync(tempDir);
       });
   });
+}
+
+/**
+ * Read git configs by creating a temp folder and initializing a repo
+ *
+ * @throws if `exec` fails
+ */
+export async function readGitConfig(): Promise<GitConfig | undefined> {
+  const tempDir = resolvePath(os.tmpdir(), 'git-temp-dir');
+
+  try {
+    await fs.mkdir(tempDir);
+
+    await exec('git init', { cwd: tempDir });
+    await exec('git commit --allow-empty -m "Initial commit"', {
+      cwd: tempDir,
+    });
+
+    const getDefaultBranch = await exec(
+      'git branch --format="%(refname:short)"',
+      { cwd: tempDir },
+    );
+
+    return {
+      defaultBranch: getDefaultBranch.stdout?.trim() || undefined,
+    };
+  } catch (error) {
+    return undefined;
+  } finally {
+    await fs.rm(tempDir, { recursive: true });
+  }
+}
+
+/**
+ * Initializes a git repository in the destination folder if possible
+ *
+ * @param dir - source path to initialize git repository in
+ * @returns true if git repository was initialized
+ */
+export async function tryInitGitRepository(dir: string) {
+  try {
+    // Check if we're already in a git repo
+    await exec('git rev-parse --is-inside-work-tree', { cwd: dir });
+    return false;
+  } catch {
+    /* ignored */
+  }
+
+  try {
+    await exec('git init', { cwd: dir });
+    await exec('git add .', { cwd: dir });
+    await exec('git commit -m "Initial commit"', { cwd: dir });
+    return true;
+  } catch (error) {
+    try {
+      await fs.rm(resolvePath(dir, '.git'), { recursive: true, force: true });
+    } catch {
+      throw new Error('Failed to remove .git folder');
+    }
+
+    return false;
+  }
 }

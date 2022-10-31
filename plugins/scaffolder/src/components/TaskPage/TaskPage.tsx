@@ -54,6 +54,7 @@ import {
 } from '../../routes';
 import { ScaffolderTaskStatus, ScaffolderTaskOutput } from '../../types';
 import { useTaskEventStream } from '../hooks/useEventStream';
+import { TaskErrors } from './TaskErrors';
 import { TaskPageLinks } from './TaskPageLinks';
 
 // typings are wrong for this library, so fallback to not parsing types.
@@ -356,6 +357,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
                 {!currentStepId && <Progress />}
 
                 <div style={{ height: '80vh' }}>
+                  <TaskErrors error={taskStream.error} />
                   <LogViewer text={logAsString} />
                 </div>
               </Grid>

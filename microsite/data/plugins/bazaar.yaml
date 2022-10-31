@@ -6,3 +6,4 @@ description: A marketplace where engineers can propose projects suitable for inn
 documentation: https://github.com/backstage/backstage/blob/master/plugins/bazaar/README.md
 iconUrl: img/bazaar.svg
 npmPackageName: '@backstage/plugin-bazaar'
+addedDate: '2022-01-11'

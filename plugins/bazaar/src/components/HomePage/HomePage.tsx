@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { Header, RoutedTabs } from '@backstage/core-components';
-import { Route } from 'react-router-dom';
 import { SortView } from '../SortView';
 import { About } from '../About';
 
@@ -25,12 +24,12 @@ export const HomePage = () => {
     {
       path: '/',
       title: 'Home',
-      children: <Route path="/" element={<SortView />} />,
+      children: <SortView />,
     },
     {
       path: '/about',
       title: 'About',
-      children: <Route path="/about" element={<About />} />,
+      children: <About />,
     },
   ];
 

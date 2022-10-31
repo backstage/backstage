@@ -25,8 +25,6 @@ import {
 import { default as FullScreenIcon } from '@material-ui/icons/Fullscreen';
 import {
   AreaChart,
-  ContentRenderer,
-  TooltipProps,
   XAxis,
   YAxis,
   Tooltip as RechartsTooltip,
@@ -52,6 +50,7 @@ import { getPreviousPeriodTotalCost } from '../../utils/change';
 import { formatPeriod } from '../../utils/formatters';
 import { aggregationSum } from '../../utils/sum';
 import { BarChartLegendOptions } from '../BarChart/BarChartLegend';
+import { TooltipRenderer } from '../../types/Tooltip';
 
 export type CostOverviewBreakdownChartProps = {
   costBreakdown: Cost[];
@@ -113,8 +112,8 @@ export const CostOverviewBreakdownChart = ({
     {} as Record<string, Record<string, number>>,
   );
 
-  const chartData: Record<string, number>[] = Object.keys(breakdownsByDate).map(
-    date => {
+  const chartData: Record<string, number>[] = Object.keys(breakdownsByDate)
+    .map(date => {
       const costsForDate = Object.keys(breakdownsByDate[date]).reduce(
         (dateCosts, breakdown) => {
           // Group costs for items that belong to 'Other' in the chart.
@@ -131,8 +130,8 @@ export const CostOverviewBreakdownChart = ({
         ...costsForDate,
         date: Date.parse(date),
       };
-    },
-  );
+    })
+    .sort((a, b) => a.date - b.date);
 
   const sortedBreakdowns = costBreakdown.sort(
     (a, b) => aggregationSum(a.aggregation) - aggregationSum(b.aggregation),
@@ -168,17 +167,15 @@ export const CostOverviewBreakdownChart = ({
           fill={color}
           onClick={() => setExpanded(true)}
           style={{
-            cursor: breakdown === 'Other' && !isExpanded ? 'pointer' : null,
+            cursor:
+              breakdown === 'Other' && !isExpanded ? 'pointer' : undefined,
           }}
         />
       );
     });
   };
 
-  const tooltipRenderer: ContentRenderer<TooltipProps> = ({
-    label,
-    payload = [],
-  }) => {
+  const tooltipRenderer: TooltipRenderer = ({ label, payload = [] }) => {
     if (isInvalid({ label, payload })) return null;
 
     const date =
@@ -186,10 +183,10 @@ export const CostOverviewBreakdownChart = ({
         ? DateTime.fromMillis(label)
         : DateTime.fromISO(label!);
     const dateTitle = date.toUTC().toFormat(DEFAULT_DATE_FORMAT);
-    const items = payload.map(p => ({
+    const items = payload.map((p, i) => ({
       label: p.dataKey as string,
-      value: formatGraphValue(p.value as number),
-      fill: p.fill!,
+      value: formatGraphValue(Number(p.value), i),
+      fill: p.color!,
     }));
     const expandText = (
       <Box>

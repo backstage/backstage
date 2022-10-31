@@ -1,5 +1,92 @@
 # @backstage/backend-test-utils
 
+## 0.1.30-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/cli@0.21.0-next.0
+  - @backstage/backend-app-api@0.2.3-next.0
+  - @backstage/backend-plugin-api@0.1.4-next.0
+  - @backstage/config@1.0.4-next.0
+
+## 0.1.29
+
+### Patch Changes
+
+- 72549952d1: Fixed handling of root scoped services in `startTestBackend`.
+- e91e8e9c55: Increased test database max connection pool size to reduce the risk of resource exhaustion.
+- Updated dependencies
+  - @backstage/backend-common@0.15.2
+  - @backstage/cli@0.20.0
+  - @backstage/backend-app-api@0.2.2
+  - @backstage/backend-plugin-api@0.1.3
+  - @backstage/config@1.0.3
+
+## 0.1.29-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/cli@0.20.0-next.2
+  - @backstage/backend-app-api@0.2.2-next.2
+  - @backstage/backend-plugin-api@0.1.3-next.2
+  - @backstage/config@1.0.3-next.2
+
+## 0.1.29-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.20.0-next.1
+  - @backstage/backend-common@0.15.2-next.1
+  - @backstage/backend-plugin-api@0.1.3-next.1
+  - @backstage/backend-app-api@0.2.2-next.1
+  - @backstage/config@1.0.3-next.1
+
+## 0.1.29-next.0
+
+### Patch Changes
+
+- 72549952d1: Fixed handling of root scoped services in `startTestBackend`.
+- e91e8e9c55: Increased test database max connection pool size to reduce the risk of resource exhaustion.
+- Updated dependencies
+  - @backstage/backend-app-api@0.2.2-next.0
+  - @backstage/backend-plugin-api@0.1.3-next.0
+  - @backstage/cli@0.20.0-next.0
+  - @backstage/backend-common@0.15.2-next.0
+  - @backstage/config@1.0.3-next.0
+
+## 0.1.28
+
+### Patch Changes
+
+- 854ba37357: Updated to support new `ServiceFactory` formats.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- de3347ca74: Updated usages of `ServiceFactory`.
+- Updated dependencies
+  - @backstage/cli@0.19.0
+  - @backstage/backend-app-api@0.2.1
+  - @backstage/backend-plugin-api@0.1.2
+  - @backstage/backend-common@0.15.1
+  - @backstage/config@1.0.2
+
+## 0.1.28-next.3
+
+### Patch Changes
+
+- 854ba37357: Updated to support new `ServiceFactory` formats.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.2-next.2
+  - @backstage/config@1.0.2-next.0
+  - @backstage/backend-app-api@0.2.1-next.2
+  - @backstage/cli@0.19.0-next.3
+  - @backstage/backend-common@0.15.1-next.3
+
 ## 0.1.28-next.2
 
 ### Patch Changes

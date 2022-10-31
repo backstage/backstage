@@ -32,6 +32,7 @@ export interface TestBackendOptions<
     ...{
       [index in keyof TServices]:
         | ServiceFactory<TServices[index]>
+        | (() => ServiceFactory<TServices[index]>)
         | [ServiceRef<TServices[index]>, Partial<TServices[index]>];
     },
   ];
@@ -62,10 +63,18 @@ export async function startTestBackend<
     if (Array.isArray(serviceDef)) {
       // if type is ExtensionPoint?
       // do something differently?
+      const [ref, impl] = serviceDef;
+      if (ref.scope === 'plugin') {
+        return createServiceFactory({
+          service: ref,
+          deps: {},
+          factory: async () => async () => impl,
+        });
+      }
       return createServiceFactory({
-        service: serviceDef[0],
+        service: ref,
         deps: {},
-        factory: async () => async () => serviceDef[1],
+        factory: async () => impl,
       });
     }
     return serviceDef as ServiceFactory;

@@ -10,6 +10,8 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
 import { ClusterObjects } from '@backstage/plugin-kubernetes-common';
+import { CustomObjectsByEntityRequest } from '@backstage/plugin-kubernetes-common';
+import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
@@ -31,6 +33,7 @@ import { V1Pod } from '@kubernetes/client-node';
 import { V1ReplicaSet } from '@kubernetes/client-node';
 import { V1Service } from '@kubernetes/client-node';
 import { V1StatefulSet } from '@kubernetes/client-node';
+import { WorkloadsByEntityRequest } from '@backstage/plugin-kubernetes-common';
 
 // Warning: (ae-forgotten-export) The symbol "ClusterProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Cluster" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -245,8 +248,16 @@ export interface KubernetesApi {
     }[]
   >;
   // (undocumented)
+  getCustomObjectsByEntity(
+    request: CustomObjectsByEntityRequest,
+  ): Promise<ObjectsByEntityResponse>;
+  // (undocumented)
   getObjectsByEntity(
     requestBody: KubernetesRequestBody,
+  ): Promise<ObjectsByEntityResponse>;
+  // (undocumented)
+  getWorkloadsByEntity(
+    request: WorkloadsByEntityRequest,
   ): Promise<ObjectsByEntityResponse>;
 }
 
@@ -304,8 +315,16 @@ export class KubernetesBackendClient implements KubernetesApi {
     }[]
   >;
   // (undocumented)
+  getCustomObjectsByEntity(
+    request: CustomObjectsByEntityRequest,
+  ): Promise<ObjectsByEntityResponse>;
+  // (undocumented)
   getObjectsByEntity(
     requestBody: KubernetesRequestBody,
+  ): Promise<ObjectsByEntityResponse>;
+  // (undocumented)
+  getWorkloadsByEntity(
+    request: WorkloadsByEntityRequest,
   ): Promise<ObjectsByEntityResponse>;
 }
 
@@ -340,6 +359,8 @@ export interface KubernetesObjects {
   error?: string;
   // (undocumented)
   kubernetesObjects?: ObjectsByEntityResponse;
+  // (undocumented)
+  loading: boolean;
 }
 
 // Warning: (ae-missing-release-tag) "kubernetesPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -402,6 +423,13 @@ export class ServerSideKubernetesAuthProvider
 //
 // @public (undocumented)
 export const ServicesAccordions: ({}: ServicesAccordionsProps) => JSX.Element;
+
+// @public
+export const useCustomResources: (
+  entity: Entity,
+  customResourceMatchers: CustomResourceMatcher[],
+  intervalMs?: number,
+) => KubernetesObjects;
 
 // Warning: (ae-missing-release-tag) "useKubernetesObjects" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

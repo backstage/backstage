@@ -30,6 +30,7 @@ export const CatalogGraphPage: (props: {
         mergeRelations?: boolean | undefined;
         direction?: Direction | undefined;
         showFilters?: boolean | undefined;
+        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
       }
     | undefined;
 }) => JSX.Element;
@@ -120,6 +121,7 @@ export const EntityRelationsGraph: (props: {
   renderLabel?:
     | DependencyGraphTypes.RenderLabelFunction<EntityEdge>
     | undefined;
+  curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
 }) => JSX.Element;
 
 // @public

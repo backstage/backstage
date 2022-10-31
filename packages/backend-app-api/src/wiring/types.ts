@@ -18,7 +18,6 @@ import {
   ServiceFactory,
   BackendFeature,
   ExtensionPoint,
-  FactoryFunc,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
 import { BackstageBackend } from './BackstageBackend';
@@ -43,11 +42,11 @@ export interface BackendRegisterInit {
  * @public
  */
 export interface CreateSpecializedBackendOptions {
-  services: ServiceFactory[];
+  services: (ServiceFactory | (() => ServiceFactory))[];
 }
 
 export type ServiceHolder = {
-  get<T>(api: ServiceRef<T>): FactoryFunc<T> | undefined;
+  get<T>(api: ServiceRef<T>, pluginId: string): Promise<T> | undefined;
 };
 
 /**
@@ -56,7 +55,9 @@ export type ServiceHolder = {
 export function createSpecializedBackend(
   options: CreateSpecializedBackendOptions,
 ): Backend {
-  return new BackstageBackend(options.services);
+  return new BackstageBackend(
+    options.services.map(s => (typeof s === 'function' ? s() : s)),
+  );
 }
 
 /**

@@ -88,7 +88,7 @@ class Index extends React.Component {
                 />
                 <Block.SmallTitle small>The Speed Paradox</Block.SmallTitle>
                 <Block.Paragraph>
-                  At Spotify, we’ve always believed in the speed and ingenuity
+                  At Spotify, we've always believed in the speed and ingenuity
                   that comes from having autonomous development teams. But as we
                   learned firsthand, the faster you grow, the more fragmented
                   and complex your software ecosystem becomes. And then
@@ -238,7 +238,7 @@ class Index extends React.Component {
                 </Block.SmallTitle>
                 <Block.Paragraph>
                   Using templates, engineers can spin up a new microservice with
-                  your organization’s best practices built-in, right from the
+                  your organization's best practices built-in, right from the
                   start
                 </Block.Paragraph>
               </Block.TextBox>
@@ -350,7 +350,7 @@ class Index extends React.Component {
                 <BulletLine />
                 <Block.SmallTitle small>Easy to maintain</Block.SmallTitle>
                 <Block.Paragraph>
-                  Updating code? Update your documentation while you’re there —
+                  Updating code? Update your documentation while you're there —
                   with docs and code in the same place, it becomes a natural
                   part of your workstream
                 </Block.Paragraph>
@@ -391,6 +391,103 @@ class Index extends React.Component {
               href={`https://backstage.io/docs/features/techdocs/techdocs-overview`}
             >
               Docs
+            </ActionBlock.Link>
+          </ActionBlock>
+
+          <Block className="stripe-top bg-teal-top-right" wrapped>
+            <Block.Container wrapped>
+              <Block.TextBox wide>
+                {' '}
+                <img
+                  className="Block__GIF"
+                  src={`${baseUrl}animations/backstage-search-platform-icon-1.gif`}
+                />
+                <Block.Subtitle>Backstage Search Platform</Block.Subtitle>
+                <Block.Title half>
+                  A search platform made just for you
+                </Block.Title>
+              </Block.TextBox>
+              <Breakpoint
+                narrow={
+                  <Block.Graphics innerPadding={20}>
+                    <Block.Graphic
+                      y={-8}
+                      padding={0}
+                      width={100}
+                      src={`${baseUrl}img/search-platform-overview-small.png`}
+                    />
+                  </Block.Graphics>
+                }
+              />
+              <Block.TextBox small>
+                <BulletLine />
+                <Block.SmallTitle small>
+                  Way more than a text box{' '}
+                </Block.SmallTitle>
+                <Block.Paragraph>
+                  Backstage Search more than just a box you type questions into
+                  — it's an entire platform all by itself, which you can
+                  customize to fit your organization's needs
+                </Block.Paragraph>
+              </Block.TextBox>
+              <Block.TextBox small>
+                <BulletLine />
+                <Block.SmallTitle small>
+                  Search the way you want
+                </Block.SmallTitle>
+                <Block.Paragraph>
+                  Bring your own search engine, create a customized search page
+                  experience, or edit the look and feel of each search result
+                </Block.Paragraph>
+              </Block.TextBox>
+              <Block.TextBox small>
+                <BulletLine />
+                <Block.SmallTitle small>
+                  Index everything, find anything
+                </Block.SmallTitle>
+                <Block.Paragraph>
+                  With an extensible backend, you can search beyond the Software
+                  Catalog and index any source you'd like — whether it's
+                  TechDocs or Confluence and Stack Overflow
+                </Block.Paragraph>
+              </Block.TextBox>
+              <Block.TextBox small>
+                <BulletLine />
+                <Block.SmallTitle small>
+                  Discoverability unlocked
+                </Block.SmallTitle>
+                <Block.Paragraph>
+                  New hires and seasoned employees alike can easily search your
+                  infrastructure instead of getting lost in it
+                </Block.Paragraph>
+              </Block.TextBox>
+            </Block.Container>
+            <Breakpoint
+              wide={
+                <Block.Graphics innerPadding={25} width={'1100px'}>
+                  <Block.Graphic
+                    padding={0}
+                    src={`${baseUrl}img/search-platform-overview.png`}
+                    width={100}
+                    style={{
+                      borderRadius: '8px',
+                      boxShadow: '3px 8px 8px rgba(0,0,0,0.3)',
+                      bottom: '8px',
+                    }}
+                  />
+                </Block.Graphics>
+              }
+            />
+          </Block>
+
+          <ActionBlock className="stripe bg-teal">
+            <ActionBlock.Title>
+              Learn more about Backstage Search
+            </ActionBlock.Title>
+            <ActionBlock.Link
+              href={`https://backstage.io/docs/features/search/search-overview`}
+            >
+              Read
             </ActionBlock.Link>
           </ActionBlock>
 
@@ -512,7 +609,7 @@ class Index extends React.Component {
                 <BulletLine />
                 <Block.SmallTitle small>BYO Plugins</Block.SmallTitle>
                 <Block.Paragraph>
-                  If you don’t see the plugin you need, it’s simple to build
+                  If you don't see the plugin you need, it's simple to build
                   your own
                 </Block.Paragraph>
               </Block.TextBox>

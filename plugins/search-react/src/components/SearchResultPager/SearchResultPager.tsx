@@ -43,7 +43,7 @@ export const SearchResultPager = () => {
   }
 
   return (
-    <nav arial-label="pagination navigation" className={classes.root}>
+    <nav aria-label="pagination navigation" className={classes.root}>
       <Button
         aria-label="previous page"
         disabled={!fetchPreviousPage}

@@ -57,9 +57,11 @@ export function createPublishGithubAction(options: {
     allowRebaseMerge?: boolean;
     allowSquashMerge?: boolean;
     allowMergeCommit?: boolean;
+    allowAutoMerge?: boolean;
     sourcePath?: string;
     requireCodeOwnerReviews?: boolean;
     requiredStatusCheckContexts?: string[];
+    requireBranchesToBeUpToDate?: boolean;
     repoVisibility?: 'private' | 'internal' | 'public';
     collaborators?: Array<
       | {
@@ -93,6 +95,7 @@ export function createPublishGithubAction(options: {
           access: inputProps.access,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+          requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
           repoVisibility: inputProps.repoVisibility,
           defaultBranch: inputProps.defaultBranch,
           protectDefaultBranch: inputProps.protectDefaultBranch,
@@ -104,6 +107,7 @@ export function createPublishGithubAction(options: {
           allowMergeCommit: inputProps.allowMergeCommit,
           allowSquashMerge: inputProps.allowSquashMerge,
           allowRebaseMerge: inputProps.allowRebaseMerge,
+          allowAutoMerge: inputProps.allowAutoMerge,
           sourcePath: inputProps.sourcePath,
           collaborators: inputProps.collaborators,
           token: inputProps.token,
@@ -126,6 +130,7 @@ export function createPublishGithubAction(options: {
         access,
         requireCodeOwnerReviews = false,
         requiredStatusCheckContexts = [],
+        requireBranchesToBeUpToDate = true,
         repoVisibility = 'private',
         defaultBranch = 'master',
         protectDefaultBranch = true,
@@ -137,6 +142,7 @@ export function createPublishGithubAction(options: {
         allowMergeCommit = true,
         allowSquashMerge = true,
         allowRebaseMerge = true,
+        allowAutoMerge = false,
         collaborators,
         topics,
         token: providedToken,
@@ -167,6 +173,7 @@ export function createPublishGithubAction(options: {
         allowMergeCommit,
         allowSquashMerge,
         allowRebaseMerge,
+        allowAutoMerge,
         access,
         collaborators,
         topics,
@@ -189,6 +196,7 @@ export function createPublishGithubAction(options: {
         repo,
         requireCodeOwnerReviews,
         requiredStatusCheckContexts,
+        requireBranchesToBeUpToDate,
         config,
         ctx.logger,
         gitCommitMessage,

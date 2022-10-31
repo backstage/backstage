@@ -102,6 +102,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   allowMergeCommit: boolean,
   allowSquashMerge: boolean,
   allowRebaseMerge: boolean,
+  allowAutoMerge: boolean,
   access: string | undefined,
   collaborators:
     | (
@@ -139,6 +140,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           allow_merge_commit: allowMergeCommit,
           allow_squash_merge: allowSquashMerge,
           allow_rebase_merge: allowRebaseMerge,
+          allow_auto_merge: allowAutoMerge,
           homepage: homepage,
         })
       : client.rest.repos.createForAuthenticatedUser({
@@ -149,6 +151,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           allow_merge_commit: allowMergeCommit,
           allow_squash_merge: allowSquashMerge,
           allow_rebase_merge: allowRebaseMerge,
+          allow_auto_merge: allowAutoMerge,
           homepage: homepage,
         });
 
@@ -245,6 +248,7 @@ export async function initRepoPushAndProtect(
   repo: string,
   requireCodeOwnerReviews: boolean,
   requiredStatusCheckContexts: string[],
+  requireBranchesToBeUpToDate: boolean,
   config: Config,
   logger: any,
   gitCommitMessage?: string,
@@ -287,6 +291,7 @@ export async function initRepoPushAndProtect(
         defaultBranch,
         requireCodeOwnerReviews,
         requiredStatusCheckContexts,
+        requireBranchesToBeUpToDate,
         enforceAdmins: protectEnforceAdmins,
       });
     } catch (e) {

@@ -13,22 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { readGitHubIntegrationConfigs } from '@backstage/integration';
+import { readGithubIntegrationConfigs } from '@backstage/integration';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import React, { useEffect } from 'react';
-import { generatePath, Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { GITHUB_ACTIONS_ANNOTATION } from '../getProjectNameFromEntity';
 import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { Typography } from '@material-ui/core';
 
-import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  errorApiRef,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import {
   InfoCard,
   InfoCardVariants,
   Link,
   Table,
 } from '@backstage/core-components';
+import { buildRouteRef } from '../../routes';
 
 const firstLine = (message: string): string => message.split('\n')[0];
 
@@ -46,7 +52,7 @@ export const RecentWorkflowRunsCard = (props: {
   const errorApi = useApi(errorApiRef);
 
   // TODO: Get github hostname from metadata annotation
-  const hostname = readGitHubIntegrationConfigs(
+  const hostname = readGithubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
   )[0].host;
 
@@ -69,7 +75,7 @@ export const RecentWorkflowRunsCard = (props: {
   }, [error, errorApi]);
 
   const githubHost = hostname || 'github.com';
-
+  const routeLink = useRouteRef(buildRouteRef);
   return (
     <InfoCard
       title="Recent Workflow Runs"
@@ -103,10 +109,7 @@ export const RecentWorkflowRunsCard = (props: {
               title: 'Commit Message',
               field: 'message',
               render: data => (
-                <Link
-                  component={RouterLink}
-                  to={generatePath('./ci-cd/:id', { id: data.id! })}
-                >
+                <Link component={RouterLink} to={routeLink({ id: data.id! })}>
                   {firstLine(data.message ?? '')}
                 </Link>
               ),

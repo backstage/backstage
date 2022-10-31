@@ -30,7 +30,7 @@ describe('Stepper', () => {
     };
 
     const { getByText } = await renderInTestApp(
-      <Stepper manifest={manifest} extensions={[]} />,
+      <Stepper manifest={manifest} extensions={[]} onComplete={jest.fn()} />,
     );
 
     for (const step of manifest.steps) {
@@ -48,7 +48,7 @@ describe('Stepper', () => {
     };
 
     const { getByRole } = await renderInTestApp(
-      <Stepper manifest={manifest} extensions={[]} />,
+      <Stepper manifest={manifest} extensions={[]} onComplete={jest.fn()} />,
     );
 
     expect(getByRole('button', { name: 'Next' })).toBeInTheDocument();
@@ -88,7 +88,7 @@ describe('Stepper', () => {
     };
 
     const { getByRole } = await renderInTestApp(
-      <Stepper manifest={manifest} extensions={[]} />,
+      <Stepper manifest={manifest} extensions={[]} onComplete={jest.fn()} />,
     );
 
     await fireEvent.change(getByRole('textbox', { name: 'name' }), {
@@ -134,6 +134,7 @@ describe('Stepper', () => {
       <Stepper
         manifest={manifest}
         extensions={[{ name: 'Mock', component: MockComponent }]}
+        onComplete={jest.fn()}
       />,
     );
 

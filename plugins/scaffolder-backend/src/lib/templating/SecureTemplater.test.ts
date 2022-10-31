@@ -144,6 +144,27 @@ describe('SecureTemplater', () => {
       ['the input value', 'another extra arg'],
     ]);
   });
+  it('should make additional globals available when requested', async () => {
+    const mockGlobal1 = jest.fn(() => 'awesome global function');
+    const mockGlobal2 = 'foo';
+    const mockGlobal3 = 123456;
+    const renderWith = await SecureTemplater.loadRenderer({
+      additionalTemplateGlobals: { mockGlobal1, mockGlobal2, mockGlobal3 },
+    });
+    const renderWithout = await SecureTemplater.loadRenderer();
+
+    const ctx = {};
+
+    expect(renderWith('${{ mockGlobal1() }}', ctx)).toBe(
+      'awesome global function',
+    );
+    expect(renderWith('${{ mockGlobal2 }}', ctx)).toBe('foo');
+    expect(renderWith('${{ mockGlobal3 }}', ctx)).toBe('123456');
+
+    expect(() => renderWithout('${{ mockGlobal1() }}', ctx)).toThrow(
+      /Error: Unable to call `mockGlobal1`/,
+    );
+  });
 
   it('should not allow helpers to be rewritten', async () => {
     const render = await SecureTemplater.loadRenderer({

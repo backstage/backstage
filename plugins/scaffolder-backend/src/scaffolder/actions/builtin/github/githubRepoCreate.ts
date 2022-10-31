@@ -50,8 +50,10 @@ export function createGithubRepoCreateAction(options: {
     allowRebaseMerge?: boolean;
     allowSquashMerge?: boolean;
     allowMergeCommit?: boolean;
+    allowAutoMerge?: boolean;
     requireCodeOwnerReviews?: boolean;
     requiredStatusCheckContexts?: string[];
+    requireBranchesToBeUpToDate?: boolean;
     repoVisibility?: 'private' | 'internal' | 'public';
     collaborators?: Array<
       | {
@@ -84,11 +86,13 @@ export function createGithubRepoCreateAction(options: {
           access: inputProps.access,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+          requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
           repoVisibility: inputProps.repoVisibility,
           deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
           allowMergeCommit: inputProps.allowMergeCommit,
           allowSquashMerge: inputProps.allowSquashMerge,
           allowRebaseMerge: inputProps.allowRebaseMerge,
+          allowAutoMerge: inputProps.allowAutoMerge,
           collaborators: inputProps.collaborators,
           token: inputProps.token,
           topics: inputProps.topics,
@@ -113,6 +117,7 @@ export function createGithubRepoCreateAction(options: {
         allowMergeCommit = true,
         allowSquashMerge = true,
         allowRebaseMerge = true,
+        allowAutoMerge = false,
         collaborators,
         topics,
         token: providedToken,
@@ -143,6 +148,7 @@ export function createGithubRepoCreateAction(options: {
         allowMergeCommit,
         allowSquashMerge,
         allowRebaseMerge,
+        allowAutoMerge,
         access,
         collaborators,
         topics,

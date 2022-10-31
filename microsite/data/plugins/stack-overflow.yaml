@@ -7,3 +7,4 @@ description: Provides Stack Overflow specific functionality that can be used in 
 documentation: https://github.com/backstage/backstage/blob/master/plugins/stack-overflow
 iconUrl: img/stack-overflow-logo.svg
 npmPackageName: '@backstage/plugin-stack-overflow'
+addedDate: '2022-06-14'

@@ -17,15 +17,26 @@
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import child_process from 'child_process';
-import path from 'path';
+import path, { resolve as resolvePath } from 'path';
+import os from 'os';
 import {
+  Task,
   buildAppTask,
   checkAppExistsTask,
   checkPathExistsTask,
   createTemporaryAppFolderTask,
   moveAppTask,
   templatingTask,
+  tryInitGitRepository,
+  readGitConfig,
 } from './tasks';
+
+jest.spyOn(Task, 'log').mockReturnValue(undefined);
+jest.spyOn(Task, 'error').mockReturnValue(undefined);
+jest.spyOn(Task, 'section').mockReturnValue(undefined);
+jest
+  .spyOn(Task, 'forItem')
+  .mockImplementation((_a, _b, taskFunc) => taskFunc());
 
 jest.mock('child_process');
 
@@ -78,185 +89,302 @@ jest.mock('./versions', () => ({
   },
 }));
 
-beforeEach(() => {
-  mockFs({
-    'projects/my-module.ts': '',
-    'projects/dir/my-file.txt': '',
-    'tmp/mockApp/.gitignore': '',
-    'tmp/mockApp/package.json': '',
-    'tmp/mockApp/packages/app/package.json': '',
-    // load templates into mock filesystem
-    'templates/': mockFs.load(path.resolve(__dirname, '../../templates/')),
-  });
-});
+describe('tasks', () => {
+  const mockExec = child_process.exec as unknown as jest.MockedFunction<
+    (
+      command: string,
+      options: any,
+      callback: (
+        error: Error | null,
+        result: { stdout: string; stderr: string },
+      ) => void,
+    ) => void
+  >;
 
-afterEach(() => {
-  mockFs.restore();
-});
-
-describe('checkAppExistsTask', () => {
-  it('should do nothing if the directory does not exist', async () => {
-    const dir = 'projects/';
-    const name = 'MyNewApp';
-    await expect(checkAppExistsTask(dir, name)).resolves.not.toThrow();
-  });
-
-  it('should throw an error when a file of the same name exists', async () => {
-    const dir = 'projects/';
-    const name = 'my-module.ts';
-    await expect(checkAppExistsTask(dir, name)).rejects.toThrow(
-      'already exists',
-    );
+  beforeEach(() => {
+    mockFs({
+      'projects/my-module.ts': '',
+      'projects/dir/my-file.txt': '',
+      'tmp/mockApp/.gitignore': '',
+      'tmp/mockApp/package.json': '',
+      'tmp/mockApp/packages/app/package.json': '',
+      // load templates into mock filesystem
+      'templates/': mockFs.load(path.resolve(__dirname, '../../templates/')),
+    });
   });
 
-  it('should throw an error when a directory of the same name exists', async () => {
-    const dir = 'projects/';
-    const name = 'dir';
-    await expect(checkAppExistsTask(dir, name)).rejects.toThrow(
-      'already exists',
-    );
-  });
-});
-
-describe('checkPathExistsTask', () => {
-  it('should create a directory at the given path', async () => {
-    const appDir = 'projects/newProject';
-    await expect(checkPathExistsTask(appDir)).resolves.not.toThrow();
-    expect(fs.existsSync(appDir)).toBe(true);
+  afterEach(() => {
+    mockExec.mockRestore();
+    mockFs.restore();
   });
 
-  it('should do nothing if a directory of the same name exists', async () => {
-    const appDir = 'projects/dir';
-    await expect(checkPathExistsTask(appDir)).resolves.not.toThrow();
-    expect(fs.existsSync(appDir)).toBe(true);
-  });
-
-  it('should fail if a file of the same name exists', async () => {
-    await expect(checkPathExistsTask('projects/my-module.ts')).rejects.toThrow(
-      'already exists',
-    );
-  });
-});
-
-describe('createTemporaryAppFolderTask', () => {
-  it('should create a directory at a given path', async () => {
-    const tempDir = 'projects/tmpFolder';
-    await expect(createTemporaryAppFolderTask(tempDir)).resolves.not.toThrow();
-    expect(fs.existsSync(tempDir)).toBe(true);
-  });
-
-  it('should fail if a directory of the same name exists', async () => {
-    const tempDir = 'projects/dir';
-    await expect(createTemporaryAppFolderTask(tempDir)).rejects.toThrow(
-      'file already exists',
-    );
-  });
-
-  it('should fail if a file of the same name exists', async () => {
-    const tempDir = 'projects/dir/my-file.txt';
-    await expect(createTemporaryAppFolderTask(tempDir)).rejects.toThrow(
-      'file already exists',
-    );
-  });
-});
-
-describe('buildAppTask', () => {
-  it('should change to `appDir` and run `yarn install` and `yarn tsc`', async () => {
-    const mockChdir = jest.spyOn(process, 'chdir');
-    const mockExec = child_process.exec as unknown as jest.MockedFunction<
-      (
-        command: string,
-        callback: (error: null, stdout: string, stderr: string) => void,
-      ) => void
-    >;
-
-    // requires callback implementation to support `promisify` wrapper
-    // https://stackoverflow.com/a/60579617/10044859
-    mockExec.mockImplementation((_command, callback) => {
-      callback(null, 'standard out', 'standard error');
+  describe('checkAppExistsTask', () => {
+    it('should do nothing if the directory does not exist', async () => {
+      const dir = 'projects/';
+      const name = 'MyNewApp';
+      await expect(checkAppExistsTask(dir, name)).resolves.not.toThrow();
     });
 
-    const appDir = 'projects/dir';
-    await expect(buildAppTask(appDir)).resolves.not.toThrow();
-    expect(mockChdir).toHaveBeenCalledTimes(2);
-    expect(mockChdir).toHaveBeenNthCalledWith(1, appDir);
-    expect(mockChdir).toHaveBeenNthCalledWith(2, appDir);
-    expect(mockExec).toHaveBeenCalledTimes(2);
-    expect(mockExec).toHaveBeenNthCalledWith(
-      1,
-      'yarn install',
-      expect.any(Function),
-    );
-    expect(mockExec).toHaveBeenNthCalledWith(
-      2,
-      'yarn tsc',
-      expect.any(Function),
-    );
-  });
-
-  it('should fail if project directory does not exist', async () => {
-    const appDir = 'projects/missingProject';
-    await expect(buildAppTask(appDir)).rejects.toThrow(
-      'no such file or directory',
-    );
-  });
-});
-
-describe('moveAppTask', () => {
-  const tempDir = 'tmp/mockApp/';
-  const id = 'myApp';
-
-  it('should move all files in the temp dir to the target dir', async () => {
-    const destination = 'projects/mockApp';
-    await moveAppTask(tempDir, destination, id);
-    expect(fs.existsSync('projects/mockApp/.gitignore')).toBe(true);
-    expect(fs.existsSync('projects/mockApp/package.json')).toBe(true);
-    expect(fs.existsSync('projects/mockApp/packages/app/package.json')).toBe(
-      true,
-    );
-  });
-
-  it('should fail to move files if destination already exists', async () => {
-    const destination = 'projects';
-    await expect(moveAppTask(tempDir, destination, id)).rejects.toThrow(
-      'dest already exists',
-    );
-  });
-
-  it('should remove temporary files if move succeeded', async () => {
-    const destination = 'projects/mockApp';
-    await moveAppTask(tempDir, destination, id);
-    expect(fs.existsSync('tmp/mockApp')).toBe(false);
-  });
-
-  it('should remove temporary files if move failed', async () => {
-    const destination = 'projects';
-    await expect(moveAppTask(tempDir, destination, id)).rejects.toThrow();
-    expect(fs.existsSync('tmp/mockApp')).toBe(false);
-  });
-});
-
-describe('templatingTask', () => {
-  it('should generate a project populating context parameters', async () => {
-    const templateDir = 'templates/default-app';
-    const destinationDir = 'templatedApp';
-    const context = {
-      name: 'SuperCoolBackstageInstance',
-      dbTypeSqlite: true,
-    };
-    await templatingTask(templateDir, destinationDir, context);
-    expect(fs.existsSync('templatedApp/package.json')).toBe(true);
-    expect(fs.existsSync('templatedApp/.dockerignore')).toBe(true);
-    await expect(fs.readJson('templatedApp/backstage.json')).resolves.toEqual({
-      version: '1.2.3',
+    it('should throw an error when a file of the same name exists', async () => {
+      const dir = 'projects/';
+      const name = 'my-module.ts';
+      await expect(checkAppExistsTask(dir, name)).rejects.toThrow(
+        'already exists',
+      );
     });
-    // catalog was populated with `context.name`
-    expect(
-      fs.readFileSync('templatedApp/catalog-info.yaml', 'utf-8'),
-    ).toContain('name: SuperCoolBackstageInstance');
-    // backend dependencies include `sqlite3` from `context.SQLite`
-    expect(
-      fs.readFileSync('templatedApp/packages/backend/package.json', 'utf-8'),
-    ).toContain('sqlite3"');
+
+    it('should throw an error when a directory of the same name exists', async () => {
+      const dir = 'projects/';
+      const name = 'dir';
+      await expect(checkAppExistsTask(dir, name)).rejects.toThrow(
+        'already exists',
+      );
+    });
+  });
+
+  describe('checkPathExistsTask', () => {
+    it('should create a directory at the given path', async () => {
+      const appDir = 'projects/newProject';
+      await expect(checkPathExistsTask(appDir)).resolves.not.toThrow();
+      expect(fs.existsSync(appDir)).toBe(true);
+    });
+
+    it('should do nothing if a directory of the same name exists', async () => {
+      const appDir = 'projects/dir';
+      await expect(checkPathExistsTask(appDir)).resolves.not.toThrow();
+      expect(fs.existsSync(appDir)).toBe(true);
+    });
+
+    it('should fail if a file of the same name exists', async () => {
+      await expect(
+        checkPathExistsTask('projects/my-module.ts'),
+      ).rejects.toThrow('already exists');
+    });
+  });
+
+  describe('createTemporaryAppFolderTask', () => {
+    it('should create a directory at a given path', async () => {
+      const tempDir = 'projects/tmpFolder';
+      await expect(
+        createTemporaryAppFolderTask(tempDir),
+      ).resolves.not.toThrow();
+      expect(fs.existsSync(tempDir)).toBe(true);
+    });
+
+    it('should fail if a directory of the same name exists', async () => {
+      const tempDir = 'projects/dir';
+      await expect(createTemporaryAppFolderTask(tempDir)).rejects.toThrow(
+        'file already exists',
+      );
+    });
+
+    it('should fail if a file of the same name exists', async () => {
+      const tempDir = 'projects/dir/my-file.txt';
+      await expect(createTemporaryAppFolderTask(tempDir)).rejects.toThrow(
+        'file already exists',
+      );
+    });
+  });
+
+  describe('buildAppTask', () => {
+    it('should change to `appDir` and run `yarn install` and `yarn tsc`', async () => {
+      const mockChdir = jest.spyOn(process, 'chdir');
+
+      // requires callback implementation to support `promisify` wrapper
+      // https://stackoverflow.com/a/60579617/10044859
+      mockExec.mockImplementation((_command, callback) => {
+        callback(null, 'standard out', 'standard error');
+      });
+
+      const appDir = 'projects/dir';
+      await expect(buildAppTask(appDir)).resolves.not.toThrow();
+      expect(mockChdir).toHaveBeenCalledTimes(2);
+      expect(mockChdir).toHaveBeenNthCalledWith(1, appDir);
+      expect(mockChdir).toHaveBeenNthCalledWith(2, appDir);
+      expect(mockExec).toHaveBeenCalledTimes(2);
+      expect(mockExec).toHaveBeenNthCalledWith(
+        1,
+        'yarn install',
+        expect.any(Function),
+      );
+      expect(mockExec).toHaveBeenNthCalledWith(
+        2,
+        'yarn tsc',
+        expect.any(Function),
+      );
+    });
+
+    it('should fail if project directory does not exist', async () => {
+      const appDir = 'projects/missingProject';
+      await expect(buildAppTask(appDir)).rejects.toThrow(
+        'no such file or directory',
+      );
+    });
+  });
+
+  describe('moveAppTask', () => {
+    const tempDir = 'tmp/mockApp/';
+    const id = 'myApp';
+
+    it('should move all files in the temp dir to the target dir', async () => {
+      const destination = 'projects/mockApp';
+      await moveAppTask(tempDir, destination, id);
+      expect(fs.existsSync('projects/mockApp/.gitignore')).toBe(true);
+      expect(fs.existsSync('projects/mockApp/package.json')).toBe(true);
+      expect(fs.existsSync('projects/mockApp/packages/app/package.json')).toBe(
+        true,
+      );
+    });
+
+    it('should fail to move files if destination already exists', async () => {
+      const destination = 'projects';
+      await expect(moveAppTask(tempDir, destination, id)).rejects.toThrow(
+        'dest already exists',
+      );
+    });
+
+    it('should remove temporary files if move succeeded', async () => {
+      const destination = 'projects/mockApp';
+      await moveAppTask(tempDir, destination, id);
+      expect(fs.existsSync('tmp/mockApp')).toBe(false);
+    });
+
+    it('should remove temporary files if move failed', async () => {
+      const destination = 'projects';
+      await expect(moveAppTask(tempDir, destination, id)).rejects.toThrow();
+      expect(fs.existsSync('tmp/mockApp')).toBe(false);
+    });
+  });
+
+  describe('templatingTask', () => {
+    it('should generate a project populating context parameters', async () => {
+      const templateDir = 'templates/default-app';
+      const destinationDir = 'templatedApp';
+      const context = {
+        name: 'SuperCoolBackstageInstance',
+        dbTypeSqlite: true,
+      };
+      await templatingTask(templateDir, destinationDir, context);
+      expect(fs.existsSync('templatedApp/package.json')).toBe(true);
+      expect(fs.existsSync('templatedApp/.dockerignore')).toBe(true);
+      await expect(fs.readJson('templatedApp/backstage.json')).resolves.toEqual(
+        {
+          version: '1.2.3',
+        },
+      );
+      // catalog was populated with `context.name`
+      expect(
+        fs.readFileSync('templatedApp/catalog-info.yaml', 'utf-8'),
+      ).toContain('name: SuperCoolBackstageInstance');
+      // backend dependencies include `sqlite3` from `context.SQLite`
+      expect(
+        fs.readFileSync('templatedApp/packages/backend/package.json', 'utf-8'),
+      ).toContain('sqlite3"');
+    });
+  });
+
+  describe('readGitConfig', () => {
+    const tmpDir = resolvePath(os.tmpdir(), 'git-temp-dir');
+
+    it('should return git config if git package is installed and git credentials are set', async () => {
+      mockExec.mockImplementation((_command, _options, callback) => {
+        callback(null, { stdout: 'main', stderr: '' });
+      });
+
+      const gitConfig = await readGitConfig();
+
+      expect(gitConfig).toEqual({
+        defaultBranch: 'main',
+      });
+      expect(mockExec).toHaveBeenCalledTimes(3);
+      expect(mockExec).toHaveBeenCalledWith(
+        'git init',
+        { cwd: tmpDir },
+        expect.any(Function),
+      );
+      expect(mockExec).toHaveBeenCalledWith(
+        'git commit --allow-empty -m "Initial commit"',
+        { cwd: tmpDir },
+        expect.any(Function),
+      );
+      expect(mockExec).toHaveBeenCalledWith(
+        'git branch --format="%(refname:short)"',
+        { cwd: tmpDir },
+        expect.any(Function),
+      );
+    });
+
+    it('should return false if git config is invalid', async () => {
+      mockExec.mockImplementation((_command, _options, callback) => {
+        callback(null, { stdout: '', stderr: '' });
+      });
+
+      const gitConfig = await readGitConfig();
+
+      expect(gitConfig).toEqual({
+        defaultBranch: undefined,
+      });
+      expect(mockExec).toHaveBeenCalledTimes(3);
+    });
+  });
+
+  describe('tryInitGitRepository', () => {
+    it('should initialize a git repository at the given path', async () => {
+      const destinationDir = 'tmp/mockApp';
+
+      mockExec.mockImplementation((command, _opts, callback) => {
+        if (command.startsWith('git rev-parse')) {
+          callback(new Error('not a git repo'), { stdout: '', stderr: '' });
+        } else {
+          callback(null, { stdout: '', stderr: '' });
+        }
+      });
+
+      await expect(tryInitGitRepository(destinationDir)).resolves.toBe(true);
+
+      expect(mockExec).toHaveBeenCalledTimes(4);
+      expect(mockExec).toHaveBeenNthCalledWith(
+        1,
+        'git rev-parse --is-inside-work-tree',
+        { cwd: destinationDir },
+        expect.any(Function),
+      );
+      expect(mockExec).toHaveBeenNthCalledWith(
+        2,
+        'git init',
+        { cwd: destinationDir },
+        expect.any(Function),
+      );
+      expect(mockExec).toHaveBeenNthCalledWith(
+        3,
+        'git add .',
+        { cwd: destinationDir },
+        expect.any(Function),
+      );
+      expect(mockExec).toHaveBeenNthCalledWith(
+        4,
+        'git commit -m "Initial commit"',
+        { cwd: destinationDir },
+        expect.any(Function),
+      );
+    });
+
+    it('should not initialize a git repository if in one already', async () => {
+      const destinationDir = 'tmp/mockApp';
+
+      mockExec.mockImplementation((_command, _opts, callback) => {
+        callback(null, { stdout: '', stderr: '' });
+      });
+
+      await expect(tryInitGitRepository(destinationDir)).resolves.toBe(false);
+
+      expect(mockExec).toHaveBeenCalledTimes(1);
+      expect(mockExec).toHaveBeenNthCalledWith(
+        1,
+        'git rev-parse --is-inside-work-tree',
+        { cwd: destinationDir },
+        expect.any(Function),
+      );
+    });
   });
 });

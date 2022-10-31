@@ -15,6 +15,7 @@
  */
 
 export * from './useKubernetesObjects';
+export * from './useCustomResources';
 export * from './PodNamesWithErrors';
 export * from './PodNamesWithMetrics';
 export * from './GroupedResponses';

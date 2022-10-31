@@ -15,19 +15,34 @@ import { Extension } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { FieldProps } from '@rjsf/core';
+import { FieldProps as FieldProps_2 } from '@rjsf/utils';
 import { FieldValidation } from '@rjsf/core';
+import { FieldValidation as FieldValidation_2 } from '@rjsf/utils';
+import type { FormProps } from '@rjsf/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
+import { PathParams } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { SubRouteRef } from '@backstage/core-plugin-api';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { UIOptionsType } from '@rjsf/utils';
+import { UiSchema } from '@rjsf/utils';
+
+// @alpha
+export function createNextScaffolderFieldExtension<
+  TReturnValue = unknown,
+  TInputProps extends UIOptionsType = {},
+>(
+  options: NextFieldExtensionOptions<TReturnValue, TInputProps>,
+): Extension<NextFieldExtensionComponentProps<TReturnValue, TInputProps>>;
 
 // @public
 export function createScaffolderFieldExtension<
@@ -36,6 +51,11 @@ export function createScaffolderFieldExtension<
 >(
   options: FieldExtensionOptions<TReturnValue, TInputProps>,
 ): Extension<FieldExtensionComponent<TReturnValue, TInputProps>>;
+
+// @public
+export function createScaffolderLayout<TInputProps = unknown>(
+  options: LayoutOptions,
+): Extension<LayoutComponent<TInputProps>>;
 
 // @public
 export type CustomFieldValidator<TFieldReturnValue> = (
@@ -66,6 +86,8 @@ export interface EntityPickerUiOptions {
   allowedKinds?: string[];
   // (undocumented)
   defaultKind?: string;
+  // (undocumented)
+  defaultNamespace?: string | false;
 }
 
 // @public
@@ -77,7 +99,11 @@ export const EntityTagsPickerFieldExtension: FieldExtensionComponent<
 // @public
 export interface EntityTagsPickerUiOptions {
   // (undocumented)
+  helperText?: string;
+  // (undocumented)
   kinds?: string[];
+  // (undocumented)
+  showCounts?: boolean;
 }
 
 // @public
@@ -107,6 +133,20 @@ export type FieldExtensionOptions<
 };
 
 // @public
+export type LayoutComponent<_TInputProps> = () => null;
+
+// @public
+export interface LayoutOptions<P = any> {
+  // (undocumented)
+  component: LayoutTemplate<P>;
+  // (undocumented)
+  name: string;
+}
+
+// @public
+export type LayoutTemplate<T = any> = FormProps<T>['ObjectFieldTemplate'];
+
+// @public
 export type ListActionsResponse = Array<{
   id: string;
   description?: string;
@@ -130,6 +170,41 @@ export type LogEvent = {
 };
 
 // @alpha
+export type NextCustomFieldValidator<TFieldReturnValue> = (
+  data: TFieldReturnValue,
+  field: FieldValidation_2,
+  context: {
+    apiHolder: ApiHolder;
+  },
+) => void | Promise<void>;
+
+// @alpha
+export interface NextFieldExtensionComponentProps<
+  TFieldReturnValue,
+  TUiOptions = {},
+> extends PropsWithChildren<FieldProps_2<TFieldReturnValue>> {
+  // (undocumented)
+  uiSchema?: UiSchema<TFieldReturnValue> & {
+    'ui:options'?: TUiOptions & UIOptionsType;
+  };
+}
+
+// @alpha
+export type NextFieldExtensionOptions<
+  TFieldReturnValue = unknown,
+  TInputProps = unknown,
+> = {
+  name: string;
+  component: (
+    props: NextFieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
+  ) => JSX.Element | null;
+  validation?: NextCustomFieldValidator<TFieldReturnValue>;
+};
+
+// @alpha (undocumented)
+export const nextRouteRef: RouteRef<undefined>;
+
+// @alpha
 export type NextRouterProps = {
   components?: {
     TemplateCardComponent?: React_2.ComponentType<{
@@ -145,6 +220,11 @@ export const NextScaffolderPage: (
   props: PropsWithChildren<NextRouterProps>,
 ) => JSX.Element;
 
+// @alpha (undocumented)
+export const nextSelectedTemplateRouteRef: SubRouteRef<
+  PathParams<'/templates/:namespace/:templateName'>
+>;
+
 // @public
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent<
   string,
@@ -159,6 +239,8 @@ export interface OwnedEntityPickerUiOptions {
   allowedKinds?: string[];
   // (undocumented)
   defaultKind?: string;
+  // (undocumented)
+  defaultNamespace?: string | false;
 }
 
 // @public
@@ -173,6 +255,8 @@ export interface OwnerPickerUiOptions {
   allowArbitraryValues?: boolean;
   // (undocumented)
   allowedKinds?: string[];
+  // (undocumented)
+  defaultNamespace?: string | false;
 }
 
 // @public
@@ -195,6 +279,8 @@ export interface RepoUrlPickerUiOptions {
   // (undocumented)
   allowedHosts?: string[];
   // (undocumented)
+  allowedOrganizations?: string[];
+  // (undocumented)
   allowedOwners?: string[];
   // (undocumented)
   allowedRepos?: string[];
@@ -211,6 +297,9 @@ export interface RepoUrlPickerUiOptions {
   };
 }
 
+// @public (undocumented)
+export const rootRouteRef: RouteRef<undefined>;
+
 // @public
 export type RouterProps = {
   components?: {
@@ -226,6 +315,11 @@ export type RouterProps = {
     filter: (entity: Entity) => boolean;
   }>;
   defaultPreviewTemplate?: string;
+  headerOptions?: {
+    pageTitleOverride?: string;
+    title?: string;
+    subtitle?: string;
+  };
   contextMenu?: {
     editor?: boolean;
     actions?: boolean;
@@ -345,6 +439,9 @@ export interface ScaffolderGetIntegrationsListResponse {
   }[];
 }
 
+// @public
+export const ScaffolderLayouts: React.ComponentType;
+
 // @public (undocumented)
 export type ScaffolderOutputLink = {
   title?: string;
@@ -363,6 +460,14 @@ export const scaffolderPlugin: BackstagePlugin<
   },
   {
     registerComponent: ExternalRouteRef<undefined, true>;
+    viewTechDoc: ExternalRouteRef<
+      {
+        name: string;
+        kind: string;
+        namespace: string;
+      },
+      true
+    >;
   },
   {}
 >;
@@ -420,6 +525,11 @@ export interface ScaffolderUseTemplateSecrets {
   // (undocumented)
   setSecrets: (input: Record<string, string>) => void;
 }
+
+// @public (undocumented)
+export const selectedTemplateRouteRef: SubRouteRef<
+  PathParams<'/templates/:namespace/:templateName'>
+>;
 
 // @public
 export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;

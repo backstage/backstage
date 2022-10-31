@@ -94,6 +94,13 @@ export class Git {
     return git.checkout({ fs, dir, ref });
   }
 
+  async branch(options: { dir: string; ref: string }): Promise<void> {
+    const { dir, ref } = options;
+    this.config.logger?.info(`Creating branch {dir=${dir},ref=${ref}`);
+
+    return git.branch({ fs, dir, ref });
+  }
+
   async commit(options: {
     dir: string;
     message: string;

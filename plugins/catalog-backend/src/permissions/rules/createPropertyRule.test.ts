@@ -41,7 +41,9 @@ describe('createPropertyRule', () => {
                 name: 'test-component',
               },
             },
-            'org.name',
+            {
+              key: 'org.name',
+            },
           ),
         ).toBe(false);
       });
@@ -57,7 +59,9 @@ describe('createPropertyRule', () => {
                 tags: [],
               },
             },
-            'tags',
+            {
+              key: 'tags',
+            },
           ),
         ).toBe(false);
       });
@@ -75,7 +79,9 @@ describe('createPropertyRule', () => {
                 },
               },
             },
-            'org.name',
+            {
+              key: 'org.name',
+            },
           ),
         ).toBe(true);
       });
@@ -91,7 +97,9 @@ describe('createPropertyRule', () => {
                 tags: ['java'],
               },
             },
-            'tags',
+            {
+              key: 'tags',
+            },
           ),
         ).toBe(true);
       });
@@ -108,8 +116,10 @@ describe('createPropertyRule', () => {
                 name: 'test-component',
               },
             },
-            'org.name',
-            'test-org',
+            {
+              key: 'org.name',
+              value: 'test-org',
+            },
           ),
         ).toBe(false);
       });
@@ -127,8 +137,10 @@ describe('createPropertyRule', () => {
                 },
               },
             },
-            'org.name',
-            'test-org',
+            {
+              key: 'org.name',
+              value: 'test-org',
+            },
           ),
         ).toBe(false);
       });
@@ -144,8 +156,10 @@ describe('createPropertyRule', () => {
                 tags: ['java'],
               },
             },
-            'tags',
-            'python',
+            {
+              key: 'tags',
+              value: 'python',
+            },
           ),
         ).toBe(false);
       });
@@ -163,8 +177,10 @@ describe('createPropertyRule', () => {
                 },
               },
             },
-            'org.name',
-            'test-org',
+            {
+              key: 'org.name',
+              value: 'test-org',
+            },
           ),
         ).toBe(true);
       });
@@ -180,8 +196,10 @@ describe('createPropertyRule', () => {
                 tags: ['java', 'java11'],
               },
             },
-            'tags',
-            'java',
+            {
+              key: 'tags',
+              value: 'java',
+            },
           ),
         ).toBe(true);
       });
@@ -190,7 +208,11 @@ describe('createPropertyRule', () => {
 
   describe('toQuery', () => {
     it('returns an appropriate catalog-backend filter', () => {
-      expect(toQuery('backstage.io/test-component')).toEqual({
+      expect(
+        toQuery({
+          key: 'backstage.io/test-component',
+        }),
+      ).toEqual({
         key: 'metadata.backstage.io/test-component',
       });
     });

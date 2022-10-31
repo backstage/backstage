@@ -1,5 +1,120 @@
 # @backstage/plugin-user-settings
 
+## 0.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.0
+  - @backstage/core-app-api@1.2.0-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/theme@0.2.16
+
+## 0.5.0
+
+### Minor Changes
+
+- 5543e86660: **BREAKING**: The `apiRef` passed to `ProviderSettingsItem` now needs to
+  implement `ProfileInfoApi & SessionApi`, rather than just the latter. This is
+  unlikely to have an effect on most users though, since the builtin auth
+  providers generally implement both.
+
+  Fixed settings page showing providers as logged out when the user is using more
+  than one provider, and displayed some additional login information.
+
+### Patch Changes
+
+- 06d61d1266: Handle errors that may occur when the user logs out
+- 44c9a95dcf: Prevent `.set()` to execute a request to the StorageClient if the user is `guest`
+- 174f02a00a: Update installation instructions
+- Updated dependencies
+  - @backstage/core-components@0.11.2
+  - @backstage/core-app-api@1.1.1
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/errors@1.1.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+
+## 0.5.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.1.1-next.2
+  - @backstage/core-components@0.11.2-next.2
+  - @backstage/core-plugin-api@1.0.7-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+
+## 0.5.0-next.1
+
+### Patch Changes
+
+- 06d61d1266: Handle errors that may occur when the user logs out
+- 44c9a95dcf: Prevent `.set()` to execute a request to the StorageClient if the user is `guest`
+- 174f02a00a: Update installation instructions
+- Updated dependencies
+  - @backstage/core-app-api@1.1.1-next.1
+  - @backstage/core-components@0.11.2-next.1
+  - @backstage/core-plugin-api@1.0.7-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+
+## 0.5.0-next.0
+
+### Minor Changes
+
+- 5543e86660: **BREAKING**: The `apiRef` passed to `ProviderSettingsItem` now needs to
+  implement `ProfileInfoApi & SessionApi`, rather than just the latter. This is
+  unlikely to have an effect on most users though, since the builtin auth
+  providers generally implement both.
+
+  Fixed settings page showing providers as logged out when the user is using more
+  than one provider, and displayed some additional login information.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.2-next.0
+  - @backstage/core-app-api@1.1.1-next.0
+  - @backstage/core-plugin-api@1.0.7-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+
+## 0.4.8
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 3f739be9d9: Minor API signatures cleanup
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- d669d89206: Minor API signatures cleanup
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 8448b53dd6: Added a `UserSettingsStorage` implementation of the `StorageApi` for use as
+  drop-in replacement for the `WebStorage`, in conjunction with the newly created
+  `@backstage/plugin-user-settings-backend`.
+- Updated dependencies
+  - @backstage/core-app-api@1.1.0
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/errors@1.1.1
+
+## 0.4.8-next.3
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.3
+  - @backstage/core-plugin-api@1.0.6-next.3
+
 ## 0.4.8-next.2
 
 ### Patch Changes

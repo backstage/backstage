@@ -29,3 +29,4 @@ export type {
 } from './lib';
 export { BitbucketServerEntityProvider } from './providers';
 export type { BitbucketServerLocationParser } from './providers';
+export { bitbucketServerEntityProviderCatalogModule } from './service/BitbucketServerEntityProviderCatalogModule';

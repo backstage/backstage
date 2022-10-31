@@ -1,5 +1,84 @@
 # @backstage/plugin-tech-insights-node
 
+## 0.3.6-next.0
+
+### Patch Changes
+
+- 06cf8f1cf2: Add a default delay to the fact retrievers to prevent cold-start errors
+- 30e43717c7: Use `HumanDuration` from `@backstage/types`
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/backend-tasks@0.3.7-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/plugin-tech-insights-common@0.2.8-next.0
+
+## 0.3.5
+
+### Patch Changes
+
+- 0963b4d5fb: Updated package role to be `node-library`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.2
+  - @backstage/backend-tasks@0.3.6
+  - @backstage/config@1.0.3
+  - @backstage/types@1.0.0
+  - @backstage/plugin-tech-insights-common@0.2.7
+
+## 0.3.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.6-next.2
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/types@1.0.0
+  - @backstage/plugin-tech-insights-common@0.2.7-next.2
+
+## 0.3.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.1
+  - @backstage/backend-tasks@0.3.6-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/types@1.0.0
+  - @backstage/plugin-tech-insights-common@0.2.7-next.1
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- 0963b4d5fb: Updated package role to be `node-library`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.0
+  - @backstage/backend-tasks@0.3.6-next.0
+  - @backstage/config@1.0.3-next.0
+  - @backstage/types@1.0.0
+  - @backstage/plugin-tech-insights-common@0.2.7-next.0
+
+## 0.3.4
+
+### Patch Changes
+
+- 3f739be9d9: Minor API signatures cleanup
+- 2e0689e536: Support for timeout in FactRetrieverRegistrationOptions
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/backend-tasks@0.3.5
+  - @backstage/config@1.0.2
+
+## 0.3.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.2-next.0
+  - @backstage/backend-common@0.15.1-next.3
+  - @backstage/backend-tasks@0.3.5-next.1
+
 ## 0.3.4-next.0
 
 ### Patch Changes

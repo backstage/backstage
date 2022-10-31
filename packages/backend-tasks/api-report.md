@@ -7,19 +7,11 @@ import { AbortSignal as AbortSignal_2 } from 'node-abort-controller';
 import { Config } from '@backstage/config';
 import { DatabaseManager } from '@backstage/backend-common';
 import { Duration } from 'luxon';
+import { HumanDuration as HumanDuration_2 } from '@backstage/types';
 import { Logger } from 'winston';
 
-// @public
-export type HumanDuration = {
-  years?: number;
-  months?: number;
-  weeks?: number;
-  days?: number;
-  hours?: number;
-  minutes?: number;
-  seconds?: number;
-  milliseconds?: number;
-};
+// @public @deprecated
+export type HumanDuration = HumanDuration_2;
 
 // @public
 export interface PluginTaskScheduler {
@@ -29,6 +21,11 @@ export interface PluginTaskScheduler {
   ): Promise<void>;
   triggerTask(id: string): Promise<void>;
 }
+
+// @public
+export function readTaskScheduleDefinitionFromConfig(
+  config: Config,
+): TaskScheduleDefinition;
 
 // @public
 export type TaskFunction =
@@ -54,10 +51,23 @@ export interface TaskScheduleDefinition {
         cron: string;
       }
     | Duration
-    | HumanDuration;
-  initialDelay?: Duration | HumanDuration;
+    | HumanDuration_2;
+  initialDelay?: Duration | HumanDuration_2;
   scope?: 'global' | 'local';
-  timeout: Duration | HumanDuration;
+  timeout: Duration | HumanDuration_2;
+}
+
+// @public
+export interface TaskScheduleDefinitionConfig {
+  frequency:
+    | {
+        cron: string;
+      }
+    | string
+    | HumanDuration_2;
+  initialDelay?: string | HumanDuration_2;
+  scope?: 'global' | 'local';
+  timeout: string | HumanDuration_2;
 }
 
 // @public

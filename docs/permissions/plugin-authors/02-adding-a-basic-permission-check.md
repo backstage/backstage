@@ -20,15 +20,18 @@ Let's navigate to the file `plugins/todo-list-common/src/permissions.ts` and add
 - export const tempExamplePermission = createPermission({
 -   name: 'temp.example.noop',
 -   attributes: {},
-+ export const todoListCreate = createPermission({
++ export const todoListCreatePermission = createPermission({
 +   name: 'todo.list.create',
 +   attributes: { action: 'create' },
   });
+
+- export const todoListPermissions = [tempExamplePermission];
++ export const todoListPermissions = [todoListCreatePermission];
 ```
 
 For this tutorial, we've automatically exported all permissions from this file (see `plugins/todo-list-common/src/index.ts`).
 
-> Note: All permissions authorized by your plugin should be exported from a ["common-library" package](https://backstage.io/docs/local-dev/cli-build-system#package-roles). This allows Backstage integrators to reference them in frontend components and permission policies.
+> Note: We use a separate `todo-list-common` package since all permissions authorized by your plugin should be exported from a ["common-library" package](https://backstage.io/docs/local-dev/cli-build-system#package-roles). This allows Backstage integrators to reference them in frontend components and permission policies.
 
 ## Authorizing using the new permission
 
@@ -45,15 +48,17 @@ Edit `plugins/todo-list-backend/src/service/router.ts`:
 ...
 
 - import { InputError } from '@backstage/errors';
+- import { IdentityApi } from '@backstage/plugin-auth-node';
 + import { InputError, NotAllowedError } from '@backstage/errors';
++ import { getBearerTokenFromAuthorizationHeader, IdentityApi } from '@backstage/plugin-auth-node';
 + import { PermissionEvaluator, AuthorizeResult } from '@backstage/plugin-permission-common';
-+ import { todoListCreate } from '@internal/plugin-todo-list-common';
++ import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
 
 ...
 
   export interface RouterOptions {
     logger: Logger;
-    identity: IdentityClient;
+    identity: IdentityApi;
 +   permissions: PermissionEvaluator;
   }
 
@@ -66,13 +71,15 @@ Edit `plugins/todo-list-backend/src/service/router.ts`:
     ...
 
     router.post('/todos', async (req, res) => {
-      const token = IdentityClient.getBearerToken(req.header('authorization'));
       let author: string | undefined = undefined;
 
-      const user = token ? await identity.authenticate(token) : undefined;
+      const user = await identity.getIdentity({ request: req });
       author = user?.identity.userEntityRef;
++     const token = getBearerTokenFromAuthorizationHeader(
++       req.header('authorization'),
++     );
 +     const decision = (
-+       await permissions.authorize([{ permission: todoListCreate }], {
++       await permissions.authorize([{ permission: todoListCreatePermission }], {
 +       token,
 +       })
 +     )[0];
@@ -125,17 +132,15 @@ In order to test the logic above, the integrators of your backstage instance nee
 ```diff
 // packages/backend/src/plugins/permission.ts
 
-- import { IdentityClient } from '@backstage/plugin-auth-node';
 + import {
 +   BackstageIdentityResponse,
-+   IdentityClient
 + } from '@backstage/plugin-auth-node';
   import {
     PermissionPolicy,
 +   PolicyQuery,
   } from '@backstage/plugin-permission-node';
 + import { isPermission } from '@backstage/plugin-permission-common';
-+ import { todoListCreate } from '@internal/plugin-todo-list-common';
++ import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
 
   class TestPermissionPolicy implements PermissionPolicy {
 -   async handle(): Promise<PolicyDecision> {
@@ -143,7 +148,7 @@ In order to test the logic above, the integrators of your backstage instance nee
 +     request: PolicyQuery,
 +     user?: BackstageIdentityResponse,
 +   ): Promise<PolicyDecision> {
-+     if (isPermission(request.permission, todoListCreate)) {
++     if (isPermission(request.permission, todoListCreatePermission)) {
 +       return {
 +         result: AuthorizeResult.DENY,
 +       };
@@ -160,10 +165,124 @@ Now the frontend should show an error whenever you try to create a new Todo item
 Let's flip the result back to `ALLOW` before moving on.
 
 ```diff
-  if (isPermission(request.permission, todoListCreate)) {
+  if (isPermission(request.permission, todoListCreatePermission)) {
     return {
 -     result: AuthorizeResult.DENY,
 +     result: AuthorizeResult.ALLOW,
     };
   }
 ```
+
+At this point everything is working but if you run `yarn tsc` you'll get some errors, let's fix those up.
+
+First we'll clean up the `plugins/todo-list-backend/src/service/router.test.ts`:
+
+```diff
+  import { getVoidLogger } from '@backstage/backend-common';
+  import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
++ import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+  import express from 'express';
+  import request from 'supertest';
+
+  import { createRouter } from './router';
+
++ const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
++   jest.fn();
++ const mockedPermissionQuery: jest.MockedFunction<
++   PermissionEvaluator['authorizeConditional']
++ > = jest.fn();
+
++ const permissionEvaluator: PermissionEvaluator = {
++   authorize: mockedAuthorize,
++   authorizeConditional: mockedPermissionQuery,
++ };
+
+  describe('createRouter', () => {
+    let app: express.Express;
+
+    beforeAll(async () => {
+      const router = await createRouter({
+        logger: getVoidLogger(),
+        identity: {} as DefaultIdentityClient,
++       permissions: toPermissionEvaluator,
+      });
+      app = express().use(router);
+    });
+
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+
+    describe('GET /health', () => {
+      it('returns ok', async () => {
+        const response = await request(app).get('/health');
+
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({ status: 'ok' });
+      });
+    });
+  });
+
+```
+
+Then we want to update the `plugins/todo-list-backend/src/service/standaloneServer.ts`, first we need to add the `@backstage/plugin-permission-node` package to `plugins/todo-list-backend/package.json` and then we can make the following edits:
+
+```diff
+  import {
+    createServiceBuilder,
+    loadBackendConfig,
+    SingleHostDiscovery,
++   ServerTokenManager,
+  } from '@backstage/backend-common';
+  import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+  import { ServerPermissionClient } from '@backstage/plugin-permission-node';
+  import { Server } from 'http';
+  import { Logger } from 'winston';
+  import { createRouter } from './router';
+
+  export interface ServerOptions {
+    port: number;
+    enableCors: boolean;
+    logger: Logger;
+  }
+
+  export async function startStandaloneServer(
+    options: ServerOptions,
+  ): Promise<Server> {
+    const logger = options.logger.child({ service: 'todo-list-backend' });
+    logger.debug('Starting application server...');
+    const config = await loadBackendConfig({ logger, argv: process.argv });
+    const discovery = SingleHostDiscovery.fromConfig(config);
++   const tokenManager = ServerTokenManager.fromConfig(config, {
++     logger,
++   });
++   const permissions = ServerPermissionClient.fromConfig(config, {
++     discovery,
++     tokenManager,
++   });
+    const router = await createRouter({
+      logger,
+      identity: DefaultIdentityClient.create({
+        discovery,
+        issuer: await discovery.getExternalBaseUrl('auth'),
+      }),
++     permissions,
+    });
+
+    let service = createServiceBuilder(module)
+      .setPort(options.port)
+      .addRouter('/todo-list', router);
+    if (options.enableCors) {
+      service = service.enableCors({ origin: 'http://localhost:3000' });
+    }
+
+    return await service.start().catch(err => {
+      logger.error(err);
+      process.exit(1);
+    });
+  }
+
+  module.hot?.accept();
+```
+
+Now when you run `yarn tsc` you should have no more errors.

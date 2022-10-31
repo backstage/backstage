@@ -292,6 +292,9 @@ export function TableToolbar(toolbarProps: {
   );
 }
 
+/**
+ * @public
+ */
 export function Table<T extends object = {}>(props: TableProps<T>) {
   const {
     data,
@@ -513,9 +516,13 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
         }
         data={typeof data === 'function' ? data : tableData}
         style={{ width: '100%' }}
-        localization={{ toolbar: { searchPlaceholder: 'Filter' } }}
+        localization={{
+          toolbar: { searchPlaceholder: 'Filter', searchTooltip: 'Filter' },
+        }}
         {...restProps}
       />
     </div>
   );
 }
+
+Table.icons = Object.freeze(tableIcons);

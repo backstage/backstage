@@ -83,12 +83,43 @@ describe('BitbucketServerUrlReader', () => {
             ),
         ),
         rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits/*',
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches',
           (_, res, ctx) =>
             res(
               ctx.status(200),
-              ctx.json({ id: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }),
+              ctx.json({
+                size: 2,
+                values: [
+                  {
+                    displayId: 'some-branch-that-should-be-ignored',
+                    latestCommit: 'bogus hash',
+                  },
+                  {
+                    displayId: 'some-branch',
+                    latestCommit: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st',
+                  },
+                ],
+              }),
             ),
+        ),
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                id: 'refs/heads/master',
+                displayId: 'master',
+                type: 'BRANCH',
+                latestCommit: '3bdd5457286abdf920db4b77bf2fef79a06190c2',
+                latestChangeset: '3bdd5457286abdf920db4b77bf2fef79a06190c2',
+                isDefault: true,
+              }),
+            ),
+        ),
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
+          (_, res, ctx) => res(ctx.status(404)),
         ),
       );
     });
@@ -106,6 +137,14 @@ describe('BitbucketServerUrlReader', () => {
       const indexMarkdownFile = await files[0].content();
 
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
+    });
+
+    it('uses default branch when no branch is provided', async () => {
+      const response = await reader.readTree(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/src',
+      );
+
+      expect(response.etag).toBe('3bdd5457286a');
     });
   });
 
@@ -130,12 +169,22 @@ describe('BitbucketServerUrlReader', () => {
             ),
         ),
         rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits/*',
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches',
           (_, res, ctx) =>
             res(
               ctx.status(200),
               ctx.json({
-                values: [{ id: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }],
+                size: 2,
+                values: [
+                  {
+                    displayId: 'some-branch-that-should-be-ignored',
+                    latestCommit: 'bogus hash',
+                  },
+                  {
+                    displayId: 'some-branch',
+                    latestCommit: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st',
+                  },
+                ],
               }),
             ),
         ),
@@ -179,11 +228,23 @@ describe('BitbucketServerUrlReader', () => {
             ),
         ),
         rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits/*',
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches',
           (_, res, ctx) =>
             res(
               ctx.status(200),
-              ctx.json({ id: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }),
+              ctx.json({
+                size: 2,
+                values: [
+                  {
+                    displayId: 'master-of-none',
+                    latestCommit: 'bogus hash',
+                  },
+                  {
+                    displayId: 'master',
+                    latestCommit: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st',
+                  },
+                ],
+              }),
             ),
         ),
       );

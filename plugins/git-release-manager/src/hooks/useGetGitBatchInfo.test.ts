@@ -35,31 +35,31 @@ describe('useGetHubBatchInfo', () => {
     });
 
     expect(result.current.gitBatchInfo).toMatchInlineSnapshot(`
-      Object {
+      {
         "loading": false,
-        "value": Object {
-          "latestRelease": Object {
+        "value": {
+          "latestRelease": {
             "htmlUrl": "https://mock_release_html_url",
             "id": 1,
             "prerelease": false,
             "tagName": "rc-2020.01.01_1",
             "targetCommitish": "rc/2020.01.01_1",
           },
-          "releaseBranch": Object {
-            "commit": Object {
-              "commit": Object {
-                "tree": Object {
+          "releaseBranch": {
+            "commit": {
+              "commit": {
+                "tree": {
                   "sha": "mock_branch_commit_commit_tree_sha",
                 },
               },
               "sha": "mock_branch_commit_sha",
             },
-            "links": Object {
+            "links": {
               "html": "https://mock_branch_links_html",
             },
             "name": "rc/1.2.3",
           },
-          "repository": Object {
+          "repository": {
             "defaultBranch": "mock_defaultBranch",
             "name": "mock_repo",
             "pushPermissions": true,
@@ -86,12 +86,12 @@ describe('useGetHubBatchInfo', () => {
     });
 
     expect(result.current.gitBatchInfo).toMatchInlineSnapshot(`
-      Object {
+      {
         "loading": false,
-        "value": Object {
+        "value": {
           "latestRelease": null,
           "releaseBranch": null,
-          "repository": Object {
+          "repository": {
             "defaultBranch": "mock_defaultBranch",
             "name": "mock_repo",
             "pushPermissions": true,

@@ -12,6 +12,7 @@ import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { JsonValue } from '@backstage/types';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
@@ -52,6 +53,16 @@ export const EntityTechInsightsScorecardContent: (props: {
 }) => JSX.Element;
 
 // @public
+export interface InsightFacts {
+  // (undocumented)
+  [factId: string]: {
+    timestamp: string;
+    version: string;
+    facts: Record<string, JsonValue>;
+  };
+}
+
+// @public
 export const jsonRulesEngineCheckResultRenderer: CheckResultRenderer;
 
 // @public
@@ -60,6 +71,8 @@ export interface TechInsightsApi {
   getAllChecks(): Promise<Check[]>;
   // (undocumented)
   getCheckResultRenderers: (types: string[]) => CheckResultRenderer[];
+  // (undocumented)
+  getFacts(entity: CompoundEntityRef, facts: string[]): Promise<InsightFacts>;
   // (undocumented)
   runBulkChecks(
     entities: CompoundEntityRef[],
@@ -86,6 +99,8 @@ export class TechInsightsClient implements TechInsightsApi {
   getAllChecks(): Promise<Check[]>;
   // (undocumented)
   getCheckResultRenderers(types: string[]): CheckResultRenderer[];
+  // (undocumented)
+  getFacts(entity: CompoundEntityRef, facts: string[]): Promise<InsightFacts>;
   // (undocumented)
   runBulkChecks(
     entities: CompoundEntityRef[],

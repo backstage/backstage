@@ -30,6 +30,13 @@ import { DateTime } from 'luxon';
 import { HomePageBazaarInfoCard } from '../HomePageBazaarInfoCard';
 import { Entity } from '@backstage/catalog-model';
 
+type Props = {
+  project: BazaarProject;
+  fetchBazaarProjects: () => Promise<BazaarProject[]>;
+  catalogEntities: Entity[];
+  fullHeight?: boolean;
+};
+
 const useStyles = makeStyles({
   statusTag: {
     display: 'inline-block',
@@ -55,12 +62,6 @@ const useStyles = makeStyles({
     textOverflow: 'ellipsis',
   },
 });
-
-type Props = {
-  project: BazaarProject;
-  fetchBazaarProjects: () => Promise<BazaarProject[]>;
-  catalogEntities: Entity[];
-};
 
 export const ProjectCard = ({
   project,

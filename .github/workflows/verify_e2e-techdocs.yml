@@ -39,7 +39,7 @@ jobs:
         run: yarn build
 
       - name: Install mkdocs & techdocs-core
-        run: python -m pip install mkdocs-techdocs-core
+        run: python -m pip install mkdocs-techdocs-core==1.1.7 mkdocs==1.4.0
 
       - name: techdocs-cli e2e test
         working-directory: packages/techdocs-cli

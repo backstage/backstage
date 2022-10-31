@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { Duration } from 'luxon';
 import { readProviderConfigs } from './BitbucketServerEntityProviderConfig';
 
 describe('readProviderConfigs', () => {
@@ -63,13 +64,22 @@ describe('readProviderConfigs', () => {
               host: 'bitbucket2.mycompany.com',
               catalogPath: 'custom/path/catalog-info.yaml',
             },
+            thirdProvider: {
+              host: 'bitbucket3.mycompany.com',
+              schedule: {
+                frequency: 'PT30M',
+                timeout: {
+                  minutes: 3,
+                },
+              },
+            },
           },
         },
       },
     });
     const providerConfigs = readProviderConfigs(config);
 
-    expect(providerConfigs).toHaveLength(2);
+    expect(providerConfigs).toHaveLength(3);
     expect(providerConfigs[0]).toEqual({
       id: 'mainProvider',
       catalogPath: '/catalog-info.yaml',
@@ -86,6 +96,21 @@ describe('readProviderConfigs', () => {
       filters: {
         projectKey: undefined,
         repoSlug: undefined,
+      },
+    });
+    expect(providerConfigs[2]).toEqual({
+      id: 'thirdProvider',
+      catalogPath: '/catalog-info.yaml',
+      host: 'bitbucket3.mycompany.com',
+      filters: {
+        projectKey: undefined,
+        repoSlug: undefined,
+      },
+      schedule: {
+        frequency: Duration.fromISO('PT30M'),
+        timeout: {
+          minutes: 3,
+        },
       },
     });
   });

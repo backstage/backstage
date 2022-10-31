@@ -1,5 +1,181 @@
 # @backstage/backend-common
 
+## 0.16.0-next.0
+
+### Minor Changes
+
+- a7607b5413: **BREAKING CHANGE**: The `UrlReader` interface has been updated to require that `readUrl` is implemented. `readUrl` has previously been optional to implement but a warning has been logged when calling its predecessor `read`.
+  The `read` method is now deprecated and will be removed in a future release.
+
+### Patch Changes
+
+- 55227712dd: Generated development HTTPS backend certificate is now checked for expiration date instead of file age.
+- d05e1841ce: This patch adds GiteaURLReader to the available classes. It currently only reads single files via gitea's public repos api
+- 210a3b5668: Small update to fix compatibility with newer versions of the `keyv` library
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+- Updated dependencies
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4-next.0
+  - @backstage/config-loader@1.1.6-next.0
+  - @backstage/errors@1.1.3-next.0
+
+## 0.15.2
+
+### Patch Changes
+
+- e8d7976413: Added back support for when no branch is provided for the Bitbucket Server `UrlReader`
+- c44cf412de: Fix BitBucket server integration
+- c31f7cdfbc: Fixed an issue where `getClient()` for a `pluginId` would return different clients and not share them
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3
+  - @backstage/config-loader@1.1.5
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+  - @backstage/types@1.0.0
+
+## 0.15.2-next.2
+
+### Patch Changes
+
+- c44cf412de: Fix BitBucket server integration
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.2
+  - @backstage/config-loader@1.1.5-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/integration@1.3.2-next.2
+  - @backstage/types@1.0.0
+
+## 0.15.2-next.1
+
+### Patch Changes
+
+- c31f7cdfbc: Fixed an issue where `getClient()` for a `pluginId` would return different clients and not share them
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.1
+  - @backstage/config-loader@1.1.5-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/integration@1.3.2-next.1
+  - @backstage/types@1.0.0
+
+## 0.15.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.0
+  - @backstage/config-loader@1.1.5-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/integration@1.3.2-next.0
+  - @backstage/types@1.0.0
+
+## 0.15.1
+
+### Patch Changes
+
+- 399286d7dd: Workaround support for `swc` instead of `sucrase`
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- c3c90280be: Added a keep-alive refresh loop to the `DatabaseManager`, keeping the connection
+  pool up.
+- c3c90280be: The options part of `DatabaseManager.fromConfig` now accepts an optional logger
+  field.
+- 3d4f5daadf: Remove use of deprecated trimLeft/trimRight
+- bf3cc134eb: Implemented KubernetesContainerRunner: a ContainerRunner implementation that leverages Jobs on a kubernetes cluster
+
+  ```ts
+  const kubeConfig = new KubeConfig();
+  kubeConfig.loadFromDefault();
+
+  const options: KubernetesContainerRunnerOptions = {
+    kubeConfig,
+    // namespace where Jobs will be created
+    namespace: 'default',
+    // Jobs name will be prefixed with this name
+    name: 'my-runner',
+    // An existing Kubernetes volume that will be used
+    // as base for mounts
+    mountBase: {
+      volumeName: 'workdir',
+      // Every mount must start with the base path
+      // see example below
+      basePath: '/workdir',
+    },
+    // Define a Pod template for the Jobs. It has to include
+    // a volume definition named as the mountBase volumeName
+    podTemplate: {
+      spec: {
+        containers: [],
+        volumes: [
+          {
+            name: 'workdir',
+            persistentVolumeClaim: {
+              claimName: 'workdir-claim',
+            },
+          },
+        ],
+      },
+    },
+  };
+  const containerRunner = new KubernetesContainerRunner(options);
+
+  const runOptions: RunContainerOptions = {
+    imageName: 'golang:1.17',
+    args: ['echo', 'hello world'],
+    mountDirs: {
+      '/workdir/app': '/app',
+    },
+  };
+  containerRunner.runContainer(runOptions);
+  ```
+
+- e3b1993788: Added port ranges in allowed hosts:
+
+  ```yaml
+  reading:
+      allow:
+        - host: *.examples.org:900-1000
+  ```
+
+- 2f52e74b49: Got rid of usages of the uppercase String type
+- 60b85d8ade: Updated dependency `helmet` to `^6.0.0`.
+
+  Please note that these policies are no longer applied by default:
+
+  helmet.contentSecurityPolicy no longer sets block-all-mixed-content directive by default
+  helmet.expectCt is no longer set by default. It can, however, be explicitly enabled. It will be removed in Helmet 7.
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 709f468330: The `branch` command has been added to the `isomorphic-git` wrapper.
+- 0c780278e0: Fix for entries being skipped or incomplete when reading large zip archives.
+- 96689fbdcb: Workaround for a rare race condition in tests.
+- Updated dependencies
+  - @backstage/integration@1.3.1
+  - @backstage/config-loader@1.1.4
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+
+## 0.15.1-next.3
+
+### Patch Changes
+
+- 96689fbdcb: Workaround for a rare race condition in tests.
+- Updated dependencies
+  - @backstage/config-loader@1.1.4-next.2
+  - @backstage/cli-common@0.1.10-next.0
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+  - @backstage/integration@1.3.1-next.2
+
 ## 0.15.1-next.2
 
 ### Patch Changes

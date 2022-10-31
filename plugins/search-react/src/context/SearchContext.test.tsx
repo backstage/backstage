@@ -40,8 +40,8 @@ describe('SearchContext', () => {
 
   const initialState = {
     term: '',
-    filters: {},
     types: ['*'],
+    filters: {},
   };
 
   beforeEach(() => {
@@ -160,6 +160,60 @@ describe('SearchContext', () => {
 
       expect(result.current.pageCursor).toBeUndefined();
     });
+
+    it('When filters are cleared', async () => {
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState: {
+            ...initialState,
+            term: 'first term',
+            filters: { foo: 'bar' },
+            pageCursor: 'SOMEPAGE',
+          },
+        },
+      });
+
+      await waitForNextUpdate();
+
+      expect(result.current.filters).toEqual({ foo: 'bar' });
+      expect(result.current.pageCursor).toEqual('SOMEPAGE');
+
+      act(() => {
+        result.current.setFilters({});
+      });
+
+      await waitForNextUpdate();
+
+      expect(result.current.pageCursor).toBeUndefined();
+    });
+
+    it('When filters are set (and different from previous)', async () => {
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState: {
+            ...initialState,
+            term: 'first term',
+            filters: { foo: 'bar' },
+            pageCursor: 'SOMEPAGE',
+          },
+        },
+      });
+
+      await waitForNextUpdate();
+
+      expect(result.current.filters).toEqual({ foo: 'bar' });
+      expect(result.current.pageCursor).toEqual('SOMEPAGE');
+
+      act(() => {
+        result.current.setFilters({ foo: 'test' });
+      });
+
+      await waitForNextUpdate();
+
+      expect(result.current.pageCursor).toBeUndefined();
+    });
   });
 
   describe('Performs search (and sets results)', () => {
@@ -182,58 +236,9 @@ describe('SearchContext', () => {
       await waitForNextUpdate();
 
       expect(query).toHaveBeenLastCalledWith({
-        filters: {},
-        types: ['*'],
         term,
-      });
-    });
-
-    it('When filters are set', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
-        wrapper,
-        initialProps: {
-          initialState,
-        },
-      });
-
-      await waitForNextUpdate();
-
-      const filters = { filter: 'filter' };
-
-      act(() => {
-        result.current.setFilters(filters);
-      });
-
-      await waitForNextUpdate();
-
-      expect(query).toHaveBeenLastCalledWith({
-        filters,
         types: ['*'],
-        term: '',
-      });
-    });
-
-    it('When page is set', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
-        wrapper,
-        initialProps: {
-          initialState,
-        },
-      });
-
-      await waitForNextUpdate();
-
-      act(() => {
-        result.current.setPageCursor('SOMEPAGE');
-      });
-
-      await waitForNextUpdate();
-
-      expect(query).toHaveBeenLastCalledWith({
         filters: {},
-        types: ['*'],
-        pageCursor: 'SOMEPAGE',
-        term: '',
       });
     });
 
@@ -257,8 +262,85 @@ describe('SearchContext', () => {
 
       expect(query).toHaveBeenLastCalledWith({
         types,
-        filters: {},
         term: '',
+        filters: {},
+      });
+    });
+
+    it('When filters are set', async () => {
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
+      });
+
+      await waitForNextUpdate();
+
+      const filters = { filter: 'filter' };
+
+      act(() => {
+        result.current.setFilters(filters);
+      });
+
+      await waitForNextUpdate();
+
+      expect(query).toHaveBeenLastCalledWith({
+        filters,
+        term: '',
+        types: ['*'],
+      });
+    });
+
+    it('When page limit is set', async () => {
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
+      });
+
+      await waitForNextUpdate();
+
+      const pageLimit = 30;
+
+      act(() => {
+        result.current.setPageLimit(pageLimit);
+      });
+
+      await waitForNextUpdate();
+
+      expect(query).toHaveBeenLastCalledWith({
+        pageLimit,
+        term: '',
+        types: ['*'],
+        filters: {},
+      });
+    });
+
+    it('When page cursor is set', async () => {
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
+      });
+
+      await waitForNextUpdate();
+
+      const pageCursor = 'SOMEPAGE';
+
+      act(() => {
+        result.current.setPageCursor(pageCursor);
+      });
+
+      await waitForNextUpdate();
+
+      expect(query).toHaveBeenLastCalledWith({
+        pageCursor,
+        term: '',
+        types: ['*'],
+        filters: {},
       });
     });
 
@@ -287,9 +369,9 @@ describe('SearchContext', () => {
       await waitForNextUpdate();
 
       expect(query).toHaveBeenLastCalledWith({
+        term: '',
         types: ['*'],
         filters: {},
-        term: '',
         pageCursor: 'NEXT',
       });
     });
@@ -319,9 +401,9 @@ describe('SearchContext', () => {
       await waitForNextUpdate();
 
       expect(query).toHaveBeenLastCalledWith({
+        term: '',
         types: ['*'],
         filters: {},
-        term: '',
         pageCursor: 'PREVIOUS',
       });
     });

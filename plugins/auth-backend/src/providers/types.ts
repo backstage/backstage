@@ -100,7 +100,14 @@ export type CookieConfigurer = (ctx: {
   baseUrl: string;
   /** The configured callback URL of the auth provider */
   callbackUrl: string;
-}) => { domain: string; path: string; secure: boolean };
+  /** The origin URL of the app */
+  appOrigin: string;
+}) => {
+  domain: string;
+  path: string;
+  secure: boolean;
+  sameSite?: 'none' | 'lax' | 'strict';
+};
 
 /** @public */
 export type AuthProviderConfig = {

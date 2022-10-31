@@ -134,7 +134,7 @@ const capitalize = (s: string) => {
 };
 
 /**
- * WarningPanel. Show a user friendly error message to a user similar to
+ * Show a user friendly error message to a user similar to
  * ErrorPanel except that the warning panel only shows the warning message to
  * the user.
  *

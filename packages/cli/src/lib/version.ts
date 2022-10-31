@@ -81,6 +81,14 @@ export function createPackageVersionProvider(lockfile?: Lockfile) {
     ) {
       return '*';
     }
+
+    for (const specifier of ['^', '~', '*']) {
+      const range = `workspace:${specifier}`;
+      if (lockfileEntries?.some(entry => entry.range === range)) {
+        return range;
+      }
+    }
+
     const validRanges = lockfileEntries?.filter(entry =>
       semver.satisfies(targetVersion, entry.range),
     );

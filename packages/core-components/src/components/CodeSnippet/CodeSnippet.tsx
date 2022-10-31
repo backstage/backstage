@@ -18,7 +18,8 @@ import React from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
 import { CopyTextButton } from '../CopyTextButton';
-import { LightAsync } from 'react-syntax-highlighter';
+import type {} from 'react-syntax-highlighter';
+import { default as LightAsync } from 'react-syntax-highlighter/dist/esm/light-async';
 import dark from 'react-syntax-highlighter/dist/esm/styles/hljs/dark';
 import docco from 'react-syntax-highlighter/dist/esm/styles/hljs/docco';
 

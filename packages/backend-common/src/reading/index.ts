@@ -21,6 +21,7 @@ export { BitbucketServerUrlReader } from './BitbucketServerUrlReader';
 export { GerritUrlReader } from './GerritUrlReader';
 export { GithubUrlReader } from './GithubUrlReader';
 export { GitlabUrlReader } from './GitlabUrlReader';
+export { GiteaUrlReader } from './GiteaUrlReader';
 export { AwsS3UrlReader } from './AwsS3UrlReader';
 export { FetchUrlReader } from './FetchUrlReader';
 export { ReadUrlResponseFactory } from './ReadUrlResponseFactory';

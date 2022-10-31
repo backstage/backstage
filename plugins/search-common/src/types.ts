@@ -23,8 +23,9 @@ import { Readable, Transform, Writable } from 'stream';
  */
 export interface SearchQuery {
   term: string;
-  filters?: JsonObject;
   types?: string[];
+  filters?: JsonObject;
+  pageLimit?: number;
   pageCursor?: string;
 }
 

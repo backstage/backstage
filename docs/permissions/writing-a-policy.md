@@ -70,9 +70,9 @@ Let's change the policy to the following:
 -       };
 +       return createCatalogConditionalDecision(
 +         request.permission,
-+         catalogConditions.isEntityOwner(
-+           user?.identity.ownershipEntityRefs ?? [],
-+         ),
++         catalogConditions.isEntityOwner({
++           claims: user?.identity.ownershipEntityRefs ?? [],
++         }),
 +       );
       }
 
@@ -119,9 +119,9 @@ class TestPermissionPolicy implements PermissionPolicy {
 +   if (isResourcePermission(request.permission, 'catalog-entity')) {
       return createCatalogConditionalDecision(
         request.permission,
-        catalogConditions.isEntityOwner(
-          user?.identity.ownershipEntityRefs ?? [],
-        ),
+        catalogConditions.isEntityOwner({
+          claims: user?.identity.ownershipEntityRefs ?? [],
+        }),
       );
     }
 

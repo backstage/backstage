@@ -21,6 +21,7 @@ import {
 } from '@backstage/plugin-permission-common';
 import express, { Express, Router } from 'express';
 import request, { Response } from 'supertest';
+import { z } from 'zod';
 import { createPermissionIntegrationRouter } from './createPermissionIntegrationRouter';
 import { createPermissionRule } from './createPermissionRule';
 
@@ -39,16 +40,20 @@ const testRule1 = createPermissionRule({
   name: 'test-rule-1',
   description: 'Test rule 1',
   resourceType: 'test-resource',
-  apply: (_resource: any, _firstParam: string, _secondParam: number) => true,
-  toQuery: (_firstParam: string, _secondParam: number) => ({}),
+  paramsSchema: z.object({
+    foo: z.string(),
+    bar: z.number().describe('bar'),
+  }),
+  apply: (_resource: any, _params) => true,
+  toQuery: _params => ({}),
 });
 
 const testRule2 = createPermissionRule({
   name: 'test-rule-2',
   description: 'Test rule 2',
   resourceType: 'test-resource',
-  apply: (_resource: any, _firstParam: object) => false,
-  toQuery: (_firstParam: object) => ({}),
+  apply: (_resource: any) => false,
+  toQuery: () => ({}),
 });
 
 describe('createPermissionIntegrationRouter', () => {
@@ -79,23 +84,31 @@ describe('createPermissionIntegrationRouter', () => {
       {
         rule: 'test-rule-1',
         resourceType: 'test-resource',
-        params: ['abc', 123],
+        params: {
+          foo: 'abc',
+          bar: 123,
+        },
       },
       {
         anyOf: [
           {
             rule: 'test-rule-1',
             resourceType: 'test-resource',
-            params: ['a', 1],
+            params: {
+              foo: 'a',
+              bar: 1,
+            },
           },
-          { rule: 'test-rule-2', resourceType: 'test-resource', params: [{}] },
+          {
+            rule: 'test-rule-2',
+            resourceType: 'test-resource',
+          },
         ],
       },
       {
         not: {
           rule: 'test-rule-2',
           resourceType: 'test-resource',
-          params: [{}],
         },
       },
       {
@@ -105,12 +118,14 @@ describe('createPermissionIntegrationRouter', () => {
               {
                 rule: 'test-rule-1',
                 resourceType: 'test-resource',
-                params: ['a', 1],
+                params: {
+                  foo: 'a',
+                  bar: 1,
+                },
               },
               {
                 rule: 'test-rule-2',
                 resourceType: 'test-resource',
-                params: [{}],
               },
             ],
           },
@@ -120,12 +135,14 @@ describe('createPermissionIntegrationRouter', () => {
                 {
                   rule: 'test-rule-1',
                   resourceType: 'test-resource',
-                  params: ['b', 2],
+                  params: {
+                    foo: 'b',
+                    bar: 2,
+                  },
                 },
                 {
                   rule: 'test-rule-2',
                   resourceType: 'test-resource',
-                  params: [{ c: 3 }],
                 },
               ],
             },
@@ -161,16 +178,21 @@ describe('createPermissionIntegrationRouter', () => {
       {
         rule: 'test-rule-2',
         resourceType: 'test-resource',
-        params: [{ foo: 0 }],
       },
       {
         allOf: [
           {
             rule: 'test-rule-1',
             resourceType: 'test-resource',
-            params: ['a', 1],
+            params: {
+              foo: 'a',
+              bar: 1,
+            },
           },
-          { rule: 'test-rule-2', resourceType: 'test-resource', params: [{}] },
+          {
+            rule: 'test-rule-2',
+            resourceType: 'test-resource',
+          },
         ],
       },
       {
@@ -180,12 +202,14 @@ describe('createPermissionIntegrationRouter', () => {
               {
                 rule: 'test-rule-1',
                 resourceType: 'test-resource',
-                params: ['a', 1],
+                params: {
+                  foo: 'a',
+                  bar: 1,
+                },
               },
               {
                 rule: 'test-rule-2',
                 resourceType: 'test-resource',
-                params: [{ b: 2 }],
               },
             ],
           },
@@ -195,13 +219,15 @@ describe('createPermissionIntegrationRouter', () => {
                 {
                   rule: 'test-rule-1',
                   resourceType: 'test-resource',
-                  params: ['c', 3],
+                  params: {
+                    foo: 'c',
+                    bar: 3,
+                  },
                 },
                 {
                   not: {
                     rule: 'test-rule-2',
                     resourceType: 'test-resource',
-                    params: [{ d: 4 }],
                   },
                 },
               ],
@@ -247,7 +273,10 @@ describe('createPermissionIntegrationRouter', () => {
                 conditions: {
                   rule: 'test-rule-1',
                   resourceType: 'test-resource',
-                  params: [],
+                  params: {
+                    foo: 'a',
+                    bar: 1,
+                  },
                 },
               },
               {
@@ -257,7 +286,6 @@ describe('createPermissionIntegrationRouter', () => {
                 conditions: {
                   rule: 'test-rule-2',
                   resourceType: 'test-resource',
-                  params: [],
                 },
               },
               {
@@ -268,7 +296,10 @@ describe('createPermissionIntegrationRouter', () => {
                   not: {
                     rule: 'test-rule-1',
                     resourceType: 'test-resource',
-                    params: [],
+                    params: {
+                      foo: 'a',
+                      bar: 1,
+                    },
                   },
                 },
               },
@@ -280,7 +311,6 @@ describe('createPermissionIntegrationRouter', () => {
                   not: {
                     rule: 'test-rule-2',
                     resourceType: 'test-resource',
-                    params: [],
                   },
                 },
               },
@@ -293,12 +323,14 @@ describe('createPermissionIntegrationRouter', () => {
                     {
                       rule: 'test-rule-1',
                       resourceType: 'test-resource',
-                      params: [],
+                      params: {
+                        foo: 'a',
+                        bar: 1,
+                      },
                     },
                     {
                       rule: 'test-rule-2',
                       resourceType: 'test-resource',
-                      params: [],
                     },
                   ],
                 },
@@ -342,7 +374,9 @@ describe('createPermissionIntegrationRouter', () => {
               conditions: {
                 rule: 'test-rule-1',
                 resourceType: 'test-incorrect-resource-1',
-                params: [{}],
+                params: {
+                  foo: {},
+                },
               },
             },
             {
@@ -352,7 +386,9 @@ describe('createPermissionIntegrationRouter', () => {
               conditions: {
                 rule: 'test-rule-1',
                 resourceType: 'test-resource',
-                params: [{}],
+                params: {
+                  foo: {},
+                },
               },
             },
             {
@@ -362,7 +398,9 @@ describe('createPermissionIntegrationRouter', () => {
               conditions: {
                 rule: 'test-rule-1',
                 resourceType: 'test-incorrect-resource-2',
-                params: [{}],
+                params: {
+                  foo: {},
+                },
               },
             },
           ],
@@ -390,7 +428,7 @@ describe('createPermissionIntegrationRouter', () => {
               conditions: {
                 rule: 'test-rule-1',
                 resourceType: 'test-resource',
-                params: [],
+                params: {},
               },
             },
           ],
@@ -427,7 +465,10 @@ describe('createPermissionIntegrationRouter', () => {
               conditions: {
                 rule: 'test-rule-1',
                 resourceType: 'test-resource',
-                params: [],
+                params: {
+                  foo: 'a',
+                  bar: 1,
+                },
               },
             },
             {
@@ -437,7 +478,10 @@ describe('createPermissionIntegrationRouter', () => {
               conditions: {
                 rule: 'test-rule-1',
                 resourceType: 'test-resource',
-                params: [],
+                params: {
+                  foo: 'a',
+                  bar: 1,
+                },
               },
             },
             {
@@ -447,7 +491,10 @@ describe('createPermissionIntegrationRouter', () => {
               conditions: {
                 rule: 'test-rule-1',
                 resourceType: 'test-resource',
-                params: [],
+                params: {
+                  foo: 'a',
+                  bar: 1,
+                },
               },
             },
           ],
@@ -524,13 +571,32 @@ describe('createPermissionIntegrationRouter', () => {
             name: testRule1.name,
             description: testRule1.description,
             resourceType: testRule1.resourceType,
-            parameters: { count: 2 },
+            paramsSchema: {
+              $schema: 'http://json-schema.org/draft-07/schema#',
+              additionalProperties: false,
+              properties: {
+                foo: {
+                  type: 'string',
+                },
+                bar: {
+                  description: 'bar',
+                  type: 'number',
+                },
+              },
+              required: ['foo', 'bar'],
+              type: 'object',
+            },
           },
           {
             name: testRule2.name,
             description: testRule2.description,
             resourceType: testRule2.resourceType,
-            parameters: { count: 1 },
+            paramsSchema: {
+              $schema: 'http://json-schema.org/draft-07/schema#',
+              additionalProperties: false,
+              properties: {},
+              type: 'object',
+            },
           },
         ],
       });

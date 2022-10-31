@@ -34,8 +34,9 @@ import {
   EntityTypePicker,
   UserListFilterKind,
   UserListPicker,
+  EntityKindPicker,
 } from '@backstage/plugin-catalog-react';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
 import { CatalogKindHeader } from '../CatalogKindHeader';
@@ -52,6 +53,7 @@ export interface DefaultCatalogPageProps {
   actions?: TableProps<CatalogTableRow>['actions'];
   initialKind?: string;
   tableOptions?: TableProps<CatalogTableRow>['options'];
+  emptyContent?: ReactNode;
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -61,6 +63,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     initiallySelectedFilter = 'owned',
     initialKind = 'component',
     tableOptions = {},
+    emptyContent,
   } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
@@ -83,6 +86,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
           </ContentHeader>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
+              <EntityKindPicker initialFilter={initialKind} />
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityOwnerPicker />
@@ -95,6 +99,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
                 columns={columns}
                 actions={actions}
                 tableOptions={tableOptions}
+                emptyContent={emptyContent}
               />
             </CatalogFilterLayout.Content>
           </CatalogFilterLayout>

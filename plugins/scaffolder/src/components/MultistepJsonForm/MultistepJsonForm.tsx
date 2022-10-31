@@ -28,6 +28,8 @@ import {
   errorApiRef,
   useApi,
   featureFlagsApiRef,
+  useAnalytics,
+  useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import { FormProps, IChangeEvent, UiSchema, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
@@ -36,6 +38,8 @@ import { transformSchemaToProps } from './schema';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
+import { LayoutOptions } from '../../layouts';
+import { selectedTemplateRouteRef } from '../../routes';
 
 const Form = withTheme(MuiTheme);
 type Step = {
@@ -55,6 +59,7 @@ type Props = {
   widgets?: FormProps<any>['widgets'];
   fields?: FormProps<any>['fields'];
   finishButtonLabel?: string;
+  layouts: LayoutOptions[];
 };
 
 export function getUiSchemasFromSteps(steps: Step[]): UiSchema[] {
@@ -119,7 +124,10 @@ export const MultistepJsonForm = (props: Props) => {
     fields,
     widgets,
     finishButtonLabel,
+    layouts,
   } = props;
+  const { templateName } = useRouteRefParams(selectedTemplateRouteRef);
+  const analytics = useAnalytics();
   const [activeStep, setActiveStep] = useState(0);
   const [disableButtons, setDisableButtons] = useState(false);
   const errorApi = useApi(errorApiRef);
@@ -168,7 +176,9 @@ export const MultistepJsonForm = (props: Props) => {
     onReset();
   };
   const handleNext = () => {
-    setActiveStep(Math.min(activeStep + 1, steps.length));
+    const stepNum = Math.min(activeStep + 1, steps.length);
+    setActiveStep(stepNum);
+    analytics.captureEvent('click', `Next Step (${stepNum})`);
   };
   const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
   const handleCreate = async () => {
@@ -179,6 +189,7 @@ export const MultistepJsonForm = (props: Props) => {
     setDisableButtons(true);
     try {
       await onFinish();
+      analytics.captureEvent('create', formData.name || `new ${templateName}`);
     } catch (err) {
       errorApi.post(err);
     } finally {
@@ -214,7 +225,7 @@ export const MultistepJsonForm = (props: Props) => {
                     if (e.errors.length === 0) handleNext();
                   }}
                   {...formProps}
-                  {...transformSchemaToProps(schema)}
+                  {...transformSchemaToProps(schema, layouts)}
                 >
                   <Button disabled={activeStep === 0} onClick={handleBack}>
                     Back

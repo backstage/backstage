@@ -35,7 +35,7 @@ import {
   buildOrgHierarchy,
   getOrganizationTeams,
   getOrganizationUsers,
-  parseGitHubOrgUrl,
+  parseGithubOrgUrl,
 } from '../lib';
 
 type GraphQL = typeof graphql;
@@ -45,7 +45,7 @@ type GraphQL = typeof graphql;
  *
  * @remarks
  *
- * Consider using {@link GitHubOrgEntityProvider} instead.
+ * Consider using {@link GithubOrgEntityProvider} instead.
  *
  * @public
  */
@@ -94,7 +94,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     }
 
     const { client, tokenType } = await this.createClient(location.target);
-    const { org } = parseGitHubOrgUrl(location.target);
+    const { org } = parseGithubOrgUrl(location.target);
 
     // Read out all of the raw data
     const startTimestamp = Date.now();

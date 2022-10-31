@@ -258,6 +258,10 @@ use `ui:widget: password` or set some properties of `ui:backstage`:
           show: false # won't print any info about 'hidden' property on Review Step
 ```
 
+### Custom step layouts
+
+If you find that the default layout of the form used in a particular step does not meet your needs then you can supply your own [custom step layout](./writing-custom-step-layouts.md).
+
 ### Remove sections or fields based on feature flags
 
 Based on feature flags you can hide sections or even only fields of your

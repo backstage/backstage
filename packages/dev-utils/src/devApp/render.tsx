@@ -46,16 +46,23 @@ import { Box } from '@material-ui/core';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import React, { ComponentType, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
-import { Route } from 'react-router';
+import { createRoutesFromChildren, Route } from 'react-router';
 import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
 
-const GatheringRoute: (props: {
+export function isReactRouterBeta(): boolean {
+  const [obj] = createRoutesFromChildren(<Route index element={<div />} />);
+  return !obj.index;
+}
+
+const MaybeGatheringRoute: (props: {
   path: string;
   element: JSX.Element;
   children?: ReactNode;
 }) => JSX.Element = ({ element }) => element;
 
-attachComponentData(GatheringRoute, 'core.gatherMountPoints', true);
+if (isReactRouterBeta()) {
+  attachComponentData(MaybeGatheringRoute, 'core.gatherMountPoints', true);
+}
 
 /** @public */
 export type DevAppPageOptions = {
@@ -136,7 +143,7 @@ export class DevAppBuilder {
       );
     }
     this.routes.push(
-      <GatheringRoute
+      <MaybeGatheringRoute
         key={path}
         path={path}
         element={opts.element}

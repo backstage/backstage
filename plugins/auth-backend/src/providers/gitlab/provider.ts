@@ -91,6 +91,9 @@ export class GitlabAuthProvider implements OAuthHandlers {
         clientSecret: options.clientSecret,
         callbackURL: options.callbackUrl,
         baseURL: options.baseUrl,
+        authorizationURL: `${options.baseUrl}/oauth/authorize`,
+        tokenURL: `${options.baseUrl}/oauth/token`,
+        profileURL: `${options.baseUrl}/api/v4/user`,
       },
       (
         accessToken: any,

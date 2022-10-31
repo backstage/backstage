@@ -7,3 +7,4 @@ description: CodeScene is a multi-purpose tool bridging code, business and peopl
 documentation: https://github.com/backstage/backstage/tree/master/plugins/codescene
 iconUrl: img/codescene_logo.svg
 npmPackageName: '@backstage/plugin-codescene'
+addedDate: '2022-04-12'

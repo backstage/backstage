@@ -15,10 +15,10 @@
  */
 
 import {
-  getGitHubFileFetchUrl,
+  getGithubFileFetchUrl,
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
-  GitHubIntegration,
+  GithubIntegration,
   ScmIntegrations,
 } from '@backstage/integration';
 import { RestEndpointMethodTypes } from '@octokit/rest';
@@ -72,7 +72,7 @@ export class GithubUrlReader implements UrlReader {
   };
 
   constructor(
-    private readonly integration: GitHubIntegration,
+    private readonly integration: GithubIntegration,
     private readonly deps: {
       treeResponseFactory: ReadTreeResponseFactory;
       credentialsProvider: GithubCredentialsProvider;
@@ -97,7 +97,7 @@ export class GithubUrlReader implements UrlReader {
     const credentials = await this.deps.credentialsProvider.getCredentials({
       url,
     });
-    const ghUrl = getGitHubFileFetchUrl(
+    const ghUrl = getGithubFileFetchUrl(
       url,
       this.integration.config,
       credentials,

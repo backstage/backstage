@@ -77,8 +77,7 @@ export class TokenFactory implements TokenIssuer {
     const key = await this.getKey();
 
     const iss = this.issuer;
-    const sub = params.claims.sub;
-    const ent = params.claims.ent;
+    const { sub, ent, ...additionalClaims } = params.claims;
     const aud = 'backstage';
     const iat = Math.floor(Date.now() / MS_IN_S);
     const exp = iat + this.keyDurationSeconds;
@@ -98,7 +97,7 @@ export class TokenFactory implements TokenIssuer {
       throw new AuthenticationError('No algorithm was provided in the key');
     }
 
-    return new SignJWT({ iss, sub, ent, aud, iat, exp })
+    return new SignJWT({ ...additionalClaims, iss, sub, ent, aud, iat, exp })
       .setProtectedHeader({ alg: key.alg, kid: key.kid })
       .setIssuer(iss)
       .setAudience(aud)

@@ -50,10 +50,13 @@ export const CalendarCard = () => {
 
   useAsync(async () => signIn(true), [signIn]);
 
-  const { isLoading: isCalendarLoading, data: calendars = [] } =
-    useCalendarsQuery({
-      enabled: isSignedIn,
-    });
+  const {
+    isLoading: isCalendarLoading,
+    isFetching: isCalendarFetching,
+    data: calendars = [],
+  } = useCalendarsQuery({
+    enabled: isSignedIn,
+  });
   const primaryCalendarId = calendars.find(c => c.primary === true)?.id;
   const defaultSelectedCalendars = primaryCalendarId ? [primaryCalendarId] : [];
   const [storedCalendars, setStoredCalendars] = useStoredCalendars(
@@ -68,6 +71,11 @@ export const CalendarCard = () => {
     timeMax: date.endOf('day').toISO(),
     timeZone: date.zoneName,
   });
+
+  const showLoader =
+    (isCalendarLoading && isCalendarFetching) ||
+    isEventLoading ||
+    !isInitialized;
 
   return (
     <InfoCard
@@ -100,7 +108,9 @@ export const CalendarCard = () => {
                 calendars={calendars}
                 selectedCalendars={storedCalendars}
                 setSelectedCalendars={setStoredCalendars}
-                disabled={isCalendarLoading || !isSignedIn}
+                disabled={
+                  (isCalendarFetching && isCalendarLoading) || !isSignedIn
+                }
               />
             </>
           ) : (
@@ -114,8 +124,8 @@ export const CalendarCard = () => {
       }}
     >
       <Box>
-        {(isCalendarLoading || isEventLoading || !isInitialized) && (
-          <Box pt={2} pb={2}>
+        {showLoader && (
+          <Box py={2}>
             <Progress variant="query" />
           </Box>
         )}

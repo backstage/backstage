@@ -1,5 +1,70 @@
 # @backstage/plugin-cicd-statistics-module-gitlab
 
+## 0.1.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/plugin-cicd-statistics@0.1.13-next.0
+
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/plugin-cicd-statistics@0.1.12
+  - @backstage/core-plugin-api@1.0.7
+
+## 0.1.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/core-plugin-api@1.0.7-next.2
+  - @backstage/plugin-cicd-statistics@0.1.12-next.2
+
+## 0.1.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-cicd-statistics@0.1.12-next.1
+  - @backstage/core-plugin-api@1.0.7-next.1
+  - @backstage/catalog-model@1.1.2-next.1
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.0
+  - @backstage/plugin-cicd-statistics@0.1.12-next.0
+  - @backstage/core-plugin-api@1.0.7-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- 71b7464a7c: Fixing typo in the Readme file: `'@backstage plugin-cicd-statistics-module-gitlab';` -> `'@backstage/plugin-cicd-statistics-module-gitlab';`
+- a98f5d4c21: add the ability to add CICD default options to createGitlabApi constructor
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/catalog-model@1.1.1
+  - @backstage/plugin-cicd-statistics@0.1.11
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.1-next.0
+  - @backstage/core-plugin-api@1.0.6-next.3
+  - @backstage/plugin-cicd-statistics@0.1.11-next.2
+
 ## 0.1.5-next.0
 
 ### Patch Changes

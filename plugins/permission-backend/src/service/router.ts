@@ -179,7 +179,7 @@ export async function createRouter(
   router.use(express.json());
 
   router.get('/health', (_, response) => {
-    response.send({ status: 'ok' });
+    response.json({ status: 'ok' });
   });
 
   router.post(

@@ -48,6 +48,8 @@ export type {
   FieldExtensionComponentProps,
   FieldExtensionComponent,
 } from './extensions';
+export { createScaffolderLayout, ScaffolderLayouts } from './layouts';
+export type { LayoutOptions, LayoutTemplate, LayoutComponent } from './layouts';
 export {
   EntityPickerFieldExtension,
   EntityNamePickerFieldExtension,
@@ -57,11 +59,23 @@ export {
   RepoUrlPickerFieldExtension,
   ScaffolderPage,
   scaffolderPlugin,
-  NextScaffolderPage,
 } from './plugin';
 export * from './components';
+export {
+  rootRouteRef,
+  nextRouteRef,
+  selectedTemplateRouteRef,
+  nextSelectedTemplateRouteRef,
+} from './routes';
 export type { TaskPageProps } from './components/TaskPage';
 
 /** next exports */
+export { NextScaffolderPage } from './plugin';
 export type { NextRouterProps } from './next';
 export type { TemplateGroupFilter } from './next';
+export {
+  createNextScaffolderFieldExtension,
+  type NextCustomFieldValidator,
+  type NextFieldExtensionOptions,
+  type NextFieldExtensionComponentProps,
+} from './extensions';

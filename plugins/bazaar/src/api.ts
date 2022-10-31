@@ -20,6 +20,7 @@ import {
   FetchApi,
   IdentityApi,
 } from '@backstage/core-plugin-api';
+import { ResponseError } from '@backstage/errors';
 
 export const bazaarApiRef = createApiRef<BazaarApi>({
   id: 'bazaar',
@@ -40,7 +41,7 @@ export interface BazaarApi {
 
   addMember(id: number, userId: string): Promise<void>;
 
-  getProjects(): Promise<any>;
+  getProjects(limit?: number, order?: string): Promise<any>;
 
   deleteProject(id: number): Promise<void>;
 }
@@ -148,12 +149,20 @@ export class BazaarClient implements BazaarApi {
     );
   }
 
-  async getProjects(): Promise<any> {
+  async getProjects(limit?: number, order?: string): Promise<any> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
+    const params = {
+      ...(limit ? { limit: limit.toString() } : {}),
+      ...(order ? { order } : {}),
+    };
+    const query = new URLSearchParams(params);
+    const url = `projects?${query.toString()}`;
 
-    return await this.fetchApi
-      .fetch(`${baseUrl}/projects`)
-      .then(resp => resp.json());
+    const data = await this.fetchApi.fetch(`${baseUrl}/${url}`);
+    if (!data.ok) {
+      throw await ResponseError.fromResponse(data);
+    }
+    return data.json();
   }
 
   async deleteProject(id: number): Promise<void> {

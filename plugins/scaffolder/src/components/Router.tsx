@@ -45,6 +45,7 @@ import {
   selectedTemplateRouteRef,
 } from '../routes';
 import { ListTasksPage } from './ListTasksPage';
+import { LayoutOptions, LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../layouts';
 
 /**
  * The props for the entrypoint `ScaffolderPage` component the plugin.
@@ -62,6 +63,11 @@ export type RouterProps = {
     filter: (entity: Entity) => boolean;
   }>;
   defaultPreviewTemplate?: string;
+  headerOptions?: {
+    pageTitleOverride?: string;
+    title?: string;
+    subtitle?: string;
+  };
   /**
    * Options for the context menu on the scaffolder page.
    */
@@ -105,6 +111,17 @@ export const Router = (props: RouterProps) => {
         ),
     ),
   ];
+
+  const customLayouts = useElementFilter(outlet, elements =>
+    elements
+      .selectByComponentData({
+        key: LAYOUTS_WRAPPER_KEY,
+      })
+      .findComponentData<LayoutOptions>({
+        key: LAYOUTS_KEY,
+      }),
+  );
+
   /**
    * This component can be deleted once the older routes have been deprecated.
    */
@@ -131,6 +148,7 @@ export const Router = (props: RouterProps) => {
             groups={groups}
             TemplateCardComponent={TemplateCardComponent}
             contextMenu={props.contextMenu}
+            headerOptions={props.headerOptions}
           />
         }
       />
@@ -142,7 +160,10 @@ export const Router = (props: RouterProps) => {
         path={selectedTemplateRouteRef.path}
         element={
           <SecretsContextProvider>
-            <TemplatePage customFieldExtensions={fieldExtensions} />
+            <TemplatePage
+              customFieldExtensions={fieldExtensions}
+              layouts={customLayouts}
+            />
           </SecretsContextProvider>
         }
       />
@@ -159,6 +180,7 @@ export const Router = (props: RouterProps) => {
             <TemplateEditorPage
               defaultPreviewTemplate={defaultPreviewTemplate}
               customFieldExtensions={fieldExtensions}
+              layouts={customLayouts}
             />
           </SecretsContextProvider>
         }

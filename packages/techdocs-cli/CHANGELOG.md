@@ -1,5 +1,104 @@
 # @techdocs/cli
 
+## 1.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/plugin-techdocs-node@1.4.2-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4-next.0
+
+## 1.2.2
+
+### Patch Changes
+
+- 0b2a30dead: fixing techdocs-cli Docker client creation
+
+  Docker client does not need to be created when --no-docker
+  option is provided.
+
+  If you had DOCKER_CERT_PATH environment variable defined
+  the Docker client was looking for certificates
+  and breaking techdocs-cli generate command even with --no-docker
+  option.
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-techdocs-node@1.4.1
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3
+
+## 1.2.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/plugin-techdocs-node@1.4.1-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.2
+
+## 1.2.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.1
+  - @backstage/catalog-model@1.1.2-next.1
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.1
+  - @backstage/plugin-techdocs-node@1.4.1-next.1
+
+## 1.2.2-next.0
+
+### Patch Changes
+
+- 0b2a30dead: fixing techdocs-cli Docker client creation
+
+  Docker client does not need to be created when --no-docker
+  option is provided.
+
+  If you had DOCKER_CERT_PATH environment variable defined
+  the Docker client was looking for certificates
+  and breaking techdocs-cli generate command even with --no-docker
+  option.
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.0
+  - @backstage/plugin-techdocs-node@1.4.1-next.0
+  - @backstage/backend-common@0.15.2-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.0
+
+## 1.2.1
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/plugin-techdocs-node@1.4.0
+  - @backstage/catalog-model@1.1.1
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.2
+
+## 1.2.1-next.2
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.1-next.0
+  - @backstage/cli-common@0.1.10-next.0
+  - @backstage/config@1.0.2-next.0
+  - @backstage/backend-common@0.15.1-next.3
+  - @backstage/plugin-techdocs-node@1.4.0-next.2
+
 ## 1.2.1-next.1
 
 ### Patch Changes

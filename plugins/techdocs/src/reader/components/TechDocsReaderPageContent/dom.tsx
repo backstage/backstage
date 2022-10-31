@@ -175,13 +175,14 @@ export const useTechDocsReaderDom = (
             // detect if CTRL or META keys are pressed so that links can be opened in a new tab with `window.open`
             const modifierActive = event.ctrlKey || event.metaKey;
             const parsedUrl = new URL(url);
+            const fullPath = `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
 
             // hash exists when anchor is clicked on secondary sidebar
             if (parsedUrl.hash) {
               if (modifierActive) {
-                window.open(`${parsedUrl.pathname}${parsedUrl.hash}`, '_blank');
+                window.open(fullPath, '_blank');
               } else {
-                navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
+                navigate(fullPath);
                 // Scroll to hash if it's on the current page
                 transformedElement
                   ?.querySelector(`[id="${parsedUrl.hash.slice(1)}"]`)
@@ -189,9 +190,9 @@ export const useTechDocsReaderDom = (
               }
             } else {
               if (modifierActive) {
-                window.open(parsedUrl.pathname, '_blank');
+                window.open(fullPath, '_blank');
               } else {
-                navigate(parsedUrl.pathname);
+                navigate(fullPath);
               }
             }
           },

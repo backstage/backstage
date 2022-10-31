@@ -1,5 +1,87 @@
 # @backstage/backend-plugin-api
 
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/backend-tasks@0.3.7-next.0
+  - @backstage/plugin-permission-common@0.7.1-next.0
+  - @backstage/config@1.0.4-next.0
+
+## 0.1.3
+
+### Patch Changes
+
+- 28377dc89f: Allow interfaces to be used for inferred option types.
+- a35a27df70: Added documentation for `createBackendModule`, with guidelines for choosing a module ID.
+- Updated dependencies
+  - @backstage/backend-common@0.15.2
+  - @backstage/backend-tasks@0.3.6
+  - @backstage/plugin-permission-common@0.7.0
+  - @backstage/config@1.0.3
+
+## 0.1.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.6-next.2
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/plugin-permission-common@0.7.0-next.2
+  - @backstage/config@1.0.3-next.2
+
+## 0.1.3-next.1
+
+### Patch Changes
+
+- a35a27df70: Added documentation for `createBackendModule`, with guidelines for choosing a module ID.
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.1
+  - @backstage/backend-tasks@0.3.6-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/plugin-permission-common@0.6.5-next.1
+
+## 0.1.3-next.0
+
+### Patch Changes
+
+- 28377dc89f: Allow interfaces to be used for inferred option types.
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.0
+  - @backstage/backend-tasks@0.3.6-next.0
+  - @backstage/config@1.0.3-next.0
+  - @backstage/plugin-permission-common@0.6.5-next.0
+
+## 0.1.2
+
+### Patch Changes
+
+- 2c57c0c499: Made `ApiRef.defaultFactory` internal.
+- 91eed37a39: Updated `createBackendPlugin` and `createBackendModule` to properly forward lack of options.
+- 409ed984e8: Service are now scoped to either `'plugin'` or `'root'` scope. Service factories have been updated to provide dependency instances directly rather than factory functions.
+- eef91a2558: Simplified the `ServiceFactory` type and removed `AnyServiceFactory`.
+- 854ba37357: The `createServiceFactory` method has been updated to return a higher-order factory that can accept options.
+- 68513f169a: When defining a new `ServiceRef` you can now also include a `defaultFactory`, which will be used to construct instances of the service in case there is no explicit factory defined.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/backend-tasks@0.3.5
+  - @backstage/config@1.0.2
+  - @backstage/plugin-permission-common@0.6.4
+
+## 0.1.2-next.2
+
+### Patch Changes
+
+- 409ed984e8: Service are now scoped to either `'plugin'` or `'root'` scope. Service factories have been updated to provide dependency instances directly rather than factory functions.
+- 854ba37357: The `createServiceFactory` method has been updated to return a higher-order factory that can accept options.
+- Updated dependencies
+  - @backstage/config@1.0.2-next.0
+  - @backstage/plugin-permission-common@0.6.4-next.2
+  - @backstage/backend-common@0.15.1-next.3
+  - @backstage/backend-tasks@0.3.5-next.1
+
 ## 0.1.2-next.1
 
 ### Patch Changes

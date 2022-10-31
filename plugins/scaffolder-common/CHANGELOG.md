@@ -1,5 +1,63 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/types@1.0.1-next.0
+
+## 1.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/types@1.0.0
+
+## 1.2.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/types@1.0.0
+
+## 1.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.1
+  - @backstage/types@1.0.0
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.0
+  - @backstage/types@1.0.0
+
+## 1.2.0
+
+### Minor Changes
+
+- 1ff817b3f0: add entity metadata to the template info type
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.1
+
+## 1.2.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.1-next.0
+
 ## 1.2.0-next.0
 
 ### Minor Changes

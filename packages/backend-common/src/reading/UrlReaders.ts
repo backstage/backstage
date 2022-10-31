@@ -29,6 +29,7 @@ import { DefaultReadTreeResponseFactory } from './tree';
 import { FetchUrlReader } from './FetchUrlReader';
 import { GoogleGcsUrlReader } from './GoogleGcsUrlReader';
 import { AwsS3UrlReader } from './AwsS3UrlReader';
+import { GiteaUrlReader } from './GiteaUrlReader';
 
 /**
  * Creation options for {@link UrlReaders}.
@@ -55,7 +56,7 @@ export class UrlReaders {
    */
   static create(options: UrlReadersOptions): UrlReader {
     const { logger, config, factories } = options;
-    const mux = new UrlReaderPredicateMux(logger);
+    const mux = new UrlReaderPredicateMux();
     const treeResponseFactory = DefaultReadTreeResponseFactory.create({
       config,
     });
@@ -89,6 +90,7 @@ export class UrlReaders {
         BitbucketUrlReader.factory,
         GerritUrlReader.factory,
         GithubUrlReader.factory,
+        GiteaUrlReader.factory,
         GitlabUrlReader.factory,
         GoogleGcsUrlReader.factory,
         AwsS3UrlReader.factory,

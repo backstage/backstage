@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  readTaskScheduleDefinitionFromConfig,
+  TaskScheduleDefinition,
+} from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { trimEnd } from 'lodash';
 
@@ -62,6 +66,12 @@ export type MicrosoftGraphProviderConfig = {
    * E.g. "accountEnabled eq true and userType eq 'member'"
    */
   userFilter?: string;
+  /**
+   * The fields to be fetched on query.
+   *
+   * E.g. ["id", "displayName", "description"]
+   */
+  userSelect?: string[];
   /**
    * The "expand" argument to apply to users.
    *
@@ -115,6 +125,11 @@ export type MicrosoftGraphProviderConfig = {
    * Some features like `$expand` are not available for advanced queries, though.
    */
   queryMode?: 'basic' | 'advanced';
+
+  /**
+   * Schedule configuration for refresh tasks.
+   */
+  schedule?: TaskScheduleDefinition;
 };
 
 /**
@@ -144,6 +159,7 @@ export function readMicrosoftGraphConfig(
 
     const userExpand = providerConfig.getOptionalString('userExpand');
     const userFilter = providerConfig.getOptionalString('userFilter');
+    const userSelect = providerConfig.getOptionalStringArray('userSelect');
     const userGroupMemberFilter = providerConfig.getOptionalString(
       'userGroupMemberFilter',
     );
@@ -196,6 +212,7 @@ export function readMicrosoftGraphConfig(
       clientSecret,
       userExpand,
       userFilter,
+      userSelect,
       userGroupMemberFilter,
       userGroupMemberSearch,
       groupExpand,
@@ -253,6 +270,15 @@ export function readProviderConfig(
   const groupSearch = config.getOptionalString('group.search');
   const groupSelect = config.getOptionalStringArray('group.select');
 
+  const queryMode = config.getOptionalString('queryMode');
+  if (
+    queryMode !== undefined &&
+    queryMode !== 'basic' &&
+    queryMode !== 'advanced'
+  ) {
+    throw new Error(`queryMode must be one of: basic, advanced`);
+  }
+
   const userGroupMemberFilter = config.getOptionalString(
     'userGroupMember.filter',
   );
@@ -279,6 +305,10 @@ export function readProviderConfig(
     throw new Error(`clientId must be provided when clientSecret is defined.`);
   }
 
+  const schedule = config.has('schedule')
+    ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+    : undefined;
+
   return {
     id,
     target,
@@ -292,7 +322,9 @@ export function readProviderConfig(
     groupFilter,
     groupSearch,
     groupSelect,
+    queryMode,
     userGroupMemberFilter,
     userGroupMemberSearch,
+    schedule,
   };
 }

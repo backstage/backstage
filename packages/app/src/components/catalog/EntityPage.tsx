@@ -104,6 +104,7 @@ import {
   EntityPagerDutyCard,
   isPagerDutyAvailable,
 } from '@backstage/plugin-pagerduty';
+import { EntityPlaylistDialog } from '@backstage/plugin-playlist';
 import {
   EntityRollbarContent,
   isRollbarAvailable,
@@ -114,6 +115,7 @@ import { EntityTechInsightsScorecardCard } from '@backstage/plugin-tech-insights
 import { EntityTodoContent } from '@backstage/plugin-todo';
 import { Button, Grid } from '@material-ui/core';
 import BadgeIcon from '@material-ui/icons/CallToAction';
+import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
 
 import {
   EntityGithubInsightsContent,
@@ -142,6 +144,7 @@ import {
   EntityNewRelicDashboardCard,
 } from '@backstage/plugin-newrelic-dashboard';
 import { EntityGoCdContent, isGoCdAvailable } from '@backstage/plugin-gocd';
+import { EntityScoreCardContent } from '@oriflame/backstage-plugin-score-card';
 
 import React, { ReactNode, useMemo, useState } from 'react';
 
@@ -155,6 +158,7 @@ const customEntityFilterKind = ['Component', 'API', 'System'];
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
   const [badgesDialogOpen, setBadgesDialogOpen] = useState(false);
+  const [playlistDialogOpen, setPlaylistDialogOpen] = useState(false);
 
   const extraMenuItems = useMemo(() => {
     return [
@@ -162,6 +166,11 @@ const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
         title: 'Badges',
         Icon: BadgeIcon,
         onClick: () => setBadgesDialogOpen(true),
+      },
+      {
+        title: 'Add to playlist',
+        Icon: PlaylistAddIcon,
+        onClick: () => setPlaylistDialogOpen(true),
       },
     ];
   }, []);
@@ -180,6 +189,10 @@ const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
         open={badgesDialogOpen}
         onClose={() => setBadgesDialogOpen(false)}
       />
+      <EntityPlaylistDialog
+        open={playlistDialogOpen}
+        onClose={() => setPlaylistDialogOpen(false)}
+      />
     </>
   );
 };
@@ -196,7 +209,7 @@ const techdocsContent = (
 /**
  * NOTE: This page is designed to work on small screens such as mobile devices.
  * This is based on Material UI Grid. If breakpoints are used, each grid item must set the `xs` prop to a column size or to `true`,
- * since this does not default. If no breakpoints are used, the items will equitably share the asvailable space.
+ * since this does not default. If no breakpoints are used, the items will equitably share the available space.
  * https://material-ui.com/components/grid/#basic-grid.
  */
 
@@ -689,6 +702,13 @@ const systemPage = (
         </Grid>
         <Grid item md={6}>
           <EntityHasResourcesCard variant="gridItem" />
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+    <EntityLayout.Route path="/score" title="Score">
+      <Grid container spacing={3} alignItems="stretch">
+        <Grid item xs={12}>
+          <EntityScoreCardContent />
         </Grid>
       </Grid>
     </EntityLayout.Route>

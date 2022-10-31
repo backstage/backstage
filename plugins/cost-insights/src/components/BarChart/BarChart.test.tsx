@@ -55,6 +55,22 @@ const renderWithProps = ({
 };
 
 describe('<BarChart />', () => {
+  const { ResizeObserver } = window;
+  beforeEach(() => {
+    // @ts-expect-error
+    delete window.ResizeObserver;
+    window.ResizeObserver = jest.fn().mockImplementation(() => ({
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+      disconnect: jest.fn(),
+    }));
+  });
+
+  afterEach(() => {
+    window.ResizeObserver = ResizeObserver;
+    jest.restoreAllMocks();
+  });
+
   it('Renders without exploding', async () => {
     const rendered = await renderWithProps({} as BarChartProps);
     expect(rendered.getByText('test-id-10')).toBeInTheDocument();

@@ -17,16 +17,16 @@
 import { Entity } from '@backstage/catalog-model';
 import { kubernetesApiRef } from '../api/types';
 import { kubernetesAuthProvidersApiRef } from '../kubernetes-auth-provider/types';
-import { useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import useInterval from 'react-use/lib/useInterval';
-import {
-  KubernetesRequestBody,
-  ObjectsByEntityResponse,
-} from '@backstage/plugin-kubernetes-common';
+import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { useApi } from '@backstage/core-plugin-api';
+import { generateAuth } from './auth';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 
 export interface KubernetesObjects {
   kubernetesObjects?: ObjectsByEntityResponse;
+  loading: boolean;
   error?: string;
 }
 
@@ -36,68 +36,28 @@ export const useKubernetesObjects = (
 ): KubernetesObjects => {
   const kubernetesApi = useApi(kubernetesApiRef);
   const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
-  const [result, setResult] = useState<KubernetesObjects>({
-    kubernetesObjects: undefined,
-    error: undefined,
-  });
-
-  const getObjects = async () => {
-    let clusters = [];
-
-    try {
-      clusters = await kubernetesApi.getClusters();
-    } catch (e) {
-      setResult({ error: e.message });
-      return;
-    }
-
-    const authProviders: string[] = [
-      ...new Set(
-        clusters.map(
-          c =>
-            `${c.authProvider}${
-              c.oidcTokenProvider ? `.${c.oidcTokenProvider}` : ''
-            }`,
-        ),
-      ),
-    ];
-
-    // For each auth type, invoke decorateRequestBodyForAuth on corresponding KubernetesAuthProvider
-    let requestBody: KubernetesRequestBody = {
+  const getObjects = useCallback(async (): Promise<ObjectsByEntityResponse> => {
+    const auth = await generateAuth(
       entity,
-    };
-    for (const authProviderStr of authProviders) {
-      // Multiple asyncs done sequentially instead of all at once to prevent same requestBody from being modified simultaneously
-      try {
-        requestBody =
-          await kubernetesAuthProvidersApi.decorateRequestBodyForAuth(
-            authProviderStr,
-            requestBody,
-          );
-      } catch (e) {
-        setResult({ error: e.message });
-        return;
-      }
-    }
+      kubernetesApi,
+      kubernetesAuthProvidersApi,
+    );
+    return await kubernetesApi.getObjectsByEntity({
+      auth,
+      entity,
+    });
+  }, [kubernetesApi, entity, kubernetesAuthProvidersApi]);
 
-    try {
-      const objects = await kubernetesApi.getObjectsByEntity(requestBody);
-      setResult({ kubernetesObjects: objects });
-    } catch (e) {
-      setResult({ error: e.message });
-      return;
-    }
+  const { value, loading, error, retry } = useAsyncRetry(
+    () => getObjects(),
+    [getObjects],
+  );
+
+  useInterval(() => retry(), intervalMs);
+
+  return {
+    kubernetesObjects: value,
+    loading,
+    error: error?.message,
   };
-
-  useEffect(() => {
-    getObjects();
-    /* eslint-disable react-hooks/exhaustive-deps */
-  }, [entity.metadata.name, kubernetesApi, kubernetesAuthProvidersApi]);
-  /* eslint-enable react-hooks/exhaustive-deps */
-
-  useInterval(() => {
-    getObjects();
-  }, intervalMs);
-
-  return result;
 };

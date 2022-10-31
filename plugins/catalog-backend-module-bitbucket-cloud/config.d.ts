@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
+
 export interface Config {
   catalog?: {
     /**
@@ -53,6 +55,10 @@ export interface Config {
                */
               projectKey?: RegExp;
             };
+            /**
+             * (Optional) TaskScheduleDefinition for the discovery.
+             */
+            schedule?: TaskScheduleDefinitionConfig;
           }
         | Record<
             string,
@@ -83,6 +89,10 @@ export interface Config {
                  */
                 projectKey?: RegExp;
               };
+              /**
+               * (Optional) TaskScheduleDefinition for the discovery.
+               */
+              schedule?: TaskScheduleDefinitionConfig;
             }
           >;
     };

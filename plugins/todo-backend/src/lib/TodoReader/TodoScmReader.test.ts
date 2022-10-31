@@ -30,6 +30,7 @@ function mockReader(): jest.Mocked<UrlReader> {
     read: jest.fn(),
     readTree: jest.fn(),
     search: jest.fn(),
+    readUrl: jest.fn(),
   } as jest.Mocked<UrlReader>;
 }
 

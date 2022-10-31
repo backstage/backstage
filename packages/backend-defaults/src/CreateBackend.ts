@@ -24,6 +24,7 @@ import {
   httpRouterFactory,
   loggerFactory,
   permissionsFactory,
+  rootLoggerFactory,
   schedulerFactory,
   tokenManagerFactory,
   urlReaderFactory,
@@ -36,6 +37,7 @@ export const defaultServiceFactories = [
   databaseFactory,
   discoveryFactory,
   loggerFactory,
+  rootLoggerFactory,
   permissionsFactory,
   schedulerFactory,
   tokenManagerFactory,
@@ -47,24 +49,14 @@ export const defaultServiceFactories = [
  * @public
  */
 export interface CreateBackendOptions {
-  services?: ServiceFactory[];
+  services?: (ServiceFactory | (() => ServiceFactory))[];
 }
 
 /**
  * @public
  */
 export function createBackend(options?: CreateBackendOptions): Backend {
-  const services = new Map<string, ServiceFactory>(
-    defaultServiceFactories.map(sf => [sf.service.id, sf as ServiceFactory]),
-  );
-
-  if (options?.services) {
-    for (const sf of options.services) {
-      services.set(sf.service.id, sf);
-    }
-  }
-
   return createSpecializedBackend({
-    services: Array.from(services.values()),
+    services: [...defaultServiceFactories, ...(options?.services ?? [])],
   });
 }

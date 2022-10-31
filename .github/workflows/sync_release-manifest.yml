@@ -53,6 +53,10 @@ jobs:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           # TODO(Rugvip): Remove the create-app dispatch once we've been on the release version for a while
           script: |
+            const releaseVersion = require('./backstage/package.json').version;
+            if(releaseVersion.includes('next')) {
+              return;
+            }
             console.log('Dispatching upgrade helper sync');
             await github.rest.actions.createWorkflowDispatch({
               owner: 'backstage',
@@ -61,6 +65,6 @@ jobs:
               ref: 'master',
               inputs: {
                 version: require('./backstage/packages/create-app/package.json').version,
-                releaseVersion: require('./backstage/package.json').version
+                releaseVersion
               },
             });

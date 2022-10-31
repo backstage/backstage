@@ -183,10 +183,12 @@ export type CookieConfigurer = (ctx: {
   providerId: string;
   baseUrl: string;
   callbackUrl: string;
+  appOrigin: string;
 }) => {
   domain: string;
   path: string;
   secure: boolean;
+  sameSite?: 'none' | 'lax' | 'strict';
 };
 
 // @public
@@ -280,11 +282,10 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
 // @public (undocumented)
 export type OAuthAdapterOptions = {
   providerId: string;
-  secure: boolean;
   persistScopes?: boolean;
-  cookieDomain: string;
-  cookiePath: string;
   appOrigin: string;
+  baseUrl: string;
+  cookieConfigurer: CookieConfigurer;
   isOriginAllowed: (origin: string) => boolean;
   callbackUrl: string;
 };
@@ -313,13 +314,18 @@ export interface OAuthHandlers {
     response: OAuthResponse;
     refreshToken?: string;
   }>;
-  logout?(): Promise<void>;
+  logout?(req: OAuthLogoutRequest): Promise<void>;
   refresh?(req: OAuthRefreshRequest): Promise<{
     response: OAuthResponse;
     refreshToken?: string;
   }>;
   start(req: OAuthStartRequest): Promise<OAuthStartResponse>;
 }
+
+// @public (undocumented)
+export type OAuthLogoutRequest = express.Request<{}> & {
+  refreshToken: string;
+};
 
 // @public (undocumented)
 export type OAuthProviderInfo = {
@@ -706,7 +712,7 @@ export type TokenParams = {
   claims: {
     sub: string;
     ent?: string[];
-  };
+  } & Record<string, JsonValue>;
 };
 
 // @public (undocumented)

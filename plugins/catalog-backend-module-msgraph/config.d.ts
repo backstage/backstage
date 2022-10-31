@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
+import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
+
 export interface Config {
-  /**
-   * Configuration options for the catalog plugin.
-   */
   catalog?: {
-    /**
-     * List of processor-specific options and attributes
-     */
     processors?: {
       /**
        * MicrosoftGraphOrgReaderProcessor configuration
@@ -75,6 +71,12 @@ export interface Config {
            */
           groupFilter?: string;
           /**
+           * The fields to be fetched on query.
+           *
+           * E.g. ["id", "displayName", "description"]
+           */
+          userSelect?: string[];
+          /**
            * The search criteria to apply to extract users by groups memberships.
            *
            * E.g. "\"displayName:-team\"" would only match groups which contain '-team'
@@ -103,9 +105,7 @@ export interface Config {
         }>;
       };
     };
-    /**
-     * List of provider-specific options and attributes
-     */
+
     providers?: {
       /**
        * MicrosoftGraphOrgEntityProvider configuration.
@@ -138,6 +138,15 @@ export interface Config {
              */
             clientSecret?: string;
 
+            /**
+             * By default, the Microsoft Graph API only provides the basic feature set
+             * for querying. Certain features are limited to advanced query capabilities
+             * (see https://docs.microsoft.com/en-us/graph/aad-advanced-queries)
+             * and need to be enabled.
+             *
+             * Some features like `$expand` are not available for advanced queries, though.
+             */
+            queryMode?: string;
             user?: {
               /**
                * The "expand" argument to apply to users.
@@ -194,6 +203,11 @@ export interface Config {
                */
               search?: string;
             };
+
+            /**
+             * (Optional) TaskScheduleDefinition for the refresh.
+             */
+            schedule?: TaskScheduleDefinitionConfig;
           }
         | Record<
             string,
@@ -224,6 +238,15 @@ export interface Config {
                */
               clientSecret: string;
 
+              /**
+               * By default, the Microsoft Graph API only provides the basic feature set
+               * for querying. Certain features are limited to advanced query capabilities
+               * (see https://docs.microsoft.com/en-us/graph/aad-advanced-queries)
+               * and need to be enabled.
+               *
+               * Some features like `$expand` are not available for advanced queries, though.
+               */
+              queryMode?: string;
               user?: {
                 /**
                  * The filter to apply to extract users.
@@ -268,6 +291,11 @@ export interface Config {
                  */
                 search?: string;
               };
+
+              /**
+               * (Optional) TaskScheduleDefinition for the refresh.
+               */
+              schedule?: TaskScheduleDefinitionConfig;
             }
           >;
     };

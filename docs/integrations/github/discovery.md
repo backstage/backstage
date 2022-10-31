@@ -12,7 +12,7 @@ The GitHub integration has a discovery provider for discovering catalog
 entities within a GitHub organization. The provider will crawl the GitHub
 organization and register entities matching the configured path. This can be
 useful as an alternative to static locations or manually adding things to the
-catalog. This is the prefered method for ingesting entities into the catalog.
+catalog. This is the preferred method for ingesting entities into the catalog.
 
 ## Installation
 
@@ -30,19 +30,22 @@ And then add the entity provider to your catalog builder:
 
 ```diff
   // In packages/backend/src/plugins/catalog.ts
-+ import { GitHubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
++ import { GithubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
 
   export default async function createPlugin(
     env: PluginEnvironment,
   ): Promise<Router> {
     const builder = await CatalogBuilder.create(env);
 +   builder.addEntityProvider(
-+     GitHubEntityProvider.fromConfig(env.config, {
++     GithubEntityProvider.fromConfig(env.config, {
 +       logger: env.logger,
++       // optional: alternatively, use scheduler with schedule defined in app-config.yaml
 +       schedule: env.scheduler.createScheduledTaskRunner({
 +         frequency: { minutes: 30 },
 +         timeout: { minutes: 3 },
 +       }),
++       // optional: alternatively, use schedule
++       scheduler: env.scheduler,
 +     }),
 +   );
 
@@ -55,7 +58,7 @@ And then add the entity provider to your catalog builder:
 To use the discovery provider, you'll need a GitHub integration
 [set up](locations.md) with either a [Personal Access Token](../../getting-started/configuration.md#setting-up-a-github-integration) or [GitHub Apps](./github-apps.md).
 
-Then you can add a github config to the catalog providers configuration:
+Then you can add a `github` config to the catalog providers configuration:
 
 ```yaml
 catalog:
@@ -68,6 +71,11 @@ catalog:
         filters:
           branch: 'main' # string
           repository: '.*' # Regex
+        schedule: # optional; same options as in TaskScheduleDefinition
+          # supports cron, ISO duration, "human duration" as used in code
+          frequency: { minutes: 30 }
+          # supports ISO duration, "human duration" as used in code
+          timeout: { minutes: 3 }
       customProviderId:
         organization: 'new-org' # string
         catalogPath: '/custom/path/catalog-info.yaml' # string
@@ -96,6 +104,17 @@ catalog:
           topic:
             include: ['backstage-include'] # optional array of strings
             exclude: ['experiments'] # optional array of strings
+      validateLocationsExist:
+        organization: 'backstage' # string
+        catalogPath: '/catalog-info.yaml' # string
+        filters:
+          branch: 'main' # string
+          repository: '.*' # Regex
+        validateLocationsExist: true # optional boolean
+      enterpriseProviderId:
+        host: ghe.example.net
+        organization: 'backstage' # string
+        catalogPath: '/catalog-info.yaml' # string
 ```
 
 This provider supports multiple organizations via unique provider IDs.
@@ -106,25 +125,43 @@ This provider supports multiple organizations via unique provider IDs.
 - **`catalogPath`** _(optional)_:
   Default: `/catalog-info.yaml`.
   Path where to look for `catalog-info.yaml` files.
-  You can use wildcards - `*` or `**` - to search the path and/or the filename
-- **filters** _(optional)_:
-  - **branch** _(optional)_:
+  You can use wildcards - `*` or `**` - to search the path and/or the filename.
+  Wildcards cannot be used if the `validateLocationsExist` option is set to `true`.
+- **`filters`** _(optional)_:
+  - **`branch`** _(optional)_:
     String used to filter results based on the branch name.
-  - **repository** _(optional)_:
+  - **`repository`** _(optional)_:
     Regular expression used to filter results based on the repository name.
-  - **topic** _(optional)_:
+  - **`topic`** _(optional)_:
     Both of the filters below may be used at the same time but the exclusion filter has the highest priority.
     In the example above, a repository with the `backstage-include` topic would still be excluded
     if it were also carrying the `experiments` topic.
-    - **include** _(optional)_:
-      An array of strings used to filter in results based on their associated Github topics.
+    - **`include`** _(optional)_:
+      An array of strings used to filter in results based on their associated GitHub topics.
       If configured, only repositories with one (or more) topic(s) present in the inclusion filter will be ingested
-    - **exclude** _(optional)_:
-      An array of strings used to filter out results based on their associated Github topics.
+    - **`exclude`** _(optional)_:
+      An array of strings used to filter out results based on their associated GitHub topics.
       If configured, all repositories _except_ those with one (or more) topics(s) present in the exclusion filter will be ingested.
-- **organization**:
+- **`host`** _(optional)_:
+  The hostname of your GitHub Enterprise instance. It must match a host defined in [integrations.github](locations.md).
+- **`organization`**:
   Name of your organization account/workspace.
   If you want to add multiple organizations, you need to add one provider config each.
+- **`validateLocationsExist`** _(optional)_:
+  Whether to validate locations that exist before emitting them.
+  This option avoids generating locations for catalog info files that do not exist in the source repository.
+  Defaults to `false`.
+  Due to limitations in the GitHub API's ability to query for repository objects, this option cannot be used in
+  conjunction with wildcards in the `catalogPath`.
+- **`schedule`** _(optional)_:
+  - **`frequency`**:
+    How often you want the task to run. The system does its best to avoid overlapping invocations.
+  - **`timeout`**:
+    The maximum amount of time that a single task invocation can take.
+  - **`initialDelay`** _(optional)_:
+    The amount of time that should pass before the first invocation happens.
+  - **`scope`** _(optional)_:
+    `'global'` or `'local'`. Sets the scope of concurrency control.
 
 ## GitHub API Rate Limits
 

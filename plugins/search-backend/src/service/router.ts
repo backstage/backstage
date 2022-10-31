@@ -62,6 +62,7 @@ export type RouterOptions = {
   logger: Logger;
 };
 
+const maxPageLimit = 100;
 const allowedLocationProtocols = ['http:', 'https:'];
 
 /**
@@ -79,6 +80,22 @@ export async function createRouter(
       .array(z.string().refine(type => Object.keys(types).includes(type)))
       .optional(),
     pageCursor: z.string().optional(),
+    pageLimit: z
+      .string()
+      .transform(pageLimit => parseInt(pageLimit, 10))
+      .refine(
+        pageLimit => !isNaN(pageLimit),
+        pageLimit => ({
+          message: `The page limit "${pageLimit}" is not a number`,
+        }),
+      )
+      .refine(
+        pageLimit => pageLimit <= maxPageLimit,
+        pageLimit => ({
+          message: `The page limit "${pageLimit}" is greater than "${maxPageLimit}"`,
+        }),
+      )
+      .optional(),
   });
 
   let permissionEvaluator: PermissionEvaluator;
@@ -133,7 +150,7 @@ export async function createRouter(
       req: express.Request,
       res: express.Response<SearchResultSet | ErrorResponseBody>,
     ) => {
-      const parseResult = requestSchema.safeParse(req.query);
+      const parseResult = requestSchema.passthrough().safeParse(req.query);
 
       if (!parseResult.success) {
         throw new InputError(`Invalid query string: ${parseResult.error}`);
@@ -156,7 +173,7 @@ export async function createRouter(
       try {
         const resultSet = await engine?.query(query, { token });
 
-        res.send(filterResultSet(toSearchResults(resultSet)));
+        res.json(filterResultSet(toSearchResults(resultSet)));
       } catch (error) {
         if (error.name === 'MissingIndexError') {
           // re-throw and let the default error handler middleware captures it and serializes it with the right response code on the standard form

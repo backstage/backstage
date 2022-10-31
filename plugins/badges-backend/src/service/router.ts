@@ -78,8 +78,7 @@ export async function createRouter(
       specs.push(badge);
     }
 
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).send(JSON.stringify(specs, null, 2));
+    res.status(200).json(specs);
   });
 
   router.get(

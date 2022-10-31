@@ -1,5 +1,117 @@
 # @backstage/core-app-api
 
+## 1.2.0-next.0
+
+### Minor Changes
+
+- 9b737e5f2e: Updated the React Router wiring to make use of the new `basename` property of the router components in React Router v6 stable. To implement this, a new optional `basename` property has been added to the `Router` app component, which can be forwarded to the concrete router implementation in order to support this new behavior. This is done by default in any app that does not have a `Router` component override.
+- 127fcad26d: Deprecated the `homepage` config as the component that used it - `HomepageTimer` - has been removed and replaced by the `HeaderWorldClock` in the home plugin
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.1.1
+
+### Patch Changes
+
+- 27e6404aba: Fixed a bug where gathered index routes would fail to bind routable extensions. This would typically show up when placing a routable extension in the entity page overview tab.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/config@1.0.3
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.1.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.2
+  - @backstage/core-plugin-api@1.0.7-next.2
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.1.1-next.1
+
+### Patch Changes
+
+- 27e6404aba: Fixed a bug where gathered index routes would fail to bind routable extensions. This would typically show up when placing a routable extension in the entity page overview tab.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.7-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.0
+  - @backstage/core-plugin-api@1.0.7-next.0
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.1.0
+
+### Minor Changes
+
+- a448fea691: Updated the routing system to be compatible with React Router v6 stable.
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- f9ec4e46e3: When using React Router v6 stable, it is now possible for components within the `Route` element tree to have `path` props, although they will be ignored.
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 744fea158b: Added `getSystemIcons()` function to the `AppContext` available through `useApp` that will pull a list of all the icons that have been registered in the App.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 8448b53dd6: Clarify that the `WebStorage` observable returns `JsonValue` items.
+- 70299c99d5: Updated `FlatRoutes` to be compatible with React Router v6 stable.
+- e9d40ebf54: If you'd like to send analytics events to multiple implementations, you may now
+  do so using the `MultipleAnalyticsApi` implementation provided by this package.
+
+  ```tsx
+  import { MultipleAnalyticsApi } from '@backstage/core-app-api';
+  import {
+    analyticsApiRef,
+    configApiRef,
+    storageApiRef,
+    identityApiRef,
+  } from '@internal/backstage/core-plugin-api';
+  import { CustomAnalyticsApi } from '@internal/analytics';
+  import { VendorAnalyticsApi } from '@vendor/analytics';
+
+  createApiFactory({
+    api: analyticsApiRef,
+    deps: { configApi: configApiRef, identityApi: identityApiRef, storageApi: storageApiRef },
+    factory: ({ configApi, identityApi, storageApi }) =>
+      MultipleAnalyticsApi.fromApis([
+        VendorAnalyticsApi.fromConfig(configApi, { identityApi }),
+        CustomAnalyticsApi.fromConfig(configApi, { identityApi, storageApi }),
+      ]),
+  }),
+  ```
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/config@1.0.2
+
+## 1.1.0-next.3
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/config@1.0.2-next.0
+  - @backstage/core-plugin-api@1.0.6-next.3
+
 ## 1.1.0-next.2
 
 ### Patch Changes

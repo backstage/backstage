@@ -15,16 +15,25 @@
  */
 
 import { get } from 'lodash';
-import { Entity } from '@backstage/catalog-model';
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 import { createCatalogPermissionRule } from './util';
+import { z } from 'zod';
 
 export const createPropertyRule = (propertyType: 'metadata' | 'spec') =>
   createCatalogPermissionRule({
     name: `HAS_${propertyType.toUpperCase()}`,
     description: `Allow entities which have the specified ${propertyType} subfield.`,
     resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-    apply: (resource: Entity, key: string, value?: string) => {
+    paramsSchema: z.object({
+      key: z
+        .string()
+        .describe(`Property within the entities ${propertyType} to match on`),
+      value: z
+        .string()
+        .optional()
+        .describe(`Value of the given property to match on`),
+    }),
+    apply: (resource, { key, value }) => {
       const foundValue = get(resource[propertyType], key);
 
       if (Array.isArray(foundValue)) {
@@ -38,7 +47,7 @@ export const createPropertyRule = (propertyType: 'metadata' | 'spec') =>
       }
       return !!foundValue;
     },
-    toQuery: (key: string, value?: string) => ({
+    toQuery: ({ key, value }) => ({
       key: `${propertyType}.${key}`,
       ...(value !== undefined && { values: [value] }),
     }),

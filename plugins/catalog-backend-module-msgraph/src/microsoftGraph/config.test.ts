@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { Duration } from 'luxon';
 import { readMicrosoftGraphConfig, readProviderConfigs } from './config';
 
 describe('readMicrosoftGraphConfig', () => {
@@ -162,6 +163,7 @@ describe('readProviderConfigs', () => {
               clientId: 'clientId',
               clientSecret: 'clientSecret',
               authority: 'https://login.example.com/',
+              queryMode: 'advanced',
               user: {
                 expand: 'manager',
                 filter: 'accountEnabled eq true',
@@ -170,6 +172,12 @@ describe('readProviderConfigs', () => {
                 expand: 'member',
                 filter: 'securityEnabled eq false',
                 select: ['id', 'displayName', 'description'],
+              },
+              schedule: {
+                frequency: 'PT30M',
+                timeout: {
+                  minutes: 3,
+                },
               },
             },
           },
@@ -185,11 +193,18 @@ describe('readProviderConfigs', () => {
         clientId: 'clientId',
         clientSecret: 'clientSecret',
         authority: 'https://login.example.com/',
+        queryMode: 'advanced',
         userExpand: 'manager',
         userFilter: 'accountEnabled eq true',
         groupExpand: 'member',
         groupSelect: ['id', 'displayName', 'description'],
         groupFilter: 'securityEnabled eq false',
+        schedule: {
+          frequency: Duration.fromISO('PT30M'),
+          timeout: {
+            minutes: 3,
+          },
+        },
       },
     ];
     expect(actual).toEqual(expected);

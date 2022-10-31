@@ -1,5 +1,62 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.4.4-next.0
+
+### Patch Changes
+
+- cbf5d11fdf: The Kubernetes errors when fetching pod metrics are now captured and returned to the frontend.
+
+  - **BREAKING** The method `fetchPodMetricsByNamespace` in the interface `KubernetesFetcher` is changed to `fetchPodMetricsByNamespaces`. It now accepts a set of namespace strings and returns `Promise<FetchResponseWrapper>`.
+  - Add the `PodStatusFetchResponse` to the `FetchResponse` union type.
+  - Add `NOT_FOUND` to the `KubernetesErrorTypes` union type, the HTTP error with status code 404 will be mapped to this error.
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.3-next.0
+
+## 0.4.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+
+## 0.4.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.2
+
+## 0.4.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.1
+
+## 0.4.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.0
+
+## 0.4.2
+
+### Patch Changes
+
+- 0768d6dece: add new kubernetes backend endpoints to kubernetes backend client
+- d669d89206: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/catalog-model@1.1.1
+
+## 0.4.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.1-next.0
+
 ## 0.4.2-next.0
 
 ### Patch Changes

@@ -48,7 +48,12 @@ describe('TokenFactory', () => {
 
     await expect(factory.listPublicKeys()).resolves.toEqual({ keys: [] });
     const token = await factory.issueToken({
-      claims: { sub: entityRef, ent: [entityRef] },
+      claims: {
+        sub: entityRef,
+        ent: [entityRef],
+        'x-fancy-claim': 'my special claim',
+        aud: 'this value will be overridden',
+      },
     });
 
     const { keys } = await factory.listPublicKeys();
@@ -60,6 +65,7 @@ describe('TokenFactory', () => {
       aud: 'backstage',
       sub: entityRef,
       ent: [entityRef],
+      'x-fancy-claim': 'my special claim',
       iat: expect.any(Number),
       exp: expect.any(Number),
     });

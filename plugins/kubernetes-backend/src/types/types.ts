@@ -18,13 +18,13 @@ import { Entity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import type { JsonObject } from '@backstage/types';
 import type {
+  CustomResourceMatcher,
   FetchResponse,
   KubernetesFetchError,
   KubernetesRequestAuth,
   KubernetesRequestBody,
   ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-common';
-import { PodStatus } from '@kubernetes/client-node/dist/top';
 
 /**
  *
@@ -52,10 +52,10 @@ export interface KubernetesFetcher {
   fetchObjectsForService(
     params: ObjectFetchParams,
   ): Promise<FetchResponseWrapper>;
-  fetchPodMetricsByNamespace(
+  fetchPodMetricsByNamespaces(
     clusterDetails: ClusterDetails,
-    namespace: string,
-  ): Promise<PodStatus[]>;
+    namespaces: Set<string>,
+  ): Promise<FetchResponseWrapper>;
 }
 
 /**
@@ -85,12 +85,6 @@ export interface ObjectToFetch {
 export interface CustomResource extends ObjectToFetch {
   objectType: 'customresources';
 }
-
-/**
- *
- * @alpha
- */
-export type CustomResourceMatcher = Omit<ObjectToFetch, 'objectType'>;
 
 /**
  *
@@ -126,11 +120,22 @@ export interface KubernetesClustersSupplier {
 }
 
 /**
+ * @alpha
+ */
+export interface ServiceLocatorRequestContext {
+  objectTypesToFetch: Set<ObjectToFetch>;
+  customResources: CustomResourceMatcher[];
+}
+
+/**
  * Used to locate which cluster(s) a service is running on
  * @alpha
  */
 export interface KubernetesServiceLocator {
-  getClustersByEntity(entity: Entity): Promise<{ clusters: ClusterDetails[] }>;
+  getClustersByEntity(
+    entity: Entity,
+    requestContext: ServiceLocatorRequestContext,
+  ): Promise<{ clusters: ClusterDetails[] }>;
 }
 
 /**

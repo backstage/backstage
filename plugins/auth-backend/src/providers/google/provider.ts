@@ -16,6 +16,7 @@
 
 import express from 'express';
 import passport from 'passport';
+import { OAuth2Client } from 'google-auth-library';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import {
   encodeState,
@@ -27,6 +28,7 @@ import {
   OAuthResponse,
   OAuthResult,
   OAuthStartRequest,
+  OAuthLogoutRequest,
 } from '../../lib/oauth';
 import {
   executeFetchUserProfileStrategy,
@@ -117,6 +119,11 @@ export class GoogleAuthProvider implements OAuthHandlers {
       response: await this.handleResult(result),
       refreshToken: privateInfo.refreshToken,
     };
+  }
+
+  async logout(req: OAuthLogoutRequest) {
+    const oauthClient = new OAuth2Client();
+    await oauthClient.revokeToken(req.refreshToken);
   }
 
   async refresh(req: OAuthRefreshRequest) {

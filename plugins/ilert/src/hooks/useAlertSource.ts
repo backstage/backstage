@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { ilertApiRef } from '../api';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
+import React from 'react';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
-import { AlertSource, UptimeMonitor } from '../types';
-import { useApi, errorApiRef } from '@backstage/core-plugin-api';
+import { ilertApiRef } from '../api';
+import { AlertSource } from '../types';
 
 export const useAlertSource = (integrationKey: string) => {
   const ilertApi = useApi(ilertApiRef);
@@ -28,10 +28,6 @@ export const useAlertSource = (integrationKey: string) => {
     null,
   );
   const [isAlertSourceLoading, setIsAlertSourceLoading] = React.useState(false);
-  const [uptimeMonitor, setUptimeMonitor] =
-    React.useState<UptimeMonitor | null>(null);
-  const [isUptimeMonitorLoading, setIsUptimeMonitorLoading] =
-    React.useState(false);
 
   const fetchAlertSourceCall = async () => {
     try {
@@ -56,38 +52,13 @@ export const useAlertSource = (integrationKey: string) => {
     [integrationKey],
   );
 
-  const fetchUptimeMonitorCall = async () => {
-    try {
-      if (!alertSource || alertSource.integrationType !== 'MONITOR') {
-        return;
-      }
-      setIsUptimeMonitorLoading(true);
-      const data = await ilertApi.fetchUptimeMonitor(alertSource.id);
-      setUptimeMonitor(data || null);
-      setIsUptimeMonitorLoading(false);
-    } catch (e) {
-      setIsUptimeMonitorLoading(false);
-      if (!(e instanceof AuthenticationError)) {
-        errorApi.post(e);
-      }
-      throw e;
-    }
-  };
-
-  const { error: uptimeMonitorError, retry: uptimeMonitorRetry } =
-    useAsyncRetry(fetchUptimeMonitorCall, [alertSource]);
-
-  const retry = () => {
-    alertSourceRetry();
-    uptimeMonitorRetry();
-  };
+  const retry = () => alertSourceRetry();
 
   return [
     {
       alertSource,
-      uptimeMonitor,
-      error: alertSourceError || uptimeMonitorError,
-      isLoading: isAlertSourceLoading || isUptimeMonitorLoading,
+      error: alertSourceError,
+      isLoading: isAlertSourceLoading,
     },
     {
       retry,

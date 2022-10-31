@@ -15,6 +15,7 @@
  */
 
 import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   Entity,
@@ -35,7 +36,7 @@ import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
 import { Logger } from 'winston';
 import { z } from 'zod';
-import { TemplateFilter } from '../lib';
+import { TemplateFilter, TemplateGlobal } from '../lib';
 import {
   createBuiltinActions,
   DatabaseTaskStore,
@@ -63,11 +64,13 @@ export interface RouterOptions {
   reader: UrlReader;
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
+  scheduler?: PluginTaskScheduler;
 
   actions?: TemplateAction<any>[];
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   identity?: IdentityApi;
 }
 
@@ -146,7 +149,8 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
-  router.use(express.json());
+  // Be generous in upload size to support a wide range of templates in dry-run mode.
+  router.use(express.json({ limit: '10MB' }));
 
   const {
     logger: parentLogger,
@@ -156,7 +160,9 @@ export async function createRouter(
     catalogClient,
     actions,
     taskWorkers,
+    scheduler,
     additionalTemplateFilters,
+    additionalTemplateGlobals,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
@@ -166,11 +172,29 @@ export async function createRouter(
 
   const workingDirectory = await getWorkingDirectory(config, logger);
   const integrations = ScmIntegrations.fromConfig(config);
-  let taskBroker: TaskBroker;
 
+  let taskBroker: TaskBroker;
   if (!options.taskBroker) {
     const databaseTaskStore = await DatabaseTaskStore.create({ database });
     taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+
+    if (scheduler && databaseTaskStore.listStaleTasks) {
+      await scheduler.scheduleTask({
+        id: 'close_stale_tasks',
+        frequency: { cron: '*/5 * * * *' }, // every 5 minutes, also supports Duration
+        timeout: { minutes: 15 },
+        fn: async () => {
+          const { tasks } = await databaseTaskStore.listStaleTasks({
+            timeoutS: 86400,
+          });
+
+          for (const task of tasks) {
+            await databaseTaskStore.shutdownTask(task);
+            logger.info(`Successfully closed stale task ${task.taskId}`);
+          }
+        },
+      });
+    }
   } else {
     taskBroker = options.taskBroker;
   }
@@ -186,6 +210,7 @@ export async function createRouter(
       logger,
       workingDirectory,
       additionalTemplateFilters,
+      additionalTemplateGlobals,
     });
     workers.push(worker);
   }
@@ -198,6 +223,7 @@ export async function createRouter(
         reader,
         config,
         additionalTemplateFilters,
+        additionalTemplateGlobals,
       });
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
@@ -209,6 +235,7 @@ export async function createRouter(
     logger,
     workingDirectory,
     additionalTemplateFilters,
+    additionalTemplateGlobals,
   });
 
   router

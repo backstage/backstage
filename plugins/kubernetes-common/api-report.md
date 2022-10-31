@@ -5,6 +5,7 @@
 ```ts
 import { Entity } from '@backstage/catalog-model';
 import type { JsonObject } from '@backstage/types';
+import { PodStatus } from '@kubernetes/client-node';
 import { V1ConfigMap } from '@kubernetes/client-node';
 import { V1CronJob } from '@kubernetes/client-node';
 import { V1DaemonSet } from '@kubernetes/client-node';
@@ -90,11 +91,31 @@ export interface CronJobsFetchResponse {
 }
 
 // @public (undocumented)
+export interface CustomObjectsByEntityRequest {
+  // (undocumented)
+  auth: KubernetesRequestAuth;
+  // (undocumented)
+  customResources: CustomResourceMatcher[];
+  // (undocumented)
+  entity: Entity;
+}
+
+// @public (undocumented)
 export interface CustomResourceFetchResponse {
   // (undocumented)
   resources: Array<any>;
   // (undocumented)
   type: 'customresources';
+}
+
+// @public (undocumented)
+export interface CustomResourceMatcher {
+  // (undocumented)
+  apiVersion: string;
+  // (undocumented)
+  group: string;
+  // (undocumented)
+  plural: string;
 }
 
 // @public (undocumented)
@@ -127,7 +148,8 @@ export type FetchResponse =
   | IngressesFetchResponse
   | CustomResourceFetchResponse
   | StatefulSetsFetchResponse
-  | DaemonSetsFetchResponse;
+  | DaemonSetsFetchResponse
+  | PodStatusFetchResponse;
 
 // @public (undocumented)
 export interface HorizontalPodAutoscalersFetchResponse {
@@ -157,6 +179,7 @@ export interface JobsFetchResponse {
 export type KubernetesErrorTypes =
   | 'BAD_REQUEST'
   | 'UNAUTHORIZED_ERROR'
+  | 'NOT_FOUND'
   | 'SYSTEM_ERROR'
   | 'UNKNOWN_ERROR';
 
@@ -211,6 +234,14 @@ export interface PodFetchResponse {
 }
 
 // @public (undocumented)
+export interface PodStatusFetchResponse {
+  // (undocumented)
+  resources: Array<PodStatus>;
+  // (undocumented)
+  type: 'podstatus';
+}
+
+// @public (undocumented)
 export interface ReplicaSetsFetchResponse {
   // (undocumented)
   resources: Array<V1ReplicaSet>;
@@ -232,5 +263,13 @@ export interface StatefulSetsFetchResponse {
   resources: Array<V1StatefulSet>;
   // (undocumented)
   type: 'statefulsets';
+}
+
+// @public (undocumented)
+export interface WorkloadsByEntityRequest {
+  // (undocumented)
+  auth: KubernetesRequestAuth;
+  // (undocumented)
+  entity: Entity;
 }
 ```
