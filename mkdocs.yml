@@ -61,7 +61,7 @@ nav:
           - Overview: 'features/software-templates/index.md'
           - Configuration: 'features/software-templates/configuration.md'
           - Adding your own Templates: 'features/software-templates/adding-templates.md'
-          - Input examples: 'features/software-templates/inputs-examples.md'
+          - Input Examples: 'features/software-templates/input-examples.md'
           - Writing Templates: 'features/software-templates/writing-templates.md'
           - Builtin Actions: 'features/software-templates/builtin-actions.md'
           - Writing Custom Actions: 'features/software-templates/writing-custom-actions.md'
