@@ -13,12 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useOutlet } from 'react-router';
-import React from 'react';
-import { DefaultSettingsPage } from './DefaultSettingsPage';
 
-export const SettingsPage = () => {
-  const outlet = useOutlet();
-
-  return <>{outlet || <DefaultSettingsPage />}</>;
-};
+export type { SettingsLayoutProps, SubRoute } from './SettingsLayout';
+export { SettingsLayout } from './SettingsLayout';

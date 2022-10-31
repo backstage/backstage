@@ -60,18 +60,18 @@ import { HomepageCompositionRoot } from '@backstage/plugin-home';
 import { LighthousePage } from '@backstage/plugin-lighthouse';
 import { NewRelicPage } from '@backstage/plugin-newrelic';
 import {
-  ScaffolderFieldExtensions,
-  ScaffolderPage,
   NextScaffolderPage,
-  scaffolderPlugin,
+  ScaffolderFieldExtensions,
   ScaffolderLayouts,
+  ScaffolderPage,
+  scaffolderPlugin,
 } from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import {
   TechDocsIndexPage,
-  TechDocsReaderPage,
   techdocsPlugin,
+  TechDocsReaderPage,
 } from '@backstage/plugin-techdocs';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import {
@@ -80,8 +80,10 @@ import {
   TextSize,
 } from '@backstage/plugin-techdocs-module-addons-contrib';
 import {
+  SettingsLayout,
+  UserSettingsFeatureFlags,
+  UserSettingsGeneral,
   UserSettingsPage,
-  UserSettingsTab,
 } from '@backstage/plugin-user-settings';
 import { AdvancedSettings } from './components/advancedSettings';
 import AlarmIcon from '@material-ui/icons/Alarm';
@@ -267,9 +269,17 @@ const routes = (
       element={<CostInsightsLabelDataflowInstructionsPage />}
     />
     <Route path="/settings" element={<UserSettingsPage />}>
-      <UserSettingsTab path="/advanced" title="Advanced">
-        <AdvancedSettings />
-      </UserSettingsTab>
+      <SettingsLayout>
+        <SettingsLayout.Route path="general" title="General">
+          <UserSettingsGeneral />
+        </SettingsLayout.Route>
+        <SettingsLayout.Route path="feature-flags" title="Feature Flags">
+          <UserSettingsFeatureFlags />
+        </SettingsLayout.Route>
+        <SettingsLayout.Route path="advanced" title="Advanced">
+          <AdvancedSettings />
+        </SettingsLayout.Route>
+      </SettingsLayout>
     </Route>
     <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
     <Route path="/apache-airflow" element={<ApacheAirflowPage />} />

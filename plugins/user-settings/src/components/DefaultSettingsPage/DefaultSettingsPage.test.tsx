@@ -16,15 +16,14 @@
 
 import React from 'react';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
-import { SettingsPage } from './SettingsPage';
-import { UserSettingsTab } from './UserSettingsTab';
+import { DefaultSettingsPage } from './DefaultSettingsPage';
+import { UserSettingsTab } from '../UserSettingsTab';
+import { useOutlet } from 'react-router';
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
   useOutlet: jest.fn().mockReturnValue(undefined),
 }));
-
-import { useOutlet } from 'react-router';
 
 describe('<SettingsPage />', () => {
   beforeEach(() => {
@@ -33,7 +32,7 @@ describe('<SettingsPage />', () => {
 
   it('should render the settings page with 3 tabs', async () => {
     const { container } = await renderWithEffects(
-      wrapInTestApp(<SettingsPage />),
+      wrapInTestApp(<DefaultSettingsPage />),
     );
 
     const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
@@ -48,7 +47,7 @@ describe('<SettingsPage />', () => {
     );
     (useOutlet as jest.Mock).mockReturnValue(advancedTabRoute);
     const { container } = await renderWithEffects(
-      wrapInTestApp(<SettingsPage />),
+      wrapInTestApp(<DefaultSettingsPage />),
     );
 
     const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
