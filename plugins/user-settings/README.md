@@ -91,9 +91,9 @@ import {
   UserSettingsTab,
 } from '@backstage/plugin-user-settings';
 
-<Route path="/settings" element={<UserSettingsPage/>}>
+<Route path="/settings" element={<UserSettingsPage />}>
   <UserSettingsTab path="/advanced" title="Advanced">
-    <AdvancedSettings/>
+    <AdvancedSettings />
   </UserSettingsTab>
 </Route>;
 ```
@@ -111,22 +111,22 @@ import {
   SettingsLayout,
   UserSettingsGeneral,
 } from '@backstage/plugin-user-settings';
-import {AdvancedSettings} from './advancedSettings';
+import { AdvancedSettings } from './advancedSettings';
 
 export const SettingsPage = () => {
   return (
     <SettingsLayout>
       <SettingsLayout.Route path="general" title="General">
-        <UserSettingsGeneral/>
+        <UserSettingsGeneral />
       </SettingsLayout.Route>
       <SettingsLayout.Route path="advanced" title="Advanced">
-        <AdvancedSettings/>
+        <AdvancedSettings />
       </SettingsLayout.Route>
     </SettingsLayout>
   );
 };
 
-export const settingsPage = <SettingsPage/>;
+export const settingsPage = <SettingsPage />;
 ```
 
 Now register the new settings page in `packages/app/src/App.tsx`:
