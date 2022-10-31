@@ -37,7 +37,7 @@ parameters:
         type: string
         description: Super secret description hint
         minLength: 6
-        ui:widget: 'password'
+        ui:widget: password
 ```
 
 ### Multi line text input
@@ -49,8 +49,8 @@ parameters:
       multiline:
         title: Text area input
         type: string
-        description: Insira o valor do input que gostraia
-        ui:widget: 'textarea'
+        description: Insert your multi line string
+        ui:widget: textarea
         ui:options:
           rows: 10
         ui:help: 'Hint: Make it strong!'
@@ -76,16 +76,16 @@ parameters:
       volume_type:
         title: Volume Type
         type: string
-        description: The volume type to be used.
-        default: 'gp2'
+        description: The volume type to be used
+        default: gp2
         enum:
-          - 'gp2'
-          - 'gp3'
-          - 'io1'
-          - 'io2'
-          - 'sc1'
-          - 'st1'
-          - 'standard'
+          - gp2
+          - gp3
+          - io1
+          - io2
+          - sc1
+          - st1
+          - standard
         enumNames:
           - 'General Purpose SSD (gp2)'
           - 'General Purpose SSD (gp3)'
@@ -108,9 +108,9 @@ parameters:
         items:
           type: string
           enum:
-            - 'production'
-            - 'staging'
-            - 'development'
+            - production
+            - staging
+            - development
         uniqueItems: true
         ui:widget: checkboxes
 ```
