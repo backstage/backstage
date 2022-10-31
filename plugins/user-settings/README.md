@@ -4,12 +4,14 @@ Welcome to the user-settings plugin!
 
 ## About the plugin
 
-This plugin provides two components, `<UserSettings />` is intended to be used within the [`<Sidebar>`](https://backstage.io/storybook/?path=/story/sidebar--sample-sidebar) and displays the signed-in users profile picture and name. The second component is a settings page where the user can control different settings across the App.
+This plugin provides two components, `<UserSettings />` is intended to be used within
+the [`<Sidebar>`](https://backstage.io/storybook/?path=/story/sidebar--sample-sidebar) and displays the signed-in users
+profile picture and name. The second component is a settings page where the user can control different settings across
+the App.
 
-It also provides a `UserSettingsStorage` implementation of the `StorageApi`, to
-be used in the frontend as a persistent alternative to the builtin `WebStorage`.
-Please see [the backend
-README](https://github.com/backstage/backstage/tree/master/plugins/user-settings-backend)
+It also provides a `UserSettingsStorage` implementation of the `StorageApi`, to be used in the frontend as a persistent
+alternative to the builtin `WebStorage`. Please
+see [the backend README](https://github.com/backstage/backstage/tree/master/plugins/user-settings-backend)
 for installation instructions.
 
 ## Components Usage
@@ -17,51 +19,60 @@ for installation instructions.
 Add the item to the Sidebar:
 
 ```ts
-import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
+import {Settings as SidebarSettings} from '@backstage/plugin-user-settings';
 
 <SidebarPage>
   <Sidebar>
-    <SidebarSettings />
-  </Sidebar>
-</SidebarPage>;
+    <SidebarSettings / >
+</Sidebar>
+< /SidebarPage>;
 ```
 
 Add the page to the App routing:
 
 ```ts
-import { UserSettingsPage } from '@backstage/plugin-user-settings';
+import {UserSettingsPage} from '@backstage/plugin-user-settings';
 
 const AppRoutes = () => (
   <Routes>
-    <Route path="/settings" element={<UserSettingsPage />} />
-  </Routes>
-);
+    <Route path = "/settings"
+element = { < UserSettingsPage / >
+}
+/>
+< /Routes>
+)
+;
 ```
 
 ### Props
 
 **Auth Providers**
 
-By default, the plugin provides a list of configured authentication providers fetched from `app-config.yaml` and displayed in the "Authentication Providers" tab.
+By default, the plugin provides a list of configured authentication providers fetched from `app-config.yaml` and
+displayed in the "Authentication Providers" tab.
 
 If you want to supply your own custom list of Authentication Providers, use the `providerSettings` prop:
 
 ```ts
 const MyAuthProviders = () => (
   <ListItem>
-    <ListItemText primary="example" />
-    <ListItemSecondaryAction>{someAction}</ListItemSecondaryAction>
-  </ListItem>
+    <ListItemText primary = "example" / >
+    <ListItemSecondaryAction>{someAction} < /ListItemSecondaryAction>
+    < /ListItem>
 );
 
 const AppRoutes = () => (
   <Routes>
     <Route
-      path="/settings"
-      element={<SettingsRouter providerSettings={<MyAuthProviders />} />}
-    />
-  </Routes>
-);
+      path = "/settings"
+element = { < SettingsRouter
+providerSettings = { < MyAuthProviders / >
+}
+/>}
+/>
+< /Routes>
+)
+;
 ```
 
 > **Note that the list of providers expects to be rendered within a MUI [`<List>`](https://material-ui.com/components/lists/)**
@@ -70,10 +81,9 @@ const AppRoutes = () => (
 
 By default, the plugin renders 3 tabs of settings; GENERAL, AUTHENTICATION PROVIDERS, and FEATURE FLAGS.
 
-If you want to add more options for your users,
-just pass the extra tabs using `UserSettingsTab` components as children of the `UserSettingsPage` route.
-The path is in this case a child of the settings path,
-in the example below it would be `/settings/advanced` so that you can easily link to it.
+If you want to add more options for your users, just pass the extra tabs using `UserSettingsTab` components as children
+of the `UserSettingsPage` route. The path is in this case a child of the settings path, in the example below it would
+be `/settings/advanced` so that you can easily link to it.
 
 ```tsx
 import {
@@ -81,55 +91,55 @@ import {
   UserSettingsTab,
 } from '@backstage/plugin-user-settings';
 
-<Route path="/settings" element={<UserSettingsPage />}>
+<Route path="/settings" element={<UserSettingsPage/>}>
   <UserSettingsTab path="/advanced" title="Advanced">
-    <AdvancedSettings />
+    <AdvancedSettings/>
   </UserSettingsTab>
 </Route>;
 ```
 
-To standardize the UI of all setting tabs,
-make sure you use a similar component structure as the other tabs.
-You can take a look at
+To standardize the UI of all setting tabs, make sure you use a similar component structure as the other tabs. You can
+take a look at
 [the example extra tab](https://github.com/backstage/backstage/blob/master/packages/app/src/components/advancedSettings/AdvancedSettings.tsx)
 we have created in Backstage's demo app.
 
 To change the layout altogether, create a custom page in `packages/app/src/components/user-settings/SettingsPage.tsx`:
+
 ```typescript jsx
 import React from 'react';
 import {
   SettingsLayout,
   UserSettingsGeneral,
 } from '@backstage/plugin-user-settings';
-import { AdvancedSettings } from './advancedSettings';
+import {AdvancedSettings} from './advancedSettings';
 
 export const SettingsPage = () => {
   return (
     <SettingsLayout>
       <SettingsLayout.Route path="general" title="General">
-        <UserSettingsGeneral />
+        <UserSettingsGeneral/>
       </SettingsLayout.Route>
       <SettingsLayout.Route path="advanced" title="Advanced">
-        <AdvancedSettings />
+        <AdvancedSettings/>
       </SettingsLayout.Route>
     </SettingsLayout>
   );
 };
 
-export const settingsPage = <SettingsPage />;
+export const settingsPage = <SettingsPage/>;
 ```
 
 Now register the new settings page in `packages/app/src/App.tsx`:
 
-```typescript jsx
-+ import { settingsPage } from './components/settings/settingsPage';
+```diff
++ import {settingsPage} from './components/settings/settingsPage';
 
 const routes = (
   <FlatRoutes>
--    <Route path="/settings" element={<UserSettingsPage />} />
-+    <Route path="/settings" element={<UserSettingsPage />}>
-+      {settingsPage}
-+    </Route>
+    - <Route path="/settings" element={<UserSettingsPage/>}/>
+    + <Route path="/settings" element={<UserSettingsPage/>}>
+    + {settingsPage}
+    + </Route>
   </FlatRoutes>
 );
 ```
