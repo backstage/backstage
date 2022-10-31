@@ -16,41 +16,65 @@
 
 import React from 'react';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
-import { DefaultSettingsPage } from './DefaultSettingsPage';
+import { SettingsPage } from './SettingsPage';
 import { UserSettingsTab } from '../UserSettingsTab';
 import { useOutlet } from 'react-router';
+import { SettingsLayout } from '../SettingsLayout';
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
   useOutlet: jest.fn().mockReturnValue(undefined),
 }));
 
-describe('<DefaultSettingsPage />', () => {
+describe('<SettingsPage />', () => {
   beforeEach(() => {
     (useOutlet as jest.Mock).mockReset();
   });
 
-  it('should render the settings page with 3 tabs', async () => {
+  it('should render the default settings page with 3 tabs', async () => {
     const { container } = await renderWithEffects(
-      wrapInTestApp(<DefaultSettingsPage />),
+      wrapInTestApp(<SettingsPage />),
     );
 
     const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
     expect(tabs).toHaveLength(3);
   });
 
-  it('should render the settings page with 4 tabs when extra tabs are provided', async () => {
+  it('should render the default settings page with 4 tabs when extra tabs are provided', async () => {
     const advancedTabRoute = (
       <UserSettingsTab path="/advanced" title="Advanced">
         <div>Advanced settings</div>
       </UserSettingsTab>
     );
+    (useOutlet as jest.Mock).mockReturnValue(advancedTabRoute);
     const { container } = await renderWithEffects(
-      wrapInTestApp(<DefaultSettingsPage tabs={[advancedTabRoute]} />),
+      wrapInTestApp(<SettingsPage />),
     );
 
     const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
     expect(tabs).toHaveLength(4);
     expect(tabs[3].textContent).toEqual('Advanced');
+  });
+
+  it('should render the custom settings page when custom layout is provided', async () => {
+    const customLayout = (
+      <SettingsLayout>
+        <SettingsLayout.Route path="general" title="General">
+          <div>User settings</div>
+        </SettingsLayout.Route>
+        <SettingsLayout.Route path="advanced" title="Advanced">
+          <div>Advanced settings</div>
+        </SettingsLayout.Route>
+      </SettingsLayout>
+    );
+    (useOutlet as jest.Mock).mockReturnValue(customLayout);
+    const { container } = await renderWithEffects(
+      wrapInTestApp(<SettingsPage />),
+    );
+
+    const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
+    expect(tabs).toHaveLength(2);
+    expect(tabs[0].textContent).toEqual('General');
+    expect(tabs[1].textContent).toEqual('Advanced');
   });
 });
