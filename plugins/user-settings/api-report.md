@@ -18,10 +18,12 @@ import { Observable } from '@backstage/types';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
+import { TabProps } from '@material-ui/core';
 
 // @public (undocumented)
 export const DefaultProviderSettings: (props: {
@@ -41,6 +43,32 @@ export const Router: (props: { providerSettings?: JSX.Element }) => JSX.Element;
 
 // @public (undocumented)
 export const Settings: (props: { icon?: IconComponent }) => JSX.Element;
+
+// @public (undocumented)
+export const SettingsLayout: {
+  (props: SettingsLayoutProps): JSX.Element;
+  Route: (props: SubRoute) => null;
+};
+
+// @public (undocumented)
+export type SettingsLayoutProps = {
+  title?: string;
+  subtitle?: string;
+  children?: React_2.ReactNode;
+};
+
+// @public (undocumented)
+export type SubRoute = {
+  path: string;
+  title: string;
+  children: JSX.Element;
+  tabProps?: TabProps<
+    React_2.ElementType,
+    {
+      component?: React_2.ElementType;
+    }
+  >;
+};
 
 // @public (undocumented)
 export const USER_SETTINGS_TAB_KEY = 'user-settings.tab';

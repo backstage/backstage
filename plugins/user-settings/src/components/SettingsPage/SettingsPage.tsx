@@ -22,6 +22,7 @@ import {
   UserSettingsTabProps,
 } from '../UserSettingsTab';
 
+/** @public */
 export const SettingsPage = (props: { providerSettings?: JSX.Element }) => {
   const { providerSettings } = props;
   const outlet = useOutlet();
