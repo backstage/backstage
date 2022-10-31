@@ -93,3 +93,43 @@ make sure you use a similar component structure as the other tabs.
 You can take a look at
 [the example extra tab](https://github.com/backstage/backstage/blob/master/packages/app/src/components/advancedSettings/AdvancedSettings.tsx)
 we have created in Backstage's demo app.
+
+To change the layout altogether, create a custom page in `packages/app/src/components/user-settings/SettingsPage.tsx`:
+```typescript jsx
+import React from 'react';
+import {
+  SettingsLayout,
+  UserSettingsGeneral,
+} from '@backstage/plugin-user-settings';
+import { AdvancedSettings } from './advancedSettings';
+
+export const SettingsPage = () => {
+  return (
+    <SettingsLayout>
+      <SettingsLayout.Route path="general" title="General">
+        <UserSettingsGeneral />
+      </SettingsLayout.Route>
+      <SettingsLayout.Route path="advanced" title="Advanced">
+        <AdvancedSettings />
+      </SettingsLayout.Route>
+    </SettingsLayout>
+  );
+};
+
+export const settingsPage = <SettingsPage />;
+```
+
+Now register the new settings page in `packages/app/src/App.tsx`:
+
+```typescript jsx
++ import { settingsPage } from './components/settings/settingsPage';
+
+const routes = (
+  <FlatRoutes>
+-    <Route path="/settings" element={<UserSettingsPage />} />
++    <Route path="/settings" element={<UserSettingsPage />}>
++      {settingsPage}
++    </Route>
+  </FlatRoutes>
+);
+```
