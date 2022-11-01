@@ -40,7 +40,7 @@ import {
   KubernetesFanOutHandler,
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
-import { KubernetesProxy, KubernetesProxyResponse } from './KubernetesProxy';
+import { KubernetesProxy } from './KubernetesProxy';
 
 /**
  *
@@ -62,6 +62,7 @@ export type KubernetesBuilderReturn = Promise<{
   clusterSupplier: KubernetesClustersSupplier;
   customResources: CustomResource[];
   fetcher: KubernetesFetcher;
+  proxy: KubernetesProxy;
   objectsProvider: KubernetesObjectsProvider;
   serviceLocator: KubernetesServiceLocator;
 }>;
@@ -107,7 +108,11 @@ export class KubernetesBuilder {
 
     const fetcher = this.getFetcher();
 
+    const proxy = this.getProxy();
+
     const clusterSupplier = this.getClusterSupplier();
+
+    proxy.clustersSupplier = clusterSupplier;
 
     const serviceLocator = this.getServiceLocator();
 
@@ -129,6 +134,7 @@ export class KubernetesBuilder {
       clusterSupplier,
       customResources,
       fetcher,
+      proxy,
       objectsProvider,
       router,
       serviceLocator,
@@ -292,12 +298,12 @@ export class KubernetesBuilder {
       });
     });
 
-    if (typeof proxy?.handleProxyRequest === 'function') {
-      router.get('/proxy/:encodedQuery', this.makeProxyRequest.bind(this));
-      router.post('/proxy/:encodedQuery', this.makeProxyRequest.bind(this));
-      router.put('/proxy/:encodedQuery', this.makeProxyRequest.bind(this));
-      router.patch('/proxy/:encodedQuery', this.makeProxyRequest.bind(this));
-      router.delete('/proxy/:encodedQuery', this.makeProxyRequest.bind(this));
+    if (typeof proxy?.proxyRequestHandler === 'function') {
+      router.get(KubernetesProxy.PROXY_PATH, proxy.proxyRequestHandler);
+      router.post(KubernetesProxy.PROXY_PATH, proxy.proxyRequestHandler);
+      router.put(KubernetesProxy.PROXY_PATH, proxy.proxyRequestHandler);
+      router.patch(KubernetesProxy.PROXY_PATH, proxy.proxyRequestHandler);
+      router.delete(KubernetesProxy.PROXY_PATH, proxy.proxyRequestHandler);
     }
 
     addResourceRoutesToRouter(router, catalogApi, objectsProvider);
@@ -380,25 +386,5 @@ export class KubernetesBuilder {
 
   protected getProxy() {
     return this.proxy ?? this.buildProxy();
-  }
-
-  protected async makeProxyRequest(
-    req: express.Request,
-    res: express.Response,
-  ) {
-    const supplier = this.getClustersSupplier();
-    const proxy = this.getProxy();
-
-    const proxyResponse: KubernetesProxyResponse =
-      await proxy.handleProxyRequest(req, supplier);
-
-    res.status(proxyResponse.code).json(proxyResponse.data);
-  }
-
-  private getClustersSupplier(): KubernetesClustersSupplier {
-    return (
-      this.clusterSupplier ??
-      this.buildClusterSupplier(this.defaultClusterRefreshInterval)
-    );
   }
 }

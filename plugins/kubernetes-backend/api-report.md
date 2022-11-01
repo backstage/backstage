@@ -22,9 +22,11 @@ import { Logger } from 'winston';
 import { Metrics } from '@kubernetes/client-node';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { PodStatus } from '@kubernetes/client-node/dist/top';
-import type { Request as Request_2 } from 'express';
+import type { RequestHandler } from 'express';
 import { TokenCredential } from '@azure/identity';
+
+// @alpha (undocumented)
+export const APPLICATION_JSON: string;
 
 // @alpha (undocumented)
 export interface AWSClusterDetails extends ClusterDetails {
@@ -145,6 +147,9 @@ export class GoogleServiceAccountAuthTranslator
 }
 
 // @alpha (undocumented)
+export const HEADER_KUBERNETES_CLUSTER: string;
+
+// @alpha (undocumented)
 export interface KubernetesAuthTranslator {
   // (undocumented)
   decorateClusterDetailsWithAuth(
@@ -227,11 +232,6 @@ export class KubernetesBuilder {
   // (undocumented)
   protected getServiceLocatorMethod(): ServiceLocatorMethod;
   // (undocumented)
-  protected makeProxyRequest(
-    req: express.Request,
-    res: express.Response,
-  ): Promise<void>;
-  // (undocumented)
   setClusterSupplier(clusterSupplier?: KubernetesClustersSupplier): this;
   // (undocumented)
   setDefaultClusterRefreshInterval(refreshInterval: Duration): this;
@@ -251,6 +251,7 @@ export type KubernetesBuilderReturn = Promise<{
   clusterSupplier: KubernetesClustersSupplier;
   customResources: CustomResource[];
   fetcher: KubernetesFetcher;
+  proxy: KubernetesProxy;
   objectsProvider: KubernetesObjectsProvider;
   serviceLocator: KubernetesServiceLocator;
 }>;
@@ -349,22 +350,14 @@ export type KubernetesObjectTypes =
 export class KubernetesProxy {
   constructor(logger: Logger);
   // (undocumented)
-  handleProxyRequest(
-    req: Request_2,
-    clusterSupplier: KubernetesClustersSupplier,
-  ): Promise<KubernetesProxyResponse>;
+  get clustersSupplier(): KubernetesClustersSupplier;
+  set clustersSupplier(clustersSupplier: KubernetesClustersSupplier);
   // (undocumented)
   protected readonly logger: Logger;
-}
-
-// @alpha (undocumented)
-export interface KubernetesProxyResponse {
   // (undocumented)
-  cluster?: string;
+  static readonly PROXY_PATH: string;
   // (undocumented)
-  code: number;
-  // (undocumented)
-  data: any;
+  proxyRequestHandler: RequestHandler;
 }
 
 // @alpha

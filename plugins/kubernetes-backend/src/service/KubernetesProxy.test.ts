@@ -22,50 +22,38 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
-import { KubernetesProxy } from './KubernetesProxy';
+import {
+  APPLICATION_JSON,
+  HEADER_KUBERNETES_CLUSTER,
+  KubernetesProxy,
+} from './KubernetesProxy';
 import { NotFoundError } from '@backstage/errors';
+import { getMockReq, getMockRes } from '@jest-mock/express';
 
 describe('KubernetesProxy', () => {
   let proxy: KubernetesProxy;
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
-  const buildEncodedRequest = (
-    clustersHeader: any,
-    query: string,
-    body?: unknown,
-  ): Request => {
-    const encodedQuery = encodeURIComponent(query);
-    const encodedClusters = Buffer.from(
-      JSON.stringify(clustersHeader),
-    ).toString('base64');
-
-    const req = {
+  const buildMockRequest = (clusterName: any, path: string): Request => {
+    const req = getMockReq({
       params: {
-        encodedQuery,
+        path,
       },
-      header: (key: string) => {
-        let value: string = '';
+      header: jest.fn((key: string) => {
         switch (key) {
           case 'Content-Type': {
-            value = 'application/json';
-            break;
+            return APPLICATION_JSON;
           }
-          case 'X-Kubernetes-Clusters': {
-            value = encodedClusters;
-            break;
+          case HEADER_KUBERNETES_CLUSTER: {
+            return clusterName;
           }
           default: {
-            break;
+            return '';
           }
         }
-        return value;
-      },
-    } as unknown as Request;
-
-    if (body) {
-      req.body = body;
-    }
+      }),
+    });
 
     return req;
   };
@@ -83,15 +71,17 @@ describe('KubernetesProxy', () => {
   });
 
   it('should return a ERROR_NOT_FOUND if no clusters are found', async () => {
-    const clustersSupplier = buildClustersSupplierWithClusters([]);
-    const req = buildEncodedRequest({}, 'api');
+    proxy.clustersSupplier = buildClustersSupplierWithClusters([]);
 
-    await expect(
-      proxy.handleProxyRequest(req, clustersSupplier),
-    ).rejects.toThrow(NotFoundError);
+    const req = buildMockRequest('test', 'api');
+    const { res, next } = getMockRes();
+
+    await expect(proxy.proxyRequestHandler(req, res, next)).rejects.toThrow(
+      NotFoundError,
+    );
   });
 
-  it('should match the response code of the Kubernetes response (single cluster)', async () => {
+  it('should match the response code of the Kubernetes response', async () => {
     const clusters: ClusterDetails[] = [
       {
         name: 'cluster1',
@@ -102,8 +92,10 @@ describe('KubernetesProxy', () => {
       },
     ];
 
-    const clustersSupplier = buildClustersSupplierWithClusters(clusters);
-    const req = buildEncodedRequest({ cluster1: 'token' }, 'api');
+    proxy.clustersSupplier = buildClustersSupplierWithClusters(clusters);
+
+    const req = buildMockRequest('cluster1', 'api');
+    const { res: response, next } = getMockRes();
 
     const apiResponse = {
       kind: 'APIVersions',
@@ -117,76 +109,18 @@ describe('KubernetesProxy', () => {
     };
 
     worker.use(
-      rest.get(`${clusters[0].url}/${req.params.encodedQuery}`, (_, res, ctx) =>
+      rest.get(`${clusters[0].url}/${req.params.path}`, (_, res, ctx) =>
         res(ctx.status(299), ctx.body(JSON.stringify(apiResponse))),
       ),
     );
 
-    const result = await proxy.handleProxyRequest(req, clustersSupplier);
+    await proxy.proxyRequestHandler(req, response, next);
 
-    expect(result.code).toEqual(299);
+    expect(response.status).toHaveBeenCalledWith(299);
+    expect(response.json).toHaveBeenCalledWith(apiResponse);
   });
 
-  it('should match the response code of the best Kubernetes response (multi cluster)', async () => {
-    const clusters: ClusterDetails[] = [
-      {
-        name: 'cluster1',
-        url: 'http://localhost:9998',
-        serviceAccountToken: 'token',
-        authProvider: 'serviceAccount',
-        skipTLSVerify: true,
-      },
-      {
-        name: 'cluster2',
-        url: 'http://localhost:9999',
-        serviceAccountToken: 'token',
-        authProvider: 'serviceAccount',
-        skipTLSVerify: true,
-      },
-    ];
-
-    const clustersSupplier = buildClustersSupplierWithClusters(clusters);
-    const req = buildEncodedRequest(
-      { cluster1: 'token', cluster2: 'token' },
-      'api',
-    );
-
-    const apiResponse1 = {
-      kind: 'APIVersions',
-      versions: ['v1'],
-      serverAddressByClientCIDRs: [
-        {
-          clientCIDR: '0.0.0.0/0',
-          serverAddress: '192.168.0.1:3333',
-        },
-      ],
-    };
-
-    const apiResponse2 = {
-      kind: 'Status',
-      apiVersion: 'v1',
-      metadata: {},
-      status: 'Failure',
-      message: 'Unauthorized',
-      reason: 'Unauthorized',
-      code: 401,
-    };
-
-    worker.use(
-      rest.get(`${clusters[0].url}/${req.params.encodedQuery}`, (_, res, ctx) =>
-        res(ctx.status(200), ctx.body(JSON.stringify(apiResponse1))),
-      ),
-      rest.get(`${clusters[1].url}/${req.params.encodedQuery}`, (_, res, ctx) =>
-        res(ctx.status(401), ctx.body(JSON.stringify(apiResponse2))),
-      ),
-    );
-
-    const result = await proxy.handleProxyRequest(req, clustersSupplier);
-
-    expect(result.code).toEqual(200);
-  });
-
-  it('should pass the exact response data from Kubernetes (single cluster)', async () => {
+  it('should pass the exact response data from Kubernetes', async () => {
     const clusters: ClusterDetails[] = [
       {
         name: 'cluster1',
@@ -197,8 +131,10 @@ describe('KubernetesProxy', () => {
       },
     ];
 
-    const clustersSupplier = buildClustersSupplierWithClusters(clusters);
-    const req = buildEncodedRequest({ cluster1: 'token' }, 'api');
+    proxy.clustersSupplier = buildClustersSupplierWithClusters(clusters);
+
+    const req = buildMockRequest('cluster1', 'api');
+    const { res: response, next } = getMockRes();
 
     const apiResponse = {
       kind: 'APIVersions',
@@ -212,109 +148,14 @@ describe('KubernetesProxy', () => {
     };
 
     worker.use(
-      rest.get(`${clusters[0].url}/${req.params.encodedQuery}`, (_, res, ctx) =>
+      rest.get(`${clusters[0].url}/${req.params.path}`, (_, res, ctx) =>
         res(ctx.status(200), ctx.body(JSON.stringify(apiResponse))),
       ),
     );
 
-    const result = await proxy.handleProxyRequest(req, clustersSupplier);
+    await proxy.proxyRequestHandler(req, response, next);
 
-    const resultString = JSON.stringify(result.data);
-    const expectedString = JSON.stringify({
-      cluster1: {
-        kind: 'APIVersions',
-        versions: ['v1'],
-        serverAddressByClientCIDRs: [
-          {
-            clientCIDR: '0.0.0.0/0',
-            serverAddress: '192.168.0.1:3333',
-          },
-        ],
-      },
-    });
-
-    expect(resultString).toEqual(expectedString);
-  });
-
-  it('should pass the exact response data from Kubernetes (multi cluster)', async () => {
-    const clusters: ClusterDetails[] = [
-      {
-        name: 'cluster1',
-        url: 'http://localhost:9998',
-        serviceAccountToken: 'token',
-        authProvider: 'serviceAccount',
-        skipTLSVerify: true,
-      },
-      {
-        name: 'cluster2',
-        url: 'http://localhost:9999',
-        serviceAccountToken: 'token',
-        authProvider: 'serviceAccount',
-        skipTLSVerify: true,
-      },
-    ];
-
-    const clustersSupplier = buildClustersSupplierWithClusters(clusters);
-    const req = buildEncodedRequest(
-      { cluster1: 'token', cluster2: 'token' },
-      'api',
-    );
-
-    const apiResponse1 = {
-      kind: 'APIVersions',
-      versions: ['v1'],
-      serverAddressByClientCIDRs: [
-        {
-          clientCIDR: '0.0.0.0/0',
-          serverAddress: '192.168.0.1:3333',
-        },
-      ],
-    };
-
-    const apiResponse2 = {
-      kind: 'Status',
-      apiVersion: 'v1',
-      metadata: {},
-      status: 'Failure',
-      message: 'Unauthorized',
-      reason: 'Unauthorized',
-      code: 401,
-    };
-
-    worker.use(
-      rest.get(`${clusters[0].url}/${req.params.encodedQuery}`, (_, res, ctx) =>
-        res(ctx.status(200), ctx.body(JSON.stringify(apiResponse1))),
-      ),
-      rest.get(`${clusters[1].url}/${req.params.encodedQuery}`, (_, res, ctx) =>
-        res(ctx.status(401), ctx.body(JSON.stringify(apiResponse2))),
-      ),
-    );
-
-    const result = await proxy.handleProxyRequest(req, clustersSupplier);
-
-    const resultString = JSON.stringify(result.data);
-    const expectedString = JSON.stringify({
-      cluster1: {
-        kind: 'APIVersions',
-        versions: ['v1'],
-        serverAddressByClientCIDRs: [
-          {
-            clientCIDR: '0.0.0.0/0',
-            serverAddress: '192.168.0.1:3333',
-          },
-        ],
-      },
-      cluster2: {
-        kind: 'Status',
-        apiVersion: 'v1',
-        metadata: {},
-        status: 'Failure',
-        message: 'Unauthorized',
-        reason: 'Unauthorized',
-        code: 401,
-      },
-    });
-
-    expect(resultString).toEqual(expectedString);
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith(apiResponse);
   });
 });
