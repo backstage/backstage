@@ -194,12 +194,6 @@ export interface KubernetesFetchError {
 }
 
 // @public (undocumented)
-export interface KubernetesProxyClusters {
-  // (undocumented)
-  [key: string]: string;
-}
-
-// @public (undocumented)
 export interface KubernetesRequestAuth {
   // (undocumented)
   google?: string;

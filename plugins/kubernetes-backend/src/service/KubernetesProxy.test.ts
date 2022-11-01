@@ -17,6 +17,8 @@ import 'buffer';
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { NotFoundError } from '@backstage/errors';
+import { getMockReq, getMockRes } from '@jest-mock/express';
 import { Request } from 'express';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -27,8 +29,6 @@ import {
   HEADER_KUBERNETES_CLUSTER,
   KubernetesProxy,
 } from './KubernetesProxy';
-import { NotFoundError } from '@backstage/errors';
-import { getMockReq, getMockRes } from '@jest-mock/express';
 
 describe('KubernetesProxy', () => {
   let proxy: KubernetesProxy;
