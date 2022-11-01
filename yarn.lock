@@ -4296,7 +4296,7 @@ __metadata:
     msw: ^0.47.0
     node-cache: ^5.1.2
     node-fetch: ^2.6.7
-    openid-client: ^5.1.3
+    openid-client: ^5.2.1
     passport: ^0.6.0
     passport-auth0: ^1.4.3
     passport-bitbucket-oauth2: ^0.1.2
@@ -27157,10 +27157,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^4.1.4":
-  version: 4.5.0
-  resolution: "jose@npm:4.5.0"
-  checksum: 51142150a9f571ca318842d34ac0daec49fb70bfb6034c68fd46d8c804a8325065876067202310c8ff3cbfc5ca8e44d4712467b4da0d3cadf1e47c96989ca4ca
+"jose@npm:^4.10.0":
+  version: 4.10.4
+  resolution: "jose@npm:4.10.4"
+  checksum: 0e6caaae0b0303534c0ac23711d45eadfbdbff63d9aeed80965c668b5532c254ab25b48afddc3e1ecfcfd36b4275dee41174a097c5a47a25ce04268c78f3c130
   languageName: node
   linkType: hard
 
@@ -31236,15 +31236,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openid-client@npm:^5.1.3, openid-client@npm:^5.1.6":
-  version: 5.1.9
-  resolution: "openid-client@npm:5.1.9"
+"openid-client@npm:^5.1.6, openid-client@npm:^5.2.1":
+  version: 5.2.1
+  resolution: "openid-client@npm:5.2.1"
   dependencies:
-    jose: ^4.1.4
+    jose: ^4.10.0
     lru-cache: ^6.0.0
     object-hash: ^2.0.1
     oidc-token-hash: ^5.0.1
-  checksum: 55390a7eceaafdc340a5f2ece576eb4863fcb4cd8840e4a7a1af66bbaf830623b18cf1dd0b8ce472c6f36c6313e78f92db48ca0c10eb8c681a81e5a3d607fc9f
+  checksum: b2e9ee8bafb30981fe8eb4446d86578649f05e61d6289abfe79c863578ef8ab24eb4430461c2b8dbb50cbaff89af01e77439df5ebb87c391ed1e336a0e69e590
   languageName: node
   linkType: hard
 
