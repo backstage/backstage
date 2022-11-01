@@ -19,15 +19,17 @@ import platformPath, { basename } from 'path';
 
 import getRawBody from 'raw-body';
 import fs from 'fs-extra';
+import { promisify } from 'util';
 import tar from 'tar';
-import { Readable } from 'stream';
+import { pipeline as pipelineCb, Readable } from 'stream';
 import {
   ReadTreeResponse,
   ReadTreeResponseFile,
   ReadTreeResponseDirOptions,
   FromReadableArrayOptions,
 } from '../types';
-import { pipeStream } from './util';
+
+const pipeline = promisify(pipelineCb);
 
 /**
  * Wraps a array of Readable objects into a tree response reader.
@@ -73,7 +75,7 @@ export class ReadableArrayResponse implements ReadTreeResponse {
 
     try {
       const data = await new Promise<Buffer>(async resolve => {
-        await pipeStream(
+        await pipeline(
           tar.create({ cwd: tmpDir }, ['']),
           concatStream(resolve),
         );
@@ -93,7 +95,7 @@ export class ReadableArrayResponse implements ReadTreeResponse {
 
     for (let i = 0; i < this.stream.length; i++) {
       if (!this.stream[i].path.endsWith('/')) {
-        await pipeStream(
+        await pipeline(
           this.stream[i].data,
           fs.createWriteStream(
             platformPath.join(dir, basename(this.stream[i].path)),

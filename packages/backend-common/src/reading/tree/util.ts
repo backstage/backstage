@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { Readable, finished } from 'stream';
+import { Readable, pipeline as pipelineCb } from 'stream';
+import { promisify } from 'util';
 import concatStream from 'concat-stream';
+
+const pipeline = promisify(pipelineCb);
 
 // Matches a directory name + one `/` at the start of any string,
 // containing any character except `/` one or more times, and ending with a `/`
@@ -26,37 +29,13 @@ export function stripFirstDirectoryFromPath(path: string): string {
   return path.replace(directoryNameRegex, '');
 }
 
-// Custom pipeline implementation, since pipeline doesn't work well with tar on node 18
-// See https://github.com/npm/node-tar/issues/321
-export function pipeStream(
-  from: NodeJS.ReadableStream,
-  to: NodeJS.WritableStream,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    from.pipe(to);
-    finished(from, fromErr => {
-      if (fromErr) {
-        reject(fromErr);
-      } else {
-        finished(to, toErr => {
-          if (toErr) {
-            reject(toErr);
-          } else {
-            resolve();
-          }
-        });
-      }
-    });
-  });
-}
-
 // Collect the stream into a buffer and return
-export function streamToBuffer(stream: Readable): Promise<Buffer> {
+export const streamToBuffer = (stream: Readable): Promise<Buffer> => {
   return new Promise(async (resolve, reject) => {
     try {
-      await pipeStream(stream, concatStream(resolve));
+      await pipeline(stream, concatStream(resolve));
     } catch (ex) {
       reject(ex);
     }
   });
-}
+};

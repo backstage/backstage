@@ -32,7 +32,8 @@ import fetch, { Response } from 'node-fetch';
 import os from 'os';
 import { join as joinPath } from 'path';
 import tar from 'tar';
-import { Readable } from 'stream';
+import { pipeline as pipelineCb, Readable } from 'stream';
+import { promisify } from 'util';
 import {
   ReaderFactory,
   ReadTreeOptions,
@@ -44,7 +45,8 @@ import {
   UrlReader,
 } from './types';
 import { ScmIntegrations } from '@backstage/integration';
-import { pipeStream } from './tree/util';
+
+const pipeline = promisify(pipelineCb);
 
 const createTemporaryDirectory = async (workDir: string): Promise<string> =>
   await fs.mkdtemp(joinPath(workDir, '/gerrit-clone-'));
@@ -195,7 +197,7 @@ export class GerritUrlReader implements UrlReader {
       });
 
       const data = await new Promise<Buffer>(async resolve => {
-        await pipeStream(
+        await pipeline(
           tar.create({ cwd: tempDir }, ['']),
           concatStream(resolve),
         );
