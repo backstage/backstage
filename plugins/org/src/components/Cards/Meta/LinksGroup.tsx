@@ -41,11 +41,8 @@ const WebLink = ({
 
 export const LinksGroup = ({ links }: { links?: EntityLink[] }) => {
   const app = useApp();
-  const iconResolver = useCallback(
-    (key?: string): IconComponent =>
-      key ? app.getSystemIcon(key) ?? LanguageIcon : LanguageIcon,
-    [app],
-  );
+  const iconResolver = (key?: string): IconComponent =>
+    key ? app.getSystemIcon(key) ?? LanguageIcon : LanguageIcon;
 
   if (links === undefined) {
     return null;
