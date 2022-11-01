@@ -1,5 +1,14 @@
 # example-app
 
+## 0.2.77-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.4.0-next.1
+  - @backstage/plugin-playlist@0.1.2-next.1
+  - @backstage/plugin-techdocs-module-addons-contrib@1.0.6-next.0
+
 ## 0.2.77-next.0
 
 ### Patch Changes
