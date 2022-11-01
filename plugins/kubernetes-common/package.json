@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
-    "@kubernetes/client-node": "^0.17.1"
+    "@kubernetes/client-node": "0.17.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

@@ -5,4 +5,4 @@
 '@backstage/plugin-kubernetes-common': patch
 ---
 
-Bumped `@kubernetes/client-node` to `^0.17.1`.
+Pin `@kubernetes/client-node` version to `0.17.0`.
