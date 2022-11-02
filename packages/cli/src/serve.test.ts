@@ -20,6 +20,8 @@ import fetch from 'node-fetch';
 import path from 'path';
 import getPort from 'get-port';
 
+jest.setTimeout(150000);
+
 const executeCommand = (
   command: string,
   args: string[],
@@ -100,11 +102,6 @@ const executeCommand = (
   });
 };
 
-const timeout = 100000;
-
-// Builds initially (with no cache) take a loooong time.
-jest.setTimeout(timeout * 2);
-
 const testProjectDir = path.resolve(
   __dirname,
   '__fixtures__/test-project/packages/app',
@@ -133,7 +130,7 @@ describe('end-to-end', () => {
     const frontendPort = await getPort();
     startEmitter.on('hit', async () => {
       const response = await fetch(
-        `http://localhost:3000/${frontendPort}/catalog`,
+        `http://localhost:${frontendPort}/test/catalog`,
       );
       const text = await response.text();
       startEmitter.emit('stop', 'SIGINT');
@@ -153,7 +150,8 @@ describe('end-to-end', () => {
       },
       startEmitter,
       {
-        signalRegex: [/webpack compiled/],
+        // Need to match console colors as well, so use .* instead of just ' '.
+        signalRegex: [/compiled.*successfully/],
       },
     );
 
