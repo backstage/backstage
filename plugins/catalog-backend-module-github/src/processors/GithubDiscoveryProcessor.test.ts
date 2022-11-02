@@ -153,6 +153,7 @@ describe('GithubDiscoveryProcessor', () => {
             defaultBranchRef: {
               name: 'master',
             },
+            catalogInfoFile: null,
           },
           {
             name: 'demo',
@@ -162,6 +163,7 @@ describe('GithubDiscoveryProcessor', () => {
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
           },
         ],
       });
@@ -203,6 +205,7 @@ describe('GithubDiscoveryProcessor', () => {
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
           },
         ],
       });
@@ -234,6 +237,7 @@ describe('GithubDiscoveryProcessor', () => {
             repositoryTopics: { nodes: [] },
             isArchived: false,
             defaultBranchRef: null,
+            catalogInfoFile: null,
           },
         ],
       });
@@ -259,6 +263,7 @@ describe('GithubDiscoveryProcessor', () => {
             defaultBranchRef: {
               name: 'master',
             },
+            catalogInfoFile: null,
           },
         ],
       });
@@ -293,6 +298,7 @@ describe('GithubDiscoveryProcessor', () => {
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
           },
           {
             name: 'techdocs-cli',
@@ -302,6 +308,7 @@ describe('GithubDiscoveryProcessor', () => {
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
           },
           {
             name: 'techdocs-container',
@@ -311,6 +318,7 @@ describe('GithubDiscoveryProcessor', () => {
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
           },
           {
             name: 'techdocs-durp',
@@ -318,6 +326,7 @@ describe('GithubDiscoveryProcessor', () => {
             repositoryTopics: { nodes: [] },
             isArchived: false,
             defaultBranchRef: null,
+            catalogInfoFile: null,
           },
         ],
       });
@@ -360,6 +369,7 @@ describe('GithubDiscoveryProcessor', () => {
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
           },
           {
             name: 'test',
@@ -369,6 +379,7 @@ describe('GithubDiscoveryProcessor', () => {
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
           },
           {
             name: 'test-archived',
@@ -378,6 +389,7 @@ describe('GithubDiscoveryProcessor', () => {
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
           },
           {
             name: 'testxyz',
@@ -387,6 +399,7 @@ describe('GithubDiscoveryProcessor', () => {
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
           },
         ],
       });

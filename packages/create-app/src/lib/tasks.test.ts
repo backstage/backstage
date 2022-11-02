@@ -27,11 +27,9 @@ import {
   createTemporaryAppFolderTask,
   moveAppTask,
   templatingTask,
-  initGitRepository,
+  tryInitGitRepository,
   readGitConfig,
 } from './tasks';
-
-const commandExists = jest.fn();
 
 jest.spyOn(Task, 'log').mockReturnValue(undefined);
 jest.spyOn(Task, 'error').mockReturnValue(undefined);
@@ -41,12 +39,6 @@ jest
   .mockImplementation((_a, _b, taskFunc) => taskFunc());
 
 jest.mock('child_process');
-jest.mock(
-  'command-exists',
-  () =>
-    (...args: any[]) =>
-      commandExists(...args),
-);
 
 // By mocking this the filesystem mocks won't mess with reading all of the package.jsons
 jest.mock('./versions', () => ({
@@ -102,7 +94,10 @@ describe('tasks', () => {
     (
       command: string,
       options: any,
-      callback: (error: null, stdout: any, stderr: any) => void,
+      callback: (
+        error: Error | null,
+        result: { stdout: string; stderr: string },
+      ) => void,
     ) => void
   >;
 
@@ -293,29 +288,15 @@ describe('tasks', () => {
 
     it('should return git config if git package is installed and git credentials are set', async () => {
       mockExec.mockImplementation((_command, _options, callback) => {
-        callback(null, { stdout: 'main' }, 'standard error');
+        callback(null, { stdout: 'main', stderr: '' });
       });
-
-      commandExists.mockResolvedValue(true);
 
       const gitConfig = await readGitConfig();
 
-      expect(gitConfig).toBeTruthy();
       expect(gitConfig).toEqual({
-        name: 'main',
-        email: 'main',
         defaultBranch: 'main',
       });
-      expect(mockExec).toHaveBeenCalledWith(
-        'git config user.name',
-        { cwd: tmpDir },
-        expect.any(Function),
-      );
-      expect(mockExec).toHaveBeenCalledWith(
-        'git config user.email',
-        { cwd: tmpDir },
-        expect.any(Function),
-      );
+      expect(mockExec).toHaveBeenCalledTimes(3);
       expect(mockExec).toHaveBeenCalledWith(
         'git init',
         { cwd: tmpDir },
@@ -326,58 +307,82 @@ describe('tasks', () => {
         { cwd: tmpDir },
         expect.any(Function),
       );
+      expect(mockExec).toHaveBeenCalledWith(
+        'git branch --format="%(refname:short)"',
+        { cwd: tmpDir },
+        expect.any(Function),
+      );
     });
 
-    it('should return false if git package is not installed', async () => {
-      commandExists.mockResolvedValue(false);
-
-      const gitConfig = await readGitConfig();
-
-      expect(gitConfig).toEqual({});
-    });
-
-    it('should return false if git package is installed but git credentials are not set', async () => {
+    it('should return false if git config is invalid', async () => {
       mockExec.mockImplementation((_command, _options, callback) => {
-        callback(null, { stdout: null }, 'standard error');
+        callback(null, { stdout: '', stderr: '' });
       });
 
-      commandExists.mockResolvedValue(true);
-
       const gitConfig = await readGitConfig();
 
-      expect(gitConfig).toEqual({});
-      expect(mockExec).toHaveBeenCalledWith(
-        'git config user.name',
-        { cwd: tmpDir },
-        expect.any(Function),
-      );
-      expect(mockExec).toHaveBeenCalledWith(
-        'git config user.email',
-        { cwd: tmpDir },
-        expect.any(Function),
-      );
+      expect(gitConfig).toEqual({
+        defaultBranch: undefined,
+      });
+      expect(mockExec).toHaveBeenCalledTimes(3);
     });
   });
 
-  describe('initGitRepository', () => {
+  describe('tryInitGitRepository', () => {
     it('should initialize a git repository at the given path', async () => {
-      const destinationDir = 'tmp/mockApp/';
+      const destinationDir = 'tmp/mockApp';
 
-      mockExec.mockImplementation((_command, callback) => {
-        callback(null, { stdout: 'main' }, 'standard error');
+      mockExec.mockImplementation((command, _opts, callback) => {
+        if (command.startsWith('git rev-parse')) {
+          callback(new Error('not a git repo'), { stdout: '', stderr: '' });
+        } else {
+          callback(null, { stdout: '', stderr: '' });
+        }
       });
 
-      await initGitRepository(destinationDir);
+      await expect(tryInitGitRepository(destinationDir)).resolves.toBe(true);
 
-      expect(mockExec).toHaveBeenCalledTimes(2);
+      expect(mockExec).toHaveBeenCalledTimes(4);
       expect(mockExec).toHaveBeenNthCalledWith(
         1,
-        'git init',
+        'git rev-parse --is-inside-work-tree',
+        { cwd: destinationDir },
         expect.any(Function),
       );
       expect(mockExec).toHaveBeenNthCalledWith(
         2,
-        'git commit --allow-empty -m "Initial commit"',
+        'git init',
+        { cwd: destinationDir },
+        expect.any(Function),
+      );
+      expect(mockExec).toHaveBeenNthCalledWith(
+        3,
+        'git add .',
+        { cwd: destinationDir },
+        expect.any(Function),
+      );
+      expect(mockExec).toHaveBeenNthCalledWith(
+        4,
+        'git commit -m "Initial commit"',
+        { cwd: destinationDir },
+        expect.any(Function),
+      );
+    });
+
+    it('should not initialize a git repository if in one already', async () => {
+      const destinationDir = 'tmp/mockApp';
+
+      mockExec.mockImplementation((_command, _opts, callback) => {
+        callback(null, { stdout: '', stderr: '' });
+      });
+
+      await expect(tryInitGitRepository(destinationDir)).resolves.toBe(false);
+
+      expect(mockExec).toHaveBeenCalledTimes(1);
+      expect(mockExec).toHaveBeenNthCalledWith(
+        1,
+        'git rev-parse --is-inside-work-tree',
+        { cwd: destinationDir },
         expect.any(Function),
       );
     });

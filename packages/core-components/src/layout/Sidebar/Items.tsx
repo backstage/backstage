@@ -53,16 +53,13 @@ import {
   SidebarItemWithSubmenuContext,
   SidebarConfig,
 } from './config';
-import {
-  SidebarSubmenuItemProps,
-  SidebarSubmenuProps,
-  SidebarSubmenu,
-} from '.';
+import { SidebarSubmenuProps, SidebarSubmenu } from './SidebarSubmenu';
 import DoubleArrowLeft from './icons/DoubleArrowLeft';
 import DoubleArrowRight from './icons/DoubleArrowRight';
 import { isLocationMatch } from './utils';
 import { Location } from 'history';
 import { useSidebarOpenState } from './SidebarOpenStateContext';
+import { SidebarSubmenuItemProps } from './SidebarSubmenuItem';
 
 /** @public */
 export type SidebarItemClassKey =
@@ -214,7 +211,7 @@ function useMemoStyles(sidebarConfig: SidebarConfig) {
 
 /**
  * Evaluates the routes of the SubmenuItems & nested DropdownItems.
- * The reeveluation is only triggered, if the `locationPathname` changes, as `useElementFilter` uses memorization.
+ * The reevaluation is only triggered, if the `locationPathname` changes, as `useElementFilter` uses memorization.
  *
  * @param submenu SidebarSubmenu component
  * @param location Location

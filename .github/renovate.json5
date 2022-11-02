@@ -15,5 +15,10 @@
       groupName: 'API Extractor / Rush Stack monorepo packages',
       rangeStrategy: 'replace',
     },
+    {
+      matchSourceUrlPrefixes: ['https://github.com/gregberge/svgr'],
+      groupName: 'SVGR monorepo packages',
+      rangeStrategy: 'replace',
+    },
   ],
 }

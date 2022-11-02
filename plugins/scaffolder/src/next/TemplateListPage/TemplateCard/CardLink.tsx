@@ -15,7 +15,8 @@
  */
 import { IconComponent } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
-import { Link, makeStyles } from '@material-ui/core';
+import { Link } from '@backstage/core-components';
+import { makeStyles } from '@material-ui/core';
 import React from 'react';
 
 interface CardLinkProps {
@@ -37,7 +38,7 @@ export const CardLink = ({ icon: Icon, text, url }: CardLinkProps) => {
   return (
     <div className={styles.linkText}>
       <Icon fontSize="small" />
-      <Link style={{ marginLeft: '8px' }} href={url}>
+      <Link style={{ marginLeft: '8px' }} to={url}>
         {text || url}
       </Link>
     </div>

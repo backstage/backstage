@@ -1,5 +1,15 @@
 # @backstage/plugin-tech-radar
 
+## 0.5.18-next.0
+
+### Patch Changes
+
+- 1f888af5f6: Fixed bug in Tech Radar where, on hover, the tech list quadrant would rerender and scroll top
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/theme@0.2.16
+
 ## 0.5.17
 
 ### Patch Changes

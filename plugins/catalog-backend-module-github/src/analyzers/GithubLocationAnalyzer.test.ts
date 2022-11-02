@@ -32,7 +32,10 @@ jest.mock('@octokit/rest', () => {
   return { Octokit };
 });
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
 import { GithubLocationAnalyzer } from './GithubLocationAnalyzer';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
@@ -45,6 +48,10 @@ describe('GithubLocationAnalyzer', () => {
   const mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery> = {
     getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007'),
     getExternalBaseUrl: jest.fn(),
+  };
+  const mockTokenManager: jest.Mocked<TokenManager> = {
+    authenticate: jest.fn(),
+    getToken: jest.fn().mockResolvedValue('abc123'),
   };
   const config = new ConfigReader({
     integrations: {
@@ -117,6 +124,7 @@ describe('GithubLocationAnalyzer', () => {
     const analyzer = new GithubLocationAnalyzer({
       discovery: mockDiscoveryApi,
       config,
+      tokenManager: mockTokenManager,
     });
     const result = await analyzer.analyze({
       url: 'https://github.com/foo/bar',
@@ -142,6 +150,7 @@ describe('GithubLocationAnalyzer', () => {
     const analyzer = new GithubLocationAnalyzer({
       discovery: mockDiscoveryApi,
       config,
+      tokenManager: mockTokenManager,
     });
     const result = await analyzer.analyze({
       url: 'https://github.com/foo/bar',

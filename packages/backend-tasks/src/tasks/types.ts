@@ -14,25 +14,11 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
 import { CronTime } from 'cron';
 import { Duration } from 'luxon';
 import { AbortSignal } from 'node-abort-controller';
 import { z } from 'zod';
-
-/**
- * Human friendly durations object
- * @public
- */
-export type HumanDuration = {
-  years?: number;
-  months?: number;
-  weeks?: number;
-  days?: number;
-  hours?: number;
-  minutes?: number;
-  seconds?: number;
-  milliseconds?: number;
-};
 
 /**
  * A function that can be called as a scheduled task.

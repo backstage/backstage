@@ -11,7 +11,7 @@ For some use cases, you may want to define custom [rules](./concepts.md#resource
 Plugins should export a rule factory that provides type-safety that ensures compatibility with the plugin's backend. The catalog plugin exports `createCatalogPermissionRule` from `@backstage/plugin-catalog-backend/alpha` for this purpose. Note: the `/alpha` path segment is temporary until this API is marked as stable. For this example, we'll define the rule in `packages/backend/src/plugins/permission.ts`, but you can put it anywhere that's accessible by your `backend` package.
 
 ```typescript
-import type { Entity } from '@backstage/plugin-catalog-model';
+import type { Entity } from '@backstage/catalog-model';
 import { createCatalogPermissionRule } from '@backstage/plugin-catalog-backend/alpha';
 import { createConditionFactory } from '@backstage/plugin-permission-node';
 import { z } from 'zod';

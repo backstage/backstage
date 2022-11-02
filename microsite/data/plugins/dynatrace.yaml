@@ -10,3 +10,4 @@ npmPackageName: '@backstage/plugin-dynatrace'
 tags:
   - dynatrace
   - monitoring
+addedDate: '2022-06-23'

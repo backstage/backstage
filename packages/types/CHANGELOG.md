@@ -1,5 +1,11 @@
 # @backstage/types
 
+## 1.0.1-next.0
+
+### Patch Changes
+
+- 30e43717c7: Added the `HumanDuration` type, moved here from `@backstage/backend-tasks`. This type matches the `Duration.fromObject` form of `luxon`.
+
 ## 1.0.0
 
 ### Major Changes

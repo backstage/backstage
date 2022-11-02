@@ -1,5 +1,16 @@
 # @backstage/backend-tasks
 
+## 0.3.7-next.0
+
+### Patch Changes
+
+- 30e43717c7: Deprecated the `HumanDuration` type, which should now instead be imported from `@backstage/types`.
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+
 ## 0.3.6
 
 ### Patch Changes

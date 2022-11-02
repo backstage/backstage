@@ -7,3 +7,4 @@ description: Visualization of maturity (and improving it) of services/systems th
 documentation: https://github.com/Oriflame/backstage-plugins/tree/main/plugins/score-card
 iconUrl: img/score-card-plugin-logo.png
 npmPackageName: '@oriflame/backstage-plugin-score-card'
+addedDate: '2022-10-06'

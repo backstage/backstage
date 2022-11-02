@@ -15,7 +15,6 @@
  */
 
 import React, { useEffect } from 'react';
-import capitalize from 'lodash/capitalize';
 import { Box } from '@material-ui/core';
 import { useEntityTypeFilter } from '../../hooks/useEntityTypeFilter';
 
@@ -54,10 +53,10 @@ export const EntityTypePicker = (props: EntityTypePickerProps) => {
   if (availableTypes.length === 0 || error) return null;
 
   const items = [
-    { value: 'all', label: 'All' },
+    { value: 'all', label: 'all' },
     ...availableTypes.map((type: string) => ({
       value: type,
-      label: capitalize(type),
+      label: type,
     })),
   ];
 

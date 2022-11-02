@@ -21,8 +21,9 @@ import { Duration } from 'luxon';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
 import { GerritIntegration } from '@backstage/integration';
+import { GiteaIntegration } from '@backstage/integration';
 import { GithubCredentialsProvider } from '@backstage/integration';
-import { GitHubIntegration } from '@backstage/integration';
+import { GithubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
 import { isChildPath } from '@backstage/cli-common';
 import { JsonValue } from '@backstage/types';
@@ -407,9 +408,26 @@ export class Git {
 }
 
 // @public
+export class GiteaUrlReader implements UrlReader {
+  constructor(integration: GiteaIntegration);
+  // (undocumented)
+  static factory: ReaderFactory;
+  // (undocumented)
+  read(url: string): Promise<Buffer>;
+  // (undocumented)
+  readTree(): Promise<ReadTreeResponse>;
+  // (undocumented)
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  // (undocumented)
+  search(): Promise<SearchResponse>;
+  // (undocumented)
+  toString(): string;
+}
+
+// @public
 export class GithubUrlReader implements UrlReader {
   constructor(
-    integration: GitHubIntegration,
+    integration: GithubIntegration,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
       credentialsProvider: GithubCredentialsProvider;
@@ -717,7 +735,7 @@ export interface TokenManager {
 // @public
 export type UrlReader = {
   read(url: string): Promise<Buffer>;
-  readUrl?(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
 };

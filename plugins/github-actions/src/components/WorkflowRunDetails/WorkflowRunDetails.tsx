@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { readGitHubIntegrationConfigs } from '@backstage/integration';
+import { readGithubIntegrationConfigs } from '@backstage/integration';
 import {
   Accordion,
   AccordionDetails,
@@ -22,7 +22,6 @@ import {
   Box,
   CircularProgress,
   LinearProgress,
-  Link as MaterialLink,
   ListItemText,
   makeStyles,
   Paper,
@@ -170,7 +169,7 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
   const projectName = getProjectNameFromEntity(entity);
 
   // TODO: Get github hostname from metadata annotation
-  const hostname = readGitHubIntegrationConfigs(
+  const hostname = readGithubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
   )[0].host;
   const [owner, repo] = (projectName && projectName.split('/')) || [];
@@ -246,10 +245,10 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
               </TableCell>
               <TableCell>
                 {details.value?.html_url && (
-                  <MaterialLink target="_blank" href={details.value.html_url}>
+                  <Link to={details.value.html_url}>
                     Workflow runs on GitHub{' '}
                     <ExternalLinkIcon className={classes.externalLinkIcon} />
-                  </MaterialLink>
+                  </Link>
                 )}
               </TableCell>
             </TableRow>

@@ -239,6 +239,17 @@ function createConfigForRole(dir, role, extraConfig = {}) {
             name: '@material-ui/icons/', // because this is possible too ._.
             message: "Please import '@material-ui/icons/<Icon>' instead.",
           },
+          {
+            name: '@material-ui/core',
+            importNames: ['Link'],
+            message:
+              'Prefer using `Link` from `@backstage/core-components` rather than material-UI',
+          },
+          {
+            name: '@material-ui/core/Link',
+            message:
+              'Prefer using `Link` from `@backstage/core-components` rather than material-UI',
+          },
           ...require('module').builtinModules,
           ...(extraConfig.restrictedImports ?? []),
         ],

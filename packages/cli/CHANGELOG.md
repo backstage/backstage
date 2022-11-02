@@ -1,5 +1,37 @@
 # @backstage/cli
 
+## 0.21.0-next.0
+
+### Minor Changes
+
+- 7539b36748: Added a new ESLint rule that restricts imports of Link from @material-ui
+
+  The rule can be can be overridden in the following way:
+
+  ```diff
+  module.exports = require('@backstage/cli/config/eslint-factory')(__dirname, {
+  +  restrictedImports: [
+  +    { name: '@material-ui/core', importNames: [] },
+  +    { name: '@material-ui/core/Link', importNames: [] },
+  +  ],
+  });
+  ```
+
+### Patch Changes
+
+- 4091c73e68: Updated `@swc/core` to version 1.3.9 which fixes a `.tsx` parser bug
+- 9c767e8f45: Updated dependency `@svgr/plugin-jsx` to `6.5.x`.
+  Updated dependency `@svgr/plugin-svgo` to `6.5.x`.
+  Updated dependency `@svgr/rollup` to `6.5.x`.
+  Updated dependency `@svgr/webpack` to `6.5.x`.
+- Updated dependencies
+  - @backstage/types@1.0.1-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4-next.0
+  - @backstage/config-loader@1.1.6-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/release-manifests@0.0.6
+
 ## 0.20.0
 
 ### Minor Changes
