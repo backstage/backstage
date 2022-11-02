@@ -24,8 +24,9 @@ export interface SpecParser {
 export class SpecHandler {
   specParsers: Record<string, SpecParser> = {};
 
-  addSpecParser(parser: SpecParser) {
+  addSpecParser(parser: SpecParser): SpecHandler {
     this.specParsers[parser.specType] = parser;
+    return this;
   }
 
   getSpecParser(specType: string): SpecParser {
