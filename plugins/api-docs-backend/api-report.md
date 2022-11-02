@@ -68,7 +68,7 @@ export class OpenAPISpecParser implements SpecParser {
 // @public (undocumented)
 export class SpecHandler {
   // (undocumented)
-  addSpecParser(parser: SpecParser): void;
+  addSpecParser(parser: SpecParser): SpecHandler;
   // (undocumented)
   getSpecParser(specType: string): SpecParser;
   // (undocumented)
