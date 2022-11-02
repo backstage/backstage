@@ -14,27 +14,31 @@
  * limitations under the License.
  */
 
-import express from 'express';
-import Router from 'express-promise-router';
-import cookieParser from 'cookie-parser';
-import { Logger } from 'winston';
-import {
-  defaultAuthProviderFactories,
-  AuthProviderFactory,
-} from '../providers';
 import {
   PluginDatabaseManager,
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
-import { assertError, NotFoundError } from '@backstage/errors';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { createOidcRouter, TokenFactory, KeyStores } from '../identity';
+import { assertError, NotFoundError } from '@backstage/errors';
+import cookieParser from 'cookie-parser';
+import express from 'express';
+import Router from 'express-promise-router';
 import session from 'express-session';
-import passport from 'passport';
 import { Minimatch } from 'minimatch';
+import passport from 'passport';
+import { Logger } from 'winston';
+import { createOidcRouter, KeyStores, TokenFactory } from '../identity';
 import { CatalogAuthResolverContext } from '../lib/resolvers';
+import {
+  AuthProviderFactory,
+  defaultAuthProviderFactories,
+} from '../providers';
+import { getRedisClient } from './redisClient';
+
+const RedisStore = require('connect-redis')(session);
+const MemoryStore = require('memorystore')(session);
 
 /** @public */
 export type ProviderFactories = { [s: string]: AuthProviderFactory };
@@ -67,6 +71,28 @@ export async function createRouter(
 
   const appUrl = config.getString('app.baseUrl');
   const authUrl = await discovery.getExternalBaseUrl('auth');
+  const cacheMemoryType = config.getString('backend.cache.store');
+  let cacheStore = null;
+
+  switch (cacheMemoryType) {
+    case 'redis':
+      {
+        const redisClient = await getRedisClient({
+          redisConnectionUrl: config.getString('backend.cache.connection'),
+        });
+        cacheStore = new RedisStore({
+          client: redisClient,
+        });
+      }
+      break;
+
+    case 'memory':
+    default:
+      cacheStore = new MemoryStore({
+        checkPeriod: 60 * 60 * 1000, // prune expired entries every 1h
+      });
+      break;
+  }
 
   const keyStore = await KeyStores.fromConfig(config, { logger, database });
   const keyDurationSeconds = 3600;
@@ -78,6 +104,7 @@ export async function createRouter(
     logger: logger.child({ component: 'token-factory' }),
     algorithm: tokenFactoryAlgorithm,
   });
+
   const catalogApi = new CatalogClient({ discoveryApi: discovery });
 
   const secret = config.getOptionalString('auth.session.secret');
@@ -87,6 +114,7 @@ export async function createRouter(
     const enforceCookieSSL = authUrl.startsWith('https');
     router.use(
       session({
+        store: cacheStore,
         secret,
         saveUninitialized: false,
         resave: false,
