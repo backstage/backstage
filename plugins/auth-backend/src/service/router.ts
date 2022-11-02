@@ -94,8 +94,6 @@ export async function createRouter(
       break;
   }
 
-  console.log('execution is here');
-
   const keyStore = await KeyStores.fromConfig(config, { logger, database });
   const keyDurationSeconds = 3600;
 
