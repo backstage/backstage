@@ -24,7 +24,7 @@ Settings for local development:
 
 - Application name: Backstage (or your custom app name)
 - Homepage URL: `http://localhost:3000`
-- Authorization callback URL: `http://localhost:7007/api/auth/github`
+- Authorization callback URL: `http://localhost:7007/api/auth/github/handler/frame`
 
 ## Configuration
 
