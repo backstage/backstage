@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
 import { createClient } from 'redis';
 
-let client;
+let client: ReturnType<typeof createClient> | null = null;
 
 interface getRedisClientParams {
-  config: Config;
+  redisConnectionUrl: string;
 }
 
 /**
+ * this function will return a singleton instance of redis.
  * TODO
  * we need to decide the strategy of how to handle redis connection failure.
  * as of right now we are shutting the server down and logging the error over the terminal.
@@ -31,19 +31,15 @@ interface getRedisClientParams {
 
 async function getRedisClient(
   options: getRedisClientParams,
-): Promise<typeof client> {
-  if (client === null) {
-    const redisConnectionUrl = options.config.getString(
-      'backend.cache.connection',
-    );
-
+): Promise<ReturnType<typeof createClient>> {
+  if (!client) {
     client = createClient({
-      url: redisConnectionUrl,
+      url: options.redisConnectionUrl,
     });
 
     client.on('connect', () => {
       console.log(
-        `CacheStore - Connection status: connected, url: ${redisConnectionUrl}`,
+        `CacheStore - Connection status: connected, url: ${options.redisConnectionUrl}`,
       );
     });
 
@@ -58,15 +54,14 @@ async function getRedisClient(
 
     client.on('error', (err: any) => {
       console.log(
-        `CacheStore - Connection status: error, url: ${redisConnectionUrl}`,
+        `CacheStore - Connection status: error, url: ${options.redisConnectionUrl}`,
         { err },
       );
       process.exit(1);
     });
-
+    // @ts-ignore
     await client.connect();
   }
-
   return client;
 }
 

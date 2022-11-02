@@ -77,7 +77,9 @@ export async function createRouter(
   switch (cacheMemoryType) {
     case 'redis':
       {
-        const redisClient = await getRedisClient({ config });
+        const redisClient = await getRedisClient({
+          redisConnectionUrl: config.getString('backend.cache.connection'),
+        });
         cacheStore = new RedisStore({
           client: redisClient,
         });
@@ -91,6 +93,8 @@ export async function createRouter(
       });
       break;
   }
+
+  console.log('execution is here');
 
   const keyStore = await KeyStores.fromConfig(config, { logger, database });
   const keyDurationSeconds = 3600;
