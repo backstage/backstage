@@ -26,4 +26,5 @@ export {
   sonarQubePlugin,
   sonarQubePlugin as plugin,
   EntitySonarQubeCard,
+  EntitySonarQubeContentPage,
 } from './plugin';

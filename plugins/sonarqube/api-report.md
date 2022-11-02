@@ -8,6 +8,7 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { InfoCardVariants } from '@backstage/core-components';
+import { default as React_2 } from 'react';
 
 // @public (undocumented)
 export type DuplicationRating = {
@@ -22,13 +23,36 @@ export const EntitySonarQubeCard: (props: {
 }) => JSX.Element;
 
 // @public (undocumented)
+export const EntitySonarQubeContentPage: ({
+  title,
+  supportTitle,
+  ...otherProps
+}: SonarQubeContentPageProps) => JSX.Element;
+
+// @public (undocumented)
 export const isSonarQubeAvailable: (entity: Entity) => boolean;
+
+// @public (undocumented)
+export const SONARQUBE_PROJECT_KEY_ANNOTATION = 'sonarqube.org/project-key';
 
 // @public (undocumented)
 export const SonarQubeCard: (props: {
   variant?: InfoCardVariants;
   duplicationRatings?: DuplicationRating[];
 }) => JSX.Element;
+
+// @public (undocumented)
+export const SonarQubeContentPage: ({
+  title,
+  supportTitle,
+  ...otherProps
+}: SonarQubeContentPageProps) => JSX.Element;
+
+// @public (undocumented)
+export type SonarQubeContentPageProps = {
+  title?: string;
+  supportTitle?: string;
+} & React_2.ComponentPropsWithoutRef<'div'>;
 
 // @public (undocumented)
 const sonarQubePlugin: BackstagePlugin<{}, {}, {}>;
