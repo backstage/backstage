@@ -22,7 +22,7 @@ import {
   ListItemText,
   Divider,
 } from '@material-ui/core';
-import React, { useCallback } from 'react';
+import React from 'react';
 
 const WebLink = ({
   href,
