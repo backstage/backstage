@@ -516,7 +516,9 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
         }
         data={typeof data === 'function' ? data : tableData}
         style={{ width: '100%' }}
-        localization={{ toolbar: { searchPlaceholder: 'Filter' } }}
+        localization={{
+          toolbar: { searchPlaceholder: 'Filter', searchTooltip: 'Filter' },
+        }}
         {...restProps}
       />
     </div>

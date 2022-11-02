@@ -15,7 +15,11 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
+import {
+  PluginTaskScheduler,
+  TaskInvocationDefinition,
+  TaskRunner,
+} from '@backstage/backend-tasks';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { CodeSearchResultItem } from '../lib';
@@ -52,6 +56,7 @@ describe('AzureDevOpsEntityProvider', () => {
     expectedBaseUrl: string,
     names: Record<string, string>,
     integrationConfig?: object,
+    scheduleInConfig?: boolean,
   ) => {
     const config = new ConfigReader({
       integrations: {
@@ -74,9 +79,18 @@ describe('AzureDevOpsEntityProvider', () => {
       refresh: jest.fn(),
     };
 
+    const schedulingConfig: Record<string, any> = {};
+    if (scheduleInConfig) {
+      schedulingConfig.scheduler = {
+        createScheduledTaskRunner: (_: any) => schedule,
+      } as unknown as PluginTaskScheduler;
+    } else {
+      schedulingConfig.schedule = schedule;
+    }
+
     const provider = AzureDevOpsEntityProvider.fromConfig(config, {
+      ...schedulingConfig,
       logger,
-      schedule,
     })[0];
     expect(provider.getProviderName()).toEqual(
       `AzureDevOpsEntityProvider:${providerId}`,
@@ -167,6 +181,94 @@ describe('AzureDevOpsEntityProvider', () => {
       {
         organization: 'myorganization',
         project: 'myproject',
+      },
+      [
+        {
+          fileName: 'catalog-info.yaml',
+          path: '/catalog-info.yaml',
+          repository: {
+            name: 'myrepo',
+          },
+        },
+        {
+          fileName: 'catalog-info.yaml',
+          path: '/catalog-info.yaml',
+          repository: {
+            name: 'myotherrepo',
+          },
+        },
+      ],
+      'https://dev.azure.com/myorganization/myproject',
+      {
+        'myrepo?path=/catalog-info.yaml':
+          'generated-87865246726bb12a8c4fb4f914443f1fbb91648c',
+        'myotherrepo?path=/catalog-info.yaml':
+          'generated-2deccac384c34d0dca37be0ebb4b1c8cf6913fe1',
+      },
+    );
+  });
+
+  it('fail without schedule and scheduler', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          azureDevOps: {
+            test: {
+              organization: 'myorganization',
+              project: 'myproject',
+            },
+          },
+        },
+      },
+    });
+
+    expect(() =>
+      AzureDevOpsEntityProvider.fromConfig(config, {
+        logger,
+      }),
+    ).toThrow('Either schedule or scheduler must be provided');
+  });
+
+  it('fail with scheduler but no schedule config', () => {
+    const scheduler = {
+      createScheduledTaskRunner: (_: any) => jest.fn(),
+    } as unknown as PluginTaskScheduler;
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          azureDevOps: {
+            test: {
+              organization: 'myorganization',
+              project: 'myproject',
+            },
+          },
+        },
+      },
+    });
+
+    expect(() =>
+      AzureDevOpsEntityProvider.fromConfig(config, {
+        logger,
+        scheduler,
+      }),
+    ).toThrow(
+      'No schedule provided neither via code nor config for AzureDevOpsEntityProvider:test',
+    );
+  });
+
+  // eslint-disable-next-line jest/expect-expect
+  it('single simple provider config with schedule in config', async () => {
+    return expectMutation(
+      'allReposMultipleFiles',
+      {
+        organization: 'myorganization',
+        project: 'myproject',
+        schedule: {
+          frequency: 'PT30M',
+          timeout: {
+            minutes: 3,
+          },
+        },
       },
       [
         {

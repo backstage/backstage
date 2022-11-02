@@ -19,8 +19,8 @@ import { Config } from '@backstage/config';
 import {
   GithubCredentialsProvider,
   ScmIntegrations,
-  GitHubIntegrationConfig,
-  GitHubIntegration,
+  GithubIntegrationConfig,
+  GithubIntegration,
   SingleInstanceGithubCredentialsProvider,
 } from '@backstage/integration';
 import {
@@ -51,7 +51,7 @@ import { satisfiesTopicFilter } from '../lib/util';
 export class GithubEntityProvider implements EntityProvider {
   private readonly config: GithubEntityProviderConfig;
   private readonly logger: Logger;
-  private readonly integration: GitHubIntegrationConfig;
+  private readonly integration: GithubIntegrationConfig;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
   private readonly githubCredentialsProvider: GithubCredentialsProvider;
@@ -101,7 +101,7 @@ export class GithubEntityProvider implements EntityProvider {
 
   private constructor(
     config: GithubEntityProviderConfig,
-    integration: GitHubIntegration,
+    integration: GithubIntegration,
     logger: Logger,
     taskRunner: TaskRunner,
   ) {
@@ -178,6 +178,7 @@ export class GithubEntityProvider implements EntityProvider {
   private async findCatalogFiles(): Promise<Repository[]> {
     const organization = this.config.organization;
     const host = this.integration.host;
+    const catalogPath = this.config.catalogPath;
     const orgUrl = `https://${host}/${organization}`;
 
     const { headers } = await this.githubCredentialsProvider.getCredentials({
@@ -192,7 +193,17 @@ export class GithubEntityProvider implements EntityProvider {
     const { repositories } = await getOrganizationRepositories(
       client,
       organization,
+      catalogPath,
     );
+
+    if (this.config.validateLocationsExist) {
+      return repositories.filter(repository => {
+        return (
+          repository.catalogInfoFile?.__typename === 'Blob' &&
+          repository.catalogInfoFile.text !== ''
+        );
+      });
+    }
 
     return repositories;
   }

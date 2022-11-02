@@ -1,5 +1,19 @@
 # @backstage/plugin-auth-backend
 
+## 0.17.1-next.0
+
+### Patch Changes
+
+- cbe11d1e23: Tweak README
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/plugin-auth-node@0.2.7-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+
 ## 0.17.0
 
 ### Minor Changes

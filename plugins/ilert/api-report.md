@@ -17,9 +17,94 @@ import { RouteRef } from '@backstage/core-plugin-api';
 export const ACCEPTED = 'ACCEPTED';
 
 // @public (undocumented)
+export interface Alert {
+  // (undocumented)
+  alertKey: string;
+  // (undocumented)
+  alertSource: AlertSource | null;
+  // (undocumented)
+  assignedTo: User | null;
+  // (undocumented)
+  commentPublishToSubscribers: boolean;
+  // (undocumented)
+  commentText: string;
+  // (undocumented)
+  details: string;
+  // (undocumented)
+  id: number;
+  // (undocumented)
+  images: Image_2[];
+  // (undocumented)
+  links: Link[];
+  // (undocumented)
+  logEntries: LogEntry[];
+  // (undocumented)
+  priority: AlertPriority;
+  // (undocumented)
+  reportTime: string;
+  // (undocumented)
+  resolvedOn: string;
+  // (undocumented)
+  responders: Responder[];
+  // (undocumented)
+  status: AlertStatus;
+  // (undocumented)
+  subscribers: Subscriber[];
+  // (undocumented)
+  summary: string;
+}
+
+// @public (undocumented)
+export interface AlertAction {
+  // (undocumented)
+  extensionId?: string;
+  // (undocumented)
+  history?: AlertActionHistory[];
+  // (undocumented)
+  name: string;
+  // (undocumented)
+  type: string;
+  // (undocumented)
+  webhookId: string;
+}
+
+// @public (undocumented)
+export interface AlertActionHistory {
+  // (undocumented)
+  actor: User;
+  // (undocumented)
+  alertId: number;
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  success: boolean;
+  // (undocumented)
+  webhookId: string;
+}
+
+// @public (undocumented)
+export type AlertPriority = 'HIGH' | 'LOW';
+
+// @public (undocumented)
+export interface AlertResponder {
+  // (undocumented)
+  disabled: boolean;
+  // (undocumented)
+  group: 'SUGGESTED' | 'USER' | 'ESCALATION_POLICY' | 'ON_CALL_SCHEDULE';
+  // (undocumented)
+  id: number;
+  // (undocumented)
+  name: string;
+}
+
+// @public (undocumented)
 export interface AlertSource {
   // (undocumented)
   active?: boolean;
+  // (undocumented)
+  alertCreation?: AlertSourceAlertCreation;
+  // (undocumented)
+  alertPriorityRule?: AlertSourceAlertPriorityRule;
   // (undocumented)
   autoResolutionTimeout?: string;
   // (undocumented)
@@ -45,10 +130,6 @@ export interface AlertSource {
   // (undocumented)
   id: number;
   // (undocumented)
-  incidentCreation?: AlertSourceIncidentCreation;
-  // (undocumented)
-  incidentPriorityRule?: AlertSourceIncidentPriorityRule;
-  // (undocumented)
   integrationKey?: string;
   // (undocumented)
   integrationType: AlertSourceIntegrationType;
@@ -65,6 +146,21 @@ export interface AlertSource {
   // (undocumented)
   teams: TeamShort[];
 }
+
+// @public (undocumented)
+export type AlertSourceAlertCreation =
+  | 'ONE_ALERT_PER_EMAIL'
+  | 'ONE_ALERT_PER_EMAIL_SUBJECT'
+  | 'ONE_PENDING_ALERT_ALLOWED'
+  | 'ONE_OPEN_ALERT_ALLOWED'
+  | 'OPEN_RESOLVE_ON_EXTRACTION';
+
+// @public (undocumented)
+export type AlertSourceAlertPriorityRule =
+  | 'HIGH'
+  | 'LOW'
+  | 'HIGH_DURING_SUPPORT_HOURS'
+  | 'LOW_DURING_SUPPORT_HOURS';
 
 // @public (undocumented)
 export interface AlertSourceAutotaskMetadata {
@@ -108,21 +204,6 @@ export interface AlertSourceHeartbeat {
   // (undocumented)
   summary: string;
 }
-
-// @public (undocumented)
-export type AlertSourceIncidentCreation =
-  | 'ONE_INCIDENT_PER_EMAIL'
-  | 'ONE_INCIDENT_PER_EMAIL_SUBJECT'
-  | 'ONE_PENDING_INCIDENT_ALLOWED'
-  | 'ONE_OPEN_INCIDENT_ALLOWED'
-  | 'OPEN_RESOLVE_ON_EXTRACTION';
-
-// @public (undocumented)
-export type AlertSourceIncidentPriorityRule =
-  | 'HIGH'
-  | 'LOW'
-  | 'HIGH_DURING_SUPPORT_HOURS'
-  | 'LOW_DURING_SUPPORT_HOURS';
 
 // @public (undocumented)
 export type AlertSourceIntegrationType =
@@ -192,7 +273,7 @@ export interface AlertSourceSupportDay {
 // @public (undocumented)
 export interface AlertSourceSupportHours {
   // (undocumented)
-  autoRaiseIncidents: boolean;
+  autoRaiseAlerts: boolean;
   // (undocumented)
   supportDays: {
     MONDAY: AlertSourceSupportDay;
@@ -213,6 +294,12 @@ export type AlertSourceTimeZone =
   | 'America/New_York'
   | 'America/Los_Angeles'
   | 'Asia/Istanbul';
+
+// @public (undocumented)
+export type AlertStatus = typeof PENDING | typeof ACCEPTED | typeof RESOLVED;
+
+// @public (undocumented)
+export const DEGRADED = 'DEGRADED';
 
 // @public (undocumented)
 export const EntityILertCard: () => JSX.Element;
@@ -255,38 +342,57 @@ export type EventRequest = {
 };
 
 // @public (undocumented)
-export type GetIncidentsCountOpts = {
-  states?: IncidentStatus[];
+export type GetAlertsCountOpts = {
+  states?: AlertStatus[];
 };
 
 // @public (undocumented)
-export type GetIncidentsOpts = {
+export type GetAlertsOpts = {
   maxResults?: number;
   startIndex?: number;
-  states?: IncidentStatus[];
+  states?: AlertStatus[];
   alertSources?: number[];
+};
+
+// @public (undocumented)
+export type GetServicesOpts = {
+  maxResults?: number;
+  startIndex?: number;
+};
+
+// @public (undocumented)
+export type GetStatusPagesOpts = {
+  maxResults?: number;
+  startIndex?: number;
 };
 
 // @public (undocumented)
 export interface ILertApi {
   // (undocumented)
-  acceptIncident(incident: Incident, userName: string): Promise<Incident>;
+  acceptAlert(alert: Alert, userName: string): Promise<Alert>;
   // (undocumented)
   addImmediateMaintenance(
     alertSourceId: number,
     minutes: number,
   ): Promise<void>;
   // (undocumented)
-  assignIncident(
-    incident: Incident,
-    responder: IncidentResponder,
-  ): Promise<Incident>;
+  assignAlert(alert: Alert, responder: AlertResponder): Promise<Alert>;
   // (undocumented)
-  createIncident(eventRequest: EventRequest): Promise<boolean>;
+  createAlert(eventRequest: EventRequest): Promise<boolean>;
   // (undocumented)
   disableAlertSource(alertSource: AlertSource): Promise<AlertSource>;
   // (undocumented)
   enableAlertSource(alertSource: AlertSource): Promise<AlertSource>;
+  // (undocumented)
+  fetchAlert(id: number): Promise<Alert>;
+  // (undocumented)
+  fetchAlertActions(alert: Alert): Promise<AlertAction[]>;
+  // (undocumented)
+  fetchAlertResponders(alert: Alert): Promise<AlertResponder[]>;
+  // (undocumented)
+  fetchAlerts(opts?: GetAlertsOpts): Promise<Alert[]>;
+  // (undocumented)
+  fetchAlertsCount(opts?: GetAlertsCountOpts): Promise<number>;
   // (undocumented)
   fetchAlertSource(idOrIntegrationKey: number | string): Promise<AlertSource>;
   // (undocumented)
@@ -294,33 +400,27 @@ export interface ILertApi {
   // (undocumented)
   fetchAlertSources(): Promise<AlertSource[]>;
   // (undocumented)
-  fetchIncident(id: number): Promise<Incident>;
-  // (undocumented)
-  fetchIncidentActions(incident: Incident): Promise<IncidentAction[]>;
-  // (undocumented)
-  fetchIncidentResponders(incident: Incident): Promise<IncidentResponder[]>;
-  // (undocumented)
-  fetchIncidents(opts?: GetIncidentsOpts): Promise<Incident[]>;
-  // (undocumented)
-  fetchIncidentsCount(opts?: GetIncidentsCountOpts): Promise<number>;
-  // (undocumented)
   fetchOnCallSchedules(): Promise<Schedule[]>;
   // (undocumented)
-  fetchUptimeMonitor(id: number): Promise<UptimeMonitor>;
+  fetchServices(opts?: GetServicesOpts): Promise<Service[]>;
   // (undocumented)
-  fetchUptimeMonitors(): Promise<UptimeMonitor[]>;
+  fetchStatusPages(opts?: GetStatusPagesOpts): Promise<StatusPage[]>;
   // (undocumented)
   fetchUsers(): Promise<User[]>;
+  // (undocumented)
+  getAlertDetailsURL(alert: Alert): string;
   // (undocumented)
   getAlertSourceDetailsURL(alertSource: AlertSource | null): string;
   // (undocumented)
   getEscalationPolicyDetailsURL(escalationPolicy: EscalationPolicy): string;
   // (undocumented)
-  getIncidentDetailsURL(incident: Incident): string;
-  // (undocumented)
   getScheduleDetailsURL(schedule: Schedule): string;
   // (undocumented)
-  getUptimeMonitorDetailsURL(uptimeMonitor: UptimeMonitor): string;
+  getServiceDetailsURL(service: Service): string;
+  // (undocumented)
+  getStatusPageDetailsURL(statusPage: StatusPage): string;
+  // (undocumented)
+  getStatusPageURL(statusPage: StatusPage): string;
   // (undocumented)
   getUserInitials(user: User | null): string;
   // (undocumented)
@@ -333,16 +433,9 @@ export interface ILertApi {
     end: string,
   ): Promise<Schedule>;
   // (undocumented)
-  pauseUptimeMonitor(uptimeMonitor: UptimeMonitor): Promise<UptimeMonitor>;
+  resolveAlert(alert: Alert, userName: string): Promise<Alert>;
   // (undocumented)
-  resolveIncident(incident: Incident, userName: string): Promise<Incident>;
-  // (undocumented)
-  resumeUptimeMonitor(uptimeMonitor: UptimeMonitor): Promise<UptimeMonitor>;
-  // (undocumented)
-  triggerIncidentAction(
-    incident: Incident,
-    action: IncidentAction,
-  ): Promise<void>;
+  triggerAlertAction(alert: Alert, action: AlertAction): Promise<void>;
 }
 
 // @public (undocumented)
@@ -359,23 +452,30 @@ export class ILertClient implements ILertApi {
     proxyPath: string;
   });
   // (undocumented)
-  acceptIncident(incident: Incident, userName: string): Promise<Incident>;
+  acceptAlert(alert: Alert, userName: string): Promise<Alert>;
   // (undocumented)
   addImmediateMaintenance(
     alertSourceId: number,
     minutes: number,
   ): Promise<void>;
   // (undocumented)
-  assignIncident(
-    incident: Incident,
-    responder: IncidentResponder,
-  ): Promise<Incident>;
+  assignAlert(alert: Alert, responder: AlertResponder): Promise<Alert>;
   // (undocumented)
-  createIncident(eventRequest: EventRequest): Promise<boolean>;
+  createAlert(eventRequest: EventRequest): Promise<boolean>;
   // (undocumented)
   disableAlertSource(alertSource: AlertSource): Promise<AlertSource>;
   // (undocumented)
   enableAlertSource(alertSource: AlertSource): Promise<AlertSource>;
+  // (undocumented)
+  fetchAlert(id: number): Promise<Alert>;
+  // (undocumented)
+  fetchAlertActions(alert: Alert): Promise<AlertAction[]>;
+  // (undocumented)
+  fetchAlertResponders(alert: Alert): Promise<AlertResponder[]>;
+  // (undocumented)
+  fetchAlerts(opts?: GetAlertsOpts): Promise<Alert[]>;
+  // (undocumented)
+  fetchAlertsCount(opts?: GetAlertsCountOpts): Promise<number>;
   // (undocumented)
   fetchAlertSource(idOrIntegrationKey: number | string): Promise<AlertSource>;
   // (undocumented)
@@ -383,21 +483,11 @@ export class ILertClient implements ILertApi {
   // (undocumented)
   fetchAlertSources(): Promise<AlertSource[]>;
   // (undocumented)
-  fetchIncident(id: number): Promise<Incident>;
-  // (undocumented)
-  fetchIncidentActions(incident: Incident): Promise<IncidentAction[]>;
-  // (undocumented)
-  fetchIncidentResponders(incident: Incident): Promise<IncidentResponder[]>;
-  // (undocumented)
-  fetchIncidents(opts?: GetIncidentsOpts): Promise<Incident[]>;
-  // (undocumented)
-  fetchIncidentsCount(opts?: GetIncidentsCountOpts): Promise<number>;
-  // (undocumented)
   fetchOnCallSchedules(): Promise<Schedule[]>;
   // (undocumented)
-  fetchUptimeMonitor(id: number): Promise<UptimeMonitor>;
+  fetchServices(opts?: GetServicesOpts): Promise<Service[]>;
   // (undocumented)
-  fetchUptimeMonitors(): Promise<UptimeMonitor[]>;
+  fetchStatusPages(opts?: GetStatusPagesOpts): Promise<StatusPage[]>;
   // (undocumented)
   fetchUsers(): Promise<User[]>;
   // (undocumented)
@@ -406,15 +496,19 @@ export class ILertClient implements ILertApi {
     discoveryApi: DiscoveryApi,
   ): ILertClient;
   // (undocumented)
+  getAlertDetailsURL(alert: Alert): string;
+  // (undocumented)
   getAlertSourceDetailsURL(alertSource: AlertSource | null): string;
   // (undocumented)
   getEscalationPolicyDetailsURL(escalationPolicy: EscalationPolicy): string;
   // (undocumented)
-  getIncidentDetailsURL(incident: Incident): string;
-  // (undocumented)
   getScheduleDetailsURL(schedule: Schedule): string;
   // (undocumented)
-  getUptimeMonitorDetailsURL(uptimeMonitor: UptimeMonitor): string;
+  getServiceDetailsURL(service: Service): string;
+  // (undocumented)
+  getStatusPageDetailsURL(statusPage: StatusPage): string;
+  // (undocumented)
+  getStatusPageURL(statusPage: StatusPage): string;
   // (undocumented)
   getUserInitials(user: User | null): string;
   // (undocumented)
@@ -427,16 +521,9 @@ export class ILertClient implements ILertApi {
     end: string,
   ): Promise<Schedule>;
   // (undocumented)
-  pauseUptimeMonitor(uptimeMonitor: UptimeMonitor): Promise<UptimeMonitor>;
+  resolveAlert(alert: Alert, userName: string): Promise<Alert>;
   // (undocumented)
-  resolveIncident(incident: Incident, userName: string): Promise<Incident>;
-  // (undocumented)
-  resumeUptimeMonitor(uptimeMonitor: UptimeMonitor): Promise<UptimeMonitor>;
-  // (undocumented)
-  triggerIncidentAction(
-    incident: Incident,
-    action: IncidentAction,
-  ): Promise<void>;
+  triggerAlertAction(alert: Alert, action: AlertAction): Promise<void>;
 }
 
 // @public (undocumented)
@@ -471,88 +558,6 @@ interface Image_2 {
 export { Image_2 as Image };
 
 // @public (undocumented)
-export interface Incident {
-  // (undocumented)
-  alertSource: AlertSource | null;
-  // (undocumented)
-  assignedTo: User | null;
-  // (undocumented)
-  commentPublishToSubscribers: boolean;
-  // (undocumented)
-  commentText: string;
-  // (undocumented)
-  details: string;
-  // (undocumented)
-  id: number;
-  // (undocumented)
-  images: Image_2[];
-  // (undocumented)
-  incidentKey: string;
-  // (undocumented)
-  links: Link[];
-  // (undocumented)
-  logEntries: LogEntry[];
-  // (undocumented)
-  priority: IncidentPriority;
-  // (undocumented)
-  reportTime: string;
-  // (undocumented)
-  resolvedOn: string;
-  // (undocumented)
-  status: IncidentStatus;
-  // (undocumented)
-  subscribers: Subscriber[];
-  // (undocumented)
-  summary: string;
-}
-
-// @public (undocumented)
-export interface IncidentAction {
-  // (undocumented)
-  extensionId?: string;
-  // (undocumented)
-  history?: IncidentActionHistory[];
-  // (undocumented)
-  name: string;
-  // (undocumented)
-  type: string;
-  // (undocumented)
-  webhookId: string;
-}
-
-// @public (undocumented)
-export interface IncidentActionHistory {
-  // (undocumented)
-  actor: User;
-  // (undocumented)
-  id: string;
-  // (undocumented)
-  incidentId: number;
-  // (undocumented)
-  success: boolean;
-  // (undocumented)
-  webhookId: string;
-}
-
-// @public (undocumented)
-export type IncidentPriority = 'HIGH' | 'LOW';
-
-// @public (undocumented)
-export interface IncidentResponder {
-  // (undocumented)
-  disabled: boolean;
-  // (undocumented)
-  group: 'SUGGESTED' | 'USER' | 'ESCALATION_POLICY' | 'ON_CALL_SCHEDULE';
-  // (undocumented)
-  id: number;
-  // (undocumented)
-  name: string;
-}
-
-// @public (undocumented)
-export type IncidentStatus = typeof PENDING | typeof ACCEPTED | typeof RESOLVED;
-
-// @public (undocumented)
 const isPluginApplicableToEntity: (entity: Entity) => boolean;
 export { isPluginApplicableToEntity as isILertAvailable };
 export { isPluginApplicableToEntity };
@@ -571,6 +576,8 @@ export interface Link {
 // @public (undocumented)
 export interface LogEntry {
   // (undocumented)
+  alertId?: number;
+  // (undocumented)
   filterTypes?: string[];
   // (undocumented)
   iconClass?: string;
@@ -579,14 +586,15 @@ export interface LogEntry {
   // (undocumented)
   id: number;
   // (undocumented)
-  incidentId?: number;
-  // (undocumented)
   logEntryType: string;
   // (undocumented)
   text: string;
   // (undocumented)
   timestamp: string;
 }
+
+// @public (undocumented)
+export const MAJOR_OUTAGE = 'MAJOR_OUTAGE';
 
 // @public (undocumented)
 export interface OnCall {
@@ -605,6 +613,12 @@ export interface OnCall {
 }
 
 // @public (undocumented)
+export const OPERATIONAL = 'OPERATIONAL';
+
+// @public (undocumented)
+export const PARTIAL_OUTAGE = 'PARTIAL_OUTAGE';
+
+// @public (undocumented)
 export const PENDING = 'PENDING';
 
 // @public (undocumented)
@@ -616,7 +630,23 @@ export interface Phone {
 }
 
 // @public (undocumented)
+export const PRIVATE = 'PRIVATE';
+
+// @public (undocumented)
+export const PUBLIC = 'PUBLIC';
+
+// @public (undocumented)
 export const RESOLVED = 'RESOLVED';
+
+// @public (undocumented)
+export interface Responder {
+  // (undocumented)
+  acceptedAt?: string;
+  // (undocumented)
+  status: string;
+  // (undocumented)
+  user: User;
+}
 
 // @public (undocumented)
 export const Router: () => JSX.Element;
@@ -644,6 +674,26 @@ export interface Schedule {
 }
 
 // @public (undocumented)
+export interface Service {
+  // (undocumented)
+  id: number;
+  // (undocumented)
+  name: string;
+  // (undocumented)
+  status: ServiceStatus;
+  // (undocumented)
+  uptime: Uptime;
+}
+
+// @public (undocumented)
+export type ServiceStatus =
+  | typeof OPERATIONAL
+  | typeof UNDER_MAINTENANCE
+  | typeof DEGRADED
+  | typeof PARTIAL_OUTAGE
+  | typeof MAJOR_OUTAGE;
+
+// @public (undocumented)
 export interface Shift {
   // (undocumented)
   end: string;
@@ -652,6 +702,25 @@ export interface Shift {
   // (undocumented)
   user: User;
 }
+
+// @public (undocumented)
+export interface StatusPage {
+  // (undocumented)
+  domain: string;
+  // (undocumented)
+  id: number;
+  // (undocumented)
+  name: string;
+  // (undocumented)
+  status: ServiceStatus;
+  // (undocumented)
+  subdomain: string;
+  // (undocumented)
+  visibility: StatusPageVisibility;
+}
+
+// @public (undocumented)
+export type StatusPageVisibility = typeof PRIVATE | typeof PUBLIC;
 
 // @public (undocumented)
 export interface Subscriber {
@@ -689,47 +758,18 @@ export interface TeamShort {
 }
 
 // @public (undocumented)
-export interface UptimeMonitor {
+export const UNDER_MAINTENANCE = 'UNDER_MAINTENANCE';
+
+// @public (undocumented)
+export interface Uptime {
   // (undocumented)
-  checkParams: UptimeMonitorCheckParams;
-  // (undocumented)
-  checkType: 'http' | 'tcp' | 'udp' | 'ping';
-  // (undocumented)
-  createIncidentAfterFailedChecks: number;
-  // (undocumented)
-  embedUrl: string;
-  // (undocumented)
-  escalationPolicy: EscalationPolicy;
-  // (undocumented)
-  id: number;
-  // (undocumented)
-  intervalSec: number;
-  // (undocumented)
-  lastStatusChange: string;
-  // (undocumented)
-  name: string;
-  // (undocumented)
-  paused: boolean;
-  // (undocumented)
-  region: 'EU' | 'US';
-  // (undocumented)
-  shareUrl: string;
-  // (undocumented)
-  status: string;
-  // (undocumented)
-  teams: TeamShort[];
-  // (undocumented)
-  timeoutMs: number;
+  uptimePercentage: UptimePercentage;
 }
 
 // @public (undocumented)
-export interface UptimeMonitorCheckParams {
+export interface UptimePercentage {
   // (undocumented)
-  host?: string;
-  // (undocumented)
-  port?: number;
-  // (undocumented)
-  url?: string;
+  p90: number;
 }
 
 // @public (undocumented)

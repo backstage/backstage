@@ -40,6 +40,21 @@ const MockUnlabeledDataflowAlertSingleProject = createMockUnlabeledDataflowData(
 );
 
 describe('<UnlabeledDataflowAlertCard />', () => {
+  const { ResizeObserver } = window;
+  beforeEach(() => {
+    // @ts-expect-error
+    delete window.ResizeObserver;
+    window.ResizeObserver = jest.fn().mockImplementation(() => ({
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+      disconnect: jest.fn(),
+    }));
+  });
+
+  afterEach(() => {
+    window.ResizeObserver = ResizeObserver;
+    jest.restoreAllMocks();
+  });
   it('renders the correct subheader for multiple projects', async () => {
     const subheader = new RegExp(
       `Showing costs from ${MockUnlabeledDataflowAlertMultipleProjects.projects.length} ` +

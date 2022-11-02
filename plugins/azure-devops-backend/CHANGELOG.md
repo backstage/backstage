@@ -1,5 +1,21 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.3.17-next.1
+
+### Patch Changes
+
+- 62f284e394: - Adjusted the asset parser to accept case sensitive
+  - Fixed fetching data that was using the deprecated function
+
+## 0.3.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/plugin-azure-devops-common@0.3.0
+
 ## 0.3.16
 
 ### Patch Changes

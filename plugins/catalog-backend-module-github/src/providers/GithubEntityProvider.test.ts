@@ -174,6 +174,11 @@ describe('GithubEntityProvider', () => {
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: {
+              __typename: 'Blob',
+              id: 'abc123',
+              text: 'some yaml',
+            },
           },
         ],
       }),
@@ -271,6 +276,11 @@ describe('GithubEntityProvider', () => {
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: {
+              __typename: 'Blob',
+              id: 'abc123',
+              text: 'some yaml',
+            },
           },
         ],
       }),
@@ -345,6 +355,11 @@ describe('GithubEntityProvider', () => {
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: {
+              __typename: 'Blob',
+              id: 'abc123',
+              text: 'some yaml',
+            },
           },
         ],
       }),
@@ -368,6 +383,110 @@ describe('GithubEntityProvider', () => {
               'backstage.io/managed-by-origin-location': `url:${url}`,
             },
             name: 'generated-5e4b9498097f15434e88c477cfba6c079aa8ca7f',
+          },
+          spec: {
+            presence: 'optional',
+            target: `${url}`,
+            type: 'url',
+          },
+        },
+        locationKey: 'github-provider:myProvider',
+      },
+    ];
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: expectedEntities,
+    });
+  });
+
+  it('should filter out invalid locations when validateLocationsExist is set to true', async () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            myProvider: {
+              organization: 'test-org',
+              catalogPath: 'catalog-custom.yaml',
+              filters: {
+                branch: 'main',
+              },
+              validateLocationsExist: true,
+            },
+          },
+        },
+      },
+    });
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+
+    const provider = GithubEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    const mockGetOrganizationRepositories = jest.spyOn(
+      helpers,
+      'getOrganizationRepositories',
+    );
+
+    mockGetOrganizationRepositories.mockReturnValue(
+      Promise.resolve({
+        repositories: [
+          {
+            name: 'test-repo',
+            url: 'https://github.com/test-org/test-repo',
+            repositoryTopics: {
+              nodes: [],
+            },
+            isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
+            catalogInfoFile: null,
+          },
+          {
+            name: 'another-repo',
+            url: 'https://github.com/test-org/another-repo',
+            repositoryTopics: {
+              nodes: [],
+            },
+            isArchived: false,
+            defaultBranchRef: {
+              name: 'main',
+            },
+            catalogInfoFile: {
+              __typename: 'Blob',
+              id: 'abc123',
+              text: 'some yaml',
+            },
+          },
+        ],
+      }),
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual('github-provider:myProvider:refresh');
+    await (taskDef.fn as () => Promise<void>)();
+
+    const url = `https://github.com/test-org/another-repo/blob/main/catalog-custom.yaml`;
+    const expectedEntities = [
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location': `url:${url}`,
+              'backstage.io/managed-by-origin-location': `url:${url}`,
+            },
+            name: 'generated-934f500db2ba2e8ea3524567926f45a73bb0b532',
           },
           spec: {
             presence: 'optional',
@@ -440,6 +559,11 @@ describe('GithubEntityProvider', () => {
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: {
+              __typename: 'Blob',
+              id: 'abc123',
+              text: 'some yaml',
+            },
           },
           {
             name: 'test-repo-2',
@@ -458,6 +582,11 @@ describe('GithubEntityProvider', () => {
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: {
+              __typename: 'Blob',
+              id: 'abc123',
+              text: 'some yaml',
+            },
           },
           {
             name: 'test-repo-3',
@@ -472,6 +601,11 @@ describe('GithubEntityProvider', () => {
             isArchived: false,
             defaultBranchRef: {
               name: 'main',
+            },
+            catalogInfoFile: {
+              __typename: 'Blob',
+              id: 'abc123',
+              text: 'some yaml',
             },
           },
         ],

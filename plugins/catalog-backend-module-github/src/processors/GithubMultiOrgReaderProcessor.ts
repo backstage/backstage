@@ -19,7 +19,7 @@ import {
   DefaultGithubCredentialsProvider,
   GithubAppCredentialsMux,
   GithubCredentialsProvider,
-  GitHubIntegrationConfig,
+  GithubIntegrationConfig,
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
@@ -182,7 +182,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
 
   // Note: Does not support usage of PATs
   private async getAllOrgs(
-    gitHubConfig: GitHubIntegrationConfig,
+    gitHubConfig: GithubIntegrationConfig,
   ): Promise<GithubMultiOrgConfig> {
     const githubAppMux = new GithubAppCredentialsMux(gitHubConfig);
     const installs = await githubAppMux.getAllInstallations();

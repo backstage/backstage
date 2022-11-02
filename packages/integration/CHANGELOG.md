@@ -1,5 +1,36 @@
 # @backstage/integration
 
+## 1.4.0-next.0
+
+### Minor Changes
+
+- d05e1841ce: This patch brings Gitea as a valid integration: target, via the ScmIntegration interface. It adds gitea to the relevant static properties (get integration by name, get integration by type) for plugins to be able to reference the same Gitea server.
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+
+  Deprecates:
+
+  - `getGitHubFileFetchUrl` replaced by `getGithubFileFetchUrl`
+  - `GitHubIntegrationConfig` replaced by `GithubIntegrationConfig`
+  - `GitHubIntegration` replaced by `GithubIntegration`
+  - `readGitHubIntegrationConfig` replaced by `readGithubIntegrationConfig`
+  - `readGitHubIntegrationConfigs` replaced by `readGithubIntegrationConfigs`
+  - `replaceGitHubUrlType` replaced by `replaceGithubUrlType`
+
+### Patch Changes
+
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- a6d779d58a: Remove explicit default visibility at `config.d.ts` files.
+
+  ```ts
+  /**
+   * @visibility backend
+   */
+  ```
+
+- Updated dependencies
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+
 ## 1.3.2
 
 ### Patch Changes

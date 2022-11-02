@@ -1,5 +1,51 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.2.0-next.0
+
+### Minor Changes
+
+- 67fe5bc9a9: BREAKING: Support authenticated backends by including a server token for catalog requests. The constructor of `GithubLocationAnalyzer` now requires an instance of `TokenManager` to be supplied:
+
+  ```diff
+  ...
+    builder.addLocationAnalyzers(
+      new GitHubLocationAnalyzer({
+        discovery: env.discovery,
+        config: env.config,
+  +     tokenManager: env.tokenManager,
+      }),
+    );
+  ...
+  ```
+
+- f64d66a45c: Added the ability for the GitHub discovery provider to validate that catalog files exist before emitting them.
+
+  Users can now set the `validateLocationsExist` property to `true` in their GitHub discovery configuration to opt in to this feature.
+  This feature only works with `catalogPath`s that do not contain wildcards.
+
+  When `validateLocationsExist` is set to `true`, the GitHub discovery provider will retrieve the object from the
+  repository at the provided `catalogPath`.
+  If this file exists and is non-empty, then it will be emitted as a location for further processing.
+  If this file does not exist or is empty, then it will not be emitted.
+  Not emitting locations that do not exist allows for far fewer calls to the GitHub API to validate locations that do not exist.
+
+### Patch Changes
+
+- 67fe5bc9a9: Properly derive Github credentials when making requests in `GithubLocationAnalyzer` to support Github App authentication
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/plugin-catalog-backend@1.5.1-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/backend-tasks@0.3.7-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/backend-plugin-api@0.1.4-next.0
+  - @backstage/plugin-catalog-node@1.2.1-next.0
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+
 ## 0.1.8
 
 ### Patch Changes

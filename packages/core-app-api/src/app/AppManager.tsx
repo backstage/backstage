@@ -99,6 +99,21 @@ const InternalAppContext = createContext<{
  * The returned path does not have a trailing slash.
  */
 function getBasePath(configApi: Config) {
+  if (!isReactRouterBeta()) {
+    // When using rr v6 stable the base path is handled through the
+    // basename prop on the router component instead.
+    return '';
+  }
+
+  return readBasePath(configApi);
+}
+
+/**
+ * Read the configured base path.
+ *
+ * The returned path does not have a trailing slash.
+ */
+function readBasePath(configApi: ConfigApi) {
   let { pathname } = new URL(
     configApi.getOptionalString('app.baseUrl') ?? '/',
     'http://dummy.dev', // baseUrl can be specified as just a path
@@ -361,7 +376,7 @@ export class AppManager implements BackstageApp {
 
     const AppRouter = ({ children }: PropsWithChildren<{}>) => {
       const configApi = useApi(configApiRef);
-      const basePath = getBasePath(configApi);
+      const basePath = readBasePath(configApi);
       const mountPath = `${basePath}/*`;
       const { routeObjects } = useContext(InternalAppContext);
 
@@ -390,23 +405,43 @@ export class AppManager implements BackstageApp {
           { signOutTargetUrl: basePath || '/' },
         );
 
+        if (isReactRouterBeta()) {
+          return (
+            <RouterComponent>
+              <RouteTracker routeObjects={routeObjects} />
+              <Routes>
+                <Route path={mountPath} element={<>{children}</>} />
+              </Routes>
+            </RouterComponent>
+          );
+        }
+
+        return (
+          <RouterComponent basename={basePath}>
+            <RouteTracker routeObjects={routeObjects} />
+            {children}
+          </RouterComponent>
+        );
+      }
+
+      if (isReactRouterBeta()) {
         return (
           <RouterComponent>
             <RouteTracker routeObjects={routeObjects} />
-            <Routes>
-              <Route path={mountPath} element={<>{children}</>} />
-            </Routes>
+            <SignInPageWrapper component={SignInPageComponent}>
+              <Routes>
+                <Route path={mountPath} element={<>{children}</>} />
+              </Routes>
+            </SignInPageWrapper>
           </RouterComponent>
         );
       }
 
       return (
-        <RouterComponent>
+        <RouterComponent basename={basePath}>
           <RouteTracker routeObjects={routeObjects} />
           <SignInPageWrapper component={SignInPageComponent}>
-            <Routes>
-              <Route path={mountPath} element={<>{children}</>} />
-            </Routes>
+            <>{children}</>
           </SignInPageWrapper>
         </RouterComponent>
       );
