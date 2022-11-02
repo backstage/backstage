@@ -49,7 +49,7 @@ const getQueryParams = (
     humanizeEntityRef(parseEntityRef(owner), { defaultKind: 'group' }),
   );
   const filters = {
-    kind: kind.toLowerCase(),
+    kind: kind.toLocaleLowerCase('en-US'),
     type,
     owners,
     user: 'all',

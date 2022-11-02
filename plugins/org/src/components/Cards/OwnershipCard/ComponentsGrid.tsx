@@ -82,7 +82,7 @@ const EntityCountTile = ({
         <Typography className={classes.bold} variant="h6">
           {pluralize(name, counter)}
         </Typography>
-        {kind != type && <Typography variant="subtitle1">{kind}</Typography>}
+        {kind !== type && <Typography variant="subtitle1">{kind}</Typography>}
       </Box>
     </Link>
   );
