@@ -56,11 +56,13 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
 const EntityCountTile = ({
   counter,
   type,
+  kind,
   name,
   url,
 }: {
   counter: number;
   type: string;
+  kind: string;
   name: string;
   url: string;
 }) => {
@@ -80,6 +82,7 @@ const EntityCountTile = ({
         <Typography className={classes.bold} variant="h6">
           {pluralize(name, counter)}
         </Typography>
+        {kind != type && <Typography variant="subtitle1">{kind}</Typography>}
       </Box>
     </Link>
   );
@@ -116,6 +119,7 @@ export const ComponentsGrid = ({
         <Grid item xs={6} md={6} lg={4} key={c.name}>
           <EntityCountTile
             counter={c.counter}
+            kind={c.kind}
             type={c.type}
             name={c.name}
             url={`${catalogLink()}/?${c.queryParams}`}

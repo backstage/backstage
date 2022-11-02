@@ -49,7 +49,7 @@ const getQueryParams = (
     humanizeEntityRef(parseEntityRef(owner), { defaultKind: 'group' }),
   );
   const filters = {
-    kind,
+    kind: kind.toLowerCase(),
     type,
     owners,
     user: 'all',
@@ -135,6 +135,7 @@ export function useGetEntities(
     | {
         counter: number;
         type: string;
+        kind: string;
         name: string;
         queryParams: string;
       }[]
@@ -197,11 +198,13 @@ export function useGetEntities(
     return topN.map(topOwnedEntity => ({
       counter: topOwnedEntity.count,
       type: topOwnedEntity.type,
+      kind: topOwnedEntity.kind,
       name: topOwnedEntity.type.toLocaleUpperCase('en-US'),
       queryParams: getQueryParams(owners, topOwnedEntity),
     })) as Array<{
       counter: number;
       type: string;
+      kind: string;
       name: string;
       queryParams: string;
     }>;
