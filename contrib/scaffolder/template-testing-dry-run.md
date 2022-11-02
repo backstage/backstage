@@ -26,17 +26,15 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { gzipSync } from 'node:zlib';
 import { ensureDir } from 'fs-extra';
 import { program } from 'commander';
-import { base64url, exportJWK, generateSecret, jwtVerify, SignJWT } from 'jose';
 import fetch from 'node-fetch';
+import ora from 'ora';
 import readdir from 'recursive-readdir';
 import { parse } from 'yaml';
 import { version } from '../../../package.json';
 import type { ScaffolderDryRunResponse } from '@backstage/plugin-scaffolder';
 
-const TOKEN_ALG = 'HS256';
-const TOKEN_SUB = 'backstage-server';
-
 const loadDirectoryContents = async (template_path: string) => {
+  const spinner = ora('Loading template').start();
   const files = await await readdir(template_path, ['.git']);
   const contents = await Promise.all(
     files.map(async p => {
@@ -46,6 +44,7 @@ const loadDirectoryContents = async (template_path: string) => {
       };
     }),
   );
+  spinner.succeed();
   return contents;
 };
 
@@ -64,15 +63,6 @@ const writeResultContents = async (
       }),
     ),
   );
-};
-
-const getToken = async (backendSecret: string) => {
-  const signingKey = base64url.decode(backendSecret);
-  return await new SignJWT({})
-    .setProtectedHeader({ alg: TOKEN_ALG })
-    .setSubject(TOKEN_SUB)
-    .setExpirationTime('10min')
-    .sign(signingKey);
 };
 
 const api = async (
@@ -96,10 +86,7 @@ const handle = async (
   template_path: string,
   data: string,
   target: string,
-  {
-    token,
-    backendSecret,
-  }: { token: string | false; backendSecret: string | false },
+  { token }: { token: string | false },
 ) => {
   const directoryContents = await loadDirectoryContents(template_path);
   const values = parse(await readFile(data, 'utf-8'));
@@ -107,10 +94,6 @@ const handle = async (
   const template = parse(
     await readFile(`${template_path}/template.yaml`, 'utf-8'),
   );
-  if (backendSecret) {
-    // eslint-disable-next-line no-param-reassign
-    token = await getToken(backendSecret);
-  }
   const response = await api(
     {
       directoryContents,
@@ -148,7 +131,6 @@ const main = async (argv: string[]) => {
     .version(version)
     .description('Creates a dry-run output of a given template')
     .option('-t, --token <value>', 'JWT to use for auth')
-    .option('-b, --backend-secret <value>', 'Base64 encoded backend secret')
     .argument('url', 'URL of your Backstage instance')
     .argument('template-path', 'Source directory of template')
     .argument('data-path', 'YAML file with input to render')

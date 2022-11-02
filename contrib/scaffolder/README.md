@@ -12,7 +12,4 @@ The [command line script](template-testing-dry-run.md) might offer a way for you
 scaffolder-dry http://localhost:7007/ template-directory values.yml output-directory
 ```
 
-If you're using backend-to-backend authentication, either
-
-- pass a front-end auth token from a current browser session via `--token $FRONTEND_TOKEN`,
-- have the tool create a b2b token for a given base64 encoded backend secret via `--backend-secret $BACKEND_SECRET`.
+If you're using backend permissions, pass a front-end auth token from a current browser session via `--token $FRONTEND_TOKEN`.
