@@ -259,6 +259,8 @@ export function DependencyGraph<NodeData, EdgeData>(
           );
         }
 
+        container.on('wheel', e => e.preventDefault());
+
         if (zoom === 'enabled') {
           enableZoom();
         } else if (zoom === 'enable-on-click') {
