@@ -46,6 +46,7 @@ import {
   InfoCardVariants,
   Link,
 } from '@backstage/core-components';
+import { LinksGroup } from '../../Meta';
 
 const CardTitle = (props: { title?: string }) =>
   props.title ? (
@@ -66,7 +67,7 @@ export const UserProfileCard = (props: { variant?: InfoCardVariants }) => {
     user.metadata.annotations?.[ANNOTATION_EDIT_URL];
 
   const {
-    metadata: { name: metaName, description },
+    metadata: { name: metaName, description, links },
     spec: { profile },
   } = user;
   const displayName = profile?.displayName ?? metaName;
@@ -128,6 +129,8 @@ export const UserProfileCard = (props: { variant?: InfoCardVariants }) => {
                 />
               </ListItemText>
             </ListItem>
+
+            <LinksGroup links={links} />
           </List>
         </Grid>
       </Grid>
