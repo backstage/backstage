@@ -1,5 +1,16 @@
 # example-backend
 
+## 0.2.77-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.8.0-next.1
+  - @backstage/plugin-playlist-backend@0.2.1-next.1
+  - @backstage/plugin-azure-devops-backend@0.3.17-next.1
+  - example-app@0.2.77-next.1
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.6-next.1
+
 ## 0.2.77-next.0
 
 ### Patch Changes

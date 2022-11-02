@@ -8,7 +8,7 @@
 [![Discord](https://img.shields.io/discord/687207715902193673)](https://discord.gg/EBHEGzX)
 ![Code style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)
 [![Codecov](https://img.shields.io/codecov/c/github/backstage/backstage)](https://codecov.io/gh/backstage/backstage)
-[![](https://img.shields.io/npm/v/@backstage/core?label=Version)](https://github.com/backstage/backstage/releases)
+[![](https://img.shields.io/github/v/release/backstage/backstage)](https://github.com/backstage/backstage/releases)
 
 ## What is Backstage?
 
