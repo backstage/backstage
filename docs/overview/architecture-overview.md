@@ -249,7 +249,7 @@ however likely to change in the future.
 The common packages are the packages effectively depended on by all other pages.
 This is a much smaller set of packages but they are also very pervasive. Because
 the common packages are isomorphic and must execute both in the frontend and
-backend, they are never allowed to depend on any of the frontend of backend
+backend, they are never allowed to depend on any of the frontend or backend
 packages.
 
 The Backstage CLI is in a category of its own and is depended on by virtually
