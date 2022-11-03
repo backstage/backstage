@@ -4,7 +4,7 @@ The Backstage backend APIs are by default available without authentication. To a
 
 API requests from frontend plugins include an authorization header with a Backstage identity token acquired when the user logs in. By adding a middleware that verifies said token to be valid and signed by Backstage, non-authenticated requests can be blocked with a 401 Unauthorized response.
 
-**NOTE**: Enabling this means that Backstage will stop working for guests, as no token is issued for them.
+**NOTE**: Enabling this means that Backstage will stop working for guests, as no token is issued for them. If you have not done so already, you will also need to implement [service-to-service auth](https://backstage.io/docs/auth/service-to-service-auth).
 
 As techdocs HTML pages load assets without an Authorization header the code below also sets a token cookie when the user logs in (and when the token is about to expire).
 
@@ -52,7 +52,7 @@ export const createAuthMiddleware = async (
     try {
       const token =
         getBearerTokenFromAuthorizationHeader(req.headers.authorization) ||
-        (req.cookies.token as string | undefined);
+        (req.cookies?.token as string | undefined);
       if (!token) {
         res.status(401).send('Unauthorized');
         return;
@@ -171,7 +171,12 @@ export async function setTokenCookie(url: string, identityApi: IdentityApi) {
 ```
 
 ```typescript
-// packages/app/src/App.tsx from a create-app deployment
+// required types and packages for example below
+
+import type { IdentityApi } from '@backstage/core-plugin-api';
+import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
+
+// additional packages/app/src/App.tsx from a create-app deployment
 
 import { setTokenCookie } from './cookieAuth';
 
