@@ -3108,7 +3108,7 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -3400,7 +3400,7 @@ __metadata:
     "@types/jest": ^29.0.0
     "@types/minimatch": ^5.0.0
     "@types/mock-fs": ^4.13.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/npm-packlist": ^3.0.0
     "@types/recursive-readdir": ^2.2.0
     "@types/rollup-plugin-peer-deps-external": ^2.2.0
@@ -3503,7 +3503,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@types/jscodeshift": ^0.11.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     chalk: ^4.0.0
     commander: ^9.1.0
     jscodeshift: ^0.13.0
@@ -3526,7 +3526,7 @@ __metadata:
     "@types/json-schema": ^7.0.6
     "@types/json-schema-merge-allof": ^0.6.0
     "@types/mock-fs": ^4.10.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/yup": ^0.29.13
     ajv: ^8.10.0
     chokidar: ^3.5.2
@@ -3579,7 +3579,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/prop-types": ^15.7.3
     "@types/zen-observable": ^0.8.0
     cross-fetch: ^3.1.5
@@ -3678,7 +3678,7 @@ __metadata:
     "@types/d3-zoom": ^3.0.1
     "@types/dagre": ^0.7.44
     "@types/google-protobuf": ^3.7.2
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/react-helmet": ^6.1.0
     "@types/react-sparklines": ^1.7.0
     "@types/react-syntax-highlighter": ^15.0.0
@@ -3754,7 +3754,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/prop-types": ^15.7.3
     "@types/zen-observable": ^0.8.0
     cross-fetch: ^3.1.5
@@ -3778,7 +3778,7 @@ __metadata:
     "@types/command-exists": ^1.2.0
     "@types/fs-extra": ^9.0.1
     "@types/inquirer": ^8.1.3
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/recursive-readdir": ^2.2.0
     chalk: ^4.0.0
     commander: ^9.1.0
@@ -3885,7 +3885,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.47.0
     react-use: ^17.2.4
@@ -3990,7 +3990,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/git-url-parse": ^9.0.0
-    "@types/node": ^16.0.0
+    "@types/node": "*"
     cross-fetch: ^3.1.5
     git-url-parse: ^13.0.0
     msw: ^0.47.0
@@ -4043,7 +4043,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/object-hash": ^2.2.1
     cross-fetch: ^3.1.5
     msw: ^0.47.0
@@ -4074,7 +4074,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.47.0
     react-use: ^17.2.4
@@ -4102,7 +4102,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.47.0
     react-ga: ^3.3.0
@@ -4128,7 +4128,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.47.0
     qs: ^6.10.1
@@ -4172,7 +4172,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/swagger-ui-react": ^4.1.1
     cross-fetch: ^3.1.5
     graphiql: ^1.8.8
@@ -4208,7 +4208,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": "*"
     cross-fetch: ^3.1.5
     msw: ^0.47.0
     react-use: ^17.2.4
@@ -4385,7 +4385,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     humanize-duration: ^3.27.0
     luxon: ^3.0.0
@@ -4447,7 +4447,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^0.47.0
@@ -4499,7 +4499,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.47.0
     react-use: ^17.2.4
@@ -4589,7 +4589,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/recharts": ^1.8.15
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
@@ -5246,7 +5246,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/humanize-duration": ^3.25.1
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     circleci-api: ^4.0.0
     cross-fetch: ^3.1.5
     humanize-duration: ^3.27.0
@@ -5280,7 +5280,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^0.47.0
@@ -5313,7 +5313,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/humanize-duration": ^3.27.1
     "@types/luxon": ^3.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     humanize-duration: ^3.27.1
     luxon: ^3.0.0
@@ -5375,7 +5375,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/highlightjs": ^10.1.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/recharts": ^1.8.15
     cross-fetch: ^3.1.5
     highlight.js: ^10.6.0
@@ -5409,7 +5409,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": "*"
     cross-fetch: ^3.1.5
     msw: ^0.47.0
     rc-progress: 3.4.0
@@ -5440,7 +5440,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     jsonschema: ^1.2.6
     msw: ^0.47.0
@@ -5480,7 +5480,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/pluralize": ^0.0.29
     "@types/recharts": ^1.8.14
     "@types/regression": ^2.0.0
@@ -5522,7 +5522,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": "*"
     express: ^4.18.1
     msw: ^0.47.0
     react-use: ^17.2.4
@@ -5543,7 +5543,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.47.0
   languageName: unknown
@@ -5570,7 +5570,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
     msw: ^0.47.0
@@ -5601,7 +5601,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^0.47.0
@@ -5631,7 +5631,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^0.47.0
@@ -5663,7 +5663,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/dompurify": ^2.3.3
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/sanitize-html": ^2.6.2
     classnames: ^2.3.1
     cross-fetch: ^3.1.5
@@ -5696,7 +5696,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.47.0
   peerDependencies:
@@ -5725,7 +5725,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/recharts": ^1.8.15
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
@@ -5761,7 +5761,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^0.47.0
@@ -5796,7 +5796,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^0.47.0
@@ -5828,7 +5828,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": "*"
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
@@ -5860,7 +5860,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
@@ -5890,7 +5890,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.47.0
     react-use: ^17.2.4
@@ -5922,7 +5922,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/lodash": ^4.14.173
     "@types/luxon": ^3.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -5952,7 +5952,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/codemirror": ^5.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     graphiql: ^1.5.12
     graphql: ^16.0.0
@@ -6036,7 +6036,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     msw: ^0.47.0
@@ -6070,7 +6070,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     humanize-duration: ^3.26.0
     luxon: ^3.0.0
@@ -6139,7 +6139,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/testing-library__jest-dom": ^5.9.1
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
@@ -6195,7 +6195,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     jest-when: ^3.1.0
     msw: ^0.47.0
@@ -6276,7 +6276,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cronstrue: ^2.2.0
     cross-fetch: ^3.1.5
@@ -6312,7 +6312,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^0.47.0
@@ -6363,7 +6363,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.47.0
     react-use: ^17.2.4
@@ -6392,7 +6392,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.47.0
     p-limit: ^3.1.0
@@ -6426,7 +6426,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
@@ -6479,7 +6479,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^0.47.0
@@ -6672,7 +6672,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": "*"
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     msw: ^0.47.0
@@ -6759,7 +6759,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
@@ -6810,7 +6810,7 @@ __metadata:
     "@types/command-exists": ^1.2.0
     "@types/fs-extra": ^9.0.1
     "@types/mock-fs": ^4.13.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     command-exists: ^1.2.9
     fs-extra: ^10.0.1
     jest-when: ^3.1.0
@@ -6950,7 +6950,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/humanize-duration": ^3.18.1
     "@types/json-schema": ^7.0.9
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@uiw/react-codemirror": ^4.9.3
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
@@ -7140,7 +7140,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.47.0
     qs: ^6.9.4
@@ -7174,7 +7174,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
@@ -7205,7 +7205,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/zen-observable": ^0.8.2
     cross-fetch: ^3.1.5
     msw: ^0.47.0
@@ -7260,7 +7260,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.47.0
     rc-progress: 3.4.0
@@ -7290,7 +7290,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
@@ -7358,7 +7358,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     msw: ^0.47.0
@@ -7470,7 +7470,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.47.0
     qs: ^6.9.4
@@ -7501,7 +7501,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/color": ^3.0.1
     "@types/d3-force": ^3.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     color: ^4.0.1
     cross-fetch: ^3.1.5
@@ -7536,7 +7536,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.47.0
     react-use: ^17.2.4
@@ -7604,7 +7604,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     git-url-parse: ^13.0.0
@@ -7711,7 +7711,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/dompurify": ^2.2.2
     "@types/event-source-polyfill": ^1.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     canvas: ^2.6.1
     cross-fetch: ^3.1.5
     dompurify: ^2.2.9
@@ -7774,7 +7774,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.47.0
     react-use: ^17.2.4
@@ -7825,7 +7825,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^0.47.0
@@ -7884,7 +7884,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": "*"
     cross-fetch: ^3.1.5
     msw: ^0.47.0
     react-use: ^17.2.4
@@ -7912,7 +7912,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -7953,7 +7953,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.47.0
     zen-observable: ^0.8.15
@@ -9697,7 +9697,7 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     cross-fetch: ^3.1.5
     msw: ^0.47.0
   languageName: unknown
@@ -9720,7 +9720,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     msw: ^0.47.0
     react-use: ^17.2.4
   peerDependencies:
@@ -13059,7 +13059,7 @@ __metadata:
     "@types/dockerode": ^3.3.0
     "@types/fs-extra": ^9.0.6
     "@types/http-proxy": ^1.17.4
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/serve-handler": ^6.1.0
     "@types/webpack-env": ^1.15.3
     commander: ^9.1.0
@@ -14331,10 +14331,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0":
-  version: 17.0.25
-  resolution: "@types/node@npm:17.0.25"
-  checksum: 6a820bd624e69ea772f52a6cdb326484eff5829443dc981939373929ade109f58c21698b9f0a831bd6ceea799e722a75dc49c5fa7a6bc32a81e1cbdfc6507b64
+"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0":
+  version: 18.11.9
+  resolution: "@types/node@npm:18.11.9"
+  checksum: cc0aae109e9b7adefc32eecb838d6fad931663bb06484b5e9cbbbf74865c721b03d16fd8d74ad90e31dbe093d956a7c2c306ba5429ba0c00f3f7505103d7a496
   languageName: node
   linkType: hard
 
@@ -14342,13 +14342,6 @@ __metadata:
   version: 12.20.24
   resolution: "@types/node@npm:12.20.24"
   checksum: e7a13460e2f5b0b5a32c0f3af7daf1a05201552a66d542d3cc3b1ea8b52d4730250f9eb1961d755e31cfe5d03c78340911a6242657a0a9a17d6f7e341fc9f366
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:>= 8":
-  version: 18.7.4
-  resolution: "@types/node@npm:18.7.4"
-  checksum: 051d2147e4d8129fceb63ee9384259b2f224dbc4e4b0c46d96a6b61cbaad4e3fe4060950e7f4fc3d5692b1e6ea47e68ad03b61155754bfa169593747cfe3f8f4
   languageName: node
   linkType: hard
 
@@ -14360,16 +14353,16 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:^12.7.1":
-  version: 12.20.48
-  resolution: "@types/node@npm:12.20.48"
-  checksum: 48bd705bda1af2332c50fb24819bba7b0eac791b07c24c098c39b10940170a53bd3c4755aedc3409c7114c539f1f86ea657aa6838d164fd135e3b89b9f9aa772
+  version: 12.20.55
+  resolution: "@types/node@npm:12.20.55"
+  checksum: e4f86785f4092706e0d3b0edff8dca5a13b45627e4b36700acd8dfe6ad53db71928c8dee914d4276c7fd3b6ccd829aa919811c9eb708a2c8e4c6eb3701178c37
   languageName: node
   linkType: hard
 
 "@types/node@npm:^14.14.31":
-  version: 14.18.16
-  resolution: "@types/node@npm:14.18.16"
-  checksum: 1999799309dc8620a2adf9a5d5e48416af87321bae4c950b4aa8018fcef2c3b6c1fcf98c39eae06f6492c03a643a5a44e2bb3750cd2574d9cf7eac33bac50e24
+  version: 14.18.33
+  resolution: "@types/node@npm:14.18.33"
+  checksum: 4e23f95186d8ae1d38c999bc6b46fe94e790da88744b0a3bfeedcbd0d9ffe2cb0ff39e85f43014f6739e5270292c1a1f6f97a1fc606fd573a0c17fda9a1d42de
   languageName: node
   linkType: hard
 
@@ -14380,10 +14373,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.0.0, @types/node@npm:^16.9.2":
-  version: 16.11.56
-  resolution: "@types/node@npm:16.11.56"
-  checksum: b4efade16eb08a39810921c54a1637e69c8f3184a20d87e8fe74d557d9bda73f0829ac318e2a30a32b1903e4b099812defd1dfe438be70b98dbfbea5b0d99a53
+"@types/node@npm:^16.0.0, @types/node@npm:^16.11.26, @types/node@npm:^16.9.2":
+  version: 16.18.3
+  resolution: "@types/node@npm:16.18.3"
+  checksum: 6b8ba2ea5d842f7986e366cb9184c54d273d492784dc62e08fd5afeae938d9b61aec6e4222d2541cd18f9b1412ba361bbcb3f4204fb003608af80a2a6af959f9
   languageName: node
   linkType: hard
 
@@ -20789,7 +20782,7 @@ __metadata:
     "@backstage/cli-common": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@types/fs-extra": ^9.0.1
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/puppeteer": ^5.4.4
     chalk: ^4.0.0
     commander: ^9.1.0
@@ -22323,7 +22316,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/jquery": ^3.3.34
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/react": "*"
     "@types/react-dom": "*"
     "@types/zen-observable": ^0.8.0
@@ -35357,7 +35350,7 @@ __metadata:
     "@octokit/rest": ^19.0.3
     "@spotify/prettier-config": ^14.0.0
     "@techdocs/cli": "workspace:*"
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/webpack": ^5.28.0
     command-exists: ^1.2.9
     concurrently: ^7.0.0
@@ -37513,7 +37506,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.0.0
+    "@types/node": ^16.11.26
     "@types/react-dom": "*"
     cross-env: ^7.0.0
     cypress: ^10.0.0
