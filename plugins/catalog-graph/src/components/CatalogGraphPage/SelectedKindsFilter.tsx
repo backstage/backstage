@@ -30,11 +30,14 @@ import { Autocomplete } from '@material-ui/lab';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 
-const useStyles = makeStyles({
-  formControl: {
-    maxWidth: 300,
+const useStyles = makeStyles(
+  {
+    formControl: {
+      maxWidth: 300,
+    },
   },
-});
+  { name: 'PluginCatalogGraphSelectedKindsFilter' },
+);
 
 export type Props = {
   value: string[] | undefined;
