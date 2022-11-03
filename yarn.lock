@@ -12019,14 +12019,15 @@ __metadata:
   linkType: hard
 
 "@opensearch-project/opensearch@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@opensearch-project/opensearch@npm:2.0.0"
+  version: 2.1.0
+  resolution: "@opensearch-project/opensearch@npm:2.1.0"
   dependencies:
+    aws4: ^1.11.0
     debug: ^4.3.1
     hpagent: ^0.1.1
     ms: ^2.1.3
     secure-json-parse: ^2.4.0
-  checksum: 7e0e7ae6ac8b6789f7fac59d66ef8afb960cdff46a5d201d9fb447270b808a5e0fd725b75e5fc647974b1b86e5a048e1e9d79aed04b11a424e14ec30079f2e44
+  checksum: 900b90f35d5b960fe60979168e21e9e5b6089a8e3dd9341b5d86c7f7aa7671cbfd937fbec311a6cfe195c113db755e699d3678ee0cbf454e9a9de1189d8cc935
   languageName: node
   linkType: hard
 
