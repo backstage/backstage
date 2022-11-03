@@ -59,7 +59,7 @@ const Body = () => {
 
   return (
     <ItemCardGrid>
-      {tools?.map((tool, index) => (
+      {tools.map((tool, index) => (
         <ToolCard key={index} card={tool} />
       ))}
     </ItemCardGrid>
