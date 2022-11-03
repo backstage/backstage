@@ -14087,11 +14087,11 @@ __metadata:
   linkType: hard
 
 "@types/ldapjs@npm:^2.2.0":
-  version: 2.2.4
-  resolution: "@types/ldapjs@npm:2.2.4"
+  version: 2.2.5
+  resolution: "@types/ldapjs@npm:2.2.5"
   dependencies:
     "@types/node": "*"
-  checksum: 3f240809927e1292380e5977579d7edffb6e5e41b35510c7091b51da19e7387d4ebff0f254c0b145f3cf5d5485b6bb39c77335d857d092e6f4e9ce5a6682a872
+  checksum: 779e462f118f8a6643b7f49d35646e4dae339ff1c6290198950327a736a79bc03beca882e1356ede4c8d54f6dc19bf544f0d23b09279558d69222a93bacd459c
   languageName: node
   linkType: hard
 
