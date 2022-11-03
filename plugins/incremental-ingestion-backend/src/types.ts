@@ -50,6 +50,7 @@ export const INCREMENTAL_ENTITY_PROVIDER_ANNOTATION =
  * batches of entities in sequence so that you never need to have more
  * than a few hundred in memory at a time.
  *
+ * @public
  */
 export interface IncrementalEntityProvider<TCursor, TContext> {
   /**
@@ -57,12 +58,6 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
    * operating in the catalog.
    */
   getProviderName(): string;
-
-  /**
-   * Return a function to register the end of the metric that was
-   * initialized before the fisrt burst call.
-   */
-  prometheusRegister?: { markIngestionCompleted: (result: string) => void };
 
   /**
    * Return a single page of entities from a specific point in the
@@ -89,8 +84,10 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
 }
 
 /**
- * Value returned by an @{link IncrementalEntityProvider} to provide a
+ * Value returned by an {@link IncrementalEntityProvider} to provide a
  * single page of entities to ingest.
+ * 
+ * @public
  */
 export interface EntityIteratorResult<T> {
   /**
@@ -111,6 +108,7 @@ export interface EntityIteratorResult<T> {
   entities: DeferredEntity[];
 }
 
+/** @public */
 export interface IncrementalEntityProviderOptions {
   /**
    * Entities are ingested in bursts. This interval determines how
@@ -139,6 +137,7 @@ export interface IncrementalEntityProviderOptions {
   backoff?: DurationObjectUnits[];
 }
 
+/** @public */
 export type PluginEnvironment = {
   logger: Logger;
   database: PluginDatabaseManager;
@@ -148,10 +147,12 @@ export type PluginEnvironment = {
   permissions: PermissionAuthorizer;
 };
 
+/** @public */
 export interface IterationEngine {
   taskFn: TaskFunction;
 }
 
+/** @public */
 export interface IterationEngineOptions {
   logger: Logger;
   connection: EntityProviderConnection;
@@ -164,6 +165,8 @@ export interface IterationEngineOptions {
 
 /**
  * The shape of data inserted into or updated in the `ingestion.ingestions` table.
+ * 
+ * @public
  */
 export interface IngestionUpsertIFace {
   /**
@@ -222,6 +225,8 @@ export interface IngestionUpsertIFace {
 
 /**
  * This interface is for updating an existing ingestion record.
+ * 
+ * @public
  */
 export interface IngestionRecordUpdate {
   ingestionId: string;
@@ -230,6 +235,8 @@ export interface IngestionRecordUpdate {
 
 /**
  * The expected response from the `ingestion.ingestion_marks` table.
+ * 
+ * @public
  */
 export interface MarkRecord {
   id: string;
@@ -241,6 +248,8 @@ export interface MarkRecord {
 
 /**
  * The expected response from the `ingestion.ingestions` table.
+ * 
+ * @public
  */
 export interface IngestionRecord extends IngestionUpsertIFace {
   id: string;
@@ -253,6 +262,8 @@ export interface IngestionRecord extends IngestionUpsertIFace {
 
 /**
  * This interface supplies all the values for adding an ingestion mark.
+ * 
+ * @public
  */
 export interface MarkRecordInsert {
   record: {
