@@ -196,14 +196,6 @@
             "type": "string",
             "visibility": "frontend"
           },
-          "googleAnalyticsTrackingId": {
-            "type": "string",
-            "visibility": "frontend",
-            "description": "Tracking ID for Google Analytics",
-            "examples": [
-              "UA-000000-0"
-            ]
-          },
           "datadogRum": {
             "type": "object",
             "description": "Datadog RUM events configuration",

@@ -19,12 +19,6 @@
           "visibility": "frontend",
           "description": "The title of the app."
         },
-        "googleAnalyticsTrackingId": {
-          "type": "string",
-          "visibility": "frontend",
-          "description": "Tracking ID for Google Analytics",
-          "examples": ["UA-000000-0"]
-        },
         "listen": {
           "type": "object",
           "description": "Listening configuration for local development",
