@@ -94,7 +94,7 @@ export const apis: AnyApiFactory[] = [
     api: exploreToolsConfigRef,
     deps: {},
     factory: () => ({
-      /*  pass the tools array 
+      /*  pass the tools array
           i.e. tools = [
             {
               title: 'New Relic',
