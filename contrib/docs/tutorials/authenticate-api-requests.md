@@ -11,12 +11,8 @@ As techdocs HTML pages load assets without an Authorization header the code belo
 Create `packages/backend/src/authMiddleware.ts`:
 
 ```typescript
-import { SingleHostDiscovery } from '@backstage/backend-common';
 import type { Config } from '@backstage/config';
-import {
-  getBearerTokenFromAuthorizationHeader,
-  IdentityClient,
-} from '@backstage/plugin-auth-node';
+import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { NextFunction, Request, Response, RequestHandler } from 'express';
 import { decodeJwt } from 'jose';
 import { URL } from 'url';
@@ -45,11 +41,6 @@ export const createAuthMiddleware = async (
   config: Config,
   appEnv: PluginEnvironment,
 ) => {
-  const discovery = SingleHostDiscovery.fromConfig(config);
-  const identity = IdentityClient.create({
-    discovery,
-    issuer: await discovery.getExternalBaseUrl('auth'),
-  });
   const baseUrl = config.getString('backend.baseUrl');
   const secure = baseUrl.startsWith('https://');
   const cookieDomain = new URL(baseUrl).hostname;
@@ -67,7 +58,7 @@ export const createAuthMiddleware = async (
         return;
       }
       try {
-        req.user = await identity.authenticate(token);
+        req.user = await appEnv.identity.getIdentity({ request: req });
       } catch {
         await appEnv.tokenManager.authenticate(token);
       }

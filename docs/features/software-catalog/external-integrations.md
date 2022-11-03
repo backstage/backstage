@@ -261,6 +261,129 @@ the `connect` call has been made to the provider.
 Start up the backend - it should now start reading from the previously
 registered location and you'll see your entities start to appear in Backstage.
 
+### Example User Entity Provider
+
+If you have a 3rd party entity provider such as an internal HR system that you wish to use you are not limited to using our entity providers, (or simply wish to add to existing entity providers with your own data).
+
+We can create an entity provider to read entities that are based off that provider.
+
+We create a basic entity provider as shown above. In the example below we might want to extract our users from an HR system, I am assuming the HR system already has the slackUserId to get that information please see the [Slack Api](https://api.slack.com/methods).
+
+```typescript
+import {
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
+} from '@backstage/catalog-model'
+import {
+  EntityProvider,
+  EntityProviderConnection,
+} from '@backstage/plugin-catalog-backend'
+import { WebClient } from '@slack/web-api'
+import {kebabCase} from 'lodash'
+
+interface Staff {
+  displayName: string
+  slackUserId: string
+  jobTitle: string
+  photoUrl: string
+  address: string
+  email:string
+}
+
+export class UserEntityProvider implements EntityProvider {
+  private readonly getStaffUrl: string
+  protected readonly slackTeam: string
+  protected readonly slackToken: string
+  protected connection?: EntityProviderConnection
+
+  static fromConfig(config: Config, options: { logger: Logger }) {
+    const getStaffUrl = config.getString('staff.url')
+    const slackToken = config.getString('slack.token')
+    const slackTeam = config.getString('slack.team')
+    return new UserEntityProvider({
+      ...options,
+      getStaffUrl,
+      slackToken,
+      slackTeam,
+    })
+  }
+
+  private constructor(options: {
+    getStaffUrl: string
+    slackToken: string
+    slackTeam: string
+  }) {
+    this.getStaffUrl = options.getStaffUrl
+    this.slackToken = options.slackToken
+    this.slackTeam = options.slackTeam
+  }
+
+  async getAllStaff(): Promise<Staff[]>{
+    await return axios.get(this.getStaffUrl)
+  }
+
+  public async connect(connection: EntityProviderConnection): Promise<void> {
+    this.connection = connection
+  }
+
+  async run(): Promise<void> {
+    if (!this.connection) {
+      throw new Error('User Connection Not initialized')
+    }
+
+    const userResources: UserEntity[] = []
+    const staff = await this.getAllStaff()
+
+    for (const user of staff) {
+      // we can add any links here in this case it would be adding a slack link to the users so you can directly slack them.
+      const links =
+        user.slackUserId != null && user.slackUserId.length > 0
+          ? [
+              {
+                url: `slack://user?team=${this.slackTeam}&id=${user.slackUserId}`,
+                title: 'Slack',
+                icon: 'message',
+              },
+            ]
+          : undefined
+      const userEntity: UserEntity = {
+        kind: 'User',
+        apiVersion: 'backstage.io/v1alpha1',
+        metadata: {
+          annotations: {
+            [ANNOTATION_LOCATION]: 'hr-user-https://www.hrurl.com/',
+            [ANNOTATION_ORIGIN_LOCATION]: 'hr-user-https://www.hrurl.com/',
+          },
+          links,
+          // name of the entity
+          name: kebabCase(user.displayName),
+          // name for display purposes could be anything including email
+          title: user.displayName,
+        },
+        spec: {
+          profile: {
+            displayName: user.displayName,
+            email: user.email,
+            picture: user.photoUrl,
+          },
+          memberOf: [],
+        },
+      }
+
+      userResources.push(userEntity)
+    }
+
+    await this.connection.applyMutation({
+      type: 'full',
+      entities: userResources.map((entity) => ({
+        entity,
+        locationKey: 'hr-user-https://www.hrurl.com/',
+      })),
+    })
+}
+
+```
+
 ## Custom Processors
 
 The other possible way of ingesting data into the catalog is through the use of
