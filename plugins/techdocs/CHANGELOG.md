@@ -1,5 +1,11 @@
 # @backstage/plugin-techdocs
 
+## 1.4.0-next.1
+
+### Patch Changes
+
+- 9e4d8e6198: Fix logic bug that broke techdocs-cli-embedded-app
+
 ## 1.4.0-next.0
 
 ### Minor Changes

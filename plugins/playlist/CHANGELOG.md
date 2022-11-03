@@ -1,5 +1,14 @@
 # @backstage/plugin-playlist
 
+## 0.1.2-next.1
+
+### Patch Changes
+
+- 605f269f0d: Updated Playlist plugin docs:
+
+  - Updated `playlist` plugin README to include note about installing backend plugin and added images for the various features
+  - Updated `playlist-backend` plugin README to remove `IdentityClient` import in example as it is not used and made minor change to headings
+
 ## 0.1.2-next.0
 
 ### Patch Changes

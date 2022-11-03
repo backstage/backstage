@@ -1,5 +1,12 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.4.0-next.1
+
 ## 1.0.6-next.0
 
 ### Patch Changes
