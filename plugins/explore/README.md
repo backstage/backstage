@@ -94,8 +94,10 @@ export const apis: AnyApiFactory[] = [
     api: exploreToolsConfigRef,
     deps: {},
     factory: () => ({
-      /*  pass the tools array
-          i.e. tools = [
+        async getTools() {
+          return tools;
+        },
+      /*  e.g. tools = [
             {
               title: 'New Relic',
               description:'new relic plugin,
@@ -104,7 +106,7 @@ export const apis: AnyApiFactory[] = [
               tags: ['newrelic', 'proxy', 'nerdGraph'],
             },
           ]
-      */
+       */
     }),
   }),
 
