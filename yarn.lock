@@ -16648,17 +16648,35 @@ __metadata:
   linkType: hard
 
 "aws-sdk-mock@npm:^5.2.1":
-  version: 5.7.0
-  resolution: "aws-sdk-mock@npm:5.7.0"
+  version: 5.8.0
+  resolution: "aws-sdk-mock@npm:5.8.0"
   dependencies:
-    aws-sdk: ^2.1122.0
-    sinon: ^13.0.2
+    aws-sdk: ^2.1231.0
+    sinon: ^14.0.1
     traverse: ^0.6.6
-  checksum: 9ac22cffc2e99c64af7aa29d2b4030ff8fdbb36d98cb27008952371d159ce974d31538fded372484e5d89e3fa9c22df0b7835d635a325734696a68c96a09e668
+  checksum: c0b06d63d375a6f6664a5860815bdcc21cbe752f227f3617db8bd9042e48604e5cc26834876909c8fc1e68ac937166f4cb0637b3cb565d05c9a64aa025fe3407
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:^2.1122.0, aws-sdk@npm:^2.814.0, aws-sdk@npm:^2.840.0, aws-sdk@npm:^2.948.0":
+"aws-sdk@npm:^2.1231.0":
+  version: 2.1246.0
+  resolution: "aws-sdk@npm:2.1246.0"
+  dependencies:
+    buffer: 4.9.2
+    events: 1.1.1
+    ieee754: 1.1.13
+    jmespath: 0.16.0
+    querystring: 0.2.0
+    sax: 1.2.1
+    url: 0.10.3
+    util: ^0.12.4
+    uuid: 8.0.0
+    xml2js: 0.4.19
+  checksum: dd9764cfdd556d1467a1812dd68327fbd563066fee38b89f15f832fc2adef330393c2612590fd580e74742f7d4297f457439beea70cebd788b5fcdd89597d16d
+  languageName: node
+  linkType: hard
+
+"aws-sdk@npm:^2.814.0, aws-sdk@npm:^2.840.0, aws-sdk@npm:^2.948.0":
   version: 2.1224.0
   resolution: "aws-sdk@npm:2.1224.0"
   dependencies:
@@ -35963,9 +35981,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sinon@npm:^13.0.2":
-  version: 13.0.2
-  resolution: "sinon@npm:13.0.2"
+"sinon@npm:^14.0.1":
+  version: 14.0.1
+  resolution: "sinon@npm:14.0.1"
   dependencies:
     "@sinonjs/commons": ^1.8.3
     "@sinonjs/fake-timers": ^9.1.2
@@ -35973,7 +35991,7 @@ __metadata:
     diff: ^5.0.0
     nise: ^5.1.1
     supports-color: ^7.2.0
-  checksum: 237f21c8c4a8b31574c71b1b9f4c0f74a63dde5c0e86bd116effa4ce63c52467bd45fb4034a8fa32656a7919d9b19fc7b108ca9e1e6e3144f3735da96dad2877
+  checksum: 55dd8dc9f33bf714fcd4cf9af5b67a3ba854da9e94d4be70bfbc13fa1113db03bdccec21fe1ded1dbf750a21f35be9727c779178ac981e55eeac9245acfdaa74
   languageName: node
   linkType: hard
 
