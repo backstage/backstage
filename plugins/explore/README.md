@@ -79,3 +79,27 @@ const routes = (
   </FlatRoutes>
 );
 ```
+
+## ToolExplorer Content Customization
+
+Override the `exploreToolsConfigRef` API in `/packages/app/src/apis.ts`.
+
+```tsx
+import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
+
+export const apis: AnyApiFactory[] = [
+  ...
+
+  createApiFactory({
+    api: exploreToolsConfigRef,
+    deps: {},
+    factory: () => ({
+      /*  pass the tools array */
+    }),
+  }),
+
+  ....
+
+];
+
+```

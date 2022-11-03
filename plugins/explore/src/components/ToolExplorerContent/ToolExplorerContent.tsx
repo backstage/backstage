@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ExploreTool,
-  exploreToolsConfigRef,
-} from '@backstage/plugin-explore-react';
+import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { ToolCard } from '../ToolCard';
@@ -32,14 +29,13 @@ import {
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
-const Body = (props: { exploreTools?: Array<ExploreTool> }) => {
+const Body = () => {
   const exploreToolsConfigApi = useApi(exploreToolsConfigRef);
   const {
     value: tools,
     loading,
     error,
   } = useAsync(async () => {
-    if (props?.exploreTools) return props?.exploreTools;
     return await exploreToolsConfigApi.getTools();
   }, [exploreToolsConfigApi]);
 
@@ -70,14 +66,11 @@ const Body = (props: { exploreTools?: Array<ExploreTool> }) => {
   );
 };
 
-export const ToolExplorerContent = (props: {
-  title?: string;
-  exploreTools?: Array<ExploreTool>;
-}) => (
+export const ToolExplorerContent = (props: { title?: string }) => (
   <Content noPadding>
     <ContentHeader title={props.title ?? 'Tools'}>
       <SupportButton>Discover the tools in your ecosystem.</SupportButton>
     </ContentHeader>
-    <Body exploreTools={props?.exploreTools} />
+    <Body />
   </Content>
 );

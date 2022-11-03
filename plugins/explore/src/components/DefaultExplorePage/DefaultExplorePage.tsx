@@ -20,11 +20,8 @@ import { ExploreLayout } from '../ExploreLayout';
 import { GroupsExplorerContent } from '../GroupsExplorerContent';
 import { ToolExplorerContent } from '../ToolExplorerContent';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { ExploreTool } from '@backstage/plugin-explore-react';
 
-export const DefaultExplorePage = (props: {
-  exploreTools?: Array<ExploreTool>;
-}) => {
+export const DefaultExplorePage = () => {
   const configApi = useApi(configApiRef);
   const organizationName =
     configApi.getOptionalString('organization.name') ?? 'Backstage';
@@ -41,7 +38,7 @@ export const DefaultExplorePage = (props: {
         <GroupsExplorerContent />
       </ExploreLayout.Route>
       <ExploreLayout.Route path="tools" title="Tools">
-        <ToolExplorerContent exploreTools={props?.exploreTools} />
+        <ToolExplorerContent />
       </ExploreLayout.Route>
     </ExploreLayout>
   );
