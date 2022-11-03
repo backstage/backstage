@@ -28,7 +28,7 @@ import {
   TokenManager,
 } from '@backstage/backend-common';
 import { assertError, NotFoundError } from '@backstage/errors';
-import { CatalogClient } from '@backstage/catalog-client';
+import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { createOidcRouter, TokenFactory, KeyStores } from '../identity';
 import session from 'express-session';
@@ -48,6 +48,7 @@ export interface RouterOptions {
   tokenManager: TokenManager;
   tokenFactoryAlgorithm?: string;
   providerFactories?: ProviderFactories;
+  catalogApi?: CatalogApi;
 }
 
 /** @public */
@@ -62,6 +63,7 @@ export async function createRouter(
     tokenManager,
     tokenFactoryAlgorithm,
     providerFactories,
+    catalogApi,
   } = options;
   const router = Router();
 
@@ -78,7 +80,6 @@ export async function createRouter(
     logger: logger.child({ component: 'token-factory' }),
     algorithm: tokenFactoryAlgorithm,
   });
-  const catalogApi = new CatalogClient({ discoveryApi: discovery });
 
   const secret = config.getOptionalString('auth.session.secret');
   if (secret) {
@@ -127,7 +128,8 @@ export async function createRouter(
           logger,
           resolverContext: CatalogAuthResolverContext.create({
             logger,
-            catalogApi,
+            catalogApi:
+              catalogApi ?? new CatalogClient({ discoveryApi: discovery }),
             tokenIssuer,
             tokenManager,
           }),
