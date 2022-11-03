@@ -20643,10 +20643,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:=2.3.10, dompurify@npm:^2.2.7, dompurify@npm:^2.2.9, dompurify@npm:^2.3.6":
+"dompurify@npm:=2.3.10":
   version: 2.3.10
   resolution: "dompurify@npm:2.3.10"
   checksum: ee343876b4c065e82d194818c66af76a6d2290264c7db583ad71761c11781fd626f0245f9f4670175d5707c4b8fcfb89adae80bed0418a9426a47ee7f36b0ffc
+  languageName: node
+  linkType: hard
+
+"dompurify@npm:^2.2.7, dompurify@npm:^2.2.9, dompurify@npm:^2.3.6":
+  version: 2.4.0
+  resolution: "dompurify@npm:2.4.0"
+  checksum: c93ea73cf8e3ba044588450198563e56ce6902e36d0e16e3699df2fa59e82c4fdd11d4ad04ef5024569ce96a35b46f29d0bbea522516add33cd39a7f56a8a675
   languageName: node
   linkType: hard
 
