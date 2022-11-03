@@ -1,6 +1,6 @@
 ---
 id: input-examples
-title: Built-in examples inputs
+title: Input Examples
 description: Some examples to use in your template
 ---
 
