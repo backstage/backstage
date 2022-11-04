@@ -26,20 +26,6 @@ parameters:
         ui:help: 'Hint: additional description...'
 ```
 
-### Simple secret input
-
-```yaml
-parameters:
-  - title: Fill in some steps
-    properties:
-      secretInput:
-        title: Input secret
-        type: string
-        description: Super secret description hint
-        minLength: 6
-        ui:widget: password
-```
-
 ### Multi line text input
 
 ```yaml
