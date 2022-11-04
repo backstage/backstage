@@ -1,5 +1,5 @@
 ---
-'@backstage/cli': minor
+'@backstage/cli': patch
 ---
 
 Adds support for two new CLI options on the `repo build` and `package build` commands. Both options are only available to frontend components. Backend config continues to be supplied at runtime.

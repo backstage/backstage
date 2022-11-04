@@ -24,9 +24,7 @@
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
-    "start": "nodemon --",
-    "test:e2e": "backstage-cli test --config e2e-test.config.js",
-    "test:e2e:ci": "backstage-cli test --config e2e-test.config.js --watchAll=false --ci"
+    "start": "nodemon --"
   },
   "bin": {
     "backstage-cli": "bin/backstage-cli"
@@ -86,7 +84,6 @@
     "express": "^4.17.1",
     "fork-ts-checker-webpack-plugin": "^7.0.0-alpha.8",
     "fs-extra": "10.1.0",
-    "get-port": "^6.1.2",
     "glob": "^7.1.7",
     "global-agent": "^3.0.0",
     "handlebars": "^4.7.3",
@@ -157,6 +154,7 @@
     "@types/terser-webpack-plugin": "^5.0.4",
     "@types/yarnpkg__lockfile": "^1.1.4",
     "del": "^6.0.0",
+    "get-port": "^6.1.2",
     "mock-fs": "^5.1.0",
     "msw": "^0.49.0",
     "nodemon": "^2.0.2",

@@ -126,6 +126,8 @@ describe('end-to-end', () => {
   });
 
   it('starts frontend on correct url', async () => {
+    expect.assertions(4);
+
     const startEmitter = new EventEmitter();
     const frontendPort = await getPort();
     startEmitter.on('hit', async () => {
@@ -136,6 +138,7 @@ describe('end-to-end', () => {
       startEmitter.emit('stop', 'SIGINT');
       expect(response.status).toBe(200);
       expect(text.length).toBeGreaterThan(0);
+      expect(text).toContain('id="root"');
     });
     const startProc = await executeCommand(
       entryPoint,
