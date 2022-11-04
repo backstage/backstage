@@ -154,7 +154,34 @@ function useConfigLoader(
     };
   }
 
-  const configReader = ConfigReader.fromConfigs(config.value ?? []);
+  let configReader = ConfigReader.fromConfigs(config.value ?? []);
+
+  const getFullBackendUrl = () => {
+    // Backend.baseUrl should always be defined.
+    let url;
+    try {
+      url = new URL(
+        configReader.getString('backend.baseUrl'),
+        document.location.origin,
+      ).href.replace(/\/$/, '');
+    } catch (err) {
+      // Backend.baseUrl was not a valid URL. This should be caught during the build process.
+    }
+    return url;
+  };
+
+  const relativeBackendConfig = {
+    data: {
+      backend: {
+        baseUrl: getFullBackendUrl(),
+      },
+    },
+    context: 'relative-override',
+  };
+
+  configReader = ConfigReader.fromConfigs(
+    config.value ? [...config.value, relativeBackendConfig] : [],
+  );
 
   return { api: configReader };
 }

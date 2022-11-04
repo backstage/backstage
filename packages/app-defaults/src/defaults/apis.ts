@@ -65,17 +65,9 @@ export const apis = [
     api: discoveryApiRef,
     deps: { configApi: configApiRef },
     factory: ({ configApi }) => {
-      let baseUrl;
-      try {
-        // Try parsing the url relative to the current document origin, if it fails the URL is misformed.
-        baseUrl = new URL(
-          configApi.getString('backend.baseUrl'),
-          document.location.origin,
-        ).href.replace(/\/$/, '');
-      } catch (err) {
-        baseUrl = configApi.getString('backend.baseUrl');
-      }
-      return UrlPatternDiscovery.compile(`${baseUrl}/api/{{ pluginId }}`);
+      return UrlPatternDiscovery.compile(
+        `${configApi.getString('backend.baseUrl')}/api/{{ pluginId }}`,
+      );
     },
   }),
   createApiFactory({

@@ -34,6 +34,7 @@ import {
   createSubRouteRef,
   createRoutableExtension,
   analyticsApiRef,
+  useApiHolder,
 } from '@backstage/core-plugin-api';
 import { AppManager } from './AppManager';
 import { AppComponents, AppIcons } from './types';
@@ -568,5 +569,94 @@ describe('Integration Test', () => {
         'The above error occurred in the <Provider> component',
       ),
     ]);
+  });
+
+  it('should add the fully qualified origin when the backend.baseUrl is relative', async () => {
+    const app = new AppManager({
+      apis: [],
+      defaultApis: [],
+      themes: [
+        {
+          id: 'light',
+          title: 'Light Theme',
+          variant: 'light',
+          Provider: ({ children }) => <>{children}</>,
+        },
+      ],
+      icons,
+      plugins: [],
+      components,
+      configLoader: async () => [
+        {
+          context: 'test',
+          data: {
+            backend: {
+              baseUrl: '/',
+            },
+          },
+        },
+      ],
+    });
+
+    const Provider = app.getProvider();
+    const ConfigDisplay = () => {
+      const apiHolder = useApiHolder();
+      const config = apiHolder.get(configApiRef);
+      return <span>{config?.getString('backend.baseUrl')}</span>;
+    };
+
+    const dom = await renderWithEffects(
+      <Provider>
+        <ConfigDisplay />
+      </Provider>,
+    );
+
+    // Verify that the backend.baseUrl is set correctly by the AppManager.
+    expect(dom.getByText(document.location.origin)).toBeTruthy();
+  });
+
+  it('should NOT change the origin when the backend.baseUrl is absolute', async () => {
+    const backendUrl = 'http://localhost:7007';
+    const app = new AppManager({
+      apis: [],
+      defaultApis: [],
+      themes: [
+        {
+          id: 'light',
+          title: 'Light Theme',
+          variant: 'light',
+          Provider: ({ children }) => <>{children}</>,
+        },
+      ],
+      icons,
+      plugins: [],
+      components,
+      configLoader: async () => [
+        {
+          context: 'test',
+          data: {
+            backend: {
+              baseUrl: backendUrl,
+            },
+          },
+        },
+      ],
+    });
+
+    const Provider = app.getProvider();
+    const ConfigDisplay = () => {
+      const apiHolder = useApiHolder();
+      const config = apiHolder.get(configApiRef);
+      return <span>{config?.getString('backend.baseUrl')}</span>;
+    };
+
+    const dom = await renderWithEffects(
+      <Provider>
+        <ConfigDisplay />
+      </Provider>,
+    );
+
+    // Verify that the backend.baseUrl is set correctly by the AppManager.
+    expect(dom.getByText(backendUrl)).toBeTruthy();
   });
 });
