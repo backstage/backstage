@@ -4597,7 +4597,7 @@ __metadata:
     msw: ^0.47.0
     qs: ^6.9.6
     react-use: ^17.2.4
-    recharts: ^2.0.0
+    recharts: ^2.1.5
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
   languageName: unknown
@@ -5382,7 +5382,7 @@ __metadata:
     luxon: ^3.0.0
     msw: ^0.47.0
     react-use: ^17.2.4
-    recharts: ^2.0.0
+    recharts: ^2.1.5
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
@@ -5494,7 +5494,7 @@ __metadata:
     pluralize: ^8.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
-    recharts: ^2.0.0
+    recharts: ^2.1.5
     regression: ^2.0.1
     yup: ^0.32.9
   peerDependencies:
@@ -5732,7 +5732,7 @@ __metadata:
     msw: ^0.47.0
     qs: ^6.10.1
     react-use: ^17.2.4
-    recharts: ^2.0.0
+    recharts: ^2.1.5
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
@@ -7947,7 +7947,7 @@ __metadata:
     luxon: ^3.0.0
     msw: ^0.47.0
     react-use: ^17.2.4
-    recharts: ^2.0.0
+    recharts: ^2.1.5
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
   languageName: unknown
@@ -33971,18 +33971,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-resize-detector@npm:^7.1.2":
-  version: 7.1.2
-  resolution: "react-resize-detector@npm:7.1.2"
-  dependencies:
-    lodash: ^4.17.21
-  peerDependencies:
-    react: ^16.0.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 55f4abad7f7523d16b081b5ab20f75c539a54a08253ce7e9df473d48386f42ceca6c31584ba9fa26e3528b498ef6685ec77fb9a22cffc97df05fb326d0bf1b26
-  languageName: node
-  linkType: hard
-
 "react-router-beta@npm:react-router@6.0.0-beta.0, react-router@npm:6.0.0-beta.0":
   version: 6.0.0-beta.0
   resolution: "react-router@npm:6.0.0-beta.0"
@@ -34054,20 +34042,6 @@ __metadata:
     react: ^15.0.0 || ^16.0.0 || ^17.0.0
     react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0
   checksum: 4eff3fb93067b538e046df2c56a2f99b25f4c3a2aafc1c59707d1a0150f7f0afab408afdc1a47ffa3556adbdb5c915d6035a9a28da878e68771dce7568cc6f69
-  languageName: node
-  linkType: hard
-
-"react-smooth@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "react-smooth@npm:2.0.1"
-  dependencies:
-    fast-equals: ^2.0.0
-    react-transition-group: 2.9.0
-  peerDependencies:
-    prop-types: ^15.6.0
-    react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 65678491cbd506573f2dba82778ebf8259714d68dd227e0ee7c0e204bcbc7839cf97401620b4223814066581f1dce0493f97162a03dc2a68058b5a7ad2b41085
   languageName: node
   linkType: hard
 
@@ -34378,32 +34352,6 @@ __metadata:
   dependencies:
     decimal.js-light: ^2.4.1
   checksum: e970377190a610e684a32c7461c7684ac3603c2e0ac0020bbba1eea9d099b38138143a8e80bf769bb49c0b7cecf22a2f5c6854885efed2d56f4540d4aa7052bd
-  languageName: node
-  linkType: hard
-
-"recharts@npm:^2.0.0":
-  version: 2.1.15
-  resolution: "recharts@npm:2.1.15"
-  dependencies:
-    "@types/d3-interpolate": ^2.0.0
-    "@types/d3-scale": ^3.0.0
-    "@types/d3-shape": ^2.0.0
-    classnames: ^2.2.5
-    d3-interpolate: ^2.0.0
-    d3-scale: ^3.0.0
-    d3-shape: ^2.0.0
-    eventemitter3: ^4.0.1
-    lodash: ^4.17.19
-    react-is: ^16.10.2
-    react-resize-detector: ^7.1.2
-    react-smooth: ^2.0.1
-    recharts-scale: ^0.4.4
-    reduce-css-calc: ^2.1.8
-  peerDependencies:
-    prop-types: ^15.6.0
-    react: ^16.0.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 2f0be89eca6da8a6d899dac8676de145001353b6072b7853d3f04091c38604f80b241b4ef04d4b28268a95df4a8134b565a192077cb6a2903048fc90f19a5def
   languageName: node
   linkType: hard
 
