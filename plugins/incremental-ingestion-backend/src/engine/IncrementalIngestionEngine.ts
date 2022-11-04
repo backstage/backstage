@@ -118,7 +118,10 @@ export class IncrementalIngestionEngine implements IterationEngine {
               const backoffLength = currentBackoff.as('milliseconds');
               this.options.logger.error(error);
 
-              const truncatedError = (error as string).substring(0, 700);
+              const truncatedError =
+                typeof error === 'string'
+                  ? error.substring(0, 700)
+                  : `${error}`;
               this.options.logger.error(
                 `incremental-engine: Ingestion '${ingestionId}' threw an error during ingestion burst. Ingestion will backoff for ${currentBackoff.toHuman()} (${truncatedError})`,
               );
