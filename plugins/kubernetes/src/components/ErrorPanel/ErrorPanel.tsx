@@ -16,7 +16,11 @@
 
 import React from 'react';
 import { Typography } from '@material-ui/core';
-import { ClusterObjects } from '@backstage/plugin-kubernetes-common';
+import {
+  ClusterObjects,
+  KubernetesAddrNotFoundError,
+  KubernetesTimeoutError,
+} from '@backstage/plugin-kubernetes-common';
 import { WarningPanel } from '@backstage/core-components';
 
 const clustersWithErrorsToErrorMessage = (
@@ -26,10 +30,30 @@ const clustersWithErrorsToErrorMessage = (
     return (
       <div key={i}>
         <Typography variant="body2">{`Cluster: ${c.cluster.name}`}</Typography>
-        {c.errors.map((e, j) => {
+        {c.errors.map((kubernetesFetchError, j) => {
+          let message: string;
+          switch (kubernetesFetchError.errorType) {
+            case 'TIMED_OUT': {
+              const { address, port } =
+                kubernetesFetchError as KubernetesTimeoutError;
+              message = `Timed out attempting to connect to Kubernetes API at address '${address}' on port ${port}`;
+              break;
+            }
+            case 'ADDR_NOT_FOUND': {
+              const { hostname } =
+                kubernetesFetchError as KubernetesAddrNotFoundError;
+              message = `Could not resolve Kubernetes API hostname: '${hostname}'`;
+              break;
+            }
+            default:
+              message =
+                'message' in kubernetesFetchError
+                  ? `Error communicating with Kubernetes: ${kubernetesFetchError.errorType}, message: ${kubernetesFetchError.message}`
+                  : `Error fetching Kubernetes resource: '${kubernetesFetchError.resourcePath}', error: ${kubernetesFetchError.errorType}, status code: ${kubernetesFetchError.statusCode}`;
+          }
           return (
             <Typography variant="body2" key={j}>
-              {`Error fetching Kubernetes resource: '${e.resourcePath}', error: ${e.errorType}, status code: ${e.statusCode}`}
+              {message}
             </Typography>
           );
         })}
