@@ -62,6 +62,7 @@ nav:
           - Configuration: 'features/software-templates/configuration.md'
           - Adding your own Templates: 'features/software-templates/adding-templates.md'
           - Writing Templates: 'features/software-templates/writing-templates.md'
+          - Input Examples: 'features/software-templates/input-examples.md'
           - Builtin Actions: 'features/software-templates/builtin-actions.md'
           - Writing Custom Actions: 'features/software-templates/writing-custom-actions.md'
           - Writing Custom Step Layouts: 'features/software-templates/writing-custom-step-layouts.md'
