@@ -127,10 +127,10 @@ Now register the new settings page in `packages/app/src/App.tsx`:
 
 const routes = (
   <FlatRoutes>
-    - <Route path="/settings" element={<UserSettingsPage/>}/>
-    + <Route path="/settings" element={<UserSettingsPage/>}>
-    + {settingsPage}
-    + </Route>
+-    <Route path="/settings" element={<UserSettingsPage />} />
++    <Route path="/settings" element={<UserSettingsPage />}>
++      {settingsPage}
++    </Route>
   </FlatRoutes>
 );
 ```
