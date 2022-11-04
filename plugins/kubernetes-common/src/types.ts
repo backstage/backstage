@@ -223,10 +223,37 @@ export interface PodStatusFetchResponse {
 }
 
 /** @public */
-export interface KubernetesFetchError {
+export type KubernetesFetchError =
+  | KubernetesHttpError
+  | KubernetesTimeoutError
+  | KubernetesAddrNotFoundError
+  | KubernetesUnknownError;
+
+/** @public */
+export interface KubernetesHttpError {
   errorType: KubernetesErrorTypes;
   statusCode?: number;
   resourcePath?: string;
+  message?: string;
+}
+
+/** @public */
+export interface KubernetesTimeoutError {
+  errorType: 'TIMED_OUT';
+  address: string;
+  port?: number;
+}
+
+/** @public */
+export interface KubernetesAddrNotFoundError {
+  errorType: 'ADDR_NOT_FOUND';
+  hostname?: string;
+}
+
+/** @public */
+export interface KubernetesUnknownError {
+  errorType: 'UNKNOWN_ERROR';
+  message: string;
 }
 
 /** @public */
@@ -235,6 +262,8 @@ export type KubernetesErrorTypes =
   | 'UNAUTHORIZED_ERROR'
   | 'NOT_FOUND'
   | 'SYSTEM_ERROR'
+  | 'TIMED_OUT'
+  | 'ADDR_NOT_FOUND'
   | 'UNKNOWN_ERROR';
 
 /** @public */

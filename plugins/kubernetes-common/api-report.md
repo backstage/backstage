@@ -176,17 +176,36 @@ export interface JobsFetchResponse {
 }
 
 // @public (undocumented)
+export interface KubernetesAddrNotFoundError {
+  // (undocumented)
+  errorType: 'ADDR_NOT_FOUND';
+  // (undocumented)
+  hostname?: string;
+}
+
+// @public (undocumented)
 export type KubernetesErrorTypes =
   | 'BAD_REQUEST'
   | 'UNAUTHORIZED_ERROR'
   | 'NOT_FOUND'
   | 'SYSTEM_ERROR'
+  | 'TIMED_OUT'
+  | 'ADDR_NOT_FOUND'
   | 'UNKNOWN_ERROR';
 
 // @public (undocumented)
-export interface KubernetesFetchError {
+export type KubernetesFetchError =
+  | KubernetesHttpError
+  | KubernetesTimeoutError
+  | KubernetesAddrNotFoundError
+  | KubernetesUnknownError;
+
+// @public (undocumented)
+export interface KubernetesHttpError {
   // (undocumented)
   errorType: KubernetesErrorTypes;
+  // (undocumented)
+  message?: string;
   // (undocumented)
   resourcePath?: string;
   // (undocumented)
@@ -209,6 +228,24 @@ export interface KubernetesRequestBody {
   auth?: KubernetesRequestAuth;
   // (undocumented)
   entity: Entity;
+}
+
+// @public (undocumented)
+export interface KubernetesTimeoutError {
+  // (undocumented)
+  address: string;
+  // (undocumented)
+  errorType: 'TIMED_OUT';
+  // (undocumented)
+  port?: number;
+}
+
+// @public (undocumented)
+export interface KubernetesUnknownError {
+  // (undocumented)
+  errorType: 'UNKNOWN_ERROR';
+  // (undocumented)
+  message: string;
 }
 
 // @public (undocumented)
