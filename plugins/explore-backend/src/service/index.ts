@@ -14,20 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  GetExploreToolsRequest,
-  GetExploreToolsResponse,
-} from '@backstage/plugin-explore-common';
-
-/**
- * @public
- */
-export interface ExploreToolProvider {
-  /**
-   * Gets a list of explore tools filtered by the request options.
-   *
-   * @param request - The request options {@link @backstage/plugin-explore-common#GetExploreToolsRequest}.
-   * @returns The response {@link @backstage/plugin-explore-common#GetExploreToolsResponse}.
-   */
-  getTools(request: GetExploreToolsRequest): Promise<GetExploreToolsResponse>;
-}
+export { createRouter } from './router';
+export type { RouterOptions } from './router';
+export * from './types';

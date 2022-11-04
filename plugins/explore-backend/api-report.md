@@ -16,36 +16,29 @@ import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
 
-// Warning: (ae-forgotten-export) The symbol "RouterOptions" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public (undocumented)
 export interface ExploreToolProvider {
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-explore-backend" does not have an export "GetExploreToolsRequest"
-  // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-explore-backend" does not have an export "GetExploreToolsResponse"
   getTools(request: GetExploreToolsRequest): Promise<GetExploreToolsResponse>;
 }
 
-// Warning: (tsdoc-undefined-tag) The TSDoc tag "@private" is not defined in this configuration
-// Warning: (ae-missing-release-tag) "getExampleTools" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export interface RouterOptions {
+  // (undocumented)
+  logger: Logger;
+  // (undocumented)
+  toolProvider: ExploreToolProvider;
+}
+
 // @public
-export function getExampleTools(
-  request: GetExploreToolsRequest,
-): Promise<GetExploreToolsResponse>;
+export interface ToolDocument extends IndexableDocument, ExploreTool {}
 
 // @public
 export class ToolDocumentCollatorFactory implements DocumentCollatorFactory {
-  // Warning: (ae-forgotten-export) The symbol "ToolDocument" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   execute(): AsyncGenerator<ToolDocument>;
-  // Warning: (ae-forgotten-export) The symbol "ToolDocumentCollatorFactoryOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static fromConfig(
     _config: Config,
@@ -56,4 +49,10 @@ export class ToolDocumentCollatorFactory implements DocumentCollatorFactory {
   // (undocumented)
   readonly type: string;
 }
+
+// @public
+export type ToolDocumentCollatorFactoryOptions = {
+  discovery: PluginEndpointDiscovery;
+  logger: Logger;
+};
 ```

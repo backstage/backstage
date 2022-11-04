@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import {
-  IndexableDocument,
-  DocumentCollatorFactory,
-} from '@backstage/plugin-search-common';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
+import { ExploreTool } from '@backstage/plugin-explore-common';
+import {
+  DocumentCollatorFactory,
+  IndexableDocument,
+} from '@backstage/plugin-search-common';
+import fetch from 'node-fetch';
 import { Readable } from 'stream';
 import { Logger } from 'winston';
-import { ExploreTool } from '@backstage/plugin-explore-common';
-import fetch from 'node-fetch';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
 /**
  * Extended IndexableDocument with explore tool specific properties
@@ -33,9 +33,11 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 export interface ToolDocument extends IndexableDocument, ExploreTool {}
 
 /**
- * The options for the {@link CatalogClient.ToolDocumentCollatorFactory}.
+ * The options for the {@link ToolDocumentCollatorFactory}.
+ *
+ * @public
  */
-type ToolDocumentCollatorFactoryOptions = {
+export type ToolDocumentCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
   logger: Logger;
 };

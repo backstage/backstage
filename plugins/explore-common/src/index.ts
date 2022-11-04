@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-/***/
 /**
  * Common functionalities for the explore plugin.
  *

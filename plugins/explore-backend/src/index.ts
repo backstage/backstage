@@ -21,10 +21,9 @@
  */
 
 export * from './search';
-export { createRouter } from './service/router';
-export * from './service/types';
+export * from './service';
 
 /**
- * @private Example only - do not use in production
+ * @internal Example only - do not use in production
  */
 export { getExampleTools } from './example/getExampleTools';

@@ -21,11 +21,17 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { ExploreToolProvider } from './types';
 
+/**
+ * @public
+ */
 export interface RouterOptions {
   logger: Logger;
   toolProvider: ExploreToolProvider;
 }
 
+/**
+ * @public
+ */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
