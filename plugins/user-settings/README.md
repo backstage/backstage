@@ -18,30 +18,26 @@ for installation instructions.
 
 Add the item to the Sidebar:
 
-```ts
+```tsx
 import {Settings as SidebarSettings} from '@backstage/plugin-user-settings';
 
 <SidebarPage>
   <Sidebar>
-    <SidebarSettings / >
-</Sidebar>
+    <SidebarSettings/>
+  </Sidebar>
 < /SidebarPage>;
 ```
 
 Add the page to the App routing:
 
-```ts
-import {UserSettingsPage} from '@backstage/plugin-user-settings';
+```tsx
+import { UserSettingsPage } from '@backstage/plugin-user-settings';
 
 const AppRoutes = () => (
   <Routes>
-    <Route path = "/settings"
-element = { < UserSettingsPage / >
-}
-/>
-< /Routes>
-)
-;
+    <Route path="/settings" element={<UserSettingsPage />} />
+  </Routes>
+);
 ```
 
 ### Props
@@ -53,26 +49,22 @@ displayed in the "Authentication Providers" tab.
 
 If you want to supply your own custom list of Authentication Providers, use the `providerSettings` prop:
 
-```ts
+```tsx
 const MyAuthProviders = () => (
   <ListItem>
-    <ListItemText primary = "example" / >
-    <ListItemSecondaryAction>{someAction} < /ListItemSecondaryAction>
-    < /ListItem>
+    <ListItemText primary="example" />
+    <ListItemSecondaryAction>{someAction} </ListItemSecondaryAction>
+  </ListItem>
 );
 
 const AppRoutes = () => (
   <Routes>
     <Route
-      path = "/settings"
-element = { < SettingsRouter
-providerSettings = { < MyAuthProviders / >
-}
-/>}
-/>
-< /Routes>
-)
-;
+      path="/settings"
+      element={<SettingsRouter providerSettings={<MyAuthProviders />} />}
+    />
+  </Routes>
+);
 ```
 
 > **Note that the list of providers expects to be rendered within a MUI [`<List>`](https://material-ui.com/components/lists/)**
