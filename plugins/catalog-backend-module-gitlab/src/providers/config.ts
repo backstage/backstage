@@ -29,6 +29,7 @@ import { GitlabProviderConfig } from '../lib';
 function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const group = config.getOptionalString('group') ?? '';
   const host = config.getString('host');
+  const forceBranch = config.getOptionalString('forceBranch');
   const branch = config.getOptionalString('branch') ?? 'master';
   const catalogFile =
     config.getOptionalString('entityFilename') ?? 'catalog-info.yaml';
@@ -45,6 +46,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     group,
     branch,
     host,
+    forceBranch,
     catalogFile,
     projectPattern,
     schedule,

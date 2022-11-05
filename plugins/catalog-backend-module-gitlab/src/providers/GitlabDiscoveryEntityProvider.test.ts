@@ -233,6 +233,106 @@ describe('GitlabDiscoveryEntityProvider', () => {
     });
   });
 
+  it('fetch project from forceBranch', async () => {
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'test-gitlab',
+            apiBaseUrl: 'https://api.gitlab.example/api/v4',
+            token: '1234',
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          gitlab: {
+            'test-id': {
+              host: 'test-gitlab',
+              group: 'test-group',
+              forceBranch: 'latest',
+            },
+          },
+        },
+      },
+    });
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+    expect(provider.getProviderName()).toEqual(
+      'GitlabDiscoveryEntityProvider:test-id',
+    );
+
+    server.use(
+      rest.get(
+        `https://api.gitlab.example/api/v4/groups/test-group/projects`,
+        (_req, res, ctx) => {
+          const response = [
+            {
+              id: 123,
+              default_branch: 'master',
+              archived: false,
+              last_activity_at: new Date().toString(),
+              web_url: 'https://api.gitlab.example/test-group/test-repo',
+              path_with_namespace: 'test-group/test-repo',
+            },
+          ];
+          return res(ctx.json(response));
+        },
+      ),
+      rest.head(
+        'https://api.gitlab.example/api/v4/projects/test-group%2Ftest-repo/repository/files/catalog-info.yaml',
+        (req, res, ctx) => {
+          if (req.url.searchParams.get('ref') === 'latest') {
+            return res(ctx.status(200));
+          }
+          return res(ctx.status(404, 'Not Found'));
+        },
+      ),
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual('GitlabDiscoveryEntityProvider:test-id:refresh');
+    await (taskDef.fn as () => Promise<void>)();
+
+    const url = `https://api.gitlab.example/test-group/test-repo/-/blob/master/catalog-info.yaml`;
+    const expectedEntities = [
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location': `url:${url}`,
+              'backstage.io/managed-by-origin-location': `url:${url}`,
+            },
+            name: 'generated-cd37bf72a2fe92603f4255d9f49c6c1ead746a48',
+          },
+          spec: {
+            presence: 'optional',
+            target: `${url}`,
+            type: 'url',
+          },
+        },
+        locationKey: 'GitlabDiscoveryEntityProvider:test-id',
+      },
+    ];
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: expectedEntities,
+    });
+  });
+
   it('should filter found projects based on a provided project pattern', async () => {
     const config = new ConfigReader({
       integrations: {

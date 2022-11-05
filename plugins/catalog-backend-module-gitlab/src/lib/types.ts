@@ -36,6 +36,7 @@ export type GitlabProviderConfig = {
   group: string;
   id: string;
   branch: string;
+  forceBranch?: string;
   catalogFile: string;
   projectPattern: RegExp;
   schedule?: TaskScheduleDefinition;

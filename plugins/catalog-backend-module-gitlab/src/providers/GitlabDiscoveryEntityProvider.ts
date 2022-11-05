@@ -181,7 +181,8 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         continue;
       }
 
-      const project_branch = project.default_branch ?? this.config.branch;
+      const project_branch =
+        this.config.forceBranch ?? project.default_branch ?? this.config.branch;
 
       const projectHasFile: boolean = await client.hasFile(
         project.path_with_namespace ?? '',
