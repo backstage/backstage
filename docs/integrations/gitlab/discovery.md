@@ -21,7 +21,8 @@ catalog:
     gitlab:
       yourProviderId:
         host: gitlab-host # Identifies one of the hosts set up in the integrations
-        branch: main # Optional. Uses `master` as default
+        branch: main # Optional. Uses `master` as default (fallback if default_branch is not set)
+        forceBranch: notMaster # Optional. Sets forced branch to fetch project.
         group: example-group # Optional. Group and subgroup (if needed) to look for repositories. If not present the whole project will be scanned
         entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
         projectPattern: /[\s\S]*/ # Optional. Filters found projects based on provided patter. Defaults to `/[\s\S]*/`, what means to not filter anything
