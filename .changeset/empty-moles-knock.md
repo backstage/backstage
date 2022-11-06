@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog': minor
 ---
 
-Introduced labels of entity.metadata in About section of catalog overview page in catalog-plugin.
+The `AboutCard` now also displays metadata labels of each entity.
