@@ -98,9 +98,9 @@ export function AboutContent(props: AboutContentProps) {
 
   let entitySourceLocation:
     | {
-      type: string;
-      target: string;
-    }
+        type: string;
+        target: string;
+      }
     | undefined;
   try {
     entitySourceLocation = getEntitySourceLocation(entity);
@@ -142,19 +142,19 @@ export function AboutContent(props: AboutContentProps) {
         isComponent ||
         isResource ||
         partOfSystemRelations.length > 0) && (
-          <AboutField
-            label="System"
-            value="No System"
-            gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-          >
-            {partOfSystemRelations.length > 0 && (
-              <EntityRefLinks
-                entityRefs={partOfSystemRelations}
-                defaultKind="system"
-              />
-            )}
-          </AboutField>
-        )}
+        <AboutField
+          label="System"
+          value="No System"
+          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
+        >
+          {partOfSystemRelations.length > 0 && (
+            <EntityRefLinks
+              entityRefs={partOfSystemRelations}
+              defaultKind="system"
+            />
+          )}
+        </AboutField>
+      )}
       {isComponent && partOfComponentRelations.length > 0 && (
         <AboutField
           label="Parent Component"
@@ -174,21 +174,21 @@ export function AboutContent(props: AboutContentProps) {
         isGroup ||
         isLocation ||
         typeof entity?.spec?.type === 'string') && (
-          <AboutField
-            label="Type"
-            value={entity?.spec?.type as string}
-            gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-          />
-        )}
+        <AboutField
+          label="Type"
+          value={entity?.spec?.type as string}
+          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
+        />
+      )}
       {(isAPI ||
         isComponent ||
         typeof entity?.spec?.lifecycle === 'string') && (
-          <AboutField
-            label="Lifecycle"
-            value={entity?.spec?.lifecycle as string}
-            gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-          />
-        )}
+        <AboutField
+          label="Lifecycle"
+          value={entity?.spec?.lifecycle as string}
+          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
+        />
+      )}
       <AboutField
         label="Tags"
         value="No Tags"
@@ -204,10 +204,15 @@ export function AboutContent(props: AboutContentProps) {
           value="No Labels"
           gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         >
-          {Object.entries(entity?.metadata?.labels).map(([labelKey, labelValue]) =>
-          (
-            <Chip size="small" key={labelKey} label={`${labelKey}: ${labelValue}`} />
-          ))}
+          {Object.entries(entity?.metadata?.labels).map(
+            ([labelKey, labelValue]) => (
+              <Chip
+                size="small"
+                key={labelKey}
+                label={`${labelKey}: ${labelValue}`}
+              />
+            ),
+          )}
         </AboutField>
       ) : null}
       {isLocation && (entity?.spec?.targets || entity?.spec?.target) && (

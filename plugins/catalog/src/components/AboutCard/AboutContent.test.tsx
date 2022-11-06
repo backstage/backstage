@@ -37,7 +37,7 @@ describe('<AboutContent />', () => {
           description: 'This is the description',
           tags: ['tag-1'],
           labels: {
-            'label-1': 'label'
+            'label-1': 'label',
           },
         },
         spec: {
@@ -92,7 +92,9 @@ describe('<AboutContent />', () => {
       expect(getByText('Tags')).toBeInTheDocument();
       expect(getByText('Tags').nextSibling).toHaveTextContent('tag-1');
       expect(getByText('Labels')).toBeInTheDocument();
-      expect(getByText('Labels').nextSibling).toHaveTextContent('label-1: label')
+      expect(getByText('Labels').nextSibling).toHaveTextContent(
+        'label-1: label',
+      );
     });
 
     it('highlights missing required fields', async () => {
@@ -135,7 +137,7 @@ describe('<AboutContent />', () => {
           description: 'This is the description',
           tags: ['tag-1'],
           labels: {
-            'label-1': 'label'
+            'label-1': 'label',
           },
         },
         spec: {
@@ -187,7 +189,9 @@ describe('<AboutContent />', () => {
       expect(getByText('Tags')).toBeInTheDocument();
       expect(getByText('Tags').nextSibling).toHaveTextContent('tag-1');
       expect(getByText('Labels')).toBeInTheDocument();
-      expect(getByText("Labels").nextSibling).toHaveTextContent('label-1: label');
+      expect(getByText('Labels').nextSibling).toHaveTextContent(
+        'label-1: label',
+      );
     });
 
     it('highlights missing required fields', async () => {
@@ -239,7 +243,7 @@ describe('<AboutContent />', () => {
           description: 'This is the description',
           tags: ['tag-1'],
           labels: {
-            'label-1': 'label'
+            'label-1': 'label',
           },
         },
         spec: {
@@ -298,7 +302,9 @@ describe('<AboutContent />', () => {
       expect(getByText('Tags')).toBeInTheDocument();
       expect(getByText('Tags').nextSibling).toHaveTextContent('tag-1');
       expect(getByText('Labels')).toBeInTheDocument();
-      expect(getByText('Labels').nextSibling).toHaveTextContent('label-1: label');
+      expect(getByText('Labels').nextSibling).toHaveTextContent(
+        'label-1: label',
+      );
     });
 
     it('highlights missing required fields', async () => {
@@ -350,7 +356,7 @@ describe('<AboutContent />', () => {
           description: 'This is the description',
           tags: ['tag-1'],
           labels: {
-            'label-1': 'label'
+            'label-1': 'label',
           },
         },
         spec: {
@@ -389,7 +395,9 @@ describe('<AboutContent />', () => {
       expect(getByText('Tags')).toBeInTheDocument();
       expect(getByText('Tags').nextSibling).toHaveTextContent('tag-1');
       expect(getByText('Labels')).toBeInTheDocument();
-      expect(getByText('Labels').nextSibling).toHaveTextContent('label-1: label');
+      expect(getByText('Labels').nextSibling).toHaveTextContent(
+        'label-1: label',
+      );
     });
 
     it('highlights missing required fields', async () => {
@@ -435,7 +443,7 @@ describe('<AboutContent />', () => {
           description: 'This is the description',
           tags: ['tag-1'],
           labels: {
-            'label-1': 'label'
+            'label-1': 'label',
           },
         },
         spec: {
@@ -475,7 +483,9 @@ describe('<AboutContent />', () => {
         'https://backstage.io',
       );
       expect(getByText('Labels')).toBeInTheDocument();
-      expect(getByText('Labels').nextSibling).toHaveTextContent('label-1: label');
+      expect(getByText('Labels').nextSibling).toHaveTextContent(
+        'label-1: label',
+      );
     });
 
     it('highlights missing required fields', async () => {
@@ -522,7 +532,7 @@ describe('<AboutContent />', () => {
           description: 'This is the description',
           tags: ['tag-1'],
           labels: {
-            'label-1': 'label'
+            'label-1': 'label',
           },
         },
         spec: {
@@ -569,7 +579,9 @@ describe('<AboutContent />', () => {
       expect(getByText('Tags')).toBeInTheDocument();
       expect(getByText('Tags').nextSibling).toHaveTextContent('tag-1');
       expect(getByText('Labels')).toBeInTheDocument();
-      expect(getByText('Labels').nextSibling).toHaveTextContent('label-1: label');
+      expect(getByText('Labels').nextSibling).toHaveTextContent(
+        'label-1: label',
+      );
     });
 
     it('highlights missing required fields', async () => {
@@ -619,7 +631,7 @@ describe('<AboutContent />', () => {
           description: 'This is the description',
           tags: ['tag-1'],
           labels: {
-            'label-1': 'label'
+            'label-1': 'label',
           },
         },
         spec: {
@@ -664,7 +676,9 @@ describe('<AboutContent />', () => {
       expect(getByText('Tags')).toBeInTheDocument();
       expect(getByText('Tags').nextSibling).toHaveTextContent('tag-1');
       expect(getByText('Labels')).toBeInTheDocument();
-      expect(getByText('Labels').nextSibling).toHaveTextContent('label-1: label');
+      expect(getByText('Labels').nextSibling).toHaveTextContent(
+        'label-1: label',
+      );
     });
 
     it('highlights missing required fields', async () => {
